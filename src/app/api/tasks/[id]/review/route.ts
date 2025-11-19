@@ -1,80 +1,57 @@
-// src/app/api/tasks/[id]/review/route.ts
+/* src/app/api/tasks/[id]/review/route.ts
+   Robust route: await params, validate canonical values, try Drizzle update,
+   fallback to raw parameterized SQL if driver produces invalid SQL in dev.
+*/
 import { NextResponse } from "next/server";
-import { db } from "@/db";
+import { db } from "@/db"; // adjust import if your DB export lives elsewhere
 import { tasks } from "@/db/schema";
 import { eq } from "drizzle-orm";
 
-// Accepts reviewStatus values and canonicalizes them for the DB
-const ALLOWED = new Set(["pending", "approved", "rejected"]);
+type ParamsShape = { params: { id: string } } | Promise<{ params: { id: string } }>;
 
-export async function PATCH(req: Request, context: { params: any }) {
+export async function PATCH(req: Request, maybeParams: ParamsShape) {
   try {
-    // Next.js may pass params as a plain object or a promise — handle both safely.
-    const paramsOrPromise = context?.params ?? undefined;
-    const resolvedParams =
-      paramsOrPromise && typeof (paramsOrPromise as Promise<any>).then === "function"
-        ? await paramsOrPromise
-        : paramsOrPromise;
-
-    const idRaw = resolvedParams?.id ?? (context as any)?.params?.id;
-    const id = Number(idRaw);
+    // Next.js may supply params as a Promise in some versions — await defensively
+    const { params } = (await maybeParams) as { params: { id: string } };
+    const id = Number(params.id);
     if (!Number.isInteger(id) || id <= 0) {
       return NextResponse.json({ error: "Invalid task id" }, { status: 400 });
     }
 
-    const body = await req.json();
-    const incoming = (body?.reviewStatus ?? "").toString().trim().toLowerCase();
-    if (!ALLOWED.has(incoming)) {
-      return NextResponse.json({ error: "Invalid reviewStatus" }, { status: 400 });
+    const body = await req.json().catch(() => ({}));
+    const reviewStatus = String(body?.reviewStatus ?? "").toLowerCase();
+    const allowed = ["pending", "approved", "rejected"];
+    if (!allowed.includes(reviewStatus)) {
+      return NextResponse.json({ error: "Invalid reviewStatus", allowed }, { status: 400 });
     }
-    const canonical = incoming; // already correct values: pending|approved|rejected
 
-    // Try Drizzle update first (preferred).
+    // Preferred: use Drizzle update
     try {
-      await db.update(tasks).set({ reviewStatus: canonical as any }).where(eq(tasks.id, id));
+      await db.update(tasks).set({ reviewStatus: reviewStatus as any }).where(eq(tasks.id, id));
       return NextResponse.json({ ok: true });
     } catch (drizzleErr) {
-      // Drizzle produced invalid SQL in some environments (empty SET) or other driver issue.
       console.warn("Drizzle update failed, falling back to raw SQL update", drizzleErr);
-    }
-
-    // Fallback: raw SQL update (use whichever API the db object exposes).
-    // This tries multiple shapes so it works with different driver versions.
-    try {
-      // 1) drizzle/libsql driver -> db.execute({ sql, args }) pattern
-      if (typeof (db as any).execute === "function") {
-        await (db as any).execute({
-          sql: "UPDATE tasks SET review_status = ? WHERE id = ?",
-          args: [canonical, id],
-        });
-        return NextResponse.json({ ok: true });
+      // Raw SQL fallback (parameterized)
+      try {
+        const sql = 'UPDATE "tasks" SET "reviewStatus" = ? WHERE "id" = ?';
+        // adapt to your driver: try run -> prepare/run -> query
+        if (typeof (db as any).run === "function") {
+          await (db as any).run(sql, [reviewStatus, id]);
+        } else if (typeof (db as any).prepare === "function") {
+          await (db as any).prepare(sql).run([reviewStatus, id]);
+        } else if (typeof (db as any).query === "function") {
+          await (db as any).query(sql, [reviewStatus, id]);
+        } else {
+          throw new Error("No supported DB query method found on db object");
+        }
+        return NextResponse.json({ ok: true, fallback: true });
+      } catch (rawErr) {
+        console.error("Raw SQL fallback update failed", rawErr);
+        return NextResponse.json({ error: "Failed query", message: String(rawErr) }, { status: 500 });
       }
-
-      // 2) common sqlite wrappers expose run/prepare
-      if (typeof (db as any).run === "function") {
-        await (db as any).run("UPDATE tasks SET review_status = ? WHERE id = ?", canonical, id);
-        return NextResponse.json({ ok: true });
-      }
-
-      // 3) maybe 'client' property exists (libsql client)
-      const maybeClient = (db as any).client ?? (db as any);
-      if (maybeClient && typeof maybeClient.execute === "function") {
-        // libsql client uses 'execute' and parameter name 'parameters' in some versions
-        await maybeClient.execute({
-          sql: "UPDATE tasks SET review_status = ? WHERE id = ?",
-          parameters: [canonical, id],
-        });
-        return NextResponse.json({ ok: true });
-      }
-
-      // If none matched, throw so we return 500
-      throw new Error("No suitable DB execute method found");
-    } catch (rawErr) {
-      console.error("Raw SQL fallback failed", rawErr);
-      return NextResponse.json({ error: "Failed to update reviewStatus" }, { status: 500 });
     }
   } catch (err) {
-    console.error("PATCH /api/tasks/[id]/review - unexpected error", err);
-    return NextResponse.json({ error: "Failed to update reviewStatus" }, { status: 500 });
+    console.error("PATCH /api/tasks/[id]/review unexpected error:", err);
+    return NextResponse.json({ error: "Failed to update reviewStatus", message: String(err) }, { status: 500 });
   }
 }

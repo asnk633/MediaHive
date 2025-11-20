@@ -4,6 +4,10 @@ import type { Page } from "@playwright/test";
 
 const BASE_URL = process.env.PLAYWRIGHT_BASE_URL || 'http://localhost:3000';
 
+/**
+ * Login helper that fetches users from the backend and stores the specified user in localStorage
+ * This simulates the client-side login flow of the application
+ */
 async function login(page: Page) {
   const LOGIN_URL = BASE_URL + "/api/users";
   
@@ -14,20 +18,26 @@ async function login(page: Page) {
   }
   
   const users = await resp.json();
-  const devUser = users.find((u: any) => u.email === "dev@local");
+  // Use the email from environment variable or fallback to dev user
+  const testEmail = process.env.PLAYWRIGHT_TEST_EMAIL || "dev@local";
+  const user = users.find((u: any) => u.email === testEmail);
   
-  if (!devUser) {
-    throw new Error("Dev user not found");
+  if (!user) {
+    throw new Error(`User with email ${testEmail} not found`);
   }
   
-  // Store user in localStorage to simulate login
-  await page.addInitScript((user) => {
-    window.localStorage.setItem('user', JSON.stringify(user));
-  }, devUser);
+  // Store user in localStorage to simulate login before page navigation
+  await page.addInitScript((userData) => {
+    window.localStorage.setItem('user', JSON.stringify(userData));
+  }, user);
   
-  return devUser;
+  return user;
 }
 
+/**
+ * Seed task helper that creates a task using the real backend API
+ * Includes the required x-user-data header for authentication
+ */
 async function seedTask(page: Page, user: any, overrides = {}) {
   const resp = await page.request.post(
     BASE_URL + "/api/tasks",
@@ -53,12 +63,19 @@ async function seedTask(page: Page, user: any, overrides = {}) {
   return (await resp.json()).data;
 }
 
+/**
+ * Navigate to tasks page and wait for hydration to complete
+ * Waits for task rows to be rendered before proceeding
+ */
 async function gotoTasksAndWait(page: Page) {
   // Navigate to tasks page
   await page.goto("/tasks");
   
-  // Wait for tasks to load
+  // Wait for tasks to load and hydration to complete
   await page.waitForSelector('.task-row', { timeout: 15000 });
+  
+  // Additional wait to ensure full hydration
+  await page.waitForTimeout(1000);
 }
 
 let currentUser: any = null;

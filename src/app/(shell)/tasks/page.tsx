@@ -1,7 +1,4 @@
-/* src/app/(shell)/tasks/page.tsx
-   Production-ready: canonical review values + Save button triggers toast/alert.
-   Replace alert() with your toast helper if you have one (examples below).
-*/
+"use client";
 import React, { useEffect, useState } from "react";
 
 type Task = {

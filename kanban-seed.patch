@@ -1,0 +1,63 @@
+*** Begin Patch
+*** Update File: e2e/playwright/kanban-drag.spec.ts
+@@
+-import { test, expect } from "@playwright/test";
++import { test, expect } from "@playwright/test";
++
++// --- e2e helpers: seed tasks + robust navigation -------------------------
++// Uses PLAYWRIGHT_BASE_URL env var (set to http://localhost:3000 in your shell)
++const API_BASE = process.env.PLAYWRIGHT_BASE_URL || "";
++
++test.beforeEach(async ({ request }) => {
++  // Create a simple seeded task so the UI shows kanban columns / tasks.
++  // If your API requires auth, add headers here (e.g. Authorization).
++  try {
++    const resp = await request.post(`${API_BASE}/api/tasks`, {
++      data: {
++        title: "e2e seeded task",
++        description: "seeded by e2e beforeEach",
++        institutionId: 1,
++        status: "todo",
++        priority: "low"
++      },
++    });
++    if (!resp.ok()) {
++      console.warn("[e2e] task seeding failed:", resp.status(), await resp.text());
++    } else {
++      // optional debug
++      const body = await resp.json().catch(() => null);
++      console.log("[e2e] seeded task id:", body?.id ?? "(no id)");
++    }
++  } catch (err) {
++    console.warn("[e2e] error seeding task:", err);
++  }
++});
++
++/**
++ * Navigate to /tasks and wait reliably for the client to fetch tasks and render.
++ * This waits for a successful /api/tasks response then for a DOM selector.
++ */
++async function gotoTasksAndWait(page, timeout = 20000) {
++  await page.goto("/tasks", { waitUntil: "domcontentloaded" });
++  // Wait for the client to call the tasks API (best-effort; not fatal).
++  try {
++    await page.waitForResponse(
++      (resp) => resp.url().includes("/api/tasks") && resp.status() === 200,
++      { timeout: 5000 }
++    );
++  } catch {
++    // fallback: continue — we'll wait for DOM below
++  }
++  // give client a moment to render
++  await page.waitForTimeout(300);
++  // now wait for either column markup or a seeded task element
++  await page.waitForSelector('[data-column="todo"], [data-task-id]', { timeout });
++}
++// -------------------------------------------------------------------------
+@@
+-    await page.goto("/tasks");
++    await gotoTasksAndWait(page);
+@@
+-    await page.goto("/tasks");
++    await gotoTasksAndWait(page);
+*** End Patch

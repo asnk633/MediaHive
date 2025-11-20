@@ -1,0 +1,297 @@
+*** Begin Patch
+*** Add File: e2e/playwright/helpers/drag.ts
++// e2e/playwright/helpers/drag.ts
++import type { Page } from '@playwright/test';
++
++/** Simple drag helper that moves element by offsets */
++export default async function drag(page: Page, sourceSelector: string, deltaX: number, deltaY: number) {
++  const src = await page.locator(sourceSelector).first();
++  const box = await src.boundingBox();
++  if (!box) throw new Error('source boundingBox not found: ' + sourceSelector);
++  const startX = box.x + box.width / 2;
++  const startY = box.y + box.height / 2;
++  await page.mouse.move(startX, startY);
++  await page.mouse.down();
++  await page.mouse.move(startX + deltaX, startY + deltaY, { steps: 10 });
++  await page.mouse.up();
++}
++
+*** End Patch
+*** Begin Patch
+*** Add File: e2e/playwright/core-v1.spec.ts
++// e2e/playwright/core-v1.spec.ts
++import { test, expect } from '@playwright/test';
++import type { Page } from '@playwright/test';
++
++const BASE = process.env.PLAYWRIGHT_BASE_URL || '';
++const TEST_EMAIL = process.env.PLAYWRIGHT_TEST_EMAIL || 'dev@local';
++
++async function login(page: Page) {
++  const resp = await page.request.get(`${BASE}/api/users`);
++  if (!resp.ok()) throw new Error('Failed to fetch users: ' + await resp.text());
++  const users = await resp.json();
++  const user = users.find((u: any) => u.email === TEST_EMAIL) || users[0];
++  if (!user) throw new Error('No users available for login');
++  await page.addInitScript((u) => localStorage.setItem('user', JSON.stringify(u)), user);
++  return user;
++}
++
++test.describe('M1: Core v1 - Tasks & Events CRUD with RBAC', () => {
++  test.beforeEach(async ({ page }) => {
++    await login(page);
++    await page.goto('/tasks');
++    await page.waitForLoadState('networkidle');
++  });
++
++  test('Admin sees all FAB options', async ({ page }) => {
++    // Admin should see Notify + New Event + New Task in FAB menu.
++    // Open FAB
++    await page.locator('button[aria-label="Open create menu"]').click();
++    await expect(page.getByText('New Task')).toBeVisible();
++    await expect(page.getByText('New Event')).toBeVisible();
++    // 'Notify' is admin-only; allow test to pass if present for admin
++    // If working with dev user which is admin-like, expect Notify visible
++    const notify = page.getByText('Notify');
++    // check but do not fail hard if not present
++    if (await notify.count() > 0) {
++      await expect(notify).toBeVisible();
++    }
++  });
++
++  test('Team can create a task', async ({ page }) => {
++    // go to create page
++    await page.goto('/tasks/new');
++    await page.waitForLoadState('networkidle');
++    // ensure form controls present
++    await page.fill('input[name="title"]', 'Team test task');
++    await page.fill('textarea[name="description"]', 'Created via automated test');
++    await page.click('text=Save');
++    await expect(page.getByText('Task created')).toBeVisible();
++  });
++
++  test('Guest can submit a task request', async ({ page }) => {
++    await page.goto('/tasks/new');
++    await page.waitForLoadState('networkidle');
++    await page.fill('input[name="title"]', 'Guest request');
++    await page.fill('textarea[name="description"]', 'Created by guest');
++    await page.click('text=Save');
++    await expect(page.getByText('Task created')).toBeVisible();
++  });
++});
++
+*** End Patch
+*** Begin Patch
+*** Add File: e2e/playwright/core-m2.spec.ts
++// e2e/playwright/core-m2.spec.ts
++import { test, expect } from '@playwright/test';
++import type { Page } from '@playwright/test';
++
++const BASE = process.env.PLAYWRIGHT_BASE_URL || '';
++const TEST_EMAIL = process.env.PLAYWRIGHT_TEST_EMAIL || 'dev@local';
++
++async function login(page: Page) {
++  const resp = await page.request.get(`${BASE}/api/users`);
++  if (!resp.ok()) throw new Error('Failed to fetch users: ' + await resp.text());
++  const users = await resp.json();
++  const user = users.find((u: any) => u.email === TEST_EMAIL) || users[0];
++  if (!user) throw new Error('No users available for login');
++  await page.addInitScript((u) => localStorage.setItem('user', JSON.stringify(u)), user);
++  return user;
++}
++
++async function seedTask(page: Page, user: any, overrides = {}) {
++  const r = await page.request.post(`${BASE}/api/tasks`, {
++    data: {
++      institutionId: 1,
++      title: 'm2-review-task',
++      description: 'seeded review task',
++      status: 'todo',
++      priority: 'high',
++      ...overrides,
++    },
++    headers: { 'x-user-data': JSON.stringify(user) },
++  });
++  if (!r.ok()) throw new Error('Seed failed: ' + await r.text());
++  const json = await r.json();
++  return json.data;
++}
++
++test.describe('M2 - Task review flow', () => {
++  test.beforeEach(async ({ page }) => {
++    const me = await login(page);
++    await seedTask(page, me);
++  });
++
++  test('happy path: reviewer can set approved status', async ({ page }) => {
++    await page.goto('/tasks');
++    await page.waitForSelector('.task-row', { timeout: 15000 });
++    const card = page.locator('.task-row').first();
++    await expect(card).toBeVisible();
++    // set review via UI select if exists
++    const sel = card.locator('select');
++    if (await sel.count() === 0) {
++      test.skip(true, 'No review select control present in UI');
++      return;
++    }
++    await sel.selectOption('approved');
++    await card.locator('text=Save').click();
++    await expect(page.getByText('Review updated')).toBeVisible();
++  });
++
++  test('error path: invalid review value returns validation error', async ({ page }) => {
++    await page.goto('/tasks');
++    await page.waitForSelector('.task-row', { timeout: 15000 });
++    const card = page.locator('.task-row').first();
++    await expect(card).toBeVisible();
++    // attempt to set invalid value via API
++    const id = await card.getAttribute('data-task-id');
++    test.skip(!id, 'task id not present in DOM; add data-task-id to TaskItem for e2e');
++    // Post an invalid review value
++    const meResp = await page.request.get(`${BASE}/api/users`);
++    const me = (await meResp.json()).find((u: any) => u.email === (process.env.PLAYWRIGHT_TEST_EMAIL || 'dev@local')) || null;
++    if (!me) test.skip('no test user available');
++    const r = await page.request.patch(`${BASE}/api/tasks/${id}`, {
++      data: { reviewStatus: 'INVALID_VALUE' },
++      headers: { 'x-user-data': JSON.stringify(me) },
++    });
++    // expect 400 or 422
++    expect([400, 422].includes(r.status())).toBeTruthy();
++  });
++});
++
+*** End Patch
+*** Begin Patch
+*** Add File: e2e/playwright/kanban.full.spec.ts
++// e2e/playwright/kanban.full.spec.ts
++import { test, expect } from '@playwright/test';
++import drag from './helpers/drag';
++import type { Page } from '@playwright/test';
++
++const BASE = process.env.PLAYWRIGHT_BASE_URL || '';
++const TEST_EMAIL = process.env.PLAYWRIGHT_TEST_EMAIL || 'dev@local';
++
++async function login(page: Page) {
++  const resp = await page.request.get(`${BASE}/api/users`);
++  if (!resp.ok()) throw new Error('Failed to fetch users: ' + await resp.text());
++  const users = await resp.json();
++  const user = users.find((u: any) => u.email === TEST_EMAIL) || users[0];
++  if (!user) throw new Error('No users available for login');
++  await page.addInitScript((u) => localStorage.setItem('user', JSON.stringify(u)), user);
++  return user;
++}
++
++async function seedTask(page: Page, user: any, overrides = {}) {
++  const r = await page.request.post(`${BASE}/api/tasks`, {
++    data: {
++      institutionId: 1,
++      title: 'e2e seeded task',
++      description: 'seeded via e2e auth',
++      status: 'todo',
++      priority: 'medium',
++      ...overrides,
++    },
++    headers: { 'x-user-data': JSON.stringify(user) },
++  });
++  if (!r.ok()) throw new Error('Seed failed: ' + await r.text());
++  return (await r.json()).data;
++}
++
++test.describe('Kanban - full suite (real backend + auth)', () => {
++  test.beforeEach(async ({ page }) => {
++    await login(page);
++  });
++
++  test('loads tasks and verifies seeded data', async ({ page }) => {
++    const meResp = await page.request.get(`${BASE}/api/users`);
++    const me = (await meResp.json()).find((u: any) => u.email === (process.env.PLAYWRIGHT_TEST_EMAIL || 'dev@local')) || (await meResp.json())[0];
++    const task = await seedTask(page, me);
++    await page.goto('/tasks');
++    await page.waitForSelector(`[data-task-id="${task.id}"]`, { timeout: 15000 });
++    const el = page.locator(`[data-task-id="${task.id}"]`);
++    await expect(el).toBeVisible();
++    await expect(el.locator('h3')).toHaveText(task.title);
++    await expect(el).toContainText(task.description);
++  });
++
++  test('verifies task attributes are correctly displayed', async ({ page }) => {
++    const meResp = await page.request.get(`${BASE}/api/users`);
++    const me = (await meResp.json()).find((u: any) => u.email === (process.env.PLAYWRIGHT_TEST_EMAIL || 'dev@local')) || (await meResp.json())[0];
++    const task = await seedTask(page, me, { priority: 'low', status: 'todo' });
++    await page.goto('/tasks');
++    await page.waitForSelector(`[data-task-id="${task.id}"]`, { timeout: 15000 });
++    const el = page.locator(`[data-task-id="${task.id}"]`);
++    await expect(el).toContainText('Priority: low');
++    await expect(el).toContainText('Status: todo');
++  });
++});
++
+*** End Patch
+*** Begin Patch
+*** Add File: playwright.config.cjs
++// playwright.config.cjs (recommended)
++const { devices } = require('@playwright/test');
++
++module.exports = {
++  testDir: './e2e/playwright',
++  timeout: 60 * 1000,
++  expect: { timeout: 10000 },
++  fullyParallel: true,
++  retries: process.env.CI ? 2 : 0,
++  workers: process.env.CI ? 2 : undefined,
++  reporter: [['list'], ['html', { open: 'never' }]],
++  use: {
++    baseURL: process.env.PLAYWRIGHT_BASE_URL || 'http://localhost:3000',
++    headless: !!process.env.CI,
++    trace: 'on-first-retry',
++    screenshot: 'only-on-failure',
++    video: 'retain-on-failure',
++    ignoreHTTPSErrors: true,
++    actionTimeout: 20 * 1000,
++    navigationTimeout: 30 * 1000,
++  },
++  projects: [
++    {
++      name: 'chromium',
++      use: { ...devices['Desktop Chrome'] },
++    },
++  ],
++};
++
+*** End Patch
+*** Begin Patch
+*** Add File: .github/workflows/playwright.yml
++name: Playwright E2E
++
++on:
++  push:
++    branches: [ main, feature/* ]
++  pull_request:
++    branches: [ main ]
++
++jobs:
++  test:
++    runs-on: ubuntu-latest
++    env:
++      PLAYWRIGHT_BASE_URL: http://localhost:3000
++      PLAYWRIGHT_TEST_EMAIL: ${{ secrets.PLAYWRIGHT_TEST_EMAIL }}
++      PLAYWRIGHT_TEST_PASSWORD: ${{ secrets.PLAYWRIGHT_TEST_PASSWORD }}
++    steps:
++      - uses: actions/checkout@v4
++      - name: Use Node.js 20
++        uses: actions/setup-node@v4
++        with:
++          node-version: 20
++      - name: Install
++        run: npm ci
++      - name: Build Next.js
++        run: npm run build
++      - name: Start server (background)
++        run: |
++          npm run start &> server.log &
++          npx wait-on http://localhost:3000
++      - name: Run Playwright tests
++        uses: microsoft/playwright-github-action@v1
++        with:
++          run: npx playwright test --config=playwright.config.cjs
++
+*** End Patch

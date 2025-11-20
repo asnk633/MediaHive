@@ -1,0 +1,455 @@
+diff --git a/e2e/playwright/fixtures.ts b/e2e/playwright/fixtures.ts
+new file mode 100644
+index 0000000..1111111
+--- /dev/null
++++ b/e2e/playwright/fixtures.ts
+@@ -0,0 +1,200 @@
++import { test as base, type Page } from '@playwright/test';
++
++/**
++ * Fixtures for Kanban e2e tests.
++ *
++ * - authUser: fetches the test user from the backend (PLAYWRIGHT_TEST_EMAIL)
++ *   and injects it into localStorage before the first navigation.
++ *
++ * Usage:
++ *   import { test, expect } from './fixtures';
++ *   test('example', async ({ page, authUser }) => { ... });
++ */
++
++type User = Record<string, any>;
++
++export const test = base.extend<{
++  authUser: User;
++}>({
++  authUser: [
++    // Auto fixture - provides the authenticated test user object
++    async ({ page, baseURL }, use) => {
++      const baseUrl = (process.env.PLAYWRIGHT_BASE_URL || baseURL || 'http://localhost:3000').replace(/\/$/, '');
++      const email = process.env.PLAYWRIGHT_TEST_EMAIL || 'dev@local';
++
++      // Fetch users from real API and find the test user
++      const resp = await page.request.get(`${baseUrl}/api/users`);
++      if (!resp.ok()) {
++        throw new Error(`Failed to fetch users for auth fixture: ${resp.status()} ${await resp.text()}`);
++      }
++      const users = await resp.json();
++      const user = Array.isArray(users) ? users.find((u: any) => u.email === email) : null;
++      if (!user) {
++        throw new Error(`auth fixture: user with email "${email}" not found. returned users: ${JSON.stringify(users).slice(0, 200)}`);
++      }
++
++      // Ensure user is injected before navigation/hydration:
++      // addInitScript runs before any page script on subsequent navigations on this page.
++      await page.addInitScript((u) => {
++        try {
++          // localStorage key used by app for client auth (app uses 'user')
++          window.localStorage.setItem('user', JSON.stringify(u));
++        } catch (err) {
++          // ignore (shouldn't happen)
++        }
++      }, user);
++
++      await use(user);
++    },
++    { scope: 'test' },
++  ],
++});
++
++export const expect = test.expect;
++
++export default test;
+diff --git a/e2e/playwright/helpers/seed.ts b/e2e/playwright/helpers/seed.ts
+new file mode 100644
+index 0000000..2222222
+--- /dev/null
++++ b/e2e/playwright/helpers/seed.ts
+@@ -0,0 +1,220 @@
++import type { Page } from '@playwright/test';
++
++/**
++ * Helpers for seeding and fetching tasks using the real backend.
++ *
++ * seedTask(page, user, overrides) -> creates a task via POST /api/tasks
++ * fetchTaskById(page, id) -> tries GET /api/tasks/:id then falls back to list search.
++ */
++
++export async function seedTask(page: Page, user: any, overrides: Partial<any> = {}) {
++  const baseUrl = process.env.PLAYWRIGHT_BASE_URL || 'http://localhost:3000';
++  const payload = {
++    institutionId: 1,
++    title: `e2e task ${Date.now()}`,
++    description: 'seeded via e2e auth',
++    status: 'todo',
++    priority: 'medium',
++    ...overrides,
++  };
++
++  const resp = await page.request.post(`${baseUrl}/api/tasks`, {
++    headers: {
++      'content-type': 'application/json',
++      'x-user-data': JSON.stringify(user),
++    },
++    data: payload,
++  });
++
++  if (!(resp.ok())) {
++    const text = await resp.text();
++    throw new Error(`seedTask failed: ${resp.status()} ${text}`);
++  }
++
++  // Expect { data: ... } or the object directly
++  const json = await resp.json();
++  return json?.data ?? json;
++}
++
++export async function fetchTaskById(page: Page, id: number | string) {
++  const baseUrl = process.env.PLAYWRIGHT_BASE_URL || 'http://localhost:3000';
++
++  // Try direct read if route exists
++  try {
++    const resp = await page.request.get(`${baseUrl}/api/tasks/${id}`);
++    if (resp.ok()) {
++      const json = await resp.json();
++      return json?.data ?? json;
++    }
++  } catch (err) {
++    // ignore and fallback
++  }
++
++  // Fallback: fetch all tasks and search
++  const listResp = await page.request.get(`${baseUrl}/api/tasks?institutionId=1&limit=500`);
++  if (!listResp.ok()) {
++    throw new Error(`fetchTaskById fallback failed: ${listResp.status()} ${await listResp.text()}`);
++  }
++  const listJson = await listResp.json();
++  const items = listJson?.data ?? listJson;
++  return Array.isArray(items) ? items.find((t: any) => String(t.id) === String(id)) : null;
++}
++
++export async function deleteTaskById(page: Page, id: number | string) {
++  const baseUrl = process.env.PLAYWRIGHT_BASE_URL || 'http://localhost:3000';
++  try {
++    const resp = await page.request.delete(`${baseUrl}/api/tasks/${id}`, {
++      headers: { 'x-user-data': page.context()._options.storageState ? '' : '' }, // placeholder; often not needed
++    });
++    return resp.ok();
++  } catch {
++    return false;
++  }
++}
+diff --git a/e2e/playwright/helpers/drag.ts b/e2e/playwright/helpers/drag.ts
+new file mode 100644
+index 0000000..3333333
+--- /dev/null
++++ b/e2e/playwright/helpers/drag.ts
+@@ -0,0 +1,220 @@
++import type { Page, Locator } from '@playwright/test';
++
++/**
++ * Robust drag helper using mouse moves & bounding boxes.
++ *
++ * Usage:
++ *   await dragAndDrop(page, locatorSource, locatorTarget);
++ *
++ * The helper:
++ * - waits for bounding boxes to be available
++ * - moves to the source center, mouse.down(), moves in steps to the target center, mouse.up()
++ * - short waits to allow UI to process the drop
++ */
++
++export async function dragAndDrop(page: Page, source: Locator, target: Locator, opts?: { steps?: number; pauseMs?: number; postDropMs?: number; }) {
++  const steps = opts?.steps ?? 12;
++  const pauseMs = opts?.pauseMs ?? 40;
++  const postDropMs = opts?.postDropMs ?? 450;
++
++  const srcBox = await source.boundingBox();
++  const tgtBox = await target.boundingBox();
++  if (!srcBox || !tgtBox) {
++    throw new Error('dragAndDrop: could not retrieve bounding boxes for source or target');
++  }
++
++  const src = { x: srcBox.x + srcBox.width / 2, y: srcBox.y + srcBox.height / 2 };
++  const tgt = { x: tgtBox.x + tgtBox.width / 2, y: tgtBox.y + tgtBox.height / 2 };
++
++  // Move to source center
++  await page.mouse.move(src.x, src.y);
++  await page.mouse.down();
++  await page.waitForTimeout(pauseMs);
++
++  // Move in small steps to target
++  for (let i = 1; i <= steps; i++) {
++    const t = i / steps;
++    const x = src.x + (tgt.x - src.x) * t;
++    const y = src.y + (tgt.y - src.y) * t;
++    await page.mouse.move(x, y, { steps: 2 });
++    await page.waitForTimeout(10);
++  }
++
++  await page.mouse.up();
++  // Give the UI & backend a moment to reconcile
++  await page.waitForTimeout(postDropMs);
++}
++
++export default dragAndDrop;
+diff --git a/e2e/playwright/kanban.full.spec.ts b/e2e/playwright/kanban.full.spec.ts
+new file mode 100644
+index 0000000..4444444
+--- /dev/null
++++ b/e2e/playwright/kanban.full.spec.ts
+@@ -0,0 +1,340 @@
++import test, { expect } from './fixtures';
++import { seedTask, fetchTaskById } from './helpers/seed';
++import dragAndDrop from './helpers/drag';
++import type { Locator } from '@playwright/test';
++
++/**
++ * Full Kanban suite
++ *
++ * - Uses real backend seeding
++ * - Uses client-side auth via localStorage (authUser fixture)
++ * - Verifies UI and backend after drag
++ *
++ * Selectors are centralized for easy tuning.
++ */
++
++const SELECTORS = {
++  taskRow: '.task-row',
++  column: (name: string) => `[data-column="${name}"]`,
++  taskById: (id: any) => `[data-task-id="${id}"]`,
++  taskTitle: 'h3, .task-title',
++};
++
++const TIMEOUTS = {
++  pageLoad: 20000,
++  taskVisible: 10000,
++};
++
++async function waitForTasksInColumn(page: any, columnName: string) {
++  const sel = SELECTORS.column(columnName);
++  await page.waitForSelector(sel, { timeout: TIMEOUTS.pageLoad });
++  // wait for at least one task-row inside that column (if present)
++  await page.waitForSelector(`${sel} ${SELECTORS.taskRow}`, { timeout: TIMEOUTS.taskVisible }).catch(() => { /* allow empty column */ });
++}
++
++test.describe('kanban full suite', () => {
++  test('can seed tasks and verify they show up', async ({ page, authUser }) => {
++    // seed a task
++    const created = await seedTask(page, authUser, { title: 'e2e-seed-basic', status: 'todo' });
++
++    // navigate to tasks page (client auth set by fixture via addInitScript)
++    await page.goto('/tasks');
++    // ensure things hydrate
++    await waitForTasksInColumn(page, 'todo');
++
++    // assert the created task is visible
++    const locator = page.locator(SELECTORS.taskById(created.id));
++    await expect(locator).toBeVisible({ timeout: TIMEOUTS.taskVisible });
++    // assert title is shown
++    await expect(locator.locator(SELECTORS.taskTitle)).toHaveText(/e2e-seed-basic/);
++  });
++
++  test('drag todo -> in_progress updates UI and backend', async ({ page, authUser }) => {
++    // seed task in todo
++    const task = await seedTask(page, authUser, { title: 'drag-todo-to-inprogress', status: 'todo' });
++
++    await page.goto('/tasks');
++    await waitForTasksInColumn(page, 'todo');
++    await waitForTasksInColumn(page, 'in_progress');
++
++    // locate source and target elements
++    const source = page.locator(SELECTORS.taskById(task.id));
++    await expect(source).toBeVisible({ timeout: TIMEOUTS.taskVisible });
++
++    const targetCol = page.locator(SELECTORS.column('in_progress'));
++    await expect(targetCol).toBeVisible({ timeout: TIMEOUTS.pageLoad });
++
++    // Perform drag
++    await dragAndDrop(page, source, targetCol);
++
++    // Wait for the task to appear in the target column
++    const movedTask = page.locator(`${SELECTORS.column('in_progress')} ${SELECTORS.taskById(task.id)}`);
++    await expect(movedTask).toBeVisible({ timeout: TIMEOUTS.taskVisible });
++
++    // Check backend: ensure task status updated
++    const fresh = await fetchTaskById(page, task.id);
++    if (!fresh) throw new Error('fetchTaskById returned null after drag');
++    expect(fresh.status).toBe('in_progress');
++  });
++
++  test('drag todo -> done updates UI and backend', async ({ page, authUser }) => {
++    const task = await seedTask(page, authUser, { title: 'drag-todo-to-done', status: 'todo' });
++
++    await page.goto('/tasks');
++    await waitForTasksInColumn(page, 'todo');
++    await waitForTasksInColumn(page, 'done');
++
++    const source = page.locator(SELECTORS.taskById(task.id));
++    await expect(source).toBeVisible({ timeout: TIMEOUTS.taskVisible });
++
++    const targetCol = page.locator(SELECTORS.column('done'));
++    await expect(targetCol).toBeVisible({ timeout: TIMEOUTS.pageLoad });
++
++    await dragAndDrop(page, source, targetCol);
++
++    const movedTask = page.locator(`${SELECTORS.column('done')} ${SELECTORS.taskById(task.id)}`);
++    await expect(movedTask).toBeVisible({ timeout: TIMEOUTS.taskVisible });
++
++    const fresh = await fetchTaskById(page, task.id);
++    if (!fresh) throw new Error('fetchTaskById returned null after drag');
++    expect(fresh.status).toBe('done');
++  });
++
++  test('column counts reflect seeded data', async ({ page, authUser }) => {
++    // seed multiple tasks in different statuses
++    const t1 = await seedTask(page, authUser, { title: 'count-task-todo', status: 'todo' });
++    const t2 = await seedTask(page, authUser, { title: 'count-task-inprogress', status: 'in_progress' });
++    const t3 = await seedTask(page, authUser, { title: 'count-task-done', status: 'done' });
++
++    await page.goto('/tasks');
++    await waitForTasksInColumn(page, 'todo');
++    await waitForTasksInColumn(page, 'in_progress');
++    await waitForTasksInColumn(page, 'done');
++
++    // count items
++    const todoCount = await page.locator(`${SELECTORS.column('todo')} ${SELECTORS.taskRow}`).count();
++    const inProgCount = await page.locator(`${SELECTORS.column('in_progress')} ${SELECTORS.taskRow}`).count();
++    const doneCount = await page.locator(`${SELECTORS.column('done')} ${SELECTORS.taskRow}`).count();
++
++    // at minimum, each column should have at least 1 because of our seeds
++    expect(todoCount).toBeGreaterThanOrEqual(1);
++    expect(inProgCount).toBeGreaterThanOrEqual(1);
++    expect(doneCount).toBeGreaterThanOrEqual(1);
++  });
++});
++
++// NOTE:
++// If your app uses different selectors, update SELECTORS above.
++// If tests fail due to timing, increase TIMEOUTS.pageLoad or TIMEOUTS.taskVisible.
+diff --git a/playwright.config.cjs b/playwright.config.cjs
+new file mode 100644
+index 0000000..5555555
+--- /dev/null
++++ b/playwright.config.cjs
+@@ -0,0 +1,40 @@
++// playwright.config.cjs
++const { devices } = require('@playwright/test');
++
++module.exports = {
++  testDir: 'e2e/playwright',
++  reporter: [['list'], ['html', { outputFolder: 'test-report' }]],
++  timeout: 60_000,
++  expect: { timeout: 5000 },
++  use: {
++    headless: false,
++    baseURL: process.env.PLAYWRIGHT_BASE_URL || 'http://localhost:3000',
++    viewport: { width: 1280, height: 800 },
++    actionTimeout: 20_000,
++    trace: 'on-first-retry',
++  },
++  projects: [
++    { name: 'chromium', use: { ...devices['Desktop Chrome'] } },
++  ],
++};
+diff --git a/.github/workflows/playwright.yml b/.github/workflows/playwright.yml
+new file mode 100644
+index 0000000..6666666
+--- /dev/null
++++ b/.github/workflows/playwright.yml
+@@ -0,0 +1,80 @@
++# .github/workflows/playwright.yml
++name: Playwright tests
++
++on:
++  push:
++    branches: [ main, 'feature/**' ]
++  pull_request:
++
++jobs:
++  playwright:
++    runs-on: ubuntu-latest
++    steps:
++      - uses: actions/checkout@v4
++      - name: Setup Node
++        uses: actions/setup-node@v4
++        with:
++          node-version: 20
++      - name: Install deps
++        run: npm ci
++      - name: Build Next app
++        run: npm run build
++      - name: Start app (background)
++        run: |
++          npm run start & sleep 3
++        env:
++          PORT: 3000
++      - name: Wait for app
++        run: |
++          npx wait-on http://localhost:3000 || npx wait-on http://127.0.0.1:3000
++      - name: Seed DB (placeholder)
++        run: |
++          echo "::notice::If your CI needs DB seeding, replace this placeholder step with your seeding commands."
++      - name: Run Playwright tests
++        run: npx playwright test --config=playwright.config.cjs --project=chromium
++        env:
++          PLAYWRIGHT_BASE_URL: http://localhost:3000
++          PLAYWRIGHT_TEST_EMAIL: dev@local
+diff --git a/e2e/playwright/README.md b/e2e/playwright/README.md
+new file mode 100644
+index 0000000..7777777
+--- /dev/null
++++ b/e2e/playwright/README.md
+@@ -0,0 +1,220 @@
++# Playwright Kanban UI test suite
++
++This folder contains a Playwright-based test suite that exercises the Kanban UI using the **real backend** and the app's client-side auth approach.
++
++## Files
++
++- `fixtures.ts` — Playwright fixture that fetches the test user (from `PLAYWRIGHT_TEST_EMAIL`) and injects it into `localStorage` before navigation.
++- `helpers/seed.ts` — helpers to create tasks via `POST /api/tasks` and fetch tasks.
++- `helpers/drag.ts` — robust drag helper using Playwright's mouse API.
++- `kanban.full.spec.ts` — the full Kanban test suite (seed, drag, verify).
++- `playwright.config.cjs` — recommended Playwright config (root).
++
++## Environment variables
++
++- `PLAYWRIGHT_BASE_URL` — base URL for your dev server (default `http://localhost:3000`).
++- `PLAYWRIGHT_TEST_EMAIL` — email of the test user to use (default `dev@local`).
++
++## Run locally
++
++1. Start dev server:
++
++```bash
++export PLAYWRIGHT_BASE_URL="http://localhost:3000"
++export PLAYWRIGHT_TEST_EMAIL="dev@local"
++npm run dev
++```
++
++2. Run tests:
++
++```bash
++npx playwright test --config=playwright.config.cjs e2e/playwright/kanban.full.spec.ts --project=chromium --headed
++```
++
++## CI notes
++
++- The included GitHub Actions workflow is a template. If your CI needs DB seeding (to ensure `dev@local` exists), replace the placeholder `Seed DB` step with your seeding command or SQL.
++- If Playwright tests time out in CI, consider:
++  - increasing timeouts in `playwright.config.cjs`
++  - running headless in CI by setting `PLAYWRIGHT_HEADLESS=true` or setting `use.headless: true`
++
++## Troubleshooting
++
++- If the app's DOM selectors differ from the selectors in `kanban.full.spec.ts`, update the `SELECTORS` object at the top of the file.
++- If `seedTask` fails with 401 or 403, ensure the `x-user-data` header is accepted by your backend, and that the test user exists in the DB.
++- If drag doesn't move tasks reliably, increase `postDropMs` in `helpers/drag.ts` and/or increase `steps`.
++
++## Common failures & fixes
++
++- **User not found in /api/users**: Ensure `PLAYWRIGHT_TEST_EMAIL` matches a user. Create the user in DB or update the env var.
++- **POST /api/tasks returns 401**: Backend expects a different auth header. Confirm `x-user-data` is correct, or modify `seedTask` to send the header your backend expects.
++- **Selectors mismatch**: Update the `SELECTORS` map in `kanban.full.spec.ts`.
++
++If you want, I can adjust selectors to match your app exactly when you paste the relevant task item HTML snippet.

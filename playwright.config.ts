@@ -69,19 +69,4 @@ export default defineConfig({
   //   timeout: 120_000,
   //   reuseExistingServer: false,
   // },
-
-// playwright.config.ts (snippet)
-export default defineConfig({
-  testDir: "e2e/playwright",
-  // ...existing settings...
-  use: {
-    baseURL: "http://localhost:3000",
-  },
-  webServer: {
-    command: "npm run dev",      // change to pnpm/yarn if needed
-    url: "http://localhost:3000",
-    timeout: 120_000,            // wait up to 2 minutes for server
-    reuseExistingServer: true,   // if a server is already running, reuse it
-  },
 });
-

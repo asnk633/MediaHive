@@ -1,41 +1,26 @@
-import type { Locator, Page } from "@playwright/test";
+import type { Page, Locator } from "@playwright/test";
 
 /**
- * Low-level mouse-based drag helper for HTML5 drag-and-drop.
- *
- * Uses mouse events (move/down/up) to simulate drag for apps that rely on
- * mouse events instead of the native HTML5 DataTransfer API.
- *
- * Exported as default so specs using `import drag from "./helpers/drag"` work.
+ * dragAndDropByBoundingBoxes - robust drag helper using bounding boxes and page.mouse
+ * source and target are Locators.
  */
-export default async function drag(
-  page: Page,
-  source: Locator,
-  target: Locator,
-  options?: { holdForMs?: number; steps?: number }
-): Promise<void> {
-  const holdForMs = options?.holdForMs ?? 80;
-  const steps = options?.steps ?? 10;
+export default async function dragAndDrop(source: Locator, target: Locator, page: Page) {
+  const sBox = await source.boundingBox();
+  const tBox = await target.boundingBox();
+  if (!sBox || !tBox) throw new Error("Element bounding box not available for drag");
 
-  const sourceBox = await source.boundingBox();
-  if (!sourceBox) {
-    throw new Error("drag(): could not resolve boundingBox() for source locator");
-  }
-
-  const targetBox = await target.boundingBox();
-  if (!targetBox) {
-    throw new Error("drag(): could not resolve boundingBox() for target locator");
-  }
-
-  const startX = sourceBox.x + sourceBox.width / 2;
-  const startY = sourceBox.y + sourceBox.height / 2;
-  const endX = targetBox.x + targetBox.width / 2;
-  const endY = targetBox.y + targetBox.height / 2;
+  const startX = sBox.x + sBox.width / 2;
+  const startY = sBox.y + sBox.height / 2;
+  const endX = tBox.x + tBox.width / 2;
+  const endY = tBox.y + tBox.height / 2;
 
   await page.mouse.move(startX, startY);
   await page.mouse.down();
-  await page.waitForTimeout(holdForMs);
-  await page.mouse.move(endX, endY, { steps });
+  // small intermediate move to simulate human drag
+  await page.mouse.move((startX + endX) / 2, (startY + endY) / 2, { steps: 8 });
+  await page.mouse.move(endX, endY, { steps: 8 });
   await page.mouse.up();
-  await page.waitForTimeout(200);
+
+  // allow time for UI/backend update
+  await page.waitForTimeout(300);
 }

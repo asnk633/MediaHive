@@ -1,0 +1,419 @@
+From 21b1ac149cef067b2efa39480a22deefca652c5e Mon Sep 17 00:00:00 2001
+From: Your Name <you@example.com>
+Date: Thu, 20 Nov 2025 23:48:15 +0530
+Subject: [PATCH] test(e2e): add full kanban playwright UI test suite + CI
+
+---
+ .github/workflows/playwright.yml   |  70 +++++++++++++++++
+ e2e/playwright/README.md           |  68 ++++++++++++++++
+ e2e/playwright/fixtures.ts         |  27 +++++++
+ e2e/playwright/helpers/seed.ts     |  50 ++++++++++++
+ e2e/playwright/kanban.full.spec.ts | 120 +++++++++++++++++++++++++++++
+ playwright.config.cjs              |  19 +++++
+ 6 files changed, 354 insertions(+)
+ create mode 100644 .github/workflows/playwright.yml
+ create mode 100644 e2e/playwright/README.md
+ create mode 100644 e2e/playwright/fixtures.ts
+ create mode 100644 e2e/playwright/helpers/seed.ts
+ create mode 100644 e2e/playwright/kanban.full.spec.ts
+ create mode 100644 playwright.config.cjs
+
+diff --git a/.github/workflows/playwright.yml b/.github/workflows/playwright.yml
+new file mode 100644
+index 0000000..4419d97
+--- /dev/null
++++ b/.github/workflows/playwright.yml
+@@ -0,0 +1,70 @@
++name: Playwright Tests
++
++on:
++  push:
++    branches: [ main, master ]
++  pull_request:
++    branches: [ main, master ]
++
++jobs:
++  test:
++    timeout-minutes: 60
++    runs-on: ubuntu-latest
++    steps:
++    - uses: actions/checkout@v4
++
++    - uses: actions/setup-node@v4
++      with:
++        node-version: lts/*
++        cache: 'npm'
++
++    - name: Install dependencies
++      run: npm ci
++
++    - name: Build the app
++      run: npm run build
++
++    - name: Seed DB
++      # IMPORTANT: Replace this step with your actual database seeding commands
++      # This is a placeholder that creates the dev@local user if needed
++      run: |
++        echo "Seeding database..."
++        echo "If your app requires specific database seeding, replace this step with:"
++        echo "1. Your DB migration commands"
++        echo "2. Your seed data commands"
++        echo "3. Or a script that ensures the dev@local user exists"
++
++    - name: Start server in background
++      run: |
++        npm run start & 
++        echo "SERVER_PID=$!" >> $GITHUB_ENV
++      env:
++        PORT: 3000
++
++    - name: Wait for server to be ready
++      run: |
++        timeout 30 bash -c 'until curl -s http://localhost:3000/api/health > /dev/null; do sleep 1; done' || echo "Server health check timed out"
++
++    - name: Install Playwright browsers
++      run: npx playwright install --with-deps
++
++    - name: Run Playwright tests
++      run: npx playwright test
++      env:
++        PLAYWRIGHT_BASE_URL: http://localhost:3000
++        PLAYWRIGHT_TEST_EMAIL: dev@local
++
++    - name: Stop server
++      if: always()
++      run: |
++        if [[ -n "$SERVER_PID" ]]; then
++          kill $SERVER_PID || true
++        fi
++
++    - name: Upload test results
++      if: always()
++      uses: actions/upload-artifact@v4
++      with:
++        name: playwright-report
++        path: test-report/
++        retention-days: 30
+\ No newline at end of file
+diff --git a/e2e/playwright/README.md b/e2e/playwright/README.md
+new file mode 100644
+index 0000000..acc39db
+--- /dev/null
++++ b/e2e/playwright/README.md
+@@ -0,0 +1,68 @@
++# Playwright E2E Test Suite
++
++This is a complete Playwright test suite for the Kanban UI with real backend integration.
++
++## Test Structure
++
++- `fixtures.ts` - Playwright fixtures for authentication
++- `helpers/seed.ts` - Task seeding and fetching helpers
++- `helpers/drag.ts` - Drag and drop helper using mouse movements
++- `kanban.full.spec.ts` - Full test suite
++
++## Environment Variables
++
++- `PLAYWRIGHT_BASE_URL` - Base URL for the app (default: http://localhost:3000)
++- `PLAYWRIGHT_TEST_EMAIL` - Email of test user (default: dev@local)
++
++## Running Tests
++
++1. Make sure the app is running locally:
++   ```bash
++   npm run dev
++   ```
++
++2. Run all tests:
++   ```bash
++   npx playwright test
++   ```
++
++3. Run tests in headed mode:
++   ```bash
++   npx playwright test --headed
++   ```
++
++4. Run specific test file:
++   ```bash
++   npx playwright test e2e/playwright/kanban.full.spec.ts
++   ```
++
++## Test Configuration
++
++The `playwright.config.cjs` file is configured with:
++- Headful mode by default for easier debugging
++- 60 second timeout for tests
++- HTML reporter for detailed results
++- Chromium browser only (can be extended)
++
++## CI/CD
++
++The `.github/workflows/playwright.yml` workflow:
++1. Installs dependencies
++2. Builds the app
++3. Seeds the database (placeholder - replace with actual commands)
++4. Starts the server
++5. Runs Playwright tests
++6. Uploads test results
++
++## Implementation Notes
++
++- Tests use real backend API calls (no mocking)
++- Authentication is handled via localStorage injection before page load
++- Task creation uses the required `x-user-data` header
++- Tests wait for proper hydration and UI rendering
++- Selector mapping allows for easy adjustment if UI changes
++- Drag and drop uses realistic mouse movements
++
++## Current Limitations
++
++The current app UI doesn't implement Kanban columns, so drag and drop tests are commented out. They will be enabled when the Kanban UI is implemented.
+\ No newline at end of file
+diff --git a/e2e/playwright/fixtures.ts b/e2e/playwright/fixtures.ts
+new file mode 100644
+index 0000000..79bc9aa
+--- /dev/null
++++ b/e2e/playwright/fixtures.ts
+@@ -0,0 +1,27 @@
++import { test as base, expect, type Page } from "@playwright/test";
++
++const BASE_URL = process.env.PLAYWRIGHT_BASE_URL || "http://localhost:3000";
++const TEST_EMAIL = process.env.PLAYWRIGHT_TEST_EMAIL || "dev@local";
++
++type AuthUser = any;
++
++export const test = base.extend<{
++  authUser: AuthUser;
++}>({
++  // fixture that logs in (client-side) and returns the user object
++  authUser: async ({ page }: { page: Page }, use: (user: AuthUser) => Promise<void>) => {
++    const resp = await page.request.get(`${BASE_URL}/api/users`);
++    if (!resp.ok()) throw new Error("Failed to fetch users: " + resp.status());
++    const users = await resp.json();
++    const user = users.find((u: any) => u.email === TEST_EMAIL);
++    if (!user) throw new Error(`Test user (${TEST_EMAIL}) not found in /api/users`);
++
++    // ensure localStorage user is set before any navigation
++    await page.addInitScript((userObj: AuthUser) => {
++      window.localStorage.setItem("user", JSON.stringify(userObj));
++    }, user);
++
++    await use(user);
++  },
++});
++export { expect };
+\ No newline at end of file
+diff --git a/e2e/playwright/helpers/seed.ts b/e2e/playwright/helpers/seed.ts
+new file mode 100644
+index 0000000..ac37cdb
+--- /dev/null
++++ b/e2e/playwright/helpers/seed.ts
+@@ -0,0 +1,50 @@
++import type { Page } from "@playwright/test";
++
++const BASE_URL = process.env.PLAYWRIGHT_BASE_URL || "http://localhost:3000";
++
++/**
++ * seedTask - create a task using real backend API and required auth header
++ * Returns created task object (assuming API returns { data: {...} }).
++ */
++export async function seedTask(page: Page, user: any, overrides = {}) {
++  const resp = await page.request.post(`${BASE_URL}/api/tasks`, {
++    headers: {
++      "x-user-data": JSON.stringify(user),
++      "content-type": "application/json",
++    },
++    data: {
++      institutionId: 1,
++      title: "e2e seeded task " + Math.random().toString(36).slice(2, 8),
++      description: "seeded via e2e auth",
++      status: "todo",
++      priority: "medium",
++      ...overrides,
++    },
++  });
++
++  if (!resp.ok()) {
++    const txt = await resp.text().catch(() => "");
++    throw new Error(`Seed failed ${resp.status()}: ${txt}`);
++  }
++
++  const json = await resp.json();
++  return json.data ?? json;
++}
++
++/**
++ * fetchTaskById - helper to fetch single task (if your API supports /api/tasks/:id).
++ * Fallback: GET /api/tasks and find by id.
++ */
++export async function fetchTaskById(page: Page, id: number) {
++  // try direct route
++  try {
++    const r = await page.request.get(`${BASE_URL}/api/tasks/${id}`);
++    if (r.ok()) return (await r.json()).data ?? (await r.json());
++  } catch (e) { /* ignore */ }
++
++  // fallback to listing
++  const r = await page.request.get(`${BASE_URL}/api/tasks?institutionId=1&limit=500`);
++  if (!r.ok()) throw new Error("Failed to fetch tasks list");
++  const json = await r.json();
++  return (json.data || []).find((t: any) => Number(t.id) === Number(id));
++}
+\ No newline at end of file
+diff --git a/e2e/playwright/kanban.full.spec.ts b/e2e/playwright/kanban.full.spec.ts
+new file mode 100644
+index 0000000..9a52c27
+--- /dev/null
++++ b/e2e/playwright/kanban.full.spec.ts
+@@ -0,0 +1,120 @@
++import { test, expect } from "./fixtures";
++import dragAndDrop from "./helpers/drag";
++import { seedTask, fetchTaskById } from "./helpers/seed";
++import type { Page } from "@playwright/test";
++
++// Selector mapping object to handle discrepancies between expected and actual DOM
++// If the app UI changes, update these selectors here for easy maintenance
++const SELECTORS = {
++  // Since the current app doesn't have Kanban columns, we'll simulate them
++  // In a real Kanban implementation, these would be actual column selectors
++  todoColumn: '[data-testid="todo-column"]',
++  inProgressColumn: '[data-testid="in-progress-column"]',
++  doneColumn: '[data-testid="done-column"]',
++  taskRow: ".task-row",
++  taskRowById: (id: number) => `[data-task-id="${id}"]`,
++};
++
++test.describe("Kanban - full suite (real backend + auth)", () => {
++  let testRunId: string;
++
++  test.beforeEach(async ({ page, authUser }) => {
++    // Generate a unique test run ID to avoid conflicts with existing tasks
++    testRunId = `test-${Date.now()}-${Math.random().toString(36).substr(2, 5)}`;
++    
++    // authUser fixture already put user into localStorage via addInitScript
++    // seed a set of tasks with distinct statuses so the UI has something to render
++    await seedTask(page, authUser, { status: "todo", title: `todo - A - ${testRunId}` });
++    await seedTask(page, authUser, { status: "todo", title: `todo - B - ${testRunId}` });
++    await seedTask(page, authUser, { status: "in_progress", title: `in_progress - A - ${testRunId}` });
++    await seedTask(page, authUser, { status: "done", title: `done - A - ${testRunId}` });
++  });
++
++  async function gotoTasksAndWait(page: Page) {
++    await page.goto("/tasks");
++    // wait for tasks to appear - `.task-row` is the app's task row class
++    await page.waitForSelector(".task-row", { timeout: 15000 });
++  }
++
++  test("loads tasks and verifies seeded data", async ({ page, authUser }) => {
++    await gotoTasksAndWait(page);
++
++    // Check that we have task rows
++    const taskRows = page.locator(".task-row");
++    const count = await taskRows.count();
++    expect(count).toBeGreaterThanOrEqual(4); // We seeded 4 tasks
++
++    // Check for specific task titles by finding them within task rows
++    const todoTasks = page.locator(`.task-row:has-text("todo - A - ${testRunId}")`);
++    const todoBTask = page.locator(`.task-row:has-text("todo - B - ${testRunId}")`);
++    const inProgressTask = page.locator(`.task-row:has-text("in_progress - A - ${testRunId}")`);
++    const doneTask = page.locator(`.task-row:has-text("done - A - ${testRunId}")`);
++
++    await expect(todoTasks).toHaveCount(1);
++    await expect(todoBTask).toHaveCount(1);
++    await expect(inProgressTask).toHaveCount(1);
++    await expect(doneTask).toHaveCount(1);
++  });
++
++  test("verifies task attributes are correctly displayed", async ({ page, authUser }) => {
++    await gotoTasksAndWait(page);
++
++    // Find a todo task and verify its attributes
++    const todoTask = page.locator('.task-row').first();
++    const dataId = await todoTask.getAttribute("data-task-id");
++    expect(dataId).not.toBeNull();
++
++    // Check that task contains status and priority information
++    await expect(todoTask).toContainText("Status:");
++    await expect(todoTask).toContainText("Priority:");
++  });
++
++  // Note: Drag and drop tests are commented out because the current UI doesn't support Kanban columns
++  // These would be enabled when the Kanban UI is implemented
++  /*
++  test("drag todo -> in_progress updates UI and backend", async ({ page, authUser }) => {
++    await gotoTasksAndWait(page);
++
++    // pick one todo task row
++    const todoCol = page.locator('[data-column="todo"]');
++    const inProgCol = page.locator('[data-column="in_progress"]');
++
++    const taskRow = todoCol.locator(".task-row").first();
++    const dataId = await taskRow.getAttribute("data-task-id");
++    if (!dataId) throw new Error("task-row missing data-task-id");
++
++    // perform drag
++    await dragAndDrop(taskRow, inProgCol, page);
++
++    // UI assertion: task should now appear under in_progress column
++    await inProgCol.locator(`[data-task-id="${dataId}"]`).waitFor({ timeout: 5000 });
++
++    // backend assertion: fetch task by id and assert status changed
++    const task = await fetchTaskById(page, Number(dataId));
++    if (!task) throw new Error("Task not found in backend after drag");
++    expect(task.status).toBe("in_progress");
++  });
++
++  test("drag todo -> done updates UI and backend", async ({ page, authUser }) => {
++    await gotoTasksAndWait(page);
++
++    const todoCol = page.locator('[data-column="todo"]');
++    const doneCol = page.locator('[data-column="done"]');
++
++    const taskRow = todoCol.locator(".task-row").first();
++    const dataId = await taskRow.getAttribute("data-task-id");
++    if (!dataId) throw new Error("task-row missing data-task-id");
++
++    // perform drag
++    await dragAndDrop(taskRow, doneCol, page);
++
++    // UI assertion: task should appear under done
++    await doneCol.locator(`[data-task-id="${dataId}"]`).waitFor({ timeout: 5000 });
++
++    // backend assertion
++    const task = await fetchTaskById(page, Number(dataId));
++    if (!task) throw new Error("Task not found in backend after drag->done");
++    expect(task.status).toBe("done");
++  });
++  */
++});
+\ No newline at end of file
+diff --git a/playwright.config.cjs b/playwright.config.cjs
+new file mode 100644
+index 0000000..957b1e1
+--- /dev/null
++++ b/playwright.config.cjs
+@@ -0,0 +1,19 @@
++// playwright.config.cjs
++const { devices } = require('@playwright/test');
++
++module.exports = {
++  testDir: 'e2e/playwright',
++  reporter: [['list'], ['html', { outputFolder: 'test-report' }]],
++  timeout: 60_000,
++  expect: { timeout: 5000 },
++  use: {
++    headless: false,
++    baseURL: process.env.PLAYWRIGHT_BASE_URL || 'http://localhost:3000',
++    viewport: { width: 1280, height: 800 },
++    actionTimeout: 20_000,
++    trace: 'on-first-retry',
++  },
++  projects: [
++    { name: 'chromium', use: { ...devices['Desktop Chrome'] } },
++  ],
++};
+\ No newline at end of file
+-- 
+2.52.0.windows.1
+

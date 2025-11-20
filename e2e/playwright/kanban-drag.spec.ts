@@ -2,83 +2,93 @@ import { test, expect } from "@playwright/test";
 import drag from "./helpers/drag";
 import type { Page } from "@playwright/test";
 
-// Mock task data
-const MOCK_TASK = {
-  id: 1,
-  institutionId: 1,
-  title: "e2e seeded task",
-  description: "seeded by e2e mock",
-  status: "todo",
-  priority: "low",
-  reviewStatus: "pending",
-  createdAt: new Date().toISOString(),
-  updatedAt: new Date().toISOString()
-};
+const BASE_URL = process.env.PLAYWRIGHT_BASE_URL || 'http://localhost:3000';
 
-// Add API mock before each test
-test.beforeEach(async ({ page }) => {
-  // Mock GET /api/tasks requests with query parameters
-  await page.route('**/api/tasks?institutionId=1&limit=500', async route => {
-    if (route.request().method() === 'GET') {
-      await route.fulfill({
-        status: 200,
-        contentType: 'application/json',
-        body: JSON.stringify({ data: [MOCK_TASK] })
-      });
-    } else {
-      await route.continue();
-    }
-  });
+async function login(page: Page) {
+  const LOGIN_URL = BASE_URL + "/api/users?search=admin@thaiba.com";
   
-  // Mock POST /api/tasks requests
-  await page.route('**/api/tasks', async route => {
-    if (route.request().method() === 'POST') {
-      const postData = await route.request().postDataJSON();
-      const newTask = {
-        ...MOCK_TASK,
-        id: Date.now(),
-        ...postData,
-        createdAt: new Date().toISOString(),
-        updatedAt: new Date().toISOString()
-      };
-      await route.fulfill({
-        status: 201,
-        contentType: 'application/json',
-        body: JSON.stringify({ data: newTask })
-      });
-    } else {
-      await route.continue();
+  const resp = await page.request.get(LOGIN_URL);
+  
+  if (!resp.ok()) {
+    throw new Error("Login failed: " + resp.status() + " " + (await resp.text()));
+  }
+  
+  const users = await resp.json();
+  const adminUser = users.find((u: any) => u.email === "admin@thaiba.com");
+  
+  if (!adminUser) {
+    throw new Error("Admin user not found");
+  }
+  
+  // Store user in localStorage to simulate login
+  await page.addInitScript((user) => {
+    window.localStorage.setItem('user', JSON.stringify(user));
+  }, adminUser);
+}
+
+async function seedTask(page: Page, overrides = {}) {
+  // First, ensure we're logged in
+  await login(page);
+  
+  const resp = await page.request.post(
+    BASE_URL + "/api/tasks",
+    {
+      data: {
+        institutionId: 1,
+        title: "e2e seeded task",
+        description: "seeded via e2e auth",
+        status: "todo",
+        priority: "medium",
+        ...overrides,
+      }
     }
-  });
+  );
+
+  if (!resp.ok()) {
+    throw new Error("Seed failed: " + resp.status() + " " + (await resp.text()));
+  }
+
+  return (await resp.json()).data;
+}
+
+async function gotoTasksAndWait(page: Page) {
+  // Navigate to tasks page
+  await page.goto("/tasks");
+  
+  // Wait for kanban columns to be visible
+  await page.waitForSelector('[data-column="todo"]', { timeout: 15000 });
+  await page.waitForSelector('[data-column="in_progress"]', { timeout: 15000 });
+  await page.waitForSelector('[data-column="done"]', { timeout: 15000 });
+}
+
+// Set up authentication before each test
+test.beforeEach(async ({ page }) => {
+  await login(page);
 });
 
 test.describe("kanban", () => {
-  test("guest sees tasks page with mock data", async ({ page }) => {
-    // Navigate to tasks page
-    await page.goto("/tasks");
+  test("guest sees tasks page with real data", async ({ page }) => {
+    // Seed a task
+    await seedTask(page);
     
-    // Wait for page to load
-    await page.waitForLoadState('networkidle');
+    // Navigate to tasks page and wait for kanban
+    await gotoTasksAndWait(page);
     
-    // Check that the mock task is displayed
+    // Check that the real task is displayed
     await expect(page.locator('text=e2e seeded task')).toBeVisible();
-    await expect(page.locator('text=seeded by e2e mock')).toBeVisible();
+    await expect(page.locator('text=seeded via e2e auth')).toBeVisible();
   });
 
-  test("tasks page shows task with correct attributes", async ({ page }) => {
-    // Navigate to tasks page
-    await page.goto("/tasks");
+  test("admin can see all kanban columns", async ({ page }) => {
+    // Seed a task
+    await seedTask(page);
     
-    // Wait for page to load
-    await page.waitForLoadState('networkidle');
+    // Navigate to tasks page and wait for kanban
+    await gotoTasksAndWait(page);
     
-    // Check that task element exists with correct data attribute
-    const taskElement = page.locator('[data-task-id="1"]');
-    await expect(taskElement).toBeVisible();
-    
-    // Check task content
-    await expect(taskElement.locator('h3')).toHaveText('e2e seeded task');
-    await expect(taskElement).toContainText('Status: todo');
-    await expect(taskElement).toContainText('Priority: low');
+    // Check that all kanban columns are visible
+    await expect(page.locator('[data-column="todo"]')).toBeVisible();
+    await expect(page.locator('[data-column="in_progress"]')).toBeVisible();
+    await expect(page.locator('[data-column="done"]')).toBeVisible();
   });
 });

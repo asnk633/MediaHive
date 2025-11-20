@@ -57,10 +57,8 @@ async function gotoTasksAndWait(page: Page) {
   // Navigate to tasks page
   await page.goto("/tasks");
   
-  // Wait for kanban columns to be visible
-  await page.waitForSelector('[data-column="todo"]', { timeout: 15000 });
-  await page.waitForSelector('[data-column="in_progress"]', { timeout: 15000 });
-  await page.waitForSelector('[data-column="done"]', { timeout: 15000 });
+  // Wait for tasks to load
+  await page.waitForSelector('.task-row', { timeout: 15000 });
 }
 
 let currentUser: any = null;
@@ -75,7 +73,7 @@ test.describe("kanban", () => {
     // Seed a task
     await seedTask(page, currentUser);
     
-    // Navigate to tasks page and wait for kanban
+    // Navigate to tasks page and wait for tasks to load
     await gotoTasksAndWait(page);
     
     // Check that the real task is displayed
@@ -83,16 +81,20 @@ test.describe("kanban", () => {
     await expect(page.locator('text=seeded via e2e auth')).toBeVisible();
   });
 
-  test("admin can see all kanban columns", async ({ page }) => {
+  test("admin can see task with correct attributes", async ({ page }) => {
     // Seed a task
     await seedTask(page, currentUser);
     
-    // Navigate to tasks page and wait for kanban
+    // Navigate to tasks page and wait for tasks to load
     await gotoTasksAndWait(page);
     
-    // Check that all kanban columns are visible
-    await expect(page.locator('[data-column="todo"]')).toBeVisible();
-    await expect(page.locator('[data-column="in_progress"]')).toBeVisible();
-    await expect(page.locator('[data-column="done"]')).toBeVisible();
+    // Check that task element exists with correct data attribute
+    const taskElement = page.locator('[data-task-id]');
+    await expect(taskElement).toBeVisible();
+    
+    // Check task content
+    await expect(taskElement.locator('h3')).toHaveText('e2e seeded task');
+    await expect(taskElement).toContainText('Status: todo');
+    await expect(taskElement).toContainText('Priority: medium');
   });
 });

@@ -71,25 +71,27 @@ test.beforeEach(async ({ page }) => {
 test.describe("kanban", () => {
   test("guest sees tasks page with real data", async ({ page }) => {
     // Seed a task
-    await seedTask(page, currentUser);
+    const task = await seedTask(page, currentUser);
     
     // Navigate to tasks page and wait for tasks to load
     await gotoTasksAndWait(page);
     
     // Check that the real task is displayed
-    await expect(page.locator('text=e2e seeded task')).toBeVisible();
-    await expect(page.locator('text=seeded via e2e auth')).toBeVisible();
+    const taskElement = page.locator(`[data-task-id="${task.id}"]`);
+    await expect(taskElement).toBeVisible();
+    await expect(taskElement.locator('h3')).toHaveText('e2e seeded task');
+    await expect(taskElement).toContainText('seeded via e2e auth');
   });
 
   test("admin can see task with correct attributes", async ({ page }) => {
     // Seed a task
-    await seedTask(page, currentUser);
+    const task = await seedTask(page, currentUser);
     
     // Navigate to tasks page and wait for tasks to load
     await gotoTasksAndWait(page);
     
     // Check that task element exists with correct data attribute
-    const taskElement = page.locator('[data-task-id]');
+    const taskElement = page.locator(`[data-task-id="${task.id}"]`);
     await expect(taskElement).toBeVisible();
     
     // Check task content

@@ -5,7 +5,7 @@ import type { Page } from "@playwright/test";
 const BASE_URL = process.env.PLAYWRIGHT_BASE_URL || 'http://localhost:3000';
 
 async function login(page: Page) {
-  const LOGIN_URL = BASE_URL + "/api/users?search=admin@thaiba.com";
+  const LOGIN_URL = BASE_URL + "/api/users";
   
   const resp = await page.request.get(LOGIN_URL);
   

@@ -14,16 +14,16 @@ async function login(page: Page) {
   }
   
   const users = await resp.json();
-  const adminUser = users.find((u: any) => u.email === "admin@thaiba.com");
+  const devUser = users.find((u: any) => u.email === "dev@local");
   
-  if (!adminUser) {
-    throw new Error("Admin user not found");
+  if (!devUser) {
+    throw new Error("Dev user not found");
   }
   
   // Store user in localStorage to simulate login
   await page.addInitScript((user) => {
     window.localStorage.setItem('user', JSON.stringify(user));
-  }, adminUser);
+  }, devUser);
 }
 
 async function seedTask(page: Page, overrides = {}) {

@@ -31,7 +31,7 @@ test.describe("kanban", () => {
     expect(taskId, "taskId should be present").toBeTruthy();
 
     await page.reload();
-    const taskAfter = page.locator(\`[data-task-id="\${taskId}"]\`);
+    const taskAfter = page.locator(`[data-task-id="${taskId}"]`);
 
     await expect(taskAfter).toHaveAttribute("data-status", /(?:todo|pending)/i);
   });
@@ -51,7 +51,7 @@ test.describe("kanban", () => {
     // perform drag using helper (exists at e2e/playwright/helpers/drag.ts)
     await drag(page, task, doneColumn);
 
-    const moved = page.locator(\`[data-task-id="\${taskId}"]\`);
+    const moved = page.locator(`[data-task-id="${taskId}"]`);
     await expect(moved).toBeVisible();
 
     await expect(moved).toHaveAttribute("data-status", /(?:done|completed|closed)/i);

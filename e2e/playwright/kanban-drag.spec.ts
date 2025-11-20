@@ -1,42 +1,56 @@
 import { test, expect } from "@playwright/test";
 import drag from "./helpers/drag";
+import type { Page } from "@playwright/test";
 
 const API_BASE = process.env.PLAYWRIGHT_BASE_URL || '';
 
-// Add a seeded task before each test for a reliable starting state
-test.beforeEach(async ({ request }) => {
-  // If your API requires auth for POST, set headers here, e.g.:
-  // const headers = { Authorization: `Bearer ${process.env.PLAYWRIGHT_API_TOKEN}` };
-  // Adjust path/body to match your API schema.
-  try {
-    const res = await request.post(`${API_BASE}/api/tasks`, {
-      // headers,
-      data: {
-        title: "e2e seeded task",
-        description: "seeded by e2e beforeEach",
-        institutionId: 1,
-        status: "todo",
-        priority: "low"
-      }
-    });
-    if (!res.ok()) {
-      console.warn("Task seeding failed:", res.status(), await res.text());
+// Mock task data
+const MOCK_TASK = {
+  id: "e2e-seed-1",
+  institutionId: "1",
+  title: "e2e seeded task",
+  description: "seeded by e2e mock",
+  status: "todo",
+  priority: "low",
+  createdAt: new Date().toISOString(),
+  updatedAt: new Date().toISOString()
+};
+
+// Add API mock before each test
+test.beforeEach(async ({ page }) => {
+  // Mock GET /api/tasks requests
+  await page.route('**/api/tasks', async route => {
+    if (route.request().method() === 'GET') {
+      await route.fulfill({
+        status: 200,
+        contentType: 'application/json',
+        body: JSON.stringify({ data: [MOCK_TASK] })
+      });
+    } else if (route.request().method() === 'POST') {
+      // Handle POST requests (task creation)
+      const postData = await route.request().postDataJSON();
+      const newTask = {
+        ...MOCK_TASK,
+        id: `e2e-seed-${Date.now()}`,
+        ...postData,
+        createdAt: new Date().toISOString(),
+        updatedAt: new Date().toISOString()
+      };
+      await route.fulfill({
+        status: 201,
+        contentType: 'application/json',
+        body: JSON.stringify({ data: newTask })
+      });
     } else {
-      const body = await res.json().catch(() => null);
-      console.log("Seeded task:", body?.id ?? "(no id)");
+      // For other methods, continue with normal request
+      await route.continue();
     }
-  } catch (err) {
-    console.warn("Error seeding task:", err);
-  }
+  });
 });
 
-async function debugGotoTasks(page, timeout = 15000) {
+async function debugGotoTasks(page: Page, timeout = 15000) {
   // navigate to tasks page
   await page.goto("/tasks", { waitUntil: "domcontentloaded" });
-
-  // wait for the UI request that loads tasks (helps avoid empty DOM due to timing)
-  await page.waitForResponse(resp => resp.url().includes('/api/tasks') && resp.status() === 200, { timeout: 5000 })
-    .catch(() => { /* continue; fallback to waiting for selector */ });
 
   // small extra delay for client render
   await page.waitForTimeout(300);

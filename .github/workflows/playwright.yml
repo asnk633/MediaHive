@@ -11,14 +11,14 @@ jobs:
     runs-on: ubuntu-latest
     env:
       PLAYWRIGHT_BASE_URL: http://localhost:3000
-      PLAYWRIGHT_TEST_EMAIL: ${{ secrets.PLAYWRIGHT_TEST_EMAIL }}
-      PLAYWRIGHT_TEST_PASSWORD: ${{ secrets.PLAYWRIGHT_TEST_PASSWORD }}
+      PLAYWRIGHT_TEST_EMAIL: dev@local
     steps:
       - uses: actions/checkout@v4
       - name: Use Node.js 20
         uses: actions/setup-node@v4
         with:
           node-version: 20
+          cache: 'npm'
       - name: Install
         run: npm ci
       - name: Build Next.js
@@ -27,8 +27,24 @@ jobs:
         run: |
           npm run start &> server.log &
           echo "Waiting for server to be ready..."
-          npx wait-on http://localhost:3000
+          npx wait-on http://localhost:3000 --timeout 60000
+      - name: Install Playwright browsers
+        run: npx playwright install --with-deps
       - name: Run Playwright tests
         uses: microsoft/playwright-github-action@v1
         with:
           run: npx playwright test --config=playwright.config.cjs
+      - name: Upload test results
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: test-results
+          path: |
+            test-results/
+            test-report/
+          retention-days: 30
+      - name: Debug server logs on failure
+        if: failure()
+        run: |
+          echo "=== Server Logs ==="
+          cat server.log

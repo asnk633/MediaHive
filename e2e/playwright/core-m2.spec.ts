@@ -1,12 +1,19 @@
-import { test, expect } from "@playwright/test";
+import { test, expect } from "./fixtures";
+import { seedTask } from "./helpers/seed";
 
 test.describe("M2 - Task review flow", () => {
-  const BASE = process.env.E2E_BASE_URL ?? "http://localhost:3000";
-
-  test("happy path: reviewer can set approved status", async ({ page }) => {
-    await page.goto(`${BASE}/tasks`);
-    const card = page.locator(".task-row").first();
-    await expect(card).toBeVisible();
+  test("happy path: reviewer can set approved status", async ({ page, authUser }) => {
+    // Seed a task for testing
+    const task = await seedTask(page, authUser, {
+      title: "Review test task",
+      description: "Task for testing review flow",
+      status: "todo",
+      priority: "medium"
+    });
+    
+    await page.goto("/tasks");
+    const card = page.locator(`[data-task-id="${task.id}"]`);
+    await expect(card).toBeVisible({ timeout: 15000 });
 
     // choose 'Approved' and click Save
     await card.locator("select").selectOption("approved");
@@ -15,12 +22,23 @@ test.describe("M2 - Task review flow", () => {
       page.waitForEvent("dialog").then((d) => d.dismiss()), // if app triggers alert()
       save.click(),
     ]);
+    
+    // Verify the UI reflects the change
+    await expect(card.locator("select")).toHaveValue("approved");
   });
 
-  test("error path: invalid review value returns validation error", async ({ page }) => {
-    await page.goto(`${BASE}/tasks`);
-    const card = page.locator(".task-row").first();
-    await expect(card).toBeVisible();
+  test("error path: invalid review value returns validation error", async ({ page, authUser }) => {
+    // Seed a task for testing
+    const task = await seedTask(page, authUser, {
+      title: "Review test task",
+      description: "Task for testing review flow",
+      status: "todo",
+      priority: "medium"
+    });
+    
+    await page.goto("/tasks");
+    const card = page.locator(`[data-task-id="${task.id}"]`);
+    await expect(card).toBeVisible({ timeout: 15000 });
 
     const id = await card.getAttribute("data-task-id");
     test.skip(!id, "task id not present in DOM; add data-task-id to TaskItem for e2e");

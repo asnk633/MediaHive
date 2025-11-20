@@ -5,6 +5,7 @@ import BottomNav from "@/components/BottomNav";
 import { ToastProvider } from "@/components/ToastProvider";
 import { ClientDataProvider } from "./ClientDataContext";
 import { RoleProvider } from "./RoleContext";
+import { FAB } from "@/components/FAB";
 
 export default function ShellLayout({ children }: { children: React.ReactNode }) {
   // Shell layout: single anchor for BottomNav + FAB. Do not render FAB elsewhere.
@@ -16,7 +17,10 @@ export default function ShellLayout({ children }: { children: React.ReactNode })
             <main className="pb-24 pt-4">{children}</main>
 
             {/* Bottom navigation + FAB (single source-of-truth) */}
-            <BottomNav isAdmin={true} canCreateEvent={true} />
+            <BottomNav />
+            
+            {/* Floating Action Button */}
+            <FAB />
           </div>
 
           <style>{`

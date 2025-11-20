@@ -69,6 +69,28 @@ test.describe("Kanban - full suite (real backend + auth)", () => {
     await expect(todoTask).toContainText("Priority:");
   });
 
+  test("verifies seeded task displays title, description, status and priority", async ({ page, authUser }) => {
+    // Seed a specific task with known attributes
+    const task = await seedTask(page, authUser, {
+      title: `Specific Test Task - ${testRunId}`,
+      description: `Test description for task - ${testRunId}`,
+      status: "todo",
+      priority: "high"
+    });
+
+    await gotoTasksAndWait(page);
+
+    // Find the specific task
+    const taskElement = page.locator(`[data-task-id="${task.id}"]`);
+    await expect(taskElement).toBeVisible({ timeout: 15000 });
+
+    // Verify all attributes are displayed
+    await expect(taskElement.locator('h3')).toHaveText(`Specific Test Task - ${testRunId}`);
+    await expect(taskElement).toContainText(`Test description for task - ${testRunId}`);
+    await expect(taskElement).toContainText("Status: todo");
+    await expect(taskElement).toContainText("Priority: high");
+  });
+
   // Note: Drag and drop tests are commented out because the current UI doesn't support Kanban columns
   // These would be enabled when the Kanban UI is implemented
   /*

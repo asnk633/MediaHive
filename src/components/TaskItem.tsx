@@ -33,9 +33,7 @@ export default function TaskItem({ task, className = "" }: Props) {
     >
       <div className="card-body">
         <h3 className="task-title">{task.title}</h3>
-        {task.description ? (
-          <p className="task-desc">{task.description}</p>
-        ) : null}
+        {task.description ? <p className="task-desc">{task.description}</p> : null}
         <div className="task-meta" aria-hidden>
           <span className="task-status">Status: {task.status ?? "—"}</span>
           <span className="task-priority">Priority: {task.priority ?? "—"}</span>

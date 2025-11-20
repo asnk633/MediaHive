@@ -16,7 +16,6 @@ test.describe("kanban", () => {
   test("guest sees To Do column and cannot drag tasks to in_progress", async ({ page }) => {
     await page.goto("/tasks");
 
-    // ensure columns exist
     const todoColumn = page.locator('[data-column="todo"]');
     const inProgressColumn = page.locator('[data-column="in_progress"]');
     const doneColumn = page.locator('[data-column="done"]');
@@ -25,18 +24,15 @@ test.describe("kanban", () => {
     await expect(inProgressColumn).toBeVisible();
     await expect(doneColumn).toBeVisible();
 
-    // find first task in todo column
     const firstTask = todoColumn.locator('[data-task-id]').first();
     await expect(firstTask).toBeVisible();
 
-    // get id and validate presence after reload
     const taskId = await firstTask.getAttribute("data-task-id");
     expect(taskId, "taskId should be present").toBeTruthy();
 
     await page.reload();
-    const taskAfter = page.locator(`[data-task-id="${taskId}"]`);
+    const taskAfter = page.locator(\`[data-task-id="\${taskId}"]\`);
 
-    // ensure the task remains in todo column (data-status still "todo" or "pending")
     await expect(taskAfter).toHaveAttribute("data-status", /(?:todo|pending)/i);
   });
 
@@ -46,21 +42,18 @@ test.describe("kanban", () => {
     const todoColumn = page.locator('[data-column="todo"]');
     const doneColumn = page.locator('[data-column="done"]');
 
-    // pick a draggable task from todo
     const task = todoColumn.locator('[data-task-id]').first();
     await expect(task).toBeVisible();
 
     const taskId = await task.getAttribute("data-task-id");
     expect(taskId, "taskId must be present").toBeTruthy();
 
-    // perform drag using helper (should exist at e2e/playwright/helpers/drag.ts)
+    // perform drag using helper (exists at e2e/playwright/helpers/drag.ts)
     await drag(page, task, doneColumn);
 
-    // wait for UI/DOM update
-    const moved = page.locator(`[data-task-id="${taskId}"]`);
+    const moved = page.locator(\`[data-task-id="\${taskId}"]\`);
     await expect(moved).toBeVisible();
 
-    // status attribute should now reflect done/completed/closed canonical values
     await expect(moved).toHaveAttribute("data-status", /(?:done|completed|closed)/i);
   });
 });

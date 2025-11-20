@@ -1,40 +1,41 @@
-import { Page, Locator } from "@playwright/test";
+import type { Locator, Page } from "@playwright/test";
 
 /**
- * Performs a low-level drag-and-drop between two locators using mouse events.
- * This avoids flaky .dragTo for complex UIs and overlays.
+ * Low-level mouse-based drag helper for HTML5 drag-and-drop.
  *
- * Usage:
- *   await drag(page, sourceLocator, targetLocator);
+ * Uses mouse events (move/down/up) to simulate drag for apps that rely on
+ * mouse events instead of the native HTML5 DataTransfer API.
  *
- * The helper will:
- *  - compute bounding boxes
- *  - move the mouse to the center of source, press, move in steps, and release on target
+ * Exported as default so specs using `import drag from "./helpers/drag"` work.
  */
-export async function drag(page: Page, source: Locator, target: Locator) {
-  const srcBox = await source.boundingBox();
-  const dstBox = await target.boundingBox();
-  if (!srcBox || !dstBox) {
-    throw new Error("drag: source or target has no bounding box");
+export default async function drag(
+  page: Page,
+  source: Locator,
+  target: Locator,
+  options?: { holdForMs?: number; steps?: number }
+): Promise<void> {
+  const holdForMs = options?.holdForMs ?? 80;
+  const steps = options?.steps ?? 10;
+
+  const sourceBox = await source.boundingBox();
+  if (!sourceBox) {
+    throw new Error("drag(): could not resolve boundingBox() for source locator");
   }
 
-  const startX = srcBox.x + srcBox.width / 2;
-  const startY = srcBox.y + srcBox.height / 2;
-  const endX = dstBox.x + dstBox.width / 2;
-  const endY = dstBox.y + dstBox.height / 2;
+  const targetBox = await target.boundingBox();
+  if (!targetBox) {
+    throw new Error("drag(): could not resolve boundingBox() for target locator");
+  }
 
-  // Small step-wise movement to imitate real drag (helps with some drag libraries)
+  const startX = sourceBox.x + sourceBox.width / 2;
+  const startY = sourceBox.y + sourceBox.height / 2;
+  const endX = targetBox.x + targetBox.width / 2;
+  const endY = targetBox.y + targetBox.height / 2;
+
   await page.mouse.move(startX, startY);
   await page.mouse.down();
-  const steps = 12;
-  for (let i = 1; i <= steps; i++) {
-    const x = startX + ((endX - startX) * i) / steps;
-    const y = startY + ((endY - startY) * i) / steps;
-    await page.mouse.move(x, y);
-    // gentle delay to help the UI settle
-    await page.waitForTimeout(20);
-  }
+  await page.waitForTimeout(holdForMs);
+  await page.mouse.move(endX, endY, { steps });
   await page.mouse.up();
+  await page.waitForTimeout(200);
 }
-
-export default drag;

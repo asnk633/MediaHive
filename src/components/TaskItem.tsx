@@ -4,7 +4,7 @@ type Task = {
   id: number | string;
   title: string;
   description?: string | null;
-  status?: string | null; // e.g. "todo" | "in_progress" | "done"
+  status?: string | null;
   priority?: string | null;
   assignee?: { id?: number | string; name?: string } | null;
   dueDate?: string | null;

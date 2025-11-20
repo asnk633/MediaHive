@@ -1,0 +1,70 @@
+name: Playwright Tests
+
+on:
+  push:
+    branches: [ main, master ]
+  pull_request:
+    branches: [ main, master ]
+
+jobs:
+  test:
+    timeout-minutes: 60
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v4
+
+    - uses: actions/setup-node@v4
+      with:
+        node-version: lts/*
+        cache: 'npm'
+
+    - name: Install dependencies
+      run: npm ci
+
+    - name: Build the app
+      run: npm run build
+
+    - name: Seed DB
+      # IMPORTANT: Replace this step with your actual database seeding commands
+      # This is a placeholder that creates the dev@local user if needed
+      run: |
+        echo "Seeding database..."
+        echo "If your app requires specific database seeding, replace this step with:"
+        echo "1. Your DB migration commands"
+        echo "2. Your seed data commands"
+        echo "3. Or a script that ensures the dev@local user exists"
+
+    - name: Start server in background
+      run: |
+        npm run start & 
+        echo "SERVER_PID=$!" >> $GITHUB_ENV
+      env:
+        PORT: 3000
+
+    - name: Wait for server to be ready
+      run: |
+        timeout 30 bash -c 'until curl -s http://localhost:3000/api/health > /dev/null; do sleep 1; done' || echo "Server health check timed out"
+
+    - name: Install Playwright browsers
+      run: npx playwright install --with-deps
+
+    - name: Run Playwright tests
+      run: npx playwright test
+      env:
+        PLAYWRIGHT_BASE_URL: http://localhost:3000
+        PLAYWRIGHT_TEST_EMAIL: dev@local
+
+    - name: Stop server
+      if: always()
+      run: |
+        if [[ -n "$SERVER_PID" ]]; then
+          kill $SERVER_PID || true
+        fi
+
+    - name: Upload test results
+      if: always()
+      uses: actions/upload-artifact@v4
+      with:
+        name: playwright-report
+        path: test-report/
+        retention-days: 30

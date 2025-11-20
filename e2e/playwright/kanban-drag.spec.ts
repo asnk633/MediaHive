@@ -2,8 +2,6 @@ import { test, expect } from "@playwright/test";
 import drag from "./helpers/drag";
 import type { Page } from "@playwright/test";
 
-const API_BASE = process.env.PLAYWRIGHT_BASE_URL || '';
-
 // Mock task data
 const MOCK_TASK = {
   id: "e2e-seed-1",
@@ -19,7 +17,7 @@ const MOCK_TASK = {
 // Add API mock before each test
 test.beforeEach(async ({ page }) => {
   // Mock GET /api/tasks requests
-  await page.route('**/api/tasks', async route => {
+  await page.route('**/api/tasks**', async route => {
     if (route.request().method() === 'GET') {
       await route.fulfill({
         status: 200,
@@ -55,29 +53,13 @@ async function debugGotoTasks(page: Page, timeout = 15000) {
   // small extra delay for client render
   await page.waitForTimeout(300);
 
-  // If the kanban root doesn't exist, dump HTML + take screenshot for inspection
-  // The selector is updated to also check for a task card, as requested in the new logic.
-  const sel = '[data-column="todo"], [data-task-id]';
-  try {
-    // Wait longer for hydration/render
-    await page.waitForSelector(sel, { timeout: timeout });
-  } catch (err) {
-    // print HTML snapshot (trimmed) to console for quick inspection
-    try {
-      const html = await page.content();
-      console.log("=== Playwright HTML snapshot (first 20000 chars) ===\n", html.slice(0, 20000));
-    } catch (e) {
-      console.log("Could not read page content:", e);
-    }
-    // save an explicit debug screenshot as well (Playwright will also save test artifacts)
-    await page.screenshot({ path: `./test-results/debug-tasks-snapshot.png`, fullPage: true }).catch(() => {});
-    throw err; // rethrow so test fails as before and artifacts are captured
-  }
+  // Wait for a top-level kanban wrapper that your app renders (fallback to body)
+  await page.waitForSelector('[data-kanban-root], .kanban, [data-column-id]', { timeout: timeout });
 }
 
 /**
  * High-level Kanban drag tests that rely on stable data attributes:
- * - columns have data-column="todo" / "in_progress" / "done"
+ * - columns have data-column-id="todo" / "in_progress" / "done"
  * - task cards have data-task-id and data-status
  *
  * Regexes below are intentionally broad to match DB/API variants:
@@ -91,15 +73,15 @@ test.describe("kanban", () => {
     // Use the debug helper, updated to include API wait logic.
     await debugGotoTasks(page);
 
-    const todoColumn = page.locator('[data-column="todo"]');
-    const inProgressColumn = page.locator('[data-column="in_progress"]');
-    const doneColumn = page.locator('[data-column="done"]');
+    const todoColumn = page.locator("[data-column-id='todo']");
+    const inProgressColumn = page.locator("[data-column-id='in_progress']");
+    const doneColumn = page.locator("[data-column-id='done']");
 
     await expect(todoColumn).toBeVisible();
     await expect(inProgressColumn).toBeVisible();
     await expect(doneColumn).toBeVisible();
 
-    const firstTask = todoColumn.locator('[data-task-id]').first();
+    const firstTask = todoColumn.locator('[data-draggable="true"]').first();
     await expect(firstTask).toBeVisible();
 
     const taskId = await firstTask.getAttribute("data-task-id");
@@ -115,10 +97,10 @@ test.describe("kanban", () => {
     // Use the debug helper, updated to include API wait logic.
     await debugGotoTasks(page);
 
-    const todoColumn = page.locator('[data-column="todo"]');
-    const doneColumn = page.locator('[data-column="done"]');
+    const todoColumn = page.locator("[data-column-id='todo']");
+    const doneColumn = page.locator("[data-column-id='done']");
 
-    const task = todoColumn.locator('[data-task-id]').first();
+    const task = todoColumn.locator('[data-draggable="true"]').first();
     await expect(task).toBeVisible();
 
     const taskId = await task.getAttribute("data-task-id");

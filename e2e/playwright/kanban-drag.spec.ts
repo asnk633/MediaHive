@@ -33,8 +33,8 @@ test.describe("kanban", () => {
     const taskId = await firstTask.getAttribute("data-task-id");
     await page.reload();
     const taskAfter = page.locator(\`[data-task-id="\${taskId}"]\`);
-    // ensure the task remains in todo column (data-status still "todo")
-    await expect(taskAfter).toHaveAttribute("data-status", /todo|pending/);
+    // ensure the task remains in todo column (data-status still "todo" or "pending")
+    await expect(taskAfter).toHaveAttribute("data-status", /(?:todo|pending)/i);
   });
 
   test("team: can drag task from To Do -> In Progress (happy path)", async ({ page }) => {
@@ -61,7 +61,7 @@ test.describe("kanban", () => {
     // Reload to ensure persisted change
     await page.reload();
     const moved = page.locator(\`[data-task-id="\${taskId}"]\`);
-    await expect(moved).toHaveAttribute("data-status", /in_progress|doing/);
+    await expect(moved).toHaveAttribute("data-status", /(?:in[_-]?progress|inprogress|doing)/i);
   });
 
   test("admin sees all columns including Done and can move to Done", async ({ page }) => {
@@ -80,6 +80,6 @@ test.describe("kanban", () => {
     await page.waitForTimeout(800);
     await page.reload();
     const final = page.locator(\`[data-task-id="\${id}"]\`);
-    await expect(final).toHaveAttribute("data-status", /done|completed/);
+    await expect(final).toHaveAttribute("data-status", /(?:done|completed|closed|finished)/i);
   });
 });

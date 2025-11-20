@@ -1,138 +1,73 @@
 import { defineConfig, devices } from "@playwright/test";
-import dotenv from "dotenv";
-
-// Load environment variables from .env or .env.local
-dotenv.config();
-
-// Use BASE_URL from .env, or default to localhost:3000
-const BASE_URL = process.env.BASE_URL || "http://localhost:3000";
 
 /**
- * Merged Playwright Configuration
+ * Playwright test configuration for Thaiba Garden Media Manager (M2)
  *
- * This file combines two configurations:
- * 1. A role-based setup (admin, team, guest) with a webServer and specific timeouts.
- * 2. A CI-aware, cross-browser setup (Chromium, Firefox, WebKit).
+ * - testDir: e2e/playwright (where your specs live)
+ * - reporters: list + html (report generation)
+ * - projects: Desktop Chrome, Firefox, Safari (Desktop Safari via WebKit)
  *
- * The merged approach creates project groups for each role (admin, team, guest)
- * and allows running them against different browsers (using device descriptors).
+ * Adjust baseURL, retries, or webServer as necessary for CI/local dev.
  */
+
 export default defineConfig({
-  // Use the cleaner path from the second config
   testDir: "e2e/playwright",
+  timeout: 30_000,
+  expect: {
+    timeout: 5_000,
+  },
 
-  // Use the longer timeout from the first config
-  timeout: 120000,
-  // Use the longer expect timeout from the first config
-  expect: { timeout: 10000 },
-
-  // --- Settings from the CI-aware config (File 2) ---
-  fullyParallel: true,
-  forbidOnly: !!process.env.CI,
-  // Use CI-aware retries
+  // Run tests in parallel where safe; set retries in CI
+  fullyParallel: false,
   retries: process.env.CI ? 2 : 0,
-  // Use CI-aware workers
   workers: process.env.CI ? 1 : undefined,
-  // Combine reporters from both
+
   reporter: [
-    ["list"], // From File 2 (good for console)
-    ["html", { open: "never" }], // From both
+    ["list"],
+    ["html", { open: "never" }]
   ],
 
-  // --- Global 'use' block (merged) ---
   use: {
-    baseURL: BASE_URL,
-    // Common settings from both files
+    // Base URL for the app under test. Adjust if your dev server runs elsewhere.
+    baseURL: process.env.PW_BASE_URL || "http://localhost:3000",
+
+    // Trace only on first retry to help triage flaky tests
     trace: "on-first-retry",
-    video: "retain-on-failure",
+
+    // Screenshot on failure
     screenshot: "only-on-failure",
 
-    // Use explicit timeouts from File 2, as File 1's actionTimeout: 0 is risky
-    actionTimeout: 10000,
-    navigationTimeout: 20000,
-    // Note: 'headless: false' and 'viewport' from File 1 are omitted
-    // in favor of device descriptors in the projects section.
+    // Video capture for debugging (disabled by default in CI)
+    video: process.env.CI ? "retain-on-failure" : "off",
   },
 
-  // --- Projects (Merged Role + Browser strategy) ---
-  // This structure combines the roles from File 1 with the
-  // cross-browser devices from File 2.
   projects: [
-    // === Admin Role Projects ===
     {
-      name: "admin-chromium",
+      name: "chromium",
       use: {
-        ...devices["Desktop Chrome"],
-        storageState: "e2e/states/admin.json",
-      },
+        ...devices["Desktop Chrome"]
+      }
     },
-    // {
-    //   name: "admin-firefox",
-    //   use: {
-    //     ...devices["Desktop Firefox"],
-    //     storageState: "e2e/states/admin.json",
-    //   },
-    // },
-    // {
-    //   name: "admin-webkit",
-    //   use: {
-    //     ...devices["Desktop Safari"],
-    //     storageState: "e2e/states/admin.json",
-    //   },
-    // },
-
-    // === Team Role Projects ===
     {
-      name: "team-chromium",
+      name: "firefox",
       use: {
-        ...devices["Desktop Chrome"],
-        storageState: "e2e/states/team.json",
-      },
+        ...devices["Desktop Firefox"]
+      }
     },
-    // {
-    //   name: "team-firefox",
-    //   use: {
-    //     ...devices["Desktop Firefox"],
-    //     storageState: "e2e/states/team.json",
-    //   },
-    // },
-    // {
-    //   name: "team-webkit",
-    //   use: {
-    * ...devices["Desktop Safari"],
-    //     storageState: "e2e/states/team.json",
-    //   },
-    // },
-
-    // === Guest Role Projects ===
     {
-      name: "guest-chromium",
+      name: "webkit",
       use: {
-        ...devices["Desktop Chrome"],
-        storageState: "e2e/states/guest.json",
-      },
-    },
-    // {
-    //   name: "guest-firefox",
-    //   use: {
-    //     ...devices["Desktop Firefox"],
-    //     storageState: "e2e/states/guest.json",
-    //   },
-    // },
-    // {
-    //   name: "guest-webkit",
-    //   use: {
-    * ...devices["Desktop Safari"],
-    //     storageState: "e2e/states/guest.json",
-    //   },
-    // },
+        ...devices["Desktop Safari"]
+      }
+    }
   ],
 
-  // --- WebServer (from File 1) ---
-  // This is crucial for running the app locally before tests.
-  webServer: {
-    command: "npm run dev",
-    port: 3000,
-    reuseExistingServer: true,
-  },
+  // Local dev helper — uncomment when running tests and you want Playwright to start the app automatically
+  // webServer: {
+  //   command: "npm run dev",
+  //   port: 3000,
+  //   timeout: 120_000,
+  //   reuseExistingServer: false,
+  // },
+
 });

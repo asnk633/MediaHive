@@ -24,12 +24,11 @@ async function login(page: Page) {
   await page.addInitScript((user) => {
     window.localStorage.setItem('user', JSON.stringify(user));
   }, devUser);
+  
+  return devUser;
 }
 
-async function seedTask(page: Page, overrides = {}) {
-  // First, ensure we're logged in
-  await login(page);
-  
+async function seedTask(page: Page, user: any, overrides = {}) {
   const resp = await page.request.post(
     BASE_URL + "/api/tasks",
     {
@@ -40,6 +39,9 @@ async function seedTask(page: Page, overrides = {}) {
         status: "todo",
         priority: "medium",
         ...overrides,
+      },
+      headers: {
+        'x-user-data': JSON.stringify(user)
       }
     }
   );
@@ -61,15 +63,17 @@ async function gotoTasksAndWait(page: Page) {
   await page.waitForSelector('[data-column="done"]', { timeout: 15000 });
 }
 
+let currentUser: any = null;
+
 // Set up authentication before each test
 test.beforeEach(async ({ page }) => {
-  await login(page);
+  currentUser = await login(page);
 });
 
 test.describe("kanban", () => {
   test("guest sees tasks page with real data", async ({ page }) => {
     // Seed a task
-    await seedTask(page);
+    await seedTask(page, currentUser);
     
     // Navigate to tasks page and wait for kanban
     await gotoTasksAndWait(page);
@@ -81,7 +85,7 @@ test.describe("kanban", () => {
 
   test("admin can see all kanban columns", async ({ page }) => {
     // Seed a task
-    await seedTask(page);
+    await seedTask(page, currentUser);
     
     // Navigate to tasks page and wait for kanban
     await gotoTasksAndWait(page);

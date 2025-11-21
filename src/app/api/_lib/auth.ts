@@ -3,6 +3,7 @@
 
 import { NextRequest } from 'next/server';
 import { UserRole } from '@/types';
+import { loggingMiddleware } from '../middleware/logging';
 
 export interface AuthUser {
   id: number;
@@ -18,6 +19,9 @@ export interface AuthUser {
  */
 export async function getUserFromRequest(req: NextRequest): Promise<AuthUser | null> {
   try {
+    // Log the request for debugging
+    await loggingMiddleware(req);
+    
     // First, try to get user from session cookie (server-side)
     const sessionToken = req.cookies.get('session_token')?.value;
     
@@ -46,53 +50,24 @@ export async function getUserFromRequest(req: NextRequest): Promise<AuthUser | n
 }
 
 /**
- * Check if user has required role
- */
-export function hasRole(user: AuthUser | null, roles: UserRole | UserRole[]): boolean {
-  if (!user) return false;
-  const roleArray = Array.isArray(roles) ? roles : [roles];
-  return roleArray.includes(user.role);
-}
-
-/**
  * Check if user is admin
  */
 export function isAdmin(user: AuthUser | null): boolean {
-  return hasRole(user, 'admin');
+  return user?.role === 'admin';
 }
 
 /**
- * Check if user can modify resource (owner or admin)
+ * Check if user has any of the specified roles
  */
-export function canModify(user: AuthUser | null, resourceOwnerId: number): boolean {
+export function hasRole(user: AuthUser | null, roles: UserRole[]): boolean {
   if (!user) return false;
-  return user.id === resourceOwnerId || isAdmin(user);
+  return roles.includes(user.role);
 }
 
 /**
- * Validate task status transition based on user role
+ * Check if user can modify a resource (admin or creator)
  */
-export function canChangeTaskStatus(
-  user: AuthUser | null,
-  currentStatus: string,
-  newStatus: string
-): boolean {
+export function canModify(user: AuthUser | null, creatorId: number): boolean {
   if (!user) return false;
-
-  // Admin can change any status
-  if (isAdmin(user)) return true;
-
-  // Team can move tasks through workflow
-  if (user.role === 'team') {
-    const validTransitions: Record<string, string[]> = {
-      'todo': ['in_progress'],
-      'in_progress': ['review', 'todo'],
-      'review': ['done', 'in_progress'],
-      'done': [], // Can't change from done without admin
-    };
-    return validTransitions[currentStatus]?.includes(newStatus) ?? false;
-  }
-
-  // Guest cannot change status
-  return false;
+  return isAdmin(user) || user.id === creatorId;
 }

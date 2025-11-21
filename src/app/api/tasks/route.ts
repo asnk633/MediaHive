@@ -2,7 +2,7 @@ import { NextRequest, NextResponse } from 'next/server';
 import { db } from '@/db';
 import { tasks } from '@/db/schema';
 import { eq, and, or, desc } from 'drizzle-orm';
-import { getUserFromRequest, hasRole, isAdmin } from '../_lib/auth';
+import { authorizeByPermission, hasRole } from '../_lib/rbac';
 import { TaskStatus, TaskPriority } from '@/types';
 
 /**
@@ -12,7 +12,8 @@ import { TaskStatus, TaskPriority } from '@/types';
  */
 export async function GET(req: NextRequest) {
   try {
-    const user = getUserFromRequest(req);
+    // Authorize user with RBAC - all roles can read tasks
+    const user = await authorizeByPermission(req, 'read:tasks');
     if (!user) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
@@ -27,7 +28,7 @@ export async function GET(req: NextRequest) {
     // Apply role-based filters
     if (filter === 'mine') {
       conditions.push(eq(tasks.assignedToId, user.id));
-    } else if (filter === 'review' && !isAdmin(user)) {
+    } else if (filter === 'review' && !hasRole(user, ['admin'])) {
       return NextResponse.json({ error: 'Forbidden' }, { status: 403 });
     }
 
@@ -64,7 +65,8 @@ export async function GET(req: NextRequest) {
  */
 export async function POST(req: NextRequest) {
   try {
-    const user = getUserFromRequest(req);
+    // Authorize user with RBAC - only roles with write:tasks permission can create tasks
+    const user = await authorizeByPermission(req, 'write:tasks');
     if (!user) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
@@ -82,12 +84,12 @@ export async function POST(req: NextRequest) {
     let assignedToId: number | null = null;
     let status: TaskStatus = 'todo';
 
-    if (isAdmin(user)) {
+    if (hasRole(user, ['admin'])) {
       // Admin can set everything
       priority = (body.priority as TaskPriority) || 'medium';
       assignedToId = body.assignedToId || null;
       status = (body.status as TaskStatus) || 'todo';
-    } else if (user.role === 'team') {
+    } else if (hasRole(user, ['team'])) {
       // Team can set priority and assign
       priority = (body.priority as TaskPriority) || 'medium';
       assignedToId = body.assignedToId || null;
@@ -136,7 +138,8 @@ export async function PUT(req: NextRequest) {
  */
 export async function DELETE(req: NextRequest) {
   try {
-    const user = getUserFromRequest(req);
+    // Authorize user with RBAC - only roles with write:tasks permission can delete tasks
+    const user = await authorizeByPermission(req, 'write:tasks');
     if (!user) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
@@ -156,7 +159,7 @@ export async function DELETE(req: NextRequest) {
     }
 
     // Only admin or creator can delete
-    if (!isAdmin(user) && task.createdById !== user.id) {
+    if (!hasRole(user, ['admin']) && task.createdById !== user.id) {
       return NextResponse.json({ error: 'Forbidden' }, { status: 403 });
     }
 

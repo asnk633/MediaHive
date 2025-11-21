@@ -59,6 +59,7 @@ export function FAB() {
             onClick={handleCreateTask}
             className="h-12 gap-2 shadow-lg"
             size="lg"
+            data-testid="fab-new-task"
           >
             <ListTodo className="h-4 w-4" />
             <span>New Task</span>
@@ -71,6 +72,7 @@ export function FAB() {
               className="h-12 gap-2 shadow-lg"
               size="lg"
               variant="secondary"
+              data-testid="fab-new-event"
             >
               <CalendarPlus className="h-4 w-4" />
               <span>New Event</span>
@@ -84,6 +86,7 @@ export function FAB() {
               className="h-12 gap-2 shadow-lg"
               size="lg"
               variant="secondary"
+              data-testid="fab-notify"
             >
               <BellPlus className="h-4 w-4" />
               <span>Notify</span>
@@ -102,6 +105,7 @@ export function FAB() {
             isOpen && 'rotate-45'
           )}
           aria-label={isOpen ? "Close create menu" : "Open create menu"}
+          data-testid="fab-open"
         >
           {isOpen ? (
             <X className="h-6 w-6" />

@@ -2,15 +2,22 @@
    Robust route: await params, validate canonical values, try Drizzle update,
    fallback to raw parameterized SQL if driver produces invalid SQL in dev.
 */
-import { NextResponse } from "next/server";
+import { NextRequest, NextResponse } from "next/server";
 import { db } from "@/db"; // adjust import if your DB export lives elsewhere
 import { tasks } from "@/db/schema";
 import { eq } from "drizzle-orm";
+import { authorizeByPermission, hasRole } from '@/app/api/_lib/rbac';
 
 type ParamsShape = { params: { id: string } } | Promise<{ params: { id: string } }>;
 
-export async function PATCH(req: Request, maybeParams: ParamsShape) {
+export async function PATCH(req: NextRequest, maybeParams: ParamsShape) {
   try {
+    // Authorize user with RBAC - only roles with review:tasks permission can update review status
+    const user = await authorizeByPermission(req, 'review:tasks');
+    if (!user) {
+      return NextResponse.json({ error: 'Forbidden: Only authorized users can review tasks' }, { status: 403 });
+    }
+
     // Next.js may supply params as a Promise in some versions — await defensively
     const { params } = (await maybeParams) as { params: { id: string } };
     const id = Number(params.id);

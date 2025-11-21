@@ -1,13 +1,12 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { getUserFromRequest, isAdmin } from '@/app/api/_lib/auth';
+import { authorizeByPermission } from '@/app/api/_lib/rbac';
 
 export async function POST(request: NextRequest) {
   try {
-    // Get user from request (session cookie or x-user-data header)
-    const user = await getUserFromRequest(request);
+    // Authorize user with RBAC - only admins can send notifications
+    const user = await authorizeByPermission(request, 'send:notifications');
     
-    // Check if user is admin
-    if (!isAdmin(user)) {
+    if (!user) {
       return NextResponse.json(
         { error: 'Forbidden: Only admins can send notifications' },
         { status: 403 }
@@ -40,7 +39,7 @@ export async function POST(request: NextRequest) {
           message,
           type,
           userId,
-          sentBy: user?.id,
+          sentBy: user.id,
           timestamp: new Date().toISOString()
         }
       },

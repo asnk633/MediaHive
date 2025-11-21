@@ -8,6 +8,7 @@ type Task = {
   priority?: string | null;
   assignee?: { id?: number | string; name?: string } | null;
   dueDate?: string | null;
+  reviewStatus?: string | null;
 };
 
 type Props = {
@@ -19,6 +20,8 @@ type Props = {
 // Exposes stable data-* attributes for e2e tests:
 //  - data-task-id
 //  - data-status
+//  - data-priority
+//  - data-review-status
 //  - data-assignee
 export default function TaskItem({ task, className = "" }: Props) {
   const assigneeName = task.assignee?.name ?? "";
@@ -28,6 +31,8 @@ export default function TaskItem({ task, className = "" }: Props) {
       className={`task-item card ${className}`}
       data-task-id={String(task.id)}
       data-status={task.status ?? "unknown"}
+      data-priority={task.priority ?? "unknown"}
+      data-review-status={task.reviewStatus ?? "unknown"}
       data-assignee={assigneeName}
       aria-label={`task-${task.id}`}
     >
@@ -38,6 +43,7 @@ export default function TaskItem({ task, className = "" }: Props) {
           <span className="task-status">Status: {task.status ?? "—"}</span>
           <span className="task-priority">Priority: {task.priority ?? "—"}</span>
           {task.dueDate ? <span className="task-due">Due: {task.dueDate}</span> : null}
+          {task.reviewStatus ? <span className="task-review">Review: {task.reviewStatus}</span> : null}
         </div>
       </div>
     </article>

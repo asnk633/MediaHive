@@ -32,6 +32,8 @@ export const tasks = sqliteTable('tasks', {
   institutionId: integer('institution_id').notNull().references(() => institutions.id),
   dueDate: text('due_date'),
   reviewStatus: text('reviewStatus'), // Add reviewStatus column for task review workflow
+  lastUpdatedBy: integer('last_updated_by').references(() => users.id), // Track who last updated the task
+  isArchived: integer('is_archived', { mode: 'boolean' }).default(false), // Archive flag
   createdAt: text('created_at').notNull(),
   updatedAt: text('updated_at').notNull(),
 });

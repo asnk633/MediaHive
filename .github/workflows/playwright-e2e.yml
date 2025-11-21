@@ -51,6 +51,13 @@ jobs:
           name: html-report-${{ matrix.node-version }}
           path: test-results/html-report/
           retention-days: 30
+      - name: Upload SSE/WS connection logs
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: connection-logs-${{ matrix.node-version }}
+          path: connection-logs/
+          retention-days: 30
       - name: Debug server logs on failure
         if: failure()
         run: |

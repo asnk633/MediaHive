@@ -34,6 +34,7 @@ export const tasks = sqliteTable('tasks', {
   reviewStatus: text('reviewStatus'), // Add reviewStatus column for task review workflow
   lastUpdatedBy: integer('last_updated_by').references(() => users.id), // Track who last updated the task
   isArchived: integer('is_archived', { mode: 'boolean' }).default(false), // Archive flag
+  version: integer('version').notNull().default(1), // Optimistic concurrency control
   createdAt: text('created_at').notNull(),
   updatedAt: text('updated_at').notNull(),
 });
@@ -56,11 +57,9 @@ export const events = sqliteTable('events', {
 export const notifications = sqliteTable('notifications', {
   id: integer('id').primaryKey({ autoIncrement: true }),
   userId: integer('user_id').notNull().references(() => users.id),
-  type: text('type').notNull(),
   title: text('title').notNull(),
-  message: text('message').notNull(),
-  read: integer('read', { mode: 'boolean' }).notNull().default(false),
-  metadata: text('metadata', { mode: 'json' }),
+  body: text('body').notNull(),
+  readAt: text('read_at'),
   createdAt: text('created_at').notNull(),
 });
 
@@ -107,4 +106,11 @@ export const files = sqliteTable('files', {
   uploadedById: integer('uploaded_by_id').notNull().references(() => users.id),
   institutionId: integer('institution_id').notNull().references(() => institutions.id),
   createdAt: text('created_at').notNull(),
+});
+
+// Presence table for tracking user online status
+export const presence = sqliteTable('presence', {
+  userId: integer('user_id').primaryKey().references(() => users.id),
+  lastSeenAt: text('last_seen_at').notNull(),
+  online: integer('online', { mode: 'boolean' }).notNull().default(false),
 });

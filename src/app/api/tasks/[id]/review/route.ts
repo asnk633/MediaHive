@@ -25,7 +25,7 @@ export async function PATCH(req: Request, maybeParams: ParamsShape) {
       return NextResponse.json({ error: "Invalid reviewStatus", allowed }, { status: 400 });
     }
 
-    // Preferred: use Drizzle update
+    // Preferred: use Drizzle update with correct column name
     try {
       await db.update(tasks).set({ reviewStatus: reviewStatus as any }).where(eq(tasks.id, id));
       return NextResponse.json({ ok: true });

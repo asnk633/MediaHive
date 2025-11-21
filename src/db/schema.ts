@@ -31,6 +31,7 @@ export const tasks = sqliteTable('tasks', {
   createdById: integer('created_by_id').notNull().references(() => users.id),
   institutionId: integer('institution_id').notNull().references(() => institutions.id),
   dueDate: text('due_date'),
+  reviewStatus: text('reviewStatus'), // Add reviewStatus column for task review workflow
   createdAt: text('created_at').notNull(),
   updatedAt: text('updated_at').notNull(),
 });
@@ -105,4 +106,3 @@ export const files = sqliteTable('files', {
   institutionId: integer('institution_id').notNull().references(() => institutions.id),
   createdAt: text('created_at').notNull(),
 });
-

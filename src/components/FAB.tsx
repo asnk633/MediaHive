@@ -1,7 +1,7 @@
 'use client';
 
-import React, { useState } from 'react';
-import { Plus, ListTodo, CalendarPlus, X } from 'lucide-react';
+import React, { useState, useCallback } from 'react';
+import { Plus, ListTodo, CalendarPlus, X, BellPlus } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { cn } from '@/lib/utils';
 import { useRouter } from 'next/navigation';
@@ -10,20 +10,27 @@ import { useAuth } from '@/contexts/AuthContext';
 export function FAB() {
   const [isOpen, setIsOpen] = useState(false);
   const router = useRouter();
-  const { hasRole } = useAuth();
+  const { hasRole, user } = useAuth();
 
-  // Guests can only create tasks
-  const canCreateEvent = hasRole(['admin', 'team']);
+  // Role check based on the patch logic
+  const canSeeEvent = hasRole(['admin', 'team']);
+  const canSeeNotify = hasRole(['admin']);
 
-  const handleCreateTask = () => {
+  const handleCreateTask = useCallback(() => {
     setIsOpen(false);
     router.push('/tasks/new');
-  };
+  }, [router]);
 
-  const handleCreateEvent = () => {
+  const handleCreateEvent = useCallback(() => {
     setIsOpen(false);
-    router.push('/calendar/new');
-  };
+    // Original component routed to '/calendar/new'
+    router.push('/calendar/new'); 
+  }, [router]);
+
+  const handleCreateNotification = useCallback(() => {
+    setIsOpen(false);
+    router.push('/notifications/new');
+  }, [router]);
 
   return (
     <>
@@ -43,10 +50,11 @@ export function FAB() {
         <div
           className={cn(
             'flex flex-col-reverse gap-3 mb-3 transition-all duration-200',
-            isOpen ? 'opacity-100 scale-100' : 'opacity-0 scale-95 pointer-events-none'
+            // Added pointer-events-auto when open to ensure buttons are clickable
+            isOpen ? 'opacity-100 scale-100 pointer-events-auto' : 'opacity-0 scale-95 pointer-events-none'
           )}
         >
-          {/* Create Task */}
+          {/* Create Task (Visible to all) */}
           <Button
             onClick={handleCreateTask}
             className="h-12 gap-2 shadow-lg"
@@ -57,7 +65,7 @@ export function FAB() {
           </Button>
 
           {/* Create Event - Only for Admin/Team */}
-          {canCreateEvent && (
+          {canSeeEvent && (
             <Button
               onClick={handleCreateEvent}
               className="h-12 gap-2 shadow-lg"
@@ -66,6 +74,19 @@ export function FAB() {
             >
               <CalendarPlus className="h-4 w-4" />
               <span>New Event</span>
+            </Button>
+          )}
+
+          {/* Notify - Only for Admin (New Feature) */}
+          {canSeeNotify && (
+            <Button
+              onClick={handleCreateNotification}
+              className="h-12 gap-2 shadow-lg"
+              size="lg"
+              variant="secondary"
+            >
+              <BellPlus className="h-4 w-4" />
+              <span>Notify</span>
             </Button>
           )}
         </div>

@@ -13,16 +13,33 @@ export interface AuthUser {
 }
 
 /**
- * Extract user from request headers (simplified for demo)
- * In production, validate JWT token or session cookie
+ * Extract user from request headers or session cookie
+ * Prefers session cookie, falls back to x-user-data header
  */
-export function getUserFromRequest(req: NextRequest): AuthUser | null {
+export async function getUserFromRequest(req: NextRequest): Promise<AuthUser | null> {
   try {
-    const userHeader = req.headers.get('x-user-data');
-    if (!userHeader) return null;
+    // First, try to get user from session cookie (server-side)
+    const sessionToken = req.cookies.get('session_token')?.value;
     
-    const user = JSON.parse(userHeader) as AuthUser;
-    return user;
+    if (sessionToken) {
+      // In a real implementation, you would validate the session token
+      // For this demo, we'll just parse it as JSON (not secure for production)
+      try {
+        const user = JSON.parse(decodeURIComponent(sessionToken)) as AuthUser;
+        return user;
+      } catch {
+        // If session token is invalid, continue to check x-user-data header
+      }
+    }
+    
+    // Fallback to x-user-data header (for backward compatibility)
+    const userHeader = req.headers.get('x-user-data');
+    if (userHeader) {
+      const user = JSON.parse(userHeader) as AuthUser;
+      return user;
+    }
+    
+    return null;
   } catch {
     return null;
   }

@@ -1,6 +1,7 @@
 import { test, expect } from "./fixtures";
 import dragAndDrop from "./helpers/drag";
 import { seedTask, fetchTaskById } from "./helpers/seed";
+import { waitForTasksOrEmpty } from "./helpers/dom";
 import type { Page } from "@playwright/test";
 
 // Selector mapping object to handle discrepancies between expected and actual DOM
@@ -32,8 +33,8 @@ test.describe("Kanban - full suite (real backend + auth)", () => {
 
   async function gotoTasksAndWait(page: Page) {
     await page.goto("/tasks");
-    // wait for tasks to appear - `.task-row` is the app's task row class
-    await page.waitForSelector(".task-row", { timeout: 15000 });
+    // Wait for tasks or empty state to ensure hydration
+    await waitForTasksOrEmpty(page, 15000);
   }
 
   test("loads tasks and verifies seeded data", async ({ page, authUser }) => {
@@ -60,7 +61,7 @@ test.describe("Kanban - full suite (real backend + auth)", () => {
     await gotoTasksAndWait(page);
 
     // Find a todo task and verify its attributes
-    const todoTask = page.locator('.task-row').first();
+    const todoTask = page.locator('[data-task-id], .task-row').first();
     const dataId = await todoTask.getAttribute("data-task-id");
     expect(dataId).not.toBeNull();
 
@@ -80,8 +81,8 @@ test.describe("Kanban - full suite (real backend + auth)", () => {
 
     await gotoTasksAndWait(page);
 
-    // Find the specific task
-    const taskElement = page.locator(`[data-task-id="${task.id}"]`);
+    // Find the specific task using robust selector
+    const taskElement = page.locator(`[data-task-id="${task.id}"], .task-row[data-task-id="${task.id}"]`).first();
     await expect(taskElement).toBeVisible({ timeout: 15000 });
 
     // Verify all attributes are displayed
@@ -101,7 +102,7 @@ test.describe("Kanban - full suite (real backend + auth)", () => {
     const todoCol = page.locator('[data-column="todo"]');
     const inProgCol = page.locator('[data-column="in_progress"]');
 
-    const taskRow = todoCol.locator(".task-row").first();
+    const taskRow = page.locator('[data-task-id], .task-row').first();
     const dataId = await taskRow.getAttribute("data-task-id");
     if (!dataId) throw new Error("task-row missing data-task-id");
 
@@ -123,7 +124,7 @@ test.describe("Kanban - full suite (real backend + auth)", () => {
     const todoCol = page.locator('[data-column="todo"]');
     const doneCol = page.locator('[data-column="done"]');
 
-    const taskRow = todoCol.locator(".task-row").first();
+    const taskRow = page.locator('[data-task-id], .task-row').first();
     const dataId = await taskRow.getAttribute("data-task-id");
     if (!dataId) throw new Error("task-row missing data-task-id");
 

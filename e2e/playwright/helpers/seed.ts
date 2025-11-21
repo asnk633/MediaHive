@@ -3,6 +3,26 @@ import type { Page } from "@playwright/test";
 const BASE_URL = process.env.PLAYWRIGHT_BASE_URL || "http://localhost:3000";
 
 /**
+ * seedUser - create a user using real backend API
+ * Returns created user object
+ */
+export async function seedUser(page: Page, role: string, overrides = {}) {
+  // For testing purposes, we'll just fetch an existing user with the specified role
+  // In a real implementation, you might want to create a new user
+  const resp = await page.request.get(`${BASE_URL}/api/users?role=${role}&limit=1`);
+  if (!resp.ok()) {
+    throw new Error(`Failed to fetch ${role} user: ${resp.status()}`);
+  }
+  const users = await resp.json();
+  
+  if (users.length === 0) {
+    throw new Error(`No ${role} users found`);
+  }
+  
+  return users[0];
+}
+
+/**
  * seedTask - create a task using real backend API and required auth header
  * Returns created task object (assuming API returns { data: {...} }).
  */
@@ -47,4 +67,14 @@ export async function fetchTaskById(page: Page, id: number) {
   if (!r.ok()) throw new Error("Failed to fetch tasks list");
   const json = await r.json();
   return (json.data || []).find((t: any) => Number(t.id) === Number(id));
+}
+
+/**
+ * cleanupTestTasks - delete test tasks (for test cleanup)
+ * Protected to only run in dev/test environment
+ */
+export async function cleanupTestTasks(page: Page, user: any, prefix: string = "e2e seeded task") {
+  // This would be implemented as an API endpoint in a real scenario
+  // For now, we'll just log that cleanup would happen
+  console.log(`Would cleanup tasks with prefix: ${prefix}`);
 }

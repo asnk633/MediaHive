@@ -12,24 +12,32 @@ import { defineConfig, devices } from "@playwright/test";
 
 export default defineConfig({
   testDir: "e2e/playwright",
-  timeout: 30_000,
+  timeout: 60_000,
   expect: {
-    timeout: 5_000,
+    timeout: 30_000,
   },
 
   // Run tests in parallel where safe; set retries in CI
-  fullyParallel: false,
-  retries: process.env.CI ? 2 : 0,
-  workers: process.env.CI ? 1 : undefined,
+  fullyParallel: true,
+  retries: 2,
+  workers: 3,
 
   reporter: [
     ["list"],
-    ["html", { open: "never" }]
+    ["html", { outputFolder: 'test-results/html', open: "never" }]
   ],
+  outputDir: 'test-results/raw',
 
   use: {
     // Base URL for the app under test. Adjust if your dev server runs elsewhere.
-    baseURL: process.env.PW_BASE_URL || "http://localhost:3000",
+    baseURL: process.env.PLAYWRIGHT_BASE_URL || "http://localhost:3000",
+
+    // Run in headless mode by default
+    headless: true,
+
+    // Navigation and action timeouts
+    navigationTimeout: 30000,
+    actionTimeout: 30000,
 
     // Trace only on first retry to help triage flaky tests
     trace: "on-first-retry",

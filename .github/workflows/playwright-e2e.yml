@@ -1,4 +1,4 @@
-name: Playwright E2E
+name: Playwright E2E Tests
 
 on:
   push:
@@ -9,21 +9,24 @@ on:
 jobs:
   test:
     runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        node-version: [20]
     env:
       PLAYWRIGHT_BASE_URL: http://localhost:3000
       PLAYWRIGHT_TEST_EMAIL: dev@local
     steps:
       - uses: actions/checkout@v4
-      - name: Use Node.js 20
+      - name: Use Node.js ${{ matrix.node-version }}
         uses: actions/setup-node@v4
         with:
-          node-version: 20
+          node-version: ${{ matrix.node-version }}
           cache: 'npm'
-      - name: Install
+      - name: Install dependencies
         run: npm ci
       - name: Build Next.js
         run: npm run build
-      - name: Start server (background)
+      - name: Start server in background
         run: |
           npm run start &> server.log &
           echo "Waiting for server to be ready..."
@@ -31,9 +34,7 @@ jobs:
       - name: Install Playwright browsers
         run: npx playwright install --with-deps
       - name: Run Playwright tests
-        uses: microsoft/playwright-github-action@v1
-        with:
-          run: npx playwright test --config=playwright.config.ts
+        run: npx playwright test --config=playwright.config.cjs
       - name: Upload test results
         if: always()
         uses: actions/upload-artifact@v4
@@ -42,6 +43,13 @@ jobs:
           path: |
             test-results/
             test-report/
+          retention-days: 30
+      - name: Upload HTML report
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: html-report
+          path: test-results/html-report/
           retention-days: 30
       - name: Debug server logs on failure
         if: failure()

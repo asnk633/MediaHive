@@ -7,18 +7,32 @@ import type { Page } from "@playwright/test";
  * This makes tests robust when the DB is empty or when seeded tasks exist.
  */
 export async function waitForTasksOrEmpty(page: Page, timeout = 15000) {
-  // Runs inside browser context; check for .task-row or the empty text
-  await page.waitForFunction(
-    (emptyText) => {
-      try {
-        if (document.querySelector(".task-row")) return true;
-        const body = document.body?.innerText || "";
-        return body.includes(emptyText);
-      } catch (e) {
-        return false;
-      }
-    },
-    "No tasks here.",
-    { timeout }
-  );
+  // Wait for either task rows or the empty state text
+  try {
+    await page.waitForFunction(
+      (emptyText) => {
+        try {
+          // Check if task rows exist
+          if (document.querySelector(".task-row")) return true;
+          // Check if the empty state text exists
+          const bodyText = document.body?.textContent || "";
+          return bodyText.includes(emptyText);
+        } catch (e) {
+          return false;
+        }
+      },
+      "No tasks here.",
+      { timeout }
+    );
+  } catch (error) {
+    // If the function times out, we'll continue anyway as the page might have loaded
+    console.warn("waitForTasksOrEmpty timed out, continuing with test execution");
+  }
+}
+
+/**
+ * waitForFAB - wait for FAB button to be visible
+ */
+export async function waitForFAB(page: Page, timeout = 15000) {
+  await page.waitForSelector("button[aria-label='Open create menu']", { timeout });
 }

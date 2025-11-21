@@ -11,6 +11,7 @@ export interface AuthUser {
   fullName: string;
   role: UserRole;
   institutionId: number;
+  tenantId: number; // Add tenantId for multi-tenant support
 }
 
 /**

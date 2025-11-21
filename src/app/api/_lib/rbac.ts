@@ -18,7 +18,8 @@ export type Permission =
   | 'write:tasks'
   | 'manage:users'
   | 'send:notifications'
-  | 'review:tasks';
+  | 'review:tasks'
+  | 'admin:monitoring';
 
 // Define role permissions mapping
 const ROLE_PERMISSIONS: Record<UserRole, Permission[]> = {
@@ -27,7 +28,8 @@ const ROLE_PERMISSIONS: Record<UserRole, Permission[]> = {
     'write:tasks',
     'manage:users',
     'send:notifications',
-    'review:tasks'
+    'review:tasks',
+    'admin:monitoring'
   ],
   team: [
     'read:tasks',

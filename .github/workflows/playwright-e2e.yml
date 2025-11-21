@@ -23,6 +23,20 @@ jobs:
         with:
           node-version: ${{ matrix.node-version }}
           cache: 'npm'
+      - name: Install system dependencies
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y ffmpeg python3 python3-pip
+      - name: Install Python face recognition dependencies
+        run: |
+          cd scripts
+          pip3 install -r requirements.txt
+      - name: Start Python face recognition service
+        run: |
+          cd scripts
+          python3 face_service.py &
+          echo "Waiting for Python service to start..."
+          sleep 10
       - name: Install dependencies
         run: npm ci
       - name: Build Next.js
@@ -36,6 +50,15 @@ jobs:
         run: npx playwright install --with-deps
       - name: Run Playwright tests
         run: npx playwright test --config=playwright.config.cjs
+      - name: Run M6 specific tests
+        run: |
+          npx playwright test ai-assistant.spec.ts monitoring.spec.ts perf.spec.ts offline.spec.ts locks.spec.ts task-activity.spec.ts notification-rules.spec.ts --config=playwright.config.cjs
+      - name: Run M8 specific tests
+        run: |
+          npx playwright test media.analyze.spec.ts face.vips.spec.ts face.privacy.spec.ts --config=playwright.config.cjs
+      - name: Run offline mode tests
+        run: |
+          npx playwright test --project=offline-mode --config=playwright.config.cjs
       - name: Upload test results
         if: always()
         uses: actions/upload-artifact@v4

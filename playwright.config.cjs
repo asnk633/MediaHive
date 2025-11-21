@@ -24,11 +24,18 @@ module.exports = defineConfig({
     }
   },
   outputDir: 'test-results',
-  // Add projects for different browsers if needed
+  // Add projects for different test scenarios
   projects: [
     {
       name: 'chromium',
       use: { browserName: 'chromium' },
+    },
+    {
+      name: 'offline-mode',
+      use: { 
+        browserName: 'chromium',
+        offline: true
+      },
     },
   ],
 });

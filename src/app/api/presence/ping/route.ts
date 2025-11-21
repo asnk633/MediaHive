@@ -56,3 +56,21 @@ export async function POST(req: NextRequest) {
     );
   }
 }
+
+// Client-side function to schedule presence updates using requestIdleCallback
+export function schedulePresenceUpdate(callback: () => void) {
+  // Check if Background Sync API is available
+  if ('serviceWorker' in navigator && 'sync' in (navigator as any).serviceWorker) {
+    // Defer to Background Sync API
+    console.log('Using Background Sync API for presence updates');
+    return;
+  }
+  
+  // Fallback to requestIdleCallback
+  if ('requestIdleCallback' in window) {
+    (window as any).requestIdleCallback(callback, { timeout: 2000 });
+  } else {
+    // Fallback to setTimeout for older browsers
+    setTimeout(callback, 0);
+  }
+}

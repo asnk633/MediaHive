@@ -3,7 +3,7 @@
 
 import { useState, useEffect } from 'react';
 import { useServerSync } from '@/hooks/useServerSync';
-import { schedulePresenceUpdate } from '@/app/api/presence/ping/route';
+import { schedulePresenceUpdate } from '@/lib/presence-client';
 
 export function usePresence(userId: number): boolean {
   const [isOnline, setIsOnline] = useState(false);

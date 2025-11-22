@@ -2,37 +2,10 @@
 // Dev-only endpoint for debugging request logs
 
 import { NextRequest, NextResponse } from 'next/server';
+import { addRequestLog, getRequestLogs, clearRequestLogs } from '@/lib/request-logger';
 
 // Ensure this endpoint is only available in development
 const isDevEnvironment = process.env.NODE_ENV === 'development' || process.env.NEXT_PUBLIC_E2E === '1';
-
-// In-memory store for request logs (ephemeral and capped)
-let requestLogs: any[] = [];
-const MAX_LOGS = 100;
-
-/**
- * Add a request log entry
- * 
- * @param entry Log entry to add
- */
-export function addRequestLog(entry: any) {
-  // Only log in dev environment
-  if (!isDevEnvironment) return;
-  
-  // Add timestamp
-  const logEntry = {
-    ...entry,
-    timestamp: new Date().toISOString()
-  };
-  
-  // Add to logs
-  requestLogs.push(logEntry);
-  
-  // Cap logs
-  if (requestLogs.length > MAX_LOGS) {
-    requestLogs = requestLogs.slice(-MAX_LOGS);
-  }
-}
 
 export async function GET(req: NextRequest) {
   // Only available in dev environment
@@ -42,10 +15,11 @@ export async function GET(req: NextRequest) {
 
   try {
     // Return the recent request logs
+    const logs = getRequestLogs();
     return NextResponse.json({ 
-      logs: requestLogs,
-      count: requestLogs.length,
-      maxLogs: MAX_LOGS
+      logs,
+      count: logs.length,
+      maxLogs: 100
     }, { status: 200 });
   } catch (error) {
     console.error('Debug logs GET error:', error);
@@ -61,7 +35,7 @@ export async function DELETE(req: NextRequest) {
 
   try {
     // Clear all request logs
-    requestLogs = [];
+    clearRequestLogs();
     return NextResponse.json({ 
       success: true, 
       message: 'Debug logs cleared' 

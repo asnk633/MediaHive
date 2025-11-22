@@ -1,13 +1,19 @@
 "use client";
 
-import React from "react";
+import React, { useEffect } from "react";
 import BottomNav from "@/components/BottomNav";
 import { ToastProvider } from "@/components/ToastProvider";
 import { ClientDataProvider } from "./ClientDataContext";
 import { RoleProvider } from "./RoleContext";
 import { FAB } from "@/components/FAB";
+import { initPWA } from "@/lib/init-pwa";
 
 export default function ShellLayout({ children }: { children: React.ReactNode }) {
+  // Initialize PWA functionality
+  useEffect(() => {
+    initPWA();
+  }, []);
+  
   // Shell layout: single anchor for BottomNav + FAB. Do not render FAB elsewhere.
   return (
     <RoleProvider>

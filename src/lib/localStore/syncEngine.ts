@@ -1,6 +1,8 @@
 // src/lib/localStore/syncEngine.ts
 // Resolves queued mutations when online
 
+"use client";
+
 import { offlineQueue, OfflineMutation } from './offlineQueue';
 import { localDB } from './localDB';
 import { persistedQueries } from './persistedQueries';

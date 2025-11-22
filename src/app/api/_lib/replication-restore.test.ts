@@ -11,20 +11,8 @@ function restoreTest(description: string, fn: () => void) {
   }
 }
 
-// Simple assertion function
-function assertEqual(actual: any, expected: any, message: string) {
-  if (actual !== expected) {
-    throw new Error(`${message} - Expected: ${expected}, Actual: ${actual}`);
-  }
-}
-
-function assertTrue(actual: boolean, message: string) {
-  assertEqual(actual, true, message);
-}
-
-function assertFalse(actual: boolean, message: string) {
-  assertEqual(actual, false, message);
-}
+// Import assertion functions
+import { assertEqual, assertTrue, assertFalse } from './test-utils/asserts';
 
 // Test restore from snapshot scenario
 restoreTest('Simulate database restore from backup', () => {

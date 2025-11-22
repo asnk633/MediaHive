@@ -1,8 +1,7 @@
 "use client";
-"use client";
 import React from 'react';
-import { useOffline } from '@/hooks/useOffline';
-import { ConflictResolutionModal } from './ConflictResolutionModal';
+import { useOffline } from '@/client/hooks/useOffline';
+import { ConflictResolutionModal } from '@/components/ConflictResolutionModal';
 
 export function OfflineStatusIndicator() {
   const { 

@@ -1,20 +1,8 @@
 // src/app/api/_lib/replication.test.ts
 // Simple tests for replication functionality
 
-// Simple assertion function
-function assertEqual(actual: any, expected: any, message: string) {
-  if (actual !== expected) {
-    throw new Error(`${message} - Expected: ${expected}, Actual: ${actual}`);
-  }
-}
-
-function assertTrue(actual: boolean, message: string) {
-  assertEqual(actual, true, message);
-}
-
-function assertFalse(actual: boolean, message: string) {
-  assertEqual(actual, false, message);
-}
+// Import assertion functions
+import { assertEqual, assertTrue, assertFalse } from './test-utils/asserts';
 
 // WAL Event interface for testing
 interface WalEvent {

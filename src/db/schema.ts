@@ -186,6 +186,7 @@ export const auditLog = sqliteTable('audit_log', {
   details: text('details', { mode: 'json' }), // Additional details about the action
   ipAddress: text('ip_address'), // Masked IP address
   userAgent: text('user_agent'),
+  tenantId: integer('tenant_id').notNull().references(() => tenants.id),
   timestamp: text('timestamp').notNull(),
 });
 

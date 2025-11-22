@@ -1,5 +1,6 @@
-import React from 'react';
-import AppLayout from '@/components/AppLayout';
+import React from "react";
+import Link from "next/link";
+import AppLayout from "@/components/AppLayout";
 
 export const dynamic = 'force-static';
 
@@ -29,9 +30,9 @@ export default function HomePage() {
           <article className="tg-card p-5">
             <h2 className="mb-1 text-lg font-medium">Shortcuts</h2>
             <ul className="mt-2 space-y-2 text-sm">
-              <li><a className="text-[hsl(var(--primary))] hover:underline" href="/tasks">Go to Tasks →</a></li>
-              <li><a className="text-[hsl(var(--primary))] hover:underline" href="/calendar">Open Calendar →</a></li>
-              <li><a className="text-[hsl(var(--primary))] hover:underline" href="/files">Browse Files →</a></li>
+              <li><Link className="text-[hsl(var(--primary))] hover:underline" href="/tasks">Go to Tasks →</Link></li>
+              <li><Link className="text-[hsl(var(--primary))] hover:underline" href="/calendar">Open Calendar →</Link></li>
+              <li><Link className="text-[hsl(var(--primary))] hover:underline" href="/files">Browse Files →</Link></li>
             </ul>
           </article>
         </div>

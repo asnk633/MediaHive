@@ -3,6 +3,9 @@ import { db } from '@/db';
 import { notifications } from '@/db/schema';
 import { eq, and, desc, gte, lte, isNull } from 'drizzle-orm';
 import { getUserFromRequest, isAdmin } from '../_lib/auth';
+import { validateSchema, createNotificationSchema } from '@/lib/validation';
+import { z } from 'zod';
+import { sanitizeHtmlContent, sanitizeTextContent } from '@/lib/sanitizer';
 
 // --- GET Request Handler (Fetch notifications for current user) ---
 export async function GET(request: NextRequest) {
@@ -55,7 +58,14 @@ export async function GET(request: NextRequest) {
       .orderBy(desc(notifications.createdAt));
 
     return NextResponse.json({ data: notificationsList }, { status: 200 });
-  } catch (error) {
+  } catch (error: any) {
+    if (error.name === 'ValidationError') {
+      return NextResponse.json(
+        { error: 'Validation failed', details: error.fieldErrors },
+        { status: 400 }
+      );
+    }
+    
     console.error('GET error:', error);
     return NextResponse.json(
       { error: 'Internal server error' },
@@ -80,14 +90,8 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    const { userId, title, body, category, ttl } = await request.json();
-
-    if (!userId || !title || !body) {
-      return NextResponse.json(
-        { error: 'Missing required fields: userId, title, body' },
-        { status: 400 }
-      );
-    }
+    const body = await request.json();
+    const { userId, title, body: notificationBody, category, ttl } = validateSchema(createNotificationSchema, body);
 
     const createdAt = new Date().toISOString();
 
@@ -95,8 +99,8 @@ export async function POST(request: NextRequest) {
       .insert(notifications)
       .values({
         createdAt,
-        title,
-        body,
+        title: sanitizeTextContent(title),
+        body: sanitizeHtmlContent(notificationBody),
         userId,
         category: category || 'general',
         ttl: ttl || 86400, // Default 24 hours TTL
@@ -106,7 +110,14 @@ export async function POST(request: NextRequest) {
       .returning();
 
     return NextResponse.json({ data: inserted[0] }, { status: 201 });
-  } catch (error) {
+  } catch (error: any) {
+    if (error.name === 'ValidationError') {
+      return NextResponse.json(
+        { error: 'Validation failed', details: error.fieldErrors },
+        { status: 400 }
+      );
+    }
+    
     console.error('POST error:', error);
     return NextResponse.json(
       { error: 'Internal server error' },
@@ -121,7 +132,18 @@ export async function PATCH(request: NextRequest) {
     const searchParams = request.nextUrl.searchParams;
     const id = searchParams.get('id');
 
-    if (!id || isNaN(parseInt(id))) {
+    if (!id) {
+      return NextResponse.json(
+        { error: 'ID is required', code: 'INVALID_ID' },
+        { status: 400 }
+      );
+    }
+
+    // Validate ID parameter
+    const idSchema = z.number().int().positive();
+    try {
+      idSchema.parse(parseInt(id));
+    } catch {
       return NextResponse.json(
         { error: 'Valid ID is required', code: 'INVALID_ID' },
         { status: 400 }
@@ -149,8 +171,8 @@ export async function PATCH(request: NextRequest) {
     if (updates.read !== undefined) {
       safeUpdates.readAt = updates.read ? new Date().toISOString() : null;
     }
-    if (updates.title) safeUpdates.title = updates.title;
-    if (updates.body) safeUpdates.body = updates.body;
+    if (updates.title) safeUpdates.title = sanitizeTextContent(updates.title);
+    if (updates.body) safeUpdates.body = sanitizeHtmlContent(updates.body);
     if (updates.category) safeUpdates.category = updates.category;
     if (updates.ttl !== undefined) safeUpdates.ttl = updates.ttl;
     if (updates.readReceipt !== undefined) safeUpdates.readReceipt = updates.readReceipt;
@@ -172,7 +194,14 @@ export async function PATCH(request: NextRequest) {
       .returning();
 
     return NextResponse.json(updated[0], { status: 200 });
-  } catch (error) {
+  } catch (error: any) {
+    if (error.name === 'ValidationError') {
+      return NextResponse.json(
+        { error: 'Validation failed', details: error.fieldErrors },
+        { status: 400 }
+      );
+    }
+    
     console.error('PATCH error:', error);
     return NextResponse.json(
       { error: 'Internal server error: ' + (error as Error).message },
@@ -187,7 +216,18 @@ export async function DELETE(request: NextRequest) {
     const searchParams = request.nextUrl.searchParams;
     const id = searchParams.get('id');
 
-    if (!id || isNaN(parseInt(id))) {
+    if (!id) {
+      return NextResponse.json(
+        { error: 'ID is required', code: 'INVALID_ID' },
+        { status: 400 }
+      );
+    }
+
+    // Validate ID parameter
+    const idSchema = z.number().int().positive();
+    try {
+      idSchema.parse(parseInt(id));
+    } catch {
       return NextResponse.json(
         { error: 'Valid ID is required', code: 'INVALID_ID' },
         { status: 400 }
@@ -220,7 +260,14 @@ export async function DELETE(request: NextRequest) {
       },
       { status: 200 }
     );
-  } catch (error) {
+  } catch (error: any) {
+    if (error.name === 'ValidationError') {
+      return NextResponse.json(
+        { error: 'Validation failed', details: error.fieldErrors },
+        { status: 400 }
+      );
+    }
+    
     console.error('DELETE error:', error);
     return NextResponse.json(
       { error: 'Internal server error: ' + (error as Error).message },

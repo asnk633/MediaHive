@@ -24,6 +24,7 @@ async function main() {
     console.log(" - inserting institution...");
     await db.insert(institutions).values({
       name: "Thaiba Garden",
+      tenantId: 1, // Default tenant ID
       createdAt: now(),
     });
 
@@ -43,6 +44,7 @@ async function main() {
         avatarUrl: null,
         role: "admin",
         institutionId,
+        tenantId: 1, // Default tenant ID
         createdAt: now(),
         updatedAt: now(),
       },
@@ -53,6 +55,7 @@ async function main() {
         avatarUrl: null,
         role: "team",
         institutionId,
+        tenantId: 1, // Default tenant ID
         createdAt: now(),
         updatedAt: now(),
       },
@@ -74,7 +77,12 @@ async function main() {
         assignedToId: maybe(johnId),
         createdById: adminId,
         institutionId,
+        tenantId: 1, // Default tenant ID
         dueDate: null,
+        reviewStatus: null,
+        lastUpdatedBy: null,
+        isArchived: 0,
+        version: 1,
         createdAt: now(),
         updatedAt: now(),
       },
@@ -86,11 +94,16 @@ async function main() {
         assignedToId: maybe(johnId),
         createdById: adminId,
         institutionId,
+        tenantId: 1, // Default tenant ID
         dueDate: null,
+        reviewStatus: null,
+        lastUpdatedBy: null,
+        isArchived: 0,
+        version: 1,
         createdAt: now(),
         updatedAt: now(),
       },
-    ]);
+    ] as any);
 
     // 4) Insert an event
     console.log(" - inserting an event...");
@@ -99,9 +112,12 @@ async function main() {
       description: "Initial kickoff meeting for the Orchids feature work.",
       startTime: now(),
       endTime: new Date(Date.now() + 60 * 60 * 1000).toISOString(), // +1 hour
+      approvalStatus: "pending",
       createdById: adminId,
       institutionId,
+      tenantId: 1, // Default tenant ID
       createdAt: now(),
+      updatedAt: now(),
     });
 
     // 5) Insert a notification
@@ -124,6 +140,7 @@ async function main() {
       checkIn: now(),
       checkOut: null,
       institutionId,
+      tenantId: 1, // Default tenant ID
       createdAt: now(),
     });
 
@@ -138,6 +155,7 @@ async function main() {
       visibility: "all",
       uploadedById: adminId,
       institutionId,
+      tenantId: 1, // Default tenant ID
       createdAt: now(),
     });
 

@@ -36,13 +36,13 @@ function runCommandSync(cmd, args, opts = {}) {
 }
 
 async function runLighthouse() {
-  // Use the wrapper script which will create JSON + HTML outputs
-  const wrapper = path.join(process.cwd(), "scripts", "audit", "run-lighthouse.sh");
+  // Use the Node.js wrapper script which will create JSON + HTML outputs
+  const wrapper = path.join(process.cwd(), "scripts", "audit", "run-lighthouse.js");
   const outHtml = path.join(OUT_ROOT, "lighthouse.html");
   const outJson = path.join(OUT_ROOT, "lighthouse.json");
   const args = [BASE_URL, outHtml, outJson];
   console.log("Running Lighthouse...");
-  const ok = runCommandSync("bash", [wrapper, ...args], { env: process.env });
+  const ok = runCommandSync("node", [wrapper, ...args], { env: process.env });
   return ok ? { html: outHtml, json: outJson } : null;
 }
 

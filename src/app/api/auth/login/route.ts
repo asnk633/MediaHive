@@ -3,17 +3,21 @@ import { db } from '@/db';
 import { users } from '@/db/schema';
 import { eq } from 'drizzle-orm';
 import bcrypt from 'bcryptjs';
+import { createSession, setSessionCookies } from '../../_lib/session';
+import { AuthUser } from '../../_lib/auth';
+import { validateSchema, loginSchema } from '@/lib/validation';
+import { rateLimitMiddleware } from '../../_lib/rate-limiter';
 
 export async function POST(request: NextRequest) {
   try {
-    const { email, password } = await request.json();
-    
-    if (!email) {
-      return NextResponse.json(
-        { error: 'Email is required' },
-        { status: 400 }
-      );
+    // Apply strict rate limiting for login attempts
+    const rateLimitResponse = await rateLimitMiddleware(request, true);
+    if (rateLimitResponse) {
+      return rateLimitResponse;
     }
+    
+    const body = await request.json();
+    const { email, password } = validateSchema(loginSchema, body);
     
     // Find user by email
     const userResult = await db
@@ -45,23 +49,24 @@ export async function POST(request: NextRequest) {
     // Remove passwordHash from response
     const { passwordHash, ...userWithoutPassword } = user;
     
-    // Set session cookie
-    const sessionToken = encodeURIComponent(JSON.stringify(userWithoutPassword));
+    // Create secure session with JWT tokens
+    const { accessToken, refreshToken } = await createSession(userWithoutPassword as AuthUser);
     
     // Create response with user data
     const response = NextResponse.json(userWithoutPassword, { status: 200 });
     
-    // Set secure cookie (HTTP-only)
-    response.cookies.set('session_token', sessionToken, {
-      httpOnly: true,
-      secure: process.env.NODE_ENV === 'production',
-      maxAge: 60 * 60 * 24 * 7, // 1 week
-      path: '/',
-      sameSite: 'strict',
-    });
+    // Set secure cookies (HTTP-only, Secure in production, SameSite)
+    setSessionCookies(response, accessToken, refreshToken);
     
     return response;
-  } catch (error) {
+  } catch (error: any) {
+    if (error.name === 'ValidationError') {
+      return NextResponse.json(
+        { error: 'Validation failed', details: error.fieldErrors },
+        { status: 400 }
+      );
+    }
+    
     console.error('Login error:', error);
     return NextResponse.json(
       { error: 'Internal server error' },

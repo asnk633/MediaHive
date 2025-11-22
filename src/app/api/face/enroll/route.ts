@@ -8,7 +8,7 @@ import { enrollVIP } from '@/lib/faceRecognition';
 import { authorizeByPermission } from '@/app/api/_lib/rbac';
 import path from 'path';
 import fs from 'fs/promises';
-import { v4 as uuidv4 } from 'uuid';
+const { v4: uuidv4 } = require('uuid');
 
 // Ensure uploads directory exists
 const UPLOADS_DIR = path.join(process.cwd(), 'uploads');

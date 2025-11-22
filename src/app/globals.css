@@ -5,8 +5,24 @@
 /* Minimal, PostCSS-safe global stylesheet for the app */
 
 /* reset */
-* { box-sizing: border-box; }
-html, body { height: 100%; margin: 0; padding: 0; }
+* { 
+  box-sizing: border-box; 
+  /* Add will-change for better performance on animated elements */
+  will-change: auto;
+}
+
+/* Add contain property for better rendering performance */
+html {
+  contain: layout style paint;
+}
+
+html, body { 
+  height: 100%; 
+  margin: 0; 
+  padding: 0; 
+  /* Optimize scrolling performance */
+  -webkit-overflow-scrolling: touch;
+}
 
 /* base page */
 body {
@@ -16,22 +32,49 @@ body {
   color: #e6e6e6;
   background: radial-gradient(circle at 50% 10%, rgba(40,40,42,0.9), #0c0c0c 60%);
   line-height: 1.45;
+  /* Optimize rendering */
+  text-rendering: optimizeSpeed;
+  -webkit-text-size-adjust: 100%;
 }
 
 /* main content spacing - keeps content above bottom nav */
 .main-content, main {
   min-height: calc(100vh - 112px);
   padding: 20px 28px;
+  /* Optimize painting */
+  contain: layout style paint;
 }
 
 /* headings */
-h1, h2, h3, h4 { color: #ffffff; margin: 0 0 12px 0; }
+h1, h2, h3, h4 { 
+  color: #ffffff; 
+  margin: 0 0 12px 0; 
+  /* Optimize font rendering */
+  font-feature-settings: "kern" 1;
+  font-kerning: normal;
+}
 
 /* default buttons */
-button { font-family: inherit; font-size: 14px; }
+button { 
+  font-family: inherit; 
+  font-size: 14px;
+  /* Optimize button rendering */
+  -webkit-appearance: none;
+  appearance: none;
+  border: none;
+  background: none;
+  cursor: pointer;
+  /* Add hardware acceleration for animations */
+  transform: translateZ(0);
+  -webkit-transform: translateZ(0);
+}
 
 /* toast safety */
-.toast-root { z-index: 1200; }
+.toast-root { 
+  z-index: 1200; 
+  /* Optimize positioning */
+  position: fixed;
+}
 
 /* BottomNav styles (scoped using tg- prefix used by component) */
 .tg-bottomnav {
@@ -42,6 +85,11 @@ button { font-family: inherit; font-size: 14px; }
   z-index: 50;
   width: min(980px, 96%);
   pointer-events: auto;
+  /* Add hardware acceleration */
+  transform: translateZ(0);
+  -webkit-transform: translateZ(0);
+  /* Optimize painting */
+  contain: layout style paint;
 }
 
 .tg-bottomnav-inner {
@@ -54,31 +102,180 @@ button { font-family: inherit; font-size: 14px; }
   justify-content: center;
   box-shadow: 0 18px 40px rgba(6,6,6,0.6);
   backdrop-filter: saturate(120%) blur(6px);
+  /* Optimize rendering */
+  will-change: transform;
 }
 
-.tg-menu { width:100%; display:flex; align-items:center; justify-content:space-between; padding:0; margin:0; list-style:none; gap:8px; }
-.tg-group { display:flex; gap:10px; align-items:center; }
-.tg-fab-gap { width: calc(var(--fab-gap-width, 88px)); flex:0 0 auto; }
+.tg-menu { 
+  width:100%; 
+  display:flex; 
+  align-items:center; 
+  justify-content:space-between; 
+  padding:0; 
+  margin:0; 
+  list-style:none; 
+  gap:8px; 
+}
 
-.tg-link { display:inline-flex; align-items:center; position:relative; overflow:hidden; width:56px; height:44px; border-radius:10px; text-decoration:none; color:#dcdcdc; transition:width .18s ease-out; }
-.tg-link::before { content:""; position:absolute; inset:0; border-radius:inherit; background: rgba(255,255,255,0.02); transform: translateX(100%); transition: transform .18s ease-out; z-index:0; }
-.tg-link .tg-link-icon { position:absolute; left:12px; z-index:1; display:inline-flex; align-items:center; }
-.tg-link .tg-link-title { display:block; width:100%; text-indent:28px; transform: translateX(100%); opacity:0; transition: transform .18s ease-out, opacity .14s ease-out; z-index:1; font-size:14px; }
-.tg-link:hover, .tg-link:focus-visible { width:128px; outline:none; }
-.tg-link:hover::before, .tg-link:focus-visible::before, .tg-link:hover .tg-link-title, .tg-link:focus-visible .tg-link-title { transform: translateX(0); opacity:1; }
-.tg-link.is-active { width:128px; }
-.tg-link.is-active::before { transform: translateX(0); background: rgba(255,255,255,0.03); }
-.tg-link.is-active .tg-link-title { transform: translateX(0); opacity:1; }
+.tg-group { 
+  display:flex; 
+  gap:10px; 
+  align-items:center; 
+}
+
+.tg-fab-gap { 
+  width: calc(var(--fab-gap-width, 88px)); 
+  flex:0 0 auto; 
+}
+
+.tg-link { 
+  display:inline-flex; 
+  align-items:center; 
+  position:relative; 
+  overflow:hidden; 
+  width:56px; 
+  height:44px; 
+  border-radius:10px; 
+  text-decoration:none; 
+  color:#dcdcdc; 
+  transition:width .18s ease-out;
+  /* Optimize animations */
+  will-change: width;
+  transform: translateZ(0);
+  -webkit-transform: translateZ(0);
+}
+
+.tg-link::before { 
+  content:""; 
+  position:absolute; 
+  inset:0; 
+  border-radius:inherit; 
+  background: rgba(255,255,255,0.02); 
+  transform: translateX(100%); 
+  transition: transform .18s ease-out; 
+  z-index:0;
+  /* Optimize animations */
+  will-change: transform;
+}
+
+.tg-link .tg-link-icon { 
+  position:absolute; 
+  left:12px; 
+  z-index:1; 
+  display:inline-flex; 
+  align-items:center; 
+  /* Optimize rendering */
+  will-change: transform;
+}
+
+.tg-link .tg-link-title { 
+  display:block; 
+  width:100%; 
+  text-indent:28px; 
+  transform: translateX(100%); 
+  opacity:0; 
+  transition: transform .18s ease-out, opacity .14s ease-out; 
+  z-index:1; 
+  font-size:14px;
+  /* Optimize animations */
+  will-change: transform, opacity;
+}
+
+.tg-link:hover, .tg-link:focus-visible { 
+  width:128px; 
+  outline:none;
+}
+
+.tg-link:hover::before, .tg-link:focus-visible::before, .tg-link:hover .tg-link-title, .tg-link:focus-visible .tg-link-title { 
+  transform: translateX(0); 
+  opacity:1; 
+}
+
+.tg-link.is-active { 
+  width:128px; 
+}
+
+.tg-link.is-active::before { 
+  transform: translateX(0); 
+  background: rgba(255,255,255,0.03); 
+}
+
+.tg-link.is-active .tg-link-title { 
+  transform: translateX(0); 
+  opacity:1; 
+}
 
 /* FAB baseline (scoped) */
-.fab-root { position: fixed; left: 50%; transform: translateX(-50%); bottom: calc(var(--bottom-nav-height, 22px) + 18px); z-index: 60; pointer-events: none; display:flex; flex-direction:column; align-items:center; gap:12px; }
-.fab-button { pointer-events: auto; width:64px; height:64px; border-radius:999px; border:none; display:inline-flex; align-items:center; justify-content:center; background: linear-gradient(180deg,#7c4dff,#6a2be8); box-shadow: 0 20px 48px rgba(6,6,6,0.6), inset 0 -8px 16px rgba(0,0,0,0.2); cursor:pointer; }
+.fab-root { 
+  position: fixed; 
+  left: 50%; 
+  transform: translateX(-50%); 
+  bottom: calc(var(--bottom-nav-height, 22px) + 18px); 
+  z-index: 60; 
+  pointer-events: none; 
+  display:flex; 
+  flex-direction:column; 
+  align-items:center; 
+  gap:12px;
+  /* Add hardware acceleration */
+  transform: translateZ(0);
+  -webkit-transform: translateZ(0);
+  /* Optimize painting */
+  contain: layout style paint;
+}
+
+.fab-button { 
+  pointer-events: auto; 
+  width:64px; 
+  height:64px; 
+  border-radius:999px; 
+  border:none; 
+  display:inline-flex; 
+  align-items:center; 
+  justify-content:center; 
+  background: linear-gradient(180deg,#7c4dff,#6a2be8); 
+  box-shadow: 0 20px 48px rgba(6,6,6,0.6), inset 0 -8px 16px rgba(0,0,0,0.2); 
+  cursor:pointer;
+  /* Add hardware acceleration */
+  transform: translateZ(0);
+  -webkit-transform: translateZ(0);
+  /* Optimize animations */
+  will-change: transform;
+  transition: transform 0.2s ease-out;
+}
+
+.fab-button:active {
+  transform: scale(0.95) translateZ(0);
+  -webkit-transform: scale(0.95) translateZ(0);
+}
 
 /* focus accessibility */
-button:focus-visible { box-shadow: 0 0 0 4px rgba(124,58,237,0.12); outline: none; }
+button:focus-visible { 
+  box-shadow: 0 0 0 4px rgba(124,58,237,0.12); 
+  outline: none; 
+}
 
 /* small screens */
 @media (max-width: 520px) {
-  .fab-button { width:56px; height:56px; }
-  .tg-fab-gap { width: calc(var(--fab-gap-width, 72px)); }
+  .fab-button { 
+    width:56px; 
+    height:56px; 
+  }
+  .tg-fab-gap { 
+    width: calc(var(--fab-gap-width, 72px)); 
+  }
+  
+  /* Optimize for mobile */
+  body {
+    -webkit-tap-highlight-color: transparent;
+  }
+  
+  .tg-link {
+    /* Reduce animation duration on mobile for better performance */
+    transition: width .12s ease-out;
+  }
+  
+  .tg-link::before, .tg-link .tg-link-title {
+    transition: transform .12s ease-out, opacity .1s ease-out;
+  }
 }

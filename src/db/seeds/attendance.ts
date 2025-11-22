@@ -18,6 +18,7 @@ async function main() {
         {
             userId: 3,
             institutionId: 1,
+            tenantId: 1, // Add missing tenantId
             checkIn: createDateTime(5, 8, 45),
             checkOut: createDateTime(5, 17, 30),
             createdAt: createDateTime(5, 8, 45),
@@ -25,6 +26,7 @@ async function main() {
         {
             userId: 4,
             institutionId: 1,
+            tenantId: 1, // Add missing tenantId
             checkIn: createDateTime(5, 8, 50),
             checkOut: createDateTime(5, 17, 15),
             createdAt: createDateTime(5, 8, 50),
@@ -33,6 +35,7 @@ async function main() {
         {
             userId: 5,
             institutionId: 1,
+            tenantId: 1, // Add missing tenantId
             checkIn: createDateTime(4, 9, 0),
             checkOut: createDateTime(4, 17, 45),
             createdAt: createDateTime(4, 9, 0),
@@ -41,6 +44,7 @@ async function main() {
         {
             userId: 3,
             institutionId: 1,
+            tenantId: 1, // Add missing tenantId
             checkIn: createDateTime(3, 8, 40),
             checkOut: createDateTime(3, 17, 20),
             createdAt: createDateTime(3, 8, 40),
@@ -49,6 +53,7 @@ async function main() {
         {
             userId: 4,
             institutionId: 1,
+            tenantId: 1, // Add missing tenantId
             checkIn: createDateTime(2, 8, 55),
             checkOut: createDateTime(2, 17, 30),
             createdAt: createDateTime(2, 8, 55),
@@ -57,6 +62,7 @@ async function main() {
         {
             userId: 3,
             institutionId: 1,
+            tenantId: 1, // Add missing tenantId
             checkIn: createDateTime(1, 8, 40),
             checkOut: null,
             createdAt: createDateTime(1, 8, 40),
@@ -64,6 +70,7 @@ async function main() {
         {
             userId: 5,
             institutionId: 1,
+            tenantId: 1, // Add missing tenantId
             checkIn: createDateTime(1, 8, 55),
             checkOut: null,
             createdAt: createDateTime(1, 8, 55),
@@ -72,6 +79,7 @@ async function main() {
         {
             userId: 5,
             institutionId: 1,
+            tenantId: 1, // Add missing tenantId
             checkIn: createDateTime(0, 8, 50),
             checkOut: null,
             createdAt: createDateTime(0, 8, 50),
@@ -79,6 +87,7 @@ async function main() {
         {
             userId: 3,
             institutionId: 1,
+            tenantId: 1, // Add missing tenantId
             checkIn: createDateTime(0, 8, 45),
             checkOut: null,
             createdAt: createDateTime(0, 8, 45),
@@ -86,13 +95,14 @@ async function main() {
         {
             userId: 4,
             institutionId: 1,
+            tenantId: 1, // Add missing tenantId
             checkIn: createDateTime(0, 9, 0),
             checkOut: null,
             createdAt: createDateTime(0, 9, 0),
         },
     ];
 
-    await db.insert(attendance).values(sampleAttendance);
+    await db.insert(attendance).values(sampleAttendance as any);
     
     console.log('✅ Attendance seeder completed successfully');
 }

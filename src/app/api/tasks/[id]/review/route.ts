@@ -8,9 +8,7 @@ import { tasks } from "@/db/schema";
 import { eq } from "drizzle-orm";
 import { authorizeByPermission, hasRole } from '@/app/api/_lib/rbac';
 
-type ParamsShape = { params: { id: string } } | Promise<{ params: { id: string } }>;
-
-export async function PATCH(req: NextRequest, maybeParams: ParamsShape) {
+export async function PATCH(req: NextRequest, { params }: { params: Promise<{ id: string }> }) {
   try {
     // Authorize user with RBAC - only roles with review:tasks permission can update review status
     const user = await authorizeByPermission(req, 'review:tasks');
@@ -19,8 +17,8 @@ export async function PATCH(req: NextRequest, maybeParams: ParamsShape) {
     }
 
     // Next.js may supply params as a Promise in some versions — await defensively
-    const { params } = (await maybeParams) as { params: { id: string } };
-    const id = Number(params.id);
+    const { id: idString } = await params;
+    const id = Number(idString);
     if (!Number.isInteger(id) || id <= 0) {
       return NextResponse.json({ error: "Invalid task id" }, { status: 400 });
     }

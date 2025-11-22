@@ -4,17 +4,16 @@
 import React from "react";
 import {
   useSortable,
-  UseSortableArguments,
-  defaultAnimateLayoutChanges,
 } from "@dnd-kit/sortable";
 import type { CSS } from "@dnd-kit/utilities";
 
+// Remove the problematic import and type
 type Props = {
   id: string | number;
   columnId?: string;
   children: React.ReactNode;
   className?: string;
-} & Partial<UseSortableArguments>;
+};
 
 export function SortableItem({ id, columnId, children, className }: Props) {
   const {
@@ -26,7 +25,6 @@ export function SortableItem({ id, columnId, children, className }: Props) {
     isDragging,
   } = useSortable({
     id,
-    animateLayoutChanges: (args) => defaultAnimateLayoutChanges(args),
   });
 
   const style: React.CSSProperties & { "--translate-x"?: string; "--translate-y"?: string } = {

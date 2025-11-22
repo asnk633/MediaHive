@@ -92,6 +92,7 @@ export async function POST(request: NextRequest) {
         checkIn,
         checkOut: checkOut || null,
         institutionId,
+        tenantId: 1, // Default tenant ID for now
         createdAt: new Date().toISOString(),
       } as any)
       .returning();

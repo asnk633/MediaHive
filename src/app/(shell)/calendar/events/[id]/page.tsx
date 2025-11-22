@@ -106,4 +106,3 @@ function Linked({ icon, text }: { icon: string; text: string }) {
     </li>
   );
 }
-

@@ -19,7 +19,7 @@ import {
   vipEmbeddings,
   notifications
 } from '@/db/schema';
-import { eq, and, gt, lt, desc, asc } from 'drizzle-orm';
+import { eq, and, gt, lt, desc, asc, count } from 'drizzle-orm';
 
 export async function GET(request: NextRequest) {
   try {
@@ -36,10 +36,10 @@ export async function GET(request: NextRequest) {
     // Get approximate row counts for key tables
     try {
       const tableStats = [
-        { name: 'tasks', query: () => db.select({ count: db.$client.fn.count() }).from(tasks) },
-        { name: 'events', query: () => db.select({ count: db.$client.fn.count() }).from(events) },
-        { name: 'users', query: () => db.select({ count: db.$client.fn.count() }).from(users) },
-        { name: 'auditLog', query: () => db.select({ count: db.$client.fn.count() }).from(auditLog) }
+        { name: 'tasks', query: () => db.select({ count: count() }).from(tasks) },
+        { name: 'events', query: () => db.select({ count: count() }).from(events) },
+        { name: 'users', query: () => db.select({ count: count() }).from(users) },
+        { name: 'auditLog', query: () => db.select({ count: count() }).from(auditLog) }
       ];
       
       for (const tableStat of tableStats) {

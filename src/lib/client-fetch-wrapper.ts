@@ -5,7 +5,7 @@ if (typeof window !== "undefined" && process.env.NODE_ENV !== "production") {
     const FLAG = "__TGMM_FETCH_WRAPPER__";
     if (!(window as any)[FLAG]) {
       const originalFetch = window.fetch.bind(window);
-      window.fetch = (input: RequestInfo, init?: RequestInit) => {
+      window.fetch = (input: RequestInfo | URL, init?: RequestInit) => {
         try {
           const stored = localStorage.getItem("user");
           if (stored) {

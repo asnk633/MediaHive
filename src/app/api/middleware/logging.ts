@@ -2,7 +2,7 @@
 // Middleware to log requests for debugging
 
 import { NextRequest } from 'next/server';
-import { addRequestLog } from '../health/debug/route';
+import { addRequestLog } from '@/lib/request-logger';
 
 /**
  * Logging middleware

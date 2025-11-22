@@ -1,5 +1,6 @@
 "use client";
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useMemo, useCallback } from "react";
+import { useSearchParams } from 'next/navigation';
 
 type Task = {
   id: number;
@@ -13,90 +14,123 @@ type Task = {
 export default function TasksPage() {
   const [tasks, setTasks] = useState<Task[]>([]);
   const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
+  const searchParams = useSearchParams();
+  const filter = searchParams.get('filter') || 'all';
 
-  useEffect(() => {
-    (async () => {
-      try {
-        const res = await fetch("/api/tasks?institutionId=1&limit=500");
-        const body = await res.json();
-        setTasks(body?.data ?? []);
-      } catch (err) {
-        console.error("Failed to load tasks", err);
-      } finally {
-        setLoading(false);
+  // Memoize the fetch function to prevent unnecessary re-renders
+  const fetchTasks = useCallback(async () => {
+    try {
+      setLoading(true);
+      setError(null);
+      
+      // Use smaller limit for better performance
+      const res = await fetch(`/api/tasks?institutionId=1&limit=50&filter=${filter}`, {
+        headers: {
+          'Accept': 'application/json',
+          'Accept-Encoding': 'gzip, deflate, br'
+        }
+      });
+      
+      if (!res.ok) {
+        throw new Error(`Failed to load tasks: ${res.status} ${res.statusText}`);
       }
-    })();
+      
+      const body = await res.json();
+      setTasks(body?.data ?? []);
+    } catch (err) {
+      console.error("Failed to load tasks", err);
+      setError(err instanceof Error ? err.message : "Failed to load tasks");
+    } finally {
+      setLoading(false);
+    }
+  }, [filter]);
+
+  // Use effect with proper dependencies
+  useEffect(() => {
+    fetchTasks();
+  }, [fetchTasks]);
+
+  // Memoize the task list to prevent unnecessary re-renders
+  const taskList = useMemo(() => tasks, [tasks]);
+
+  // Memoize the change handler
+  const handleChange = useCallback((taskId: number, value: string) => {
+    setTasks((prev) => prev.map((p) => (p.id === taskId ? { ...p, reviewStatus: value } : p)));
   }, []);
 
-  if (loading) return <div>Loading…</div>;
-  if (!tasks.length) return <div>No tasks here.</div>;
+  // Memoize the save function
+  const saveReview = useCallback(async (task: Task) => {
+    // canonical backend values expected: 'pending', 'approved', 'rejected'
+    const payload = { reviewStatus: task.reviewStatus ?? "pending" };
+    try {
+      const res = await fetch(`/api/tasks/${task.id}/review`, {
+        method: "PATCH",
+        headers: { 
+          "Content-Type": "application/json",
+          "Accept-Encoding": "gzip, deflate, br"
+        },
+        body: JSON.stringify(payload),
+      });
+      const body = await res.json().catch(() => ({}));
+      if (!res.ok) {
+        // Prefer app toast API if available. Example: toast.error(...)
+        alert(`Failed to update reviewStatus: ${body?.error ?? res.statusText}`);
+      } else {
+        // Example: toast.success("Review status updated")
+        alert("Review status updated");
+      }
+    } catch (err) {
+      alert(`Failed to update review status: ${String(err)}`);
+    }
+  }, []);
+
+  if (loading) return <div className="p-6">Loading…</div>;
+  if (error) return <div className="p-6 text-red-500">Error: {error}</div>;
+  if (!taskList.length) return <div className="p-6">No tasks here.</div>;
 
   return (
-    <div style={{ padding: 24 }}>
-      <h1>Task Review Dashboard</h1>
+    <div className="p-6">
+      <h1 className="text-2xl font-bold mb-6">Task Review Dashboard</h1>
 
-      {tasks.map((t) => {
-        const handleChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
-          const val = e.target.value;
-          setTasks((prev) => prev.map((p) => (p.id === t.id ? { ...p, reviewStatus: val } : p)));
-        };
-
-        const saveReview = async () => {
-          // canonical backend values expected: 'pending', 'approved', 'rejected'
-          const payload = { reviewStatus: t.reviewStatus ?? "pending" };
-          try {
-            const res = await fetch(`/api/tasks/${t.id}/review`, {
-              method: "PATCH",
-              headers: { "Content-Type": "application/json" },
-              body: JSON.stringify(payload),
-            });
-            const body = await res.json().catch(() => ({}));
-            if (!res.ok) {
-              // Prefer app toast API if available. Example: toast.error(...)
-              alert(`Failed to update reviewStatus: ${body?.error ?? res.statusText}`);
-            } else {
-              // Example: toast.success("Review status updated")
-              alert("Review status updated");
-            }
-          } catch (err) {
-            alert(`Failed to update review status: ${String(err)}`);
-          }
-        };
-
-        return (
+      <div className="space-y-4">
+        {taskList.map((task) => (
           <div
-            key={t.id}
-            className="task-row"
-            data-task-id={t.id}
-            style={{
-              border: "1px solid rgba(255,255,255,0.06)",
-              padding: 18,
-              marginBottom: 16,
-              borderRadius: 6,
-            }}
+            key={task.id}
+            className="task-row border border-white/10 p-4 rounded-lg bg-black/20 backdrop-blur-sm"
+            data-task-id={task.id}
           >
-            <h3 style={{ margin: 0 }}>{t.title}</h3>
-            {t.description && <p style={{ marginTop: 8 }}>{t.description}</p>}
-            <div style={{ color: "#999", fontSize: 13 }}>
-              <span>Status: {t.status ?? "—"}</span>
-              <span style={{ marginLeft: 12 }}>Priority: {t.priority ?? "—"}</span>
+            <h3 className="text-lg font-semibold m-0">{task.title}</h3>
+            {task.description && <p className="mt-2 text-gray-300">{task.description}</p>}
+            <div className="text-gray-500 text-sm mt-2">
+              <span>Status: {task.status ?? "—"}</span>
+              <span className="ml-3">Priority: {task.priority ?? "—"}</span>
             </div>
 
-            <div style={{ float: "right", display: "flex", gap: 8, alignItems: "center", marginTop: 8 }}>
-              <select value={t.reviewStatus ?? "pending"} onChange={handleChange} aria-label="Review status">
+            <div className="flex items-center gap-2 mt-4 float-right">
+              <select 
+                value={task.reviewStatus ?? "pending"} 
+                onChange={(e) => handleChange(task.id, e.target.value)}
+                className="bg-black/30 border border-white/20 rounded px-2 py-1 text-sm"
+                aria-label="Review status"
+              >
                 <option value="pending">Pending</option>
                 <option value="approved">Approved</option>
                 <option value="rejected">Rejected</option>
               </select>
 
-              <button onClick={saveReview} aria-label={`Save review for task ${t.id}`}>
+              <button 
+                onClick={() => saveReview(task)}
+                className="bg-purple-600 hover:bg-purple-700 text-white px-3 py-1 rounded text-sm transition-colors"
+                aria-label={`Save review for task ${task.id}`}
+              >
                 Save
               </button>
             </div>
-            <div style={{ clear: "both" }} />
+            <div className="clear-both" />
           </div>
-        );
-      })}
+        ))}
+      </div>
     </div>
   );
 }

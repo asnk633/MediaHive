@@ -12,7 +12,7 @@ import path from 'path';
  */
 export async function POST(req: NextRequest) {
   try {
-    const user = getUserFromRequest(req);
+    const user = await getUserFromRequest(req);
     if (!user) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
@@ -78,6 +78,7 @@ export async function POST(req: NextRequest) {
         fileType: file.type || 'application/octet-stream',
         fileSize: file.size,
         uploadedById: user.id,
+        tenantId: user.tenantId,
         createdAt: now,
       })
       .returning();
@@ -98,7 +99,7 @@ export async function POST(req: NextRequest) {
  */
 export async function GET(req: NextRequest) {
   try {
-    const user = getUserFromRequest(req);
+    const user = await getUserFromRequest(req);
     if (!user) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }

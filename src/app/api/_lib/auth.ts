@@ -2,39 +2,24 @@
 // RBAC helpers for API routes
 
 import { NextRequest } from 'next/server';
-import { UserRole } from '@/types';
+import { TaskStatus } from '@/types';
 import { loggingMiddleware } from '../middleware/logging';
-
-export interface AuthUser {
-  id: number;
-  email: string;
-  fullName: string;
-  role: UserRole;
-  institutionId: number;
-  tenantId: number; // Add tenantId for multi-tenant support
-}
+import { getUserFromRequest as getSessionUser } from './session';
+import { AuthUser, UserRole } from './types';
 
 /**
  * Extract user from request headers or session cookie
- * Prefers session cookie, falls back to x-user-data header
+ * Prefers JWT tokens, falls back to legacy session cookie, then x-user-data header
  */
 export async function getUserFromRequest(req: NextRequest): Promise<AuthUser | null> {
   try {
     // Log the request for debugging
     await loggingMiddleware(req);
     
-    // First, try to get user from session cookie (server-side)
-    const sessionToken = req.cookies.get('session_token')?.value;
-    
-    if (sessionToken) {
-      // In a real implementation, you would validate the session token
-      // For this demo, we'll just parse it as JSON (not secure for production)
-      try {
-        const user = JSON.parse(decodeURIComponent(sessionToken)) as AuthUser;
-        return user;
-      } catch {
-        // If session token is invalid, continue to check x-user-data header
-      }
+    // Use our enhanced session management
+    const user = await getSessionUser(req);
+    if (user) {
+      return user;
     }
     
     // Fallback to x-user-data header (for backward compatibility)
@@ -71,4 +56,40 @@ export function hasRole(user: AuthUser | null, roles: UserRole[]): boolean {
 export function canModify(user: AuthUser | null, creatorId: number): boolean {
   if (!user) return false;
   return isAdmin(user) || user.id === creatorId;
+}
+
+/**
+ * Check if user can change task status based on role and current status
+ */
+export function canChangeTaskStatus(
+  user: AuthUser | null,
+  currentStatus: TaskStatus,
+  newStatus: TaskStatus
+): boolean {
+  if (!user) return false;
+
+  // Admins can change to any status
+  if (isAdmin(user)) {
+    return true;
+  }
+
+  // Team members can move tasks forward in the workflow
+  if (user.role === 'team') {
+    const statusOrder: Record<TaskStatus, number> = {
+      todo: 0,
+      in_progress: 1,
+      review: 2,
+      done: 3,
+    };
+
+    // Allow moving forward or staying in same status
+    return statusOrder[newStatus] >= statusOrder[currentStatus];
+  }
+
+  // Guests can only move their own tasks to in_progress
+  if (user.role === 'guest') {
+    return currentStatus === 'todo' && newStatus === 'in_progress';
+  }
+
+  return false;
 }

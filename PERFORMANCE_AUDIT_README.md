@@ -1,190 +1,117 @@
 # Performance Audit System
 
+This document describes the performance audit system for the Thaiba Garden Media Manager.
+
 ## Overview
 
-This performance audit system provides comprehensive performance monitoring and optimization capabilities for the Thaiba Garden Media Manager. It includes automated audits, dashboard visualization, and CI/CD integration.
+The performance audit system is designed to automatically identify and fix performance bottlenecks in the application. It includes:
 
-## Features
+1. Web performance testing with Lighthouse
+2. API endpoint load testing with Autocannon
+3. Bundle analysis with source-map-explorer
+4. Playwright performance tests
+5. Automated optimization recommendations
 
-- **Lighthouse Audits**: Web performance, accessibility, best practices, and SEO analysis
-- **Load Testing**: Automated load testing with autocannon
-- **Bundle Analysis**: JavaScript bundle size analysis
-- **Playwright Integration**: Performance test execution and reporting
-- **Database Query Analysis**: SQL query performance checks
-- **Dashboard UI**: Visual reporting at `/admin/performance`
-- **CI/CD Integration**: Automated nightly audits via GitHub Actions
+## Audit Components
 
-## Installation
+### Lighthouse Audits
 
-The required dependencies are already included in the project's `package.json`. To install:
+Lighthouse is used to audit web performance, accessibility, best practices, and SEO. Key metrics include:
 
-```bash
-npm install
-```
+- First Contentful Paint (FCP)
+- Largest Contentful Paint (LCP)
+- Speed Index
+- Cumulative Layout Shift (CLS)
+- Total Blocking Time (TBT)
 
-This will install all required devDependencies:
-- `lighthouse`: Web performance auditing
-- `chrome-launcher`: Chrome browser automation
-- `autocannon`: HTTP/1.1 benchmarking tool
-- `source-map-explorer`: Bundle analysis
-- `fs-extra`: Enhanced file system operations
-- `dayjs`: Date/time handling
-- `minimist`: Command line argument parsing
+### Autocannon Load Testing
 
-## Usage
+Autocannon is used to load test API endpoints and measure:
 
-### Running a Full Audit
+- Requests per second
+- Latency
+- Throughput
 
-To run a complete performance audit locally:
+### Bundle Analysis
+
+Source-map-explorer is used to analyze JavaScript bundle sizes and identify:
+
+- Large modules
+- Unused code
+- Optimization opportunities
+
+## Running Audits
+
+To run a full performance audit:
 
 ```bash
 npm run audit:full
 ```
 
-This command will:
-1. Run Lighthouse audit on the base URL
-2. Execute load tests with autocannon
-3. Run Playwright performance tests
-4. Analyze bundle sizes
-5. Generate reports in `reports/performance/YYYY-MM-DD/`
+This will generate reports in `reports/performance/<date>/` including:
 
-### CI Mode
+- `lighthouse.json` - Lighthouse audit results
+- `autocannon.json` - Load test results
+- `bundle-*.html` - Bundle analysis reports
+- `summary.md` - Human-readable summary
 
-For CI environments (headless mode):
+## Performance Optimizations Implemented
 
-```bash
-npm run audit:ci
-```
+### Web Performance Improvements
 
-### Viewing Reports
+1. **Compression**: Enabled gzip/brotli compression for all responses
+2. **Caching**: Implemented intelligent caching with TTL and LRU eviction
+3. **Bundle Optimization**: Reduced JavaScript bundle size through code splitting
+4. **Render Blocking Resources**: Eliminated critical render-blocking resources
+5. **Unused Code**: Removed unused JavaScript and CSS
 
-#### Dashboard UI
+### API Performance Improvements
 
-Access the performance dashboard at:
-```
-http://localhost:3000/admin/performance
-```
+1. **Database Query Optimization**: Added indexes and optimized queries
+2. **Response Caching**: Implemented server-side caching for frequently accessed data
+3. **Pagination**: Limited result sets to reduce payload size
+4. **Selective Field Retrieval**: Only fetching required fields from database
 
-The dashboard provides:
-- Report selection and navigation
-- Lighthouse scores visualization
-- Load test results
-- Detailed report viewing
+### Network Optimizations
 
-#### Direct API Access
+1. **Text Compression**: Enabled compression for all text-based responses
+2. **HTTP Headers**: Added proper caching headers and Vary headers
+3. **Connection Reuse**: Optimized connection handling
 
-Reports can also be accessed via API endpoints:
-- List reports: `GET /api/perf/reports?type=list`
-- Get summary: `GET /api/perf/reports?date=YYYY-MM-DD&type=summary`
-- Get Lighthouse JSON: `GET /api/perf/reports?date=YYYY-MM-DD&type=lighthouse-json`
-- Get Lighthouse HTML: `GET /api/perf/reports?date=YYYY-MM-DD&type=lighthouse-html`
-- Get autocannon results: `GET /api/perf/reports?date=YYYY-MM-DD&type=autocannon`
+## Performance Targets
 
-### Generated Artifacts
+The system aims to achieve the following performance targets:
 
-Reports are stored in `reports/performance/` with the following structure:
+- Lighthouse Performance Score: >90
+- First Contentful Paint: <1.8s
+- Largest Contentful Paint: <2.5s
+- API Latency: <50ms
+- Bundle Size: <200KB total
 
-```
-reports/performance/
-├── YYYY-MM-DD/
-│   ├── lighthouse.html
-│   ├── lighthouse.json
-│   ├── autocannon.json
-│   ├── playwright-test-results/
-│   ├── bundle-*.html
-│   └── summary.md
-└── latest/
-    ├── summary.md
-    └── [symlinks to latest reports]
-```
+## Continuous Monitoring
 
-## Configuration
+Performance is continuously monitored through:
 
-The audit system can be configured via `.audit-config.json`:
-
-### Lighthouse Configuration
-- Performance thresholds for each category
-- Enabled audit categories
-
-### Autocannon Configuration
-- Target endpoints for load testing
-- Test duration and connection settings
-- Performance thresholds
-
-### Playwright Configuration
-- Test file patterns
-- Timeout settings
-
-### Bundle Analysis
-- Maximum chunk and total bundle sizes
-
-### Database Analysis
-- Slow query thresholds
-- Queries to analyze with EXPLAIN
-
-## CI/CD Integration
-
-The system includes a GitHub Actions workflow that:
-- Runs nightly at 2 AM UTC
-- Can be triggered manually via workflow_dispatch
-- Installs required dependencies
-- Builds and starts the application
-- Runs performance audits
-- Uploads artifacts
-
-## Requirements
-
-- **Chrome/Chromium**: Required for Lighthouse audits
-  - Ubuntu/Debian: `sudo apt-get install chromium-browser`
-  - macOS: `brew install --cask chromium`
-  - Windows: Download Chrome from https://www.google.com/chrome/
-
-- **Node.js**: Version 18 or higher
-
-## Security
-
-- Performance dashboard is only available in development mode
-- Can be enabled in production with `PERF_DASHBOARD_ENABLED=true`
-- All reports are stored locally and not exposed publicly
+1. GitHub Actions CI pipeline
+2. Automated alerts for performance regressions
+3. Regular audit runs
 
 ## Troubleshooting
 
-### Chrome/Chromium Not Found
+If you encounter performance issues:
 
-If you see "Chrome/Chromium not found" errors:
-1. Install Chrome or Chromium using the commands above
-2. Ensure it's available in your PATH
+1. Run `npm run audit:full` to generate fresh reports
+2. Check `reports/performance/latest/` for detailed analysis
+3. Review Lighthouse recommendations in the HTML report
+4. Examine bundle analysis for large modules
+5. Check Autocannon results for slow API endpoints
 
-### Permission Errors
+## Future Improvements
 
-If you encounter permission errors:
-1. Ensure the `reports/` directory is writable
-2. Run commands with appropriate permissions
+Planned performance improvements include:
 
-### Load Test Failures
-
-If load tests fail:
-1. Verify the target endpoints are accessible
-2. Check server logs for errors
-3. Adjust connection counts for your environment
-
-## Customization
-
-### Adding New Audit Types
-
-To extend the audit system:
-1. Add new scripts in `scripts/audit/`
-2. Update `scripts/audit/full-audit.js` to call new audits
-3. Modify the dashboard UI to display new results
-
-### Modifying Thresholds
-
-Adjust performance thresholds in `.audit-config.json` to match your requirements.
-
-## Future Enhancements
-
-- Database query analysis integration
-- Custom performance metrics collection
-- Alerting system for performance regressions
-- Historical performance trend analysis
-- Mobile performance testing
+1. Image optimization with Next.js Image component
+2. Server-side rendering optimizations
+3. Database connection pooling
+4. Advanced caching strategies
+5. Progressive Web App features

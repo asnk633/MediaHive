@@ -15,7 +15,7 @@ export async function POST(
   context: { params: Promise<{ id: string }> }
 ) {
   try {
-    const user = getUserFromRequest(req);
+    const user = await getUserFromRequest(req);
     if (!user) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
@@ -42,7 +42,7 @@ export async function POST(
     }
 
     // Validate transition based on role
-    if (!canChangeTaskStatus(user, task.status, newStatus)) {
+    if (!canChangeTaskStatus(user, task.status as TaskStatus, newStatus)) {
       return NextResponse.json(
         { error: 'You do not have permission to make this status change' },
         { status: 403 }

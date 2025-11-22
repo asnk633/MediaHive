@@ -10,6 +10,7 @@ async function main() {
             role: 'admin',
             avatarUrl: null,
             institutionId: 1,
+            tenantId: 1, // Add missing tenantId
             createdAt: new Date().toISOString(),
             updatedAt: new Date().toISOString(),
         },
@@ -20,6 +21,7 @@ async function main() {
             role: 'admin',
             avatarUrl: null,
             institutionId: 1,
+            tenantId: 1, // Add missing tenantId
             createdAt: new Date().toISOString(),
             updatedAt: new Date().toISOString(),
         },
@@ -30,6 +32,7 @@ async function main() {
             role: 'team',
             avatarUrl: null,
             institutionId: 1,
+            tenantId: 1, // Add missing tenantId
             createdAt: new Date().toISOString(),
             updatedAt: new Date().toISOString(),
         },
@@ -40,6 +43,7 @@ async function main() {
             role: 'team',
             avatarUrl: null,
             institutionId: 1,
+            tenantId: 1, // Add missing tenantId
             createdAt: new Date().toISOString(),
             updatedAt: new Date().toISOString(),
         },
@@ -50,6 +54,7 @@ async function main() {
             role: 'team',
             avatarUrl: null,
             institutionId: 1,
+            tenantId: 1, // Add missing tenantId
             createdAt: new Date().toISOString(),
             updatedAt: new Date().toISOString(),
         },
@@ -60,6 +65,7 @@ async function main() {
             role: 'guest',
             avatarUrl: null,
             institutionId: 1,
+            tenantId: 1, // Add missing tenantId
             createdAt: new Date().toISOString(),
             updatedAt: new Date().toISOString(),
         },
@@ -70,12 +76,13 @@ async function main() {
             role: 'guest',
             avatarUrl: null,
             institutionId: 1,
+            tenantId: 1, // Add missing tenantId
             createdAt: new Date().toISOString(),
             updatedAt: new Date().toISOString(),
         },
     ];
 
-    await db.insert(users).values(sampleUsers);
+    await db.insert(users).values(sampleUsers as any);
     
     console.log('✅ Users seeder completed successfully');
 }

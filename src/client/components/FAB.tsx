@@ -1,11 +1,19 @@
 'use client';
 
 import React, { useState, useCallback } from 'react';
-import { Plus, ListTodo, CalendarPlus, X, BellPlus } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { cn } from '@/lib/utils';
 import { useRouter } from 'next/navigation';
 import { useAuth } from '@/contexts/AuthContext';
+
+// Dynamic imports for icons to reduce bundle size
+import dynamic from 'next/dynamic';
+
+const Plus = dynamic(() => import('lucide-react').then(mod => mod.Plus), { ssr: false });
+const ListTodo = dynamic(() => import('lucide-react').then(mod => mod.ListTodo), { ssr: false });
+const CalendarPlus = dynamic(() => import('lucide-react').then(mod => mod.CalendarPlus), { ssr: false });
+const X = dynamic(() => import('lucide-react').then(mod => mod.X), { ssr: false });
+const BellPlus = dynamic(() => import('lucide-react').then(mod => mod.BellPlus), { ssr: false });
 
 export function FAB() {
   const [isOpen, setIsOpen] = useState(false);

@@ -37,5 +37,4 @@ export default function ShellLayout({ children }: { children: React.ReactNode })
         </ClientDataProvider>
       </ToastProvider>
     </RoleProvider>
-  );
-}
+  }

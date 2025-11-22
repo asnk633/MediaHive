@@ -1,5 +1,6 @@
 // src/app/layout.tsx
 import React from "react";
+import { Inter } from "next/font/google";
 import BottomNav from "@/components/BottomNav";
 import { ClientFAB as FAB } from "@/components/ClientFAB";
 import { ToastProvider } from "@/components/ToastProvider";
@@ -9,6 +10,12 @@ import { RoleProvider } from "@/app/(shell)/RoleContext";
 import { AuthProvider } from "@/contexts/AuthContext";
 import { ClientOfflineStatusIndicator as OfflineStatusIndicator } from "@/components/ClientOfflineStatusIndicator";
 
+// Initialize Inter font
+const inter = Inter({
+  subsets: ['latin'],
+  variable: '--font-inter',
+});
+
 // 🎯 Ensure globals.css is imported here
 import './globals.css';
 
@@ -16,13 +23,20 @@ import './globals.css';
 export const metadata = {
   title: 'Thaiba Garden Media Manager',
   description: 'Media management system for Thaiba Garden',
-  viewport: 'width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no',
-  themeColor: '#000000',
   appleMobileWebAppCapable: 'yes',
   appleMobileWebAppStatusBarStyle: 'black-translucent',
   // PWA metadata
   manifest: '/manifest.json',
 };
+
+export const viewport = {
+  width: 'device-width',
+  initialScale: 1,
+  maximumScale: 1,
+  userScalable: false,
+};
+
+export const themeColor = '#000000';
 
 export default function ShellLayout({ children }: { children: React.ReactNode }) {
   return (
@@ -34,12 +48,12 @@ export default function ShellLayout({ children }: { children: React.ReactNode })
             <html lang="en">
               <head>
                 {/* Preload critical resources */}
-                <link rel="preload" href="/fonts/inter-var-latin.woff2" as="font" type="font/woff2" crossOrigin="anonymous" />
-                <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no" />
+
+
                 
                 {/* PWA meta tags */}
                 <link rel="manifest" href="/manifest.json" />
-                <meta name="theme-color" content="#000000" />
+
                 <meta name="apple-mobile-web-app-capable" content="yes" />
                 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
                 <link rel="apple-touch-icon" href="/apple-touch-icon.png" />
@@ -61,7 +75,7 @@ export default function ShellLayout({ children }: { children: React.ReactNode })
                   `
                 }} />
               </head>
-              <body className="min-h-screen bg-black text-white">
+              <body className={`${inter.variable} min-h-screen bg-black text-white font-sans`}>
                 <main className="pb-24 pt-4">{children}</main>
 
                 {/* Offline status indicator */}

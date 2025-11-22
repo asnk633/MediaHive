@@ -3,6 +3,7 @@
 
 import { hasRole, hasPermission } from './rbac';
 import { AuthUser } from './auth';
+import { assertEqual } from './test-utils/asserts';
 
 // Mock user objects for testing
 const mockAdminUser: AuthUser = {
@@ -42,12 +43,7 @@ function test(description: string, fn: () => void) {
   }
 }
 
-// Simple assertion function
-function assertEqual(actual: any, expected: any, message: string) {
-  if (actual !== expected) {
-    throw new Error(`${message} - Expected: ${expected}, Actual: ${actual}`);
-  }
-}
+
 
 // Test RBAC for user management endpoints
 test('Admin user can manage users', () => {

@@ -7,6 +7,8 @@ import { loggingMiddleware } from '../middleware/logging';
 import { getUserFromRequest as getSessionUser } from './session';
 import { AuthUser, UserRole } from './types';
 
+export type { AuthUser };
+
 /**
  * Extract user from request headers or session cookie
  * Prefers JWT tokens, falls back to legacy session cookie, then x-user-data header

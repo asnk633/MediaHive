@@ -5,7 +5,7 @@ import BottomNav from "@/components/BottomNav";
 import { ToastProvider } from "@/components/ToastProvider";
 import { ClientDataProvider } from "./ClientDataContext";
 import { RoleProvider } from "./RoleContext";
-import { FAB } from "@/components/FAB";
+import { FAB } from "@/client/components/FAB";
 import { initPWA } from "@/lib/init-pwa";
 
 export default function ShellLayout({ children }: { children: React.ReactNode }) {

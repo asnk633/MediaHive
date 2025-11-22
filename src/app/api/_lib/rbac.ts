@@ -55,7 +55,12 @@ export function hasRole(user: AuthUser | null, roles: UserRole[]): boolean {
 export function hasPermission(user: AuthUser | null, permission: Permission): boolean {
   if (!user) return false;
   
-  const userPermissions = ROLE_PERMISSIONS[user.role] || [];
+  // Type guard to ensure user.role is a valid UserRole
+  if (!(user.role in ROLE_PERMISSIONS)) {
+    return false;
+  }
+  
+  const userPermissions = ROLE_PERMISSIONS[user.role as UserRole] || [];
   return userPermissions.includes(permission);
 }
 

@@ -2,7 +2,8 @@ import { NextRequest, NextResponse } from 'next/server';
 import { db } from '@/db';
 import { tasks } from '@/db/schema';
 import { eq, and, desc, like, SQL, count } from 'drizzle-orm';
-import { authorizeByPermission, hasRole } from '../_lib/rbac';
+import { authorize } from '../_lib/rbac';
+import { hasRole } from '@/lib/permissions';
 import { TaskStatus, TaskPriority } from '@/types';
 import { cache } from '@/lib/cache/index';
 import { validateSchema, createTaskSchema, updateTaskSchema } from '@/lib/validation';
@@ -36,11 +37,11 @@ const performanceTracker = {
  */
 export async function GET(req: NextRequest) {
   const perfStart = performanceTracker.start('GET /api/tasks');
-  
+
   try {
     // Authorize user with RBAC - all roles can read tasks
     const authStart = performanceTracker.start('Authorization');
-    const user = await authorizeByPermission(req, 'read:tasks');
+    const user = await authorize(req, 'read:tasks');
     if (!user) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
@@ -55,14 +56,14 @@ export async function GET(req: NextRequest) {
 
     // Create cache key
     const cacheKey = `tasks:${user.institutionId}:${filter}:${search}:${page}:${limit}`;
-    
+
     // Try to get from cache first
     const cacheStart = performanceTracker.start('Cache lookup');
     const cached = cache.get(cacheKey);
     if (cached) {
       performanceTracker.end('Cache lookup', cacheStart);
       performanceTracker.end('GET /api/tasks', perfStart);
-      return NextResponse.json(cached, { 
+      return NextResponse.json(cached, {
         status: 200,
         headers: {
           'Content-Type': 'application/json',
@@ -97,7 +98,7 @@ export async function GET(req: NextRequest) {
       .select({ count: count() })
       .from(tasks)
       .where(and(...conditions));
-    
+
     const totalCount = totalCountResult.count;
     performanceTracker.end('Count query', countStart);
 
@@ -125,23 +126,23 @@ export async function GET(req: NextRequest) {
       .offset(offset);
     performanceTracker.end('Main query', queryStart);
 
-    const response = { 
-      data: result, 
-      pagination: { 
-        page, 
-        limit, 
+    const response = {
+      data: result,
+      pagination: {
+        page,
+        limit,
         total: totalCount,
         totalPages: Math.ceil(totalCount / limit)
-      } 
+      }
     };
-    
+
     // Cache the response for 30 seconds
     const cacheSetStart = performanceTracker.start('Cache set');
     cache.set(cacheKey, response, 30);
     performanceTracker.end('Cache set', cacheSetStart);
-    
+
     performanceTracker.end('GET /api/tasks', perfStart);
-    return NextResponse.json(response, { 
+    return NextResponse.json(response, {
       status: 200,
       headers: {
         'Content-Type': 'application/json',
@@ -166,11 +167,11 @@ export async function GET(req: NextRequest) {
  */
 export async function POST(req: NextRequest) {
   const perfStart = performanceTracker.start('POST /api/tasks');
-  
+
   try {
     // Authorize user with RBAC - only roles with write:tasks permission can create tasks
     const authStart = performanceTracker.start('Authorization');
-    const user = await authorizeByPermission(req, 'write:tasks');
+    const user = await authorize(req, 'create:tasks');
     if (!user) {
       performanceTracker.end('Authorization', authStart);
       performanceTracker.end('POST /api/tasks', perfStart);
@@ -239,7 +240,7 @@ export async function POST(req: NextRequest) {
     performanceTracker.end('Cache invalidation', cacheInvalidateStart);
 
     performanceTracker.end('POST /api/tasks', perfStart);
-    return NextResponse.json({ data: newTask }, { 
+    return NextResponse.json({ data: newTask }, {
       status: 201,
       headers: {
         'Content-Type': 'application/json',
@@ -255,7 +256,7 @@ export async function POST(req: NextRequest) {
         { status: 400 }
       );
     }
-    
+
     console.error('[POST /api/tasks]', error);
     performanceTracker.end('POST /api/tasks', perfStart);
     return NextResponse.json(
@@ -280,11 +281,11 @@ export async function PUT(req: NextRequest) {
  */
 export async function DELETE(req: NextRequest) {
   const perfStart = performanceTracker.start('DELETE /api/tasks');
-  
+
   try {
     // Authorize user with RBAC - only roles with write:tasks permission can delete tasks
     const authStart = performanceTracker.start('Authorization');
-    const user = await authorizeByPermission(req, 'write:tasks');
+    const user = await authorize(req, 'delete:tasks');
     if (!user) {
       performanceTracker.end('Authorization', authStart);
       performanceTracker.end('DELETE /api/tasks', perfStart);
@@ -293,7 +294,7 @@ export async function DELETE(req: NextRequest) {
     performanceTracker.end('Authorization', authStart);
 
     const body = await req.json();
-    
+
     // Validate task ID
     const idSchema = z.number().int().positive();
     try {
@@ -302,7 +303,7 @@ export async function DELETE(req: NextRequest) {
       performanceTracker.end('DELETE /api/tasks', perfStart);
       return NextResponse.json({ error: 'Valid task ID required' }, { status: 400 });
     }
-    
+
     const taskId = body.id;
 
     // Fetch task to check ownership
@@ -331,7 +332,7 @@ export async function DELETE(req: NextRequest) {
     performanceTracker.end('Cache invalidation', cacheInvalidateStart);
 
     performanceTracker.end('DELETE /api/tasks', perfStart);
-    return NextResponse.json({ success: true }, { 
+    return NextResponse.json({ success: true }, {
       status: 200,
       headers: {
         'Content-Type': 'application/json',
@@ -347,7 +348,7 @@ export async function DELETE(req: NextRequest) {
         { status: 400 }
       );
     }
-    
+
     console.error('[DELETE /api/tasks]', error);
     performanceTracker.end('DELETE /api/tasks', perfStart);
     return NextResponse.json(

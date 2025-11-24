@@ -1,6 +1,9 @@
 "use client";
 import React, { useEffect, useState, useMemo, useCallback } from "react";
 import { useSearchParams } from 'next/navigation';
+import { Trash2 } from "lucide-react";
+import { usePermission } from "@/hooks/usePermission";
+import { useRole } from "@/app/(shell)/RoleContext";
 
 type Task = {
   id: number;
@@ -17,25 +20,28 @@ export default function TasksPage() {
   const [error, setError] = useState<string | null>(null);
   const searchParams = useSearchParams();
   const filter = searchParams.get('filter') || 'all';
+  const { can, role } = usePermission();
+  const { user } = useRole();
 
   // Memoize the fetch function to prevent unnecessary re-renders
   const fetchTasks = useCallback(async () => {
     try {
       setLoading(true);
       setError(null);
-      
+
       // Use smaller limit for better performance
       const res = await fetch(`/api/tasks?institutionId=1&limit=50&filter=${filter}`, {
         headers: {
           'Accept': 'application/json',
-          'Accept-Encoding': 'gzip, deflate, br'
+          'Accept-Encoding': 'gzip, deflate, br',
+          'x-user-id': user?.id ? String(user.id) : '1'
         }
       });
-      
+
       if (!res.ok) {
         throw new Error(`Failed to load tasks: ${res.status} ${res.statusText}`);
       }
-      
+
       const body = await res.json();
       setTasks(body?.data ?? []);
     } catch (err) {
@@ -66,7 +72,7 @@ export default function TasksPage() {
     try {
       const res = await fetch(`/api/tasks/${task.id}/review`, {
         method: "PATCH",
-        headers: { 
+        headers: {
           "Content-Type": "application/json",
           "Accept-Encoding": "gzip, deflate, br"
         },
@@ -85,52 +91,78 @@ export default function TasksPage() {
     }
   }, []);
 
-  if (loading) return <div className="p-6">Loading…</div>;
-  if (error) return <div className="p-6 text-red-500">Error: {error}</div>;
-  if (!taskList.length) return <div className="p-6">No tasks here.</div>;
-
   return (
     <div className="p-6">
-      <h1 className="text-2xl font-bold mb-6">Task Review Dashboard</h1>
+      <h1 className="text-2xl font-bold mb-6">
+        Task Review Dashboard
+      </h1>
 
-      <div className="space-y-4">
-        {taskList.map((task) => (
-          <div
-            key={task.id}
-            className="task-row border border-white/10 p-4 rounded-lg bg-black/20 backdrop-blur-sm"
-            data-task-id={task.id}
-          >
-            <h3 className="text-lg font-semibold m-0">{task.title}</h3>
-            {task.description && <p className="mt-2 text-gray-300">{task.description}</p>}
-            <div className="text-gray-500 text-sm mt-2">
-              <span>Status: {task.status ?? "—"}</span>
-              <span className="ml-3">Priority: {task.priority ?? "—"}</span>
+      {loading && <div>Loading…</div>}
+      {error && <div className="text-red-500">Error: {error}</div>}
+      {!loading && !error && !taskList.length && <div>No tasks here.</div>}
+
+      {!loading && !error && taskList.length > 0 && (
+        <div className="space-y-4">
+          {taskList.map((task) => (
+            <div
+              key={task.id}
+              className="task-row border border-white/10 p-4 rounded-lg bg-black/20 backdrop-blur-sm relative"
+              data-task-id={task.id}
+            >
+              <h3 className="text-lg font-semibold m-0">{task.title}</h3>
+              {task.description && <p className="mt-2 text-gray-300">{task.description}</p>}
+              <div className="text-gray-500 text-sm mt-2">
+                <span>Status: {task.status ?? "—"}</span>
+                <span className="ml-3">Priority: {task.priority ?? "—"}</span>
+              </div>
+
+              {/* Only Admin can see/edit review status */}
+              {role === 'admin' && (
+                <div className="flex items-center gap-2 mt-4 float-right">
+                  <select
+                    value={task.reviewStatus ?? "pending"}
+                    onChange={(e) => handleChange(task.id, e.target.value)}
+                    className="bg-black/30 border border-white/20 rounded px-2 py-1 text-sm"
+                    aria-label="Review status"
+                  >
+                    <option value="pending">Pending</option>
+                    <option value="approved">Approved</option>
+                    <option value="rejected">Rejected</option>
+                  </select>
+
+                  <button
+                    onClick={() => saveReview(task)}
+                    className="bg-purple-600 hover:bg-purple-700 text-white px-3 py-1 rounded text-sm transition-colors"
+                    aria-label={`Save review for task ${task.id}`}
+                  >
+                    Save
+                  </button>
+                </div>
+              )}
+
+              {/* Delete Button for Admin */}
+              {can('delete:tasks') && (
+                <button
+                  onClick={() => {
+                    if (confirm('Delete task?')) {
+                      // Call delete API
+                      fetch(`/api/tasks/${task.id}?institutionId=1`, {
+                        method: 'DELETE',
+                        headers: { 'x-user-id': user?.id ? String(user.id) : '1' }
+                      }).then(() => setTasks(prev => prev.filter(t => t.id !== task.id)));
+                    }
+                  }}
+                  className="absolute top-4 right-4 text-white/40 hover:text-red-400 transition-colors"
+                  aria-label="Delete task"
+                >
+                  <Trash2 className="w-4 h-4" />
+                </button>
+              )}
+              <div className="clear-both" />
             </div>
-
-            <div className="flex items-center gap-2 mt-4 float-right">
-              <select 
-                value={task.reviewStatus ?? "pending"} 
-                onChange={(e) => handleChange(task.id, e.target.value)}
-                className="bg-black/30 border border-white/20 rounded px-2 py-1 text-sm"
-                aria-label="Review status"
-              >
-                <option value="pending">Pending</option>
-                <option value="approved">Approved</option>
-                <option value="rejected">Rejected</option>
-              </select>
-
-              <button 
-                onClick={() => saveReview(task)}
-                className="bg-purple-600 hover:bg-purple-700 text-white px-3 py-1 rounded text-sm transition-colors"
-                aria-label={`Save review for task ${task.id}`}
-              >
-                Save
-              </button>
-            </div>
-            <div className="clear-both" />
-          </div>
-        ))}
-      </div>
+          ))}
+        </div>
+      )}
     </div>
   );
 }

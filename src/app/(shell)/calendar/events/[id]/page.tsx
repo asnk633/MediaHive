@@ -1,9 +1,10 @@
 "use client";
 
+import { use } from "react";
 import Link from "next/link";
 
-export default function EventDetailPage({ params }: { params: { id: string } }) {
-  const { id } = params;
+export default function EventDetailPage({ params }: { params: Promise<{ id: string }> }) {
+  const { id } = use(params);
 
   return (
     <div className="px-4 pb-28 pt-6">

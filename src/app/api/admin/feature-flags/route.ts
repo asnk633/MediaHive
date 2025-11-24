@@ -2,7 +2,7 @@
 // Dev-only feature flag management API
 
 import { NextRequest, NextResponse } from 'next/server';
-import { authorizeByRole, hasRole } from '@/app/api/_lib/rbac';
+import { authorizeByPermission } from '@/app/api/_lib/rbac';
 import { isFeatureEnabled, getAllFeatureFlags } from '@/app/featureFlags';
 
 // Ensure this endpoint is only available in development
@@ -15,7 +15,7 @@ export async function GET(req: NextRequest) {
   }
 
   // Authorize user - only admins can access feature flags
-  const user = await authorizeByRole(req, ['admin']);
+  const user = await authorizeByPermission(req, 'manage:users');
   if (!user) {
     return NextResponse.json({ error: 'Forbidden' }, { status: 403 });
   }
@@ -36,7 +36,7 @@ export async function PUT(req: NextRequest) {
   }
 
   // Authorize user - only admins can update feature flags
-  const user = await authorizeByRole(req, ['admin']);
+  const user = await authorizeByPermission(req, 'manage:users');
   if (!user) {
     return NextResponse.json({ error: 'Forbidden' }, { status: 403 });
   }
@@ -57,9 +57,9 @@ export async function PUT(req: NextRequest) {
     // For this demo, we'll just log the change
     console.log(`Feature flag ${feature} set to ${enabled}`);
 
-    return NextResponse.json({ 
-      success: true, 
-      message: `Feature flag ${feature} updated to ${enabled}` 
+    return NextResponse.json({
+      success: true,
+      message: `Feature flag ${feature} updated to ${enabled}`
     }, { status: 200 });
   } catch (error) {
     console.error('Feature flags PUT error:', error);

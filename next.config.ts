@@ -17,8 +17,8 @@ const nextConfig: NextConfig = {
     ],
   },
   
-  // Enable compression
-  compress: true,
+  // Disable compression for debugging
+  compress: false,
   
   // Optimize images
   images: {
@@ -55,10 +55,6 @@ const nextConfig: NextConfig = {
             key: 'Vary',
             value: 'Accept-Encoding',
           },
-          {
-            key: 'Content-Encoding',
-            value: 'gzip, deflate, br',
-          },
         ],
       },
       {
@@ -71,10 +67,6 @@ const nextConfig: NextConfig = {
           {
             key: 'Vary',
             value: 'Accept-Encoding',
-          },
-          {
-            key: 'Content-Encoding',
-            value: 'gzip, deflate, br',
           },
         ],
       },

@@ -7,7 +7,7 @@ import { authorizeByPermission } from '../../_lib/rbac';
 export async function POST(req: NextRequest) {
   try {
     // Authorize user with RBAC
-    const user = await authorizeByPermission(req, 'write:tasks');
+    const user = await authorizeByPermission(req, 'create:tasks');
     if (!user) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
@@ -17,7 +17,7 @@ export async function POST(req: NextRequest) {
 
     // In a real implementation, this would call an AI service
     // For now, we'll return mock suggestions
-    
+
     // Mock AI suggestions
     const suggestions = {
       suggestedTitle: title ? `Enhanced: ${title}` : 'Suggested Task Title',
@@ -28,7 +28,7 @@ export async function POST(req: NextRequest) {
 
     // Return AI suggestions
     return NextResponse.json(
-      { 
+      {
         success: true,
         suggestions
       },

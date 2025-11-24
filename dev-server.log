@@ -1,0 +1,1276 @@
+
+> thaiba-garden-media-manager@0.1.0 dev
+> next dev --turbopack
+
+   ▲ Next.js 15.3.5 (Turbopack)
+   - Local:        http://localhost:3001
+   - Network:      http://192.168.0.58:3001
+   - Environments: .env.local, .env
+
+ ✓ Starting...
+ ✓ Compiled middleware in 283ms
+ ✓ Ready in 2.8s
+ ⚠ Webpack is configured while Turbopack is not, which may cause problems.
+ ⚠ See instructions if you need to configure Turbopack:
+  https://nextjs.org/docs/app/api-reference/next-config-js/turbo
+
+ ○ Compiling /api/health ...
+ ✓ Compiled /api/health in 1133ms
+ GET /api/health 200 in 1802ms
+ GET /api/health 200 in 42ms
+ ○ Compiling /api/auth/login ...
+ ✓ Compiled /api/auth/login in 592ms
+Unable to determine client IP for rate limiting
+Unable to determine client IP for rate limiting
+ POST /api/auth/login 200 in 830ms
+ POST /api/auth/login 200 in 811ms
+Unable to determine client IP for rate limiting
+ POST /api/auth/login 200 in 896ms
+ ○ Compiling /api/users ...
+ ✓ Compiled /api/users in 621ms
+ GET /api/users?role=admin&limit=1 200 in 1016ms
+ GET /api/users?role=admin&limit=1 200 in 1019ms
+ GET /api/users?role=admin&limit=1 200 in 1013ms
+Unable to determine client IP for rate limiting
+ POST /api/auth/login 200 in 121ms
+Unable to determine client IP for rate limiting
+ POST /api/auth/login 200 in 185ms
+Unable to determine client IP for rate limiting
+ POST /api/auth/login 200 in 184ms
+ GET /api/users?role=admin&limit=1 200 in 179ms
+ GET /api/users?role=admin&limit=1 200 in 116ms
+ GET /api/users?role=admin&limit=1 200 in 49ms
+Unable to determine client IP for rate limiting
+ POST /api/auth/login 200 in 126ms
+Unable to determine client IP for rate limiting
+ POST /api/auth/login 200 in 134ms
+Unable to determine client IP for rate limiting
+ POST /api/auth/login 200 in 200ms
+ GET /api/users?role=admin&limit=1 200 in 197ms
+ GET /api/users?role=admin&limit=1 200 in 62ms
+ GET /api/users?role=admin&limit=1 200 in 57ms
+ GET /api/users?role=admin&limit=1 401 in 47ms
+ GET /api/users?role=admin&limit=1 401 in 56ms
+ GET /api/users?role=admin&limit=1 401 in 52ms
+ GET /api/users?role=admin&limit=1 401 in 64ms
+ GET /api/users?role=admin&limit=1 401 in 78ms
+ GET /api/users?role=admin&limit=1 401 in 69ms
+ GET /api/users?role=admin&limit=1 401 in 50ms
+ GET /api/users?role=admin&limit=1 401 in 49ms
+ GET /api/users?role=admin&limit=1 401 in 52ms
+ GET /api/users?role=admin&limit=1 401 in 54ms
+ GET /api/users?role=admin&limit=1 401 in 46ms
+ GET /api/users?role=admin&limit=1 401 in 46ms
+ GET /api/users?role=admin&limit=1 401 in 59ms
+ GET /api/users?role=admin&limit=1 401 in 56ms
+ GET /api/users?role=admin&limit=1 401 in 47ms
+ GET /api/users?role=admin&limit=1 401 in 59ms
+ GET /api/users?role=admin&limit=1 401 in 54ms
+ GET /api/users?role=admin&limit=1 401 in 43ms
+ GET /api/users?role=admin&limit=1 401 in 59ms
+ GET /api/users?role=admin&limit=1 401 in 63ms
+ GET /api/users?role=admin&limit=1 401 in 49ms
+ GET /api/users?role=admin&limit=1 401 in 67ms
+ GET /api/users?role=admin&limit=1 401 in 61ms
+ GET /api/users?role=admin&limit=1 401 in 60ms
+ GET /api/users?role=admin&limit=1 401 in 48ms
+ GET /api/users?role=admin&limit=1 401 in 48ms
+ GET /api/users?role=admin&limit=1 401 in 45ms
+ GET /api/users?role=admin&limit=1 401 in 55ms
+Unable to determine client IP for rate limiting
+ POST /api/auth/login 200 in 111ms
+Unable to determine client IP for rate limiting
+ POST /api/auth/login 200 in 124ms
+ ○ Compiling /api/tasks ...
+ ✓ Compiled /api/tasks in 531ms
+(node:42752) Warning: Label '[PERF] POST /api/tasks' already exists for console.time()
+(Use `node --trace-warnings ...` to show where the warning was created)
+(node:42752) Warning: Label '[PERF] Authorization' already exists for console.time()
+[PERF] Authorization: 1.717ms
+[PERF] Database insert: 6.63ms
+[PERF] Cache invalidation: 0.066ms
+[PERF] POST /api/tasks: 9.284ms
+ POST /api/tasks 201 in 600ms
+(node:42752) Warning: No such label '[PERF] Authorization' for console.timeEnd()
+[PERF] Database insert: 3.038ms
+[PERF] Cache invalidation: 0.012ms
+(node:42752) Warning: No such label '[PERF] POST /api/tasks' for console.timeEnd()
+ POST /api/tasks 201 in 479ms
+ GET /api/users?role=admin&limit=1 401 in 46ms
+ GET /api/users?role=admin&limit=1 401 in 36ms
+Unable to determine client IP for rate limiting
+ POST /api/auth/login 200 in 102ms
+Unable to determine client IP for rate limiting
+ POST /api/auth/login 200 in 108ms
+Unable to determine client IP for rate limiting
+ POST /api/auth/login 200 in 164ms
+[PERF] Authorization: 0.3ms
+[PERF] Database insert: 3.505ms
+[PERF] Cache invalidation: 0.01ms
+[PERF] POST /api/tasks: 4.406ms
+ POST /api/tasks 201 in 107ms
+[PERF] Authorization: 0.341ms
+[PERF] Database insert: 2.754ms
+[PERF] Cache invalidation: 0.01ms
+[PERF] POST /api/tasks: 3.564ms
+ POST /api/tasks 201 in 53ms
+Unable to determine client IP for rate limiting
+ POST /api/auth/login 200 in 94ms
+Unable to determine client IP for rate limiting
+Unable to determine client IP for rate limiting
+ POST /api/auth/login 200 in 166ms
+ POST /api/auth/login 200 in 167ms
+(node:42752) Warning: Label '[PERF] POST /api/tasks' already exists for console.time()
+(node:42752) Warning: Label '[PERF] Authorization' already exists for console.time()
+[PERF] Authorization: 1.447ms
+[PERF] Database insert: 3.955ms
+[PERF] Cache invalidation: 0.01ms
+[PERF] POST /api/tasks: 5.957ms
+ POST /api/tasks 201 in 52ms
+(node:42752) Warning: No such label '[PERF] Authorization' for console.timeEnd()
+[PERF] Database insert: 2.438ms
+[PERF] Cache invalidation: 0.011ms
+(node:42752) Warning: No such label '[PERF] POST /api/tasks' for console.timeEnd()
+ POST /api/tasks 201 in 56ms
+Unable to determine client IP for rate limiting
+ POST /api/auth/login 200 in 91ms
+Unable to determine client IP for rate limiting
+ POST /api/auth/login 200 in 102ms
+Unable to determine client IP for rate limiting
+ POST /api/auth/login 200 in 164ms
+Unable to determine client IP for rate limiting
+ POST /api/auth/login 200 in 91ms
+ GET /api/users?role=admin&limit=1 200 in 34ms
+Unable to determine client IP for rate limiting
+ POST /api/auth/login 200 in 98ms
+Unable to determine client IP for rate limiting
+ POST /api/auth/login 200 in 94ms
+Unable to determine client IP for rate limiting
+ POST /api/auth/login 200 in 91ms
+ GET /api/users?role=admin&limit=1 200 in 35ms
+Unable to determine client IP for rate limiting
+ POST /api/auth/login 200 in 107ms
+Unable to determine client IP for rate limiting
+ POST /api/auth/login 200 in 91ms
+Unable to determine client IP for rate limiting
+ POST /api/auth/login 200 in 90ms
+ GET /api/users?role=admin&limit=1 200 in 33ms
+Unable to determine client IP for rate limiting
+ POST /api/auth/login 200 in 103ms
+ GET /api/users?role=team&limit=1 200 in 51ms
+Unable to determine client IP for rate limiting
+ POST /api/auth/login 200 in 110ms
+ GET /api/users?role=guest&limit=1 200 in 43ms
+Unable to determine client IP for rate limiting
+ POST /api/auth/login 200 in 90ms
+ GET /api/users?role=admin&limit=1 200 in 37ms
+Unable to determine client IP for rate limiting
+ POST /api/auth/login 200 in 107ms
+Unable to determine client IP for rate limiting
+ POST /api/auth/login 200 in 103ms
+ GET /api/users?role=team&limit=1 200 in 102ms
+ GET /api/users?role=guest&limit=1 200 in 35ms
+Unable to determine client IP for rate limiting
+ POST /api/auth/login 200 in 91ms
+ GET /api/users?role=admin&limit=1 200 in 34ms
+Unable to determine client IP for rate limiting
+ POST /api/auth/login 200 in 99ms
+Unable to determine client IP for rate limiting
+ POST /api/auth/login 200 in 155ms
+ GET /api/users?role=team&limit=1 200 in 101ms
+ GET /api/users?role=guest&limit=1 200 in 43ms
+Unable to determine client IP for rate limiting
+ POST /api/auth/login 200 in 90ms
+ GET /api/users?role=admin&limit=1 200 in 35ms
+ GET /api/users?role=admin&limit=1 401 in 36ms
+ GET /api/users?role=admin&limit=1 401 in 61ms
+ GET /api/users?role=admin&limit=1 401 in 42ms
+ GET /api/users?role=admin&limit=1 401 in 38ms
+ GET /api/users?role=admin&limit=1 401 in 41ms
+ GET /api/users?role=admin&limit=1 401 in 41ms
+ GET /api/users?role=admin&limit=1 401 in 42ms
+ GET /api/users?role=admin&limit=1 401 in 44ms
+ GET /api/users?role=admin&limit=1 401 in 39ms
+ GET /api/users?role=admin&limit=1 401 in 43ms
+ GET /api/users?role=admin&limit=1 401 in 45ms
+ GET /api/users?role=admin&limit=1 401 in 40ms
+ GET /api/users?role=admin&limit=1 401 in 60ms
+ GET /api/users?role=admin&limit=1 401 in 40ms
+ GET /api/users?role=admin&limit=1 401 in 38ms
+ GET /api/users?role=admin&limit=1 401 in 41ms
+ GET /api/users?role=admin&limit=1 401 in 40ms
+ GET /api/users?role=admin&limit=1 401 in 39ms
+Unable to determine client IP for rate limiting
+ POST /api/auth/login 200 in 102ms
+ GET /api/users?role=admin&limit=1 401 in 48ms
+[PERF] Authorization: 0.326ms
+[PERF] Database insert: 3.299ms
+[PERF] Cache invalidation: 0.011ms
+[PERF] POST /api/tasks: 4.078ms
+ POST /api/tasks 201 in 52ms
+ GET /api/users?role=admin&limit=1 401 in 41ms
+ GET /api/users?role=admin&limit=1 401 in 33ms
+Unable to determine client IP for rate limiting
+ POST /api/auth/login 200 in 91ms
+[PERF] Authorization: 0.309ms
+[PERF] Database insert: 2.827ms
+[PERF] Cache invalidation: 0.008ms
+[PERF] POST /api/tasks: 3.545ms
+ POST /api/tasks 201 in 38ms
+Unable to determine client IP for rate limiting
+ POST /api/auth/login 200 in 92ms
+[PERF] Authorization: 0.308ms
+[PERF] Database insert: 2.925ms
+[PERF] Cache invalidation: 0.012ms
+[PERF] POST /api/tasks: 3.709ms
+ POST /api/tasks 201 in 36ms
+[PERF] Authorization: 0.32ms
+[PERF] Database insert: 2.808ms
+[PERF] Cache invalidation: 0.027ms
+[PERF] POST /api/tasks: 3.654ms
+ POST /api/tasks 201 in 39ms
+[PERF] Authorization: 0.322ms
+[PERF] Database insert: 3.088ms
+[PERF] Cache invalidation: 0.013ms
+[PERF] POST /api/tasks: 3.898ms
+ POST /api/tasks 201 in 43ms
+[PERF] Authorization: 0.271ms
+[PERF] Database insert: 2.619ms
+[PERF] Cache invalidation: 0.006ms
+[PERF] POST /api/tasks: 3.287ms
+ POST /api/tasks 201 in 53ms
+Unable to determine client IP for rate limiting
+ POST /api/auth/login 200 in 89ms
+[PERF] Authorization: 0.307ms
+[PERF] Database insert: 2.359ms
+[PERF] Cache invalidation: 0.005ms
+[PERF] POST /api/tasks: 3.029ms
+ POST /api/tasks 201 in 36ms
+Unable to determine client IP for rate limiting
+ POST /api/auth/login 200 in 93ms
+[PERF] Authorization: 0.294ms
+[PERF] Database insert: 3.398ms
+[PERF] Cache invalidation: 0.008ms
+[PERF] POST /api/tasks: 4.224ms
+ POST /api/tasks 201 in 42ms
+Unable to determine client IP for rate limiting
+ POST /api/auth/login 200 in 92ms
+[PERF] Authorization: 0.336ms
+[PERF] Database insert: 3.66ms
+[PERF] Cache invalidation: 0.008ms
+[PERF] POST /api/tasks: 4.468ms
+ POST /api/tasks 201 in 42ms
+[PERF] Authorization: 0.294ms
+[PERF] Database insert: 2.304ms
+[PERF] Cache invalidation: 0.006ms
+[PERF] POST /api/tasks: 3.008ms
+ POST /api/tasks 201 in 40ms
+[PERF] Authorization: 0.311ms
+[PERF] Database insert: 2.555ms
+[PERF] Cache invalidation: 0.008ms
+[PERF] POST /api/tasks: 3.273ms
+ POST /api/tasks 201 in 41ms
+[PERF] Authorization: 0.281ms
+[PERF] Database insert: 2.711ms
+[PERF] Cache invalidation: 0.011ms
+[PERF] POST /api/tasks: 3.497ms
+ POST /api/tasks 201 in 43ms
+Unable to determine client IP for rate limiting
+ POST /api/auth/login 200 in 87ms
+[PERF] Authorization: 0.292ms
+[PERF] Database insert: 2.815ms
+[PERF] Cache invalidation: 0.007ms
+[PERF] POST /api/tasks: 3.518ms
+ POST /api/tasks 201 in 37ms
+Unable to determine client IP for rate limiting
+ POST /api/auth/login 200 in 95ms
+[PERF] Authorization: 0.283ms
+[PERF] Database insert: 2.604ms
+[PERF] Cache invalidation: 0.007ms
+[PERF] POST /api/tasks: 3.295ms
+ POST /api/tasks 201 in 42ms
+Unable to determine client IP for rate limiting
+ POST /api/auth/login 200 in 96ms
+[PERF] Authorization: 0.316ms
+[PERF] Database insert: 3.462ms
+[PERF] Cache invalidation: 0.008ms
+[PERF] POST /api/tasks: 4.271ms
+ POST /api/tasks 201 in 51ms
+[PERF] Authorization: 0.289ms
+[PERF] Database insert: 2.571ms
+[PERF] Cache invalidation: 0.009ms
+[PERF] POST /api/tasks: 3.293ms
+ POST /api/tasks 201 in 46ms
+[PERF] Authorization: 0.363ms
+[PERF] Database insert: 2.96ms
+[PERF] Cache invalidation: 0.007ms
+[PERF] POST /api/tasks: 3.844ms
+ POST /api/tasks 201 in 43ms
+[PERF] Authorization: 0.314ms
+[PERF] Database insert: 2.601ms
+[PERF] Cache invalidation: 0.007ms
+[PERF] POST /api/tasks: 3.352ms
+ POST /api/tasks 201 in 46ms
+Unable to determine client IP for rate limiting
+ POST /api/auth/login 200 in 87ms
+[PERF] Authorization: 0.262ms
+[PERF] Database insert: 2.626ms
+[PERF] Cache invalidation: 0.006ms
+[PERF] POST /api/tasks: 3.245ms
+ POST /api/tasks 201 in 37ms
+[PERF] Authorization: 0.306ms
+[PERF] Database insert: 2.699ms
+[PERF] Cache invalidation: 0.007ms
+[PERF] POST /api/tasks: 3.378ms
+ POST /api/tasks 201 in 39ms
+[PERF] Authorization: 0.312ms
+[PERF] Database insert: 2.283ms
+[PERF] Cache invalidation: 0.005ms
+[PERF] POST /api/tasks: 2.95ms
+ POST /api/tasks 201 in 36ms
+[PERF] Authorization: 0.284ms
+[PERF] Database insert: 2.474ms
+[PERF] Cache invalidation: 0.006ms
+[PERF] POST /api/tasks: 3.103ms
+ POST /api/tasks 201 in 38ms
+Unable to determine client IP for rate limiting
+ POST /api/auth/login 200 in 92ms
+[PERF] Authorization: 0.277ms
+[PERF] Database insert: 2.837ms
+[PERF] Cache invalidation: 0.01ms
+[PERF] POST /api/tasks: 3.603ms
+ POST /api/tasks 201 in 42ms
+[PERF] Authorization: 0.291ms
+[PERF] Database insert: 2.793ms
+[PERF] Cache invalidation: 0.008ms
+[PERF] POST /api/tasks: 3.543ms
+ POST /api/tasks 201 in 47ms
+[PERF] Authorization: 0.289ms
+[PERF] Database insert: 2.702ms
+[PERF] Cache invalidation: 0.012ms
+[PERF] POST /api/tasks: 3.476ms
+ POST /api/tasks 201 in 44ms
+[PERF] Authorization: 0.31ms
+[PERF] Database insert: 2.593ms
+[PERF] Cache invalidation: 0.008ms
+[PERF] POST /api/tasks: 3.308ms
+ POST /api/tasks 201 in 42ms
+[PERF] Authorization: 0.333ms
+[PERF] Database insert: 2.487ms
+[PERF] Cache invalidation: 0.007ms
+[PERF] POST /api/tasks: 3.226ms
+ POST /api/tasks 201 in 40ms
+Unable to determine client IP for rate limiting
+ POST /api/auth/login 200 in 89ms
+ GET /api/users?role=admin&limit=1 200 in 36ms
+[PERF] Authorization: 0.275ms
+[PERF] Database insert: 2.956ms
+[PERF] Cache invalidation: 0.009ms
+[PERF] POST /api/tasks: 3.7ms
+ POST /api/tasks 201 in 39ms
+Unable to determine client IP for rate limiting
+ POST /api/auth/login 200 in 91ms
+[PERF] Authorization: 0.336ms
+[PERF] Database insert: 2.392ms
+[PERF] Cache invalidation: 0.008ms
+[PERF] POST /api/tasks: 3.13ms
+ POST /api/tasks 201 in 35ms
+[PERF] Authorization: 0.287ms
+[PERF] Database insert: 2.891ms
+[PERF] Cache invalidation: 0.007ms
+[PERF] POST /api/tasks: 3.67ms
+ POST /api/tasks 201 in 38ms
+[PERF] Authorization: 0.341ms
+[PERF] Database insert: 2.627ms
+[PERF] Cache invalidation: 0.007ms
+[PERF] POST /api/tasks: 3.384ms
+ POST /api/tasks 201 in 44ms
+[PERF] Authorization: 0.266ms
+[PERF] Database insert: 2.516ms
+[PERF] Cache invalidation: 0.006ms
+[PERF] POST /api/tasks: 3.192ms
+ POST /api/tasks 201 in 40ms
+Unable to determine client IP for rate limiting
+ POST /api/auth/login 200 in 90ms
+[PERF] Authorization: 0.308ms
+[PERF] Database insert: 3.671ms
+[PERF] Cache invalidation: 0.009ms
+[PERF] POST /api/tasks: 4.481ms
+ POST /api/tasks 201 in 48ms
+[PERF] Authorization: 0.33ms
+[PERF] Database insert: 2.502ms
+[PERF] Cache invalidation: 0.007ms
+[PERF] POST /api/tasks: 3.243ms
+ POST /api/tasks 201 in 49ms
+[PERF] Authorization: 0.412ms
+[PERF] Database insert: 3.232ms
+[PERF] Cache invalidation: 0.009ms
+[PERF] POST /api/tasks: 4.192ms
+ POST /api/tasks 201 in 48ms
+[PERF] Authorization: 0.332ms
+[PERF] Database insert: 2.741ms
+[PERF] Cache invalidation: 0.009ms
+[PERF] POST /api/tasks: 3.577ms
+ POST /api/tasks 201 in 45ms
+[PERF] Authorization: 0.298ms
+[PERF] Database insert: 2.742ms
+[PERF] Cache invalidation: 0.007ms
+[PERF] POST /api/tasks: 3.556ms
+ POST /api/tasks 201 in 43ms
+Unable to determine client IP for rate limiting
+ POST /api/auth/login 200 in 102ms
+ GET /api/users?role=admin&limit=1 200 in 49ms
+[PERF] Authorization: 0.281ms
+[PERF] Database insert: 2.505ms
+[PERF] Cache invalidation: 0.006ms
+[PERF] POST /api/tasks: 3.197ms
+ POST /api/tasks 201 in 41ms
+Unable to determine client IP for rate limiting
+ POST /api/auth/login 200 in 88ms
+[PERF] Authorization: 0.318ms
+[PERF] Database insert: 2.498ms
+[PERF] Cache invalidation: 0.007ms
+[PERF] POST /api/tasks: 3.196ms
+ POST /api/tasks 201 in 40ms
+[PERF] Authorization: 0.31ms
+[PERF] Database insert: 2.181ms
+[PERF] Cache invalidation: 0.005ms
+[PERF] POST /api/tasks: 2.887ms
+ POST /api/tasks 201 in 35ms
+[PERF] Authorization: 0.328ms
+[PERF] Database insert: 2.378ms
+[PERF] Cache invalidation: 0.008ms
+[PERF] POST /api/tasks: 3.098ms
+ POST /api/tasks 201 in 38ms
+[PERF] Authorization: 0.305ms
+[PERF] Database insert: 2.292ms
+[PERF] Cache invalidation: 0.008ms
+[PERF] POST /api/tasks: 2.984ms
+ POST /api/tasks 201 in 37ms
+Unable to determine client IP for rate limiting
+ POST /api/auth/login 200 in 92ms
+[PERF] Authorization: 0.283ms
+[PERF] Database insert: 2.845ms
+[PERF] Cache invalidation: 0.01ms
+[PERF] POST /api/tasks: 3.563ms
+ POST /api/tasks 201 in 46ms
+[PERF] Authorization: 0.303ms
+[PERF] Database insert: 3.279ms
+[PERF] Cache invalidation: 0.012ms
+[PERF] POST /api/tasks: 4.115ms
+ POST /api/tasks 201 in 42ms
+[PERF] Authorization: 0.306ms
+[PERF] Database insert: 2.758ms
+[PERF] Cache invalidation: 0.008ms
+[PERF] POST /api/tasks: 3.563ms
+ POST /api/tasks 201 in 44ms
+[PERF] Authorization: 0.356ms
+[PERF] Database insert: 2.473ms
+[PERF] Cache invalidation: 0.008ms
+[PERF] POST /api/tasks: 3.322ms
+ POST /api/tasks 201 in 43ms
+[PERF] Authorization: 0.304ms
+[PERF] Database insert: 2.317ms
+[PERF] Cache invalidation: 0.007ms
+[PERF] POST /api/tasks: 3.004ms
+ POST /api/tasks 201 in 40ms
+Unable to determine client IP for rate limiting
+ POST /api/auth/login 200 in 100ms
+ GET /api/users?role=admin&limit=1 200 in 45ms
+[PERF] Authorization: 0.349ms
+[PERF] Database insert: 3.078ms
+[PERF] Cache invalidation: 0.01ms
+[PERF] POST /api/tasks: 3.896ms
+ POST /api/tasks 201 in 50ms
+Unable to determine client IP for rate limiting
+ POST /api/auth/login 200 in 89ms
+ GET /api/users?role=admin&limit=1 200 in 32ms
+[PERF] Authorization: 0.285ms
+[PERF] Database insert: 3.063ms
+[PERF] Cache invalidation: 0.007ms
+[PERF] POST /api/tasks: 3.826ms
+ POST /api/tasks 201 in 38ms
+Unable to determine client IP for rate limiting
+ POST /api/auth/login 200 in 93ms
+ GET /api/users?role=admin&limit=1 200 in 47ms
+Unable to determine client IP for rate limiting
+ POST /api/auth/login 200 in 92ms
+ GET /api/users?role=team&limit=1 200 in 41ms
+[PERF] Authorization: 0.295ms
+[PERF] Database insert: 3.178ms
+[PERF] Cache invalidation: 0.008ms
+[PERF] POST /api/tasks: 3.881ms
+ POST /api/tasks 201 in 41ms
+Unable to determine client IP for rate limiting
+ POST /api/auth/login 200 in 105ms
+ GET /api/users?role=admin&limit=1 200 in 41ms
+Unable to determine client IP for rate limiting
+ POST /api/auth/login 200 in 108ms
+ GET /api/users?role=team&limit=1 200 in 44ms
+[PERF] Authorization: 0.308ms
+[PERF] Database insert: 3.05ms
+[PERF] Cache invalidation: 0.008ms
+[PERF] POST /api/tasks: 3.786ms
+ POST /api/tasks 201 in 42ms
+Unable to determine client IP for rate limiting
+ POST /api/auth/login 200 in 88ms
+ GET /api/users?role=admin&limit=1 200 in 35ms
+[PERF] Authorization: 0.265ms
+[PERF] Database insert: 2.607ms
+[PERF] Cache invalidation: 0.006ms
+[PERF] POST /api/tasks: 3.261ms
+ POST /api/tasks 201 in 38ms
+Unable to determine client IP for rate limiting
+ POST /api/auth/login 200 in 90ms
+ GET /api/users?role=admin&limit=1 200 in 39ms
+Unable to determine client IP for rate limiting
+ POST /api/auth/login 200 in 98ms
+ GET /api/users?role=team&limit=1 200 in 35ms
+[PERF] Authorization: 0.282ms
+[PERF] Database insert: 2.907ms
+[PERF] Cache invalidation: 0.008ms
+[PERF] POST /api/tasks: 3.582ms
+ POST /api/tasks 201 in 39ms
+Unable to determine client IP for rate limiting
+ POST /api/auth/login 200 in 101ms
+ GET /api/users?role=admin&limit=1 200 in 45ms
+Unable to determine client IP for rate limiting
+ POST /api/auth/login 200 in 112ms
+ GET /api/users?role=team&limit=1 200 in 36ms
+[PERF] Authorization: 0.258ms
+[PERF] Database insert: 2.835ms
+[PERF] Cache invalidation: 0.006ms
+[PERF] POST /api/tasks: 3.494ms
+ POST /api/tasks 201 in 39ms
+Unable to determine client IP for rate limiting
+ POST /api/auth/login 200 in 88ms
+ GET /api/users?role=admin&limit=1 200 in 33ms
+[PERF] Authorization: 0.287ms
+[PERF] Database insert: 2.73ms
+[PERF] Cache invalidation: 0.007ms
+[PERF] POST /api/tasks: 3.414ms
+ POST /api/tasks 201 in 38ms
+Unable to determine client IP for rate limiting
+ POST /api/auth/login 200 in 90ms
+ GET /api/users?role=admin&limit=1 200 in 44ms
+Unable to determine client IP for rate limiting
+ POST /api/auth/login 200 in 96ms
+ GET /api/users?role=team&limit=1 200 in 42ms
+[PERF] Authorization: 0.354ms
+[PERF] Database insert: 3.028ms
+[PERF] Cache invalidation: 0.01ms
+[PERF] POST /api/tasks: 3.818ms
+ POST /api/tasks 201 in 40ms
+Unable to determine client IP for rate limiting
+ POST /api/auth/login 200 in 111ms
+ GET /api/users?role=admin&limit=1 200 in 44ms
+Unable to determine client IP for rate limiting
+ POST /api/auth/login 200 in 102ms
+ GET /api/users?role=team&limit=1 200 in 40ms
+[PERF] Authorization: 0.328ms
+[PERF] Database insert: 2.97ms
+[PERF] Cache invalidation: 0.011ms
+[PERF] POST /api/tasks: 3.812ms
+ POST /api/tasks 201 in 43ms
+Unable to determine client IP for rate limiting
+ POST /api/auth/login 200 in 90ms
+ GET /api/users?role=admin&limit=1 200 in 38ms
+Unable to determine client IP for rate limiting
+ POST /api/auth/login 200 in 94ms
+ GET /api/users?role=team&limit=1 200 in 45ms
+[PERF] Authorization: 0.319ms
+[PERF] Database insert: 3.173ms
+[PERF] Cache invalidation: 0.008ms
+[PERF] POST /api/tasks: 3.925ms
+ POST /api/tasks 201 in 48ms
+Unable to determine client IP for rate limiting
+ POST /api/auth/login 200 in 97ms
+ GET /api/users?role=admin&limit=1 200 in 39ms
+Unable to determine client IP for rate limiting
+ POST /api/auth/login 200 in 96ms
+ GET /api/users?role=team&limit=1 200 in 42ms
+[PERF] Authorization: 0.304ms
+[PERF] Database insert: 3.78ms
+[PERF] Cache invalidation: 0.011ms
+[PERF] POST /api/tasks: 4.869ms
+ POST /api/tasks 201 in 44ms
+Unable to determine client IP for rate limiting
+ POST /api/auth/login 200 in 102ms
+ GET /api/users?role=admin&limit=1 200 in 64ms
+Unable to determine client IP for rate limiting
+ POST /api/auth/login 200 in 104ms
+ GET /api/users?role=team&limit=1 200 in 48ms
+[PERF] Authorization: 0.329ms
+[PERF] Database insert: 4.245ms
+[PERF] Cache invalidation: 0.01ms
+[PERF] POST /api/tasks: 5.107ms
+ POST /api/tasks 201 in 56ms
+Unable to determine client IP for rate limiting
+ POST /api/auth/login 200 in 93ms
+ GET /api/users?role=admin&limit=1 200 in 44ms
+Unable to determine client IP for rate limiting
+ POST /api/auth/login 200 in 97ms
+Unable to determine client IP for rate limiting
+ POST /api/auth/login 200 in 155ms
+ GET /api/users?role=admin&limit=1 200 in 101ms
+ GET /api/users?role=admin&limit=1 200 in 39ms
+Unable to determine client IP for rate limiting
+ POST /api/auth/login 200 in 90ms
+ GET /api/users?role=admin&limit=1 200 in 33ms
+Unable to determine client IP for rate limiting
+ POST /api/auth/login 200 in 99ms
+Unable to determine client IP for rate limiting
+ POST /api/auth/login 200 in 105ms
+ GET /api/users?role=admin&limit=1 200 in 104ms
+ GET /api/users?role=admin&limit=1 200 in 37ms
+Unable to determine client IP for rate limiting
+ POST /api/auth/login 200 in 89ms
+ GET /api/users?role=admin&limit=1 200 in 39ms
+Unable to determine client IP for rate limiting
+ POST /api/auth/login 200 in 93ms
+Unable to determine client IP for rate limiting
+ POST /api/auth/login 200 in 101ms
+ GET /api/users?role=admin&limit=1 200 in 104ms
+ GET /api/users?role=admin&limit=1 200 in 34ms
+Unable to determine client IP for rate limiting
+ POST /api/auth/login 200 in 92ms
+ GET /api/users?role=team&limit=1 200 in 33ms
+ GET /api/users?role=admin&limit=1 401 in 44ms
+ GET /api/users?role=admin&limit=1 401 in 42ms
+ GET /api/users?role=admin&limit=1 401 in 52ms
+ GET /api/users?role=admin&limit=1 401 in 51ms
+Unable to determine client IP for rate limiting
+ POST /api/auth/login 200 in 119ms
+ GET /api/users?role=team&limit=1 200 in 59ms
+ GET /api/users?role=admin&limit=1 401 in 57ms
+ GET /api/users?role=admin&limit=1 401 in 54ms
+ GET /api/users?role=admin&limit=1 401 in 45ms
+ GET /api/users?role=admin&limit=1 401 in 43ms
+ GET /api/users?role=admin&limit=1 401 in 42ms
+ GET /api/users?role=admin&limit=1 401 in 38ms
+ GET /api/users?role=admin&limit=1 401 in 47ms
+ GET /api/users?role=admin&limit=1 401 in 45ms
+Unable to determine client IP for rate limiting
+ POST /api/auth/login 200 in 93ms
+ GET /api/users?role=team&limit=1 200 in 45ms
+ GET /api/users?role=admin&limit=1 401 in 36ms
+Unable to determine client IP for rate limiting
+ POST /api/auth/login 200 in 95ms
+ GET /api/users?role=team&limit=1 200 in 37ms
+Unable to determine client IP for rate limiting
+ POST /api/auth/login 200 in 90ms
+ GET /api/users?role=admin&limit=1 200 in 40ms
+[PERF] Authorization: 0.258ms
+[PERF] Database insert: 3.086ms
+[PERF] Cache invalidation: 0.008ms
+[PERF] POST /api/tasks: 3.982ms
+ POST /api/tasks 201 in 45ms
+ GET /api/users?role=admin&limit=1 401 in 36ms
+Unable to determine client IP for rate limiting
+ POST /api/auth/login 200 in 96ms
+ GET /api/users?role=team&limit=1 200 in 40ms
+Unable to determine client IP for rate limiting
+ POST /api/auth/login 200 in 106ms
+ GET /api/users?role=admin&limit=1 200 in 40ms
+[PERF] Authorization: 0.739ms
+[PERF] Database insert: 3.253ms
+[PERF] Cache invalidation: 0.008ms
+[PERF] POST /api/tasks: 4.424ms
+ POST /api/tasks 201 in 50ms
+ GET /api/users?role=admin&limit=1 401 in 52ms
+Unable to determine client IP for rate limiting
+ POST /api/auth/login 200 in 96ms
+ GET /api/users?role=team&limit=1 200 in 50ms
+Unable to determine client IP for rate limiting
+ POST /api/auth/login 200 in 100ms
+ GET /api/users?role=team&limit=1 200 in 52ms
+[PERF] Authorization: 0.631ms
+[PERF] Database insert: 4.386ms
+[PERF] Cache invalidation: 0.016ms
+[PERF] POST /api/tasks: 5.928ms
+ POST /api/tasks 201 in 69ms
+Unable to determine client IP for rate limiting
+ POST /api/auth/login 200 in 94ms
+ GET /api/users?role=admin&limit=1 200 in 43ms
+Unable to determine client IP for rate limiting
+ POST /api/auth/login 200 in 93ms
+ GET /api/users?role=team&limit=1 200 in 39ms
+Unable to determine client IP for rate limiting
+ POST /api/auth/login 200 in 94ms
+ GET /api/users?role=admin&limit=1 200 in 41ms
+[PERF] Authorization: 0.275ms
+[PERF] Database insert: 2.975ms
+[PERF] Cache invalidation: 0.008ms
+[PERF] POST /api/tasks: 3.673ms
+ POST /api/tasks 201 in 41ms
+Unable to determine client IP for rate limiting
+ POST /api/auth/login 200 in 98ms
+ GET /api/users?role=team&limit=1 200 in 37ms
+Unable to determine client IP for rate limiting
+ POST /api/auth/login 200 in 94ms
+ GET /api/users?role=team&limit=1 200 in 37ms
+[PERF] Authorization: 0.352ms
+[PERF] Database insert: 2.888ms
+[PERF] Cache invalidation: 0.009ms
+[PERF] POST /api/tasks: 3.765ms
+ POST /api/tasks 201 in 43ms
+Unable to determine client IP for rate limiting
+ POST /api/auth/login 200 in 97ms
+ GET /api/users?role=admin&limit=1 200 in 50ms
+Unable to determine client IP for rate limiting
+ POST /api/auth/login 200 in 99ms
+ GET /api/users?role=team&limit=1 200 in 39ms
+Unable to determine client IP for rate limiting
+ POST /api/auth/login 200 in 90ms
+ GET /api/users?role=team&limit=1 200 in 39ms
+Unable to determine client IP for rate limiting
+ POST /api/auth/login 200 in 89ms
+ GET /api/users?role=team&limit=1 200 in 38ms
+[PERF] Authorization: 0.319ms
+[PERF] Database insert: 3.269ms
+[PERF] Cache invalidation: 0.011ms
+[PERF] POST /api/tasks: 4.055ms
+ POST /api/tasks 201 in 49ms
+Unable to determine client IP for rate limiting
+ POST /api/auth/login 200 in 93ms
+ GET /api/users?role=admin&limit=1 200 in 34ms
+Unable to determine client IP for rate limiting
+ POST /api/auth/login 200 in 91ms
+ GET /api/users?role=admin&limit=1 200 in 40ms
+Unable to determine client IP for rate limiting
+ POST /api/auth/login 200 in 94ms
+ GET /api/users?role=team&limit=1 200 in 36ms
+Unable to determine client IP for rate limiting
+ POST /api/auth/login 200 in 104ms
+ GET /api/users?role=admin&limit=1 200 in 49ms
+Unable to determine client IP for rate limiting
+ POST /api/auth/login 200 in 104ms
+ GET /api/users?role=team&limit=1 200 in 37ms
+Unable to determine client IP for rate limiting
+ POST /api/auth/login 200 in 90ms
+ GET /api/users?role=admin&limit=1 200 in 37ms
+Unable to determine client IP for rate limiting
+ POST /api/auth/login 200 in 88ms
+ GET /api/users?role=admin&limit=1 200 in 33ms
+Unable to determine client IP for rate limiting
+ POST /api/auth/login 200 in 107ms
+ GET /api/users?role=team&limit=1 200 in 50ms
+Unable to determine client IP for rate limiting
+ POST /api/auth/login 200 in 95ms
+ GET /api/users?role=admin&limit=1 200 in 35ms
+Unable to determine client IP for rate limiting
+ POST /api/auth/login 200 in 89ms
+ GET /api/users?role=team&limit=1 200 in 36ms
+ GET /api/users?role=admin&limit=1 401 in 35ms
+ GET /api/users?role=admin&limit=1 401 in 37ms
+Unable to determine client IP for rate limiting
+ POST /api/auth/login 200 in 93ms
+ GET /api/users?role=admin&limit=1 200 in 34ms
+Unable to determine client IP for rate limiting
+ POST /api/auth/login 200 in 104ms
+ GET /api/users?role=team&limit=1 200 in 41ms
+ GET /api/users?role=admin&limit=1 401 in 51ms
+ GET /api/users?role=admin&limit=1 401 in 39ms
+ GET /api/users?role=team&limit=1 401 in 36ms
+ GET /api/users?role=admin&limit=1 401 in 36ms
+ GET /api/users?role=team&limit=1 401 in 37ms
+ GET /api/users?role=admin&limit=1 401 in 49ms
+ GET /api/users?role=team&limit=1 401 in 46ms
+ GET /api/users?role=team&limit=1 401 in 43ms
+ GET /api/users?role=admin&limit=1 401 in 38ms
+Unable to determine client IP for rate limiting
+ POST /api/auth/login 200 in 101ms
+ GET /api/users?role=team&limit=1 401 in 46ms
+ GET /api/users?role=admin&limit=1 200 in 45ms
+[PERF] Authorization: 0.31ms
+[PERF] Database insert: 3.341ms
+[PERF] Cache invalidation: 0.009ms
+[PERF] POST /api/tasks: 4.102ms
+ POST /api/tasks 201 in 48ms
+ GET /api/users?role=admin&limit=1 401 in 52ms
+ GET /api/users?role=team&limit=1 401 in 38ms
+ GET /api/users?role=admin&limit=1 401 in 35ms
+Unable to determine client IP for rate limiting
+ POST /api/auth/login 200 in 90ms
+ GET /api/users?role=admin&limit=1 200 in 34ms
+[PERF] Authorization: 0.252ms
+[PERF] Database insert: 2.565ms
+[PERF] Cache invalidation: 0.006ms
+[PERF] POST /api/tasks: 3.195ms
+ POST /api/tasks 201 in 39ms
+Unable to determine client IP for rate limiting
+ POST /api/auth/login 200 in 90ms
+ GET /api/users?role=admin&limit=1 200 in 37ms
+[PERF] Authorization: 0.365ms
+[PERF] Database insert: 2.672ms
+[PERF] Cache invalidation: 0.009ms
+[PERF] POST /api/tasks: 3.492ms
+ POST /api/tasks 201 in 40ms
+Unable to determine client IP for rate limiting
+ POST /api/auth/login 200 in 114ms
+ GET /api/users?role=admin&limit=1 200 in 45ms
+[PERF] Authorization: 0.32ms
+[PERF] Database insert: 3.111ms
+[PERF] Cache invalidation: 0.01ms
+[PERF] POST /api/tasks: 3.928ms
+ POST /api/tasks 201 in 47ms
+Unable to determine client IP for rate limiting
+ POST /api/auth/login 200 in 92ms
+ GET /api/users?role=admin&limit=1 200 in 36ms
+[PERF] Authorization: 0.288ms
+[PERF] Database insert: 2.764ms
+[PERF] Cache invalidation: 0.008ms
+[PERF] POST /api/tasks: 3.452ms
+ POST /api/tasks 201 in 40ms
+Unable to determine client IP for rate limiting
+ POST /api/auth/login 200 in 93ms
+ GET /api/users?role=admin&limit=1 200 in 50ms
+[PERF] Authorization: 0.424ms
+[PERF] Database insert: 3.118ms
+[PERF] Cache invalidation: 0.009ms
+[PERF] POST /api/tasks: 4.038ms
+ POST /api/tasks 201 in 47ms
+Unable to determine client IP for rate limiting
+ POST /api/auth/login 200 in 95ms
+ GET /api/users?role=admin&limit=1 200 in 40ms
+[PERF] Authorization: 0.3ms
+[PERF] Database insert: 2.582ms
+[PERF] Cache invalidation: 0.008ms
+[PERF] POST /api/tasks: 3.305ms
+ POST /api/tasks 201 in 47ms
+Unable to determine client IP for rate limiting
+ POST /api/auth/login 200 in 91ms
+ GET /api/users?role=admin&limit=1 200 in 38ms
+[PERF] Authorization: 0.303ms
+[PERF] Database insert: 3.055ms
+[PERF] Cache invalidation: 0.009ms
+[PERF] POST /api/tasks: 3.735ms
+ POST /api/tasks 201 in 40ms
+Unable to determine client IP for rate limiting
+ POST /api/auth/login 200 in 101ms
+ GET /api/users?role=admin&limit=1 200 in 37ms
+[PERF] Authorization: 0.318ms
+[PERF] Database insert: 2.586ms
+[PERF] Cache invalidation: 0.007ms
+[PERF] POST /api/tasks: 3.445ms
+ POST /api/tasks 201 in 40ms
+Unable to determine client IP for rate limiting
+ POST /api/auth/login 200 in 97ms
+ GET /api/users?role=admin&limit=1 200 in 35ms
+[PERF] Authorization: 0.301ms
+[PERF] Database insert: 2.77ms
+[PERF] Cache invalidation: 0.016ms
+[PERF] POST /api/tasks: 3.499ms
+ POST /api/tasks 201 in 36ms
+Unable to determine client IP for rate limiting
+ POST /api/auth/login 200 in 90ms
+ GET /api/users?role=admin&limit=1 200 in 37ms
+Unable to determine client IP for rate limiting
+ POST /api/auth/login 200 in 91ms
+ GET /api/users?role=admin&limit=1 200 in 37ms
+[PERF] Authorization: 0.3ms
+[PERF] Database insert: 3.326ms
+[PERF] Cache invalidation: 0.014ms
+[PERF] POST /api/tasks: 4.096ms
+ POST /api/tasks 201 in 39ms
+Unable to determine client IP for rate limiting
+ POST /api/auth/login 200 in 89ms
+ GET /api/users?role=admin&limit=1 200 in 37ms
+[PERF] Authorization: 0.272ms
+[PERF] Database insert: 2.66ms
+[PERF] Cache invalidation: 0.007ms
+[PERF] POST /api/tasks: 3.384ms
+ POST /api/tasks 201 in 36ms
+Unable to determine client IP for rate limiting
+ POST /api/auth/login 200 in 97ms
+ GET /api/users?role=admin&limit=1 200 in 41ms
+Unable to determine client IP for rate limiting
+ POST /api/auth/login 200 in 93ms
+ GET /api/users?role=admin&limit=1 200 in 36ms
+[PERF] Authorization: 0.284ms
+[PERF] Database insert: 2.898ms
+[PERF] Cache invalidation: 0.009ms
+[PERF] POST /api/tasks: 3.581ms
+ POST /api/tasks 201 in 42ms
+Unable to determine client IP for rate limiting
+ POST /api/auth/login 200 in 89ms
+ GET /api/users?role=admin&limit=1 200 in 37ms
+[PERF] Authorization: 0.274ms
+[PERF] Database insert: 2.377ms
+[PERF] Cache invalidation: 0.007ms
+[PERF] POST /api/tasks: 3.042ms
+ POST /api/tasks 201 in 36ms
+Unable to determine client IP for rate limiting
+ POST /api/auth/login 200 in 94ms
+ GET /api/users?role=admin&limit=1 200 in 35ms
+Unable to determine client IP for rate limiting
+ POST /api/auth/login 200 in 94ms
+ GET /api/users?role=admin&limit=1 200 in 37ms
+[PERF] Authorization: 0.324ms
+[PERF] Database insert: 2.938ms
+[PERF] Cache invalidation: 0.008ms
+[PERF] POST /api/tasks: 3.715ms
+ POST /api/tasks 201 in 39ms
+Unable to determine client IP for rate limiting
+ POST /api/auth/login 200 in 89ms
+ GET /api/users?role=admin&limit=1 200 in 34ms
+Unable to determine client IP for rate limiting
+ POST /api/auth/login 200 in 93ms
+ GET /api/users?role=admin&limit=1 200 in 42ms
+Unable to determine client IP for rate limiting
+ POST /api/auth/login 200 in 100ms
+ GET /api/users?role=admin&limit=1 200 in 49ms
+Unable to determine client IP for rate limiting
+ POST /api/auth/login 200 in 86ms
+ GET /api/users?role=admin&limit=1 200 in 33ms
+Unable to determine client IP for rate limiting
+ POST /api/auth/login 200 in 88ms
+ GET /api/users?role=admin&limit=1 200 in 38ms
+Unable to determine client IP for rate limiting
+ POST /api/auth/login 200 in 94ms
+ GET /api/users?role=admin&limit=1 200 in 35ms
+Unable to determine client IP for rate limiting
+ POST /api/auth/login 200 in 88ms
+ GET /api/users?role=admin&limit=1 200 in 36ms
+Unable to determine client IP for rate limiting
+ POST /api/auth/login 200 in 92ms
+ GET /api/users?role=admin&limit=1 200 in 43ms
+Unable to determine client IP for rate limiting
+ POST /api/auth/login 200 in 98ms
+ GET /api/users?role=admin&limit=1 200 in 36ms
+Unable to determine client IP for rate limiting
+ POST /api/auth/login 200 in 88ms
+ GET /api/users?role=admin&limit=1 200 in 33ms
+Unable to determine client IP for rate limiting
+ POST /api/auth/login 200 in 90ms
+ GET /api/users?role=admin&limit=1 200 in 37ms
+[PERF] Authorization: 0.283ms
+[PERF] Database insert: 2.929ms
+[PERF] Cache invalidation: 0.015ms
+[PERF] POST /api/tasks: 3.758ms
+ POST /api/tasks 201 in 46ms
+Unable to determine client IP for rate limiting
+ POST /api/auth/login 200 in 109ms
+ GET /api/users?role=admin&limit=1 200 in 37ms
+Unable to determine client IP for rate limiting
+ POST /api/auth/login 200 in 87ms
+ GET /api/users?role=admin&limit=1 200 in 32ms
+Unable to determine client IP for rate limiting
+ POST /api/auth/login 200 in 91ms
+ GET /api/users?role=admin&limit=1 200 in 39ms
+[PERF] Authorization: 0.329ms
+[PERF] Database insert: 2.869ms
+[PERF] Cache invalidation: 0.008ms
+[PERF] POST /api/tasks: 3.607ms
+ POST /api/tasks 201 in 43ms
+Unable to determine client IP for rate limiting
+ POST /api/auth/login 200 in 99ms
+ GET /api/users?role=admin&limit=1 200 in 39ms
+Unable to determine client IP for rate limiting
+ POST /api/auth/login 200 in 91ms
+ GET /api/users?role=admin&limit=1 200 in 36ms
+Unable to determine client IP for rate limiting
+ POST /api/auth/login 200 in 103ms
+ GET /api/users?role=admin&limit=1 200 in 53ms
+[PERF] Authorization: 0.33ms
+[PERF] Database insert: 2.738ms
+[PERF] Cache invalidation: 0.009ms
+[PERF] POST /api/tasks: 3.574ms
+ POST /api/tasks 201 in 41ms
+Unable to determine client IP for rate limiting
+ POST /api/auth/login 200 in 93ms
+ GET /api/users?role=admin&limit=1 200 in 37ms
+Unable to determine client IP for rate limiting
+ POST /api/auth/login 200 in 88ms
+ GET /api/users?role=admin&limit=1 200 in 38ms
+Unable to determine client IP for rate limiting
+ POST /api/auth/login 200 in 94ms
+ GET /api/users?role=admin&limit=1 200 in 40ms
+Unable to determine client IP for rate limiting
+ POST /api/auth/login 200 in 109ms
+ GET /api/users?role=team&limit=1 200 in 46ms
+Unable to determine client IP for rate limiting
+ POST /api/auth/login 200 in 100ms
+ GET /api/users?role=admin&limit=1 200 in 40ms
+Unable to determine client IP for rate limiting
+ POST /api/auth/login 200 in 103ms
+ GET /api/users?role=admin&limit=1 200 in 40ms
+Unable to determine client IP for rate limiting
+ POST /api/auth/login 200 in 93ms
+ GET /api/users?role=team&limit=1 200 in 36ms
+Unable to determine client IP for rate limiting
+ POST /api/auth/login 200 in 97ms
+ GET /api/users?role=admin&limit=1 200 in 39ms
+Unable to determine client IP for rate limiting
+ POST /api/auth/login 200 in 92ms
+ GET /api/users?role=team&limit=1 200 in 35ms
+Unable to determine client IP for rate limiting
+ POST /api/auth/login 200 in 101ms
+ GET /api/users?role=guest&limit=1 200 in 37ms
+Unable to determine client IP for rate limiting
+ POST /api/auth/login 200 in 102ms
+Unable to determine client IP for rate limiting
+ POST /api/auth/login 200 in 161ms
+ GET /api/users?role=guest&limit=1 200 in 106ms
+ GET /api/users?role=admin&limit=1 200 in 42ms
+Unable to determine client IP for rate limiting
+ POST /api/auth/login 200 in 91ms
+ GET /api/users?role=guest&limit=1 200 in 41ms
+Unable to determine client IP for rate limiting
+ POST /api/auth/login 200 in 94ms
+ GET /api/users?role=guest&limit=1 200 in 39ms
+Unable to determine client IP for rate limiting
+ POST /api/auth/login 200 in 90ms
+ GET /api/users?role=guest&limit=1 200 in 38ms
+Unable to determine client IP for rate limiting
+ POST /api/auth/login 200 in 96ms
+ GET /api/users?role=guest&limit=1 200 in 45ms
+Unable to determine client IP for rate limiting
+ POST /api/auth/login 200 in 95ms
+ GET /api/users?role=admin&limit=1 200 in 37ms
+Unable to determine client IP for rate limiting
+ POST /api/auth/login 200 in 91ms
+ GET /api/users?role=admin&limit=1 200 in 36ms
+[PERF] Authorization: 0.519ms
+[PERF] Database insert: 3.502ms
+[PERF] Cache invalidation: 0.008ms
+[PERF] POST /api/tasks: 4.52ms
+ POST /api/tasks 201 in 45ms
+Unable to determine client IP for rate limiting
+ POST /api/auth/login 200 in 99ms
+ GET /api/users?role=team&limit=1 200 in 39ms
+Unable to determine client IP for rate limiting
+ POST /api/auth/login 200 in 93ms
+ GET /api/users?role=team&limit=1 200 in 39ms
+[PERF] Authorization: 0.504ms
+[PERF] Database insert: 3.632ms
+[PERF] Cache invalidation: 0.01ms
+[PERF] POST /api/tasks: 4.811ms
+ POST /api/tasks 201 in 50ms
+Unable to determine client IP for rate limiting
+ POST /api/auth/login 200 in 105ms
+Unable to determine client IP for rate limiting
+ POST /api/auth/login 200 in 108ms
+ GET /api/users?role=admin&limit=1 200 in 108ms
+ GET /api/users?role=admin&limit=1 200 in 37ms
+Unable to determine client IP for rate limiting
+ POST /api/auth/login 200 in 96ms
+ GET /api/users?role=admin&limit=1 200 in 41ms
+[PERF] Authorization: 0.285ms
+[PERF] Database insert: 2.88ms
+[PERF] Cache invalidation: 0.008ms
+[PERF] POST /api/tasks: 3.582ms
+ POST /api/tasks 201 in 43ms
+Unable to determine client IP for rate limiting
+ POST /api/auth/login 200 in 95ms
+ GET /api/users?role=team&limit=1 200 in 45ms
+Unable to determine client IP for rate limiting
+ POST /api/auth/login 200 in 101ms
+Unable to determine client IP for rate limiting
+ POST /api/auth/login 200 in 102ms
+ GET /api/users?role=team&limit=1 200 in 106ms
+ GET /api/users?role=admin&limit=1 200 in 53ms
+[PERF] Authorization: 0.344ms
+[PERF] Database insert: 2.9ms
+[PERF] Cache invalidation: 0.009ms
+[PERF] POST /api/tasks: 3.713ms
+ POST /api/tasks 201 in 52ms
+Unable to determine client IP for rate limiting
+ POST /api/auth/login 200 in 96ms
+ GET /api/users?role=admin&limit=1 200 in 46ms
+Unable to determine client IP for rate limiting
+ POST /api/auth/login 200 in 100ms
+ GET /api/users?role=admin&limit=1 200 in 47ms
+[PERF] Authorization: 0.285ms
+[PERF] Database insert: 2.99ms
+[PERF] Cache invalidation: 0.012ms
+[PERF] POST /api/tasks: 3.832ms
+ POST /api/tasks 201 in 47ms
+Unable to determine client IP for rate limiting
+ POST /api/auth/login 200 in 101ms
+ GET /api/users?role=team&limit=1 200 in 38ms
+Unable to determine client IP for rate limiting
+ POST /api/auth/login 200 in 89ms
+ GET /api/users?role=team&limit=1 200 in 34ms
+[PERF] Authorization: 0.329ms
+[PERF] Database insert: 3.478ms
+[PERF] Cache invalidation: 0.009ms
+[PERF] POST /api/tasks: 4.232ms
+ POST /api/tasks 201 in 40ms
+Unable to determine client IP for rate limiting
+ POST /api/auth/login 200 in 92ms
+ GET /api/users?role=admin&limit=1 200 in 41ms
+Unable to determine client IP for rate limiting
+ POST /api/auth/login 200 in 97ms
+ GET /api/users?role=admin&limit=1 200 in 38ms
+[PERF] Authorization: 0.325ms
+[PERF] Database insert: 2.534ms
+[PERF] Cache invalidation: 0.007ms
+[PERF] POST /api/tasks: 3.286ms
+ POST /api/tasks 201 in 40ms
+[PERF] Authorization: 0.596ms
+[PERF] Database insert: 2.506ms
+[PERF] Cache invalidation: 0.007ms
+[PERF] POST /api/tasks: 3.503ms
+ POST /api/tasks 201 in 41ms
+Unable to determine client IP for rate limiting
+ POST /api/auth/login 200 in 95ms
+ GET /api/users?role=admin&limit=1 200 in 41ms
+[PERF] Authorization: 0.342ms
+[PERF] Database insert: 2.803ms
+[PERF] Cache invalidation: 0.007ms
+[PERF] POST /api/tasks: 3.777ms
+ POST /api/tasks 201 in 46ms
+Unable to determine client IP for rate limiting
+ POST /api/auth/login 200 in 97ms
+ GET /api/users?role=admin&limit=1 200 in 37ms
+[PERF] Authorization: 0.638ms
+[PERF] Database insert: 2.57ms
+[PERF] Cache invalidation: 0.009ms
+[PERF] POST /api/tasks: 3.63ms
+ POST /api/tasks 201 in 40ms
+[PERF] Authorization: 0.317ms
+[PERF] Database insert: 2.574ms
+[PERF] Cache invalidation: 0.009ms
+[PERF] POST /api/tasks: 3.314ms
+ POST /api/tasks 201 in 38ms
+Unable to determine client IP for rate limiting
+ POST /api/auth/login 200 in 91ms
+ GET /api/users?role=admin&limit=1 200 in 36ms
+[PERF] Authorization: 0.317ms
+[PERF] Database insert: 8.192ms
+[PERF] Cache invalidation: 0.008ms
+[PERF] POST /api/tasks: 8.969ms
+ POST /api/tasks 201 in 43ms
+Unable to determine client IP for rate limiting
+ POST /api/auth/login 200 in 94ms
+ GET /api/users?role=admin&limit=1 200 in 37ms
+[PERF] Authorization: 0.269ms
+[PERF] Database insert: 2.75ms
+[PERF] Cache invalidation: 0.007ms
+[PERF] POST /api/tasks: 3.409ms
+ POST /api/tasks 201 in 38ms
+[PERF] Authorization: 0.256ms
+[PERF] Database insert: 2.444ms
+[PERF] Cache invalidation: 0.007ms
+[PERF] POST /api/tasks: 3.084ms
+ POST /api/tasks 201 in 38ms
+Unable to determine client IP for rate limiting
+ POST /api/auth/login 200 in 102ms
+ GET /api/users?role=admin&limit=1 200 in 42ms
+[PERF] Authorization: 0.321ms
+[PERF] Database insert: 2.281ms
+[PERF] Cache invalidation: 0.006ms
+[PERF] POST /api/tasks: 2.995ms
+ POST /api/tasks 201 in 44ms
+Unable to determine client IP for rate limiting
+ POST /api/auth/login 200 in 88ms
+ GET /api/users?role=admin&limit=1 200 in 32ms
+[PERF] Authorization: 0.327ms
+[PERF] Database insert: 2.95ms
+[PERF] Cache invalidation: 0.009ms
+[PERF] POST /api/tasks: 3.73ms
+ POST /api/tasks 201 in 38ms
+Unable to determine client IP for rate limiting
+ POST /api/auth/login 200 in 89ms
+ GET /api/users?role=admin&limit=1 200 in 34ms
+[PERF] Authorization: 0.29ms
+[PERF] Database insert: 2.59ms
+[PERF] Cache invalidation: 0.008ms
+[PERF] POST /api/tasks: 3.272ms
+ POST /api/tasks 201 in 46ms
+Unable to determine client IP for rate limiting
+ POST /api/auth/login 200 in 95ms
+ GET /api/users?role=admin&limit=1 200 in 38ms
+[PERF] Authorization: 0.448ms
+[PERF] Database insert: 2.784ms
+[PERF] Cache invalidation: 0.01ms
+[PERF] POST /api/tasks: 3.697ms
+ POST /api/tasks 201 in 40ms
+Unable to determine client IP for rate limiting
+ POST /api/auth/login 200 in 95ms
+ GET /api/users?role=admin&limit=1 200 in 44ms
+[PERF] Authorization: 0.474ms
+[PERF] Database insert: 2.742ms
+[PERF] Cache invalidation: 0.014ms
+[PERF] POST /api/tasks: 3.755ms
+ POST /api/tasks 201 in 46ms
+Unable to determine client IP for rate limiting
+ POST /api/auth/login 200 in 115ms
+ GET /api/users?role=admin&limit=1 200 in 47ms
+[PERF] Authorization: 0.5ms
+[PERF] Database insert: 3.273ms
+[PERF] Cache invalidation: 0.007ms
+[PERF] POST /api/tasks: 4.383ms
+ POST /api/tasks 201 in 42ms
+Unable to determine client IP for rate limiting
+ POST /api/auth/login 200 in 96ms
+ GET /api/users?role=admin&limit=1 200 in 39ms
+[PERF] Authorization: 0.255ms
+[PERF] Database insert: 2.708ms
+[PERF] Cache invalidation: 0.007ms
+[PERF] POST /api/tasks: 3.336ms
+ POST /api/tasks 201 in 43ms
+Unable to determine client IP for rate limiting
+ POST /api/auth/login 200 in 102ms
+ GET /api/users?role=admin&limit=1 200 in 45ms
+[PERF] Authorization: 0.542ms
+[PERF] Database insert: 3.079ms
+[PERF] Cache invalidation: 0.012ms
+[PERF] POST /api/tasks: 4.236ms
+ POST /api/tasks 201 in 52ms
+Unable to determine client IP for rate limiting
+ POST /api/auth/login 200 in 87ms
+ GET /api/users?role=admin&limit=1 200 in 34ms
+[PERF] Authorization: 0.417ms
+[PERF] Database insert: 2.659ms
+[PERF] Cache invalidation: 0.011ms
+[PERF] POST /api/tasks: 3.594ms
+ POST /api/tasks 201 in 35ms
+Unable to determine client IP for rate limiting
+ POST /api/auth/login 200 in 90ms
+ GET /api/users?role=admin&limit=1 200 in 37ms
+[PERF] Authorization: 0.328ms
+[PERF] Database insert: 2.861ms
+[PERF] Cache invalidation: 0.012ms
+[PERF] POST /api/tasks: 3.691ms
+ POST /api/tasks 201 in 46ms
+ ✓ Compiled /api/health/schema in 351ms
+ GET /api/health/schema 200 in 409ms
+ GET /api/health 200 in 60ms
+ GET /api/health 200 in 55ms
+ GET /api/health/schema 200 in 60ms
+ GET /api/health 200 in 85ms
+ GET /api/health/schema 200 in 56ms
+ GET /api/health 200 in 58ms
+ GET /api/health/schema 200 in 61ms
+ ✓ Compiled middleware in 1ms
+Unable to determine client IP for rate limiting
+ POST /api/auth/login 200 in 432ms
+Unable to determine client IP for rate limiting
+ POST /api/auth/login 200 in 125ms
+ GET /api/users?role=admin&limit=1 200 in 99ms
+ GET /api/users?role=admin&limit=1 200 in 59ms
+ ○ Compiling /api/test-utils/seed-user ...
+ ✓ Compiled /api/test-utils/seed-user in 588ms
+ POST /api/test-utils/seed-user 201 in 773ms
+   Reload env: .env.local
+
+-----
+[1m[31mFATAL[39m[0m: An unexpected Turbopack error occurred. A panic log has been written to C:\Users\SHUKOO~1\AppData\Local\Temp\next-panic-4836d1847cb8596c04f7b5f46eb9a0d2.log.
+
+To help make Turbopack better, report this error by clicking here: https://github.com/vercel/next.js/discussions/new?category=turbopack-error-report&title=Turbopack%20Error%3A%20Next.js%20package%20not%20found&body=Turbopack%20version%3A%20%60e678913a%60%0A%0AError%20message%3A%0A%60%60%60%0ATurbopack%20Error%3A%20Next.js%20package%20not%20found%0A%60%60%60&labels=Turbopack,Turbopack%20Panic%20Backtrace
+-----
+
+[Error [TurbopackInternalError]: Next.js package not found
+
+Debug info:
+- Execution of get_entrypoints_with_issues_operation failed
+- Execution of EntrypointsOperation::new failed
+- Execution of Project::entrypoints failed
+- Execution of AppProject::routes failed
+- Execution of directory_tree_to_entrypoints_internal failed
+- Execution of directory_tree_to_loader_tree failed
+- Execution of get_next_package failed
+- Next.js package not found]
+[?25h

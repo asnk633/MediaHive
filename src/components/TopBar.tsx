@@ -3,6 +3,8 @@
 
 import { useEffect, useState } from "react";
 import Link from "next/link";
+import { Bell, Moon, User } from "lucide-react";
+import { cn } from "@/lib/utils";
 
 type Health = "unknown" | "healthy" | "error";
 
@@ -41,38 +43,35 @@ export default function TopBar() {
   }, []);
 
   return (
-    <header className="sticky top-0 z-50 flex items-center justify-between bg-black/60 backdrop-blur-md px-4 py-3 border-b border-white/10">
+    <header className="sticky top-0 z-50 flex items-center justify-between bg-background/80 backdrop-blur-md px-4 py-3 border-b border-white/5">
       <div className="flex items-center gap-2">
         <span
-          className={`inline-block h-3 w-3 rounded-full ${
-            health === "healthy" ? "bg-emerald-500" : health === "error" ? "bg-red-500" : "bg-zinc-500"
-          }`}
+          className={cn(
+            "inline-block h-2.5 w-2.5 rounded-full shadow-[0_0_8px_currentColor]",
+            health === "healthy" ? "bg-emerald-500 text-emerald-500" : health === "error" ? "bg-red-500 text-red-500" : "bg-zinc-500 text-zinc-500"
+          )}
           title={`Server: ${health}`}
         />
-        <span className="text-lg font-semibold">Thaiba Garden</span>
+        <span className="text-lg font-bold tracking-tight text-white">Thaiba Garden</span>
       </div>
 
-      <nav className="flex items-center gap-3 text-white/80">
-        <button aria-label="Theme" className="hover:text-white">
-          🌙
+      <nav className="flex items-center gap-1 text-text-muted">
+        <button aria-label="Theme" className="p-2 hover:text-white hover:bg-white/5 rounded-full transition-colors">
+          <Moon className="h-5 w-5" />
         </button>
-        <Link href="/updates" className="relative hover:text-white" aria-label="Notifications" title="Notifications">
-          🔔
+        <Link href="/updates" className="relative p-2 hover:text-white hover:bg-white/5 rounded-full transition-colors" aria-label="Notifications" title="Notifications">
+          <Bell className="h-5 w-5" />
           {unread > 0 && (
-            <span className="absolute -right-1 -top-1 grid h-4 min-w-4 place-items-center rounded-full bg-emerald-500 px-1 text-[10px] font-bold text-black">
-              {unread}
-            </span>
+            <span className="absolute top-1.5 right-1.5 grid h-2.5 min-w-[10px] place-items-center rounded-full bg-primary ring-2 ring-background" />
           )}
         </Link>
-        
-        {/* Avatar link updated to match the requested styling */}
-        <Link href="/profile" aria-label="Open profile" className="ml-2">
+
+        <Link href="/profile" aria-label="Open profile" className="ml-1">
           <div
-            className="w-9 h-9 rounded-full overflow-hidden border-2 border-white/8 cursor-pointer grid place-items-center"
+            className="w-8 h-8 rounded-full overflow-hidden border border-white/10 bg-surface flex items-center justify-center hover:border-primary/50 transition-colors"
             title="Your profile"
-            style={{ pointerEvents: "auto" }}
           >
-            <span className="text-sm font-medium text-white/90">AU</span>
+            <span className="text-xs font-bold text-white">AU</span>
           </div>
         </Link>
       </nav>

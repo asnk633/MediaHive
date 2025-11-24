@@ -4,7 +4,7 @@ import React, { useState, useCallback } from 'react';
 import { Button } from '@/components/ui/button';
 import { cn } from '@/lib/utils';
 import { useRouter } from 'next/navigation';
-import { useAuth } from '@/contexts/AuthContext';
+import { usePermission } from '@/hooks/usePermission';
 
 // Dynamic imports for icons to reduce bundle size
 import dynamic from 'next/dynamic';
@@ -18,11 +18,13 @@ const BellPlus = dynamic(() => import('lucide-react').then(mod => mod.BellPlus),
 export function FAB() {
   const [isOpen, setIsOpen] = useState(false);
   const router = useRouter();
-  const { hasRole, user } = useAuth();
+  const { can, role } = usePermission();
 
-  // Role check based on the patch logic
-  const canSeeEvent = hasRole(['admin', 'team']);
-  const canSeeNotify = hasRole(['admin']);
+  // Permission Checks
+  const canCreateTask = can('create:tasks');
+  const canCreateEvent = can('create:events');
+  // Assuming 'create:notifications' or similar exists, or restricted to admin
+  const canNotify = role === 'admin';
 
   const handleCreateTask = useCallback(() => {
     setIsOpen(false);
@@ -31,8 +33,7 @@ export function FAB() {
 
   const handleCreateEvent = useCallback(() => {
     setIsOpen(false);
-    // Original component routed to '/calendar/new'
-    router.push('/calendar/new'); 
+    router.push('/calendar?modal=new-event');
   }, [router]);
 
   const handleCreateNotification = useCallback(() => {
@@ -40,77 +41,75 @@ export function FAB() {
     router.push('/notifications/new');
   }, [router]);
 
+  // If user can't create anything, don't show FAB
+  if (!canCreateTask && !canCreateEvent && !canNotify) return null;
+
   return (
     <>
       {/* Backdrop */}
       {isOpen && (
         <div
-          className="fixed inset-0 bg-black/20 z-40 md:hidden"
+          className="fixed inset-0 bg-background/60 backdrop-blur-sm z-40 md:hidden"
           onClick={() => setIsOpen(false)}
         />
       )}
 
       {/* FAB Menu (centered over BottomNav) */}
       <div
-        className="fixed left-1/2 transform -translate-x-1/2 z-50"
-        style={{ bottom: "calc(var(--bottom-nav-height, 22px) + 2rem)" }}
+        className="fixed left-1/2 transform -translate-x-1/2 z-50 fab-root"
+        style={{ bottom: "calc(var(--bottom-nav-height, 22px) + 18px)" }}
       >
         <div
           className={cn(
-            'flex flex-col-reverse gap-3 mb-3 transition-all duration-200',
-            // Added pointer-events-auto when open to ensure buttons are clickable
+            'flex flex-col-reverse gap-3 mb-3 transition-all duration-200 items-center',
             isOpen ? 'opacity-100 scale-100 pointer-events-auto' : 'opacity-0 scale-95 pointer-events-none'
           )}
         >
-          {/* Create Task (Visible to all) */}
-          <Button
-            onClick={handleCreateTask}
-            className="h-12 gap-2 shadow-lg"
-            size="lg"
-            data-testid="fab-new-task"
-          >
-            <ListTodo className="h-4 w-4" />
-            <span>New Task</span>
-          </Button>
+          {/* Create Task (Visible if permitted) */}
+          {canCreateTask && (
+            <Button
+              onClick={handleCreateTask}
+              className="h-12 w-auto px-6 gap-2 shadow-elevated rounded-full bg-surface text-text-primary hover:bg-surface/80 border border-white/10"
+              data-testid="fab-new-task"
+            >
+              <ListTodo className="h-4 w-4 text-primary" />
+              <span>New Task</span>
+            </Button>
+          )}
 
-          {/* Create Event - Only for Admin/Team */}
-          {canSeeEvent && (
+          {/* Create Event - Only for permitted roles */}
+          {canCreateEvent && (
             <Button
               onClick={handleCreateEvent}
-              className="h-12 gap-2 shadow-lg"
-              size="lg"
-              variant="secondary"
+              className="h-12 w-auto px-6 gap-2 shadow-elevated rounded-full bg-surface text-text-primary hover:bg-surface/80 border border-white/10"
               data-testid="fab-new-event"
             >
-              <CalendarPlus className="h-4 w-4" />
+              <CalendarPlus className="h-4 w-4 text-accent" />
               <span>New Event</span>
             </Button>
           )}
 
-          {/* Notify - Only for Admin (New Feature) */}
-          {canSeeNotify && (
+          {/* Notify - Only for Admin */}
+          {canNotify && (
             <Button
               onClick={handleCreateNotification}
-              className="h-12 gap-2 shadow-lg"
-              size="lg"
-              variant="secondary"
+              className="h-12 w-auto px-6 gap-2 shadow-elevated rounded-full bg-surface text-text-primary hover:bg-surface/80 border border-white/10"
               data-testid="fab-notify"
             >
-              <BellPlus className="h-4 w-4" />
+              <BellPlus className="h-4 w-4 text-yellow-500" />
               <span>Notify</span>
             </Button>
           )}
         </div>
 
-        {/* Main FAB Button (visual: purple circular CTA) */}
+        {/* Main FAB Button */}
         <Button
           onClick={() => setIsOpen(!isOpen)}
-          // remove size prop so className controls actual size
           className={cn(
-            'h-14 w-14 rounded-full shadow-2xl transition-transform flex items-center justify-center',
-            'bg-gradient-to-b from-purple-600 to-purple-500 text-white',
-            'focus:outline-none focus-visible:ring-4 focus-visible:ring-purple-300',
-            isOpen && 'rotate-45'
+            'h-14 w-14 rounded-full shadow-glow transition-transform flex items-center justify-center',
+            'bg-gradient-to-b from-primary to-primary/80 text-white border border-white/20',
+            'focus:outline-none focus-visible:ring-4 focus-visible:ring-primary/30',
+            isOpen && 'rotate-45 bg-surface border-white/10 text-text-muted'
           )}
           aria-label={isOpen ? "Close create menu" : "Open create menu"}
           data-testid="fab-open"

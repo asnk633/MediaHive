@@ -89,6 +89,9 @@ test.describe('RBAC (Role-Based Access Control)', () => {
     // Seed a guest user
     const guestUser = await seedUser(page, 'guest');
     
+    // Clear cookies to avoid interference from previous login
+    await page.context().clearCookies();
+    
     // Try to access the notify endpoint as a guest
     const resp = await page.request.post('/api/notify', {
       headers: {
@@ -110,6 +113,9 @@ test.describe('RBAC (Role-Based Access Control)', () => {
   test('should allow admin to access admin endpoints', async ({ page }) => {
     // Seed an admin user
     const adminUser = await seedUser(page, 'admin');
+    
+    // Clear cookies to avoid interference from previous login
+    await page.context().clearCookies();
     
     // Try to access the notify endpoint as an admin
     const resp = await page.request.post('/api/notify', {
@@ -137,6 +143,9 @@ test.describe('RBAC (Role-Based Access Control)', () => {
     
     // Seed a team user (different user)
     const teamUser = await seedUser(page, 'team');
+    
+    // Clear cookies to avoid interference from previous login
+    await page.context().clearCookies();
     
     // Try to delete the admin's task as a team member
     const resp = await page.request.delete('/api/tasks', {

@@ -17,7 +17,7 @@ export interface Institution {
   createdAt: string;
 }
 
-export type TaskStatus = 'todo' | 'in_progress' | 'review' | 'done';
+export type TaskStatus = 'todo' | 'in_progress' | 'review' | 'done' | 'pending';
 export type TaskPriority = 'low' | 'medium' | 'high' | 'urgent';
 
 export interface Task {

@@ -1,8 +1,8 @@
 // src/app/api/_lib/test-rbac.ts
 // Simple test script to verify RBAC functions
 
-import { hasRole, hasPermission } from './rbac';
-import { AuthUser } from './auth';
+import { hasPermission } from '@/lib/permissions';
+import { hasRole, AuthUser } from './auth';
 
 // Mock user objects for testing
 const mockAdminUser: AuthUser = {
@@ -45,16 +45,13 @@ console.log('Null user has admin role (should be false):', hasRole(null, ['admin
 
 // Test hasPermission function
 console.log('\nTesting hasPermission function:');
-console.log('Admin has manage:users permission:', hasPermission(mockAdminUser, 'manage:users'));
-console.log('Admin has send:notifications permission:', hasPermission(mockAdminUser, 'send:notifications'));
-console.log('Admin has admin:monitoring permission:', hasPermission(mockAdminUser, 'admin:monitoring'));
-console.log('Team has read:tasks permission:', hasPermission(mockTeamUser, 'read:tasks'));
-console.log('Team has write:tasks permission:', hasPermission(mockTeamUser, 'write:tasks'));
-console.log('Team has review:tasks permission:', hasPermission(mockTeamUser, 'review:tasks'));
-console.log('Guest has read:tasks permission:', hasPermission(mockGuestUser, 'read:tasks'));
-console.log('Guest has manage:users permission (should be false):', hasPermission(mockGuestUser, 'manage:users'));
-console.log('Team has manage:users permission (should be false):', hasPermission(mockTeamUser, 'manage:users'));
-console.log('Guest has send:notifications permission (should be false):', hasPermission(mockGuestUser, 'send:notifications'));
-console.log('Null user has read:tasks permission (should be false):', hasPermission(null, 'read:tasks'));
+console.log('Admin has manage:users permission:', hasPermission(mockAdminUser.role, 'manage:users'));
+console.log('Admin has read:reports permission:', hasPermission(mockAdminUser.role, 'read:reports'));
+console.log('Team has read:tasks permission:', hasPermission(mockTeamUser.role, 'read:tasks'));
+console.log('Team has create:tasks permission:', hasPermission(mockTeamUser.role, 'create:tasks'));
+console.log('Team has edit:task_status permission:', hasPermission(mockTeamUser.role, 'edit:task_status'));
+console.log('Guest has read:tasks permission:', hasPermission(mockGuestUser.role, 'read:tasks'));
+console.log('Guest has manage:users permission (should be false):', hasPermission(mockGuestUser.role, 'manage:users'));
+console.log('Team has manage:users permission (should be false):', hasPermission(mockTeamUser.role, 'manage:users'));
 
 console.log('\nRBAC tests completed successfully!');

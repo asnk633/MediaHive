@@ -1,113 +1,48 @@
-import { NextRequest } from 'next/server';
-import { AuthUser } from './auth';
-import { getUserFromRequest } from './auth';
+import { NextRequest, NextResponse } from 'next/server';
+import { db } from '@/db';
+import { users } from '@/db/schema';
+import { eq } from 'drizzle-orm';
+import { Role, hasPermission, Permission } from '@/lib/permissions';
 
-/**
- * RBAC middleware for API routes
- * 
- * Centralized role-based access control that validates user permissions
- * for protected endpoints.
- */
+export async function authorizeByPermission(req: NextRequest, requiredPermission: Permission) {
+  // 1. Get User ID from Header (Simulated Auth) or Session
+  // In a real app, this would be a session token. 
+  // For this project, we might be using a header or a mock session.
+  // Let's assume a custom header 'x-user-id' for now, or fallback to a default if dev.
 
-// Define roles
-export type UserRole = 'admin' | 'team' | 'guest';
+  let userId = req.headers.get('x-user-id');
 
-// Define permissions
-export type Permission = 
-  | 'read:tasks'
-  | 'write:tasks'
-  | 'manage:users'
-  | 'send:notifications'
-  | 'review:tasks'
-  | 'admin:monitoring';
-
-// Define role permissions mapping
-const ROLE_PERMISSIONS: Record<UserRole, Permission[]> = {
-  admin: [
-    'read:tasks',
-    'write:tasks',
-    'manage:users',
-    'send:notifications',
-    'review:tasks',
-    'admin:monitoring'
-  ],
-  team: [
-    'read:tasks',
-    'write:tasks',
-    'review:tasks'
-  ],
-  guest: [
-    'read:tasks'
-  ]
-};
-
-/**
- * Check if user has a specific role
- */
-export function hasRole(user: AuthUser | null, roles: UserRole[]): boolean {
-  if (!user) return false;
-  return roles.includes(user.role);
-}
-
-/**
- * Check if user has a specific permission
- */
-export function hasPermission(user: AuthUser | null, permission: Permission): boolean {
-  if (!user) return false;
-  
-  // Type guard to ensure user.role is a valid UserRole
-  if (!(user.role in ROLE_PERMISSIONS)) {
-    return false;
+  // DEV FALLBACK
+  if (!userId && process.env.NODE_ENV !== 'production') {
+    // Default to admin for dev convenience if not specified
+    // userId = '1'; 
   }
-  
-  const userPermissions = ROLE_PERMISSIONS[user.role as UserRole] || [];
-  return userPermissions.includes(permission);
-}
 
-/**
- * Middleware to protect API routes by role
- * 
- * @param req Next.js request object
- * @param allowedRoles Roles that are allowed to access the route
- * @returns AuthUser object if authorized, null if not
- */
-export async function authorizeByRole(
-  req: NextRequest,
-  allowedRoles: UserRole[]
-): Promise<AuthUser | null> {
-  const user = await getUserFromRequest(req);
-  
+  if (!userId) {
+    return null; // Unauthorized
+  }
+
+  const [user] = await db.select().from(users).where(eq(users.id, parseInt(userId)));
+
   if (!user) {
     return null;
   }
-  
-  if (!hasRole(user, allowedRoles)) {
-    return null;
+
+  const userRole = user.role as Role;
+
+  if (!hasPermission(userRole, requiredPermission)) {
+    return null; // Forbidden
   }
-  
+
   return user;
 }
 
-/**
- * Middleware to protect API routes by permission
- * 
- * @param req Next.js request object
- * @param requiredPermission Permission required to access the route
- * @returns AuthUser object if authorized, null if not
- */
-export async function authorizeByPermission(
-  req: NextRequest,
-  requiredPermission: Permission
-): Promise<AuthUser | null> {
-  const user = await getUserFromRequest(req);
-  
-  if (!user) {
-    return null;
-  }
-  
-  if (!hasPermission(user, requiredPermission)) {
-    return null;
-  }
-  
-  return user;
+export function withAuth(handler: Function, permission: Permission) {
+  return async (req: NextRequest, ...args: any[]) => {
+    const user = await authorizeByPermission(req, permission);
+    if (!user) {
+      return NextResponse.json({ error: 'Unauthorized or Forbidden' }, { status: 403 });
+    }
+    return handler(req, user, ...args);
+  };
 }

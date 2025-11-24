@@ -9,6 +9,7 @@ import { RoleProvider } from "@/app/(shell)/RoleContext";
 // 🎯 Import the AuthProvider from the correct path
 import { AuthProvider } from "@/contexts/AuthContext";
 import { ClientOfflineStatusIndicator as OfflineStatusIndicator } from "@/components/ClientOfflineStatusIndicator";
+import { HydrationDetector } from "@/components/HydrationDetector";
 
 // Initialize Inter font
 const inter = Inter({
@@ -50,14 +51,14 @@ export default function ShellLayout({ children }: { children: React.ReactNode })
                 {/* Preload critical resources */}
 
 
-                
+
                 {/* PWA meta tags */}
                 <link rel="manifest" href="/manifest.json" />
 
                 <meta name="apple-mobile-web-app-capable" content="yes" />
                 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
                 <link rel="apple-touch-icon" href="/apple-touch-icon.png" />
-                
+
                 {/* Service worker registration */}
                 <script dangerouslySetInnerHTML={{
                   __html: `
@@ -80,6 +81,7 @@ export default function ShellLayout({ children }: { children: React.ReactNode })
 
                 {/* Offline status indicator */}
                 <OfflineStatusIndicator />
+                <HydrationDetector />
 
                 {/* Put FAB here so it's centered above the BottomNav */}
                 <FAB />

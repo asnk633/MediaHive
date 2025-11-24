@@ -1,0 +1,13 @@
+-- ALTER TABLE `tasks` ADD COLUMN `reviewStatus` text;
+--> statement-breakpoint
+-- ALTER TABLE `tasks` ADD COLUMN `last_updated_by` integer REFERENCES users(id);
+--> statement-breakpoint
+-- ALTER TABLE `tasks` ADD COLUMN `is_archived` integer DEFAULT false;
+--> statement-breakpoint
+-- ALTER TABLE `tasks` ADD COLUMN `version` integer DEFAULT 1 NOT NULL;
+--> statement-breakpoint
+-- ALTER TABLE `events` ADD COLUMN `approval_status` text DEFAULT 'pending' NOT NULL;
+--> statement-breakpoint
+-- ALTER TABLE `notifications` ADD COLUMN `read` integer DEFAULT false NOT NULL;
+--> statement-breakpoint
+-- ALTER TABLE `notifications` ADD COLUMN `metadata` text;

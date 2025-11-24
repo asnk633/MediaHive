@@ -2,7 +2,8 @@ import { NextRequest, NextResponse } from 'next/server';
 import { db } from '@/db';
 import { events } from '@/db/schema';
 import { eq, like, and, or, gte, lte, desc } from 'drizzle-orm';
-import { getUserFromRequest, hasRole, isAdmin } from '../_lib/auth';
+import { authorize } from '../_lib/rbac';
+import { hasRole } from '@/lib/permissions';
 import { validateSchema, createEventSchema, updateEventSchema } from '@/lib/validation';
 import { z } from 'zod';
 import { sanitizeHtmlContent, sanitizeTextContent } from '@/lib/sanitizer';
@@ -10,7 +11,7 @@ import { sanitizeHtmlContent, sanitizeTextContent } from '@/lib/sanitizer';
 // --- GET Request Handler ---
 export async function GET(request: NextRequest) {
   try {
-    const user = await getUserFromRequest(request);
+    const user = await authorize(request, 'read:events');
     if (!user) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
@@ -57,7 +58,7 @@ export async function GET(request: NextRequest) {
     const conditions = [eq(events.institutionId, user.institutionId)];
 
     // Non-admin users only see approved events
-    if (!isAdmin(user)) {
+    if (!hasRole(user, ['admin'])) {
       conditions.push(eq(events.approvalStatus, 'approved'));
     }
 
@@ -95,7 +96,7 @@ export async function GET(request: NextRequest) {
         { status: 400 }
       );
     }
-    
+
     console.error('GET error:', error);
     return NextResponse.json(
       { error: 'Internal server error: ' + (error as Error).message },
@@ -107,18 +108,13 @@ export async function GET(request: NextRequest) {
 // --- POST Request Handler ---
 export async function POST(request: NextRequest) {
   try {
-    const user = await getUserFromRequest(request);
+    const user = await authorize(request, 'create:events');
     if (!user) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
 
-    // Only team and admin can create events
-    if (!hasRole(user, ['admin', 'team'])) {
-      return NextResponse.json(
-        { error: 'Only team members and admins can create events' },
-        { status: 403 }
-      );
-    }
+    // Only team and admin can create events (enforced by permission check above, but double check role if needed)
+    // The permission 'create:events' is assigned to admin and team in permissions.ts
 
     const body = await request.json();
     const validatedBody = validateSchema(createEventSchema, body);
@@ -127,7 +123,7 @@ export async function POST(request: NextRequest) {
     const now = new Date().toISOString();
 
     // Admin events are auto-approved, team events need approval
-    const approvalStatus = isAdmin(user) ? 'approved' : 'pending';
+    const approvalStatus = hasRole(user, ['admin']) ? 'approved' : 'pending';
 
     const newEvents = await db
       .insert(events)
@@ -153,7 +149,7 @@ export async function POST(request: NextRequest) {
         { status: 400 }
       );
     }
-    
+
     console.error('POST error:', error);
     return NextResponse.json(
       { error: 'Internal server error: ' + (error as Error).message },
@@ -165,7 +161,7 @@ export async function POST(request: NextRequest) {
 // --- PUT Request Handler ---
 export async function PUT(request: NextRequest) {
   try {
-    const user = await getUserFromRequest(request);
+    const user = await authorize(request, 'edit:events');
     if (!user) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
@@ -179,7 +175,7 @@ export async function PUT(request: NextRequest) {
 
     const body = await request.json();
     const validatedBody = validateSchema(updateEventSchema, body);
-    
+
     // Check if event exists
     const [existingEvent] = await db
       .select()
@@ -191,7 +187,7 @@ export async function PUT(request: NextRequest) {
     }
 
     // Only creator or admin can update
-    if (existingEvent.createdById !== user.id && !isAdmin(user)) {
+    if (existingEvent.createdById !== user.id && !hasRole(user, ['admin'])) {
       return NextResponse.json({ error: 'Forbidden' }, { status: 403 });
     }
 
@@ -236,7 +232,7 @@ export async function PUT(request: NextRequest) {
         { status: 400 }
       );
     }
-    
+
     console.error('PUT error:', error);
     return NextResponse.json(
       { error: 'Internal server error' },
@@ -248,7 +244,7 @@ export async function PUT(request: NextRequest) {
 // --- DELETE Request Handler ---
 export async function DELETE(request: NextRequest) {
   try {
-    const user = await getUserFromRequest(request);
+    const user = await authorize(request, 'delete:events');
     if (!user) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
@@ -279,7 +275,7 @@ export async function DELETE(request: NextRequest) {
     }
 
     // Only creator or admin can delete
-    if (existingEvent.createdById !== user.id && !isAdmin(user)) {
+    if (existingEvent.createdById !== user.id && !hasRole(user, ['admin'])) {
       return NextResponse.json({ error: 'Forbidden' }, { status: 403 });
     }
 
@@ -293,7 +289,7 @@ export async function DELETE(request: NextRequest) {
         { status: 400 }
       );
     }
-    
+
     console.error('DELETE error:', error);
     return NextResponse.json(
       { error: 'Internal server error' },

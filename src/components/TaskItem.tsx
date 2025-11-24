@@ -1,4 +1,7 @@
 import React from "react";
+import { usePermission } from "@/hooks/usePermission";
+import { Trash2, Edit2, Calendar, User, Flag, CheckCircle2 } from "lucide-react";
+import { cn } from "@/lib/utils";
 
 type Task = {
   id: number | string;
@@ -9,26 +12,35 @@ type Task = {
   assignee?: { id?: number | string; name?: string } | null;
   dueDate?: string | null;
   reviewStatus?: string | null;
+  createdById?: number | string;
 };
 
 type Props = {
   task: Task;
   className?: string;
+  onEdit?: (task: Task) => void;
+  onDelete?: (taskId: string) => void;
 };
 
-// Simple presentational TaskItem used by both Kanban and list views.
-// Exposes stable data-* attributes for e2e tests:
-//  - data-task-id
-//  - data-status
-//  - data-priority
-//  - data-review-status
-//  - data-assignee
-export default function TaskItem({ task, className = "" }: Props) {
+export default function TaskItem({ task, className = "", onEdit, onDelete }: Props) {
+  const { can } = usePermission();
   const assigneeName = task.assignee?.name ?? "";
+
+  const canEdit = can('edit:tasks');
+  const canDelete = can('delete:tasks');
+
+  const priorityColor =
+    task.priority === 'urgent' ? 'text-red-400 bg-red-500/10' :
+      task.priority === 'high' ? 'text-orange-400 bg-orange-500/10' :
+        'text-primary bg-primary/10';
+
   return (
     <article
       role="article"
-      className={`task-item card ${className}`}
+      className={cn(
+        "group relative overflow-hidden rounded-xl border border-white/5 bg-surface/40 p-4 transition-all hover:bg-surface/60 hover:shadow-lg hover:shadow-primary/5 backdrop-blur-sm",
+        className
+      )}
       data-task-id={String(task.id)}
       data-status={task.status ?? "unknown"}
       data-priority={task.priority ?? "unknown"}
@@ -36,15 +48,70 @@ export default function TaskItem({ task, className = "" }: Props) {
       data-assignee={assigneeName}
       aria-label={`task-${task.id}`}
     >
-      <div className="card-body">
-        <h3 className="task-title">{task.title}</h3>
-        {task.description ? <p className="task-desc">{task.description}</p> : null}
-        <div className="task-meta" aria-hidden>
-          <span className="task-status">Status: {task.status ?? "—"}</span>
-          <span className="task-priority">Priority: {task.priority ?? "—"}</span>
-          {task.dueDate ? <span className="task-due">Due: {task.dueDate}</span> : null}
-          {task.reviewStatus ? <span className="task-review">Review: {task.reviewStatus}</span> : null}
+      <div className="absolute left-0 top-0 h-full w-1 bg-primary/50" />
+
+      <div className="pr-10">
+        <h3 className="font-semibold text-text-primary line-clamp-1 group-hover:text-primary transition-colors">{task.title}</h3>
+        {task.description && (
+          <p className="mt-1 text-sm text-text-muted line-clamp-2">{task.description}</p>
+        )}
+
+        <div className="mt-3 flex flex-wrap gap-2 text-xs text-text-muted" aria-hidden>
+          <div className="flex items-center gap-1.5 rounded-full bg-surface/50 px-2 py-1">
+            <CheckCircle2 className="h-3 w-3" />
+            <span>{task.status ?? "Pending"}</span>
+          </div>
+
+          <div className={cn("flex items-center gap-1.5 rounded-full px-2 py-1", priorityColor)}>
+            <Flag className="h-3 w-3" />
+            <span className="uppercase font-bold text-[10px]">{task.priority ?? "Normal"}</span>
+          </div>
+
+          {task.dueDate && (
+            <div className="flex items-center gap-1.5 rounded-full bg-surface/50 px-2 py-1">
+              <Calendar className="h-3 w-3" />
+              <span>{task.dueDate}</span>
+            </div>
+          )}
+
+          {assigneeName && (
+            <div className="flex items-center gap-1.5 rounded-full bg-surface/50 px-2 py-1">
+              <User className="h-3 w-3" />
+              <span>{assigneeName}</span>
+            </div>
+          )}
+
+          {task.reviewStatus && (
+            <span className={cn(
+              "rounded-full px-2 py-1 font-medium",
+              task.reviewStatus === 'approved' ? 'bg-emerald-500/20 text-emerald-300' : 'bg-amber-500/20 text-amber-300'
+            )}>
+              {task.reviewStatus === 'pending_review' ? 'In Review' : task.reviewStatus}
+            </span>
+          )}
         </div>
+      </div>
+
+      {/* Action Buttons */}
+      <div className="absolute top-3 right-3 flex gap-2 opacity-0 group-hover:opacity-100 transition-opacity focus-within:opacity-100">
+        {canEdit && onEdit && (
+          <button
+            onClick={(e) => { e.stopPropagation(); onEdit(task); }}
+            className="p-1.5 rounded-lg bg-surface hover:bg-accent hover:text-white text-text-muted transition-colors focus:outline-none focus:ring-2 focus:ring-accent"
+            aria-label="Edit task"
+          >
+            <Edit2 className="w-3.5 h-3.5" />
+          </button>
+        )}
+        {canDelete && onDelete && (
+          <button
+            onClick={(e) => { e.stopPropagation(); onDelete(String(task.id)); }}
+            className="p-1.5 rounded-lg bg-surface hover:bg-red-500 hover:text-white text-text-muted transition-colors focus:outline-none focus:ring-2 focus:ring-red-500"
+            aria-label="Delete task"
+          >
+            <Trash2 className="w-3.5 h-3.5" />
+          </button>
+        )}
       </div>
     </article>
   );

@@ -72,6 +72,7 @@ export const events = sqliteTable('events', {
 export const notifications = sqliteTable('notifications', {
   id: integer('id').primaryKey({ autoIncrement: true }),
   userId: integer('user_id').notNull().references(() => users.id),
+  type: text('type').notNull(),
   title: text('title').notNull(),
   body: text('body').notNull(),
   readAt: text('read_at'),

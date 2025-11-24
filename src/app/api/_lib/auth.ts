@@ -8,6 +8,7 @@ import { getUserFromRequest as getSessionUser } from './session';
 import { AuthUser, UserRole } from './types';
 
 export type { AuthUser };
+export type { UserRole };
 
 /**
  * Extract user from request headers or session cookie
@@ -17,20 +18,20 @@ export async function getUserFromRequest(req: NextRequest): Promise<AuthUser | n
   try {
     // Log the request for debugging
     await loggingMiddleware(req);
-    
+
     // Use our enhanced session management
     const user = await getSessionUser(req);
     if (user) {
       return user;
     }
-    
+
     // Fallback to x-user-data header (for backward compatibility)
     const userHeader = req.headers.get('x-user-data');
     if (userHeader) {
       const user = JSON.parse(userHeader) as AuthUser;
       return user;
     }
-    
+
     return null;
   } catch {
     return null;
@@ -78,6 +79,7 @@ export function canChangeTaskStatus(
   // Team members can move tasks forward in the workflow
   if (user.role === 'team') {
     const statusOrder: Record<TaskStatus, number> = {
+      pending: -1,
       todo: 0,
       in_progress: 1,
       review: 2,

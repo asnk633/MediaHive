@@ -1,7 +1,7 @@
 import { test as base, expect, type Page } from "@playwright/test";
 
-const BASE_URL = process.env.PLAYWRIGHT_BASE_URL || "http://localhost:3000";
-const TEST_EMAIL = process.env.PLAYWRIGHT_TEST_EMAIL || "dev@local";
+const BASE_URL = process.env.BASE_URL || process.env.PLAYWRIGHT_BASE_URL || "http://localhost:3000";
+const TEST_EMAIL = process.env.PLAYWRIGHT_TEST_EMAIL || "admin@thaiba.com";
 
 type AuthUser = any;
 
@@ -10,14 +10,20 @@ export const test = base.extend<{
 }>({
   // fixture that logs in (client-side) and returns the user object
   authUser: async ({ page }: { page: Page }, use: (user: AuthUser) => Promise<void>) => {
-    const resp = await page.request.get(`${BASE_URL}/api/users`);
-    if (!resp.ok()) throw new Error("Failed to fetch users: " + resp.status());
-    const users = await resp.json();
-    const user = users.find((u: any) => u.email === TEST_EMAIL);
-    if (!user) throw new Error(`Test user (${TEST_EMAIL}) not found in /api/users`);
-
-    // ensure localStorage user is set before any navigation
-    await page.addInitScript((userObj: AuthUser) => {
+    // Login via API to get session cookie
+    const loginResp = await page.request.post(`${BASE_URL}/api/auth/login`, {
+      data: { email: TEST_EMAIL, password: "ChangeMe123!" },
+      headers: { "Content-Type": "application/json" }
+    });
+    
+    if (!loginResp.ok()) {
+      throw new Error(`Failed to login: ${loginResp.status()}`);
+    }
+    
+    const user = await loginResp.json();
+    
+    // Also set localStorage for client-side compatibility
+    await page.addInitScript((userObj: any) => {
       window.localStorage.setItem("user", JSON.stringify(userObj));
     }, user);
 
@@ -31,11 +37,17 @@ export const testWithLogin = base.extend<{
   loginAs: (role: string) => Promise<AuthUser>;
 }>({
   authUser: async ({ page }: { page: Page }, use: (user: AuthUser) => Promise<void>) => {
-    const resp = await page.request.get(`${BASE_URL}/api/users`);
-    if (!resp.ok()) throw new Error("Failed to fetch users: " + resp.status());
-    const users = await resp.json();
-    const user = users.find((u: any) => u.email === TEST_EMAIL);
-    if (!user) throw new Error(`Test user (${TEST_EMAIL}) not found in /api/users`);
+    // Login via API to get session cookie
+    const loginResp = await page.request.post(`${BASE_URL}/api/auth/login`, {
+      data: { email: TEST_EMAIL, password: "ChangeMe123!" },
+      headers: { "Content-Type": "application/json" }
+    });
+    
+    if (!loginResp.ok()) {
+      throw new Error(`Failed to login: ${loginResp.status()}`);
+    }
+    
+    const user = await loginResp.json();
 
     await use(user);
   },
@@ -55,7 +67,7 @@ export const testWithLogin = base.extend<{
       
       // Login via API to get session cookie
       const loginResp = await page.request.post(`${BASE_URL}/api/auth/login`, {
-        data: { email: user.email },
+        data: { email: user.email, password: "ChangeMe123!" },
         headers: { "Content-Type": "application/json" }
       });
       

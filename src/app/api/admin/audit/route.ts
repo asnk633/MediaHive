@@ -6,7 +6,7 @@ import { authorizeByPermission } from '@/app/api/_lib/rbac';
 import { getUserFromRequest } from '@/app/api/_lib/auth';
 import { db } from '@/db';
 import { auditLog, users } from '@/db/schema';
-import { eq, and, gte, lte, count, sql, desc } from 'drizzle-orm';
+import { eq, and, gte, lte, count, sql, desc, inArray } from 'drizzle-orm';
 
 // GET /api/admin/audit - Get audit logs (admin-only, readonly)
 export async function GET(req: NextRequest) {
@@ -35,27 +35,27 @@ export async function GET(req: NextRequest) {
     const includeUserDetails = searchParams.get('includeUserDetails') === 'true';
 
     // Build query conditions
-    const conditions = [];
-    
+    const conditions: any[] = [];
+
     // Add tenant isolation
     conditions.push(eq(auditLog.tenantId, authUser.tenantId));
-    
+
     if (userId) {
       conditions.push(eq(auditLog.userId, parseInt(userId, 10)));
     }
-    
+
     if (action) {
       conditions.push(eq(auditLog.action, action));
     }
-    
+
     if (resourceType) {
       conditions.push(eq(auditLog.resourceType, resourceType));
     }
-    
+
     if (startDate) {
       conditions.push(gte(auditLog.timestamp, startDate));
     }
-    
+
     if (endDate) {
       conditions.push(lte(auditLog.timestamp, endDate));
     }
@@ -75,9 +75,9 @@ export async function GET(req: NextRequest) {
     // If requested, include user details
     if (includeUserDetails && logs.length > 0) {
       // Get unique user IDs
-      const userIds = [...new Set(logs.map(log => log.userId))];
-      
-      // Fetch user details
+      const userIds = [...new Set(logs.map((log: any) => log.userId))] as number[];
+
+      // Fetch user details using inArray instead of sql template
       const userDetails = await db
         .select({
           id: users.id,
@@ -86,16 +86,16 @@ export async function GET(req: NextRequest) {
           role: users.role
         })
         .from(users)
-        .where(sql`id IN (${sql.join(userIds, sql`, `)})`);
-      
+        .where(inArray(users.id, userIds));
+
       // Create a map for quick lookup
-      const userMap = userDetails.reduce((acc, user) => {
+      const userMap = userDetails.reduce((acc: Record<number, typeof userDetails[0]>, user: typeof userDetails[0]) => {
         acc[user.id] = user;
         return acc;
       }, {} as Record<number, typeof userDetails[0]>);
-      
+
       // Add user details to logs
-      logs.forEach(log => {
+      logs.forEach((log: any) => {
         (log as any).user = userMap[log.userId] || null;
       });
     }
@@ -105,7 +105,7 @@ export async function GET(req: NextRequest) {
       .select({ count: count() })
       .from(auditLog)
       .where(conditions.length > 0 ? and(...conditions) : undefined);
-    
+
     const totalCount = totalCountResult[0]?.count || 0;
 
     return NextResponse.json(

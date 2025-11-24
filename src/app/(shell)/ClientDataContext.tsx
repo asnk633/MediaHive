@@ -1,10 +1,9 @@
 "use client";
 import "@/lib/client-fetch-wrapper";
-import React, { createContext, useCallback, useContext, useEffect, useMemo, useState } from "react";
+import React, { createContext, useCallback, useContext, useEffect, useState } from "react";
 import { useToast } from "@/components/ToastProvider";
 import { apiFromUiStatus, uiFromApiStatus } from "./utils/uiMaps";
 import { useRole } from "./RoleContext";
-
 
 export type TaskLite = {
   id: string;
@@ -17,7 +16,15 @@ export type TaskLite = {
 };
 
 export type NotificationLite = { id: string; title: string; body: string; read?: boolean; time?: string };
-export type EventLite = { id: string; title: string; startAt: string; endAt?: string | null; visibility?: "all" | "team" | "branch" | "custom" };
+export type EventLite = {
+  id: string;
+  title: string;
+  startAt: string;
+  endAt?: string | null;
+  visibility?: "all" | "team" | "branch" | "custom";
+  location?: string | null;
+  description?: string | null;
+};
 
 type Store = {
   tasks: TaskLite[];
@@ -42,7 +49,15 @@ function mapApiTask(x: any): TaskLite {
   };
 }
 function mapApiEvent(x: any): EventLite {
-  return { id: x.id, title: x.title, startAt: x.startAt, endAt: x.endAt ?? null, visibility: x.visibility ?? "team" };
+  return {
+    id: x.id,
+    title: x.title,
+    startAt: x.startAt,
+    endAt: x.endAt ?? null,
+    visibility: x.visibility ?? "team",
+    location: x.location ?? null,
+    description: x.description ?? null,
+  };
 }
 
 export function ClientDataProvider({ children }: { children: React.ReactNode }) {
@@ -82,27 +97,28 @@ export function ClientDataProvider({ children }: { children: React.ReactNode }) 
         setTasks(Array.isArray(t.data) ? t.data.map(mapApiTask) : []);
         setNotifications(Array.isArray(n.data) ? n.data.map((x: any) => ({ id: x.id, title: x.title, body: x.body, read: !!x.read })) : []);
         setEvents(Array.isArray(e.data) ? e.data.map(mapApiEvent) : []);
-      } catch {}
+      } catch { }
     })();
   }, []);
 
   const createTask = useCallback(async (input: { title: string; description?: string; dueAt?: string | null; priority?: TaskLite["priority"] }) => {
     const tempId = `tsk_temp_${Math.random().toString(36).slice(2, 8)}`;
+    const isGuest = user.role === "guest";
     const optimistic: TaskLite = {
       id: tempId,
       title: input.title,
       dueAt: input.dueAt ?? null,
       status: "Pending",
       priority: input.priority ?? "medium",
-      assignedTo: user.role !== "guest" ? user.name : null,
-      reviewStatus: user.role === "guest" ? "pending_review" : "approved",
+      assignedTo: !isGuest ? user.name : null,
+      reviewStatus: isGuest ? "pending_review" : "approved",
     };
     setTasks(prev => [optimistic, ...prev]);
     try {
-      const res = await fetch("/api/tasks", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
+      const endpoint = isGuest ? "/api/guest-tasks/create" : "/api/tasks";
+      const body = isGuest
+        ? { title: input.title, dueDate: input.dueAt, assignedBy: Number(user.id) }
+        : {
           title: input.title,
           description: input.description ?? "",
           dueAt: input.dueAt ?? null,
@@ -110,13 +126,21 @@ export function ClientDataProvider({ children }: { children: React.ReactNode }) 
           assignedTo: optimistic.assignedTo,
           reviewStatus: optimistic.reviewStatus,
           institutionId: "1",
-        }),
+        };
+
+      const res = await fetch(endpoint, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          "x-user-id": String(user.id)
+        },
+        body: JSON.stringify(body),
       });
       if (!res.ok) throw new Error(String(res.status));
       const json = await res.json();
       const real = json?.data;
       if (real?.id) setTasks(prev => [{ ...mapApiTask(real) }, ...prev.filter(t => t.id !== tempId)]);
-      toast.show(user.role === "guest" ? "Task submitted for review" : "Task created", "success");
+      toast.show(isGuest ? "Task submitted for review" : "Task created", "success");
     } catch {
       setTasks(prev => prev.filter(t => t.id !== tempId));
       toast.show("Couldn’t create task", "error");
@@ -138,7 +162,14 @@ export function ClientDataProvider({ children }: { children: React.ReactNode }) 
       if (delta.reviewStatus !== undefined) payload.reviewStatus = delta.reviewStatus;
       if (delta.status !== undefined) payload.status = apiFromUiStatus(delta.status as any);
 
-      const res = await fetch(`/api/tasks/${id}`, { method: "PATCH", headers: { "Content-Type": "application/json" }, body: JSON.stringify(payload) });
+      const res = await fetch(`/api/tasks/${id}`, {
+        method: "PATCH",
+        headers: {
+          "Content-Type": "application/json",
+          "x-user-id": String(user.id)
+        },
+        body: JSON.stringify(payload)
+      });
       if (!res.ok) throw new Error("Update failed");
       const json = await res.json().catch(() => null);
       const server = json?.data;
@@ -150,13 +181,18 @@ export function ClientDataProvider({ children }: { children: React.ReactNode }) 
       toast.show("Couldn’t save changes", "error");
       return false;
     }
-  }, [tasks, toast]);
+  }, [tasks, toast, user]);
 
   const deleteTask = useCallback(async (id: string) => {
     const prev = tasks;
     setTasks(cur => cur.filter(t => t.id !== id));
     try {
-      const res = await fetch(`/api/tasks/${id}?institutionId=1`, { method: "DELETE" });
+      const res = await fetch(`/api/tasks/${id}?institutionId=1`, {
+        method: "DELETE",
+        headers: {
+          "x-user-id": String(user.id)
+        }
+      });
       if (!res.ok && res.status !== 204) throw new Error("Delete failed");
       toast.show("Task deleted", "success");
       return true;
@@ -165,15 +201,21 @@ export function ClientDataProvider({ children }: { children: React.ReactNode }) 
       toast.show("Delete failed", "error");
       return false;
     }
-  }, [tasks, toast]);
+  }, [tasks, toast, user]);
 
   const createNotification = useCallback(async (input: { title: string; body: string; audience?: string }) => {
     const tempId = `ntf_temp_${Math.random().toString(36).slice(2, 8)}`;
     const optimistic: NotificationLite = { id: tempId, title: input.title, body: input.body, read: false };
     setNotifications(prev => [optimistic, ...prev]);
     try {
-      const res = await fetch("/api/notifications", { method: "POST", headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ title: input.title, body: input.body, audience: input.audience ?? "team", institutionId: "1" }) });
+      const res = await fetch("/api/notifications", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          "x-user-id": String(user.id)
+        },
+        body: JSON.stringify({ title: input.title, body: input.body, audience: input.audience ?? "team", institutionId: "1" })
+      });
       if (!res.ok) throw new Error(String(res.status));
       const json = await res.json();
       const real = json?.data;
@@ -184,15 +226,21 @@ export function ClientDataProvider({ children }: { children: React.ReactNode }) 
       toast.show("Couldn’t send notification", "error");
       throw new Error("Create notification failed");
     }
-  }, [toast]);
+  }, [toast, user]);
 
   const createEvent = useCallback(async (input: { title: string; description?: string; startAt: string; endAt?: string | null; location?: string }) => {
     const tempId = `evt_temp_${Math.random().toString(36).slice(2, 8)}`;
     const optimistic: EventLite = { id: tempId, title: input.title, startAt: input.startAt, endAt: input.endAt ?? null, visibility: "team" };
     setEvents(prev => [optimistic, ...prev]);
     try {
-      const res = await fetch("/api/events", { method: "POST", headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ title: input.title, description: input.description ?? "", startAt: input.startAt, endAt: input.endAt ?? null, location: input.location ?? "", institutionId: "1" }) });
+      const res = await fetch("/api/events", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          "x-user-id": String(user.id)
+        },
+        body: JSON.stringify({ title: input.title, description: input.description ?? "", startAt: input.startAt, endAt: input.endAt ?? null, location: input.location ?? "", institutionId: "1" })
+      });
       if (!res.ok) throw new Error(String(res.status));
       const json = await res.json();
       const real = json?.data;
@@ -203,7 +251,7 @@ export function ClientDataProvider({ children }: { children: React.ReactNode }) 
       toast.show("Couldn’t create event", "error");
       throw new Error("Create event failed");
     }
-  }, [toast]);
+  }, [toast, user]);
 
   return (
     <Ctx.Provider value={{ tasks, notifications, events, createTask, updateTask, deleteTask, createNotification, createEvent }}>

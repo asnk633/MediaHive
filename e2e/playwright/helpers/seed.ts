@@ -1,18 +1,36 @@
 import type { Page } from "@playwright/test";
 
-const BASE_URL = process.env.PLAYWRIGHT_BASE_URL || "http://localhost:3000";
+const BASE_URL = process.env.BASE_URL || process.env.PLAYWRIGHT_BASE_URL || "http://localhost:3000";
 
 /**
  * seedUser - create a user using real backend API
  * Returns created user object
  */
 export async function seedUser(page: Page, role: string, overrides = {}) {
-  // For testing purposes, we'll just fetch an existing user with the specified role
-  // In a real implementation, you might want to create a new user
-  const resp = await page.request.get(`${BASE_URL}/api/users?role=${role}&limit=1`);
+  // First, login as an admin user to get access to the users endpoint
+  const loginResp = await page.request.post(`${BASE_URL}/api/auth/login`, {
+    data: { email: 'admin@thaiba.com', password: 'ChangeMe123!' },
+    headers: { 'Content-Type': 'application/json' }
+  });
+  
+  if (!loginResp.ok()) {
+    throw new Error(`Failed to login: ${loginResp.status()}`);
+  }
+  
+  // Get the admin user data
+  const adminUser = await loginResp.json();
+  
+  // Now fetch users with the specified role using the x-user-data header
+  const resp = await page.request.get(`${BASE_URL}/api/users?role=${role}&limit=1`, {
+    headers: {
+      'x-user-data': JSON.stringify(adminUser)
+    }
+  });
+  
   if (!resp.ok()) {
     throw new Error(`Failed to fetch ${role} user: ${resp.status()}`);
   }
+  
   const users = await resp.json();
   
   if (users.length === 0) {

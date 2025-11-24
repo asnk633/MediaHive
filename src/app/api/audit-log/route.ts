@@ -20,7 +20,7 @@ export async function GET(req: NextRequest) {
 
     // Get query parameters
     const { searchParams } = new URL(req.url);
-    
+
     // Check if this is a stats request
     if (searchParams.get('stats') === 'true') {
       const period = searchParams.get('period') || 'week';
@@ -28,7 +28,7 @@ export async function GET(req: NextRequest) {
       // Calculate date range
       const now = new Date();
       let startDate = new Date();
-      
+
       switch (period) {
         case 'day':
           startDate = new Date(now.getFullYear(), now.getMonth(), now.getDate());
@@ -92,7 +92,7 @@ export async function GET(req: NextRequest) {
 
       // Fetch user details for top users
       if (topUsers.length > 0) {
-        const userIds = topUsers.map(user => user.userId);
+        const userIds = topUsers.map((user: any) => user.userId);
         const userDetails = await db
           .select({
             id: users.id,
@@ -101,7 +101,7 @@ export async function GET(req: NextRequest) {
           })
           .from(users)
           .where(sql`id IN (${sql.join(userIds, sql`, `)})`);
-        
+
         // Add user details to top users
         topUsers.forEach(user => {
           const detail = userDetails.find(u => u.id === user.userId);
@@ -140,26 +140,26 @@ export async function GET(req: NextRequest) {
 
       // Build query conditions
       const conditions = [];
-      
+
       if (userId) {
         conditions.push(eq(auditLog.userId, parseInt(userId, 10)));
       }
-      
+
       // Add tenant isolation
       conditions.push(eq(auditLog.tenantId, authUser.tenantId));
-      
+
       if (action) {
         conditions.push(eq(auditLog.action, action));
       }
-      
+
       if (resourceType) {
         conditions.push(eq(auditLog.resourceType, resourceType));
       }
-      
+
       if (startDate) {
         conditions.push(gte(auditLog.timestamp, startDate));
       }
-      
+
       if (endDate) {
         conditions.push(lte(auditLog.timestamp, endDate));
       }
@@ -180,7 +180,7 @@ export async function GET(req: NextRequest) {
       if (includeUserDetails && logs.length > 0) {
         // Get unique user IDs
         const userIds = [...new Set(logs.map(log => log.userId))];
-        
+
         // Fetch user details
         const userDetails = await db
           .select({
@@ -191,13 +191,13 @@ export async function GET(req: NextRequest) {
           })
           .from(users)
           .where(sql`id IN (${sql.join(userIds, sql`, `)})`);
-        
+
         // Create a map for quick lookup
         const userMap = userDetails.reduce((acc, user) => {
           acc[user.id] = user;
           return acc;
         }, {} as Record<number, typeof userDetails[0]>);
-        
+
         // Add user details to logs
         logs.forEach(log => {
           (log as any).user = userMap[log.userId] || null;
@@ -209,7 +209,7 @@ export async function GET(req: NextRequest) {
         .select({ count: count() })
         .from(auditLog)
         .where(conditions.length > 0 ? and(...conditions) : undefined);
-      
+
       const totalCount = totalCountResult[0]?.count || 0;
 
       return NextResponse.json(
@@ -239,7 +239,7 @@ export async function POST(req: NextRequest) {
   try {
     // This endpoint is for internal use only - not exposed to clients
     // In a real implementation, this would be called by server-side code
-    
+
     // Get user for tenant isolation
     const authUser = await getUserFromRequest(req);
     if (!authUser) {

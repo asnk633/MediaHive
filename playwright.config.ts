@@ -30,7 +30,7 @@ export default defineConfig({
 
   use: {
     // Base URL for the app under test. Adjust if your dev server runs elsewhere.
-    baseURL: process.env.PLAYWRIGHT_BASE_URL || "http://localhost:3000",
+    baseURL: process.env.PLAYWRIGHT_BASE_URL || `http://localhost:${process.env.PORT || 3000}`,
 
     // Run in headless mode by default
     headless: true,
@@ -70,11 +70,11 @@ export default defineConfig({
     }
   ],
 
-  // Local dev helper — uncomment when running tests and you want Playwright to start the app automatically
-  // webServer: {
-  //   command: "npm run dev",
-  //   port: 3000,
-  //   timeout: 120_000,
-  //   reuseExistingServer: false,
-  // },
+  // Local dev helper — automatically start the app when running tests
+  webServer: {
+    command: "npm run dev",
+    port: parseInt(process.env.PORT || "3000"),
+    timeout: 120_000,
+    reuseExistingServer: true,
+  },
 });

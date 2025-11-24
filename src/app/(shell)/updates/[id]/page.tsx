@@ -1,9 +1,11 @@
 "use client";
 
-type Props = { params: { id: string } };
+import { use } from "react";
+
+type Props = { params: Promise<{ id: string }> };
 
 export default function NotificationDetail({ params }: Props) {
-  const { id } = params;
+  const { id } = use(params);
 
   return (
     <div className="px-4 pb-24 pt-6">

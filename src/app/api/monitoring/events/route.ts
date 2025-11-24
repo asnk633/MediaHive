@@ -7,7 +7,7 @@ import { registerSSEConnection, unregisterSSEConnection } from '../../_lib/realt
 
 export async function GET(req: NextRequest) {
   // Authorize user with RBAC - only admin can access monitoring
-  const user = await authorizeByPermission(req, 'admin:monitoring');
+  const user = await authorizeByPermission(req, 'manage:users');
   if (!user || user.role !== 'admin') {
     return new Response(JSON.stringify({ error: 'Unauthorized' }), {
       status: 401,
@@ -20,7 +20,7 @@ export async function GET(req: NextRequest) {
     start(controller) {
       // Send initial connection message
       controller.enqueue(`data: ${JSON.stringify({ type: 'connected', userId: user.id })}\n\n`);
-      
+
       // Register the connection
       const connection = {
         write: (data: string) => {
@@ -31,9 +31,9 @@ export async function GET(req: NextRequest) {
           }
         }
       };
-      
+
       registerSSEConnection(`monitoring-${user.id}`, connection);
-      
+
       // Keep the connection alive
       const keepAliveInterval = setInterval(() => {
         try {
@@ -42,7 +42,7 @@ export async function GET(req: NextRequest) {
           clearInterval(keepAliveInterval);
         }
       }, 30000);
-      
+
       // Handle cleanup when the connection is closed
       req.signal.addEventListener('abort', () => {
         clearInterval(keepAliveInterval);

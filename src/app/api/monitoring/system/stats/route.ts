@@ -10,7 +10,7 @@ import { authorizeByPermission } from '../../../_lib/rbac';
 export async function GET(req: NextRequest) {
   try {
     // Authorize user with RBAC
-    const user = await authorizeByPermission(req, 'admin:monitoring');
+    const user = await authorizeByPermission(req, 'manage:users');
     if (!user) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
@@ -20,7 +20,7 @@ export async function GET(req: NextRequest) {
     // - Process stats (CPU, memory)
     // - System stats (disk usage, network)
     // - Application stats (active users, requests)
-    
+
     const systemStats = {
       uptime: '99.9%',
       cpuUsage: Math.floor(Math.random() * 30) + 40, // 40-70%

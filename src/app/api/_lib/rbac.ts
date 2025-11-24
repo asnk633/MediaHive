@@ -46,3 +46,6 @@ export function withAuth(handler: Function, permission: Permission) {
     return handler(req, user, ...args);
   };
 }
+
+// Compatibility alias for backward compatibility
+export const authorize = authorizeByPermission;

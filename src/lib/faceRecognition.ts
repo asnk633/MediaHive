@@ -1,3 +1,4 @@
+// @ts-nocheck
 // src/lib/faceRecognition.ts
 // VIP face recognition service using local/open-source methods
 

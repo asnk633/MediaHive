@@ -10,7 +10,7 @@ import { broadcastEvent } from '../../_lib/realtime';
 export async function POST(req: NextRequest) {
   try {
     // Authorize user with RBAC - only admins can send notifications
-    const user = await authorizeByPermission(req, 'send:notifications');
+    const user = await authorizeByPermission(req, 'manage:users');
     if (!user) {
       return NextResponse.json({ error: 'Forbidden: Only admins can send notifications' }, { status: 403 });
     }

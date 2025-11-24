@@ -7,7 +7,7 @@ import { authorizeByPermission } from '../../_lib/rbac';
 export async function POST(req: NextRequest) {
   try {
     // Authorize user with RBAC - only admin can access monitoring
-    const user = await authorizeByPermission(req, 'admin:monitoring');
+    const user = await authorizeByPermission(req, 'manage:users');
     if (!user || user.role !== 'admin') {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
@@ -26,7 +26,7 @@ export async function POST(req: NextRequest) {
 
     // Return success
     return NextResponse.json(
-      { 
+      {
         success: true,
         message: 'Error reported successfully'
       },

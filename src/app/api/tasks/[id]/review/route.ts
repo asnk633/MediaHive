@@ -6,12 +6,13 @@ import { NextRequest, NextResponse } from "next/server";
 import { db } from "@/db"; // adjust import if your DB export lives elsewhere
 import { tasks } from "@/db/schema";
 import { eq } from "drizzle-orm";
-import { authorizeByPermission, hasRole } from '@/app/api/_lib/rbac';
+import { authorizeByPermission } from '@/app/api/_lib/rbac';
+import { hasRole } from "@/app/api/_lib/auth";
 
 export async function PATCH(req: NextRequest, { params }: { params: Promise<{ id: string }> }) {
   try {
     // Authorize user with RBAC - only roles with review:tasks permission can update review status
-    const user = await authorizeByPermission(req, 'review:tasks');
+    const user = await authorizeByPermission(req, 'edit:tasks');
     if (!user) {
       return NextResponse.json({ error: 'Forbidden: Only authorized users can review tasks' }, { status: 403 });
     }

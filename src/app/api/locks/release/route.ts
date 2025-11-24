@@ -10,7 +10,7 @@ import { authorizeByPermission } from '../../_lib/rbac';
 export async function POST(req: NextRequest) {
   try {
     // Authorize user with RBAC
-    const user = await authorizeByPermission(req, 'write:tasks');
+    const user = await authorizeByPermission(req, 'edit:tasks');
     if (!user) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
@@ -44,7 +44,7 @@ export async function POST(req: NextRequest) {
 
     // Return success
     return NextResponse.json(
-      { 
+      {
         success: true,
         message: 'Lock released successfully'
       },

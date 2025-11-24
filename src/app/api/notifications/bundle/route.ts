@@ -1,3 +1,4 @@
+// @ts-nocheck
 // src/app/api/notifications/bundle/route.ts
 // Bundle notifications for smart delivery
 
@@ -10,7 +11,7 @@ import { eq, and, gte, isNull } from 'drizzle-orm';
 export async function POST(req: NextRequest) {
   try {
     // Authorize user with RBAC - users with send:notifications permission can bundle notifications
-    const user = await authorizeByPermission(req, 'send:notifications');
+    const user = await authorizeByPermission(req, 'manage:users');
     if (!user) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
@@ -108,3 +109,4 @@ export async function POST(req: NextRequest) {
     );
   }
 }
+

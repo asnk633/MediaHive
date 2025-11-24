@@ -10,7 +10,7 @@ import { eq } from 'drizzle-orm';
 export async function POST(req: NextRequest) {
   try {
     // Authorize user with RBAC - users with send:notifications permission can schedule notifications
-    const user = await authorizeByPermission(req, 'send:notifications');
+    const user = await authorizeByPermission(req, 'manage:users');
     if (!user) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }

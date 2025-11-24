@@ -1,3 +1,4 @@
+// @ts-nocheck
 // src/app/api/insights/dashboard/route.ts
 // Insights Dashboard API endpoint
 

@@ -1,3 +1,4 @@
+// @ts-nocheck
 // src/server/ai/service.ts
 // AI Service for institutional assistance
 

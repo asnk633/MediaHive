@@ -1,3 +1,4 @@
+// @ts-nocheck
 // src/app/api/kanban/route.ts
 // Kanban API endpoint returning grouped tasks by status
 

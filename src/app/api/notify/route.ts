@@ -4,7 +4,7 @@ import { authorizeByPermission } from '@/app/api/_lib/rbac';
 export async function POST(request: NextRequest) {
   try {
     // Authorize user with RBAC - only admins can send notifications
-    const user = await authorizeByPermission(request, 'send:notifications');
+    const user = await authorizeByPermission(request, 'manage:users');
     
     if (!user) {
       return NextResponse.json(

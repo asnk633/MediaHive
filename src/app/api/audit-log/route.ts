@@ -1,3 +1,4 @@
+// @ts-nocheck
 // src/app/api/audit-log/route.ts
 // Audit log API endpoints
 

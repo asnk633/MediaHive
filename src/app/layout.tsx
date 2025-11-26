@@ -1,8 +1,7 @@
 import './globals.css';
-import { ReactNode, useEffect } from 'react';
+import { ReactNode } from 'react';
 import { AuthProvider } from "@/contexts/AuthContext";
 import { ThemeProvider } from "@/context/ThemeProvider";
-import { enableKeyboardNavigationDetection } from '@/utils/a11y';
 
 export const metadata = {
   title: 'Thaiba Garden',
@@ -21,11 +20,6 @@ export const viewport = {
 };
 
 export default function RootLayout({ children }: { children: ReactNode }) {
-  useEffect(() => {
-    // Enable keyboard navigation detection
-    enableKeyboardNavigationDetection();
-  }, []);
-
   return (
     <html lang="en" suppressHydrationWarning>
       <head>

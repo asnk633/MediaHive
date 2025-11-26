@@ -70,11 +70,11 @@ export default defineConfig({
     }
   ],
 
-  // Local dev helper — automatically start the app when running tests
-  webServer: {
-    command: "npm run dev",
-    port: parseInt(process.env.PORT || "3000"),
-    timeout: 120_000,
-    reuseExistingServer: true,
-  },
+  // Comment out webServer since we're running the dev server manually
+  // webServer: {
+  //   command: "npm run dev",
+  //   port: parseInt(process.env.PORT || "3000"),
+  //   timeout: 120_000,
+  //   reuseExistingServer: true,
+  // },
 });

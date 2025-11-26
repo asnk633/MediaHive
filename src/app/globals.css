@@ -1,45 +1,24 @@
-@tailwind base;
-@tailwind components;
-@tailwind utilities;
+/* Import design tokens */
+@import './tokens.css';
 
 /* ---------- Theme tokens (Pro Institutional Blend) ---------- */
 /* Default to dark, override with [data-theme="light"] */
 :root {
-  --bg: #0b0b0b;
-  --panel: #0f1113;
-  --panel-strong: #131416;
-  --text: #e6eef6;
-  --muted: #9aa6b2;
-  --accent: #8b5cf6;
-  --accent-2: #12b886;
-  --danger: #e05555;
-  --glass-border: rgba(255,255,255,0.04);
-  --shadow-1: 0 8px 24px rgba(10,10,10,0.6);
-  --shadow-2: 0 12px 40px rgba(10,10,10,0.6);
+  --nav-height: 72px;
+  --bottom-nav-height: 80px;
+  --fab-size: 72px;
   --nav-bg: linear-gradient(180deg, rgba(255,255,255,0.02), rgba(255,255,255,0.01));
   --fab-glow: 0 10px 40px rgba(139,92,246,0.18);
-  --icon: var(--text);
-  --icon-muted: var(--muted);
   --shadow-fab: 0 14px 40px rgba(7, 10, 30, 0.6), 0 6px 18px rgba(123, 97, 255, 0.28);
+  /* Performance optimization: contain layout for fixed elements */
+  --fixed-element-contain: layout style paint;
 }
 
 /* Light theme overrides */
 :root[data-theme="light"] {
-  --bg: #fff;
-  --panel: #f6f7f9;
-  --text: #111;
-  --muted: #586069;
-  --accent: #00bfa6;
-  --accent-2: #0fa360;
-  --danger: #b33636;
-  --glass-border: rgba(11,19,32,0.06);
-  --shadow-1: 0 8px 24px rgba(0,0,0,0.06);
-  --shadow-2: 0 12px 40px rgba(10,10,10,0.6);
   --nav-bg: linear-gradient(0deg, rgba(255,255,255,0.98), rgba(255,255,255,0.99));
-  --fab-glow: 0 10px 40px rgba(106,78,240,0.12);
-  --icon: var(--text);
-  --icon-muted: var(--muted);
-  --shadow-fab: 0 14px 40px rgba(7, 10, 30, 0.6), 0 6px 18px rgba(123, 97, 255, 0.28);
+  --fab-glow: 0 10px 40px rgba(106,78,240,0.08); /* Reduced neon from 0.12 to 0.08 */
+  --shadow-fab: 0 14px 40px rgba(7, 10, 30, 0.4), 0 6px 18px rgba(123, 97, 255, 0.18); /* Reduced neon from 0.6 to 0.4 and 0.28 to 0.18 */
 }
 
 /* Prefer system if no explicit choice yet */
@@ -60,16 +39,27 @@ html, body, #__next {
   background: var(--panel);
   border: 1px solid var(--glass-border);
   box-shadow: var(--shadow-1);
-  border-radius: 12px;
+  border-radius: var(--radius-md);
+  /* Performance optimization: create a new stacking context */
+  will-change: auto;
+  contain: layout style paint;
 }
 
 /* Bottom nav / FAB usage example */
 .bottom-nav {
   background: var(--nav-bg);
   box-shadow: var(--shadow-2);
+  border-radius: var(--radius-lg);
+  /* Performance optimization: hardware acceleration */
+  transform: translateZ(0);
+  will-change: auto;
 }
+
 .fab {
   box-shadow: var(--fab-glow);
+  /* Performance optimization: hardware acceleration */
+  transform: translateZ(0);
+  will-change: auto;
 }
 
 /* global page rules */
@@ -106,7 +96,7 @@ body {
   /* shell layout handles scrolling on main element */
   background: var(--bg);
   color: var(--text);
-  transition: background .18s ease, color .18s ease;
+  transition: var(--transition-fast);
 }
 
 /* Scrollable main area inside shell should use its own scroll - see layout.tsx */
@@ -114,15 +104,26 @@ body {
   flex: 1;
   overflow: auto;
   -webkit-overflow-scrolling: touch;
-  padding: 32px;
+  padding: 12px;
+  /* Performance optimization: contain scroll */
+  contain: layout style paint;
+}
+
+@media (min-width: 640px) {
+  .app-main-scroll {
+    padding: 18px;
+  }
 }
 
 /* ---------- Visual utilities ---------- */
 .glass-card {
   background: linear-gradient(180deg, var(--panel), rgba(255, 255, 255, 0.01));
-  border-radius: 12px;
+  border-radius: var(--radius-md);
   border: 1px solid var(--glass-border);
   box-shadow: var(--shadow-1), inset 0 1px 0 rgba(255, 255, 255, 0.02);
+  /* Performance optimization: hardware acceleration */
+  transform: translateZ(0);
+  will-change: auto;
 }
 
 /* small pill */
@@ -135,6 +136,9 @@ body {
   font-size: 0.8rem;
   background: var(--panel);
   color: var(--text);
+  /* Performance optimization: hardware acceleration */
+  transform: translateZ(0);
+  will-change: auto;
 }
 
 /* subtle text gradient */
@@ -143,6 +147,42 @@ body {
   -webkit-background-clip: text;
   background-clip: text;
   color: transparent;
+}
+
+/* ---------- Typography ---------- */
+h1 {
+  font-size: clamp(28px, 3.4vw, 40px);
+  font-weight: 700;
+}
+
+h2 {
+  font-size: clamp(22px, 2.8vw, 28px);
+  font-weight: 600;
+}
+
+h3 {
+  font-size: clamp(18px, 2.2vw, 22px);
+  font-weight: 600;
+}
+
+.section-title {
+  font-size: clamp(16px, 2vw, 18px);
+  font-weight: 600;
+}
+
+body {
+  font-size: clamp(14px, 1.8vw, 16px);
+}
+
+/* Standardize card padding */
+.card-padding {
+  padding: 12px;
+}
+
+@media (min-width: 640px) {
+  .card-padding {
+    padding: 18px;
+  }
 }
 
 /* ---------- Bottom Nav & FAB ---------- */
@@ -158,9 +198,12 @@ body {
   justify-content: space-between;
   padding: 0 clamp(8px, 1.5vw, 18px);
   background: var(--nav-bg);
-  border-radius: 16px;
-  box-shadow: 0 8px 30px rgba(0, 0, 0, 0.6);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-2);
   z-index: 30;
+  /* Performance optimization: contain layout and create new stacking context */
+  contain: var(--fixed-element-contain);
+  transform: translateZ(0);
 }
 
 /* FAB overlap spacing */
@@ -192,20 +235,23 @@ body {
   flex-direction: column;
   align-items: center;
   gap: clamp(4px, 0.5vh, 6px);
-  padding: clamp(8px, 1vh, 12px) clamp(10px, 1.5vw, 18px);
+  padding: 12px;
   min-height: 44px;
-  border-radius: 8px;
+  border-radius: var(--radius-sm);
   color: var(--text);
   opacity: 0.95;
   font-size: clamp(11px, 1.5vw, 12px);
   text-decoration: none;
   touch-action: manipulation;
-  transition: all 150ms ease;
+  transition: var(--transition-fast);
+  /* Performance optimization: hardware acceleration */
+  transform: translateZ(0);
+  will-change: auto;
 }
 
 .bottom-nav .nav-item.active {
   background: linear-gradient(180deg, rgba(123, 97, 255, 0.12), rgba(79, 70, 229, 0.06));
-  box-shadow: 0 8px 26px rgba(123, 97, 255, 0.12);
+  box-shadow: 0 6px 20px rgba(123, 97, 255, 0.08); /* Reduced glow effect */
   color: white;
 }
 
@@ -215,7 +261,10 @@ body {
   inset: 0;
   pointer-events: none; /* let clicks pass through unless child re-enables */
   backdrop-filter: blur(8px);
-  transition: opacity .18s ease;
+  transition: opacity var(--transition-fast);
+  /* Performance optimization: hardware acceleration */
+  transform: translateZ(0);
+  will-change: opacity;
 }
 
 /* FAB */
@@ -223,19 +272,22 @@ body {
   position: fixed;
   left: 50%;
   transform: translateX(-50%);
-  bottom: calc(var(--bottom-nav-height) + 16px);
+  bottom: calc(var(--bottom-nav-height) + 22px);
   z-index: 1000;
   display: flex;
   align-items: center;
   justify-content: center;
   pointer-events: none;
   /* container non-interactive; buttons inside are interactive */
+  /* Performance optimization: contain layout and create new stacking context */
+  contain: var(--fixed-element-contain);
+  transform: translateZ(0);
 }
 
 .fab {
   pointer-events: auto;
-  width: var(--fab-size);
-  height: var(--fab-size);
+  width: 64px;
+  height: 64px;
   border-radius: 999px;
   background: var(--accent);
   display: flex;
@@ -244,13 +296,23 @@ body {
   color: white;
   font-size: 28px;
   border: none;
-  box-shadow: 0 14px 40px rgba(7, 10, 30, 0.6), 0 6px 18px rgba(123, 97, 255, 0.28);
-  transition: all 200ms ease;
+  box-shadow: var(--shadow-fab);
+  transition: var(--transition-fast);
+  /* Performance optimization: hardware acceleration */
+  transform: translateZ(0);
+  will-change: transform;
+}
+
+@media (max-width: 600px) {
+  .fab {
+    width: 56px;
+    height: 56px;
+  }
 }
 
 /* small hover/pulse */
 .fab:hover {
-  transform: translateY(-4px) scale(1.03);
+  transform: translateY(-4px) scale(1.03) translateZ(0);
 }
 
 .fab:focus-visible {
@@ -268,9 +330,19 @@ body {
   padding: 10px 14px;
   border-radius: 999px;
   box-shadow: var(--shadow-1);
-  transition: transform .16s ease, opacity .16s ease;
+  transition: var(--transition-medium);
+  min-width: 44px;
+  min-height: 44px;
+  pointer-events: auto;
+  /* Performance optimization: hardware acceleration */
+  transform: translateZ(0);
+  will-change: opacity, transform;
 }
-.fab-item:focus { outline: 3px solid rgba(255,255,255,0.06); transform: translateY(-2px); }
+
+.fab-item:focus {
+  outline: 3px solid rgba(255,255,255,0.06);
+  transform: translateY(-2px) translateZ(0);
+}
 
 /* ---------- TopBar ---------- */
 .topbar {
@@ -288,6 +360,10 @@ body {
   z-index: 90;
   backdrop-filter: blur(6px);
   background: var(--nav-bg);
+  border-radius: 0 0 var(--radius-sm) var(--radius-sm);
+  /* Performance optimization: contain layout and create new stacking context */
+  contain: var(--fixed-element-contain);
+  transform: translateZ(0);
 }
 
 /* body content padding to account top and bottom */
@@ -297,6 +373,7 @@ body {
 }
 
 /* ---------- accessibility / focus ---------- */
+/* Global focus styles */
 button:focus {
   outline: 2px solid rgba(123, 97, 255, 0.4);
   outline-offset: 2px;
@@ -304,6 +381,35 @@ button:focus {
 
 :focus {
   outline: 3px solid color-mix(in srgb, var(--accent) 24%, transparent);
+  outline-offset: 3px;
+}
+
+/* Focus visible helper - only show focus styles when keyboard navigating */
+.focus-visible {
+  outline: 3px solid color-mix(in srgb, var(--accent) 24%, transparent);
+  outline-offset: 3px;
+}
+
+/* Remove default focus styles when not keyboard navigating */
+:not(.keyboard-navigation) :focus:not(.focus-visible) {
+  outline: none;
+}
+
+/* Ensure all interactive elements have visible focus */
+a:focus-visible,
+button:focus-visible,
+input:focus-visible,
+textarea:focus-visible,
+select:focus-visible,
+[tabindex]:focus-visible {
+  outline: 3px solid color-mix(in srgb, var(--accent) 24%, transparent);
+  outline-offset: 3px;
+}
+
+/* Special focus styles for light mode */
+[data-theme="light"] .focus-visible,
+[data-theme="light"] :focus-visible {
+  outline: 3px solid color-mix(in srgb, var(--accent) 30%, transparent);
   outline-offset: 3px;
 }
 
@@ -318,4 +424,15 @@ button:focus {
   border-radius: 99px;
   border: 2px solid rgba(0, 0, 0, 0);
   background-clip: padding-box;
+}
+
+/* ---------- Micro-animations ---------- */
+button {
+  transform: translateY(0) translateZ(0);
+  transition: var(--transition-fast);
+  will-change: transform;
+}
+
+button:active {
+  transform: translateY(1px) scale(.995) translateZ(0);
 }

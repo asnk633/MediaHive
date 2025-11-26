@@ -82,15 +82,15 @@ export default function CalendarPage() {
           <Button
             variant="outline"
             size="icon"
-            className="rounded-full border-white/10 bg-white/5 hover:bg-white/10 text-gray-400 hover:text-white"
+            className="rounded-full border-[var(--glass-border)] bg-[var(--panel)] hover:bg-[var(--panel-strong)] text-[var(--icon-muted)] hover:text-[var(--text)]"
             onClick={() => setFilter(f => f === 'all' ? 'events' : f === 'events' ? 'tasks' : 'all')}
             aria-label="Filter items"
           >
-            <Filter className={cn("h-4 w-4", filter !== 'all' && "text-blue-400")} />
+            <Filter className={cn("h-4 w-4", filter !== 'all' && "text-[var(--accent)]")} />
           </Button>
           <Button
             size="icon"
-            className="rounded-full bg-blue-600 hover:bg-blue-500 text-white shadow-glow"
+            className="rounded-full bg-[var(--accent)] hover:bg-[var(--accent-2)] text-[var(--text)] shadow-glow"
             onClick={() => setIsEventModalOpen(true)}
             aria-label="Create new item"
           >
@@ -157,7 +157,7 @@ export default function CalendarPage() {
                       {/* Timeline Dot */}
                       <div className={cn(
                         "absolute left-[15px] top-6 h-2.5 w-2.5 rounded-full border-2 border-[var(--bg)] z-10 transition-transform duration-200 ease-in-out group-hover/item:scale-125",
-                        item.type === 'event' ? 'bg-indigo-500 shadow-[0_0_8px_rgba(99,102,241,0.5)]' : 'bg-blue-500 shadow-[0_0_8px_rgba(59,130,246,0.5)]'
+                        item.type === 'event' ? 'bg-[var(--accent)] shadow-[0_0_8px_rgba(123,97,255,0.5)]' : 'bg-[var(--accent-2)] shadow-[0_0_8px_rgba(0,191,166,0.5)]'
                       )} />
 
                       {/* Connector Line to Dot */}
@@ -189,21 +189,21 @@ function TaskCard({ task }: { task: TaskLite }) {
   const isDone = task.status === "Completed";
   return (
     <div className={cn(
-      "glass-card group relative overflow-hidden p-4 transition-all duration-200 ease-in-out hover:bg-[var(--panel)] hover:shadow-lg hover:shadow-blue-500/5",
+      "glass-card group relative overflow-hidden p-4 transition-all duration-200 ease-in-out hover:bg-[var(--panel)] hover:shadow-lg hover:shadow-[var(--accent)]/10 card-padding",
       isDone && "opacity-60 grayscale-[0.5]"
     )}>
-      <div className={cn("absolute left-0 top-0 h-full w-1", isDone ? "bg-blue-500/30" : "bg-blue-500")} />
+      <div className={cn("absolute left-0 top-0 h-full w-1", isDone ? "bg-[var(--accent-2)]/30" : "bg-[var(--accent-2)]")} />
 
       <div className="mb-2 flex items-start justify-between gap-2">
-        <h3 className={cn("font-semibold text-[var(--text)] line-clamp-1 group-hover:text-blue-400 transition-colors duration-200 ease-in-out", isDone && "line-through text-[var(--muted)]")}>
+        <h3 className={cn("font-semibold text-[var(--text)] line-clamp-1 group-hover:text-[var(--accent)] transition-colors duration-200 ease-in-out", isDone && "line-through text-[var(--muted)]")}>
           {task.title}
         </h3>
         <span className={cn(
           "shrink-0 rounded-full px-2 py-0.5 text-[10px] font-bold uppercase tracking-wider",
-          task.priority === 'urgent' ? 'bg-red-500/20 text-red-200' : 
-          task.priority === 'high' ? 'bg-red-500/20 text-red-200' : 
-          task.priority === 'medium' ? 'bg-yellow-500/20 text-yellow-200' : 
-          'bg-green-500/20 text-green-200'
+          task.priority === 'urgent' ? 'bg-[var(--danger)]/20 text-[var(--danger)]' : 
+          task.priority === 'high' ? 'bg-[var(--danger)]/20 text-[var(--danger)]' : 
+          task.priority === 'medium' ? 'bg-yellow-500/20 text-yellow-400' : 
+          'bg-[var(--accent-2)]/20 text-[var(--accent-2)]'
         )}>
           {task.priority}
         </span>

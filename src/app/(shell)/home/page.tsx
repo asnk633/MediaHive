@@ -89,7 +89,7 @@ function DashboardCard({
 }) {
   return (
     <section className={cn(
-      "relative overflow-hidden rounded-2xl border border-[var(--glass-border)] p-5 transition-all duration-300 hover:border-[var(--glass-border)]",
+      "relative overflow-hidden rounded-2xl border border-[var(--glass-border)] p-5 transition-all duration-300 hover:border-[var(--glass-border)] card-padding",
       "bg-gradient-to-br", gradient
     )}>
       {/* Glass Background */}

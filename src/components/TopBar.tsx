@@ -2,9 +2,23 @@
 import { Bell } from 'lucide-react';
 import { useRole } from "@/app/(shell)/RoleContext";
 import ThemeToggle from "@/components/ThemeToggle";
+import { useEffect, useRef } from "react";
+import { addFocusVisibleClass } from "@/utils/a11y";
 
 export default function TopBar() {
   const { user } = useRole();
+  const notificationButtonRef = useRef<HTMLButtonElement>(null);
+  const userMenuRef = useRef<HTMLDivElement>(null);
+
+  // Add focus visible class to interactive elements for keyboard navigation detection
+  useEffect(() => {
+    if (notificationButtonRef.current) {
+      addFocusVisibleClass(notificationButtonRef.current);
+    }
+    if (userMenuRef.current) {
+      addFocusVisibleClass(userMenuRef.current);
+    }
+  }, []);
 
   return (
     <header className="topbar">
@@ -17,14 +31,21 @@ export default function TopBar() {
         <ThemeToggle />
 
         <button
+          ref={notificationButtonRef}
           aria-label="Notifications"
           title="Notifications"
-          className="p-2 rounded-full hover:bg-[var(--panel)] transition-all duration-200 ease-in-out"
+          className="p-2 rounded-full hover:bg-[var(--panel)] transition-all duration-200 ease-in-out focus:outline-none"
         >
           <Bell size={20} aria-hidden="true" className="text-[var(--icon)]" />
         </button>
 
-        <div className="w-9 h-9 rounded-full grid place-items-center bg-[var(--panel)] border border-[var(--glass-border)]">
+        <div 
+          ref={userMenuRef}
+          className="w-9 h-9 rounded-full grid place-items-center bg-[var(--panel)] border border-[var(--glass-border)]"
+          role="button"
+          tabIndex={0}
+          aria-label={`User menu for ${user?.name || 'Anonymous'}`}
+        >
           <span className="font-bold text-sm text-[var(--icon)]">
             {user?.name?.charAt(0).toUpperCase() || 'A'}
           </span>

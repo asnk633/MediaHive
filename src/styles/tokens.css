@@ -1,0 +1,38 @@
+:root{
+  --bg: #070707;
+  --panel: #0f0f11;
+  --panel-strong: #0b0b0c;
+  --text: #e6e6e6;
+  --muted: #9aa3a8;
+  --accent: #7b3df3; /* existing purple */
+  --accent-2: #00bfa6;
+  --danger: #e05555;
+  --glass-border: rgba(255,255,255,0.04);
+  --shadow-1: 0 6px 18px rgba(0,0,0,0.52);
+  --shadow-2: 0 10px 28px rgba(0,0,0,0.38);
+  --radius-sm: 8px;
+  --radius-md: 14px;
+  --radius-lg: 18px;
+  --icon: var(--text);
+  --icon-muted: rgba(255,255,255,0.44);
+  --transition-fast: all 160ms cubic-bezier(.2,.9,.2,1);
+  --transition-medium: all 260ms cubic-bezier(.2,.9,.2,1);
+}
+
+[data-theme="light"]{
+  --bg: #f6f7f9;
+  --panel: #ffffff;
+  --panel-strong: #f0f0f0; /* Increased contrast from #f2f4f7 */
+  --text: #0b0b0b;
+  --muted: #4a4a4a;
+  --accent: #27ae60; /* Reduced neon in light - more muted green */
+  --accent-2: #0fa360;
+  --danger: #b33636;
+  --glass-border: rgba(11,19,32,0.06);
+  --shadow-1: 0 8px 28px rgba(2,6,23,0.12); /* Increased from 0.08 */
+  --shadow-2: 0 16px 48px rgba(2,6,23,0.16); /* Increased from 0.12 */
+  --icon: var(--text);
+  --icon-muted: rgba(11,19,32,0.6);
+  --transition-fast: all 160ms cubic-bezier(.2,.9,.2,1);
+  --transition-medium: all 260ms cubic-bezier(.2,.9,.2,1);
+}

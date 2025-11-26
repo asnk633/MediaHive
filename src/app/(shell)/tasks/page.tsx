@@ -127,7 +127,7 @@ export default function TasksPage() {
           {taskList.map((task) => (
             <div
               key={task.id}
-              className="glass-card relative p-5 group transition-all duration-200 ease-in-out hover:bg-[var(--panel)]"
+              className="glass-card relative p-5 group transition-all duration-200 ease-in-out hover:bg-[var(--panel)] card-padding"
             >
               <div className="flex items-start justify-between gap-4">
                 <div className="flex-1 min-w-0">

@@ -51,10 +51,10 @@ export default function ReportsPage() {
 
   return (
     <div className="px-4 pb-28 pt-6">
-      <h1 className="text-[28px] font-bold leading-tight tracking-tight">Reports</h1>
+      <h1 className="text-[28px] font-bold leading-tight tracking-tight text-[var(--text)]">Reports</h1>
 
       {loading ? (
-        <div className="mt-4 rounded-xl bg-[#1f1f1f] p-4">Loading…</div>
+        <div className="mt-4 rounded-xl bg-[var(--panel)] p-4 card-padding">Loading…</div>
       ) : (
         <>
           <div className="mt-4 grid gap-3 sm:grid-cols-3">
@@ -63,9 +63,9 @@ export default function ReportsPage() {
             <Card title="Events this week" value={String(thisWeekEvents)} hint="Across branches" />
           </div>
 
-          <section className="mt-6 rounded-xl bg-[#1f1f1f] p-4 shadow-lg">
-            <h3 className="text-lg font-bold">Productivity Snapshot</h3>
-            <p className="mt-1 text-white/70">
+          <section className="mt-6 glass-card rounded-xl p-4 card-padding">
+            <h3 className="text-lg font-bold text-[var(--text)]">Productivity Snapshot</h3>
+            <p className="mt-1 text-[var(--muted)]">
               A quick overview based on your current open items and schedule.
             </p>
             <div className="mt-3 grid gap-3 sm:grid-cols-3">
@@ -87,19 +87,19 @@ function pct(n: number, d: number) {
 
 function Card({ title, value, hint }: { title: string; value: string; hint?: string }) {
   return (
-    <div className="rounded-xl bg-[#1f1f1f] p-4 shadow-lg">
-      <p className="text-sm text-white/60">{title}</p>
-      <p className="mt-1 text-3xl font-extrabold">{value}</p>
-      {hint && <p className="text-xs text-white/50">{hint}</p>}
+    <div className="glass-card rounded-xl p-4 card-padding">
+      <p className="text-sm text-[var(--muted)]">{title}</p>
+      <p className="mt-1 text-3xl font-extrabold text-[var(--text)]">{value}</p>
+      {hint && <p className="text-xs text-[var(--muted)]">{hint}</p>}
     </div>
   );
 }
 
 function Metric({ label, value }: { label: string; value: string }) {
   return (
-    <div className="rounded-lg bg-[#262626] p-3">
-      <p className="text-sm text-white/60">{label}</p>
-      <p className="text-xl font-bold">{value}</p>
+    <div className="rounded-lg bg-[var(--panel-strong)] p-3">
+      <p className="text-sm text-[var(--muted)]">{label}</p>
+      <p className="text-xl font-bold text-[var(--text)]">{value}</p>
     </div>
   );
 }

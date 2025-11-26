@@ -21,6 +21,10 @@ jobs:
           cache: 'npm'
       - name: Install
         run: npm ci
+      - name: Run lint
+        run: npm run lint
+      - name: Run unit tests
+        run: npm run test
       - name: Build Next.js
         run: npm run build
       - name: Start server (background)
@@ -42,6 +46,8 @@ jobs:
           path: |
             test-results/
             test-report/
+            bundle-analysis/
+            lighthouse-reports/
           retention-days: 30
       - name: Debug server logs on failure
         if: failure()

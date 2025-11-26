@@ -3,7 +3,7 @@ import { db } from '@/db';
 import { tasks, users, notifications } from '@/db/schema';
 import { eq, and } from 'drizzle-orm';
 import { z } from 'zod';
-import { authorize } from '../../_lib/rbac';
+import { authorize } from '@/app/api/_lib/rbac';
 
 // Schema for validating the request body
 const createGuestTaskSchema = z.object({

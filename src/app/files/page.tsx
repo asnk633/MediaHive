@@ -182,7 +182,7 @@ export default function FilesPage() {
   return (
     <div className="space-y-6">
       <div className="flex items-center justify-between">
-        <h1 className="text-3xl font-bold">Files</h1>
+        <h1 className="text-3xl font-bold text-[var(--text)]">Files</h1>
         {hasRole('admin') && (
           <Dialog open={isUploadOpen} onOpenChange={setIsUploadOpen}>
             <DialogTrigger asChild>

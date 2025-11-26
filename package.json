@@ -3,7 +3,7 @@
   "version": "0.1.0",
   "private": true,
   "scripts": {
-    "dev": "next dev --turbopack -p 3000",
+    "dev": "node scripts/dev.js",
     "build": "next build",
     "start": "next start",
     "lint": "next lint",
@@ -95,6 +95,7 @@
     "estree-walker": "2.0.2",
     "flubber": "^0.4.2",
     "framer-motion": "^12.23.22",
+    "get-port": "^7.1.0",
     "input-otp": "^1.4.2",
     "libsql": "^0.5.22",
     "lucide-react": "^0.545.0",

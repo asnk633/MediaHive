@@ -2,7 +2,7 @@
 // Individual tenant API endpoints
 
 import { NextRequest, NextResponse } from 'next/server';
-import { authorizeByPermission } from '../../_lib/rbac';
+import { authorizeByPermission } from '@/app/api/_lib/rbac';
 import { db } from '@/db';
 import { tenants } from '@/db/schema';
 import { eq, and } from 'drizzle-orm';

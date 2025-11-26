@@ -6,7 +6,7 @@ import { NextRequest, NextResponse } from 'next/server';
 import { db } from '@/db';
 import { notifications } from '@/db/schema';
 import { eq } from 'drizzle-orm';
-import { authorizeByPermission } from '../../_lib/rbac';
+import { authorizeByPermission } from '@/app/api/_lib/rbac';
 
 export async function GET(req: NextRequest) {
   try {

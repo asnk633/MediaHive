@@ -3,7 +3,7 @@
 // Audit log API endpoints
 
 import { NextRequest, NextResponse } from 'next/server';
-import { authorizeByPermission } from '../_lib/rbac';
+import { authorizeByPermission } from '@/app/api/_lib/rbac';
 import { getUserFromRequest } from '../_lib/auth';
 import { db } from '@/db';
 import { auditLog, users } from '@/db/schema';

@@ -2,7 +2,7 @@
 // Endpoint to receive browser console errors for monitoring
 
 import { NextRequest, NextResponse } from 'next/server';
-import { authorizeByPermission } from '../../_lib/rbac';
+import { authorizeByPermission } from '@/app/api/_lib/rbac';
 
 export async function POST(req: NextRequest) {
   try {

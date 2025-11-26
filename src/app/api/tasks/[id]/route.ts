@@ -2,7 +2,7 @@ import { NextRequest, NextResponse } from 'next/server';
 import { db } from '@/db';
 import { tasks } from '@/db/schema';
 import { eq } from 'drizzle-orm';
-import { authorize } from '../../_lib/rbac';
+import { authorize } from '@/app/api/_lib/rbac';
 import { hasRole } from '@/lib/permissions';
 import { TaskStatus, TaskPriority } from '@/types';
 

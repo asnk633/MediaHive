@@ -2,7 +2,7 @@
 // Unified search API endpoint
 
 import { NextRequest, NextResponse } from 'next/server';
-import { authorizeByPermission } from '../_lib/rbac';
+import { authorizeByPermission } from '@/app/api/_lib/rbac';
 import { knowledgeGraph } from '@/server/knowledgeGraph';
 
 export async function GET(req: NextRequest) {

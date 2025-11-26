@@ -2,7 +2,7 @@
 // AI endpoint to summarize notifications
 
 import { NextRequest, NextResponse } from 'next/server';
-import { authorizeByPermission } from '../../_lib/rbac';
+import { authorizeByPermission } from '@/app/api/_lib/rbac';
 
 export async function POST(req: NextRequest) {
   try {

@@ -3,7 +3,7 @@
 // Insights Dashboard API endpoint
 
 import { NextRequest, NextResponse } from 'next/server';
-import { authorizeByPermission } from '../../_lib/rbac';
+import { authorizeByPermission } from '@/app/api/_lib/rbac';
 import { db } from '@/db';
 import { tasks, events, institutions, users, files } from '@/db/schema';
 import { eq, and, gte, lte, count, sql } from 'drizzle-orm';

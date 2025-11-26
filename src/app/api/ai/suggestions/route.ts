@@ -2,7 +2,7 @@
 // AI Suggestions API endpoint
 
 import { NextRequest, NextResponse } from 'next/server';
-import { authorizeByPermission } from '../../_lib/rbac';
+import { authorizeByPermission } from '@/app/api/_lib/rbac';
 import { aiService } from '@/server/ai/service';
 
 export async function POST(req: NextRequest) {

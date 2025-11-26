@@ -2,7 +2,7 @@
 // SSE endpoint for realtime notifications
 
 import { NextRequest } from 'next/server';
-import { authorizeByPermission } from '../../_lib/rbac';
+import { authorizeByPermission } from '@/app/api/_lib/rbac';
 import { registerSSEConnection, unregisterSSEConnection } from '../../_lib/realtime';
 
 export async function GET(req: NextRequest) {

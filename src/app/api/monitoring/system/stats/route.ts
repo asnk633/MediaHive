@@ -2,7 +2,7 @@
 // System Monitoring Stats API endpoint
 
 import { NextRequest, NextResponse } from 'next/server';
-import { authorizeByPermission } from '../../../_lib/rbac';
+import { authorizeByPermission } from '@/app/api/_lib/rbac';
 
 // In a real implementation, you would get actual system stats
 // For now, we'll return mock data

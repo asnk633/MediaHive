@@ -2,280 +2,320 @@
 @tailwind components;
 @tailwind utilities;
 
-/* Minimal, PostCSS-safe global stylesheet for the app */
-
-/* reset */
-* { 
-  box-sizing: border-box; 
-  /* Add will-change for better performance on animated elements */
-  will-change: auto;
+/* ---------- Theme tokens (Pro Institutional Blend) ---------- */
+/* Default to dark, override with [data-theme="light"] */
+:root {
+  --bg: #0b0b0b;
+  --panel: #0f1113;
+  --panel-strong: #131416;
+  --text: #e6eef6;
+  --muted: #9aa6b2;
+  --accent: #8b5cf6;
+  --accent-2: #12b886;
+  --danger: #e05555;
+  --glass-border: rgba(255,255,255,0.04);
+  --shadow-1: 0 8px 24px rgba(10,10,10,0.6);
+  --shadow-2: 0 12px 40px rgba(10,10,10,0.6);
+  --nav-bg: linear-gradient(180deg, rgba(255,255,255,0.02), rgba(255,255,255,0.01));
+  --fab-glow: 0 10px 40px rgba(139,92,246,0.18);
+  --icon: var(--text);
+  --icon-muted: var(--muted);
+  --shadow-fab: 0 14px 40px rgba(7, 10, 30, 0.6), 0 6px 18px rgba(123, 97, 255, 0.28);
 }
 
-/* Add contain property for better rendering performance */
-html {
-  contain: layout style paint;
+/* Light theme overrides */
+:root[data-theme="light"] {
+  --bg: #fff;
+  --panel: #f6f7f9;
+  --text: #111;
+  --muted: #586069;
+  --accent: #00bfa6;
+  --accent-2: #0fa360;
+  --danger: #b33636;
+  --glass-border: rgba(11,19,32,0.06);
+  --shadow-1: 0 8px 24px rgba(0,0,0,0.06);
+  --shadow-2: 0 12px 40px rgba(10,10,10,0.6);
+  --nav-bg: linear-gradient(0deg, rgba(255,255,255,0.98), rgba(255,255,255,0.99));
+  --fab-glow: 0 10px 40px rgba(106,78,240,0.12);
+  --icon: var(--text);
+  --icon-muted: var(--muted);
+  --shadow-fab: 0 14px 40px rgba(7, 10, 30, 0.6), 0 6px 18px rgba(123, 97, 255, 0.28);
 }
 
-html, body { 
-  height: 100%; 
-  margin: 0; 
-  padding: 0; 
-  /* Optimize scrolling performance */
-  -webkit-overflow-scrolling: touch;
+/* Prefer system if no explicit choice yet */
+@media (prefers-color-scheme: light) {
+  :root:not([data-theme]) { --initial-prefers: light; }
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme]) { --initial-prefers: dark; }
 }
 
-/* base page */
+/* Apply tokens */
+html, body, #__next {
+  background: var(--bg);
+  color: var(--text);
+}
+
+.panel {
+  background: var(--panel);
+  border: 1px solid var(--glass-border);
+  box-shadow: var(--shadow-1);
+  border-radius: 12px;
+}
+
+/* Bottom nav / FAB usage example */
+.bottom-nav {
+  background: var(--nav-bg);
+  box-shadow: var(--shadow-2);
+}
+.fab {
+  box-shadow: var(--fab-glow);
+}
+
+/* global page rules */
+html,
+body,
+#__next {
+  height: auto;
+  background: radial-gradient(circle at 10% 10%, rgba(123, 97, 255, 0.03), transparent 15%), var(--bg);
+  color: var(--text);
+  margin: 0;
+  font-family: Inter, system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial;
+}
+
+/* layout helpers */
+.app-shell {
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+}
+
+/* ---------- Base rules ---------- */
+* {
+  box-sizing: border-box;
+}
+
 body {
-  font-family: var(--font-inter), system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+  margin: 0;
+  font-family: Inter, system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial;
+  background: radial-gradient(circle at 10% 10%, rgba(123, 97, 255, 0.03), transparent 15%), var(--bg);
+  color: var(--text);
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
-  color: #e6e6e6;
-  background: radial-gradient(circle at 50% 10%, rgba(40,40,42,0.9), #0c0c0c 60%);
-  line-height: 1.45;
-  /* Optimize rendering */
-  text-rendering: optimizeSpeed;
-  -webkit-text-size-adjust: 100%;
+  overflow: visible;
+  /* shell layout handles scrolling on main element */
+  background: var(--bg);
+  color: var(--text);
+  transition: background .18s ease, color .18s ease;
 }
 
-/* main content spacing - keeps content above bottom nav */
-.main-content, main {
-  min-height: calc(100vh - 112px);
-  padding: 20px 28px;
-  /* Optimize painting */
-  contain: layout style paint;
+/* Scrollable main area inside shell should use its own scroll - see layout.tsx */
+.app-main-scroll {
+  flex: 1;
+  overflow: auto;
+  -webkit-overflow-scrolling: touch;
+  padding: 32px;
 }
 
-/* headings */
-h1, h2, h3, h4 { 
-  color: #ffffff; 
-  margin: 0 0 12px 0; 
-  /* Optimize font rendering */
-  font-feature-settings: "kern" 1;
-  font-kerning: normal;
+/* ---------- Visual utilities ---------- */
+.glass-card {
+  background: linear-gradient(180deg, var(--panel), rgba(255, 255, 255, 0.01));
+  border-radius: 12px;
+  border: 1px solid var(--glass-border);
+  box-shadow: var(--shadow-1), inset 0 1px 0 rgba(255, 255, 255, 0.02);
 }
 
-/* default buttons */
-button { 
-  font-family: inherit; 
-  font-size: 14px;
-  /* Optimize button rendering */
-  -webkit-appearance: none;
-  appearance: none;
-  border: none;
-  background: none;
-  cursor: pointer;
-  /* Add hardware acceleration for animations */
-  transform: translateZ(0);
-  -webkit-transform: translateZ(0);
+/* small pill */
+.pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 6px 10px;
+  border-radius: 999px;
+  font-size: 0.8rem;
+  background: var(--panel);
+  color: var(--text);
 }
 
-/* toast safety */
-.toast-root { 
-  z-index: 1200; 
-  /* Optimize positioning */
+/* subtle text gradient */
+.text-gradient {
+  background: var(--accent);
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+}
+
+/* ---------- Bottom Nav & FAB ---------- */
+/* Base bottom nav wrapper. Layout should position it fixed. */
+.bottom-nav {
   position: fixed;
+  left: 16px;
+  right: 16px;
+  bottom: 12px;
+  height: var(--bottom-nav-height);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 clamp(8px, 1.5vw, 18px);
+  background: var(--nav-bg);
+  border-radius: 16px;
+  box-shadow: 0 8px 30px rgba(0, 0, 0, 0.6);
+  z-index: 30;
 }
 
-/* BottomNav styles (scoped using tg- prefix used by component) */
-.tg-bottomnav {
+/* FAB overlap spacing */
+@media (min-width: 1024px) {
+  .bottom-nav {
+    left: 40px;
+    right: 40px;
+  }
+
+  :root {
+    --fab-size: 80px;
+  }
+}
+
+@media (max-width: 600px) {
+  .bottom-nav {
+    left: 10px;
+    right: 10px;
+  }
+
+  :root {
+    --fab-size: 64px;
+  }
+}
+
+/* nav item */
+.bottom-nav .nav-item {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: clamp(4px, 0.5vh, 6px);
+  padding: clamp(8px, 1vh, 12px) clamp(10px, 1.5vw, 18px);
+  min-height: 44px;
+  border-radius: 8px;
+  color: var(--text);
+  opacity: 0.95;
+  font-size: clamp(11px, 1.5vw, 12px);
+  text-decoration: none;
+  touch-action: manipulation;
+  transition: all 150ms ease;
+}
+
+.bottom-nav .nav-item.active {
+  background: linear-gradient(180deg, rgba(123, 97, 255, 0.12), rgba(79, 70, 229, 0.06));
+  box-shadow: 0 8px 26px rgba(123, 97, 255, 0.12);
+  color: white;
+}
+
+/* FAB overlay */
+.fab-overlay {
+  position: fixed;
+  inset: 0;
+  pointer-events: none; /* let clicks pass through unless child re-enables */
+  backdrop-filter: blur(8px);
+  transition: opacity .18s ease;
+}
+
+/* FAB */
+.fab-wrap {
   position: fixed;
   left: 50%;
   transform: translateX(-50%);
-  bottom: calc(var(--bottom-nav-height, 22px) + 6px);
-  z-index: 50;
-  width: min(980px, 96%);
-  pointer-events: auto;
-  /* Add hardware acceleration */
-  transform: translateZ(0);
-  -webkit-transform: translateZ(0);
-  /* Optimize painting */
-  contain: layout style paint;
-}
-
-.tg-bottomnav-inner {
-  width: 100%;
-  background: linear-gradient(180deg, rgba(20,20,20,0.98), rgba(12,12,12,0.96));
-  border-radius: 18px;
-  padding: 10px 14px;
+  bottom: calc(var(--bottom-nav-height) + 16px);
+  z-index: 1000;
   display: flex;
   align-items: center;
   justify-content: center;
-  box-shadow: 0 18px 40px rgba(6,6,6,0.6);
-  backdrop-filter: saturate(120%) blur(6px);
-  /* Optimize rendering */
-  will-change: transform;
+  pointer-events: none;
+  /* container non-interactive; buttons inside are interactive */
 }
 
-.tg-menu { 
-  width:100%; 
-  display:flex; 
-  align-items:center; 
-  justify-content:space-between; 
-  padding:0; 
-  margin:0; 
-  list-style:none; 
-  gap:8px; 
+.fab {
+  pointer-events: auto;
+  width: var(--fab-size);
+  height: var(--fab-size);
+  border-radius: 999px;
+  background: var(--accent);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: white;
+  font-size: 28px;
+  border: none;
+  box-shadow: 0 14px 40px rgba(7, 10, 30, 0.6), 0 6px 18px rgba(123, 97, 255, 0.28);
+  transition: all 200ms ease;
 }
 
-.tg-group { 
-  display:flex; 
-  gap:10px; 
-  align-items:center; 
+/* small hover/pulse */
+.fab:hover {
+  transform: translateY(-4px) scale(1.03);
 }
 
-.tg-fab-gap { 
-  width: calc(var(--fab-gap-width, 88px)); 
-  flex:0 0 auto; 
+.fab:focus-visible {
+  outline: 3px solid rgba(123, 97, 255, 0.6);
+  outline-offset: 4px;
 }
 
-.tg-link { 
-  display:inline-flex; 
-  align-items:center; 
-  position:relative; 
-  overflow:hidden; 
-  width:56px; 
-  height:44px; 
-  border-radius:10px; 
-  text-decoration:none; 
-  color:#dcdcdc; 
-  transition:width .18s ease-out;
-  /* Optimize animations */
-  will-change: width;
-  transform: translateZ(0);
-  -webkit-transform: translateZ(0);
+/* FAB item style */
+.fab-item {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  background: var(--panel);
+  color: var(--text);
+  padding: 10px 14px;
+  border-radius: 999px;
+  box-shadow: var(--shadow-1);
+  transition: transform .16s ease, opacity .16s ease;
+}
+.fab-item:focus { outline: 3px solid rgba(255,255,255,0.06); transform: translateY(-2px); }
+
+/* ---------- TopBar ---------- */
+.topbar {
+  height: 64px;
+  padding: 12px 20px;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  justify-content: space-between;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.02);
+  position: fixed;
+  left: 0;
+  right: 0;
+  top: 0;
+  z-index: 90;
+  backdrop-filter: blur(6px);
+  background: var(--nav-bg);
 }
 
-.tg-link::before { 
-  content:""; 
-  position:absolute; 
-  inset:0; 
-  border-radius:inherit; 
-  background: rgba(255,255,255,0.02); 
-  transform: translateX(100%); 
-  transition: transform .18s ease-out; 
-  z-index:0;
-  /* Optimize animations */
-  will-change: transform;
+/* body content padding to account top and bottom */
+.app-body-padding {
+  padding-top: 84px;
+  padding-bottom: calc(var(--bottom-nav-height) + 24px);
 }
 
-.tg-link .tg-link-icon { 
-  position:absolute; 
-  left:12px; 
-  z-index:1; 
-  display:inline-flex; 
-  align-items:center; 
-  /* Optimize rendering */
-  will-change: transform;
+/* ---------- accessibility / focus ---------- */
+button:focus {
+  outline: 2px solid rgba(123, 97, 255, 0.4);
+  outline-offset: 2px;
 }
 
-.tg-link .tg-link-title { 
-  display:block; 
-  width:100%; 
-  text-indent:28px; 
-  transform: translateX(100%); 
-  opacity:0; 
-  transition: transform .18s ease-out, opacity .14s ease-out; 
-  z-index:1; 
-  font-size:14px;
-  /* Optimize animations */
-  will-change: transform, opacity;
+:focus {
+  outline: 3px solid color-mix(in srgb, var(--accent) 24%, transparent);
+  outline-offset: 3px;
 }
 
-.tg-link:hover, .tg-link:focus-visible { 
-  width:128px; 
-  outline:none;
+/* ---------- custom scrollbar ---------- */
+.app-main-scroll::-webkit-scrollbar {
+  width: 10px;
+  height: 10px;
 }
 
-.tg-link:hover::before, .tg-link:focus-visible::before, .tg-link:hover .tg-link-title, .tg-link:focus-visible .tg-link-title { 
-  transform: translateX(0); 
-  opacity:1; 
-}
-
-.tg-link.is-active { 
-  width:128px; 
-}
-
-.tg-link.is-active::before { 
-  transform: translateX(0); 
-  background: rgba(255,255,255,0.03); 
-}
-
-.tg-link.is-active .tg-link-title { 
-  transform: translateX(0); 
-  opacity:1; 
-}
-
-/* FAB baseline (scoped) */
-.fab-root { 
-  position: fixed; 
-  left: 50%; 
-  transform: translateX(-50%); 
-  bottom: calc(var(--bottom-nav-height, 22px) + 18px); 
-  z-index: 60; 
-  pointer-events: none; 
-  display:flex; 
-  flex-direction:column; 
-  align-items:center; 
-  gap:12px;
-  /* Add hardware acceleration */
-  transform: translateZ(0);
-  -webkit-transform: translateZ(0);
-  /* Optimize painting */
-  contain: layout style paint;
-}
-
-.fab-button { 
-  pointer-events: auto; 
-  width:64px; 
-  height:64px; 
-  border-radius:999px; 
-  border:none; 
-  display:inline-flex; 
-  align-items:center; 
-  justify-content:center; 
-  background: linear-gradient(180deg,#7c4dff,#6a2be8); 
-  box-shadow: 0 20px 48px rgba(6,6,6,0.6), inset 0 -8px 16px rgba(0,0,0,0.2); 
-  cursor:pointer;
-  /* Add hardware acceleration */
-  transform: translateZ(0);
-  -webkit-transform: translateZ(0);
-  /* Optimize animations */
-  will-change: transform;
-  transition: transform 0.2s ease-out;
-}
-
-.fab-button:active {
-  transform: scale(0.95) translateZ(0);
-  -webkit-transform: scale(0.95) translateZ(0);
-}
-
-/* focus accessibility */
-button:focus-visible { 
-  box-shadow: 0 0 0 4px rgba(124,58,237,0.12); 
-  outline: none; 
-}
-
-/* small screens */
-@media (max-width: 520px) {
-  .fab-button { 
-    width:56px; 
-    height:56px; 
-  }
-  .tg-fab-gap { 
-    width: calc(var(--fab-gap-width, 72px)); 
-  }
-  
-  /* Optimize for mobile */
-  body {
-    -webkit-tap-highlight-color: transparent;
-  }
-  
-  .tg-link {
-    /* Reduce animation duration on mobile for better performance */
-    transition: width .12s ease-out;
-  }
-  
-  .tg-link::before, .tg-link .tg-link-title {
-    transition: transform .12s ease-out, opacity .1s ease-out;
-  }
+.app-main-scroll::-webkit-scrollbar-thumb {
+  background: linear-gradient(180deg, rgba(255, 255, 255, 0.04), rgba(255, 255, 255, 0.02));
+  border-radius: 99px;
+  border: 2px solid rgba(0, 0, 0, 0);
+  background-clip: padding-box;
 }

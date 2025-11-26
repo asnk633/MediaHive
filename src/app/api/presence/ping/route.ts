@@ -4,7 +4,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { db } from '@/db';
 import { presence } from '@/db/schema';
-import { authorizeByPermission } from '../../_lib/rbac';
+import { authorizeByPermission } from '@/app/api/_lib/rbac';
 import { broadcastEvent } from '../../_lib/realtime';
 
 export async function POST(req: NextRequest) {

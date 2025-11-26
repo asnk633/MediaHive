@@ -2,7 +2,7 @@ import { NextRequest, NextResponse } from 'next/server';
 import { db } from '@/db';
 import { events } from '@/db/schema';
 import { eq, like, and, or, gte, lte, desc } from 'drizzle-orm';
-import { authorize } from '../_lib/rbac';
+import { authorize } from '@/app/api/_lib/rbac';
 import { hasRole } from '@/lib/permissions';
 import { validateSchema, createEventSchema, updateEventSchema } from '@/lib/validation';
 import { z } from 'zod';

@@ -3,7 +3,7 @@
 // Bundle notifications for smart delivery
 
 import { NextRequest, NextResponse } from 'next/server';
-import { authorizeByPermission } from '../../_lib/rbac';
+import { authorizeByPermission } from '@/app/api/_lib/rbac';
 import { db } from '@/db';
 import { notifications } from '@/db/schema';
 import { eq, and, gte, isNull } from 'drizzle-orm';

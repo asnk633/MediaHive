@@ -1,5 +1,5 @@
 /* Import design tokens */
-@import './tokens.css';
+@import '../styles/tokens.css';
 
 /* ---------- Theme tokens (Pro Institutional Blend) ---------- */
 /* Default to dark, override with [data-theme="light"] */

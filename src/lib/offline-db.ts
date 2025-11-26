@@ -324,18 +324,30 @@ export async function getUnresolvedConflicts(): Promise<ConflictItem[]> {
     const index = store.index('resolved');
 
     return new Promise((resolve, reject) => {
-      // Guard against invalid keys
-      // Boolean keys are valid in IDB 2.0, but some environments might be strict.
-      // We use a try-catch to be safe.
-      try {
-        const range = IDBKeyRange.only(false);
-        const request = index.getAll(range);
-        request.onsuccess = () => resolve(request.result || []);
-        request.onerror = () => reject(request.error);
-      } catch (e) {
-        console.warn('IDBKeyRange.only(false) failed, falling back or returning empty', e);
-        resolve([]);
-      }
+      const unresolvedConflicts: ConflictItem[] = [];
+      
+      // Use cursor to iterate through all records and filter for unresolved ones
+      const request = index.openCursor();
+      
+      request.onsuccess = (event) => {
+        const cursor = (event.target as IDBRequest<IDBCursorWithValue>).result;
+        if (cursor) {
+          const conflict = cursor.value as ConflictItem;
+          // Only include unresolved conflicts (where resolved is false or falsy)
+          if (!conflict.resolved) {
+            unresolvedConflicts.push(conflict);
+          }
+          cursor.continue();
+        } else {
+          // No more records, resolve with the collected conflicts
+          resolve(unresolvedConflicts);
+        }
+      };
+      
+      request.onerror = () => {
+        console.error('Error opening cursor for unresolved conflicts:', request.error);
+        reject(request.error);
+      };
     });
   } catch (error) {
     console.error('Failed to get unresolved conflicts:', error);

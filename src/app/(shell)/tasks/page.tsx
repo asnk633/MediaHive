@@ -5,6 +5,7 @@ import { Trash2, CheckCircle2, Clock, AlertCircle, Save } from "lucide-react";
 import { usePermission } from "@/hooks/usePermission";
 import { useRole } from "@/app/(shell)/RoleContext";
 import { cn } from "@/lib/utils";
+import { fetcher } from "@/lib/fetcher";
 
 type Task = {
   id: number;
@@ -29,20 +30,15 @@ export default function TasksPage() {
       setLoading(true);
       setError(null);
 
-      const res = await fetch(`/api/tasks?institutionId=1&limit=50&filter=${filter}`, {
+      const data = await fetcher(`/api/tasks?institutionId=1&limit=50&filter=${filter}`, {
         headers: {
           'Accept': 'application/json',
           'Accept-Encoding': 'gzip, deflate, br',
           'x-user-id': user?.id ? String(user.id) : '1'
         }
       });
-
-      if (!res.ok) {
-        throw new Error(`Failed to load tasks: ${res.status} ${res.statusText}`);
-      }
-
-      const body = await res.json();
-      setTasks(body?.data ?? []);
+      
+      setTasks(data?.data ?? []);
     } catch (err) {
       console.error("Failed to load tasks", err);
       setError(err instanceof Error ? err.message : "Failed to load tasks");
@@ -64,7 +60,7 @@ export default function TasksPage() {
   const saveReview = useCallback(async (task: Task) => {
     const payload = { reviewStatus: task.reviewStatus ?? "pending" };
     try {
-      const res = await fetch(`/api/tasks/${task.id}/review`, {
+      await fetcher(`/api/tasks/${task.id}/review`, {
         method: "PATCH",
         headers: {
           "Content-Type": "application/json",
@@ -72,12 +68,9 @@ export default function TasksPage() {
         },
         body: JSON.stringify(payload),
       });
-      const body = await res.json().catch(() => ({}));
-      if (!res.ok) {
-        alert(`Failed to update reviewStatus: ${body?.error ?? res.statusText}`);
-      } else {
-        alert("Review status updated");
-      }
+      
+      // Show success message
+      alert("Review status updated");
     } catch (err) {
       alert(`Failed to update review status: ${String(err)}`);
     }
@@ -86,13 +79,14 @@ export default function TasksPage() {
   const handleDelete = async (taskId: number) => {
     if (confirm('Delete task?')) {
       try {
-        await fetch(`/api/tasks/${taskId}?institutionId=1`, {
+        await fetcher(`/api/tasks/${taskId}?institutionId=1`, {
           method: 'DELETE',
           headers: { 'x-user-id': user?.id ? String(user.id) : '1' }
         });
         setTasks(prev => prev.filter(t => t.id !== taskId));
       } catch (e) {
         console.error("Failed to delete task", e);
+        alert("Failed to delete task. Please try again.");
       }
     }
   };
@@ -113,6 +107,12 @@ export default function TasksPage() {
       {error && (
         <div className="p-4 rounded-xl bg-[var(--danger)]/10 border border-[var(--danger)]/20 text-[var(--danger)]">
           Error: {error}
+          <button 
+            onClick={fetchTasks}
+            className="ml-4 px-3 py-1 rounded bg-[var(--danger)]/20 hover:bg-[var(--danger)]/30 text-[var(--danger)] text-sm"
+          >
+            Retry
+          </button>
         </div>
       )}
 

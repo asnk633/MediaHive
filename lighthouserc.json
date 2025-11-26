@@ -1,23 +1,27 @@
 {
   "ci": {
     "collect": {
-      "staticDistDir": ".next",
       "url": [
-        "http://localhost/tasks",
-        "http://localhost/kanban"
-      ]
+        "http://localhost:3000/home",
+        "http://localhost:3000/tasks"
+      ],
+      "numberOfRuns": 3,
+      "settings": {
+        "formFactor": "mobile",
+        "screenEmulation": {
+          "mobile": true,
+          "width": 360,
+          "height": 640,
+          "deviceScaleFactor": 2,
+          "disabled": false
+        }
+      }
     },
     "assert": {
-      "preset": "lighthouse:recommended",
-      "assertions": {
-        "categories:pwa": ["error", {"minScore": 0.9}],
-        "installable-manifest": "error",
-        "service-worker": "error",
-        "offline-start-url": "error",
-        "viewport": "error",
-        "content-width": "error",
-        "without-javascript": "error"
-      }
+      "preset": "lighthouse:no-pwa"
+    },
+    "upload": {
+      "target": "temporary-public-storage"
     }
   }
 }

@@ -135,6 +135,8 @@
   },
   "devDependencies": {
     "@eslint/eslintrc": "^3.3.1",
+    "@lhci/cli": "^0.15.1",
+    "@next/bundle-analyzer": "^16.0.4",
     "@playwright/test": "^1.56.1",
     "@tailwindcss/postcss": "^4.1.16",
     "@types/better-sqlite3": "^7.6.13",

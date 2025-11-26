@@ -27,6 +27,12 @@ jobs:
         run: npm run test
       - name: Build Next.js
         run: npm run build
+      - name: Database backup
+        run: node scripts/db-backup.cjs
+      - name: Housekeeping
+        run: node scripts/cleanup-old-data.cjs
+      - name: Semantic release dry run
+        run: npx semantic-release --dry-run
       - name: Start server (background)
         run: |
           npm run start &> server.log &

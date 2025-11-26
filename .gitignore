@@ -39,3 +39,6 @@ next-env.d.ts
 playwright-report/
 test-results/
 
+# environment files
+.env
+.env*.local

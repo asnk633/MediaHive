@@ -30,7 +30,7 @@ export default function NewEventPage() {
         setTimeout(() => {
             setIsLoading(false);
             toast.success('Event created successfully');
-            router.push('/calendar');
+            router.push('/events');
         }, 1000);
     };
 

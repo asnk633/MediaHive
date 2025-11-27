@@ -1,7 +1,7 @@
 "use client";
 
 import React, { useEffect, Suspense } from "react";
-import BottomNav from "@/components/BottomNav";
+import BottomNav from "@/components/BottomNavigation";
 import TopBar from "@/components/TopBar";
 import { ToastProvider } from "@/components/ToastProvider";
 import { ClientDataProvider } from "./ClientDataContext";
@@ -21,44 +21,42 @@ export default function ShellLayout({ children }: { children: React.ReactNode })
   }, []);
 
   return (
-    <html lang="en" suppressHydrationWarning>
-      <body className="min-h-screen">
-        <RoleProvider>
-          <ToastProvider>
-            <ClientDataProvider>
-              <div className="min-h-screen flex flex-col">
-                {/* Keyboard Navigation Detector */}
-                <KeyboardNavigationDetector />
-                
-                {/* Offline Banner */}
-                <OfflineBanner />
-                
-                {/* Top Bar */}
-                <TopBar />
+    <>
+      <RoleProvider>
+        <ToastProvider>
+          <ClientDataProvider>
+            <div className="min-h-screen flex flex-col">
+              {/* Keyboard Navigation Detector */}
+              <KeyboardNavigationDetector />
 
-                {/* Main Content Area - Scrolls independently */}
-                <main className="flex-1 overflow-y-auto overflow-x-hidden pt-6">
-                  <ErrorBoundary>
-                    <Suspense fallback={<div>Loading...</div>}>
-                      {children}
-                    </Suspense>
-                  </ErrorBoundary>
-                </main>
+              {/* Offline Banner */}
+              <OfflineBanner />
 
-                {/* Offline & Hydration Indicators */}
-                <OfflineStatusIndicator />
-                <HydrationDetector />
+              {/* Top Bar */}
+              <TopBar />
 
-                {/* Floating Action Button */}
-                <FAB />
+              {/* Main Content Area - Scrolls independently */}
+              <main className="flex-1 overflow-y-auto overflow-x-hidden pt-6">
+                <ErrorBoundary>
+                  <Suspense fallback={<div>Loading...</div>}>
+                    {children}
+                  </Suspense>
+                </ErrorBoundary>
+              </main>
 
-                {/* Bottom Navigation */}
-                <BottomNav />
-              </div>
-            </ClientDataProvider>
-          </ToastProvider>
-        </RoleProvider>
-      </body>
-    </html>
+              {/* Offline & Hydration Indicators */}
+              <OfflineStatusIndicator />
+              <HydrationDetector />
+
+              {/* Floating Action Button */}
+              <FAB />
+
+              {/* Bottom Navigation */}
+              <BottomNav />
+            </div>
+          </ClientDataProvider>
+        </ToastProvider>
+      </RoleProvider>
+    </>
   );
 }

@@ -2,7 +2,7 @@ import { useEffect, useState, useCallback } from "react";
 
 type Theme = "dark" | "light";
 
-const STORAGE_KEY = "tg_theme_pref";
+const STORAGE_KEY = "theme";
 
 export function getPreferredTheme(): Theme | null {
     try {

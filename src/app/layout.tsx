@@ -1,5 +1,6 @@
 import '../styles/tokens.css';
 import './globals.css';
+import './../design-system/base.css';
 import { ReactNode } from 'react';
 import { AuthProvider } from "@/contexts/AuthContext";
 import { ThemeProvider } from "@/context/ThemeProvider";
@@ -21,6 +22,8 @@ export const viewport = {
 };
 
 export default function RootLayout({ children }: { children: ReactNode }) {
+  const useNewUI = process.env.NEXT_PUBLIC_NEW_UI === "true";
+
   return (
     <html lang="en" suppressHydrationWarning>
       <head>
@@ -48,7 +51,12 @@ export default function RootLayout({ children }: { children: ReactNode }) {
       <body className="min-h-screen">
         <ThemeProvider>
           <AuthProvider>
-            {children}
+            {useNewUI ? (
+              // keep app routes: your existing router will handle / (redesign)
+              children
+            ) : (
+              children
+            )}
           </AuthProvider>
         </ThemeProvider>
       </body>

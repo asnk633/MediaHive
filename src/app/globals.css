@@ -286,31 +286,6 @@ body {
   will-change: opacity;
 }
 
-/* FAB */
-.fab-wrap {
-  position: fixed;
-  left: 50%;
-  transform: translateX(-50%);
-  bottom: calc(var(--bottom-nav-height) + 16px);
-  z-index: 1200;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  pointer-events: none;
-  /* container non-interactive; buttons inside are interactive */
-  /* Performance optimization: contain layout and create new stacking context */
-}
-}
-
-/* small hover/pulse */
-.fab:hover {
-  transform: translateY(-4px) scale(1.03) translateZ(0);
-}
-
-.fab:focus-visible {
-  outline: 3px solid rgba(123, 97, 255, 0.6);
-  outline-offset: 4px;
-}
 
 /* FAB item style */
 .fab-item {

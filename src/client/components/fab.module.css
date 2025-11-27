@@ -1,0 +1,63 @@
+/* src/client/components/fab.module.css */
+.fabWrap {
+  position: fixed;
+  left: 50%;
+  transform: translateX(-50%);
+  bottom: calc(var(--bottom-nav-height, 74px) / 2);
+  z-index: 80;
+  pointer-events: none;
+}
+
+/* layout for items */
+.menu {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  align-items: center;
+  margin-bottom: 12px;
+  opacity: 0;
+  transform: translateY(14px);
+  transition: all var(--trans-smooth) ease;
+  pointer-events: none;
+}
+.menu.open { opacity: 1; transform: translateY(0); pointer-events: auto; }
+
+/* menu item */
+.menuItem {
+  display:flex;
+  gap:10px;
+  align-items:center;
+  padding:8px 14px;
+  border-radius:999px;
+  background: rgba(255,255,255,0.03);
+  backdrop-filter: blur(6px);
+  color:var(--text);
+  text-decoration:none;
+}
+
+/* little color bullet */
+.menuBullet {
+  width:10px; height:10px; border-radius:50%;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.6);
+}
+
+/* fab button */
+.fab {
+  pointer-events: auto;
+  width:64px;
+  height:64px;
+  border-radius:50%;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  background: linear-gradient(180deg, var(--accent), #5a3bff);
+  box-shadow: var(--fab-glow), var(--shadow-1);
+  transform: translateY(0);
+  border: none;
+  cursor: pointer;
+  transition: transform var(--trans-fast) ease, box-shadow var(--trans-fast);
+}
+.fab:hover{ transform: translateY(-4px); }
+.fab.active{ transform: translateY(-2px); box-shadow: 0 12px 36px rgba(0,0,0,0.6); }
+
+.fabPlus{ color:white; font-size:28px; font-weight:700; }

@@ -6,7 +6,7 @@ import TopBar from "@/components/TopBar";
 import { ToastProvider } from "@/components/ToastProvider";
 import { ClientDataProvider } from "./ClientDataContext";
 import { RoleProvider } from "./RoleContext";
-import { FAB } from "@/client/components/FAB";
+import FAB from "@/client/components/FAB";
 import { initPWA } from "@/lib/init-pwa";
 import { ClientOfflineStatusIndicator as OfflineStatusIndicator } from "@/components/ClientOfflineStatusIndicator";
 import { HydrationDetector } from "@/components/HydrationDetector";

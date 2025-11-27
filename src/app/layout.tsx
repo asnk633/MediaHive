@@ -1,3 +1,4 @@
+import '../styles/tokens.css';
 import './globals.css';
 import { ReactNode } from 'react';
 import { AuthProvider } from "@/contexts/AuthContext";

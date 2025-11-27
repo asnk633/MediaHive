@@ -1,14 +1,3 @@
-@charset "utf-8";
-
-/* design tokens must load first so PostCSS/Tailwind can use them */
-/* design tokens must load first so PostCSS/Tailwind can use them */
-/* @import '../styles/tokens.css'; REMOVED: Imported in layout.tsx */
-
-/* Tailwind directives (if using) — keep these after tokens import */
-@tailwind base;
-@tailwind components;
-@tailwind utilities;
-
 /* ---------- Theme tokens (Pro Institutional Blend) ---------- */
 /* Default to dark, override with [data-theme="light"] */
 :root {

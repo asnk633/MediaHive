@@ -257,18 +257,6 @@ body {
 
 .bottom-nav .nav-item.active {
   background: linear-gradient(180deg, rgba(123, 97, 255, 0.12), rgba(79, 70, 229, 0.06));
-  box-shadow: 0 6px 20px rgba(123, 97, 255, 0.08);
-  /* Reduced glow effect */
-  color: white;
-}
-
-/* FAB overlay */
-.fab-overlay {
-  position: fixed;
-  inset: 0;
-  pointer-events: none;
-  /* let clicks pass through unless child re-enables */
-  backdrop-filter: blur(8px);
   transition: opacity var(--transition-fast);
   /* Performance optimization: hardware acceleration */
   transform: translateZ(0);

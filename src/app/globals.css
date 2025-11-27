@@ -128,28 +128,6 @@ body {
   border: 1px solid var(--glass-border);
   box-shadow: var(--shadow-1), inset 0 1px 0 rgba(255, 255, 255, 0.02);
   /* Performance optimization: hardware acceleration */
-  transform: translateZ(0);
-  will-change: auto;
-}
-
-/* small pill */
-.pill {
-  display: inline-flex;
-  align-items: center;
-  gap: 8px;
-  padding: 6px 10px;
-  border-radius: 999px;
-  font-size: 0.8rem;
-  background: var(--panel);
-  color: var(--text);
-  /* Performance optimization: hardware acceleration */
-  transform: translateZ(0);
-  will-change: auto;
-}
-
-/* subtle text gradient */
-.text-gradient {
-  background: var(--accent);
   -webkit-background-clip: text;
   background-clip: text;
   color: transparent;

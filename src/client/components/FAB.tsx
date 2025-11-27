@@ -29,7 +29,7 @@ export function FAB() {
         label: 'Open quick actions'
       });
     }
-    
+
     if (menuRef.current) {
       setMenuAriaAttributes(menuRef.current, {
         labelledBy: 'fab-button',
@@ -45,7 +45,7 @@ export function FAB() {
 
   const handleCreateEvent = useCallback(() => {
     setIsOpen(false);
-    router.push('/calendar?modal=new-event');
+    router.push('/events/new');
   }, [router]);
 
   const handleCreateNotification = useCallback(() => {
@@ -58,12 +58,12 @@ export function FAB() {
 
   const menuItems = [
     {
-      label: 'New Task',
-      icon: ListTodo,
-      onClick: handleCreateTask,
-      visible: canCreateTask,
-      color: 'text-blue-400',
-      delay: 0.1
+      label: 'Notify',
+      icon: BellPlus,
+      onClick: handleCreateNotification,
+      visible: canNotify,
+      color: 'text-amber-400',
+      delay: 0
     },
     {
       label: 'New Event',
@@ -74,12 +74,12 @@ export function FAB() {
       delay: 0.05
     },
     {
-      label: 'Notify',
-      icon: BellPlus,
-      onClick: handleCreateNotification,
-      visible: canNotify,
-      color: 'text-amber-400',
-      delay: 0
+      label: 'New Task',
+      icon: ListTodo,
+      onClick: handleCreateTask,
+      visible: canCreateTask,
+      color: 'text-blue-400',
+      delay: 0.1
     }
   ].filter(item => item.visible);
 
@@ -88,7 +88,7 @@ export function FAB() {
     if (e.key === 'Escape') {
       setIsOpen(false);
     }
-    
+
     // Handle arrow keys for menu navigation
     if (isOpen && menuRef.current) {
       const menuItems = menuRef.current.querySelectorAll('[role="menuitem"]');
@@ -117,14 +117,14 @@ export function FAB() {
         aria-hidden={!isOpen}
         style={{ pointerEvents: isOpen ? 'auto' : 'none' }}
       />
-      
+
       {/* FAB wrapper - centered and positioned above BottomNav */}
       <div className="fab-wrap">
         <div className="relative">
           {/* menu items - still pointer-events-auto so they are clickable */}
           <AnimatePresence>
             {isOpen && (
-              <div 
+              <div
                 ref={menuRef}
                 id="fab-menu"
                 className="absolute -top-28 w-max flex flex-col items-center gap-3"
@@ -180,7 +180,10 @@ export function FAB() {
             aria-expanded={isOpen}
             aria-controls="fab-menu"
             className="fab focus:outline-none"
-            onClick={() => setIsOpen(v => !v)}
+            onClick={() => {
+              console.log('FAB clicked, toggling open state', !isOpen);
+              setIsOpen(v => !v);
+            }}
             onKeyDown={handleKeyDown}
           >
             <span className="sr-only">Open quick actions</span>

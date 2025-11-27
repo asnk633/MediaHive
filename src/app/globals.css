@@ -1,7 +1,8 @@
 @charset "utf-8";
 
 /* design tokens must load first so PostCSS/Tailwind can use them */
-@import '../styles/tokens.css';
+/* design tokens must load first so PostCSS/Tailwind can use them */
+/* @import '../styles/tokens.css'; REMOVED: Imported in layout.tsx */
 
 /* Tailwind directives (if using) — keep these after tokens import */
 @tailwind base;
@@ -290,7 +291,7 @@ body {
   position: fixed;
   left: 50%;
   transform: translateX(-50%);
-  bottom: calc(var(--bottom-nav-height) + 22px);
+  bottom: calc(var(--bottom-nav-height) + 16px);
   z-index: 1200;
   display: flex;
   align-items: center;
@@ -298,34 +299,7 @@ body {
   pointer-events: none;
   /* container non-interactive; buttons inside are interactive */
   /* Performance optimization: contain layout and create new stacking context */
-  contain: var(--fixed-element-contain);
-  transform: translateZ(0);
 }
-
-.fab {
-  pointer-events: auto;
-  width: 64px;
-  height: 64px;
-  border-radius: 999px;
-  background: var(--accent);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  color: white;
-  font-size: 28px;
-  border: none;
-  box-shadow: var(--shadow-fab);
-  transition: var(--transition-fast);
-  /* Performance optimization: hardware acceleration */
-  transform: translateZ(0);
-  will-change: transform;
-}
-
-@media (max-width: 600px) {
-  .fab {
-    width: 56px;
-    height: 56px;
-  }
 }
 
 /* small hover/pulse */

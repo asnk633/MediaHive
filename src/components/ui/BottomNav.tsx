@@ -2,7 +2,7 @@
 "use client";
 import Link from "next/link";
 import React from "react";
-import Icon from "@/design-system/Icon";
+import Icon from "@/client/components/Icon";
 import styles from "./bottomnav.module.css";
 
 const BOTTOM_NAV = [
@@ -21,7 +21,7 @@ export default function BottomNav() {
         {BOTTOM_NAV.map(item => (
           <li key={item.href} className={styles.item}>
             <Link href={item.href} className={styles.link} aria-label={item.label}>
-              <Icon name={item.name as any} size={22} />
+              <Icon name={item.name as any} variant="duotone" className="w-6 h-6" />
               <span className={styles.label}>{item.label}</span>
             </Link>
           </li>

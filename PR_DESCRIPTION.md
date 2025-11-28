@@ -30,7 +30,6 @@ Requested reviewers:
 - UI designer (visual signoff)
 - Frontend dev (accessibility & performance)
 
-
 Checklist for reviewer:
 
  NEXT_PUBLIC_NEW_UI=true npm run dev launches without errors
@@ -46,3 +45,19 @@ Checklist for reviewer:
  a11y quick check: keyboard focus reaches FAB menu items
 
  Visual approval from design owner
+
+Extra QA Smoke Checklist:
+
+ Build: npm run build — passes.
+
+ Dev run: NEXT_PUBLIC_NEW_UI=true npm run dev — page loads.
+
+ Visual: Home, Tasks, Events, Reports, Downloads, Profile exist under /(redesign) group.
+
+ FAB: opens, menu items route correctly (/notifications/new, /events/new, /tasks/new).
+
+ BottomNav: 6 items; clicking routes to appropriate route.
+
+ No console errors/warnings related to hydration or refs.
+
+ Playwright smoke tests (provided) pass.

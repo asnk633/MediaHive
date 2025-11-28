@@ -10,20 +10,6 @@
 
   /* Accents */
   --accent: #7B5CFF;
-  /* Primary Purple */
-  --accent-2: #00BFA6;
-  /* Secondary Teal */
-  --danger: #e05555;
-
-  /* UI Elements */
-  --glass-border: rgba(255, 255, 255, 0.06);
-  --icon: var(--muted);
-  --icon-muted: rgba(255, 255, 255, 0.4);
-
-  /* Shadows */
-  --shadow-1: 0 6px 20px rgba(0, 0, 0, 0.6);
-  --shadow-2: 0 12px 32px rgba(0, 0, 0, 0.5);
-  --fab-glow: 0 8px 24px rgba(123, 92, 255, 0.3);
 
   /* Radii */
   --radius-sm: 8px;

@@ -1,0 +1,20 @@
+{
+  "tasks": [
+    {
+      "id": 1,
+      "title": "Shoot campus B-roll",
+      "assigned_to": "asnk633@gmail.com",
+      "priority": "high",
+      "status": "pending",
+      "due": "2025-12-01"
+    },
+    {
+      "id": 2,
+      "title": "Edit Teachers Day video",
+      "assigned_to": "anumadmax@gmail.com",
+      "priority": "urgent",
+      "status": "working on",
+      "due": "2025-11-30"
+    }
+  ]
+}

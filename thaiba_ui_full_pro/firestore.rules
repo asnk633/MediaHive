@@ -1,0 +1,87 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+
+    function isAuth() {
+      return request.auth != null;
+    }
+
+    // Helper: check a value is a list whose every element is a string
+    // Implementation checks indices 0..3 (max 4 members).
+    function isStringList(val) {
+      return val is list
+        && (val.size() == 0 || (
+             (val.size() <= 0 || val[0] is string)
+             && (val.size() <= 1 || val[1] is string)
+             && (val.size() <= 2 || val[2] is string)
+             && (val.size() <= 3 || val[3] is string)
+           ));
+    }
+
+    // Roles: only admin can write, authenticated can read
+    match /roles/{uid} {
+      allow read: if isAuth();
+      allow write: if isAuth()
+                   && get(/databases/$(database)/documents/roles/$(request.auth.uid)).data.role == "admin";
+    }
+
+    // User profiles: authenticated read; only owner write
+    match /users/{uid} {
+      allow read: if isAuth();
+      allow write: if isAuth() && request.auth.uid == uid;
+    }
+
+    // Tasks
+    match /tasks/{taskId} {
+      allow read: if isAuth();
+
+      allow create: if isAuth()
+        && (get(/databases/$(database)/documents/roles/$(request.auth.uid)).data.role in ["admin","team","guest"])
+        // basic shape guards
+        && request.resource.data.keys().hasAll(['title','createdBy','priority','status','createdAt'])
+        && request.resource.data.title is string
+        && request.resource.data.createdBy == request.auth.uid
+        && request.resource.data.priority in ['low','medium','high','urgent']
+        && request.resource.data.status in ['pending','in-progress','completed']
+        && request.resource.data.createdAt is number
+        // assignedTo optional: if present must be a list of strings with at most 4 members
+        && (
+             !request.resource.data.keys().hasAny(['assignedTo'])
+             || (isStringList(request.resource.data.assignedTo) && request.resource.data.assignedTo.size() <= 4)
+           );
+
+      allow update, delete: if isAuth() &&
+        (
+          get(/databases/$(database)/documents/roles/$(request.auth.uid)).data.role == "admin"
+          || resource.data.createdBy == request.auth.uid
+        )
+        && (!request.resource.data.keys().hasAny(['title']) || request.resource.data.title is string);
+    }
+
+    // Notifications
+    match /notifications/{nid} {
+      allow read: if isAuth();
+
+      allow create: if isAuth()
+        && get(/databases/$(database)/documents/roles/$(request.auth.uid)).data.role == "admin"
+        && request.resource.data.keys().hasAll(['title','body','createdAt','readBy'])
+        && request.resource.data.title is string
+        && request.resource.data.body is string
+        && request.resource.data.createdAt is number
+        && request.resource.data.readBy is list;
+
+      allow delete: if isAuth()
+        && get(/databases/$(database)/documents/roles/$(request.auth.uid)).data.role == "admin";
+
+      // Allow only mark-as-read updates:
+      allow update: if isAuth()
+        && request.resource.data.keys().hasOnly(['readBy'])
+        && request.resource.data.readBy.hasAll(resource.data.readBy)
+        && request.resource.data.readBy.hasAny([request.auth.uid]);
+    }
+
+    match /{document=**} {
+      allow read, write: if false;
+    }
+  }
+}

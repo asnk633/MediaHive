@@ -3,7 +3,7 @@
 
 // Components
 export { OfflineStatusIndicator } from './components/OfflineStatusIndicator';
-export { FAB } from './components/FAB';
+export { default as FAB } from './components/FAB';
 
 // Hooks
 export { useOffline } from './hooks/useOffline';

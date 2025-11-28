@@ -23,7 +23,7 @@ export type SVGProps = React.SVGProps<SVGSVGElement> & { title?: string };
    --------------------------- */
 export const Filled = {
     Home: forwardRef<SVGSVGElement, SVGProps>(({ title = "Home", ...p }, ref) => (
-        <svg ref={ref} viewBox="0 0 24 24" {...p} xmlns="http://www.w3.org/2000/svg" role="img" aria-hidden={!p.title && !p["aria-label"]}>
+        <svg ref={ref} viewBox="0 0 24 24" {...p} xmlns="http://www.w3.org/2000/svg" role="img" aria-hidden={!title && !p["aria-label"]}>
             {title ? <title>{title}</title> : null}
             <path fill="currentColor" d="M12 3.2l8 6.2v9.1a1 1 0 0 1-1 1h-5v-5H10v5H5a1 1 0 0 1-1-1V9.4l8-6.2z" />
         </svg>

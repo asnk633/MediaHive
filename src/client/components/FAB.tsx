@@ -3,7 +3,7 @@
 import React, { useEffect, useRef, useState } from "react";
 import styles from "./fab.module.css";
 import Link from "next/link";
-import Icon from "@/design-system/Icon";
+import Icon from "@/client/components/Icon";
 
 type Role = "admin" | "team" | "guest";
 
@@ -22,8 +22,8 @@ export default function FAB({ role = "team" as Role }: { role?: Role }) {
   const ref = useRef<HTMLButtonElement | null>(null);
 
   useEffect(() => {
-    function onKey(e: KeyboardEvent){
-      if(e.key === "Escape") setOpen(false);
+    function onKey(e: KeyboardEvent) {
+      if (e.key === "Escape") setOpen(false);
     }
     window.addEventListener("keydown", onKey);
     return () => window.removeEventListener("keydown", onKey);
@@ -50,7 +50,7 @@ export default function FAB({ role = "team" as Role }: { role?: Role }) {
         onClick={() => setOpen(v => !v)}
         title={open ? "Close quick actions" : "Open quick actions"}
       >
-        <Icon name="plus" size={36} className="text-[var(--accent)]" ariaLabel="Create new" />
+        <Icon name="plus" variant="filled" className="w-9 h-9 text-[var(--accent)]" aria-label="Create new" />
       </button>
     </div>
   );

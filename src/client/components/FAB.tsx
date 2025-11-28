@@ -3,6 +3,7 @@
 import React, { useEffect, useRef, useState } from "react";
 import styles from "./fab.module.css";
 import Link from "next/link";
+import Icon from "@/design-system/Icon";
 
 type Role = "admin" | "team" | "guest";
 
@@ -49,7 +50,7 @@ export default function FAB({ role = "team" as Role }: { role?: Role }) {
         onClick={() => setOpen(v => !v)}
         title={open ? "Close quick actions" : "Open quick actions"}
       >
-        <span className={styles.fabPlus}>{open ? "✕" : "+"}</span>
+        <Icon name="plus" size={36} className="text-[var(--accent)]" ariaLabel="Create new" />
       </button>
     </div>
   );

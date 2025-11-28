@@ -57,7 +57,7 @@ export const ProfileIcon = forwardRef<SVGSVGElement, SVGProps>(({ title = "Profi
 export const PlusIcon = forwardRef<SVGSVGElement, SVGProps>(({ title = "Add", ...p }, ref) => (
   <svg ref={ref} viewBox="0 0 24 24" width="32" height="32" fill="none" xmlns="http://www.w3.org/2000/svg" {...p}>
     {title ? <title>{title}</title> : null}
-    <circle cx="12" cy="12" r="11" stroke="currentColor" strokeWidth="1.2" opacity="0.06" />
-    <path d="M12 7v10M7 12h10" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round"/>
+    <circle cx="12" cy="12" r="11" stroke="currentColor" strokeWidth="1.6" opacity="0.06" />
+    <path d="M12 7v10M7 12h10" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round"/>
   </svg>
 ));

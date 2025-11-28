@@ -3,12 +3,11 @@
   position: fixed;
   left: 50%;
   transform: translateX(-50%);
-  bottom: calc(var(--bottom-nav-height, 74px) / 2);
-  z-index: 80;
+  bottom: calc(var(--bottom-nav-height, 84px) / 2);
+  z-index: 120;
   pointer-events: none;
 }
 
-/* layout for items */
 .menu {
   display: flex;
   flex-direction: column;
@@ -16,13 +15,12 @@
   align-items: center;
   margin-bottom: 12px;
   opacity: 0;
-  transform: translateY(14px);
+  transform: translateY(12px);
   transition: all var(--trans-smooth) ease;
   pointer-events: none;
 }
 .menu.open { opacity: 1; transform: translateY(0); pointer-events: auto; }
 
-/* menu item */
 .menuItem {
   display:flex;
   gap:10px;
@@ -33,15 +31,14 @@
   backdrop-filter: blur(6px);
   color:var(--text);
   text-decoration:none;
+  font-size:14px;
 }
 
-/* little color bullet */
 .menuBullet {
   width:10px; height:10px; border-radius:50%;
   box-shadow: 0 4px 12px rgba(0,0,0,0.6);
 }
 
-/* fab button */
 .fab {
   pointer-events: auto;
   width:64px;

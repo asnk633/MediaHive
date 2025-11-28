@@ -1,6 +1,6 @@
-import '../styles/tokens.css';
 import './globals.css';
-import './../design-system/base.css';
+// load design tokens and base (safe, non-invasive)
+import "../design-system/base.css";
 import { ReactNode } from 'react';
 import { AuthProvider } from "@/contexts/AuthContext";
 import { ThemeProvider } from "@/context/ThemeProvider";
@@ -25,7 +25,7 @@ export default function RootLayout({ children }: { children: ReactNode }) {
   const useNewUI = process.env.NEXT_PUBLIC_NEW_UI === "true";
 
   return (
-    <html lang="en" suppressHydrationWarning>
+    <html lang="en" data-theme="dark">
       <head>
         {/* inside <head> of src/app/layout.tsx */}
         <script
@@ -51,12 +51,7 @@ export default function RootLayout({ children }: { children: ReactNode }) {
       <body className="min-h-screen">
         <ThemeProvider>
           <AuthProvider>
-            {useNewUI ? (
-              // keep app routes: your existing router will handle / (redesign)
-              children
-            ) : (
-              children
-            )}
+            {children}
           </AuthProvider>
         </ThemeProvider>
       </body>

@@ -2,25 +2,26 @@
 "use client";
 import Link from "next/link";
 import React from "react";
+import Icon from "@/design-system/Icon";
 import styles from "./bottomnav.module.css";
 
-const NAV = [
-  { key: "home", label: "Home", href: "/"},
-  { key: "tasks", label: "Tasks", href: "/tasks"},
-  { key: "events", label: "Events", href: "/events"},
-  { key: "reports", label: "Reports", href: "/reports"},
-  { key: "downloads", label: "Downloads", href: "/downloads"},
-  { key: "profile", label: "Profile", href: "/profile"},
+const BOTTOM_NAV = [
+  { name: "home", href: "/", label: "Home" },
+  { name: "tasks", href: "/tasks", label: "Tasks" },
+  { name: "events", href: "/events", label: "Events" },
+  { name: "reports", href: "/reports", label: "Reports" },
+  { name: "downloads", href: "/downloads", label: "Downloads" },
+  { name: "profile", href: "/profile", label: "Profile" },
 ];
 
-export default function BottomNav(){
+export default function BottomNav() {
   return (
     <nav className={styles.bottomNav} role="navigation" aria-label="Main">
       <ul className={styles.list}>
-        {NAV.map(item => (
-          <li key={item.key} className={styles.item}>
-            <Link href={item.href} className={styles.link}>
-              <span className={styles.icon} aria-hidden>◻</span>
+        {BOTTOM_NAV.map(item => (
+          <li key={item.href} className={styles.item}>
+            <Link href={item.href} className={styles.link} aria-label={item.label}>
+              <Icon name={item.name as any} size={22} />
               <span className={styles.label}>{item.label}</span>
             </Link>
           </li>

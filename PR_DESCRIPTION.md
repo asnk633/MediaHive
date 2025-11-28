@@ -1,40 +1,48 @@
-# PR: Restore UI Structure, Navigation, and FAB
+PR title: feat(ui): redesign scaffold — Mixed Premium Hybrid (non-destructive)
 
-## Summary
-This PR restores the application's core UI structure, navigation, and Floating Action Button (FAB) functionality. It addresses regressions where navigation items were missing or incorrect, and the FAB was not functioning as intended.
+Description (paste):
 
-**Key Changes:**
-*   **Bottom Navigation**: Restored to exactly 6 items: Home, Tasks, Events, Reports, Downloads, Profile. Removed the incorrect "Updates" link.
-*   **FAB**:
-    *   Restored role-based menu items (Admin: 3 items, Others: 2 items).
-    *   Fixed routing for "New Event" (`/events/new`), "New Task" (`/tasks/new`), and "Notify" (`/notifications/new`).
-    *   Improved accessibility (ARIA attributes, keyboard navigation).
-    *   Fixed CSS positioning and pointer-events.
-*   **TopBar**: Linked the Bell icon to the `/updates` page.
-*   **Pages**: Verified existence of all required pages (`events`, `reports`, `downloads`, etc.).
-*   **Styles**: Fixed `tokens.css` imports to prevent duplicate loading and parsing errors.
-*   **Tests**: Added `e2e/playwright/ui/smoke.spec.ts` for automated regression testing.
+Summary:
+- Adds a non-destructive UI redesign scaffold under src/app/(redesign)
+- Introduces design-system tokens, base styles
+- Adds accessible FAB component with role-based quick actions
+- Adds BottomNav visual component with 6 items and FAB spacer
+- Adds PageContainer wrapper and two example pages (home, downloads)
+- Feature-flag enabled at runtime via NEXT_PUBLIC_NEW_UI
 
-## Verification Checklist (Phase 7 & 8)
+How to test locally:
+1. git checkout ui/2025-redesign-framework
+2. NEXT_PUBLIC_NEW_UI=true npm run dev
+3. Visit the app; navigate to redesigned pages (/(redesign)/home ...)
 
-### Manual Checks
-- [x] **BottomNav**: Shows exactly 6 items (Home, Tasks, Events, Reports, Downloads, Profile).
-- [x] **Navigation**: Clicking each item navigates to the correct route.
-- [x] **Updates**: Top-right bell icon correctly navigates to `/updates`.
-- [x] **FAB**:
-    - [x] Visible and centered.
-    - [x] Opens overlay with correct menu items.
-    - [x] "New Event" -> `/events/new`
-    - [x] "New Task" -> `/tasks/new`
-- [x] **Console**: No critical runtime errors on page load.
+Notes:
+- This PR only *adds* new UI files. No existing routes, APIs, or DB migration modified.
+- Please run a visual QA (screenshots) and keyboard navigation smoke test.
 
-### Automated Checks
-- [x] `npm run lint`: Passed.
-- [x] `npx playwright test e2e/playwright/ui/smoke.spec.ts`: Added (Note: Local dev server instability prevented full execution, but tests are valid).
+Files of interest:
+- src/design-system/*
+- src/client/components/FAB.tsx
+- src/components/ui/BottomNav.tsx
+- src/components/ui/PageContainer.tsx
+- src/app/(redesign)/*
 
-## Screenshots
-*See attached walkthrough recording for visual verification of FAB and Navigation.*
+Requested reviewers:
+- UI designer (visual signoff)
+- Frontend dev (accessibility & performance)
 
-## Reviewers
-Requesting review from: @maintainer
-Requesting QA run: `smoke.spec.ts`
+
+Checklist for reviewer:
+
+ NEXT_PUBLIC_NEW_UI=true npm run dev launches without errors
+
+ FAB visible, opens via click, closes via Esc
+
+ BottomNav shows 6 items and is centered
+
+ No console runtime errors on load
+
+ Linter passes
+
+ a11y quick check: keyboard focus reaches FAB menu items
+
+ Visual approval from design owner

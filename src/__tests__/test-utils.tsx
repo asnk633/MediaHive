@@ -1,10 +1,10 @@
 import React, { ReactNode } from 'react';
 import { render as rtlRender } from '@testing-library/react';
 import { MemoryRouter } from 'react-router-dom';
-import { ThemeContext } from './context/ThemeContext';
-import { AuthContext } from './context/AuthContext';
-import { NotificationContext } from './context/NotificationContext';
-import { TaskContext } from './context/TaskContext';
+import { ThemeContext } from '../context/ThemeContext';
+import { AuthContext } from '../context/AuthContext';
+import { NotificationContext } from '../context/NotificationContext';
+import { TaskContext } from '../context/TaskContext';
 
 type ProvidersOptions = {
   theme?: 'dark' | 'light';

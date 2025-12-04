@@ -11,12 +11,14 @@ import {
   assertFails
 } from "@firebase/rules-unit-testing";
 import { arrayUnion } from "firebase/firestore";
-import { seedRoles } from "../test/firestoreTestUtils";
+import { seedRoles } from "../test-utils/firestoreTestUtils";
+
+jest.unmock("firebase/firestore");
 
 let testEnv: RulesTestEnvironment;
 
 beforeAll(async () => {
-  const rulesPath = path.resolve(__dirname, "../../firestore.rules");
+  const rulesPath = path.resolve(__dirname, "../../../firestore.rules");
   const rules = fs.readFileSync(rulesPath, "utf8");
 
   testEnv = await initializeTestEnvironment({
@@ -35,11 +37,11 @@ afterEach(async () => {
 
 describe("Explicit Firestore security rule tests (loaded from firestore.rules)", () => {
   test("guest can create task; guest who created it can update and delete it", async () => {
-    const guestCtx = testEnv.authenticatedContext("guest1", { uid: "guest1" });
+    const guestCtx = testEnv.authenticatedContext("guest1");
     const dbGuest = guestCtx.firestore();
 
     // seed roles using helper (admin + guest doc)
-    const adminCtx = testEnv.authenticatedContext("sysadmin", { uid: "sysadmin" });
+    const adminCtx = testEnv.authenticatedContext("sysadmin");
     const adminDb = adminCtx.firestore();
     await seedRoles(adminDb, {
       sysadmin: { role: "admin" },
@@ -67,9 +69,9 @@ describe("Explicit Firestore security rule tests (loaded from firestore.rules)",
   });
 
   test("team can create, admin can delete other's tasks but team cannot delete others' tasks", async () => {
-    const adminCtx = testEnv.authenticatedContext("admin", { uid: "admin" });
-    const teamCtx = testEnv.authenticatedContext("teamA", { uid: "teamA" });
-    const otherTeamCtx = testEnv.authenticatedContext("teamB", { uid: "teamB" });
+    const adminCtx = testEnv.authenticatedContext("admin");
+    const teamCtx = testEnv.authenticatedContext("teamA");
+    const otherTeamCtx = testEnv.authenticatedContext("teamB");
 
     const adminDb = adminCtx.firestore();
     const teamDb = teamCtx.firestore();
@@ -96,8 +98,8 @@ describe("Explicit Firestore security rule tests (loaded from firestore.rules)",
   });
 
   test("notifications: only admin can create; authenticated users can mark-as-read via arrayUnion", async () => {
-    const adminCtx = testEnv.authenticatedContext("adminN", { uid: "adminN" });
-    const userCtx = testEnv.authenticatedContext("userN", { uid: "userN" });
+    const adminCtx = testEnv.authenticatedContext("adminN");
+    const userCtx = testEnv.authenticatedContext("userN");
 
     const adminDb = adminCtx.firestore();
     const userDb = userCtx.firestore();
@@ -129,8 +131,8 @@ describe("Explicit Firestore security rule tests (loaded from firestore.rules)",
   });
 
   test("roles: only admin can write role docs", async () => {
-    const adminCtx = testEnv.authenticatedContext("adminR", { uid: "adminR" });
-    const teamCtx = testEnv.authenticatedContext("teamR", { uid: "teamR" });
+    const adminCtx = testEnv.authenticatedContext("adminR");
+    const teamCtx = testEnv.authenticatedContext("teamR");
 
     const adminDb = adminCtx.firestore();
     const teamDb = teamCtx.firestore();

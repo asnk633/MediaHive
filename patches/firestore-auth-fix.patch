@@ -1,0 +1,48 @@
+diff --git a/src/__tests__/rules/firestore.rules.test.ts b/src/__tests__/rules/firestore.rules.test.ts
+index xxxxxxx..yyyyyyy 100644
+--- a/src/__tests__/rules/firestore.rules.test.ts
++++ b/src/__tests__/rules/firestore.rules.test.ts
+@@ -36,11 +36,11 @@ describe("Explicit Firestore security rule tests (loaded from firestore.rules)", (
+   test("guest can create task; guest who created it can update and delete it", async () => {
+     const guestCtx = testEnv.authenticatedContext("guest1");
+     const dbGuest = guestCtx.firestore();
+ 
+     // seed roles using helper (admin + guest doc)
+     const adminCtx = testEnv.authenticatedContext("sysadmin");
+     const adminDb = adminCtx.firestore();
+     await seedRoles(adminDb, {
+       sysadmin: { role: "admin" },
+       guest1: { role: "guest" }
+     });
+ 
+@@ -68,9 +68,9 @@ describe("Explicit Firestore security rule tests (loaded from firestore.rules)", (
+   test("team can create, admin can delete other's tasks but team cannot delete others' tasks", async () => {
+     const adminCtx = testEnv.authenticatedContext("admin");
+     const teamCtx = testEnv.authenticatedContext("teamA");
+     const otherTeamCtx = testEnv.authenticatedContext("teamB");
+ 
+     const adminDb = adminCtx.firestore();
+     const teamDb = teamCtx.firestore();
+     const otherTeamDb = otherTeamCtx.firestore();
+ 
+@@ -97,8 +97,8 @@ describe("Explicit Firestore security rule tests (loaded from firestore.rules)", (
+   test("notifications: only admin can create; authenticated users can mark-as-read via arrayUnion", async () => {
+     const adminCtx = testEnv.authenticatedContext("adminN");
+     const userCtx = testEnv.authenticatedContext("userN");
+ 
+     const adminDb = adminCtx.firestore();
+     const userDb = userCtx.firestore();
+ 
+@@ -130,8 +130,8 @@ describe("Explicit Firestore security rule tests (loaded from firestore.rules)", (
+   test("roles: only admin can write role docs", async () => {
+     const adminCtx = testEnv.authenticatedContext("adminR");
+     const teamCtx = testEnv.authenticatedContext("teamR");
+ 
+     const adminDb = adminCtx.firestore();
+     const teamDb = teamCtx.firestore();
+ 
+@@ -149,4 +149,4 @@ describe("Explicit Firestore security rule tests (loaded from firestore.rules)", (
+     await assertFails(unauthDb.collection("tasks").add({ title: "x", createdBy: "anon", priority: "low", status: "pending", createdAt: Date.now() }));
+     await assertFails(unauthDb.collection("notifications").add({ title: "x", body: "x", createdAt: Date.now(), readBy: [] }));
+   });
+ });

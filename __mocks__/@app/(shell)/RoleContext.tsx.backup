@@ -1,0 +1,26 @@
+import React, { createContext } from "react";
+
+export type Role = "admin" | "team" | "guest";
+type User = { id: string; name: string; role: Role };
+
+type Ctx = {
+  user: User;
+  setRole: (r: Role) => void;
+};
+
+const RoleCtx = createContext<Ctx | null>(null);
+
+export function useRole() {
+  return {
+    user: { id: "test", name: "Test User", role: "guest" as Role },
+    setRole: () => {}
+  };
+}
+
+export function RoleProvider({ children }: { children: React.ReactNode }) {
+  const value: Ctx = {
+    user: { id: "test", name: "Test User", role: "guest" as Role },
+    setRole: () => {}
+  };
+  return <RoleCtx.Provider value={value}>{children}</RoleCtx.Provider>;
+}

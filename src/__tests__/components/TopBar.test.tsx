@@ -1,10 +1,12 @@
 import React from 'react';
-import { render, screen, fireEvent } from '../test-utils';
-import TopBar from '../components/TopBar';
+import { render, screen, fireEvent } from '@testing-library/react';
+import TopBar from '../../components/TopBar';
+import { renderWithProviders } from '../test-utils/renderWithProviders';
 
 test('renders TopBar and toggles theme button text', () => {
-  render(<TopBar />, { options: { theme: 'dark' } });
-  const btn = screen.getByRole('button', { name: /Light|Dark/i });
+  const { ui } = renderWithProviders(<TopBar />, { user: { name: "Test User" }});
+  const view = render(ui);
+  const btn = view.getByRole('button', { name: /Light|Dark/i });
   // initial theme 'dark' -> button shows "Light"
   expect(btn).toBeInTheDocument();
   expect(btn).toHaveTextContent(/Light/i);

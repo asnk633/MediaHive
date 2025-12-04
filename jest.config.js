@@ -1,29 +1,18 @@
 module.exports = {
-    testEnvironment: "jsdom",
-    transform: {
-        "^.+\\.(t|j)sx?$": ["@swc/jest"]
-    },
-    moduleFileExtensions: ["ts", "tsx", "js", "jsx", "json", "node"],
-    testPathIgnorePatterns: [
-        "/node_modules/",
-        "/e2e/",
-        "/tests.archived/",
-        "/playwright.archived/",
-        "/thaiba_ui_full_lite/",
-        "/thaiba_ui_full_heavy/",
-        "/thaiba_ui_full_pro/",
-        "/src/__tests__/test-utils.tsx"
-    ],
-    // Map import aliases to relative paths
-    moduleNameMapper: {
-        "^@/(.*)$": "<rootDir>/src/$1",
-        "^@/firebase/(.*)$": "<rootDir>/src/lib/$1",
-        "^@/contexts/(.*)$": "<rootDir>/src/contexts/$1",
-        "^@/db(.*)$": "<rootDir>/src/db$1"
-    },
-    // Ignore node_modules except when necessary
-    transformIgnorePatterns: [
-        "/node_modules/(?!(@firebase|@testing-library)/)"
-    ],
-    testTimeout: 20000
+  testEnvironment: "jest-environment-jsdom",
+  // keep whatever transforms / moduleNameMapper you already have
+  transform: { "^.+\.(t|j)sx?$": ["@swc/jest"] },
+  moduleFileExtensions: ["ts","tsx","js","jsx","json","node"],
+  setupFilesAfterEnv: ["<rootDir>/src/__tests__/setup-textencoder.ts"],
+  // Map import aliases to relative paths
+  moduleNameMapper: {
+    "^@/firebase/auth$": "<rootDir>/__mocks__/@firebase/auth.ts",
+    "^@/firebase/roles$": "<rootDir>/__mocks__/@firebase/roles.ts",
+    "^@/contexts/AuthContext$": "<rootDir>/__mocks__/authContextMock.ts",
+    "^@/app/\$shell\$/RoleContext$": "<rootDir>/__mocks__/@app/(shell)/RoleContext.tsx",
+    "^@/firebase/(.*)$": "<rootDir>/src/lib/$1",
+    "^@/contexts/(.*)$": "<rootDir>/src/contexts/$1",
+    "^@/db(.*)$": "<rootDir>/src/db$1",
+    "^@/(.*)$": "<rootDir>/src/$1"
+  }
 };

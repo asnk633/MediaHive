@@ -1,41 +1,19 @@
-import { defineConfig, devices } from "@playwright/test";
+import { defineConfig, devices } from '@playwright/test';
+import getPort from 'get-port';
 
 export default defineConfig({
-  testDir: "e2e/playwright",
-  timeout: 60_000,
-  expect: {
-    timeout: 30_000,
-  },
-  fullyParallel: true,
-  retries: 2,
-  workers: 3,
-  reporter: [
-    ["list"],
-    ["html", { outputFolder: 'test-results/html', open: "never" }]
-  ],
-  outputDir: 'test-results/raw',
-  use: {
-    baseURL: process.env.PLAYWRIGHT_BASE_URL || `http://localhost:${process.env.PORT || 3000}`,
-    headless: true,
-    navigationTimeout: 30000,
-    actionTimeout: 30000,
-    trace: "on-first-retry",
-    screenshot: "only-on-failure",
-    video: process.env.CI ? "retain-on-failure" : "off",
-  },
-  testMatch: ['**/e2e/playwright/ui/smoke.single.spec.ts'],
+  testDir: 'e2e/playwright',
+  timeout: 30_000,
+  expect: { timeout: 5000 },
   projects: [
-    {
-      name: "chromium",
-      use: { ...devices["Desktop Chrome"] }
-    },
-    {
-      name: "firefox",
-      use: { ...devices["Desktop Firefox"] }
-    },
-    {
-      name: "webkit",
-      use: { ...devices["Desktop Safari"] }
-    }
+    { name: 'chromium', use: { ...devices['Desktop Chrome'] } },
+    { name: 'firefox', use: { ...devices['Desktop Firefox'] } },
+    { name: 'webkit', use: { ...devices['Desktop Safari'] } },
   ],
+  webServer: {
+    command: 'npm run dev',
+    url: 'http://127.0.0.1:3000',
+    timeout: 120_000,
+    reuseExistingServer: true,
+  },
 });

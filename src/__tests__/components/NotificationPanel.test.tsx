@@ -1,29 +1,49 @@
 import React from 'react';
-import { render, screen, fireEvent } from '@testing-library/react';
+import { render, fireEvent, waitFor } from '@testing-library/react';
 import { NotificationPanel } from '../../components/NotificationPanel';
 import { renderWithProviders } from '../test-utils/renderWithProviders';
 
+// Mock the hook because it uses relative import in the component
+jest.mock('../../hooks/useNotificationsRealtime', () => ({
+  useNotificationsRealtime: jest.fn()
+}));
+
+// Simplified minimal notification object
 const notifs = [
-  { id: 'n1', title: 'Hello', body: 'World', readBy: [] }
+  {
+    id: 1,
+    title: 'Hello',
+    body: 'World',
+    readAt: null,
+    createdAt: '2023-01-01T00:00:00Z'
+  }
 ];
 
-test('NotificationPanel lists notifications and shows delete for admin', () => {
-  // as guest: no delete
-  const { ui: ui1 } = renderWithProviders(<NotificationPanel />, { 
-    notifications: notifs, 
-    user: { uid: 'u1' }, 
-    role: { role: 'guest' } 
-  });
-  const view1 = render(ui1);
-  expect(view1.getByText('Hello')).toBeInTheDocument();
-  expect(view1.queryByText(/Delete/i)).not.toBeInTheDocument();
+// Mock fetch
+global.fetch = jest.fn(() =>
+  Promise.resolve({
+    ok: true,
+    json: () => Promise.resolve({ notifications: notifs, unreadCount: 1 }),
+  })
+) as jest.Mock;
 
-  // as admin: delete present
-  const { ui: ui2 } = renderWithProviders(<NotificationPanel />, { 
-    notifications: notifs, 
-    user: { uid: 'u1' }, 
-    role: { role: 'admin' } 
+test('NotificationPanel lists notifications and allows marking as read', async () => {
+  const { ui } = renderWithProviders(<NotificationPanel />, {
+    notifications: notifs,
+    user: { uid: 'u1' }
   });
-  const view2 = render(ui2);
-  expect(view2.getByText(/Delete/i)).toBeInTheDocument();
+  const view = render(ui);
+
+  // Open panel
+  const bell = view.getByTestId('notification-bell');
+  fireEvent.click(bell);
+
+  // Wait for fetch to complete and render
+  await waitFor(() => {
+    expect(view.getByText('Hello')).toBeInTheDocument();
+  });
+  expect(view.getByText('World')).toBeInTheDocument();
+
+  // Check for "Mark as read" button
+  expect(view.getByText(/Mark as read/i)).toBeInTheDocument();
 });

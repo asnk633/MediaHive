@@ -1,26 +1,34 @@
 // src/lib/firebaseAdmin.ts
-import { initializeApp, getApps, cert } from 'firebase-admin/app';
-import { getFirestore } from 'firebase-admin/firestore';
-import { getMessaging } from 'firebase-admin/messaging';
+import admin from 'firebase-admin';
 
-// Only initialize if no apps exist and we have credentials
-if (!getApps().length) {
-  // Check if we have the required environment variables
-  if (process.env.FIREBASE_PRIVATE_KEY && process.env.FIREBASE_CLIENT_EMAIL) {
-    initializeApp({
-      credential: cert({
-        projectId: process.env.NEXT_PUBLIC_FIREBASE_PROJECT_ID,
-        clientEmail: process.env.FIREBASE_CLIENT_EMAIL,
-        privateKey: process.env.FIREBASE_PRIVATE_KEY?.replace(/\\n/g, '\n'),
-      }),
-    });
+const getServiceAccount = () => {
+  const b64 = process.env.FIREBASE_ADMIN_SA || '';
+  if (!b64) {
+    // Return null if missing (e.g. during build)
+    return null;
+  }
+  try {
+    return JSON.parse(Buffer.from(b64, 'base64').toString('utf8'));
+  } catch (e) {
+    console.error('Failed to parse FIREBASE_ADMIN_SA', e);
+    return null;
+  }
+};
+
+if (!admin.apps.length) {
+  const svc = getServiceAccount();
+  if (svc) {
+    admin.initializeApp({ credential: admin.credential.cert(svc) });
   } else {
-    // Initialize with default credentials (for development)
-    console.warn('Firebase admin credentials not found, using default initialization');
-    initializeApp();
+    // Fallback for build/dev where SA might be missing
+    // Try default init (picks up GOOGLE_APPLICATION_CREDENTIALS or other envs)
+    // or just don't crash immediately
+    try {
+      admin.initializeApp();
+    } catch (e) {
+      console.warn('Firebase admin default init failed, some features may not work:', e);
+    }
   }
 }
 
-// Export clients that will work in both environments
-export const adminDb = getFirestore();
-export const adminMessaging = getMessaging();
+export default admin;

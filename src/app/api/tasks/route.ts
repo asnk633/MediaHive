@@ -1,14 +1,13 @@
 import { NextResponse } from 'next/server';
-import { adminDb } from '@/lib/firebaseAdmin';
-import { getAuth } from 'firebase-admin/auth';
+import admin from '@/lib/firebaseAdmin';
 
 // Helper to verify auth and role
 async function verifyUser(request: Request) {
   const token = request.headers.get('Authorization')?.split('Bearer ')[1];
   if (!token) return null;
   try {
-    const decoded = await getAuth().verifyIdToken(token);
-    const userDoc = await adminDb.collection('users').doc(decoded.uid).get();
+    const decoded = await admin.auth().verifyIdToken(token);
+    const userDoc = await admin.firestore().collection('users').doc(decoded.uid).get();
     const role = userDoc.exists ? userDoc.data()?.role : 'guest';
     return { uid: decoded.uid, role };
   } catch (e) {
@@ -32,7 +31,7 @@ export async function POST(request: Request) {
     data.isRequest = true;
   }
 
-  const res = await adminDb.collection('tasks').add({
+  const res = await admin.firestore().collection('tasks').add({
     ...data,
     createdBy: user.uid,
     createdAt: new Date().toISOString()
@@ -52,7 +51,7 @@ export async function PUT(request: Request) {
   const { id, ...data } = await request.json();
   if (!id) return NextResponse.json({ error: 'Missing ID' }, { status: 400 });
 
-  await adminDb.collection('tasks').doc(id).update(data);
+  await admin.firestore().collection('tasks').doc(id).update(data);
   return NextResponse.json({ success: true });
 }
 
@@ -68,6 +67,6 @@ export async function DELETE(request: Request) {
   const id = searchParams.get('id');
   if (!id) return NextResponse.json({ error: 'Missing ID' }, { status: 400 });
 
-  await adminDb.collection('tasks').doc(id).delete();
+  await admin.firestore().collection('tasks').doc(id).delete();
   return NextResponse.json({ success: true });
 }

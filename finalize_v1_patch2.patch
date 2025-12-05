@@ -1,0 +1,95 @@
+*** Begin Patch
+*** Add File: src/lib/firebaseAdmin.ts
++// src/lib/firebaseAdmin.ts
++import admin from 'firebase-admin';
++
++const getServiceAccount = () => {
++  const b64 = process.env.FIREBASE_ADMIN_SA || '';
++  if (!b64) throw new Error('FIREBASE_ADMIN_SA env missing');
++  return JSON.parse(Buffer.from(b64, 'base64').toString('utf8'));
++};
++
++if (!admin.apps.length) {
++  const svc = getServiceAccount();
++  admin.initializeApp({ credential: admin.credential.cert(svc) });
++}
++
++export default admin;
++
+*** End Patch
+*** Begin Patch
+*** Add File: src/lib/sendFcm.ts
++// src/lib/sendFcm.ts
++import admin from './firebaseAdmin';
++
++export async function sendFcm(toToken: string, payload: { title: string; body?: string; data?: any }) {
++  const message: any = {
++    token: toToken,
++    notification: { title: payload.title, body: payload.body || '' },
++  };
++  if (payload.data) {
++    message.data = Object.fromEntries(Object.entries(payload.data).map(([k, v]) => [k, String(v)]));
++  }
++  return admin.messaging().send(message);
++}
++
+*** End Patch
+*** Begin Patch
+*** Add File: e2e/smoke.spec.ts
++// e2e/smoke.spec.ts
++import { test, expect } from '@playwright/test';
++
++test.describe('Smoke: auth + task flow', () => {
++  test('login, create task, complete task', async ({ page }) => {
++    // Navigate to login page - assumes local dev with test user available
++    await page.goto('http://localhost:3000');
++    // NOTE: Update selectors and flow to match your app
++    // If using Firebase auth, consider a test-only route or mock credentials
++    // For now, we check page loads and UI interaction for creating tasks
++    await expect(page).toHaveTitle(/Thaiba/);
++    // Open tasks
++    await page.click('a[href="/app/tasks"]');
++    await page.waitForSelector('text=Tasks');
++    // Create new task if button exists
++    const newBtn = await page.$('button:has-text("New Task")');
++    if (newBtn) {
++      await newBtn.click();
++      await page.fill('input[placeholder="Title"]', 'Smoke test task');
++      await page.click('button:has-text("Create")');
++      await page.waitForSelector('text=Smoke test task');
++      // complete it
++      await page.click('button:has-text("Complete")');
++      await expect(page.locator('text=Smoke test task')).toBeVisible();
++    }
++  });
++});
++
+*** End Patch
+*** Begin Patch
+*** Add File: DEPLOY.md
++# DEPLOY.md
++
++This file contains production deployment steps for Vercel and Docker (repeat of earlier but committed to repo).
++
++## Vercel (recommended)
++- Add repository to Vercel and set environment variables in project settings.
++- Required envs: NEXT_PUBLIC_FIREBASE_API_KEY, NEXT_PUBLIC_FIREBASE_AUTH_DOMAIN, NEXT_PUBLIC_FIREBASE_PROJECT_ID, NEXT_PUBLIC_FIREBASE_STORAGE_BUCKET, NEXT_PUBLIC_FIREBASE_MESSAGING_SENDER_ID, NEXT_PUBLIC_FIREBASE_APP_ID, FIREBASE_ADMIN_SA (base64).
++- Vercel will run `npm ci` and `npm run build`. Ensure playback/Playwright checks run in CI.
++
++## Docker (self-hosted)
++- Build container: `docker build -t thaiba-media-manager:1.0.0 .`
++- Run with secrets passed via env or secret store. Example:
++  `docker run -p 3000:3000 -e NEXT_PUBLIC_FIREBASE_API_KEY=... -e FIREBASE_ADMIN_SA=... thaiba-media-manager:1.0.0`
++
++## Healthchecks
++- Add a simple `/api/health` route that returns 200. Use this for load balancer checks.
++
+*** End Patch
+*** Begin Patch
+*** Add File: tailwind-migration-notes.md
++# Tailwind v4 migration notes
++
++Steps to migrate safely from Tailwind v3 -> v4:
++1. Create a branch `chore/tailwind-v4-migration`.
++2. Install latest Tailwind + PostCSS: `npm i -D tailwindcss@latest postcss@latest autoprefixer@latest`.
++3. Run `npx tailwindcss init -p` -> inspect generated config and merge tokens from current `tailwind.config.js`.

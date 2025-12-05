@@ -1,0 +1,100 @@
+name: Antigravity + Quoder — Native Module Repair & Build
+
+on:
+  push:
+    branches: [ main, feat/*, chore/*, fix/* ]
+  pull_request:
+    types: [opened, synchronize, reopened]
+
+jobs:
+  native-repair-and-build:
+    name: Native Repair & Build (Quoder / Antigravity fallback)
+    runs-on: ${{ matrix.os }}
+    strategy:
+      matrix:
+        os: [ubuntu-latest, windows-latest]
+        node-version: [20.x]
+    env:
+      # keep secrets out of logs: set FIREBASE_ADMIN_SA or FIREBASE_ADMIN_SA_PATH in repo secrets if required
+      CI: true
+
+    permissions:
+      contents: read
+      actions: read
+      id-token: write
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Setup Node.js ${{ matrix.node-version }}
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ matrix.node-version }}
+          cache: 'npm'
+
+      - name: Print node info
+        run: |
+          node -v
+          node -p "process.versions.modules"
+          npm -v
+
+      - name: Install build dependencies (Ubuntu)
+        if: runner.os == 'Linux'
+        run: |
+          sudo apt-get update -y
+          sudo apt-get install -y build-essential python3 python3-pip
+      - name: Install build dependencies (Windows)
+        if: runner.os == 'Windows'
+        run: |
+          choco install -y python --version=3.11.0 || true
+          choco install -y visualstudio2019buildtools --yes || true
+          echo "Note: Windows runners may still need Visual Studio components."
+
+      - name: Save environment (for logs)
+        run: env | grep -E 'NODE|NPM|PATH' || true
+
+      - name: Install dependencies (fast)
+        run: npm ci --no-audit --prefer-offline
+        continue-on-error: false
+
+      - name: Quoder audit (if Quoder available)
+        run: |
+          if command -v qoder >/dev/null 2>&1; then
+            echo "Running Quoder native audit..."
+            qoder run quoder/rules/native-audit.rules || true
+          else
+            echo "Quoder not installed on runner; skipping Quoder audit."
+          fi
+
+      - name: Antigravity task (if Antigravity CLI available)
+        run: |
+          if command -v antigravity >/dev/null 2>&1; then
+            echo "Running Antigravity rebuild-native task..."
+            antigravity run antigravity/tasks/rebuild-native.yaml || true
+          else
+            echo "Antigravity CLI not available; executing fallback script."
+            bash scripts/ci-native-repair.sh
+          fi
+        shell: bash
+
+      - name: Run verification build
+        run: |
+          set -o pipefail
+          npm run build 2>&1 | tee build_ci_output.log
+        shell: bash
+
+      - name: Upload build log
+        uses: actions/upload-artifact@v4
+        with:
+          name: build-ci-log
+          path: build_ci_output.log
+
+      - name: Upload native rebuild log (if any)
+        uses: actions/upload-artifact@v4
+        with:
+          name: native-rebuild-log
+          path: native-rebuild.log
+          if-no-files-found: ignore

@@ -41,4 +41,6 @@ test-results/
 
 # environment files
 .env
-.env*.locale2e/storage/
+.env*.local
+e2e/storage/
+

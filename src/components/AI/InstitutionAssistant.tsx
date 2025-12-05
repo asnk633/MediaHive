@@ -264,7 +264,7 @@ export function InstitutionAssistant() {
                 <div className="chat-container h-64 overflow-y-auto mb-4 p-2 border rounded">
                   {conversation.map((message, index) => (
                     <div 
-                      key={index} 
+                      key={`${message.role}-${index}`} 
                       className={`mb-2 ${message.role === 'user' ? 'text-right' : 'text-left'}`}
                     >
                       <div 

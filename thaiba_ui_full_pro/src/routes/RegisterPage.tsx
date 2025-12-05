@@ -5,7 +5,7 @@ import { setUserRole } from '../../firebase/roles';
 
 export default function RegisterPage() {
   const [email, setEmail] = useState(''); const [password, setPassword] = useState('');
-  const register = async () => { const u = await createUserWithEmailAndPassword(auth, email, password); await setUserRole(u.user.uid, { role: 'guest', tags: [] }); alert('Registered! Please verify your email.'); };
+  const register = async () => { const u = await createUserWithEmailAndPassword(auth, email, password); await setUserRole(u.user.uid, 'guest'); alert('Registered! Please verify your email.'); };
   return (
     <div className='min-h-screen flex items-center justify-center p-6'>
       <div className='w-full max-w-sm bg-white/10 p-6 rounded shadow'>

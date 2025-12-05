@@ -12,12 +12,13 @@ export const NotificationProvider = ({ children }: any) => {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    const unsub = listenNotifications((all: any[]) => {
+    if (!user) return;
+    const unsub = listenNotifications(user.uid, (all: any[]) => {
       setNotifications(all);
       setLoading(false);
     });
     return () => unsub();
-  }, []);
+  }, [user]);
 
   const unreadCount = notifications.filter((n) => !n.readBy?.includes(user?.uid)).length;
 

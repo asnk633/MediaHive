@@ -4,7 +4,7 @@
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { Home, CheckSquare, Calendar, FileText, Download, User } from "lucide-react";
-import { useEffect } from "react";
+import React, { useEffect } from "react";
 import { addFocusVisibleClass } from "@/utils/a11y";
 
 const BOTTOM_NAV_ITEMS = [
@@ -36,10 +36,9 @@ export default function BottomNavigation() {
   return (
     <nav className="bottom-nav" role="navigation" aria-label="Main navigation">
       {BOTTOM_NAV_ITEMS.map((item, index) => (
-        <>
-          {index === 3 && <div style={{ width: 'var(--fab-size)' }} key="fab-spacer" />} {/* Spacer after 3rd item (index 0,1,2) */}
+        <React.Fragment key={item.key}>
+          {index === 3 && <div style={{ width: 'var(--fab-size)' }} aria-hidden="true" />} {/* Spacer after 3rd item (index 0,1,2) */}
           <Link
-            key={item.key}
             href={item.href}
             className={`nav-item ${isActive(item.href) ? "active" : ""}`}
             aria-current={isActive(item.href) ? "page" : undefined}
@@ -47,7 +46,7 @@ export default function BottomNavigation() {
             <item.icon size={20} className="text-[var(--icon)]" />
             <span className="text-[var(--icon)]">{item.label}</span>
           </Link>
-        </>
+        </React.Fragment>
       ))}
     </nav>
   );

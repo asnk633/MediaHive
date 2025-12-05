@@ -10,7 +10,8 @@ export default function TaskCard({ task }: any) {
   const canEdit = role?.role === 'admin' || task.createdBy === user?.uid;
   const canDelete = role?.role === 'admin';
 
-  const color = { low: 'bg-green-800', medium: 'bg-yellow-700', high: 'bg-orange-700', urgent: 'bg-red-700' }[task.priority];
+  const priorityColors: Record<string, string> = { low: 'bg-green-800', medium: 'bg-yellow-700', high: 'bg-orange-700', urgent: 'bg-red-700' };
+  const color = priorityColors[task.priority] || 'bg-gray-700';
 
   return (
     <>

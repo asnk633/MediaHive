@@ -14,7 +14,7 @@ export default function NotificationPanel({ open, onClose }: any) {
           <h3 className='font-semibold mb-3'>Notifications</h3>
           <div className='max-h-80 overflow-y-auto'>
             {notifications.length === 0 && <p className='opacity-50'>No notifications.</p>}
-            {notifications.map(n => (
+            {notifications.map((n: any) => (
               <div key={n.id} className='p-3 mb-2 bg-white/10 rounded cursor-pointer' onClick={() => markRead(n)}>
                 <p className='font-medium'>{n.title}</p>
                 <p className='text-sm opacity-80'>{n.body}</p>

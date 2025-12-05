@@ -158,8 +158,9 @@ const LegendWrapper = (props: any) => {
 
         <div className="mt-4 grid grid-cols-2 gap-y-1.5 text-center sm:grid-cols-4">
           {(Array.isArray(payload) ? payload : []).map((item: any, index: number) => {
+            const key = item?.value ?? item?.name ?? index;
             return (
-              <li key={index}>
+              <li key={key}>
                 <span className="legend-item-label">{item?.value ?? item?.name}</span>
               </li>
             );
@@ -175,8 +176,9 @@ const LegendWrapper = (props: any) => {
     <div className="pt-2 text-sm font-medium">
       <div className="grid grid-cols-2 gap-y-1.5 text-center sm:grid-cols-4">
         {(Array.isArray(payload) ? payload : []).map((item: any, index: number) => {
+          const key = item?.value ?? item?.name ?? index;
           return (
-            <div key={index} className="chart-legend-row">
+            <div key={key} className="chart-legend-row">
               {item?.payload && <span className="legend-dot" />}
               <span className="legend-text">{item?.value ?? item?.name}</span>
             </div>

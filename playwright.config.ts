@@ -9,6 +9,9 @@ export default defineConfig({
     { name: 'firefox', use: { ...devices['Desktop Firefox'] } },
     { name: 'webkit', use: { ...devices['Desktop Safari'] } },
   ],
+  use: {
+    baseURL: process.env.BASE_URL || 'http://localhost:3000',
+  },
   webServer: {
     command: 'npm run dev',
     url: 'http://localhost:3000',

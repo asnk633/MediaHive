@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from 'next/server';
 import { authorizeByPermission } from '@/app/api/_lib/rbac';
 import { z } from 'zod';
 import { sanitizeTextContent, sanitizeHtmlContent } from '@/lib/sanitizer';
+import { sendFcm } from '@/lib/sendFcm';
 
 // In-memory storage for mock implementation
 let mockNotifications: any[] = [];
@@ -49,6 +50,23 @@ export async function POST(req: NextRequest) {
 
     // In a real implementation, you would save to database here
     mockNotifications.push(newNotification);
+    
+    // Send FCM notification to recipients
+    // This is a simplified example - in a real implementation, you would:
+    // 1. Query the database for users matching the audience
+    // 2. Get their FCM tokens
+    // 3. Send notifications to each token
+    
+    // For demonstration, we'll send to a mock token
+    const mockFcmToken = 'mock-fcm-token-for-demo';
+    await sendFcm(mockFcmToken, {
+      title: newNotification.title,
+      body: newNotification.body,
+      data: {
+        notificationId: newNotification.id.toString(),
+        type: 'new_notification'
+      }
+    });
 
     return NextResponse.json({ data: newNotification }, {
       status: 201,

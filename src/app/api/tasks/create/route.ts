@@ -3,6 +3,7 @@ import { authorize } from '@/app/api/_lib/rbac';
 import { validateSchema, createTaskSchema } from '@/lib/validation';
 import { z } from 'zod';
 import { sanitizeTextContent, sanitizeHtmlContent } from '@/lib/sanitizer';
+import { sendFcm } from '@/lib/sendFcm';
 
 // In-memory storage for mock implementation
 let mockTasks: any[] = [];
@@ -73,6 +74,25 @@ export async function POST(req: NextRequest) {
 
     // In a real implementation, you would save to database here
     mockTasks.push(newTask);
+    
+    // Send notification if task is assigned to someone
+    if (assignedToId) {
+      // In a real implementation, you would:
+      // 1. Look up the assigned user in the database
+      // 2. Get their FCM token
+      // 3. Send them a notification
+      
+      // For demonstration, we'll send to a mock token
+      const mockFcmToken = 'mock-fcm-token-for-demo';
+      await sendFcm(mockFcmToken, {
+        title: 'New Task Assigned',
+        body: `You have been assigned a new task: ${newTask.title}`,
+        data: {
+          taskId: newTask.id.toString(),
+          type: 'task_assigned'
+        }
+      });
+    }
 
     return NextResponse.json({ data: newTask }, {
       status: 201,

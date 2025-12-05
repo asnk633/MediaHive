@@ -1,3 +1,5 @@
+@import "tailwindcss";
+
 /* ---------- Theme tokens (Pro Institutional Blend) ---------- */
 /* Default to dark, override with [data-theme="light"] */
 :root {

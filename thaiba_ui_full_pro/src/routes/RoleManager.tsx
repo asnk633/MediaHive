@@ -1,5 +1,5 @@
 ﻿import React, { useState } from 'react';
-import { setUserRole } from '../../firebase/roles';
+import { setUserRole } from '../firebase/roles';
 import { useAuth } from '../context/AuthContext';
 
 export default function RoleManager() {

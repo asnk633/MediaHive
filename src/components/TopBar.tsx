@@ -53,6 +53,11 @@ export default function TopBar() {
             {user?.name?.charAt(0).toUpperCase() || 'A'}
           </span>
         </div>
+        {user && (
+          <span className="px-2 py-1 text-xs rounded bg-gray-100 dark:bg-gray-800 text-gray-600 dark:text-gray-300 font-medium border border-gray-200 dark:border-gray-700">
+            {user.role.toUpperCase()}
+          </span>
+        )}
       </div>
     </header>
   );

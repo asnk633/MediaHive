@@ -27,8 +27,8 @@ export function RoleProvider({ children }: { children: React.ReactNode }) {
   const user = useMemo(() => {
     if (authUser) {
       return {
-        id: authUser.id.toString(),
-        name: authUser.fullName,
+        id: authUser.uid,
+        name: authUser.name || '',
         role: authUser.role as Role
       };
     }

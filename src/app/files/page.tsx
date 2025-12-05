@@ -23,7 +23,7 @@ import { Search, File, Folder, Download, Eye, EyeOff, Users, Globe, AlertCircle,
 import { toast } from 'sonner';
 
 export default function FilesPage() {
-  const { user, hasRole } = useAuth();
+  const { user } = useAuth();
   const router = useRouter();
   const [files, setFiles] = useState<FileType[]>([]);
   const [isLoading, setIsLoading] = useState(true);
@@ -58,7 +58,6 @@ export default function FilesPage() {
     try {
       setIsLoading(true);
       const params = new URLSearchParams({
-        institutionId: user!.institutionId.toString(),
         limit: '100',
       });
 
@@ -106,8 +105,6 @@ export default function FilesPage() {
     try {
       const formData = new FormData();
       formData.append('file', selectedFile);
-      formData.append('uploadedById', user!.id.toString());
-      formData.append('institutionId', user!.institutionId.toString());
       formData.append('folder', uploadFolder || '');
       formData.append('visibility', uploadVisibility);
 
@@ -183,7 +180,7 @@ export default function FilesPage() {
     <div className="space-y-6">
       <div className="flex items-center justify-between">
         <h1 className="text-3xl font-bold text-[var(--text)]">Files</h1>
-        {hasRole('admin') && (
+        {user?.role === 'admin' && (
           <Dialog open={isUploadOpen} onOpenChange={setIsUploadOpen}>
             <DialogTrigger asChild>
               <Button>

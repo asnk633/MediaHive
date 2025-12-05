@@ -3,9 +3,20 @@ import { render, fireEvent, waitFor } from '@testing-library/react';
 import { NotificationPanel } from '../../components/NotificationPanel';
 import { renderWithProviders } from '../test-utils/renderWithProviders';
 
-// Mock the hook because it uses relative import in the component
+// Mock the hooks because they use relative imports in the component
 jest.mock('../../hooks/useNotificationsRealtime', () => ({
   useNotificationsRealtime: jest.fn()
+}));
+
+jest.mock('../../hooks/useNotifications', () => ({
+  useNotifications: jest.fn(() => [])
+}));
+
+// Mock the AuthContext
+jest.mock('@/contexts/AuthContext', () => ({
+  useAuth: jest.fn(() => ({
+    user: { uid: 'u1' }
+  }))
 }));
 
 // Simplified minimal notification object

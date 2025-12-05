@@ -145,8 +145,10 @@ export async function POST(request: NextRequest) {
 // GET /api/media/analyze/:id - Get previous report
 export async function GET(
   request: NextRequest,
-  { params }: { params: Promise<{ id: string }> }
-) {  // Check if feature is enabled  if (!config.FEATURE_MEDIA_ANALYZER) {
+  context: { params: Promise<{}> }
+) {  
+  // Check if feature is enabled
+  if (!config.FEATURE_MEDIA_ANALYZER) {
     return NextResponse.json(
       { error: 'Media analyzer feature is disabled' },
       { status: 404 }
@@ -154,8 +156,8 @@ export async function GET(
   }
   
   try {
-    const paramsObj = await params;
-    const id = parseInt(paramsObj.id, 10);
+    const params = await context.params as { id: string };
+    const id = parseInt(params.id, 10);
     
     if (isNaN(id)) {
       return NextResponse.json(

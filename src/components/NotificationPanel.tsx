@@ -4,7 +4,9 @@
 'use client';
 
 import React, { useState, useEffect } from 'react';
-import { useNotificationsRealtime } from '../hooks/useNotificationsRealtime';
+// import { useNotificationsRealtime } from '../hooks/useNotificationsRealtime';
+import { useNotifications } from '@/hooks/useNotifications';
+import { useAuth } from '@/contexts/AuthContext';
 import { Bell } from 'lucide-react';
 
 interface Notification {
@@ -19,12 +21,10 @@ export function NotificationPanel() {
   const [isOpen, setIsOpen] = useState(false);
   const [notifications, setNotifications] = useState<Notification[]>([]);
   const [unreadCount, setUnreadCount] = useState(0);
+  const { user } = useAuth();
+  const realtimeNotifications = useNotifications(user?.uid);
 
-  // Subscribe to notification updates
-  useNotificationsRealtime((notification: any) => {
-    setNotifications(prev => [notification, ...prev]);
-    setUnreadCount(prev => prev + 1);
-  });
+  // Realtime subscription handled by useNotifications hook below
 
   // Load initial notifications
   useEffect(() => {
@@ -44,6 +44,26 @@ export function NotificationPanel() {
     loadNotifications();
   }, []);
 
+  // Update notifications when realtime data changes
+  useEffect(() => {
+    if (realtimeNotifications.length > 0) {
+      // Merge realtime notifications with existing ones
+      setNotifications(prev => {
+        const newNotifications = [...prev];
+        realtimeNotifications.forEach(realtimeNotif => {
+          if (!newNotifications.some(n => n.id === realtimeNotif.id)) {
+            newNotifications.unshift(realtimeNotif);
+          }
+        });
+        return newNotifications;
+      });
+
+      // Update unread count based on realtime notifications
+      const unreadRealtime = realtimeNotifications.filter(n => !n.readAt).length;
+      setUnreadCount(prev => prev + unreadRealtime);
+    }
+  }, [realtimeNotifications]);
+
   const markAsRead = async (notificationId: number) => {
     try {
       const response = await fetch('/api/notifications/read', {
@@ -57,8 +77,8 @@ export function NotificationPanel() {
       });
 
       if (response.ok) {
-        setNotifications(prev => 
-          prev.map(n => 
+        setNotifications(prev =>
+          prev.map(n =>
             n.id === notificationId ? { ...n, readAt: new Date().toISOString() } : n
           )
         );
@@ -73,7 +93,7 @@ export function NotificationPanel() {
     try {
       const unreadNotifications = notifications.filter(n => !n.readAt);
       const unreadIds = unreadNotifications.map(n => n.id);
-      
+
       const response = await fetch('/api/notifications/read', {
         method: 'POST',
         headers: {
@@ -85,8 +105,8 @@ export function NotificationPanel() {
       });
 
       if (response.ok) {
-        setNotifications(prev => 
-          prev.map(n => 
+        setNotifications(prev =>
+          prev.map(n =>
             unreadIds.includes(n.id) ? { ...n, readAt: new Date().toISOString() } : n
           )
         );
@@ -99,7 +119,7 @@ export function NotificationPanel() {
 
   return (
     <div className="relative">
-      <button 
+      <button
         className="p-2 rounded-full hover:bg-[var(--panel)] transition-all duration-200 ease-in-out text-[var(--icon)] hover:text-[var(--text)] relative"
         onClick={() => setIsOpen(!isOpen)}
         data-testid="notification-bell"
@@ -118,7 +138,7 @@ export function NotificationPanel() {
           <div className="flex items-center justify-between p-4 border-b border-[var(--glass-border)]">
             <h3 className="text-lg font-semibold text-[var(--text)]">Notifications</h3>
             {unreadCount > 0 && (
-              <button 
+              <button
                 className="text-sm text-[var(--accent)] hover:text-[var(--accent-2)] font-medium"
                 onClick={markAllAsRead}
               >
@@ -126,7 +146,7 @@ export function NotificationPanel() {
               </button>
             )}
           </div>
-          
+
           <div className="max-h-96 overflow-y-auto">
             {notifications.length === 0 ? (
               <div className="p-8 text-center text-[var(--muted)]">
@@ -135,8 +155,8 @@ export function NotificationPanel() {
               </div>
             ) : (
               notifications.map(notification => (
-                <div 
-                  key={notification.id} 
+                <div
+                  key={notification.id}
                   className={`p-4 border-b border-[var(--glass-border)] hover:bg-[var(--panel-strong)] transition-colors duration-200 ease-in-out ${!notification.readAt ? 'bg-[var(--accent)]/5' : ''}`}
                   data-testid={`notification-item-${notification.id}`}
                 >
@@ -148,7 +168,7 @@ export function NotificationPanel() {
                         {new Date(notification.createdAt).toLocaleString()}
                       </span>
                       {!notification.readAt && (
-                        <button 
+                        <button
                           className="text-xs text-[var(--accent)] hover:text-[var(--accent-2)] font-medium"
                           onClick={() => markAsRead(notification.id)}
                         >

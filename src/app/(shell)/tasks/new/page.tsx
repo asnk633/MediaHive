@@ -1,4 +1,3 @@
-// src/app/(shell)/tasks/new/page.tsx - FINAL FILE
 "use client";
 
 import React from 'react';
@@ -6,10 +5,21 @@ import { useRouter } from 'next/navigation';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { ArrowLeft } from 'lucide-react';
-import { TaskForm } from '@/components/TaskForm';
+import TaskForm from '@/components/TaskForm';
 
 export default function NewTaskPage() {
   const router = useRouter();
+
+  const handleCancel = () => {
+    router.back();
+  };
+
+  const handleSubmit = async (data: any) => {
+    // Handle form submission
+    console.log('Task data:', data);
+    // In a real implementation, you would send this to your API
+    router.push('/tasks');
+  };
 
   return (
     <div className="space-y-6 max-w-2xl mx-auto p-4 sm:p-6">
@@ -30,7 +40,7 @@ export default function NewTaskPage() {
           <CardTitle className="text-[var(--text)]">Task Details</CardTitle>
         </CardHeader>
         <CardContent>
-          <TaskForm />
+          <TaskForm onCancel={handleCancel} onSubmit={handleSubmit} />
         </CardContent>
       </Card>
     </div>

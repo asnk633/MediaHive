@@ -71,7 +71,7 @@ export function NotificationForm({ initialData, onSubmitSuccess, onCancel }: Not
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
-          'x-user-id': String(user.id)
+          'x-user-id': String(user.uid)
         },
         body: JSON.stringify(payload),
       });

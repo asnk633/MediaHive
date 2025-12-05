@@ -19,17 +19,23 @@ const notifs = [
   }
 ];
 
-// Mock fetch
-global.fetch = jest.fn(() =>
-  Promise.resolve({
-    ok: true,
-    json: () => Promise.resolve({ notifications: notifs, unreadCount: 1 }),
-  })
-) as jest.Mock;
+beforeEach(() => {
+  // Mock fetch
+  global.fetch = jest.fn(() =>
+    Promise.resolve({
+      ok: true,
+      json: () => Promise.resolve({ notifications: notifs, unreadCount: 1 }),
+    })
+  ) as jest.Mock;
+});
+
+afterEach(() => {
+  // Clean up mock
+  (global.fetch as jest.Mock).mockClear();
+});
 
 test('NotificationPanel lists notifications and allows marking as read', async () => {
   const { ui } = renderWithProviders(<NotificationPanel />, {
-    notifications: notifs,
     user: { uid: 'u1' }
   });
   const view = render(ui);

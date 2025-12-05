@@ -1,0 +1,48 @@
+diff --git a/src/tests/setup-globals.ts b/src/tests/setup-globals.ts
+index 1cc936c7..06364c4c 100644
+--- a/src/tests/setup-globals.ts
++++ b/src/tests/setup-globals.ts
+@@ -1,28 +1,23 @@
+ // src/tests/setup-globals.ts
+-// Setup file for Jest tests
+-
+-// Polyfill TextEncoder and TextDecoder for older Node.js versions
+ import { TextEncoder, TextDecoder } from 'util';
+ 
+ global.TextEncoder = TextEncoder;
+ global.TextDecoder = TextDecoder as any;
+ 
+-// Mock window.matchMedia
+ if (typeof window !== 'undefined') {
+-  Object.defineProperty(window, 'matchMedia', {
+-    writable: true,
+-    value: jest.fn().mockImplementation(query => ({
+-      matches: false,
+-      media: query,
+-      onchange: null,
+-      addListener: jest.fn(), // deprecated
+-      removeListener: jest.fn(), // deprecated
+-      addEventListener: jest.fn(),
+-      removeEventListener: jest.fn(),
+-      dispatchEvent: jest.fn(),
+-    })),
+-  });
++    Object.defineProperty(window, 'matchMedia', {
++        writable: true,
++        value: jest.fn().mockImplementation(query => ({
++            matches: false,
++            media: query,
++            onchange: null,
++            addListener: jest.fn(),
++            removeListener: jest.fn(),
++            addEventListener: jest.fn(),
++            removeEventListener: jest.fn(),
++            dispatchEvent: jest.fn(),
++        })),
++    });
+ }
+ 
+-// Import EventSource polyfill
+-require('event-source-polyfill');
+\ No newline at end of file
++require('event-source-polyfill');

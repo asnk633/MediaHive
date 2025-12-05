@@ -6,7 +6,7 @@ const { spawn } = require("child_process");
   
   console.log(`Dev server starting on port ${port}...`);
 
-  const child = spawn("next", ["dev", "--turbopack", "-p", String(port)], {
+  const child = spawn("next", ["dev", "-p", String(port)], {
     stdio: "inherit",
     shell: true,
   });

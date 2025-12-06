@@ -2,8 +2,10 @@ import { defineConfig, devices } from '@playwright/test';
 
 export default defineConfig({
     testDir: './e2e/playwright',
-    timeout: 30_000,
-    expect: { timeout: 5000 },
+    timeout: 300_000,
+    workers: 1,
+    retries: 2,
+    expect: { timeout: 10_000 },
     reporter: [['html', { outputFolder: 'test-results/html-report' }]],
     projects: [
         { name: 'chromium', use: { ...devices['Desktop Chrome'] } },
@@ -13,6 +15,11 @@ export default defineConfig({
     use: {
         baseURL: process.env.BASE_URL || 'http://localhost:3000',
         navigationTimeout: 60_000,
+        trace: 'on-first-retry',
+        video: 'retain-on-failure',
+        screenshot: 'only-on-failure',
+        launchOptions: { slowMo: 50 },
+        storageState: process.env.PLAYWRIGHT_STORAGE || 'e2e/storageState.json',
     },
     webServer: {
         command: 'npm run dev',

@@ -1,0 +1,49 @@
+
+> thaiba-ui-full-pro@1.0.0 dev
+> vite
+
+Re-optimizing dependencies because lockfile has changed
+
+  [32m[1mVITE[22m v5.4.21[39m  [2mready in [0m[1m535[22m[2m[0m ms[22m
+
+  [32m➜[39m  [1mLocal[22m:   [36mhttp://127.0.0.1:[1m3000[22m/[39m
+[2m[32m  ➜[39m[22m[2m  press [22m[1mh + enter[22m[2m to show help[22m
+Error: [31m  Failed to scan for dependencies from entries:
+  D:/Thaiba Garden Media Manager-Orchids/thaiba_ui_full_pro/index.html
+D:/Thaiba Garden Media Manager-Orchids/thaiba_ui_full_pro/test-results/html-report/index.html
+D:/Thaiba Garden Media Manager-Orchids/thaiba_ui_full_pro/test-results/html-report/trace/index.html
+D:/Thaiba Garden Media Manager-Orchids/thaiba_ui_full_pro/test-results/html-report/trace/snapshot.html
+D:/Thaiba Garden Media Manager-Orchids/thaiba_ui_full_pro/test-results/html-report/trace/uiMode.html
+
+  [39m[31mX [41;31m[[41;97mERROR[41;31m][0m [1mNo matching export in "firebase/auth.ts" for import "sendPasswordResetEmail"[0m
+
+    src/routes/ForgotPassword.tsx:3:9:
+[37m      3 │ import { [32msendPasswordResetEmail[37m } from 'firebase/auth';
+        ╵          [32m~~~~~~~~~~~~~~~~~~~~~~[0m
+
+
+[31mX [41;31m[[41;97mERROR[41;31m][0m [1mNo matching export in "firebase/auth.ts" for import "signInWithEmailAndPassword"[0m
+
+    src/routes/LoginPage.tsx:3:9:
+[37m      3 │ import { [32msignInWithEmailAndPassword[37m } from 'firebase/auth';
+        ╵          [32m~~~~~~~~~~~~~~~~~~~~~~~~~~[0m
+
+
+[31mX [41;31m[[41;97mERROR[41;31m][0m [1mNo matching export in "firebase/auth.ts" for import "createUserWithEmailAndPassword"[0m
+
+    src/routes/RegisterPage.tsx:3:9:
+[37m      3 │ import { [32mcreateUserWithEmailAndPassword[37m } from 'firebase/auth';
+        ╵          [32m~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~[0m
+
+
+    at failureErrorWithLog (D:\Thaiba Garden Media Manager-Orchids\thaiba_ui_full_pro\node_modules\esbuild\lib\main.js:1472:15)
+    at D:\Thaiba Garden Media Manager-Orchids\thaiba_ui_full_pro\node_modules\esbuild\lib\main.js:945:25
+    at runOnEndCallbacks (D:\Thaiba Garden Media Manager-Orchids\thaiba_ui_full_pro\node_modules\esbuild\lib\main.js:1315:45)
+    at buildResponseToResult (D:\Thaiba Garden Media Manager-Orchids\thaiba_ui_full_pro\node_modules\esbuild\lib\main.js:943:7)
+    at D:\Thaiba Garden Media Manager-Orchids\thaiba_ui_full_pro\node_modules\esbuild\lib\main.js:955:9
+    at new Promise (<anonymous>)
+    at requestCallbacks.on-end (D:\Thaiba Garden Media Manager-Orchids\thaiba_ui_full_pro\node_modules\esbuild\lib\main.js:954:54)
+    at handleRequest (D:\Thaiba Garden Media Manager-Orchids\thaiba_ui_full_pro\node_modules\esbuild\lib\main.js:647:17)
+    at handleIncomingPacket (D:\Thaiba Garden Media Manager-Orchids\thaiba_ui_full_pro\node_modules\esbuild\lib\main.js:672:7)
+    at Socket.readFromStdout (D:\Thaiba Garden Media Manager-Orchids\thaiba_ui_full_pro\node_modules\esbuild\lib\main.js:600:7)
+Terminate batch job (Y/N)? 

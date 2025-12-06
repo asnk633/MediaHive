@@ -10,7 +10,7 @@
   Firestore
 } from "firebase/firestore";
 
-import { db as defaultDb } from "@/firebase/auth";
+import { db as defaultDb } from "../firebase/firebaseWrapper";
 import { pushNotification } from "./notificationService";
 
 export const tasksRefFor = (firestore: Firestore) => collection(firestore, "tasks");

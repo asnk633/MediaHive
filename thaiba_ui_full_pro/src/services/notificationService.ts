@@ -8,7 +8,7 @@
   orderBy,
   Firestore
 } from "firebase/firestore";
-import { db as defaultDb } from "@/firebase/auth";
+import { db as defaultDb } from "../firebase/firebaseWrapper";
 
 export const notifRefFor = (firestore: Firestore) => collection(firestore, "notifications");
 

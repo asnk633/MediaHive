@@ -1,136 +1,112 @@
 name: CI — E2E (decode SA, seed, playwright)
 
 on:
-  push:
-    branches: [ main, feat/clean-finalize-v1-files ]
   pull_request:
-    types: [opened, synchronize, reopened]
-  workflow_dispatch: {}
-
-permissions: read-all
+    branches:
+      - main
+      - ci/fix-workflows
 
 jobs:
-  e2e:
-    name: E2E
+  E2E:
     runs-on: ubuntu-latest
-    timeout-minutes: 40
+    timeout-minutes: 30
+
     env:
-      NODE_OPTIONS: '--max-old-space-size=2048'
+      NODE_OPTIONS: --max-old-space-size=2048
       BASE_URL: http://127.0.0.1:3000
+
+      # Supabase
       SUPABASE_URL: ${{ secrets.SUPABASE_URL }}
       SUPABASE_SERVICE_KEY: ${{ secrets.SUPABASE_SERVICE_KEY }}
       APP_SECRET: ${{ secrets.APP_SECRET }}
-      # Firebase client environment variables
+
+      # Firebase client (for Next.js app)
       NEXT_PUBLIC_FIREBASE_API_KEY: ${{ secrets.NEXT_PUBLIC_FIREBASE_API_KEY }}
       NEXT_PUBLIC_FIREBASE_AUTH_DOMAIN: ${{ secrets.NEXT_PUBLIC_FIREBASE_AUTH_DOMAIN }}
       NEXT_PUBLIC_FIREBASE_PROJECT_ID: ${{ secrets.NEXT_PUBLIC_FIREBASE_PROJECT_ID }}
-      NEXT_PUBLIC_FIREBASE_APP_ID: ${{ secrets.NEXT_PUBLIC_FIREBASE_APP_ID }}
       NEXT_PUBLIC_FIREBASE_STORAGE_BUCKET: ${{ secrets.NEXT_PUBLIC_FIREBASE_STORAGE_BUCKET }}
       NEXT_PUBLIC_FIREBASE_MESSAGING_SENDER_ID: ${{ secrets.NEXT_PUBLIC_FIREBASE_MESSAGING_SENDER_ID }}
-      # FIREBASE_ADMIN_SA removed - now using FIREBASE_ADMIN_SA_PATH only
+      NEXT_PUBLIC_FIREBASE_APP_ID: ${{ secrets.NEXT_PUBLIC_FIREBASE_APP_ID }}
+
+      # Firebase admin (file-based; app reads FIREBASE_ADMIN_SA_PATH)
+      FIREBASE_ADMIN_SA_PATH: ${{ github.workspace }}/service-account.json
 
     steps:
       - name: Checkout
         uses: actions/checkout@v4
-        with:
-          fetch-depth: 0
-
-      - name: Validate required secrets
-        run: |
-          missing=()
-          for v in SUPABASE_URL APP_SECRET; do
-            if [ -z "${!v:-}" ]; then
-              missing+=($v)
-            fi
-          done
-          if [ ${#missing[@]} -ne 0 ]; then
-            echo "ERROR: Missing required secrets: ${missing[*]}"
-            echo "Please add them to Repository → Settings → Secrets and variables → Actions"
-            exit 1
-          fi
-
-      - name: Decode service account (Linux / macOS)
-        if: runner.os != 'Windows'
-        run: |
-          if [ -z "${{ secrets.FIREBASE_ADMIN_SA }}" ]; then
-            echo "FIREBASE_ADMIN_SA secret is missing"
-            exit 1
-          fi
-          # Write the raw JSON from the secret into a file
-          echo '${{ secrets.FIREBASE_ADMIN_SA }}' > service-account.json
-          ls -la service-account.json
-          # Debug: Check if file is valid JSON
-          echo "=== Service account file validation ==="
-          if head -c 1 service-account.json | grep -q '"'; then
-            echo "File starts with quote - likely valid JSON"
-          else
-            echo "File does not start with quote - may be corrupted"
-            echo "First 100 characters:"
-            head -c 100 service-account.json | cat -A
-          fi
-          echo "File size: $(wc -c < service-account.json) bytes"
-          # Additional validation
-          echo "File type:"
-          file service-account.json
-        shell: bash
-
-      - name: Decode service account (Windows)
-        if: runner.os == 'Windows'
-        run: |
-          if (-not "${{ secrets.FIREBASE_ADMIN_SA }}") {
-            Write-Host "FIREBASE_ADMIN_SA secret is missing"
-            exit 1
-          }
-          # Write the raw JSON from the secret into a file
-          Set-Content -Path service-account.json -Value '${{ secrets.FIREBASE_ADMIN_SA }}' -Encoding UTF8
-          Get-Item service-account.json | Format-List
-        shell: pwsh
-
-      - name: Set FIREBASE_ADMIN_SA_PATH for Node app
-        run: echo "FIREBASE_ADMIN_SA_PATH=$(pwd)/service-account.json" >> $GITHUB_ENV
-        shell: bash
 
       - name: Setup Node
         uses: actions/setup-node@v4
         with:
-          node-version: '20'
+          node-version: 20
+          cache: npm
 
-      - name: Install dependencies
+      - name: Install deps
         run: npm ci
 
+      # Write the service account JSON from the secret (Linux/macOS)
+      - name: Decode service account (Linux / macOS)
+        if: runner.os != 'Windows'
+        env:
+          FIREBASE_ADMIN_SA: ${{ secrets.FIREBASE_ADMIN_SA }}
+        run: |
+          if [ -z "${FIREBASE_ADMIN_SA:-}" ]; then
+            echo "FIREBASE_ADMIN_SA secret is missing"
+            exit 1
+          fi
+          printf '%s\n' "$FIREBASE_ADMIN_SA" > "$FIREBASE_ADMIN_SA_PATH"
+          ls -la "$FIREBASE_ADMIN_SA_PATH"
+
+      # (Optional Windows step kept for completeness; you'll only hit this if you ever switch runner)
+      - name: Decode service account (Windows)
+        if: runner.os == 'Windows'
+        env:
+          FIREBASE_ADMIN_SA: ${{ secrets.FIREBASE_ADMIN_SA }}
+        run: |
+          if (-not "$env:FIREBASE_ADMIN_SA") {
+            Write-Host "FIREBASE_ADMIN_SA secret is missing"
+            exit 1
+          }
+          Set-Content -Path $env:FIREBASE_ADMIN_SA_PATH -Value $env:FIREBASE_ADMIN_SA -Encoding UTF8
+          Get-Item $env:FIREBASE_ADMIN_SA_PATH | Format-List
+        shell: pwsh
+
+      - name: Setup Python 3.10
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.10"
+
+      - name: Install Python face recognition dependencies
+        run: |
+          python -m venv .venv
+          # Windows/Linux compatible activation
+          if [ -f ".venv/bin/activate" ]; then
+            source .venv/bin/activate
+          else
+            source .venv/Scripts/activate
+          fi
+          # Using scripts/requirements.txt as per file structure
+          pip install -r scripts/requirements.txt
+
       - name: Install Playwright browsers
+        run: npx playwright install --with-deps
+
+      - name: Start Python face recognition service
         run: |
-          npx playwright install --with-deps
-          npx playwright install-deps
-        shell: bash
+          cd scripts
+          # Fixed path to match repo structure (scripts/face_service.py)
+          nohup python face_service.py > ../face-service.log 2>&1 &
+          cd ..
+          echo "Waiting for Python service to start..."
+          sleep 10
 
-      - name: Build
-        run: npm run build
-
-      - name: Start server (background)
+      - name: Start Next.js app (background)
         run: |
-          # start the app on port 3000 in background and redirect logs
-          nohup npm run start --silent > app.log 2>&1 &
-          echo $! > .server_pid
-        shell: bash
+          nohup npm run dev:e2e > app.log 2>&1 &
+          echo "Waiting for Next.js to start..."
+          sleep 25
 
-      - name: Wait for server to be healthy
-        run: |
-          for i in {1..40}; do
-            if curl -sSf http://127.0.0.1:3000/api/health >/dev/null 2>&1; then
-              echo "server is healthy"
-              exit 0
-            fi
-            echo "waiting for server... ($i)"
-            sleep 3
-          done
-          echo "Server did not become healthy"
-          cat app.log || true
-          exit 1
-        shell: bash
-
-      - name: Seed smoke user (retry)
-        id: seed
+      - name: Seed smoke user
         run: |
           for i in 1 2 3; do
             echo "seed attempt $i"
@@ -148,45 +124,16 @@ jobs:
           echo "Seed failed; dumping server log"
           tail -n +1 app.log || true
           exit 1
-        shell: bash
 
-      - name: Generate Playwright storage state (optional)
-        run: |
-          mkdir -p e2e
-          BASE_URL=http://127.0.0.1:3000 E2E_TEST_EMAIL='smoke@test.local' E2E_TEST_PW='Pass123' node scripts/generateStorageState.js || true
-        continue-on-error: true
-        shell: bash
+      - name: Run Playwright tests
+        run: npx playwright test --config=playwright.config.cjs
 
-      - name: Run Playwright tests (single worker, retries, trace on failure)
-        id: playwright
-        run: |
-          npx cross-env BASE_URL=http://127.0.0.1:3000 npx playwright test --retries=2 --workers=1 --trace on
-        continue-on-error: true
-        shell: bash
-
-      - name: Upload Playwright traces & logs
+      - name: Upload Playwright artifacts (optional)
         if: always()
         uses: actions/upload-artifact@v4
         with:
-          name: e2e-artifacts
+          name: test-results
           path: |
+            test-results
             playwright-report
-            e2e-artifacts || true
-            ./app.log
-            ./e2e/storageState.json || true
-
-      - name: Stop server
-        if: always()
-        run: |
-          if [ -f .server_pid ]; then
-            kill -9 $(cat .server_pid) || true
-            rm -f .server_pid
-          fi
-        shell: bash
-
-      - name: Fail if tests failed
-        if: steps.playwright.outcome != 'success'
-        run: |
-          echo "Playwright tests failed. See artifacts."
-          exit 1
-        shell: bash
+            app.log

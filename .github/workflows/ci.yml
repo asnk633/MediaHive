@@ -1,203 +1,54 @@
 name: CI
 
 on:
-  push:
-    branches: [ main ]
   pull_request:
-    branches: [ main ]
-
-permissions: read-all
+    branches:
+      - main
+      - ci/fix-workflows
+  push:
+    branches:
+      - main
 
 jobs:
-  build:
+  build-and-test:
     name: Build & Test
     runs-on: ubuntu-latest
+
     env:
+      NODE_OPTIONS: --max-old-space-size=2048
+      BASE_URL: http://127.0.0.1:3000
+
+      # Supabase (backend / API)
       SUPABASE_URL: ${{ secrets.SUPABASE_URL }}
       SUPABASE_SERVICE_KEY: ${{ secrets.SUPABASE_SERVICE_KEY }}
       APP_SECRET: ${{ secrets.APP_SECRET }}
-      # Firebase client environment variables
+
+      # Firebase client (Next.js app)
       NEXT_PUBLIC_FIREBASE_API_KEY: ${{ secrets.NEXT_PUBLIC_FIREBASE_API_KEY }}
       NEXT_PUBLIC_FIREBASE_AUTH_DOMAIN: ${{ secrets.NEXT_PUBLIC_FIREBASE_AUTH_DOMAIN }}
       NEXT_PUBLIC_FIREBASE_PROJECT_ID: ${{ secrets.NEXT_PUBLIC_FIREBASE_PROJECT_ID }}
-      NEXT_PUBLIC_FIREBASE_APP_ID: ${{ secrets.NEXT_PUBLIC_FIREBASE_APP_ID }}
       NEXT_PUBLIC_FIREBASE_STORAGE_BUCKET: ${{ secrets.NEXT_PUBLIC_FIREBASE_STORAGE_BUCKET }}
       NEXT_PUBLIC_FIREBASE_MESSAGING_SENDER_ID: ${{ secrets.NEXT_PUBLIC_FIREBASE_MESSAGING_SENDER_ID }}
-      # FIREBASE_ADMIN_SA removed - now using FIREBASE_ADMIN_SA_PATH only
-      # Add other necessary secrets if referenced by ci-env-loader
+      NEXT_PUBLIC_FIREBASE_APP_ID: ${{ secrets.NEXT_PUBLIC_FIREBASE_APP_ID }}
 
     steps:
       - name: Checkout
         uses: actions/checkout@v4
 
-      - name: Validate required secrets
-        run: |
-          missing=()
-          for v in SUPABASE_URL APP_SECRET NEXT_PUBLIC_FIREBASE_API_KEY NEXT_PUBLIC_FIREBASE_PROJECT_ID; do
-            if [ -z "${!v:-}" ]; then
-              missing+=($v)
-            fi
-          done
-          if [ ${#missing[@]} -ne 0 ]; then
-            echo "ERROR: Missing required secrets: ${missing[*]}"
-            echo "Please add them to Repository → Settings → Secrets and variables → Actions"
-            exit 1
-          fi
-
-      - name: Debug (non-secret)
-        run: |
-          echo "Workspace root:"
-          ls -la
-          node -v || true
-          python --version || true
-
       - name: Setup Node
         uses: actions/setup-node@v4
         with:
-          node-version: '20'
+          node-version: 20
+          cache: npm
 
-      - name: Install dependencies
+      - name: Install deps
         run: npm ci
 
-      - name: Decode Firebase service account
-        run: |
-          if [ -z '${{ secrets.FIREBASE_ADMIN_SA }}' ]; then
-            echo "FIREBASE_ADMIN_SA secret is missing"
-            exit 1
-          fi
-          # Write the raw JSON from the secret into a file
-          echo '${{ secrets.FIREBASE_ADMIN_SA }}' > ./service-account.json
-          ls -la ./service-account.json
-
-      - name: Set FIREBASE_ADMIN_SA_PATH for Node app
-        run: echo "FIREBASE_ADMIN_SA_PATH=$(pwd)/service-account.json" >> $GITHUB_ENV
-
-      - name: Inject envs (from secrets)
-        run: chmod +x .github/actions/ci-env-loader.sh && ./.github/actions/ci-env-loader.sh
-
       - name: Install Playwright browsers
-        run: |
-          npx playwright install --with-deps
-          npx playwright install-deps
+        run: npx playwright install --with-deps
 
-      - name: Run tests
-        run: npm run test
+      - name: Run unit + UI tests
+        run: npm test
 
-      - name: Build (Next.js)
+      - name: Build Next.js
         run: npm run build
-
-      - name: Upload build artifact
-        uses: actions/upload-artifact@v4
-        with:
-          name: web-build
-          path: .next
-          retention-days: 1
-
-  playwright_smoke:
-    name: Playwright smoke (stable)
-    runs-on: ubuntu-latest
-    needs: build
-    env:
-      # Firebase client environment variables
-      NEXT_PUBLIC_FIREBASE_API_KEY: ${{ secrets.NEXT_PUBLIC_FIREBASE_API_KEY }}
-      NEXT_PUBLIC_FIREBASE_AUTH_DOMAIN: ${{ secrets.NEXT_PUBLIC_FIREBASE_AUTH_DOMAIN }}
-      NEXT_PUBLIC_FIREBASE_PROJECT_ID: ${{ secrets.NEXT_PUBLIC_FIREBASE_PROJECT_ID }}
-      NEXT_PUBLIC_FIREBASE_APP_ID: ${{ secrets.NEXT_PUBLIC_FIREBASE_APP_ID }}
-      NEXT_PUBLIC_FIREBASE_STORAGE_BUCKET: ${{ secrets.NEXT_PUBLIC_FIREBASE_STORAGE_BUCKET }}
-      NEXT_PUBLIC_FIREBASE_MESSAGING_SENDER_ID: ${{ secrets.NEXT_PUBLIC_FIREBASE_MESSAGING_SENDER_ID }}
-      # FIREBASE_ADMIN_SA removed - now using FIREBASE_ADMIN_SA_PATH only
-      SUPABASE_URL: ${{ secrets.SUPABASE_URL }}
-      SUPABASE_SERVICE_KEY: ${{ secrets.SUPABASE_SERVICE_KEY }}
-      APP_SECRET: ${{ secrets.APP_SECRET }}
-
-    steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-node@v4
-        with:
-          node-version: '20'
-
-      - name: Install
-        run: npm ci
-
-      - name: Decode Firebase service account
-        run: |
-          if [ -z '${{ secrets.FIREBASE_ADMIN_SA }}' ]; then
-            echo "ERROR: FIREBASE_ADMIN_SA secret is missing. Please configure it in repository secrets."
-            exit 1
-          fi
-          # Write the raw JSON from the secret into a file
-          echo '${{ secrets.FIREBASE_ADMIN_SA }}' > ./service-account.json
-          ls -la ./service-account.json
-
-      - name: Set FIREBASE_ADMIN_SA_PATH for Node app
-        run: echo "FIREBASE_ADMIN_SA_PATH=$(pwd)/service-account.json" >> $GITHUB_ENV
-
-      - name: Inject envs (from secrets)
-        run: chmod +x .github/actions/ci-env-loader.sh && ./.github/actions/ci-env-loader.sh
-        env:
-          NEXT_PUBLIC_FIREBASE_API_KEY: ${{ secrets.NEXT_PUBLIC_FIREBASE_API_KEY }}
-          NEXT_PUBLIC_FIREBASE_AUTH_DOMAIN: ${{ secrets.NEXT_PUBLIC_FIREBASE_AUTH_DOMAIN }}
-          NEXT_PUBLIC_FIREBASE_PROJECT_ID: ${{ secrets.NEXT_PUBLIC_FIREBASE_PROJECT_ID }}
-          NEXT_PUBLIC_FIREBASE_APP_ID: ${{ secrets.NEXT_PUBLIC_FIREBASE_APP_ID }}
-          NEXT_PUBLIC_FIREBASE_STORAGE_BUCKET: ${{ secrets.NEXT_PUBLIC_FIREBASE_STORAGE_BUCKET }}
-          NEXT_PUBLIC_FIREBASE_MESSAGING_SENDER_ID: ${{ secrets.NEXT_PUBLIC_FIREBASE_MESSAGING_SENDER_ID }}
-          SUPABASE_URL: ${{ secrets.SUPABASE_URL }}
-          SUPABASE_SERVICE_KEY: ${{ secrets.SUPABASE_SERVICE_KEY }}
-          APP_SECRET: ${{ secrets.APP_SECRET }}
-
-      - name: Validate required secrets
-        run: |
-          missing=()
-          for v in SUPABASE_URL APP_SECRET; do
-            if [ -z "${!v:-}" ]; then
-              missing+=($v)
-            fi
-          done
-          if [ ${#missing[@]} -ne 0 ]; then
-            echo "ERROR: Missing required secrets: ${missing[*]}"
-            echo "Please add them to Repository → Settings → Secrets and variables → Actions"
-            exit 1
-          fi
-
-      - name: Persist envs for subsequent steps (write to $GITHUB_ENV)
-        run: |
-          echo "NEXT_PUBLIC_FIREBASE_API_KEY=${NEXT_PUBLIC_FIREBASE_API_KEY}" >> $GITHUB_ENV
-          echo "NEXT_PUBLIC_FIREBASE_AUTH_DOMAIN=${NEXT_PUBLIC_FIREBASE_AUTH_DOMAIN}" >> $GITHUB_ENV
-          echo "NEXT_PUBLIC_FIREBASE_PROJECT_ID=${NEXT_PUBLIC_FIREBASE_PROJECT_ID}" >> $GITHUB_ENV
-          echo "NEXT_PUBLIC_FIREBASE_APP_ID=${NEXT_PUBLIC_FIREBASE_APP_ID}" >> $GITHUB_ENV
-          echo "NEXT_PUBLIC_FIREBASE_STORAGE_BUCKET=${NEXT_PUBLIC_FIREBASE_STORAGE_BUCKET}" >> $GITHUB_ENV
-          echo "NEXT_PUBLIC_FIREBASE_MESSAGING_SENDER_ID=${NEXT_PUBLIC_FIREBASE_MESSAGING_SENDER_ID}" >> $GITHUB_ENV
-          echo "SUPABASE_URL=${SUPABASE_URL}" >> $GITHUB_ENV
-          echo "SUPABASE_SERVICE_KEY=${SUPABASE_SERVICE_KEY}" >> $GITHUB_ENV
-          echo "APP_SECRET=${APP_SECRET}" >> $GITHUB_ENV
-
-      - name: Build & start
-        run: |
-          npm run build
-          nohup npm run start &>/tmp/next-start.log &
-
-      - name: Wait for server
-        run: npx wait-on http://localhost:3000 --timeout 120000
-
-      - name: Seed database
-        run: |
-          curl -X POST http://localhost:3000/api/test-utils/seed-user \
-            -H "Content-Type: application/json" \
-            -d '{"email": "smoke@test.local", "password": "Pass123", "role": "admin"}'
-
-      - name: Install Playwright browsers
-        run: |
-          npx playwright install --with-deps
-          npx playwright install-deps
-
-      - name: Run smoke spec (single worker + retries)
-        run: npx playwright test e2e/smoke.spec.ts --project=chromium --retries=2 --workers=1 --reporter=list
-        env:
-          CI: true
-
-      - name: Upload next-start.log
-        if: always()
-        uses: actions/upload-artifact@v4
-        with:
-          name: next-start-log
-          path: /tmp/next-start.log

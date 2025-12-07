@@ -14,6 +14,9 @@ jobs:
     env:
       NODE_OPTIONS: '--max-old-space-size=2048'
       BASE_URL: http://127.0.0.1:3000
+      SUPABASE_URL: ${{ secrets.SUPABASE_URL }}
+      SUPABASE_SERVICE_KEY: ${{ secrets.SUPABASE_SERVICE_KEY }}
+      APP_SECRET: ${{ secrets.APP_SECRET }}
 
     steps:
       - name: Checkout

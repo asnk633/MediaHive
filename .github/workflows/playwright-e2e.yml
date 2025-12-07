@@ -16,6 +16,9 @@ jobs:
       PLAYWRIGHT_BASE_URL: http://localhost:3000
       PLAYWRIGHT_TEST_EMAIL: dev@local
       NEXT_PUBLIC_E2E: 1
+      SUPABASE_URL: ${{ secrets.SUPABASE_URL }}
+      SUPABASE_SERVICE_KEY: ${{ secrets.SUPABASE_SERVICE_KEY }}
+      APP_SECRET: ${{ secrets.APP_SECRET }}
     steps:
       - uses: actions/checkout@v4
       - name: Use Node.js ${{ matrix.node-version }}

@@ -7,8 +7,11 @@ on:
     types: [opened, synchronize, reopened]
   workflow_dispatch: {}
 
+permissions: read-all
+
 jobs:
   e2e:
+    name: E2E
     runs-on: ubuntu-latest
     timeout-minutes: 40
     env:
@@ -17,37 +20,43 @@ jobs:
       SUPABASE_URL: ${{ secrets.SUPABASE_URL }}
       SUPABASE_SERVICE_KEY: ${{ secrets.SUPABASE_SERVICE_KEY }}
       APP_SECRET: ${{ secrets.APP_SECRET }}
+      FIREBASE_ADMIN_SA_BASE64: ${{ secrets.FIREBASE_ADMIN_SA }}
 
     steps:
       - name: Checkout
         uses: actions/checkout@v4
-        with:
-          fetch-depth: 0
 
-      - name: Use Node 20
+      # Note: Not downloading artifact because ci.yml runs concurrently. Building locally.
+      
+      - name: Decode service account (Linux / macOS)
+        if: runner.os != 'Windows'
+        run: |
+          if [ -z "${FIREBASE_ADMIN_SA_BASE64:-}" ]; then
+            echo "FIREBASE_ADMIN_SA_BASE64 secret is missing"
+            exit 1
+          fi
+          echo "$FIREBASE_ADMIN_SA_BASE64" | base64 --decode > service-account.json
+          ls -la service-account.json
+        shell: bash
+
+      - name: Decode service account (Windows)
+        if: runner.os == 'Windows'
+        run: |
+          if (-not $env:FIREBASE_ADMIN_SA_BASE64) { Write-Error "FIREBASE_ADMIN_SA_BASE64 secret is missing"; exit 1 }
+          [System.Text.Encoding]::UTF8.GetString([System.Convert]::FromBase64String($env:FIREBASE_ADMIN_SA_BASE64)) | Out-File -FilePath service-account.json -Encoding utf8
+          Get-ChildItem service-account.json
+        shell: pwsh
+
+      - name: Set FIREBASE_ADMIN_SA_PATH for Node app
+        run: echo "FIREBASE_ADMIN_SA_PATH=$(pwd)/service-account.json" >> $GITHUB_ENV
+        shell: bash
+
+      - name: Setup Node
         uses: actions/setup-node@v4
         with:
           node-version: '20'
 
-      - name: Decode Firebase SA (from repo secret)
-        run: |
-          echo "Decoding FIREBASE_ADMIN_SA_BASE64 -> service-account.json"
-          echo "$FIREBASE_ADMIN_SA_BASE64" | base64 --decode > service-account.json
-          # secure the file
-          chmod 600 service-account.json
-        env:
-          FIREBASE_ADMIN_SA_BASE64: ${{ secrets.FIREBASE_ADMIN_SA_BASE64 }}
-
-      - name: Ensure service-account.json exists
-        run: |
-          ls -l service-account.json
-          echo "SERVICE ACCOUNT preview (first 2 lines):"
-          head -n 2 service-account.json || true
-
-      - name: Set FIREBASE_ADMIN_SA_PATH for Node app
-        run: echo "FIREBASE_ADMIN_SA_PATH=$(pwd)/service-account.json" >> $GITHUB_ENV
-
-      - name: Install dependencies (ci)
+      - name: Install dependencies
         run: npm ci
 
       - name: Build
@@ -58,6 +67,8 @@ jobs:
           # start the app on port 3000 in background and redirect logs
           nohup npm run start --silent > app.log 2>&1 &
           echo $! > .server_pid
+        shell: bash
+
       - name: Wait for server to be healthy
         run: |
           for i in {1..40}; do
@@ -71,6 +82,7 @@ jobs:
           echo "Server did not become healthy"
           cat app.log || true
           exit 1
+        shell: bash
 
       - name: Seed smoke user (retry)
         id: seed
@@ -91,22 +103,23 @@ jobs:
           echo "Seed failed; dumping server log"
           tail -n +1 app.log || true
           exit 1
+        shell: bash
 
       - name: Generate Playwright storage state (optional)
         run: |
-          # create e2e folder if required
           mkdir -p e2e
-          # Ensure node script is runnable from repo root
-          # If your generate script expects env vars, set them here:
+          # Install Playwright browsers for this step too (it uses playwright)
+          npx playwright install --with-deps
           BASE_URL=http://127.0.0.1:3000 E2E_TEST_EMAIL='smoke@test.local' E2E_TEST_PW='Pass123' node scripts/generateStorageState.js || true
         continue-on-error: true
+        shell: bash
 
       - name: Run Playwright tests (single worker, retries, trace on failure)
         id: playwright
         run: |
-          npx playwright install --with-deps
           npx cross-env BASE_URL=http://127.0.0.1:3000 npx playwright test --retries=2 --workers=1 --trace on
         continue-on-error: true
+        shell: bash
 
       - name: Upload Playwright traces & logs
         if: always()
@@ -126,9 +139,11 @@ jobs:
             kill -9 $(cat .server_pid) || true
             rm -f .server_pid
           fi
+        shell: bash
 
       - name: Fail if tests failed
         if: steps.playwright.outcome != 'success'
         run: |
           echo "Playwright tests failed. See artifacts."
           exit 1
+        shell: bash

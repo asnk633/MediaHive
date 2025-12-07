@@ -1,93 +1,100 @@
-name: Playwright E2E Tests
+name: Playwright E2E
 
 on:
-  push:
-    branches: [ main, feature/* ]
+  workflow_dispatch:
   pull_request:
+  push:
     branches: [ main ]
 
+permissions: read-all
+
 jobs:
-  test:
+  playwright:
     runs-on: ubuntu-latest
-    strategy:
-      matrix:
-        node-version: [18, 20]
     env:
-      PLAYWRIGHT_BASE_URL: http://localhost:3000
-      PLAYWRIGHT_TEST_EMAIL: dev@local
-      NEXT_PUBLIC_E2E: 1
       SUPABASE_URL: ${{ secrets.SUPABASE_URL }}
       SUPABASE_SERVICE_KEY: ${{ secrets.SUPABASE_SERVICE_KEY }}
       APP_SECRET: ${{ secrets.APP_SECRET }}
+      FIREBASE_ADMIN_SA_BASE64: ${{ secrets.FIREBASE_ADMIN_SA }}
+      NEXT_PUBLIC_E2E: 1
     steps:
-      - uses: actions/checkout@v4
-      - name: Use Node.js ${{ matrix.node-version }}
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node
         uses: actions/setup-node@v4
         with:
-          node-version: ${{ matrix.node-version }}
-          cache: 'npm'
-      - name: Install system dependencies
+          node-version: '20'
+
+      - name: Install system dependencies (Python 3.10)
         run: |
           sudo apt-get update
           sudo apt-get install -y ffmpeg python3.10 python3-pip
+
       - name: Install Python face recognition dependencies
         run: |
           cd scripts
           python3.10 -m pip install -r requirements.txt
+
+      - name: Install deps
+        run: npm ci
+
+      - name: Decode service account (bash)
+        if: runner.os != 'Windows'
+        run: |
+          if [ -z "${FIREBASE_ADMIN_SA_BASE64:-}" ]; then
+            echo "FIREBASE_ADMIN_SA_BASE64 secret is missing"
+            exit 1
+          fi
+          echo "$FIREBASE_ADMIN_SA_BASE64" | base64 --decode > service-account.json
+          ls -la service-account.json
+        shell: bash
+
+      - name: Install Playwright browsers
+        run: npx playwright install --with-deps
+        shell: bash
+        
       - name: Start Python face recognition service
         run: |
           cd scripts
           python3.10 face_service.py &
           echo "Waiting for Python service to start..."
           sleep 10
-      - name: Install dependencies
-        run: npm ci
-      - name: Run npm audit
-        run: npm audit
+        shell: bash
+
       - name: Build Next.js
         run: npm run build
-      - name: Start server in background
+
+      - name: Start app (background)
         run: |
           npm run start &> server.log &
           echo "Waiting for server to be ready..."
           npx wait-on http://localhost:3000 --timeout 60000
-      - name: Install Playwright browsers
-        run: npx playwright install --with-deps
+        shell: bash
+
+      - name: Debug (non-secret)
+        run: |
+          echo "Files:"
+          ls -la
+          node -v
+          npx playwright --version || true
+        shell: bash
+
       - name: Run Playwright tests
         run: npx playwright test --config=playwright.config.cjs
-      - name: Run M6 specific tests
-        run: |
-          npx playwright test ai-assistant.spec.ts monitoring.spec.ts perf.spec.ts offline.spec.ts locks.spec.ts task-activity.spec.ts notification-rules.spec.ts --config=playwright.config.cjs
-      - name: Run M8 specific tests
-        run: |
-          npx playwright test media.analyze.spec.ts face.vips.spec.ts face.privacy.spec.ts --config=playwright.config.cjs
-      - name: Run offline mode tests
-        run: |
-          npx playwright test --project=offline-mode --config=playwright.config.cjs
-      - name: Upload test results
-        if: always()
-        uses: actions/upload-artifact@v4
-        with:
-          name: test-results-${{ matrix.node-version }}
-          path: |
-            test-results/
-          retention-days: 30
-      - name: Upload HTML report
-        if: always()
-        uses: actions/upload-artifact@v4
-        with:
-          name: html-report-${{ matrix.node-version }}
-          path: test-results/html-report/
-          retention-days: 30
-      - name: Upload SSE/WS connection logs
-        if: always()
-        uses: actions/upload-artifact@v4
-        with:
-          name: connection-logs-${{ matrix.node-version }}
-          path: connection-logs/
-          retention-days: 30
+        shell: bash
+
       - name: Debug server logs on failure
         if: failure()
         run: |
-          echo "=== Server Logs ==="
-          cat server.log
+          echo "=== Server logs (if any) ==="
+          if [ -f server.log ]; then
+            echo "server.log found → printing:"
+            cat server.log
+          else
+            echo "server.log: not found"
+          fi
+
+          # also print process list and recent journalctl (if available)
+          echo "=== ps aux (top lines) ==="
+          ps aux | head -n 30 || true

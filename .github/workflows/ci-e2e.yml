@@ -20,7 +20,7 @@ jobs:
       SUPABASE_URL: ${{ secrets.SUPABASE_URL }}
       SUPABASE_SERVICE_KEY: ${{ secrets.SUPABASE_SERVICE_KEY }}
       APP_SECRET: ${{ secrets.APP_SECRET }}
-      FIREBASE_ADMIN_SA: ${{ secrets.FIREBASE_ADMIN_SA }}
+      # FIREBASE_ADMIN_SA removed - now using FIREBASE_ADMIN_SA_PATH only
 
     steps:
       - name: Checkout
@@ -45,24 +45,24 @@ jobs:
       - name: Decode service account (Linux / macOS)
         if: runner.os != 'Windows'
         run: |
-          if [ -z "${FIREBASE_ADMIN_SA:-}" ]; then
+          if [ -z "${{ secrets.FIREBASE_ADMIN_SA }}" ]; then
             echo "FIREBASE_ADMIN_SA secret is missing"
             exit 1
           fi
           # Write the raw JSON from the secret into a file
-          printf '%s\n' "$FIREBASE_ADMIN_SA" > service-account.json
+          printf '%s\n' "${{ secrets.FIREBASE_ADMIN_SA }}" > service-account.json
           ls -la service-account.json
         shell: bash
 
       - name: Decode service account (Windows)
         if: runner.os == 'Windows'
         run: |
-          if (-not $env:FIREBASE_ADMIN_SA) {
+          if (-not "${{ secrets.FIREBASE_ADMIN_SA }}") {
             Write-Host "FIREBASE_ADMIN_SA secret is missing"
             exit 1
           }
           # Write the raw JSON from the secret into a file
-          Set-Content -Path service-account.json -Value $env:FIREBASE_ADMIN_SA -Encoding UTF8
+          Set-Content -Path service-account.json -Value "${{ secrets.FIREBASE_ADMIN_SA }}" -Encoding UTF8
           Get-Item service-account.json | Format-List
         shell: pwsh
 

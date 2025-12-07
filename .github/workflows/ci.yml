@@ -16,7 +16,7 @@ jobs:
       SUPABASE_URL: ${{ secrets.SUPABASE_URL }}
       SUPABASE_SERVICE_KEY: ${{ secrets.SUPABASE_SERVICE_KEY }}
       APP_SECRET: ${{ secrets.APP_SECRET }}
-      FIREBASE_ADMIN_SA: ${{ secrets.FIREBASE_ADMIN_SA }}
+      # FIREBASE_ADMIN_SA removed - now using FIREBASE_ADMIN_SA_PATH only
       # Add other necessary secrets if referenced by ci-env-loader
       NEXT_PUBLIC_FIREBASE_API_KEY: ${{ secrets.NEXT_PUBLIC_FIREBASE_API_KEY }}
       NEXT_PUBLIC_FIREBASE_AUTH_DOMAIN: ${{ secrets.NEXT_PUBLIC_FIREBASE_AUTH_DOMAIN }}
@@ -59,7 +59,17 @@ jobs:
         run: npm ci
 
       - name: Decode Firebase service account
-        run: echo "${{ secrets.FIREBASE_ADMIN_SA }}" | base64 --decode > ./service-account.json
+        run: |
+          if [ -z "${{ secrets.FIREBASE_ADMIN_SA }}" ]; then
+            echo "FIREBASE_ADMIN_SA secret is missing"
+            exit 1
+          fi
+          # Write the raw JSON from the secret into a file
+          printf '%s\n' "${{ secrets.FIREBASE_ADMIN_SA }}" > ./service-account.json
+          ls -la ./service-account.json
+
+      - name: Set FIREBASE_ADMIN_SA_PATH for Node app
+        run: echo "FIREBASE_ADMIN_SA_PATH=$(pwd)/service-account.json" >> $GITHUB_ENV
 
       - name: Inject envs (from secrets)
         run: chmod +x .github/actions/ci-env-loader.sh && ./.github/actions/ci-env-loader.sh
@@ -91,7 +101,7 @@ jobs:
       NEXT_PUBLIC_FIREBASE_APP_ID: ${{ secrets.NEXT_PUBLIC_FIREBASE_APP_ID }}
       NEXT_PUBLIC_FIREBASE_STORAGE_BUCKET: ${{ secrets.NEXT_PUBLIC_FIREBASE_STORAGE_BUCKET }}
       NEXT_PUBLIC_FIREBASE_MESSAGING_SENDER_ID: ${{ secrets.NEXT_PUBLIC_FIREBASE_MESSAGING_SENDER_ID }}
-      FIREBASE_ADMIN_SA: ${{ secrets.FIREBASE_ADMIN_SA }}
+      # FIREBASE_ADMIN_SA removed - now using FIREBASE_ADMIN_SA_PATH only
       SUPABASE_URL: ${{ secrets.SUPABASE_URL }}
       SUPABASE_SERVICE_KEY: ${{ secrets.SUPABASE_SERVICE_KEY }}
       APP_SECRET: ${{ secrets.APP_SECRET }}
@@ -107,11 +117,16 @@ jobs:
 
       - name: Decode Firebase service account
         run: |
-          if [ -z "${FIREBASE_ADMIN_SA:-}" ]; then
+          if [ -z "${{ secrets.FIREBASE_ADMIN_SA }}" ]; then
             echo "ERROR: FIREBASE_ADMIN_SA secret is missing. Please configure it in repository secrets."
             exit 1
           fi
-          echo "$FIREBASE_ADMIN_SA" | base64 --decode > ./service-account.json
+          # Write the raw JSON from the secret into a file
+          printf '%s\n' "${{ secrets.FIREBASE_ADMIN_SA }}" > ./service-account.json
+          ls -la ./service-account.json
+
+      - name: Set FIREBASE_ADMIN_SA_PATH for Node app
+        run: echo "FIREBASE_ADMIN_SA_PATH=$(pwd)/service-account.json" >> $GITHUB_ENV
 
       - name: Inject envs (from secrets)
         run: chmod +x .github/actions/ci-env-loader.sh && ./.github/actions/ci-env-loader.sh
@@ -122,7 +137,6 @@ jobs:
           NEXT_PUBLIC_FIREBASE_APP_ID: ${{ secrets.NEXT_PUBLIC_FIREBASE_APP_ID }}
           NEXT_PUBLIC_FIREBASE_STORAGE_BUCKET: ${{ secrets.NEXT_PUBLIC_FIREBASE_STORAGE_BUCKET }}
           NEXT_PUBLIC_FIREBASE_MESSAGING_SENDER_ID: ${{ secrets.NEXT_PUBLIC_FIREBASE_MESSAGING_SENDER_ID }}
-          FIREBASE_ADMIN_SA: ${{ secrets.FIREBASE_ADMIN_SA }}
           SUPABASE_URL: ${{ secrets.SUPABASE_URL }}
           SUPABASE_SERVICE_KEY: ${{ secrets.SUPABASE_SERVICE_KEY }}
           APP_SECRET: ${{ secrets.APP_SECRET }}
@@ -130,7 +144,7 @@ jobs:
       - name: Validate required secrets
         run: |
           missing=()
-          for v in SUPABASE_URL APP_SECRET FIREBASE_ADMIN_SA; do
+          for v in SUPABASE_URL APP_SECRET; do
             if [ -z "${!v:-}" ]; then
               missing+=($v)
             fi
@@ -149,7 +163,6 @@ jobs:
           echo "NEXT_PUBLIC_FIREBASE_APP_ID=${NEXT_PUBLIC_FIREBASE_APP_ID}" >> $GITHUB_ENV
           echo "NEXT_PUBLIC_FIREBASE_STORAGE_BUCKET=${NEXT_PUBLIC_FIREBASE_STORAGE_BUCKET}" >> $GITHUB_ENV
           echo "NEXT_PUBLIC_FIREBASE_MESSAGING_SENDER_ID=${NEXT_PUBLIC_FIREBASE_MESSAGING_SENDER_ID}" >> $GITHUB_ENV
-          echo "FIREBASE_ADMIN_SA=${FIREBASE_ADMIN_SA}" >> $GITHUB_ENV
           echo "SUPABASE_URL=${SUPABASE_URL}" >> $GITHUB_ENV
           echo "SUPABASE_SERVICE_KEY=${SUPABASE_SERVICE_KEY}" >> $GITHUB_ENV
           echo "APP_SECRET=${APP_SECRET}" >> $GITHUB_ENV

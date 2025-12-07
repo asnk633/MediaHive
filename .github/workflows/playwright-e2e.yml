@@ -15,7 +15,7 @@ jobs:
       SUPABASE_URL: ${{ secrets.SUPABASE_URL }}
       SUPABASE_SERVICE_KEY: ${{ secrets.SUPABASE_SERVICE_KEY }}
       APP_SECRET: ${{ secrets.APP_SECRET }}
-      FIREBASE_ADMIN_SA_BASE64: ${{ secrets.FIREBASE_ADMIN_SA }}
+      # FIREBASE_ADMIN_SA_BASE64 removed - now using FIREBASE_ADMIN_SA_PATH only
       NEXT_PUBLIC_E2E: 1
     steps:
       - name: Checkout
@@ -61,12 +61,17 @@ jobs:
       - name: Decode service account (bash)
         if: runner.os != 'Windows'
         run: |
-          if [ -z "${FIREBASE_ADMIN_SA_BASE64:-}" ]; then
-            echo "FIREBASE_ADMIN_SA_BASE64 secret is missing"
+          if [ -z "${{ secrets.FIREBASE_ADMIN_SA }}" ]; then
+            echo "FIREBASE_ADMIN_SA secret is missing"
             exit 1
           fi
-          echo "$FIREBASE_ADMIN_SA_BASE64" | base64 --decode > service-account.json
+          # Write the raw JSON from the secret into a file
+          printf '%s\n' "${{ secrets.FIREBASE_ADMIN_SA }}" > service-account.json
           ls -la service-account.json
+        shell: bash
+
+      - name: Set FIREBASE_ADMIN_SA_PATH for Node app
+        run: echo "FIREBASE_ADMIN_SA_PATH=$(pwd)/service-account.json" >> $GITHUB_ENV
         shell: bash
 
       - name: Install Playwright browsers

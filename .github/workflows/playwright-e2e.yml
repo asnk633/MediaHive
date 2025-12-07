@@ -68,23 +68,13 @@ jobs:
       - name: Decode service account (bash)
         if: runner.os != 'Windows'
         run: |
-          if [ -z "${{ secrets.FIREBASE_ADMIN_SA }}" ]; then
+          if [ -z '${{ secrets.FIREBASE_ADMIN_SA }}' ]; then
             echo "FIREBASE_ADMIN_SA secret is missing"
             exit 1
           fi
           # Write the raw JSON from the secret into a file
-          echo "${{ secrets.FIREBASE_ADMIN_SA }}" > service-account.json
+          echo '${{ secrets.FIREBASE_ADMIN_SA }}' > service-account.json
           ls -la service-account.json
-          # Debug: Check if file is valid JSON
-          echo "=== Service account file validation ==="
-          if head -c 1 service-account.json | grep -q '"'; then
-            echo "File starts with quote - likely valid JSON"
-          else
-            echo "File does not start with quote - may be corrupted"
-            echo "First 100 characters:"
-            head -c 100 service-account.json | cat -A
-          fi
-          echo "File size: $(wc -c < service-account.json) bytes"
         shell: bash
 
       - name: Set FIREBASE_ADMIN_SA_PATH for Node app

@@ -57,7 +57,7 @@ jobs:
             exit 1
           fi
           # Write the raw JSON from the secret into a file
-          echo "${{ secrets.FIREBASE_ADMIN_SA }}" > service-account.json
+          echo '${{ secrets.FIREBASE_ADMIN_SA }}' > service-account.json
           ls -la service-account.json
           # Debug: Check if file is valid JSON
           echo "=== Service account file validation ==="
@@ -69,6 +69,9 @@ jobs:
             head -c 100 service-account.json | cat -A
           fi
           echo "File size: $(wc -c < service-account.json) bytes"
+          # Additional validation
+          echo "File type:"
+          file service-account.json
         shell: bash
 
       - name: Decode service account (Windows)
@@ -79,7 +82,7 @@ jobs:
             exit 1
           }
           # Write the raw JSON from the secret into a file
-          Set-Content -Path service-account.json -Value "${{ secrets.FIREBASE_ADMIN_SA }}" -Encoding UTF8
+          Set-Content -Path service-account.json -Value '${{ secrets.FIREBASE_ADMIN_SA }}' -Encoding UTF8
           Get-Item service-account.json | Format-List
         shell: pwsh
 

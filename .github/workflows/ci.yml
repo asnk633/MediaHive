@@ -16,14 +16,15 @@ jobs:
       SUPABASE_URL: ${{ secrets.SUPABASE_URL }}
       SUPABASE_SERVICE_KEY: ${{ secrets.SUPABASE_SERVICE_KEY }}
       APP_SECRET: ${{ secrets.APP_SECRET }}
-      # FIREBASE_ADMIN_SA removed - now using FIREBASE_ADMIN_SA_PATH only
-      # Add other necessary secrets if referenced by ci-env-loader
+      # Firebase client environment variables
       NEXT_PUBLIC_FIREBASE_API_KEY: ${{ secrets.NEXT_PUBLIC_FIREBASE_API_KEY }}
       NEXT_PUBLIC_FIREBASE_AUTH_DOMAIN: ${{ secrets.NEXT_PUBLIC_FIREBASE_AUTH_DOMAIN }}
       NEXT_PUBLIC_FIREBASE_PROJECT_ID: ${{ secrets.NEXT_PUBLIC_FIREBASE_PROJECT_ID }}
       NEXT_PUBLIC_FIREBASE_APP_ID: ${{ secrets.NEXT_PUBLIC_FIREBASE_APP_ID }}
       NEXT_PUBLIC_FIREBASE_STORAGE_BUCKET: ${{ secrets.NEXT_PUBLIC_FIREBASE_STORAGE_BUCKET }}
       NEXT_PUBLIC_FIREBASE_MESSAGING_SENDER_ID: ${{ secrets.NEXT_PUBLIC_FIREBASE_MESSAGING_SENDER_ID }}
+      # FIREBASE_ADMIN_SA removed - now using FIREBASE_ADMIN_SA_PATH only
+      # Add other necessary secrets if referenced by ci-env-loader
 
     steps:
       - name: Checkout
@@ -65,13 +66,18 @@ jobs:
             exit 1
           fi
           # Write the raw JSON from the secret into a file
-          printf '%s\n' "${{ secrets.FIREBASE_ADMIN_SA }}" > ./service-account.json
+          echo "${{ secrets.FIREBASE_ADMIN_SA }}" > ./service-account.json
           ls -la ./service-account.json
-          # Debug: Check the content of the file
-          echo "=== Service account file content (first 200 chars) ==="
-          head -c 200 ./service-account.json || true
-          echo ""
-          echo "=== End of service account file content ==="
+          # Debug: Check if file is valid JSON
+          echo "=== Service account file validation ==="
+          if head -c 1 ./service-account.json | grep -q '"'; then
+            echo "File starts with quote - likely valid JSON"
+          else
+            echo "File does not start with quote - may be corrupted"
+            echo "First 100 characters:"
+            head -c 100 ./service-account.json | cat -A
+          fi
+          echo "File size: $(wc -c < ./service-account.json) bytes"
 
       - name: Set FIREBASE_ADMIN_SA_PATH for Node app
         run: echo "FIREBASE_ADMIN_SA_PATH=$(pwd)/service-account.json" >> $GITHUB_ENV
@@ -80,7 +86,9 @@ jobs:
         run: chmod +x .github/actions/ci-env-loader.sh && ./.github/actions/ci-env-loader.sh
 
       - name: Install Playwright browsers
-        run: npx playwright install --with-deps
+        run: |
+          npx playwright install --with-deps
+          npx playwright install-deps
 
       - name: Run tests
         run: npm run test
@@ -100,6 +108,7 @@ jobs:
     runs-on: ubuntu-latest
     needs: build
     env:
+      # Firebase client environment variables
       NEXT_PUBLIC_FIREBASE_API_KEY: ${{ secrets.NEXT_PUBLIC_FIREBASE_API_KEY }}
       NEXT_PUBLIC_FIREBASE_AUTH_DOMAIN: ${{ secrets.NEXT_PUBLIC_FIREBASE_AUTH_DOMAIN }}
       NEXT_PUBLIC_FIREBASE_PROJECT_ID: ${{ secrets.NEXT_PUBLIC_FIREBASE_PROJECT_ID }}
@@ -127,13 +136,18 @@ jobs:
             exit 1
           fi
           # Write the raw JSON from the secret into a file
-          printf '%s\n' "${{ secrets.FIREBASE_ADMIN_SA }}" > ./service-account.json
+          echo "${{ secrets.FIREBASE_ADMIN_SA }}" > ./service-account.json
           ls -la ./service-account.json
-          # Debug: Check the content of the file
-          echo "=== Service account file content (first 200 chars) ==="
-          head -c 200 ./service-account.json || true
-          echo ""
-          echo "=== End of service account file content ==="
+          # Debug: Check if file is valid JSON
+          echo "=== Service account file validation ==="
+          if head -c 1 ./service-account.json | grep -q '"'; then
+            echo "File starts with quote - likely valid JSON"
+          else
+            echo "File does not start with quote - may be corrupted"
+            echo "First 100 characters:"
+            head -c 100 ./service-account.json | cat -A
+          fi
+          echo "File size: $(wc -c < ./service-account.json) bytes"
 
       - name: Set FIREBASE_ADMIN_SA_PATH for Node app
         run: echo "FIREBASE_ADMIN_SA_PATH=$(pwd)/service-account.json" >> $GITHUB_ENV
@@ -192,7 +206,9 @@ jobs:
             -d '{"email": "smoke@test.local", "password": "Pass123", "role": "admin"}'
 
       - name: Install Playwright browsers
-        run: npx playwright install --with-deps
+        run: |
+          npx playwright install --with-deps
+          npx playwright install-deps
 
       - name: Run smoke spec (single worker + retries)
         run: npx playwright test e2e/smoke.spec.ts --project=chromium --retries=2 --workers=1 --reporter=list

@@ -68,6 +68,11 @@ jobs:
           # Write the raw JSON from the secret into a file
           printf '%s\n' "${{ secrets.FIREBASE_ADMIN_SA }}" > service-account.json
           ls -la service-account.json
+          # Debug: Check the content of the file
+          echo "=== Service account file content (first 200 chars) ==="
+          head -c 200 service-account.json || true
+          echo ""
+          echo "=== End of service account file content ==="
         shell: bash
 
       - name: Set FIREBASE_ADMIN_SA_PATH for Node app

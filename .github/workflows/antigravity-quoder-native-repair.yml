@@ -1,10 +1,11 @@
+# DISABLED - no longer needed after clean finalize branch
 name: Antigravity + Quoder — Native Module Repair & Build
 
-on:
-  push:
-    branches: [ main, feat/*, chore/*, fix/* ]
-  pull_request:
-    types: [opened, synchronize, reopened]
+# on:
+#   push:
+#     branches: [ main, feat/*, chore/*, fix/* ]
+#   pull_request:
+#     types: [opened, synchronize, reopened]
 
 jobs:
   native-repair-and-build:

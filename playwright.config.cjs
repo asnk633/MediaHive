@@ -1,16 +1,20 @@
 // playwright.config.cjs
-const { defineConfig } = require('@playwright/test');
+const { defineConfig, devices } = require('@playwright/test');
+
+const isCI = !!process.env.CI;
 
 module.exports = defineConfig({
   testDir: 'e2e/playwright',
   timeout: 60_000,
   expect: { timeout: 10_000 },
-  retries: process.env.CI ? 2 : 0,
-  workers: process.env.CI ? 2 : undefined,
+  retries: isCI ? 2 : 0,
+  workers: isCI ? 2 : undefined,
+
   reporter: [
     ['list'],
-    ['html', { outputFolder: 'test-results/html-report', open: 'never' }]
+    ['html', { outputFolder: 'playwright-report', open: 'never' }],
   ],
+
   use: {
     baseURL: process.env.PLAYWRIGHT_BASE_URL || 'http://localhost:3000',
     actionTimeout: 10_000,
@@ -18,24 +22,31 @@ module.exports = defineConfig({
     trace: 'on-first-retry',
     screenshot: 'only-on-failure',
     video: 'retain-on-failure',
-    headless: process.env.CI ? true : false,
+    headless: isCI ? true : false,
     launchOptions: {
-      slowMo: process.env.CI ? 0 : 50
-    }
+      slowMo: isCI ? 0 : 50,
+    },
   },
+
   outputDir: 'test-results',
-  // Add projects for different test scenarios
+
   projects: [
     {
       name: 'chromium',
-      use: { browserName: 'chromium' },
+      use: { ...devices['Desktop Chrome'] },
     },
-    {
-      name: 'offline-mode',
-      use: { 
-        browserName: 'chromium',
-        offline: true
-      },
-    },
+
+    // ✅ Offline mode only runs locally, NOT in CI
+    ...(isCI
+      ? []
+      : [
+        {
+          name: 'offline-mode',
+          use: {
+            ...devices['Desktop Chrome'],
+            offline: true,
+          },
+        },
+      ]),
   ],
 });

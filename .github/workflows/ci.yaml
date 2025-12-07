@@ -31,6 +31,8 @@ jobs:
           node-version: '20'
       - name: Install
         run: npm ci
+      - name: Decode Firebase service account
+        run: echo "${{ secrets.FIREBASE_ADMIN_SA }}" | base64 --decode > ./service-account.json
       - name: Inject envs (from secrets)
         run: chmod +x .github/actions/ci-env-loader.sh && ./.github/actions/ci-env-loader.sh
         env:
@@ -45,6 +47,11 @@ jobs:
           nohup npm run start &>/tmp/next-start.log &
       - name: Wait for server
         run: npx wait-on http://localhost:3000 --timeout 60000
+      - name: Seed database
+        run: |
+          curl -X POST http://localhost:3000/api/test-utils/seed-user \
+            -H "Content-Type: application/json" \
+            -d '{"email": "smoke@test.local", "password": "Pass123", "role": "admin"}'
       - name: Install Playwright browsers
         run: npx playwright install --with-deps
       - name: Run smoke spec (single worker + retries)

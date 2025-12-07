@@ -44,3 +44,4 @@ test-results/
 .env*.local
 e2e/storage/
 
+e2e/storageState.json

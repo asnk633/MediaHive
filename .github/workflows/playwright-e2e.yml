@@ -21,6 +21,20 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v4
 
+      - name: Validate required secrets
+        run: |
+          missing=()
+          for v in SUPABASE_URL APP_SECRET; do
+            if [ -z "${!v:-}" ]; then
+              missing+=($v)
+            fi
+          done
+          if [ ${#missing[@]} -ne 0 ]; then
+            echo "ERROR: Missing required secrets: ${missing[*]}"
+            echo "Please add them to Repository → Settings → Secrets and variables → Actions"
+            exit 1
+          fi
+
       - name: Setup Node
         uses: actions/setup-node@v4
         with:

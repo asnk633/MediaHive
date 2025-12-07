@@ -25,9 +25,23 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
 
-      # Note: Not downloading artifact because ci.yml runs concurrently. Building locally.
-      
+      - name: Validate required secrets
+        run: |
+          missing=()
+          for v in SUPABASE_URL APP_SECRET; do
+            if [ -z "${!v:-}" ]; then
+              missing+=($v)
+            fi
+          done
+          if [ ${#missing[@]} -ne 0 ]; then
+            echo "ERROR: Missing required secrets: ${missing[*]}"
+            echo "Please add them to Repository → Settings → Secrets and variables → Actions"
+            exit 1
+          fi
+
       - name: Decode service account (Linux / macOS)
         if: runner.os != 'Windows'
         run: |

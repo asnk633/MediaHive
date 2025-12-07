@@ -3,7 +3,9 @@ name: CI — E2E (decode SA, seed, playwright)
 on:
   push:
     branches: [ main, feat/clean-finalize-v1-files ]
-  workflow_dispatch:
+  pull_request:
+    types: [opened, synchronize, reopened]
+  workflow_dispatch: {}
 
 jobs:
   e2e:

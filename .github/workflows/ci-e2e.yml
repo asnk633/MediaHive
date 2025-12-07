@@ -1,0 +1,129 @@
+name: CI — E2E (decode SA, seed, playwright)
+
+on:
+  push:
+    branches: [ main, feat/clean-finalize-v1-files ]
+  workflow_dispatch:
+
+jobs:
+  e2e:
+    runs-on: ubuntu-latest
+    timeout-minutes: 40
+    env:
+      NODE_OPTIONS: '--max-old-space-size=2048'
+      BASE_URL: http://127.0.0.1:3000
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Use Node 20
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+
+      - name: Decode Firebase SA (from repo secret)
+        run: |
+          echo "Decoding FIREBASE_ADMIN_SA_BASE64 -> service-account.json"
+          echo "$FIREBASE_ADMIN_SA_BASE64" | base64 --decode > service-account.json
+          # secure the file
+          chmod 600 service-account.json
+        env:
+          FIREBASE_ADMIN_SA_BASE64: ${{ secrets.FIREBASE_ADMIN_SA_BASE64 }}
+
+      - name: Ensure service-account.json exists
+        run: |
+          ls -l service-account.json
+          echo "SERVICE ACCOUNT preview (first 2 lines):"
+          head -n 2 service-account.json || true
+
+      - name: Set FIREBASE_ADMIN_SA_PATH for Node app
+        run: echo "FIREBASE_ADMIN_SA_PATH=$(pwd)/service-account.json" >> $GITHUB_ENV
+
+      - name: Install dependencies (ci)
+        run: npm ci
+
+      - name: Build
+        run: npm run build
+
+      - name: Start server (background)
+        run: |
+          # start the app on port 3000 in background and redirect logs
+          nohup npm run start --silent > app.log 2>&1 &
+          echo $! > .server_pid
+      - name: Wait for server to be healthy
+        run: |
+          for i in {1..40}; do
+            if curl -sSf http://127.0.0.1:3000/api/health >/dev/null 2>&1; then
+              echo "server is healthy"
+              exit 0
+            fi
+            echo "waiting for server... ($i)"
+            sleep 3
+          done
+          echo "Server did not become healthy"
+          cat app.log || true
+          exit 1
+
+      - name: Seed smoke user (retry)
+        id: seed
+        run: |
+          for i in 1 2 3; do
+            echo "seed attempt $i"
+            HTTP_STATUS=$(curl -s -o /dev/null -w "%{http_code}" \
+              -X POST http://127.0.0.1:3000/api/test-utils/seed-user \
+              -H "Content-Type: application/json" \
+              -d '{"email":"smoke@test.local","password":"Pass123","role":"team"}' || true)
+            echo "seed http status: $HTTP_STATUS"
+            if [ "$HTTP_STATUS" = "201" ] || [ "$HTTP_STATUS" = "200" ]; then
+              echo "seed ok"
+              exit 0
+            fi
+            sleep 2
+          done
+          echo "Seed failed; dumping server log"
+          tail -n +1 app.log || true
+          exit 1
+
+      - name: Generate Playwright storage state (optional)
+        run: |
+          # create e2e folder if required
+          mkdir -p e2e
+          # Ensure node script is runnable from repo root
+          # If your generate script expects env vars, set them here:
+          BASE_URL=http://127.0.0.1:3000 E2E_TEST_EMAIL='smoke@test.local' E2E_TEST_PW='Pass123' node scripts/generateStorageState.js || true
+        continue-on-error: true
+
+      - name: Run Playwright tests (single worker, retries, trace on failure)
+        id: playwright
+        run: |
+          npx playwright install --with-deps
+          npx cross-env BASE_URL=http://127.0.0.1:3000 npx playwright test --retries=2 --workers=1 --trace on
+        continue-on-error: true
+
+      - name: Upload Playwright traces & logs
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: e2e-artifacts
+          path: |
+            playwright-report
+            e2e-artifacts || true
+            ./app.log
+            ./e2e/storageState.json || true
+
+      - name: Stop server
+        if: always()
+        run: |
+          if [ -f .server_pid ]; then
+            kill -9 $(cat .server_pid) || true
+            rm -f .server_pid
+          fi
+
+      - name: Fail if tests failed
+        if: steps.playwright.outcome != 'success'
+        run: |
+          echo "Playwright tests failed. See artifacts."
+          exit 1

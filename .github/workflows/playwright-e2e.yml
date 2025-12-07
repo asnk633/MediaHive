@@ -40,15 +40,20 @@ jobs:
         with:
           node-version: '20'
 
-      - name: Install system dependencies (Python 3.10)
+      - name: Install system dependencies
         run: |
           sudo apt-get update
-          sudo apt-get install -y ffmpeg python3.10 python3-pip
+          sudo apt-get install -y ffmpeg
+
+      - name: Setup Python 3.10
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.10'
 
       - name: Install Python face recognition dependencies
         run: |
           cd scripts
-          python3.10 -m pip install -r requirements.txt
+          python -m pip install -r requirements.txt
 
       - name: Install deps
         run: npm ci
@@ -71,7 +76,7 @@ jobs:
       - name: Start Python face recognition service
         run: |
           cd scripts
-          python3.10 face_service.py &
+          python face_service.py &
           echo "Waiting for Python service to start..."
           sleep 10
         shell: bash

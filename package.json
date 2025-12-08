@@ -168,7 +168,7 @@
     "@types/three": "^0.178.0",
     "autocannon": "^7.15.0",
     "autoprefixer": "^10.4.22",
-    "chrome-launcher": "^0.15.0",
+    "chrome-launcher": "^1.2.1",
     "dayjs": "^1.11.19",
     "drizzle-kit": "^0.31.7",
     "eslint": "^9.37.0",

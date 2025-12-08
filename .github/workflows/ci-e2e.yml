@@ -102,7 +102,7 @@ jobs:
 
       - name: Start Next.js app (background)
         run: |
-          nohup npm run dev:e2e > app.log 2>&1 &
+          nohup npm run dev > app.log 2>&1 &
           echo "Waiting for Next.js to start..."
           sleep 25
 

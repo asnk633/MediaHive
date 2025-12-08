@@ -36,6 +36,7 @@ jobs:
       - name: Build Next.js
         run: npm run build
       - name: Database backup
+        if: github.ref == 'refs/heads/main' && github.event_name == 'push'
         run: node scripts/db-backup.cjs
       - name: Housekeeping
         run: node scripts/cleanup-old-data.cjs

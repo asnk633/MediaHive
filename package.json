@@ -79,7 +79,7 @@
     "@tsparticles/react": "^3.0.0",
     "@tsparticles/slim": "^3.8.1",
     "@types/uuid": "^10.0.0",
-    "atmn": "^0.0.24",
+    "atmn": "^0.0.30",
     "autumn-js": "^0.1.43",
     "axios": "^1.13.2",
     "bcrypt": "^6.0.0",

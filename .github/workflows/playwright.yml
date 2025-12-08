@@ -1,0 +1,63 @@
+name: Playwright E2E
+
+on:
+  pull_request:
+    branches:
+      - main
+      - ci/fix-workflows
+  push:
+    branches:
+      - main
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+
+    env:
+      NODE_OPTIONS: --max-old-space-size=2048
+      BASE_URL: http://127.0.0.1:3000
+
+      # If Playwright UI needs Firebase in the app, you can also pass these:
+      NEXT_PUBLIC_FIREBASE_API_KEY: ${{ secrets.NEXT_PUBLIC_FIREBASE_API_KEY }}
+      NEXT_PUBLIC_FIREBASE_AUTH_DOMAIN: ${{ secrets.NEXT_PUBLIC_FIREBASE_AUTH_DOMAIN }}
+      NEXT_PUBLIC_FIREBASE_PROJECT_ID: ${{ secrets.NEXT_PUBLIC_FIREBASE_PROJECT_ID }}
+      NEXT_PUBLIC_FIREBASE_STORAGE_BUCKET: ${{ secrets.NEXT_PUBLIC_FIREBASE_STORAGE_BUCKET }}
+      NEXT_PUBLIC_FIREBASE_MESSAGING_SENDER_ID: ${{ secrets.NEXT_PUBLIC_FIREBASE_MESSAGING_SENDER_ID }}
+      NEXT_PUBLIC_FIREBASE_APP_ID: ${{ secrets.NEXT_PUBLIC_FIREBASE_APP_ID }}
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: npm
+
+      - name: Install deps
+        run: npm ci
+
+      # 🔥 This is what was missing for this workflow
+      - name: Install Playwright browsers
+        run: npx playwright install --with-deps
+
+      - name: Start Next.js app (background)
+        run: |
+          nohup npm run dev > app.log 2>&1 &
+          echo "Waiting for Next.js to start..."
+          sleep 25
+
+      # Only run the Playwright UI tests here
+      - name: Run Playwright tests
+        run: npx playwright test --retries=0
+
+      - name: Upload Playwright artifacts
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: test-results
+          path: |
+            test-results
+            playwright-report
+            app.log

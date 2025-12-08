@@ -5,11 +5,12 @@ async function main() {
     const sampleInstitutions = [
         {
             name: 'Thaiba Garden Media',
+            tenantId: 1, // Add missing tenantId
             createdAt: new Date().toISOString(),
         }
     ];
 
-    await db.insert(institutions).values(sampleInstitutions);
+    await db.insert(institutions).values(sampleInstitutions as any);
     
     console.log('✅ Institutions seeder completed successfully');
 }

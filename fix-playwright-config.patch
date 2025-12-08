@@ -1,0 +1,57 @@
+*** Begin Patch
+*** Update File: playwright.config.ts
+@@
+-import { defineConfig, devices } from "@playwright/test";
+-
+-/**
+- * Playwright test configuration for Thaiba Garden Media Manager (M2)
+- *
+- * - testDir: e2e/playwright (where your specs live)
+- * - reporters: list + html (report generation)
+- * - projects: Desktop Chrome, Firefox, Safari (Desktop Safari via WebKit)
+- *
+- * Adjust baseURL, retries, or webServer as necessary for CI/local dev.
+- */
+-
+-export default defineConfig({
+-  testDir: "e2e/playwright",
+-  timeout: 30_000,
+-  expect: {
+-    timeout: 5_000,
+-  },
++import { defineConfig, devices } from "@playwright/test";
++
++export default defineConfig({
++  testDir: "e2e/playwright",
++  timeout: 30_000,
++  expect: { timeout: 5_000 },
++  forbidOnly: !!process.env.CI,
++  retries: process.env.CI ? 1 : 0,
++  fullyParallel: true,
++  workers: process.env.CI ? 2 : undefined,
+@@
+-  use: {
+-    baseURL: "http://localhost:3000",
+-  },
++  use: {
++    baseURL: "http://localhost:3000",
++    trace: "retain-on-failure",
++    actionTimeout: 10_000,
++    ignoreHTTPSErrors: true,
++  },
++  webServer: {
++    command: process.env.PW_WEB_SERVER_CMD || "npm run dev",
++    url: "http://localhost:3000",
++    timeout: 120_000,
++    reuseExistingServer: true,
++  },
+   /* reporters and projects should be safe defaults */
+-});
++  reporters: [["list"], ["html", { open: "never" }]],
++  projects: [
++    { name: "chromium", use: { ...devices["Desktop Chrome"] } },
++    { name: "firefox", use: { ...devices["Desktop Firefox"] } },
++    { name: "webkit", use: { ...devices["Desktop Safari"] } },
++  ],
++});
+*** End Patch

@@ -1,39 +1,60 @@
-// src/app/layout.tsx
-"use client";
-
-import React from "react";
-import BottomNav from "@/components/BottomNav";
-import { FAB } from "@/components/FAB";
-import { ToastProvider } from "@/components/ToastProvider";
-import { ClientDataProvider } from "@/app/(shell)/ClientDataContext";
-import { RoleProvider } from "@/app/(shell)/RoleContext";
-// 🎯 Import the AuthProvider from the correct path
-import { AuthProvider } from "@/contexts/AuthContext";
-
-// 🎯 Ensure globals.css is imported here
 import './globals.css';
+// load design tokens and base (safe, non-invasive)
+import "../design-system/base.css";
+import { ReactNode } from 'react';
+import { AuthProvider } from "@/contexts/AuthContext";
+import { ThemeProvider } from "@/context/ThemeProvider";
 
-export default function ShellLayout({ children }: { children: React.ReactNode }) {
+export const metadata = {
+  title: 'Thaiba Garden',
+  description: 'Media management system for Thaiba Garden',
+};
+
+export const viewport = {
+  width: 'device-width',
+  initialScale: 1,
+  maximumScale: 1,
+  userScalable: false,
+  themeColor: [
+    { media: '(prefers-color-scheme: light)', color: '#f5f7fb' },
+    { media: '(prefers-color-scheme: dark)', color: '#070607' }
+  ]
+};
+
+export default function RootLayout({ children }: { children: ReactNode }) {
+  const useNewUI = process.env.NEXT_PUBLIC_NEW_UI === "true";
+
   return (
-    // 🎯 Wrap all other providers with AuthProvider
-    <AuthProvider>
-      <RoleProvider>
-        <ToastProvider>
-          <ClientDataProvider>
-            <html lang="en">
-              <body className="min-h-screen">
-                <main className="pb-24 pt-4">{children}</main>
-
-                {/* Put FAB here so it's centered above the BottomNav */}
-                <FAB />
-
-                {/* Bottom navigation remains single-source-of-truth */}
-                <BottomNav isAdmin={true} canCreateEvent={true} />
-              </body>
-            </html>
-          </ClientDataProvider>
-        </ToastProvider>
-      </RoleProvider>
-    </AuthProvider>
+    <html lang="en" data-theme="dark">
+      <head>
+        {/* inside <head> of src/app/layout.tsx */}
+        <script
+          dangerouslySetInnerHTML={{
+            __html: `
+              (function() {
+                try {
+                  var t = localStorage.getItem('theme');
+                  if (!t) {
+                    // detect system preference as fallback
+                    var prefersDark = window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches;
+                    t = prefersDark ? 'dark' : 'light';
+                  }
+                  document.documentElement.setAttribute('data-theme', t);
+                } catch (e) {
+                  // ignore - localStorage not available
+                }
+              })();
+            `,
+          }}
+        />
+      </head>
+      <body className="min-h-screen">
+        <ThemeProvider>
+          <AuthProvider>
+            {children}
+          </AuthProvider>
+        </ThemeProvider>
+      </body>
+    </html>
   );
 }

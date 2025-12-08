@@ -1,0 +1,21 @@
+
+> thaiba-ui-full-pro@1.0.0 dev
+> vite
+
+[33mThe CJS build of Vite's Node API is deprecated. See https://vite.dev/guide/troubleshooting.html#vite-cjs-node-api-deprecated for more details.[39m
+[31mfailed to load config from D:\Thaiba Garden Media Manager-Orchids\thaiba_ui_full_pro\vite.config.js[39m
+[31merror when starting dev server:
+Error: Cannot find module '@vitejs/plugin-react'
+Require stack:
+- D:\Thaiba Garden Media Manager-Orchids\thaiba_ui_full_pro\vite.config.js
+- D:\Thaiba Garden Media Manager-Orchids\thaiba_ui_full_pro\node_modules\vite\dist\node\chunks\dep-BK3b2jBa.js
+    at Module._resolveFilename (node:internal/modules/cjs/loader:1207:15)
+    at Module._load (node:internal/modules/cjs/loader:1038:27)
+    at Module.require (node:internal/modules/cjs/loader:1289:19)
+    at require (node:internal/modules/helpers:182:18)
+    at Object.<anonymous> (D:\Thaiba Garden Media Manager-Orchids\thaiba_ui_full_pro\vite.config.js:37:35)
+    at Module._compile (node:internal/modules/cjs/loader:1521:14)
+    at _require.extensions.<computed> [as .js] (file:///D:/Thaiba%20Garden%20Media%20Manager-Orchids/thaiba_ui_full_pro/node_modules/vite/dist/node/chunks/dep-BK3b2jBa.js:66987:16)
+    at Module.load (node:internal/modules/cjs/loader:1266:32)
+    at Module._load (node:internal/modules/cjs/loader:1091:12)
+    at Module.require (node:internal/modules/cjs/loader:1289:19)[39m

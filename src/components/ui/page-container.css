@@ -1,0 +1,9 @@
+/* src/components/ui/page-container.css */
+.ds-page {
+  min-height: calc(100vh - 96px);
+  padding: var(--space-lg) var(--space-md) calc(120px + var(--space-md)) var(--space-md);
+}
+.ds-page-inner {
+  max-width: 1100px;
+  margin: 0 auto;
+}

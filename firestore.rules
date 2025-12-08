@@ -1,0 +1,86 @@
+rules_version = '2';
+
+service cloud.firestore {
+  match /databases/{database}/documents {
+
+    /** Safe role fetcher */
+    function userRole() {
+      return request.auth != null &&
+             get(/databases/$(database)/documents/roles/$(request.auth.uid)).exists()
+             ? get(/databases/$(database)/documents/roles/$(request.auth.uid)).data['role']
+             : null;
+    }
+
+    function isAuth() {
+      return request.auth != null;
+    }
+
+    /** Validate required task fields */
+    function isValidTaskCreate() {
+      return request.resource.data.keys().hasAll([
+        'title', 'createdBy', 'priority', 'status', 'createdAt', 'assignedTo'
+      ])
+      && request.resource.data['createdBy'] == request.auth.uid
+      && request.resource.data['assignedTo'].size() <= 4;
+    }
+
+    function isValidTaskUpdate() {
+      return request.resource.data.keys().hasOnly([
+        'title','priority','status','assignedTo','due','assignedBy','createdBy','createdAt'
+      ])
+      && request.resource.data['assignedTo'].size() <= 4;
+    }
+
+    /** Prevent null crash in notifications */
+    function safeReadByArray() {
+      return resource.data.keys().hasAll(['readBy']);
+    }
+
+    /* ROLES */
+    match /roles/{uid} {
+      allow read: if isAuth();
+      allow write: if userRole() == 'admin';
+    }
+
+    /* USERS */
+    match /users/{uid} {
+      allow read: if isAuth();
+      allow write: if isAuth() && request.auth.uid == uid;
+    }
+
+    /* TASKS */
+    match /tasks/{id} {
+
+      allow read: if isAuth();
+
+      allow create: if isAuth() && isValidTaskCreate();
+
+      allow update: if isAuth()
+        && resource.data['createdBy'] == request.auth.uid
+        && isValidTaskUpdate();
+
+      allow delete: if isAuth()
+        && resource.data['createdBy'] == request.auth.uid;
+    }
+
+    /* NOTIFICATIONS */
+    match /notifications/{id} {
+
+      allow read: if isAuth();
+
+      allow create: if userRole() == 'admin';
+
+      /** ArrayUnion safety */
+      allow update: if isAuth()
+        && safeReadByArray()
+        && request.resource.data.keys().hasOnly(['readBy'])
+        && request.resource.data['readBy'].size() ==
+             resource.data['readBy'].size() + 1
+        && request.resource.data['readBy'].hasOnly([request.auth.uid])
+        && request.resource.data['readBy'].hasAll(resource.data['readBy']);
+
+      allow delete: if userRole() == 'admin';
+    }
+
+  }
+}

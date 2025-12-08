@@ -2,80 +2,98 @@
 // RBAC helpers for API routes
 
 import { NextRequest } from 'next/server';
-import { UserRole } from '@/types';
+import { TaskStatus } from '@/types';
+import { loggingMiddleware } from '../middleware/logging';
+import { getUserFromRequest as getSessionUser } from './session';
+import { AuthUser, UserRole } from './types';
 
-export interface AuthUser {
-  id: number;
-  email: string;
-  fullName: string;
-  role: UserRole;
-  institutionId: number;
-}
+export type { AuthUser };
+export type { UserRole };
 
 /**
- * Extract user from request headers (simplified for demo)
- * In production, validate JWT token or session cookie
+ * Extract user from request headers or session cookie
+ * Prefers JWT tokens, falls back to legacy session cookie, then x-user-data header
  */
-export function getUserFromRequest(req: NextRequest): AuthUser | null {
+export async function getUserFromRequest(req: NextRequest): Promise<AuthUser | null> {
   try {
+    // Log the request for debugging
+    await loggingMiddleware(req);
+
+    // Use our enhanced session management
+    const user = await getSessionUser(req);
+    if (user) {
+      return user;
+    }
+
+    // Fallback to x-user-data header (for backward compatibility)
     const userHeader = req.headers.get('x-user-data');
-    if (!userHeader) return null;
-    
-    const user = JSON.parse(userHeader) as AuthUser;
-    return user;
+    if (userHeader) {
+      const user = JSON.parse(userHeader) as AuthUser;
+      return user;
+    }
+
+    return null;
   } catch {
     return null;
   }
 }
 
 /**
- * Check if user has required role
- */
-export function hasRole(user: AuthUser | null, roles: UserRole | UserRole[]): boolean {
-  if (!user) return false;
-  const roleArray = Array.isArray(roles) ? roles : [roles];
-  return roleArray.includes(user.role);
-}
-
-/**
  * Check if user is admin
  */
 export function isAdmin(user: AuthUser | null): boolean {
-  return hasRole(user, 'admin');
+  return user?.role === 'admin';
 }
 
 /**
- * Check if user can modify resource (owner or admin)
+ * Check if user has any of the specified roles
  */
-export function canModify(user: AuthUser | null, resourceOwnerId: number): boolean {
+export function hasRole(user: AuthUser | null, roles: UserRole[]): boolean {
   if (!user) return false;
-  return user.id === resourceOwnerId || isAdmin(user);
+  return roles.includes(user.role);
 }
 
 /**
- * Validate task status transition based on user role
+ * Check if user can modify a resource (admin or creator)
+ */
+export function canModify(user: AuthUser | null, creatorId: number): boolean {
+  if (!user) return false;
+  return isAdmin(user) || user.id === creatorId;
+}
+
+/**
+ * Check if user can change task status based on role and current status
  */
 export function canChangeTaskStatus(
   user: AuthUser | null,
-  currentStatus: string,
-  newStatus: string
+  currentStatus: TaskStatus,
+  newStatus: TaskStatus
 ): boolean {
   if (!user) return false;
 
-  // Admin can change any status
-  if (isAdmin(user)) return true;
-
-  // Team can move tasks through workflow
-  if (user.role === 'team') {
-    const validTransitions: Record<string, string[]> = {
-      'todo': ['in_progress'],
-      'in_progress': ['review', 'todo'],
-      'review': ['done', 'in_progress'],
-      'done': [], // Can't change from done without admin
-    };
-    return validTransitions[currentStatus]?.includes(newStatus) ?? false;
+  // Admins can change to any status
+  if (isAdmin(user)) {
+    return true;
   }
 
-  // Guest cannot change status
+  // Team members can move tasks forward in the workflow
+  if (user.role === 'team') {
+    const statusOrder: Record<TaskStatus, number> = {
+      pending: -1,
+      todo: 0,
+      in_progress: 1,
+      review: 2,
+      done: 3,
+    };
+
+    // Allow moving forward or staying in same status
+    return statusOrder[newStatus] >= statusOrder[currentStatus];
+  }
+
+  // Guests can only move their own tasks to in_progress
+  if (user.role === 'guest') {
+    return currentStatus === 'todo' && newStatus === 'in_progress';
+  }
+
   return false;
 }

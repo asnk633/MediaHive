@@ -1,0 +1,16 @@
+﻿@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root { --bottom-nav-height: 26px; }
+
+/* lighten/darken for .light/.dark on html root */
+html.dark { background: #020617; color: #e6eef8; }
+html.light { background: #ffffff; color: #111827; }
+
+/* ensure main area above bottom nav */
+body { padding-bottom: calc(var(--bottom-nav-height) + 60px); }
+
+/* transition for sidebar */
+@media (min-width: 768px) { aside { transition: width .22s ease; } }
+@media (max-width: 480px) { .fab { bottom: 18px !important; width: 56px !important; height: 56px !important; } }

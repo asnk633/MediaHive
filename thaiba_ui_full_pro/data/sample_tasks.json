@@ -1,0 +1,19 @@
+{
+  "tasks": [
+    {
+      "id": 1,
+      "title": "Shoot campus B-roll",
+      "priority": "high"
+    },
+    {
+      "id": 2,
+      "title": "Edit long-form video",
+      "priority": "medium"
+    },
+    {
+      "id": 3,
+      "title": "Drone shoot for Antla campus",
+      "priority": "urgent"
+    }
+  ]
+}

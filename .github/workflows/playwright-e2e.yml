@@ -1,0 +1,133 @@
+name: Playwright E2E
+
+on:
+  workflow_dispatch:
+  pull_request:
+  push:
+    branches: [ main ]
+
+permissions: read-all
+
+jobs:
+  playwright:
+    runs-on: ubuntu-latest
+    env:
+      SUPABASE_URL: ${{ secrets.SUPABASE_URL }}
+      SUPABASE_SERVICE_KEY: ${{ secrets.SUPABASE_SERVICE_KEY }}
+      APP_SECRET: ${{ secrets.APP_SECRET }}
+      # Firebase client environment variables
+      NEXT_PUBLIC_FIREBASE_API_KEY: ${{ secrets.NEXT_PUBLIC_FIREBASE_API_KEY }}
+      NEXT_PUBLIC_FIREBASE_AUTH_DOMAIN: ${{ secrets.NEXT_PUBLIC_FIREBASE_AUTH_DOMAIN }}
+      NEXT_PUBLIC_FIREBASE_PROJECT_ID: ${{ secrets.NEXT_PUBLIC_FIREBASE_PROJECT_ID }}
+      NEXT_PUBLIC_FIREBASE_APP_ID: ${{ secrets.NEXT_PUBLIC_FIREBASE_APP_ID }}
+      NEXT_PUBLIC_FIREBASE_STORAGE_BUCKET: ${{ secrets.NEXT_PUBLIC_FIREBASE_STORAGE_BUCKET }}
+      NEXT_PUBLIC_FIREBASE_MESSAGING_SENDER_ID: ${{ secrets.NEXT_PUBLIC_FIREBASE_MESSAGING_SENDER_ID }}
+      # FIREBASE_ADMIN_SA_BASE64 removed - now using FIREBASE_ADMIN_SA_PATH only
+      NEXT_PUBLIC_E2E: 1
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Validate required secrets
+        run: |
+          missing=()
+          for v in SUPABASE_URL APP_SECRET; do
+            if [ -z "${!v:-}" ]; then
+              missing+=($v)
+            fi
+          done
+          if [ ${#missing[@]} -ne 0 ]; then
+            echo "ERROR: Missing required secrets: ${missing[*]}"
+            echo "Please add them to Repository → Settings → Secrets and variables → Actions"
+            exit 1
+          fi
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+
+      - name: Install system dependencies
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y ffmpeg
+
+      - name: Setup Python 3.10
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.10'
+
+      - name: Install Python face recognition dependencies
+        run: |
+          cd scripts
+          python -m pip install -r requirements.txt
+
+      - name: Install deps
+        run: npm ci
+
+      - name: Decode service account (bash)
+        if: runner.os != 'Windows'
+        run: |
+          if [ -z '${{ secrets.FIREBASE_ADMIN_SA }}' ]; then
+            echo "FIREBASE_ADMIN_SA secret is missing"
+            exit 1
+          fi
+          # Write the raw JSON from the secret into a file
+          echo '${{ secrets.FIREBASE_ADMIN_SA }}' > service-account.json
+          ls -la service-account.json
+        shell: bash
+
+      - name: Set FIREBASE_ADMIN_SA_PATH for Node app
+        run: echo "FIREBASE_ADMIN_SA_PATH=$(pwd)/service-account.json" >> $GITHUB_ENV
+        shell: bash
+
+      - name: Install Playwright browsers
+        run: |
+          npx playwright install --with-deps
+          npx playwright install-deps
+        shell: bash
+        
+      - name: Start Python face recognition service
+        run: |
+          cd scripts
+          python face_service.py &
+          echo "Waiting for Python service to start..."
+          sleep 10
+        shell: bash
+
+      - name: Build Next.js
+        run: npm run build
+
+      - name: Start app (background)
+        run: |
+          npm run start &> server.log &
+          echo "Waiting for server to be ready..."
+          npx wait-on http://localhost:3000 --timeout 60000
+        shell: bash
+
+      - name: Debug (non-secret)
+        run: |
+          echo "Files:"
+          ls -la
+          node -v
+          npx playwright --version || true
+        shell: bash
+
+      - name: Run Playwright tests
+        run: npx playwright test --config=playwright.config.cjs
+        shell: bash
+
+      - name: Debug server logs on failure
+        if: failure()
+        run: |
+          echo "=== Server logs (if any) ==="
+          if [ -f server.log ]; then
+            echo "server.log found → printing:"
+            cat server.log
+          else
+            echo "server.log: not found"
+          fi
+
+          # also print process list and recent journalctl (if available)
+          echo "=== ps aux (top lines) ==="
+          ps aux | head -n 30 || true

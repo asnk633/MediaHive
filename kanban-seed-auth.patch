@@ -1,0 +1,99 @@
+*** Begin Patch
+*** Update File: e2e/playwright/kanban-drag.spec.ts
+@@
+-// --- e2e helpers: seed tasks + robust navigation -------------------------
+-// Uses PLAYWRIGHT_BASE_URL env var (set to http://localhost:3000 in your shell)
+-const API_BASE = process.env.PLAYWRIGHT_BASE_URL || "";
+-
+-test.beforeEach(async ({ request }) => {
+-  // Create a simple seeded task so the UI shows kanban columns / tasks.
+-  // If your API requires auth, add headers here (e.g. Authorization).
+-  try {
+-    const resp = await request.post(`${API_BASE}/api/tasks`, {
+-      data: {
+-        title: "e2e seeded task",
+-        description: "seeded by e2e beforeEach",
+-        institutionId: 1,
+-        status: "todo",
+-        priority: "low"
+-      },
+-    });
+-    if (!resp.ok()) {
+-      console.warn("[e2e] task seeding failed:", resp.status(), await resp.text());
+-    } else {
+-      // optional debug
+-      const body = await resp.json().catch(() => null);
+-      console.log("[e2e] seeded task id:", body?.id ?? "(no id)");
+-    }
+-  } catch (err) {
+-    console.warn("[e2e] error seeding task:", err);
+-  }
+-});
++// --- e2e helpers: seed tasks + robust navigation -------------------------
++// Uses PLAYWRIGHT_BASE_URL env var (set to http://localhost:3000 in your shell).
++// Optional: set PLAYWRIGHT_API_TOKEN to include Bearer auth for seeding.
++const API_BASE = process.env.PLAYWRIGHT_BASE_URL || "";
++const API_TOKEN = process.env.PLAYWRIGHT_API_TOKEN || "";
++
++test.beforeEach(async ({ request }) => {
++  // Build headers only if token provided
++  const headers = API_TOKEN ? { Authorization: `Bearer ${API_TOKEN}` } : {};
++
++  try {
++    const resp = await request.post(`${API_BASE}/api/tasks`, {
++      data: {
++        title: "e2e seeded task",
++        description: "seeded by e2e beforeEach",
++        institutionId: 1,
++        status: "todo",
++        priority: "low"
++      },
++      headers,
++    });
++
++    if (!resp.ok()) {
++      // Print short body for debugging (do not crash the test run)
++      let text = "";
++      try { text = await resp.text(); } catch (e) { text = "(cannot read body)"; }
++      console.warn(`[e2e] task seeding failed: ${resp.status()} ${text}`);
++    } else {
++      const body = await resp.json().catch(() => null);
++      console.log("[e2e] seeded task id:", body?.id ?? "(no id)");
++    }
++  } catch (err) {
++    console.warn("[e2e] error seeding task:", err);
++  }
++});
+@@
+-async function gotoTasksAndWait(page, timeout = 20000) {
+-  await page.goto("/tasks", { waitUntil: "domcontentloaded" });
++async function gotoTasksAndWait(page, timeout = 30000) {
++  await page.goto("/tasks", { waitUntil: "domcontentloaded" });
+   // Wait for the client to call the tasks API (best-effort; not fatal).
+   try {
+     await page.waitForResponse(
+       (resp) => resp.url().includes("/api/tasks") && resp.status() === 200,
+-      { timeout: 5000 }
++      { timeout: 7000 }
+     );
+   } catch {
+     // fallback: continue — we'll wait for DOM below
+   }
+   // give client a moment to render
+   await page.waitForTimeout(300);
+   // now wait for either column markup or a seeded task element
+-  await page.waitForSelector('[data-column="todo"], [data-task-id]', { timeout });
++  try {
++    await page.waitForSelector('[data-column="todo"], [data-task-id]', { timeout });
++  } catch (err) {
++    // print trimmed HTML snapshot to logs for quick inspection
++    try {
++      const html = (await page.content()).slice(0, 20000);
++      console.error("=== Playwright HTML snapshot (first 20000 chars) ===\n", html);
++    } catch (e) {
++      console.error("[e2e] failed to read page content for debug:", e);
++    }
++    throw err;
++  }
+ }
+*** End Patch

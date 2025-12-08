@@ -39,3 +39,15 @@ next-env.d.ts
 playwright-report/
 test-results/
 
+# environment files
+.env
+.env*.local
+e2e/storage/
+
+e2e/storageState.json
+e2e/storageState.json
+service-account.json
+
+# Firebase service account keys (never commit)
+sa.json
+firebase-sa.json

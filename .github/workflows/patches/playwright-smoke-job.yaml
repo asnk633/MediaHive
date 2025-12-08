@@ -1,0 +1,31 @@
+  playwright_smoke:
+    name: Playwright smoke (stable)
+    runs-on: ubuntu-latest
+    needs: test
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+      - name: Install
+        run: npm ci
+      - name: Inject envs (from secrets)
+        run: chmod +x .github/actions/ci-env-loader.sh && ./.github/actions/ci-env-loader.sh
+        env:
+          NEXT_PUBLIC_FIREBASE_API_KEY: ${{ secrets.NEXT_PUBLIC_FIREBASE_API_KEY }}
+          NEXT_PUBLIC_FIREBASE_AUTH_DOMAIN: ${{ secrets.NEXT_PUBLIC_FIREBASE_AUTH_DOMAIN }}
+          NEXT_PUBLIC_FIREBASE_PROJECT_ID: ${{ secrets.NEXT_PUBLIC_FIREBASE_PROJECT_ID }}
+          NEXT_PUBLIC_FIREBASE_APP_ID: ${{ secrets.NEXT_PUBLIC_FIREBASE_APP_ID }}
+          FIREBASE_ADMIN_SA: ${{ secrets.FIREBASE_ADMIN_SA }}
+      - name: Build & start
+        run: |
+          npm run build
+          nohup npm run start &>/tmp/next-start.log &
+      - name: Wait for server
+        run: npx wait-on http://localhost:3000 --timeout 60000
+      - name: Install Playwright browsers
+        run: npx playwright install --with-deps
+      - name: Run smoke spec (single worker + retries)
+        run: npx playwright test e2e/smoke.spec.ts --project=chromium --retries=2 --workers=1 --reporter=list
+        env:
+          CI: true

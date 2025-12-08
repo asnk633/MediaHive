@@ -155,6 +155,7 @@ export async function POST(request: NextRequest) {
       visibility: body.visibility,
       uploadedById: body.uploadedById,
       institutionId: body.institutionId,
+      tenantId: 1, // Default tenant ID for now
       createdAt: new Date().toISOString(),
     };
 

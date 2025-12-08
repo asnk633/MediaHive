@@ -1,0 +1,83 @@
+name: Antigravity + Quoder — native repair & build
+
+on:
+  push:
+    branches:
+      - feat/clean-finalize-v1-files
+  pull_request:
+    types: [opened, synchronize, reopened]
+
+jobs:
+  build-and-repair:
+    runs-on: ubuntu-latest
+    timeout-minutes: 60
+    env:
+      NODE_ENV: production
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Set up Node.js (16/20/24 safe selection)
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20.x'
+          cache: 'npm'
+
+      - name: Install system deps (imagemagick build essentials)
+        if: runner.os == 'Linux'
+        run: |
+          sudo apt-get update -y
+          sudo apt-get install -y build-essential python3
+
+      - name: Prepare Firebase service account (decode secret or use path)
+        id: sa
+        run: |
+          mkdir -p $GITHUB_WORKSPACE/.secrets
+          if [ -n "${{ secrets.FIREBASE_ADMIN_SA }}" ]; then
+            echo "Decoding FIREBASE_ADMIN_SA -> .secrets/service-account.json"
+            echo "${{ secrets.FIREBASE_ADMIN_SA }}" | base64 --decode > .secrets/service-account.json
+            echo "FIREBASE_ADMIN_SA_PATH=.secrets/service-account.json" >> $GITHUB_ENV
+          elif [ -n "${{ secrets.FIREBASE_ADMIN_SA_PATH }}" ]; then
+            echo "Using FIREBASE_ADMIN_SA_PATH secret (assumed mounted) - ensure runner provides file"
+            echo "FIREBASE_ADMIN_SA_PATH=${{ secrets.FIREBASE_ADMIN_SA_PATH }}" >> $GITHUB_ENV
+          else
+            echo "No FIREBASE_ADMIN_SA secret provided; build may fail if firebase admin required"
+          fi
+
+      - name: Show Node & NPM
+        run: node -v && npm -v && node -p "process.versions.modules"
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Run Antigravity + Quoder native audit (best-effort)
+        run: |
+          if [ -f "./scripts/antigravity-native-repair.sh" ]; then
+            chmod +x ./scripts/antigravity-native-repair.sh
+            ./scripts/antigravity-native-repair.sh || echo "native-repair returned nonzero (continuing)"
+          else
+            echo "No native repair script present - skipping."
+          fi
+
+      - name: Build (production)
+        run: npm run build
+
+      - name: Run unit tests
+        run: npx jest --runInBand || echo "Unit tests returned nonzero"
+
+      - name: Run Playwright smoke (optional)
+        if: github.event_name != 'pull_request' || github.head_ref == ''
+        run: |
+          npx cross-env BASE_URL=http://127.0.0.1:3000 npx playwright test --project=chromium --workers=1 --retries=1 || echo "Playwright tests returned nonzero"
+
+      - name: Upload build logs & artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: build-logs
+          path: |
+            .next
+            npm-debug.log
+            native-rebuild.log

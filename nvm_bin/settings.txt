@@ -1,0 +1,4 @@
+root: D:\Thaiba Garden Media Manager-Orchids\nvm_bin
+path: D:\Thaiba Garden Media Manager-Orchids\nodejs_symlink
+arch: 64
+proxy: none

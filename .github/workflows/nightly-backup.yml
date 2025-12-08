@@ -1,0 +1,82 @@
+name: Nightly Database Backup
+
+on:
+  schedule:
+    # Run at 2 AM UTC every day
+    - cron: '0 2 * * *'
+  workflow_dispatch: # Allows manual triggering
+
+jobs:
+  backup:
+    runs-on: ubuntu-latest
+    env:
+      TURSO_CONNECTION_URL: ${{ secrets.TURSO_CONNECTION_URL }}
+      TURSO_AUTH_TOKEN: ${{ secrets.TURSO_AUTH_TOKEN }}
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: 'npm'
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Install libsql-shell
+        run: |
+          # Install libsql-shell for database operations
+          npm install -g @libsql/libsql-shell
+
+      - name: Create backup directory
+        run: |
+          mkdir -p backups
+          echo "Backup directory created"
+
+      - name: Export database as SQL
+        run: |
+          TIMESTAMP=$(date -u +"%Y%m%d-%H%M%S")
+          BACKUP_FILE="backup-${TIMESTAMP}.sql"
+          
+          echo "Exporting database to ${BACKUP_FILE}"
+          node scripts/backup/export-db.js --format sql --output "backups/${BACKUP_FILE}"
+          
+          echo "BACKUP_FILE=${BACKUP_FILE}" >> $GITHUB_ENV
+          echo "TIMESTAMP=${TIMESTAMP}" >> $GITHUB_ENV
+
+      - name: Upload backup as artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: database-backup-${{ env.TIMESTAMP }}
+          path: backups/${{ env.BACKUP_FILE }}
+          retention-days: 30 # Keep backups for 30 days
+
+      - name: Cleanup old backups (local)
+        run: |
+          # Keep only the most recent 10 backup files locally
+          cd backups
+          ls -t backup-*.sql | tail -n +11 | xargs -r rm
+          echo "Old local backups cleaned up"
+
+      - name: Verify backup
+        run: |
+          # Basic verification - check if file exists and has content
+          if [ -f "backups/${{ env.BACKUP_FILE }}" ]; then
+            FILE_SIZE=$(stat -c%s "backups/${{ env.BACKUP_FILE }}")
+            if [ $FILE_SIZE -gt 0 ]; then
+              echo "✅ Backup verified successfully (size: ${FILE_SIZE} bytes)"
+            else
+              echo "❌ Backup file is empty"
+              exit 1
+            fi
+          else
+            echo "❌ Backup file not found"
+            exit 1
+          fi
+
+      - name: Send notification on failure
+        if: failure()
+        run: |
+          echo "🚨 Nightly backup failed on ${{ github.repository }}"
+          echo "Check the workflow run for details: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}"

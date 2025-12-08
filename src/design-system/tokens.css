@@ -1,0 +1,26 @@
+/* src/design-system/tokens.css */
+:root{
+  --bg: #050507;
+  --panel: linear-gradient(180deg, rgba(11,11,13,0.9), rgba(14,14,16,0.88));
+  --panel-solid: #0B0B0D;
+  --accent: #7B5CFF;
+  --accent-2: #00BFA6;
+  --text: #E6E7E8;
+  --muted: #9aa0a6;
+  --glass-border: rgba(255,255,255,0.04);
+
+  --shadow-1: 0 6px 20px rgba(0,0,0,0.6);
+  --shadow-2: 0 12px 32px rgba(0,0,0,0.5);
+  --fab-glow: 0 8px 24px rgba(123,92,255,0.22);
+
+  --radius-sm: 8px;
+  --radius-md: 14px;
+  --radius-lg: 20px;
+  --space-xs: 8px;
+  --space-sm: 12px;
+  --space-md: 18px;
+  --space-lg: 28px;
+
+  --trans-fast: 160ms;
+  --trans-smooth: 280ms;
+}

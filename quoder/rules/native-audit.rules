@@ -1,0 +1,16 @@
+rules:
+  - id: detect-native-binaries
+    query: "node_modules/**/build/Release/*.node"
+    description: "Find compiled native Node binaries."
+
+  - id: detect-better-sqlite3
+    query: "node_modules/better-sqlite3 OR package.json contains 'better-sqlite3'"
+    description: "Detect better-sqlite3 presence."
+
+  - id: detect-sharp
+    query: "node_modules/sharp OR package.json contains 'sharp'"
+    description: "Detect sharp presence."
+
+  - id: node-version
+    query: "node -v"
+    description: "Record Node version for discussion."

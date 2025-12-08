@@ -77,6 +77,7 @@ export async function POST(request: NextRequest) {
       .insert(institutions)
       .values({
         name: sanitizedName,
+        tenantId: 1, // Default tenant ID for now
         createdAt: new Date().toISOString(),
       })
       .returning();

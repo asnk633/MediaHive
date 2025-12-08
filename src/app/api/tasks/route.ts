@@ -1,173 +1,91 @@
-import { NextRequest, NextResponse } from 'next/server';
-import { db } from '@/db';
-import { tasks } from '@/db/schema';
-import { eq, and, or, desc } from 'drizzle-orm';
-import { getUserFromRequest, hasRole, isAdmin } from '../_lib/auth';
-import { TaskStatus, TaskPriority } from '@/types';
+import { NextResponse } from 'next/server';
+import { getFirebaseAdminApp } from '@/lib/firebaseAdmin';
 
-/**
- * GET /api/tasks
- * List tasks with filters based on user role
- * Query params: filter (mine|team|all|review), search, institutionId
- */
-export async function GET(req: NextRequest) {
+// Cache the services
+let cachedAuth: any = null;
+let cachedFirestore: any = null;
+
+async function getFirebaseServices() {
+  if (!cachedAuth || !cachedFirestore) {
+    const app = getFirebaseAdminApp();
+    const authModule = await import('firebase-admin/auth');
+    const firestoreModule = await import('firebase-admin/firestore');
+    cachedAuth = authModule.getAuth(app);
+    cachedFirestore = firestoreModule.getFirestore(app);
+  }
+  return { auth: cachedAuth, firestore: cachedFirestore };
+}
+
+// Helper to verify auth and role
+async function verifyUser(request: Request) {
+  const { auth, firestore } = await getFirebaseServices();
+  const token = request.headers.get('Authorization')?.split('Bearer ')[1];
+  if (!token) return null;
   try {
-    const user = getUserFromRequest(req);
-    if (!user) {
-      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
-    }
-
-    const { searchParams } = new URL(req.url);
-    const filter = searchParams.get('filter') || 'all';
-    const search = searchParams.get('search') || '';
-
-    // Build query conditions
-    let conditions = [eq(tasks.institutionId, user.institutionId)];
-
-    // Apply role-based filters
-    if (filter === 'mine') {
-      conditions.push(eq(tasks.assignedToId, user.id));
-    } else if (filter === 'review' && !isAdmin(user)) {
-      return NextResponse.json({ error: 'Forbidden' }, { status: 403 });
-    }
-
-    const result = await db
-      .select()
-      .from(tasks)
-      .where(and(...conditions))
-      .orderBy(desc(tasks.createdAt));
-    
-    // Apply search filter
-    let data = result;
-    if (search) {
-      const term = search.toLowerCase();
-      data = data.filter(t => 
-        t.title.toLowerCase().includes(term) ||
-        t.description?.toLowerCase().includes(term)
-      );
-    }
-
-    return NextResponse.json({ data }, { status: 200 });
-  } catch (error) {
-    console.error('[GET /api/tasks]', error);
-    return NextResponse.json(
-      { error: 'Failed to fetch tasks' },
-      { status: 500 }
-    );
+    const decoded = await auth.verifyIdToken(token);
+    const userDoc = await firestore.collection('users').doc(decoded.uid).get();
+    const role = userDoc.exists ? userDoc.data()?.role : 'guest';
+    return { uid: decoded.uid, role };
+  } catch (e) {
+    return null;
   }
 }
 
-/**
- * POST /api/tasks
- * Create new task with role-based restrictions
- * Body: { title, description?, priority?, dueDate?, assignedToId? }
- */
-export async function POST(req: NextRequest) {
-  try {
-    const user = getUserFromRequest(req);
-    if (!user) {
-      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
-    }
+export async function POST(request: Request) {
+  const { firestore } = await getFirebaseServices();
+  const user = await verifyUser(request);
+  if (!user) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
 
-    const body = await req.json();
+  // Allow admin/team to create directly, guests to 'request' (which might be a different status or collection)
+  // For now, we'll allow creation but force status to 'pending' for everyone, 
+  // and maybe strictly check role if we want to block guests from creating 'working' tasks.
 
-    if (!body?.title || String(body.title).trim().length === 0) {
-      return NextResponse.json({ error: 'Title is required' }, { status: 400 });
-    }
+  const data = await request.json();
 
-    const now = new Date().toISOString();
-
-    // Role-based field restrictions
-    let priority: TaskPriority = 'medium';
-    let assignedToId: number | null = null;
-    let status: TaskStatus = 'todo';
-
-    if (isAdmin(user)) {
-      // Admin can set everything
-      priority = (body.priority as TaskPriority) || 'medium';
-      assignedToId = body.assignedToId || null;
-      status = (body.status as TaskStatus) || 'todo';
-    } else if (user.role === 'team') {
-      // Team can set priority and assign
-      priority = (body.priority as TaskPriority) || 'medium';
-      assignedToId = body.assignedToId || null;
-    } else {
-      // Guest: create with defaults only
-      priority = 'medium';
-      assignedToId = null;
-      status = 'todo';
-    }
-
-    const [newTask] = await db.insert(tasks).values({
-      title: String(body.title).trim(),
-      description: body.description || null,
-      status,
-      priority,
-      assignedToId,
-      createdById: user.id,
-      institutionId: user.institutionId,
-      dueDate: body.dueDate || null,
-      createdAt: now,
-      updatedAt: now,
-    }).returning();
-
-    return NextResponse.json({ data: newTask }, { status: 201 });
-  } catch (error) {
-    console.error('[POST /api/tasks]', error);
-    return NextResponse.json(
-      { error: 'Failed to create task' },
-      { status: 500 }
-    );
+  if (user.role === 'guest') {
+    // Guests can only create "requests"
+    data.status = 'pending';
+    data.isRequest = true;
   }
+
+  const res = await firestore.collection('tasks').add({
+    ...data,
+    createdBy: user.uid,
+    createdAt: new Date().toISOString()
+  });
+
+  return NextResponse.json({ id: res.id });
 }
 
-/**
- * PUT /api/tasks (bulk update endpoint if needed)
- */
-export async function PUT(req: NextRequest) {
-  return NextResponse.json(
-    { error: 'Use PUT /api/tasks/[id] for updates' },
-    { status: 400 }
-  );
+export async function PUT(request: Request) {
+  const { firestore } = await getFirebaseServices();
+  const user = await verifyUser(request);
+  if (!user) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+
+  if (user.role !== 'admin' && user.role !== 'team') {
+    return NextResponse.json({ error: 'Forbidden' }, { status: 403 });
+  }
+
+  const { id, ...data } = await request.json();
+  if (!id) return NextResponse.json({ error: 'Missing ID' }, { status: 400 });
+
+  await firestore.collection('tasks').doc(id).update(data);
+  return NextResponse.json({ success: true });
 }
 
-/**
- * DELETE /api/tasks (requires task ID in body for safety)
- */
-export async function DELETE(req: NextRequest) {
-  try {
-    const user = getUserFromRequest(req);
-    if (!user) {
-      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
-    }
+export async function DELETE(request: Request) {
+  const { firestore } = await getFirebaseServices();
+  const user = await verifyUser(request);
+  if (!user) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
 
-    const body = await req.json();
-    const taskId = body.id;
-
-    if (!taskId) {
-      return NextResponse.json({ error: 'Task ID required' }, { status: 400 });
-    }
-
-    // Fetch task to check ownership
-    const [task] = await db.select().from(tasks).where(eq(tasks.id, taskId));
-
-    if (!task) {
-      return NextResponse.json({ error: 'Task not found' }, { status: 404 });
-    }
-
-    // Only admin or creator can delete
-    if (!isAdmin(user) && task.createdById !== user.id) {
-      return NextResponse.json({ error: 'Forbidden' }, { status: 403 });
-    }
-
-    await db.delete(tasks).where(eq(tasks.id, taskId));
-
-    return NextResponse.json({ success: true }, { status: 200 });
-  } catch (error) {
-    console.error('[DELETE /api/tasks]', error);
-    return NextResponse.json(
-      { error: 'Failed to delete task' },
-      { status: 500 }
-    );
+  if (user.role !== 'admin') {
+    return NextResponse.json({ error: 'Forbidden' }, { status: 403 });
   }
+
+  const { searchParams } = new URL(request.url);
+  const id = searchParams.get('id');
+  if (!id) return NextResponse.json({ error: 'Missing ID' }, { status: 400 });
+
+  await firestore.collection('tasks').doc(id).delete();
+  return NextResponse.json({ success: true });
 }

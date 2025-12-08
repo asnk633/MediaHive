@@ -1,31 +1,62 @@
 "use client";
 
-import React from "react";
-import BottomNav from "@/components/BottomNav";
+import React, { useEffect, Suspense } from "react";
+import BottomNav from "@/components/BottomNavigation";
+import TopBar from "@/components/TopBar";
 import { ToastProvider } from "@/components/ToastProvider";
 import { ClientDataProvider } from "./ClientDataContext";
 import { RoleProvider } from "./RoleContext";
+import FAB from "@/client/components/FAB";
+import { initPWA } from "@/lib/init-pwa";
+import { ClientOfflineStatusIndicator as OfflineStatusIndicator } from "@/components/ClientOfflineStatusIndicator";
+import { HydrationDetector } from "@/components/HydrationDetector";
+import ErrorBoundary from "@/components/ErrorBoundary";
+import { OfflineBanner } from "@/components/OfflineBanner";
+import { KeyboardNavigationDetector } from "@/components/KeyboardNavigationDetector";
 
 export default function ShellLayout({ children }: { children: React.ReactNode }) {
-  // Shell layout: single anchor for BottomNav + FAB. Do not render FAB elsewhere.
+  // Initialize PWA functionality
+  useEffect(() => {
+    initPWA();
+  }, []);
+
   return (
-    <RoleProvider>
-      <ToastProvider>
-        <ClientDataProvider>
-          <div className="min-h-screen">
-            <main className="pb-24 pt-4">{children}</main>
+    <>
+      <RoleProvider>
+        <ToastProvider>
+          <ClientDataProvider>
+            <div className="min-h-screen flex flex-col">
+              {/* Keyboard Navigation Detector */}
+              <KeyboardNavigationDetector />
 
-            {/* Bottom navigation + FAB (single source-of-truth) */}
-            <BottomNav isAdmin={true} canCreateEvent={true} />
-          </div>
+              {/* Offline Banner */}
+              <OfflineBanner />
 
-          <style>{`
-            button:active { transform: translateY(1px) scale(0.98); }
-            .material-symbols-outlined { font-variation-settings: 'FILL' 0, 'wght' 600, 'GRAD' 0, 'opsz' 48; }
-            button:focus { outline: none; box-shadow: 0 0 0 4px rgba(0,190,160,0.08); }
-          `}</style>
-        </ClientDataProvider>
-      </ToastProvider>
-    </RoleProvider>
+              {/* Top Bar */}
+              <TopBar />
+
+              {/* Main Content Area - Scrolls independently */}
+              <main className="flex-1 overflow-y-auto overflow-x-hidden pt-6">
+                <ErrorBoundary>
+                  <Suspense fallback={<div>Loading...</div>}>
+                    {children}
+                  </Suspense>
+                </ErrorBoundary>
+              </main>
+
+              {/* Offline & Hydration Indicators */}
+              <OfflineStatusIndicator />
+              <HydrationDetector />
+
+              {/* Floating Action Button */}
+              <FAB />
+
+              {/* Bottom Navigation */}
+              <BottomNav />
+            </div>
+          </ClientDataProvider>
+        </ToastProvider>
+      </RoleProvider>
+    </>
   );
 }

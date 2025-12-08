@@ -1,0 +1,116 @@
+﻿
+> thaiba-garden-media-manager@0.1.1 build
+> next build
+
+   Γû▓ Next.js 15.3.5
+   - Environments: .env.local, .env
+
+   Creating an optimized production build ...
+node.exe : Failed to 
+compile.
+At line:1 char:1
++ & "C:\Program Files
+\nodejs/node.exe" 
+"C:\Users\Shukoor 
+Rahman\AppData ...
++ ~~~~~~~~~~~~~~~~~~~
+~~~~~~~~~~~~~~~~~~~~~
+~~~~~~~~~~~~~~~~~~~~~
+~~~~~~~~
+    + CategoryInfo   
+           : NotSpe  
+  cified: (Failed    
+ to compile.:Stri    
+ng) [], RemoteEx    
+ception
+    + FullyQualified 
+   ErrorId : Native  
+  CommandError
+ 
+
+src\app\(redesign)\do
+wnloads\page.tsx
+You cannot have two 
+parallel pages that 
+resolve to the same 
+path. Please check /(
+redesign)/downloads/p
+age and /(shell)/down
+loads/page. Refer to 
+the route group docs 
+for more 
+information: https://
+nextjs.org/docs/app/b
+uilding-your-applicat
+ion/routing/route-gro
+ups
+
+src\app\(redesign)\ev
+ents\page.tsx
+You cannot have two 
+parallel pages that 
+resolve to the same 
+path. Please check /(
+redesign)/events/page
+ and /(shell)/events/
+page. Refer to the 
+route group docs for 
+more information: htt
+ps://nextjs.org/docs/
+app/building-your-app
+lication/routing/rout
+e-groups
+
+src\app\(redesign)\ho
+me\page.tsx
+You cannot have two 
+parallel pages that 
+resolve to the same 
+path. Please check /(
+redesign)/home/page 
+and 
+/(shell)/home/page. 
+Refer to the route 
+group docs for more 
+information: https://
+nextjs.org/docs/app/b
+uilding-your-applicat
+ion/routing/route-gro
+ups
+
+src\app\(redesign)\pr
+ofile\page.tsx
+You cannot have two 
+parallel pages that 
+resolve to the same 
+path. Please check /(
+redesign)/profile/pag
+e and /(shell)/profil
+e/page. Refer to the 
+route group docs for 
+more information: htt
+ps://nextjs.org/docs/
+app/building-your-app
+lication/routing/rout
+e-groups
+
+src\app\(redesign)\re
+ports\page.tsx
+You cannot have two 
+parallel pages that 
+resolve to the same 
+path. Please check /(
+redesign)/reports/pag
+e and /(shell)/report
+s/page. Refer to the 
+route group docs for 
+more information: htt
+ps://nextjs.org/docs/
+app/building-your-app
+lication/routing/rout
+e-groups
+
+
+> Build failed 
+because of webpack 
+errors

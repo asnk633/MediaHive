@@ -2,7 +2,8 @@ import { NextRequest, NextResponse } from 'next/server';
 import { db } from '@/db';
 import { tasks } from '@/db/schema';
 import { eq } from 'drizzle-orm';
-import { getUserFromRequest, canModify, isAdmin } from '../../_lib/auth';
+import { authorize } from '@/app/api/_lib/rbac';
+import { hasRole } from '@/lib/permissions';
 import { TaskStatus, TaskPriority } from '@/types';
 
 /**
@@ -14,7 +15,8 @@ export async function GET(
   context: { params: Promise<{ id: string }> }
 ) {
   try {
-    const user = getUserFromRequest(request);
+    // Authorize user with RBAC - all roles can read tasks
+    const user = await authorize(request, 'read:tasks');
     if (!user) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
@@ -52,7 +54,8 @@ export async function PATCH(
   context: { params: Promise<{ id: string }> }
 ) {
   try {
-    const user = getUserFromRequest(req);
+    // Authorize user with RBAC - only roles with edit:tasks permission can update tasks
+    const user = await authorize(req, 'edit:tasks');
     if (!user) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
@@ -65,16 +68,16 @@ export async function PATCH(
     if (!existingTask) {
       return NextResponse.json({ error: 'Not found' }, { status: 404 });
     }
-    
+
     // Check institution access for the task being modified
     if (existingTask.institutionId !== user.institutionId) {
-        return NextResponse.json({ error: 'Forbidden' }, { status: 403 });
+      return NextResponse.json({ error: 'Forbidden' }, { status: 403 });
     }
 
 
     // Check permission - Only Admin or Creator can initiate a PATCH
     // Note: Field-level restrictions apply AFTER this initial check.
-    if (!canModify(user, existingTask.createdById)) {
+    if (!hasRole(user, ['admin']) && existingTask.createdById !== user.id) {
       return NextResponse.json({ error: 'Forbidden' }, { status: 403 });
     }
 
@@ -92,18 +95,18 @@ export async function PATCH(
     if (delta.dueDate !== undefined) updates.dueDate = delta.dueDate;
 
     // Fields only team/admin can update
-    if (user.role !== 'guest') {
+    if (hasRole(user, ['team', 'admin'])) {
       if (delta.priority !== undefined) updates.priority = delta.priority as TaskPriority;
       if (delta.assignedToId !== undefined) updates.assignedToId = delta.assignedToId;
     }
 
     // Fields only admin can update
-    if (isAdmin(user)) {
+    if (hasRole(user, ['admin'])) {
       if (delta.status !== undefined) updates.status = delta.status as TaskStatus;
       // New field: reviewStatus - restricted to Admin
       if (delta.reviewStatus !== undefined) updates.reviewStatus = delta.reviewStatus;
     }
-    
+
     // Check if any fields other than 'updatedAt' were actually set for update
     if (Object.keys(updates).length === 1 && updates.updatedAt === now) {
       return NextResponse.json({ error: 'Nothing to update or no permission to update the requested fields' }, { status: 400 });
@@ -115,11 +118,11 @@ export async function PATCH(
       .set(updates)
       .where(eq(tasks.id, taskId))
       .returning();
-      
+
     // The query above will always return one element if successful because the WHERE clause is on a unique ID.
     // However, including a check for 'updated' safety is good practice, though unlikely to fail here.
     if (!updated) {
-       return NextResponse.json({ error: 'Update failed or task vanished' }, { status: 500 });
+      return NextResponse.json({ error: 'Update failed or task vanished' }, { status: 500 });
     }
 
     return NextResponse.json({ data: updated }, { status: 200 });
@@ -141,7 +144,8 @@ export async function DELETE(
   context: { params: Promise<{ id: string }> }
 ) {
   try {
-    const user = getUserFromRequest(req);
+    // Authorize user with RBAC - only roles with delete:tasks permission can delete tasks
+    const user = await authorize(req, 'delete:tasks');
     if (!user) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
@@ -161,7 +165,7 @@ export async function DELETE(
     }
 
     // Only admin or creator can delete
-    if (!canModify(user, task.createdById)) {
+    if (!hasRole(user, ['admin']) && task.createdById !== user.id) {
       return NextResponse.json({ error: 'Forbidden' }, { status: 403 });
     }
 

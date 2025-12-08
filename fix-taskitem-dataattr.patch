@@ -1,0 +1,53 @@
+*** Begin Patch
+*** Add File: src/components/TaskItem.tsx
++import React from "react";
++
++type Task = {
++  id: number | string;
++  title: string;
++  description?: string | null;
++  status?: string | null; // e.g. "todo" | "in_progress" | "done"
++  priority?: string | null;
++  assignee?: { id?: number | string; name?: string } | null;
++  dueDate?: string | null;
++};
++
++type Props = {
++  task: Task;
++  className?: string;
++};
++
++// Presentational TaskItem used by Kanban and list views.
++// Exposes stable attributes for e2e tests:
++//  - data-task-id
++//  - data-status
++//  - data-assignee (name or id)
++export default function TaskItem({ task, className = "" }: Props) {
++  const assigneeAttr =
++    task.assignee?.name ?? (task.assignee?.id ? String(task.assignee.id) : "");
++
++  return (
++    <article
++      className={`task-item ${className}`}
++      data-task-id={String(task.id)}
++      data-status={task.status ?? ""}
++      data-assignee={assigneeAttr}
++      role="article"
++      aria-label={task.title}
++    >
++      <header className="task-item__head">
++        <h3 className="task-item__title">{task.title}</h3>
++        {task.priority ? <span className="task-item__prio">{task.priority}</span> : null}
++      </header>
++      {task.description ? (
++        <p className="task-item__desc">{task.description}</p>
++      ) : null}
++      <footer className="task-item__meta">
++        {task.dueDate ? <time>{task.dueDate}</time> : null}
++        {assigneeAttr ? <span className="task-item__assignee">{assigneeAttr}</span> : null}
++      </footer>
++    </article>
++  );
++}
++
+*** End Patch

@@ -8,6 +8,76 @@
       "when": 1761881794662,
       "tag": "0000_low_iron_man",
       "breakpoints": true
+    },
+    {
+      "idx": 1,
+      "version": "6",
+      "when": 1761881794663,
+      "tag": "0001_add_tasks_indexes",
+      "breakpoints": true
+    },
+    {
+      "idx": 2,
+      "version": "6",
+      "when": 1761881794664,
+      "tag": "0002_add_events_indexes",
+      "breakpoints": true
+    },
+    {
+      "idx": 3,
+      "version": "6",
+      "when": 1761881794665,
+      "tag": "0003_add_users_indexes",
+      "breakpoints": true
+    },
+    {
+      "idx": 4,
+      "version": "6",
+      "when": 1761881794666,
+      "tag": "0004_add_audit_log_tenant_id",
+      "breakpoints": true
+    },
+    {
+      "idx": 5,
+      "version": "6",
+      "when": 1761881794667,
+      "tag": "0005_add_tenants_table",
+      "breakpoints": true
+    },
+    {
+      "idx": 6,
+      "version": "6",
+      "when": 1761881794668,
+      "tag": "0006_add_missing_columns",
+      "breakpoints": true
+    },
+    {
+      "idx": 7,
+      "version": "6",
+      "when": 1761881794669,
+      "tag": "0007_add_events_updated_at",
+      "breakpoints": true
+    },
+    {
+      "idx": 8,
+      "version": "6",
+      "when": 1761881794670,
+      "tag": "0008_fix_notifications_column",
+      "breakpoints": true
+    },
+    {
+      "idx": 9,
+      "version": "6",
+      "when": 1761881794671,
+      "tag": "0009_fix_notifications_columns",
+      "breakpoints": true
+    },
+    {
+      "idx": 10,
+      "version": "6",
+      "when": 1761881794672,
+      "tag": "0010_add_media_reports_table",
+      "breakpoints": true
     }
   ]
 }

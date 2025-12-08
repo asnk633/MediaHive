@@ -1,0 +1,319 @@
+// src/app/admin/performance/page.tsx
+// Performance dashboard UI for viewing audit reports
+
+'use client';
+
+import { useState, useEffect } from 'react';
+import { Card, CardHeader, CardTitle, CardContent } from '@/components/ui/card';
+import { Button } from '@/components/ui/button';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
+import { Badge } from '@/components/ui/badge';
+import { Loader2, RefreshCw, FileText, BarChart3, Zap, Eye } from 'lucide-react';
+import { useToast } from '@/components/ToastProvider';
+
+interface Report {
+  date: string;
+  content?: string;
+}
+
+interface LighthouseCategory {
+  title: string;
+  score: number;
+}
+
+export default function PerformanceDashboard() {
+  const { show: showToast } = useToast();
+  const [reports, setReports] = useState<string[]>([]);
+  const [selectedReport, setSelectedReport] = useState<string>('latest');
+  const [reportData, setReportData] = useState<Report | null>(null);
+  const [lighthouseData, setLighthouseData] = useState<Record<string, LighthouseCategory> | null>(null);
+  const [autocannonData, setAutocannonData] = useState<any>(null);
+  const [loading, setLoading] = useState<boolean>(true);
+  const [activeTab, setActiveTab] = useState<string>('summary');
+
+  // Fetch available reports
+  useEffect(() => {
+    const fetchReports = async () => {
+      try {
+        const response = await fetch('/api/perf/reports?type=list');
+        if (response.ok) {
+          const data = await response.json();
+          setReports(data.reports);
+          if (data.latest && selectedReport === 'latest') {
+            setSelectedReport(data.latest);
+          }
+        }
+      } catch (error) {
+        console.error('Failed to fetch reports:', error);
+        showToast('Failed to load performance reports', 'error');
+      }
+    };
+
+    fetchReports();
+  }, [showToast, selectedReport]);
+
+  // Fetch report data when selected report changes
+  useEffect(() => {
+    if (!selectedReport) return;
+
+    const fetchReportData = async () => {
+      setLoading(true);
+      try {
+        // Fetch summary
+        const summaryResponse = await fetch(`/api/perf/reports?date=${selectedReport}&type=summary`);
+        if (summaryResponse.ok) {
+          const summaryData = await summaryResponse.json();
+          setReportData(summaryData);
+        }
+
+        // Fetch Lighthouse data
+        const lighthouseResponse = await fetch(`/api/perf/reports?date=${selectedReport}&type=lighthouse-json`);
+        if (lighthouseResponse.ok) {
+          const lighthouseText = await lighthouseResponse.text();
+          const lighthouseJson = JSON.parse(lighthouseText);
+          if (lighthouseJson.categories) {
+            setLighthouseData(lighthouseJson.categories);
+          }
+        }
+
+        // Fetch autocannon data
+        const autocannonResponse = await fetch(`/api/perf/reports?date=${selectedReport}&type=autocannon`);
+        if (autocannonResponse.ok) {
+          const autocannonText = await autocannonResponse.text();
+          const autocannonJson = JSON.parse(autocannonText);
+          setAutocannonData(autocannonJson);
+        }
+      } catch (error) {
+        console.error('Failed to fetch report data:', error);
+        showToast('Failed to load report data', 'error');
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchReportData();
+  }, [selectedReport, showToast]);
+
+  const handleRefresh = () => {
+    window.location.reload();
+  };
+
+  const handleRunAudit = async () => {
+    showToast('Performance audit is running in the background', 'info');
+    
+    try {
+      // In a real implementation, this would trigger the audit
+      // For now, we'll just show a message
+      setTimeout(() => {
+        showToast('Performance audit finished. Refresh to see new results.', 'success');
+      }, 3000);
+    } catch (error) {
+      showToast('Failed to start performance audit', 'error');
+    }
+  };
+
+  const getScoreColor = (score: number) => {
+    if (score >= 90) return 'bg-green-500';
+    if (score >= 50) return 'bg-yellow-500';
+    return 'bg-red-500';
+  };
+
+  return (
+    <div className="container mx-auto py-8">
+      <div className="flex justify-between items-center mb-8">
+        <div>
+          <h1 className="text-3xl font-bold">Performance Dashboard</h1>
+          <p className="text-muted-foreground">View and analyze performance audit reports</p>
+        </div>
+        <div className="flex gap-2">
+          <Button onClick={handleRefresh} variant="outline">
+            <RefreshCw className="mr-2 h-4 w-4" />
+            Refresh
+          </Button>
+          <Button onClick={handleRunAudit}>
+            <Zap className="mr-2 h-4 w-4" />
+            Run Audit
+          </Button>
+        </div>
+      </div>
+
+      <div className="grid gap-6">
+        <Card>
+          <CardHeader>
+            <div className="flex justify-between items-center">
+              <CardTitle>Report Selection</CardTitle>
+              <div className="flex items-center gap-2">
+                <span className="text-sm text-muted-foreground">Select Report:</span>
+                <Select value={selectedReport} onValueChange={setSelectedReport}>
+                  <SelectTrigger className="w-48">
+                    <SelectValue placeholder="Select report" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {reports.map((report) => (
+                      <SelectItem key={report} value={report}>
+                        {report === 'latest' ? 'Latest Report' : report}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              </div>
+            </div>
+          </CardHeader>
+        </Card>
+
+        {loading ? (
+          <div className="flex justify-center items-center h-64">
+            <Loader2 className="h-8 w-8 animate-spin" />
+          </div>
+        ) : (
+          <>
+            <Tabs value={activeTab} onValueChange={setActiveTab}>
+              <TabsList>
+                <TabsTrigger value="summary">Summary</TabsTrigger>
+                <TabsTrigger value="lighthouse">Lighthouse</TabsTrigger>
+                <TabsTrigger value="loadtest">Load Test</TabsTrigger>
+                <TabsTrigger value="details">Details</TabsTrigger>
+              </TabsList>
+
+              <TabsContent value="summary" className="mt-6">
+                <Card>
+                  <CardHeader>
+                    <CardTitle>
+                      <FileText className="inline mr-2 h-5 w-5" />
+                      Summary Report
+                    </CardTitle>
+                  </CardHeader>
+                  <CardContent>
+                    {reportData?.content ? (
+                      <div className="prose max-w-none">
+                        {reportData.content.split('\n').map((line, i) => (
+                          <p key={i}>{line}</p>
+                        ))}
+                      </div>
+                    ) : (
+                      <p>No summary report available.</p>
+                    )}
+                  </CardContent>
+                </Card>
+              </TabsContent>
+
+              <TabsContent value="lighthouse" className="mt-6">
+                <Card>
+                  <CardHeader>
+                    <CardTitle>
+                      <BarChart3 className="inline mr-2 h-5 w-5" />
+                      Lighthouse Results
+                    </CardTitle>
+                  </CardHeader>
+                  <CardContent>
+                    {lighthouseData ? (
+                      <div className="grid gap-4">
+                        {Object.entries(lighthouseData).map(([key, category]) => {
+                          const score = Math.round(category.score * 100);
+                          return (
+                            <div key={key} className="flex items-center justify-between p-4 border rounded-lg">
+                              <div>
+                                <h3 className="font-medium">{category.title}</h3>
+                              </div>
+                              <div className="flex items-center gap-2">
+                                <Badge className={getScoreColor(score)}>
+                                  {score}/100
+                                </Badge>
+                              </div>
+                            </div>
+                          );
+                        })}
+                      </div>
+                    ) : (
+                      <p>No Lighthouse data available.</p>
+                    )}
+                  </CardContent>
+                </Card>
+              </TabsContent>
+
+              <TabsContent value="loadtest" className="mt-6">
+                <Card>
+                  <CardHeader>
+                    <CardTitle>
+                      <Zap className="inline mr-2 h-5 w-5" />
+                      Load Test Results
+                    </CardTitle>
+                  </CardHeader>
+                  <CardContent>
+                    {autocannonData ? (
+                      <div className="grid gap-4">
+                        <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                          <div className="p-4 border rounded-lg">
+                            <h3 className="font-medium text-sm text-muted-foreground">Requests/sec</h3>
+                            <p className="text-2xl font-bold">
+                              {autocannonData.requests?.average?.toFixed(2) || 'N/A'}
+                            </p>
+                          </div>
+                          <div className="p-4 border rounded-lg">
+                            <h3 className="font-medium text-sm text-muted-foreground">Latency (ms)</h3>
+                            <p className="text-2xl font-bold">
+                              {autocannonData.latency?.average?.toFixed(2) || 'N/A'}
+                            </p>
+                          </div>
+                          <div className="p-4 border rounded-lg">
+                            <h3 className="font-medium text-sm text-muted-foreground">Throughput</h3>
+                            <p className="text-2xl font-bold">
+                              {autocannonData.throughput?.average?.toFixed(2) || 'N/A'}
+                            </p>
+                          </div>
+                        </div>
+                        
+                        {autocannonData.errors > 0 && (
+                          <div className="p-4 bg-red-50 border border-red-200 rounded-lg">
+                            <h3 className="font-medium text-red-800">Errors Detected</h3>
+                            <p className="text-red-600">{autocannonData.errors} errors occurred during the load test</p>
+                          </div>
+                        )}
+                      </div>
+                    ) : (
+                      <p>No load test data available.</p>
+                    )}
+                  </CardContent>
+                </Card>
+              </TabsContent>
+
+              <TabsContent value="details" className="mt-6">
+                <Card>
+                  <CardHeader>
+                    <CardTitle>
+                      <Eye className="inline mr-2 h-5 w-5" />
+                      Detailed Reports
+                    </CardTitle>
+                  </CardHeader>
+                  <CardContent>
+                    <div className="flex flex-wrap gap-2">
+                      <Button 
+                        variant="outline" 
+                        onClick={() => window.open(`/api/perf/reports?date=${selectedReport}&type=lighthouse-html`, '_blank')}
+                      >
+                        View Lighthouse HTML Report
+                      </Button>
+                      <Button 
+                        variant="outline" 
+                        onClick={() => window.open(`/api/perf/reports?date=${selectedReport}&type=lighthouse-json`, '_blank')}
+                      >
+                        Download Lighthouse JSON
+                      </Button>
+                      <Button 
+                        variant="outline" 
+                        onClick={() => window.open(`/api/perf/reports?date=${selectedReport}&type=autocannon`, '_blank')}
+                      >
+                        Download Load Test Results
+                      </Button>
+                    </div>
+                  </CardContent>
+                </Card>
+              </TabsContent>
+            </Tabs>
+          </>
+        )}
+      </div>
+    </div>
+  );
+}

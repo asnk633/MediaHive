@@ -2,12 +2,16 @@ import { NextRequest, NextResponse } from 'next/server';
 import { db } from '@/db';
 import { events } from '@/db/schema';
 import { eq, like, and, or, gte, lte, desc } from 'drizzle-orm';
-import { getUserFromRequest, hasRole, isAdmin } from '../_lib/auth';
+import { authorize } from '@/app/api/_lib/rbac';
+import { hasRole } from '@/lib/permissions';
+import { validateSchema, createEventSchema, updateEventSchema } from '@/lib/validation';
+import { z } from 'zod';
+import { sanitizeHtmlContent, sanitizeTextContent } from '@/lib/sanitizer';
 
 // --- GET Request Handler ---
 export async function GET(request: NextRequest) {
   try {
-    const user = getUserFromRequest(request);
+    const user = await authorize(request, 'read:events');
     if (!user) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
@@ -17,7 +21,11 @@ export async function GET(request: NextRequest) {
 
     // Single event fetch
     if (id) {
-      if (!id || isNaN(parseInt(id))) {
+      // Validate ID parameter
+      const idSchema = z.number().int().positive();
+      try {
+        idSchema.parse(parseInt(id));
+      } catch {
         return NextResponse.json(
           { error: 'Valid ID is required', code: 'INVALID_ID' },
           { status: 400 }
@@ -50,7 +58,7 @@ export async function GET(request: NextRequest) {
     const conditions = [eq(events.institutionId, user.institutionId)];
 
     // Non-admin users only see approved events
-    if (!isAdmin(user)) {
+    if (!hasRole(user, ['admin'])) {
       conditions.push(eq(events.approvalStatus, 'approved'));
     }
 
@@ -81,7 +89,14 @@ export async function GET(request: NextRequest) {
       .offset(offset);
 
     return NextResponse.json(results, { status: 200 });
-  } catch (error) {
+  } catch (error: any) {
+    if (error.name === 'ValidationError') {
+      return NextResponse.json(
+        { error: 'Validation failed', details: error.fieldErrors },
+        { status: 400 }
+      );
+    }
+
     console.error('GET error:', error);
     return NextResponse.json(
       { error: 'Internal server error: ' + (error as Error).message },
@@ -93,92 +108,48 @@ export async function GET(request: NextRequest) {
 // --- POST Request Handler ---
 export async function POST(request: NextRequest) {
   try {
-    const user = getUserFromRequest(request);
+    const user = await authorize(request, 'create:events');
     if (!user) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
 
-    // Only team and admin can create events
-    if (!hasRole(user, ['admin', 'team'])) {
-      return NextResponse.json(
-        { error: 'Only team members and admins can create events' },
-        { status: 403 }
-      );
-    }
+    // Only team and admin can create events (enforced by permission check above, but double check role if needed)
+    // The permission 'create:events' is assigned to admin and team in permissions.ts
 
     const body = await request.json();
-    const { title, description, startTime, endTime } = body;
-
-    // Validation
-    if (!title || typeof title !== 'string' || title.trim() === '') {
-      return NextResponse.json(
-        { error: 'Title is required' },
-        { status: 400 }
-      );
-    }
-
-    if (!startTime || typeof startTime !== 'string') {
-      return NextResponse.json(
-        { error: 'Start time (ISO format) is required' },
-        { status: 400 }
-      );
-    }
-
-    if (!endTime || typeof endTime !== 'string') {
-      return NextResponse.json(
-        { error: 'End time (ISO format) is required' },
-        { status: 400 }
-      );
-    }
-    
-    // Validate timestamps
-    const startTimeDate = new Date(startTime);
-    const endTimeDate = new Date(endTime);
-
-    if (isNaN(startTimeDate.getTime())) {
-      return NextResponse.json(
-        { error: 'Invalid start time format' },
-        { status: 400 }
-      );
-    }
-
-    if (isNaN(endTimeDate.getTime())) {
-      return NextResponse.json(
-        { error: 'Invalid end time format' },
-        { status: 400 }
-      );
-    }
-
-    // Validate end time is after start time
-    if (endTimeDate <= startTimeDate) {
-      return NextResponse.json(
-        { error: 'End time must be after start time' },
-        { status: 400 }
-      );
-    }
+    const validatedBody = validateSchema(createEventSchema, body);
+    const { title, description, startTime, endTime } = validatedBody;
 
     const now = new Date().toISOString();
 
     // Admin events are auto-approved, team events need approval
-    const approvalStatus = isAdmin(user) ? 'approved' : 'pending';
+    const approvalStatus = hasRole(user, ['admin']) ? 'approved' : 'pending';
 
     const newEvents = await db
       .insert(events)
       .values({
-        title: title.trim(),
-        description: description?.trim() || null,
-        startTime: startTimeDate.toISOString(),
-        endTime: endTimeDate.toISOString(),
+        title: sanitizeTextContent(title.trim()),
+        description: description ? sanitizeHtmlContent(description.trim()) : null,
+        startTime,
+        endTime,
         approvalStatus,
         createdById: user.id,
         institutionId: user.institutionId,
+        tenantId: user.tenantId,
         createdAt: now,
         updatedAt: now,
       })
       .returning();
 
     return NextResponse.json({ data: newEvents[0] }, { status: 201 });
-  } catch (error) {
+  } catch (error: any) {
+    if (error.name === 'ValidationError') {
+      return NextResponse.json(
+        { error: 'Validation failed', details: error.fieldErrors },
+        { status: 400 }
+      );
+    }
+
     console.error('POST error:', error);
     return NextResponse.json(
       { error: 'Internal server error: ' + (error as Error).message },
@@ -190,7 +161,7 @@ export async function POST(request: NextRequest) {
 // --- PUT Request Handler ---
 export async function PUT(request: NextRequest) {
   try {
-    const user = getUserFromRequest(request);
+    const user = await authorize(request, 'edit:events');
     if (!user) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
@@ -203,8 +174,8 @@ export async function PUT(request: NextRequest) {
     }
 
     const body = await request.json();
-    const { title, description, startTime, endTime } = body;
-    
+    const validatedBody = validateSchema(updateEventSchema, body);
+
     // Check if event exists
     const [existingEvent] = await db
       .select()
@@ -216,38 +187,31 @@ export async function PUT(request: NextRequest) {
     }
 
     // Only creator or admin can update
-    if (existingEvent.createdById !== user.id && !isAdmin(user)) {
+    if (existingEvent.createdById !== user.id && !hasRole(user, ['admin'])) {
       return NextResponse.json({ error: 'Forbidden' }, { status: 403 });
     }
 
     const updates: any = { updatedAt: new Date().toISOString() };
 
-    // Validate and prepare updates
-    if (title !== undefined) {
-      if (typeof title !== 'string' || title.trim() === '') {
-        return NextResponse.json({ error: 'Title cannot be empty' }, { status: 400 });
-      }
-      updates.title = title.trim();
+    // Prepare updates from validated body
+    if (validatedBody.title !== undefined) {
+      updates.title = sanitizeTextContent(validatedBody.title.trim());
     }
 
-    if (description !== undefined) {
-      updates.description = description ? description.trim() : null;
+    if (validatedBody.description !== undefined) {
+      updates.description = validatedBody.description ? sanitizeHtmlContent(validatedBody.description.trim()) : null;
     }
 
-    if (startTime !== undefined) {
-      const startTimeDate = new Date(startTime);
-      if (isNaN(startTimeDate.getTime())) {
-        return NextResponse.json({ error: 'Invalid start time format' }, { status: 400 });
-      }
-      updates.startTime = startTimeDate.toISOString();
+    if (validatedBody.startTime !== undefined) {
+      updates.startTime = validatedBody.startTime;
     }
 
-    if (endTime !== undefined) {
-      const endTimeDate = new Date(endTime);
-      if (isNaN(endTimeDate.getTime())) {
-        return NextResponse.json({ error: 'Invalid end time format' }, { status: 400 });
-      }
-      updates.endTime = endTimeDate.toISOString();
+    if (validatedBody.endTime !== undefined) {
+      updates.endTime = validatedBody.endTime;
+    }
+
+    if (validatedBody.approvalStatus !== undefined) {
+      updates.approvalStatus = validatedBody.approvalStatus;
     }
 
     if (Object.keys(updates).length === 1) { // Only updatedAt
@@ -261,7 +225,14 @@ export async function PUT(request: NextRequest) {
       .returning();
 
     return NextResponse.json({ data: updatedEvents[0] }, { status: 200 });
-  } catch (error) {
+  } catch (error: any) {
+    if (error.name === 'ValidationError') {
+      return NextResponse.json(
+        { error: 'Validation failed', details: error.fieldErrors },
+        { status: 400 }
+      );
+    }
+
     console.error('PUT error:', error);
     return NextResponse.json(
       { error: 'Internal server error' },
@@ -273,7 +244,7 @@ export async function PUT(request: NextRequest) {
 // --- DELETE Request Handler ---
 export async function DELETE(request: NextRequest) {
   try {
-    const user = getUserFromRequest(request);
+    const user = await authorize(request, 'delete:events');
     if (!user) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
@@ -281,7 +252,15 @@ export async function DELETE(request: NextRequest) {
     const searchParams = request.nextUrl.searchParams;
     const id = searchParams.get('id');
 
-    if (!id || isNaN(parseInt(id))) {
+    if (!id) {
+      return NextResponse.json({ error: 'ID is required' }, { status: 400 });
+    }
+
+    // Validate ID parameter
+    const idSchema = z.number().int().positive();
+    try {
+      idSchema.parse(parseInt(id));
+    } catch {
       return NextResponse.json({ error: 'Valid ID is required' }, { status: 400 });
     }
 
@@ -296,14 +275,21 @@ export async function DELETE(request: NextRequest) {
     }
 
     // Only creator or admin can delete
-    if (existingEvent.createdById !== user.id && !isAdmin(user)) {
+    if (existingEvent.createdById !== user.id && !hasRole(user, ['admin'])) {
       return NextResponse.json({ error: 'Forbidden' }, { status: 403 });
     }
 
     await db.delete(events).where(eq(events.id, parseInt(id)));
 
     return new NextResponse(null, { status: 204 });
-  } catch (error) {
+  } catch (error: any) {
+    if (error.name === 'ValidationError') {
+      return NextResponse.json(
+        { error: 'Validation failed', details: error.fieldErrors },
+        { status: 400 }
+      );
+    }
+
     console.error('DELETE error:', error);
     return NextResponse.json(
       { error: 'Internal server error' },

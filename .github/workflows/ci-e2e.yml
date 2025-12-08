@@ -1,0 +1,139 @@
+name: CI — E2E (decode SA, seed, playwright)
+
+on:
+  pull_request:
+    branches:
+      - main
+      - ci/fix-workflows
+
+jobs:
+  E2E:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+
+    env:
+      NODE_OPTIONS: --max-old-space-size=2048
+      BASE_URL: http://127.0.0.1:3000
+
+      # Supabase
+      SUPABASE_URL: ${{ secrets.SUPABASE_URL }}
+      SUPABASE_SERVICE_KEY: ${{ secrets.SUPABASE_SERVICE_KEY }}
+      APP_SECRET: ${{ secrets.APP_SECRET }}
+
+      # Firebase client (for Next.js app)
+      NEXT_PUBLIC_FIREBASE_API_KEY: ${{ secrets.NEXT_PUBLIC_FIREBASE_API_KEY }}
+      NEXT_PUBLIC_FIREBASE_AUTH_DOMAIN: ${{ secrets.NEXT_PUBLIC_FIREBASE_AUTH_DOMAIN }}
+      NEXT_PUBLIC_FIREBASE_PROJECT_ID: ${{ secrets.NEXT_PUBLIC_FIREBASE_PROJECT_ID }}
+      NEXT_PUBLIC_FIREBASE_STORAGE_BUCKET: ${{ secrets.NEXT_PUBLIC_FIREBASE_STORAGE_BUCKET }}
+      NEXT_PUBLIC_FIREBASE_MESSAGING_SENDER_ID: ${{ secrets.NEXT_PUBLIC_FIREBASE_MESSAGING_SENDER_ID }}
+      NEXT_PUBLIC_FIREBASE_APP_ID: ${{ secrets.NEXT_PUBLIC_FIREBASE_APP_ID }}
+
+      # Firebase admin (file-based; app reads FIREBASE_ADMIN_SA_PATH)
+      FIREBASE_ADMIN_SA_PATH: ${{ github.workspace }}/service-account.json
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: npm
+
+      - name: Install deps
+        run: npm ci
+
+      # Write the service account JSON from the secret (Linux/macOS)
+      - name: Decode service account (Linux / macOS)
+        if: runner.os != 'Windows'
+        env:
+          FIREBASE_ADMIN_SA: ${{ secrets.FIREBASE_ADMIN_SA }}
+        run: |
+          if [ -z "${FIREBASE_ADMIN_SA:-}" ]; then
+            echo "FIREBASE_ADMIN_SA secret is missing"
+            exit 1
+          fi
+          printf '%s\n' "$FIREBASE_ADMIN_SA" > "$FIREBASE_ADMIN_SA_PATH"
+          ls -la "$FIREBASE_ADMIN_SA_PATH"
+
+      # (Optional Windows step kept for completeness; you'll only hit this if you ever switch runner)
+      - name: Decode service account (Windows)
+        if: runner.os == 'Windows'
+        env:
+          FIREBASE_ADMIN_SA: ${{ secrets.FIREBASE_ADMIN_SA }}
+        run: |
+          if (-not "$env:FIREBASE_ADMIN_SA") {
+            Write-Host "FIREBASE_ADMIN_SA secret is missing"
+            exit 1
+          }
+          Set-Content -Path $env:FIREBASE_ADMIN_SA_PATH -Value $env:FIREBASE_ADMIN_SA -Encoding UTF8
+          Get-Item $env:FIREBASE_ADMIN_SA_PATH | Format-List
+        shell: pwsh
+
+      - name: Setup Python 3.10
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.10"
+
+      - name: Install Python face recognition dependencies
+        run: |
+          python -m venv .venv
+          # Windows/Linux compatible activation
+          if [ -f ".venv/bin/activate" ]; then
+            source .venv/bin/activate
+          else
+            source .venv/Scripts/activate
+          fi
+          # Using scripts/requirements.txt as per file structure
+          pip install -r scripts/requirements.txt
+
+      - name: Install Playwright browsers
+        run: npx playwright install --with-deps
+
+      - name: Start Python face recognition service
+        run: |
+          cd scripts
+          # Fixed path to match repo structure (scripts/face_service.py)
+          nohup python face_service.py > ../face-service.log 2>&1 &
+          cd ..
+          echo "Waiting for Python service to start..."
+          sleep 10
+
+      - name: Start Next.js app (background)
+        run: |
+          nohup npm run dev > app.log 2>&1 &
+          echo "Waiting for Next.js to start..."
+          sleep 25
+
+      - name: Seed smoke user
+        run: |
+          for i in 1 2 3; do
+            echo "seed attempt $i"
+            HTTP_STATUS=$(curl -s -o /dev/null -w "%{http_code}" \
+              -X POST http://127.0.0.1:3000/api/test-utils/seed-user \
+              -H "Content-Type: application/json" \
+              -d '{"email":"smoke@test.local","password":"Pass123","role":"team"}' || true)
+            echo "seed http status: $HTTP_STATUS"
+            if [ "$HTTP_STATUS" = "201" ] || [ "$HTTP_STATUS" = "200" ]; then
+              echo "seed ok"
+              exit 0
+            fi
+            sleep 2
+          done
+          echo "Seed failed; dumping server log"
+          tail -n +1 app.log || true
+          exit 1
+
+      - name: Run Playwright tests
+        run: npx playwright test --config=playwright.config.cjs
+
+      - name: Upload Playwright artifacts (optional)
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: test-results
+          path: |
+            test-results
+            playwright-report
+            app.log

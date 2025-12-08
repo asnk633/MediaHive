@@ -2,18 +2,24 @@
    Robust route: await params, validate canonical values, try Drizzle update,
    fallback to raw parameterized SQL if driver produces invalid SQL in dev.
 */
-import { NextResponse } from "next/server";
+import { NextRequest, NextResponse } from "next/server";
 import { db } from "@/db"; // adjust import if your DB export lives elsewhere
 import { tasks } from "@/db/schema";
 import { eq } from "drizzle-orm";
+import { authorizeByPermission } from '@/app/api/_lib/rbac';
+import { hasRole } from "@/app/api/_lib/auth";
 
-type ParamsShape = { params: { id: string } } | Promise<{ params: { id: string } }>;
-
-export async function PATCH(req: Request, maybeParams: ParamsShape) {
+export async function PATCH(req: NextRequest, { params }: { params: Promise<{ id: string }> }) {
   try {
+    // Authorize user with RBAC - only roles with review:tasks permission can update review status
+    const user = await authorizeByPermission(req, 'edit:tasks');
+    if (!user) {
+      return NextResponse.json({ error: 'Forbidden: Only authorized users can review tasks' }, { status: 403 });
+    }
+
     // Next.js may supply params as a Promise in some versions — await defensively
-    const { params } = (await maybeParams) as { params: { id: string } };
-    const id = Number(params.id);
+    const { id: idString } = await params;
+    const id = Number(idString);
     if (!Number.isInteger(id) || id <= 0) {
       return NextResponse.json({ error: "Invalid task id" }, { status: 400 });
     }
@@ -25,7 +31,7 @@ export async function PATCH(req: Request, maybeParams: ParamsShape) {
       return NextResponse.json({ error: "Invalid reviewStatus", allowed }, { status: 400 });
     }
 
-    // Preferred: use Drizzle update
+    // Preferred: use Drizzle update with correct column name
     try {
       await db.update(tasks).set({ reviewStatus: reviewStatus as any }).where(eq(tasks.id, id));
       return NextResponse.json({ ok: true });

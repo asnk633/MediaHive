@@ -1,0 +1,10 @@
+*** Update File: jest.config.js
+@@
+  moduleNameMapper: {
+-   '^@/(.*)$': '<rootDir>/src/$1',
++   // ensure tests resolve aliases to src/
++   '^@/(.*)$': '<rootDir>/src/$1',
++   '^@/firebase/(.*)$': '<rootDir>/src/lib/$1',
++   '^@/contexts/(.*)$': '<rootDir>/src/contexts/$1',
++   '^@/db(.*)$': '<rootDir>/src/db$1',
+  },

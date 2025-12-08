@@ -1,80 +1,213 @@
-/* Minimal, PostCSS-safe global stylesheet for the app */
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
 
-/* reset */
-* { box-sizing: border-box; }
-html, body { height: 100%; margin: 0; padding: 0; }
+:root {
+  /* Colors - Institutional & Professional */
+  --bg-app: #0c0c0c;
+  --bg-surface: #141414;
+  --bg-surface-elevated: #1c1c1c;
 
-/* base page */
+  --text-primary: #f0f0f0;
+  --text-secondary: #a0a0a0;
+  --text-tertiary: #666666;
+
+  --accent-primary: #3b82f6;
+  --accent-secondary: #6366f1;
+  --accent-glow: rgba(59, 130, 246, 0.5);
+
+  --status-success: #10b981;
+  --status-warning: #f59e0b;
+  --status-error: #ef4444;
+  --status-info: #3b82f6;
+
+  --border-color: rgba(255, 255, 255, 0.1);
+
+  /* Spacing & Layout */
+  --bottom-nav-height: 80px;
+  --fab-gap-width: 88px;
+  --header-height: 64px;
+
+  /* Shadows */
+  --shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+  --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+  --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+  --shadow-glow: 0 0 20px var(--accent-glow);
+  --shadow-ambient: 0 20px 40px rgba(0, 0, 0, 0.4);
+
+  /* Typography */
+  --font-inter: 'Inter', sans-serif;
+}
+
+[data-theme='light'] {
+  --bg-app: #f8f9fa;
+  --bg-surface: #ffffff;
+  --bg-surface-elevated: #f1f5f9;
+
+  --text-primary: #111827;
+  --text-secondary: #4b5563;
+  --text-tertiary: #9ca3af;
+
+  --accent-primary: #2563eb;
+  --accent-secondary: #4f46e5;
+  --accent-glow: rgba(37, 99, 235, 0.3);
+
+  --border-color: rgba(0, 0, 0, 0.1);
+
+  --shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+  --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+  --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+  --shadow-glow: 0 0 15px var(--accent-glow);
+  --shadow-ambient: 0 10px 30px rgba(0, 0, 0, 0.1);
+}
+
+/* Base Styles */
+html,
 body {
-  font-family: Inter, system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+  height: 100%;
+  margin: 0;
+  padding: 0;
+  background-color: var(--bg-app);
+  color: var(--text-primary);
+  font-family: var(--font-inter), system-ui, sans-serif;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
-  color: #e6e6e6;
-  background: radial-gradient(circle at 50% 10%, rgba(40,40,42,0.9), #0c0c0c 60%);
-  line-height: 1.45;
+  overflow: hidden;
+  /* Prevent body scroll, handle in main */
 }
 
-/* main content spacing - keeps content above bottom nav */
-.main-content, main {
-  min-height: calc(100vh - 112px);
-  padding: 20px 28px;
-}
-
-/* headings */
-h1, h2, h3, h4 { color: #ffffff; margin: 0 0 12px 0; }
-
-/* default buttons */
-button { font-family: inherit; font-size: 14px; }
-
-/* toast safety */
-.toast-root { z-index: 1200; }
-
-/* BottomNav styles (scoped using tg- prefix used by component) */
-.tg-bottomnav {
+/* Global Gradient Background */
+body::before {
+  content: '';
   position: fixed;
-  left: 50%;
-  transform: translateX(-50%);
-  bottom: calc(var(--bottom-nav-height, 22px) + 6px);
-  z-index: 50;
-  width: min(980px, 96%);
-  pointer-events: auto;
-}
-
-.tg-bottomnav-inner {
+  top: 0;
+  left: 0;
   width: 100%;
-  background: linear-gradient(180deg, rgba(20,20,20,0.98), rgba(12,12,12,0.96));
-  border-radius: 18px;
-  padding: 10px 14px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  box-shadow: 0 18px 40px rgba(6,6,6,0.6);
-  backdrop-filter: saturate(120%) blur(6px);
+  height: 100%;
+  background: radial-gradient(circle at 50% 0%, rgba(40, 40, 45, 0.4), transparent 70%),
+    radial-gradient(circle at 80% 10%, rgba(59, 130, 246, 0.05), transparent 50%);
+  pointer-events: none;
+  z-index: -1;
 }
 
-.tg-menu { width:100%; display:flex; align-items:center; justify-content:space-between; padding:0; margin:0; list-style:none; gap:8px; }
-.tg-group { display:flex; gap:10px; align-items:center; }
-.tg-fab-gap { width: calc(var(--fab-gap-width, 88px)); flex:0 0 auto; }
+/* Main Content Wrapper */
+main {
+  height: calc(100vh - var(--bottom-nav-height));
+  overflow-y: auto;
+  overflow-x: hidden;
+  padding-bottom: 24px;
+  /* Extra padding at bottom */
+  -webkit-overflow-scrolling: touch;
+}
 
-.tg-link { display:inline-flex; align-items:center; position:relative; overflow:hidden; width:56px; height:44px; border-radius:10px; text-decoration:none; color:#dcdcdc; transition:width .18s ease-out; }
-.tg-link::before { content:""; position:absolute; inset:0; border-radius:inherit; background: rgba(255,255,255,0.02); transform: translateX(100%); transition: transform .18s ease-out; z-index:0; }
-.tg-link .tg-link-icon { position:absolute; left:12px; z-index:1; display:inline-flex; align-items:center; }
-.tg-link .tg-link-title { display:block; width:100%; text-indent:28px; transform: translateX(100%); opacity:0; transition: transform .18s ease-out, opacity .14s ease-out; z-index:1; font-size:14px; }
-.tg-link:hover, .tg-link:focus-visible { width:128px; outline:none; }
-.tg-link:hover::before, .tg-link:focus-visible::before, .tg-link:hover .tg-link-title, .tg-link:focus-visible .tg-link-title { transform: translateX(0); opacity:1; }
-.tg-link.is-active { width:128px; }
-.tg-link.is-active::before { transform: translateX(0); background: rgba(255,255,255,0.03); }
-.tg-link.is-active .tg-link-title { transform: translateX(0); opacity:1; }
+/* Scrollbar Styling */
+::-webkit-scrollbar {
+  width: 6px;
+}
 
-/* FAB baseline (scoped) */
-.fab-root { position: fixed; left: 50%; transform: translateX(-50%); bottom: calc(var(--bottom-nav-height, 22px) + 18px); z-index: 60; pointer-events: none; display:flex; flex-direction:column; align-items:center; gap:12px; }
-.fab-button { pointer-events: auto; width:64px; height:64px; border-radius:999px; border:none; display:inline-flex; align-items:center; justify-content:center; background: linear-gradient(180deg,#7c4dff,#6a2be8); box-shadow: 0 20px 48px rgba(6,6,6,0.6), inset 0 -8px 16px rgba(0,0,0,0.2); cursor:pointer; }
+::-webkit-scrollbar-track {
+  background: transparent;
+}
 
-/* focus accessibility */
-button:focus-visible { box-shadow: 0 0 0 4px rgba(124,58,237,0.12); outline: none; }
+::-webkit-scrollbar-thumb {
+  background: rgba(255, 255, 255, 0.1);
+  border-radius: 3px;
+}
 
-/* small screens */
-@media (max-width: 520px) {
-  .fab-button { width:56px; height:56px; }
-  .tg-fab-gap { width: calc(var(--fab-gap-width, 72px)); }
+::-webkit-scrollbar-thumb:hover {
+  background: rgba(255, 255, 255, 0.2);
+}
+
+/* Utility Classes */
+.glass-panel {
+  background: rgba(20, 20, 20, 0.7);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+.glass-card {
+  background: rgba(255, 255, 255, 0.03);
+  border: 1px solid rgba(255, 255, 255, 0.05);
+  backdrop-filter: blur(8px);
+  border-radius: 16px;
+}
+
+.text-gradient {
+  background: linear-gradient(to right, #fff, #a0a0a0);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+
+/* Animations */
+@keyframes pulse-glow {
+
+  0%,
+  100% {
+    box-shadow: 0 0 15px rgba(59, 130, 246, 0.3);
+  }
+
+  50% {
+    box-shadow: 0 0 25px rgba(59, 130, 246, 0.5);
+  }
+}
+
+.animate-pulse-glow {
+  animation: pulse-glow 3s infinite;
+}
+
+/* Typography Utilities */
+h1,
+h2,
+h3,
+h4,
+h5,
+h6 {
+  color: var(--text-primary);
+  font-weight: 600;
+  letter-spacing: -0.02em;
+}
+
+.text-label {
+  font-size: 0.75rem;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: var(--text-tertiary);
+  font-weight: 600;
+}
+
+/* Form Elements */
+input,
+select,
+textarea {
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  color: var(--text-primary);
+  border-radius: 8px;
+  padding: 8px 12px;
+  transition: all 0.2s ease;
+}
+
+input:focus,
+select:focus,
+textarea:focus {
+  outline: none;
+  border-color: var(--accent-primary);
+  background: rgba(255, 255, 255, 0.08);
+}
+
+/* Button Reset */
+button {
+  cursor: pointer;
+  font-family: inherit;
+}
+
+/* Hide scrollbar for clean UI but allow scroll */
+.no-scrollbar::-webkit-scrollbar {
+  display: none;
+}
+
+.no-scrollbar {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
 }

@@ -1,0 +1,82 @@
+name: Performance Audit
+
+on:
+  schedule:
+    # Run nightly at 2 AM UTC
+    - cron: '0 2 * * *'
+  workflow_dispatch:
+    inputs:
+      audit_type:
+        description: 'Type of audit to run'
+        required: false
+        default: 'full'
+        type: choice
+        options:
+          - full
+          - lighthouse
+          - loadtest
+
+jobs:
+  perf-audit:
+    runs-on: ubuntu-latest
+    env:
+      PLAYWRIGHT_BASE_URL: http://localhost:3000
+      BASE_URL: http://localhost:3000
+      PERF_DASHBOARD_ENABLED: true
+      NEXT_TELEMETRY_DISABLED: 1
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: 'npm'
+
+      - name: Install system dependencies
+        run: |
+          # Install Chrome for Lighthouse
+          sudo apt-get update
+          sudo apt-get install -y chromium-browser
+
+      - name: Install npm dependencies
+        run: npm ci
+
+      - name: Build Next.js app
+        run: npm run build
+
+      - name: Start Next.js server in background
+        run: |
+          npm start &> server.log &
+          echo "Waiting for server to be ready..."
+          npx wait-on http://localhost:3000 --timeout 60000
+
+      - name: Run performance audit
+        run: |
+          npm run audit:ci
+
+      - name: Upload performance reports
+        uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: performance-reports
+          path: |
+            reports/performance/
+          retention-days: 30
+
+      - name: Upload Lighthouse HTML report
+        uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: lighthouse-html-report
+          path: |
+            reports/performance/*/lighthouse.html
+          retention-days: 30
+
+      - name: Debug server logs on failure
+        if: failure()
+        run: |
+          echo "=== Server Logs ==="
+          cat server.log

@@ -1,0 +1,29 @@
+{
+  "filesChanged": [
+    {
+      "path": "src/app/api/_lib/rbac-integration.test.ts",
+      "reason": "Removed duplicate assertEqual function and added import from shared test-utils"
+    },
+    {
+      "path": "src/app/api/_lib/rbac.test.ts",
+      "reason": "Removed duplicate assertEqual function and added import from shared test-utils"
+    },
+    {
+      "path": "e2e/playwright/utils/index.ts",
+      "reason": "Created re-export file for e2e utilities"
+    },
+    {
+      "path": "scripts/validate-boundaries.sh",
+      "reason": "Created validation script for TypeScript, ESLint, and boundary checks"
+    }
+  ],
+  "commands": {
+    "applyPatch": "git apply mX-server-client-fix.cleaned.patch",
+    "runValidations": [
+      "npx tsc --noEmit",
+      "npm run lint",
+      "sh scripts/validate-boundaries.sh"
+    ],
+    "exportPatch": "git diff db639d4 > mX-server-client-fix.cleaned.patch"
+  }
+}

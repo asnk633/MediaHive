@@ -17,7 +17,10 @@
 /* Bottom nav container */
 .bottom-nav {
   /* already fixed in component; keep stacking context sane */
-  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.35);
+  box-shadow: var(--shadow-2);
+  /* Performance optimization: hardware acceleration */
+  transform: translateZ(0);
+  will-change: auto;
 }
 
 /* Ensure the app layout never clips fixed elements on mobile */
@@ -28,6 +31,8 @@ html, body, #root {
 body {
   overflow-x: hidden;
   background: radial-gradient(1200px 600px at 50% -200px, #0b1320, #0a0a0b 60%);
+  /* Performance optimization: contain layout */
+  contain: layout style;
 }
 
 /* Optional: avoid accidental transforms on page wrappers that would break 'fixed' */

@@ -1,0 +1,51 @@
+{
+  "lighthouse": {
+    "thresholds": {
+      "performance": 80,
+      "accessibility": 90,
+      "best-practices": 90,
+      "seo": 80
+    },
+    "categories": [
+      "performance",
+      "accessibility",
+      "best-practices",
+      "seo"
+    ]
+  },
+  "autocannon": {
+    "endpoints": [
+      "/api/tasks",
+      "/api/events",
+      "/api/users",
+      "/api/files"
+    ],
+    "duration": 10,
+    "connections": 20,
+    "pipelining": 1,
+    "thresholds": {
+      "requestsPerSecond": 50,
+      "latency": 200,
+      "throughput": 100000
+    }
+  },
+  "playwright": {
+    "testPatterns": [
+      "perf.spec.ts",
+      "*performance*.spec.ts"
+    ],
+    "timeout": 30000
+  },
+  "bundle": {
+    "maxChunkSize": 500000,
+    "maxTotalSize": 5000000
+  },
+  "database": {
+    "slowQueryThreshold": 1000,
+    "explainQueries": [
+      "SELECT * FROM tasks WHERE status = ?",
+      "SELECT * FROM events WHERE startTime > ?",
+      "SELECT * FROM users WHERE institutionId = ?"
+    ]
+  }
+}

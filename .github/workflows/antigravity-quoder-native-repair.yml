@@ -1,0 +1,34 @@
+# This file preserves existing triggers but ensures env wiring and safe SA decode.
+name: antigravity-quoder-native-repair
+on:
+  workflow_dispatch:
+  push:
+    branches: [ main ]
+permissions: read-all
+env:
+  SUPABASE_URL: ${{ secrets.SUPABASE_URL }}
+  SUPABASE_SERVICE_KEY: ${{ secrets.SUPABASE_SERVICE_KEY }}
+  APP_SECRET: ${{ secrets.APP_SECRET }}
+  FIREBASE_ADMIN_SA_BASE64: ${{ secrets.FIREBASE_ADMIN_SA }}
+jobs:
+  repair:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Decode service account (safe)
+        if: runner.os != 'Windows'
+        run: |
+          if [ -z "${FIREBASE_ADMIN_SA_BASE64:-}" ]; then
+            echo "FIREBASE_ADMIN_SA_BASE64 secret missing - skipping decode"
+          else
+            echo "$FIREBASE_ADMIN_SA_BASE64" | base64 --decode > service-account.json
+            ls -la service-account.json
+          fi
+        shell: bash
+
+      - name: Run repair script (example)
+        run: |
+          echo "Run your repair steps here"
+        shell: bash

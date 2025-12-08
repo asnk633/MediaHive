@@ -3,6 +3,8 @@
 import React, { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import { useAuth } from '@/contexts/AuthContext';
+import { signInWithEmailAndPassword } from 'firebase/auth';
+import { auth } from '@/firebase/client';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
@@ -16,7 +18,7 @@ export default function LoginPage() {
   const [password, setPassword] = useState('');
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState('');
-  const { login, user } = useAuth();
+  const { user } = useAuth();
   const router = useRouter();
 
   useEffect(() => {
@@ -31,7 +33,7 @@ export default function LoginPage() {
     setIsLoading(true);
 
     try {
-      await login(email, password);
+      await signInWithEmailAndPassword(auth, email, password);
       toast.success('Welcome back!');
       router.push('/tasks');
     } catch (err) {

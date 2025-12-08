@@ -11,7 +11,6 @@ export async function sendPush(deviceTokens: string[], payload: { title?: string
 
   // If EXPO_SERVER_KEY or FCM is present, one could call the appropriate API.
   // For now we simulate and log.
-  // eslint-disable-next-line no-console
   console.log("[sendPush_stub] tokens:", deviceTokens, "payload:", payload);
 
   return {

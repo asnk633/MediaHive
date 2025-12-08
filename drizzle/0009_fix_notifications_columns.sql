@@ -1,0 +1,11 @@
+-- ALTER TABLE `notifications` ADD COLUMN `read_at` text;
+--> statement-breakpoint
+-- ALTER TABLE `notifications` ADD COLUMN `channel` text DEFAULT 'ui';
+--> statement-breakpoint
+-- ALTER TABLE `notifications` ADD COLUMN `category` text;
+--> statement-breakpoint
+-- ALTER TABLE `notifications` ADD COLUMN `ttl` integer;
+--> statement-breakpoint
+-- ALTER TABLE `notifications` ADD COLUMN `read_receipt` integer DEFAULT false;
+--> statement-breakpoint
+-- ALTER TABLE `notifications` ADD COLUMN `updated_at` text;

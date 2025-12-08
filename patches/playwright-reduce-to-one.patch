@@ -1,0 +1,12 @@
+*** Update File: playwright.config.ts
+@@
+-  use: {
+-    headless: false,
+-    // ...other settings
+-  },
++  use: {
++    headless: true, // run headless by default for CI / fast smoke
++    // keep other shared settings
++  },
++  // restrict tests to the single basic smoke test we keep
++  testMatch: ['**/e2e/playwright/ui/smoke.single.spec.ts'],

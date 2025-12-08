@@ -13,7 +13,7 @@ export default function TaskDetailPage() {
   const id = params.id as string | undefined;
 
   // keep using your client context hook
-  const { getTask, updateTask, ...rest } = useClientData();
+  const { updateTask, ...rest } = useClientData();
   const toast = useToast();
   const router = useRouter();
 
@@ -21,8 +21,7 @@ export default function TaskDetailPage() {
     if (!id) return;
     // if you had server fetching, call client fetch or your existing client data loader
     // Example: load task from client store if not present
-    // getTask(id).catch(err => toast({ title: 'Failed to load task' }));
-  }, [id, getTask, toast]);
+  }, [id, toast]);
 
   if (!id) {
     return <div className="p-6">Invalid task id</div>;

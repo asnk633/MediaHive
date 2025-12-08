@@ -1,0 +1,31 @@
+/* src/components/ui/bottomnav.module.css */
+.bottomNav {
+  position: fixed;
+  left: 0; right:0;
+  bottom: 12px;
+  padding: 8px 20px;
+  display:flex;
+  justify-content:center;
+  z-index:70;
+  pointer-events: auto;
+}
+.list {
+  display:flex;
+  gap: 24px;
+  background: linear-gradient(180deg, rgba(7,7,9,0.95), rgba(8,8,10,0.9));
+  padding: 12px 22px;
+  border-radius: 26px;
+  box-shadow: var(--shadow-2);
+  align-items:center;
+}
+.item { list-style:none; }
+.link {
+  display:flex;
+  gap:8px;
+  align-items:center;
+  color:var(--muted);
+  font-size:13px;
+}
+.link:focus, .link:hover { color:var(--text); }
+.icon { width:20px; height:20px; display:inline-block; background:transparent; }
+.label { display:inline-block; }

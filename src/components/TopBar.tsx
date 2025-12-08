@@ -1,81 +1,64 @@
-// src/components/TopBar.tsx
 "use client";
-
-import { useEffect, useState } from "react";
-import Link from "next/link";
-
-type Health = "unknown" | "healthy" | "error";
+import { Bell } from 'lucide-react';
+import Link from 'next/link';
+import { useRole } from "@/app/(shell)/RoleContext";
+import ThemeToggle from "@/components/ThemeToggle";
+import { useEffect, useRef } from "react";
+import { addFocusVisibleClass } from "@/utils/a11y";
 
 export default function TopBar() {
-  const [health, setHealth] = useState<Health>("unknown");
-  const [unread, setUnread] = useState<number>(0);
+  const { user } = useRole();
+  const notificationButtonRef = useRef<HTMLButtonElement>(null);
+  const userMenuRef = useRef<HTMLDivElement>(null);
 
+  // Add focus visible class to interactive elements for keyboard navigation detection
   useEffect(() => {
-    let mounted = true;
-    const fetchHealth = async () => {
-      try {
-        const res = await fetch("/api/health");
-        const ok = res.ok ? (await res.json())?.status === "healthy" : false;
-        if (mounted) setHealth(ok ? "healthy" : "error");
-      } catch {
-        if (mounted) setHealth("error");
-      }
-    };
-    const fetchNotifications = async () => {
-      try {
-        const res = await fetch("/api/notifications?userId=1&read=false&limit=5");
-        if (mounted) setUnread(res.ok ? (await res.json()).length ?? 0 : 0);
-      } catch {
-        if (mounted) setUnread(0);
-      }
-    };
-    fetchHealth();
-    fetchNotifications();
-    const t1 = setInterval(fetchHealth, 60_000);
-    const t2 = setInterval(fetchNotifications, 30_000);
-    return () => {
-      mounted = false;
-      clearInterval(t1);
-      clearInterval(t2);
-    };
+    if (notificationButtonRef.current) {
+      addFocusVisibleClass(notificationButtonRef.current);
+    }
+    if (userMenuRef.current) {
+      addFocusVisibleClass(userMenuRef.current);
+    }
   }, []);
 
   return (
-    <header className="sticky top-0 z-50 flex items-center justify-between bg-black/60 backdrop-blur-md px-4 py-3 border-b border-white/10">
-      <div className="flex items-center gap-2">
-        <span
-          className={`inline-block h-3 w-3 rounded-full ${
-            health === "healthy" ? "bg-emerald-500" : health === "error" ? "bg-red-500" : "bg-zinc-500"
-          }`}
-          title={`Server: ${health}`}
-        />
-        <span className="text-lg font-semibold">Thaiba Garden</span>
+    <header className="topbar">
+      <div className="flex items-center gap-3">
+        <div className="w-3 h-3 rounded-full bg-green-500 shadow-[0_0_10px_rgba(0,200,83,0.25)]" />
+        <div className="font-bold text-lg tracking-tight text-[var(--text)]">Thaiba Garden</div>
       </div>
 
-      <nav className="flex items-center gap-3 text-white/80">
-        <button aria-label="Theme" className="hover:text-white">
-          🌙
-        </button>
-        <Link href="/updates" className="relative hover:text-white" aria-label="Notifications" title="Notifications">
-          🔔
-          {unread > 0 && (
-            <span className="absolute -right-1 -top-1 grid h-4 min-w-4 place-items-center rounded-full bg-emerald-500 px-1 text-[10px] font-bold text-black">
-              {unread}
-            </span>
-          )}
-        </Link>
-        
-        {/* Avatar link updated to match the requested styling */}
-        <Link href="/profile" aria-label="Open profile" className="ml-2">
-          <div
-            className="w-9 h-9 rounded-full overflow-hidden border-2 border-white/8 cursor-pointer grid place-items-center"
-            title="Your profile"
-            style={{ pointerEvents: "auto" }}
+      <div className="flex items-center gap-3">
+        <ThemeToggle />
+
+        <Link href="/updates" passHref legacyBehavior>
+          <button
+            ref={notificationButtonRef}
+            aria-label="Notifications"
+            title="Notifications"
+            className="p-2 rounded-full hover:bg-[var(--panel)] transition-all duration-200 ease-in-out focus:outline-none"
           >
-            <span className="text-sm font-medium text-white/90">AU</span>
-          </div>
+            <Bell size={20} aria-hidden="true" className="text-[var(--icon)]" />
+          </button>
         </Link>
-      </nav>
+
+        <div
+          ref={userMenuRef}
+          className="w-9 h-9 rounded-full grid place-items-center bg-[var(--panel)] border border-[var(--glass-border)]"
+          role="button"
+          tabIndex={0}
+          aria-label={`User menu for ${user?.name || 'Anonymous'}`}
+        >
+          <span className="font-bold text-sm text-[var(--icon)]">
+            {user?.name?.charAt(0).toUpperCase() || 'A'}
+          </span>
+        </div>
+        {user && (
+          <span className="px-2 py-1 text-xs rounded bg-gray-100 dark:bg-gray-800 text-gray-600 dark:text-gray-300 font-medium border border-gray-200 dark:border-gray-700">
+            {user.role.toUpperCase()}
+          </span>
+        )}
+      </div>
     </header>
   );
 }

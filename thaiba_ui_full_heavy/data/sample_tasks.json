@@ -1,0 +1,19 @@
+{
+  "tasks": [
+    {
+      "id": 1,
+      "title": "Shoot campus B-roll",
+      "priority": "high"
+    },
+    {
+      "id": 2,
+      "title": "Edit festival video",
+      "priority": "urgent"
+    },
+    {
+      "id": 3,
+      "title": "Schedule drone shoot",
+      "priority": "medium"
+    }
+  ]
+}

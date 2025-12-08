@@ -1,0 +1,27 @@
+{
+  "ci": {
+    "collect": {
+      "url": [
+        "http://localhost:3000/home",
+        "http://localhost:3000/tasks"
+      ],
+      "numberOfRuns": 3,
+      "settings": {
+        "formFactor": "mobile",
+        "screenEmulation": {
+          "mobile": true,
+          "width": 360,
+          "height": 640,
+          "deviceScaleFactor": 2,
+          "disabled": false
+        }
+      }
+    },
+    "assert": {
+      "preset": "lighthouse:no-pwa"
+    },
+    "upload": {
+      "target": "temporary-public-storage"
+    }
+  }
+}

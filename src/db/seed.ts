@@ -1,6 +1,7 @@
 // src/db/seed.ts
 import bcrypt from "bcryptjs";
-import { db } from "./index";
+import { db } from "./index.js";
+import { eq } from "drizzle-orm";
 import {
   institutions,
   users,
@@ -9,7 +10,8 @@ import {
   notifications,
   attendance,
   files,
-} from "./schema";
+  tenants,
+} from "./schema.js";
 
 const now = () => new Date().toISOString();
 
@@ -20,126 +22,218 @@ async function main() {
   try {
     console.log("📦 Running DB seed...");
 
-    // 1) Insert institution
-    console.log(" - inserting institution...");
-    await db.insert(institutions).values({
-      name: "Thaiba Garden",
-      createdAt: now(),
-    });
-
-    // We assume the institution id will be 1 on a fresh DB. If not, change accordingly.
-    const institutionId = 1;
-
-    // 2) Insert users (admin + example team user)
-    console.log(" - inserting users...");
-    const adminPasswordHash = bcrypt.hashSync("ChangeMe123!", 10);
-    const teamPasswordHash = bcrypt.hashSync("team-pass-123", 10);
-
-    await db.insert(users).values([
-      {
-        email: "admin@thaiba.com",
-        passwordHash: adminPasswordHash,
-        fullName: "Admin User",
-        avatarUrl: null,
-        role: "admin",
-        institutionId,
+    // 1) Check if tenant already exists, if not insert it
+    console.log(" - checking/inserting tenant...");
+    let tenantId: number;
+    const existingTenant = await db.select({id: tenants.id}).from(tenants).where(eq(tenants.id, 1)).limit(1);
+    if (existingTenant.length === 0) {
+      const [tenantResult] = await db.insert(tenants).values({
+        name: "Thaiba Garden",
+        domain: "thaiba.local",
         createdAt: now(),
         updatedAt: now(),
-      },
-      {
-        email: "john.doe@thaiba.com",
-        passwordHash: teamPasswordHash,
-        fullName: "John Doe",
-        avatarUrl: null,
-        role: "team",
-        institutionId,
+      }).returning({ id: tenants.id });
+      tenantId = tenantResult.id;
+    } else {
+      tenantId = existingTenant[0].id;
+    }
+
+    // 2) Check if institution already exists, if not insert it
+    console.log(" - checking/inserting institution...");
+    let institutionId: number;
+    const existingInstitution = await db.select({id: institutions.id}).from(institutions).where(eq(institutions.name, "Thaiba Garden")).limit(1);
+    if (existingInstitution.length === 0) {
+      const [institutionResult] = await db.insert(institutions).values({
+        name: "Thaiba Garden",
+        tenantId: tenantId,
         createdAt: now(),
-        updatedAt: now(),
-      },
-    ]);
+      }).returning({ id: institutions.id });
+      institutionId = institutionResult.id;
+    } else {
+      institutionId = existingInstitution[0].id;
+    }
 
-    // For simplicity assume admin id = 1 and john doe id = 2 on a fresh DB
-    // If your DB already has rows, fetch IDs programmatically (see note below)
-    const adminId = 1;
-    const johnId = 2;
+    // 3) Check if users already exist, if not insert them
+    console.log(" - checking/inserting users...");
+    let adminId: number;
+    let johnId: number;
+    let guestId: number;
+    
+    // Check for existing users
+    const existingAdmin = await db.select({id: users.id}).from(users).where(eq(users.email, "admin@thaiba.com")).limit(1);
+    const existingJohn = await db.select({id: users.id}).from(users).where(eq(users.email, "john.doe@thaiba.com")).limit(1);
+    const existingGuest = await db.select({id: users.id}).from(users).where(eq(users.email, "guest@thaiba.com")).limit(1);
+    
+    if (existingAdmin.length === 0 && existingJohn.length === 0 && existingGuest.length === 0) {
+      // Insert new users and capture their IDs
+      const adminPasswordHash = bcrypt.hashSync("ChangeMe123!", 10);
+      const teamPasswordHash = bcrypt.hashSync("team-pass-123", 10);
+      const guestPasswordHash = bcrypt.hashSync("guest-pass-123", 10);
 
-    // 3) Insert example tasks
-    console.log(" - inserting tasks...");
-    await db.insert(tasks).values([
-      {
-        title: "Welcome: Set up dashboard",
-        description: "Initial onboarding task for the admin user.",
-        status: "todo",
-        priority: "high",
-        assignedToId: maybe(johnId),
+      const insertedUsers = await db.insert(users).values([
+        {
+          email: "admin@thaiba.com",
+          passwordHash: adminPasswordHash,
+          fullName: "Admin User",
+          avatarUrl: null,
+          role: "admin",
+          institutionId,
+          tenantId: tenantId,
+          createdAt: now(),
+          updatedAt: now(),
+        },
+        {
+          email: "john.doe@thaiba.com",
+          passwordHash: teamPasswordHash,
+          fullName: "John Doe",
+          avatarUrl: null,
+          role: "team",
+          institutionId,
+          tenantId: tenantId,
+          createdAt: now(),
+          updatedAt: now(),
+        },
+        {
+          email: "guest@thaiba.com",
+          passwordHash: guestPasswordHash,
+          fullName: "Guest User",
+          avatarUrl: null,
+          role: "guest",
+          institutionId,
+          tenantId: tenantId,
+          createdAt: now(),
+          updatedAt: now(),
+        },
+      ]).returning({ id: users.id, email: users.email });
+
+      // Find the inserted users by email
+      const adminUser = insertedUsers.find((u: { email: string; id: number }) => u.email === "admin@thaiba.com");
+      const johnUser = insertedUsers.find((u: { email: string; id: number }) => u.email === "john.doe@thaiba.com");
+      const guestUser = insertedUsers.find((u: { email: string; id: number }) => u.email === "guest@thaiba.com");
+
+      adminId = adminUser?.id || 1;
+      johnId = johnUser?.id || 2;
+      guestId = guestUser?.id || 3;
+    } else {
+      // Users already exist, get their IDs
+      adminId = existingAdmin.length > 0 ? existingAdmin[0].id : 1;
+      johnId = existingJohn.length > 0 ? existingJohn[0].id : 2;
+      guestId = existingGuest.length > 0 ? existingGuest[0].id : 3;
+    }
+
+    // 4) Check if tasks already exist, if not insert them
+    console.log(" - checking/inserting tasks...");
+    const existingTask1 = await db.select({id: tasks.id}).from(tasks).where(eq(tasks.title, "Welcome: Set up dashboard")).limit(1);
+    const existingTask2 = await db.select({id: tasks.id}).from(tasks).where(eq(tasks.title, "Prepare Playwright tests")).limit(1);
+    
+    if (existingTask1.length === 0 && existingTask2.length === 0) {
+      await db.insert(tasks).values([
+        {
+          title: "Welcome: Set up dashboard",
+          description: "Initial onboarding task for the admin user.",
+          status: "todo",
+          priority: "high",
+          assignedToId: maybe(johnId),
+          createdById: adminId,
+          institutionId,
+          tenantId: tenantId,
+          dueDate: null,
+          reviewStatus: null,
+          lastUpdatedBy: null,
+          isArchived: 0,
+          version: 1,
+          createdAt: now(),
+          updatedAt: now(),
+        },
+        {
+          title: "Prepare Playwright tests",
+          description: "Add e2e tests and CI integration.",
+          status: "in_progress",
+          priority: "medium",
+          assignedToId: maybe(johnId),
+          createdById: adminId,
+          institutionId,
+          tenantId: tenantId,
+          dueDate: null,
+          reviewStatus: null,
+          lastUpdatedBy: null,
+          isArchived: 0,
+          version: 1,
+          createdAt: now(),
+          updatedAt: now(),
+        },
+      ] as any);
+    }
+
+    // 5) Check if event already exists, if not insert it
+    console.log(" - checking/inserting an event...");
+    const existingEvent = await db.select({id: events.id}).from(events).where(eq(events.title, "Project Kickoff")).limit(1);
+    if (existingEvent.length === 0) {
+      await db.insert(events).values({
+        title: "Project Kickoff",
+        description: "Initial kickoff meeting for the Orchids feature work.",
+        startTime: now(),
+        endTime: new Date(Date.now() + 60 * 60 * 1000).toISOString(), // +1 hour
+        approvalStatus: "pending",
         createdById: adminId,
         institutionId,
-        dueDate: null,
+        tenantId: tenantId,
         createdAt: now(),
         updatedAt: now(),
-      },
-      {
-        title: "Prepare Playwright tests",
-        description: "Add e2e tests and CI integration.",
-        status: "in_progress",
-        priority: "medium",
-        assignedToId: maybe(johnId),
-        createdById: adminId,
+      });
+    }
+
+    // 6) Check if notification already exists, if not insert it
+    console.log(" - checking/inserting a notification...");
+    const existingNotification = await db.select({id: notifications.id}).from(notifications).where(eq(notifications.title, "Welcome")).limit(1);
+    if (existingNotification.length === 0) {
+      // Cast to any to bypass strict typing mismatch in seed insertion.
+      await db.insert(notifications).values({
+        userId: adminId,
+        type: "system",
+        title: "Welcome",
+        body: "Seed complete — welcome to Thaiba Garden Media Manager.",
+        readAt: null,
+        channel: "ui",
+        category: null,
+        ttl: null,
+        readReceipt: false,
+        createdAt: now(),
+        updatedAt: now(),
+      } as any);
+    }
+
+    // 7) Check if attendance row already exists, if not insert it
+    console.log(" - checking/inserting attendance...");
+    const existingAttendance = await db.select({id: attendance.id}).from(attendance).where(eq(attendance.userId, johnId)).limit(1);
+    if (existingAttendance.length === 0) {
+      await db.insert(attendance).values({
+        userId: johnId,
+        checkIn: now(),
+        checkOut: null,
         institutionId,
-        dueDate: null,
+        tenantId: tenantId,
         createdAt: now(),
-        updatedAt: now(),
-      },
-    ]);
+      });
+    }
 
-    // 4) Insert an event
-    console.log(" - inserting an event...");
-    await db.insert(events).values({
-      title: "Project Kickoff",
-      description: "Initial kickoff meeting for the Orchids feature work.",
-      startTime: now(),
-      endTime: new Date(Date.now() + 60 * 60 * 1000).toISOString(), // +1 hour
-      createdById: adminId,
-      institutionId,
-      createdAt: now(),
-    });
-
-    // 5) Insert a notification
-    console.log(" - inserting a notification...");
-    // Cast to any to bypass strict typing mismatch in seed insertion.
-    await db.insert(notifications).values({
-      userId: adminId,
-      type: "system",
-      title: "Welcome",
-      message: "Seed complete — welcome to Thaiba Garden Media Manager.",
-      read: 0, // boolean mode stored as integer per schema
-      metadata: JSON.stringify({ seed: true }),
-      createdAt: now(),
-    } as any);
-
-    // 6) Insert an attendance row
-    console.log(" - inserting attendance...");
-    await db.insert(attendance).values({
-      userId: johnId,
-      checkIn: now(),
-      checkOut: null,
-      institutionId,
-      createdAt: now(),
-    });
-
-    // 7) Insert a files row
-    console.log(" - inserting file entry...");
-    await db.insert(files).values({
-      name: "example-doc.pdf",
-      fileUrl: "/public/example-doc.pdf",
-      fileType: "application/pdf",
-      fileSize: 12345,
-      folder: "docs",
-      visibility: "all",
-      uploadedById: adminId,
-      institutionId,
-      createdAt: now(),
-    });
+    // 8) Check if files row already exists, if not insert it
+    console.log(" - checking/inserting file entry...");
+    const existingFile = await db.select({id: files.id}).from(files).where(eq(files.name, "example-doc.pdf")).limit(1);
+    if (existingFile.length === 0) {
+      await db.insert(files).values({
+        name: "example-doc.pdf",
+        fileUrl: "/public/example-doc.pdf",
+        fileType: "application/pdf",
+        fileSize: 12345,
+        folder: "docs",
+        visibility: "all",
+        uploadedById: adminId,
+        institutionId,
+        tenantId: tenantId,
+        createdAt: now(),
+      });
+    }
 
     console.log("✅ Seed finished.");
     process.exit(0);

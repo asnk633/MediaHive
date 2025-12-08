@@ -1,4 +1,4 @@
-CREATE TABLE `attendance` (
+CREATE TABLE IF NOT EXISTS `attendance` (
 	`id` integer PRIMARY KEY AUTOINCREMENT NOT NULL,
 	`user_id` integer NOT NULL,
 	`check_in` text NOT NULL,
@@ -9,7 +9,7 @@ CREATE TABLE `attendance` (
 	FOREIGN KEY (`institution_id`) REFERENCES `institutions`(`id`) ON UPDATE no action ON DELETE no action
 );
 --> statement-breakpoint
-CREATE TABLE `events` (
+CREATE TABLE IF NOT EXISTS `events` (
 	`id` integer PRIMARY KEY AUTOINCREMENT NOT NULL,
 	`title` text NOT NULL,
 	`description` text,
@@ -22,7 +22,7 @@ CREATE TABLE `events` (
 	FOREIGN KEY (`institution_id`) REFERENCES `institutions`(`id`) ON UPDATE no action ON DELETE no action
 );
 --> statement-breakpoint
-CREATE TABLE `files` (
+CREATE TABLE IF NOT EXISTS `files` (
 	`id` integer PRIMARY KEY AUTOINCREMENT NOT NULL,
 	`name` text NOT NULL,
 	`file_url` text NOT NULL,
@@ -37,13 +37,13 @@ CREATE TABLE `files` (
 	FOREIGN KEY (`institution_id`) REFERENCES `institutions`(`id`) ON UPDATE no action ON DELETE no action
 );
 --> statement-breakpoint
-CREATE TABLE `institutions` (
+CREATE TABLE IF NOT EXISTS `institutions` (
 	`id` integer PRIMARY KEY AUTOINCREMENT NOT NULL,
 	`name` text NOT NULL,
 	`created_at` text NOT NULL
 );
 --> statement-breakpoint
-CREATE TABLE `notifications` (
+CREATE TABLE IF NOT EXISTS `notifications` (
 	`id` integer PRIMARY KEY AUTOINCREMENT NOT NULL,
 	`user_id` integer NOT NULL,
 	`type` text NOT NULL,
@@ -55,7 +55,7 @@ CREATE TABLE `notifications` (
 	FOREIGN KEY (`user_id`) REFERENCES `users`(`id`) ON UPDATE no action ON DELETE no action
 );
 --> statement-breakpoint
-CREATE TABLE `tasks` (
+CREATE TABLE IF NOT EXISTS `tasks` (
 	`id` integer PRIMARY KEY AUTOINCREMENT NOT NULL,
 	`title` text NOT NULL,
 	`description` text,
@@ -72,7 +72,7 @@ CREATE TABLE `tasks` (
 	FOREIGN KEY (`institution_id`) REFERENCES `institutions`(`id`) ON UPDATE no action ON DELETE no action
 );
 --> statement-breakpoint
-CREATE TABLE `users` (
+CREATE TABLE IF NOT EXISTS `users` (
 	`id` integer PRIMARY KEY AUTOINCREMENT NOT NULL,
 	`email` text NOT NULL,
 	`password_hash` text NOT NULL,
@@ -85,4 +85,4 @@ CREATE TABLE `users` (
 	FOREIGN KEY (`institution_id`) REFERENCES `institutions`(`id`) ON UPDATE no action ON DELETE no action
 );
 --> statement-breakpoint
-CREATE UNIQUE INDEX `users_email_unique` ON `users` (`email`);
+CREATE UNIQUE INDEX IF NOT EXISTS `users_email_unique` ON `users` (`email`);

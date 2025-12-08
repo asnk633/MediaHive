@@ -12,6 +12,7 @@ async function main() {
             visibility: 'all',
             uploadedById: 1,
             institutionId: 1,
+            tenantId: 1, // Add missing tenantId
             createdAt: new Date().toISOString(),
         },
         {
@@ -23,6 +24,7 @@ async function main() {
             visibility: 'all',
             uploadedById: 2,
             institutionId: 1,
+            tenantId: 1, // Add missing tenantId
             createdAt: new Date().toISOString(),
         },
         {
@@ -34,6 +36,7 @@ async function main() {
             visibility: 'all',
             uploadedById: 1,
             institutionId: 1,
+            tenantId: 1, // Add missing tenantId
             createdAt: new Date().toISOString(),
         },
         {
@@ -45,6 +48,7 @@ async function main() {
             visibility: 'team',
             uploadedById: 2,
             institutionId: 1,
+            tenantId: 1, // Add missing tenantId
             createdAt: new Date().toISOString(),
         },
         {
@@ -56,6 +60,7 @@ async function main() {
             visibility: 'team',
             uploadedById: 1,
             institutionId: 1,
+            tenantId: 1, // Add missing tenantId
             createdAt: new Date().toISOString(),
         },
         {
@@ -67,6 +72,7 @@ async function main() {
             visibility: 'team',
             uploadedById: 3,
             institutionId: 1,
+            tenantId: 1, // Add missing tenantId
             createdAt: new Date().toISOString(),
         },
         {
@@ -78,6 +84,7 @@ async function main() {
             visibility: 'guest',
             uploadedById: 1,
             institutionId: 1,
+            tenantId: 1, // Add missing tenantId
             createdAt: new Date().toISOString(),
         },
         {
@@ -89,11 +96,12 @@ async function main() {
             visibility: 'guest',
             uploadedById: 4,
             institutionId: 1,
+            tenantId: 1, // Add missing tenantId
             createdAt: new Date().toISOString(),
         },
     ];
 
-    await db.insert(files).values(sampleFiles);
+    await db.insert(files).values(sampleFiles as any);
     
     console.log('✅ Files seeder completed successfully');
 }

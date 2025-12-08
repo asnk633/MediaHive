@@ -1,0 +1,91 @@
+*** Begin Patch
+*** Update File: e2e/playwright/kanban-drag.spec.ts
+@@
+-import { test, expect } from "@playwright/test";
+-
+-test.describe("kanban", () => {
+-  test("guest sees To Do column and cannot drag tasks to in_progress", async ({ page }) => {
+-    await page.goto("/tasks");
+-
+-    const todoColumn = page.locator('[data-column="todo"]');
+-    const inProgressColumn = page.locator('[data-column="in_progress"]');
+-    const doneColumn = page.locator('[data-column="done"]');
+-
+-    await expect(todoColumn).toBeVisible();
+-    await expect(inProgressColumn).toBeVisible();
+-    await expect(doneColumn).toBeVisible();
+-  });
+-
+-  test("dragging task from todo to done updates status (UI + attribute)", async ({ page }) => {
+-    await page.goto("/tasks");
+-
+-    const todoColumn = page.locator('[data-column="todo"]');
+-    const doneColumn = page.locator('[data-column="done"]');
+-
+-    const task = todoColumn.locator('[data-task-id]').first();
+-    await expect(task).toBeVisible();
+-
+-    const taskId = await task.getAttribute("data-task-id");
+-    expect(taskId, "taskId must be present").toBeTruthy();
+-
+-    // ...rest of existing test that does dragging and asserts UI + attribute...
+-  });
+-});
++import { test, expect } from "@playwright/test";
++
++// Helper: navigate to /tasks, wait for networkidle and for kanban selector.
++// If the selector doesn't appear within the timeout, dump page HTML (first 20k chars)
++// to the test output to help debug missing DOM.
++async function gotoTasksAndWaitForKanban(page, timeout = 10000) {
++  await page.goto("/tasks", { waitUntil: "domcontentloaded" });
++  await page.waitForLoadState("networkidle", { timeout: timeout }).catch(() => {
++    // continue — we'll try selector wait next
++  });
++
++  try {
++    await page.waitForSelector('[data-column="todo"]', { timeout });
++    return;
++  } catch (err) {
++    try {
++      const html = await page.content();
++      // Print snapshot (trim to avoid huge logs)
++      console.log("=== Playwright HTML snapshot (first 20000 chars) ===\n", html.slice(0, 20000));
++    } catch (e) {
++      console.log("Could not read page content:", e);
++    }
++    // rethrow the original selector error so Playwright marks the test failed + captures artifacts
++    throw err;
++  }
++}
++
++test.describe("kanban", () => {
++  test("guest sees To Do column and cannot drag tasks to in_progress", async ({ page }) => {
++    await gotoTasksAndWaitForKanban(page, 15000);
++
++    const todoColumn = page.locator('[data-column="todo"]');
++    const inProgressColumn = page.locator('[data-column="in_progress"]');
++    const doneColumn = page.locator('[data-column="done"]');
++
++    await expect(todoColumn).toBeVisible({ timeout: 10000 });
++    await expect(inProgressColumn).toBeVisible({ timeout: 10000 });
++    await expect(doneColumn).toBeVisible({ timeout: 10000 });
++  });
++
++  test("dragging task from todo to done updates status (UI + attribute)", async ({ page }) => {
++    await gotoTasksAndWaitForKanban(page, 15000);
++
++    const todoColumn = page.locator('[data-column="todo"]');
++    const doneColumn = page.locator('[data-column="done"]');
++
++    // wait for at least one task in todo
++    await page.waitForSelector('[data-column="todo"] [data-task-id]', { timeout: 10000 });
++    const task = todoColumn.locator('[data-task-id]').first();
++    await expect(task).toBeVisible({ timeout: 10000 });
++
++    const taskId = await task.getAttribute("data-task-id");
++    expect(taskId, "taskId must be present").toBeTruthy();
++
++    // ...rest of existing test that does dragging and asserts UI + attribute...
++  });
++});
+*** End Patch

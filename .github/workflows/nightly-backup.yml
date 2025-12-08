@@ -13,7 +13,7 @@ jobs:
       TURSO_CONNECTION_URL: ${{ secrets.TURSO_CONNECTION_URL }}
       TURSO_AUTH_TOKEN: ${{ secrets.TURSO_AUTH_TOKEN }}
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v6
 
       - name: Setup Node.js
         uses: actions/setup-node@v4

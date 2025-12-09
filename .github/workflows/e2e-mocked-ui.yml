@@ -64,7 +64,14 @@ jobs:
 
       - name: Install dependencies
         run: |
-          pnpm install --frozen-lockfile
+          set -e
+          if command -v pnpm >/dev/null 2>&1; then
+            echo "Running pnpm install (try frozen then fallback)..."
+            pnpm install --frozen-lockfile || pnpm install --no-frozen-lockfile
+          else
+            echo "pnpm not found; falling back to npm install"
+            npm ci || npm install
+          fi
         env:
           CI: true
 

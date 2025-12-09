@@ -3,7 +3,7 @@
 // Lightweight wrapper for running Playwright suite and summarizing groups.
 // (JS, no TypeScript annotations so node can run it directly)
 
-const execa = require('execa');
+const { execa } = require('execa');
 const path = require('path');
 const fs = require('fs');
 

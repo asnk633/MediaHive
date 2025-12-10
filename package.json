@@ -106,7 +106,7 @@
     "get-port": "^7.1.0",
     "input-otp": "^1.4.2",
     "libsql": "^0.5.22",
-    "lucide-react": "^0.555.0",
+    "lucide-react": "^0.559.0",
     "mini-svg-data-uri": "^1.4.4",
     "motion": "^12.23.22",
     "motion-dom": "^12.23.21",

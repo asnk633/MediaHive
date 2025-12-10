@@ -15,7 +15,7 @@ export async function mergeTestResults(groupKey: string, resultObject: any): Pro
     fs.mkdirSync(RESULTS_DIR, { recursive: true });
   }
 
-  let mergedResults = {};
+  let mergedResults: Record<string, any> = {};
 
   // Read existing results if file exists
   if (fs.existsSync(RESULTS_FILE)) {

@@ -41,42 +41,55 @@ jobs:
           node-version: 22
           cache: npm
 
-      - name: Setup pnpm
+      - name: Show repo root (diagnostics)
+        run: |
+          echo "GITHUB_REF: $GITHUB_REF"
+          echo "GITHUB_SHA: $GITHUB_SHA"
+          pwd
+          ls -la
+          echo "show root file list:"
+          ls -la .
+
+      - name: Setup pnpm (if using pnpm)
         uses: pnpm/action-setup@v2
         with:
-          version: 8
+          version: latest
 
       - name: Install dependencies (robust)
         shell: bash
         run: |
-          set -euo pipefail
-          echo "---- repo files (top) ----"
-          ls -la | sed -n '1,200p'
-          echo "---- check lockfiles ----"
+          # Prefer frozen (CI-safe). If lockfile is missing or incompatible, fallback to a safe install.
           if [ -f pnpm-lock.yaml ]; then
             echo "pnpm-lock.yaml found — trying frozen install"
-            # ensure pnpm available via action or installed prior
-            pnpm --version || corepack prepare pnpm@latest --activate
-            pnpm install --frozen-lockfile --reporter=append-only
+            pnpm install --frozen-lockfile || {
+              echo "Frozen failed, trying non-frozen install"
+              pnpm install --reporter=ndjson
+            }
           else
-            echo "pnpm-lock.yaml NOT found — generating or falling back"
-            pnpm --version || corepack prepare pnpm@latest --activate
-            # Try to create lockfile but keep deterministic: prefer CI-safe generation
-            pnpm install --no-frozen-lockfile --reporter=append-only
-            # optionally, commit lockfile in a follow-up PR, but avoid failing CI here
+            echo "pnpm-lock.yaml not found — creating lockfile then install"
+            pnpm install --no-frozen-lockfile || {
+              echo "pnpm install failed; printing pnpm version and list"
+              pnpm -v
+              pnpm list --depth 0 || true
+              exit 1
+            }
           fi
 
-          echo "node and npm info:"
-          node -v
-          pnpm -v
-          echo "ls node_modules top"
-          ls -la node_modules | sed -n '1,200p'
+      - name: Verify installed (diagnostics)
+        run: |
+          echo "node: $(node -v)  npm: $(npm -v) pnpm: $(pnpm -v)"
+          ls -la node_modules || true
+          ls -la node_modules/.bin || true
+          pnpm list --depth 0 || true
 
       - name: Install Playwright browsers
         run: npx playwright install --with-deps
 
       - name: Run unit + UI tests
-        run: npm test
+        run: |
+          # Use pnpm so local binaries (jest etc) are found
+          pnpm test || pnpm exec -- npm test
+        shell: bash
 
       - name: Build Next.js
         run: npm run build

@@ -137,7 +137,7 @@
     "swr": "^2.3.7",
     "tailwind-merge": "^3.3.1",
     "tailwindcss-animate": "^1.0.7",
-    "three": "^0.181.2",
+    "three": "^0.182.0",
     "three-globe": "^2.43.0",
     "uuid": "^13.0.0",
     "vaul": "^1.1.2",

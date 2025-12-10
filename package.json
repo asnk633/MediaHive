@@ -102,7 +102,7 @@
     "firebase": "^12.6.0",
     "firebase-admin": "^13.6.0",
     "flubber": "^0.4.2",
-    "framer-motion": "^12.23.22",
+    "framer-motion": "^12.23.26",
     "get-port": "^7.1.0",
     "input-otp": "^1.4.2",
     "libsql": "^0.5.22",

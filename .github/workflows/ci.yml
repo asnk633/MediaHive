@@ -32,8 +32,7 @@ jobs:
       NEXT_PUBLIC_FIREBASE_APP_ID: ${{ secrets.NEXT_PUBLIC_FIREBASE_APP_ID }}
 
     steps:
-      - name: Checkout
-        uses: actions/checkout@v4
+      - name: Checkoutions/checkout@v4
         with:
           fetch-depth: 0
 

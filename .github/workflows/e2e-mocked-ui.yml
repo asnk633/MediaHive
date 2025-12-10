@@ -64,12 +64,20 @@ jobs:
 
       - name: Ensure pnpm lockfile (tolerate missing lockfile)
         run: |
-          echo "Run # Create a lockfile if missing (CI) then run frozen install."
-          ls -la
-          if [ -f ./ci/ensure-pnpm-lock.sh ]; then
-            bash ./ci/ensure-pnpm-lock.sh
+          # Inline ensure-lock script to avoid 'file not found' issues
+          echo "[ci/ensure-pnpm-lock] checking for pnpm-lock.yaml"
+          if [ -f pnpm-lock.yaml ]; then
+            echo "[ci/ensure-pnpm-lock] pnpm-lock.yaml found – nothing to do"
           else
-            echo "ci/ensure-pnpm-lock.sh not found - continuing"
+            echo "[ci/ensure-pnpm-lock] pnpm-lock.yaml not found — creating lockfile (CI-safe mode)"
+            # Use npx pnpm if pnpm not globally present
+            PNPM_CMD="$(command -v pnpm || true)"
+            if [ -z "$PNPM_CMD" ]; then
+              echo "[ci/ensure-pnpm-lock] pnpm not in PATH — using npx pnpm"
+              PNPM_CMD="npx pnpm"
+            fi
+            $PNPM_CMD install --lockfile-only --no-frozen-lockfile --no-prefer-frozen-lockfile
+            echo "[ci/ensure-pnpm-lock] Created pnpm-lock.yaml"
           fi
         shell: bash
 

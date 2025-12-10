@@ -46,35 +46,31 @@ jobs:
         with:
           version: 8
 
-      - name: Install dependencies
+      - name: Install dependencies (robust)
+        shell: bash
         run: |
-          # Create a lockfile if missing (CI) then run frozen install.
-          # Inline ensure-lock script to avoid 'file not found' issues
-          echo "Checking for pnpm-lock.yaml..."
+          set -euo pipefail
+          echo "---- repo files (top) ----"
+          ls -la | sed -n '1,200p'
+          echo "---- check lockfiles ----"
           if [ -f pnpm-lock.yaml ]; then
-            echo "pnpm-lock.yaml already exists — nothing to do."
-            exit 0
-          fi
-
-          echo "pnpm-lock.yaml not found — creating lockfile (CI-safe mode)"
-          # Prefer corepack/pnpm if available, otherwise use npx to run pnpm
-          if command -v pnpm >/dev/null 2>&1; then
-            PNPM_BIN=pnpm
-          elif command -v corepack >/dev/null 2>&1; then
-            echo "corepack available — activate pnpm"
-            corepack prepare pnpm@latest --activate
-            PNPM_BIN=pnpm
+            echo "pnpm-lock.yaml found — trying frozen install"
+            # ensure pnpm available via action or installed prior
+            pnpm --version || corepack prepare pnpm@latest --activate
+            pnpm install --frozen-lockfile --reporter=append-only
           else
-            echo "pnpm not installed; will use npx to invoke pnpm"
-            PNPM_BIN="npx pnpm@latest"
+            echo "pnpm-lock.yaml NOT found — generating or falling back"
+            pnpm --version || corepack prepare pnpm@latest --activate
+            # Try to create lockfile but keep deterministic: prefer CI-safe generation
+            pnpm install --no-frozen-lockfile --reporter=append-only
+            # optionally, commit lockfile in a follow-up PR, but avoid failing CI here
           fi
 
-          # Create the lockfile only (no full install) in a CI-friendly way.
-          # Use lockfile-only with no frozen flag so it can create the lockfile deterministically.
-          $PNPM_BIN install --lockfile-only --no-prefer-frozen-lockfile
-
-          echo "pnpm-lock.yaml created"
-          pnpm install --frozen-lockfile
+          echo "node and npm info:"
+          node -v
+          pnpm -v
+          echo "ls node_modules top"
+          ls -la node_modules | sed -n '1,200p'
 
       - name: Install Playwright browsers
         run: npx playwright install --with-deps

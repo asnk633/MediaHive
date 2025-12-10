@@ -80,6 +80,19 @@ jobs:
               exit 1
             }
           fi
+        env:
+          NODE_ENV: development
+          NPM_CONFIG_PRODUCTION: false
+
+      - name: Verify jest binary
+        run: |
+          if [ -x ./node_modules/.bin/jest ]; then
+            echo "jest binary found"
+          else
+            echo "jest missing — listing node_modules top level"
+            ls -la node_modules | sed -n '1,200p'
+            exit 1
+          fi
 
       - name: Verify installed (diagnostics)
         run: |

@@ -6,6 +6,9 @@
 import { auth } from './auth';
 import { db } from './auth';
 
+// Export the instances directly for client-side usage (e.g. AuthContext)
+export { auth, db };
+
 // Mock init function - export as named export for compatibility
 export async function initFirebase() {
   // This is a mock implementation for build purposes

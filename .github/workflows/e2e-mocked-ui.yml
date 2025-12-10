@@ -65,20 +65,30 @@ jobs:
       - name: Ensure pnpm lockfile (tolerate missing lockfile)
         run: |
           # Inline ensure-lock script to avoid 'file not found' issues
-          echo "[ci/ensure-pnpm-lock] checking for pnpm-lock.yaml"
+          echo "Checking for pnpm-lock.yaml..."
           if [ -f pnpm-lock.yaml ]; then
-            echo "[ci/ensure-pnpm-lock] pnpm-lock.yaml found – nothing to do"
-          else
-            echo "[ci/ensure-pnpm-lock] pnpm-lock.yaml not found — creating lockfile (CI-safe mode)"
-            # Use npx pnpm if pnpm not globally present
-            PNPM_CMD="$(command -v pnpm || true)"
-            if [ -z "$PNPM_CMD" ]; then
-              echo "[ci/ensure-pnpm-lock] pnpm not in PATH — using npx pnpm"
-              PNPM_CMD="npx pnpm"
-            fi
-            $PNPM_CMD install --lockfile-only --no-frozen-lockfile --no-prefer-frozen-lockfile
-            echo "[ci/ensure-pnpm-lock] Created pnpm-lock.yaml"
+            echo "pnpm-lock.yaml already exists — nothing to do."
+            exit 0
           fi
+
+          echo "pnpm-lock.yaml not found — creating lockfile (CI-safe mode)"
+          # Prefer corepack/pnpm if available, otherwise use npx to run pnpm
+          if command -v pnpm >/dev/null 2>&1; then
+            PNPM_BIN=pnpm
+          elif command -v corepack >/dev/null 2>&1; then
+            echo "corepack available — activate pnpm"
+            corepack prepare pnpm@latest --activate
+            PNPM_BIN=pnpm
+          else
+            echo "pnpm not installed; will use npx to invoke pnpm"
+            PNPM_BIN="npx pnpm@latest"
+          fi
+
+          # Create the lockfile only (no full install) in a CI-friendly way.
+          # Use lockfile-only with no frozen flag so it can create the lockfile deterministically.
+          $PNPM_BIN install --lockfile-only --no-prefer-frozen-lockfile
+
+          echo "pnpm-lock.yaml created"
         shell: bash
 
       - name: Install dependencies (CI)

@@ -1,0 +1,98 @@
+name: "E2E - Mocked UI Tests (pull_request)"
+
+# Only run for PRs so it doesn't affect main branch builds
+on:
+  pull_request:
+    types: [opened, synchronize, reopened, labeled, unlabeled]
+
+permissions:
+  contents: read
+  pull-requests: write
+
+env:
+  # Force mock mode in CI so Playwright uses mocked Firebase + WebView
+  NODE_ENV: test
+  USE_REAL_FIREBASE: "false"
+  MOCK_FIREBASE: "true"
+  MOCK_WEBVIEW: "true"
+
+  # Provide minimal fake NEXT_PUBLIC_FIREBASE_* values so check-envs doesn't fail
+  NEXT_PUBLIC_FIREBASE_API_KEY: "ci_dummy_api_key"
+  NEXT_PUBLIC_FIREBASE_AUTH_DOMAIN: "ci_dummy.firebaseapp.com"
+  NEXT_PUBLIC_FIREBASE_PROJECT_ID: "ci_dummy_project"
+  NEXT_PUBLIC_FIREBASE_STORAGE_BUCKET: "ci_dummy_bucket"
+  NEXT_PUBLIC_FIREBASE_MESSAGING_SENDER_ID: "1234567890"
+  NEXT_PUBLIC_FIREBASE_APP_ID: "1:123:web:ci_dummy"
+
+  # Provide a file DB so DB seeding/connection checks don't blow up
+  DATABASE_URL: "file:./ci.db"
+
+jobs:
+  e2e-mocked:
+    name: E2E - Mocked UI Tests
+    runs-on: ubuntu-latest
+    concurrency:
+      group: "e2e-mocked-${{ github.head_ref || github.run_id }}"
+      cancel-in-progress: true
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: "npm"
+
+      - name: Setup pnpm (if you use pnpm)
+        uses: pnpm/action-setup@v2
+        with:
+          version: 8
+
+      - name: Cache node modules
+        uses: actions/cache@v4
+        with:
+          path: |
+            ~/.pnpm-store
+            node_modules
+          key: ${{ runner.os }}-pnpm-${{ hashFiles('**/pnpm-lock.yaml') }}
+          restore-keys: |
+            ${{ runner.os }}-pnpm-
+
+      - name: Install dependencies
+        run: |
+          set -e
+          if command -v pnpm >/dev/null 2>&1; then
+            echo "Running pnpm install (try frozen then fallback)..."
+            pnpm install --frozen-lockfile || pnpm install --no-frozen-lockfile
+          else
+            echo "pnpm not found; falling back to npm install"
+            npm ci || npm install
+          fi
+        env:
+          CI: true
+
+      - name: Install Playwright browsers
+        run: npx playwright install --with-deps
+
+      - name: Ensure local CI DB exists
+        run: |
+          # Create an empty sqlite file (used by DATABASE_URL file:./ci.db)
+          mkdir -p .ci
+          touch ci.db || true
+        shell: bash
+
+      - name: Run the unified UI test suite (mocked)
+        run: |
+          # The test script should respect the MOCK_FIREBASE / USE_REAL_FIREBASE env variables.
+          # Use the provided "test:full-ui" script which runs the Playwright unified suite.
+          npm run test:full-ui
+        env:
+          # reiterate mock env for steps that use child processes
+          USE_REAL_FIREBASE: "false"
+          MOCK_FIREBASE: "true"
+          MOCK_WEBVIEW: "true"
+          DATABASE_URL: "file:./ci.db"

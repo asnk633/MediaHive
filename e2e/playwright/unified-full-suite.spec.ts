@@ -1,5 +1,6 @@
 import { expect } from '@playwright/test';
 import { test as mockTest } from './fixtures/mockFirebase';
+import { mergeTestResults } from './utils/results';
 
 // Use our extended fixture (test.mockFirebase available)
 const test = mockTest;
@@ -60,7 +61,7 @@ const WEBVIEW_UAS = [
 ];
 
 // Test results storage
-const testResults: any = {
+let testResults: any = {
   fabVisibility: {},
   safeAreaCorrectness: {},
   hydrationStability: {},
@@ -190,6 +191,9 @@ test.describe('1. FAB Visibility Tests', () => {
           horizontalOffset
         };
 
+        // Merge results for this group
+        await mergeTestResults('fabVisibility', testResults.fabVisibility);
+
         // Take screenshot
         await page.screenshot({
           path: `test-results/fab-visibility-${viewport.name.toLowerCase().replace(/\s+/g, '-')}.png`,
@@ -217,6 +221,9 @@ test.describe('1. FAB Visibility Tests', () => {
           error: error.message,
           uiAnalysis
         };
+
+        // Merge results for this group
+        await mergeTestResults('fabVisibility', testResults.fabVisibility);
 
         // Re-throw the error to fail the test
         throw error;
@@ -277,6 +284,9 @@ test.describe('2. Safe-area Correctness Tests', () => {
           safeAreaInfo
         };
 
+        // Merge results for this group
+        await mergeTestResults('safeAreaCorrectness', testResults.safeAreaCorrectness);
+
         // Take screenshot
         await page.screenshot({
           path: `test-results/safe-area-${viewport.name.toLowerCase().replace(/\s+/g, '-')}.png`,
@@ -297,6 +307,9 @@ test.describe('2. Safe-area Correctness Tests', () => {
           status: 'FAIL',
           error: error.message
         };
+
+        // Merge results for this group
+        await mergeTestResults('safeAreaCorrectness', testResults.safeAreaCorrectness);
 
         throw error;
       }
@@ -371,6 +384,9 @@ test.describe('3. Hydration Stability Tests', () => {
           hydrationErrors: hydrationErrors.length
         };
 
+        // Merge results for this group
+        await mergeTestResults('hydrationStability', testResults.hydrationStability);
+
         // Take screenshot
         await page.screenshot({
           path: `test-results/hydration-${viewport.name.toLowerCase().replace(/\s+/g, '-')}.png`,
@@ -391,6 +407,9 @@ test.describe('3. Hydration Stability Tests', () => {
           status: 'FAIL',
           error: error.message
         };
+
+        // Merge results for this group
+        await mergeTestResults('hydrationStability', testResults.hydrationStability);
 
         throw error;
       }
@@ -445,6 +464,9 @@ test.describe('4. Greeting Positioning Tests', () => {
           greetingBox
         };
 
+        // Merge results for this group
+        await mergeTestResults('greetingPositioning', testResults.greetingPositioning);
+
         // Take screenshot
         await page.screenshot({
           path: `test-results/greeting-${viewport.name.toLowerCase().replace(/\s+/g, '-')}.png`,
@@ -465,6 +487,9 @@ test.describe('4. Greeting Positioning Tests', () => {
           status: 'FAIL',
           error: error.message
         };
+
+        // Merge results for this group
+        await mergeTestResults('greetingPositioning', testResults.greetingPositioning);
 
         throw error;
       }
@@ -552,6 +577,9 @@ test.describe('5. Firebase Runtime Tests', () => {
           firebaseInfo
         };
 
+        // Merge results for this group
+        await mergeTestResults('firebaseRuntime', testResults.firebaseRuntime);
+
         // Take screenshot
         await page.screenshot({
           path: `test-results/firebase-${viewport.name.toLowerCase().replace(/\s+/g, '-')}.png`,
@@ -580,6 +608,9 @@ test.describe('5. Firebase Runtime Tests', () => {
           status: 'FAIL',
           error: error.message
         };
+
+        // Merge results for this group
+        await mergeTestResults('firebaseRuntime', testResults.firebaseRuntime);
 
         throw error;
       }
@@ -809,6 +840,9 @@ test.describe('6. WebView Device Behavior Tests', () => {
           firebaseInfo
         };
 
+        // Merge results for this group
+        await mergeTestResults('webViewDeviceBehavior', testResults.webViewDeviceBehavior);
+
         // Take screenshot for visual verification
         await page.screenshot({
           path: `test-results/webview-${ua.name.toLowerCase().replace(/\s+/g, '-')}-test.png`,
@@ -839,6 +873,9 @@ test.describe('6. WebView Device Behavior Tests', () => {
           status: 'FAIL',
           error: error.message
         };
+
+        // Merge results for this group
+        await mergeTestResults('webViewDeviceBehavior', testResults.webViewDeviceBehavior);
 
         throw error;
       }
@@ -983,6 +1020,9 @@ test.describe('6. WebView Device Behavior Tests', () => {
         firebaseAfterReload
       };
 
+      // Merge results for this group
+      await mergeTestResults('webViewDeviceBehavior', testResults.webViewDeviceBehavior);
+
       // Take screenshot
       await page.screenshot({
         path: `test-results/webview-capacitor-session-persistence.png`,
@@ -1012,6 +1052,9 @@ test.describe('6. WebView Device Behavior Tests', () => {
         error: error.message
       };
 
+      // Merge results for this group
+      await mergeTestResults('webViewDeviceBehavior', testResults.webViewDeviceBehavior);
+
       throw error;
     }
   });
@@ -1021,22 +1064,5 @@ test.describe('6. WebView Device Behavior Tests', () => {
 test.afterAll(async () => {
   console.log('\n=== Test Suite Summary ===');
   console.log(JSON.stringify(testResults, null, 2));
-
-  // Write results to file
-  const fs = require('fs');
-  const path = require('path');
-
-  // Ensure test-results directory exists
-  const resultsDir = path.join(__dirname, '../../test-results');
-  if (!fs.existsSync(resultsDir)) {
-    fs.mkdirSync(resultsDir, { recursive: true });
-  }
-
-  // Write structured JSON output
-  fs.writeFileSync(
-    path.join(resultsDir, 'unified-test-suite-results.json'),
-    JSON.stringify(testResults, null, 2)
-  );
-
-  console.log('\nTest results written to test-results/unified-test-suite-results.json');
+  console.log('\nTest results merged incrementally to test-results/unified-summary.json');
 });

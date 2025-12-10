@@ -44,7 +44,7 @@ jobs:
       - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
-          node-version: 20
+          node-version: 22
           cache: "npm"
 
       - name: Setup pnpm (if you use pnpm)
@@ -62,16 +62,16 @@ jobs:
           restore-keys: |
             ${{ runner.os }}-pnpm-
 
-      - name: Install dependencies
+      - name: Ensure pnpm lockfile (tolerate missing lockfile)
         run: |
-          set -e
-          if command -v pnpm >/dev/null 2>&1; then
-            echo "Running pnpm install (try frozen then fallback)..."
-            pnpm install --frozen-lockfile || pnpm install --no-frozen-lockfile
-          else
-            echo "pnpm not found; falling back to npm install"
-            npm ci || npm install
-          fi
+          chmod +x ci/ensure-pnpm-lock.sh
+          ./ci/ensure-pnpm-lock.sh
+        shell: bash
+
+      - name: Install dependencies (CI)
+        run: |
+          # Prefer frozen install, but CI may create lockfile above.
+          npm ci
         env:
           CI: true
 

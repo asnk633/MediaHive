@@ -38,11 +38,19 @@ jobs:
       - name: Setup Node
         uses: actions/setup-node@v4
         with:
-          node-version: 20
+          node-version: 22
           cache: npm
 
-      - name: Install deps
-        run: npm ci
+      - name: Setup pnpm
+        uses: pnpm/action-setup@v2
+        with:
+          version: 8
+
+      - name: Install dependencies
+        run: |
+          # Create a lockfile if missing (CI) then run frozen install.
+          bash ci/ensure-pnpm-lock.sh
+          npm ci
 
       - name: Install Playwright browsers
         run: npx playwright install --with-deps

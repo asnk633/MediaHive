@@ -16,7 +16,7 @@
     "test:e2e:wait-db": "node scripts/wait-for-db.js",
     "test:e2e:run": "node scripts/run-e2e-tests.js",
     "test:e2e:run:win": "node scripts/run-e2e-tests.js",
-    "test:unit": "jest --passWithNoTests",
+    "test:unit": "npx jest --passWithNoTests",
     "test:ui": "npx playwright test --retries=0",
     "test:full-ui": "node scripts/run-full-ui-tests.js",
     "ci:ensure-lock": "bash ci/ensure-pnpm-lock.sh",

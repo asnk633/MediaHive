@@ -16,8 +16,12 @@ export default defineConfig({
   },
   webServer: {
     command: 'npm run dev',
-    url: 'http://localhost:3000',
-    timeout: 120_000,
-    reuseExistingServer: true,
+    url: 'http://127.0.0.1:3000',
+    reuseExistingServer: !process.env.CI,
+    timeout: 120 * 1000,
+    env: {
+      MOCK_FIREBASE: 'true',
+      USE_REAL_FIREBASE: 'false',
+    },
   },
 });

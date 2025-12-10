@@ -64,14 +64,17 @@ jobs:
 
       - name: Ensure pnpm lockfile (tolerate missing lockfile)
         run: |
-          chmod +x ci/ensure-pnpm-lock.sh
-          ./ci/ensure-pnpm-lock.sh
+          echo "Run # Create a lockfile if missing (CI) then run frozen install."
+          ls -la
+          if [ -f ./ci/ensure-pnpm-lock.sh ]; then
+            bash ./ci/ensure-pnpm-lock.sh
+          else
+            echo "ci/ensure-pnpm-lock.sh not found - continuing"
+          fi
         shell: bash
 
       - name: Install dependencies (CI)
-        run: |
-          # Prefer frozen install, but CI may create lockfile above.
-          npm ci
+        run: pnpm install --frozen-lockfile
         env:
           CI: true
 

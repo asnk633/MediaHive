@@ -49,8 +49,14 @@ jobs:
       - name: Install dependencies
         run: |
           # Create a lockfile if missing (CI) then run frozen install.
-          bash ci/ensure-pnpm-lock.sh
-          npm ci
+          echo "Run # Create a lockfile if missing (CI) then run frozen install."
+          ls -la
+          if [ -f ./ci/ensure-pnpm-lock.sh ]; then
+            bash ./ci/ensure-pnpm-lock.sh
+          else
+            echo "ci/ensure-pnpm-lock.sh not found - continuing"
+          fi
+          pnpm install --frozen-lockfile
 
       - name: Install Playwright browsers
         run: npx playwright install --with-deps

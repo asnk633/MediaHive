@@ -33,7 +33,7 @@ importers:
         specifier: ^7.0.3
         version: 7.0.4(@capacitor/core@7.4.4)
       '@capacitor/status-bar':
-        specifier: ^7.0.3
+        specifier: ^7.0.4
         version: 7.0.4(@capacitor/core@7.4.4)
       '@dnd-kit/core':
         specifier: ^6.3.1

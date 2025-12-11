@@ -6,11 +6,11 @@ import * as schema from './schema'; // keep relative path to avoid alias issues
 const TURSO_URL = process.env.TURSO_CONNECTION_URL;
 const TURSO_PLACEHOLDER = 'your_turso_connection_url_here';
 
-let db: any;
+let _db: any = null;
 let dbPromise: Promise<any> | null = null;
 
 async function initializeDatabase() {
-  if (db) return db;
+  if (_db) return _db;
   if (dbPromise) return dbPromise;
 
   dbPromise = (async () => {
@@ -21,16 +21,16 @@ async function initializeDatabase() {
         url: TURSO_URL,
         authToken: process.env.TURSO_AUTH_TOKEN,
       });
-      db = drizzleLibsql(client, { schema });
+      _db = drizzleLibsql(client, { schema });
     } else {
       // Local SQLite via better-sqlite3 (dynamic import to avoid build issues)
       const { drizzle: drizzleSqlite } = await import('drizzle-orm/better-sqlite3');
       const Database = (await import('better-sqlite3')).default;
       const dbPath = (process.env.DATABASE_URL || 'file:./dev.db').replace(/^file:/, '');
       const sqlite = new Database(dbPath);
-      db = drizzleSqlite(sqlite, { schema });
+      _db = drizzleSqlite(sqlite, { schema });
     }
-    return db;
+    return _db;
   })();
 
   return dbPromise;
@@ -39,10 +39,10 @@ async function initializeDatabase() {
 // Export a proxy that initializes on first access
 export const db = new Proxy({} as any, {
   get(target, prop) {
-    if (!db || !db[prop]) {
+    if (!_db || !_db[prop]) {
       throw new Error('Database not initialized. Call initializeDatabase() first or use getDb()');
     }
-    return db[prop];
+    return _db[prop];
   }
 });
 

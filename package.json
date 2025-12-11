@@ -198,7 +198,7 @@
     "rimraf": "^6.1.2",
     "semantic-release": "^25.0.2",
     "source-map-explorer": "^2.5.3",
-    "tailwindcss": "^4.1.17",
+    "tailwindcss": "^4.1.18",
     "ts-jest": "^29.4.6",
     "ts-node": "^10.9.2",
     "tsconfig-paths": "^4.2.0",

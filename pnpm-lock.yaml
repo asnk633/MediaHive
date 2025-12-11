@@ -15,7 +15,7 @@ importers:
         specifier: ^7.4.4
         version: 7.4.4(@capacitor/core@7.4.4)
       '@capacitor/app':
-        specifier: ^7.1.0
+        specifier: ^7.1.1
         version: 7.1.1(@capacitor/core@7.4.4)
       '@capacitor/cli':
         specifier: ^7.4.4

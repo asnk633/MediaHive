@@ -15,13 +15,9 @@ export default defineConfig({
     baseURL: process.env.PLAYWRIGHT_BASE_URL || 'http://localhost:3000',
   },
   webServer: {
-    command: 'npm run dev',
+    command: 'MOCK_FIREBASE=true npm run dev',
     url: 'http://127.0.0.1:3000',
     reuseExistingServer: !process.env.CI,
     timeout: 120 * 1000,
-    env: {
-      MOCK_FIREBASE: 'true',
-      USE_REAL_FIREBASE: 'false',
-    },
   },
 });

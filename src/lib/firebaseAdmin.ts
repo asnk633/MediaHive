@@ -40,6 +40,8 @@ function getServiceAccount() {
 export function getFirebaseAdminApp() {
   if (getApps().length) return getApps()[0];
 
+  console.log('[Debug] getFirebaseAdminApp: MOCK_FIREBASE =', process.env.MOCK_FIREBASE);
+
   // ✅ CI / Mock Check:
   if (process.env.MOCK_FIREBASE === 'true') {
     console.warn('[Mock] Firebase Admin initialization skipped (MOCK_FIREBASE=true)');

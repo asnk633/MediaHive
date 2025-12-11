@@ -14,10 +14,14 @@ export default defineConfig({
   use: {
     baseURL: process.env.PLAYWRIGHT_BASE_URL || 'http://localhost:3000',
   },
-  webServer: {
-    command: 'npm run dev',
-    url: 'http://localhost:3000',
-    timeout: 120_000,
-    reuseExistingServer: true,
-  },
+  // Only use webServer in local development, not in CI
+  // In CI, the server is started manually in the workflow
+  ...(process.env.CI ? {} : {
+    webServer: {
+      command: 'npm run dev',
+      url: 'http://127.0.0.1:3000',
+      reuseExistingServer: true,
+      timeout: 120 * 1000,
+    },
+  }),
 });

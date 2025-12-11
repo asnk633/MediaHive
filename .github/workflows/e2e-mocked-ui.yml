@@ -44,36 +44,62 @@ jobs:
       - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
-          node-version: 20
+          node-version: 22
           cache: "npm"
 
-      - name: Setup pnpm (if you use pnpm)
+      - name: Show repo root (diagnostics)
+        run: |
+          echo "GITHUB_REF: $GITHUB_REF"
+          echo "GITHUB_SHA: $GITHUB_SHA"
+          pwd
+          ls -la
+          echo "show root file list:"
+          ls -la .
+
+      - name: Setup pnpm (if using pnpm)
         uses: pnpm/action-setup@v2
         with:
-          version: 8
+          version: latest
 
-      - name: Cache node modules
-        uses: actions/cache@v4
-        with:
-          path: |
-            ~/.pnpm-store
-            node_modules
-          key: ${{ runner.os }}-pnpm-${{ hashFiles('**/pnpm-lock.yaml') }}
-          restore-keys: |
-            ${{ runner.os }}-pnpm-
-
-      - name: Install dependencies
+      - name: Install dependencies (robust)
+        shell: bash
         run: |
-          set -e
-          if command -v pnpm >/dev/null 2>&1; then
-            echo "Running pnpm install (try frozen then fallback)..."
-            pnpm install --frozen-lockfile || pnpm install --no-frozen-lockfile
+          # Prefer frozen (CI-safe). If lockfile is missing or incompatible, fallback to a safe install.
+          if [ -f pnpm-lock.yaml ]; then
+            echo "pnpm-lock.yaml found — trying frozen install"
+            pnpm install --frozen-lockfile || {
+              echo "Frozen failed, trying non-frozen install"
+              pnpm install --reporter=ndjson
+            }
           else
-            echo "pnpm not found; falling back to npm install"
-            npm ci || npm install
+            echo "pnpm-lock.yaml not found — creating lockfile then install"
+            pnpm install --no-frozen-lockfile || {
+              echo "pnpm install failed; printing pnpm version and list"
+              pnpm -v
+              pnpm list --depth 0 || true
+              exit 1
+            }
           fi
         env:
-          CI: true
+          NODE_ENV: development
+          NPM_CONFIG_PRODUCTION: false
+
+      - name: Verify jest binary
+        run: |
+          if [ -x ./node_modules/.bin/jest ]; then
+            echo "jest binary found"
+          else
+            echo "jest missing — listing node_modules top level"
+            ls -la node_modules | sed -n '1,200p'
+            exit 1
+          fi
+
+      - name: Verify installed (diagnostics)
+        run: |
+          echo "node: $(node -v)  npm: $(npm -v) pnpm: $(pnpm -v)"
+          ls -la node_modules || true
+          ls -la node_modules/.bin || true
+          pnpm list --depth 0 || true
 
       - name: Install Playwright browsers
         run: npx playwright install --with-deps
@@ -85,14 +111,48 @@ jobs:
           touch ci.db || true
         shell: bash
 
-      - name: Run the unified UI test suite (mocked)
+      - name: Start dev server in background
         run: |
-          # The test script should respect the MOCK_FIREBASE / USE_REAL_FIREBASE env variables.
-          # Use the provided "test:full-ui" script which runs the Playwright unified suite.
-          npm run test:full-ui
+          # Start the dev server in background
+          nohup npm run dev > dev-server.log 2>&1 &
+          echo $! > dev-server.pid
+          
+          # Wait for server to be ready (max 60 seconds)
+          echo "Waiting for dev server to start..."
+          for i in {1..60}; do
+            if curl -s http://127.0.0.1:3000 > /dev/null; then
+              echo "Dev server is ready!"
+              break
+            fi
+            if [ $i -eq 60 ]; then
+              echo "Dev server failed to start within 60 seconds"
+              cat dev-server.log
+              exit 1
+            fi
+            sleep 1
+          done
+        shell: bash
         env:
-          # reiterate mock env for steps that use child processes
-          USE_REAL_FIREBASE: "false"
           MOCK_FIREBASE: "true"
-          MOCK_WEBVIEW: "true"
-          DATABASE_URL: "file:./ci.db"
+          USE_REAL_FIREBASE: "false"
+
+      - name: Run Playwright tests
+        run: |
+          # Run Playwright tests against the running server
+          npx playwright test e2e/playwright/unified-full-suite.spec.ts --retries=0 --reporter=list
+        shell: bash
+        env:
+          PLAYWRIGHT_BASE_URL: http://127.0.0.1:3000
+
+      - name: Stop dev server
+        if: always()
+        run: |
+          if [ -f dev-server.pid ]; then
+            kill $(cat dev-server.pid) || true
+          fi
+          # Show server logs if tests failed
+          if [ -f dev-server.log ]; then
+            echo "=== Dev Server Logs ==="
+            cat dev-server.log
+          fi
+        shell: bash

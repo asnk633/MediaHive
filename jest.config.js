@@ -7,7 +7,8 @@ module.exports = {
     "<rootDir>/src/tests/setup-globals.ts"
   ],
   setupFilesAfterEnv: [
-    "<rootDir>/node_modules/@testing-library/jest-dom"
+    "<rootDir>/node_modules/@testing-library/jest-dom",
+    "<rootDir>/src/tests/jest-setup.js"
   ],
   moduleNameMapper: {
     "^@/firebase/auth$": "<rootDir>/src/__tests__/__mocks__/firebaseAuth.ts",

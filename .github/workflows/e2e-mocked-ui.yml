@@ -138,9 +138,8 @@ jobs:
 
       - name: Run Playwright tests
         run: |
-          # Run simple smoke tests instead of full suite for now
-          # Full suite can be debugged separately
-          npx playwright test e2e/smoke.spec.ts --retries=1 --reporter=list
+          # Run smoke tests - use absolute path to override testDir config
+          npx playwright test ${{ github.workspace }}/e2e/smoke.spec.ts --retries=1 --reporter=list
         shell: bash
         env:
           PLAYWRIGHT_BASE_URL: http://127.0.0.1:3000

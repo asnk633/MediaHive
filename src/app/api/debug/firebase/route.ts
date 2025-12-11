@@ -3,42 +3,26 @@ import { initFirebase, getFirebaseAuth, getFirebaseDb } from '@/firebase/client'
 
 export async function GET() {
   try {
-    // Initialize Firebase
-    const app = await initFirebase();
-    
-    // Get auth and db instances
+    // Initialize Firebase and get instances
+    const { app } = await initFirebase();
     const auth = await getFirebaseAuth();
     const db = await getFirebaseDb();
-    
-    // Check if Firebase is ready
-    const isFirebaseReady = typeof window !== 'undefined' && !!(window as any).__FIREBASE_READY__;
-    
-    // Get Firebase app info
-    const appInfo = {
-      name: app.name,
-      options: app.options,
-      isReady: isFirebaseReady,
-    };
-    
-    // Get auth info
-    const authInfo = {
-      currentUser: auth.currentUser ? {
-        uid: auth.currentUser.uid,
-        email: auth.currentUser.email,
-        displayName: auth.currentUser.displayName,
-      } : null,
-      persistence: (auth as any)._persistence?._name || 'unknown',
-    };
-    
+
+    // Safely access app.name (may not exist in mock mode)
+    const appName = (app as any)?.name ?? 'mock-firebase-app';
+
     return NextResponse.json({
-      success: true,
-      app: appInfo,
-      auth: authInfo,
+      status: 'ok',
+      firebase: {
+        name: appName,
+        authInitialized: !!auth,
+        dbInitialized: !!db,
+      },
       timestamp: new Date().toISOString(),
     });
   } catch (error: any) {
     return NextResponse.json({
-      success: false,
+      status: 'error',
       error: error.message,
       timestamp: new Date().toISOString(),
     }, { status: 500 });

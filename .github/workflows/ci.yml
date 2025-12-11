@@ -101,13 +101,10 @@ jobs:
           ls -la node_modules/.bin || true
           pnpm list --depth 0 || true
 
-      - name: Install Playwright browsers
-        run: npx playwright install --with-deps
-
-      - name: Run unit + UI tests
+      - name: Run unit tests only
         run: |
-          # Use pnpm so local binaries (jest etc) are found
-          pnpm test || pnpm exec -- npm test
+          # Run Jest unit tests only (no Playwright UI tests in this job)
+          pnpm run test:unit
         shell: bash
 
       - name: Build Next.js

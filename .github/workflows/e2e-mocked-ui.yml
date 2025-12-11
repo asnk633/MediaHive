@@ -111,15 +111,48 @@ jobs:
           touch ci.db || true
         shell: bash
 
-      - name: Run the unified UI test suite (mocked)
+      - name: Start dev server in background
         run: |
-          # The test script should respect the MOCK_FIREBASE / USE_REAL_FIREBASE env variables.
-          # Use the provided "test:full-ui" script which runs the Playwright unified suite.
-          # Use pnpm so local binaries (jest etc) are found
-          pnpm run test:full-ui || pnpm exec -- npm run test:full-ui
+          # Start the dev server in background
+          nohup npm run dev > dev-server.log 2>&1 &
+          echo $! > dev-server.pid
+          
+          # Wait for server to be ready (max 60 seconds)
+          echo "Waiting for dev server to start..."
+          for i in {1..60}; do
+            if curl -s http://127.0.0.1:3000 > /dev/null; then
+              echo "Dev server is ready!"
+              break
+            fi
+            if [ $i -eq 60 ]; then
+              echo "Dev server failed to start within 60 seconds"
+              cat dev-server.log
+              exit 1
+            fi
+            sleep 1
+          done
+        shell: bash
         env:
-          # reiterate mock env for steps that use child processes
-          USE_REAL_FIREBASE: "false"
           MOCK_FIREBASE: "true"
-          MOCK_WEBVIEW: "true"
-          DATABASE_URL: "file:./ci.db"
+          USE_REAL_FIREBASE: "false"
+
+      - name: Run Playwright tests
+        run: |
+          # Run Playwright tests against the running server
+          npx playwright test e2e/playwright/unified-full-suite.spec.ts --retries=0 --reporter=list
+        shell: bash
+        env:
+          PLAYWRIGHT_BASE_URL: http://127.0.0.1:3000
+
+      - name: Stop dev server
+        if: always()
+        run: |
+          if [ -f dev-server.pid ]; then
+            kill $(cat dev-server.pid) || true
+          fi
+          # Show server logs if tests failed
+          if [ -f dev-server.log ]; then
+            echo "=== Dev Server Logs ==="
+            cat dev-server.log
+          fi
+        shell: bash

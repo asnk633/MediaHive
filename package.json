@@ -156,7 +156,7 @@
     "@eslint/eslintrc": "^3.3.1",
     "@firebase/rules-unit-testing": "^5.0.0",
     "@lhci/cli": "^0.15.1",
-    "@next/bundle-analyzer": "^16.0.4",
+    "@next/bundle-analyzer": "^16.0.9",
     "@playwright/test": "^1.56.1",
     "@semantic-release/changelog": "^6.0.3",
     "@semantic-release/git": "^10.0.1",

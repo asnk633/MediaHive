@@ -24,7 +24,7 @@ importers:
         specifier: ^7.4.4
         version: 7.4.4
       '@capacitor/haptics':
-        specifier: ^7.0.2
+        specifier: ^7.0.3
         version: 7.0.3(@capacitor/core@7.4.4)
       '@capacitor/ios':
         specifier: ^7.4.4

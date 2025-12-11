@@ -8,10 +8,12 @@ const { spawn } = require("child_process");
 
   console.log(`Dev server starting on port ${port}...`);
 
-  // Spawn next dev with proper args (fixes DEP0190 warning)
+  // Spawn next dev with proper args
+  // On Windows, npx requires shell to be enabled
+  const isWindows = process.platform === 'win32';
   const child = spawn('npx', ['next', 'dev', '-p', port.toString()], {
     stdio: 'inherit',
-    shell: false // Don't use shell to avoid security warning
+    shell: isWindows // Enable shell on Windows, disable on Unix for security
   });
 
   child.on('error', (err) => {

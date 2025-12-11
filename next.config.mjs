@@ -7,6 +7,7 @@ const withBundleAnalyzer = bundleAnalyzer({
 const nextConfig = {
   // Performance optimizations
   experimental: {
+    serverComponentsExternalPackages: ['better-sqlite3'],
     optimizePackageImports: [
       'lucide-react',
       'date-fns',

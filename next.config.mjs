@@ -5,9 +5,11 @@ const withBundleAnalyzer = bundleAnalyzer({
 });
 
 const nextConfig = {
+  // External packages (native modules that shouldn't be bundled)
+  serverExternalPackages: ['better-sqlite3'],
+
   // Performance optimizations
   experimental: {
-    serverComponentsExternalPackages: ['better-sqlite3'],
     optimizePackageImports: [
       'lucide-react',
       'date-fns',

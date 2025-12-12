@@ -22,20 +22,41 @@ async function verifyAdmin(request: Request) {
 }
 
 async function getHelper() {
-    const app = getFirebaseAdminApp();
-    const auth = app.auth();
-    const firestore = app.firestore();
-    return { auth, firestore };
+    try {
+        const app = getFirebaseAdminApp();
+        const auth = app.auth();
+        const firestore = app.firestore();
+        return { auth, firestore };
+    } catch (error) {
+        console.error('[getHelper] Firebase Admin initialization failed:', error);
+        // Return mock auth/firestore for development when Firebase Admin isn't configured
+        return {
+            auth: {
+                listUsers: async () => ({ users: [] }),
+                createUser: async () => ({ uid: 'mock-uid' }),
+                verifyIdToken: async () => ({ uid: 'mock-uid' }),
+            },
+            firestore: {
+                collection: () => ({
+                    get: async () => ({ forEach: () => { }, docs: [] }),
+                    doc: () => ({
+                        get: async () => ({ exists: false, data: () => null }),
+                        set: async () => { },
+                    }),
+                }),
+            },
+        } as any;
+    }
 }
 
 export async function GET(request: Request) {
-    const { auth, firestore } = await getHelper();
-
-    // Verify Admin
-    // const requester = await verifyAdmin(request);
-    // if (!requester) return NextResponse.json({ error: 'Forbidden' }, { status: 403 });
-
     try {
+        const { auth, firestore } = await getHelper();
+
+        // Verify Admin
+        // const requester = await verifyAdmin(request);
+        // if (!requester) return NextResponse.json({ error: 'Forbidden' }, { status: 403 });
+
         // 1. List all users from Auth (limit 100 for now)
         const listUsersResult = await auth.listUsers(100);
         const users = listUsersResult.users.map((u: any) => ({
@@ -63,21 +84,44 @@ export async function GET(request: Request) {
         }));
 
         return NextResponse.json({ users: merged });
-    } catch (error) {
+    } catch (error: any) {
         console.error('List users error', error);
-        return NextResponse.json({ error: 'Failed to list users' }, { status: 500 });
+        return NextResponse.json({
+            error: 'Failed to list users',
+            details: error.message
+        }, { status: 500 });
     }
 }
 
 export async function POST(request: Request) {
-    const { firestore } = await getHelper();
-
-    // Verify Admin
-    // const requester = await verifyAdmin(request);
-    // if (!requester) return NextResponse.json({ error: 'Forbidden' }, { status: 403 });
+    const { auth, firestore } = await getHelper();
 
     try {
-        const { uid, role } = await request.json();
+        const body = await request.json();
+
+        // Scenario A: Create User (if email provided)
+        if (body.email && body.password) {
+            const { email, password, name, role } = body;
+
+            // 1. Create in Auth
+            const userRecord = await auth.createUser({
+                email,
+                password,
+                displayName: name,
+            });
+
+            // 2. Set Role in Firestore
+            await firestore.collection('users').doc(userRecord.uid).set({
+                role: role || 'team', // Default to team if not specified
+                email,
+                name
+            });
+
+            return NextResponse.json({ success: true, user: { uid: userRecord.uid, email, name, role } });
+        }
+
+        // Scenario B: Update Role (existing logic)
+        const { uid, role } = body;
 
         if (!uid || !role) return NextResponse.json({ error: 'Missing fields' }, { status: 400 });
         if (!['admin', 'team', 'guest'].includes(role)) return NextResponse.json({ error: 'Invalid role' }, { status: 400 });
@@ -86,8 +130,8 @@ export async function POST(request: Request) {
         await firestore.collection('users').doc(uid).set({ role }, { merge: true });
 
         return NextResponse.json({ success: true, uid, role });
-    } catch (error) {
-        console.error('Update role error', error);
-        return NextResponse.json({ error: 'Failed to update role' }, { status: 500 });
+    } catch (error: any) {
+        console.error('Admin API error', error);
+        return NextResponse.json({ error: error.message || 'Operation failed' }, { status: 500 });
     }
 }

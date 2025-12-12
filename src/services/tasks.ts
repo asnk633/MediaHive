@@ -9,7 +9,8 @@ import {
     Timestamp,
     query,
     orderBy,
-    getDocs
+    getDocs,
+    runTransaction
 } from 'firebase/firestore';
 import { db } from '@/firebase/client';
 import { Task } from '@/types/task';
@@ -157,6 +158,50 @@ export const TaskService = {
         }
     },
 
+    toggleTaskAssignee: async (taskId: string, member: { uid: string; name: string }) => {
+        try {
+            const taskRef = doc(db, TASKS_COLLECTION, taskId);
+            // Use transaction to ensure atomic update of the array
+            // preventing overwrite race conditions from rapid UI clicks
+            await runTransaction(db, async (transaction) => {
+                const taskDoc = await transaction.get(taskRef);
+                if (!taskDoc.exists()) throw new Error("Task does not exist!");
+
+                const data = taskDoc.data();
+                const currentAssignees: { uid: string; name: string }[] = Array.isArray(data.assignedTo) ? data.assignedTo : [];
+
+                const exists = currentAssignees.some(a => a.uid === member.uid);
+                let newAssignees;
+
+                if (exists) {
+                    newAssignees = currentAssignees.filter(a => a.uid !== member.uid);
+                } else {
+                    newAssignees = [...currentAssignees, member];
+                }
+
+                transaction.update(taskRef, { assignedTo: newAssignees });
+            });
+        } catch (err) {
+            console.warn("Firestore toggle assignee failed, trying fallback:", err);
+            // Fallback for offline/mock
+            const current = loadFromLocal();
+            const taskIndex = current.findIndex(t => t.id === taskId);
+            if (taskIndex > -1) {
+                const task = current[taskIndex];
+                const currentAssignees = Array.isArray(task.assignedTo) ? task.assignedTo : [];
+                const exists = currentAssignees.some(a => a.uid === member.uid);
+                let newAssignees;
+                if (exists) {
+                    newAssignees = currentAssignees.filter(a => a.uid !== member.uid);
+                } else {
+                    newAssignees = [...currentAssignees, member];
+                }
+                current[taskIndex] = { ...task, assignedTo: newAssignees };
+                saveToLocal([...current]);
+            }
+        }
+    },
+
     seedDummyTasks: async () => {
         const dummyTasks: Omit<Task, 'id' | 'createdAt'>[] = [
             {
@@ -167,7 +212,8 @@ export const TaskService = {
                 dueDate: Timestamp.fromDate(new Date(Date.now() + 86400000 * 2)), // 2 days from now
                 department: "Marketing",
                 assignedBy: { uid: "u3", name: "Shukoor Rahman", role: "admin" },
-                assignedTo: { uid: "u2", name: "KMS Pallikkunnu" },
+                createdBy: { uid: "u3", name: "Shukoor Rahman" },
+                assignedTo: [{ uid: "u2", name: "KMS Pallikkunnu" }],
             },
             {
                 title: "Update Client Database",
@@ -177,7 +223,8 @@ export const TaskService = {
                 dueDate: Timestamp.fromDate(new Date(Date.now() + 86400000 * 5)),
                 department: "Operations",
                 assignedBy: { uid: "u3", name: "Shukoor Rahman", role: "admin" },
-                assignedTo: { uid: "u2", name: "KMS Pallikkunnu" },
+                createdBy: { uid: "u3", name: "Shukoor Rahman" },
+                assignedTo: [{ uid: "u2", name: "KMS Pallikkunnu" }, { uid: "u4", name: "Sarah Designer" }],
             },
             {
                 title: "Prepare Monthly Financial Report",
@@ -187,7 +234,8 @@ export const TaskService = {
                 dueDate: Timestamp.fromDate(new Date(Date.now() + 86400000 * 1)),
                 department: "Finance",
                 assignedBy: { uid: "u3", name: "Shukoor Rahman", role: "admin" },
-                assignedTo: { uid: "u2", name: "KMS Pallikkunnu" },
+                createdBy: { uid: "u3", name: "Shukoor Rahman" },
+                assignedTo: [{ uid: "u2", name: "KMS Pallikkunnu" }],
             }
         ];
 

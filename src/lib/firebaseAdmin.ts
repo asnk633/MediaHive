@@ -50,17 +50,27 @@ export function getFirebaseAdminApp() {
   // ✅ CI / Mock Check:
   if (process.env.MOCK_FIREBASE === 'true') {
     console.warn('[Mock] Firebase Admin initialization skipped (MOCK_FIREBASE=true)');
-    // Return a dummy app object or just null if your logic supports it. 
-    // Since getApps()[0] returns an App, we might need a partial mock.
-    // For now, let's just NOT throw an error and return a bare minimum object 
-    // or let it proceed to initializeApp with a dummy service account if that helps.
-    // Better: Allow initialization with a dummy credential if mock is true.
-    return initializeApp({
-      projectId: 'thaiba-garden-mock',
-      credential: {
-        getAccessToken: () => Promise.resolve({ access_token: 'mock-token', expires_in: 3600 }),
-      } as any,
-    }, 'mock-app');
+    // Return a mock app with stub methods
+    const mockApp = {
+      auth: () => ({
+        listUsers: async () => ({ users: [] }),
+        createUser: async () => ({ uid: 'mock-uid' }),
+        verifyIdToken: async () => ({ uid: 'mock-uid' }),
+      }),
+      firestore: () => ({
+        collection: () => ({
+          get: async () => ({ forEach: () => { }, docs: [] }),
+          doc: () => ({
+            get: async () => ({ exists: false, data: () => null }),
+            set: async () => { },
+          }),
+        }),
+      }),
+      name: 'mock-app',
+    } as any;
+
+    // Cache it in getApps() manually if possible, or just return
+    return mockApp;
   }
 
   const serviceAccount = getServiceAccount();

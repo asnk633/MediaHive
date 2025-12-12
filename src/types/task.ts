@@ -11,10 +11,14 @@ export interface Task {
         name: string;
         role: string;
     };
+    createdBy: {
+        uid: string;
+        name: string;
+    };
     assignedTo?: {
         uid: string;
         name: string;
         // role is optional here
-    };
+    }[];
     createdAt: any;
 }

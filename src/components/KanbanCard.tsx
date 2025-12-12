@@ -6,6 +6,7 @@
 import React from 'react';
 import { Task } from '@/types';
 import { PresenceDot } from '@/components/PresenceDot';
+import { formatDateOnly } from '@/lib/dateUtils';
 
 interface KanbanCardProps {
   task: Task;
@@ -13,8 +14,8 @@ interface KanbanCardProps {
 
 export function KanbanCard({ task }: KanbanCardProps) {
   return (
-    <div 
-      className="kanban-card glass-card card-padding" 
+    <div
+      className="kanban-card glass-card card-padding"
       data-testid={`kanban-card-${task.id}`}
       data-task-id={task.id}
       data-status={task.status}
@@ -32,7 +33,7 @@ export function KanbanCard({ task }: KanbanCardProps) {
       <div className="kanban-card-meta mt-3 flex items-center justify-between">
         {task.dueDate && (
           <span className="kanban-card-due-date text-xs text-[var(--muted)]">
-            Due: {new Date(task.dueDate).toLocaleDateString()}
+            Due: {formatDateOnly(task.dueDate)}
           </span>
         )}
         {task.priority && (

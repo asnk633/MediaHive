@@ -10,7 +10,7 @@ const BOTTOM_NAV = [
   { name: "tasks", href: "/tasks", label: "Tasks" },
   { name: "events", href: "/events", label: "Events" },
   { name: "reports", href: "/reports", label: "Reports" },
-  { name: "downloads", href: "/downloads", label: "Downloads" },
+  { name: "downloads", href: "/downloads", label: "Files" },
   { name: "profile", href: "/profile", label: "Profile" },
 ];
 

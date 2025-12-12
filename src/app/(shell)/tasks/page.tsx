@@ -39,8 +39,8 @@ export default function TasksPage() {
       {/* Header */}
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <div>
-          <h1 className="text-3xl font-bold tracking-tight text-gray-900">Tasks</h1>
-          <p className="text-gray-500 mt-1">Manage, track, and organize your work.</p>
+          <h1 className="text-3xl font-bold tracking-tight text-[var(--text-primary)]">Tasks</h1>
+          <p className="text-[var(--text-secondary)] mt-1">Manage, track, and organize your work.</p>
         </div>
 
         <div className="flex items-center gap-3">
@@ -76,7 +76,7 @@ export default function TasksPage() {
 
           {/* Add Task Button (Mobile users have FAB) */}
           <Link href="/tasks/new">
-            <button className="flex items-center gap-2 px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-xl shadow-lg shadow-blue-200 transition-all active:scale-95 text-sm font-semibold">
+            <button className="flex items-center gap-2 px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-xl shadow-lg dark:shadow-blue-900/50 light:shadow-blue-200 transition-all active:scale-95 text-sm font-semibold">
               <Plus size={18} />
               <span className="hidden sm:inline">New Task</span>
             </button>

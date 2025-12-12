@@ -5,9 +5,24 @@ import { useRole } from "@/app/(shell)/RoleContext";
 import { Plus, CheckSquare, Calendar, Bell, Users } from "lucide-react";
 import Link from "next/link";
 
-export default function FAB() {
+
+interface FABProps {
+  onMainClick?: () => void;
+}
+
+export default function FAB({ onMainClick }: FABProps) {
   const [isOpen, setIsOpen] = useState(false);
   const { user } = useRole();
+
+  // If onMainClick is provided, it overrides the menu behavior
+  const handleClick = () => {
+    if (onMainClick) {
+      onMainClick();
+    } else {
+      setIsOpen(!isOpen);
+    }
+  };
+
 
   const allActions = [
     { label: "Task", icon: CheckSquare, color: "bg-[#00A896]", href: "/tasks/new", delay: 0.1 },
@@ -24,7 +39,7 @@ export default function FAB() {
       </AnimatePresence>
       <div className="fixed left-1/2 -translate-x-1/2 z-50 flex flex-col-reverse items-center gap-4" style={{ bottom: 'calc(3.5rem + env(safe-area-inset-bottom))' }}>
         <motion.button
-          className="w-16 h-16 rounded-full text-white shadow-xl shadow-indigo-500/30 flex items-center justify-center relative z-20"
+          className="w-14 h-14 rounded-full text-white shadow-xl shadow-indigo-500/30 flex items-center justify-center relative z-20"
           style={{ backgroundColor: 'var(--color-fab-bg, #6366F1)' }}
           onClick={() => setIsOpen(!isOpen)}
           aria-label="Open Actions Menu"

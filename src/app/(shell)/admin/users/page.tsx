@@ -26,8 +26,20 @@ export default function UserManagementPage() {
     const fetchUsers = async () => {
         setLoading(true);
         try {
-            // Pass auth token if we implement strict check
             const res = await fetch('/api/admin/users');
+            if (!res.ok) {
+                console.error(`API Error: ${res.status}`);
+                // Safely read text to avoid parsing error
+                const text = await res.text();
+                // If it looks like JSON, try to parse error message
+                try {
+                    const json = JSON.parse(text);
+                    if (json.error) console.error(json.error);
+                } catch {
+                    console.error("Non-JSON Response:", text.slice(0, 100));
+                }
+                return;
+            }
             const data = await res.json();
             if (data.users) setUsers(data.users);
         } catch (e) {

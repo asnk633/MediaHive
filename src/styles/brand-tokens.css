@@ -4,6 +4,7 @@
     --color-primary-start: #0096FF;
     --color-primary-end: #00C2FF;
     --gradient-primary: linear-gradient(135deg, var(--color-primary-start), var(--color-primary-end));
+    --gradient-card-primary: linear-gradient(135deg, #0096FF 0%, #00C2FF 100%);
 
     /* Accents */
     --color-accent-purple: #6A5ACD;

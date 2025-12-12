@@ -1,4 +1,5 @@
 "use client";
+import { useRouter } from 'next/navigation';
 import React, { useState } from "react";
 import { CheckSquare, Clock, CheckCircle2, XCircle } from "lucide-react";
 import { OverviewCard } from "@/components/home/OverviewCard";
@@ -6,6 +7,7 @@ import { TaskItem } from "@/components/home/TaskItem";
 import { useRole } from "@/app/(shell)/RoleContext";
 
 export default function Home() {
+  const router = useRouter();
   const [filter, setFilter] = useState("all");
   const { user } = useRole();
   const displayName = user?.name ? user.name.split(' ').pop() : 'User';
@@ -22,7 +24,7 @@ export default function Home() {
       {/* Header */}
       <header className="mb-8 pt-6">
         <p className="text-xs font-bold tracking-widest text-[var(--color-text-secondary)] uppercase mb-2">Thaiba MediaHive</p>
-        <h1 className="text-4xl font-display font-bold text-white leading-tight">
+        <h1 className="text-4xl font-display font-bold text-[var(--color-text-primary)] leading-tight">
           Good Morning, <br />
           <span className="text-[var(--color-primary-start)]">{displayName}.</span>
         </h1>
@@ -39,7 +41,7 @@ export default function Home() {
       <section className="space-y-4">
         <div className="flex justify-between items-end mb-2">
           <h2 className="text-lg font-bold text-[var(--color-text-primary)]">My Tasks</h2>
-          <button className="text-sm font-semibold text-[var(--color-primary-start)] hover:underline">See All</button>
+          <button onClick={() => router.push('/tasks')} className="text-sm font-semibold text-[var(--color-primary-start)] hover:underline">See All</button>
         </div>
 
         <div className="space-y-3">

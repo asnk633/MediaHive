@@ -3,15 +3,23 @@ import React, { useEffect, useRef } from "react";
 import { Bell, Settings } from 'lucide-react';
 import Link from 'next/link';
 import { useRole } from "@/app/(shell)/RoleContext";
+import { useRouter } from 'next/navigation';
 import ThemeToggle from "@/components/ThemeToggle";
 import { addFocusVisibleClass } from "@/utils/a11y";
 
 export default function TopBar({ title = "Thaiba MediaHive" }: { title?: string }) {
   const { user } = useRole();
+  const router = useRouter();
   const notifRef = useRef<HTMLButtonElement>(null);
+  const [avatarUrl, setAvatarUrl] = React.useState<string | null>(null);
 
   useEffect(() => {
     if (notifRef.current) addFocusVisibleClass(notifRef.current);
+    // Load avatar from localStorage
+    const savedAvatar = localStorage.getItem('userAvatar');
+    if (savedAvatar) {
+      setAvatarUrl(savedAvatar);
+    }
   }, []);
 
   return (
@@ -34,13 +42,19 @@ export default function TopBar({ title = "Thaiba MediaHive" }: { title?: string 
         </Link>
 
         {/* Settings Button (Hidden on mobile) */}
-        <button className="p-2 text-gray-500 hover:bg-gray-100 rounded-full transition-colors hidden sm:block">
+        <button
+          onClick={() => router.push('/profile')}
+          className="p-2 text-gray-500 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-full transition-colors hidden sm:block"
+        >
           <Settings size={20} />
         </button>
 
-        <div className="w-9 h-9 rounded-full bg-gray-100 overflow-hidden border border-gray-200">
-          {(user as any)?.avatar ? <img src={(user as any).avatar} className="w-full h-full object-cover" /> : <div className="w-full h-full grid place-items-center text-gray-500 font-bold">{user?.name?.charAt(0).toUpperCase() || 'A'}</div>}
-        </div>
+        <button
+          onClick={() => router.push('/profile')}
+          className="w-9 h-9 rounded-full bg-gray-100 overflow-hidden border border-gray-200 cursor-pointer hover:ring-2 hover:ring-blue-500 transition-all"
+        >
+          {avatarUrl ? <img src={avatarUrl} alt="Profile" className="w-full h-full object-cover" /> : (user as any)?.avatar ? <img src={(user as any).avatar} className="w-full h-full object-cover" /> : <div className="w-full h-full grid place-items-center text-gray-500 font-bold">{user?.name?.charAt(0).toUpperCase() || 'A'}</div>}
+        </button>
       </div>
     </header>
   );

@@ -1,53 +1,41 @@
-// src/components/BottomNavigation.tsx
 "use client";
-
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { Home, CheckSquare, Calendar, FileText, Download, User } from "lucide-react";
-import React, { useEffect } from "react";
-import { addFocusVisibleClass } from "@/utils/a11y";
-
-const BOTTOM_NAV_ITEMS = [
-  { key: 'home', label: 'Home', href: '/home', icon: Home },
-  { key: 'tasks', label: 'Tasks', href: '/tasks', icon: CheckSquare },
-  { key: 'events', label: 'Events', href: '/events', icon: Calendar },
-  { key: 'reports', label: 'Reports', href: '/reports', icon: FileText },
-  { key: 'downloads', label: 'Downloads', href: '/downloads', icon: Download },
-  { key: 'profile', label: 'Profile', href: '/profile', icon: User },
-];
-
+import { Home, CheckSquare, Calendar, User } from "lucide-react";
+import React from "react";
+import { motion } from "framer-motion";
 export default function BottomNavigation() {
   const pathname = usePathname();
-
-  const isActive = (href: string) => {
-    return pathname === href || pathname?.startsWith(href + "/");
-  };
-
-  // Add focus visible class to all nav items for keyboard navigation detection
-  useEffect(() => {
-    const navItems = document.querySelectorAll('.nav-item');
-    navItems.forEach(item => {
-      if (item instanceof HTMLElement) {
-        addFocusVisibleClass(item);
-      }
-    });
-  }, []);
-
+  const isActive = (href: string) => pathname === href || pathname?.startsWith(href + "/");
+  const items = [
+    { key: 'home', label: 'Home', href: '/home', icon: Home },
+    { key: 'tasks', label: 'Tasks', href: '/tasks', icon: CheckSquare },
+    { key: 'spacer', label: '', href: '', icon: null }, // FAB Spacer
+    { key: 'events', label: 'Events', href: '/events', icon: Calendar },
+    { key: 'profile', label: 'Profile', href: '/profile', icon: User },
+  ];
   return (
-    <nav className="bottom-nav" role="navigation" aria-label="Main navigation">
-      {BOTTOM_NAV_ITEMS.map((item, index) => (
-        <React.Fragment key={item.key}>
-          {index === 3 && <div style={{ width: 'var(--fab-size)' }} aria-hidden="true" />} {/* Spacer after 3rd item (index 0,1,2) */}
+    <motion.nav 
+      initial={{ y: 100, opacity: 0 }}
+      animate={{ y: 0, opacity: 1 }}
+      className="fixed bottom-6 left-1/2 -translate-x-1/2 w-[calc(100%-32px)] max-w-md bg-white/90 backdrop-blur-xl rounded-full shadow-2xl flex items-center justify-around h-16 z-30 border border-white/20"
+      style={{ bottom: 'calc(1.5rem + env(safe-area-inset-bottom))' }}
+    >
+      {items.map((item) => {
+        if (item.key === 'spacer') return <div key="spacer" className="w-16" />;
+        const Icon = item.icon!;
+        const active = isActive(item.href);
+        return (
           <Link
+            key={item.key}
             href={item.href}
-            className={`nav-item ${isActive(item.href) ? "active" : ""}`}
-            aria-current={isActive(item.href) ? "page" : undefined}
+            className={`flex flex-col items-center justify-center w-12 h-full transition-colors ${active ? 'text-[#0096FF]' : 'text-gray-400 hover:text-gray-600'}`}
           >
-            <item.icon size={20} className="text-[var(--icon)]" />
-            <span className="text-[var(--icon)]">{item.label}</span>
+            <Icon size={24} className={active ? 'stroke-[2.5px]' : 'stroke-2'} />
+            <span className="text-[10px] font-medium mt-0.5">{item.label}</span>
           </Link>
-        </React.Fragment>
-      ))}
-    </nav>
+        );
+      })}
+    </motion.nav>
   );
 }

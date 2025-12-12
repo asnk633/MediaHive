@@ -22,6 +22,8 @@ const config: Config = {
         foreground: tokens.colors.text.primary,
         primary: {
           ...tokens.colors.primary,
+          start: 'var(--color-primary-start)',
+          end: 'var(--color-primary-end)',
         },
         secondary: {
           DEFAULT: tokens.colors.surface.DEFAULT,
@@ -46,6 +48,14 @@ const config: Config = {
         card: {
           DEFAULT: tokens.colors.background.card,
           foreground: tokens.colors.text.primary,
+        },
+        
+        // Brand Design Tokens
+        white: 'var(--color-white)',
+        bg: 'var(--color-bg-app)',
+        text: {
+          primary: 'var(--color-text-primary)',
+          secondary: 'var(--color-text-secondary)',
         },
       },
       borderRadius: tokens.borderRadius,

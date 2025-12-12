@@ -1,57 +1,64 @@
-// src/client/components/FAB.tsx
 "use client";
-import React, { useEffect, useRef, useState } from "react";
-import styles from "./fab.module.css";
+import React, { useState } from "react";
+import { motion, AnimatePresence } from "framer-motion";
+import { Plus, CheckSquare, Calendar } from "lucide-react";
 import Link from "next/link";
-import Icon from "@/client/components/Icon";
-
-type Role = "admin" | "team" | "guest";
-
-const MENU_ADMIN = [
-  { id: "notify", label: "Notify", href: "/notifications/new", color: "#ffb86b" },
-  { id: "event", label: "New Event", href: "/events/new", color: "#7b5cff" },
-  { id: "task", label: "New Task", href: "/tasks/new", color: "#00bfa6" },
-];
-const MENU_OTHERS = [
-  { id: "task", label: "New Task", href: "/tasks/new", color: "#00bfa6" },
-  { id: "event", label: "New Event", href: "/events/new", color: "#7b5cff" },
-];
-
-export default function FAB({ role = "team" as Role }: { role?: Role }) {
-  const [open, setOpen] = useState(false);
-  const ref = useRef<HTMLButtonElement | null>(null);
-
-  useEffect(() => {
-    function onKey(e: KeyboardEvent) {
-      if (e.key === "Escape") setOpen(false);
-    }
-    window.addEventListener("keydown", onKey);
-    return () => window.removeEventListener("keydown", onKey);
-  }, []);
-
-  const menu = role === "admin" ? MENU_ADMIN : MENU_OTHERS;
-
+export default function FAB() {
+  const [isOpen, setIsOpen] = useState(false);
+  const actions = [
+    { label: "New Task", icon: CheckSquare, color: "bg-[#00A896]", href: "/tasks/new", delay: 0.1 },
+    { label: "New Event", icon: Calendar, color: "bg-[#6A5ACD]", href: "/events/new", delay: 0.05 },
+  ];
   return (
-    <div className={styles.fabWrap} aria-hidden={false}>
-      <div className={`${styles.menu} ${open ? styles.open : ""}`} role="menu" aria-label="Quick actions">
-        {menu.map(item => (
-          <Link key={item.id} href={item.href} className={styles.menuItem} role="menuitem" tabIndex={open ? 0 : -1} style={{ boxShadow: `0 6px 20px ${item.color}22` }}>
-            <span className={styles.menuBullet} style={{ background: item.color }} />
-            <span>{item.label}</span>
-          </Link>
-        ))}
+    <>
+      <AnimatePresence>
+        {isOpen && (
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            className="fixed inset-0 bg-white/60 backdrop-blur-sm z-40"
+            onClick={() => setIsOpen(false)}
+          />
+        )}
+      </AnimatePresence>
+      <div className="fixed bottom-10 left-1/2 -translate-x-1/2 z-50 flex flex-col-reverse items-center gap-4" style={{ bottom: 'calc(2.5rem + env(safe-area-inset-bottom))' }}>
+        <motion.button
+          className="w-16 h-16 rounded-full bg-gradient-to-br from-[#0096FF] to-[#00C2FF] text-white shadow-xl shadow-blue-500/30 flex items-center justify-center relative z-20"
+          onClick={() => setIsOpen(!isOpen)}
+          whileTap={{ scale: 0.9 }}
+          animate={{ rotate: isOpen ? 135 : 0 }}
+          aria-label={isOpen ? "Close Menu" : "Open Menu"}
+          aria-expanded={isOpen}
+          aria-controls="fab-actions"
+        >
+          <Plus size={32} />
+        </motion.button>
+        <AnimatePresence>
+          {isOpen && (
+            <div id="fab-actions" role="menu" className="absolute bottom-20 flex flex-col items-center gap-4 w-max">
+              {actions.map((action) => (
+                <Link key={action.label} href={action.href}>
+                  <motion.div
+                    initial={{ opacity: 0, y: 20, scale: 0.8 }}
+                    animate={{ opacity: 1, y: 0, scale: 1 }}
+                    exit={{ opacity: 0, y: 10, scale: 0.8 }}
+                    transition={{ delay: action.delay }}
+                    className="flex items-center gap-3"
+                  >
+                    <span className="bg-white/90 backdrop-blur text-gray-700 text-xs font-bold px-3 py-1.5 rounded-lg shadow-sm">
+                      {action.label}
+                    </span>
+                    <div className={`${action.color} w-12 h-12 rounded-full text-white shadow-lg flex items-center justify-center hover:scale-110 transition-transform`} role="menuitem" aria-label={action.label}>
+                      <action.icon size={20} strokeWidth={2.5} />
+                    </div>
+                  </motion.div>
+                </Link>
+              ))}
+            </div>
+          )}
+        </AnimatePresence>
       </div>
-
-      <button
-        ref={ref}
-        aria-haspopup="true"
-        aria-expanded={open}
-        className={`${styles.fab} ${open ? styles.active : ""}`}
-        onClick={() => setOpen(v => !v)}
-        title={open ? "Close quick actions" : "Open quick actions"}
-      >
-        <Icon name="plus" variant="filled" className="w-9 h-9 text-[var(--accent)]" aria-label="Create new" />
-      </button>
-    </div>
+    </>
   );
 }

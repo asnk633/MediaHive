@@ -24,8 +24,8 @@ export default function HomePageRedesign(){
         </section>
       </PageContainer>
 
-      {/* Visual-only FAB (role set to admin for preview) */}
-      <FAB role="admin" />
+      {/* Visual-only FAB */}
+      <FAB />
       <BottomNav />
     </>
   );

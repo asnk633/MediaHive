@@ -1,63 +1,49 @@
 "use client";
-import { Bell } from 'lucide-react';
+import { Bell, Settings } from 'lucide-react';
 import Link from 'next/link';
 import { useRole } from "@/app/(shell)/RoleContext";
 import ThemeToggle from "@/components/ThemeToggle";
 import { useEffect, useRef } from "react";
 import { addFocusVisibleClass } from "@/utils/a11y";
-
-export default function TopBar() {
+type TopBarProps = {
+  title?: string;
+};
+export default function TopBar({ title = "Thaiba Garden" }: TopBarProps) {
   const { user } = useRole();
   const notificationButtonRef = useRef<HTMLButtonElement>(null);
-  const userMenuRef = useRef<HTMLDivElement>(null);
-
-  // Add focus visible class to interactive elements for keyboard navigation detection
   useEffect(() => {
-    if (notificationButtonRef.current) {
-      addFocusVisibleClass(notificationButtonRef.current);
-    }
-    if (userMenuRef.current) {
-      addFocusVisibleClass(userMenuRef.current);
-    }
+    if (notificationButtonRef.current) addFocusVisibleClass(notificationButtonRef.current);
   }, []);
-
   return (
-    <header className="topbar">
+    <header className="fixed top-0 left-0 right-0 h-[72px] bg-white/80 backdrop-blur-md border-b border-[var(--color-border)] z-30 flex items-center justify-between px-4 lg:px-8 transition-all">
       <div className="flex items-center gap-3">
-        <div className="w-3 h-3 rounded-full bg-green-500 shadow-[0_0_10px_rgba(0,200,83,0.25)]" />
-        <div className="font-bold text-lg tracking-tight text-[var(--text)]">Thaiba Garden</div>
+        <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-[var(--color-primary-start)] to-[var(--color-primary-end)] flex items-center justify-center text-white font-bold text-sm">
+          TG
+        </div>
+        <h1 className="font-display font-bold text-xl tracking-tight text-[var(--color-text-primary)] hidden sm:block">
+          {title}
+        </h1>
       </div>
-
       <div className="flex items-center gap-3">
         <ThemeToggle />
-
-        <Link href="/updates" passHref legacyBehavior>
+        <Link href="/updates">
           <button
             ref={notificationButtonRef}
             aria-label="Notifications"
-            title="Notifications"
-            className="p-2 rounded-full hover:bg-[var(--panel)] transition-all duration-200 ease-in-out focus:outline-none"
+            className="p-2 rounded-full text-gray-500 hover:bg-gray-100 transition-colors relative"
           >
-            <Bell size={20} aria-hidden="true" className="text-[var(--icon)]" />
+            <Bell size={20} />
+            <span className="absolute top-1.5 right-2 w-2 h-2 bg-red-500 rounded-full border border-white" />
           </button>
         </Link>
-
-        <div
-          ref={userMenuRef}
-          className="w-9 h-9 rounded-full grid place-items-center bg-[var(--panel)] border border-[var(--glass-border)]"
-          role="button"
-          tabIndex={0}
-          aria-label={`User menu for ${user?.name || 'Anonymous'}`}
-        >
-          <span className="font-bold text-sm text-[var(--icon)]">
+        <button className="p-2 text-gray-500 hover:bg-gray-100 rounded-full transition-colors hidden sm:block">
+          <Settings size={20} />
+        </button>
+        <div className="flex items-center gap-3 pl-2 sm:border-l border-gray-200">
+          <div className="w-9 h-9 rounded-full bg-gray-100 overflow-hidden border border-gray-200 flex items-center justify-center font-bold text-gray-500">
             {user?.name?.charAt(0).toUpperCase() || 'A'}
-          </span>
+          </div>
         </div>
-        {user && (
-          <span className="px-2 py-1 text-xs rounded bg-gray-100 dark:bg-gray-800 text-gray-600 dark:text-gray-300 font-medium border border-gray-200 dark:border-gray-700">
-            {user.role.toUpperCase()}
-          </span>
-        )}
       </div>
     </header>
   );

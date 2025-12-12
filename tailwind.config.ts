@@ -49,7 +49,7 @@ const config: Config = {
           DEFAULT: tokens.colors.background.card,
           foreground: tokens.colors.text.primary,
         },
-        
+
         // Brand Design Tokens
         white: 'var(--color-white)',
         bg: 'var(--color-bg-app)',
@@ -83,4 +83,3 @@ const config: Config = {
 };
 
 export default config;
-

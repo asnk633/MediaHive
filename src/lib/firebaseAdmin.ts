@@ -22,8 +22,13 @@ function getServiceAccount() {
     try {
       // If it's base64 encoded, decode it first
       if (fromEnv.startsWith('{')) {
-        // It's already JSON
-        return JSON.parse(fromEnv);
+        // It's already JSON. 
+        // Logic: Sometimes env vars have actual newlines that JSON.parse hates. 
+        // We replace them with space or escaped newline depending on context, 
+        // but for a private key it usually expects \n.
+        // Let's try to be robust:
+        const sanitized = fromEnv.replace(/[\r\n]+/g, '');
+        return JSON.parse(sanitized);
       } else {
         // It's likely base64 encoded
         return JSON.parse(Buffer.from(fromEnv, 'base64').toString('utf8'));
@@ -51,11 +56,11 @@ export function getFirebaseAdminApp() {
     // or let it proceed to initializeApp with a dummy service account if that helps.
     // Better: Allow initialization with a dummy credential if mock is true.
     return initializeApp({
-      projectId: 'mock-project',
+      projectId: 'thaiba-garden-mock',
       credential: {
         getAccessToken: () => Promise.resolve({ access_token: 'mock-token', expires_in: 3600 }),
       } as any,
-    });
+    }, 'mock-app');
   }
 
   const serviceAccount = getServiceAccount();

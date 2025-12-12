@@ -1,0 +1,31 @@
+# Hydration Mismatch Detection Test Commands
+
+## Run all hydration mismatch tests
+npx playwright test e2e/playwright/hydration-mismatch.spec.ts
+
+## Run tests for specific viewport
+npx playwright test e2e/playwright/hydration-mismatch.spec.ts --project=chromium
+
+## Run with verbose output
+npx playwright test e2e/playwright/hydration-mismatch.spec.ts --reporter=verbose
+
+## Run in headed mode for debugging
+npx playwright test e2e/playwright/hydration-mismatch.spec.ts --headed
+
+## Run on Windows
+npm run test:e2e:win
+
+## View test results
+npx playwright show-report
+
+## Run with custom reporter
+npx playwright test e2e/playwright/hydration-mismatch.spec.ts --reporter=line
+
+## Run with trace enabled for debugging
+npx playwright test e2e/playwright/hydration-mismatch.spec.ts --trace on
+
+## Run specific test by line number
+npx playwright test e2e/playwright/hydration-mismatch.spec.ts:15
+
+## Run tests in debug mode
+npx playwright test e2e/playwright/hydration-mismatch.spec.ts --debug

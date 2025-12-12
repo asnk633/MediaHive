@@ -27,8 +27,8 @@ export function OverviewCard({
             className={cn(
                 "relative flex flex-col p-5 rounded-[20px] transition-all duration-300 cursor-pointer overflow-hidden",
                 isPrimary
-                    ? "bg-gradient-to-br from-[var(--color-primary-start)] to-[var(--color-primary-end)] text-white shadow-lg shadow-blue-500/25"
-                    : "bg-white border border-[var(--color-border)] text-[var(--color-text-primary)] shadow-sm hover:shadow-md"
+                    ? "bg-[image:var(--gradient-card-primary)] text-white shadow-xl shadow-blue-500/25 border-none"
+                    : "bg-[var(--color-bg-surface)] border border-[var(--color-border)] text-[var(--color-text-primary)] shadow-sm hover:shadow-md"
             )}
         >
             <div className="flex justify-between items-start mb-4">

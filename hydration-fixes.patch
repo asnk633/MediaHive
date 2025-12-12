@@ -1,0 +1,45 @@
+diff --git a/src/components/ClipDetection.client.tsx b/src/components/ClipDetection.client.tsx
+index 1234567..89abcdef 100644
+--- a/src/components/ClipDetection.client.tsx
++++ b/src/components/ClipDetection.client.tsx
+@@ -3,14 +3,22 @@
+ export default function ClipDetection() {
+   useEffect(() => {
+     const checkAndAdjustClip = () => {
++      // Skip if safe area hasn't been initialized yet
++      if (!(window as any).__SAFE_AREA_INITIALIZED) {
++        return;
++      }
++      
+       const topBar = document.querySelector(".topbar");
+       if (!topBar) return;
+       const rect = topBar.getBoundingClientRect();
+       if (rect.top < -4) {
++        // Mark that clip detection has made adjustments
++        (window as any).__CLIP_DETECTION_ADJUSTED = true;
++        
+         const cur = parseFloat(getComputedStyle(document.documentElement).getPropertyValue('--computed-safe-top')) || 0;
+         const newPad = Math.abs(rect.top) + 4 + cur;
+         document.documentElement.style.setProperty('--computed-safe-top', `${newPad}px`);
+-        document.documentElement.style.setProperty('--safe-area-top', `${newPad}px`);
++        document.documentElement.style.setProperty('--safe-area-top', `${newPad}px`);
+       }
+     };
+
+diff --git a/src/app/(shell)/layout.tsx b/src/app/(shell)/layout.tsx
+index abcdef1..1234567 100644
+--- a/src/app/(shell)/layout.tsx
++++ b/src/app/(shell)/layout.tsx
+@@ -23,7 +23,11 @@
+           
+           {/* IMPORTANT: render content-offset wrapper on both server and client.
+              ClipDetection logic moved to a client-only component that returns null. */}
+-          <div className="content-offset">
++          <div 
++            className="content-offset"
++            // Add data attribute to help with debugging hydration issues
++            data-hydration-id="content-offset"
++          >
+             {/* MAIN SCROLL AREA */}
+             <main className="flex-1 overflow-y-auto">
+               {children}

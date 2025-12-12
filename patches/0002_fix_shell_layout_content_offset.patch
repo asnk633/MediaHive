@@ -1,0 +1,50 @@
+*** Update File: src/app/(shell)/layout.tsx
+@@ -1,34 +1,36 @@
+ "use client";
+
+ import type { ReactNode } from "react";
+ import { useEffect } from "react";
+ import TopBar from "@/components/TopBar";
+ import BottomNav from "@/components/BottomNavigation";
+ import FAB from "@/client/components/FAB";
+ import { ClientDataProvider } from "@/components/layout/ClientDataProvider";
+ import { RoleProvider } from "@/app/(shell)/RoleContext";
++import ClipDetection from '@/components/ClipDetection.client';
+
+ type ShellLayoutProps = {
+   children: ReactNode;
+ };
+
+ export default function ShellLayout({ children }: ShellLayoutProps) {
+   return (
+     <ClientDataProvider>
+       <RoleProvider>
+         <div className="shell-wrapper min-h-screen flex flex-col">
+           {/* TOP BAR */}
+           <TopBar />
+           
+-          {/* Clip Detection and Auto-correction Hook */}
+-          <ClipDetectionHook />
+-          
+-          {/* Dedicated content offset div to prevent padding overrides */}
++          {/* IMPORTANT: render content-offset wrapper on both server and client.
++             ClipDetection logic moved to a client-only component that returns null. */}
+           <div className="content-offset">
+             {/* MAIN SCROLL AREA */}
+             <main className="flex-1 overflow-y-auto">
+               {children}
+             </main>
+
+             {/* BOTTOM NAV + FAB */}
+             <BottomNav />
+             <FAB />
+           </div>
++
++          {/* Client-only clip detection; safe to include here: it renders null on server */}
++          {/* Import path: src/components/ClipDetection.client.tsx */}
++          <ClipDetection />
+         </div>
+       </RoleProvider>
+     </ClientDataProvider>
+   );
+ }

@@ -1,0 +1,12 @@
+--- a/scripts/run-full-ui-tests.js
++++ b/scripts/run-full-ui-tests.js
+@@ -63,8 +63,8 @@
+       // Count passed/failed tests for each group
+       Object.keys(results).forEach(group => {
+         const groupResults = results[group];
+-        const passed = Object.values(groupResults).filter((result: any) => result.status === 'PASS').length;
+-        const failed = Object.values(groupResults).filter((result: any) => result.status === 'FAIL').length;
++        // Node (plain JS) cannot parse TypeScript annotations; remove them
++        const passed = Object.values(groupResults).filter((result) => result.status === 'PASS').length;
++        const failed = Object.values(groupResults).filter((result) => result.status === 'FAIL').length;
+       });

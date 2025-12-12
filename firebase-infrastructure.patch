@@ -1,0 +1,277 @@
+diff --git a/scripts/inject-firebase-config.js b/scripts/inject-firebase-config.js
+index xxxxxxx..xxxxxxx 100644
+--- a/scripts/inject-firebase-config.js
++++ b/scripts/inject-firebase-config.js
+@@ -17,14 +17,25 @@ const clientConfig = {
+ 
+ // Validation
++const requiredKeys = [
++    'apiKey',
++    'authDomain',
++    'projectId'
++];
++
+ const missingKeys = Object.entries(clientConfig)
+-    .filter(([key, val]) => !val && key !== 'buildTime')
++    .filter(([key, val]) => !val && key !== 'buildTime' && requiredKeys.includes(key))
+     .map(([key]) => key);
+ 
++console.log('[inject-firebase-config] Checking Firebase configuration...');
++
+ if (missingKeys.length > 0) {
+-    console.warn(`[inject-firebase-config] WARNING: Missing NEXT_PUBLIC_FIREBASE_* environment variables: ${missingKeys.join(', ')}`);
++    console.warn(`[inject-firebase-config] WARNING: Missing required NEXT_PUBLIC_FIREBASE_* environment variables: ${missingKeys.join(', ')}`);
+     console.warn(`[inject-firebase-config] The generated firebase-config.json will be incomplete.`);
++    
++    // Show what keys we do have for debugging
++    const presentKeys = Object.entries(clientConfig)
++        .filter(([key, val]) => val && key !== 'buildTime')
++        .map(([key]) => key);
++    
++    if (presentKeys.length > 0) {
++        console.log(`[inject-firebase-config] Present keys: ${presentKeys.join(', ')}`);
++    }
+ 
+     // In CI/Production builds for Capacitor, this is fatal.
+     if (process.env.CI || process.env.NODE_ENV === 'production') {
+         console.error('[inject-firebase-config] CI/Production build detected. Failing due to missing keys.');
+         process.exit(1);
++} else {
++    console.log('[inject-firebase-config] All required Firebase environment variables are present.');
+ }
+ 
+ // Ensure public dir exists
+@@ -40,4 +59,14 @@
+ 
+ fs.writeFileSync(configPath, JSON.stringify(clientConfig, null, 2));
+ console.log(`[inject-firebase-config] Wrote Firebase client config to ${configPath}`);
++
++// Also log the config (without sensitive values) for verification
++console.log('[inject-firebase-config] Generated config preview:', {
++    apiKey: clientConfig.apiKey ? `${clientConfig.apiKey.substring(0, 5)}...` : 'MISSING',
++    authDomain: clientConfig.authDomain || 'MISSING',
++    projectId: clientConfig.projectId || 'MISSING',
++    hasMessagingSenderId: !!clientConfig.messagingSenderId,
++    hasAppId: !!clientConfig.appId,
++    buildTime: clientConfig.buildTime
++});
+ 
+diff --git a/scripts/check-envs.js b/scripts/check-envs.js
+index xxxxxxx..xxxxxxx 100644
+--- a/scripts/check-envs.js
++++ b/scripts/check-envs.js
+@@ -8,11 +8,14 @@ const requiredKeys = [
+     'NEXT_PUBLIC_FIREBASE_API_KEY',
+     'NEXT_PUBLIC_FIREBASE_AUTH_DOMAIN',
+     'NEXT_PUBLIC_FIREBASE_PROJECT_ID',
+-    // ... others usually needed
++    'NEXT_PUBLIC_FIREBASE_STORAGE_BUCKET',
++    'NEXT_PUBLIC_FIREBASE_MESSAGING_SENDER_ID',
++    'NEXT_PUBLIC_FIREBASE_APP_ID'
+ ];
+ 
+ console.log('[ci/check-envs] Verifying environment variables...');
+ 
++// Check for missing required keys
+ const missing = requiredKeys.filter(k => !process.env[k]);
+ 
+ if (missing.length > 0) {
+     console.error(`[ci/check-envs] CRITICAL: Missing required environment variables: ${missing.join(', ')}`);
++    
++    // Show what keys we do have for debugging
++    const presentKeys = requiredKeys.filter(k => process.env[k]);
++    if (presentKeys.length > 0) {
++        console.log(`[ci/check-envs] Present keys: ${presentKeys.join(', ')}`);
++    }
++    
+     process.exit(1);
+ }
+ 
++// Additional validation - check for empty values
++const emptyValues = requiredKeys.filter(k => process.env[k] === '');
++if (emptyValues.length > 0) {
++    console.warn(`[ci/check-envs] WARNING: The following environment variables are set but empty: ${emptyValues.join(', ')}`);
++}
++
++// Log config preview (without sensitive values)
++console.log('[ci/check-envs] Firebase configuration preview:', {
++    apiKey: process.env.NEXT_PUBLIC_FIREBASE_API_KEY ? 
++        `${process.env.NEXT_PUBLIC_FIREBASE_API_KEY.substring(0, 5)}...` : 'MISSING',
++    authDomain: process.env.NEXT_PUBLIC_FIREBASE_AUTH_DOMAIN || 'MISSING',
++    projectId: process.env.NEXT_PUBLIC_FIREBASE_PROJECT_ID || 'MISSING',
++    storageBucket: !!process.env.NEXT_PUBLIC_FIREBASE_STORAGE_BUCKET,
++    messagingSenderId: !!process.env.NEXT_PUBLIC_FIREBASE_MESSAGING_SENDER_ID,
++    appId: !!process.env.NEXT_PUBLIC_FIREBASE_APP_ID
++});
+ 
+ console.log('[ci/check-envs] All required Firebase environment variables are present.');
+ 
+diff --git a/src/firebase/client.ts b/src/firebase/client.ts
+index xxxxxxx..xxxxxxx 100644
+--- a/src/firebase/client.ts
++++ b/src/firebase/client.ts
+@@ -1,7 +1,6 @@
+ import { initializeApp, getApps, getApp, FirebaseApp } from 'firebase/app';
+ import { getAuth, Auth, setPersistence, browserLocalPersistence, browserSessionPersistence, inMemoryPersistence } from 'firebase/auth';
+ import { getFirestore, Firestore } from 'firebase/firestore';
+ 
+-// Core config object
+ // Core config object
+ const envConfig = {
+     apiKey: process.env.NEXT_PUBLIC_FIREBASE_API_KEY,
+@@ -79,9 +78,12 @@
+             throw new Error(errorMsg);
+         }
+ 
++        // Initialize Firebase app
+         if (!getApps().length) {
++            console.log('[FIREBASE] Initializing new Firebase app');
+             app = initializeApp(finalConfig as any);
+         } else {
++            console.log('[FIREBASE] Using existing Firebase app');
+             app = getApp();
+         }
+ 
+@@ -94,18 +96,42 @@
+ export async function getFirebaseAuth(): Promise<Auth> {
+     if (auth) return auth;
++    
++    try {
+         const initializedApp = await initFirebase();
+         auth = getAuth(initializedApp);
+ 
+         // Explicitly set persistence if in browser/webview
+         if (typeof window !== 'undefined') {
+             try {
+                 // Force local persistence for better WebView behavior
+                 await setPersistence(auth, browserLocalPersistence);
+                 console.log('[FIREBASE] Persistence set to LOCAL (browserLocalPersistence)');
+-            } catch (e) {
+-                console.warn('[FIREBASE] Failed to set persistence:', e);
++            } catch (e) {
++                console.warn('[FIREBASE] Failed to set persistence, falling back to in-memory:', e);
++                // Fallback to in-memory persistence if local fails
++                try {
++                    await setPersistence(auth, inMemoryPersistence);
++                    console.log('[FIREBASE] Persistence set to IN-MEMORY (inMemoryPersistence)');
++                } catch (fallbackError) {
++                    console.error('[FIREBASE] Failed to set any persistence:', fallbackError);
++                }
+             }
+         }
+ 
+-        return auth;
++        return auth;
++    } catch (error) {
++        console.error('[FIREBASE] Failed to initialize Firebase Auth:', error);
++        throw error;
+     }
+ }
+ 
+@@ -124,7 +150,15 @@
+ export async function getFirebaseDb(): Promise<Firestore> {
+     if (db) return db;
++    
++    try {
+         const initializedApp = await initFirebase();
+         db = getFirestore(initializedApp);
+-        return db;
++        return db;
++    } catch (error) {
++        console.error('[FIREBASE] Failed to initialize Firebase DB:', error);
++        throw error;
++    }
+ }
+ 
+diff --git a/src/contexts/AuthContext.tsx b/src/contexts/AuthContext.tsx
+index xxxxxxx..xxxxxxx 100644
+--- a/src/contexts/AuthContext.tsx
++++ b/src/contexts/AuthContext.tsx
+@@ -26,23 +26,41 @@
+   useEffect(() => {
+     let unsub: (() => void) | undefined;
++    let isMounted = true;
+ 
+     const init = async () => {
+       try {
+         const auth = await getFirebaseAuth();
++        
++        if (!isMounted) return;
++        
+         unsub = onAuthStateChanged(auth, async (fbUser: FBUser | null) => {
++          if (!isMounted) return;
++          
+           if (!fbUser) {
+             setUser(null);
+             setLoading(false);
+             return;
+           }
++          
+           try {
+             const db = await getFirebaseDb();
++            if (!isMounted) return;
++            
+             const docRef = doc(db, 'users', fbUser.uid);
+             const snap = await getDoc(docRef);
+             const data = snap.exists() ? (snap.data() as any) : null;
+             const role = (data?.role as Role) || 'guest';
++            
++            if (isMounted) {
++              setUser({
++                uid: fbUser.uid,
++                email: fbUser.email,
++                name: fbUser.displayName || null,
++                role,
++              });
++            }
+           } catch (e) {
+             console.error('Auth role fetch error', e);
++            
++            if (isMounted) {
++              setUser({
++                uid: fbUser.uid,
++                email: fbUser.email,
++                name: fbUser.displayName || null,
++                role: 'guest',
++              });
++            }
+           }
++          
++          if (isMounted) {
++            setLoading(false);
++          }
+         });
+       } catch (e) {
+         console.error('Failed to init auth', e);
++        
++        if (isMounted) {
++          setLoading(false);
++        }
+       }
+     };
+ 
+     init();
+ 
+     return () => {
++      isMounted = false;
+       if (unsub) unsub();
+     };
+   }, []);
+ 
+   const signOut = async () => {
+-    const auth = await getFirebaseAuth();
+-    await fbSignOut(auth);
+-    setUser(null);
++    try {
++      const auth = await getFirebaseAuth();
++      await fbSignOut(auth);
++      setUser(null);
++    } catch (error) {
++      console.error('Sign out error:', error);
++      setUser(null); // Still clear user state even if sign out fails
++    }
+   };
+-  // ...
+ 
+   return <AuthContext.Provider value={{ user, loading, signOut }}>{children}</AuthContext.Provider>;
+ };

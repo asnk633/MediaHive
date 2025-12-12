@@ -1,128 +1,28 @@
-"use client";
-
-import React, { useState } from "react";
-import { FileText, Image as ImageIcon, File, Download, Search, Filter } from "lucide-react";
-import { cn } from "@/lib/utils";
-
-type FileItem = {
-  id: string;
-  name: string;
-  type: string;
-  size: string;
-  uploadedBy: string;
-  date: string;
-  category: 'document' | 'image' | 'archive' | 'other';
-};
-
-const MOCK_FILES: FileItem[] = [
-  { id: '1', name: 'Brand_Guidelines_2024.pdf', type: 'PDF', size: '2.4 MB', uploadedBy: 'Admin', date: '2024-05-12', category: 'document' },
-  { id: '2', name: 'Logo_Pack_Final.zip', type: 'ZIP', size: '15.8 MB', uploadedBy: 'Design Team', date: '2024-05-10', category: 'archive' },
-  { id: '3', name: 'Social_Media_Post_Template.psd', type: 'PSD', size: '45.2 MB', uploadedBy: 'Alex', date: '2024-05-08', category: 'image' },
-  { id: '4', name: 'Q2_Report_Draft.docx', type: 'DOCX', size: '1.2 MB', uploadedBy: 'Sarah', date: '2024-05-05', category: 'document' },
-  { id: '5', name: 'Event_Banner_v2.png', type: 'PNG', size: '3.5 MB', uploadedBy: 'Design Team', date: '2024-05-01', category: 'image' },
-];
+import React from 'react';
+import { Download, File, Folder } from 'lucide-react';
 
 export default function DownloadsPage() {
-  const [activeCategory, setActiveCategory] = useState<string>('all');
-  const [searchQuery, setSearchQuery] = useState('');
-
-  const filteredFiles = MOCK_FILES.filter(file => {
-    const matchesCategory = activeCategory === 'all' || file.category === activeCategory;
-    const matchesSearch = file.name.toLowerCase().includes(searchQuery.toLowerCase());
-    return matchesCategory && matchesSearch;
-  });
-
   return (
-    <div className="flex flex-col gap-6 px-2 pt-4 pb-24">
-      <header className="px-2">
-        <h1 className="text-3xl font-bold tracking-tight text-[var(--text)]">
-          Files
-        </h1>
-        <p className="mt-1 text-[var(--muted)]">Access shared resources and documents.</p>
+    <div className="flex flex-col min-h-screen app-body-padding px-4 pb-24 max-w-4xl mx-auto">
+      <header className="mb-8 pt-6">
+        <h1 className="text-3xl font-display font-bold text-white mb-2">Downloads</h1>
+        <p className="text-[var(--color-text-secondary)]">Access shared resources and media.</p>
       </header>
 
-      {/* Search and Filter */}
-      <div className="flex flex-col gap-4">
-        <div className="relative">
-          <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-[var(--icon-muted)] w-4 h-4" />
-          <input
-            type="text"
-            placeholder="Search files..."
-            value={searchQuery}
-            onChange={(e) => setSearchQuery(e.target.value)}
-            className="w-full bg-[var(--panel)] border border-[var(--glass-border)] rounded-xl py-2.5 pl-10 pr-4 text-sm text-[var(--text)] focus:outline-none focus:border-[var(--accent)]/50 focus:bg-[var(--panel-strong)] transition-all"
-          />
-        </div>
-
-        <div className="flex gap-2 overflow-x-auto pb-2 no-scrollbar">
-          <CategoryChip label="All" active={activeCategory === 'all'} onClick={() => setActiveCategory('all')} />
-          <CategoryChip label="Documents" active={activeCategory === 'document'} onClick={() => setActiveCategory('document')} />
-          <CategoryChip label="Images" active={activeCategory === 'image'} onClick={() => setActiveCategory('image')} />
-          <CategoryChip label="Archives" active={activeCategory === 'archive'} onClick={() => setActiveCategory('archive')} />
-        </div>
-      </div>
-
-      {/* File List */}
-      <div className="grid gap-3">
-        {filteredFiles.length > 0 ? (
-          filteredFiles.map((file) => (
-            <div
-              key={file.id}
-              className="glass-card flex items-center gap-4 p-4 hover:bg-[var(--panel)]/50 transition-colors group card-padding"
-            >
-              {/* Icon */}
-              <div className="flex-shrink-0 w-10 h-10 rounded-lg bg-[var(--panel)] flex items-center justify-center text-[var(--icon-muted)] group-hover:text-[var(--accent)] group-hover:bg-[var(--accent)]/10 transition-colors">
-                <FileIcon type={file.type} />
-              </div>
-
-              {/* Info */}
-              <div className="flex-1 min-w-0">
-                <h3 className="text-sm font-medium text-[var(--text)] truncate">{file.name}</h3>
-                <div className="flex items-center gap-2 mt-1 text-xs text-[var(--muted)]">
-                  <span className="uppercase">{file.type}</span>
-                  <span className="w-1 h-1 rounded-full bg-[var(--glass-border)]" />
-                  <span>{file.size}</span>
-                  <span className="w-1 h-1 rounded-full bg-[var(--glass-border)]" />
-                  <span>{file.uploadedBy}</span>
-                </div>
-              </div>
-
-              {/* Download Button */}
-              <button className="p-2 rounded-full text-[var(--icon-muted)] hover:text-[var(--text)] hover:bg-[var(--panel)]/50 transition-colors">
-                <Download size={18} />
-              </button>
-            </div>
-          ))
-        ) : (
-          <div className="text-center py-12 text-[var(--muted)]">
-            No files found matching your criteria.
+      <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+        {[1, 2, 3, 4].map((i) => (
+          <div key={i} className="aspect-square bg-[var(--color-bg-surface)] rounded-[20px] border border-[var(--color-border)] flex flex-col items-center justify-center gap-3 p-4 hover:bg-[var(--color-bg-subtle)] transition-colors cursor-pointer">
+            <Folder size={32} className="text-blue-400" />
+            <span className="text-white font-medium text-sm">Media Pack {i}</span>
           </div>
-        )}
+        ))}
+        {[1, 2].map((i) => (
+          <div key={`f-${i}`} className="aspect-square bg-[var(--color-bg-surface)] rounded-[20px] border border-[var(--color-border)] flex flex-col items-center justify-center gap-3 p-4 hover:bg-[var(--color-bg-subtle)] transition-colors cursor-pointer">
+            <File size={32} className="text-[var(--color-text-secondary)]" />
+            <span className="text-white font-medium text-sm">Document.pdf</span>
+          </div>
+        ))}
       </div>
     </div>
   );
-}
-
-function CategoryChip({ label, active, onClick }: { label: string; active: boolean; onClick: () => void }) {
-  return (
-    <button
-      onClick={onClick}
-      className={cn(
-        "px-4 py-1.5 rounded-full text-xs font-medium whitespace-nowrap transition-all border",
-        active
-          ? "bg-[var(--accent)] text-[var(--text)] border-[var(--accent)] shadow-glow"
-          : "bg-[var(--panel)] text-[var(--muted)] border-[var(--glass-border)] hover:bg-[var(--panel-strong)] hover:text-[var(--text)]"
-      )}
-    >
-      {label}
-    </button>
-  );
-}
-
-function FileIcon({ type }: { type: string }) {
-  const t = type.toLowerCase();
-  if (t.includes('pdf') || t.includes('doc') || t.includes('txt')) return <FileText size={20} />;
-  if (t.includes('png') || t.includes('jpg') || t.includes('psd')) return <ImageIcon size={20} />;
-  if (t.includes('zip') || t.includes('rar')) return <File size={20} />;
-  return <File size={20} />;
 }

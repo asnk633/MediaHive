@@ -1,0 +1,15 @@
+{
+  "analysis": "Comprehensive hydration mismatch detection suite for Next.js App Router project. The test suite detects server/client DOM mismatches, differences in content-offset wrapper presence, TopBar positioning issues, missing or additional elements, improperly wrapped client-only components, and runtime changes caused by safe-area initializer. The suite runs on multiple viewports and provides detailed DOM diff analysis with automatic screenshot capture on failure.",
+  "tests": [
+    "e2e/playwright/hydration-mismatch.spec.ts"
+  ],
+  "patches": [
+    "hydration-fixes.patch"
+  ],
+  "commands": [
+    "npx playwright test e2e/playwright/hydration-mismatch.spec.ts",
+    "npx playwright test e2e/playwright/hydration-mismatch.spec.ts --project=chromium",
+    "npx playwright test e2e/playwright/hydration-mismatch.spec.ts --reporter=verbose",
+    "npx playwright test e2e/playwright/hydration-mismatch.spec.ts --headed"
+  ]
+}

@@ -1,0 +1,22 @@
+# Commands to run the FAB visibility tests
+
+## Run all FAB visibility tests
+npx playwright test e2e/playwright/fab-visibility.spec.ts
+
+## Run tests for specific viewport
+npx playwright test e2e/playwright/fab-visibility.spec.ts --project=chromium
+
+## Run with verbose output
+npx playwright test e2e/playwright/fab-visibility.spec.ts --reporter=verbose
+
+## Run and generate HTML report
+npx playwright test e2e/playwright/fab-visibility.spec.ts --reporter=html
+
+## Run on Windows
+npm run test:e2e:win
+
+## View test results
+npx playwright show-report
+
+## Debug tests in headed mode
+npx playwright test e2e/playwright/fab-visibility.spec.ts --headed

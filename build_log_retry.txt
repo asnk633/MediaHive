@@ -1,0 +1,97 @@
+
+> thaiba-garden-media-manager@0.1.1 build
+> next build
+
+ ⚠ Found lockfile missing swc dependencies, patching...
+'pnpm' is not recognized as an internal or external command,
+operable program or batch file.
+'pnpm' is not recognized as an internal or external command,
+operable program or batch file.
+'pnpm' is not recognized as an internal or external command,
+operable program or batch file.
+'pnpm' is not recognized as an internal or external command,
+operable program or batch file.
+'pnpm' is not recognized as an internal or external command,
+operable program or batch file.
+'pnpm' is not recognized as an internal or external command,
+operable program or batch file.
+'pnpm' is not recognized as an internal or external command,
+operable program or batch file.
+ ⨯ Failed to patch lockfile, please try uninstalling and reinstalling next in this workspace
+Error: Failed to get registry from "pnpm".
+    at ignore-listed frames {
+  [cause]: Error: Command failed: pnpm config get registry 
+  'pnpm' is not recognized as an internal or external command,
+  operable program or batch file.
+  
+      at ignore-listed frames {
+    status: 1,
+    signal: null,
+    output: [
+      null,
+      <Buffer >,
+      <Buffer 27 70 6e 70 6d 27 20 69 73 20 6e 6f 74 20 72 65 63 6f 67 6e 69 7a 65 64 20 61 73 20 61 6e 20 69 6e 74 65 72 6e 61 6c 20 6f 72 20 65 78 74 65 72 6e 61 ... 45 more bytes>
+    ],
+    pid: 42076,
+    stdout: <Buffer >,
+    stderr: <Buffer 27 70 6e 70 6d 27 20 69 73 20 6e 6f 74 20 72 65 63 6f 67 6e 69 7a 65 64 20 61 73 20 61 6e 20 69 6e 74 65 72 6e 61 6c 20 6f 72 20 65 78 74 65 72 6e 61 ... 45 more bytes>
+  }
+}
+   ▲ Next.js 16.0.7 (Turbopack)
+   - Environments: .env.local, .env
+   - Experiments (use with caution):
+     · optimizePackageImports
+
+ ⚠ The "middleware" file convention is deprecated. Please use "proxy" instead. Learn more: https://nextjs.org/docs/messages/middleware-to-proxy
+   Creating an optimized production build ...
+ ⚠ Found lockfile missing swc dependencies, patching...
+'pnpm' is not recognized as an internal or external command,
+operable program or batch file.
+'pnpm' is not recognized as an internal or external command,
+operable program or batch file.
+'pnpm' is not recognized as an internal or external command,
+operable program or batch file.
+'pnpm' is not recognized as an internal or external command,
+operable program or batch file.
+'pnpm' is not recognized as an internal or external command,
+operable program or batch file.
+'pnpm' is not recognized as an internal or external command,
+operable program or batch file.
+'pnpm' is not recognized as an internal or external command,
+operable program or batch file.
+ ⨯ Failed to patch lockfile, please try uninstalling and reinstalling next in this workspace
+Error: Failed to get registry from "pnpm".
+    at ignore-listed frames {
+  [cause]: Error: Command failed: pnpm config get registry 
+  'pnpm' is not recognized as an internal or external command,
+  operable program or batch file.
+  
+      at ignore-listed frames {
+    status: 1,
+    signal: null,
+    output: [
+      null,
+      <Buffer >,
+      <Buffer 27 70 6e 70 6d 27 20 69 73 20 6e 6f 74 20 72 65 63 6f 67 6e 69 7a 65 64 20 61 73 20 61 6e 20 69 6e 74 65 72 6e 61 6c 20 6f 72 20 65 78 74 65 72 6e 61 ... 45 more bytes>
+    ],
+    pid: 34920,
+    stdout: <Buffer >,
+    stderr: <Buffer 27 70 6e 70 6d 27 20 69 73 20 6e 6f 74 20 72 65 63 6f 67 6e 69 7a 65 64 20 61 73 20 61 6e 20 69 6e 74 65 72 6e 61 6c 20 6f 72 20 65 78 74 65 72 6e 61 ... 45 more bytes>
+  }
+}
+ ✓ Compiled successfully in 7.4s
+   Running TypeScript ...
+Failed to compile.
+
+./e2e/playwright/utils/results.ts:38:3
+Type error: Element implicitly has an 'any' type because expression of type 'string' can't be used to index type '{}'.
+  No index signature with a parameter of type 'string' was found on type '{}'.
+
+[0m [90m 36 |[39m
+ [90m 37 |[39m   [90m// Merge the new results under the group key[39m
+[31m[1m>[22m[39m[90m 38 |[39m   mergedResults[groupKey] [33m=[39m resultObject[33m;[39m
+ [90m    |[39m   [31m[1m^[22m[39m
+ [90m 39 |[39m
+ [90m 40 |[39m   [90m// Write merged results back to file[39m
+ [90m 41 |[39m   [36mtry[39m {[0m
+Next.js build worker exited with code: 1 and signal: null

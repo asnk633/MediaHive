@@ -1,105 +1,135 @@
-// src/app/(shell)/reports/page.tsx
 "use client";
+import React, { useEffect, useState } from 'react';
+import { useAuth } from '@/contexts/AuthContext';
+import { useRole } from '@/app/(shell)/RoleContext';
+import { motion } from 'framer-motion';
+import { BarChart3, Users, FileText } from 'lucide-react';
 
-import { useEffect, useMemo, useState } from "react";
-
-type Task = {
-  id: string; status?: "pending" | "working" | "completed" | "on_hold";
-  dueAt?: string | null;
+type UserData = {
+  uid: string;
+  email: string;
+  name: string;
+  role: 'admin' | 'team' | 'guest';
 };
-type Event = { id: string; startAt: string };
-
-function isOverdue(t: Task) {
-  if (!t.dueAt) return false;
-  const due = new Date(t.dueAt).getTime();
-  return due < Date.now() && t.status !== "completed";
-}
 
 export default function ReportsPage() {
-  const [tasks, setTasks] = useState<Task[]>([]);
-  const [events, setEvents] = useState<Event[]>([]);
-  const [loading, setLoading] = useState(true);
+  const { user } = useRole();
+  const [users, setUsers] = useState<UserData[]>([]);
+  const [loading, setLoading] = useState(false);
+  const [saving, setSaving] = useState<string | null>(null);
 
+  // Load users only if admin
   useEffect(() => {
-    let active = true;
-    (async () => {
-      try {
-        const t = await fetch("/api/tasks?institutionId=1&limit=1000").then(r => r.json());
-        const e = await fetch("/api/events?institutionId=1&limit=500").then(r => r.json());
-        if (!active) return;
-        setTasks(Array.isArray(t.data) ? t.data : []);
-        setEvents(Array.isArray(e.data) ? e.data : []);
-      } finally { if (active) setLoading(false); }
-    })();
-    return () => { active = false; };
-  }, []);
+    if (user?.role === 'admin') {
+      fetchUsers();
+    }
+  }, [user?.role]);
 
-  const openTasks = useMemo(() => tasks.filter(t => t.status !== "completed").length, [tasks]);
-  const overdue = useMemo(() => tasks.filter(isOverdue).length, [tasks]);
-  const thisWeekEvents = useMemo(() => {
-    const now = new Date();
-    const start = new Date(now);
-    start.setDate(now.getDate() - now.getDay()); // Sun
-    const end = new Date(start);
-    end.setDate(start.getDate() + 7);
-    const s = start.getTime(), e = end.getTime();
-    return events.filter(ev => {
-      const ts = new Date(ev.startAt).getTime();
-      return ts >= s && ts < e;
-    }).length;
-  }, [events]);
+  const fetchUsers = async () => {
+    setLoading(true);
+    try {
+      const res = await fetch('/api/admin/users');
+      const data = await res.json();
+      if (data.users) setUsers(data.users);
+    } catch (e) {
+      console.error("Failed to fetch users", e);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleRoleChange = async (uid: string, newRole: string) => {
+    setSaving(uid);
+    try {
+      await fetch('/api/admin/users', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ uid, role: newRole })
+      });
+      setUsers(prev => prev.map(u => u.uid === uid ? { ...u, role: newRole as any } : u));
+    } catch (e) {
+      alert("Failed to update role");
+    } finally {
+      setSaving(null);
+    }
+  };
 
   return (
-    <div className="px-4 pb-28 pt-6">
-      <h1 className="text-[28px] font-bold leading-tight tracking-tight text-[var(--text)]">Reports</h1>
+    <div className="flex flex-col min-h-screen app-body-padding px-4 pb-24 max-w-4xl mx-auto">
+      <header className="mb-8 pt-6">
+        <h1 className="text-3xl font-display font-bold text-white mb-2">Reports & Analytics</h1>
+        <p className="text-[var(--color-text-secondary)]">Overview of system activity and resources.</p>
+      </header>
 
-      {loading ? (
-        <div className="mt-4 rounded-xl bg-[var(--panel)] p-4 card-padding">Loading…</div>
-      ) : (
-        <>
-          <div className="mt-4 grid gap-3 sm:grid-cols-3">
-            <Card title="Open Tasks" value={String(openTasks)} hint="Team-wide" />
-            <Card title="Overdue" value={String(overdue)} hint="Needs attention" />
-            <Card title="Events this week" value={String(thisWeekEvents)} hint="Across branches" />
+      {/* General Reports Section (Visible to all or Team) */}
+      <section className="mb-8">
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <div className="bg-[var(--color-bg-surface)] p-6 rounded-[20px] border border-[var(--color-border)]">
+            <div className="flex items-center gap-3 mb-4">
+              <div className="w-10 h-10 rounded-full bg-blue-500/20 flex items-center justify-center text-blue-400"><FileText size={20} /></div>
+              <h3 className="text-white font-bold">Monthly Summary</h3>
+            </div>
+            <p className="text-[var(--color-text-secondary)] text-sm">Download the latest activity report for this month.</p>
+            <button className="mt-4 text-xs font-bold text-blue-400 uppercase tracking-wider">View Report</button>
           </div>
 
-          <section className="mt-6 glass-card rounded-xl p-4 card-padding">
-            <h3 className="text-lg font-bold text-[var(--text)]">Productivity Snapshot</h3>
-            <p className="mt-1 text-[var(--muted)]">
-              A quick overview based on your current open items and schedule.
-            </p>
-            <div className="mt-3 grid gap-3 sm:grid-cols-3">
-              <Metric label="Completion Rate" value={pct(tasks.filter(t=>t.status==="completed").length, tasks.length)} />
-              <Metric label="Open vs Total" value={`${openTasks}/${tasks.length}`} />
-              <Metric label="Overdue Share" value={pct(overdue, tasks.length)} />
+          <div className="bg-[var(--color-bg-surface)] p-6 rounded-[20px] border border-[var(--color-border)]">
+            <div className="flex items-center gap-3 mb-4">
+              <div className="w-10 h-10 rounded-full bg-green-500/20 flex items-center justify-center text-green-400"><BarChart3 size={20} /></div>
+              <h3 className="text-white font-bold">Performance</h3>
             </div>
-          </section>
-        </>
+            <p className="text-[var(--color-text-secondary)] text-sm">Your task completion rate is 20% higher than last week.</p>
+          </div>
+        </div>
+      </section>
+
+      {/* Admin User Management Section */}
+      {user?.role === 'admin' && (
+        <section>
+          <div className="flex items-center gap-2 mb-4">
+            <Users className="text-indigo-400" size={24} />
+            <h2 className="text-2xl font-bold text-white">Team Management</h2>
+          </div>
+
+          <div className="bg-[var(--color-bg-surface)] border border-[var(--color-border)] rounded-[20px] overflow-hidden">
+            <div className="p-4 md:p-6 grid gap-4">
+              {loading ? (
+                <div className="text-[var(--color-text-secondary)] text-center py-4">Loading users...</div>
+              ) : (
+                users.map((u) => (
+                  <motion.div
+                    key={u.uid}
+                    initial={{ opacity: 0 }}
+                    animate={{ opacity: 1 }}
+                    className="flex flex-col md:flex-row md:items-center justify-between gap-4 py-3 border-b border-[var(--color-border)] last:border-0"
+                  >
+                    <div className="flex items-center gap-3">
+                      <div className="w-10 h-10 rounded-full bg-[var(--color-bg-subtle)] flex items-center justify-center text-[var(--color-text-primary)] font-bold">
+                        {u.name ? u.name[0].toUpperCase() : (u.email?.[0]?.toUpperCase() || 'U')}
+                      </div>
+                      <div className="min-w-0">
+                        <h4 className="text-white font-medium truncate">{u.name || 'Unknown User'}</h4>
+                        <p className="text-xs text-[var(--color-text-secondary)] truncate">{u.email}</p>
+                      </div>
+                    </div>
+
+                    <select
+                      value={u.role}
+                      onChange={(e) => handleRoleChange(u.uid, e.target.value)}
+                      disabled={saving === u.uid}
+                      className="bg-black/30 text-white border border-[var(--color-border)] rounded-lg px-3 py-1.5 text-xs focus:outline-none focus:border-indigo-500 transition-colors cursor-pointer"
+                    >
+                      <option value="guest">Guest</option>
+                      <option value="team">Team</option>
+                      <option value="admin">Admin</option>
+                    </select>
+                  </motion.div>
+                ))
+              )}
+            </div>
+          </div>
+        </section>
       )}
-    </div>
-  );
-}
-
-function pct(n: number, d: number) {
-  if (!d) return "—";
-  return `${Math.round((n / d) * 100)}%`;
-}
-
-function Card({ title, value, hint }: { title: string; value: string; hint?: string }) {
-  return (
-    <div className="glass-card rounded-xl p-4 card-padding">
-      <p className="text-sm text-[var(--muted)]">{title}</p>
-      <p className="mt-1 text-3xl font-extrabold text-[var(--text)]">{value}</p>
-      {hint && <p className="text-xs text-[var(--muted)]">{hint}</p>}
-    </div>
-  );
-}
-
-function Metric({ label, value }: { label: string; value: string }) {
-  return (
-    <div className="rounded-lg bg-[var(--panel-strong)] p-3">
-      <p className="text-sm text-[var(--muted)]">{label}</p>
-      <p className="text-xl font-bold text-[var(--text)]">{value}</p>
     </div>
   );
 }

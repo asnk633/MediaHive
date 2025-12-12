@@ -12,7 +12,7 @@ interface TaskItemProps {
 
 export function TaskItem({ title, date, icon: Icon, isCompleted }: TaskItemProps) {
     return (
-        <div className="group flex items-center justify-between p-4 bg-white rounded-2xl shadow-sm border border-[var(--color-border)] hover:shadow-md transition-all duration-200 transform hover:-translate-y-0.5">
+        <div className="group flex items-center justify-between p-4 bg-[var(--color-bg-surface)] rounded-2xl shadow-sm border border-[var(--color-border)] hover:shadow-md transition-all duration-200 transform hover:-translate-y-0.5">
             <div className="flex items-center gap-4">
                 <div className={cn(
                     "w-10 h-10 rounded-xl flex items-center justify-center transition-colors",

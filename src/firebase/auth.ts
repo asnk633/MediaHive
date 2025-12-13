@@ -1,8 +1,13 @@
 // Mock firebase auth file for build purposes
 import { initializeApp, getApps, FirebaseApp } from 'firebase/app';
 import { getAuth, Auth } from 'firebase/auth';
-import { getFirestore, Firestore, initializeFirestore } from 'firebase/firestore';
+import { getFirestore, Firestore, initializeFirestore, setLogLevel } from 'firebase/firestore';
 import { getStorage, FirebaseStorage } from 'firebase/storage';
+
+// Enable verbose logging to debug timeouts
+if (typeof window !== 'undefined') {
+  setLogLevel('debug');
+}
 
 // Mock Firebase configuration - using valid format to avoid initialization errors
 const firebaseConfig = {

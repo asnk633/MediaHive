@@ -7,6 +7,7 @@ import { cn } from "@/lib/utils";
 import ImageCropper from "@/components/ImageCropper";
 import { uploadProfilePicture, getProfilePictureUrl } from "@/services/profilePicture";
 import { auth } from "@/firebase/client";
+import { signOut } from "firebase/auth";
 
 export default function ProfilePage() {
   const { user } = useRole();
@@ -185,10 +186,16 @@ export default function ProfilePage() {
       {/* Logout */}
       <button
         onClick={async () => {
-          const { signOut } = await import('firebase/auth');
-          const { auth } = await import('@/firebase/auth');
-          await signOut(auth);
-          window.location.href = '/';
+          try {
+            await signOut(auth);
+            // Clear any local storage
+            localStorage.clear();
+            // Redirect to login page
+            window.location.href = '/login';
+          } catch (error) {
+            console.error('Error signing out:', error);
+            alert('Failed to sign out. Please try again.');
+          }
         }}
         className="flex items-center justify-center gap-2 w-full py-3 rounded-xl bg-red-50 hover:bg-red-100 dark:bg-red-900/20 dark:hover:bg-red-900/30 text-red-600 dark:text-red-400 font-medium transition-colors border border-red-200 dark:border-red-800"
       >

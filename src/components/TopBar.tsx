@@ -1,63 +1,60 @@
 "use client";
-import { Bell } from 'lucide-react';
+import React, { useEffect, useRef } from "react";
+import { Bell, Settings } from 'lucide-react';
 import Link from 'next/link';
 import { useRole } from "@/app/(shell)/RoleContext";
+import { useRouter } from 'next/navigation';
 import ThemeToggle from "@/components/ThemeToggle";
-import { useEffect, useRef } from "react";
 import { addFocusVisibleClass } from "@/utils/a11y";
 
-export default function TopBar() {
+export default function TopBar({ title = "Thaiba MediaHive" }: { title?: string }) {
   const { user } = useRole();
-  const notificationButtonRef = useRef<HTMLButtonElement>(null);
-  const userMenuRef = useRef<HTMLDivElement>(null);
+  const router = useRouter();
+  const notifRef = useRef<HTMLButtonElement>(null);
+  const [avatarUrl, setAvatarUrl] = React.useState<string | null>(null);
 
-  // Add focus visible class to interactive elements for keyboard navigation detection
   useEffect(() => {
-    if (notificationButtonRef.current) {
-      addFocusVisibleClass(notificationButtonRef.current);
-    }
-    if (userMenuRef.current) {
-      addFocusVisibleClass(userMenuRef.current);
+    if (notifRef.current) addFocusVisibleClass(notifRef.current);
+    // Load avatar from localStorage
+    const savedAvatar = localStorage.getItem('userAvatar');
+    if (savedAvatar) {
+      setAvatarUrl(savedAvatar);
     }
   }, []);
 
   return (
-    <header className="topbar">
+    <header className="fixed top-0 left-0 right-0 h-[72px] bg-[var(--color-bg-glass)] backdrop-blur-md border-b border-[var(--color-border)] z-30 flex items-center justify-between px-4 lg:px-8 transition-all">
       <div className="flex items-center gap-3">
-        <div className="w-3 h-3 rounded-full bg-green-500 shadow-[0_0_10px_rgba(0,200,83,0.25)]" />
-        <div className="font-bold text-lg tracking-tight text-[var(--text)]">Thaiba Garden</div>
+        {/* Logo Icon */}
+        <div className="w-10 h-10 flex items-center justify-center">
+          <img src="/mediahive-icon.png" alt="Logo" className="w-full h-full object-contain" />
+        </div>
+        <h1 className="font-display font-bold text-xl text-[var(--color-text-primary)] hidden sm:block">{title}</h1>
       </div>
 
       <div className="flex items-center gap-3">
         <ThemeToggle />
-
-        <Link href="/updates" passHref legacyBehavior>
-          <button
-            ref={notificationButtonRef}
-            aria-label="Notifications"
-            title="Notifications"
-            className="p-2 rounded-full hover:bg-[var(--panel)] transition-all duration-200 ease-in-out focus:outline-none"
-          >
-            <Bell size={20} aria-hidden="true" className="text-[var(--icon)]" />
+        <Link href="/updates">
+          <button ref={notifRef} aria-label="Notifications" className="p-2 rounded-full text-gray-500 hover:bg-gray-100 relative">
+            <Bell size={20} />
+            <span className="absolute top-1.5 right-2 w-2 h-2 bg-red-500 rounded-full border border-white" />
           </button>
         </Link>
 
-        <div
-          ref={userMenuRef}
-          className="w-9 h-9 rounded-full grid place-items-center bg-[var(--panel)] border border-[var(--glass-border)]"
-          role="button"
-          tabIndex={0}
-          aria-label={`User menu for ${user?.name || 'Anonymous'}`}
+        {/* Settings Button (Hidden on mobile) */}
+        <button
+          onClick={() => router.push('/profile')}
+          className="p-2 text-gray-500 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-full transition-colors hidden sm:block"
         >
-          <span className="font-bold text-sm text-[var(--icon)]">
-            {user?.name?.charAt(0).toUpperCase() || 'A'}
-          </span>
-        </div>
-        {user && (
-          <span className="px-2 py-1 text-xs rounded bg-gray-100 dark:bg-gray-800 text-gray-600 dark:text-gray-300 font-medium border border-gray-200 dark:border-gray-700">
-            {user.role.toUpperCase()}
-          </span>
-        )}
+          <Settings size={20} />
+        </button>
+
+        <button
+          onClick={() => router.push('/profile')}
+          className="w-9 h-9 rounded-full bg-gray-100 overflow-hidden border border-gray-200 cursor-pointer hover:ring-2 hover:ring-blue-500 transition-all"
+        >
+          {avatarUrl ? <img src={avatarUrl} alt="Profile" className="w-full h-full object-cover" /> : (user as any)?.avatar ? <img src={(user as any).avatar} className="w-full h-full object-cover" /> : <div className="w-full h-full grid place-items-center text-gray-500 font-bold">{user?.name?.charAt(0).toUpperCase() || 'A'}</div>}
+        </button>
       </div>
     </header>
   );

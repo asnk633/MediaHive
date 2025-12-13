@@ -1,0 +1,83 @@
+{
+  "title": "Unified Playwright Test Suite",
+  "description": "Comprehensive UI validation suite covering 6 groups across all viewport presets",
+  "createdFiles": [
+    {
+      "path": "e2e/playwright/unified-full-suite.spec.ts",
+      "description": "Main test suite covering all 6 groups: FAB visibility, Safe-area correctness, Hydration stability, Greeting positioning, Firebase runtime, WebView device behavior"
+    },
+    {
+      "path": "playwright.ci.config.ts",
+      "description": "CI-ready Playwright configuration with optimized settings for consistent test runs"
+    },
+    {
+      "path": "scripts/run-full-ui-tests.js",
+      "description": "Main entry script to run the full UI test suite with proper error handling and result reporting"
+    },
+    {
+      "path": "ui-test-fixes.patch",
+      "description": "Auto-fix patches for common issues detected by the test suite"
+    },
+    {
+      "path": "UNIFIED_TEST_SUITE.md",
+      "description": "Documentation explaining how to use the unified test suite"
+    }
+  ],
+  "updatedFiles": [
+    {
+      "path": "package.json",
+      "description": "Added npm script 'test:full-ui' to run the unified test suite"
+    }
+  ],
+  "testGroups": [
+    {
+      "name": "FAB Visibility",
+      "description": "Validates Floating Action Button visibility and positioning across all viewports"
+    },
+    {
+      "name": "Safe-area Correctness",
+      "description": "Ensures safe-area initialization and values are correct"
+    },
+    {
+      "name": "Hydration Stability",
+      "description": "Detects and prevents hydration mismatches"
+    },
+    {
+      "name": "Greeting Positioning",
+      "description": "Validates proper positioning of greeting elements below TopBar"
+    },
+    {
+      "name": "Firebase Runtime",
+      "description": "Tests Firebase initialization and persistence"
+    },
+    {
+      "name": "WebView Device Behavior",
+      "description": "Comprehensive testing of WebView environments"
+    }
+  ],
+  "viewportPresets": [
+    "Desktop (1366×768)",
+    "Tablet (1024×768)",
+    "Chrome Mobile (412×915)",
+    "Pixel 7 (412×915)",
+    "Samsung S21 (360×800)"
+  ],
+  "webViewEnvironments": [
+    "Android WebView",
+    "Chrome WebView 81",
+    "Capacitor WebView"
+  ],
+  "features": [
+    "Runs across all viewport presets",
+    "Generates screenshots and logs for each test",
+    "Produces structured JSON output for analysis",
+    "Provides auto-fix patches if issues are detected",
+    "CI-ready configuration included",
+    "Comprehensive error handling and reporting"
+  ],
+  "usage": {
+    "quickRun": "npm run test:full-ui",
+    "manualRun": "npx playwright test unified-full-suite.spec.ts",
+    "ciMode": "npx playwright test unified-full-suite.spec.ts --config=playwright.ci.config.ts"
+  }
+}

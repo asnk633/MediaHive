@@ -1,0 +1,27 @@
+[
+  {
+    "name": "Desktop",
+    "status": "FAIL",
+    "error": "Key elements not found"
+  },
+  {
+    "name": "Tablet",
+    "status": "FAIL",
+    "error": "Key elements not found"
+  },
+  {
+    "name": "Chrome Mobile",
+    "status": "FAIL",
+    "error": "Key elements not found"
+  },
+  {
+    "name": "Pixel 7",
+    "status": "FAIL",
+    "error": "Page load failed"
+  },
+  {
+    "name": "Samsung Galaxy S21",
+    "status": "FAIL",
+    "error": "Page load failed"
+  }
+]

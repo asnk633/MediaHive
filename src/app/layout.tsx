@@ -25,7 +25,7 @@ export default function RootLayout({ children }: { children: ReactNode }) {
   const useNewUI = process.env.NEXT_PUBLIC_NEW_UI === "true";
 
   return (
-    <html lang="en" data-theme="dark">
+    <html lang="en" data-theme="dark" suppressHydrationWarning={true}>
       <head>
         {/* inside <head> of src/app/layout.tsx */}
         <script

@@ -138,8 +138,8 @@ jobs:
 
       - name: Run Playwright tests
         run: |
-          # Run smoke tests - use absolute path to override testDir config
-          npx playwright test ${{ github.workspace }}/e2e/smoke.spec.ts --retries=1 --reporter=list
+          # Run smoke tests from correct directory (matches testDir config)
+          npx playwright test smoke.spec.ts --retries=1 --reporter=list
         shell: bash
         env:
           PLAYWRIGHT_BASE_URL: http://127.0.0.1:3000

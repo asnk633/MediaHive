@@ -1,0 +1,19 @@
+{
+  "analysis": "Comprehensive FAB visibility test across multiple devices and viewports. The test validates that the FAB component is visible, properly positioned, and not clipped across Desktop (1366x768), Tablet (1024x768), Chrome Mobile (412x915), Pixel 7 (412x915), and Samsung S21 (360x800) viewports. The test includes automatic screenshot capture on failure and UI invariant analysis when issues are detected.",
+  "patches": [
+    "fabric-fixes.patch"
+  ],
+  "tests": [
+    "e2e/playwright/fab-visibility.spec.ts"
+  ],
+  "commands": [
+    "npx playwright test e2e/playwright/fab-visibility.spec.ts",
+    "npx playwright test e2e/playwright/fab-visibility.spec.ts --project=chromium",
+    "npx playwright test e2e/playwright/fab-visibility.spec.ts --reporter=verbose",
+    "npx playwright test e2e/playwright/fab-visibility.spec.ts --reporter=html",
+    "npm run test:e2e:win",
+    "npx playwright show-report",
+    "npx playwright test e2e/playwright/fab-visibility.spec.ts --headed"
+  ],
+  "pr_description": "Adds comprehensive E2E tests for FAB visibility across all supported devices and viewports. The tests validate that the FAB component is properly positioned, visible, and not clipped behind the BottomNav on Desktop, Tablet, Chrome Mobile, Pixel 7, and Samsung S21 viewports. Includes automatic screenshot capture on failure and UI invariant analysis for debugging. Also includes a minor CSS fix for very small screens to ensure the FAB menu doesn't get cut off."
+}

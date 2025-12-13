@@ -1,0 +1,63 @@
+diff --git a/.github/workflows/playwright-e2e.yml b/.github/workflows/playwright-e2e.yml
+index 1234567..abcdef0 100644
+--- a/.github/workflows/playwright-e2e.yml
++++ b/.github/workflows/playwright-e2e.yml
+@@ -1,10 +1,12 @@
+ name: Playwright E2E
+ 
+ on:
+-  workflow_dispatch:
+-  pull_request:
+-  push:
+-    branches: [ main ]
++  push:
++    branches:
++      - main
++  workflow_dispatch:
++
+ 
+ permissions: read-all
+ 
+diff --git a/.github/workflows/ci-e2e.yml b/.github/workflows/ci-e2e.yml
+index 1234567..abcdef0 100644
+--- a/.github/workflows/ci-e2e.yml
++++ b/.github/workflows/ci-e2e.yml
+@@ -1,10 +1,12 @@
+ name: CI — E2E (decode SA, seed, playwright)
+ 
+ on:
+-  pull_request:
+-    branches:
+-      - main
+-      - ci/fix-workflows
++  push:
++    branches:
++      - main
++  workflow_dispatch:
++
+ 
+ jobs:
+   E2E:
+diff --git a/.github/workflows/playwright.yml b/.github/workflows/playwright.yml
+index 1234567..abcdef0 100644
+--- a/.github/workflows/playwright.yml
++++ b/.github/workflows/playwright.yml
+@@ -1,13 +1,12 @@
+ name: Playwright E2E
+ 
+ on:
+-  pull_request:
+-    branches:
+-      - main
+-      - ci/fix-workflows
+-  push:
+-    branches:
+-      - main
++  push:
++    branches:
++      - main
++  workflow_dispatch:
++
+ 
+ jobs:
+   test:

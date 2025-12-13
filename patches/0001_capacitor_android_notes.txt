@@ -1,0 +1,79 @@
+Capacitor Android Specific Steps
+===============================
+
+1. StatusBar Configuration
+-------------------------
+To ensure the TopBar doesn't overlap with the status bar in Capacitor Android WebView:
+
+In `android/app/src/main/java/your/package/name/MainActivity.java`, add:
+
+```java
+import com.getcapacitor.Plugin;
+import com.getcapacitor.BridgeActivity;
+import com.getcapacitor.annotation.CapacitorPlugin;
+import com.capacitorjs.plugins.statusbar.StatusBar;
+
+public class MainActivity extends BridgeActivity {
+    @Override
+    public void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        
+        // Disable status bar overlay to respect safe areas
+        StatusBar statusBar = new StatusBar();
+        statusBar.setOverlaysWebView(false);
+    }
+}
+```
+
+Alternatively, in your JavaScript/TypeScript code:
+
+```typescript
+import { StatusBar } from '@capacitor/status-bar';
+
+// Disable overlays to respect safe areas
+StatusBar.setOverlaysWebView({ overlay: false });
+```
+
+2. AndroidManifest.xml Configuration
+-----------------------------------
+In `android/app/src/main/AndroidManifest.xml`, ensure the main activity has:
+
+```xml
+<activity
+    android:name=".MainActivity"
+    android:windowSoftInputMode="adjustResize"
+    android:exported="true">
+</activity>
+```
+
+The `windowSoftInputMode="adjustResize"` is crucial for proper keyboard handling and viewport sizing.
+
+3. Testing and Debugging
+------------------------
+To clear app data and cache for clean testing:
+
+```bash
+adb shell pm clear your.package.name
+```
+
+To inspect WebView console logs:
+
+```bash
+# Enable WebView debugging
+adb shell setprop debug.hwui.renderer skiagl
+
+# Filter logs for your app
+adb logcat | grep your.package.name
+
+# Or use Chrome DevTools for WebView inspection:
+# 1. Connect device via USB
+# 2. Open chrome://inspect/#devices in Chrome
+# 3. Find your WebView instance and click "inspect"
+```
+
+4. Additional Considerations
+----------------------------
+- Ensure `viewport-fit=cover` is set in your viewport meta tag (already configured)
+- Test on both notched and non-notched devices
+- Verify safe-area insets are properly respected on different Android versions
+- Check that the TopBar height is correctly measured and applied via ResizeObserver

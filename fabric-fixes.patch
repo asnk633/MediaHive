@@ -1,0 +1,18 @@
+diff --git a/src/app/globals.css b/src/app/globals.css
+index abc1234..def5678 100644
+--- a/src/app/globals.css
++++ b/src/app/globals.css
+@@ -350,6 +350,12 @@
+   width: max-content;
+   /* Push up above the button when opening */
+   padding-bottom: 80px;
++}
++
++/* Additional fix for very small screens like Samsung S21 */
++@media (max-width: 370px) {
++  .fab-menu {
++    padding-bottom: 100px;
++  }
+ }
+ 
+ .fab-menu.open {

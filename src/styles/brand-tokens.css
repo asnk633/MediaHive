@@ -1,0 +1,79 @@
+:root {
+    /* --- Colors --- */
+    /* Primary Brand Gradient (MediaHive) */
+    --color-primary-start: #0096FF;
+    --color-primary-end: #00C2FF;
+    --gradient-primary: linear-gradient(135deg, var(--color-primary-start), var(--color-primary-end));
+    --gradient-card-primary: linear-gradient(135deg, #0096FF 0%, #00C2FF 100%);
+
+    /* Accents */
+    --color-accent-purple: #6A5ACD;
+    --color-accent-success: #00A896;
+    --color-accent-warning: #FFD54F;
+    --color-accent-error: #FF5630;
+
+    /* Neutrals (Primitives) */
+    --color-white: #FFFFFF;
+    --color-black: #000000;
+
+    /* Semantic Vars (Light Mode Defaults) */
+    --color-bg-app: #F8F9FA;
+    --app-main-background: var(--color-bg-app);
+
+    --color-bg-surface: #FFFFFF;
+    --color-bg-glass: rgba(255, 255, 255, 0.8);
+    --color-bg-subtle: #F4F6F8;
+
+    --color-text-primary: #212B36;
+    --color-text-secondary: #637381;
+    --color-border: #E8EAEB;
+
+    /* --- Typography --- */
+    --font-family-body: 'Poppins', sans-serif;
+
+    /* --- Spacing --- */
+    --space-4: 1rem;
+    --space-6: 2rem;
+
+    /* --- Radius --- */
+    --radius-sm: 8px;
+    --radius-md: 12px;
+    --radius-lg: 16px;
+    --radius-xl: 20px;
+    --radius-full: 9999px;
+
+    /* --- Elevation --- */
+    --shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+    --shadow-md: 0 4px 12px rgba(145, 158, 171, 0.08);
+}
+
+/* --- Dark Mode Overrides (Midnight Neon Theme) --- */
+[data-theme='dark'] {
+    /* Deep Midnight Background */
+    --color-bg-app: #050511;
+    --app-main-background: #050511;
+
+    /* Navy Surface for Cards */
+    --color-bg-surface: #10111a;
+    --color-bg-glass: rgba(16, 17, 26, 0.6);
+    /* More transparent for blur */
+    /* Glassy Navy */
+    --color-bg-subtle: #181924;
+
+    /* Text */
+    --color-text-primary: #FFFFFF;
+    --color-text-secondary: #94A3B8;
+    --color-border: rgba(255, 255, 255, 0.05);
+
+    /* Gradients & Accents */
+    /* Hero Card: Vivid Blue to Purple */
+    --gradient-card-primary: linear-gradient(90deg, #3B82F6 0%, #8B5CF6 100%);
+
+    /* FAB: Indigo/Purple */
+    --color-fab-bg: #6366F1;
+
+    /* Shadows */
+    --shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.3);
+    --shadow-md: 0 8px 16px rgba(0, 0, 0, 0.4);
+    --shadow-lg: 0 12px 24px rgba(0, 0, 0, 0.5);
+}

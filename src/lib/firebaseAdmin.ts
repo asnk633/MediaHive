@@ -22,8 +22,13 @@ function getServiceAccount() {
     try {
       // If it's base64 encoded, decode it first
       if (fromEnv.startsWith('{')) {
-        // It's already JSON
-        return JSON.parse(fromEnv);
+        // It's already JSON. 
+        // Logic: Sometimes env vars have actual newlines that JSON.parse hates. 
+        // We replace them with space or escaped newline depending on context, 
+        // but for a private key it usually expects \n.
+        // Let's try to be robust:
+        const sanitized = fromEnv.replace(/[\r\n]+/g, '');
+        return JSON.parse(sanitized);
       } else {
         // It's likely base64 encoded
         return JSON.parse(Buffer.from(fromEnv, 'base64').toString('utf8'));
@@ -45,17 +50,27 @@ export function getFirebaseAdminApp() {
   // ✅ CI / Mock Check:
   if (process.env.MOCK_FIREBASE === 'true') {
     console.warn('[Mock] Firebase Admin initialization skipped (MOCK_FIREBASE=true)');
-    // Return a dummy app object or just null if your logic supports it. 
-    // Since getApps()[0] returns an App, we might need a partial mock.
-    // For now, let's just NOT throw an error and return a bare minimum object 
-    // or let it proceed to initializeApp with a dummy service account if that helps.
-    // Better: Allow initialization with a dummy credential if mock is true.
-    return initializeApp({
-      projectId: 'mock-project',
-      credential: {
-        getAccessToken: () => Promise.resolve({ access_token: 'mock-token', expires_in: 3600 }),
-      } as any,
-    });
+    // Return a mock app with stub methods
+    const mockApp = {
+      auth: () => ({
+        listUsers: async () => ({ users: [] }),
+        createUser: async () => ({ uid: 'mock-uid' }),
+        verifyIdToken: async () => ({ uid: 'mock-uid' }),
+      }),
+      firestore: () => ({
+        collection: () => ({
+          get: async () => ({ forEach: () => { }, docs: [] }),
+          doc: () => ({
+            get: async () => ({ exists: false, data: () => null }),
+            set: async () => { },
+          }),
+        }),
+      }),
+      name: 'mock-app',
+    } as any;
+
+    // Cache it in getApps() manually if possible, or just return
+    return mockApp;
   }
 
   const serviceAccount = getServiceAccount();

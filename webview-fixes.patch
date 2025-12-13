@@ -1,0 +1,47 @@
+diff --git a/src/components/ClipDetection.client.tsx b/src/components/ClipDetection.client.tsx
+index 1234567..abcdef8 100644
+--- a/src/components/ClipDetection.client.tsx
++++ b/src/components/ClipDetection.client.tsx
+@@ -14,6 +14,10 @@
+       const rect = topBar.getBoundingClientRect();
+       if (rect.top < -4) {
+         // Mark that clip detection has made adjustments
++        // Add logging for WebView debugging
++        if (document.documentElement.classList.contains('is-android-webview')) {
++          console.log('[WEBVIEW] ClipDetection adjusting safe area padding');
++        }
+         (window as any).__CLIP_DETECTION_ADJUSTED = true;
+         
+         const cur = parseFloat(getComputedStyle(document.documentElement).getPropertyValue('--computed-safe-top')) || 0;
+
+diff --git a/src/firebase/client.ts b/src/firebase/client.ts
+index 8765432..fedcba9 100644
+--- a/src/firebase/client.ts
++++ b/src/firebase/client.ts
+@@ -56,6 +56,10 @@
+             const isWebView = document.documentElement.classList.contains('is-android-webview');
+             const ua = window.navigator.userAgent;
+ 
++            // Add specific logging for WebView environments
++            if (isWebView) {
++              console.log('[FIREBASE] WebView environment detected, enforcing browserLocalPersistence');
++            }
+             console.groupCollapsed('[FIREBASE] Initialization Debug');
+             console.log('Source:', source);
+             console.log('UserAgent:', ua);
+
+diff --git a/src/app/layout.tsx b/src/app/layout.tsx
+index abcdef1..1234567 100644
+--- a/src/app/layout.tsx
++++ b/src/app/layout.tsx
+@@ -50,6 +50,10 @@
+                 // Safe area initializer - runs before React hydration
+                 try {
+                   // Mark that safe area initialization has run
++                  // Add logging for debugging
++                  if (navigator.userAgent.includes('wv')) {
++                    console.log('[SAFE-AREA] Initializing for WebView environment');
++                  }
+                   window.__SAFE_AREA_INITIALIZED = true;
+                   
+                   // Function to get safe area values

@@ -4,258 +4,205 @@ import React, { useState, useEffect } from 'react';
 import { Upload, FileText, Download, Eye, Trash2, File, Image as ImageIcon, Video, Music, Archive, X } from 'lucide-react';
 import { useRole } from '@/app/(shell)/RoleContext';
 import { formatDate } from '@/lib/dateUtils';
-
-interface FileData {
-  id: string;
-  name: string;
-  originalName: string;
-  size: number;
-  type: string;
-  uploadedDate: string;
-  previewUrl?: string;
-  fileUrl: string;
-}
+import { uploadFile, subscribeToFiles, deleteFile, type FileMetadata } from '@/services/files';
+import { auth } from '@/firebase/client';
 
 export default function FilesPage() {
   const { user } = useRole();
   const isAdmin = user?.role === 'admin';
 
-  const [files, setFiles] = useState<FileData[]>([]);
+  const [files, setFiles] = useState<FileMetadata[]>([]);
   const [uploading, setUploading] = useState(false);
-  const [previewFile, setPreviewFile] = useState<FileData | null>(null);
+  const [previewFile, setPreviewFile] = useState<FileMetadata | null>(null);
   const [showNameModal, setShowNameModal] = useState(false);
-  const [pendingFiles, setPendingFiles] = useState<{ file: File, fileUrl: string, previewUrl?: string }[]>([]);
+  const [pendingFile, setPendingFile] = useState<File | null>(null);
   const [customName, setCustomName] = useState('');
 
-  // Load files from localStorage on mount
+  // Subscribe to real-time file updates
   useEffect(() => {
-    const savedFiles = localStorage.getItem('uploadedFiles');
-    if (savedFiles) {
-      setFiles(JSON.parse(savedFiles));
-    }
-  }, []);
+    const userId = auth.currentUser?.uid;
+    if (!userId) return;
 
-  // Save files to localStorage whenever they change
-  useEffect(() => {
-    localStorage.setItem('uploadedFiles', JSON.stringify(files));
-  }, [files]);
-
-  const handleFileUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
-    const selectedFiles = e.target.files;
-    if (!selectedFiles || selectedFiles.length === 0) return;
-
-    setUploading(true);
-
-    const filesData: { file: File, fileUrl: string, previewUrl?: string }[] = [];
-
-    for (let i = 0; i < selectedFiles.length; i++) {
-      const file = selectedFiles[i];
-
-      // Check file size (max 50MB)
-      if (file.size > 50 * 1024 * 1024) {
-        alert(`${file.name}: File size must be less than 50MB`);
-        continue;
+    // Subscribe to files (admin sees all, users see only theirs)
+    const unsubscribe = subscribeToFiles(
+      isAdmin ? null : userId,
+      (updatedFiles) => {
+        setFiles(updatedFiles);
       }
+    );
 
-      // Read file as base64
-      const fileUrl = await readFileAsDataURL(file);
+    return () => unsubscribe();
+  }, [isAdmin]);
 
-      // Generate preview for images
-      let previewUrl: string | undefined;
-      if (file.type.startsWith('image/')) {
-        previewUrl = fileUrl;
-      } else if (file.type.startsWith('video/')) {
-        previewUrl = fileUrl;
-      }
+  const handleFileUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const selectedFile = e.target.files?.[0];
+    if (!selectedFile) return;
 
-      filesData.push({ file, fileUrl, previewUrl });
+    // Check file size (max 50MB)
+    if (selectedFile.size > 50 * 1024 * 1024) {
+      alert('File size must be less than 50MB');
+      return;
     }
 
-    setPendingFiles(filesData);
-    setUploading(false);
+    // Set pending file and show naming modal
+    setPendingFile(selectedFile);
+    setCustomName(selectedFile.name.replace(/\.[^/.]+$/, '')); // Remove extension
+    setShowNameModal(true);
 
     // Reset input
     e.target.value = '';
-
-    // Show naming modal for first file
-    if (filesData.length > 0) {
-      setCustomName(filesData[0].file.name.replace(/\.[^/.]+$/, '')); // Remove extension
-      setShowNameModal(true);
-    }
   };
 
-  const handleSaveFile = () => {
-    if (!customName.trim() || pendingFiles.length === 0) return;
+  const handleSaveFile = async () => {
+    if (!customName.trim() || !pendingFile) return;
 
-    const currentFile = pendingFiles[0];
-    const fileExtension = currentFile.file.name.split('.').pop();
-    const fullName = fileExtension ? `${customName.trim()}.${fileExtension}` : customName.trim();
-
-    const fileData: FileData = {
-      id: `file-${Date.now()}`,
-      name: fullName,
-      originalName: currentFile.file.name,
-      size: currentFile.file.size,
-      type: currentFile.file.type,
-      uploadedDate: new Date().toISOString(),
-      previewUrl: currentFile.previewUrl,
-      fileUrl: currentFile.fileUrl,
-    };
-
-    setFiles([fileData, ...files]);
-
-    // Process next file or close modal
-    const remainingFiles = pendingFiles.slice(1);
-    if (remainingFiles.length > 0) {
-      setPendingFiles(remainingFiles);
-      setCustomName(remainingFiles[0].file.name.replace(/\.[^/.]+$/, ''));
-    } else {
-      setShowNameModal(false);
-      setPendingFiles([]);
-      setCustomName('');
+    const userId = auth.currentUser?.uid;
+    if (!userId) {
+      alert('User not authenticated');
+      return;
     }
-  };
 
-  const handleCancelUpload = () => {
+    setUploading(true);
     setShowNameModal(false);
-    setPendingFiles([]);
+
+    try {
+      // Upload to Firebase Storage
+      await uploadFile(userId, pendingFile, customName.trim());
+
+      // Clear pending state
+      setPendingFile(null);
+      setCustomName('');
+    } catch (error) {
+      console.error('Error uploading file:', error);
+      alert('Failed to upload file. Please try again.');
+    } finally {
+      setUploading(false);
+    }
+  };
+
+  const handleCancelNaming = () => {
+    setShowNameModal(false);
+    setPendingFile(null);
     setCustomName('');
   };
 
-  const readFileAsDataURL = (file: File): Promise<string> => {
-    return new Promise((resolve, reject) => {
-      const reader = new FileReader();
-      reader.onloadend = () => resolve(reader.result as string);
-      reader.onerror = reject;
-      reader.readAsDataURL(file);
-    });
-  };
+  const handleDeleteFile = async (file: FileMetadata) => {
+    const userId = auth.currentUser?.uid;
+    if (!userId) return;
 
-  const handleDownload = (file: FileData) => {
-    const link = document.createElement('a');
-    link.href = file.fileUrl;
-    link.download = file.name;
-    document.body.appendChild(link);
-    link.click();
-    document.body.removeChild(link);
-  };
+    // Check permissions
+    if (!isAdmin && file.userId !== userId) {
+      alert('You can only delete your own files');
+      return;
+    }
 
-  const handleDelete = (fileId: string) => {
-    if (confirm('Are you sure you want to delete this file?')) {
-      const updatedFiles = files.filter(f => f.id !== fileId);
-      setFiles(updatedFiles);
-      localStorage.setItem('uploadedFiles', JSON.stringify(updatedFiles));
+    if (!confirm(`Delete "${file.name}"?`)) return;
+
+    try {
+      await deleteFile(file.id, file.storagePath);
+    } catch (error) {
+      console.error('Error deleting file:', error);
+      alert('Failed to delete file');
     }
   };
 
-  const formatFileSize = (bytes: number): string => {
-    if (bytes === 0) return '0 Bytes';
-    const k = 1024;
-    const sizes = ['Bytes', 'KB', 'MB', 'GB'];
-    const i = Math.floor(Math.log(bytes) / Math.log(k));
-    return Math.round(bytes / Math.pow(k, i) * 100) / 100 + ' ' + sizes[i];
+  const getFileIcon = (type: string) => {
+    if (type.startsWith('image/')) return <ImageIcon className="w-5 h-5" />;
+    if (type.startsWith('video/')) return <Video className="w-5 h-5" />;
+    if (type.startsWith('audio/')) return <Music className="w-5 h-5" />;
+    if (type.includes('pdf')) return <FileText className="w-5 h-5" />;
+    if (type.includes('zip') || type.includes('rar')) return <Archive className="w-5 h-5" />;
+    return <File className="w-5 h-5" />;
   };
 
-  const getFileIcon = (type: string) => {
-    if (type.startsWith('image/')) return <ImageIcon size={20} />;
-    if (type.startsWith('video/')) return <Video size={20} />;
-    if (type.startsWith('audio/')) return <Music size={20} />;
-    if (type.includes('zip') || type.includes('rar') || type.includes('7z')) return <Archive size={20} />;
-    if (type.includes('pdf')) return <FileText size={20} />;
-    return <File size={20} />;
+  const formatFileSize = (bytes: number): string => {
+    if (bytes < 1024) return bytes + ' B';
+    if (bytes < 1024 * 1024) return (bytes / 1024).toFixed(1) + ' KB';
+    return (bytes / (1024 * 1024)).toFixed(1) + ' MB';
   };
 
   return (
-    <div className="flex flex-col min-h-screen app-body-padding px-4 pb-24">
-      {/* Header */}
-      <header className="mb-8 pt-6">
-        <h1 className="text-3xl font-display font-bold text-[var(--text-primary)] mb-2">Files</h1>
-        <p className="text-[var(--text-secondary)]">Access shared resources and media.</p>
-      </header>
+    <div className="min-h-screen pb-24 px-4 pt-24">
+      <div className="max-w-6xl mx-auto">
+        {/* Header */}
+        <header className="mb-8">
+          <h1 className="text-3xl font-display font-bold text-[var(--text-primary)] mb-2">Files</h1>
+          <p className="text-[var(--text-secondary)]">Manage and download your files</p>
+        </header>
 
-      {/* Upload Section - Admin Only */}
-      {isAdmin && (
-        <div className="mb-6">
-          <label className="flex flex-col items-center justify-center w-full h-32 border-2 border-dashed border-[var(--border-subtle)] rounded-2xl cursor-pointer hover:border-blue-500 transition-all bg-[var(--bg-card)] hover:bg-[var(--bg-panel)]">
-            <div className="flex flex-col items-center justify-center pt-5 pb-6">
-              <Upload className={`w-10 h-10 mb-3 text-[var(--text-secondary)] ${uploading ? 'animate-bounce' : ''}`} />
-              <p className="mb-2 text-sm text-[var(--text-primary)] font-semibold">
-                {uploading ? 'Processing...' : 'Click to upload files'}
-              </p>
-              <p className="text-xs text-[var(--text-secondary)]">
-                PDF, Images, Videos, Documents (Max 50MB)
-              </p>
-            </div>
-            <input
-              type="file"
-              className="hidden"
-              multiple
-              onChange={handleFileUpload}
-              disabled={uploading}
-              accept="*/*"
-            />
-          </label>
-        </div>
-      )}
+        {/* Upload Section (Admin Only) */}
+        {isAdmin && (
+          <div className="glass-card p-6 mb-8">
+            <label className="block cursor-pointer">
+              <div className="border-2 border-dashed border-[var(--glass-border)] rounded-xl p-8 text-center hover:border-[var(--accent)] hover:bg-[var(--panel)] transition-all duration-200">
+                <Upload className="w-12 h-12 mx-auto text-[var(--accent)] mb-3" />
+                <p className="text-[var(--text)] font-medium mb-1">
+                  {uploading ? 'Uploading...' : 'Click to upload file'}
+                </p>
+                <p className="text-xs text-[var(--muted)]">Max file size: 50MB</p>
+              </div>
+              <input
+                type="file"
+                className="hidden"
+                onChange={handleFileUpload}
+                disabled={uploading}
+              />
+            </label>
+          </div>
+        )}
 
-      {/* Files Grid */}
-      {files.length === 0 ? (
-        <div className="flex flex-col items-center justify-center py-16 text-center">
-          <FileText size={64} className="text-[var(--text-muted)] mb-4 opacity-50" />
-          <h3 className="text-lg font-semibold text-[var(--text-primary)] mb-2">No files uploaded yet</h3>
-          <p className="text-sm text-[var(--text-secondary)]">
-            {isAdmin ? 'Upload your first file to get started' : 'Check back later for shared files'}
-          </p>
-        </div>
-      ) : (
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-          {files.map((file) => (
-            <div
-              key={file.id}
-              className="bg-[var(--bg-card)] rounded-2xl overflow-hidden border border-[var(--border-subtle)] hover:shadow-lg transition-all"
-            >
-              {/* Preview */}
-              {file.previewUrl && file.type.startsWith('image/') ? (
-                <div className="h-48 bg-[var(--bg-panel)] overflow-hidden">
-                  <img
-                    src={file.previewUrl}
-                    alt={file.name}
-                    className="w-full h-full object-cover"
-                  />
-                </div>
-              ) : file.previewUrl && file.type.startsWith('video/') ? (
-                <div className="h-48 bg-[var(--bg-panel)] overflow-hidden relative">
-                  <video
-                    src={file.fileUrl}
-                    className="w-full h-full object-cover"
-                    controls={false}
-                  />
-                  <div className="absolute inset-0 flex items-center justify-center bg-black/20">
-                    <Video size={48} className="text-white opacity-70" />
-                  </div>
-                </div>
-              ) : (
-                <div className="h-48 bg-[var(--bg-panel)] flex items-center justify-center">
-                  <div className="text-[var(--text-muted)] opacity-50 scale-150">
-                    {getFileIcon(file.type)}
-                  </div>
-                </div>
-              )}
-
-              {/* File Info */}
-              <div className="p-4">
-                <div className="flex items-start gap-3 mb-3">
-                  <div className="p-2 rounded-lg bg-[var(--bg-panel)] text-blue-500">
-                    {getFileIcon(file.type)}
-                  </div>
-                  <div className="flex-1 min-w-0">
-                    <h4 className="text-sm font-semibold text-[var(--text-primary)] truncate mb-1">
-                      {file.name}
-                    </h4>
-                    <div className="flex flex-col gap-0.5 text-xs text-[var(--text-secondary)]">
-                      <span>{formatFileSize(file.size)}</span>
-                      <span>{formatDate(file.uploadedDate)}</span>
+        {/* Files Grid */}
+        {files.length === 0 ? (
+          <div className="glass-card p-12 text-center">
+            <File className="w-16 h-16 mx-auto text-[var(--icon-muted)] mb-4" />
+            <h3 className="text-lg font-medium text-[var(--text)] mb-2">No files yet</h3>
+            <p className="text-sm text-[var(--muted)]">
+              {isAdmin ? 'Upload files to get started' : 'Files uploaded by admins will appear here'}
+            </p>
+          </div>
+        ) : (
+          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
+            {files.map((file) => (
+              <div
+                key={file.id}
+                className="glass-card p-4 hover:bg-[var(--panel)] transition-all duration-200 group"
+              >
+                {/* Preview */}
+                <div className="relative aspect-square mb-3 rounded-lg overflow-hidden bg-[var(--panel-strong)]">
+                  {file.type.startsWith('image/') ? (
+                    <img
+                      src={file.storageUrl}
+                      alt={file.name}
+                      className="w-full h-full object-cover"
+                    />
+                  ) : file.type.startsWith('video/') ? (
+                    <div className="relative w-full h-full">
+                      <video
+                        src={file.storageUrl}
+                        className="w-full h-full object-cover"
+                      />
+                      <div className="absolute inset-0 flex items-center justify-center bg-black/30">
+                        <Video className="w-12 h-12 text-white" />
+                      </div>
                     </div>
+                  ) : (
+                    <div className="w-full h-full flex items-center justify-center">
+                      {getFileIcon(file.type)}
+                    </div>
+                  )}
+                </div>
+
+                {/* File Info */}
+                <div className="space-y-1 mb-3">
+                  <h3 className="font-medium text-sm text-[var(--text)] truncate" title={file.name}>
+                    {file.name}
+                  </h3>
+                  <p className="text-xs text-[var(--muted)] truncate" title={file.originalName}>
+                    {file.originalName}
+                  </p>
+                  <div className="flex items-center justify-between text-xs text-[var(--muted)]">
+                    <span>{formatFileSize(file.size)}</span>
+                    <span>{formatDate(file.uploadedDate.toDate())}</span>
                   </div>
                 </div>
 
@@ -263,189 +210,148 @@ export default function FilesPage() {
                 <div className="flex gap-2">
                   <button
                     onClick={() => setPreviewFile(file)}
-                    className="flex-1 flex items-center justify-center gap-2 py-2 rounded-lg bg-blue-600 hover:bg-blue-700 text-white text-sm font-medium transition-colors"
+                    className="flex-1 flex items-center justify-center gap-2 px-3 py-2 bg-[var(--panel-strong)] hover:bg-[var(--accent)] text-[var(--text)] rounded-lg transition-all duration-200 text-xs"
                   >
-                    <Eye size={16} />
+                    <Eye className="w-4 h-4" />
                     Preview
                   </button>
-                  <button
-                    onClick={() => handleDownload(file)}
-                    className="flex items-center justify-center p-2 rounded-lg bg-[var(--bg-panel)] hover:bg-green-600 hover:text-white text-[var(--text-primary)] transition-colors"
-                    title="Download"
+                  <a
+                    href={file.storageUrl}
+                    download={file.name}
+                    className="flex-1 flex items-center justify-center gap-2 px-3 py-2 bg-[var(--panel-strong)] hover:bg-[var(--accent)] text-[var(--text)] rounded-lg transition-all duration-200 text-xs"
                   >
-                    <Download size={16} />
-                  </button>
+                    <Download className="w-4 h-4" />
+                    Download
+                  </a>
                   {isAdmin && (
                     <button
-                      onClick={() => handleDelete(file.id)}
-                      className="flex items-center justify-center p-2 rounded-lg bg-[var(--bg-panel)] hover:bg-red-600 hover:text-white text-[var(--text-primary)] transition-colors"
-                      title="Delete (Admin only)"
+                      onClick={() => handleDeleteFile(file)}
+                      className="px-3 py-2 bg-red-500/10 hover:bg-red-500 text-red-500 hover:text-white rounded-lg transition-all duration-200"
                     >
-                      <Trash2 size={16} />
+                      <Trash2 className="w-4 h-4" />
                     </button>
                   )}
                 </div>
               </div>
-            </div>
-          ))}
-        </div>
-      )}
+            ))}
+          </div>
+        )}
 
-      {/* Custom Name Modal */}
-      {showNameModal && pendingFiles.length > 0 && (
-        <div className="fixed inset-0 z-50 bg-black/80 flex items-center justify-center p-4">
-          <div className="bg-[var(--bg-card)] rounded-2xl max-w-md w-full p-6 shadow-2xl">
-            <div className="flex items-center justify-between mb-4">
-              <h3 className="text-lg font-bold text-[var(--text-primary)]">Name Your File</h3>
-              <button
-                onClick={handleCancelUpload}
-                className="p-2 hover:bg-[var(--bg-panel)] rounded-full transition-colors"
-              >
-                <X size={20} className="text-[var(--text-secondary)]" />
-              </button>
-            </div>
-
-            <div className="mb-4">
-              <p className="text-sm text-[var(--text-secondary)] mb-2">
-                Original: {pendingFiles[0].file.name}
-              </p>
-              <p className="text-xs text-[var(--text-muted)] mb-3">
-                {pendingFiles.length > 1 && `${pendingFiles.length} files remaining`}
-              </p>
-
-              <label className="block text-sm font-medium text-[var(--text-primary)] mb-2">
-                Custom Name
-              </label>
+        {/* Custom Name Modal */}
+        {showNameModal && (
+          <div className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center z-50 p-4">
+            <div className="glass-card max-w-md w-full p-6">
+              <h3 className="text-xl font-bold text-[var(--text)] mb-4">Name this file</h3>
               <input
                 type="text"
                 value={customName}
                 onChange={(e) => setCustomName(e.target.value)}
-                onKeyDown={(e) => e.key === 'Enter' && handleSaveFile()}
-                className="w-full px-4 py-2.5 rounded-xl bg-[var(--bg-panel)] border border-[var(--border-subtle)] text-[var(--text-primary)] focus:outline-none focus:ring-2 focus:ring-blue-500"
                 placeholder="Enter file name"
+                className="w-full bg-[var(--panel)] border border-[var(--glass-border)] rounded-lg px-4 py-2 text-[var(--text)] focus:outline-none focus:border-[var(--accent)] mb-4"
                 autoFocus
+                onKeyPress={(e) => e.key === 'Enter' && handleSaveFile()}
               />
-              <p className="text-xs text-[var(--text-secondary)] mt-2">
-                Extension will be added automatically
-              </p>
-            </div>
-
-            <div className="flex gap-3">
-              <button
-                onClick={handleCancelUpload}
-                className="flex-1 py-2.5 rounded-xl bg-[var(--bg-panel)] hover:bg-[var(--bg-panel)] text-[var(--text-primary)] font-medium text-sm transition-colors border border-[var(--border-subtle)]"
-              >
-                Cancel
-              </button>
-              <button
-                onClick={handleSaveFile}
-                disabled={!customName.trim()}
-                className="flex-1 py-2.5 rounded-xl bg-blue-600 hover:bg-blue-700 text-white font-medium text-sm transition-colors shadow-lg shadow-blue-500/20 disabled:opacity-50 disabled:cursor-not-allowed"
-              >
-                {pendingFiles.length > 1 ? 'Next' : 'Save'}
-              </button>
-            </div>
-          </div>
-        </div>
-      )}
-
-      {/* Preview Modal */}
-      {previewFile && (
-        <div
-          className="fixed inset-0 z-50 bg-black/90 flex items-center justify-center p-4"
-          onClick={() => setPreviewFile(null)}
-        >
-          <div
-            className="bg-[var(--bg-card)] rounded-2xl max-w-4xl w-full max-h-[90vh] overflow-auto"
-            onClick={(e) => e.stopPropagation()}
-          >
-            {/* Header */}
-            <div className="sticky top-0 bg-[var(--bg-card)] border-b border-[var(--border-subtle)] p-4 flex items-center justify-between z-10">
-              <h3 className="text-lg font-bold text-[var(--text-primary)] truncate">{previewFile.name}</h3>
-              <button
-                onClick={() => setPreviewFile(null)}
-                className="p-2 hover:bg-[var(--bg-panel)] rounded-full transition-colors"
-              >
-                <X size={20} className="text-[var(--text-secondary)]" />
-              </button>
-            </div>
-
-            {/* Preview Content */}
-            <div className="p-6">
-              {previewFile.type.startsWith('image/') ? (
-                <img src={previewFile.fileUrl} alt={previewFile.name} className="w-full rounded-lg" />
-              ) : previewFile.type.startsWith('video/') ? (
-                <video src={previewFile.fileUrl} controls className="w-full rounded-lg" />
-              ) : previewFile.type.startsWith('audio/') ? (
-                <audio src={previewFile.fileUrl} controls className="w-full" />
-              ) : previewFile.type.includes('pdf') ? (
-                <iframe src={previewFile.fileUrl} className="w-full h-[70vh] rounded-lg" />
-              ) : (
-                <div className="text-center py-12">
-                  <FileText size={64} className="mx-auto text-[var(--text-muted)] mb-4 opacity-50" />
-                  <p className="text-[var(--text-secondary)] mb-4">Preview not available for this file type</p>
-                  <button
-                    onClick={() => handleDownload(previewFile)}
-                    className="px-6 py-2 rounded-lg bg-blue-600 hover:bg-blue-700 text-white font-medium transition-colors"
-                  >
-                    Download File
-                  </button>
-                </div>
-              )}
-
-              {/* File Details */}
-              <div className="mt-6 p-4 bg-[var(--bg-panel)] rounded-lg">
-                <h4 className="text-sm font-bold text-[var(--text-primary)] mb-3">File Details</h4>
-                <div className="grid grid-cols-2 gap-4 text-sm">
-                  <div>
-                    <p className="text-[var(--text-secondary)] mb-1">Display Name</p>
-                    <p className="text-[var(--text-primary)] font-medium">{previewFile.name}</p>
-                  </div>
-                  <div>
-                    <p className="text-[var(--text-secondary)] mb-1">Original Name</p>
-                    <p className="text-[var(--text-primary)] font-medium">{previewFile.originalName}</p>
-                  </div>
-                  <div>
-                    <p className="text-[var(--text-secondary)] mb-1">File Size</p>
-                    <p className="text-[var(--text-primary)] font-medium">{formatFileSize(previewFile.size)}</p>
-                  </div>
-                  <div>
-                    <p className="text-[var(--text-secondary)] mb-1">File Type</p>
-                    <p className="text-[var(--text-primary)] font-medium">{previewFile.type || 'Unknown'}</p>
-                  </div>
-                  <div className="col-span-2">
-                    <p className="text-[var(--text-secondary)] mb-1">Uploaded</p>
-                    <p className="text-[var(--text-primary)] font-medium">{formatDate(previewFile.uploadedDate)}</p>
-                  </div>
-                </div>
+              <div className="flex gap-3">
+                <button
+                  onClick={handleCancelNaming}
+                  className="flex-1 px-4 py-2 bg-[var(--panel)] hover:bg-[var(--panel-strong)] text-[var(--text)] rounded-lg transition-all duration-200"
+                >
+                  Cancel
+                </button>
+                <button
+                  onClick={handleSaveFile}
+                  className="flex-1 px-4 py-2 bg-[var(--accent)] hover:bg-[var(--accent)]/80 text-white rounded-lg transition-all duration-200"
+                  disabled={!customName.trim()}
+                >
+                  Save
+                </button>
               </div>
             </div>
+          </div>
+        )}
 
-            {/* Footer Actions */}
-            <div className="sticky bottom-0 bg-[var(--bg-card)] border-t border-[var(--border-subtle)] p-4 flex gap-3">
-              <button
-                onClick={() => handleDownload(previewFile)}
-                className="flex-1 flex items-center justify-center gap-2 py-2.5 rounded-xl bg-blue-600 hover:bg-blue-700 text-white font-medium transition-colors"
-              >
-                <Download size={18} />
-                Download
-              </button>
-              {isAdmin && (
+        {/* Preview Modal */}
+        {previewFile && (
+          <div className="fixed inset-0 bg-black/90 backdrop-blur-sm flex items-center justify-center z-50 p-4">
+            <div className="max-w-4xl w-full max-h-[90vh] glass-card p-6 overflow-auto">
+              <div className="flex items-center justify-between mb-4">
+                <h3 className="text-xl font-bold text-[var(--text)]">{previewFile.name}</h3>
                 <button
-                  onClick={() => {
-                    handleDelete(previewFile.id);
-                    setPreviewFile(null);
-                  }}
-                  className="flex items-center justify-center gap-2 px-6 py-2.5 rounded-xl bg-red-600 hover:bg-red-700 text-white font-medium transition-colors"
+                  onClick={() => setPreviewFile(null)}
+                  className="p-2 hover:bg-[var(--panel)] rounded-lg transition-all"
                 >
-                  <Trash2 size={18} />
-                  Delete
+                  <X className="w-6 h-6 text-[var(--text)]" />
                 </button>
-              )}
+              </div>
+
+              <div className="mb-4">
+                {previewFile.type.startsWith('image/') && (
+                  <img src={previewFile.storageUrl} alt={previewFile.name} className="w-full rounded-lg" />
+                )}
+                {previewFile.type.startsWith('video/') && (
+                  <video src={previewFile.storageUrl} controls className="w-full rounded-lg" />
+                )}
+                {previewFile.type.startsWith('audio/') && (
+                  <audio src={previewFile.storageUrl} controls className="w-full" />
+                )}
+                {previewFile.type.includes('pdf') && (
+                  <iframe src={previewFile.storageUrl} className="w-full h-[600px] rounded-lg" />
+                )}
+                {!previewFile.type.startsWith('image/') &&
+                  !previewFile.type.startsWith('video/') &&
+                  !previewFile.type.startsWith('audio/') &&
+                  !previewFile.type.includes('pdf') && (
+                    <div className="text-center py-12">
+                      <File className="w-16 h-16 mx-auto text-[var(--icon-muted)] mb-4" />
+                      <p className="text-[var(--muted)]">Preview not available for this file type</p>
+                    </div>
+                  )}
+              </div>
+
+              <div className="space-y-2 text-sm">
+                <div className="flex justify-between">
+                  <span className="text-[var(--muted)]">Original name:</span>
+                  <span className="text-[var(--text)]">{previewFile.originalName}</span>
+                </div>
+                <div className="flex justify-between">
+                  <span className="text-[var(--muted)]">File size:</span>
+                  <span className="text-[var(--text)]">{formatFileSize(previewFile.size)}</span>
+                </div>
+                <div className="flex justify-between">
+                  <span className="text-[var(--muted)]">File type:</span>
+                  <span className="text-[var(--text)]">{previewFile.type}</span>
+                </div>
+                <div className="flex justify-between">
+                  <span className="text-[var(--muted)]">Uploaded:</span>
+                  <span className="text-[var(--text)]">{formatDate(previewFile.uploadedDate.toDate())}</span>
+                </div>
+              </div>
+
+              <div className="flex gap-3 mt-6">
+                <a
+                  href={previewFile.storageUrl}
+                  download={previewFile.name}
+                  className="flex-1 flex items-center justify-center gap-2 px-4 py-2 bg-[var(--accent)] hover:bg-[var(--accent)]/80 text-white rounded-lg transition-all duration-200"
+                >
+                  <Download className="w-4 h-4" />
+                  Download
+                </a>
+                {isAdmin && (
+                  <button
+                    onClick={() => {
+                      handleDeleteFile(previewFile);
+                      setPreviewFile(null);
+                    }}
+                    className="px-4 py-2 bg-red-500/10 hover:bg-red-500 text-red-500 hover:text-white rounded-lg transition-all duration-200"
+                  >
+                    <Trash2 className="w-4 h-4" />
+                  </button>
+                )}
+              </div>
             </div>
           </div>
-        </div>
-      )}
+        )}
+      </div>
     </div>
   );
 }

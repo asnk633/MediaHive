@@ -82,5 +82,26 @@ service cloud.firestore {
       allow delete: if userRole() == 'admin';
     }
 
+    // =======================
+    // Files Collection
+    // =======================
+    // Files uploaded by admins, visible to all authenticated users
+    // Only admins can create/delete files
+    match /files/{fileId} {
+      // All authenticated users can read files
+      allow read: if request.auth != null;
+      
+      // Only admins can create files
+      allow create: if request.auth != null && 
+                       get(/databases/$(database)/documents/users/$(request.auth.uid)).data.role == 'admin';
+      
+      // Only the uploader or admins can delete
+      allow delete: if request.auth != null && 
+                       (request.auth.uid == resource.data.userId || 
+                        get(/databases/$(database)/documents/users/$(request.auth.uid)).data.role == 'admin');
+      
+      // No updates allowed (delete and re-upload instead)
+      allow update: if false;
+    }
   }
 }

@@ -1,25 +1,43 @@
 "use client";
-import React, { useEffect, useRef } from "react";
-import { Bell, Settings } from 'lucide-react';
+
+import React, { useEffect, useRef, useState } from "react";
+import { Bell, Settings, User } from 'lucide-react';
 import Link from 'next/link';
-import { useRole } from "@/app/(shell)/RoleContext";
+import { use Role } from "@/app/(shell)/RoleContext";
 import { useRouter } from 'next/navigation';
 import ThemeToggle from "@/components/ThemeToggle";
 import { addFocusVisibleClass } from "@/utils/a11y";
+import { getProfilePictureUrl } from "@/services/profilePicture";
+import { auth } from "@/firebase/client";
 
 export default function TopBar({ title = "Thaiba MediaHive" }: { title?: string }) {
   const { user } = useRole();
   const router = useRouter();
   const notifRef = useRef<HTMLButtonElement>(null);
-  const [avatarUrl, setAvatarUrl] = React.useState<string | null>(null);
+  const [avatarUrl, setAvatarUrl] = useState<string | null>(null);
 
   useEffect(() => {
     if (notifRef.current) addFocusVisibleClass(notifRef.current);
-    // Load avatar from localStorage
-    const savedAvatar = localStorage.getItem('userAvatar');
-    if (savedAvatar) {
-      setAvatarUrl(savedAvatar);
+
+    // Load avatar from Firebase Storage
+    async function loadAvatar() {
+      const userId = auth.currentUser?.uid;
+      if (userId) {
+        const url = await getProfilePictureUrl(userId);
+        setAvatarUrl(url);
+      }
     }
+
+    loadAvatar();
+
+    // Listen for auth state changes
+    const unsubscribe = auth.onAuthStateChanged((user) => {
+      if (user) {
+        loadAvatar();
+      }
+    });
+
+    return () => unsubscribe();
   }, []);
 
   return (
@@ -40,21 +58,22 @@ export default function TopBar({ title = "Thaiba MediaHive" }: { title?: string 
             <span className="absolute top-1.5 right-2 w-2 h-2 bg-red-500 rounded-full border border-white" />
           </button>
         </Link>
-
-        {/* Settings Button (Hidden on mobile) */}
         <button
-          onClick={() => router.push('/profile')}
-          className="p-2 text-gray-500 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-full transition-colors hidden sm:block"
+          onClick={() => router.push('/settings')}
+          aria-label="Settings"
+          className="p-2 rounded-full text-gray-500 hover:bg-gray-100"
         >
           <Settings size={20} />
         </button>
-
-        <button
-          onClick={() => router.push('/profile')}
-          className="w-9 h-9 rounded-full bg-gray-100 overflow-hidden border border-gray-200 cursor-pointer hover:ring-2 hover:ring-blue-500 transition-all"
-        >
-          {avatarUrl ? <img src={avatarUrl} alt="Profile" className="w-full h-full object-cover" /> : (user as any)?.avatar ? <img src={(user as any).avatar} className="w-full h-full object-cover" /> : <div className="w-full h-full grid place-items-center text-gray-500 font-bold">{user?.name?.charAt(0).toUpperCase() || 'A'}</div>}
-        </button>
+        <Link href="/profile">
+          <button aria-label="Profile" className="relative w-9 h-9 rounded-full overflow-hidden bg-gray-200 hover:ring-2 hover:ring-blue-500 transition-all">
+            {avatarUrl ? (
+              <img src={avatarUrl} alt={user?.fullName || "Profile"} className="w-full h-full object-cover" />
+            ) : (
+              <User className="w-5 h-5 absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 text-gray-500" />
+            )}
+          </button>
+        </Link>
       </div>
     </header>
   );

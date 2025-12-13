@@ -1,0 +1,36 @@
+rules_version = '2';
+service firebase.storage {
+  match /b/{bucket}/o {
+    
+    // Profile Pictures
+    // Users can read anyone's profile picture
+    // Users can only write/delete their own profile picture
+    match /profile-pictures/{userId}/{fileName} {
+      allow read: if request.auth != null;
+      allow write: if request.auth != null && request.auth.uid == userId;
+      allow delete: if request.auth != null && request.auth.uid == userId;
+    }
+    
+    // Uploaded Files
+    // All authenticated users can read files
+    // Only admins can upload files
+    // Only the uploader or admins can delete files
+    match /files/{userId}/{fileId}/{fileName} {
+      allow read: if request.auth != null;
+      
+      // Only admins can upload (checked via custom claims)
+      allow write: if request.auth != null && 
+                      request.auth.token.role == 'admin';
+      
+      // Owner or admin can delete
+      allow delete: if request.auth != null && 
+                       (request.auth.uid == userId || 
+                        request.auth.token.role == 'admin');
+    }
+    
+    // Deny all other paths
+    match /{allPaths=**} {
+      allow read, write: if false;
+    }
+  }
+}

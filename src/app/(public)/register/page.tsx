@@ -3,6 +3,8 @@
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useState, type FormEvent } from "react";
+import { createUserWithEmailAndPassword, updateProfile } from "firebase/auth";
+import { getFirebaseAuth } from "@/firebase/client";
 
 export default function RegisterPage() {
     const router = useRouter();
@@ -51,25 +53,47 @@ export default function RegisterPage() {
         setSubmitting(true);
 
         try {
-            // 🔹 For now: store a simple "fake" account locally
+            // Get Firebase Auth instance
+            const auth = await getFirebaseAuth();
+
+            // Create user with email and password
+            const userCredential = await createUserWithEmailAndPassword(
+                auth,
+                normalizedEmail,
+                password
+            );
+
+            // Update the user's profile with their display name
+            await updateProfile(userCredential.user, {
+                displayName: fullName.trim()
+            });
+
+            // Store user info in localStorage for quick access
             if (typeof window !== "undefined") {
                 const user = {
                     name: fullName.trim(),
                     email: normalizedEmail,
-                    password, // NOTE: only for local fake auth – in real backend this must be hashed
+                    uid: userCredential.user.uid,
                     createdAt: new Date().toISOString(),
                 };
                 localStorage.setItem("thaiba-tasks:user", JSON.stringify(user));
             }
 
-            // Later we will call a real backend here:
-            // await fetch('/api/auth/register', { ... })
-
-            // go to dashboard
+            // Redirect to home page
             router.push("/home");
-        } catch (err) {
+        } catch (err: any) {
             console.error(err);
-            setError("Something went wrong. Please try again.");
+
+            // Handle specific Firebase errors
+            if (err.code === 'auth/email-already-in-use') {
+                setError("This email is already registered. Please log in instead.");
+            } else if (err.code === 'auth/weak-password') {
+                setError("Password is too weak. Please use a stronger password.");
+            } else if (err.code === 'auth/invalid-email') {
+                setError("Invalid email address.");
+            } else {
+                setError("Something went wrong. Please try again.");
+            }
         } finally {
             setSubmitting(false);
         }

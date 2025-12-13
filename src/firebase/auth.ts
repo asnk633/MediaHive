@@ -29,3 +29,5 @@ export const db = initializeFirestore(app, {
   experimentalForceLongPolling: true,
 });
 export const storage = getStorage(app);
+// Increase retry time to 5 minutes for slow networks
+storage.maxOperationRetryTime = 5 * 60 * 1000;

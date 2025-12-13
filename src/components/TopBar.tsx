@@ -3,7 +3,7 @@
 import React, { useEffect, useRef, useState } from "react";
 import { Bell, Settings, User } from 'lucide-react';
 import Link from 'next/link';
-import { use Role } from "@/app/(shell)/RoleContext";
+import { useRole } from "@/app/(shell)/RoleContext";
 import { useRouter } from 'next/navigation';
 import ThemeToggle from "@/components/ThemeToggle";
 import { addFocusVisibleClass } from "@/utils/a11y";

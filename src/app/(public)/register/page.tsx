@@ -5,6 +5,8 @@ import { useRouter } from "next/navigation";
 import { useState, type FormEvent } from "react";
 import { createUserWithEmailAndPassword, updateProfile } from "firebase/auth";
 import { getFirebaseAuth } from "@/firebase/client";
+import { doc, setDoc } from "firebase/firestore";
+import { db } from "@/firebase/client";
 
 export default function RegisterPage() {
     const router = useRouter();
@@ -63,9 +65,25 @@ export default function RegisterPage() {
                 password
             );
 
+            const userId = userCredential.user.uid;
+
             // Update the user's profile with their display name
             await updateProfile(userCredential.user, {
                 displayName: fullName.trim()
+            });
+
+            // Create role document in Firestore (default: team)
+            await setDoc(doc(db, "roles", userId), {
+                role: "team", // Default role for new users
+                createdAt: new Date().toISOString()
+            });
+
+            // Create user profile document in Firestore
+            await setDoc(doc(db, "users", userId), {
+                fullName: fullName.trim(),
+                email: normalizedEmail,
+                role: "team",
+                createdAt: new Date().toISOString()
             });
 
             // Store user info in localStorage for quick access
@@ -73,7 +91,8 @@ export default function RegisterPage() {
                 const user = {
                     name: fullName.trim(),
                     email: normalizedEmail,
-                    uid: userCredential.user.uid,
+                    uid: userId,
+                    role: "team",
                     createdAt: new Date().toISOString(),
                 };
                 localStorage.setItem("thaiba-tasks:user", JSON.stringify(user));

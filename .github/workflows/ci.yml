@@ -35,6 +35,9 @@ jobs:
       MOCK_FIREBASE: "true"
       USE_REAL_FIREBASE: "false"
 
+      # Provide a file DB so DB seeding/connection checks don't blow up
+      DATABASE_URL: "file:./ci.db"
+
     steps:
       - name: Checkout
         uses: actions/checkout@v4
@@ -106,6 +109,13 @@ jobs:
           # Run Jest unit tests - ignore React 19 warnings
           # Tests pass but console.error warnings cause exit code 1
           pnpm run test:unit || echo "Tests completed with warnings (React 19 deprecations)"
+        shell: bash
+
+      - name: Ensure local CI DB exists
+        run: |
+          # Create an empty sqlite file (used by DATABASE_URL file:./ci.db)
+          mkdir -p .ci
+          touch ci.db || true
         shell: bash
 
       - name: Build Next.js

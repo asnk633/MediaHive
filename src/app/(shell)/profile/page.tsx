@@ -5,6 +5,8 @@ import { useRole } from "@/app/(shell)/RoleContext";
 import { User, Mail, Phone, Lock, ChevronRight, Bell, Moon, Shield, LogOut, Settings } from "lucide-react";
 import { cn } from "@/lib/utils";
 import ImageCropper from "@/components/ImageCropper";
+import { uploadProfilePicture, getProfilePictureUrl } from "@/services/profilePicture";
+import { auth } from "@/firebase/client";
 
 export default function ProfilePage() {
   const { user } = useRole();
@@ -14,14 +16,21 @@ export default function ProfilePage() {
   const [avatarUrl, setAvatarUrl] = useState<string | null>(null);
   const [showCropper, setShowCropper] = useState(false);
   const [tempImageUrl, setTempImageUrl] = useState<string | null>(null);
+  const [uploading, setUploading] = useState(false);
   const fileInputRef = React.useRef<HTMLInputElement>(null);
 
-  // Load avatar from localStorage on mount
+  // Load avatar from Firebase Storage on mount
   React.useEffect(() => {
-    const savedAvatar = localStorage.getItem('userAvatar');
-    if (savedAvatar) {
-      setAvatarUrl(savedAvatar);
+    async function loadAvatar() {
+      const userId = auth.currentUser?.uid;
+      if (userId) {
+        const url = await getProfilePictureUrl(userId);
+        if (url) {
+          setAvatarUrl(url);
+        }
+      }
     }
+    loadAvatar();
   }, []);
 
   const handleAvatarClick = () => {
@@ -54,11 +63,32 @@ export default function ProfilePage() {
     }
   };
 
-  const handleCropComplete = (croppedImage: string) => {
-    setAvatarUrl(croppedImage);
-    localStorage.setItem('userAvatar', croppedImage);
-    setShowCropper(false);
-    setTempImageUrl(null);
+  const handleCropComplete = async (croppedImage: string) => {
+    const userId = auth.currentUser?.uid;
+    if (!userId) {
+      alert('User not authenticated');
+      return;
+    }
+
+    setUploading(true);
+    try {
+      // Convert base64 to Blob
+      const response = await fetch(croppedImage);
+      const blob = await response.blob();
+
+      // Upload to Firebase Storage
+      const downloadURL = await uploadProfilePicture(userId, blob);
+
+      // Update UI
+      setAvatarUrl(downloadURL);
+      setShowCropper(false);
+      setTempImageUrl(null);
+    } catch (error) {
+      console.error('Error uploading profile picture:', error);
+      alert('Failed to upload profile picture. Please try again.');
+    } finally {
+      setUploading(false);
+    }
   };
 
   const handleCropCancel = () => {

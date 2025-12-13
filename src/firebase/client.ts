@@ -1,18 +1,19 @@
-/* 
+/*
   Firebase client async-init with stable named exports.
   Ensure getFirebaseAuth and getFirebaseDb are exported as named exports so
   Next.js server routes can statically import them.
 */
 import { auth } from './auth';
 import { db } from './auth';
+import { storage } from './auth'; // Add storage import
 
 // Export the instances directly for client-side usage (e.g. AuthContext)
-export { auth, db };
+export { auth, db, storage }; // Export storage
 
 // Mock init function - export as named export for compatibility
 export async function initFirebase() {
   // This is a mock implementation for build purposes
-  return { app: {}, auth, db };
+  return { app: {}, auth, db, storage }; // Include storage in mock init
 }
 
 // Export shims so static imports used by app routes do not break during build.

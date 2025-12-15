@@ -342,8 +342,8 @@ importers:
         specifier: ^12.0.2
         version: 12.0.3
       swr:
-        specifier: ^2.3.7
-        version: 2.3.7(react@19.2.1)
+        specifier: ^2.3.8
+        version: 2.3.8(react@19.2.1)
       tailwind-merge:
         specifier: ^3.3.1
         version: 3.4.0
@@ -7559,6 +7559,7 @@ packages:
   next@16.0.8:
     resolution: {integrity: sha512-LmcZzG04JuzNXi48s5P+TnJBsTGPJunViNKV/iE4uM6kstjTQsQhvsAv+xF6MJxU2Pr26tl15eVbp0jQnsv6/g==}
     engines: {node: '>=20.9.0'}
+    deprecated: This version has a security vulnerability. Please upgrade to a patched version. See https://nextjs.org/blog/security-update-2025-12-11 for more details.
     hasBin: true
     peerDependencies:
       '@opentelemetry/api': ^1.1.0
@@ -9032,8 +9033,8 @@ packages:
     resolution: {integrity: sha512-BHd6U1VPEIksrXlyXjMmRWO0onmdNPaTAFduzqR3pgjvi7KfmUCAm/0cj49u2D7B0zNjMw02TSeXfinC1hDCXg==}
     engines: {node: '>= 4.7.0'}
 
-  swr@2.3.7:
-    resolution: {integrity: sha512-ZEquQ82QvalqTxhBVv/DlAg2mbmUjF4UgpPg9wwk4ufb9rQnZXh1iKyyKBqV6bQGu1Ie7L1QwSYO07qFIa1p+g==}
+  swr@2.3.8:
+    resolution: {integrity: sha512-gaCPRVoMq8WGDcWj9p4YWzCMPHzE0WNl6W8ADIx9c3JBEIdMkJGMzW+uzXvxHMltwcYACr9jP+32H8/hgwMR7w==}
     peerDependencies:
       react: ^16.11.0 || ^17.0.0 || ^18.0.0 || ^19.0.0
 
@@ -14053,7 +14054,7 @@ snapshots:
       convex: 1.30.0(react@19.2.1)
       query-string: 9.3.1
       rou3: 0.6.3
-      swr: 2.3.7(react@19.2.1)
+      swr: 2.3.8(react@19.2.1)
       zod: 4.1.13
     optionalDependencies:
       better-auth: 1.4.6(next@16.0.8(@babel/core@7.28.5)(@opentelemetry/api@1.9.0)(@playwright/test@1.57.0)(react-dom@19.2.1(react@19.2.1))(react@19.2.1))(react-dom@19.2.1(react@19.2.1))(react@19.2.1)
@@ -19372,7 +19373,7 @@ snapshots:
 
   swiper@12.0.3: {}
 
-  swr@2.3.7(react@19.2.1):
+  swr@2.3.8(react@19.2.1):
     dependencies:
       dequal: 2.0.3
       react: 19.2.1

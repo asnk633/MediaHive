@@ -51,3 +51,5 @@ service-account.json
 # Firebase service account keys (never commit)
 sa.json
 firebase-sa.json
+# Firebase Admin SDK private key
+serviceAccountKey.json

@@ -51,34 +51,13 @@ export function NotificationForm({ initialData, onSubmitSuccess, onCancel }: Not
 
     setIsSubmitting(true);
     try {
-      let attachments = [];
+      // TODO: Re-implement file upload without dynamic import
+      // The dynamic import of @/services/fileService causes server-side build failures
+      // File upload functionality temporarily disabled until proper implementation
+      const attachments: Array<{ name: string; url: string; type: string }> = [];
       if (mediaFile) {
-        try {
-          // Upload to Drive
-          const { FileService } = await import('@/services/fileService');
-          const metadata = {
-            name: `NOTIF_${Date.now()}_${mediaFile.name}`,
-            type: 'document', // or image, but generic is fine as mimeType decides folder
-            folder: 'Interactions', // Grouping under Interactions
-            subfolder: 'Notifications',
-            uploadedBy: user.uid,
-            visibility: { mode: 'all' }
-          };
-
-          const uploadResult = await FileService.uploadFile(mediaFile, metadata as any);
-          if (uploadResult.success) {
-            attachments.push({
-              name: mediaFile.name,
-              url: uploadResult.viewLink,
-              type: mediaFile.type
-            });
-          } else {
-            throw new Error("Failed to upload attachment");
-          }
-        } catch (uploadErr) {
-          console.error("Attachment upload failed", uploadErr);
-          toast.error("Failed to upload attachment, sending without it.");
-        }
+        toast.error("File upload temporarily disabled. Please remove attachment.");
+        setMediaFile(null);
       }
 
       const payload = {
@@ -86,7 +65,7 @@ export function NotificationForm({ initialData, onSubmitSuccess, onCancel }: Not
         body: data.body,
         audience: selectedAudiences,
         scheduledAt: data.schedule || null,
-        attachments: attachments,
+        attachments,
         // Add required fields expected by the API
       };
 

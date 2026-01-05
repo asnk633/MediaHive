@@ -1,0 +1,37 @@
+# Ignore experimental / disabled backend
+src/app/_api_disabled/
+src/server_disabled/
+
+# Ignore unfinished admin subsystems
+src/app/(shell)/campaigns/
+src/app/(shell)/flowboard/
+src/app/(shell)/inventory/
+src/app/(shell)/media/
+src/app/(shell)/reports/
+src/app/(shell)/settings/
+src/app/(shell)/updates/
+
+# Ignore heavy admin APIs not needed for core app
+src/app/api/admin/
+src/app/api/cron/
+src/app/api/system-events/
+src/app/api/device-logs/
+src/app/api/device-requests/
+
+# Ignore test & debug material
+__tests__/
+__tests_archive__/
+e2e/
+src/tests/
+build-output.txt
+build_log_debug.txt
+dev_log_debug.txt
+test_output_debug.txt
+test_output_debug_2.txt
+
+# Ignore scripts & diagnostics
+scripts/
+functions/
+debug_*.js
+inspect_*.py
+*.log

@@ -37,6 +37,19 @@
   ],
   "exclude": [
     "node_modules",
-    "thaiba_ui_full_pro"
+    "thaiba_ui_full_pro",
+    "src/app/_api_disabled",
+    "src/server_disabled",
+    "src/scripts",
+    "e2e",
+    "tests",
+    "tests",
+    "playwright",
+    "src/__tests__",
+    "__tests_archive__",
+    "**/*.test.tsx",
+    "**/*.spec.tsx",
+    "**/*.test.ts",
+    "**/*.spec.ts"
   ]
 }

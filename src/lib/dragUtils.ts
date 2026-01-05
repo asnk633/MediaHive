@@ -1,5 +1,4 @@
-// src/lib/dragUtils.ts
-export const STATUS_COLUMN_IDS = ["todo", "inprogress", "review", "done"];
+export const STATUS_COLUMN_IDS = ["todo", "in_progress", "on_hold", "review", "done"];
 
 export function mapStatusToColumnId(status: string) {
   switch (status) {
@@ -8,7 +7,11 @@ export function mapStatusToColumnId(status: string) {
       return "todo";
     case "in_progress":
     case "inprogress":
-      return "inprogress";
+    case "working":
+      return "in_progress";
+    case "on_hold":
+    case "onhold":
+      return "on_hold";
     case "review":
       return "review";
     case "done":

@@ -6,10 +6,8 @@ import { CapacitorConfig } from '@capacitor/cli';
 const config: CapacitorConfig = {
   appId: 'com.thaibagarden.media',
   appName: 'Thaiba Garden Media Manager',
-  webDir: '.next',
-  server: {
-    androidScheme: 'https'
-  },
+  webDir: 'out',
+
   plugins: {
     SplashScreen: {
       launchShowDuration: 3000,

@@ -1,38 +1,32 @@
 "use client";
 
-import React, { useState } from "react";
-import { useRole } from "@/app/(shell)/RoleContext";
-import { User, Mail, Phone, Lock, ChevronRight, Bell, Moon, Shield, LogOut, Settings } from "lucide-react";
+import React, { useState, useEffect } from "react";
+import { useAuth } from "@/contexts/AuthContext";
+import { Mail, Lock, ChevronRight, Bell, LogOut, Settings } from "lucide-react";
 import { cn } from "@/lib/utils";
 import ImageCropper from "@/components/ImageCropper";
-import { uploadProfilePicture, getProfilePictureUrl } from "@/services/profilePicture";
+import { uploadProfilePicture } from "@/services/profilePicture";
 import { auth } from "@/firebase/client";
 import { signOut } from "firebase/auth";
+import { getRoleBadgeColors } from "@/lib/roleStyles";
+import { SafeAvatar } from "@/components/ui/SafeAvatar";
 
 export default function ProfilePage() {
-  const { user } = useRole();
+  const { user } = useAuth();
   const role = user?.role;
   const [notifications, setNotifications] = useState(true);
-  const [darkMode, setDarkMode] = useState(true);
   const [avatarUrl, setAvatarUrl] = useState<string | null>(null);
   const [showCropper, setShowCropper] = useState(false);
   const [tempImageUrl, setTempImageUrl] = useState<string | null>(null);
   const [uploading, setUploading] = useState(false);
   const fileInputRef = React.useRef<HTMLInputElement>(null);
 
-  // Load avatar from Firebase Storage on mount
-  React.useEffect(() => {
-    async function loadAvatar() {
-      const userId = auth.currentUser?.uid;
-      if (userId) {
-        const url = await getProfilePictureUrl(userId);
-        if (url) {
-          setAvatarUrl(url);
-        }
-      }
+  // Sync state with user context
+  useEffect(() => {
+    if (user?.avatarUrl) {
+      setAvatarUrl(user.avatarUrl);
     }
-    loadAvatar();
-  }, []);
+  }, [user?.avatarUrl]);
 
   const handleAvatarClick = () => {
     fileInputRef.current?.click();
@@ -117,15 +111,15 @@ export default function ProfilePage() {
         <div className="relative group">
           <button
             onClick={handleAvatarClick}
-            className="h-28 w-28 rounded-full border-4 border-transparent shadow-2xl overflow-hidden bg-gradient-to-br from-blue-500 to-cyan-500 flex items-center justify-center cursor-pointer hover:ring-4 hover:ring-blue-400 transition-all"
+            className="h-28 w-28 rounded-full border-4 border-transparent shadow-2xl overflow-hidden bg-gradient-to-br from-blue-500 to-cyan-500 flex items-center justify-center cursor-pointer hover:ring-4 hover:ring-blue-400 transition-all p-0"
           >
-            {avatarUrl ? (
-              <img src={avatarUrl} alt="Profile" className="w-full h-full object-cover" />
-            ) : (
-              <span className="text-4xl font-bold text-white opacity-90">
-                {user?.name?.charAt(0) || "U"}
-              </span>
-            )}
+            <SafeAvatar
+              src={avatarUrl}
+              alt={user?.name || "Profile"}
+              size={112} // 28 * 4
+              className="w-full h-full bg-cover"
+              priority={true}
+            />
           </button>
           <button
             onClick={handleAvatarClick}
@@ -140,11 +134,11 @@ export default function ProfilePage() {
           <div className="flex items-center justify-center gap-2 mt-1">
             <span className={cn(
               "px-2.5 py-0.5 rounded-full text-[10px] font-bold uppercase tracking-wider",
-              role === 'admin' ? "bg-purple-500/20 text-purple-400 border border-purple-500/30" : "bg-blue-500/20 text-blue-400 border border-blue-500/30"
+              getRoleBadgeColors(role)
             )}>
-              {role || "Guest"}
+              {(user?.email === 'media@thaibagarden.com' || user?.isSuperAdmin) ? "SUPER ADMIN" : (role || "Guest")}
             </span>
-            <span className="text-sm text-[var(--text-secondary)]">Media Manager</span>
+            {/* Removed raw ID display as per user request */}
           </div>
         </div>
       </div>
@@ -155,8 +149,8 @@ export default function ProfilePage() {
           <h3 className="text-xs font-bold text-[var(--text-secondary)] uppercase tracking-wider">Account Information</h3>
         </div>
         <div className="divide-y divide-[var(--border-subtle)]">
-          <ProfileRow icon={Mail} label="Email" value={"user@thaibagarden.com"} onClick={() => alert('Email editing coming soon!')} />
-          <ProfileRow icon={Phone} label="Phone" value="+1 (555) 123-4567" onClick={() => alert('Phone editing coming soon!')} />
+          <ProfileRow icon={Mail} label="Email" value={user?.email || "No email"} onClick={() => alert('Email editing coming soon!')} />
+          {/* Phone Number removed as per request */}
           <ProfileRow icon={Lock} label="Password" value="••••••••" action onClick={() => alert('Password change coming soon!')} />
         </div>
       </section>
@@ -173,12 +167,7 @@ export default function ProfilePage() {
             checked={notifications}
             onChange={setNotifications}
           />
-          <ToggleRow
-            icon={Moon}
-            label="Dark Mode"
-            checked={darkMode}
-            onChange={setDarkMode}
-          />
+          {/* Dark Mode Toggle removed - Theme Locked to Night Sky */}
         </div>
       </section>
 

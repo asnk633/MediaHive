@@ -2,10 +2,19 @@
 // Endpoint to get task activity timeline
 
 import { NextRequest, NextResponse } from 'next/server';
-import { db } from '@/db';
+import { getDb } from '@/db';
 import { taskActivity, tasks } from '@/db/schema';
 import { eq } from 'drizzle-orm';
 import { authorizeByPermission } from '@/app/api/_lib/rbac';
+
+// Configure for static export
+export const dynamic = 'force-static';
+export const revalidate = false;
+
+// For static export with dynamic routes
+export async function generateStaticParams() {
+  return [];
+}
 
 export async function GET(
   req: NextRequest,
@@ -17,6 +26,8 @@ export async function GET(
     if (!user) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
+
+    const db = await getDb();
 
     const { id } = await context.params;
     const taskId = parseInt(id, 10);
@@ -46,7 +57,7 @@ export async function GET(
 
     // Return the activities
     return NextResponse.json(
-      { 
+      {
         activities
       },
       { status: 200 }

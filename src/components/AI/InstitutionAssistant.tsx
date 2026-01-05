@@ -4,6 +4,7 @@
 'use client';
 
 import React, { useState, useEffect, useRef } from 'react';
+import { apiClient } from '@/lib/apiClient';
 
 interface AISuggestion {
   id?: string;
@@ -49,7 +50,7 @@ export function InstitutionAssistant() {
       setConversation(newConversation);
       
       // Call AI service to generate suggestions
-      const response = await fetch('/api/ai/suggestions', {
+      const data = await apiClient('/api/ai/suggestions', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -57,18 +58,12 @@ export function InstitutionAssistant() {
         body: JSON.stringify({ query }),
       });
       
-      if (response.ok) {
-        const data = await response.json();
-        // Add IDs to suggestions for React keys
-        const suggestionsWithIds = data.suggestions.map((suggestion: any, index: number) => ({
-          ...suggestion,
-          id: `${suggestion.type}-${index}`
-        }));
-        setSuggestions(suggestionsWithIds);
-      } else {
-        // Fallback to mock suggestions if AI service fails
-        throw new Error('AI service unavailable');
-      }
+      // Add IDs to suggestions for React keys
+      const suggestionsWithIds = data.suggestions.map((suggestion: any, index: number) => ({
+        ...suggestion,
+        id: `${suggestion.type}-${index}`
+      }));
+      setSuggestions(suggestionsWithIds);
     } catch (error) {
       console.error('Failed to generate suggestions:', error);
       // Fallback to mock suggestions

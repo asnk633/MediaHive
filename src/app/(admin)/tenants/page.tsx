@@ -4,6 +4,7 @@
 'use client';
 
 import React, { useState, useEffect } from 'react';
+import { apiClient } from '@/lib/apiClient';
 
 interface Tenant {
   id: number;
@@ -31,11 +32,10 @@ export default function TenantsPage() {
   useEffect(() => {
     const fetchTenants = async () => {
       try {
-        const response = await fetch('/api/tenants');
-        if (response.ok) {
-          const data = await response.json();
-          setTenants(data.tenants);
-        }
+        const data = await apiClient('/api/tenants', {
+          method: 'GET'
+        });
+        setTenants(data.tenants);
       } catch (error) {
         console.error('Failed to fetch tenants:', error);
       } finally {
@@ -54,27 +54,21 @@ export default function TenantsPage() {
       const url = editingTenant ? `/api/tenants/${editingTenant.id}` : '/api/tenants';
       const method = editingTenant ? 'PUT' : 'POST';
       
-      const response = await fetch(url, {
+      const data = await apiClient(url, {
         method,
-        headers: {
-          'Content-Type': 'application/json',
-        },
         body: JSON.stringify({
           name: tenantForm.name,
           domain: tenantForm.domain,
           settings: tenantForm.settings ? JSON.parse(tenantForm.settings) : {}
         }),
       });
-
-      if (response.ok) {
-        const data = await response.json();
-        if (editingTenant) {
-          setTenants(tenants.map(tenant => tenant.id === editingTenant.id ? data.tenant : tenant));
-        } else {
-          setTenants([...tenants, data.tenant]);
-        }
-        resetForm();
+      
+      if (editingTenant) {
+        setTenants(tenants.map(tenant => tenant.id === editingTenant.id ? data.tenant : tenant));
+      } else {
+        setTenants([...tenants, data.tenant]);
       }
+      resetForm();
     } catch (error) {
       console.error('Failed to save tenant:', error);
     }
@@ -98,13 +92,11 @@ export default function TenantsPage() {
     }
 
     try {
-      const response = await fetch(`/api/tenants/${tenantId}`, {
+      await apiClient(`/api/tenants/${tenantId}`, {
         method: 'DELETE',
       });
-
-      if (response.ok) {
-        setTenants(tenants.filter(tenant => tenant.id !== tenantId));
-      }
+      
+      setTenants(tenants.filter(tenant => tenant.id !== tenantId));
     } catch (error) {
       console.error('Failed to delete tenant:', error);
     }

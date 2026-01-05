@@ -13,14 +13,17 @@ export type Permission =
     | 'delete:events'
     | 'read:users'
     | 'manage:users'
-    | 'read:reports';
+    | 'read:reports'
+    | 'write:intervention'
+    | 'read:audit_log';
 
 export const ROLES: Record<Role, Permission[]> = {
     admin: [
         'read:tasks', 'create:tasks', 'edit:tasks', 'delete:tasks',
         'edit:task_status', 'edit:task_priority',
         'read:events', 'create:events', 'edit:events', 'delete:events',
-        'read:users', 'manage:users', 'read:reports'
+        'read:users', 'manage:users', 'read:reports',
+        'write:intervention', 'read:audit_log'
     ],
     team: [
         'read:tasks', 'create:tasks', 'edit:task_status', 'edit:task_priority',

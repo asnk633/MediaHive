@@ -1,137 +1,80 @@
-import { NextResponse } from 'next/server';
-import { getFirebaseAdminApp } from '@/lib/firebaseAdmin';
+import { NextRequest } from 'next/server';
+import { getAuth } from 'firebase-admin/auth';
+import { getFirestore, FieldValue } from 'firebase-admin/firestore';
+import { getFirebaseAdminDb } from '@/firebase/admin';
+import { requireAdminWithVerifiedEmail } from '@/lib/emailVerificationGuard';
+import { logAuditAction } from '@/lib/audit';
 
-// Helper to verify auth and role (reused logic, ideally shared)
-async function verifyAdmin(request: Request) {
-    const { auth, firestore } = await getHelper();
-    const token = request.headers.get('Authorization')?.split('Bearer ')[1];
-    if (!token) return null;
+export async function GET(request: NextRequest) {
+  try {
+    // Use the admin guard which checks both admin status and email verification
+    const decodedToken = await requireAdminWithVerifiedEmail(request);
 
-    try {
-        const decoded = await auth.verifyIdToken(token);
-        const userDoc = await firestore.collection('users').doc(decoded.uid).get();
-        const role = userDoc.exists ? userDoc.data()?.role : 'guest';
+    const db = getFirebaseAdminDb();
 
-        // Check if user is admin
-        if (role !== 'admin') return null;
+    // Fetch all users from Firestore
+    const usersSnapshot = await db.collection('users').get();
+    const users = usersSnapshot.docs.map(doc => ({
+      id: doc.id,
+      ...doc.data()
+    }));
 
-        return { uid: decoded.uid, role };
-    } catch (e) {
-        return null;
-    }
+    return Response.json({ users });
+  } catch (error: any) {
+    console.error('Error fetching users:', error);
+    return Response.json({ error: error.message || 'Failed to fetch users' }, { status: 403 });
+  }
 }
 
-async function getHelper() {
-    try {
-        const app = getFirebaseAdminApp();
-        const auth = app.auth();
-        const firestore = app.firestore();
-        return { auth, firestore };
-    } catch (error) {
-        console.error('[getHelper] Firebase Admin initialization failed:', error);
-        // Return mock auth/firestore for development when Firebase Admin isn't configured
-        return {
-            auth: {
-                listUsers: async () => ({ users: [] }),
-                createUser: async () => ({ uid: 'mock-uid' }),
-                verifyIdToken: async () => ({ uid: 'mock-uid' }),
-            },
-            firestore: {
-                collection: () => ({
-                    get: async () => ({ forEach: () => { }, docs: [] }),
-                    doc: () => ({
-                        get: async () => ({ exists: false, data: () => null }),
-                        set: async () => { },
-                    }),
-                }),
-            },
-        } as any;
+export async function POST(request: NextRequest) {
+  try {
+    // Use the admin guard which checks both admin status and email verification
+    const decodedToken = await requireAdminWithVerifiedEmail(request);
+
+    const { targetUserId, newRole } = await request.json();
+
+    if (!targetUserId || !newRole) {
+      return Response.json({ error: 'targetUserId and newRole are required' }, { status: 400 });
     }
-}
 
-export async function GET(request: Request) {
-    try {
-        const { auth, firestore } = await getHelper();
-
-        // Verify Admin
-        // const requester = await verifyAdmin(request);
-        // if (!requester) return NextResponse.json({ error: 'Forbidden' }, { status: 403 });
-
-        // 1. List all users from Auth (limit 100 for now)
-        const listUsersResult = await auth.listUsers(100);
-        const users = listUsersResult.users.map((u: any) => ({
-            uid: u.uid,
-            email: u.email,
-            name: u.displayName,
-            photoURL: u.photoURL,
-            lastSignInTime: u.metadata.lastSignInTime,
-            creationTime: u.metadata.creationTime,
-        }));
-
-        // 2. Fetch roles from Firestore for these users
-        // We can do a getAll or individual fetches. For <100, getAll is okay-ish or map.
-        // Better: Query 'users' collection.
-        const userDocs = await firestore.collection('users').get();
-        const roleMap: Record<string, string> = {};
-        userDocs.forEach((doc: any) => {
-            roleMap[doc.id] = doc.data().role;
-        });
-
-        // 3. Merge
-        const merged = users.map((u: any) => ({
-            ...u,
-            role: roleMap[u.uid] || 'guest' // Default to guest if no record
-        }));
-
-        return NextResponse.json({ users: merged });
-    } catch (error: any) {
-        console.error('List users error', error);
-        return NextResponse.json({
-            error: 'Failed to list users',
-            details: error.message
-        }, { status: 500 });
+    // Validate role
+    const validRoles = ['guest', 'team', 'admin'];
+    if (!validRoles.includes(newRole)) {
+      return Response.json({ error: 'Invalid role specified' }, { status: 400 });
     }
-}
 
-export async function POST(request: Request) {
-    const { auth, firestore } = await getHelper();
+    const db = getFirebaseAdminDb();
 
-    try {
-        const body = await request.json();
+    // Update the user's role
+    const userRef = db.collection('users').doc(targetUserId);
 
-        // Scenario A: Create User (if email provided)
-        if (body.email && body.password) {
-            const { email, password, name, role } = body;
+    // Perform update
+    await userRef.update({
+      role: newRole,
+      updatedAt: FieldValue.serverTimestamp()
+    });
 
-            // 1. Create in Auth
-            const userRecord = await auth.createUser({
-                email,
-                password,
-                displayName: name,
-            });
+    // Log audit action asynchronously (fire-and-forget to not block response)
+    // We already passed the guard so we know decodedToken.uid is safe
+    const performedBy = decodedToken.uid;
 
-            // 2. Set Role in Firestore
-            await firestore.collection('users').doc(userRecord.uid).set({
-                role: role || 'team', // Default to team if not specified
-                email,
-                name
-            });
+    // We need to fetch the admin's extra details ideally, but verifyUser token has basic info.
+    // For now, we use what we have.
+    logAuditAction(
+      'ROLE_CHANGE',
+      {
+        uid: performedBy,
+        email: decodedToken.email,
+        role: decodedToken.role,
+        ip: request.headers.get('x-forwarded-for') || 'unknown'
+      },
+      { id: targetUserId, collection: 'users', name: 'User' },
+      { newRole, oldRole: null } // ideally fetch old role before update if strict audit needed
+    ).catch(e => console.error('Audit log failed', e));
 
-            return NextResponse.json({ success: true, user: { uid: userRecord.uid, email, name, role } });
-        }
-
-        // Scenario B: Update Role (existing logic)
-        const { uid, role } = body;
-
-        if (!uid || !role) return NextResponse.json({ error: 'Missing fields' }, { status: 400 });
-        if (!['admin', 'team', 'guest'].includes(role)) return NextResponse.json({ error: 'Invalid role' }, { status: 400 });
-
-        // Update Firestore
-        await firestore.collection('users').doc(uid).set({ role }, { merge: true });
-
-        return NextResponse.json({ success: true, uid, role });
-    } catch (error: any) {
-        console.error('Admin API error', error);
-        return NextResponse.json({ error: error.message || 'Operation failed' }, { status: 500 });
-    }
+    return Response.json({ message: 'Role updated successfully' });
+  } catch (error: any) {
+    console.error('Error updating user role:', error);
+    return Response.json({ error: error.message || 'Failed to update user role' }, { status: 403 });
+  }
 }

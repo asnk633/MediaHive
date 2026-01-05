@@ -78,6 +78,13 @@
       "when": 1761881794672,
       "tag": "0010_add_media_reports_table",
       "breakpoints": true
+    },
+    {
+      "idx": 11,
+      "version": "6",
+      "when": 1767348159537,
+      "tag": "0011_cuddly_penance",
+      "breakpoints": true
     }
   ]
 }

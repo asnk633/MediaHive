@@ -6,6 +6,7 @@
 import { offlineQueue, OfflineMutation } from './offlineQueue';
 import { localDB } from './localDB';
 import { persistedQueries } from './persistedQueries';
+import { apiClient } from '@/lib/apiClient';
 
 class SyncEngine {
   private isSyncing = false;
@@ -79,11 +80,7 @@ class SyncEngine {
       options.body = JSON.stringify(payload);
     }
     
-    const response = await fetch(endpoint, options);
-    
-    if (!response.ok) {
-      throw new Error(`HTTP ${response.status}: ${response.statusText}`);
-    }
+    await apiClient(endpoint, options);
   }
 
   async revalidateFromServer(): Promise<void> {

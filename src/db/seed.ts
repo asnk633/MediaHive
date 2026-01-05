@@ -4,6 +4,7 @@ import { db } from "./index.js";
 import { eq } from "drizzle-orm";
 import {
   institutions,
+  departments,
   users,
   tasks,
   events,
@@ -11,6 +12,8 @@ import {
   attendance,
   files,
   tenants,
+  userDepartments,
+  userInstitutions
 } from "./schema.js";
 
 const now = () => new Date().toISOString();
@@ -53,7 +56,90 @@ async function main() {
       institutionId = existingInstitution[0].id;
     }
 
-    // 3) Check if users already exist, if not insert them
+    // 3) Check if departments already exist, if not insert them
+    console.log(" - checking/inserting departments...");
+    const departmentNames = [
+      "Media & IT Office",
+      "Director Office",
+      "Join Director Office",
+      "Project Department",
+      "Accounts Department",
+      "Vehicle Department",
+      "Maintenance Department",
+      "Food Department",
+      "PR Department",
+      "Feed The Needy",
+      "Candle Of Hope International",
+      "Al Siddiqia Trust",
+      "Kahani From Thaiba",
+      "Amar Thaiba"
+    ];
+
+    // Check if any departments exist
+    const existingDepartments = await db.select({id: departments.id, name: departments.name}).from(departments).limit(1);
+    
+    if (existingDepartments.length === 0) {
+      // Insert all departments
+      for (const deptName of departmentNames) {
+        await db.insert(departments).values({
+          name: deptName,
+          tenantId: tenantId,
+          createdAt: now(),
+        });
+      }
+      console.log(`  - inserted ${departmentNames.length} departments`);
+    } else {
+      console.log("  - departments already exist, skipping");
+    }
+
+    // 4) Check if institutions already exist, if not insert them
+    console.log(" - checking/inserting institutions...");
+    const institutionNames = [
+      "CIS Boys - Majhikhanda",
+      "Banath - Baghait",
+      "TPS - Majhikhanda",
+      "TPS - Godda",
+      "TPS - Antla",
+      "TPS - Baleshwar",
+      "TPS - Kosbagolla",
+      "TPS – Mallikpur",
+      "TPS – Raiganj",
+      "TPS – Sagardighi",
+      "TPS – Manipur",
+      "New Katak Public School",
+      "Thaiba Moral Academy Office",
+      "Model School - Baghait",
+      "Da'awra - Majhikhanda",
+      "School Of Quran - Baghait",
+      "School Of Quran - Mallikpur",
+      "CIS Junior Boys – Choumini",
+      "CIS Junior Boys - Bisfi",
+      "Model Academy - Samsi",
+      "Model Academy – Konar",
+      "Model Academy - Chakolia",
+      "Orphan Home - Baghait",
+      "Spark Academy",
+      "Edu Berry - UAE"
+    ];
+
+    // Check if any institutions exist (beyond the default one)
+    const existingInstitutions = await db.select({id: institutions.id, name: institutions.name}).from(institutions);
+    
+    if (existingInstitutions.length <= 1) { // Only the default one exists
+      // Insert all institutions
+      for (const instName of institutionNames) {
+        await db.insert(institutions).values({
+          name: instName,
+          tenantId: tenantId,
+          createdAt: now(),
+        });
+      }
+      console.log(`  - inserted ${institutionNames.length} institutions`);
+    } else {
+      console.log("  - institutions already exist, skipping");
+    }
+
+    // 5) Check if users already exist, if not insert them
     console.log(" - checking/inserting users...");
     let adminId: number;
     let johnId: number;
@@ -121,7 +207,42 @@ async function main() {
       guestId = existingGuest.length > 0 ? existingGuest[0].id : 3;
     }
 
-    // 4) Check if tasks already exist, if not insert them
+    // 6) Seed user departments and institutions
+    console.log(" - checking/inserting user departments and institutions...");
+    
+    // Get some departments and institutions for seeding
+    const allDepartments = await db.select().from(departments).limit(5);
+    const allInstitutions = await db.select().from(institutions).limit(5);
+    
+    if (allDepartments.length > 0 && allInstitutions.length > 0) {
+      // Clear existing user departments and institutions
+      await db.delete(userDepartments);
+      await db.delete(userInstitutions);
+      
+      // Add sample user-department associations
+      if (allDepartments.length >= 3) {
+        await db.insert(userDepartments).values([
+          { userId: adminId, departmentId: allDepartments[0].id, createdAt: now() },
+          { userId: adminId, departmentId: allDepartments[1].id, createdAt: now() },
+          { userId: johnId, departmentId: allDepartments[1].id, createdAt: now() },
+          { userId: johnId, departmentId: allDepartments[2].id, createdAt: now() },
+        ]);
+      }
+      
+      // Add sample user-institution associations
+      if (allInstitutions.length >= 3) {
+        await db.insert(userInstitutions).values([
+          { userId: adminId, institutionId: allInstitutions[0].id, createdAt: now() },
+          { userId: adminId, institutionId: allInstitutions[1].id, createdAt: now() },
+          { userId: johnId, institutionId: allInstitutions[1].id, createdAt: now() },
+          { userId: johnId, institutionId: allInstitutions[2].id, createdAt: now() },
+        ]);
+      }
+      
+      console.log("  - inserted sample user departments and institutions");
+    }
+
+    // 7) Check if tasks already exist, if not insert them
     console.log(" - checking/inserting tasks...");
     const existingTask1 = await db.select({id: tasks.id}).from(tasks).where(eq(tasks.title, "Welcome: Set up dashboard")).limit(1);
     const existingTask2 = await db.select({id: tasks.id}).from(tasks).where(eq(tasks.title, "Prepare Playwright tests")).limit(1);
@@ -165,7 +286,7 @@ async function main() {
       ] as any);
     }
 
-    // 5) Check if event already exists, if not insert it
+    // 8) Check if event already exists, if not insert it
     console.log(" - checking/inserting an event...");
     const existingEvent = await db.select({id: events.id}).from(events).where(eq(events.title, "Project Kickoff")).limit(1);
     if (existingEvent.length === 0) {
@@ -183,7 +304,7 @@ async function main() {
       });
     }
 
-    // 6) Check if notification already exists, if not insert it
+    // 9) Check if notification already exists, if not insert it
     console.log(" - checking/inserting a notification...");
     const existingNotification = await db.select({id: notifications.id}).from(notifications).where(eq(notifications.title, "Welcome")).limit(1);
     if (existingNotification.length === 0) {
@@ -203,7 +324,7 @@ async function main() {
       } as any);
     }
 
-    // 7) Check if attendance row already exists, if not insert it
+    // 10) Check if attendance row already exists, if not insert it
     console.log(" - checking/inserting attendance...");
     const existingAttendance = await db.select({id: attendance.id}).from(attendance).where(eq(attendance.userId, johnId)).limit(1);
     if (existingAttendance.length === 0) {
@@ -217,7 +338,7 @@ async function main() {
       });
     }
 
-    // 8) Check if files row already exists, if not insert it
+    // 11) Check if files row already exists, if not insert it
     console.log(" - checking/inserting file entry...");
     const existingFile = await db.select({id: files.id}).from(files).where(eq(files.name, "example-doc.pdf")).limit(1);
     if (existingFile.length === 0) {

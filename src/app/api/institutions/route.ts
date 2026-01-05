@@ -1,10 +1,22 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { db } from '@/db';
+import { getDb } from '@/db';
 import { institutions } from '@/db/schema';
 import { eq, like } from 'drizzle-orm';
+import { authorizeByPermission } from '@/app/api/_lib/rbac';
+
+// Configure for dynamic rendering to allow database access
+// export const dynamic = 'force-dynamic';
+export const revalidate = 0;
 
 export async function GET(request: NextRequest) {
   try {
+    // Authorize user with RBAC - users can read institutions
+    const user = await authorizeByPermission(request, 'read:tasks');
+    if (!user) {
+      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+    }
+
+    const db = await getDb();
     const { searchParams } = new URL(request.url);
     const id = searchParams.get('id');
 
@@ -34,7 +46,7 @@ export async function GET(request: NextRequest) {
     }
 
     // List institutions with pagination and search
-    const limit = Math.min(parseInt(searchParams.get('limit') ?? '10'), 100);
+    const limit = Math.min(parseInt(searchParams.get('limit') ?? '10'), 1000);
     const offset = parseInt(searchParams.get('offset') ?? '0');
     const search = searchParams.get('search');
 
@@ -59,6 +71,13 @@ export async function GET(request: NextRequest) {
 
 export async function POST(request: NextRequest) {
   try {
+    // Authorize user with RBAC - only admins can create institutions
+    const user = await authorizeByPermission(request, 'manage:users');
+    if (!user) {
+      return NextResponse.json({ error: 'Forbidden: Only admins can create institutions' }, { status: 403 });
+    }
+
+    const db = await getDb();
     const body = await request.json();
     const { name } = body;
 
@@ -94,6 +113,13 @@ export async function POST(request: NextRequest) {
 
 export async function PUT(request: NextRequest) {
   try {
+    // Authorize user with RBAC - only admins can update institutions
+    const user = await authorizeByPermission(request, 'manage:users');
+    if (!user) {
+      return NextResponse.json({ error: 'Forbidden: Only admins can update institutions' }, { status: 403 });
+    }
+
+    const db = await getDb();
     const { searchParams } = new URL(request.url);
     const id = searchParams.get('id');
 
@@ -161,6 +187,13 @@ export async function PUT(request: NextRequest) {
 
 export async function DELETE(request: NextRequest) {
   try {
+    // Authorize user with RBAC - only admins can delete institutions
+    const user = await authorizeByPermission(request, 'manage:users');
+    if (!user) {
+      return NextResponse.json({ error: 'Forbidden: Only admins can delete institutions' }, { status: 403 });
+    }
+
+    const db = await getDb();
     const { searchParams } = new URL(request.url);
     const id = searchParams.get('id');
 

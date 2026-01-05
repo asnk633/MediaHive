@@ -2,6 +2,7 @@
 // Task prefetching utility for performance improvements
 
 import { getQueryCache, setQueryCache, invalidateQueryCache } from '../cache/query-cache';
+import { apiClient } from '@/lib/apiClient';
 
 // Prefetch tasks for a user
 export async function prefetchTasks(
@@ -34,13 +35,7 @@ export async function prefetchTasks(
       queryParams.append('priority', priority);
     }
     
-    const response = await fetch(`/api/tasks?${queryParams.toString()}`);
-    
-    if (!response.ok) {
-      throw new Error('Failed to fetch tasks');
-    }
-    
-    const data = await response.json();
+    const data = await apiClient(`/api/tasks?${queryParams.toString()}`);
     const tasks = data.data || data.tasks || [];
     
     // Cache the results for 5 minutes
@@ -71,7 +66,7 @@ export async function prefetchNearestCampusTasks(
     }
     
     // Fetch nearest campus tasks from API
-    const response = await fetch(
+    const data = await apiClient(
       `/api/tasks/nearest?` +
       `userId=${userId}&` +
       `latitude=${userLocation.latitude}&` +
@@ -79,11 +74,6 @@ export async function prefetchNearestCampusTasks(
       `maxDistance=${maxDistanceKm}`
     );
     
-    if (!response.ok) {
-      throw new Error('Failed to fetch nearest campus tasks');
-    }
-    
-    const data = await response.json();
     const tasks = data.data || data.tasks || [];
     
     // Cache the results for 10 minutes

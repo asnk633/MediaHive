@@ -1,9 +1,12 @@
 // Lightweight monitoring abstraction - prepared for future integration with Sentry, Logflare, etc.
 
+import { apiClient } from '@/lib/apiClient';
+
 export async function captureEvent(payload: any) {
   const url = process.env.MONITORING_WEBHOOK;
   if (!url) return;
   try {
+    // Note: This is sending to an external webhook URL, so we can't use apiClient
     await fetch(url, { method: 'POST', headers: { 'content-type': 'application/json' }, body: JSON.stringify(payload) });
   } catch (e) {
     console.warn('monitor failed', e);

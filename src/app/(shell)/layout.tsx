@@ -5,7 +5,6 @@ import BottomNav from "@/components/BottomNavigation";
 import TopBar from "@/components/TopBar";
 import { ToastProvider } from "@/components/ToastProvider";
 import { ClientDataProvider } from "./ClientDataContext";
-import { RoleProvider } from "./RoleContext";
 import FAB from "@/client/components/FAB";
 import { initPWA } from "@/lib/init-pwa";
 import { ClientOfflineStatusIndicator as OfflineStatusIndicator } from "@/components/ClientOfflineStatusIndicator";
@@ -13,6 +12,8 @@ import { HydrationDetector } from "@/components/HydrationDetector";
 import ErrorBoundary from "@/components/ErrorBoundary";
 import { OfflineBanner } from "@/components/OfflineBanner";
 import { KeyboardNavigationDetector } from "@/components/KeyboardNavigationDetector";
+import ProtectedRoute from "@/components/ProtectedRoute";
+import { TextCycleLoader } from "@/components/ui/TextCycleLoader";
 
 export default function ShellLayout({ children }: { children: React.ReactNode }) {
   // Initialize PWA functionality
@@ -21,42 +22,50 @@ export default function ShellLayout({ children }: { children: React.ReactNode })
   }, []);
 
   return (
-    <>
-      <RoleProvider>
-        <ToastProvider>
-          <ClientDataProvider>
-            <div className="min-h-screen flex flex-col">
-              {/* Keyboard Navigation Detector */}
-              <KeyboardNavigationDetector />
+    <ProtectedRoute>
+      <ToastProvider>
+        <ClientDataProvider>
+          <div className="min-h-screen flex flex-col">
+            {/* Keyboard Navigation Detector */}
+            <KeyboardNavigationDetector />
 
-              {/* Offline Banner */}
-              <OfflineBanner />
+            {/* Offline Banner */}
+            <OfflineBanner />
 
-              {/* Top Bar */}
+            {/* Top Bar */}
+            <div className="print:hidden">
               <TopBar />
+            </div>
 
-              {/* Main Content Area - Scrolls independently */}
-              <main className="flex-1 overflow-y-auto overflow-x-hidden pt-6">
-                <ErrorBoundary>
-                  <Suspense fallback={<div>Loading...</div>}>
-                    {children}
-                  </Suspense>
-                </ErrorBoundary>
-              </main>
+            {/* Main Content Area - Scrolls independently - Added pb-32 for Bottom Nav clearance */}
+            <main className="flex-1 overflow-y-auto overflow-x-hidden pt-6 pb-32 print:pt-0 print:pb-0 print:overflow-visible print:h-auto">
+              <ErrorBoundary>
+                <Suspense fallback={
+                  <div className="flex items-center justify-center p-12">
+                    <TextCycleLoader />
+                  </div>
+                }>
+                  {children}
+                </Suspense>
+              </ErrorBoundary>
+            </main>
 
-              {/* Offline & Hydration Indicators */}
-              <OfflineStatusIndicator />
-              <HydrationDetector />
+            {/* Offline & Hydration Indicators */}
+            <OfflineStatusIndicator />
+            <HydrationDetector />
 
-              {/* Floating Action Button */}
+            {/* Floating Action Button */}
+            <div className="print:hidden">
               <FAB />
+            </div>
 
-              {/* Bottom Navigation */}
+            {/* Bottom Navigation */}
+            <div className="print:hidden">
               <BottomNav />
             </div>
-          </ClientDataProvider>
-        </ToastProvider>
-      </RoleProvider>
-    </>
+          </div>
+        </ClientDataProvider>
+      </ToastProvider>
+    </ProtectedRoute>
   );
 }

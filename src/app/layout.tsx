@@ -6,49 +6,25 @@ import { AuthProvider } from "@/contexts/AuthContext";
 import { ThemeProvider } from "@/context/ThemeProvider";
 
 export const metadata = {
-  title: 'Thaiba Garden',
+  title: 'MediaHive',
   description: 'Media management system for Thaiba Garden',
 };
 
 export const viewport = {
   width: 'device-width',
   initialScale: 1,
-  maximumScale: 1,
-  userScalable: false,
-  themeColor: [
-    { media: '(prefers-color-scheme: light)', color: '#f5f7fb' },
-    { media: '(prefers-color-scheme: dark)', color: '#070607' }
-  ]
+  maximumScale: 5,
+  userScalable: true,
+  viewportFit: 'cover',
+  themeColor: '#0f172a',
 };
 
 export default function RootLayout({ children }: { children: ReactNode }) {
   const useNewUI = process.env.NEXT_PUBLIC_NEW_UI === "true";
 
   return (
-    <html lang="en" data-theme="dark" suppressHydrationWarning={true}>
-      <head>
-        {/* inside <head> of src/app/layout.tsx */}
-        <script
-          dangerouslySetInnerHTML={{
-            __html: `
-              (function() {
-                try {
-                  var t = localStorage.getItem('theme');
-                  if (!t) {
-                    // detect system preference as fallback
-                    var prefersDark = window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches;
-                    t = prefersDark ? 'dark' : 'light';
-                  }
-                  document.documentElement.setAttribute('data-theme', t);
-                } catch (e) {
-                  // ignore - localStorage not available
-                }
-              })();
-            `,
-          }}
-        />
-      </head>
-      <body className="min-h-screen">
+    <html lang="en" data-theme="dark" className="dark" suppressHydrationWarning={true}>
+      <body className="min-h-screen" suppressHydrationWarning={true}>
         <ThemeProvider>
           <AuthProvider>
             {children}

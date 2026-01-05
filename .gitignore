@@ -53,3 +53,30 @@ sa.json
 firebase-sa.json
 # Firebase Admin SDK private key
 serviceAccountKey.json
+# --- Local env & state ---
+.env.local
+.env.production
+.env.development
+dev.db
+*.sqlite
+
+# --- Logs & debug ---
+*.log
+*_log.txt
+*_output.txt
+debug_*.txt
+regression_*.txt
+jest_*.txt
+tsc_output*
+tail_log.txt
+
+# --- Temporary scripts / outputs ---
+audit_result.json
+users_report*.txt
+users_report*.json
+firestore_users*.txt
+firestore_users*.json
+
+# --- OS / tooling ---
+.DS_Store
+Thumbs.db

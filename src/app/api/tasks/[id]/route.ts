@@ -1,182 +1,174 @@
-import { NextRequest, NextResponse } from 'next/server';
-import { db } from '@/db';
-import { tasks } from '@/db/schema';
-import { eq } from 'drizzle-orm';
-import { authorize } from '@/app/api/_lib/rbac';
-import { hasRole } from '@/lib/permissions';
-import { TaskStatus, TaskPriority } from '@/types';
+import { NextResponse } from 'next/server';
+import { getFirebaseServices, verifyUser } from '@/lib/server-utils';
+import { ServerNotification } from '@/lib/server-notification';
 
-/**
- * GET /api/tasks/[id]
- * Get single task details
- */
+// Dynamic route
 export async function GET(
-  request: NextRequest,
-  context: { params: Promise<{ id: string }> }
+  request: Request,
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
-    // Authorize user with RBAC - all roles can read tasks
-    const user = await authorize(request, 'read:tasks');
-    if (!user) {
-      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
-    }
+    const { firestore } = await getFirebaseServices();
+    const user = await verifyUser(request);
+    if (!user) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
 
-    const { id } = await context.params;
-    const taskId = parseInt(id, 10);
+    const { id } = await params;
 
-    const [task] = await db.select().from(tasks).where(eq(tasks.id, taskId));
+    const docSnap = await firestore.collection('tasks').doc(id).get();
 
-    if (!task) {
+    if (!docSnap.exists) {
       return NextResponse.json({ error: 'Not found' }, { status: 404 });
     }
 
-    // Check institution access (Crucial multi-tenancy check)
-    if (task.institutionId !== user.institutionId) {
-      return NextResponse.json({ error: 'Forbidden' }, { status: 403 });
-    }
-
-    return NextResponse.json({ data: task }, { status: 200 });
+    return NextResponse.json({ id: docSnap.id, ...docSnap.data() });
   } catch (error) {
-    console.error('[GET /api/tasks/[id]]', error);
-    return NextResponse.json(
-      { error: 'Failed to fetch task' },
-      { status: 500 }
-    );
+    console.error("GET task error", error);
+    return NextResponse.json({ error: 'Internal Error' }, { status: 500 });
   }
 }
 
-/**
- * PATCH /api/tasks/[id]
- * Update task with role-based field restrictions
- */
 export async function PATCH(
-  req: NextRequest,
-  context: { params: Promise<{ id: string }> }
+  request: Request,
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
-    // Authorize user with RBAC - only roles with edit:tasks permission can update tasks
-    const user = await authorize(req, 'edit:tasks');
-    if (!user) {
-      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
-    }
+    const { firestore } = await getFirebaseServices();
+    const user = await verifyUser(request);
 
-    const { id } = await context.params;
-    const taskId = parseInt(id, 10);
+    if (!user) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
 
-    const [existingTask] = await db.select().from(tasks).where(eq(tasks.id, taskId));
+    const { id } = await params;
+    const data = await request.json();
 
-    if (!existingTask) {
+    // Fetch current task for comparison and permission check
+    const taskRef = firestore.collection('tasks').doc(id);
+    const taskDoc = await taskRef.get();
+
+    if (!taskDoc.exists) {
       return NextResponse.json({ error: 'Not found' }, { status: 404 });
     }
 
-    // Check institution access for the task being modified
-    if (existingTask.institutionId !== user.institutionId) {
-      return NextResponse.json({ error: 'Forbidden' }, { status: 403 });
+    const currentTask = taskDoc.data() || {};
+
+    // PERMISSION CHECK
+    // 1. Admin/Team roles can always edit
+    const hasRolePermission = user.role === 'admin' || user.role === 'team';
+
+    // 2. Creator can always edit
+    const isCreator = currentTask.createdBy === user.uid || (typeof currentTask.createdBy === 'object' && currentTask.createdBy.uid === user.uid);
+
+    // 3. Assignees can always edit (explicitly allowed for status updates)
+    const assignedArray = Array.isArray(currentTask.assignedTo) ? currentTask.assignedTo : [];
+    const isAssignee = assignedArray.some((u: any) => {
+      const uid = typeof u === 'string' ? u : u.uid;
+      return uid === user.uid;
+    });
+
+    console.log(`[API Debug] Task Update Attempt: TaskId=${id}, User=${user.uid}, Role=${user.role}`);
+    console.log(`[API Debug] Permissions: RolePerm=${hasRolePermission}, IsCreator=${isCreator}, IsAssignee=${isAssignee}`);
+    console.log(`[API Debug] Assignees: ${JSON.stringify(assignedArray)}`);
+
+    if (!hasRolePermission && !isCreator && !isAssignee) {
+      console.error(`[API] Forbidden access to task ${id}. User: ${user.uid}, Role: ${user.role}`);
+      return NextResponse.json({ error: 'Forbidden: Insufficient permissions (Debug: Role=' + user.role + ')' }, { status: 403 });
     }
 
+    // Perform Update
+    await taskRef.update({
+      ...data,
+      updatedAt: new Date().toISOString()
+    });
 
-    // Check permission - Only Admin or Creator can initiate a PATCH
-    // Note: Field-level restrictions apply AFTER this initial check.
-    if (!hasRole(user, ['admin']) && existingTask.createdById !== user.id) {
-      return NextResponse.json({ error: 'Forbidden' }, { status: 403 });
+    // --- NOTIFICATION LOGIC ---
+    // 1. Status Changed (e.g. Pending -> Todo/Approved)
+    if (data.status && data.status !== currentTask.status) {
+      // Notify Creator if someone else changed it
+      if (currentTask.createdBy && currentTask.createdBy !== user.uid) {
+        let msg = `Task status updated to ${data.status}`;
+        if (data.status === 'todo' && currentTask.status === 'pending') {
+          msg = `Your task "${currentTask.title}" has been approved.`;
+        } else if (data.status === 'done') {
+          // Handled by notifyTaskCompleted usually, but good fallback
+          msg = `Your task "${currentTask.title}" is completed.`;
+        }
+
+        // We don't have a generic "notifyUpdate" in ServerNotification yet, 
+        // so we use 'create' directly or existing helper if it fits.
+        // 'notifyTaskCompleted' fits 'done'. 
+        // For approval, we can use a generic notification.
+
+        if (data.status === 'done') {
+          await ServerNotification.notifyTaskCompleted(id, currentTask.title, currentTask.createdBy, user.uid);
+        } else {
+          // Generic update notification
+          // We can use 'priority_updated' type or just raw create if needed, 
+          // but let's see if we can misuse 'task_assigned' or similar? No.
+          // Best to use 'info' or 'task_update' if supported.
+          // Looking at ServerNotification.ts, 'priority_updated' is specific.
+          // Let's use `create` directly for now to be safe.
+          await ServerNotification.create(currentTask.createdBy, {
+            type: 'task_assigned', // Using valid enum type, title differentiates
+            title: 'Task Status Updated',
+            message: msg,
+            entityType: 'task',
+            entityId: id,
+            actionUrl: `/tasks/view/${id}`,
+            sourceUserId: user.uid,
+            priority: 'medium'
+          });
+        }
+      }
     }
 
-    const delta = await req.json();
-    const now = new Date().toISOString();
+    // 2. Task Assigned
+    if (data.assignedTo && Array.isArray(data.assignedTo)) {
+      const oldAssignees = new Set((currentTask.assignedTo || []).map((u: any) => typeof u === 'string' ? u : u.uid));
+      const newAssignees = data.assignedTo.map((u: any) => typeof u === 'object' ? u.uid : u);
 
-    // Build update object based on role
-    const updates: any = {
-      updatedAt: now,
-    };
+      const addedAssignees = newAssignees.filter((uid: string) => !oldAssignees.has(uid));
 
-    // Fields anyone who passes canModify can update (Creator, Team, Admin)
-    if (delta.title !== undefined) updates.title = delta.title;
-    if (delta.description !== undefined) updates.description = delta.description;
-    if (delta.dueDate !== undefined) updates.dueDate = delta.dueDate;
+      if (addedAssignees.length > 0) {
+        // Notify Assignees
+        for (const assigneeId of addedAssignees) {
+          if (assigneeId) {
+            await ServerNotification.notifyTaskAssigned(id, currentTask.title || 'Untitled Task', assigneeId, user.uid);
+          }
+        }
 
-    // Fields only team/admin can update
-    if (hasRole(user, ['team', 'admin'])) {
-      if (delta.priority !== undefined) updates.priority = delta.priority as TaskPriority;
-      if (delta.assignedToId !== undefined) updates.assignedToId = delta.assignedToId;
+        // Notify Creator ("Your task assigned to X")
+        // Robust UID extraction
+        const creatorUid = typeof currentTask.createdBy === 'object' ? currentTask.createdBy.uid : currentTask.createdBy;
+
+        if (creatorUid && creatorUid !== user.uid) {
+          const nameStr = addedAssignees.length === 1 ? "a team member" : `${addedAssignees.length} team members`;
+          await ServerNotification.notifyTaskAssignedToCreator(id, currentTask.title || 'Untitled Task', creatorUid, user.uid, nameStr);
+        }
+      }
     }
 
-    // Fields only admin can update
-    if (hasRole(user, ['admin'])) {
-      if (delta.status !== undefined) updates.status = delta.status as TaskStatus;
-      // New field: reviewStatus - restricted to Admin
-      if (delta.reviewStatus !== undefined) updates.reviewStatus = delta.reviewStatus;
-    }
+    return NextResponse.json({ success: true });
 
-    // Check if any fields other than 'updatedAt' were actually set for update
-    if (Object.keys(updates).length === 1 && updates.updatedAt === now) {
-      return NextResponse.json({ error: 'Nothing to update or no permission to update the requested fields' }, { status: 400 });
-    }
-
-
-    const [updated] = await db
-      .update(tasks)
-      .set(updates)
-      .where(eq(tasks.id, taskId))
-      .returning();
-
-    // The query above will always return one element if successful because the WHERE clause is on a unique ID.
-    // However, including a check for 'updated' safety is good practice, though unlikely to fail here.
-    if (!updated) {
-      return NextResponse.json({ error: 'Update failed or task vanished' }, { status: 500 });
-    }
-
-    return NextResponse.json({ data: updated }, { status: 200 });
   } catch (error) {
-    console.error('[PATCH /api/tasks/[id]]', error);
-    return NextResponse.json(
-      { error: 'Failed to update task' },
-      { status: 500 }
-    );
+    console.error("PATCH task error", error);
+    return NextResponse.json({ error: 'Internal Error' }, { status: 500 });
   }
 }
 
-/**
- * DELETE /api/tasks/[id]
- * Delete task (admin or creator only)
- */
 export async function DELETE(
-  req: NextRequest,
-  context: { params: Promise<{ id: string }> }
+  request: Request,
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
-    // Authorize user with RBAC - only roles with delete:tasks permission can delete tasks
-    const user = await authorize(req, 'delete:tasks');
-    if (!user) {
-      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
-    }
+    const { firestore } = await getFirebaseServices();
+    const user = await verifyUser(request);
+    if (!user || user.role !== 'admin') return NextResponse.json({ error: 'Forbidden' }, { status: 403 });
 
-    const { id } = await context.params;
-    const taskId = parseInt(id, 10);
+    const { id } = await params;
+    await firestore.collection('tasks').doc(id).delete();
 
-    const [task] = await db.select().from(tasks).where(eq(tasks.id, taskId));
-
-    if (!task) {
-      return NextResponse.json({ error: 'Not found' }, { status: 404 });
-    }
-
-    // Check institution access
-    if (task.institutionId !== user.institutionId) {
-      return NextResponse.json({ error: 'Forbidden' }, { status: 403 });
-    }
-
-    // Only admin or creator can delete
-    if (!hasRole(user, ['admin']) && task.createdById !== user.id) {
-      return NextResponse.json({ error: 'Forbidden' }, { status: 403 });
-    }
-
-    await db.delete(tasks).where(eq(tasks.id, taskId));
-
-    return new NextResponse(null, { status: 204 });
+    return NextResponse.json({ success: true });
   } catch (error) {
-    console.error('[DELETE /api/tasks/[id]]', error);
-    return NextResponse.json(
-      { error: 'Failed to delete task' },
-      { status: 500 }
-    );
+    console.error("DELETE task error", error);
+    return NextResponse.json({ error: 'Internal Error' }, { status: 500 });
   }
 }

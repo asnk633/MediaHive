@@ -10,6 +10,11 @@ const nextConfig = {
 
   // Performance optimizations
   experimental: {
+    serverActions: {
+      bodySizeLimit: '10gb',
+    },
+    proxyClientMaxBodySize: '10gb',
+    clientRouterFilter: false,
     optimizePackageImports: [
       'lucide-react',
       'date-fns',
@@ -25,35 +30,47 @@ const nextConfig = {
   // Optimize images
   images: {
     minimumCacheTTL: 60,
+    remotePatterns: [
+      {
+        protocol: 'https',
+        hostname: 'firebasestorage.googleapis.com',
+        port: '',
+        pathname: '/v0/b/**',
+      },
+    ],
   },
 
-  // Add headers for compression and caching
+  // Security Headers
   async headers() {
     return [
-      {
-        source: '/api/:path*',
-        headers: [
-          {
-            key: 'Cache-Control',
-            value: 'public, max-age=31536000, immutable',
-          },
-          {
-            key: 'Vary',
-            value: 'Accept-Encoding',
-          },
-        ],
-      },
       {
         source: '/:path*',
         headers: [
           {
-            key: 'Cache-Control',
-            value: 'public, max-age=31536000, immutable',
+            key: 'X-DNS-Prefetch-Control',
+            value: 'on'
           },
           {
-            key: 'Vary',
-            value: 'Accept-Encoding',
+            key: 'Strict-Transport-Security',
+            value: 'max-age=63072000; includeSubDomains; preload'
           },
+          {
+            key: 'X-Content-Type-Options',
+            value: 'nosniff'
+          },
+          {
+            key: 'X-Frame-Options',
+            value: 'DENY'
+          },
+          {
+            key: 'Referrer-Policy',
+            value: 'origin-when-cross-origin'
+          },
+          {
+            // Basic Permissions Policy
+            key: 'Permissions-Policy',
+            value: 'camera=(), microphone=(), geolocation=()'
+          }
         ],
       },
     ];

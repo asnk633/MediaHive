@@ -5,6 +5,7 @@
 
 import React, { createContext, useContext, useState, useEffect, ReactNode } from 'react';
 import { FeatureFlag, isFeatureEnabled, getAllFeatureFlags } from '@/app/featureFlags';
+import { apiClient } from '@/lib/apiClient';
 
 interface FeatureFlagContextType {
   flags: Record<FeatureFlag, boolean>;
@@ -25,12 +26,9 @@ export function FeatureFlagProvider({ children }: { children: ReactNode }) {
     try {
       // In development, we can fetch from the API
       if (process.env.NODE_ENV === 'development' || process.env.NEXT_PUBLIC_E2E === '1') {
-        const response = await fetch('/api/admin/feature-flags');
-        if (response.ok) {
-          const data = await response.json();
-          setFlags(data.flags);
-          return;
-        }
+        const data = await apiClient('/api/admin/feature-flags');
+        setFlags(data.flags);
+        return;
       }
       
       // In production, use the default implementation

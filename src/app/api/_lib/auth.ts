@@ -82,6 +82,7 @@ export function canChangeTaskStatus(
       pending: -1,
       todo: 0,
       in_progress: 1,
+      on_hold: 1,
       review: 2,
       done: 3,
     };

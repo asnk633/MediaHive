@@ -1,40 +1,33 @@
 import { useEffect, useState, useCallback } from "react";
 
-type Theme = "dark" | "light";
+type Theme = "dark";
 
-const STORAGE_KEY = "theme";
-
-export function getPreferredTheme(): Theme | null {
-    try {
-        const stored = typeof window !== "undefined" ? localStorage.getItem(STORAGE_KEY) : null;
-        if (stored === "dark" || stored === "light") return stored;
-        if (typeof window !== "undefined" && window.matchMedia) {
-            return window.matchMedia("(prefers-color-scheme: light)").matches ? "light" : "dark";
-        }
-    } catch (e) { }
-    return null;
+export function getPreferredTheme(): Theme {
+    return "dark";
 }
 
 export default function useTheme(initial?: Theme) {
-    const [theme, setTheme] = useState<Theme | null>(initial ?? null);
+    const [theme] = useState<Theme>("dark");
 
-    // init on client
+    // Force strict Dark Mode on mount
     useEffect(() => {
-        const stored = getPreferredTheme();
-        setTheme(stored ?? initial ?? "dark");
-    }, [initial]);
-
-    useEffect(() => {
-        if (!theme) return;
         try {
-            document.documentElement.setAttribute("data-theme", theme);
-            localStorage.setItem(STORAGE_KEY, theme);
+            const root = document.documentElement;
+            root.setAttribute("data-theme", "dark");
+            root.classList.add("dark");
+
+            // Clear any legacy 'light' setting
+            localStorage.setItem("theme", "dark");
         } catch (e) { }
-    }, [theme]);
+    }, []);
 
     const toggle = useCallback(() => {
-        setTheme((t) => (t === "dark" ? "light" : "dark"));
+        // No-op: Theme is locked
+        console.log("Theme is locked to Night Sky");
     }, []);
+
+    // Provide legacy setters for compatibility but they do nothing
+    const setTheme = () => { };
 
     return { theme, setTheme, toggle };
 }

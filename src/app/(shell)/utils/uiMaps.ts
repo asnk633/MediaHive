@@ -1,8 +1,24 @@
-export type UiStatus = "Pending" | "Working On" | "On Hold" | "Completed";
-export type ApiStatus = "pending" | "working" | "on_hold" | "completed";
+export type UiStatus = "Pending" | "To Do" | "In Progress" | "On Hold" | "Review" | "Done";
+export type ApiStatus = "pending" | "todo" | "in_progress" | "on_hold" | "review" | "done";
 
-export const uiFromApiStatus = (s?: ApiStatus): UiStatus =>
-  s === "working" ? "Working On" : s === "completed" ? "Completed" : s === "on_hold" ? "On Hold" : "Pending";
+export const uiFromApiStatus = (s?: string): UiStatus => {
+  switch (s) {
+    case "todo": return "To Do";
+    case "in_progress": return "In Progress";
+    case "on_hold": return "On Hold";
+    case "review": return "Review";
+    case "done": return "Done";
+    default: return "Pending";
+  }
+};
 
-export const apiFromUiStatus = (u: UiStatus): ApiStatus =>
-  u === "Working On" ? "working" : u === "On Hold" ? "on_hold" : u === "Completed" ? "completed" : "pending";
+export const apiFromUiStatus = (u: string): ApiStatus => {
+  switch (u) {
+    case "To Do": return "todo";
+    case "In Progress": return "in_progress";
+    case "On Hold": return "on_hold";
+    case "Review": return "review";
+    case "Done": return "done";
+    default: return "pending";
+  }
+};

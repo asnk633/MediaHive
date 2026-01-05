@@ -7,15 +7,16 @@ import React from 'react';
 import { usePresence } from '@/hooks/usePresence';
 
 interface PresenceDotProps {
-  userId: number;
+  userId: string | number;
+  size?: 'xs' | 'sm' | 'md' | 'lg';
 }
 
-export function PresenceDot({ userId }: PresenceDotProps) {
+export function PresenceDot({ userId, size = 'sm' }: PresenceDotProps) {
   const isOnline = usePresence(userId);
-  
+
   return (
-    <div 
-      className={`presence-dot ${isOnline ? 'online' : 'offline'}`}
+    <div
+      className={`presence-dot ${isOnline ? 'online' : 'offline'} presence-dot-${size}`}
       data-testid={`presence-dot-${userId}`}
     />
   );

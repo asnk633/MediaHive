@@ -4,7 +4,8 @@ const { spawn } = require("child_process");
 (async () => {
   // In CI, use fixed port 3000 to match Playwright config
   // Otherwise, find an available port for local development
-  const port = process.env.CI ? 3000 : await findAvailablePort(3000);
+  // Force port 3000 to avoid confusion
+  const port = 3000;
 
   console.log(`Dev server starting on port ${port}...`);
 

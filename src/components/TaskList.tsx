@@ -9,7 +9,7 @@ export default function TaskList({ tasks }: { tasks: any[] }) {
     const { user } = useAuth();
 
     async function toggleComplete(task: any) {
-        await updateTask(task.id, { status: task.status === 'completed' ? 'pending' : 'completed' });
+        await updateTask(task.id, { status: task.status === 'done' ? 'todo' : 'done' });
     }
 
     if (!tasks.length) return <div className="text-muted">No tasks</div>;
@@ -25,7 +25,7 @@ export default function TaskList({ tasks }: { tasks: any[] }) {
                     </div>
                     <div className="flex items-center gap-2">
                         <button className="btn" onClick={() => toggleComplete(t)}>
-                            {t.status === 'completed' ? 'Reopen' : 'Complete'}
+                            {t.status === 'done' ? 'Reopen' : 'Complete'}
                         </button>
                     </div>
                 </div>

@@ -2,36 +2,39 @@
 
 import React from 'react';
 import { useRouter } from 'next/navigation';
-import { ArrowLeft } from 'lucide-react';
-import { Button } from '@/components/ui/button';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { NotificationForm } from '@/components/NotificationForm';
 
 export default function NewNotificationPage() {
     const router = useRouter();
 
     return (
-        <div className="space-y-6 max-w-2xl mx-auto p-4 sm:p-6">
-            <div className="flex items-center gap-3">
-                <Button 
-                  variant="ghost" 
-                  size="icon" 
-                  onClick={() => router.back()}
-                  className="bg-[var(--panel)] border-[var(--glass-border)] text-[var(--text)] hover:bg-[var(--panel-strong)] transition-all duration-200"
-                >
-                    <ArrowLeft className="h-4 w-4" />
-                </Button>
-                <h1 className="text-3xl font-bold text-[var(--text)]">New Notification</h1>
-            </div>
+        <div className="min-h-screen flex items-center justify-center bg-gradient-to-b from-slate-950 to-[#0B0D10] py-20 px-4 sm:px-6 relative overflow-hidden">
+            {/* Ambient Background */}
+            <div className="fixed inset-0 bg-[radial-gradient(circle_at_50%_0%,rgba(59,130,246,0.15),transparent_50%)] pointer-events-none" />
 
-            <Card className="bg-[var(--panel)] border-[var(--glass-border)] p-4 sm:p-6">
-                <CardHeader>
-                    <CardTitle className="text-[var(--text)]">Compose Notification</CardTitle>
-                </CardHeader>
-                <CardContent>
-                    <NotificationForm />
-                </CardContent>
-            </Card>
+            {/* Centered Glass Card */}
+            <div className="w-full max-w-xl relative z-10">
+                <div className="bg-[#13161c]/90 backdrop-blur-3xl border border-white/10 rounded-3xl p-6 sm:p-8 shadow-2xl ring-1 ring-white/5">
+
+                    {/* Header */}
+                    <div className="flex items-center justify-between mb-8 pb-4 border-b border-white/5">
+                        <button
+                            onClick={() => router.back()}
+                            className="text-red-400/80 font-medium hover:text-red-300 transition-colors text-sm hover:bg-white/5 px-3 py-1.5 rounded-full"
+                        >
+                            Cancel
+                        </button>
+                        <h1 className="text-lg font-bold text-white tracking-wide">New Notification</h1>
+
+                        {/* Spacer for balance */}
+                        <div className="w-[50px]"></div>
+                    </div>
+
+                    <NotificationForm
+                        onCancel={() => router.back()}
+                    />
+                </div>
+            </div>
         </div>
     );
 }

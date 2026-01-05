@@ -70,7 +70,15 @@ export default function TaskItem({ task, className = "", onEdit, onDelete }: Pro
           {task.dueDate && (
             <div className="flex items-center gap-1.5 rounded-full bg-surface/50 px-2 py-1">
               <Calendar className="h-3 w-3" />
-              <span>{task.dueDate}</span>
+              <span>
+                {(() => {
+                  try {
+                    if (typeof task.dueDate === 'string') return new Date(task.dueDate).toLocaleDateString();
+                    if (typeof task.dueDate === 'object' && 'seconds' in (task.dueDate as any)) return new Date((task.dueDate as any).seconds * 1000).toLocaleDateString();
+                    return 'Invalid Date';
+                  } catch { return 'Invalid Date' }
+                })()}
+              </span>
             </div>
           )}
 

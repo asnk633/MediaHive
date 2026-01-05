@@ -4,6 +4,7 @@
 'use client';
 
 import React, { useState, useEffect } from 'react';
+import { apiClient } from '@/lib/apiClient';
 
 interface AutomationRule {
   id: number;
@@ -90,11 +91,10 @@ export default function AutomationsPage() {
   useEffect(() => {
     const fetchRules = async () => {
       try {
-        const response = await fetch('/api/automation-rules');
-        if (response.ok) {
-          const data = await response.json();
-          setRules(data.rules);
-        }
+        const data = await apiClient('/api/automation-rules', {
+          method: 'GET'
+        });
+        setRules(data.rules);
       } catch (error) {
         console.error('Failed to fetch automation rules:', error);
       } finally {
@@ -130,11 +130,8 @@ export default function AutomationsPage() {
       const url = editingRule ? `/api/automation-rules/${editingRule.id}` : '/api/automation-rules';
       const method = editingRule ? 'PUT' : 'POST';
       
-      const response = await fetch(url, {
+      const data = await apiClient(url, {
         method,
-        headers: {
-          'Content-Type': 'application/json',
-        },
         body: JSON.stringify({
           name: ruleForm.name,
           description: ruleForm.description,
@@ -145,17 +142,14 @@ export default function AutomationsPage() {
           enabled: ruleForm.enabled
         }),
       });
-
-      if (response.ok) {
-        const data = await response.json();
-        if (editingRule) {
-          setRules(rules.map(rule => rule.id === editingRule.id ? data.rule : rule));
-        } else {
-          setRules([...rules, data.rule]);
-        }
-        resetForm();
-        setActiveTab('list');
+      
+      if (editingRule) {
+        setRules(rules.map(rule => rule.id === editingRule.id ? data.rule : rule));
+      } else {
+        setRules([...rules, data.rule]);
       }
+      resetForm();
+      setActiveTab('list');
     } catch (error) {
       console.error('Failed to save automation rule:', error);
     }
@@ -178,20 +172,14 @@ export default function AutomationsPage() {
   // Toggle rule enabled status
   const toggleRuleStatus = async (ruleId: number, enabled: boolean) => {
     try {
-      const response = await fetch(`/api/automation-rules/${ruleId}`, {
+      const data = await apiClient(`/api/automation-rules/${ruleId}`, {
         method: 'PATCH',
-        headers: {
-          'Content-Type': 'application/json',
-        },
         body: JSON.stringify({ enabled: !enabled }),
       });
-
-      if (response.ok) {
-        const data = await response.json();
-        setRules(rules.map(rule => 
-          rule.id === ruleId ? { ...rule, enabled: data.rule.enabled } : rule
-        ));
-      }
+      
+      setRules(rules.map(rule => 
+        rule.id === ruleId ? { ...rule, enabled: data.rule.enabled } : rule
+      ));
     } catch (error) {
       console.error('Failed to update automation rule:', error);
     }
@@ -204,13 +192,11 @@ export default function AutomationsPage() {
     }
 
     try {
-      const response = await fetch(`/api/automation-rules/${ruleId}`, {
+      await apiClient(`/api/automation-rules/${ruleId}`, {
         method: 'DELETE',
       });
-
-      if (response.ok) {
-        setRules(rules.filter(rule => rule.id !== ruleId));
-      }
+      
+      setRules(rules.filter(rule => rule.id !== ruleId));
     } catch (error) {
       console.error('Failed to delete automation rule:', error);
     }

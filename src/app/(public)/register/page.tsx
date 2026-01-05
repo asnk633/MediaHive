@@ -5,8 +5,8 @@ import { useRouter } from "next/navigation";
 import { useState, type FormEvent } from "react";
 import { createUserWithEmailAndPassword, updateProfile } from "firebase/auth";
 import { getFirebaseAuth } from "@/firebase/client";
-import { doc, setDoc } from "firebase/firestore";
-import { db } from "@/firebase/client";
+import { apiClient } from '@/lib/apiClient';
+
 
 export default function RegisterPage() {
     const router = useRouter();
@@ -72,19 +72,25 @@ export default function RegisterPage() {
                 displayName: fullName.trim()
             });
 
-            // Create role document in Firestore (default: team)
-            await setDoc(doc(db, "roles", userId), {
-                role: "team", // Default role for new users
-                createdAt: new Date().toISOString()
-            });
+            // NOTE: Role document creation has been deprecated.
+            // Roles are now stored only in the user document for consistency.
 
-            // Create user profile document in Firestore
-            await setDoc(doc(db, "users", userId), {
-                fullName: fullName.trim(),
-                email: normalizedEmail,
-                role: "team",
-                createdAt: new Date().toISOString()
+            // Get the ID token to send to the server-side API
+            const idToken = await userCredential.user.getIdToken();
+            
+            // Create user profile document via server-side API route
+            const result = await apiClient('/api/registerUser', {
+                method: 'POST',
+                body: JSON.stringify({
+                    idToken,
+                    fullName,
+                    email: normalizedEmail
+                })
             });
+            
+            if (result.skipped) {
+                console.warn('User profile already existed, creation was skipped');
+            }
 
             // Store user info in localStorage for quick access
             if (typeof window !== "undefined") {
@@ -126,160 +132,114 @@ export default function RegisterPage() {
         !agree;
 
     return (
-        <div className="flex flex-1 flex-col">
-            {/* Brand header */}
-            <header className="mb-10 flex items-center justify-between">
-                <div className="flex items-center gap-3">
-                    <div className="flex h-10 w-10 items-center justify-center rounded-full bg-sky-500/10">
-                        <div className="h-6 w-6 rounded-full border-2 border-sky-500 border-t-transparent animate-spin" />
-                    </div>
-                    <span className="text-lg font-semibold tracking-tight text-slate-900">
-                        Thaiba Tasks
-                    </span>
+        <main className="flex flex-1 flex-col min-h-screen relative overflow-hidden justify-center items-center p-4">
+            {/* Background is handled by globals.css body style (Midnight Gradient) */}
+
+            {/* Decorative Background Elements */}
+            <div className="absolute top-[-20%] left-[-20%] w-[80%] h-[50%] bg-blue-500/10 blur-[120px] rounded-full pointer-events-none" />
+            <div className="absolute bottom-[-20%] right-[-20%] w-[60%] h-[60%] bg-purple-500/10 blur-[120px] rounded-full pointer-events-none" />
+
+            {/* Logo Header */}
+            <div className="flex flex-col items-center mb-8 relative z-10 w-full max-w-md">
+                <div className="w-16 h-16 flex items-center justify-center mb-4">
+                    <img src="/logo-app.png" alt="Logo" className="w-full h-full object-contain brightness-0 invert drop-shadow-[0_0_15px_rgba(255,255,255,0.3)]" />
+                </div>
+                <h1 className="text-2xl font-bold text-white tracking-wide mb-2 text-center drop-shadow-sm font-display">Thaiba MediaHive</h1>
+                <p className="text-blue-100/70 text-sm font-medium">Create your account</p>
+            </div>
+
+            {/* Glass Card */}
+            <form
+                onSubmit={handleSubmit}
+                className="glass-card w-full max-w-md p-8 flex flex-col gap-5 relative z-10 border border-white/10"
+            >
+                <div className="space-y-1">
+                    <label className="text-xs font-bold text-blue-100/80 uppercase tracking-wider pl-1">Full Name</label>
+                    <input
+                        type="text"
+                        value={fullName}
+                        onChange={(e) => setFullName(e.target.value)}
+                        className="w-full h-11 rounded-xl bg-white/5 border border-white/10 px-4 text-white placeholder-white/20 outline-none focus:ring-2 focus:ring-blue-500/50 focus:border-blue-500/50 transition-all font-medium"
+                        placeholder="Your full name"
+                    />
                 </div>
 
-                <Link
-                    href="/login"
-                    className="text-sm font-medium text-sky-600 hover:text-sky-700"
-                >
-                    Log in
-                </Link>
-            </header>
+                <div className="space-y-1">
+                    <label className="text-xs font-bold text-blue-100/80 uppercase tracking-wider pl-1">Email</label>
+                    <input
+                        type="email"
+                        value={email}
+                        onChange={(e) => setEmail(e.target.value)}
+                        className="w-full h-11 rounded-xl bg-white/5 border border-white/10 px-4 text-white placeholder-white/20 outline-none focus:ring-2 focus:ring-blue-500/50 focus:border-blue-500/50 transition-all font-medium"
+                        placeholder="you@thaiba.in"
+                    />
+                </div>
 
-            {/* Title + helper text */}
-            <section className="mb-8">
-                <h1 className="text-3xl font-bold leading-tight tracking-tight text-slate-900">
-                    Create an account
-                </h1>
-                <p className="mt-2 text-sm leading-relaxed text-slate-500">
-                    Set up your Thaiba account so you can manage tasks, events and
-                    reports across all Thaiba campuses in one place.
-                </p>
-            </section>
-
-            {/* Form card */}
-            <main className="rounded-3xl bg-white/95 p-5 shadow-lg shadow-sky-100/70 backdrop-blur">
-                <form className="space-y-4" onSubmit={handleSubmit}>
-                    <div className="space-y-1.5">
-                        <label
-                            htmlFor="name"
-                            className="text-sm font-medium text-slate-700"
-                        >
-                            Full name
-                        </label>
+                <div className="grid grid-cols-2 gap-4">
+                    <div className="space-y-1">
+                        <label className="text-xs font-bold text-blue-100/80 uppercase tracking-wider pl-1">Password</label>
                         <input
-                            id="name"
-                            name="name"
-                            type="text"
-                            autoComplete="name"
-                            value={fullName}
-                            onChange={(e) => setFullName(e.target.value)}
-                            placeholder="Your full name"
-                            className="h-11 w-full rounded-2xl border border-slate-200 bg-slate-50/80 px-3 text-sm text-slate-900 outline-none ring-sky-500/10 transition focus:border-sky-500 focus:ring-2 focus:ring-sky-500/40"
-                        />
-                    </div>
-
-                    <div className="space-y-1.5">
-                        <label
-                            htmlFor="email"
-                            className="text-sm font-medium text-slate-700"
-                        >
-                            Email
-                        </label>
-                        <input
-                            id="email"
-                            name="email"
-                            type="email"
-                            autoComplete="email"
-                            value={email}
-                            onChange={(e) => setEmail(e.target.value)}
-                            placeholder="you@thaiba.in"
-                            className="h-11 w-full rounded-2xl border border-slate-200 bg-slate-50/80 px-3 text-sm text-slate-900 outline-none ring-sky-500/10 transition focus:border-sky-500 focus:ring-2 focus:ring-sky-500/40"
-                        />
-                    </div>
-
-                    <div className="space-y-1.5">
-                        <label
-                            htmlFor="password"
-                            className="text-sm font-medium text-slate-700"
-                        >
-                            Password
-                        </label>
-                        <input
-                            id="password"
-                            name="password"
                             type="password"
-                            autoComplete="new-password"
                             value={password}
                             onChange={(e) => setPassword(e.target.value)}
-                            placeholder="Create a strong password"
-                            className="h-11 w-full rounded-2xl border border-slate-200 bg-slate-50/80 px-3 text-sm text-slate-900 outline-none ring-sky-500/10 transition focus:border-sky-500 focus:ring-2 focus:ring-sky-500/40"
+                            className="w-full h-11 rounded-xl bg-white/5 border border-white/10 px-4 text-white placeholder-white/20 outline-none focus:ring-2 focus:ring-blue-500/50 focus:border-blue-500/50 transition-all font-medium"
+                            placeholder="At least 8 chars"
                         />
                     </div>
 
-                    <div className="space-y-1.5">
-                        <label
-                            htmlFor="confirmPassword"
-                            className="text-sm font-medium text-slate-700"
-                        >
-                            Confirm password
-                        </label>
+                    <div className="space-y-1">
+                        <label className="text-xs font-bold text-blue-100/80 uppercase tracking-wider pl-1">Confirm</label>
                         <input
-                            id="confirmPassword"
-                            name="confirmPassword"
                             type="password"
-                            autoComplete="new-password"
                             value={confirmPassword}
                             onChange={(e) => setConfirmPassword(e.target.value)}
-                            placeholder="Re-enter password"
-                            className="h-11 w-full rounded-2xl border border-slate-200 bg-slate-50/80 px-3 text-sm text-slate-900 outline-none ring-sky-500/10 transition focus:border-sky-500 focus:ring-2 focus:ring-sky-500/40"
+                            className="w-full h-11 rounded-xl bg-white/5 border border-white/10 px-4 text-white placeholder-white/20 outline-none focus:ring-2 focus:ring-blue-500/50 focus:border-blue-500/50 transition-all font-medium"
+                            placeholder="Re-enter"
                         />
                     </div>
+                </div>
 
-                    <div className="flex items-start gap-2 rounded-2xl bg-sky-50/60 px-3 py-2">
-                        <input
-                            id="terms"
-                            name="terms"
-                            type="checkbox"
-                            checked={agree}
-                            onChange={(e) => setAgree(e.target.checked)}
-                            className="mt-1 h-4 w-4 rounded border-slate-300 text-sky-600 focus:ring-sky-500"
-                        />
-                        <label
-                            htmlFor="terms"
-                            className="text-xs leading-relaxed text-slate-600"
-                        >
-                            By creating an account you agree to Thaiba’s{" "}
-                            <span className="font-medium text-sky-600">terms</span> and{" "}
-                            <span className="font-medium text-sky-600">privacy policy</span>.
-                        </label>
+                <div className="flex items-start gap-3 p-3 rounded-xl bg-white/5 border border-white/5">
+                    <input
+                        id="terms"
+                        type="checkbox"
+                        checked={agree}
+                        onChange={(e) => setAgree(e.target.checked)}
+                        className="mt-1 w-4 h-4 rounded border-gray-500 text-blue-600 focus:ring-blue-500 bg-gray-700"
+                    />
+                    <label htmlFor="terms" className="text-xs leading-relaxed text-blue-100/70">
+                        By creating an account you agree to Thaiba’s{" "}
+                        <span className="font-medium text-blue-300 hover:text-white transition-colors cursor-pointer">terms</span> and{" "}
+                        <span className="font-medium text-blue-300 hover:text-white transition-colors cursor-pointer">privacy policy</span>.
+                    </label>
+                </div>
+
+                {error && (
+                    <div className="p-3 rounded-xl bg-red-500/10 text-red-200 text-xs font-semibold text-center border border-red-500/20 backdrop-blur-sm">
+                        {error}
                     </div>
+                )}
 
-                    {error && (
-                        <p className="mt-3 text-sm text-red-500 text-center">{error}</p>
-                    )}
-
-                    <button
-                        type="submit"
-                        disabled={submitting || isInvalid}
-                        className="mt-2 inline-flex h-11 w-full items-center justify-center rounded-full bg-sky-500 text-sm font-semibold text-white shadow-lg shadow-sky-300/70 transition hover:bg-sky-600 active:scale-[0.98] disabled:opacity-60 disabled:cursor-not-allowed"
-                    >
-                        {submitting ? "Creating account…" : "Create account"}
-                    </button>
-                </form>
-            </main>
-
-            {/* Bottom helper */}
-            <p className="mt-6 text-center text-sm text-slate-500">
-                Already using Thaiba Tasks?{" "}
-                <Link
-                    href="/login"
-                    className="font-semibold text-sky-600 hover:text-sky-700"
+                <button
+                    type="submit"
+                    disabled={submitting || isInvalid}
+                    className="w-full h-12 bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-500 hover:to-indigo-500 text-white rounded-xl font-bold text-base shadow-lg shadow-blue-900/40 active:scale-[0.98] transition-all disabled:opacity-40 disabled:cursor-not-allowed mt-2 border border-white/10"
                 >
-                    Log in
-                </Link>
+                    {submitting ? "Creating account..." : "Create Account"}
+                </button>
+
+                <div className="text-center pt-2">
+                    <span className="text-sm text-blue-100/60">Already have an account? </span>
+                    <Link href="/login" className="text-sm font-bold text-blue-300 hover:text-white hover:underline transition-colors ml-1">
+                        Log in
+                    </Link>
+                </div>
+            </form>
+
+            <p className="mt-8 text-center text-blue-100/30 text-xs font-medium tracking-wide">
+                © 2026 Thaiba Garden - Media
             </p>
-        </div>
+        </main>
     );
 }
 

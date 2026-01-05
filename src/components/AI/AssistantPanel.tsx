@@ -4,6 +4,7 @@
 'use client';
 
 import React, { useState } from 'react';
+import { apiClient } from '@/lib/apiClient';
 
 interface Suggestion {
   suggestedTitle: string;
@@ -28,18 +29,14 @@ export function AssistantPanel() {
   const generateTaskSuggestions = async (title: string, description: string) => {
     setLoading(true);
     try {
-      const response = await fetch('/api/ai/generate-task', {
+      const data = await apiClient('/api/ai/generate-task', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
         },
         body: JSON.stringify({ title, description }),
       });
-
-      if (response.ok) {
-        const data = await response.json();
-        setTaskSuggestions(data.suggestions);
-      }
+      setTaskSuggestions(data.suggestions);
     } catch (error) {
       console.error('Failed to generate task suggestions:', error);
     } finally {
@@ -50,18 +47,14 @@ export function AssistantPanel() {
   const summarizeNotifications = async (notifications: any[]) => {
     setLoading(true);
     try {
-      const response = await fetch('/api/ai/summarize-notifications', {
+      const data = await apiClient('/api/ai/summarize-notifications', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
         },
         body: JSON.stringify({ notifications }),
       });
-
-      if (response.ok) {
-        const data = await response.json();
-        setNotificationSummary(data.summary);
-      }
+      setNotificationSummary(data.summary);
     } catch (error) {
       console.error('Failed to summarize notifications:', error);
     } finally {

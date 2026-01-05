@@ -1,28 +1,29 @@
-
-import {
-    collection,
-    onSnapshot,
-    addDoc,
-    updateDoc,
-    deleteDoc,
-    doc,
-    Timestamp,
-    query,
-    orderBy
-} from 'firebase/firestore';
-import { db } from '@/firebase/client';
 import type { Event } from '@/types/event';
+import type { Task } from '@/types/task';
+import { TaskService } from './tasks';
+import { SystemEventService } from './systemEventService';
 
-const EVENTS_COLLECTION = 'events';
+import { TimestampLike } from '@/types/timestamp';
+import { toast } from 'sonner';
+import { apiClient } from '@/lib/apiClient';
+
 const LOCAL_STORAGE_KEY = 'mediahive_offline_events';
 
 // In-Memory fallback
 let memoryEvents: Event[] = [];
 
-const saveToLocal = (events: Event[]) => {
+// API helper function
+const apiRequest = async (endpoint: string, options: RequestInit = {}) => {
+    const url = `/api/events${endpoint}`;
+    return apiClient(url, options);
+};
+
+const saveToLocal = (events: Event[], dispatchEvent: boolean = true) => {
     if (typeof window !== 'undefined') {
         localStorage.setItem(LOCAL_STORAGE_KEY, JSON.stringify(events));
-        window.dispatchEvent(new Event('event-update'));
+        if (dispatchEvent) {
+            window.dispatchEvent(new CustomEvent('event-update'));
+        }
     }
     memoryEvents = events;
 };
@@ -46,75 +47,201 @@ const loadFromLocal = (): Event[] => {
 
 export const EventService = {
     subscribeToEvents: (callback: (events: Event[]) => void) => {
-        let unsubscribe: () => void = () => { };
+        let isCancelled = false;
+        let pollInterval: NodeJS.Timeout | null = null;
+        let windowCleanup: (() => void) | null = null;
 
-        try {
-            const q = query(collection(db, EVENTS_COLLECTION), orderBy('date', 'asc'));
-            unsubscribe = onSnapshot(q, (snapshot) => {
-                const events = snapshot.docs.map(doc => {
-                    const data = doc.data();
-                    return {
-                        id: doc.id,
-                        ...data,
-                        startTime: data.startTime instanceof Timestamp
-                            ? data.startTime
-                            : (data.startTime ? new Timestamp(data.startTime.seconds, data.startTime.nanoseconds) : undefined),
-                        endTime: data.endTime instanceof Timestamp
-                            ? data.endTime
-                            : (data.endTime ? new Timestamp(data.endTime.seconds, data.endTime.nanoseconds) : undefined),
-                    };
-                }) as unknown as Event[];
-                callback(events);
-            }, (err) => {
-                console.warn("Firestore subscription failed (offline):", err);
-                callback(loadFromLocal());
-            });
-        } catch (e) {
-            console.warn("Firestore init failed (offline):", e);
-            callback(loadFromLocal());
-        }
+        const pollEvents = async () => {
+            if (isCancelled) return;
+
+            try {
+                const data = await apiClient('/api/events', {
+                    method: 'GET'
+                });
+
+                // Process events data
+                const rawEvents = Array.isArray(data) ? data : (data.events || []);
+                const userEvents = rawEvents.map((event: any) => ({
+                    id: event.id,
+                    ...event,
+                    startTime: event.startTime,
+                    endTime: event.endTime,
+                    // Normalize date to Timestamp schema to satisfy UI components
+                    date: typeof event.date === 'string'
+                        ? { seconds: Math.floor(new Date(event.date).getTime() / 1000), nanoseconds: 0 }
+                        : event.date,
+                    // Normalize createdAt to Timestamp schema
+                    createdAt: typeof event.createdAt === 'string'
+                        ? { seconds: Math.floor(new Date(event.createdAt).getTime() / 1000), nanoseconds: 0 }
+                        : event.createdAt,
+                }));
+
+                // Combine with system events
+                const currentYear = new Date().getFullYear();
+                const allSystemEvents = await SystemEventService.getAllSystemEvents();
+                // Expand for Current Year AND Next Year to ensure visibility
+                const systemEventsCurrent = SystemEventService.expandEventsForView(allSystemEvents, currentYear);
+                const systemEventsNext = SystemEventService.expandEventsForView(allSystemEvents, currentYear + 1);
+
+                const systemEvents = [...systemEventsCurrent, ...systemEventsNext];
+
+                // We cast SystemEvent to Event (they are compatible enough for display, but may need type assertion)
+                const combined = [
+                    ...userEvents,
+                    ...systemEvents.map(se => ({
+                        ...se,
+                        // Add UI specific flags or map types if strictly needed
+                        isSystemEvent: true, // Custom flag to be handled in UI
+                        startTime: se.date, // Map date to startTime for calendar if needed
+                        endTime: se.date,
+                    }))
+                ];
+
+                callback(combined);
+            } catch (error) {
+                console.warn('Event polling failed:', error);
+                // Fallback to local storage if API fails
+                if (!isCancelled) callback(loadFromLocal());
+            }
+
+            // Continue polling every 30 seconds
+            if (!isCancelled) {
+                pollInterval = setTimeout(pollEvents, 30000);
+            }
+        };
+
+        // Start polling immediately
+        pollEvents();
 
         if (typeof window !== 'undefined') {
             const handleStorage = () => callback(loadFromLocal());
             window.addEventListener('event-update', handleStorage);
-            return () => {
-                if (unsubscribe) unsubscribe();
-                window.removeEventListener('event-update', handleStorage);
-            };
+            windowCleanup = () => window.removeEventListener('event-update', handleStorage);
         }
 
-        return unsubscribe;
+        // Return a cleanup function that actually works
+        return () => {
+            isCancelled = true;
+            if (pollInterval) clearTimeout(pollInterval);
+            if (windowCleanup) {
+                windowCleanup();
+            }
+        };
     },
 
     addEvent: async (event: Omit<Event, 'id' | 'createdAt'>) => {
         try {
-            const timeoutPromise = new Promise((_, reject) => setTimeout(() => reject(new Error('Timeout')), 2000));
-            await Promise.race([
-                addDoc(collection(db, EVENTS_COLLECTION), {
-                    ...event,
-                    createdAt: Timestamp.now()
-                }),
-                timeoutPromise
-            ]);
+            const response = await apiRequest('', {
+                method: 'POST',
+                body: JSON.stringify(event),
+            });
+
+            const { id: eventId } = response.data;
+
+            if (event.mediaCoverage && event.mediaCoverage.length > 0) {
+                // Ensure date is string for Task API
+                let dateStr: string;
+                if (event.date && typeof (event.date as any).toDate === 'function') {
+                    dateStr = (event.date as any).toDate().toISOString();
+                } else if (event.date instanceof Date) {
+                    dateStr = event.date.toISOString();
+                } else {
+                    dateStr = new Date(event.date as any).toISOString();
+                }
+
+                const mediaTask: Omit<Task, 'id' | 'createdAt'> = {
+                    title: `Media Request: ${event.title}`,
+                    description: `Event Coverage Requested: ${event.mediaCoverage.join(', ')}\n\nLocation: ${event.location}\nDate: ${new Date(dateStr).toDateString()}`,
+                    status: 'todo' as const,
+                    priority: 'high',
+                    department: 'Media',
+                    dueDate: dateStr as any, // Task type likely expects string or Date, ensuring string ISO
+                    assignedTo: [],
+                    assignedBy: { uid: event.createdBy.uid, name: event.createdBy.name, role: event.createdBy.role || 'user' },
+                    createdBy: { uid: event.createdBy.uid, name: event.createdBy.name, role: event.createdBy.role || 'user' },
+                    eventId
+                };
+
+                await TaskService.addTask(mediaTask);
+            }
+
+            return response.data;
         } catch (err) {
             console.warn("Saving event locally:", err);
             const current = loadFromLocal();
             const newEvent: Event = {
                 id: 'local_' + Date.now(),
                 ...event,
-                createdAt: Timestamp.fromMillis(Date.now()),
-                date: Timestamp.fromMillis(Date.now())
+                status: 'pending',
+                createdAt: new Date().toISOString(),
+                date: event.date
             };
             saveToLocal([newEvent, ...current]);
+            throw err;
+        }
+    },
+
+    approveEvent: async (eventId: string, approverUid: string) => {
+        try {
+            const response = await apiRequest(`/${encodeURIComponent(eventId)}/approve`, {
+                method: 'POST',
+                body: JSON.stringify({ action: 'approve' }),
+            });
+
+            return response.data;
+        } catch (e) {
+            console.error("Failed to approve event:", e);
+            throw e;
+        }
+    },
+
+    getEvent: async (id: string): Promise<Event | null> => {
+        try {
+            const data = await apiClient(`/api/events/${id}`, {
+                method: 'GET'
+            });
+
+            const event = data.event;
+            if (!event) return null;
+
+            return {
+                id: event.id,
+                ...event,
+                startTime: event.startTime,
+                endTime: event.endTime,
+                date: event.date,
+                createdAt: event.createdAt,
+            } as unknown as Event;
+        } catch (e) {
+            console.error("Error fetching event", e);
+            const local = loadFromLocal();
+            return local.find(t => t.id === id) || null;
         }
     },
 
     deleteEvent: async (id: string) => {
         try {
-            await deleteDoc(doc(db, EVENTS_COLLECTION, id));
+            await apiClient(`/api/events?id=${encodeURIComponent(id)}`, {
+                method: 'DELETE'
+            });
+        } catch (err: any) {
+            console.error("Event delete failed:", err);
+            toast.error("Failed to delete event: " + (err.message || "Unknown error"));
+            throw err;
+        }
+    },
+
+    updateEvent: async (id: string, updates: Partial<Event>, currentUserUid: string) => {
+        try {
+            const response = await apiRequest(`?id=${encodeURIComponent(id)}`, {
+                method: 'PUT',
+                body: JSON.stringify(updates),
+            });
+
+            return response.data;
         } catch (err) {
-            const current = loadFromLocal();
-            saveToLocal(current.filter(t => t.id !== id));
+            console.error("Error updating event:", err);
+            throw err;
         }
     }
 };

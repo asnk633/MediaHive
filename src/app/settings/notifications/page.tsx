@@ -4,6 +4,7 @@
 'use client';
 
 import React, { useState, useEffect } from 'react';
+import { apiClient } from '@/lib/apiClient';
 
 interface NotificationSettings {
   quietHours: {
@@ -34,11 +35,10 @@ export default function NotificationSettingsPage() {
   useEffect(() => {
     const fetchSettings = async () => {
       try {
-        const response = await fetch('/api/notification-settings');
-        if (response.ok) {
-          const data = await response.json();
-          setSettings(data.settings);
-        }
+        const data = await apiClient('/api/notification-settings', {
+          method: 'GET'
+        });
+        setSettings(data.settings);
       } catch (error) {
         console.error('Failed to fetch notification settings:', error);
       } finally {
@@ -53,18 +53,12 @@ export default function NotificationSettingsPage() {
   const updateSettings = async (updates: Partial<NotificationSettings>) => {
     setSaving(true);
     try {
-      const response = await fetch('/api/notification-settings', {
+      const data = await apiClient('/api/notification-settings', {
         method: 'PATCH',
-        headers: {
-          'Content-Type': 'application/json',
-        },
         body: JSON.stringify(updates),
       });
-
-      if (response.ok) {
-        const data = await response.json();
-        setSettings(data.settings);
-      }
+      
+      setSettings(data.settings);
     } catch (error) {
       console.error('Failed to update notification settings:', error);
     } finally {

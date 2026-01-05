@@ -1,92 +1,51 @@
-// src/lib/firebaseAdmin.ts
-import fs from 'node:fs';
-import { cert, getApps, initializeApp } from 'firebase-admin/app';
+import 'server-only';
+import admin from 'firebase-admin';
 
-function getServiceAccount() {
-  const path = process.env.FIREBASE_ADMIN_SA_PATH;
-
-  if (path && fs.existsSync(path)) {
-    // ✅ CI / production path: read from JSON file
-    const raw = fs.readFileSync(path, 'utf8');
-    try {
-      return JSON.parse(raw);
-    } catch (err) {
-      console.error('Failed to parse service account JSON from FIREBASE_ADMIN_SA_PATH', err);
-      throw err;
-    }
-  }
-
-  const fromEnv = process.env.FIREBASE_ADMIN_SA;
-  if (fromEnv) {
-    // ✅ Local dev: use env JSON if no path is provided
-    try {
-      // If it's base64 encoded, decode it first
-      if (fromEnv.startsWith('{')) {
-        // It's already JSON. 
-        // Logic: Sometimes env vars have actual newlines that JSON.parse hates. 
-        // We replace them with space or escaped newline depending on context, 
-        // but for a private key it usually expects \n.
-        // Let's try to be robust:
-        const sanitized = fromEnv.replace(/[\r\n]+/g, '');
-        return JSON.parse(sanitized);
-      } else {
-        // It's likely base64 encoded
-        return JSON.parse(Buffer.from(fromEnv, 'base64').toString('utf8'));
-      }
-    } catch (err) {
-      console.error('Failed to parse FIREBASE_ADMIN_SA env JSON', err);
-      throw err;
-    }
-  }
-
-  throw new Error('Missing Firebase admin credentials: set FIREBASE_ADMIN_SA_PATH or FIREBASE_ADMIN_SA');
+// Validates that we are running in a server context
+if (!process.env.FIREBASE_PROJECT_ID && !process.env.NEXT_PUBLIC_FIREBASE_PROJECT_ID) {
+  console.warn('Values for FIREBASE_PROJECT_ID (or FIREBASE_ADMIN_PROJECT_ID) are missing.');
 }
 
-export function getFirebaseAdminApp() {
-  if (getApps().length) return getApps()[0];
+let adminApp: admin.app.App;
 
-  console.log('[Debug] getFirebaseAdminApp: MOCK_FIREBASE =', process.env.MOCK_FIREBASE);
+if (admin.apps.length > 0) {
+  adminApp = admin.apps[0]!;
+} else {
+  const projectId = process.env.FIREBASE_ADMIN_PROJECT_ID || process.env.FIREBASE_PROJECT_ID || process.env.NEXT_PUBLIC_FIREBASE_PROJECT_ID;
+  const clientEmail = process.env.FIREBASE_ADMIN_CLIENT_EMAIL || process.env.FIREBASE_CLIENT_EMAIL || process.env.GOOGLE_SERVICE_ACCOUNT_EMAIL;
+  const privateKey = (process.env.FIREBASE_ADMIN_PRIVATE_KEY || process.env.FIREBASE_PRIVATE_KEY || process.env.GOOGLE_PRIVATE_KEY || '').replace(/\\n/g, '\n');
 
-  // ✅ CI / Mock Check:
-  if (process.env.MOCK_FIREBASE === 'true') {
-    console.warn('[Mock] Firebase Admin initialization skipped (MOCK_FIREBASE=true)');
-    // Return a mock app with stub methods
-    const mockApp = {
-      auth: () => ({
-        listUsers: async () => ({ users: [] }),
-        createUser: async () => ({ uid: 'mock-uid' }),
-        verifyIdToken: async () => ({ uid: 'mock-uid' }),
+  if (projectId && clientEmail && privateKey) {
+    console.log('[FIREBASE ADMIN] Credentials detected: YES');
+    adminApp = admin.initializeApp({
+      credential: admin.credential.cert({
+        projectId,
+        clientEmail,
+        privateKey,
       }),
-      firestore: () => ({
-        collection: () => ({
-          get: async () => ({ forEach: () => { }, docs: [] }),
-          doc: () => ({
-            get: async () => ({ exists: false, data: () => null }),
-            set: async () => { },
-          }),
-        }),
-      }),
-      name: 'mock-app',
-    } as any;
-
-    // Cache it in getApps() manually if possible, or just return
-    return mockApp;
-  }
-
-  const serviceAccount = getServiceAccount();
-
-  return initializeApp({
-    credential: cert(serviceAccount as any),
-  });
-}
-
-// Initialize the app immediately if not already initialized
-if (getApps().length === 0) {
-  try {
-    getFirebaseAdminApp();
-  } catch (e) {
-    console.warn('Firebase admin init failed, some features may not work:', e);
+      projectId,
+    });
+  } else if (process.env.FIREBASE_ADMIN_SA_PATH) {
+    // Fallback to Service Account Path
+    try {
+      const serviceAccount = require(process.env.FIREBASE_ADMIN_SA_PATH);
+      console.log('[FIREBASE ADMIN] Credentials detected: YES (SA Path)');
+      adminApp = admin.initializeApp({
+        credential: admin.credential.cert(serviceAccount)
+      });
+    } catch (e) {
+      console.error('Failed to load service account from path', e);
+      throw new Error('Firebase Admin initialization failed: Invalid SA Path');
+    }
+  } else {
+    throw new Error('Firebase Admin initialization failed: Missing credentials (FIREBASE_PROJECT_ID, CLIENT_EMAIL, PRIVATE_KEY)');
   }
 }
 
-export default { apps: getApps(), getFirebaseAdminApp };
+export const adminAuth = adminApp.auth();
+export const adminDb = adminApp.firestore();
+export const adminMessaging = adminApp.messaging();
+
+// Legacy compatibility exports if needed, but we prefer direct usage
+export const db = adminDb;
+export const auth = adminAuth;

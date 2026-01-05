@@ -1,12 +1,11 @@
-import { ref, uploadBytes, getDownloadURL, deleteObject } from 'firebase/storage';
-import { storage } from '@/firebase/client';
+import { apiClient } from '@/lib/apiClient';
 
 /**
  * Profile Picture Service - Handles uploading, retrieving, and deleting profile pictures
- * using Firebase Storage
+ * using server-side Drive integration.
  */
 
-const PROFILE_PICTURES_PATH = 'profile-pictures';
+const PROFILE_PICTURES_PATH = 'profile-pictures'; // Still kept if useful for other refs, or remove. Actually unused now.
 
 /**
  * Upload a profile picture to Firebase Storage
@@ -16,18 +15,24 @@ const PROFILE_PICTURES_PATH = 'profile-pictures';
  */
 export async function uploadProfilePicture(userId: string, imageBlob: Blob): Promise<string> {
     try {
-        // Create a reference to the storage location
-        // Path: profile-pictures/{userId}/avatar.jpg
-        const storageRef = ref(storage, `${PROFILE_PICTURES_PATH}/${userId}/avatar.jpg`);
+        const formData = new FormData();
+        formData.append('file', imageBlob);
 
-        // Upload the image
-        const snapshot = await uploadBytes(storageRef, imageBlob, {
-            contentType: 'image/jpeg',
-            cacheControl: 'public, max-age=31536000', // Cache for 1 year
+        // Upload via our server API (which routes to Google Drive)
+        // Note: userId is derived from session on the server side for security
+        const response = await fetch('/api/users/me/avatar', {
+            method: 'POST',
+            body: formData,
+            credentials: 'include', // Ensure cookies are sent even if origin slightly differs (e.g. specialized environments)
         });
 
-        // Get the download URL
-        const downloadURL = await getDownloadURL(snapshot.ref);
+        if (!response.ok) {
+            const error = await response.json();
+            throw new Error(error.error || 'Upload failed');
+        }
+
+        const data = await response.json();
+        const downloadURL = data.avatarUrl;
 
         // Cache the URL in localStorage for faster loads
         if (typeof window !== 'undefined') {
@@ -35,9 +40,9 @@ export async function uploadProfilePicture(userId: string, imageBlob: Blob): Pro
         }
 
         return downloadURL;
-    } catch (error) {
+    } catch (error: any) {
         console.error('Error uploading profile picture:', error);
-        throw new Error('Failed to upload profile picture');
+        throw new Error(error.message || 'Failed to upload profile picture. Please try again.');
     }
 }
 
@@ -56,22 +61,20 @@ export async function getProfilePictureUrl(userId: string): Promise<string | nul
             }
         }
 
-        // Get from Firebase Storage
-        const storageRef = ref(storage, `${PROFILE_PICTURES_PATH}/${userId}/avatar.jpg`);
-        const downloadURL = await getDownloadURL(storageRef);
+        // Get from API
+        const userData = await apiClient(`/api/users/${userId}`, {
+            method: 'GET'
+        });
+
+        const downloadURL = userData?.avatarUrl || null;
 
         // Cache for future use
-        if (typeof window !== 'undefined') {
+        if (typeof window !== 'undefined' && downloadURL) {
             localStorage.setItem('userAvatarUrl', downloadURL);
         }
 
         return downloadURL;
     } catch (error: any) {
-        // If file doesn't exist (error code 'storage/object-not-found'), return null
-        if (error.code === 'storage/object-not-found') {
-            return null;
-        }
-
         console.error('Error fetching profile picture:', error);
         return null;
     }
@@ -83,8 +86,14 @@ export async function getProfilePictureUrl(userId: string): Promise<string | nul
  */
 export async function deleteProfilePicture(userId: string): Promise<void> {
     try {
-        const storageRef = ref(storage, `${PROFILE_PICTURES_PATH}/${userId}/avatar.jpg`);
-        await deleteObject(storageRef);
+        // Delete via API
+        await apiClient(`/api/users/me`, {
+            method: 'PATCH',
+            body: JSON.stringify({
+                avatarUrl: null,
+                avatarUpdatedAt: new Date().toISOString()
+            })
+        });
 
         // Clear localStorage cache
         if (typeof window !== 'undefined') {
@@ -92,10 +101,7 @@ export async function deleteProfilePicture(userId: string): Promise<void> {
             localStorage.removeItem('userAvatar'); // Old base64 key
         }
     } catch (error: any) {
-        // Ignore if file doesn't exist
-        if (error.code !== 'storage/object-not-found') {
-            console.error('Error deleting profile picture:', error);
-            throw new Error('Failed to delete profile picture');
-        }
+        console.error('Error deleting profile picture:', error);
+        throw error;
     }
 }

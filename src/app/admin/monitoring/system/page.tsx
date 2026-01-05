@@ -4,6 +4,7 @@
 'use client';
 
 import React, { useState, useEffect } from 'react';
+import { apiClient } from '@/lib/apiClient';
 
 interface SystemStats {
   uptime: string;
@@ -35,18 +36,16 @@ export default function SystemMonitoringPage() {
     const fetchStats = async () => {
       try {
         // Fetch system stats
-        const systemResponse = await fetch('/api/monitoring/system/stats');
-        if (systemResponse.ok) {
-          const systemData = await systemResponse.json();
-          setSystemStats(systemData);
-        }
-
+        const systemData = await apiClient('/api/monitoring/system/stats', {
+          method: 'GET'
+        });
+        setSystemStats(systemData);
+        
         // Fetch audit stats
-        const auditResponse = await fetch(`/api/audit-log/stats?period=${selectedPeriod}&tenant=${selectedTenant}`);
-        if (auditResponse.ok) {
-          const auditData = await auditResponse.json();
-          setAuditStats(auditData);
-        }
+        const auditData = await apiClient(`/api/audit-log/stats?period=${selectedPeriod}&tenant=${selectedTenant}`, {
+          method: 'GET'
+        });
+        setAuditStats(auditData);
       } catch (error) {
         console.error('Failed to fetch monitoring data:', error);
       } finally {

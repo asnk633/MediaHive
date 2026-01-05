@@ -1,13 +1,12 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
+import { UserService } from '@/services/userService';
+import { getRoleBadgeColors } from '@/lib/roleStyles';
+import { cn } from '@/lib/utils';
 
 type Person = { id: string; name: string; role?: "admin" | "team" };
-const TEAM: Person[] = [
-  { id: "u1", name: "Anu MadMax", role: "team" },
-  { id: "u2", name: "KMS Pallikkunnu", role: "team" },
-  { id: "u3", name: "Shukoor Rahman", role: "admin" },
-];
+
 
 export default function PeoplePicker({
   value,
@@ -22,7 +21,17 @@ export default function PeoplePicker({
 }) {
   const [open, setOpen] = useState(false);
   const [q, setQ] = useState("");
+  const [teamMembers, setTeamMembers] = useState<Person[]>([]);
   const boxRef = useRef<HTMLDivElement>(null);
+
+  // Fetch team members from Firestore
+  useEffect(() => {
+    const fetchMembers = async () => {
+      const members = await UserService.getTeamMembers();
+      setTeamMembers(members.map(m => ({ id: m.uid, name: m.name, role: 'team' as const })));
+    };
+    fetchMembers();
+  }, []);
 
   useEffect(() => {
     if (!open) return;
@@ -34,8 +43,8 @@ export default function PeoplePicker({
     return () => document.removeEventListener("mousedown", onDoc);
   }, [open]);
 
-  const selected = TEAM.find(p => p.id === value);
-  const list = TEAM.filter(p => p.name.toLowerCase().includes(q.toLowerCase()));
+  const selected = teamMembers.find(p => p.id === value);
+  const list = teamMembers.filter(p => p.name.toLowerCase().includes(q.toLowerCase()));
 
   return (
     <div className={anchorClass} ref={boxRef}>
@@ -60,7 +69,7 @@ export default function PeoplePicker({
                 className="flex w-full items-center justify-between rounded-md px-2 py-2 text-left hover:bg-white/10"
               >
                 <span>{p.name}</span>
-                <span className="text-xs text-white/50">{p.role}</span>
+                <span className={cn("text-[10px] px-1.5 py-0.5 rounded-full border bg-opacity-10", getRoleBadgeColors(p.role))}>{p.role}</span>
               </button>
             ))}
             {list.length === 0 && <div className="px-2 py-2 text-sm text-white/60">No results</div>}

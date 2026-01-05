@@ -1,13 +1,16 @@
 import React, { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Plus, CheckSquare, Calendar, X } from 'lucide-react';
+import { Plus, CheckSquare, Calendar, CalendarCheck, X } from 'lucide-react';
+import { useRouter } from 'next/navigation';
 
 export const FAB = () => {
     const [isOpen, setIsOpen] = useState(false);
+    const router = useRouter();
 
     const actions = [
-        { label: "New Task", icon: CheckSquare, color: "bg-green-500", delay: 0.1 },
-        { label: "New Event", icon: Calendar, color: "bg-purple-500", delay: 0.05 },
+        { label: "Request Leave", icon: CalendarCheck, color: "text-amber-400", delay: 0.15, onClick: () => router.push('/leave/request') },
+        { label: "New Task", icon: CheckSquare, color: "text-green-400", delay: 0.1, onClick: () => { } },
+        { label: "New Event", icon: Calendar, color: "text-purple-400", delay: 0.05, onClick: () => { } },
     ];
 
     return (
@@ -18,7 +21,7 @@ export const FAB = () => {
                         initial={{ opacity: 0 }}
                         animate={{ opacity: 1 }}
                         exit={{ opacity: 0 }}
-                        className="fixed inset-0 bg-white/60 backdrop-blur-sm z-40"
+                        className="fixed inset-0 bg-black/60 backdrop-blur-sm z-40"
                         onClick={() => setIsOpen(false)}
                     />
                 )}
@@ -46,10 +49,16 @@ export const FAB = () => {
                                     transition={{ delay: action.delay }}
                                     className="flex items-center gap-3"
                                 >
-                                    <span className="bg-white/90 backdrop-blur text-gray-700 text-xs font-bold px-2 py-1 rounded-md shadow-sm">
+                                    <span className="bg-black/80 backdrop-blur-md border border-white/10 text-white text-xs font-bold px-3 py-1.5 rounded-xl shadow-lg">
                                         {action.label}
                                     </span>
-                                    <button className={`${action.color} w-12 h-12 rounded-full text-white shadow-lg flex items-center justify-center hover:scale-110 transition-transform`}>
+                                    <button
+                                        onClick={() => {
+                                            action.onClick();
+                                            setIsOpen(false);
+                                        }}
+                                        className={`w-12 h-12 rounded-full bg-black/40 backdrop-blur-md border border-white/10 shadow-lg flex items-center justify-center hover:scale-110 hover:bg-white/10 transition-all ${action.color}`}
+                                    >
                                         <action.icon size={20} />
                                     </button>
                                 </motion.div>

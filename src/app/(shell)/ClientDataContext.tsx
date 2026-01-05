@@ -4,16 +4,17 @@
 import "@/lib/client-fetch-wrapper"; // side‑effect import for fetch wrapper
 import React, { createContext, useCallback, useContext, useEffect, useState } from "react";
 import { useToast } from "@/components/ToastProvider";
-import { apiFromUiStatus, uiFromApiStatus } from "./utils/uiMaps";
-import { useRole } from "./RoleContext";
+import { apiFromUiStatus, uiFromApiStatus, type UiStatus } from "./utils/uiMaps";
+import { useAuth } from "@/contexts/AuthContext";
 import { formatDistanceToNow } from "date-fns";
+import { apiClient } from "@/lib/apiClient";
 
 // ---------- Types ----------
 export type TaskLite = {
   id: string;
   title: string;
   dueAt?: string | null;
-  status?: "Working On" | "In Progress" | "Pending" | "Completed" | "On Hold";
+  status?: UiStatus;
   priority?: "low" | "medium" | "high" | "urgent";
   assignedTo?: string | null;
   reviewStatus?: "pending_review" | "approved" | "rejected";
@@ -35,6 +36,7 @@ export type EventLite = {
   visibility?: "all" | "team" | "branch" | "custom";
   location?: string | null;
   description?: string | null;
+  isSystemEvent?: boolean;
 };
 
 type Store = {
@@ -92,6 +94,7 @@ function mapApiEvent(x: any): EventLite {
     visibility: x.visibility ?? "team",
     location: x.location ?? null,
     description: x.description ?? null,
+    isSystemEvent: x.isSystemEvent,
   };
 }
 
@@ -135,7 +138,7 @@ export function ClientDataProvider({ children }: { children: React.ReactNode }) 
     }
   }, []);
 
-  const { user } = useRole();
+  const { user } = useAuth();
   const toast = useToast();
 
   const [tasks, setTasks] = useState<TaskLite[]>([]);
@@ -149,6 +152,11 @@ export function ClientDataProvider({ children }: { children: React.ReactNode }) 
   // ----- CRUD helpers -----
   const createTask = useCallback(
     async (input: { title: string; description?: string; dueAt?: string | null; priority?: TaskLite["priority"] }) => {
+      if (!user) {
+        toast?.show("Not authenticated", "error");
+        return;
+      }
+
       const tempId = `tsk_temp_${Math.random().toString(36).slice(2, 8)}`;
       const isGuest = user.role === "guest";
       const optimistic: TaskLite = {
@@ -157,14 +165,14 @@ export function ClientDataProvider({ children }: { children: React.ReactNode }) 
         dueAt: input.dueAt ?? null,
         status: "Pending",
         priority: input.priority ?? "medium",
-        assignedTo: !isGuest ? user.name : null,
+        assignedTo: !isGuest ? (user.name || null) : null,
         reviewStatus: isGuest ? "pending_review" : "approved",
       };
       setTasks(prev => [optimistic, ...prev]);
       try {
         const endpoint = isGuest ? "/api/guest-tasks/create" : "/api/tasks";
         const body = isGuest
-          ? { title: input.title, dueDate: input.dueAt, assignedBy: Number(user.id) }
+          ? { title: input.title, dueDate: input.dueAt, assignedBy: Number(user.uid) }
           : {
             title: input.title,
             description: input.description ?? "",
@@ -174,13 +182,11 @@ export function ClientDataProvider({ children }: { children: React.ReactNode }) 
             reviewStatus: optimistic.reviewStatus,
             institutionId: "1",
           };
-        const res = await fetch(endpoint, {
+        const json = await apiClient(endpoint, {
           method: "POST",
           headers: { "Content-Type": "application/json", ...getDevAuthHeaders() },
           body: JSON.stringify(body),
         });
-        if (!res.ok) throw new Error(String(res.status));
-        const json = await res.json();
         const real = json?.data;
         if (real?.id) setTasks(prev => [{ ...mapApiTask(real) }, ...prev.filter(t => t.id !== tempId)]);
         toast.show(isGuest ? "Task submitted for review" : "Task created", "success");
@@ -210,13 +216,11 @@ export function ClientDataProvider({ children }: { children: React.ReactNode }) 
         if (delta.assignedTo !== undefined) payload.assignedTo = delta.assignedTo;
         if (delta.reviewStatus !== undefined) payload.reviewStatus = delta.reviewStatus;
         if (delta.status !== undefined) payload.status = apiFromUiStatus(delta.status as any);
-        const res = await fetch(`/api/tasks/${id}`, {
+        const json = await apiClient(`/api/tasks/${id}`, {
           method: "PATCH",
           headers: { "Content-Type": "application/json", ...getDevAuthHeaders() },
           body: JSON.stringify(payload),
         });
-        if (!res.ok) throw new Error("Update failed");
-        const json = await res.json().catch(() => null);
         const server = json?.data;
         if (server?.id) setTasks(cur => cur.map(t => (t.id === id ? mapApiTask(server) : t)));
         toast.show("Saved", "success");
@@ -234,11 +238,10 @@ export function ClientDataProvider({ children }: { children: React.ReactNode }) 
     const prev = tasks;
     setTasks(cur => cur.filter(t => t.id !== id));
     try {
-      const res = await fetch(`/api/tasks/${id}?institutionId=1`, {
+      await apiClient(`/api/tasks/${id}?institutionId=1`, {
         method: "DELETE",
         headers: { ...getDevAuthHeaders() },
       });
-      if (!res.ok && res.status !== 204) throw new Error("Delete failed");
       toast.show("Task deleted", "success");
       return true;
     } catch (e) {
@@ -253,13 +256,11 @@ export function ClientDataProvider({ children }: { children: React.ReactNode }) 
     const optimistic: NotificationLite = { id: tempId, title: input.title, body: input.body, read: false };
     setNotifications(prev => [optimistic, ...prev]);
     try {
-      const res = await fetch("/api/notifications", {
+      const json = await apiClient("/api/notifications", {
         method: "POST",
         headers: { "Content-Type": "application/json", ...getDevAuthHeaders() },
         body: JSON.stringify({ title: input.title, body: input.body, audience: input.audience ?? "team", institutionId: "1" }),
       });
-      if (!res.ok) throw new Error(String(res.status));
-      const json = await res.json();
       const real = json?.data;
       if (real?.id)
         setNotifications(prev => [{ id: real.id, title: real.title, body: real.body, read: !!real.read }, ...prev.filter(n => n.id !== tempId)]);
@@ -276,7 +277,7 @@ export function ClientDataProvider({ children }: { children: React.ReactNode }) 
     const optimistic: EventLite = { id: tempId, title: input.title, startAt: input.startAt, endAt: input.endAt ?? null, visibility: "team" };
     setEvents(prev => [optimistic, ...prev]);
     try {
-      const res = await fetch("/api/events", {
+      const json = await apiClient("/api/events", {
         method: "POST",
         headers: { "Content-Type": "application/json", ...getDevAuthHeaders() },
         body: JSON.stringify({
@@ -288,8 +289,6 @@ export function ClientDataProvider({ children }: { children: React.ReactNode }) 
           institutionId: "1",
         }),
       });
-      if (!res.ok) throw new Error(String(res.status));
-      const json = await res.json();
       const real = json?.data;
       if (real?.id)
         setEvents(prev => [{ id: real.id, title: real.title, startAt: real.startAt, endAt: real.endAt ?? null, visibility: real.visibility ?? "team" }, ...prev.filter(e => e.id !== tempId)]);

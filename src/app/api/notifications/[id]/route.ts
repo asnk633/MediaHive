@@ -1,30 +1,43 @@
-import { NextRequest } from "next/server";
-import { ok, notFound, bad, noContent } from "../../_lib/http";
-import { db, Notification } from "../../_lib/store";
+import { NextResponse } from 'next/server';
+import { getFirebaseServices, verifyUser } from '@/lib/server-utils';
 
-export async function GET(_: NextRequest, { params }: { params: Promise<{ id: string }> }) {
-  const { id } = await params;
-  const row = db.notifications.get(id);
-  if (!row) return notFound("Notification not found");
-  return ok(row);
-}
+export async function PATCH(req: Request, props: { params: Promise<{ id: string }> }) {
+    try {
+        const { firestore } = await getFirebaseServices();
+        const user = await verifyUser(req);
 
-export async function PATCH(req: NextRequest, { params }: { params: Promise<{ id: string }> }) {
-  const { id } = await params;
-  const row = db.notifications.get(id);
-  if (!row) return notFound("Notification not found");
+        if (!user) {
+            return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+        }
 
-  const delta = await req.json().catch(() => null);
-  if (!delta) return bad("Invalid JSON");
+        const params = await props.params;
+        const { id } = params;
+        const body = await req.json();
+        const { action } = body; // 'markRead' or 'archive'
 
-  const updated: Notification = { ...row, ...delta, updatedAt: new Date().toISOString() };
-  db.notifications.set(id, updated);
-  return ok(updated);
-}
+        const docRef = firestore.collection('notifications').doc(id);
+        const doc = await docRef.get();
 
-export async function DELETE(_: NextRequest, { params }: { params: Promise<{ id: string }> }) {
-  const { id } = await params;
-  const existed = db.notifications.delete(id);
-  if (!existed) return notFound("Notification not found");
-  return noContent();
+        if (!doc.exists) {
+            return NextResponse.json({ error: 'Notification not found' }, { status: 404 });
+        }
+
+        const data = doc.data();
+        if (data?.userId !== user.uid) {
+            return NextResponse.json({ error: 'Forbidden' }, { status: 403 });
+        }
+
+        if (action === 'markRead') {
+            await docRef.update({ isRead: true });
+        } else if (action === 'archive') {
+            await docRef.update({ isArchived: true });
+        } else {
+            return NextResponse.json({ error: 'Invalid action' }, { status: 400 });
+        }
+
+        return NextResponse.json({ success: true });
+    } catch (error) {
+        console.error('Error updating notification:', error);
+        return NextResponse.json({ error: 'Internal Server Error' }, { status: 500 });
+    }
 }

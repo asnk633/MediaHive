@@ -5,7 +5,8 @@
 
 import React, { useState, useEffect } from 'react';
 import { usePermission } from '@/hooks/usePermission';
-import { useRole } from '@/app/(shell)/RoleContext';
+import { useAuth } from '@/contexts/AuthContext';
+import { apiClient } from '@/lib/apiClient';
 
 interface Activity {
   id: number;
@@ -26,7 +27,7 @@ export function TaskActivity({ taskId }: TaskActivityProps) {
   const [activities, setActivities] = useState<Activity[]>([]);
   const [loading, setLoading] = useState(true);
   const { can } = usePermission();
-  const { user } = useRole();
+  const { user } = useAuth();
 
   useEffect(() => {
     // Only fetch if user has read permission
@@ -37,13 +38,10 @@ export function TaskActivity({ taskId }: TaskActivityProps) {
 
     const fetchActivities = async () => {
       try {
-        const response = await fetch(`/api/tasks/${taskId}/activity`, {
-          headers: { 'x-user-id': user?.id ? String(user.id) : '1' }
+        const data = await apiClient(`/api/tasks/${taskId}/activity`, {
+          headers: { 'x-user-id': user?.uid ? String(user.uid) : '1' }
         });
-        if (response.ok) {
-          const data = await response.json();
-          setActivities(data.activities);
-        }
+        setActivities(data.activities);
       } catch (error) {
         console.error('Failed to fetch task activities:', error);
       } finally {

@@ -1,21 +1,31 @@
 // src/app/api/_lib/audit.ts
 // Audit logging utilities
 
-import { db } from '@/db';
+import { getDb } from '@/db';
 import { auditLog } from '@/db/schema';
 
 // Log an audit event
 export async function logAuditEvent(
-  userId: number,
+  userId: string,
   action: string,
   resourceType: string,
-  tenantId: number,
-  resourceId?: number | null,
+  tenantId: number | string,
+  resourceId?: string | null,
   details?: any,
   ipAddress?: string | null,
   userAgent?: string | null
 ) {
   try {
+    // Robustly handle tenantId
+    let safeTenantId = 1;
+    if (typeof tenantId === 'number') {
+      safeTenantId = tenantId;
+    } else if (typeof tenantId === 'string') {
+      const parsed = parseInt(tenantId, 10);
+      if (!isNaN(parsed)) safeTenantId = parsed;
+    }
+
+    const db = await getDb();
     // Create audit log entry
     const [log] = await db
       .insert(auditLog)
@@ -23,15 +33,15 @@ export async function logAuditEvent(
         userId,
         action,
         resourceType,
-        tenantId,
+        tenantId: safeTenantId,
         resourceId: resourceId || null,
-        details: details ? JSON.stringify(details) : null,
+        details: details ? JSON.stringify(details) : '{}',
         ipAddress: ipAddress || null,
         userAgent: userAgent || null,
         timestamp: new Date().toISOString(),
       })
       .returning();
-    
+
     return log;
   } catch (error) {
     console.error('Failed to log audit event:', error);
@@ -41,46 +51,54 @@ export async function logAuditEvent(
 }
 
 // Convenience functions for common audit events
-export async function logUserLogin(userId: number, tenantId: number, ipAddress?: string | null, userAgent?: string | null) {
-  return logAuditEvent(userId, 'login', 'user', tenantId, userId, { action: 'login' }, ipAddress, userAgent);
+export async function logUserLogin(userId: string, tenantId: number | string, ipAddress?: string | null, userAgent?: string | null) {
+  return logAuditEvent(userId, 'login', 'user', tenantId, null, { action: 'login' }, ipAddress, userAgent);
 }
 
-export async function logUserLogout(userId: number, tenantId: number, ipAddress?: string | null, userAgent?: string | null) {
-  return logAuditEvent(userId, 'logout', 'user', tenantId, userId, { action: 'logout' }, ipAddress, userAgent);
+export async function logUserLogout(userId: string, tenantId: number | string, ipAddress?: string | null, userAgent?: string | null) {
+  return logAuditEvent(userId, 'logout', 'user', tenantId, null, { action: 'logout' }, ipAddress, userAgent);
 }
 
-export async function logTaskCreated(userId: number, tenantId: number, taskId: number, details?: any, ipAddress?: string | null, userAgent?: string | null) {
+export async function logTaskCreated(userId: string, tenantId: number | string, taskId: string, details?: any, ipAddress?: string | null, userAgent?: string | null) {
   return logAuditEvent(userId, 'create', 'task', tenantId, taskId, details, ipAddress, userAgent);
 }
 
-export async function logTaskUpdated(userId: number, tenantId: number, taskId: number, details?: any, ipAddress?: string | null, userAgent?: string | null) {
+export async function logTaskUpdated(userId: string, tenantId: number | string, taskId: string, details?: any, ipAddress?: string | null, userAgent?: string | null) {
   return logAuditEvent(userId, 'update', 'task', tenantId, taskId, details, ipAddress, userAgent);
 }
 
-export async function logTaskDeleted(userId: number, tenantId: number, taskId: number, details?: any, ipAddress?: string | null, userAgent?: string | null) {
+export async function logTaskDeleted(userId: string, tenantId: number | string, taskId: string, details?: any, ipAddress?: string | null, userAgent?: string | null) {
   return logAuditEvent(userId, 'delete', 'task', tenantId, taskId, details, ipAddress, userAgent);
 }
 
-export async function logEventCreated(userId: number, tenantId: number, eventId: number, details?: any, ipAddress?: string | null, userAgent?: string | null) {
+export async function logEventCreated(userId: string, tenantId: number | string, eventId: string, details?: any, ipAddress?: string | null, userAgent?: string | null) {
   return logAuditEvent(userId, 'create', 'event', tenantId, eventId, details, ipAddress, userAgent);
 }
 
-export async function logEventUpdated(userId: number, tenantId: number, eventId: number, details?: any, ipAddress?: string | null, userAgent?: string | null) {
+export async function logEventUpdated(userId: string, tenantId: number | string, eventId: string, details?: any, ipAddress?: string | null, userAgent?: string | null) {
   return logAuditEvent(userId, 'update', 'event', tenantId, eventId, details, ipAddress, userAgent);
 }
 
-export async function logFileUploaded(userId: number, tenantId: number, fileId: number, details?: any, ipAddress?: string | null, userAgent?: string | null) {
+export async function logEventDeleted(userId: string, tenantId: number | string, eventId: string, details?: any, ipAddress?: string | null, userAgent?: string | null) {
+  return logAuditEvent(userId, 'delete', 'event', tenantId, eventId, details, ipAddress, userAgent);
+}
+
+export async function logFileUploaded(userId: string, tenantId: number | string, fileId: string, details?: any, ipAddress?: string | null, userAgent?: string | null) {
   return logAuditEvent(userId, 'upload', 'file', tenantId, fileId, details, ipAddress, userAgent);
 }
 
-export async function logNotificationSent(userId: number, tenantId: number, notificationId: number, details?: any, ipAddress?: string | null, userAgent?: string | null) {
+export async function logNotificationSent(userId: string, tenantId: number | string, notificationId: string, details?: any, ipAddress?: string | null, userAgent?: string | null) {
   return logAuditEvent(userId, 'send', 'notification', tenantId, notificationId, details, ipAddress, userAgent);
 }
 
-export async function logAutomationRuleCreated(userId: number, tenantId: number, ruleId: number, details?: any, ipAddress?: string | null, userAgent?: string | null) {
+export async function logAutomationRuleCreated(userId: string, tenantId: number | string, ruleId: string, details?: any, ipAddress?: string | null, userAgent?: string | null) {
   return logAuditEvent(userId, 'create', 'automation_rule', tenantId, ruleId, details, ipAddress, userAgent);
 }
 
-export async function logAutomationRuleUpdated(userId: number, tenantId: number, ruleId: number, details?: any, ipAddress?: string | null, userAgent?: string | null) {
+export async function logAutomationRuleUpdated(userId: string, tenantId: number | string, ruleId: string, details?: any, ipAddress?: string | null, userAgent?: string | null) {
   return logAuditEvent(userId, 'update', 'automation_rule', tenantId, ruleId, details, ipAddress, userAgent);
+}
+
+export async function logStaleTaskNotification(userId: string, tenantId: number | string, taskId: string, details?: any, ipAddress?: string | null, userAgent?: string | null) {
+  return logAuditEvent(userId, 'notify', 'stale_task', tenantId, taskId, details, ipAddress, userAgent);
 }

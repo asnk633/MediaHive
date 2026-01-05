@@ -1,4 +1,4 @@
-import { sqliteTable, integer, text } from 'drizzle-orm/sqlite-core';
+import { sqliteTable, integer, text, real } from 'drizzle-orm/sqlite-core';
 
 // Tenants table for multi-tenant support
 export const tenants = sqliteTable('tenants', {
@@ -19,6 +19,14 @@ export const institutions = sqliteTable('institutions', {
   createdAt: text('created_at').notNull(),
 });
 
+// Departments table
+export const departments = sqliteTable('departments', {
+  id: integer('id').primaryKey({ autoIncrement: true }),
+  name: text('name').notNull(),
+  tenantId: integer('tenant_id').notNull().references(() => tenants.id),
+  createdAt: text('created_at').notNull(),
+});
+
 // Users table
 export const users = sqliteTable('users', {
   id: integer('id').primaryKey({ autoIncrement: true }),
@@ -28,9 +36,26 @@ export const users = sqliteTable('users', {
   avatarUrl: text('avatar_url'),
   role: text('role').notNull(), // 'admin', 'team', 'guest'
   institutionId: integer('institution_id').notNull().references(() => institutions.id),
+  departmentId: integer('department_id').references(() => departments.id),
   tenantId: integer('tenant_id').notNull().references(() => tenants.id),
   createdAt: text('created_at').notNull(),
   updatedAt: text('updated_at').notNull(),
+});
+
+// Junction table for user-department many-to-many relationship
+export const userDepartments = sqliteTable('user_departments', {
+  id: integer('id').primaryKey({ autoIncrement: true }),
+  userId: integer('user_id').notNull().references(() => users.id, { onDelete: 'cascade' }),
+  departmentId: integer('department_id').notNull().references(() => departments.id, { onDelete: 'cascade' }),
+  createdAt: text('created_at').notNull(),
+});
+
+// Junction table for user-institution many-to-many relationship
+export const userInstitutions = sqliteTable('user_institutions', {
+  id: integer('id').primaryKey({ autoIncrement: true }),
+  userId: integer('user_id').notNull().references(() => users.id, { onDelete: 'cascade' }),
+  institutionId: integer('institution_id').notNull().references(() => institutions.id, { onDelete: 'cascade' }),
+  createdAt: text('created_at').notNull(),
 });
 
 // Tasks table
@@ -43,6 +68,7 @@ export const tasks = sqliteTable('tasks', {
   assignedToId: integer('assigned_to_id').references(() => users.id),
   createdById: integer('created_by_id').notNull().references(() => users.id),
   institutionId: integer('institution_id').notNull().references(() => institutions.id),
+  departmentId: integer('department_id').references(() => departments.id),
   tenantId: integer('tenant_id').notNull().references(() => tenants.id),
   dueDate: text('due_date'),
   reviewStatus: text('reviewStatus'), // Add reviewStatus column for task review workflow
@@ -63,6 +89,7 @@ export const events = sqliteTable('events', {
   approvalStatus: text('approval_status').notNull().default('pending'), // 'pending', 'approved', 'declined'
   createdById: integer('created_by_id').notNull().references(() => users.id),
   institutionId: integer('institution_id').notNull().references(() => institutions.id),
+  departmentId: integer('department_id').references(() => departments.id),
   tenantId: integer('tenant_id').notNull().references(() => tenants.id),
   createdAt: text('created_at').notNull(),
   updatedAt: text('updated_at').notNull(),
@@ -75,6 +102,7 @@ export const notifications = sqliteTable('notifications', {
   type: text('type').notNull(),
   title: text('title').notNull(),
   body: text('body').notNull(),
+  read: integer('read', { mode: 'boolean' }).notNull().default(false), // Legacy column restored
   readAt: text('read_at'),
   channel: text('channel').default('ui'), // 'ui', 'email', 'realtime'
   category: text('category'), // Notification categories for smart bundling
@@ -91,9 +119,72 @@ export const attendance = sqliteTable('attendance', {
   checkIn: text('check_in').notNull(),
   checkOut: text('check_out'),
   institutionId: integer('institution_id').notNull().references(() => institutions.id),
+  departmentId: integer('department_id').references(() => departments.id),
   tenantId: integer('tenant_id').notNull().references(() => tenants.id),
+  notes: text('notes'),
+  status: text('status'), // 'present', 'late', 'half_day', 'excused'
+
+  // Strict Accountability Fields (Spec 2.0)
+  workedMinutes: integer('worked_minutes').default(0),
+  lateArrival: integer('late_arrival', { mode: 'boolean' }).default(false),
+  earlyExit: integer('early_exit', { mode: 'boolean' }).default(false),
+  pendingTasksAtCheckout: integer('pending_tasks_at_checkout').default(0),
+  completedTasksToday: integer('completed_tasks_today').default(0),
+  approvedEarlyExit: integer('approved_early_exit', { mode: 'boolean' }).default(false),
+  negativeDisciplineEvent: integer('negative_discipline_event', { mode: 'boolean' }).default(false),
+  markedBy: integer('marked_by').references(() => users.id),
+
   createdAt: text('created_at').notNull(),
 });
+
+// Performance Snapshots (Derived, Cached) - Spec 2.0
+export const performanceSnapshots = sqliteTable('performance_snapshots', {
+  id: integer('id').primaryKey({ autoIncrement: true }),
+  userId: integer('user_id').notNull().references(() => users.id),
+  period: text('period').notNull(), // 'YYYY-MM'
+
+  assignedTasks: integer('assigned_tasks').default(0),
+  completedTasks: integer('completed_tasks').default(0),
+  onTimeCompletedTasks: integer('on_time_completed_tasks').default(0),
+  overdueTasks: integer('overdue_tasks').default(0),
+
+  taskCompletionRate: real('task_completion_rate').default(0), // stored as integer 0-100 or float? Spec says 0.85. Storing as Real/Float is better for precision, or integer 85. Let's use Real.
+  onTimeRate: real('on_time_rate').default(0), // Using integer 0-100 for simplicity in this DB or Real? SQLite integer vs real. Let's use REAL for scores.
+  overdueLoadRatio: real('overdue_load_ratio').default(0),
+  avgDelayHours: real('avg_delay_hours').default(0),
+
+  avgDailyHours: real('avg_daily_hours').default(0),
+  attendanceDisciplineScore: real('attendance_discipline_score').default(0),
+
+  individualPerformanceScore: real('individual_performance_score').default(0),
+  performanceStatus: text('performance_status').notNull(), // 'performing', 'at_risk', 'underperforming'
+
+  negativeDisciplineDays: integer('negative_discipline_days').default(0),
+
+  tenantId: integer('tenant_id').notNull().references(() => tenants.id),
+  generatedAt: text('generated_at').notNull(),
+});
+
+// Department Snapshot - Spec 2.0
+export const departmentHealthSnapshots = sqliteTable('department_health_snapshots', {
+  id: integer('id').primaryKey({ autoIncrement: true }),
+  period: text('period').notNull(), // 'YYYY-MM'
+
+  totalTasks: integer('total_tasks').default(0),
+  completedTasks: integer('completed_tasks').default(0),
+  overdueTasks: integer('overdue_tasks').default(0),
+
+  avgCompletionRate: real('avg_completion_rate').default(0),
+  avgOnTimeRate: real('avg_on_time_rate').default(0),
+  avgAttendanceScore: real('avg_attendance_score').default(0),
+
+  departmentHealthScore: real('department_health_score').default(0),
+  healthStatus: text('health_status').notNull(), // 'healthy', 'strained', 'poor'
+
+  tenantId: integer('tenant_id').notNull().references(() => tenants.id),
+  generatedAt: text('generated_at').notNull(),
+});
+
 
 // Task comments table
 export const taskComments = sqliteTable('task_comments', {
@@ -128,6 +219,7 @@ export const files = sqliteTable('files', {
   visibility: text('visibility').notNull(), // 'all', 'team', 'guest'
   uploadedById: integer('uploaded_by_id').notNull().references(() => users.id),
   institutionId: integer('institution_id').notNull().references(() => institutions.id),
+  departmentId: integer('department_id').references(() => departments.id),
   tenantId: integer('tenant_id').notNull().references(() => tenants.id),
   createdAt: text('created_at').notNull(),
 });
@@ -161,6 +253,8 @@ export const taskActivity = sqliteTable('task_activity', {
   createdAt: text('created_at').notNull(),
 });
 
+
+
 // Automation rules table for no-code workflow builder
 export const automationRules = sqliteTable('automation_rules', {
   id: integer('id').primaryKey({ autoIncrement: true }),
@@ -180,11 +274,12 @@ export const automationRules = sqliteTable('automation_rules', {
 // Audit log table for compliance
 export const auditLog = sqliteTable('audit_log', {
   id: integer('id').primaryKey({ autoIncrement: true }),
-  userId: integer('user_id').notNull().references(() => users.id),
+  userId: text('user_id').notNull(), // Store as string to match Firebase UID format
   action: text('action').notNull(), // 'create', 'update', 'delete', 'login', etc.
   resourceType: text('resource_type').notNull(), // 'task', 'event', 'user', etc.
-  resourceId: integer('resource_id'),
-  details: text('details', { mode: 'json' }), // Additional details about the action
+  resourceId: text('resource_id'),
+  details: text('details', { mode: 'json' }) // Additional details about the action
+    .default('{}'),
   ipAddress: text('ip_address'), // Masked IP address
   userAgent: text('user_agent'),
   tenantId: integer('tenant_id').notNull().references(() => tenants.id),
@@ -203,12 +298,24 @@ export const mediaReports = sqliteTable('media_reports', {
   updatedAt: text('updated_at').notNull(),
 });
 
-// VIP embeddings table for face recognition
+// VIP embeddings table for face recognition - HMR Touch
 export const vipEmbeddings = sqliteTable('vip_embeddings', {
   id: integer('id').primaryKey({ autoIncrement: true }),
   label: text('label').notNull(), // VIP name/label
   userId: integer('user_id').references(() => users.id), // Optional association with user
   embedding: text('embedding', { mode: 'json' }).notNull(), // JSON array of embedding vector (encrypted)
   createdBy: integer('created_by').references(() => users.id), // Admin who created the embedding
+  createdAt: text('created_at').notNull(),
+});
+
+// Admin intervention notes table - Spec 4.1
+export const adminInterventionNotes = sqliteTable('admin_intervention_notes', {
+  id: integer('id').primaryKey({ autoIncrement: true }),
+  userId: integer('user_id').notNull(), // FK temporarily removed for safe migration
+  period: text('period').notNull(), // 'YYYY-MM'
+  riskLevelAtTime: text('risk_level_at_time').notNull(), // 'Low' | 'Medium' | 'High'
+  note: text('note').notNull(),
+  actionType: text('action_type').notNull(), // 'Observation' | 'Counselled' | 'Warning Issued' | 'Support Planned' | 'No Action Needed'
+  createdBy: integer('created_by').notNull(), // FK temporarily removed for safe migration
   createdAt: text('created_at').notNull(),
 });

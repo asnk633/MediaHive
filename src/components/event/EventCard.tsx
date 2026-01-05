@@ -14,18 +14,23 @@ export function EventCard({ event, onClick, className }: EventCardProps) {
         <div
             onClick={onClick}
             className={cn(
-                "group relative overflow-hidden rounded-xl border border-white/5 bg-surface/40 p-4 transition-all hover:bg-surface/60 hover:shadow-lg hover:shadow-accent/5 cursor-pointer backdrop-blur-sm",
+                event.isSystemEvent ? "border-amber-500/20 bg-amber-500/5 hover:bg-amber-500/10 hover:shadow-amber-500/5" : "border-white/5 bg-surface/40 hover:bg-surface/60 hover:shadow-accent/5",
                 className
             )}
         >
-            <div className="absolute left-0 top-0 h-full w-1 bg-accent" />
+            <div className={cn("absolute left-0 top-0 h-full w-1", event.isSystemEvent ? "bg-amber-500" : "bg-accent")} />
 
             <div className="mb-2 flex items-start justify-between gap-2">
                 <h3 className="font-semibold text-text-primary line-clamp-1 group-hover:text-accent transition-colors">
                     {event.title}
                 </h3>
-                <span className="shrink-0 rounded-full bg-accent/10 px-2 py-0.5 text-[10px] font-bold uppercase tracking-wider text-accent">
-                    Event
+                <span className={cn(
+                    "shrink-0 rounded-full px-2 py-0.5 text-[10px] font-bold uppercase tracking-wider",
+                    event.isSystemEvent
+                        ? "bg-amber-500/10 text-amber-400 border border-amber-500/20"
+                        : "bg-accent/10 text-accent"
+                )}>
+                    {event.isSystemEvent ? "System Event" : "Event"}
                 </span>
             </div>
 

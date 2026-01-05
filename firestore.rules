@@ -1,67 +1,104 @@
 rules_version = '2';
-
 service cloud.firestore {
   match /databases/{database}/documents {
 
-    /** Safe role fetcher with fallback */
-    function userRole() {
-      return request.auth != null &&
-             get(/databases/$(database)/documents/roles/$(request.auth.uid)).exists()
-             ? get(/databases/$(database)/documents/roles/$(request.auth.uid)).data['role']
-             : 'team'; // Default to team if no role doc exists
-    }
-
-    function isAuth() {
+    function isSignedIn() {
       return request.auth != null;
     }
 
-    /* ROLES */
-    match /roles/{uid} {
-      allow read: if isAuth();
-      allow write: if isAuth(); // Temporarily allow all authenticated users to write
+    function userRole() {
+      return get(/databases/$(database)/documents/users/$(request.auth.uid)).data.role;
     }
 
-    /* USERS */
-    match /users/{uid} {
-      allow read: if isAuth();
-      allow write: if isAuth(); // Allow any authenticated user to write for now
+    function isAdmin() {
+      return userRole() == "admin";
     }
 
-    /* TASKS */
-    match /tasks/{id} {
-      allow read: if isAuth();
-      allow create: if isAuth(); // Simplified for testing
-      allow update: if isAuth();
-      allow delete: if isAuth();
+    function isTeam() {
+      return userRole() == "team";
     }
 
-    /* EVENTS */
-    match /events/{id} {
-      allow read: if isAuth();
-      allow create: if isAuth();
-      allow update: if isAuth();
-      allow delete: if isAuth();
+    function isGuest() {
+      return userRole() == "guest";
     }
 
-    /* NOTIFICATIONS */
-    match /notifications/{id} {
-      allow read: if isAuth();
-      allow create: if isAuth(); // Allow anyone to create for testing
-      allow update: if isAuth();
-      allow delete: if isAuth();
+    function isOwner(resource) {
+      return resource.data.createdBy == request.auth.uid;
     }
 
-    /* FILES */
+    function canGuestUpdate(resource) {
+      return request.resource.data
+        .diff(resource.data)
+        .affectedKeys()
+        .hasOnly(["title", "description"]);
+    }
+
+    function canTeamUpdate(resource) {
+      return !(resource.data.status == "pending" &&
+               request.resource.data.status == "todo");
+    }
+
+    match /tasks/{taskId} {
+
+      allow read: if isSignedIn() &&
+        (
+          isAdmin() ||
+          isTeam() ||
+          (isGuest() && resource.data.createdBy == request.auth.uid)
+        );
+
+      allow create: if isSignedIn() &&
+        (
+          isAdmin() ||
+          isTeam() ||
+          (isGuest() &&
+            request.resource.data.createdBy == request.auth.uid &&
+            request.resource.data.status == "pending" &&
+            request.resource.data.priority == "low" &&
+            !("assignee" in request.resource.data)
+          )
+        );
+
+      allow update: if isSignedIn() &&
+        (
+          isAdmin() ||
+          (isTeam() && canTeamUpdate(resource)) ||
+          (isGuest() && isOwner(resource) && canGuestUpdate(resource))
+        );
+
+      allow delete: if isSignedIn() && isAdmin();
+    }
+
+    match /tasks/{taskId}/comments/{commentId} {
+      allow read: if isSignedIn();
+      allow create: if isSignedIn();
+      allow update, delete: if isSignedIn() &&
+        (
+          isAdmin() ||
+          resource.data.authorId == request.auth.uid
+        );
+    }
+
+    match /events/{eventId} {
+      allow read: if isSignedIn();
+      allow create: if isSignedIn() &&
+        (
+          isAdmin() ||
+          isTeam() ||
+          (isGuest() && request.resource.data.status == "pending")
+        );
+      allow update, delete: if isSignedIn() && isAdmin();
+    }
+
     match /files/{fileId} {
-      allow read: if isAuth();
-      allow create: if isAuth(); // Allow anyone for testing
-      allow update: if isAuth();
-      allow delete: if isAuth();
+      allow read: if isSignedIn();
+      allow create: if isSignedIn() && (isAdmin() || isTeam());
+      allow delete: if isSignedIn() && isAdmin();
     }
 
-    // Catch-all: allow authenticated users to read/write
-    match /{document=**} {
-      allow read, write: if isAuth();
+    match /users/{userId} {
+      allow read: if isSignedIn();
+      allow write: if isSignedIn() && isAdmin();
     }
   }
 }

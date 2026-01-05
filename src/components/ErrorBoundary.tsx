@@ -1,13 +1,13 @@
 'use client';
 import React from 'react';
 
-export default class ErrorBoundary extends React.Component<{children:React.ReactNode}, {hasError:boolean}> {
+export default class ErrorBoundary extends React.Component<{ children: React.ReactNode }, { hasError: boolean }> {
   state = { hasError: false };
 
   static getDerivedStateFromError() { return { hasError: true }; }
 
   componentDidCatch(error: any, info: any) {
-    import('@/lib/logger').then(m => m.logError(error, info));
+    import('@/lib/logger').then(m => m.logger.error("ErrorBoundary caught error", { error, info }));
   }
 
   render() {

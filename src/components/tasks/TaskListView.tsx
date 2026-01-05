@@ -1,236 +1,554 @@
-import React from 'react';
+import React, { useState, useMemo } from 'react';
+import { Skeleton } from '@/components/ui/skeleton';
 import { Task } from '@/types/task';
 import { format } from 'date-fns';
-import { MoreVertical } from 'lucide-react';
 import { TaskService } from '@/services/tasks';
-import { useRole } from '@/app/(shell)/RoleContext';
+import { useAuth } from '@/contexts/AuthContext';
+import { UserService } from '@/services/userService';
+import { BulkOperationsToolbar } from './BulkOperationsToolbar';
+import { EditTaskDialog } from './EditTaskDialog';
+import { SafeAvatar } from "@/components/ui/SafeAvatar";
+import { MoreVertical, Calendar, User as UserIcon, CheckCircle2, Clock, AlertCircle, Circle, Filter, Edit3, Layers } from 'lucide-react';
+import {
+    DropdownMenu,
+    DropdownMenuContent,
+    DropdownMenuItem,
+    DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
+import { cn } from "@/lib/utils";
 
 interface TaskListViewProps {
     tasks: Task[];
+    loading?: boolean;
     onTaskClick?: (task: Task) => void;
+    onTaskUpdate?: (taskId: string, updates: Partial<Task>) => void;
 }
 
-export const TaskListView: React.FC<TaskListViewProps> = ({ tasks, onTaskClick }) => {
-    const { user } = useRole();
-    const isAdmin = user?.role === 'admin';
-    const isTeam = user?.role === 'team' || isAdmin; // Team can edit too
+const safeDate = (date: any): Date | null => {
+    if (!date) return null;
+    if (typeof date === 'object' && 'seconds' in date) return new Date(date.seconds * 1000);
+    if (typeof date === 'string') return new Date(date);
+    return null;
+};
 
-    const priorityColors: Record<string, string> = {
-        high: 'text-red-600 bg-red-50',
-        medium: 'text-orange-600 bg-orange-50',
-        low: 'text-blue-600 bg-blue-50',
+// Admin Intelligence Design Tokens
+interface BadgeProps extends React.HTMLAttributes<HTMLSpanElement> {
+    priority?: string;
+    status?: string;
+    onClick?: () => void;
+}
+
+const PriorityBadge = React.forwardRef<HTMLSpanElement, BadgeProps>(({ priority, className, ...props }, ref) => {
+    const styles = {
+        urgent: 'bg-red-500/10 text-red-500 border-red-500/20',
+        high: 'bg-orange-500/10 text-orange-500 border-orange-500/20',
+        medium: 'bg-yellow-500/10 text-yellow-500 border-yellow-500/20',
+        low: 'bg-slate-500/10 text-slate-400 border-slate-500/20'
+    };
+    return (
+        <span
+            ref={ref}
+            className={cn(
+                "px-2 py-0.5 rounded text-[10px] uppercase font-bold tracking-wider border cursor-pointer hover:bg-white/5 transition-colors",
+                styles[(priority || 'low') as keyof typeof styles] || styles.low,
+                className
+            )}
+            {...props}
+        >
+            {priority}
+        </span>
+    );
+});
+PriorityBadge.displayName = "PriorityBadge";
+
+const StatusPill = React.forwardRef<HTMLSpanElement, BadgeProps>(({ status, onClick, className, ...props }, ref) => {
+    const config = {
+        done: { color: 'emerald', icon: CheckCircle2, label: 'Completed' },
+        in_progress: { color: 'blue', icon: Clock, label: 'Working' },
+        review: { color: 'amber', icon: AlertCircle, label: 'On Hold' },
+        todo: { color: 'slate', icon: Circle, label: 'To Do' },
+        pending: { color: 'amber', icon: AlertCircle, label: 'Approval Needed' }
     };
 
-    const statusColors: Record<string, string> = {
-        todo: 'bg-gray-100 text-gray-600',
-        'in-progress': 'bg-blue-100 text-blue-600',
-        review: 'bg-purple-100 text-purple-600',
-        done: 'bg-green-100 text-green-600',
-    };
+    // @ts-ignore
+    const { color, icon: Icon, label } = config[status] || config.pending;
 
-    const handleStatusUpdate = (e: React.MouseEvent, task: Task, newStatus: Task['status']) => {
-        e.stopPropagation();
-        TaskService.updateTask(task.id, { status: newStatus });
-    };
-
-    const [assignOpenForTask, setAssignOpenForTask] = React.useState<string | null>(null);
-
-    // Mock members as per request
-    const mockMembers = [
-        { id: 'u3', name: 'Shukoor Rahman' },
-        { id: 'u_anu', name: 'Anu Anwar' },
-        { id: 'u_sab', name: 'Sabith Amjadi' },
-        { id: 'u2', name: 'KMS Pallikkunnu' }, // Keeping previous mock too just in case
-    ];
-
-    const handleToggleAssign = (e: React.MouseEvent, task: Task, member: { id: string, name: string }) => {
-        e.stopPropagation(); // Stop click from closing dropdown if it relies on bubbling
-        // Use atomic transaction in service
-        TaskService.toggleTaskAssignee(task.id, { uid: member.id, name: member.name });
-    };
-
-    // Close dropdown when clicking outside
-    React.useEffect(() => {
-        const close = (e: MouseEvent) => {
-            // Only close if the click target is NOT inside a dropdown or valid button
-            // But since we stopPropagation on the dropdown items, this global listener 
-            // primarily catches clicks *outside*.
-            setAssignOpenForTask(null);
-        };
-
-        if (assignOpenForTask) {
-            // Use timeoute to avoid immediate close from the opening click if it bubbles up
-            setTimeout(() => window.addEventListener('click', close), 0);
-        }
-        return () => window.removeEventListener('click', close);
-    }, [assignOpenForTask]);
-
-    const handlePriorityUpdate = (e: React.MouseEvent, task: Task, newPriority: Task['priority']) => {
-        e.stopPropagation();
-        TaskService.updateTask(task.id, { priority: newPriority });
+    const colorStyles = {
+        emerald: "bg-emerald-500/10 text-emerald-400 border-emerald-500/20",
+        blue: "bg-blue-500/10 text-blue-400 border-blue-500/20",
+        amber: "bg-amber-500/10 text-amber-400 border-amber-500/20",
+        slate: "bg-slate-500/10 text-slate-400 border-slate-500/20"
     };
 
     return (
-        <div className="bg-white border border-gray-200 rounded-xl overflow-hidden shadow-sm">
-            <div className="overflow-x-auto">
-                <table className="w-full text-left text-sm text-gray-500">
-                    <thead className="bg-gray-50 text-xs uppercase text-gray-700 font-medium">
-                        <tr>
-                            <th className="px-6 py-4">Title</th>
-                            <th className="px-6 py-4">Status</th>
-                            <th className="px-6 py-4">Priority</th>
-                            <th className="px-6 py-4">Due Date</th>
-                            <th className="px-6 py-4">Assigned To</th>
-                            <th className="px-6 py-4 sr-only">Actions</th>
-                        </tr>
-                    </thead>
-                    <tbody className="divide-y divide-gray-100">
-                        {tasks.map((task) => (
-                            <tr
-                                key={task.id}
-                                className="hover:bg-gray-50 transition-colors cursor-pointer group"
-                                onClick={() => onTaskClick?.(task)}
-                            >
-                                <td className="px-6 py-4 font-medium text-gray-900">
-                                    <div className="max-w-xs truncate" title={task.title}>{task.title}</div>
-                                    <div className="text-xs text-gray-400 max-w-xs truncate">{task.department}</div>
-                                </td>
-                                <td className="px-6 py-4">
-                                    {isTeam ? (
-                                        <div className="group/status relative inline-block">
-                                            <span className={`px-2.5 py-1 rounded-full text-xs font-medium whitespace-nowrap cursor-pointer hover:ring-2 hover:ring-gray-200 ${statusColors[task.status]}`}>
-                                                {task.status.replace('-', ' ')}
-                                            </span>
-                                            {/* Dropdown on Hover/Focus (Simplified for now, ideal specific dropdown comp) */}
-                                            <div className="absolute top-full left-0 mt-1 w-32 bg-white rounded-lg shadow-xl border border-gray-100 hidden group-hover/status:block z-20">
-                                                {Object.keys(statusColors).map((s) => (
-                                                    <div
-                                                        key={s}
-                                                        onClick={(e) => handleStatusUpdate(e, task, s as any)}
-                                                        className="px-3 py-2 hover:bg-gray-50 cursor-pointer capitalize text-xs"
-                                                    >
-                                                        {s.replace('-', ' ')}
-                                                    </div>
-                                                ))}
-                                            </div>
-                                        </div>
-                                    ) : (
-                                        <span className={`px-2.5 py-1 rounded-full text-xs font-medium whitespace-nowrap ${statusColors[task.status]}`}>
-                                            {task.status.replace('-', ' ')}
-                                        </span>
-                                    )}
-                                </td>
-                                <td className="px-6 py-4">
-                                    {isTeam ? (
-                                        <div className="group/priority relative inline-block">
-                                            <span className={`px-2.5 py-1 rounded-full text-xs font-medium whitespace-nowrap cursor-pointer hover:ring-2 hover:ring-gray-200 ${priorityColors[task.priority]}`}>
-                                                {task.priority.charAt(0).toUpperCase() + task.priority.slice(1)}
-                                            </span>
-                                            <div className="absolute top-full left-0 mt-1 w-24 bg-white rounded-lg shadow-xl border border-gray-100 hidden group-hover/priority:block z-20">
-                                                {['low', 'medium', 'high'].map((p) => (
-                                                    <div
-                                                        key={p}
-                                                        onClick={(e) => handlePriorityUpdate(e, task, p as any)}
-                                                        className="px-3 py-2 hover:bg-gray-50 cursor-pointer capitalize text-xs"
-                                                    >
-                                                        {p}
-                                                    </div>
-                                                ))}
-                                            </div>
-                                        </div>
-                                    ) : (
-                                        <span className={`px-2.5 py-1 rounded-full text-xs font-medium ${priorityColors[task.priority]}`}>
-                                            {task.priority.charAt(0).toUpperCase() + task.priority.slice(1)}
-                                        </span>
-                                    )}
-                                </td>
-                                <td className="px-6 py-4 whitespace-nowrap">
-                                    {task.dueDate?.seconds ? format(new Date(task.dueDate.seconds * 1000), 'MMM d, yyyy') : '-'}
-                                </td>
-                                <td className="px-6 py-4">
-                                    {Array.isArray(task.assignedTo) && task.assignedTo.length > 0 ? (
-                                        <div className="flex items-center gap-2 relative group/assign">
-                                            <div className="flex -space-x-2 overflow-hidden">
-                                                {task.assignedTo.map((assignee, i) => (
-                                                    <div
-                                                        key={i}
-                                                        className="inline-block w-8 h-8 rounded-full ring-2 ring-white bg-indigo-100 text-indigo-600 flex items-center justify-center text-xs font-bold"
-                                                        title={assignee.name}
-                                                    >
-                                                        {assignee.name.charAt(0)}
-                                                    </div>
-                                                ))}
-                                            </div>
-                                            {isAdmin && <button onClick={(e) => { e.stopPropagation(); setAssignOpenForTask(task.id === assignOpenForTask ? null : task.id); }} className="w-8 h-8 rounded-full bg-gray-50 flex items-center justify-center text-gray-400 hover:bg-gray-100 ring-2 ring-white text-xs z-10">+</button>}
+        <span
+            ref={ref}
+            onClick={onClick}
+            className={cn(
+                "px-2.5 py-1 rounded text-xs font-semibold border flex items-center gap-1.5 transition-all select-none w-fit cursor-pointer hover:bg-white/5 active:scale-95",
+                // @ts-ignore
+                colorStyles[color],
+                className
+            )}
+            {...props}
+        >
+            <Icon size={12} />
+            {label}
+        </span>
+    );
+});
+StatusPill.displayName = "StatusPill";
 
-                                            {/* Assignment Dropdown */}
-                                            {assignOpenForTask === task.id && (
-                                                <div className="absolute top-full left-0 mt-2 w-48 bg-white rounded-xl shadow-xl border border-gray-100 z-50 p-2">
-                                                    <div className="text-xs font-semibold text-gray-400 px-2 py-1 mb-1">ASSIGN TO</div>
-                                                    {mockMembers.map(m => {
-                                                        const isAssigned = Array.isArray(task.assignedTo) && task.assignedTo.some(current => current.uid === m.id);
-                                                        return (
-                                                            <div
-                                                                key={m.id}
-                                                                onClick={(e) => handleToggleAssign(e, task, m)}
-                                                                className={`flex items-center gap-2 px-2 py-2 rounded-lg cursor-pointer text-sm ${isAssigned ? 'bg-indigo-50 text-indigo-700' : 'hover:bg-gray-50 text-gray-700'}`}
-                                                            >
-                                                                <div className={`w-4 h-4 rounded border flex items-center justify-center ${isAssigned ? 'bg-indigo-600 border-indigo-600' : 'border-gray-300'}`}>
-                                                                    {isAssigned && <span className="text-white text-[10px]">✓</span>}
-                                                                </div>
-                                                                {m.name}
-                                                            </div>
-                                                        );
-                                                    })}
+const TaskListViewComponent: React.FC<TaskListViewProps> = ({ tasks, loading = false, onTaskClick, onTaskUpdate }) => {
+    const { user } = useAuth();
+    const isAdmin = user?.role?.toLowerCase() === 'admin' || (user as any)?.isSuperAdmin || user?.email === 'media@thaibagarden.com';
+
+    // Filters & Views
+    const [view, setView] = useState<'all' | 'mine' | 'overdue'>('all');
+    const [filterStatus, setFilterStatus] = useState<string>('all');
+    const [filterPriority, setFilterPriority] = useState<string>('all');
+
+    // Local State
+    const [taskToEdit, setTaskToEdit] = useState<Task | null>(null);
+    const [editDialogOpen, setEditDialogOpen] = useState(false);
+    const [selectedTaskIds, setSelectedTaskIds] = useState<string[]>([]);
+    const [teamMembers, setTeamMembers] = useState<{ uid: string; name: string }[]>([]);
+
+    React.useEffect(() => {
+        const fetchTeam = async () => {
+            const members = await UserService.getTeamMembers();
+            setTeamMembers(members);
+        };
+        fetchTeam();
+    }, []);
+
+    // Signal to hide FAB when bulk actions are active
+    React.useEffect(() => {
+        if (selectedTaskIds.length > 0) {
+            document.body.classList.add('hide-fab');
+        } else {
+            document.body.classList.remove('hide-fab');
+        }
+        return () => document.body.classList.remove('hide-fab');
+    }, [selectedTaskIds.length]);
+
+    // --- LOGIC ---
+    /*
+     * [CRITICAL SYSTEM PATH] - FEATURE FROZEN
+     * Sorting and Filtering Logic is LOCKED.
+     * Do not modify without approval.
+     */
+    const processedTasks = useMemo(() => {
+        let result = [...tasks];
+
+        if (view === 'mine' && user) {
+            result = result.filter(t => {
+                if (!t.assignedTo) return false;
+                if (Array.isArray(t.assignedTo)) {
+                    return t.assignedTo.some(a => (typeof a === 'string' ? a : a.uid) === user.uid);
+                }
+                return false;
+            });
+        }
+        if (view === 'overdue') {
+            const now = new Date();
+            result = result.filter(t => {
+                const due = safeDate(t.dueDate);
+                return due && due < now && t.status !== 'done';
+            });
+        }
+
+        if (filterStatus !== 'all') result = result.filter(t => t.status === filterStatus);
+        if (filterPriority !== 'all') result = result.filter(t => t.priority === filterPriority);
+
+        // Sorting: Overdue > Today > Soon
+        result.sort((a, b) => {
+            const dateA = safeDate(a.dueDate);
+            const dateB = safeDate(b.dueDate);
+
+            // Completed always last
+            if (a.status === 'done' && b.status !== 'done') return 1;
+            if (a.status !== 'done' && b.status === 'done') return -1;
+
+            if (!dateA && !dateB) return 0;
+            if (!dateA) return 1;
+            if (!dateB) return -1;
+            return dateA.getTime() - dateB.getTime();
+        });
+
+        return result;
+    }, [tasks, view, filterStatus, filterPriority, user]);
+
+    // INLINE ACTIONS
+    const handleStatusUpdate = async (taskId: string, newStatus: Task['status']) => {
+        onTaskUpdate?.(taskId, { status: newStatus });
+        await TaskService.updateTask(taskId, { status: newStatus });
+    };
+
+    const handlePriorityUpdate = async (taskId: string, newPriority: string) => {
+        onTaskUpdate?.(taskId, { priority: newPriority as any });
+        await TaskService.updateTask(taskId, { priority: newPriority as any });
+    };
+
+    const handleAssigneeToggle = async (taskId: string, member: { uid: string, name: string }) => {
+        const task = tasks.find(t => t.id === taskId);
+        if (task) {
+            const currentAssignees = task.assignedTo || [];
+            const exists = Array.isArray(currentAssignees) && currentAssignees.some(a => (typeof a === 'string' ? a : a.uid) === member.uid);
+            let newAssignees;
+            if (exists) {
+                newAssignees = currentAssignees.filter(a => (typeof a === 'string' ? a : a.uid) !== member.uid);
+            } else {
+                newAssignees = [...currentAssignees, member];
+            }
+            onTaskUpdate?.(taskId, { assignedTo: newAssignees });
+        }
+        await TaskService.toggleTaskAssignee(taskId, member);
+    };
+
+    const toggleSelection = (taskId: string) => {
+        if (!isAdmin) return;
+        setSelectedTaskIds(prev =>
+            prev.includes(taskId) ? prev.filter(id => id !== taskId) : [...prev, taskId]
+        );
+    };
+
+    return (
+        <div className="space-y-6">
+            {/* Top Bar: Executive Controls */}
+            <div className="flex flex-col md:flex-row gap-4 items-start md:items-center justify-between border-b border-white/10 pb-6">
+
+                {/* Views Pill */}
+                <div className="flex bg-black/40 p-1 rounded-lg border border-white/5">
+                    {(['all', 'mine', 'overdue'] as const).map((v) => (
+                        <button
+                            key={v}
+                            onClick={() => setView(v)}
+                            className={cn(
+                                "px-6 py-2 text-xs font-semibold uppercase tracking-wider rounded-md transition-all",
+                                view === v ? "bg-[#1e293b] text-white shadow-sm border border-white/10" : "text-gray-500 hover:text-gray-300"
+                            )}
+                        >
+                            {v === 'mine' ? 'My Tasks' : v === 'overdue' ? 'Attention Needed' : 'All Tasks'}
+                        </button>
+                    ))}
+                </div>
+
+                {/* Filters */}
+                <div className="flex items-center gap-3">
+                    <Filter className="w-4 h-4 text-gray-500" />
+                    <select
+                        value={filterStatus}
+                        onChange={(e) => setFilterStatus(e.target.value)}
+                        className="bg-transparent border-none text-sm font-medium text-gray-400 focus:ring-0 cursor-pointer hover:text-white transition-colors [&>option]:bg-[#0f172a] [&>option]:text-white"
+                    >
+                        <option value="all" className="bg-[#0f172a] text-white">Any Status</option>
+                        <option value="todo" className="bg-[#0f172a] text-white">Pending</option>
+                        <option value="in_progress" className="bg-[#0f172a] text-white">Working</option>
+                        <option value="review" className="bg-[#0f172a] text-white">On Hold</option>
+                        <option value="done" className="bg-[#0f172a] text-white">Completed</option>
+                    </select>
+
+                    <div className="w-px h-4 bg-white/10" />
+
+                    <select
+                        value={filterPriority}
+                        onChange={(e) => setFilterPriority(e.target.value)}
+                        className="bg-transparent border-none text-sm font-medium text-gray-400 focus:ring-0 cursor-pointer hover:text-white transition-colors [&>option]:bg-[#0f172a] [&>option]:text-white"
+                    >
+                        <option value="all" className="bg-[#0f172a] text-white">Any Priority</option>
+                        <option value="urgent" className="bg-[#0f172a] text-white">Urgent</option>
+                        <option value="high" className="bg-[#0f172a] text-white">High</option>
+                        <option value="medium" className="bg-[#0f172a] text-white">Medium</option>
+                        <option value="low" className="bg-[#0f172a] text-white">Low</option>
+                    </select>
+                </div>
+            </div>
+
+            {/* Pending Approvals Section (Admins Only) - Always visible regardless of filters */}
+            {isAdmin && tasks.some(t => t.approvalStatus === 'pending') && (
+                <div className="mb-8 p-1 rounded-2xl bg-gradient-to-r from-amber-500/10 to-orange-500/5 border border-amber-500/20">
+                    <div className="px-6 py-4 flex items-center justify-between border-b border-white/5">
+                        <div className="flex items-center gap-2">
+                            <div className="w-2 h-2 rounded-full bg-amber-500 animate-pulse" />
+                            <h3 className="text-sm font-bold text-amber-200 uppercase tracking-widest">Pending Approvals</h3>
+                        </div>
+                        <span className="text-xs font-mono text-amber-500/60">{tasks.filter(t => t.approvalStatus === 'pending').length} Requests</span>
+                    </div>
+                    <div className="divide-y divide-white/5">
+                        {tasks.filter(t => t.approvalStatus === 'pending').map(task => (
+                            <div key={task.id} className="grid grid-cols-12 gap-4 px-6 py-4 items-center bg-white/[0.02] hover:bg-white/[0.05] transition-colors">
+                                <div className="col-span-8 flex flex-col gap-1">
+                                    <h4 className="text-sm font-medium text-white">{task.title}</h4>
+                                    <div className="flex items-center gap-2 text-[10px] text-white/50">
+                                        <span>Requested by <span className="text-white">{typeof task.createdBy === 'object' ? task.createdBy.name : 'Guest'}</span></span>
+                                        <span>•</span>
+                                        <span>{task.description ? 'Has Description' : 'No Details'}</span>
+                                    </div>
+                                </div>
+                                <div className="col-span-4 flex justify-end gap-2">
+                                    <button
+                                        onClick={() => { setTaskToEdit(task); setEditDialogOpen(true); }}
+                                        className="px-3 py-1.5 text-xs font-bold text-white bg-blue-600 hover:bg-blue-500 rounded-lg transition-colors shadow-lg shadow-blue-500/20"
+                                    >
+                                        Review & Assign
+                                    </button>
+                                </div>
+                            </div>
+                        ))}
+                    </div>
+                </div>
+            )}
+
+            {/* Task Table-List */}
+            <div className="rounded-2xl border border-white/10 bg-[#0f172a] shadow-2xl overflow-hidden min-h-[400px]">
+                {/* Header Row */}
+                <div className="grid grid-cols-12 gap-4 px-6 py-3 bg-black/20 border-b border-white/5 text-[10px] uppercase font-bold text-white/30 tracking-widest">
+                    <div className="col-span-6 md:col-span-6">Task & Priority</div>
+                    <div className="col-span-3 md:col-span-2 hidden md:block">Assignee</div>
+                    <div className="col-span-3 md:col-span-2">Status</div>
+                    <div className="col-span-3 md:col-span-2 text-right">Due Date</div>
+                </div>
+
+                {loading ? (
+                    <div className="p-6 space-y-4">
+                        {[1, 2, 3, 4].map(i => <Skeleton key={i} className="h-12 w-full bg-white/5 rounded" />)}
+                    </div>
+                ) : processedTasks.filter(t => isAdmin ? t.approvalStatus !== 'pending' : true).length === 0 ? (
+                    <div className="flex flex-col items-center justify-center h-64 text-center">
+                        <div className="w-16 h-16 rounded-full bg-white/5 flex items-center justify-center mb-4">
+                            <CheckCircle2 className="w-8 h-8 text-white/20" />
+                        </div>
+                        <h3 className="text-white/40 font-medium">All clear.</h3>
+                        <p className="text-white/20 text-sm mt-1">No tasks require attention.</p>
+                    </div>
+                ) : (
+                    <div className="divide-y divide-white/5">
+                        {processedTasks.filter(t => isAdmin ? t.approvalStatus !== 'pending' : true).map(task => {
+                            const dueDate = safeDate(task.dueDate);
+                            const isOverdue = dueDate && dueDate < new Date() && task.status !== 'done';
+                            const isSelected = selectedTaskIds.includes(task.id);
+
+                            return (
+                                <div
+                                    key={task.id}
+                                    onClick={() => onTaskClick?.(task)}
+                                    className={cn(
+                                        "group grid grid-cols-12 gap-4 px-6 py-4 items-center transition-all hover:bg-white/[0.02]",
+                                        isSelected && "bg-blue-500/5",
+                                        isOverdue && "bg-red-500/[0.02] shadow-[inset_2px_0_0_0_#ef4444]"
+                                    )}
+                                    role="button"
+                                    tabIndex={0}
+                                    onKeyDown={(e) => e.key === 'Enter' && onTaskClick?.(task)}
+                                >
+                                    {/* Title & Priority */}
+                                    <div className="col-span-6 md:col-span-6 flex items-center gap-3 overflow-hidden">
+                                        <div onClick={e => e.stopPropagation()} className="shrink-0 pt-1">
+                                            {isAdmin ? (
+                                                <div
+                                                    onClick={() => toggleSelection(task.id)}
+                                                    className={cn("w-4 h-4 rounded border cursor-pointer transition-colors flex items-center justify-center",
+                                                        isSelected ? "bg-blue-500 border-blue-500" : "border-white/20 hover:border-white/40 bg-transparent"
+                                                    )}
+                                                >
+                                                    {isSelected && <CheckCircle2 size={10} className="text-white" />}
                                                 </div>
+                                            ) : (
+                                                <div className={cn("w-1.5 h-1.5 rounded-full mt-1.5", isOverdue ? "bg-red-500" : "bg-white/10")} />
                                             )}
                                         </div>
-                                    ) : (
-                                        isAdmin ? (
-                                            <div className="relative">
-                                                <span
-                                                    onClick={(e) => { e.stopPropagation(); setAssignOpenForTask(task.id === assignOpenForTask ? null : task.id); }}
-                                                    className="text-blue-500 text-xs font-medium cursor-pointer hover:underline"
-                                                >
-                                                    Assign
+                                        <div className="min-w-0 flex flex-col gap-1">
+                                            <div className="flex items-center gap-2">
+                                                <h3 className={cn("text-sm font-medium text-gray-200 truncate group-hover:text-white transition-colors", task.status === 'done' && "line-through opacity-50")}>{task.title}</h3>
+                                                {/* INLINE PRIORITY EDIT - ADMIN ONLY */}
+                                                <div onClick={e => isAdmin ? e.stopPropagation() : null}>
+                                                    {isAdmin ? (
+                                                        <DropdownMenu>
+                                                            <DropdownMenuTrigger asChild>
+                                                                <PriorityBadge priority={task.priority || 'low'} />
+                                                            </DropdownMenuTrigger>
+                                                            <DropdownMenuContent align="start" className="bg-[#1e293b] border-white/10 text-white">
+                                                                {['urgent', 'high', 'medium', 'low'].map(p => (
+                                                                    <DropdownMenuItem
+                                                                        key={p}
+                                                                        onClick={() => handlePriorityUpdate(task.id, p)}
+                                                                        className="capitalize cursor-pointer hover:bg-white/5"
+                                                                    >
+                                                                        {p}
+                                                                    </DropdownMenuItem>
+                                                                ))}
+                                                            </DropdownMenuContent>
+                                                        </DropdownMenu>
+                                                    ) : (
+                                                        <PriorityBadge priority={task.priority || 'low'} className="cursor-default hover:bg-transparent" />
+                                                    )}
+                                                </div>
+                                            </div>
+                                            {isOverdue && (
+                                                <span className="text-[10px] font-bold text-red-500 uppercase tracking-wide flex items-center gap-1">
+                                                    <AlertCircle size={10} /> Overdue
                                                 </span>
-                                                {assignOpenForTask === task.id && (
-                                                    <div className="absolute top-full left-0 mt-2 w-48 bg-white rounded-xl shadow-xl border border-gray-100 z-50 p-2">
-                                                        <div className="text-xs font-semibold text-gray-400 px-2 py-1 mb-1">ASSIGN TO</div>
-                                                        {mockMembers.map(m => {
-                                                            const isAssigned = Array.isArray(task.assignedTo) && task.assignedTo.some(current => current.uid === m.id);
-                                                            return (
-                                                                <div
-                                                                    key={m.id}
-                                                                    onClick={(e) => handleToggleAssign(e, task, m)}
-                                                                    className={`flex items-center gap-2 px-2 py-2 rounded-lg cursor-pointer text-sm ${isAssigned ? 'bg-indigo-50 text-indigo-700' : 'hover:bg-gray-50 text-gray-700'}`}
-                                                                >
-                                                                    <div className={`w-4 h-4 rounded border flex items-center justify-center ${isAssigned ? 'bg-indigo-600 border-indigo-600' : 'border-gray-300'}`}>
-                                                                        {isAssigned && <span className="text-white text-[10px]">✓</span>}
+                                            )}
+                                        </div>
+                                    </div>
+
+                                    {/* Assignee - INLINE EDIT - ADMIN ONLY */}
+                                    <div className="col-span-2 hidden md:flex flex-col justify-center gap-1" onClick={e => isAdmin ? e.stopPropagation() : null}>
+                                        {isAdmin ? (
+                                            <DropdownMenu>
+                                                <DropdownMenuTrigger asChild>
+                                                    <div className="cursor-pointer hover:opacity-80 transition-opacity p-1 -ml-1 rounded hover:bg-white/5 min-h-[30px] flex flex-col justify-center">
+                                                        {Array.isArray(task.assignedTo) && task.assignedTo.length > 0 ? (
+                                                            <div className="flex flex-col gap-1.5">
+                                                                {task.assignedTo.map((assignee: any, idx: number) => (
+                                                                    <div key={idx} className="flex items-center gap-2">
+                                                                        <SafeAvatar
+                                                                            src={assignee.avatarUrl} // Assuming avatarUrl exists or will exist
+                                                                            alt={typeof assignee === 'string' ? '?' : assignee.name || '?'}
+                                                                            name={typeof assignee === 'object' ? assignee.name : undefined}
+                                                                            size={20}
+                                                                            className="text-[9px]"
+                                                                        />
+                                                                        <span className="text-xs text-gray-400 truncate max-w-[100px] leading-tight">
+                                                                            {typeof assignee === 'object' ? assignee.name : 'Unknown'}
+                                                                        </span>
                                                                     </div>
-                                                                    {m.name}
-                                                                </div>
-                                                            );
-                                                        })}
+                                                                ))}
+                                                            </div>
+                                                        ) : (
+                                                            <span className="text-xs text-gray-600 italic hover:text-white px-2 py-1">Unassigned</span>
+                                                        )}
                                                     </div>
+                                                </DropdownMenuTrigger>
+                                                <DropdownMenuContent align="start" className="bg-[#1e293b] border-white/10 text-white max-h-60 overflow-y-auto min-w-[200px]">
+                                                    {teamMembers.length === 0 ? (
+                                                        <div className="px-2 py-3 text-xs text-gray-500 text-center">
+                                                            No team members found
+                                                        </div>
+                                                    ) : (
+                                                        teamMembers.map(member => (
+                                                            <DropdownMenuItem
+                                                                key={member.uid}
+                                                                onClick={() => handleAssigneeToggle(task.id, member)}
+                                                                className="flex items-center gap-2 cursor-pointer hover:bg-white/5"
+                                                            >
+                                                                <div className={cn(
+                                                                    "w-4 h-4 rounded-full border flex items-center justify-center text-[8px]",
+                                                                    Array.isArray(task.assignedTo) && task.assignedTo.some(a => (a as any).uid === member.uid)
+                                                                        ? "bg-blue-500 border-blue-500 text-white"
+                                                                        : "border-white/20 text-transparent"
+                                                                )}>
+                                                                    ✓
+                                                                </div>
+                                                                <span>{member.name}</span>
+                                                            </DropdownMenuItem>
+                                                        ))
+                                                    )}
+                                                </DropdownMenuContent>
+                                            </DropdownMenu>
+                                        ) : (
+                                            /* Non-Admin View */
+                                            Array.isArray(task.assignedTo) && task.assignedTo.length > 0 ? (
+                                                <div className="flex flex-col gap-1.5">
+                                                    {task.assignedTo.map((assignee: any, idx: number) => (
+                                                        <div key={idx} className="flex items-center gap-2">
+                                                            <SafeAvatar
+                                                                src={assignee.avatarUrl}
+                                                                alt={typeof assignee === 'string' ? '?' : assignee.name || '?'}
+                                                                name={typeof assignee === 'object' ? assignee.name : undefined}
+                                                                size={20}
+                                                                className="text-[9px]"
+                                                            />
+                                                            <span className="text-xs text-gray-400 truncate max-w-[100px] leading-tight">
+                                                                {typeof assignee === 'object' ? assignee.name : 'Unknown'}
+                                                            </span>
+                                                        </div>
+                                                    ))}
+                                                </div>
+                                            ) : (
+                                                <span className="text-xs text-gray-600 italic">Unassigned</span>
+                                            )
+                                        )}
+                                    </div>
+
+                                    {/* Status - INLINE EDIT - ADMIN OR ASSIGNEE */}
+                                    {(() => {
+                                        const isAssignee = Array.isArray(task.assignedTo) && task.assignedTo.some(a => (typeof a === 'string' ? a : a.uid) === user?.uid);
+                                        const canEditStatus = isAdmin || isAssignee;
+
+                                        return (
+                                            <div className="col-span-3 md:col-span-2 flex items-center" onClick={e => canEditStatus ? e.stopPropagation() : null}>
+                                                {canEditStatus ? (
+                                                    <DropdownMenu>
+                                                        <DropdownMenuTrigger asChild>
+                                                            <div className="hover:opacity-80 transition-opacity">
+                                                                <StatusPill status={task.status || 'todo'} />
+                                                            </div>
+                                                        </DropdownMenuTrigger>
+                                                        <DropdownMenuContent align="start" className="bg-[#1e293b] border-white/10 text-white">
+                                                            {['todo', 'in_progress', 'review', 'done'].map(s => (
+                                                                <DropdownMenuItem
+                                                                    key={s}
+                                                                    onClick={() => handleStatusUpdate(task.id, s as any)}
+                                                                    className="capitalize cursor-pointer hover:bg-white/5"
+                                                                >
+                                                                    {s === 'in_progress' ? 'Working' : s === 'review' ? 'On Hold' : s === 'todo' ? 'Pending' : 'Completed'}
+                                                                </DropdownMenuItem>
+                                                            ))}
+                                                        </DropdownMenuContent>
+                                                    </DropdownMenu>
+                                                ) : (
+                                                    <StatusPill status={task.status || 'todo'} onClick={undefined} className="cursor-default hover:bg-transparent" />
                                                 )}
                                             </div>
-                                        ) : <span className="text-gray-300 italic">Unassigned</span>
-                                    )}
-                                </td>
-                                <td className="px-6 py-4 text-right">
-                                    <button className="text-gray-400 hover:text-gray-600 p-2 hover:bg-gray-100 rounded-full opacity-0 group-hover:opacity-100 transition-opacity">
-                                        <MoreVertical size={16} />
-                                    </button>
-                                </td>
-                            </tr>
-                        ))}
-                    </tbody>
-                </table>
-                {tasks.length === 0 && (
-                    <div className="p-8 text-center text-gray-400 italic">No tasks found</div>
+                                        );
+                                    })()}
+
+                                    {/* Due Date */}
+                                    <div className="col-span-3 md:col-span-2 text-right">
+                                        <div className={cn("text-xs font-mono", isOverdue ? "text-red-400 font-bold" : "text-gray-400")}>
+                                            {dueDate ? format(dueDate, 'MMM d') : '-'}
+                                        </div>
+                                        {dueDate && (
+                                            <div className="text-[10px] text-gray-600">
+                                                {format(dueDate, 'yyyy')}
+                                            </div>
+                                        )}
+                                    </div>
+
+
+                                </div>
+                            );
+                        })}
+                    </div>
                 )}
             </div>
+
+            {/* Bulk Ops */}
+            {isAdmin && selectedTaskIds.length > 0 && (
+                <BulkOperationsToolbar
+                    selectedTaskIds={selectedTaskIds}
+                    tasks={processedTasks}
+                    onOperationComplete={() => setSelectedTaskIds([])}
+                    onClearSelection={() => setSelectedTaskIds([])}
+                />
+            )}
+
+            {/* Edit Dialog */}
+            {taskToEdit && (
+                <EditTaskDialog
+                    open={editDialogOpen}
+                    onOpenChange={setEditDialogOpen}
+                    task={taskToEdit}
+                    onUpdate={async (updates) => {
+                        await TaskService.updateTask(taskToEdit.id, updates);
+                        return true;
+                    }}
+                />
+            )}
         </div>
     );
 };
+
+export const TaskListView = React.memo(TaskListViewComponent);

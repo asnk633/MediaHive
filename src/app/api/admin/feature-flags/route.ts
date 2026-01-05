@@ -5,6 +5,10 @@ import { NextRequest, NextResponse } from 'next/server';
 import { authorizeByPermission } from '@/app/api/_lib/rbac';
 import { isFeatureEnabled, getAllFeatureFlags } from '@/app/featureFlags';
 
+// Configure for static export
+export const dynamic = 'force-static';
+export const revalidate = false;
+
 // Ensure this endpoint is only available in development
 const isDevEnvironment = process.env.NODE_ENV === 'development' || process.env.NEXT_PUBLIC_E2E === '1';
 
@@ -55,7 +59,6 @@ export async function PUT(req: NextRequest) {
 
     // In a real implementation, you would persist this to a database or config file
     // For this demo, we'll just log the change
-    console.log(`Feature flag ${feature} set to ${enabled}`);
 
     return NextResponse.json({
       success: true,

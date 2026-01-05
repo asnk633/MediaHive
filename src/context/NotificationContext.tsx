@@ -1,8 +1,7 @@
 ﻿import React, { createContext, useContext, useEffect, useState } from 'react';
 import { listenNotifications, pushNotification, deleteNotification } from '@/services/notificationService';
-import { db } from '@/firebase/auth';
-import { doc, updateDoc } from 'firebase/firestore';
-import { useAuth } from './AuthContext';
+import { apiClient } from '@/lib/apiClient';
+import { useAuth } from '@/contexts/AuthContext';
 
 export const NotificationContext = createContext<any>(null);
 
@@ -24,9 +23,11 @@ export const NotificationProvider = ({ children }: any) => {
 
   const markRead = async (notif: any) => {
     if (!user) return;
-    const ref = doc(db, 'notifications', notif.id);
-    await updateDoc(ref, {
-      readBy: Array.from(new Set([...(notif.readBy || []), user.uid]))
+    await apiClient(`/api/notifications/${notif.id}/read`, {
+      method: 'POST',
+      body: JSON.stringify({
+        userId: user.uid
+      })
     });
   };
 

@@ -6,6 +6,7 @@ import {
   updateSyncOperationStatus,
   clearCompletedSyncOperations
 } from './offline-db';
+import { apiClient } from '@/lib/apiClient';
 
 // Exponential backoff configuration
 const MAX_RETRY_ATTEMPTS = 5;
@@ -57,7 +58,7 @@ async function processOperation(operation: any): Promise<void> {
     }
     
     // Perform the API request
-    const response = await fetch(operation.endpoint, {
+    await apiClient(operation.endpoint, {
       method: operation.method,
       headers: {
         'Content-Type': 'application/json',
@@ -67,14 +68,9 @@ async function processOperation(operation: any): Promise<void> {
       body: operation.data ? JSON.stringify(operation.data) : undefined
     });
     
-    if (response.ok) {
-      // Success - mark as completed
-      await updateSyncOperationStatus(operation.id, 'completed');
-      console.log(`[Sync Queue] Operation ${operation.id} completed successfully`);
-    } else {
-      // Handle HTTP errors
-      await handleOperationError(operation, response.status);
-    }
+    // Success - mark as completed
+    await updateSyncOperationStatus(operation.id, 'completed');
+    console.log(`[Sync Queue] Operation ${operation.id} completed successfully`);
   } catch (error) {
     // Handle network errors
     await handleOperationError(operation, 0, error);

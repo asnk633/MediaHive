@@ -1,13 +1,12 @@
+import { apiClient } from '@/lib/apiClient';
+
 export async function fetcher(url:string, opts: RequestInit = {}, timeout = 15000) {
-  const controller = new AbortController();
-  const id = setTimeout(() => controller.abort(), timeout);
+  // Note: This function is designed to work with internal API routes only
+  // since apiClient handles authentication tokens
   try {
-    const res = await fetch(url, { ...opts, signal: controller.signal });
-    clearTimeout(id);
-    if (!res.ok) throw new Error(`HTTP ${res.status}`);
-    return res.json();
+    const result = await apiClient(url, opts);
+    return result;
   } catch (e) {
-    clearTimeout(id);
     throw e;
   }
 }

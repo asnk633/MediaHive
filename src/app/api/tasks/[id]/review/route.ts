@@ -3,11 +3,20 @@
    fallback to raw parameterized SQL if driver produces invalid SQL in dev.
 */
 import { NextRequest, NextResponse } from "next/server";
-import { db } from "@/db"; // adjust import if your DB export lives elsewhere
+import { getDb } from "@/db"; // adjust import if your DB export lives elsewhere
 import { tasks } from "@/db/schema";
 import { eq } from "drizzle-orm";
 import { authorizeByPermission } from '@/app/api/_lib/rbac';
 import { hasRole } from "@/app/api/_lib/auth";
+
+// Configure for static export
+export const dynamic = 'force-static';
+export const revalidate = false;
+
+// For static export with dynamic routes
+export async function generateStaticParams() {
+  return [];
+}
 
 export async function PATCH(req: NextRequest, { params }: { params: Promise<{ id: string }> }) {
   try {
@@ -16,6 +25,8 @@ export async function PATCH(req: NextRequest, { params }: { params: Promise<{ id
     if (!user) {
       return NextResponse.json({ error: 'Forbidden: Only authorized users can review tasks' }, { status: 403 });
     }
+
+    const db = await getDb();
 
     // Next.js may supply params as a Promise in some versions — await defensively
     const { id: idString } = await params;

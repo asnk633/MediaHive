@@ -5,18 +5,8 @@ import {
     deleteObject,
     listAll
 } from 'firebase/storage';
-import {
-    collection,
-    addDoc,
-    deleteDoc,
-    doc,
-    query,
-    where,
-    onSnapshot,
-    Timestamp,
-    orderBy
-} from 'firebase/firestore';
-import { storage, db } from '@/firebase/client';
+import { getFirebaseStorage } from '@/firebase/client';
+import { apiClient } from '@/lib/apiClient';
 
 /**
  * Files Storage Service - Handles file uploads to Firebase Storage
@@ -35,7 +25,7 @@ export interface FileMetadata {
     type: string;
     storageUrl: string;
     storagePath: string;
-    uploadedDate: Timestamp;
+    uploadedDate: string; // Using string instead of Timestamp
     uploadedBy: string;
 }
 
@@ -52,6 +42,8 @@ export async function uploadFile(
     customName: string
 ): Promise<FileMetadata> {
     try {
+        const storage = await getFirebaseStorage();
+        
         // Generate unique file ID
         const fileId = `${Date.now()}_${Math.random().toString(36).substring(7)}`;
 
@@ -68,7 +60,7 @@ export async function uploadFile(
         // Get download URL
         const downloadURL = await getDownloadURL(snapshot.ref);
 
-        // Save metadata to Firestore
+        // Save metadata to API
         const metadata: Omit<FileMetadata, 'id'> = {
             userId,
             name: customName,
@@ -77,14 +69,19 @@ export async function uploadFile(
             type: file.type,
             storageUrl: downloadURL,
             storagePath,
-            uploadedDate: Timestamp.now(),
+            uploadedDate: new Date().toISOString(),
             uploadedBy: userId,
         };
 
-        const docRef = await addDoc(collection(db, FILES_COLLECTION), metadata);
+        const result = await apiClient('/api/files', {
+            method: 'POST',
+            body: JSON.stringify({
+                ...metadata
+            })
+        });
 
         return {
-            id: docRef.id,
+            id: result.id || fileId,
             ...metadata,
         };
     } catch (error) {
@@ -103,42 +100,44 @@ export function subscribeToFiles(
     userId: string | null,
     callback: (files: FileMetadata[]) => void
 ): () => void {
-    try {
-        // Build query
-        let q;
-        if (userId) {
-            // Regular user: only their files
-            q = query(
-                collection(db, FILES_COLLECTION),
-                where('userId', '==', userId),
-                orderBy('uploadedDate', 'desc')
-            );
-        } else {
-            // Admin: all files
-            q = query(
-                collection(db, FILES_COLLECTION),
-                orderBy('uploadedDate', 'desc')
-            );
-        }
+    let pollInterval: NodeJS.Timeout | null = null;
+    let isCancelled = false;
 
-        // Subscribe to real-time updates
-        const unsubscribe = onSnapshot(q, (snapshot) => {
-            const files = snapshot.docs.map(doc => ({
-                id: doc.id,
-                ...doc.data()
-            } as FileMetadata));
-
+    const pollFiles = async () => {
+        if (isCancelled) return;
+        
+        try {
+            const endpoint = userId ? `/api/files?userId=${userId}` : '/api/files';
+            const result = await apiClient(endpoint, {
+                method: 'GET'
+            });
+            
+            const files = (result.files || []).map((file: any) => ({
+                id: file.id,
+                ...file,
+                uploadedDate: file.uploadedDate || new Date().toISOString()
+            }));
+            
             callback(files);
-        }, (error) => {
-            console.error('Error subscribing to files:', error);
+        } catch (error) {
+            console.warn('File polling failed:', error);
             callback([]);
-        });
+        }
+        
+        if (!isCancelled) {
+            pollInterval = setTimeout(pollFiles, 30000); // Poll every 30 seconds
+        }
+    };
 
-        return unsubscribe;
-    } catch (error) {
-        console.error('Error setting up file subscription:', error);
-        return () => { };
-    }
+    // Start polling immediately
+    pollFiles();
+
+    return () => {
+        isCancelled = true;
+        if (pollInterval) {
+            clearTimeout(pollInterval);
+        }
+    };
 }
 
 /**
@@ -148,12 +147,16 @@ export function subscribeToFiles(
  */
 export async function deleteFile(fileId: string, storagePath: string): Promise<void> {
     try {
+        const storage = await getFirebaseStorage();
+        
         // Delete from Storage
         const storageRef = ref(storage, storagePath);
         await deleteObject(storageRef);
 
-        // Delete from Firestore
-        await deleteDoc(doc(db, FILES_COLLECTION, fileId));
+        // Delete from API
+        await apiClient(`/api/files/${fileId}`, {
+            method: 'DELETE'
+        });
     } catch (error: any) {
         // Ignore if file doesn't exist in storage
         if (error.code !== 'storage/object-not-found') {
@@ -161,11 +164,13 @@ export async function deleteFile(fileId: string, storagePath: string): Promise<v
             throw new Error('Failed to delete file');
         }
 
-        // Still delete from Firestore even if storage file is gone
+        // Still delete from API even if storage file is gone
         try {
-            await deleteDoc(doc(db, FILES_COLLECTION, fileId));
-        } catch (firestoreError) {
-            console.error('Error deleting file metadata:', firestoreError);
+            await apiClient(`/api/files/${fileId}`, {
+                method: 'DELETE'
+            });
+        } catch (apiError) {
+            console.error('Error deleting file metadata:', apiError);
         }
     }
 }
@@ -177,26 +182,15 @@ export async function deleteFile(fileId: string, storagePath: string): Promise<v
  */
 export async function getFiles(userId: string): Promise<FileMetadata[]> {
     try {
-        const q = query(
-            collection(db, FILES_COLLECTION),
-            where('userId', '==', userId),
-            orderBy('uploadedDate', 'desc')
-        );
-
-        return new Promise((resolve, reject) => {
-            const unsubscribe = onSnapshot(q, (snapshot) => {
-                const files = snapshot.docs.map(doc => ({
-                    id: doc.id,
-                    ...doc.data()
-                } as FileMetadata));
-
-                unsubscribe();
-                resolve(files);
-            }, (error) => {
-                unsubscribe();
-                reject(error);
-            });
+        const result = await apiClient(`/api/files?userId=${userId}`, {
+            method: 'GET'
         });
+        
+        return (result.files || []).map((file: any) => ({
+            id: file.id,
+            ...file,
+            uploadedDate: file.uploadedDate || new Date().toISOString()
+        }));
     } catch (error) {
         console.error('Error fetching files:', error);
         return [];

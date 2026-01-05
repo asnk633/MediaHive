@@ -1,10 +1,10 @@
 "use client";
 
-import { useRole } from "@/app/(shell)/RoleContext";
+import { useAuth } from "@/contexts/AuthContext";
 import { Permission, hasPermission, Role } from "@/lib/permissions";
 
 export function usePermission() {
-    const { user } = useRole();
+    const { user } = useAuth();
 
     const can = (permission: Permission) => {
         if (!user) return false;

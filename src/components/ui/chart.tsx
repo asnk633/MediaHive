@@ -4,6 +4,7 @@ import * as React from "react";
 import * as RechartsPrimitive from "recharts";
 
 import { cn } from "@/lib/utils";
+import { SafeResponsiveContainer } from "@/components/SafeResponsiveContainer";
 
 // Format: { THEME_NAME: CSS_SELECTOR }
 const THEMES = { light: "", dark: ".dark" } as const;
@@ -47,6 +48,26 @@ function ChartContainer({
   const uniqueId = React.useId();
   const chartId = `chart-${id || uniqueId.replace(/:/g, "")}`;
 
+  // Recharts requires explicit client-side rendering to avoid hydration mismatches
+  // and "width/height" warnings during server-side composition
+  const [isReady, setIsReady] = React.useState(false);
+
+  React.useEffect(() => {
+    setIsReady(true);
+  }, []);
+
+  if (!isReady) {
+    return (
+      <div
+        className={cn(
+          "flex aspect-video justify-center text-xs [&_.recharts-dot]:fill-primary",
+          className
+        )}
+        {...props}
+      />
+    );
+  }
+
   return (
     <ChartContext.Provider value={{ config }}>
       <div
@@ -58,7 +79,9 @@ function ChartContainer({
         {...props}
       >
         <div className="h-full w-full">
-          <RechartsPrimitive.ResponsiveContainer>{children}</RechartsPrimitive.ResponsiveContainer>
+          <div className="h-full w-full">
+            <SafeResponsiveContainer>{children}</SafeResponsiveContainer>
+          </div>
         </div>
       </div>
     </ChartContext.Provider>

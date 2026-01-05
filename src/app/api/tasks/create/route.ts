@@ -5,6 +5,10 @@ import { z } from 'zod';
 import { sanitizeTextContent, sanitizeHtmlContent } from '@/lib/sanitizer';
 import { sendFcm } from '@/lib/sendFcm';
 
+// Configure for static export
+export const dynamic = 'force-static';
+export const revalidate = false;
+
 // In-memory storage for mock implementation
 let mockTasks: any[] = [];
 let taskIdCounter = 1;

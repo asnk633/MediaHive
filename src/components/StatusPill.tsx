@@ -1,7 +1,9 @@
 import React from 'react';
 import { cn } from "@/lib/utils";
 
-type TaskStatus = 'pending' | 'working' | 'completed' | 'on_hold' | string;
+import { Task } from '@/types/task';
+
+type TaskStatus = Task['status'];
 
 interface StatusPillProps {
     status: TaskStatus;
@@ -13,19 +15,19 @@ export function StatusPill({ status }: StatusPillProps) {
             label: 'Pending',
             className: 'bg-amber-500/10 text-amber-300 border-amber-500/30',
         },
-        'working': {
+        'todo': {
+            label: 'To Do',
+            className: 'bg-slate-500/10 text-slate-300 border-slate-500/30',
+        },
+        'in_progress': {
             label: 'In Progress',
             className: 'bg-sky-500/10 text-sky-300 border-sky-500/30',
         },
-        'in_progress': { // handle variation
-            label: 'In Progress',
-            className: 'bg-sky-500/10 text-sky-300 border-sky-500/30',
+        'review': {
+            label: 'Review',
+            className: 'bg-purple-500/10 text-purple-300 border-purple-500/30',
         },
-        'completed': {
-            label: 'Done',
-            className: 'bg-emerald-500/10 text-emerald-300 border-emerald-500/30',
-        },
-        'done': { // handle variation
+        'done': {
             label: 'Done',
             className: 'bg-emerald-500/10 text-emerald-300 border-emerald-500/30',
         },

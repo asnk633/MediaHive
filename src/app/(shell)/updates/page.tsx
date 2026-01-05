@@ -58,7 +58,7 @@ export default function UpdatesPage() {
           {filteredNotifications.length > 0 ? (
             filteredNotifications.map((n) => (
               <Link
-                href={`/updates/${n.id}`}
+                href={`/updates/view?id=${n.id}`}
                 key={n.id}
                 className="glass-card flex items-start gap-4 p-4 hover:bg-[var(--panel)] transition-colors group relative"
               >

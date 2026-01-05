@@ -6,14 +6,11 @@ import { useForm, Controller } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { NotificationFormData, notificationFormSchema } from '@/lib/forms/validators';
 import { useAuth } from '@/contexts/AuthContext';
-import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
-import { Label } from '@/components/ui/label';
-import { Textarea } from '@/components/ui/textarea';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { toast } from 'sonner';
-import { Send, Eye, Loader2, Calendar, Paperclip, X } from 'lucide-react';
+import { Send, Eye, Loader2, Calendar, Paperclip, X, Users, Megaphone, Bell } from 'lucide-react';
 import { cn } from '@/lib/utils';
+import NotificationPreviewModal from '@/components/NotificationPreviewModal';
+import { apiClient } from '@/lib/apiClient';
 
 interface NotificationFormProps {
   initialData?: Partial<NotificationFormData>;
@@ -22,7 +19,7 @@ interface NotificationFormProps {
 }
 
 export function NotificationForm({ initialData, onSubmitSuccess, onCancel }: NotificationFormProps) {
-  const { user } = useAuth();
+  const { user, getIdToken } = useAuth();
   const router = useRouter();
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isPreviewing, setIsPreviewing] = useState(false);
@@ -47,45 +44,62 @@ export function NotificationForm({ initialData, onSubmitSuccess, onCancel }: Not
     },
   });
 
-  // Watch form values for preview
-  const formData = watch();
+  const watchedValues = watch();
 
   const onSubmit = async (data: NotificationFormData) => {
     if (!user) return;
-    
+
     setIsSubmitting(true);
     try {
-      // Prepare payload
+      let attachments = [];
+      if (mediaFile) {
+        try {
+          // Upload to Drive
+          const { FileService } = await import('@/services/fileService');
+          const metadata = {
+            name: `NOTIF_${Date.now()}_${mediaFile.name}`,
+            type: 'document', // or image, but generic is fine as mimeType decides folder
+            folder: 'Interactions', // Grouping under Interactions
+            subfolder: 'Notifications',
+            uploadedBy: user.uid,
+            visibility: { mode: 'all' }
+          };
+
+          const uploadResult = await FileService.uploadFile(mediaFile, metadata as any);
+          if (uploadResult.success) {
+            attachments.push({
+              name: mediaFile.name,
+              url: uploadResult.viewLink,
+              type: mediaFile.type
+            });
+          } else {
+            throw new Error("Failed to upload attachment");
+          }
+        } catch (uploadErr) {
+          console.error("Attachment upload failed", uploadErr);
+          toast.error("Failed to upload attachment, sending without it.");
+        }
+      }
+
       const payload = {
         title: data.title,
         body: data.body,
         audience: selectedAudiences,
         scheduledAt: data.schedule || null,
-        attachments: mediaFile ? [{
-          name: mediaFile.name,
-          url: '' // In a real implementation, you would upload the file and get the URL
-        }] : [],
+        attachments: attachments,
+        // Add required fields expected by the API
       };
 
-      const response = await fetch('/api/notifications/create', {
+      await apiClient('/api/notifications/create', {
         method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          'x-user-id': String(user.uid)
-        },
         body: JSON.stringify(payload),
       });
 
-      if (response.ok) {
-        toast.success('Notification sent successfully');
-        if (onSubmitSuccess) {
-          onSubmitSuccess();
-        } else {
-          router.push('/updates');
-        }
+      toast.success('Notification sent successfully');
+      if (onSubmitSuccess) {
+        onSubmitSuccess();
       } else {
-        const errorData = await response.json();
-        toast.error(errorData.error || 'Failed to send notification');
+        router.push('/updates');
       }
     } catch (error) {
       console.error('Error sending notification:', error);
@@ -97,14 +111,11 @@ export function NotificationForm({ initialData, onSubmitSuccess, onCancel }: Not
 
   const handlePreview = () => {
     setIsPreviewing(true);
-    // In a real implementation, you might show a modal with the preview
-    toast.info('Preview feature: Shows how the notification will appear to recipients');
   };
 
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     if (e.target.files && e.target.files[0]) {
       const file = e.target.files[0];
-      // Filter for images and PDFs only
       if (file.type.startsWith('image/') || file.type === 'application/pdf') {
         setMediaFile(file);
       } else {
@@ -119,246 +130,190 @@ export function NotificationForm({ initialData, onSubmitSuccess, onCancel }: Not
 
   const toggleAudience = (audience: string) => {
     setSelectedAudiences(prev => {
-      if (prev.includes(audience)) {
-        return prev.filter(a => a !== audience);
+      // If clicking 'all', clear others and set 'all'
+      if (audience === 'all') return ['all'];
+
+      // If clicking something else, remove 'all'
+      let newSelection = prev.filter(a => a !== 'all');
+
+      if (newSelection.includes(audience)) {
+        newSelection = newSelection.filter(a => a !== audience);
       } else {
-        return [...prev, audience];
+        newSelection = [...newSelection, audience];
       }
+
+      // If nothing selected, revert to 'all' or empty? Let's default 'all' if empty
+      return newSelection.length === 0 ? ['all'] : newSelection;
     });
   };
 
+  const inputClasses = "w-full bg-black/20 backdrop-blur-sm p-3 rounded-xl border border-white/5 shadow-inner focus:bg-black/40 focus:ring-2 focus:ring-blue-500/30 focus:border-blue-500/50 outline-none transition-all placeholder:text-gray-700 font-medium text-white";
+  const labelClasses = "text-[10px] font-bold text-blue-300/70 uppercase tracking-widest ml-1";
+
   return (
-    <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
-      {/* Title */}
-      <div className="space-y-2">
-        <Label htmlFor="title">Title *</Label>
-        <Controller
-          name="title"
-          control={control}
-          render={({ field }) => (
-            <Input
-              {...field}
-              id="title"
-              placeholder="Notification title"
-              className={cn(
-                errors.title && 'border-red-500',
-                'bg-[var(--panel)] border-[var(--glass-border)] text-[var(--text)]'
-              )}
-              aria-invalid={!!errors.title}
-              aria-describedby={errors.title ? 'title-error' : undefined}
-            />
-          )}
-        />
-        {errors.title && (
-          <p 
-            id="title-error" 
-            className="text-sm text-red-500" 
-            role="alert"
-            aria-live="assertive"
-          >
-            {errors.title.message}
-          </p>
-        )}
-      </div>
-
-      {/* Message/Body */}
-      <div className="space-y-2">
-        <Label htmlFor="body">Message *</Label>
-        <Controller
-          name="body"
-          control={control}
-          render={({ field }) => (
-            <Textarea
-              {...field}
-              id="body"
-              placeholder="Notification message"
-              rows={4}
-              className={cn(
-                errors.body && 'border-red-500',
-                'bg-[var(--panel)] border-[var(--glass-border)] text-[var(--text)]'
-              )}
-              aria-invalid={!!errors.body}
-              aria-describedby={errors.body ? 'body-error' : undefined}
-            />
-          )}
-        />
-        {errors.body && (
-          <p 
-            id="body-error" 
-            className="text-sm text-red-500" 
-            role="alert"
-            aria-live="assertive"
-          >
-            {errors.body.message}
-          </p>
-        )}
-      </div>
-
-      {/* Audience - Multi-select */}
-      <div className="space-y-2">
-        <Label htmlFor="audience">Audience *</Label>
-        <div className="flex flex-wrap gap-2">
-          {['all', 'admins', 'team', 'guests'].map((audience) => (
-            <button
-              key={audience}
-              type="button"
-              onClick={() => toggleAudience(audience)}
-              className={cn(
-                "px-3 py-1.5 rounded-full text-sm transition-all duration-200",
-                selectedAudiences.includes(audience)
-                  ? "bg-[var(--accent)] text-white"
-                  : "bg-[var(--panel)] border border-[var(--glass-border)] text-[var(--muted)] hover:bg-[var(--panel-strong)] hover:text-[var(--text)]"
-              )}
-              aria-pressed={selectedAudiences.includes(audience)}
-            >
-              {audience}
-            </button>
-          ))}
-        </div>
-        <input 
-          type="hidden" 
-          {...control.register('audience')} 
-          value={selectedAudiences.join(',')} 
-        />
-        {errors.audience && (
-          <p 
-            id="audience-error" 
-            className="text-sm text-red-500" 
-            role="alert"
-            aria-live="assertive"
-          >
-            {errors.audience.message}
-          </p>
-        )}
-      </div>
-
-      {/* Schedule */}
-      <div className="space-y-2">
-        <Label htmlFor="schedule">Schedule</Label>
-        <Controller
-          name="schedule"
-          control={control}
-          render={({ field }) => (
-            <div className="relative">
-              <Input
-                {...field}
-                id="schedule"
-                type="datetime-local"
-                value={field.value || ''}
-                onChange={(e) => field.onChange(e.target.value || null)}
-                className={cn(
-                  errors.schedule && 'border-red-500',
-                  'bg-[var(--panel)] border-[var(--glass-border)] text-[var(--text)]'
-                )}
-                aria-invalid={!!errors.schedule}
-                aria-describedby={errors.schedule ? 'schedule-error' : undefined}
-              />
-              <Calendar className="absolute right-3 top-1/2 -translate-y-1/2 w-4 h-4 text-[var(--icon)]" />
+    <>
+      <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
+        <div className="space-y-2">
+          <label htmlFor="title" className={labelClasses}>Title</label>
+          <div className="relative">
+            <div className="absolute inset-y-0 left-3 flex items-center pointer-events-none text-gray-500">
+              <Megaphone size={16} />
             </div>
-          )}
-        />
-        {errors.schedule && (
-          <p 
-            id="schedule-error" 
-            className="text-sm text-red-500" 
-            role="alert"
-            aria-live="assertive"
-          >
-            {errors.schedule.message}
-          </p>
-        )}
-      </div>
+            <Controller
+              name="title"
+              control={control}
+              render={({ field }) => (
+                <input
+                  {...field}
+                  id="title"
+                  placeholder="Notification title"
+                  className={`${inputClasses} pl-10 text-lg`}
+                />
+              )}
+            />
+          </div>
+          {errors.title && <p className="text-xs text-red-400 ml-1">{errors.title.message}</p>}
+        </div>
 
-      {/* Media Attachment */}
-      <div className="space-y-2">
-        <Label htmlFor="media">Attach Media</Label>
-        <div className="flex flex-col gap-2">
-          <div className="flex gap-2">
-            <Input
+        <div className="space-y-2">
+          <label htmlFor="body" className={labelClasses}>Message</label>
+          <Controller
+            name="body"
+            control={control}
+            render={({ field }) => (
+              <textarea
+                {...field}
+                id="body"
+                placeholder="Notification message..."
+                rows={4}
+                className={`${inputClasses} resize-none`}
+              />
+            )}
+          />
+          {errors.body && <p className="text-xs text-red-400 ml-1">{errors.body.message}</p>}
+        </div>
+
+        <div className="space-y-2">
+          <label className={labelClasses}>Audience</label>
+          <div className="flex flex-wrap gap-2">
+            {['all', 'admins', 'team', 'guests'].map((audience) => (
+              <button
+                key={audience}
+                type="button"
+                onClick={() => toggleAudience(audience)}
+                className={cn(
+                  "px-4 py-2 rounded-xl text-xs font-bold uppercase tracking-wider transition-all duration-300 border",
+                  selectedAudiences.includes(audience)
+                    ? "bg-blue-500/20 border-blue-500/50 text-blue-100 shadow-[0_0_15px_rgba(59,130,246,0.3)]"
+                    : "bg-white/5 border-white/5 text-gray-500 hover:bg-white/10 hover:text-gray-300"
+                )}
+              >
+                {audience}
+              </button>
+            ))}
+          </div>
+          <input type="hidden" {...control.register('audience')} value={selectedAudiences.join(',')} />
+        </div>
+
+        <div className="space-y-2">
+          <label htmlFor="schedule" className={labelClasses}>Schedule (Optional)</label>
+          <Controller
+            name="schedule"
+            control={control}
+            render={({ field }) => (
+              <div className="relative">
+                <div className="absolute inset-y-0 left-3 flex items-center pointer-events-none text-gray-500">
+                  <Calendar size={16} />
+                </div>
+                <input
+                  id="schedule"
+                  type="datetime-local"
+                  value={field.value ? new Date(field.value).toISOString().slice(0, 16) : ''}
+                  onChange={(e) => field.onChange(e.target.value ? new Date(e.target.value) : null)}
+                  className={`${inputClasses} pl-10 [color-scheme:dark]`}
+                />
+              </div>
+            )}
+          />
+        </div>
+
+        <div className="space-y-2">
+          <label className={labelClasses}>Attach Media</label>
+          <div className="flex flex-col gap-3">
+            <input
               ref={fileInputRef}
               type="file"
               accept="image/*,application/pdf"
               onChange={handleFileChange}
               className="hidden"
-              id="media"
-              aria-describedby={errors.media ? 'media-error' : undefined}
             />
-            <Button
-              type="button"
-              variant="outline"
-              className="border-[var(--glass-border)] bg-[var(--panel)] text-[var(--text)] hover:bg-[var(--panel-strong)] transition-all duration-200 flex items-center gap-2"
-              onClick={() => fileInputRef.current?.click()}
-              aria-label="Attach media"
-            >
-              <Paperclip className="w-4 h-4 text-[var(--icon)]" />
-              Choose File
-            </Button>
-          </div>
-          
-          {mediaFile && (
-            <div className="mt-2 flex items-center justify-between bg-[var(--panel)] border border-[var(--glass-border)] rounded-lg px-3 py-2 text-[var(--text)]">
-              <div className="flex items-center gap-2">
-                <Paperclip className="w-4 h-4 text-[var(--icon)]" />
-                <span className="text-sm truncate max-w-xs">{mediaFile.name}</span>
-              </div>
-              <button
-                type="button"
-                onClick={removeMedia}
-                className="text-[var(--icon-muted)] hover:text-[var(--danger)] focus:outline-none transition-all duration-200"
-                aria-label={`Remove media ${mediaFile.name}`}
-              >
-                <X className="w-4 h-4" />
-              </button>
-            </div>
-          )}
-        </div>
-        {errors.media && (
-          <p 
-            id="media-error" 
-            className="text-sm text-red-500" 
-            role="alert"
-            aria-live="assertive"
-          >
-            {errors.media.message}
-          </p>
-        )}
-      </div>
 
-      {/* Actions */}
-      <div className="flex gap-3 pt-4">
-        <Button type="submit" disabled={isSubmitting} className="flex-1 bg-[var(--accent)] text-white hover:bg-[var(--accent-2)] transition-all duration-200">
-          {isSubmitting ? (
-            <>
-              <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-              Sending...
-            </>
-          ) : (
-            <>
-              <Send className="mr-2 h-4 w-4" />
-              Send Notification
-            </>
-          )}
-        </Button>
-        <Button 
-          type="button" 
-          variant="outline" 
-          className="border-[var(--glass-border)] bg-transparent text-[var(--text)] hover:bg-[var(--panel-strong)] transition-all duration-200"
-          onClick={handlePreview}
-          disabled={isSubmitting}
-        >
-          <Eye className="mr-2 h-4 w-4" />
-          Preview
-        </Button>
-        <Button
-          type="button"
-          variant="outline"
-          className="border-[var(--glass-border)] bg-transparent text-[var(--text)] hover:bg-[var(--panel-strong)] transition-all duration-200"
-          onClick={onCancel || (() => router.back())}
-          disabled={isSubmitting}
-        >
-          Cancel
-        </Button>
-      </div>
-    </form>
+            <button
+              type="button"
+              onClick={() => fileInputRef.current?.click()}
+              className="flex items-center justify-center gap-2 w-full py-3 border border-dashed border-white/10 rounded-xl bg-white/5 hover:bg-white/10 transition-colors text-gray-400 hover:text-gray-200 text-sm font-medium"
+            >
+              <Paperclip className="w-4 h-4" />
+              {mediaFile ? 'Change File' : 'Choose Image or PDF'}
+            </button>
+
+            {mediaFile && (
+              <div className="flex items-center justify-between bg-blue-500/10 border border-blue-500/20 rounded-xl px-4 py-3 text-blue-100">
+                <div className="flex items-center gap-3">
+                  <div className="w-8 h-8 rounded-lg bg-blue-500/20 flex items-center justify-center">
+                    <Paperclip className="w-4 h-4 text-blue-300" />
+                  </div>
+                  <span className="text-sm font-medium truncate max-w-[200px]">{mediaFile.name}</span>
+                </div>
+                <button
+                  type="button"
+                  onClick={removeMedia}
+                  className="text-blue-300 hover:text-white transition-colors"
+                >
+                  <X className="w-4 h-4" />
+                </button>
+              </div>
+            )}
+          </div>
+        </div>
+
+        <div className="flex gap-3 pt-6 mt-6 border-t border-white/5">
+          <button
+            type="button"
+            onClick={handlePreview}
+            className="flex-1 py-4 text-gray-400 font-bold bg-white/5 hover:bg-white/10 hover:text-white rounded-xl transition-all border border-white/5 flex items-center justify-center gap-2"
+          >
+            <Eye className="w-4 h-4" />
+            Preview
+          </button>
+          <button
+            type="submit"
+            disabled={isSubmitting}
+            className="flex-[2] py-4 bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-500 hover:to-indigo-500 text-white font-bold text-lg rounded-xl shadow-lg shadow-blue-900/20 hover:shadow-blue-900/40 hover-sheen active:scale-[0.98] transition-all disabled:opacity-50 flex items-center justify-center gap-2"
+          >
+            {isSubmitting ? (
+              <>
+                <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                Sending...
+              </>
+            ) : (
+              <>
+                <Send className="mr-2 h-4 w-4" />
+                Send Notification
+              </>
+            )}
+          </button>
+        </div>
+      </form>
+
+      <NotificationPreviewModal
+        open={isPreviewing}
+        onClose={() => setIsPreviewing(false)}
+        data={{
+          title: watchedValues.title || '',
+          body: watchedValues.body || '',
+        }}
+      />
+    </>
   );
 }

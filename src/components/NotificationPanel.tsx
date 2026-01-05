@@ -1,188 +1,183 @@
-// src/components/NotificationPanel.tsx
-// Notification dropdown panel component
-
-'use client';
-
 import React, { useState, useEffect } from 'react';
-// import { useNotificationsRealtime } from '../hooks/useNotificationsRealtime';
-import { useNotifications } from '@/hooks/useNotifications';
+import { Layers } from 'lucide-react';
+import { NotificationService } from '@/services/notificationService';
+import { AppNotification } from '@/types/notification';
+import { NotificationItem } from '@/components/notifications/NotificationItem';
 import { useAuth } from '@/contexts/AuthContext';
-import { Bell } from 'lucide-react';
+import { useRouter } from 'next/navigation';
+import { groupNotifications, GroupedNotification } from '@/lib/notification-grouping';
+import { formatDistanceToNow } from 'date-fns';
+import { apiClient } from '@/lib/apiClient';
 
-interface Notification {
-  id: number;
-  title: string;
-  body: string;
-  readAt: string | null;
-  createdAt: string;
-}
+export const NotificationPanel = () => {
+    const { user } = useAuth();
+    const router = useRouter();
+    const [notifications, setNotifications] = useState<AppNotification[]>([]);
 
-export function NotificationPanel() {
-  const [isOpen, setIsOpen] = useState(false);
-  const [notifications, setNotifications] = useState<Notification[]>([]);
-  const [unreadCount, setUnreadCount] = useState(0);
-  const { user } = useAuth();
-  const realtimeNotifications = useNotifications(user?.uid);
+    // Initial fetch and setup
+    useEffect(() => {
+        if (!user) return;
 
-  // Realtime subscription handled by useNotifications hook below
+        const fetchNotifications = async () => {
+            try {
+                const data = await NotificationService.getUserNotifications(100); // Fetch more for panel
+                setNotifications(data);
+            } catch (e) {
+                console.error(e);
+            }
+        };
 
-  // Load initial notifications
-  useEffect(() => {
-    const loadNotifications = async () => {
-      try {
-        const response = await fetch('/api/notifications/list');
-        if (response.ok) {
-          const data = await response.json();
-          setNotifications(data.notifications);
-          setUnreadCount(data.unreadCount);
+        fetchNotifications();
+
+        // Simple polling for now
+        const interval = setInterval(fetchNotifications, 60000);
+        return () => clearInterval(interval);
+    }, [user]);
+
+    const handleNotificationClick = async (notification: AppNotification | GroupedNotification) => {
+        if ('isGroup' in notification) {
+            // It's a group
+            const items = notification.items;
+
+            // Mark all valid items as read optimistically
+            const itemIds = new Set(items.map(i => i.id));
+            setNotifications(prev => prev.map(n =>
+                itemIds.has(n.id) ? { ...n, isRead: true } : n
+            ));
+
+            // Server update
+            items.filter(i => !i.isRead).forEach(n => {
+                apiClient(`/api/notifications/${n.id}`, {
+                    method: 'PATCH',
+                    body: JSON.stringify({ action: 'markRead' })
+                });
+            });
+
+            // Navigation
+            const target = items[0];
+            if (target.actionUrl) {
+                let url = target.actionUrl;
+                if (url.includes('/tasks/view/') && !url.includes('?id=')) {
+                    url = url.replace('/tasks/view/', '/tasks/view?id=');
+                }
+                router.push(url);
+            } else if (target.entityType === 'task') {
+                router.push(`/tasks/view?id=${target.entityId}`);
+            } else if (target.entityType === 'event') {
+                router.push('/events');
+            }
+
+        } else {
+            // Single Notification
+            if (!notification.isRead) {
+                // Optimistic update
+                setNotifications(prev => prev.map(n =>
+                    n.id === notification.id ? { ...n, isRead: true } : n
+                ));
+
+                // API call
+                await apiClient(`/api/notifications/${notification.id}`, {
+                    method: 'PATCH',
+                    body: JSON.stringify({ action: 'markRead' })
+                });
+            }
+
+            if (notification.actionUrl) {
+                let url = notification.actionUrl;
+                if (url.includes('/tasks/view/') && !url.includes('?id=')) {
+                    url = url.replace('/tasks/view/', '/tasks/view?id=');
+                }
+                router.push(url);
+            }
         }
-      } catch (error) {
-        console.error('Failed to load notifications:', error);
-      }
     };
 
-    loadNotifications();
-  }, []);
+    const handleMarkAllRead = async () => {
+        if (!user) return;
+        setNotifications(prev => prev.map(n => ({ ...n, isRead: true })));
+        await NotificationService.markAllAsRead();
+    };
 
-  // Update notifications when realtime data changes
-  useEffect(() => {
-    if (realtimeNotifications.length > 0) {
-      // Merge realtime notifications with existing ones
-      setNotifications(prev => {
-        const newNotifications = [...prev];
-        realtimeNotifications.forEach(realtimeNotif => {
-          if (!newNotifications.some(n => n.id === realtimeNotif.id)) {
-            newNotifications.unshift(realtimeNotif);
-          }
-        });
-        return newNotifications;
-      });
+    // Calculate groups for display
+    const displayList = groupNotifications(notifications);
 
-      // Update unread count based on realtime notifications
-      const unreadRealtime = realtimeNotifications.filter(n => !n.readAt).length;
-      setUnreadCount(prev => prev + unreadRealtime);
-    }
-  }, [realtimeNotifications]);
+    return (
+        <div className="bg-[#0f172a] border border-white/20 rounded-2xl shadow-2xl text-left w-full max-w-sm sm:max-w-md md:max-w-xl mx-auto overflow-hidden ring-1 ring-black/50">
+            <div className="p-4 border-b border-white/10 flex justify-between items-center bg-white/5">
+                <h3 className="font-bold text-white text-sm tracking-wide uppercase">Notifications</h3>
+                {notifications.some(n => !n.isRead) && (
+                    <button
+                        onClick={handleMarkAllRead}
+                        className="text-xs text-blue-400 hover:text-blue-300 font-semibold transition-colors"
+                    >
+                        Mark all reads
+                    </button>
+                )}
+            </div>
 
-  const markAsRead = async (notificationId: number) => {
-    try {
-      const response = await fetch('/api/notifications/read', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-          notificationIds: [notificationId]
-        })
-      });
+            <div className="max-h-[60vh] overflow-y-auto scrollbar-thin scrollbar-thumb-white/10 scrollbar-track-transparent">
+                {displayList.length > 0 ? (
+                    displayList.map(item => {
+                        if ('isGroup' in item) {
+                            const latest = item.items[0];
+                            let entityName = latest.metadata?.entityTitle || latest.metadata?.taskTitle || latest.metadata?.eventTitle;
+                            if (!entityName) entityName = "Item";
 
-      if (response.ok) {
-        setNotifications(prev =>
-          prev.map(n =>
-            n.id === notificationId ? { ...n, readAt: new Date().toISOString() } : n
-          )
-        );
-        setUnreadCount(prev => Math.max(0, prev - 1));
-      }
-    } catch (error) {
-      console.error('Failed to mark notification as read:', error);
-    }
-  };
-
-  const markAllAsRead = async () => {
-    try {
-      const unreadNotifications = notifications.filter(n => !n.readAt);
-      const unreadIds = unreadNotifications.map(n => n.id);
-
-      const response = await fetch('/api/notifications/read', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-          notificationIds: unreadIds
-        })
-      });
-
-      if (response.ok) {
-        setNotifications(prev =>
-          prev.map(n =>
-            unreadIds.includes(n.id) ? { ...n, readAt: new Date().toISOString() } : n
-          )
-        );
-        setUnreadCount(0);
-      }
-    } catch (error) {
-      console.error('Failed to mark all notifications as read:', error);
-    }
-  };
-
-  return (
-    <div className="relative">
-      <button
-        className="p-2 rounded-full hover:bg-[var(--panel)] transition-all duration-200 ease-in-out text-[var(--icon)] hover:text-[var(--text)] relative"
-        onClick={() => setIsOpen(!isOpen)}
-        data-testid="notification-bell"
-        aria-label="Notifications"
-      >
-        <Bell size={20} />
-        {unreadCount > 0 && (
-          <span className="absolute -top-1 -right-1 h-5 w-5 rounded-full bg-[var(--accent)] text-[var(--text)] text-xs flex items-center justify-center font-bold" data-testid="unread-badge">
-            {unreadCount > 9 ? '9+' : unreadCount}
-          </span>
-        )}
-      </button>
-
-      {isOpen && (
-        <div className="absolute right-0 mt-2 w-80 rounded-xl bg-[var(--panel)] border border-[var(--glass-border)] shadow-lg z-50" data-testid="notification-dropdown">
-          <div className="flex items-center justify-between p-4 border-b border-[var(--glass-border)]">
-            <h3 className="text-lg font-semibold text-[var(--text)]">Notifications</h3>
-            {unreadCount > 0 && (
-              <button
-                className="text-sm text-[var(--accent)] hover:text-[var(--accent-2)] font-medium"
-                onClick={markAllAsRead}
-              >
-                Mark all as read
-              </button>
-            )}
-          </div>
-
-          <div className="max-h-96 overflow-y-auto">
-            {notifications.length === 0 ? (
-              <div className="p-8 text-center text-[var(--muted)]">
-                <Bell className="mx-auto h-12 w-12 opacity-20 mb-2" />
-                <p>No notifications</p>
-              </div>
-            ) : (
-              notifications.map(notification => (
-                <div
-                  key={notification.id}
-                  className={`p-4 border-b border-[var(--glass-border)] hover:bg-[var(--panel-strong)] transition-colors duration-200 ease-in-out ${!notification.readAt ? 'bg-[var(--accent)]/5' : ''}`}
-                  data-testid={`notification-item-${notification.id}`}
-                >
-                  <div className="notification-content">
-                    <h4 className="font-semibold text-[var(--text)]">{notification.title}</h4>
-                    <p className="mt-1 text-sm text-[var(--muted)]">{notification.body}</p>
-                    <div className="mt-2 flex items-center justify-between">
-                      <span className="text-xs text-[var(--muted)]">
-                        {new Date(notification.createdAt).toLocaleString()}
-                      </span>
-                      {!notification.readAt && (
-                        <button
-                          className="text-xs text-[var(--accent)] hover:text-[var(--accent-2)] font-medium"
-                          onClick={() => markAsRead(notification.id)}
-                        >
-                          Mark as read
-                        </button>
-                      )}
+                            return (
+                                <div
+                                    key={item.id}
+                                    onClick={() => handleNotificationClick(item)}
+                                    className="flex items-start gap-4 p-4 cursor-pointer transition-colors border-b border-white/5 hover:bg-white/5 group"
+                                >
+                                    <div className="mt-1 flex-shrink-0">
+                                        <div className="w-10 h-10 bg-blue-500/20 rounded-xl flex items-center justify-center border border-blue-500/30 group-hover:border-blue-500/50 transition-colors">
+                                            <Layers size={20} className="text-blue-400" />
+                                        </div>
+                                    </div>
+                                    <div className="flex-1 min-w-0">
+                                        <p className="text-sm font-medium text-gray-200 group-hover:text-white transition-colors">
+                                            {item.count} updates on <span className="font-bold text-white">'{entityName}'</span>
+                                        </p>
+                                        <p className="text-xs text-gray-500 mt-1">
+                                            Click to view all activities
+                                        </p>
+                                        <p className="text-[10px] text-gray-600 mt-2 font-medium uppercase tracking-wider">
+                                            {typeof item.latestCreatedAt === 'string'
+                                                ? formatDistanceToNow(new Date(item.latestCreatedAt), { addSuffix: true })
+                                                : item.latestCreatedAt?.seconds
+                                                    ? formatDistanceToNow(new Date(item.latestCreatedAt.seconds * 1000), { addSuffix: true })
+                                                    : 'Just now'
+                                            }
+                                        </p>
+                                    </div>
+                                    <div className="w-2 h-2 rounded-full bg-blue-500 mt-2 flex-shrink-0 shadow-[0_0_8px_rgba(59,130,246,0.6)]" />
+                                </div>
+                            );
+                        } else {
+                            // Single Item - We reuse NotificationItem but ensuring it looks good in a full panel
+                            return (
+                                <div key={item.id} className="border-b border-white/5 last:border-0 hover:bg-white/5 transition-colors">
+                                    <NotificationItem
+                                        notification={item}
+                                        onClick={handleNotificationClick}
+                                    />
+                                </div>
+                            );
+                        }
+                    })
+                ) : (
+                    <div className="flex flex-col items-center justify-center h-64 text-gray-500">
+                        <div className="p-4 bg-white/5 rounded-full mb-4">
+                            <Layers size={32} className="opacity-40" />
+                        </div>
+                        <p className="text-sm font-medium">No notifications yet</p>
+                        <p className="text-xs opacity-60 mt-1">We'll notify you when something happens.</p>
                     </div>
-                  </div>
-                </div>
-              ))
-            )}
-          </div>
+                )}
+            </div>
+            <div className="p-3 border-t border-white/10 bg-[#0f172a] text-center">
+                <small className="text-[10px] text-gray-600 font-medium uppercase tracking-widest">Notifications are stored for 30 days</small>
+            </div>
         </div>
-      )}
-    </div>
-  );
-}
+    );
+};

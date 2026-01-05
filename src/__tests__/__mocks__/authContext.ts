@@ -1,7 +1,8 @@
-import React from 'react';
-export const AuthContext = React.createContext({
-    user: { uid: 'test-user', email: 'test@example.com' },
-    role: { role: 'guest', tags: [] },
-    loading: false,
-    verified: true,
-});
+import { createContext, useContext } from 'react';
+
+export const AuthContext = createContext<any>(null);
+
+export const useAuth = () => {
+    const context = useContext(AuthContext);
+    return context || { user: null, loading: false, logout: jest.fn() };
+};

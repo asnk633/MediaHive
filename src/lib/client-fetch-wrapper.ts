@@ -7,8 +7,11 @@ if (typeof window !== "undefined" && process.env.NODE_ENV !== "production") {
       const originalFetch = window.fetch.bind(window);
       window.fetch = (input: RequestInfo | URL, init?: RequestInit) => {
         try {
+          const url = typeof input === 'string' ? input : (input instanceof URL ? input.href : input.url);
+          const isInternalRequest = url.startsWith('/') || url.startsWith(window.location.origin);
           const stored = localStorage.getItem("user");
-          if (stored) {
+
+          if (isInternalRequest && stored) {
             const headers = new Headers(init?.headers as HeadersInit | undefined);
             if (!headers.get("x-user-data")) headers.set("x-user-data", stored);
             init = { ...(init || {}), headers };

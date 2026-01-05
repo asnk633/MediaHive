@@ -3,27 +3,32 @@
 import React from 'react';
 import { useRouter } from 'next/navigation';
 import { CreateEventForm } from '@/components/library/organisms/CreateEventForm';
-import { ArrowLeft } from 'lucide-react';
 
 export default function NewEventPage() {
     const router = useRouter();
 
     return (
-        <div className="min-h-screen bg-gray-50/50 dark:bg-black px-4 sm:px-6 pb-24" style={{ paddingTop: '120px' }}>
-            <div className="max-w-xl mx-auto">
-                {/* Header */}
-                <div className="flex items-center gap-3 mb-8">
-                    <button
-                        onClick={() => router.back()}
-                        className="p-2 -ml-2 text-gray-600 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-800 rounded-full transition-colors"
-                    >
-                        <ArrowLeft size={24} />
-                    </button>
-                    <h1 className="text-2xl font-bold text-gray-900 dark:text-white">Create New Event</h1>
-                </div>
+        <div className="min-h-full flex items-center justify-center bg-gradient-to-b from-slate-950 to-[#0B0D10] py-20 px-4 sm:px-6 relative overflow-hidden">
+            {/* Ambient Background */}
+            <div className="fixed inset-0 bg-[radial-gradient(circle_at_50%_0%,rgba(59,130,246,0.15),transparent_50%)] pointer-events-none" />
 
-                {/* Form Card */}
-                <div className="bg-white dark:bg-[#10111a] rounded-2xl p-6 shadow-sm border border-gray-100 dark:border-gray-800">
+            {/* Centered Glass Card */}
+            <div className="w-full max-w-xl relative z-10">
+                <div className="bg-[#13161c]/90 backdrop-blur-3xl border border-white/10 rounded-3xl p-6 sm:p-8 shadow-2xl ring-1 ring-white/5">
+
+                    {/* Header */}
+                    <div className="flex items-center justify-between mb-8 pb-4 border-b border-white/5">
+                        <button
+                            onClick={() => router.back()}
+                            className="text-red-400/80 font-medium hover:text-red-300 transition-colors text-sm hover:bg-white/5 px-3 py-1.5 rounded-full"
+                        >
+                            Cancel
+                        </button>
+                        <h1 className="text-lg font-bold text-white tracking-wide">New Event</h1>
+                        {/* Spacer for balance */}
+                        <div className="w-[50px]"></div>
+                    </div>
+
                     <CreateEventForm
                         onSuccess={() => router.push('/events')}
                         onCancel={() => router.back()}

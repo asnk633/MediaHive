@@ -11,11 +11,8 @@ module.exports = {
     "<rootDir>/src/tests/jest-setup.js"
   ],
   moduleNameMapper: {
-    "^@/firebase/auth$": "<rootDir>/src/__tests__/__mocks__/firebaseAuth.ts",
-    "^@/firebase/roles$": "<rootDir>/src/__tests__/__mocks__/firebaseRoles.ts",
     "^@/contexts/AuthContext$": "<rootDir>/src/__tests__/__mocks__/authContext.ts",
-    "^@/app/\\(shell\\)/RoleContext$": "<rootDir>/src/__tests__/__mocks__/roleContext.tsx",
-    "^@/services/(.*)$": "<rootDir>/src/__tests__/__mocks__/@/services/$1.ts",
+    "^@/services/canonicalDataService$": "<rootDir>/src/__tests__/__mocks__/canonicalDataService.ts",
     "^@/(.*)$": "<rootDir>/src/$1"
   },
   // only run meaningful unit tests from src/__tests__/components

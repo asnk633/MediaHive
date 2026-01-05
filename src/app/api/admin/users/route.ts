@@ -1,7 +1,7 @@
 import { NextRequest } from 'next/server';
 import { getAuth } from 'firebase-admin/auth';
 import { getFirestore, FieldValue } from 'firebase-admin/firestore';
-import { getFirebaseAdminDb } from '@/firebase/admin';
+import { adminDb } from '@/lib/firebase/server';
 import { requireAdminWithVerifiedEmail } from '@/lib/emailVerificationGuard';
 import { logAuditAction } from '@/lib/audit';
 
@@ -10,7 +10,7 @@ export async function GET(request: NextRequest) {
     // Use the admin guard which checks both admin status and email verification
     const decodedToken = await requireAdminWithVerifiedEmail(request);
 
-    const db = getFirebaseAdminDb();
+    const db = adminDb;
 
     // Fetch all users from Firestore
     const usersSnapshot = await db.collection('users').get();
@@ -43,7 +43,7 @@ export async function POST(request: NextRequest) {
       return Response.json({ error: 'Invalid role specified' }, { status: 400 });
     }
 
-    const db = getFirebaseAdminDb();
+    const db = adminDb;
 
     // Update the user's role
     const userRef = db.collection('users').doc(targetUserId);

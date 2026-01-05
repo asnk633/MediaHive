@@ -1,5 +1,5 @@
 import { NextResponse } from 'next/server';
-import { getFirebaseAdminDb, getFirebaseAdminAuth } from '@/firebase/admin';
+import { adminAuth, adminDb } from '@/lib/firebase/server';
 
 export const dynamic = 'force-dynamic';
 
@@ -21,7 +21,7 @@ export async function GET() {
 
         // 1. Check Firestore (Read a doc)
         try {
-            const db = getFirebaseAdminDb();
+            const db = adminDb;
             await db.collection('system').doc('healthcheck').get();
         } catch (e) {
             console.error('Firestore Health Check Failed', e);
@@ -31,7 +31,7 @@ export async function GET() {
         // 2. Check Auth (List 1 user)
         try {
             // Just check if we can list 1 user (verifies Admin SDK creds & connectivity)
-            const adminAuth = getFirebaseAdminAuth();
+            const adminAuth = await import('@/lib/firebase/server').then(m => m.adminAuth);
             await adminAuth.listUsers(1);
         } catch (e) {
             console.error('Auth Health Check Failed', e);

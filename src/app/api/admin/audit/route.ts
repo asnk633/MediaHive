@@ -90,8 +90,8 @@ export async function GET(req: NextRequest) {
       const userIds = [...new Set(logs.map((log: any) => log.userId))];
 
       try {
-        const { getFirebaseAdminAuth } = await import('@/firebase/admin');
-        const auth = getFirebaseAdminAuth();
+        const { adminAuth } = await import('@/lib/firebase/server');
+        const auth = adminAuth;
 
         // Fetch users from Firebase (max 100 per batch, matched by logs limit)
         const userRecords = await auth.getUsers(

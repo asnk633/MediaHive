@@ -1,5 +1,5 @@
 import { NextRequest } from 'next/server';
-import { getFirebaseAdminDb } from '@/firebase/admin';
+import { adminDb } from '@/lib/firebase/server';
 import { requireAdminWithVerifiedEmail } from '@/lib/emailVerificationGuard';
 import { verifyUser } from '@/lib/server-utils';
 import { verifyIdempotency } from '@/lib/idempotency';
@@ -15,7 +15,7 @@ export async function GET(request: NextRequest) {
     const url = new URL(request.url);
     const taskId = url.pathname.split('/').pop(); // Get the last part of the path for individual task
 
-    const db = getFirebaseAdminDb();
+    const db = adminDb;
 
     if (taskId && taskId !== 'tasks') {
       // Fetch individual task by ID
@@ -67,7 +67,7 @@ export async function POST(request: NextRequest) {
 
     const taskData = await request.json();
 
-    const db = getFirebaseAdminDb();
+    const db = adminDb;
     const tags = taskData.tags || [];
 
     // If attached to a campaign, ensure campaign exists and add its name as a tag
@@ -203,7 +203,7 @@ export async function PUT(request: NextRequest) {
     delete (updateData as any).createdAt;
     delete (updateData as any).institutionId;
 
-    const db = getFirebaseAdminDb();
+    const db = adminDb;
 
     // Get the existing task to check permissions
     const taskDoc = await db.collection('tasks').doc(id).get();
@@ -328,7 +328,7 @@ export async function DELETE(request: NextRequest) {
       return Response.json({ error: 'Task ID is required' }, { status: 400 });
     }
 
-    const db = getFirebaseAdminDb();
+    const db = adminDb;
 
     // Get the existing task to check permissions
     const taskDoc = await db.collection('tasks').doc(taskId).get();

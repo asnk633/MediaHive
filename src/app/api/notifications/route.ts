@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { getFirebaseAdminDb } from '@/firebase/admin';
+import { adminDb } from '@/lib/firebase/server';
 // import { requireAdminWithVerifiedEmail } from '@/lib/emailVerificationGuard'; // causing build issues
 import { verifyUser } from '@/lib/server-utils';
 
@@ -17,7 +17,7 @@ export async function GET(request: NextRequest) {
     const limitParam = url.searchParams.get('limit');
     const limit = limitParam ? parseInt(limitParam, 10) : 50;
 
-    const db = getFirebaseAdminDb();
+    const db = adminDb;
 
     // Fetch user's notifications from Firestore
     const notificationsSnapshot = await db
@@ -63,7 +63,7 @@ export async function POST(request: NextRequest) {
       }
     }
 
-    const db = getFirebaseAdminDb();
+    const db = adminDb;
 
     // Handle unread count request
     if (path.includes('/unread')) {
@@ -107,7 +107,7 @@ export async function PUT(request: NextRequest) {
       return NextResponse.json({ error: 'Notification ID is required' }, { status: 400 });
     }
 
-    const db = getFirebaseAdminDb();
+    const db = adminDb;
     const notifRef = db.collection('notifications').doc(notificationId);
     const notifDoc = await notifRef.get();
 

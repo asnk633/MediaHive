@@ -1,7 +1,7 @@
 // src/lib/prefetch/tasks.ts
 // Task prefetching utility for performance improvements
 
-import { getQueryCache, setQueryCache, invalidateQueryCache } from '../cache/query-cache';
+import { getQueryCache, setQueryCache, invalidateQueryCache } from '@/lib/cache/query-cache';
 import { apiClient } from '@/lib/apiClient';
 
 // Prefetch tasks for a user
@@ -15,32 +15,32 @@ export async function prefetchTasks(
     // Generate cache key
     const cacheKey = 'tasks';
     const params = { userId, institutionId, status, priority };
-    
+
     // Check cache first
     const cachedTasks = await getQueryCache<any[]>(cacheKey, params);
     if (cachedTasks) {
       return cachedTasks;
     }
-    
+
     // Fetch tasks from API
     const queryParams = new URLSearchParams();
     queryParams.append('userId', userId.toString());
     queryParams.append('institutionId', institutionId.toString());
-    
+
     if (status) {
       queryParams.append('status', status);
     }
-    
+
     if (priority) {
       queryParams.append('priority', priority);
     }
-    
+
     const data = await apiClient(`/api/tasks?${queryParams.toString()}`);
     const tasks = data.data || data.tasks || [];
-    
+
     // Cache the results for 5 minutes
     await setQueryCache(cacheKey, tasks, params, 5 * 60 * 1000);
-    
+
     return tasks;
   } catch (error) {
     console.warn('Failed to prefetch tasks:', error);
@@ -58,13 +58,13 @@ export async function prefetchNearestCampusTasks(
     // Generate cache key
     const cacheKey = 'nearest-campus-tasks';
     const params = { userId, latitude: userLocation.latitude, longitude: userLocation.longitude };
-    
+
     // Check cache first
     const cachedTasks = await getQueryCache<any[]>(cacheKey, params);
     if (cachedTasks) {
       return cachedTasks;
     }
-    
+
     // Fetch nearest campus tasks from API
     const data = await apiClient(
       `/api/tasks/nearest?` +
@@ -73,12 +73,12 @@ export async function prefetchNearestCampusTasks(
       `longitude=${userLocation.longitude}&` +
       `maxDistance=${maxDistanceKm}`
     );
-    
+
     const tasks = data.data || data.tasks || [];
-    
+
     // Cache the results for 10 minutes
     await setQueryCache(cacheKey, tasks, params, 10 * 60 * 1000);
-    
+
     return tasks;
   } catch (error) {
     console.warn('Failed to prefetch nearest campus tasks:', error);
@@ -95,7 +95,7 @@ export async function invalidateTaskCache(
 ): Promise<void> {
   const cacheKey = 'tasks';
   const params = { userId, institutionId, status, priority };
-  
+
   await invalidateQueryCache(cacheKey, params);
 }
 
@@ -106,6 +106,6 @@ export async function invalidateNearestCampusTasksCache(
 ): Promise<void> {
   const cacheKey = 'nearest-campus-tasks';
   const params = { userId, latitude: userLocation.latitude, longitude: userLocation.longitude };
-  
+
   await invalidateQueryCache(cacheKey, params);
 }

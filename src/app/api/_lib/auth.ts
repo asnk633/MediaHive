@@ -3,7 +3,7 @@
 
 import { NextRequest } from 'next/server';
 import { TaskStatus } from '@/types';
-import { loggingMiddleware } from '../middleware/logging';
+import { loggingMiddleware } from '@/app/api/middleware/logging';
 import { getUserFromRequest as getSessionUser } from './session';
 import { AuthUser, UserRole } from './types';
 

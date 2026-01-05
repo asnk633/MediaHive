@@ -6,7 +6,7 @@ import { sanitizeTextContent, sanitizeHtmlContent } from '@/lib/sanitizer';
 import { sendFcm } from '@/lib/sendFcm';
 
 // Configure for static export
-export const dynamic = 'force-static';
+export const dynamic = 'force-dynamic';
 export const revalidate = false;
 
 // In-memory storage for mock implementation
@@ -36,14 +36,14 @@ export async function POST(req: NextRequest) {
     }
 
     const body = await req.json();
-    
+
     // Validate the payload
     const validatedBody = validateSchema(taskPayloadSchema, body);
-    
+
     // Role-based field restrictions
     let priority = 'medium';
     let assignedToId: string | null = null;
-    
+
     if (user.role === 'admin') {
       // Admin can set everything
       priority = validatedBody.priority;
@@ -59,7 +59,7 @@ export async function POST(req: NextRequest) {
     }
 
     const now = new Date().toISOString();
-    
+
     const newTask = {
       id: taskIdCounter++,
       title: sanitizeTextContent(validatedBody.title.trim()),
@@ -78,14 +78,14 @@ export async function POST(req: NextRequest) {
 
     // In a real implementation, you would save to database here
     mockTasks.push(newTask);
-    
+
     // Send notification if task is assigned to someone
     if (assignedToId) {
       // In a real implementation, you would:
       // 1. Look up the assigned user in the database
       // 2. Get their FCM token
       // 3. Send them a notification
-      
+
       // For demonstration, we'll send to a mock token
       const mockFcmToken = 'mock-fcm-token-for-demo';
       await sendFcm(mockFcmToken, {

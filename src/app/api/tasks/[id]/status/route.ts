@@ -6,7 +6,7 @@ import { getUserFromRequest, canChangeTaskStatus } from '../../../../_api_disabl
 import { TaskStatus } from '@/types';
 
 // Configure for static export
-export const dynamic = 'force-static';
+export const dynamic = 'force-dynamic';
 export const revalidate = false;
 
 // For static export with dynamic routes

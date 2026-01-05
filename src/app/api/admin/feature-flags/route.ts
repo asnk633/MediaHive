@@ -6,7 +6,7 @@ import { authorizeByPermission } from '@/app/api/_lib/rbac';
 import { isFeatureEnabled, getAllFeatureFlags } from '@/app/featureFlags';
 
 // Configure for static export
-export const dynamic = 'force-static';
+export const dynamic = 'force-dynamic';
 export const revalidate = false;
 
 // Ensure this endpoint is only available in development

@@ -10,7 +10,7 @@ import { authorizeByPermission } from '@/app/api/_lib/rbac';
 import { hasRole } from "@/app/api/_lib/auth";
 
 // Configure for static export
-export const dynamic = 'force-static';
+export const dynamic = 'force-dynamic';
 export const revalidate = false;
 
 // For static export with dynamic routes

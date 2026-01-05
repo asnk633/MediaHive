@@ -1,4 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
+export const dynamic = 'force-dynamic';
 import { getFirebaseServices, verifyUser } from '@/lib/server-utils';
 import { hasRole } from '@/lib/permissions';
 import { logEventCreated, logEventUpdated, logEventDeleted } from '@/app/api/_lib/audit';

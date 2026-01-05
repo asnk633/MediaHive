@@ -2,7 +2,7 @@ import { NextRequest, NextResponse } from 'next/server';
 import { getDb } from '@/db';
 import { tasks, users, notifications } from '@/db/schema';
 import { eq } from 'drizzle-orm';
-import { getUserFromRequest, canChangeTaskStatus } from '../../../../_api_disabled/_lib/auth';
+import { getUserFromRequest, canChangeTaskStatus } from '../../../_lib/auth';
 import { TaskStatus } from '@/types';
 
 // Configure for static export

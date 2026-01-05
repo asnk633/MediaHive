@@ -1,0 +1,8 @@
+{
+  "projects": {
+    "staging": "thaiba-media-staging",
+    "default": "thaiba-media-staging"
+  },
+  "targets": {},
+  "etags": {}
+}

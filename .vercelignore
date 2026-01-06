@@ -3,13 +3,7 @@ src/app/_api_disabled/
 src/server_disabled/
 
 # Ignore unfinished admin subsystems
-src/app/(shell)/campaigns/
-src/app/(shell)/flowboard/
-src/app/(shell)/inventory/
-src/app/(shell)/media/
-src/app/(shell)/reports/
-src/app/(shell)/settings/
-src/app/(shell)/updates/
+
 
 # Ignore heavy admin APIs not needed for core app
 src/app/api/admin/

@@ -44,7 +44,7 @@
 
 @layer base {
   * {
-    @apply border-white/10;
+    border-color: rgba(255, 255, 255, 0.1);
   }
 
   body {

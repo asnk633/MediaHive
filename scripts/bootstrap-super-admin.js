@@ -4,7 +4,9 @@ const admin = require('firebase-admin');
 // This script should be run in an environment with proper Firebase Admin credentials
 // Either with GOOGLE_APPLICATION_CREDENTIALS environment variable set or
 // with proper service account key
-const app = admin.initializeApp();
+const app = admin.initializeApp({
+  projectId: 'thaiba-media-prod',
+});
 
 // HARD RUNTIME GUARD: Script crashes immediately if wrong Firebase project is used
 // This ensures we don't accidentally run this against staging or another environment

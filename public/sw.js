@@ -76,6 +76,12 @@ self.addEventListener('fetch', (event) => {
     return; // Go straight to network
   }
 
+  // 0.1. IGNORE NON-GET REQUESTS (POST, PUT, DELETE, HEAD)
+  // The Cache API only supports GET requests.
+  if (request.method !== 'GET') {
+    return;
+  }
+
   // 1. IGNORE Dynamic Next.js Chunks & HMR
   // These are heavy, change often, and cause "Failed to cache" errors
   if (

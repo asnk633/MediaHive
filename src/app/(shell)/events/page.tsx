@@ -101,7 +101,7 @@ function EventsContent() {
     return (
         <div className="flex flex-col min-h-screen px-4 md:max-w-4xl mx-auto">
             {/* Header */}
-            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-8">
+            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-6">
                 <div>
                     <h1 className="text-3xl font-bold tracking-tight text-[var(--color-text-primary)]">Events</h1>
                     <p className="text-[var(--color-text-secondary)] mt-1">Schedule and manage your timeline.</p>

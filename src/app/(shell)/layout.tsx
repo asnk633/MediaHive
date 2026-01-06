@@ -42,7 +42,7 @@ export default function ShellLayout({ children }: { children: React.ReactNode })
               className="flex-1 overflow-y-auto overflow-x-hidden pt-6 print:pt-0 print:pb-0 print:overflow-visible print:h-auto"
               style={{
                 paddingBottom: 'var(--bottom-nav-height)',
-                paddingTop: 'calc(var(--header-height) + 1.5rem)'
+                paddingTop: 'calc(var(--header-height) + 1rem)'
               }}
             >
               <ErrorBoundary>

@@ -209,7 +209,7 @@ export default function Home() {
 
       <div className="container mx-auto px-4 pb-8 max-w-7xl">
         {/* Header */}
-        <header className="mb-8">
+        <header className="mb-6">
 
           <h1 className="text-5xl font-display font-medium text-white leading-tight tracking-tight">
             {welcome.greeting}, <br />

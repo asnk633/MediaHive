@@ -23,7 +23,7 @@ if (getApps().length === 0) {
 
 // HARD RUNTIME GUARD: App crashes immediately if wrong Firebase project is used
 // HARD RUNTIME GUARD: App crashes immediately if wrong Firebase project is used
-const allowedProjectIds = ['thaiba-media-staging', 'media-app-93b73'];
+const allowedProjectIds = ['thaiba-media-staging', 'media-app-93b73', 'thaiba-media-prod'];
 if (!allowedProjectIds.includes(firebaseApp.options.projectId || '')) {
   const errorMsg = `[FIREBASE] CRITICAL ERROR: Expected one of [${allowedProjectIds.join(', ')}], but got '${firebaseApp.options.projectId}'. App will crash to prevent using wrong Firebase project.`;
   console.error(errorMsg);

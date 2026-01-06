@@ -1,4 +1,27 @@
-// import { getFirebaseAuth } from '@/firebase/client'; // Removed for cookie-based auth
+import { getFirebaseAuth } from '@/firebase/client';
+
+// ... (existing imports)
+
+// ...
+
+// Inside apiClient function, inside retryWithBackoff callback:
+
+// Prepare headers
+const headers = {
+  'Content-Type': 'application/json',
+  ...options.headers,
+} as Record<string, string>;
+
+// Inject Firebase ID Token if authenticated
+try {
+  const auth = getAuth();
+  if (auth.currentUser) {
+    const token = await auth.currentUser.getIdToken();
+    headers['Authorization'] = `Bearer ${token}`;
+  }
+} catch (error) {
+  console.warn('[API Client] Failed to retrieve ID token:', error);
+}
 
 // Request deduplication cache
 const inflightRequests = new Map<string, Promise<any>>();
@@ -127,6 +150,19 @@ export const apiClient = async <T = any>(endpoint: string, options: ApiOptions =
       'Content-Type': 'application/json',
       ...options.headers,
     } as Record<string, string>;
+
+    // Automatically attach Firebase ID token if user is signed in
+    try {
+      const auth = getAuth();
+      if (auth.currentUser) {
+        const token = await auth.currentUser.getIdToken();
+        headers['Authorization'] = `Bearer ${token}`;
+      }
+    } catch (error) {
+      // Silently fail to attach token if auth not initialized or other error
+      // The request will proceed (and likely fail 401) but existing error handling will catch that
+      if (isDev) console.warn('[API Client] Failed to attach auth token:', error);
+    }
 
     // Make the fetch request
     const response = await fetch(url, {

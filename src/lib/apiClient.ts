@@ -1,27 +1,4 @@
-import { getFirebaseAuth } from '@/firebase/client';
-
-// ... (existing imports)
-
-// ...
-
-// Inside apiClient function, inside retryWithBackoff callback:
-
-// Prepare headers
-const headers = {
-  'Content-Type': 'application/json',
-  ...options.headers,
-} as Record<string, string>;
-
-// Inject Firebase ID Token if authenticated
-try {
-  const auth = getAuth();
-  if (auth.currentUser) {
-    const token = await auth.currentUser.getIdToken();
-    headers['Authorization'] = `Bearer ${token}`;
-  }
-} catch (error) {
-  console.warn('[API Client] Failed to retrieve ID token:', error);
-}
+import { getAuth } from 'firebase/auth';
 
 // Request deduplication cache
 const inflightRequests = new Map<string, Promise<any>>();

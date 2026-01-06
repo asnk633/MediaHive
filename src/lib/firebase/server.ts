@@ -19,25 +19,28 @@ try {
         const privateKey = (process.env.FIREBASE_ADMIN_PRIVATE_KEY || process.env.FIREBASE_PRIVATE_KEY || process.env.GOOGLE_PRIVATE_KEY || '').replace(/\\n/g, '\n');
 
         if (projectId && clientEmail && privateKey) {
-            // console.log('[FIREBASE ADMIN] Credentials detected: YES'); // Reduced verbosity for production
-            console.log('[FIREBASE ADMIN] Initializing with cert...');
+            console.log('[FIREBASE ADMIN] Initializing with cert for:', projectId);
+
+            // Explicit guard: Check for mismatch
+            if (projectId !== 'thaiba-media-prod') {
+                console.warn(`[FIREBASE ADMIN] WARNING: Project ID mismatch! Expected 'thaiba-media-prod', got '${projectId}'`);
+            }
+
             adminApp = admin.initializeApp({
                 credential: admin.credential.cert({
                     projectId,
                     clientEmail,
                     privateKey,
                 }),
-                // projectId: projectId, // Omit to allow inference from cert and avoid mismatch
-            });
-        } else if (process.env.FIREBASE_ADMIN_SA_PATH) {
-            // Fallback to Service Account Path (Native/Local dev)
-            // eslint-disable-next-line @typescript-eslint/no-var-requires
-            const serviceAccount = require(process.env.FIREBASE_ADMIN_SA_PATH);
-            adminApp = admin.initializeApp({
-                credential: admin.credential.cert(serviceAccount)
+                projectId: projectId, // Explicitly set projectId
             });
         } else {
-            // Log but don't crash yet - allow build to proceed
+            // Log critical failure elements (redacted)
+            console.error('[FIREBASE ADMIN] CRITICAL: Missing Env Vars', {
+                hasProjectId: !!projectId,
+                hasClientEmail: !!clientEmail,
+                hasPrivateKey: !!privateKey
+            });
             console.warn('Firebase Admin Env Vars Missing. App will crash if DB accessed.');
         }
     }

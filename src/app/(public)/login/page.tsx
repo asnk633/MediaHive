@@ -190,7 +190,7 @@ export default function LoginPage() {
                 <button
                     type="submit"
                     disabled={submitting}
-                    className="w-full h-12 bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-500 hover:to-indigo-500 text-white rounded-xl font-bold text-base shadow-lg shadow-blue-900/40 active:scale-[0.98] transition-all disabled:opacity-70 disabled:cursor-not-allowed mt-2 border border-white/10"
+                    className="w-full h-12 bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-500 hover:to-indigo-500 text-white rounded-xl font-bold text-base shadow-lg shadow-blue-900/40 active:scale-[0.98] transition-all disabled:opacity-70 disabled:cursor-not-allowed mt-2 border border-[#ffffff1a]"
                 >
                     {submitting ? "Signing in..." : "Login"}
                 </button>
@@ -210,7 +210,7 @@ export default function LoginPage() {
             {/* Password Reset Modal */}
             {showResetModal && (
                 <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80 backdrop-blur-md">
-                    <div className="glass-card w-full max-w-md p-6 relative bg-[#0f172a]/90 border border-white/10">
+                    <div className="glass-card w-full max-w-md p-6 relative bg-[#0f172a]/90 border border-[#ffffff1a]">
                         <button
                             onClick={() => {
                                 setShowResetModal(false);

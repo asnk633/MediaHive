@@ -219,7 +219,7 @@ export const CreateEventForm = ({ initialDate, onSuccess, onCancel, isModal = fa
         bg-[#0a0c10] 
         text-white 
         placeholder:text-white/30
-        border border-white/10 
+        border border-[#ffffff1a] 
         rounded-2xl 
         py-4 pl-12 pr-4 
         outline-none 
@@ -234,7 +234,7 @@ export const CreateEventForm = ({ initialDate, onSuccess, onCancel, isModal = fa
             {/* Title Section */}
             <div className="space-y-4">
                 {user?.role === 'admin' && (
-                    <div className="space-y-4 p-4 rounded-2xl bg-white/5 border border-white/10">
+                    <div className="space-y-4 p-4 rounded-2xl bg-white/5 border border-[#ffffff1a]">
                         <div className="flex items-center justify-between">
                             <div className="flex-1">
                                 <label className="text-sm font-bold text-white block">System Event</label>
@@ -261,16 +261,16 @@ export const CreateEventForm = ({ initialDate, onSuccess, onCancel, isModal = fa
 
                         {/* Recurrence Options */}
                         {isSystemEvent && (
-                            <div className="pt-4 border-t border-white/10 grid grid-cols-1 md:grid-cols-2 gap-4">
+                            <div className="pt-4 border-t border-[#ffffff1a] grid grid-cols-1 md:grid-cols-2 gap-4">
                                 <div className="space-y-2">
                                     <label className="text-xs font-bold text-white/50 uppercase">Frequency</label>
                                     <div className="relative">
                                         <Repeat size={16} className="absolute left-3 top-1/2 -translate-y-1/2 text-white/40" />
                                         <Select value={recurrenceFreq} onValueChange={(val: any) => setRecurrenceFreq(val)}>
-                                            <SelectTrigger className="w-full bg-[#0a0c10] border-white/10 text-white pl-9 h-11">
+                                            <SelectTrigger className="w-full bg-[#0a0c10] border-[#ffffff1a] text-white pl-9 h-11">
                                                 <SelectValue />
                                             </SelectTrigger>
-                                            <SelectContent className="bg-[#141e30] border-white/10 text-white">
+                                            <SelectContent className="bg-[#141e30] border-[#ffffff1a] text-white">
                                                 <SelectItem value="weekly">Weekly</SelectItem>
                                                 <SelectItem value="monthly">Monthly</SelectItem>
                                                 <SelectItem value="yearly">Yearly</SelectItem>
@@ -285,7 +285,7 @@ export const CreateEventForm = ({ initialDate, onSuccess, onCancel, isModal = fa
                                             <Button
                                                 variant={"outline"}
                                                 className={cn(
-                                                    "w-full bg-[#0a0c10] border-white/10 text-white justify-start text-left font-normal h-11",
+                                                    "w-full bg-[#0a0c10] border-[#ffffff1a] text-white justify-start text-left font-normal h-11",
                                                     !recurrenceEndDate && "text-white/30"
                                                 )}
                                             >
@@ -293,7 +293,7 @@ export const CreateEventForm = ({ initialDate, onSuccess, onCancel, isModal = fa
                                                 {recurrenceEndDate ? format(new Date(recurrenceEndDate), "PPP") : <span>No End Date</span>}
                                             </Button>
                                         </PopoverTrigger>
-                                        <PopoverContent className="w-auto p-0 bg-[#141e30] border-white/10 text-white" align="start">
+                                        <PopoverContent className="w-auto p-0 bg-[#141e30] border-[#ffffff1a] text-white" align="start">
                                             <Calendar
                                                 mode="single"
                                                 selected={recurrenceEndDate ? new Date(recurrenceEndDate) : undefined}
@@ -332,10 +332,10 @@ export const CreateEventForm = ({ initialDate, onSuccess, onCancel, isModal = fa
                     <div className={inputContainerClasses}>
                         <User size={20} className={iconClasses} />
                         <Select value={createdById} onValueChange={setCreatedById}>
-                            <SelectTrigger className="w-full bg-[#0a0c10] border-white/10 text-white h-14 rounded-2xl pl-12">
+                            <SelectTrigger className="w-full bg-[#0a0c10] border-[#ffffff1a] text-white h-14 rounded-2xl pl-12">
                                 <SelectValue placeholder="Select Creator" />
                             </SelectTrigger>
-                            <SelectContent className="bg-[#141e30] border-white/10 text-white max-h-80">
+                            <SelectContent className="bg-[#141e30] border-[#ffffff1a] text-white max-h-80">
                                 <SelectItem value={user?.uid || 'self'}>Myself ({user?.officialName || user?.name})</SelectItem>
 
                                 {user?.role === 'admin' && teamMembers.length > 0 && (
@@ -385,13 +385,13 @@ export const CreateEventForm = ({ initialDate, onSuccess, onCancel, isModal = fa
                                 </span>
                             </Button>
                         </PopoverTrigger>
-                        <PopoverContent className="w-auto p-0 border-white/10 bg-[#141e30] text-white" align="start">
+                        <PopoverContent className="w-auto p-0 border-[#ffffff1a] bg-[#141e30] text-white" align="start">
                             <Calendar
                                 mode="single"
                                 selected={date ? new Date(date) : undefined}
                                 onSelect={(d) => setDate(d ? format(d, 'yyyy-MM-dd') : '')}
                                 initialFocus
-                                className="bg-[#141e30] text-white rounded-xl border border-white/10"
+                                className="bg-[#141e30] text-white rounded-xl border border-[#ffffff1a]"
                             />
                         </PopoverContent>
                     </Popover>
@@ -448,10 +448,10 @@ export const CreateEventForm = ({ initialDate, onSuccess, onCancel, isModal = fa
                         <div className={inputContainerClasses}>
                             <Briefcase size={20} className={iconClasses} />
                             <Select value={department} onValueChange={setDepartment}>
-                                <SelectTrigger className="w-full bg-[#0a0c10] border-white/10 text-white h-14 rounded-2xl pl-12">
+                                <SelectTrigger className="w-full bg-[#0a0c10] border-[#ffffff1a] text-white h-14 rounded-2xl pl-12">
                                     <SelectValue placeholder="Select Department" />
                                 </SelectTrigger>
-                                <SelectContent className="bg-[#141e30] border-white/10 text-white max-h-80">
+                                <SelectContent className="bg-[#141e30] border-[#ffffff1a] text-white max-h-80">
                                     <SelectGroup>
                                         <SelectLabel className="text-white/50 text-xs font-bold uppercase tracking-wider px-2 py-1.5">Departments</SelectLabel>
                                         {departmentsList.map(dept => (
@@ -484,7 +484,7 @@ export const CreateEventForm = ({ initialDate, onSuccess, onCancel, isModal = fa
                                     relative flex flex-col items-start justify-center p-4 rounded-2xl border cursor-pointer transition-all duration-300 select-none group
                                     ${isSelected
                                                     ? 'bg-blue-600/10 border-blue-500/50 shadow-[0_0_20px_rgba(59,130,246,0.15)] ring-1 ring-blue-500/20'
-                                                    : 'bg-[#0a0c10] border-white/5 hover:border-white/10 hover:bg-white/5'}
+                                                    : 'bg-[#0a0c10] border-white/5 hover:border-[#ffffff1a] hover:bg-white/5'}
                                 `}
                                         >
                                             <div className="flex items-center justify-between w-full mb-3">
@@ -527,7 +527,7 @@ export const CreateEventForm = ({ initialDate, onSuccess, onCancel, isModal = fa
             </div>
 
             {/* Actions */}
-            <div className={`flex gap-4 ${isModal ? 'pt-2' : 'pt-6 mt-6 border-t border-white/10'}`}>
+            <div className={`flex gap-4 ${isModal ? 'pt-2' : 'pt-6 mt-6 border-t border-[#ffffff1a]'}`}>
                 {onCancel && (
                     <button
                         type="button"

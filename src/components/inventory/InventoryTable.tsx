@@ -69,7 +69,7 @@ export default function InventoryTable() {
                 )}
             </div>
 
-            <div className="rounded-md border border-white/10 overflow-hidden overflow-x-auto bg-slate-950/30">
+            <div className="rounded-md border border-[#ffffff1a] overflow-hidden overflow-x-auto bg-slate-950/30">
                 <Table>
                     <TableHeader className="bg-slate-900/50">
                         <TableRow className="border-white/5 hover:bg-transparent">
@@ -130,7 +130,7 @@ export default function InventoryTable() {
                     size="sm"
                     onClick={() => setPage(p => Math.max(0, p - 1))}
                     disabled={page === 0 || loading}
-                    className="border-white/10 text-white hover:bg-white/5 bg-transparent"
+                    className="border-[#ffffff1a] text-white hover:bg-white/5 bg-transparent"
                 >
                     Previous
                 </Button>
@@ -140,7 +140,7 @@ export default function InventoryTable() {
                     size="sm"
                     onClick={() => setPage(p => p + 1)}
                     disabled={!hasMore || loading}
-                    className="border-white/10 text-white hover:bg-white/5 bg-transparent"
+                    className="border-[#ffffff1a] text-white hover:bg-white/5 bg-transparent"
                 >
                     Next
                 </Button>
@@ -183,23 +183,23 @@ function CreateItemDialog({ onSuccess }: { onSuccess: () => void }) {
                     <Plus size={16} className="mr-2" /> Add Item
                 </Button>
             </DialogTrigger>
-            <DialogContent className="bg-slate-900 border-white/10 text-white sm:max-w-[425px]">
+            <DialogContent className="bg-slate-900 border-[#ffffff1a] text-white sm:max-w-[425px]">
                 <DialogHeader>
                     <DialogTitle>Add Inventory Item</DialogTitle>
                 </DialogHeader>
                 <form onSubmit={handleSubmit} className="space-y-4 mt-4">
                     <div className="space-y-2">
                         <Label>Name</Label>
-                        <Input name="name" required placeholder="e.g. AA Batteries" className="bg-white/5 border-white/10" />
+                        <Input name="name" required placeholder="e.g. AA Batteries" className="bg-white/5 border-[#ffffff1a]" />
                     </div>
                     <div className="grid grid-cols-2 gap-4">
                         <div className="space-y-2">
                             <Label>Category</Label>
                             <Select name="category" required defaultValue="General">
-                                <SelectTrigger className="bg-white/5 border-white/10">
+                                <SelectTrigger className="bg-white/5 border-[#ffffff1a]">
                                     <SelectValue />
                                 </SelectTrigger>
-                                <SelectContent className="bg-slate-900 border-white/10 text-white">
+                                <SelectContent className="bg-slate-900 border-[#ffffff1a] text-white">
                                     <SelectItem value="General">General</SelectItem>
                                     <SelectItem value="Electronics">Electronics</SelectItem>
                                     <SelectItem value="Cables">Cables</SelectItem>
@@ -209,17 +209,17 @@ function CreateItemDialog({ onSuccess }: { onSuccess: () => void }) {
                         </div>
                         <div className="space-y-2">
                             <Label>Unit</Label>
-                            <Input name="unit" required placeholder="pcs, kg" className="bg-white/5 border-white/10" />
+                            <Input name="unit" required placeholder="pcs, kg" className="bg-white/5 border-[#ffffff1a]" />
                         </div>
                     </div>
                     <div className="grid grid-cols-2 gap-4">
                         <div className="space-y-2">
                             <Label>Quantity</Label>
-                            <Input name="quantity" type="number" required min="0" className="bg-white/5 border-white/10" />
+                            <Input name="quantity" type="number" required min="0" className="bg-white/5 border-[#ffffff1a]" />
                         </div>
                         <div className="space-y-2">
                             <Label>Low Stock Threshold</Label>
-                            <Input name="threshold" type="number" required min="0" className="bg-white/5 border-white/10" />
+                            <Input name="threshold" type="number" required min="0" className="bg-white/5 border-[#ffffff1a]" />
                         </div>
                     </div>
                     <div className="pt-2 flex justify-end">
@@ -267,7 +267,7 @@ function EditItemDialog({ item, onSuccess }: { item: InventoryItem, onSuccess: (
                     <RefreshCw size={14} className="text-slate-400" />
                 </Button>
             </DialogTrigger>
-            <DialogContent className="bg-slate-900 border-white/10 text-white sm:max-w-[425px]">
+            <DialogContent className="bg-slate-900 border-[#ffffff1a] text-white sm:max-w-[425px]">
                 <DialogHeader>
                     <DialogTitle>Update Stock: {item.name}</DialogTitle>
                 </DialogHeader>
@@ -275,11 +275,11 @@ function EditItemDialog({ item, onSuccess }: { item: InventoryItem, onSuccess: (
                     <div className="grid grid-cols-2 gap-4">
                         <div className="space-y-2">
                             <Label>Quantity</Label>
-                            <Input name="quantity" type="number" required min="0" defaultValue={item.quantity} className="bg-white/5 border-white/10" />
+                            <Input name="quantity" type="number" required min="0" defaultValue={item.quantity} className="bg-white/5 border-[#ffffff1a]" />
                         </div>
                         <div className="space-y-2">
                             <Label>Low Stock Threshold</Label>
-                            <Input name="threshold" type="number" required min="0" defaultValue={item.threshold} className="bg-white/5 border-white/10" />
+                            <Input name="threshold" type="number" required min="0" defaultValue={item.threshold} className="bg-white/5 border-[#ffffff1a]" />
                         </div>
                     </div>
                     <div className="pt-2 flex justify-end">

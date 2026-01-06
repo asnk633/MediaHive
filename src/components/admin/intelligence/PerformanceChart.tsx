@@ -46,8 +46,8 @@ function CustomTooltip({ active, payload }: any) {
     const data = payload[0].payload;
 
     return (
-        <div className="bg-[#1a2639]/95 border border-white/10 rounded-xl p-4 shadow-xl backdrop-blur-md">
-            <p className="text-white font-bold mb-2 uppercase tracking-wider text-xs border-b border-white/10 pb-2">{data.period}</p>
+        <div className="bg-[#1a2639]/95 border border-[#ffffff1a] rounded-xl p-4 shadow-xl backdrop-blur-md">
+            <p className="text-white font-bold mb-2 uppercase tracking-wider text-xs border-b border-[#ffffff1a] pb-2">{data.period}</p>
             <div className="space-y-2">
                 <div className="flex justify-between items-center gap-8">
                     <span className="text-gray-400 text-xs">IPS Score</span>

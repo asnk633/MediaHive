@@ -46,7 +46,7 @@ export const TaskOriginWidget = ({ tasks }: TaskOriginWidgetProps) => {
     ].filter(d => d.value > 0);
 
     return (
-        <div className="bg-white/5 backdrop-blur-md border border-white/10 rounded-2xl p-6 shadow-xl h-full">
+        <div className="bg-white/5 backdrop-blur-md border border-[#ffffff1a] rounded-2xl p-6 shadow-xl h-full">
             <div className="flex items-center gap-2 mb-6">
                 <div className="p-2 bg-gray-500/10 rounded-lg">
                     <Network className="w-5 h-5 text-gray-400" />

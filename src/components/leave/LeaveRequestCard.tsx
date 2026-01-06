@@ -27,7 +27,7 @@ export const LeaveRequestCard: React.FC<LeaveRequestCardProps> = ({
     };
 
     return (
-        <div className="bg-white/5 border border-white/10 rounded-2xl p-5 hover:bg-white/[0.07] transition-all">
+        <div className="bg-white/5 border border-[#ffffff1a] rounded-2xl p-5 hover:bg-white/[0.07] transition-all">
             {/* Header */}
             <div className="flex items-start justify-between mb-4">
                 <div className="flex-1">

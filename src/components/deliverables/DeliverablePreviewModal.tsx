@@ -75,7 +75,7 @@ export const DeliverablePreviewModal: React.FC<DeliverablePreviewModalProps> = (
                         initial={{ opacity: 0, scale: 0.95 }}
                         animate={{ opacity: 1, scale: 1 }}
                         exit={{ opacity: 0, scale: 0.95 }}
-                        className="relative w-full max-w-6xl h-full max-h-[90vh] bg-[#0F172A] rounded-2xl border border-white/10 shadow-2xl flex flex-col overflow-hidden"
+                        className="relative w-full max-w-6xl h-full max-h-[90vh] bg-[#0F172A] rounded-2xl border border-[#ffffff1a] shadow-2xl flex flex-col overflow-hidden"
                         onClick={e => e.stopPropagation()}
                     >
                         {/* Header */}
@@ -108,14 +108,14 @@ export const DeliverablePreviewModal: React.FC<DeliverablePreviewModalProps> = (
                                 <button
                                     onClick={() => onNavigate('prev')}
                                     disabled={versionIndex >= totalVersions - 1} // Can't go older if at end
-                                    className="pointer-events-auto p-3 rounded-full bg-black/50 border border-white/10 text-white hover:bg-black/80 hover:scale-110 disabled:opacity-0 disabled:pointer-events-none transition-all"
+                                    className="pointer-events-auto p-3 rounded-full bg-black/50 border border-[#ffffff1a] text-white hover:bg-black/80 hover:scale-110 disabled:opacity-0 disabled:pointer-events-none transition-all"
                                 >
                                     <ChevronLeft size={24} />
                                 </button>
                                 <button
                                     onClick={() => onNavigate('next')}
                                     disabled={versionIndex <= 0} // Can't go newer if at 0
-                                    className="pointer-events-auto p-3 rounded-full bg-black/50 border border-white/10 text-white hover:bg-black/80 hover:scale-110 disabled:opacity-0 disabled:pointer-events-none transition-all"
+                                    className="pointer-events-auto p-3 rounded-full bg-black/50 border border-[#ffffff1a] text-white hover:bg-black/80 hover:scale-110 disabled:opacity-0 disabled:pointer-events-none transition-all"
                                 >
                                     <ChevronRight size={24} />
                                 </button>

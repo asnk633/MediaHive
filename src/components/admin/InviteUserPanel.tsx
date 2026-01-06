@@ -122,7 +122,7 @@ export const InviteUserPanel: React.FC<InviteUserPanelProps> = ({ institutionId 
   }
 
   return (
-    <Card className="bg-white/5 backdrop-blur-md border border-white/10">
+    <Card className="bg-white/5 backdrop-blur-md border border-[#ffffff1a]">
       <CardHeader>
         <div className="flex items-center gap-2">
           <UserPlus className="w-5 h-5 text-blue-400" />
@@ -178,7 +178,7 @@ export const InviteUserPanel: React.FC<InviteUserPanelProps> = ({ institutionId 
           </p>
         </form>
 
-        <div className="border-t border-white/10 pt-6">
+        <div className="border-t border-[#ffffff1a] pt-6">
           <h3 className="text-lg font-medium text-white mb-4">Pending Invites</h3>
           
           {loadingInvites ? (

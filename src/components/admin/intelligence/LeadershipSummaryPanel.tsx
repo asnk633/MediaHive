@@ -99,7 +99,7 @@ export function LeadershipSummaryPanel() {
             <div className="grid grid-cols-1 md:grid-cols-12 gap-6">
 
                 {/* 1. Executive Narrative (Left - Wide) */}
-                <div className="col-span-12 md:col-span-7 lg:col-span-8 bg-[#0f172a] border border-white/10 rounded-2xl p-6 shadow-2xl relative overflow-hidden group">
+                <div className="col-span-12 md:col-span-7 lg:col-span-8 bg-[#0f172a] border border-[#ffffff1a] rounded-2xl p-6 shadow-2xl relative overflow-hidden group">
                     <div className="absolute top-0 right-0 p-4 opacity-10 group-hover:opacity-20 transition-opacity">
                         <BrainCircuit size={120} className="text-white" />
                     </div>
@@ -137,7 +137,7 @@ export function LeadershipSummaryPanel() {
                 <div className="col-span-12 md:col-span-5 lg:col-span-4 flex flex-col gap-6">
 
                     {/* Health Score */}
-                    <div className="flex-1 bg-[#0f172a] border border-white/10 rounded-2xl p-6 shadow-xl flex flex-col justify-between">
+                    <div className="flex-1 bg-[#0f172a] border border-[#ffffff1a] rounded-2xl p-6 shadow-xl flex flex-col justify-between">
                         <div className="flex justify-between items-start">
                             <div>
                                 <h3 className="text-xs font-bold text-white/40 uppercase tracking-widest">Department Health</h3>
@@ -146,7 +146,7 @@ export function LeadershipSummaryPanel() {
                                 </div>
                             </div>
                             <div className="flex flex-col items-end">
-                                <div className="flex items-center gap-1.5 px-2 py-1 bg-white/5 rounded text-xs font-medium text-white/80 border border-white/10">
+                                <div className="flex items-center gap-1.5 px-2 py-1 bg-white/5 rounded text-xs font-medium text-white/80 border border-[#ffffff1a]">
                                     {getTrendIcon(departmentHealth.trend)}
                                     <span className="uppercase">{departmentHealth.trend}</span>
                                 </div>
@@ -176,7 +176,7 @@ export function LeadershipSummaryPanel() {
             </div>
 
             {/* 3. Automation Readiness (Preview) */}
-            <div className="bg-[#0f172a] border border-white/10 rounded-xl p-4 flex flex-col md:flex-row items-center gap-6 shadow-lg relative overflow-hidden">
+            <div className="bg-[#0f172a] border border-[#ffffff1a] rounded-xl p-4 flex flex-col md:flex-row items-center gap-6 shadow-lg relative overflow-hidden">
                 <div className="absolute left-0 top-0 bottom-0 w-1 bg-amber-500/50" />
 
                 <div className="shrink-0 flex items-center gap-4">
@@ -203,7 +203,7 @@ export function LeadershipSummaryPanel() {
                     </div>
                 </div>
 
-                <div className="text-xs text-gray-500 italic max-w-xs md:text-right border-l md:border-l-0 md:border-r border-white/10 pl-4 md:pr-4 md:pl-0">
+                <div className="text-xs text-gray-500 italic max-w-xs md:text-right border-l md:border-l-0 md:border-r border-[#ffffff1a] pl-4 md:pr-4 md:pl-0">
                     "{automationPreview.message}"
                 </div>
             </div>

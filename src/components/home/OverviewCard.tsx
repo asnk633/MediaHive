@@ -35,7 +35,7 @@ export function OverviewCard({
                 "relative flex flex-col p-6 rounded-[25px] transition-all duration-300 cursor-pointer overflow-hidden group hover:-translate-y-1 hover-sheen animate-in fade-in zoom-in-95 duration-500",
                 isPrimary
                     ? "bg-gradient-to-br from-[#141e30] to-[#243b55] text-white shadow-[5px_10px_50px_rgba(0,0,0,0.5),-5px_0px_20px_rgba(255,255,255,0.05)] border-none"
-                    : "bg-white/5 backdrop-blur-md border border-white/10 text-white shadow-[0px_4px_20px_rgba(0,0,0,0.2)] hover:bg-white/10"
+                    : "bg-white/5 backdrop-blur-md border border-[#ffffff1a] text-white shadow-[0px_4px_20px_rgba(0,0,0,0.2)] hover:bg-white/10"
             )}
         >
             <div className="flex justify-between items-start mb-6">
@@ -43,7 +43,7 @@ export function OverviewCard({
                     className={cn(
                         "p-3 rounded-2xl backdrop-blur-md transition-colors",
                         isPrimary
-                            ? "bg-white/10 text-blue-300 shadow-inner border border-white/10"
+                            ? "bg-white/10 text-blue-300 shadow-inner border border-[#ffffff1a]"
                             : "bg-white/5 text-gray-300 border border-white/5"
                     )}
                 >
@@ -73,12 +73,12 @@ export function OverviewCard({
                 <p className={cn("text-xs font-bold uppercase tracking-widest", isPrimary ? "text-blue-200" : "text-gray-400")}>
                     {label}
                 </p>
-                <div className={cn("mt-4 pt-4 border-t flex items-center justify-between", isPrimary ? "border-white/10" : "border-white/10")}>
+                <div className={cn("mt-4 pt-4 border-t flex items-center justify-between", isPrimary ? "border-[#ffffff1a]" : "border-[#ffffff1a]")}>
                     <p className={cn("text-xs font-medium", isPrimary ? "text-white/60" : "text-gray-500")}>
                         {subLabel}
                     </p>
                     <div className={cn("text-[10px] px-2 py-1 rounded-full border",
-                        isPrimary ? "border-white/10 bg-white/5 text-white/80" : "border-white/5 bg-black/20 text-gray-400"
+                        isPrimary ? "border-[#ffffff1a] bg-white/5 text-white/80" : "border-white/5 bg-black/20 text-gray-400"
                     )}>
                         View
                     </div>

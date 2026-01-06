@@ -99,7 +99,7 @@ function EventsContent() {
     };
 
     return (
-        <div className="flex flex-col min-h-screen app-body-padding px-4 pb-28 pt-8 md:max-w-4xl mx-auto">
+        <div className="flex flex-col min-h-screen px-4 md:max-w-4xl mx-auto">
             {/* Header */}
             <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-8">
                 <div>
@@ -111,7 +111,7 @@ function EventsContent() {
                 <div className="flex items-center gap-4 self-start sm:self-auto">
                     {/* Year Toggle */}
                     {view === 'list' && (
-                        <div className="flex items-center gap-2 px-3 py-2 bg-white/5 border border-white/10 rounded-xl">
+                        <div className="flex items-center gap-2 px-3 py-2 bg-white/5 border border-[#ffffff1a] rounded-xl">
                             <Label htmlFor="year-toggle" className="text-sm font-medium text-white/70 whitespace-nowrap">This Year Only</Label>
                             <Switch
                                 id="year-toggle"
@@ -141,10 +141,12 @@ function EventsContent() {
 
             {/* Content */}
             <div className="flex-1">
-                <UpcomingEventsStrip
-                    events={events}
-                    onEventClick={(e) => setExpandedEvent(e)}
-                />
+                {events.length > 0 && (
+                    <UpcomingEventsStrip
+                        events={events}
+                        onEventClick={(e) => setExpandedEvent(e)}
+                    />
+                )}
 
                 {view === 'calendar' ? (
                     <CalendarView

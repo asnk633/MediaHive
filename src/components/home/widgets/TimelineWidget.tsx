@@ -95,7 +95,7 @@ export const TimelineWidget = ({ tasks, events }: TimelineWidgetProps) => {
                     <span className="w-1.5 h-1.5 rounded-full bg-blue-400 shadow-[0_0_8px_rgba(96,165,250,0.8)]" />
                     Today
                 </h4>
-                <div className="space-y-3 pl-3 border-l border-white/10 ml-0.5">
+                <div className="space-y-3 pl-3 border-l border-[#ffffff1a] ml-0.5">
                     {(() => {
                         const pastToday = todayItems.filter(item => isPastToday(item.date));
                         const futureToday = todayItems.filter(item => isFutureToday(item.date));
@@ -128,7 +128,7 @@ export const TimelineWidget = ({ tasks, events }: TimelineWidgetProps) => {
                     <h4 className="text-xs font-bold text-gray-500 uppercase tracking-wider mb-3 mt-6">
                         Next 7 Days
                     </h4>
-                    <div className="space-y-3 pl-3 border-l border-white/10 ml-0.5">
+                    <div className="space-y-3 pl-3 border-l border-[#ffffff1a] ml-0.5">
                         {upcomingItems.map(renderItem)}
                     </div>
                 </div>

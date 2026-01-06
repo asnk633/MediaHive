@@ -57,7 +57,7 @@ export default function FAB({ onMainClick }: FABProps) {
       <AnimatePresence>
         {isOpen && <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} className="fixed inset-0 bg-black/60 backdrop-blur-sm z-40" onClick={() => setIsOpen(false)} />}
       </AnimatePresence>
-      <div className="fixed left-1/2 -translate-x-1/2 z-50 flex flex-col-reverse items-center gap-4" style={{ bottom: 'calc(2.5rem + env(safe-area-inset-bottom))' }}>
+      <div className="fixed left-1/2 -translate-x-1/2 z-50 flex flex-col-reverse items-center gap-4" style={{ bottom: 'calc(3rem + env(safe-area-inset-bottom))' }}>
         <motion.button
           className="w-16 h-16 rounded-full text-white shadow-[0_8px_30px_rgba(79,70,229,0.5)] flex items-center justify-center relative z-20 bg-gradient-to-br from-blue-600 to-violet-600 hover-sheen overflow-hidden border border-white/20"
           onClick={() => setIsOpen(!isOpen)}
@@ -78,7 +78,7 @@ export default function FAB({ onMainClick }: FABProps) {
                       <action.icon size={24} strokeWidth={2} />
                     </div>
                     {/* Clean Label */}
-                    <span className="text-white text-[10px] font-bold px-3 py-1 rounded-full bg-black/80 backdrop-blur-md border border-white/10 shadow-md">{action.label}</span>
+                    <span className="text-white text-[10px] font-bold px-3 py-1 rounded-full bg-black/80 backdrop-blur-md border border-[#ffffff1a] shadow-md">{action.label}</span>
                   </motion.div>
                 </Link>
               ))}

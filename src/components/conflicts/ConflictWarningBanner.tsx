@@ -89,7 +89,7 @@ export const ConflictWarningBanner: React.FC<ConflictWarningBannerProps> = ({
                     </div>
 
                     {showOverride && onOverride && (
-                        <div className="mt-4 pt-3 border-t border-white/10 flex justify-end gap-2">
+                        <div className="mt-4 pt-3 border-t border-[#ffffff1a] flex justify-end gap-2">
                             <button
                                 onClick={onOverride}
                                 className="px-4 py-2 bg-amber-500 hover:bg-amber-600 text-white font-semibold rounded-xl transition-colors text-sm"

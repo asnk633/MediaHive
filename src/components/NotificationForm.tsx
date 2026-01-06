@@ -230,7 +230,7 @@ export function NotificationForm({ initialData, onSubmitSuccess, onCancel }: Not
             <button
               type="button"
               onClick={() => fileInputRef.current?.click()}
-              className="flex items-center justify-center gap-2 w-full py-3 border border-dashed border-white/10 rounded-xl bg-white/5 hover:bg-white/10 transition-colors text-gray-400 hover:text-gray-200 text-sm font-medium"
+              className="flex items-center justify-center gap-2 w-full py-3 border border-dashed border-[#ffffff1a] rounded-xl bg-white/5 hover:bg-white/10 transition-colors text-gray-400 hover:text-gray-200 text-sm font-medium"
             >
               <Paperclip className="w-4 h-4" />
               {mediaFile ? 'Change File' : 'Choose Image or PDF'}

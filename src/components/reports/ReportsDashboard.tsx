@@ -64,7 +64,7 @@ export default function ReportsDashboard() {
     return (
         <div className="space-y-6">
             <Tabs defaultValue="intelligence" className="w-full space-y-6">
-                <TabsList className="bg-slate-900/50 border border-white/10 p-1">
+                <TabsList className="bg-slate-900/50 border border-[#ffffff1a] p-1">
                     <TabsTrigger value="intelligence" className="data-[state=active]:bg-blue-600 data-[state=active]:text-white text-slate-400">
                         <LayoutDashboard size={16} className="mr-2" /> Admin Intelligence
                     </TabsTrigger>
@@ -80,7 +80,7 @@ export default function ReportsDashboard() {
 
                 {/* TAB 2: ACTIVITY LOGS (Legacy View Preserved) */}
                 <TabsContent value="activity" className="focus-visible:outline-none">
-                    <Card className="bg-slate-900/30 border-white/10">
+                    <Card className="bg-slate-900/30 border-[#ffffff1a]">
                         <CardHeader>
                             <CardTitle className="flex items-center gap-2">
                                 <Activity className="w-5 h-5 text-slate-400" />
@@ -105,7 +105,7 @@ export default function ReportsDashboard() {
                                     No recent activity found.
                                 </div>
                             ) : (
-                                <div className="relative border-l border-white/10 ml-4 space-y-8 py-2">
+                                <div className="relative border-l border-[#ffffff1a] ml-4 space-y-8 py-2">
                                     {activity.map((item, index) => (
                                         <div key={item.id + index} className="relative pl-8">
                                             <div className={`absolute -left-[9px] top-1 w-4 h-4 rounded-full border-2 border-slate-900 ${getActivityColor(item.type)}`} />
@@ -118,7 +118,7 @@ export default function ReportsDashboard() {
                                                 </div>
                                                 <p className="text-sm text-slate-400">{item.description}</p>
                                                 {item.type === 'task' && (
-                                                    <Badge variant="outline" className="text-[10px] border-white/10 text-slate-400 mt-1">
+                                                    <Badge variant="outline" className="text-[10px] border-[#ffffff1a] text-slate-400 mt-1">
                                                         {item.meta.status}
                                                     </Badge>
                                                 )}

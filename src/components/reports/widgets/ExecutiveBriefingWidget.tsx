@@ -9,7 +9,7 @@ interface ExecutiveBriefingProps {
 
 export const ExecutiveBriefingWidget: React.FC<ExecutiveBriefingProps> = ({ points, loading }) => {
     return (
-        <Card className="bg-slate-900/30 border-white/10 h-full">
+        <Card className="bg-slate-900/30 border-[#ffffff1a] h-full">
             <CardHeader className="flex flex-row items-center gap-2 pb-2">
                 <div className="p-2 bg-blue-500/10 rounded-lg">
                     <Sparkles size={16} className="text-blue-400" />

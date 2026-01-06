@@ -121,7 +121,7 @@ export const FirstLoginWelcome: React.FC<FirstLoginWelcomeProps> = ({ userRole, 
 
   return (
     <div className="fixed inset-0 bg-black/70 backdrop-blur-sm flex items-center justify-center z-50 p-4">
-      <Card className="w-full max-w-md bg-gradient-to-br from-gray-800 to-gray-900 border border-white/10">
+      <Card className="w-full max-w-md bg-gradient-to-br from-gray-800 to-gray-900 border border-[#ffffff1a]">
         <CardHeader className="text-center pb-2">
           <div className="flex justify-center mb-2">
             {welcomeContent.icon}

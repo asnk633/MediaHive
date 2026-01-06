@@ -17,7 +17,7 @@ export const SectionHeader: React.FC<SectionHeaderProps> = ({ title, icon: Icon,
 
                 <div className="flex items-center gap-2">
                     {Icon && <Icon size={14} className="text-gray-500" />}
-                    <h2 className="text-xs font-bold text-gray-400 uppercase tracking-[0.2em] leading-none">
+                    <h2 className="text-xs font-bold text-gray-400 uppercase tracking-widest leading-none">
                         {title}
                     </h2>
                 </div>

@@ -33,7 +33,7 @@ export const InventoryGrid: React.FC<InventoryGridProps> = ({
     // Empty State
     if (items.length === 0) {
         return (
-            <div className="flex flex-col items-center justify-center py-20 text-center border border-dashed border-white/10 rounded-xl bg-slate-900/20">
+            <div className="flex flex-col items-center justify-center py-20 text-center border border-dashed border-[#ffffff1a] rounded-xl bg-slate-900/20">
                 <div className="w-16 h-16 bg-slate-800/50 rounded-full flex items-center justify-center mb-4">
                     <FileQuestion className="text-slate-500" size={32} />
                 </div>

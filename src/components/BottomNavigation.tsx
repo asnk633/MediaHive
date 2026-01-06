@@ -47,13 +47,13 @@ export default function BottomNavigation() {
           ease: "easeInOut"
         }
       }}
-      className="fixed bottom-6 left-1/2 -translate-x-1/2 w-[calc(100%-32px)] max-w-md bg-[#0f172a]/90 backdrop-blur-2xl flex items-center justify-around h-20 z-30 border border-white/10 rounded-[40px]"
+      className="fixed bottom-6 left-1/2 -translate-x-1/2 w-[calc(100%-32px)] max-w-md bg-[#0f172a]/90 backdrop-blur-2xl flex items-center justify-around h-20 z-30 border border-[#ffffff1a] rounded-[40px]"
       style={{
         bottom: 'calc(1.5rem + env(safe-area-inset-bottom))',
       }}
     >
       {items.map((item) => {
-        if (item.key === 'spacer') return <div key="spacer" className="w-16" />;
+        if (item.key === 'spacer') return <div key="spacer" className="w-20" />;
         const Icon = item.icon!;
         const active = isActive(item.href);
         return (

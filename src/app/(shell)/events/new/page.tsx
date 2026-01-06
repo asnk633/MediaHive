@@ -14,7 +14,7 @@ export default function NewEventPage() {
 
             {/* Centered Glass Card */}
             <div className="w-full max-w-xl relative z-10">
-                <div className="bg-[#13161c]/90 backdrop-blur-3xl border border-white/10 rounded-3xl p-6 sm:p-8 shadow-2xl ring-1 ring-white/5">
+                <div className="bg-[#13161c]/90 backdrop-blur-3xl border border-[#ffffff1a] rounded-3xl p-6 sm:p-8 shadow-2xl ring-1 ring-white/5">
 
                     {/* Header */}
                     <div className="flex items-center justify-between mb-8 pb-4 border-b border-white/5">

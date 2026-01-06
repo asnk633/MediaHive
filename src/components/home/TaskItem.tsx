@@ -32,7 +32,7 @@ export function TaskItem({ title, date, icon: Icon, isCompleted: initialComplete
     }
 
     return (
-        <div className="group relative flex items-center justify-between p-4 bg-white/5 backdrop-blur-md rounded-2xl border border-white/5 transition-all duration-300 hover-sheen overflow-hidden text-white shadow-none hover:border-white/10 hover:bg-white/10 hover:shadow-[0_4px_20px_rgba(0,0,0,0.2)]">
+        <div className="group relative flex items-center justify-between p-4 bg-white/5 backdrop-blur-md rounded-2xl border border-white/5 transition-all duration-300 hover-sheen overflow-hidden text-white shadow-none hover:border-[#ffffff1a] hover:bg-white/10 hover:shadow-[0_4px_20px_rgba(0,0,0,0.2)]">
             <div className="flex items-center gap-4 z-10 relative">
                 <button
                     onClick={handleToggleComplete}
@@ -42,7 +42,7 @@ export function TaskItem({ title, date, icon: Icon, isCompleted: initialComplete
                         disableCompletion && "cursor-not-allowed opacity-50",
                         isCompleted
                             ? "bg-green-500/20 border-green-500/30 text-green-400 shadow-[0_0_15px_rgba(74,222,128,0.2)]"
-                            : "bg-white/5 border-white/10 text-gray-400 hover:bg-blue-500/10 hover:border-blue-500/30 hover:text-blue-400"
+                            : "bg-white/5 border-[#ffffff1a] text-gray-400 hover:bg-blue-500/10 hover:border-blue-500/30 hover:text-blue-400"
                     )}
                 >
                     {/* If icon provided use it, else checkbox style */}

@@ -33,7 +33,7 @@ export default function NotificationPreviewModal({ open, onClose, data }: Notifi
     };
 
     return (
-        <ModalBase open={open} onClose={onClose} panelClass="fixed inset-x-0 bottom-0 z-[70] mx-auto max-w-xl rounded-t-2xl bg-[#102220] p-6 text-white border-t border-white/10 shadow-2xl">
+        <ModalBase open={open} onClose={onClose} panelClass="fixed inset-x-0 bottom-0 z-[70] mx-auto max-w-xl rounded-t-2xl bg-[#102220] p-6 text-white border-t border-[#ffffff1a] shadow-2xl">
             <div className="flex items-center justify-between mb-6">
                 <h3 className="text-xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-blue-300 to-indigo-300">
                     Preview Notification

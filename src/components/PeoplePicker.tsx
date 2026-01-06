@@ -53,7 +53,7 @@ export default function PeoplePicker({
       </button>
 
       {open && (
-        <div className="absolute z-[80] mt-2 w-64 rounded-lg border border-white/10 bg-[#1f1f1f] p-3 shadow-xl">
+        <div className="absolute z-[80] mt-2 w-64 rounded-lg border border-[#ffffff1a] bg-[#1f1f1f] p-3 shadow-xl">
           <input
             autoFocus
             value={q}

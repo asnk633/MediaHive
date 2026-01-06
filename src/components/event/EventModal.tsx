@@ -142,10 +142,10 @@ export function EventModal({ isOpen, onClose, defaultDate, eventToEdit }: EventM
                         initial={{ scale: 0.95, opacity: 0, y: 20 }}
                         animate={{ scale: 1, opacity: 1, y: 0 }}
                         exit={{ scale: 0.95, opacity: 0, y: 20 }}
-                        className="relative w-full max-w-2xl bg-[#141e30] rounded-2xl shadow-2xl border border-white/10 overflow-hidden flex flex-col max-h-[90vh]"
+                        className="relative w-full max-w-2xl bg-[#141e30] rounded-2xl shadow-2xl border border-[#ffffff1a] overflow-hidden flex flex-col max-h-[90vh]"
                     >
                         {/* Header */}
-                        <div className="px-6 py-4 border-b border-white/10 flex justify-between items-center bg-white/5">
+                        <div className="px-6 py-4 border-b border-[#ffffff1a] flex justify-between items-center bg-white/5">
                             <h3 className="text-xl font-bold text-white flex items-center gap-2">
                                 {eventToEdit ? (isSystemEvent ? 'Edit System Event' : 'Edit Event') : (isSystemEvent ? 'New System Event' : (user?.role === 'guest' ? 'Request Event' : 'New Event'))}
                             </h3>
@@ -159,7 +159,7 @@ export function EventModal({ isOpen, onClose, defaultDate, eventToEdit }: EventM
                             <form id="event-form" onSubmit={handleSubmit} className="space-y-6">
                                 {/* Admin Toggle */}
                                 {isAdmin && (
-                                    <div className="flex items-center justify-between p-4 bg-white/5 rounded-xl border border-white/10">
+                                    <div className="flex items-center justify-between p-4 bg-white/5 rounded-xl border border-[#ffffff1a]">
                                         <div className="flex flex-col">
                                             <label className="text-sm font-bold text-white">System Event</label>
                                             <span className="text-xs text-white/40">Recurring yearly event for everyone</span>
@@ -182,7 +182,7 @@ export function EventModal({ isOpen, onClose, defaultDate, eventToEdit }: EventM
                                     <div className="relative group">
                                         <AlignLeft size={18} className="absolute left-4 top-1/2 -translate-y-1/2 text-white/30 group-focus-within:text-blue-400 transition-colors pointer-events-none" />
                                         <input
-                                            className="w-full bg-white/5 border border-white/10 rounded-xl pl-12 pr-4 py-3 text-white placeholder-white/30 focus:ring-2 focus:ring-blue-500/50 outline-none transition-all"
+                                            className="w-full bg-white/5 border border-[#ffffff1a] rounded-xl pl-12 pr-4 py-3 text-white placeholder-white/30 focus:ring-2 focus:ring-blue-500/50 outline-none transition-all"
                                             placeholder={isSystemEvent ? "77th Republic Day of India" : "Enter event title"}
                                             value={formData.title}
                                             onChange={e => setFormData({ ...formData, title: e.target.value })}
@@ -202,7 +202,7 @@ export function EventModal({ isOpen, onClose, defaultDate, eventToEdit }: EventM
                                                 value={formData.date}
                                                 onChange={e => setFormData({ ...formData, date: e.target.value })}
                                                 required
-                                                className="w-full bg-white/5 border border-white/10 rounded-xl pl-12 pr-4 py-3 text-white focus:ring-2 focus:ring-blue-500/50 outline-none [color-scheme:dark]"
+                                                className="w-full bg-white/5 border border-[#ffffff1a] rounded-xl pl-12 pr-4 py-3 text-white focus:ring-2 focus:ring-blue-500/50 outline-none [color-scheme:dark]"
                                             />
                                         </div>
                                     </div>
@@ -217,7 +217,7 @@ export function EventModal({ isOpen, onClose, defaultDate, eventToEdit }: EventM
                                                     value={formData.startTime}
                                                     onChange={e => setFormData({ ...formData, startTime: e.target.value })}
                                                     required
-                                                    className="w-full bg-white/5 border border-white/10 rounded-xl pl-12 pr-4 py-3 text-white focus:ring-2 focus:ring-blue-500/50 outline-none [color-scheme:dark]"
+                                                    className="w-full bg-white/5 border border-[#ffffff1a] rounded-xl pl-12 pr-4 py-3 text-white focus:ring-2 focus:ring-blue-500/50 outline-none [color-scheme:dark]"
                                                 />
                                             </div>
                                         </div>
@@ -242,7 +242,7 @@ export function EventModal({ isOpen, onClose, defaultDate, eventToEdit }: EventM
                                                 value={formData.location}
                                                 onChange={e => setFormData({ ...formData, location: e.target.value })}
                                                 placeholder="e.g. Conference Room A"
-                                                className="w-full bg-white/5 border border-white/10 rounded-xl pl-12 pr-4 py-3 text-white placeholder-white/30 focus:ring-2 focus:ring-blue-500/50 outline-none transition-all"
+                                                className="w-full bg-white/5 border border-[#ffffff1a] rounded-xl pl-12 pr-4 py-3 text-white placeholder-white/30 focus:ring-2 focus:ring-blue-500/50 outline-none transition-all"
                                             />
                                         </div>
                                     </div>
@@ -255,7 +255,7 @@ export function EventModal({ isOpen, onClose, defaultDate, eventToEdit }: EventM
                                         value={formData.description}
                                         onChange={e => setFormData({ ...formData, description: e.target.value })}
                                         placeholder="Add details..."
-                                        className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-white placeholder-white/30 focus:ring-2 focus:ring-blue-500/50 outline-none transition-all min-h-[100px]"
+                                        className="w-full bg-white/5 border border-[#ffffff1a] rounded-xl px-4 py-3 text-white placeholder-white/30 focus:ring-2 focus:ring-blue-500/50 outline-none transition-all min-h-[100px]"
                                         rows={4}
                                     />
                                 </div>
@@ -263,7 +263,7 @@ export function EventModal({ isOpen, onClose, defaultDate, eventToEdit }: EventM
                         </div>
 
                         {/* Footer */}
-                        <div className="p-6 border-t border-white/10 bg-white/5 flex gap-3 justify-end items-center">
+                        <div className="p-6 border-t border-[#ffffff1a] bg-white/5 flex gap-3 justify-end items-center">
                             <button
                                 onClick={onClose}
                                 className="px-6 py-2.5 rounded-xl text-white/60 hover:text-white hover:bg-white/5 transition-all text-sm font-medium"

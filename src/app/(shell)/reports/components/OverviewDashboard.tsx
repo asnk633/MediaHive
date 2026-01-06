@@ -93,7 +93,7 @@ export function OverviewDashboard() {
                 </div>
 
                 <select
-                    className="bg-black/20 border border-white/10 rounded-xl px-4 py-2.5 text-sm text-white focus:outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500 cursor-pointer hover:bg-white/5 transition-colors"
+                    className="bg-black/20 border border-[#ffffff1a] rounded-xl px-4 py-2.5 text-sm text-white focus:outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500 cursor-pointer hover:bg-white/5 transition-colors"
                     value={filters.department || ''}
                     onChange={e => {
                         const val = e.target.value;
@@ -107,7 +107,7 @@ export function OverviewDashboard() {
                 </select>
 
                 <select
-                    className="bg-black/20 border border-white/10 rounded-xl px-4 py-2.5 text-sm text-white focus:outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500 cursor-pointer hover:bg-white/5 transition-colors"
+                    className="bg-black/20 border border-[#ffffff1a] rounded-xl px-4 py-2.5 text-sm text-white focus:outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500 cursor-pointer hover:bg-white/5 transition-colors"
                     value={filters.institution || ''}
                     onChange={e => {
                         const val = e.target.value;
@@ -266,7 +266,7 @@ function ReportDownloadButton() {
                     <Download size={16} /> Report
                 </button>
             </DialogTrigger>
-            <DialogContent className="sm:max-w-md bg-[#1a1f2e] border-white/10 text-white">
+            <DialogContent className="sm:max-w-md bg-[#1a1f2e] border-[#ffffff1a] text-white">
                 <DialogHeader>
                     <DialogTitle>Download Monthly Report</DialogTitle>
                     <DialogDescription className="text-gray-400 mt-2">
@@ -280,7 +280,7 @@ function ReportDownloadButton() {
                             <select
                                 value={month}
                                 onChange={(e) => setMonth(e.target.value)}
-                                className="w-full bg-black/20 border border-white/10 rounded-md p-2 text-sm text-white"
+                                className="w-full bg-black/20 border border-[#ffffff1a] rounded-md p-2 text-sm text-white"
                             >
                                 {months.map((m, i) => (
                                     <option key={i} value={i} className="bg-slate-900">{m}</option>
@@ -292,7 +292,7 @@ function ReportDownloadButton() {
                             <select
                                 value={year}
                                 onChange={(e) => setYear(e.target.value)}
-                                className="w-full bg-black/20 border border-white/10 rounded-md p-2 text-sm text-white"
+                                className="w-full bg-black/20 border border-[#ffffff1a] rounded-md p-2 text-sm text-white"
                             >
                                 {years.map((y) => (
                                     <option key={y} value={y} className="bg-slate-900">{y}</option>

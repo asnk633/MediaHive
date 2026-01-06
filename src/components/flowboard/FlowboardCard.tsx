@@ -17,7 +17,7 @@ export const FlowboardCard: React.FC<FlowboardCardProps> = ({ task, smartData, o
             case 'done': return 'bg-green-500/20 text-green-400 border-green-500/30';
             case 'in_progress': return 'bg-blue-500/20 text-blue-400 border-blue-500/30';
             case 'review': return 'bg-purple-500/20 text-purple-400 border-purple-500/30';
-            case 'todo': return 'bg-white/10 text-gray-400 border-white/10';
+            case 'todo': return 'bg-white/10 text-gray-400 border-[#ffffff1a]';
             default: return 'bg-gray-500/10 text-gray-500 border-gray-500/20';
         }
     }, [task.status]);
@@ -27,7 +27,7 @@ export const FlowboardCard: React.FC<FlowboardCardProps> = ({ task, smartData, o
             onClick={() => onClick(task)}
             className={`
                 group relative p-3 rounded-xl border border-white/5 bg-[#1A1F2E]/80 backdrop-blur-sm 
-                hover:bg-white/10 hover:border-white/10 transition-all cursor-pointer shadow-sm hover:shadow-md
+                hover:bg-white/10 hover:border-[#ffffff1a] transition-all cursor-pointer shadow-sm hover:shadow-md
                 ${smartData.needsAttention ? 'ring-1 ring-red-500/50 shadow-[0_0_15px_-3px_rgba(239,68,68,0.2)]' : ''}
                 ${smartData.isBlocked ? 'ring-1 ring-amber-500/50 shadow-[0_0_15px_-3px_rgba(245,158,11,0.2)]' : ''}
                 ${smartData.inferredStage === 'publish' && task.status === 'done' ? 'opacity-60 grayscale-[0.5]' : ''}

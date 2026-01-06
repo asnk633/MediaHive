@@ -53,7 +53,7 @@ export function DatePicker({ date, setDate, placeholder = "Pick a date", classNa
                 </Button>
             </PopoverTrigger>
             <PopoverContent className="w-auto p-0 bg-transparent border-none shadow-none" align="start">
-                <div className="flex flex-col sm:flex-row gap-2 bg-slate-900/90 backdrop-blur-xl border border-white/10 p-2 rounded-2xl shadow-2xl">
+                <div className="flex flex-col sm:flex-row gap-2 bg-slate-900/90 backdrop-blur-xl border border-[#ffffff1a] p-2 rounded-2xl shadow-2xl">
                     <Calendar
                         mode="single"
                         selected={date}
@@ -72,7 +72,7 @@ export function DatePicker({ date, setDate, placeholder = "Pick a date", classNa
                         className="rounded-xl border-none shadow-none bg-transparent"
                     />
                     {showTime && date && (
-                        <div className="p-2 border-l border-white/10 flex flex-col gap-2">
+                        <div className="p-2 border-l border-[#ffffff1a] flex flex-col gap-2">
                             <div className="flex items-center gap-2 text-white/50 text-xs font-bold uppercase tracking-widest pl-2">
                                 <Clock size={12} />
                                 Time

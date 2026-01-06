@@ -84,9 +84,9 @@ export default function TopBar({ title = "Thaiba MediaHive" }: { title?: string 
                 className="fixed inset-0 z-40"
                 onClick={() => setShowUserMenu(false)}
               />
-              <div className="absolute right-0 top-full mt-2 w-72 bg-[#0a0c10]/95 backdrop-blur-xl rounded-2xl shadow-2xl border border-white/10 z-50 overflow-hidden">
+              <div className="absolute right-0 top-full mt-2 w-72 bg-[#0a0c10]/95 backdrop-blur-xl rounded-2xl shadow-2xl border border-[#ffffff1a] z-50 overflow-hidden">
                 {/* User Info Section */}
-                <div className="p-5 border-b border-white/10 bg-gradient-to-br from-blue-500/10 to-purple-500/10">
+                <div className="p-5 border-b border-[#ffffff1a] bg-gradient-to-br from-blue-500/10 to-purple-500/10">
                   <div className="flex items-center gap-3 mb-3">
                     <div className="w-14 h-14 rounded-full overflow-hidden bg-white/10 border-2 border-blue-400/30">
                       <SafeAvatar
@@ -126,7 +126,7 @@ export default function TopBar({ title = "Thaiba MediaHive" }: { title?: string 
                     <span className="text-sm font-medium text-white">View Profile</span>
                   </Link>
 
-                  <div className="pt-2 mt-2 border-t border-white/10">
+                  <div className="pt-2 mt-2 border-t border-[#ffffff1a]">
                     <button
                       onClick={handleSignOut}
                       className="w-full flex items-center gap-3 px-4 py-3 rounded-xl hover:bg-red-500/20 transition-all text-left group"

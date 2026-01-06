@@ -57,7 +57,7 @@ export function AuditLogTable() {
     }
 
     return (
-        <div className="bg-[#0f172a] border border-white/10 rounded-2xl shadow-2xl overflow-hidden">
+        <div className="bg-[#0f172a] border border-[#ffffff1a] rounded-2xl shadow-2xl overflow-hidden">
             <div className="p-6 border-b border-white/5 flex items-center justify-between">
                 <div className="flex items-center gap-3">
                     <Shield className="text-emerald-400" size={24} />

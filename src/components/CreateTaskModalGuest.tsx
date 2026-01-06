@@ -43,7 +43,7 @@ export default function CreateTaskModalGuest({ open, onClose }: { open: boolean;
       panelClass="fixed inset-0 z-[70] flex items-center justify-center p-4 sm:p-6"
       overlayClass="fixed inset-0 z-[60] bg-black/60 backdrop-blur-md"
     >
-      <div className="w-full max-w-lg overflow-hidden rounded-2xl border border-white/10 bg-[#102220]/90 shadow-2xl backdrop-blur-xl ring-1 ring-black/5">
+      <div className="w-full max-w-lg overflow-hidden rounded-2xl border border-[#ffffff1a] bg-[#102220]/90 shadow-2xl backdrop-blur-xl ring-1 ring-black/5">
         <header className="flex items-center justify-between border-b border-white/5 bg-white/5 px-6 py-4">
           <h3 className="text-lg font-semibold text-white">New Request</h3>
           <button
@@ -67,7 +67,7 @@ export default function CreateTaskModalGuest({ open, onClose }: { open: boolean;
                 if (error) setError("");
               }}
               placeholder="e.g., Fix leaking tap in Room 101"
-              className={`w-full rounded-xl border bg-black/20 px-4 py-3 text-white placeholder-white/30 transition-all focus:border-emerald-500 focus:outline-none focus:ring-2 focus:ring-emerald-500/20 ${error ? "border-red-500/50" : "border-white/10"}`}
+              className={`w-full rounded-xl border bg-black/20 px-4 py-3 text-white placeholder-white/30 transition-all focus:border-emerald-500 focus:outline-none focus:ring-2 focus:ring-emerald-500/20 ${error ? "border-red-500/50" : "border-[#ffffff1a]"}`}
               autoFocus
             />
             {error && <p className="text-sm text-red-400">{error}</p>}
@@ -82,7 +82,7 @@ export default function CreateTaskModalGuest({ open, onClose }: { open: boolean;
               value={description}
               onChange={(e) => setDescription(e.target.value)}
               placeholder="Provide more context..."
-              className="min-h-[120px] w-full resize-none rounded-xl border border-white/10 bg-black/20 px-4 py-3 text-white placeholder-white/30 transition-all focus:border-emerald-500 focus:outline-none focus:ring-2 focus:ring-emerald-500/20"
+              className="min-h-[120px] w-full resize-none rounded-xl border border-[#ffffff1a] bg-black/20 px-4 py-3 text-white placeholder-white/30 transition-all focus:border-emerald-500 focus:outline-none focus:ring-2 focus:ring-emerald-500/20"
             />
           </div>
 

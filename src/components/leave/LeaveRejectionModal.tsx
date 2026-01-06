@@ -47,7 +47,7 @@ export const LeaveRejectionModal: React.FC<LeaveRejectionModalProps> = ({
             />
 
             {/* Modal */}
-            <div className="relative w-full max-w-md bg-gradient-to-br from-[#1a2639] to-[#0f172a] rounded-3xl shadow-2xl border border-white/10 p-6">
+            <div className="relative w-full max-w-md bg-gradient-to-br from-[#1a2639] to-[#0f172a] rounded-3xl shadow-2xl border border-[#ffffff1a] p-6">
                 {/* Header */}
                 <div className="flex items-center justify-between mb-6">
                     <div className="flex items-center gap-3">
@@ -81,7 +81,7 @@ export const LeaveRejectionModal: React.FC<LeaveRejectionModalProps> = ({
                             onChange={(e) => setReason(e.target.value)}
                             rows={4}
                             placeholder="e.g., Insufficient notice, overlapping with critical project deadline..."
-                            className="w-full bg-[#0a0c10] text-white placeholder:text-white/30 border border-white/10 rounded-xl py-3 px-4 outline-none transition-all focus:border-red-500/50 focus:ring-4 focus:ring-red-500/10 resize-none"
+                            className="w-full bg-[#0a0c10] text-white placeholder:text-white/30 border border-[#ffffff1a] rounded-xl py-3 px-4 outline-none transition-all focus:border-red-500/50 focus:ring-4 focus:ring-red-500/10 resize-none"
                         />
                         <p className="text-xs text-white/30 mt-1">
                             {reason.length}/10 characters minimum

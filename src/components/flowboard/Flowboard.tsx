@@ -89,7 +89,7 @@ export const Flowboard: React.FC<FlowboardProps> = ({ tasks, onTaskClick }) => {
     }, [tasks]);
 
     return (
-        <div className="bg-[#0B0E14] rounded-2xl border border-white/10 overflow-hidden">
+        <div className="bg-[#0B0E14] rounded-2xl border border-[#ffffff1a] overflow-hidden">
             {/* Header Removed as per user request */}
 
             {/* Lanes Container */}

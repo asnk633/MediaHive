@@ -208,7 +208,7 @@ export const DepartmentManagement = () => {
                                             autoFocus
                                             value={editName}
                                             onChange={(e) => setEditName(e.target.value)}
-                                            className="flex-1 bg-white/5 border border-white/10 rounded-lg px-3 py-2 text-white focus:outline-none focus:border-blue-500 transition-colors"
+                                            className="flex-1 bg-white/5 border border-[#ffffff1a] rounded-lg px-3 py-2 text-white focus:outline-none focus:border-blue-500 transition-colors"
                                             placeholder="Department Name"
                                             onKeyDown={(e) => {
                                                 if (e.key === 'Enter') handleUpdate(dept.id);
@@ -276,7 +276,7 @@ export const DepartmentManagement = () => {
             </div>
 
             <AlertDialog open={!!deleteConfirmId} onOpenChange={(open) => !open && setDeleteConfirmId(null)}>
-                <AlertDialogContent className="bg-[#1e293b] border-white/10 text-white">
+                <AlertDialogContent className="bg-[#1e293b] border-[#ffffff1a] text-white">
                     <AlertDialogHeader>
                         <AlertDialogTitle>Are you absolutely sure?</AlertDialogTitle>
                         <AlertDialogDescription className="text-slate-400">
@@ -285,7 +285,7 @@ export const DepartmentManagement = () => {
                         </AlertDialogDescription>
                     </AlertDialogHeader>
                     <AlertDialogFooter>
-                        <AlertDialogCancel className="bg-transparent text-white border-white/10 hover:bg-white/5 hover:text-white">Cancel</AlertDialogCancel>
+                        <AlertDialogCancel className="bg-transparent text-white border-[#ffffff1a] hover:bg-white/5 hover:text-white">Cancel</AlertDialogCancel>
                         <AlertDialogAction onClick={confirmDelete} className="bg-red-600 hover:bg-red-700 text-white border-none">
                             Delete
                         </AlertDialogAction>

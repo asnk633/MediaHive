@@ -49,7 +49,7 @@ export const FAB = () => {
                                     transition={{ delay: action.delay }}
                                     className="flex items-center gap-3"
                                 >
-                                    <span className="bg-black/80 backdrop-blur-md border border-white/10 text-white text-xs font-bold px-3 py-1.5 rounded-xl shadow-lg">
+                                    <span className="bg-black/80 backdrop-blur-md border border-[#ffffff1a] text-white text-xs font-bold px-3 py-1.5 rounded-xl shadow-lg">
                                         {action.label}
                                     </span>
                                     <button
@@ -57,7 +57,7 @@ export const FAB = () => {
                                             action.onClick();
                                             setIsOpen(false);
                                         }}
-                                        className={`w-12 h-12 rounded-full bg-black/40 backdrop-blur-md border border-white/10 shadow-lg flex items-center justify-center hover:scale-110 hover:bg-white/10 transition-all ${action.color}`}
+                                        className={`w-12 h-12 rounded-full bg-black/40 backdrop-blur-md border border-[#ffffff1a] shadow-lg flex items-center justify-center hover:scale-110 hover:bg-white/10 transition-all ${action.color}`}
                                     >
                                         <action.icon size={20} />
                                     </button>

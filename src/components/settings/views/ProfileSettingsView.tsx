@@ -19,12 +19,12 @@ export const ProfileSettingsView = () => {
             </div>
 
             <div className="flex items-center gap-6 pb-6 border-b border-white/5">
-                <div className="w-20 h-20 rounded-full bg-slate-800 flex items-center justify-center text-slate-500 border border-white/10 shrink-0">
+                <div className="w-20 h-20 rounded-full bg-slate-800 flex items-center justify-center text-slate-500 border border-[#ffffff1a] shrink-0">
                     {/* Placeholder for Avatar */}
                     <UserCircle size={48} />
                 </div>
                 <div className="space-y-2">
-                    <Button variant="outline" className="border-white/10 text-slate-300 hover:text-white hover:bg-white/5">
+                    <Button variant="outline" className="border-[#ffffff1a] text-slate-300 hover:text-white hover:bg-white/5">
                         Change Avatar
                     </Button>
                     <p className="text-xs text-slate-500">
@@ -39,7 +39,7 @@ export const ProfileSettingsView = () => {
                     <Input
                         defaultValue={user?.name || ''}
                         readOnly
-                        className="bg-slate-950/50 border-white/10 text-slate-400 cursor-not-allowed"
+                        className="bg-slate-950/50 border-[#ffffff1a] text-slate-400 cursor-not-allowed"
                     />
                     <p className="text-xs text-slate-500">Managed by Google Auth provider.</p>
                 </div>
@@ -49,7 +49,7 @@ export const ProfileSettingsView = () => {
                     <Input
                         defaultValue={user?.email || ''}
                         readOnly
-                        className="bg-slate-950/50 border-white/10 text-slate-400 cursor-not-allowed"
+                        className="bg-slate-950/50 border-[#ffffff1a] text-slate-400 cursor-not-allowed"
                     />
                 </div>
 

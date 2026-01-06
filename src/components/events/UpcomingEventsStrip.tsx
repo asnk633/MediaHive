@@ -46,7 +46,7 @@ export function UpcomingEventsStrip({ events, onEventClick }: UpcomingEventsStri
                 <h3 className="text-xs font-bold text-white/50 uppercase tracking-widest mb-3 pl-1 flex items-center gap-2">
                     Events in next 7 days
                 </h3>
-                <div className="w-full bg-white/5 border border-white/10 rounded-xl p-6 text-center flex flex-col items-center justify-center gap-2">
+                <div className="w-full bg-white/5 border border-[#ffffff1a] rounded-xl p-6 text-center flex flex-col items-center justify-center gap-2">
                     <div className="w-10 h-10 rounded-full bg-white/5 flex items-center justify-center text-white/20 mb-1">
                         <PartyPopper size={20} />
                     </div>
@@ -81,7 +81,7 @@ export function UpcomingEventsStrip({ events, onEventClick }: UpcomingEventsStri
                                 flex flex-col justify-between min-h-[120px]
                                 ${isSystem
                                     ? 'bg-gradient-to-br from-blue-900/40 to-slate-900/60 border-blue-500/30'
-                                    : 'bg-white/5 border-white/10 hover:bg-white/10'
+                                    : 'bg-white/5 border-[#ffffff1a] hover:bg-white/10'
                                 }
                             `}
                         >
@@ -96,7 +96,7 @@ export function UpcomingEventsStrip({ events, onEventClick }: UpcomingEventsStri
                                             ? 'bg-emerald-500/20 text-emerald-300 border-emerald-500/30'
                                             : isSystem
                                                 ? 'bg-blue-500/20 text-blue-200 border-blue-500/30'
-                                                : 'bg-white/10 text-white/70 border-white/10'
+                                                : 'bg-white/10 text-white/70 border-[#ffffff1a]'
                                         }
                                     `}>
                                         <span className="text-[9px] font-bold uppercase leading-none opacity-80">

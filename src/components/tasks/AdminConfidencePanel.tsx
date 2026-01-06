@@ -88,7 +88,7 @@ const AdminConfidencePanel: React.FC<AdminConfidencePanelProps> = ({ tasks, even
   }).slice(0, 3);
 
   return (
-    <div className="bg-white/5 backdrop-blur-md border border-white/10 rounded-xl p-4 mb-4">
+    <div className="bg-white/5 backdrop-blur-md border border-[#ffffff1a] rounded-xl p-4 mb-4">
       <div className="flex items-center justify-between gap-2 mb-4">
         <div className="flex items-center gap-2">
           <TrendingUp className="w-5 h-5 text-green-400" />

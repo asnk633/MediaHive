@@ -151,7 +151,7 @@ export default function RegisterPage() {
             {/* Glass Card */}
             <form
                 onSubmit={handleSubmit}
-                className="glass-card w-full max-w-md p-8 flex flex-col gap-5 relative z-10 border border-white/10"
+                className="glass-card w-full max-w-md p-8 flex flex-col gap-5 relative z-10 border border-[#ffffff1a]"
             >
                 <div className="space-y-1">
                     <label className="text-xs font-bold text-blue-100/80 uppercase tracking-wider pl-1">Full Name</label>
@@ -159,7 +159,7 @@ export default function RegisterPage() {
                         type="text"
                         value={fullName}
                         onChange={(e) => setFullName(e.target.value)}
-                        className="w-full h-11 rounded-xl bg-white/5 border border-white/10 px-4 text-white placeholder-white/20 outline-none focus:ring-2 focus:ring-blue-500/50 focus:border-blue-500/50 transition-all font-medium"
+                        className="w-full h-11 rounded-xl bg-white/5 border border-[#ffffff1a] px-4 text-white placeholder-white/20 outline-none focus:ring-2 focus:ring-blue-500/50 focus:border-blue-500/50 transition-all font-medium"
                         placeholder="Your full name"
                     />
                 </div>
@@ -170,7 +170,7 @@ export default function RegisterPage() {
                         type="email"
                         value={email}
                         onChange={(e) => setEmail(e.target.value)}
-                        className="w-full h-11 rounded-xl bg-white/5 border border-white/10 px-4 text-white placeholder-white/20 outline-none focus:ring-2 focus:ring-blue-500/50 focus:border-blue-500/50 transition-all font-medium"
+                        className="w-full h-11 rounded-xl bg-white/5 border border-[#ffffff1a] px-4 text-white placeholder-white/20 outline-none focus:ring-2 focus:ring-blue-500/50 focus:border-blue-500/50 transition-all font-medium"
                         placeholder="you@thaiba.in"
                     />
                 </div>
@@ -182,7 +182,7 @@ export default function RegisterPage() {
                             type="password"
                             value={password}
                             onChange={(e) => setPassword(e.target.value)}
-                            className="w-full h-11 rounded-xl bg-white/5 border border-white/10 px-4 text-white placeholder-white/20 outline-none focus:ring-2 focus:ring-blue-500/50 focus:border-blue-500/50 transition-all font-medium"
+                            className="w-full h-11 rounded-xl bg-white/5 border border-[#ffffff1a] px-4 text-white placeholder-white/20 outline-none focus:ring-2 focus:ring-blue-500/50 focus:border-blue-500/50 transition-all font-medium"
                             placeholder="At least 8 chars"
                         />
                     </div>
@@ -193,7 +193,7 @@ export default function RegisterPage() {
                             type="password"
                             value={confirmPassword}
                             onChange={(e) => setConfirmPassword(e.target.value)}
-                            className="w-full h-11 rounded-xl bg-white/5 border border-white/10 px-4 text-white placeholder-white/20 outline-none focus:ring-2 focus:ring-blue-500/50 focus:border-blue-500/50 transition-all font-medium"
+                            className="w-full h-11 rounded-xl bg-white/5 border border-[#ffffff1a] px-4 text-white placeholder-white/20 outline-none focus:ring-2 focus:ring-blue-500/50 focus:border-blue-500/50 transition-all font-medium"
                             placeholder="Re-enter"
                         />
                     </div>
@@ -223,7 +223,7 @@ export default function RegisterPage() {
                 <button
                     type="submit"
                     disabled={submitting || isInvalid}
-                    className="w-full h-12 bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-500 hover:to-indigo-500 text-white rounded-xl font-bold text-base shadow-lg shadow-blue-900/40 active:scale-[0.98] transition-all disabled:opacity-40 disabled:cursor-not-allowed mt-2 border border-white/10"
+                    className="w-full h-12 bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-500 hover:to-indigo-500 text-white rounded-xl font-bold text-base shadow-lg shadow-blue-900/40 active:scale-[0.98] transition-all disabled:opacity-40 disabled:cursor-not-allowed mt-2 border border-[#ffffff1a]"
                 >
                     {submitting ? "Creating account..." : "Create Account"}
                 </button>

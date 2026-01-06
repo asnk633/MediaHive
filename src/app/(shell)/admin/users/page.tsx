@@ -200,7 +200,7 @@ export default function UserManagementPage() {
                                             value={u.defaultDepartment || ""}
                                             onChange={(e) => handleUpdate(u.uid, 'defaultDepartment', e.target.value)}
                                             disabled={saving === u.uid || !!u.defaultInstitution || isOrgLocked(u.role)}
-                                            className={`w-full bg-black/20 text-white border border-white/10 rounded-xl px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500/50 cursor-pointer hover:bg-white/5 transition-colors ${u.defaultInstitution || isOrgLocked(u.role) ? 'opacity-40 cursor-not-allowed' : ''}`}
+                                            className={`w-full bg-black/20 text-white border border-[#ffffff1a] rounded-xl px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500/50 cursor-pointer hover:bg-white/5 transition-colors ${u.defaultInstitution || isOrgLocked(u.role) ? 'opacity-40 cursor-not-allowed' : ''}`}
                                         >
                                             <option value="" className="bg-slate-900">Select Department...</option>
                                             {departmentsList.map(dept => (
@@ -216,7 +216,7 @@ export default function UserManagementPage() {
                                             value={u.defaultInstitution || ""}
                                             onChange={(e) => handleUpdate(u.uid, 'defaultInstitution', e.target.value)}
                                             disabled={saving === u.uid || !!u.defaultDepartment || isOrgLocked(u.role)}
-                                            className={`w-full bg-black/20 text-white border border-white/10 rounded-xl px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500/50 cursor-pointer hover:bg-white/5 transition-colors ${u.defaultDepartment || isOrgLocked(u.role) ? 'opacity-40 cursor-not-allowed' : ''}`}
+                                            className={`w-full bg-black/20 text-white border border-[#ffffff1a] rounded-xl px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500/50 cursor-pointer hover:bg-white/5 transition-colors ${u.defaultDepartment || isOrgLocked(u.role) ? 'opacity-40 cursor-not-allowed' : ''}`}
                                         >
                                             <option value="" className="bg-slate-900">Select Institution...</option>
                                             {institutionsList.map(inst => (

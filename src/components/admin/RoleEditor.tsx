@@ -53,7 +53,7 @@ export const RoleEditor: React.FC<RoleEditorProps> = ({ uid, currentRole, onRole
                     disabled={loading}
                     className={`
             appearance-none w-full px-3 py-1.5 pr-8 rounded-lg text-sm font-medium
-            bg-white/5 border border-white/10
+            bg-white/5 border border-[#ffffff1a]
             text-white
             focus:outline-none focus:border-blue-500/50 focus:bg-white/10
             transition-all duration-200

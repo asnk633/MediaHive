@@ -131,7 +131,7 @@ export default function DeviceRequestForm() {
     };
 
     return (
-        <form onSubmit={handleSubmit} className="space-y-6 max-w-lg mx-auto p-6 bg-slate-900/50 rounded-2xl border border-white/10">
+        <form onSubmit={handleSubmit} className="space-y-6 max-w-lg mx-auto p-6 bg-slate-900/50 rounded-2xl border border-[#ffffff1a]">
             <h2 className="text-2xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-blue-400 to-violet-400">
                 {targetItem ? `Requesting: ${targetItem.name}` : 'Request Equipment'}
             </h2>
@@ -141,7 +141,7 @@ export default function DeviceRequestForm() {
                 <div className="space-y-2 p-3 bg-blue-500/10 border border-blue-500/20 rounded-lg">
                     <Label className="text-blue-200">Request For</Label>
                     <Select value={selectedUserId} onValueChange={setSelectedUserId}>
-                        <SelectTrigger className="bg-slate-800 border-white/10">
+                        <SelectTrigger className="bg-slate-800 border-[#ffffff1a]">
                             <SelectValue placeholder="Select team member..." />
                         </SelectTrigger>
                         <SelectContent>
@@ -159,7 +159,7 @@ export default function DeviceRequestForm() {
             {/* If Item Selected, Show ReadOnly Info instead of Category Select */}
             {targetItem ? (
                 <div className="p-4 bg-slate-800 rounded-lg border border-slate-700 flex gap-4 items-center">
-                    <div className="w-12 h-12 bg-slate-700/50 rounded-lg flex items-center justify-center border border-white/10">
+                    <div className="w-12 h-12 bg-slate-700/50 rounded-lg flex items-center justify-center border border-[#ffffff1a]">
                         <Package className="text-blue-400" />
                     </div>
                     <div>

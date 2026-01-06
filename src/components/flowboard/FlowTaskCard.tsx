@@ -32,8 +32,8 @@ export const FlowTaskCard: React.FC<FlowTaskCardProps> = ({ task, onClick }) => 
             className={`
                 p-3 rounded-lg border cursor-pointer transition-all
                 ${isBlocked
-                    ? 'bg-white/5 border-white/10 opacity-60 hover:opacity-80'
-                    : 'bg-[#1A1F2E]/80 border-white/10 hover:border-white/20 hover:bg-white/10'
+                    ? 'bg-white/5 border-[#ffffff1a] opacity-60 hover:opacity-80'
+                    : 'bg-[#1A1F2E]/80 border-[#ffffff1a] hover:border-white/20 hover:bg-white/10'
                 }
             `}
         >

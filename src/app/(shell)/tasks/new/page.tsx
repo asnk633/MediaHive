@@ -210,7 +210,7 @@ export default function NewTaskPage() {
 
       {/* Centered Card */}
       <div className="w-full max-w-xl relative z-10">
-        <div className="bg-[#13161c]/90 backdrop-blur-3xl border border-white/10 rounded-3xl p-6 sm:p-8 shadow-2xl ring-1 ring-white/5">
+        <div className="bg-[#13161c]/90 backdrop-blur-3xl border border-[#ffffff1a] rounded-3xl p-6 sm:p-8 shadow-2xl ring-1 ring-white/5">
           {/* Header */}
           <div className="flex items-center justify-between mb-8 pb-4 border-b border-white/5">
             <button
@@ -295,7 +295,7 @@ export default function NewTaskPage() {
                     <Button
                       variant={"outline"}
                       className={cn(
-                        "w-full bg-white/5 hover:bg-white/10 pl-10 pr-4 py-3 h-auto rounded-xl border border-white/10 focus:border-blue-500/50 hover:text-white text-left font-normal justify-start relative text-sm text-white",
+                        "w-full bg-white/5 hover:bg-white/10 pl-10 pr-4 py-3 h-auto rounded-xl border border-[#ffffff1a] focus:border-blue-500/50 hover:text-white text-left font-normal justify-start relative text-sm text-white",
                         !dueDate && "text-white/40"
                       )}
                     >
@@ -305,7 +305,7 @@ export default function NewTaskPage() {
                       {dueDate ? format(dueDate, "dd/MM/yyyy") : <span>Pick a date</span>}
                     </Button>
                   </PopoverTrigger>
-                  <PopoverContent className="w-auto p-0 bg-[#10111a] border-white/10 text-white z-[200]" align="start">
+                  <PopoverContent className="w-auto p-0 bg-[#10111a] border-[#ffffff1a] text-white z-[200]" align="start">
                     <Calendar
                       mode="single"
                       selected={dueDate}
@@ -339,7 +339,7 @@ export default function NewTaskPage() {
                     <select
                       value={selectedOrg}
                       onChange={(e) => setSelectedOrg(e.target.value)}
-                      className="w-full bg-white/5 hover:bg-white/10 pl-10 pr-8 py-3 rounded-xl border border-white/10 focus:border-blue-500/50 outline-none text-sm text-white appearance-none [&>optgroup]:bg-[#13161c] [&>option]:bg-[#13161c] cursor-pointer transition-colors"
+                      className="w-full bg-white/5 hover:bg-white/10 pl-10 pr-8 py-3 rounded-xl border border-[#ffffff1a] focus:border-blue-500/50 outline-none text-sm text-white appearance-none [&>optgroup]:bg-[#13161c] [&>option]:bg-[#13161c] cursor-pointer transition-colors"
                     >
                       <option value="" className="bg-[#13161c]">Select Org</option>
 

@@ -175,8 +175,8 @@ export function CalendarMasterList() {
     return (
         <div className="w-full">
             {/* Toolbar */}
-            <div className="p-4 border-b border-white/10 flex flex-wrap gap-4 items-center justify-between bg-black/20">
-                <div className="flex items-center gap-3 bg-white/5 rounded-xl px-3 py-2 border border-white/10 w-full sm:w-auto">
+            <div className="p-4 border-b border-[#ffffff1a] flex flex-wrap gap-4 items-center justify-between bg-black/20">
+                <div className="flex items-center gap-3 bg-white/5 rounded-xl px-3 py-2 border border-[#ffffff1a] w-full sm:w-auto">
                     <Search size={18} className="text-white/40" />
                     <input
                         type="text"
@@ -193,7 +193,7 @@ export function CalendarMasterList() {
                             type="checkbox"
                             checked={showDisabled}
                             onChange={e => setShowDisabled(e.target.checked)}
-                            className="rounded bg-white/5 border-white/10"
+                            className="rounded bg-white/5 border-[#ffffff1a]"
                         />
                         Show Disabled
                     </label>
@@ -201,7 +201,7 @@ export function CalendarMasterList() {
                     <select
                         value={selectedYear}
                         onChange={(e) => setSelectedYear(Number(e.target.value))}
-                        className="bg-white/5 border border-white/10 text-white text-sm rounded-lg px-3 py-2 outline-none"
+                        className="bg-white/5 border border-[#ffffff1a] text-white text-sm rounded-lg px-3 py-2 outline-none"
                     >
                         <option value={2024}>2024</option>
                         <option value={2025}>2025</option>
@@ -259,7 +259,7 @@ export function CalendarMasterList() {
                                                     px-2 py-0.5 rounded text-[10px] font-bold uppercase border
                                                     ${event.type === 'holiday' ? 'bg-red-500/10 text-red-400 border-red-500/20' :
                                                         event.type === 'company' ? 'bg-blue-500/10 text-blue-400 border-blue-500/20' :
-                                                            'bg-white/5 text-white/60 border-white/10'
+                                                            'bg-white/5 text-white/60 border-[#ffffff1a]'
                                                     }
                                                 `}>
                                                     {event.type}
@@ -291,7 +291,7 @@ export function CalendarMasterList() {
                                                                     w-6 h-6 flex items-center justify-center rounded text-[10px] font-bold border transition-all
                                                                     ${isEnabled
                                                                         ? 'bg-blue-500 text-white border-blue-500'
-                                                                        : 'bg-transparent text-white/20 border-white/10 hover:border-white/30'
+                                                                        : 'bg-transparent text-white/20 border-[#ffffff1a] hover:border-white/30'
                                                                     }
                                                                 `}
                                                             >

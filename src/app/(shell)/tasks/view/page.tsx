@@ -496,7 +496,7 @@ function TaskDetailContent() {
                                 <MoreHorizontal className="h-4 w-4" />
                             </Button>
                         </DropdownMenuTrigger>
-                        <DropdownMenuContent align="end" className="bg-[#0f172a] border-white/10 text-white">
+                        <DropdownMenuContent align="end" className="bg-[#0f172a] border-[#ffffff1a] text-white">
                             <DropdownMenuItem onClick={() => setEditDialogOpen(true)} className="hover:bg-white/10 cursor-pointer focus:bg-white/10 focus:text-white">
                                 <Edit className="mr-2 h-4 w-4" />
                                 Edit Task Details
@@ -543,7 +543,7 @@ function TaskDetailContent() {
                                             {task.priority}
                                         </div>
 
-                                        <div className="flex items-center text-blue-200/80 bg-white/5 px-3 py-1 rounded-full text-xs border border-white/10" title="Due Date">
+                                        <div className="flex items-center text-blue-200/80 bg-white/5 px-3 py-1 rounded-full text-xs border border-[#ffffff1a]" title="Due Date">
                                             <Calendar className="mr-1.5 h-3 w-3" />
                                             {formatDate(task.dueDate)}
                                         </div>
@@ -555,7 +555,7 @@ function TaskDetailContent() {
                         <CardContent className="space-y-8">
                             <div className="prose prose-invert max-w-none">
                                 <h3 className="text-xs font-bold uppercase tracking-widest text-blue-300/70 mb-3 ml-1">Description</h3>
-                                <div className="bg-white/5 backdrop-blur-sm p-6 rounded-2xl border border-white/10 text-blue-50 text-base leading-relaxed shadow-inner">
+                                <div className="bg-white/5 backdrop-blur-sm p-6 rounded-2xl border border-[#ffffff1a] text-blue-50 text-base leading-relaxed shadow-inner">
                                     {task.description || <span className="italic text-white/40">No description provided.</span>}
                                 </div>
                             </div>
@@ -580,7 +580,7 @@ function TaskDetailContent() {
                             )}
 
                             <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                                <div className="p-4 rounded-2xl bg-white/5 border border-white/10 backdrop-blur-sm hover:bg-white/10 transition-colors group/box">
+                                <div className="p-4 rounded-2xl bg-white/5 border border-[#ffffff1a] backdrop-blur-sm hover:bg-white/10 transition-colors group/box">
                                     <h3 className="text-[10px] font-bold uppercase text-blue-300/60 mb-2 tracking-wider">Created By</h3>
                                     <div className="flex items-center gap-3">
                                         <SafeAvatar
@@ -593,7 +593,7 @@ function TaskDetailContent() {
                                         <span className="font-medium text-white group-hover/box:text-blue-200 transition-colors">{creatorName || 'Loading...'}</span>
                                     </div>
                                 </div>
-                                <div className="p-4 rounded-2xl bg-white/5 border border-white/10 backdrop-blur-sm hover:bg-white/10 transition-colors group/box">
+                                <div className="p-4 rounded-2xl bg-white/5 border border-[#ffffff1a] backdrop-blur-sm hover:bg-white/10 transition-colors group/box">
                                     <h3 className="text-[10px] font-bold uppercase text-blue-300/60 mb-2 tracking-wider">Assigned To</h3>
                                     <div className="flex -space-x-3 overflow-hidden py-1 items-center pl-1">
                                         {task.assignedTo && task.assignedTo.length > 0 ? (
@@ -630,7 +630,7 @@ function TaskDetailContent() {
                                         )}
                                     </div>
                                 </div>
-                                <div className="p-4 rounded-2xl bg-white/5 border border-white/10 backdrop-blur-sm hover:bg-white/10 transition-colors group/box">                                    <h3 className="text-[10px] font-bold uppercase text-blue-300/60 mb-2 tracking-wider">Due Date</h3>
+                                <div className="p-4 rounded-2xl bg-white/5 border border-[#ffffff1a] backdrop-blur-sm hover:bg-white/10 transition-colors group/box">                                    <h3 className="text-[10px] font-bold uppercase text-blue-300/60 mb-2 tracking-wider">Due Date</h3>
                                     <div className="flex items-center gap-2 text-sm font-medium text-white">
                                         <div className="p-1.5 rounded-md bg-blue-500/20 text-blue-300 group-hover/box:text-blue-200">
                                             <Clock className="h-4 w-4" />
@@ -656,7 +656,7 @@ function TaskDetailContent() {
                         <CardHeader>
                             <CardTitle className="flex items-center gap-2 text-white text-xl">
                                 <span>Activity & Comments</span>
-                                <span className="bg-white/10 text-blue-200 text-xs px-2 py-0.5 rounded-full border border-white/10">{task.activity?.length || 0}</span>
+                                <span className="bg-white/10 text-blue-200 text-xs px-2 py-0.5 rounded-full border border-[#ffffff1a]">{task.activity?.length || 0}</span>
                             </CardTitle>
                         </CardHeader>
                         <CardContent>
@@ -665,7 +665,7 @@ function TaskDetailContent() {
                                     placeholder="Write a comment..."
                                     value={comment}
                                     onChange={(e) => setComment(e.target.value)}
-                                    className="min-h-[100px] bg-white/5 border-white/10 focus:border-blue-400/50 focus:bg-white/10 resize-none pr-12 pb-10 placeholder:text-white/20 text-white rounded-xl transition-all"
+                                    className="min-h-[100px] bg-white/5 border-[#ffffff1a] focus:border-blue-400/50 focus:bg-white/10 resize-none pr-12 pb-10 placeholder:text-white/20 text-white rounded-xl transition-all"
                                 />
                                 <div className="absolute bottom-3 right-3 opacity-100 transition-opacity">
                                     <Button
@@ -682,7 +682,7 @@ function TaskDetailContent() {
                             <div className="space-y-6 max-h-[500px] overflow-y-auto pr-2 custom-scrollbar">
                                 {(task.activity || []).length === 0 ? (
                                     <div className="text-center py-10 opacity-50">
-                                        <div className="inline-flex h-12 w-12 items-center justify-center rounded-full bg-white/5 mb-3 border border-white/10">
+                                        <div className="inline-flex h-12 w-12 items-center justify-center rounded-full bg-white/5 mb-3 border border-[#ffffff1a]">
                                             <MoreHorizontal className="h-6 w-6 text-white" />
                                         </div>
                                         <p className="text-white text-sm">No recent activity</p>
@@ -732,7 +732,7 @@ function TaskDetailContent() {
                             variant="secondary"
                             size="sm"
                             onClick={() => setUploadModalOpen(true)}
-                            className="bg-white/10 hover:bg-white/20 text-white border border-white/10"
+                            className="bg-white/10 hover:bg-white/20 text-white border border-[#ffffff1a]"
                         >
                             <UploadCloud className="mr-2 h-4 w-4" />
                             Upload Media
@@ -813,17 +813,17 @@ function TaskDetailContent() {
                                 ) : (
                                     <>
                                         {(task.status || 'todo') !== 'todo' && task.status !== 'pending' && (
-                                            <Button variant="outline" className="w-full justify-start border-white/10 bg-white/5 hover:bg-white/10 text-white h-11" onClick={() => handleStatusChange('todo')} disabled={updating}>
+                                            <Button variant="outline" className="w-full justify-start border-[#ffffff1a] bg-white/5 hover:bg-white/10 text-white h-11" onClick={() => handleStatusChange('todo')} disabled={updating}>
                                                 Mark as Todo
                                             </Button>
                                         )}
                                         {(task.status || 'todo') !== 'in_progress' && task.status !== 'pending' && (
-                                            <Button variant="outline" className="w-full justify-start border-white/10 bg-white/5 hover:bg-blue-500/20 hover:border-blue-500/50 hover:text-blue-200 text-white h-11" onClick={() => handleStatusChange('in_progress')} disabled={updating}>
+                                            <Button variant="outline" className="w-full justify-start border-[#ffffff1a] bg-white/5 hover:bg-blue-500/20 hover:border-blue-500/50 hover:text-blue-200 text-white h-11" onClick={() => handleStatusChange('in_progress')} disabled={updating}>
                                                 Mark In Progress
                                             </Button>
                                         )}
                                         {(task.status || 'todo') !== 'done' && (
-                                            <Button variant="outline" className="w-full justify-start border-white/10 bg-white/5 hover:bg-green-500/20 hover:border-green-500/50 hover:text-green-200 text-white h-11" onClick={() => handleStatusChange('done')} disabled={updating}>
+                                            <Button variant="outline" className="w-full justify-start border-[#ffffff1a] bg-white/5 hover:bg-green-500/20 hover:border-green-500/50 hover:text-green-200 text-white h-11" onClick={() => handleStatusChange('done')} disabled={updating}>
                                                 Mark as Done
                                             </Button>
                                         )}
@@ -896,21 +896,21 @@ function TaskDetailContent() {
                                         )
                                     })
                                 ) : (
-                                    <div className="text-center p-6 border border-dashed border-white/10 rounded-xl bg-white/[0.02] text-white/40 text-sm">
+                                    <div className="text-center p-6 border border-dashed border-[#ffffff1a] rounded-xl bg-white/[0.02] text-white/40 text-sm">
                                         No team members assigned
                                     </div>
                                 )}
                             </div>
 
                             {canManage && (
-                                <div className="pt-4 border-t border-white/10">
+                                <div className="pt-4 border-t border-[#ffffff1a]">
                                     <Label className="text-[10px] font-bold text-blue-300/60 mb-3 block uppercase tracking-wider">Add Member</Label>
                                     <div className="flex gap-2">
                                         <Select value={selectedAssignee} onValueChange={setSelectedAssignee}>
-                                            <SelectTrigger className="flex-1 bg-white/5 border-white/10 text-white focus:ring-blue-500/50 h-10">
+                                            <SelectTrigger className="flex-1 bg-white/5 border-[#ffffff1a] text-white focus:ring-blue-500/50 h-10">
                                                 <SelectValue placeholder="Select member" />
                                             </SelectTrigger>
-                                            <SelectContent className="bg-[#1e2a3b] border-white/10 text-white">
+                                            <SelectContent className="bg-[#1e2a3b] border-[#ffffff1a] text-white">
                                                 {teamMembers.map((member) => (
                                                     <SelectItem key={member.uid} value={member.uid} className="focus:bg-white/10 focus:text-white hover:bg-white/10 cursor-pointer">
                                                         {member.displayName}

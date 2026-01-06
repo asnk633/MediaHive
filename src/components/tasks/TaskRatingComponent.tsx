@@ -36,7 +36,7 @@ export const TaskRatingComponent = ({ task, onRatingSubmitted }: TaskRatingProps
     // View Mode (Already Rated)
     if (existingRating) {
         return (
-            <div className="bg-white/5 border border-white/10 rounded-xl p-4 mt-4">
+            <div className="bg-white/5 border border-[#ffffff1a] rounded-xl p-4 mt-4">
                 <div className="flex items-center justify-between mb-2">
                     <h4 className="text-sm font-bold text-white uppercase tracking-wider">Feedback</h4>
                     <span className="text-xs text-white/40">
@@ -149,7 +149,7 @@ export const TaskRatingComponent = ({ task, onRatingSubmitted }: TaskRatingProps
                         onChange={(e) => setComment(e.target.value)}
                         placeholder="Add a comment (optional)..."
                         rows={2}
-                        className="w-full bg-black/20 border border-white/10 rounded-lg p-3 text-sm text-white placeholder:text-white/30 focus:border-blue-500/50 outline-none resize-none"
+                        className="w-full bg-black/20 border border-[#ffffff1a] rounded-lg p-3 text-sm text-white placeholder:text-white/30 focus:border-blue-500/50 outline-none resize-none"
                     />
                     <div className="flex justify-end gap-2">
                         <button

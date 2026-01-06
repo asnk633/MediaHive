@@ -20,7 +20,7 @@ export const SafeDeliverablePreview: React.FC<SafeDeliverablePreviewProps> = ({
 
     if (isImage) {
         return (
-            <div className={`relative group rounded-lg overflow-hidden bg-black/20 border border-white/10 ${className}`}>
+            <div className={`relative group rounded-lg overflow-hidden bg-black/20 border border-[#ffffff1a] ${className}`}>
                 <img
                     src={url}
                     alt={fileName}
@@ -45,7 +45,7 @@ export const SafeDeliverablePreview: React.FC<SafeDeliverablePreviewProps> = ({
 
     if (isVideo) {
         return (
-            <div className={`relative rounded-lg overflow-hidden bg-black/40 border border-white/10 flex items-center justify-center ${className}`}>
+            <div className={`relative rounded-lg overflow-hidden bg-black/40 border border-[#ffffff1a] flex items-center justify-center ${className}`}>
                 <video
                     src={url}
                     className="w-full h-full object-contain"
@@ -67,7 +67,7 @@ export const SafeDeliverablePreview: React.FC<SafeDeliverablePreviewProps> = ({
 
     // Generic File Fallback
     return (
-        <div className={`flex flex-col items-center justify-center p-4 bg-white/5 border border-white/10 rounded-lg ${className}`}>
+        <div className={`flex flex-col items-center justify-center p-4 bg-white/5 border border-[#ffffff1a] rounded-lg ${className}`}>
             <div className="p-3 bg-white/5 rounded-full mb-2">
                 <FileText size={24} className="text-blue-400" />
             </div>

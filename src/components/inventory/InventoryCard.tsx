@@ -67,7 +67,7 @@ export const InventoryCard: React.FC<InventoryCardProps> = ({ item, role, onRequ
                     {role === 'admin' && onEdit && (
                         <Button
                             variant="outline"
-                            className="flex-1 border-white/10 text-slate-300 hover:text-white hover:bg-white/5"
+                            className="flex-1 border-[#ffffff1a] text-slate-300 hover:text-white hover:bg-white/5"
                             onClick={() => onEdit(item)}
                         >
                             Edit

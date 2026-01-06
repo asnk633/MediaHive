@@ -110,7 +110,7 @@ export const EventDetailsModal: React.FC<EventDetailsModalProps> = ({ event, isO
         <Dialog open={isOpen} onOpenChange={(open) => !open && onClose()}>
             <DialogContent
                 showCloseButton={false}
-                className="max-w-5xl bg-gradient-to-br from-[#1a2639] to-[#0f172a] border-white/10 p-0 gap-0 overflow-hidden flex flex-col max-h-[90vh] rounded-3xl"
+                className="max-w-5xl bg-gradient-to-br from-[#1a2639] to-[#0f172a] border-[#ffffff1a] p-0 gap-0 overflow-hidden flex flex-col max-h-[90vh] rounded-3xl"
             >
                 {/* Screen readers title */}
                 <DialogTitle className="sr-only">Event Details: {event.title}</DialogTitle>
@@ -127,7 +127,7 @@ export const EventDetailsModal: React.FC<EventDetailsModalProps> = ({ event, isO
                     type="button"
                     onClick={onClose}
                     disabled={isDeleting || isDeleteOpen}
-                    className="absolute top-4 right-4 p-2 bg-black/20 hover:bg-black/40 text-white rounded-full transition-all z-50 backdrop-blur-md border border-white/10 disabled:opacity-50 disabled:cursor-not-allowed cursor-pointer"
+                    className="absolute top-4 right-4 p-2 bg-black/20 hover:bg-black/40 text-white rounded-full transition-all z-50 backdrop-blur-md border border-[#ffffff1a] disabled:opacity-50 disabled:cursor-not-allowed cursor-pointer"
                 >
                     <X size={20} />
                 </button>
@@ -184,7 +184,7 @@ export const EventDetailsModal: React.FC<EventDetailsModalProps> = ({ event, isO
 
                             {/* Media Coverage */}
                             {event.mediaCoverage && event.mediaCoverage.length > 0 && (
-                                <section className="bg-white/5 border border-white/10 rounded-2xl p-6">
+                                <section className="bg-white/5 border border-[#ffffff1a] rounded-2xl p-6">
                                     <h3 className="text-sm font-bold text-blue-400 flex items-center gap-2 mb-4">
                                         <Video size={18} /> Media Coverage Requested
                                     </h3>
@@ -208,7 +208,7 @@ export const EventDetailsModal: React.FC<EventDetailsModalProps> = ({ event, isO
 
                         {/* Right Column: Metadata */}
                         <div className="md:col-span-2 space-y-6">
-                            <div className="bg-white/5 border border-white/10 rounded-2xl p-5 space-y-6">
+                            <div className="bg-white/5 border border-[#ffffff1a] rounded-2xl p-5 space-y-6">
                                 <div className="flex items-center gap-4">
                                     <div className="w-10 h-10 rounded-xl bg-blue-500/10 flex items-center justify-center text-blue-400 border border-blue-500/20">
                                         <Calendar size={20} />
@@ -254,12 +254,12 @@ export const EventDetailsModal: React.FC<EventDetailsModalProps> = ({ event, isO
                                 </div>
                             </div>
 
-                            <div className="bg-white/5 border border-white/10 rounded-2xl p-5">
+                            <div className="bg-white/5 border border-[#ffffff1a] rounded-2xl p-5">
                                 <h3 className="text-[10px] uppercase font-bold text-white/40 tracking-wider mb-4 flex items-center gap-2">
                                     <User size={12} /> {event.createdBy?.role === 'guest' ? 'Created By' : 'Organizer'}
                                 </h3>
                                 <div className="flex items-center gap-3">
-                                    <div className="w-10 h-10 rounded-full bg-gradient-to-br from-blue-600 to-indigo-600 flex items-center justify-center text-white font-bold border border-white/10 shadow-lg">
+                                    <div className="w-10 h-10 rounded-full bg-gradient-to-br from-blue-600 to-indigo-600 flex items-center justify-center text-white font-bold border border-[#ffffff1a] shadow-lg">
                                         {event.createdBy?.role === 'guest'
                                             ? (event.createdBy?.name?.charAt(0) || '?')
                                             : (event.department?.charAt(0) || 'O')}
@@ -283,12 +283,12 @@ export const EventDetailsModal: React.FC<EventDetailsModalProps> = ({ event, isO
                 </div>
 
                 {/* Footer */}
-                <div className="px-8 py-5 border-t border-white/10 bg-black/20 flex flex-col sm:flex-row justify-between items-center gap-4 shrink-0">
+                <div className="px-8 py-5 border-t border-[#ffffff1a] bg-black/20 flex flex-col sm:flex-row justify-between items-center gap-4 shrink-0">
                     <div className="text-[10px] text-white/30 font-medium">
                         EVENT ID: {event.id}
                     </div>
                     <div className="flex gap-3">
-                        <button className="p-2.5 text-white/60 hover:text-white hover:bg-white/5 transition-all rounded-xl border border-transparent hover:border-white/10">
+                        <button className="p-2.5 text-white/60 hover:text-white hover:bg-white/5 transition-all rounded-xl border border-transparent hover:border-[#ffffff1a]">
                             <Share2 size={18} />
                         </button>
                         {canDelete && (
@@ -306,7 +306,7 @@ export const EventDetailsModal: React.FC<EventDetailsModalProps> = ({ event, isO
                                         <Trash2 size={18} />
                                     </button>
                                 </AlertDialogTrigger>
-                                <AlertDialogContent className="bg-[#1a2639] border-white/10 text-white z-[120]">
+                                <AlertDialogContent className="bg-[#1a2639] border-[#ffffff1a] text-white z-[120]">
                                     <AlertDialogHeader>
                                         <AlertDialogTitle>Delete Event?</AlertDialogTitle>
                                         <AlertDialogDescription className="text-white/60">
@@ -316,7 +316,7 @@ export const EventDetailsModal: React.FC<EventDetailsModalProps> = ({ event, isO
                                     <AlertDialogFooter>
                                         <AlertDialogCancel
                                             onClick={() => setIsDeleteOpen(false)}
-                                            className="bg-transparent border-white/10 text-white hover:bg-white/5 hover:text-white"
+                                            className="bg-transparent border-[#ffffff1a] text-white hover:bg-white/5 hover:text-white"
                                         >
                                             Cancel
                                         </AlertDialogCancel>

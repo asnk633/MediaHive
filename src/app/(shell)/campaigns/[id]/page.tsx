@@ -97,7 +97,7 @@ export default function CampaignDashboardPage() {
 
             {/* Info Grid */}
             <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
-                <div className="bg-white/5 border border-white/10 rounded-2xl p-4 flex items-center gap-4">
+                <div className="bg-white/5 border border-[#ffffff1a] rounded-2xl p-4 flex items-center gap-4">
                     <div className="w-10 h-10 rounded-full bg-blue-500/20 flex items-center justify-center text-blue-400">
                         <Calendar size={20} />
                     </div>
@@ -109,7 +109,7 @@ export default function CampaignDashboardPage() {
                     </div>
                 </div>
 
-                <div className="bg-white/5 border border-white/10 rounded-2xl p-4 flex items-center gap-4">
+                <div className="bg-white/5 border border-[#ffffff1a] rounded-2xl p-4 flex items-center gap-4">
                     <div className="w-10 h-10 rounded-full bg-purple-500/20 flex items-center justify-center text-purple-400">
                         <Layers size={20} />
                     </div>
@@ -119,7 +119,7 @@ export default function CampaignDashboardPage() {
                     </div>
                 </div>
 
-                <div className="bg-white/5 border border-white/10 rounded-2xl p-4 flex items-center gap-4">
+                <div className="bg-white/5 border border-[#ffffff1a] rounded-2xl p-4 flex items-center gap-4">
                     <div className="w-10 h-10 rounded-full bg-green-500/20 flex items-center justify-center text-green-400">
                         <CheckCircle size={20} />
                     </div>
@@ -131,7 +131,7 @@ export default function CampaignDashboardPage() {
                     </div>
                 </div>
 
-                <div className="bg-white/5 border border-white/10 rounded-2xl p-4 flex items-center gap-4">
+                <div className="bg-white/5 border border-[#ffffff1a] rounded-2xl p-4 flex items-center gap-4">
                     <div className="w-10 h-10 rounded-full bg-orange-500/20 flex items-center justify-center text-orange-400">
                         <Clock size={20} />
                     </div>
@@ -154,7 +154,7 @@ export default function CampaignDashboardPage() {
                 {tasks.length > 0 ? (
                     <div className="grid grid-cols-1 gap-3">
                         {tasks.map(task => (
-                            <div key={task.id} className="bg-white/5 border border-white/10 rounded-xl p-4 hover:bg-white/10 transition-colors flex items-center justify-between group cursor-pointer" onClick={() => router.push(`/tasks/view?id=${task.id}`)}>
+                            <div key={task.id} className="bg-white/5 border border-[#ffffff1a] rounded-xl p-4 hover:bg-white/10 transition-colors flex items-center justify-between group cursor-pointer" onClick={() => router.push(`/tasks/view?id=${task.id}`)}>
                                 <div>
                                     <h3 className="text-white font-medium group-hover:text-blue-400 transition-colors">{task.title}</h3>
                                     <p className="text-sm text-gray-500 line-clamp-1">{task.description}</p>
@@ -171,7 +171,7 @@ export default function CampaignDashboardPage() {
                         ))}
                     </div>
                 ) : (
-                    <div className="bg-white/5 border border-white/10 border-dashed rounded-2xl p-12 text-center text-gray-500">
+                    <div className="bg-white/5 border border-[#ffffff1a] border-dashed rounded-2xl p-12 text-center text-gray-500">
                         <div className="w-16 h-16 bg-white/5 rounded-full flex items-center justify-center mx-auto mb-4">
                             <Layers size={32} className="opacity-50" />
                         </div>

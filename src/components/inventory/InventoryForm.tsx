@@ -52,7 +52,7 @@ export default function InventoryForm({ initialData, mode }: InventoryFormProps)
 
     const [uploadingImage, setUploadingImage] = useState(false);
 
-    const inputClasses = "bg-white/5 border-white/10 text-white placeholder:text-white/30 focus:border-blue-500/50 focus:ring-0";
+    const inputClasses = "bg-white/5 border-[#ffffff1a] text-white placeholder:text-white/30 focus:border-blue-500/50 focus:ring-0";
     const labelClasses = "text-white/70 font-medium";
 
     const [formData, setFormData] = useState({
@@ -244,7 +244,7 @@ export default function InventoryForm({ initialData, mode }: InventoryFormProps)
 
 
     return (
-        <div className="max-w-2xl mx-auto p-8 text-center bg-slate-900/50 rounded-2xl border border-white/10">
+        <div className="max-w-2xl mx-auto p-8 text-center bg-slate-900/50 rounded-2xl border border-[#ffffff1a]">
             <div className="flex justify-center mb-4">
                 <AlertCircle className="h-12 w-12 text-yellow-500" />
             </div>

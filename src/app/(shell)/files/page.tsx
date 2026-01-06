@@ -101,7 +101,7 @@ export default function FilesPage() {
                         placeholder="Search files..."
                         value={search}
                         onChange={(e) => setSearch(e.target.value)}
-                        className="w-full pl-10 pr-4 py-2.5 rounded-xl bg-black/20 border border-white/10 focus:outline-none focus:border-indigo-500 focus:bg-black/30 transition-all text-white placeholder-white/20"
+                        className="w-full pl-10 pr-4 py-2.5 rounded-xl bg-black/20 border border-[#ffffff1a] focus:outline-none focus:border-indigo-500 focus:bg-black/30 transition-all text-white placeholder-white/20"
                     />
                 </div>
                 {/* Future: Filters */}

@@ -34,7 +34,7 @@ export const DueSoonWidget = ({ tasks, userRole }: DueSoonWidgetProps) => {
     if (dueSoonTasks.length === 0) return null;
 
     return (
-        <div className="bg-white/5 backdrop-blur-md border border-white/10 rounded-2xl p-5 shadow-xl animate-in fade-in slide-in-from-bottom-2">
+        <div className="bg-white/5 backdrop-blur-md border border-[#ffffff1a] rounded-2xl p-5 shadow-xl animate-in fade-in slide-in-from-bottom-2">
             <div className="flex items-center justify-between mb-4">
                 <h3 className="text-lg font-bold text-white flex items-center gap-2">
                     <Clock className="w-5 h-5 text-amber-400" />

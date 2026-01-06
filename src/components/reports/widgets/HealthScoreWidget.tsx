@@ -22,7 +22,7 @@ export const HealthScoreWidget: React.FC<HealthScoreWidgetProps> = ({ score, tre
     const offset = circumference - (score / 100) * circumference;
 
     return (
-        <Card className={cn("bg-slate-900/30 border-white/10 relative overflow-hidden", className)}>
+        <Card className={cn("bg-slate-900/30 border-[#ffffff1a] relative overflow-hidden", className)}>
             <CardContent className="p-6 flex items-center justify-center relative z-10">
                 <div className="relative w-40 h-40 flex items-center justify-center">
                     {/* Background Circle */}

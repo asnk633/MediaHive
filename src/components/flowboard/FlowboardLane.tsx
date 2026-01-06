@@ -26,8 +26,8 @@ export const FlowboardLane: React.FC<FlowboardLaneProps> = ({
         emerald: 'border-emerald-500/30',
         orange: 'border-orange-500/30',
         fuchsia: 'border-fuchsia-500/30',
-        gray: 'border-white/10'
-    }[color] || 'border-white/10';
+        gray: 'border-[#ffffff1a]'
+    }[color] || 'border-[#ffffff1a]';
 
     const bgGradient = {
         blue: 'from-blue-500/5',
@@ -74,7 +74,7 @@ export const FlowboardLane: React.FC<FlowboardLaneProps> = ({
                                     flex items-center gap-1 pl-0.5 pr-1.5 py-0.5 rounded-full text-[9px] font-bold border
                                     ${user.count > 3
                                         ? 'bg-red-500/10 text-red-400 border-red-500/20'
-                                        : 'bg-white/5 text-gray-400 border-white/10'}
+                                        : 'bg-white/5 text-gray-400 border-[#ffffff1a]'}
                                 `}
                             >
                                 <div className="w-3.5 h-3.5 rounded-full bg-white/10 flex items-center justify-center">

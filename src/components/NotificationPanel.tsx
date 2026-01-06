@@ -103,7 +103,7 @@ export const NotificationPanel = () => {
 
     return (
         <div className="bg-[#0f172a] border border-white/20 rounded-2xl shadow-2xl text-left w-full max-w-sm sm:max-w-md md:max-w-xl mx-auto overflow-hidden ring-1 ring-black/50">
-            <div className="p-4 border-b border-white/10 flex justify-between items-center bg-white/5">
+            <div className="p-4 border-b border-[#ffffff1a] flex justify-between items-center bg-white/5">
                 <h3 className="font-bold text-white text-sm tracking-wide uppercase">Notifications</h3>
                 {notifications.some(n => !n.isRead) && (
                     <button
@@ -175,7 +175,7 @@ export const NotificationPanel = () => {
                     </div>
                 )}
             </div>
-            <div className="p-3 border-t border-white/10 bg-[#0f172a] text-center">
+            <div className="p-3 border-t border-[#ffffff1a] bg-[#0f172a] text-center">
                 <small className="text-[10px] text-gray-600 font-medium uppercase tracking-widest">Notifications are stored for 30 days</small>
             </div>
         </div>

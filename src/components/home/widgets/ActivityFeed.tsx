@@ -55,7 +55,7 @@ export const ActivityFeed = ({ tasks }: ActivityFeedProps) => {
     if (activities.length === 0) return null;
 
     return (
-        <div className="bg-white/5 backdrop-blur-md border border-white/10 rounded-2xl p-5 shadow-xl">
+        <div className="bg-white/5 backdrop-blur-md border border-[#ffffff1a] rounded-2xl p-5 shadow-xl">
             <div className="flex items-center gap-2 mb-4">
                 <Activity className="w-5 h-5 text-blue-400" />
                 <h3 className="text-lg font-bold text-white">Recent Updates</h3>
@@ -67,7 +67,7 @@ export const ActivityFeed = ({ tasks }: ActivityFeedProps) => {
                         {/* Timeline Line */}
                         <div className="absolute left-[9px] top-8 bottom-0 w-px bg-white/10 last:hidden" />
 
-                        <div className={cn("mt-1 h-5 w-5 rounded-full flex items-center justify-center shadow-lg border border-white/10 shrink-0",
+                        <div className={cn("mt-1 h-5 w-5 rounded-full flex items-center justify-center shadow-lg border border-[#ffffff1a] shrink-0",
                             act.type === 'created' ? "bg-blue-500/20 text-blue-400" : "bg-green-500/20 text-green-400"
                         )}>
                             {act.type === 'created' ? <PlusCircle size={12} /> : <Edit3 size={12} />}

@@ -19,8 +19,8 @@ export const CreateEventModal = ({ isOpen, onClose, isMobile = true, initialDate
         : `${overlayClasses} items-center justify-center`;
 
     const modalClasses = isMobile
-        ? "w-full bg-[#10111a] rounded-t-[32px] p-6 animate-slide-up shadow-[0_-8px_30px_rgba(0,0,0,0.5)] max-h-[90vh] overflow-y-auto border-t border-white/10"
-        : "w-full max-w-lg bg-[#10111a] rounded-[24px] p-8 animate-fade-in shadow-2xl border border-white/10";
+        ? "w-full bg-[#10111a] rounded-t-[32px] p-6 animate-slide-up shadow-[0_-8px_30px_rgba(0,0,0,0.5)] max-h-[90vh] overflow-y-auto border-t border-[#ffffff1a]"
+        : "w-full max-w-lg bg-[#10111a] rounded-[24px] p-8 animate-fade-in shadow-2xl border border-[#ffffff1a]";
 
     return (
         <div className={containerClasses} onClick={onClose}>

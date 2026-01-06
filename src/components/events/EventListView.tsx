@@ -248,7 +248,7 @@ function EventCard({ event, onEventClick, isAdmin, user }: { event: Event, onEve
             )}
 
             {/* Date Box */}
-            <div className={`flex-shrink-0 flex sm:flex-col items-center justify-center gap-1 sm:gap-0 w-full sm:w-16 sm:h-16 ${isPending ? 'bg-amber-500/20 border-amber-500/30' : 'bg-white/10 border-white/10'} backdrop-blur-md rounded-xl text-white shadow-inner`}>
+            <div className={`flex-shrink-0 flex sm:flex-col items-center justify-center gap-1 sm:gap-0 w-full sm:w-16 sm:h-16 ${isPending ? 'bg-amber-500/20 border-amber-500/30' : 'bg-white/10 border-[#ffffff1a]'} backdrop-blur-md rounded-xl text-white shadow-inner`}>
                 <span className="text-[10px] font-bold uppercase tracking-wider text-white/70">{format(eventDate, 'MMM')}</span>
                 <span className="text-xl font-bold font-[gill-sans-mt,sans-serif]">{format(eventDate, 'd')}</span>
             </div>

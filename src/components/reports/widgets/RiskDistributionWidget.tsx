@@ -11,7 +11,7 @@ export const RiskDistributionWidget: React.FC<RiskDistributionProps> = ({ riskCo
     const riskPercent = total > 0 ? (riskCount / total) * 100 : 0;
 
     return (
-        <Card className="bg-slate-900/30 border-white/10 h-full">
+        <Card className="bg-slate-900/30 border-[#ffffff1a] h-full">
             <CardHeader className="pb-2">
                 <CardTitle className="text-sm font-medium text-slate-400 uppercase tracking-wider">Workforce Risk Distribution</CardTitle>
             </CardHeader>

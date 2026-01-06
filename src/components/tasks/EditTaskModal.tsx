@@ -188,10 +188,10 @@ export const EditTaskModal: React.FC<EditTaskModalProps> = ({ task, isOpen, onCl
                         initial={{ scale: 0.95, opacity: 0, y: 20 }}
                         animate={{ scale: 1, opacity: 1, y: 0 }}
                         exit={{ scale: 0.95, opacity: 0, y: 20 }}
-                        className="relative w-full max-w-xl bg-[#141e30] rounded-2xl shadow-2xl border border-white/10 overflow-hidden flex flex-col max-h-[90vh]"
+                        className="relative w-full max-w-xl bg-[#141e30] rounded-2xl shadow-2xl border border-[#ffffff1a] overflow-hidden flex flex-col max-h-[90vh]"
                     >
                         {/* Header */}
-                        <div className="px-6 py-4 border-b border-white/10 flex justify-between items-center bg-white/5">
+                        <div className="px-6 py-4 border-b border-[#ffffff1a] flex justify-between items-center bg-white/5">
                             <h3 className="text-xl font-bold text-white flex items-center gap-2">
                                 <AlertCircle className="text-blue-400" size={20} />
                                 Edit Task
@@ -207,7 +207,7 @@ export const EditTaskModal: React.FC<EditTaskModalProps> = ({ task, isOpen, onCl
                                 <div>
                                     <label className="block text-xs font-bold text-white/40 uppercase tracking-widest mb-2 px-1">Task Title</label>
                                     <input
-                                        className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-white placeholder-white/20 focus:ring-2 focus:ring-blue-500/50 outline-none transition-all"
+                                        className="w-full bg-white/5 border border-[#ffffff1a] rounded-xl px-4 py-3 text-white placeholder-white/20 focus:ring-2 focus:ring-blue-500/50 outline-none transition-all"
                                         placeholder="Enter task title"
                                         value={formData.title}
                                         onChange={e => setFormData({ ...formData, title: e.target.value })}
@@ -219,7 +219,7 @@ export const EditTaskModal: React.FC<EditTaskModalProps> = ({ task, isOpen, onCl
                                 <div>
                                     <label className="block text-xs font-bold text-white/40 uppercase tracking-widest mb-2 px-1">Description</label>
                                     <textarea
-                                        className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-white placeholder-white/20 focus:ring-2 focus:ring-blue-500/50 outline-none transition-all min-h-[120px]"
+                                        className="w-full bg-white/5 border border-[#ffffff1a] rounded-xl px-4 py-3 text-white placeholder-white/20 focus:ring-2 focus:ring-blue-500/50 outline-none transition-all min-h-[120px]"
                                         placeholder="Describe the task details..."
                                         rows={4}
                                         value={formData.description}
@@ -234,7 +234,7 @@ export const EditTaskModal: React.FC<EditTaskModalProps> = ({ task, isOpen, onCl
                                         <label className="block text-xs font-bold text-white/40 uppercase tracking-widest mb-2 px-1">Status</label>
                                         <div className="relative">
                                             <select
-                                                className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-white focus:ring-2 focus:ring-blue-500/50 outline-none appearance-none cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed"
+                                                className="w-full bg-white/5 border border-[#ffffff1a] rounded-xl px-4 py-3 text-white focus:ring-2 focus:ring-blue-500/50 outline-none appearance-none cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed"
                                                 value={formData.status}
                                                 onChange={e => setFormData({ ...formData, status: e.target.value })}
                                                 disabled={!canEditStatus}
@@ -256,7 +256,7 @@ export const EditTaskModal: React.FC<EditTaskModalProps> = ({ task, isOpen, onCl
                                         <label className="block text-xs font-bold text-white/40 uppercase tracking-widest mb-2 px-1">Priority</label>
                                         <div className="relative">
                                             <select
-                                                className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-white focus:ring-2 focus:ring-blue-500/50 outline-none appearance-none cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed"
+                                                className="w-full bg-white/5 border border-[#ffffff1a] rounded-xl px-4 py-3 text-white focus:ring-2 focus:ring-blue-500/50 outline-none appearance-none cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed"
                                                 value={formData.priority}
                                                 onChange={e => setFormData({ ...formData, priority: e.target.value })}
                                                 disabled={!canEditPriority}
@@ -277,7 +277,7 @@ export const EditTaskModal: React.FC<EditTaskModalProps> = ({ task, isOpen, onCl
                                     <div className="relative">
                                         <input
                                             type="date"
-                                            className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-white focus:ring-2 focus:ring-blue-500/50 outline-none block disabled:opacity-50 disabled:cursor-not-allowed"
+                                            className="w-full bg-white/5 border border-[#ffffff1a] rounded-xl px-4 py-3 text-white focus:ring-2 focus:ring-blue-500/50 outline-none block disabled:opacity-50 disabled:cursor-not-allowed"
                                             value={formData.dueDate}
                                             onChange={e => setFormData({ ...formData, dueDate: e.target.value })}
                                             disabled={!canEditDueDate}
@@ -291,7 +291,7 @@ export const EditTaskModal: React.FC<EditTaskModalProps> = ({ task, isOpen, onCl
                                     <label className="block text-xs font-bold text-white/40 uppercase tracking-widest mb-2 px-1">Campaign</label>
                                     <div className="relative">
                                         <select
-                                            className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-white focus:ring-2 focus:ring-blue-500/50 outline-none appearance-none cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed"
+                                            className="w-full bg-white/5 border border-[#ffffff1a] rounded-xl px-4 py-3 text-white focus:ring-2 focus:ring-blue-500/50 outline-none appearance-none cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed"
                                             value={formData.campaignId || ''}
                                             onChange={e => setFormData({ ...formData, campaignId: e.target.value })}
                                             disabled={!canEditContent}
@@ -329,7 +329,7 @@ export const EditTaskModal: React.FC<EditTaskModalProps> = ({ task, isOpen, onCl
                                                 >
                                                     <div className={`
                                                         w-6 h-6 rounded-md flex items-center justify-center border transition-all
-                                                        ${formData.assignedToIds.includes(m.uid) ? 'bg-blue-600 border-blue-400' : 'bg-transparent border-white/10'}
+                                                        ${formData.assignedToIds.includes(m.uid) ? 'bg-blue-600 border-blue-400' : 'bg-transparent border-[#ffffff1a]'}
                                                     `}>
                                                         {formData.assignedToIds.includes(m.uid) && <Check size={14} className="text-white" />}
                                                     </div>
@@ -350,7 +350,7 @@ export const EditTaskModal: React.FC<EditTaskModalProps> = ({ task, isOpen, onCl
                                 )}
 
 
-                                <div className="pt-6 mt-6 border-t border-white/10">
+                                <div className="pt-6 mt-6 border-t border-[#ffffff1a]">
                                     <DeliverablesList
                                         taskId={task.id}
                                     />
@@ -359,7 +359,7 @@ export const EditTaskModal: React.FC<EditTaskModalProps> = ({ task, isOpen, onCl
                         </div>
 
                         {/* Footer */}
-                        <div className="p-6 border-t border-white/10 bg-white/5 flex gap-3 justify-end items-center">
+                        <div className="p-6 border-t border-[#ffffff1a] bg-white/5 flex gap-3 justify-end items-center">
                             <button
                                 onClick={onClose}
                                 className="px-6 py-2.5 rounded-xl text-white/60 hover:text-white hover:bg-white/5 transition-all text-sm font-medium"

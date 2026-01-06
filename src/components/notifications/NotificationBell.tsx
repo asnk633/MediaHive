@@ -165,7 +165,7 @@ export const NotificationBell = () => {
 
             {isOpen && (
                 <div className="absolute right-0 mt-2 w-80 md:w-96 bg-[#0f172a] border border-white/20 rounded-2xl shadow-2xl z-50 overflow-hidden text-left ring-1 ring-black/50">
-                    <div className="p-4 border-b border-white/10 flex justify-between items-center bg-white/5">
+                    <div className="p-4 border-b border-[#ffffff1a] flex justify-between items-center bg-white/5">
                         <h3 className="font-bold text-white text-sm tracking-wide uppercase">Notifications</h3>
                         {unreadCount > 0 && (
                             <button
@@ -197,7 +197,7 @@ export const NotificationBell = () => {
                                         <div
                                             key={item.id}
                                             onClick={() => handleNotificationClick(item)}
-                                            className="flex items-start gap-4 p-4 cursor-pointer transition-colors border-b border-white/10 hover:bg-white/5 group"
+                                            className="flex items-start gap-4 p-4 cursor-pointer transition-colors border-b border-[#ffffff1a] hover:bg-white/5 group"
                                         >
                                             <div className="mt-1 flex-shrink-0">
                                                 <div className="w-10 h-10 bg-blue-500/20 rounded-xl flex items-center justify-center border border-blue-500/30 group-hover:border-blue-500/50 transition-colors">
@@ -226,7 +226,7 @@ export const NotificationBell = () => {
                                 } else {
                                     // Single Item
                                     return (
-                                        <div key={item.id} className="border-b border-white/10 last:border-0 hover:bg-white/5 transition-colors">
+                                        <div key={item.id} className="border-b border-[#ffffff1a] last:border-0 hover:bg-white/5 transition-colors">
                                             <NotificationItem
                                                 notification={item}
                                                 onClick={handleNotificationClick}
@@ -244,7 +244,7 @@ export const NotificationBell = () => {
                             </div>
                         )}
                     </div>
-                    <div className="p-3 border-t border-white/10 bg-[#0f172a] text-center">
+                    <div className="p-3 border-t border-[#ffffff1a] bg-[#0f172a] text-center">
                         <small className="text-[10px] text-gray-600 font-medium uppercase tracking-widest">Notifications are stored for 30 days</small>
                     </div>
                 </div>

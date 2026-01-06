@@ -45,7 +45,7 @@ export const LeaveAnalytics: React.FC<LeaveAnalyticsProps> = ({ data }) => {
         <div className="space-y-6">
             {/* KPI Cards */}
             <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-4">
-                <div className="bg-white/5 border border-white/10 rounded-xl p-4">
+                <div className="bg-white/5 border border-[#ffffff1a] rounded-xl p-4">
                     <div className="flex items-center gap-2 mb-2">
                         <TrendingUp size={16} className="text-blue-400" />
                         <span className="text-xs font-bold text-white/50 uppercase tracking-wider">Total</span>
@@ -53,7 +53,7 @@ export const LeaveAnalytics: React.FC<LeaveAnalyticsProps> = ({ data }) => {
                     <div className="text-3xl font-bold text-white">{summary.total}</div>
                 </div>
 
-                <div className="bg-white/5 border border-white/10 rounded-xl p-4">
+                <div className="bg-white/5 border border-[#ffffff1a] rounded-xl p-4">
                     <div className="flex items-center gap-2 mb-2">
                         <AlertCircle size={16} className="text-amber-400" />
                         <span className="text-xs font-bold text-white/50 uppercase tracking-wider">Pending</span>
@@ -61,7 +61,7 @@ export const LeaveAnalytics: React.FC<LeaveAnalyticsProps> = ({ data }) => {
                     <div className="text-3xl font-bold text-amber-400">{summary.pending}</div>
                 </div>
 
-                <div className="bg-white/5 border border-white/10 rounded-xl p-4">
+                <div className="bg-white/5 border border-[#ffffff1a] rounded-xl p-4">
                     <div className="flex items-center gap-2 mb-2">
                         <CheckCircle size={16} className="text-emerald-400" />
                         <span className="text-xs font-bold text-white/50 uppercase tracking-wider">Approved</span>
@@ -69,7 +69,7 @@ export const LeaveAnalytics: React.FC<LeaveAnalyticsProps> = ({ data }) => {
                     <div className="text-3xl font-bold text-emerald-400">{summary.approved}</div>
                 </div>
 
-                <div className="bg-white/5 border border-white/10 rounded-xl p-4">
+                <div className="bg-white/5 border border-[#ffffff1a] rounded-xl p-4">
                     <div className="flex items-center gap-2 mb-2">
                         <XCircle size={16} className="text-red-400" />
                         <span className="text-xs font-bold text-white/50 uppercase tracking-wider">Rejected</span>
@@ -77,7 +77,7 @@ export const LeaveAnalytics: React.FC<LeaveAnalyticsProps> = ({ data }) => {
                     <div className="text-3xl font-bold text-red-400">{summary.rejected}</div>
                 </div>
 
-                <div className="bg-white/5 border border-white/10 rounded-xl p-4">
+                <div className="bg-white/5 border border-[#ffffff1a] rounded-xl p-4">
                     <div className="flex items-center gap-2 mb-2">
                         <TrendingUp size={16} className="text-purple-400" />
                         <span className="text-xs font-bold text-white/50 uppercase tracking-wider">Approval Rate</span>
@@ -85,7 +85,7 @@ export const LeaveAnalytics: React.FC<LeaveAnalyticsProps> = ({ data }) => {
                     <div className="text-3xl font-bold text-purple-400">{summary.approvalRate}%</div>
                 </div>
 
-                <div className="bg-white/5 border border-white/10 rounded-xl p-4">
+                <div className="bg-white/5 border border-[#ffffff1a] rounded-xl p-4">
                     <div className="flex items-center gap-2 mb-2">
                         <Clock size={16} className="text-cyan-400" />
                         <span className="text-xs font-bold text-white/50 uppercase tracking-wider">Avg Time</span>
@@ -97,7 +97,7 @@ export const LeaveAnalytics: React.FC<LeaveAnalyticsProps> = ({ data }) => {
             {/* Charts Grid */}
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
                 {/* Leave by Type - Pie Chart */}
-                <div className="bg-white/5 border border-white/10 rounded-2xl p-6">
+                <div className="bg-white/5 border border-[#ffffff1a] rounded-2xl p-6">
                     <h3 className="text-sm font-bold text-white/70 uppercase tracking-wider mb-4">
                         Leaves by Type
                     </h3>
@@ -130,7 +130,7 @@ export const LeaveAnalytics: React.FC<LeaveAnalyticsProps> = ({ data }) => {
                 </div>
 
                 {/* Leave by Month - Bar Chart */}
-                <div className="bg-white/5 border border-white/10 rounded-2xl p-6">
+                <div className="bg-white/5 border border-[#ffffff1a] rounded-2xl p-6">
                     <h3 className="text-sm font-bold text-white/70 uppercase tracking-wider mb-4">
                         Leaves by Month (Last 12 Months)
                     </h3>
@@ -162,7 +162,7 @@ export const LeaveAnalytics: React.FC<LeaveAnalyticsProps> = ({ data }) => {
 
             {/* Department Breakdown */}
             {byDepartment.length > 0 && (
-                <div className="bg-white/5 border border-white/10 rounded-2xl p-6">
+                <div className="bg-white/5 border border-[#ffffff1a] rounded-2xl p-6">
                     <h3 className="text-sm font-bold text-white/70 uppercase tracking-wider mb-4">
                         Leaves by Department
                     </h3>
@@ -193,13 +193,13 @@ export const LeaveAnalytics: React.FC<LeaveAnalyticsProps> = ({ data }) => {
 
             {/* Upcoming Leaves */}
             {upcoming.length > 0 && (
-                <div className="bg-white/5 border border-white/10 rounded-2xl p-6">
+                <div className="bg-white/5 border border-[#ffffff1a] rounded-2xl p-6">
                     <h3 className="text-sm font-bold text-white/70 uppercase tracking-wider mb-4">
                         Upcoming Approved Leaves (Next 30 Days)
                     </h3>
                     <div className="space-y-3">
                         {upcoming.map((leave: any) => (
-                            <div key={leave.id} className="bg-white/5 border border-white/10 rounded-xl p-4 flex items-center justify-between">
+                            <div key={leave.id} className="bg-white/5 border border-[#ffffff1a] rounded-xl p-4 flex items-center justify-between">
                                 <div className="flex items-center gap-4">
                                     <div className="w-10 h-10 rounded-full bg-blue-500/20 flex items-center justify-center text-blue-400 font-bold text-sm">
                                         {leave.requestedBy.name.split(' ').map((n: string) => n[0]).join('').substring(0, 2)}

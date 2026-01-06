@@ -46,7 +46,7 @@ export function CalendarView({ currentDate, onDateChange, events, onDateClick, o
             text-white
         ">
             {/* Header */}
-            <div className="flex items-center justify-between p-6 border-b border-white/10">
+            <div className="flex items-center justify-between p-6 border-b border-[#ffffff1a]">
                 <h2 className="text-xl font-bold text-white tracking-wide font-[gill-sans-mt,sans-serif]">
                     {format(currentDate, 'MMMM yyyy')}
                 </h2>
@@ -61,7 +61,7 @@ export function CalendarView({ currentDate, onDateChange, events, onDateClick, o
             </div>
 
             {/* Grid Header */}
-            <div className="grid grid-cols-7 bg-white/5 border-b border-white/10">
+            <div className="grid grid-cols-7 bg-white/5 border-b border-[#ffffff1a]">
                 {weekDays.map(day => (
                     <div key={day} className="py-3 text-center text-[10px] font-bold text-white/50 uppercase tracking-widest">
                         {day}
@@ -89,7 +89,7 @@ export function CalendarView({ currentDate, onDateChange, events, onDateClick, o
                             key={day.toString()}
                             onClick={() => onDateClick(day)}
                             className={`
-                                min-h-[100px] border-b border-r border-white/10 relative p-2 cursor-pointer transition-all duration-200
+                                min-h-[100px] border-b border-r border-[#ffffff1a] relative p-2 cursor-pointer transition-all duration-200
                                 ${!isCurrentMonth ? 'bg-white/[0.02] text-white/20' : 'hover:bg-white/10 text-white/90'}
                                 ${isToday ? 'bg-indigo-500/20 shadow-inner' : ''}
                             `}
@@ -123,7 +123,7 @@ export function CalendarView({ currentDate, onDateChange, events, onDateClick, o
                                         className={`
                                             text-[10px] truncate px-2 py-0.5 rounded-[4px] border font-medium backdrop-blur-sm transition-colors
                                             ${(ev as any).isSystemEvent
-                                                ? 'bg-transparent border border-white/10 text-white/40 hover:bg-white/5 hover:text-white/60' // Faded System Event
+                                                ? 'bg-transparent border border-[#ffffff1a] text-white/40 hover:bg-white/5 hover:text-white/60' // Faded System Event
                                                 : 'bg-blue-600/40 border-blue-500/50 text-white shadow-sm hover:bg-blue-600/60 font-bold'} // Highlighted User Event
                                         `}
                                     >

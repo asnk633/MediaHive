@@ -141,7 +141,7 @@ export default function LeaveAnalyticsPage() {
                 </div>
 
                 {/* Filters */}
-                <div className="bg-white/5 border border-white/10 rounded-2xl p-5">
+                <div className="bg-white/5 border border-[#ffffff1a] rounded-2xl p-5">
                     <div className="flex items-center gap-2 mb-4">
                         <Calendar size={18} className="text-blue-400" />
                         <h3 className="text-sm font-bold text-white/70 uppercase tracking-wider">
@@ -157,7 +157,7 @@ export default function LeaveAnalyticsPage() {
                                 type="date"
                                 value={startDate}
                                 onChange={(e) => setStartDate(e.target.value)}
-                                className="w-full bg-[#0a0c10] text-white border border-white/10 rounded-xl py-2 px-3 outline-none focus:border-blue-500/50 [color-scheme:dark]"
+                                className="w-full bg-[#0a0c10] text-white border border-[#ffffff1a] rounded-xl py-2 px-3 outline-none focus:border-blue-500/50 [color-scheme:dark]"
                             />
                         </div>
                         <div>
@@ -168,7 +168,7 @@ export default function LeaveAnalyticsPage() {
                                 type="date"
                                 value={endDate}
                                 onChange={(e) => setEndDate(e.target.value)}
-                                className="w-full bg-[#0a0c10] text-white border border-white/10 rounded-xl py-2 px-3 outline-none focus:border-blue-500/50 [color-scheme:dark]"
+                                className="w-full bg-[#0a0c10] text-white border border-[#ffffff1a] rounded-xl py-2 px-3 outline-none focus:border-blue-500/50 [color-scheme:dark]"
                             />
                         </div>
                         <div>
@@ -180,7 +180,7 @@ export default function LeaveAnalyticsPage() {
                                 value={department}
                                 onChange={(e) => setDepartment(e.target.value)}
                                 placeholder="All departments"
-                                className="w-full bg-[#0a0c10] text-white placeholder:text-white/30 border border-white/10 rounded-xl py-2 px-3 outline-none focus:border-blue-500/50"
+                                className="w-full bg-[#0a0c10] text-white placeholder:text-white/30 border border-[#ffffff1a] rounded-xl py-2 px-3 outline-none focus:border-blue-500/50"
                             />
                         </div>
                         <div className="flex items-end">

@@ -84,10 +84,10 @@ export function ExportModal({ isOpen, onClose, availableUsers }: ExportModalProp
                     initial={{ opacity: 0, scale: 0.95 }}
                     animate={{ opacity: 1, scale: 1 }}
                     exit={{ opacity: 0, scale: 0.95 }}
-                    className="bg-[#0a0c10] border border-white/10 rounded-2xl shadow-2xl w-full max-w-md overflow-hidden"
+                    className="bg-[#0a0c10] border border-[#ffffff1a] rounded-2xl shadow-2xl w-full max-w-md overflow-hidden"
                 >
                     {/* Header */}
-                    <div className="flex items-center justify-between p-6 border-b border-white/10 bg-white/5">
+                    <div className="flex items-center justify-between p-6 border-b border-[#ffffff1a] bg-white/5">
                         <div className="flex items-center gap-3">
                             <div className="p-2 bg-indigo-500/20 rounded-lg">
                                 <Download size={20} className="text-indigo-400" />
@@ -119,7 +119,7 @@ export function ExportModal({ isOpen, onClose, availableUsers }: ExportModalProp
                                         onClick={() => setExportType('department')}
                                         className={`flex flex-col items-center justify-center p-3 rounded-xl border transition-all ${exportType === 'department'
                                             ? 'bg-indigo-600 border-indigo-500 text-white shadow-lg shadow-indigo-900/20'
-                                            : 'bg-white/5 border-white/10 text-gray-400 hover:bg-white/10'
+                                            : 'bg-white/5 border-[#ffffff1a] text-gray-400 hover:bg-white/10'
                                             }`}
                                     >
                                         <Building size={20} className="mb-2" />
@@ -129,7 +129,7 @@ export function ExportModal({ isOpen, onClose, availableUsers }: ExportModalProp
                                         onClick={() => setExportType('attendance')}
                                         className={`flex flex-col items-center justify-center p-3 rounded-xl border transition-all ${exportType === 'attendance'
                                             ? 'bg-indigo-600 border-indigo-500 text-white shadow-lg shadow-indigo-900/20'
-                                            : 'bg-white/5 border-white/10 text-gray-400 hover:bg-white/10'
+                                            : 'bg-white/5 border-[#ffffff1a] text-gray-400 hover:bg-white/10'
                                             }`}
                                     >
                                         <Users size={20} className="mb-2" />
@@ -139,7 +139,7 @@ export function ExportModal({ isOpen, onClose, availableUsers }: ExportModalProp
                                         onClick={() => setExportType('user')}
                                         className={`flex flex-col items-center justify-center p-3 rounded-xl border transition-all ${exportType === 'user'
                                             ? 'bg-indigo-600 border-indigo-500 text-white shadow-lg shadow-indigo-900/20'
-                                            : 'bg-white/5 border-white/10 text-gray-400 hover:bg-white/10'
+                                            : 'bg-white/5 border-[#ffffff1a] text-gray-400 hover:bg-white/10'
                                             }`}
                                     >
                                         <FileText size={20} className="mb-2" />
@@ -154,7 +154,7 @@ export function ExportModal({ isOpen, onClose, availableUsers }: ExportModalProp
                                 {/* Format */}
                                 <div>
                                     <label className="text-xs text-gray-500 mb-1.5 block">Format</label>
-                                    <div className="flex bg-black/20 p-1 rounded-lg border border-white/10">
+                                    <div className="flex bg-black/20 p-1 rounded-lg border border-[#ffffff1a]">
                                         <button
                                             onClick={() => setFormat('csv')}
                                             className={`flex-1 py-1.5 text-xs font-medium rounded-md transition-all ${format === 'csv' ? 'bg-white/10 text-white' : 'text-gray-500 hover:text-gray-300'
@@ -173,7 +173,7 @@ export function ExportModal({ isOpen, onClose, availableUsers }: ExportModalProp
                                 </div>
 
                                 {/* Filters */}
-                                <div className="bg-white/5 rounded-xl p-4 border border-white/10 space-y-4">
+                                <div className="bg-white/5 rounded-xl p-4 border border-[#ffffff1a] space-y-4">
 
                                     {exportType === 'attendance' ? (
                                         <div className="grid grid-cols-2 gap-3">
@@ -183,7 +183,7 @@ export function ExportModal({ isOpen, onClose, availableUsers }: ExportModalProp
                                                     type="date"
                                                     value={dateFrom}
                                                     onChange={(e) => setDateFrom(e.target.value)}
-                                                    className="w-full bg-black/20 border border-white/10 rounded-lg px-3 py-2 text-sm text-white focus:outline-none focus:border-indigo-500"
+                                                    className="w-full bg-black/20 border border-[#ffffff1a] rounded-lg px-3 py-2 text-sm text-white focus:outline-none focus:border-indigo-500"
                                                 />
                                             </div>
                                             <div>
@@ -192,7 +192,7 @@ export function ExportModal({ isOpen, onClose, availableUsers }: ExportModalProp
                                                     type="date"
                                                     value={dateTo}
                                                     onChange={(e) => setDateTo(e.target.value)}
-                                                    className="w-full bg-black/20 border border-white/10 rounded-lg px-3 py-2 text-sm text-white focus:outline-none focus:border-indigo-500"
+                                                    className="w-full bg-black/20 border border-[#ffffff1a] rounded-lg px-3 py-2 text-sm text-white focus:outline-none focus:border-indigo-500"
                                                 />
                                             </div>
                                         </div>
@@ -203,7 +203,7 @@ export function ExportModal({ isOpen, onClose, availableUsers }: ExportModalProp
                                                 type="month"
                                                 value={period}
                                                 onChange={(e) => setPeriod(e.target.value)}
-                                                className="w-full bg-black/20 border border-white/10 rounded-lg px-3 py-2 text-sm text-white focus:outline-none focus:border-indigo-500"
+                                                className="w-full bg-black/20 border border-[#ffffff1a] rounded-lg px-3 py-2 text-sm text-white focus:outline-none focus:border-indigo-500"
                                             />
                                         </div>
                                     )}
@@ -214,7 +214,7 @@ export function ExportModal({ isOpen, onClose, availableUsers }: ExportModalProp
                                             <select
                                                 value={selectedUserId}
                                                 onChange={(e) => setSelectedUserId(Number(e.target.value))}
-                                                className="w-full bg-black/20 border border-white/10 rounded-lg px-3 py-2 text-sm text-white focus:outline-none focus:border-indigo-500"
+                                                className="w-full bg-black/20 border border-[#ffffff1a] rounded-lg px-3 py-2 text-sm text-white focus:outline-none focus:border-indigo-500"
                                             >
                                                 <option value="">Select a user...</option>
                                                 {availableUsers.map(user => (
@@ -263,7 +263,7 @@ export function ExportModal({ isOpen, onClose, availableUsers }: ExportModalProp
                             </div>
                         </div>
                     ) : (
-                        <div className="p-6 border-t border-white/10 flex justify-end gap-3 bg-white/5">
+                        <div className="p-6 border-t border-[#ffffff1a] flex justify-end gap-3 bg-white/5">
                             <button
                                 onClick={onClose}
                                 className="px-4 py-2 text-sm font-medium text-gray-400 hover:text-white transition-colors"

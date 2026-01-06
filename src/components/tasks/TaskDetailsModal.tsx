@@ -138,7 +138,7 @@ export const TaskDetailsModal: React.FC<TaskDetailsModalProps> = ({ task, isOpen
                     {/* Modal Content */}
                     <motion.div
                         layoutId={`task-card-${task.id}`}
-                        className="relative w-full max-w-2xl bg-gradient-to-br from-[#1a2639] to-[#0f172a] rounded-3xl shadow-2xl overflow-hidden border border-white/10 flex flex-col max-h-[90vh]"
+                        className="relative w-full max-w-2xl bg-gradient-to-br from-[#1a2639] to-[#0f172a] rounded-3xl shadow-2xl overflow-hidden border border-[#ffffff1a] flex flex-col max-h-[90vh]"
                     >
                         {/* Header Image/Pattern Area */}
                         <div className="h-32 bg-blue-600/20 relative overflow-hidden shrink-0">
@@ -170,7 +170,7 @@ export const TaskDetailsModal: React.FC<TaskDetailsModalProps> = ({ task, isOpen
                                     <span className={`px-3 py-1 rounded-full text-[10px] font-bold tracking-widest uppercase border ${priorityColors[task.priority!] || priorityColors.low} `}>
                                         {task.priority || 'low'} Priority
                                     </span>
-                                    <div className="flex items-center gap-2 px-3 py-1 rounded-full bg-white/5 border border-white/10 text-xs font-medium text-white/70">
+                                    <div className="flex items-center gap-2 px-3 py-1 rounded-full bg-white/5 border border-[#ffffff1a] text-xs font-medium text-white/70">
                                         {statusIcons[task.status]}
                                         <span className="capitalize">{task.status.replace('_', ' ')}</span>
                                     </div>
@@ -248,7 +248,7 @@ export const TaskDetailsModal: React.FC<TaskDetailsModalProps> = ({ task, isOpen
                                                             <UserIcon size={12} /> Assign
                                                         </button>
                                                     </PopoverTrigger>
-                                                    <PopoverContent className="w-56 p-2 bg-[#0f172a] border-white/10 text-white z-[110]" align="end" side="bottom">
+                                                    <PopoverContent className="w-56 p-2 bg-[#0f172a] border-[#ffffff1a] text-white z-[110]" align="end" side="bottom">
                                                         <div className="text-xs font-bold text-gray-500 px-2 py-1 mb-1 tracking-wider">SELECT MEMBER</div>
                                                         <div className="max-h-60 overflow-y-auto custom-scrollbar">
                                                             {teamMembers.map((m) => {
@@ -286,13 +286,13 @@ export const TaskDetailsModal: React.FC<TaskDetailsModalProps> = ({ task, isOpen
                                                     const name = assignee.name || teamMember?.name || 'Unknown';
 
                                                     return (
-                                                        <div key={i} className="flex items-center gap-2 bg-white/10 px-3 py-1.5 rounded-lg border border-white/10 group cursor-default">
+                                                        <div key={i} className="flex items-center gap-2 bg-white/10 px-3 py-1.5 rounded-lg border border-[#ffffff1a] group cursor-default">
                                                             <SafeAvatar
                                                                 src={avatarUrl}
                                                                 name={name}
                                                                 alt={name}
                                                                 size={24}
-                                                                className="border border-white/10"
+                                                                className="border border-[#ffffff1a]"
                                                             />
                                                             <span className="text-xs text-white/90">{name}</span>
                                                         </div>
@@ -312,7 +312,7 @@ export const TaskDetailsModal: React.FC<TaskDetailsModalProps> = ({ task, isOpen
                             initial={{ y: 20, opacity: 0 }}
                             animate={{ y: 0, opacity: 1 }}
                             transition={{ delay: 0.4 }}
-                            className="mt-8 pt-8 border-t border-white/10"
+                            className="mt-8 pt-8 border-t border-[#ffffff1a]"
                         >
                             <div className="flex items-center justify-between mb-4">
                                 <h3 className="text-sm font-bold text-gray-400 uppercase tracking-widest flex items-center gap-2">

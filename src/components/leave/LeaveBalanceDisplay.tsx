@@ -54,7 +54,7 @@ export const LeaveBalanceDisplay: React.FC<LeaveBalanceDisplayProps> = ({ compac
                     const percentage = (taken / total) * 100;
 
                     return (
-                        <div key={type} className="bg-white/5 border border-white/10 rounded-xl p-3">
+                        <div key={type} className="bg-white/5 border border-[#ffffff1a] rounded-xl p-3">
                             <div className="text-xs font-bold text-white/50 uppercase tracking-wider mb-1">
                                 {LEAVE_TYPE_LABELS[type]}
                             </div>
@@ -93,7 +93,7 @@ export const LeaveBalanceDisplay: React.FC<LeaveBalanceDisplayProps> = ({ compac
                 const isLow = remaining <= 2;
 
                 return (
-                    <div key={type} className="bg-white/5 border border-white/10 rounded-xl p-4">
+                    <div key={type} className="bg-white/5 border border-[#ffffff1a] rounded-xl p-4">
                         <div className="flex items-center justify-between mb-3">
                             <div>
                                 <div className="text-sm font-bold text-white">

@@ -216,7 +216,7 @@ const TaskListViewComponent: React.FC<TaskListViewProps> = ({ tasks, loading = f
     return (
         <div className="space-y-6">
             {/* Top Bar: Executive Controls */}
-            <div className="flex flex-col md:flex-row gap-4 items-start md:items-center justify-between border-b border-white/10 pb-6">
+            <div className="flex flex-col md:flex-row gap-4 items-start md:items-center justify-between border-b border-[#ffffff1a] pb-6">
 
                 {/* Views Pill */}
                 <div className="flex bg-black/40 p-1 rounded-lg border border-white/5">
@@ -226,7 +226,7 @@ const TaskListViewComponent: React.FC<TaskListViewProps> = ({ tasks, loading = f
                             onClick={() => setView(v)}
                             className={cn(
                                 "px-6 py-2 text-xs font-semibold uppercase tracking-wider rounded-md transition-all",
-                                view === v ? "bg-[#1e293b] text-white shadow-sm border border-white/10" : "text-gray-500 hover:text-gray-300"
+                                view === v ? "bg-[#1e293b] text-white shadow-sm border border-[#ffffff1a]" : "text-gray-500 hover:text-gray-300"
                             )}
                         >
                             {v === 'mine' ? 'My Tasks' : v === 'overdue' ? 'Attention Needed' : 'All Tasks'}
@@ -301,7 +301,7 @@ const TaskListViewComponent: React.FC<TaskListViewProps> = ({ tasks, loading = f
             )}
 
             {/* Task Table-List */}
-            <div className="rounded-2xl border border-white/10 bg-[#0f172a] shadow-2xl overflow-hidden min-h-[400px]">
+            <div className="rounded-2xl border border-[#ffffff1a] bg-[#0f172a] shadow-2xl overflow-hidden min-h-[400px]">
                 {/* Header Row */}
                 <div className="grid grid-cols-12 gap-4 px-6 py-3 bg-black/20 border-b border-white/5 text-[10px] uppercase font-bold text-white/30 tracking-widest">
                     <div className="col-span-6 md:col-span-6">Task & Priority</div>
@@ -368,7 +368,7 @@ const TaskListViewComponent: React.FC<TaskListViewProps> = ({ tasks, loading = f
                                                             <DropdownMenuTrigger asChild>
                                                                 <PriorityBadge priority={task.priority || 'low'} />
                                                             </DropdownMenuTrigger>
-                                                            <DropdownMenuContent align="start" className="bg-[#1e293b] border-white/10 text-white">
+                                                            <DropdownMenuContent align="start" className="bg-[#1e293b] border-[#ffffff1a] text-white">
                                                                 {['urgent', 'high', 'medium', 'low'].map(p => (
                                                                     <DropdownMenuItem
                                                                         key={p}
@@ -421,7 +421,7 @@ const TaskListViewComponent: React.FC<TaskListViewProps> = ({ tasks, loading = f
                                                         )}
                                                     </div>
                                                 </DropdownMenuTrigger>
-                                                <DropdownMenuContent align="start" className="bg-[#1e293b] border-white/10 text-white max-h-60 overflow-y-auto min-w-[200px]">
+                                                <DropdownMenuContent align="start" className="bg-[#1e293b] border-[#ffffff1a] text-white max-h-60 overflow-y-auto min-w-[200px]">
                                                     {teamMembers.length === 0 ? (
                                                         <div className="px-2 py-3 text-xs text-gray-500 text-center">
                                                             No team members found
@@ -486,7 +486,7 @@ const TaskListViewComponent: React.FC<TaskListViewProps> = ({ tasks, loading = f
                                                                 <StatusPill status={task.status || 'todo'} />
                                                             </div>
                                                         </DropdownMenuTrigger>
-                                                        <DropdownMenuContent align="start" className="bg-[#1e293b] border-white/10 text-white">
+                                                        <DropdownMenuContent align="start" className="bg-[#1e293b] border-[#ffffff1a] text-white">
                                                             {['todo', 'in_progress', 'review', 'done'].map(s => (
                                                                 <DropdownMenuItem
                                                                     key={s}

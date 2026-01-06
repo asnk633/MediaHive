@@ -46,7 +46,7 @@ export const LeaveApprovalCard: React.FC<LeaveApprovalCardProps> = ({
     }, [request]);
 
     return (
-        <div className="bg-white/5 border border-white/10 rounded-2xl p-6 hover:bg-white/[0.07] transition-all">
+        <div className="bg-white/5 border border-[#ffffff1a] rounded-2xl p-6 hover:bg-white/[0.07] transition-all">
             {/* User Info */}
             <div className="flex items-start gap-4 mb-4">
                 <SafeAvatar

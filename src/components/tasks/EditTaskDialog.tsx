@@ -158,7 +158,7 @@ export function EditTaskDialog({ open, onOpenChange, task, onUpdate }: EditTaskD
     };
 
     // Styles matching Night Sky theme
-    const inputClasses = "bg-[#0a0c10] border-white/10 text-white placeholder:text-white/30 focus:border-blue-500/50 focus:ring-blue-500/10 transition-all rounded-xl h-11 disabled:opacity-50 disabled:cursor-not-allowed";
+    const inputClasses = "bg-[#0a0c10] border-[#ffffff1a] text-white placeholder:text-white/30 focus:border-blue-500/50 focus:ring-blue-500/10 transition-all rounded-xl h-11 disabled:opacity-50 disabled:cursor-not-allowed";
     const labelClasses = "uppercase text-[10px] font-bold tracking-widest text-white/50 mb-1.5 block";
 
     const isAdmin = user?.role?.toLowerCase() === 'admin';
@@ -189,7 +189,7 @@ export function EditTaskDialog({ open, onOpenChange, task, onUpdate }: EditTaskD
 
     return (
         <Dialog open={open} onOpenChange={onOpenChange}>
-            <DialogContent className="z-[150] sm:max-w-md bg-[#10111a] text-white border-white/10 shadow-[0_0_50px_-12px_rgba(0,0,0,0.5)] p-6 rounded-[24px]">
+            <DialogContent className="z-[150] sm:max-w-md bg-[#10111a] text-white border-[#ffffff1a] shadow-[0_0_50px_-12px_rgba(0,0,0,0.5)] p-6 rounded-[24px]">
                 <DialogHeader className="mb-4">
                     <DialogTitle className="text-xl font-bold tracking-tight text-white flex items-center gap-3">
                         <div className={cn("p-2.5 rounded-xl text-blue-500", canSave ? "bg-blue-600/10" : "bg-white/5 text-white/50")}>
@@ -231,7 +231,7 @@ export function EditTaskDialog({ open, onOpenChange, task, onUpdate }: EditTaskD
                             value={description}
                             onChange={(e) => setDescription(e.target.value)}
                             className={cn(
-                                "bg-[#0a0c10] border-white/10 text-white placeholder:text-white/30 focus:border-blue-500/50 focus:ring-blue-500/10 transition-all rounded-xl min-h-[100px] disabled:opacity-50 disabled:cursor-not-allowed"
+                                "bg-[#0a0c10] border-[#ffffff1a] text-white placeholder:text-white/30 focus:border-blue-500/50 focus:ring-blue-500/10 transition-all rounded-xl min-h-[100px] disabled:opacity-50 disabled:cursor-not-allowed"
                             )}
                             placeholder="Provide more context..."
                             disabled={!canEditContent}
@@ -246,10 +246,10 @@ export function EditTaskDialog({ open, onOpenChange, task, onUpdate }: EditTaskD
                                 onValueChange={(v: any) => setPriority(v)}
                                 disabled={!isAdmin && !isSuperAdmin && !canEditMeta}
                             >
-                                <SelectTrigger className="bg-[#0a0c10] border-white/10 text-white focus:ring-blue-500/10 h-11 rounded-xl disabled:opacity-50 disabled:cursor-not-allowed">
+                                <SelectTrigger className="bg-[#0a0c10] border-[#ffffff1a] text-white focus:ring-blue-500/10 h-11 rounded-xl disabled:opacity-50 disabled:cursor-not-allowed">
                                     <SelectValue />
                                 </SelectTrigger>
-                                <SelectContent className="bg-[#0a0c10] border-white/10 text-white z-[200]">
+                                <SelectContent className="bg-[#0a0c10] border-[#ffffff1a] text-white z-[200]">
                                     <SelectItem value="low">Low</SelectItem>
                                     <SelectItem value="medium">Medium</SelectItem>
                                     <SelectItem value="high">High</SelectItem>
@@ -266,7 +266,7 @@ export function EditTaskDialog({ open, onOpenChange, task, onUpdate }: EditTaskD
                                     <PopoverTrigger asChild>
                                         <Button
                                             variant="outline"
-                                            className="w-full justify-between bg-[#0a0c10] border-white/10 text-white hover:bg-white/5 hover:text-white h-11 rounded-xl"
+                                            className="w-full justify-between bg-[#0a0c10] border-[#ffffff1a] text-white hover:bg-white/5 hover:text-white h-11 rounded-xl"
                                         >
                                             <span className="truncate">
                                                 {assignedToIds.length === 0
@@ -276,7 +276,7 @@ export function EditTaskDialog({ open, onOpenChange, task, onUpdate }: EditTaskD
                                             <Users size={16} className="opacity-50" />
                                         </Button>
                                     </PopoverTrigger>
-                                    <PopoverContent className="w-[200px] p-0 bg-[#0a0c10] border-white/10 text-white shadow-xl" align="start">
+                                    <PopoverContent className="w-[200px] p-0 bg-[#0a0c10] border-[#ffffff1a] text-white shadow-xl" align="start">
                                         <div className="p-2 space-y-1 max-h-[200px] overflow-y-auto">
                                             {teamMembers.map(m => (
                                                 <div
@@ -318,7 +318,7 @@ export function EditTaskDialog({ open, onOpenChange, task, onUpdate }: EditTaskD
                                         variant={"outline"}
                                         disabled={!isAdmin && !isSuperAdmin && !canEditMeta}
                                         className={cn(
-                                            "w-full justify-start text-left font-normal bg-[#0a0c10] border-white/10 text-white hover:bg-white/5 hover:text-white h-11 rounded-xl disabled:opacity-50 disabled:cursor-not-allowed",
+                                            "w-full justify-start text-left font-normal bg-[#0a0c10] border-[#ffffff1a] text-white hover:bg-white/5 hover:text-white h-11 rounded-xl disabled:opacity-50 disabled:cursor-not-allowed",
                                             !dueDate && "text-muted-foreground"
                                         )}
                                     >
@@ -326,7 +326,7 @@ export function EditTaskDialog({ open, onOpenChange, task, onUpdate }: EditTaskD
                                         {dueDate ? format(dueDate, "dd/MM/yyyy") : <span>Pick a date</span>}
                                     </Button>
                                 </PopoverTrigger>
-                                <PopoverContent className="w-auto p-0 bg-[#10111a] border-white/10 text-white z-[200]" align="start">
+                                <PopoverContent className="w-auto p-0 bg-[#10111a] border-[#ffffff1a] text-white z-[200]" align="start">
                                     <Calendar
                                         mode="single"
                                         selected={dueDate}
@@ -350,13 +350,13 @@ export function EditTaskDialog({ open, onOpenChange, task, onUpdate }: EditTaskD
                     <div className="space-y-1">
                         <Label className={labelClasses}>Campaign</Label>
                         <Select value={campaignId} onValueChange={setCampaignId} disabled={!canEditContent}>
-                            <SelectTrigger className="bg-[#0a0c10] border-white/10 text-white focus:ring-blue-500/10 h-11 rounded-xl w-full disabled:opacity-50 disabled:cursor-not-allowed">
+                            <SelectTrigger className="bg-[#0a0c10] border-[#ffffff1a] text-white focus:ring-blue-500/10 h-11 rounded-xl w-full disabled:opacity-50 disabled:cursor-not-allowed">
                                 <div className="flex items-center gap-2 truncate">
                                     <Layers size={14} className="text-white/50" />
                                     <SelectValue placeholder="Select Campaign" />
                                 </div>
                             </SelectTrigger>
-                            <SelectContent className="bg-[#0a0c10] border-white/10 text-white">
+                            <SelectContent className="bg-[#0a0c10] border-[#ffffff1a] text-white">
                                 <SelectItem value="none" className="text-white/50 italic">No Campaign</SelectItem>
                                 {campaigns.map(c => (
                                     <SelectItem key={c.id} value={c.id}>{c.name}</SelectItem>

@@ -59,8 +59,8 @@ export const CampaignCreateModal: React.FC<CampaignCreateModalProps> = ({ isOpen
 
     return (
         <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/50 backdrop-blur-sm">
-            <div className="bg-[#0f172a] border border-white/10 w-full max-w-lg rounded-2xl shadow-2xl overflow-hidden ring-1 ring-white/10 animate-in fade-in zoom-in-95 duration-200">
-                <div className="flex items-center justify-between p-4 border-b border-white/10 bg-white/5">
+            <div className="bg-[#0f172a] border border-[#ffffff1a] w-full max-w-lg rounded-2xl shadow-2xl overflow-hidden ring-1 ring-white/10 animate-in fade-in zoom-in-95 duration-200">
+                <div className="flex items-center justify-between p-4 border-b border-[#ffffff1a] bg-white/5">
                     <h2 className="text-lg font-bold text-white">New Campaign</h2>
                     <button onClick={onClose} className="text-gray-400 hover:text-white transition-colors">
                         <X size={20} />
@@ -85,7 +85,7 @@ export const CampaignCreateModal: React.FC<CampaignCreateModalProps> = ({ isOpen
                             type="text"
                             required
                             placeholder="e.g. Summer Festival 2025"
-                            className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-white placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-blue-500/50 transition-all font-medium"
+                            className="w-full bg-white/5 border border-[#ffffff1a] rounded-xl px-4 py-3 text-white placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-blue-500/50 transition-all font-medium"
                             value={formData.name}
                             onChange={e => setFormData({ ...formData, name: e.target.value })}
                         />
@@ -96,7 +96,7 @@ export const CampaignCreateModal: React.FC<CampaignCreateModalProps> = ({ isOpen
                         <textarea
                             rows={3}
                             placeholder="What are the goals of this campaign?"
-                            className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-white placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-blue-500/50 transition-all text-sm resize-none"
+                            className="w-full bg-white/5 border border-[#ffffff1a] rounded-xl px-4 py-3 text-white placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-blue-500/50 transition-all text-sm resize-none"
                             value={formData.description}
                             onChange={e => setFormData({ ...formData, description: e.target.value })}
                         />
@@ -110,7 +110,7 @@ export const CampaignCreateModal: React.FC<CampaignCreateModalProps> = ({ isOpen
                                     <button
                                         type="button"
                                         className={cn(
-                                            "w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-left focus:outline-none focus:ring-2 focus:ring-blue-500/50 transition-all text-sm flex items-center justify-between",
+                                            "w-full bg-white/5 border border-[#ffffff1a] rounded-xl px-4 py-3 text-left focus:outline-none focus:ring-2 focus:ring-blue-500/50 transition-all text-sm flex items-center justify-between",
                                             !formData.startDate ? "text-gray-500" : "text-white font-medium"
                                         )}
                                     >
@@ -118,7 +118,7 @@ export const CampaignCreateModal: React.FC<CampaignCreateModalProps> = ({ isOpen
                                         <CalendarIcon size={16} className="text-gray-500" />
                                     </button>
                                 </PopoverTrigger>
-                                <PopoverContent className="w-auto p-0 bg-[#0f172a] border-white/10" align="start">
+                                <PopoverContent className="w-auto p-0 bg-[#0f172a] border-[#ffffff1a]" align="start">
                                     <Calendar
                                         mode="single"
                                         selected={formData.startDate ? new Date(formData.startDate) : undefined}
@@ -136,7 +136,7 @@ export const CampaignCreateModal: React.FC<CampaignCreateModalProps> = ({ isOpen
                                     <button
                                         type="button"
                                         className={cn(
-                                            "w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-left focus:outline-none focus:ring-2 focus:ring-blue-500/50 transition-all text-sm flex items-center justify-between",
+                                            "w-full bg-white/5 border border-[#ffffff1a] rounded-xl px-4 py-3 text-left focus:outline-none focus:ring-2 focus:ring-blue-500/50 transition-all text-sm flex items-center justify-between",
                                             !formData.endDate ? "text-gray-500" : "text-white font-medium"
                                         )}
                                     >
@@ -144,7 +144,7 @@ export const CampaignCreateModal: React.FC<CampaignCreateModalProps> = ({ isOpen
                                         <CalendarIcon size={16} className="text-gray-500" />
                                     </button>
                                 </PopoverTrigger>
-                                <PopoverContent className="w-auto p-0 bg-[#0f172a] border-white/10" align="start">
+                                <PopoverContent className="w-auto p-0 bg-[#0f172a] border-[#ffffff1a]" align="start">
                                     <Calendar
                                         mode="single"
                                         selected={formData.endDate ? new Date(formData.endDate) : undefined}

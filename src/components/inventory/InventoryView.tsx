@@ -140,23 +140,23 @@ function CreateItemDialog({ onSuccess }: { onSuccess: () => void }) {
                     <Plus size={18} className="mr-2" /> Add Asset
                 </Button>
             </DialogTrigger>
-            <DialogContent className="bg-slate-900 border-white/10 text-white sm:max-w-[425px]">
+            <DialogContent className="bg-slate-900 border-[#ffffff1a] text-white sm:max-w-[425px]">
                 <DialogHeader>
                     <DialogTitle>Add New Asset</DialogTitle>
                 </DialogHeader>
                 <form onSubmit={handleSubmit} className="space-y-4 mt-4">
                     <div className="space-y-2">
                         <Label>Asset Name</Label>
-                        <Input name="name" required placeholder="e.g. Sony A7s III" className="bg-white/5 border-white/10" />
+                        <Input name="name" required placeholder="e.g. Sony A7s III" className="bg-white/5 border-[#ffffff1a]" />
                     </div>
                     <div className="grid grid-cols-2 gap-4">
                         <div className="space-y-2">
                             <Label>Category</Label>
                             <Select name="category" required defaultValue="General">
-                                <SelectTrigger className="bg-white/5 border-white/10">
+                                <SelectTrigger className="bg-white/5 border-[#ffffff1a]">
                                     <SelectValue />
                                 </SelectTrigger>
-                                <SelectContent className="bg-slate-900 border-white/10 text-white">
+                                <SelectContent className="bg-slate-900 border-[#ffffff1a] text-white">
                                     <SelectItem value="Cameras">Cameras</SelectItem>
                                     <SelectItem value="Audio">Audio</SelectItem>
                                     <SelectItem value="Lights">Lights</SelectItem>
@@ -168,17 +168,17 @@ function CreateItemDialog({ onSuccess }: { onSuccess: () => void }) {
                         </div>
                         <div className="space-y-2">
                             <Label>Unit</Label>
-                            <Input name="unit" required placeholder="pcs, kit" className="bg-white/5 border-white/10" />
+                            <Input name="unit" required placeholder="pcs, kit" className="bg-white/5 border-[#ffffff1a]" />
                         </div>
                     </div>
                     <div className="grid grid-cols-2 gap-4">
                         <div className="space-y-2">
                             <Label>Quantity</Label>
-                            <Input name="quantity" type="number" required min="0" className="bg-white/5 border-white/10" />
+                            <Input name="quantity" type="number" required min="0" className="bg-white/5 border-[#ffffff1a]" />
                         </div>
                         <div className="space-y-2">
                             <Label>Low Threshold</Label>
-                            <Input name="threshold" type="number" required min="0" className="bg-white/5 border-white/10" />
+                            <Input name="threshold" type="number" required min="0" className="bg-white/5 border-[#ffffff1a]" />
                         </div>
                     </div>
                     <div className="pt-4 flex justify-end gap-3">

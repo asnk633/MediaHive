@@ -168,7 +168,7 @@ export const UserManagementPanel: React.FC<UserManagementPanelProps> = ({ instit
   }
 
   return (
-    <Card className="bg-white/5 backdrop-blur-md border border-white/10">
+    <Card className="bg-white/5 backdrop-blur-md border border-[#ffffff1a]">
       <CardHeader>
         <div className="flex items-center gap-2">
           <Users className="w-5 h-5 text-blue-400" />
@@ -197,7 +197,7 @@ export const UserManagementPanel: React.FC<UserManagementPanelProps> = ({ instit
                     <img
                       src={user.photoURL || user.avatarUrl}
                       alt={user.name}
-                      className="w-10 h-10 rounded-full object-cover border border-white/10"
+                      className="w-10 h-10 rounded-full object-cover border border-[#ffffff1a]"
                     />
                   ) : (
                     <div className="w-10 h-10 rounded-full bg-blue-500/20 flex items-center justify-center">
@@ -292,17 +292,17 @@ export const UserManagementPanel: React.FC<UserManagementPanelProps> = ({ instit
                 <input
                   value={editingUser.officialName}
                   onChange={e => setEditingUser({ ...editingUser, officialName: e.target.value })}
-                  className="w-full bg-black/20 border border-white/10 rounded-md p-2 text-white"
+                  className="w-full bg-black/20 border border-[#ffffff1a] rounded-md p-2 text-white"
                 />
               </div>
 
               <div className="space-y-2">
                 <label className="text-xs text-gray-400">Role</label>
                 <Select value={editingUser.role} onValueChange={v => setEditingUser({ ...editingUser, role: v })}>
-                  <SelectTrigger className="bg-black/20 border-white/10 text-white">
+                  <SelectTrigger className="bg-black/20 border-[#ffffff1a] text-white">
                     <SelectValue placeholder="Select Role" />
                   </SelectTrigger>
-                  <SelectContent className="bg-gray-800 border-white/10 text-white">
+                  <SelectContent className="bg-gray-800 border-[#ffffff1a] text-white">
                     <SelectItem value="admin">Admin</SelectItem>
                     <SelectItem value="team">Team Member</SelectItem>
                     <SelectItem value="guest">Guest</SelectItem>
@@ -313,10 +313,10 @@ export const UserManagementPanel: React.FC<UserManagementPanelProps> = ({ instit
               <div className="space-y-2">
                 <label className="text-xs text-gray-400">Department</label>
                 <Select value={editingUser.defaultDepartment?.toString()} onValueChange={v => setEditingUser({ ...editingUser, defaultDepartment: v })}>
-                  <SelectTrigger className="bg-black/20 border-white/10 text-white">
+                  <SelectTrigger className="bg-black/20 border-[#ffffff1a] text-white">
                     <SelectValue placeholder="Select Department" />
                   </SelectTrigger>
-                  <SelectContent className="bg-gray-800 border-white/10 text-white">
+                  <SelectContent className="bg-gray-800 border-[#ffffff1a] text-white">
                     {departments.map(d => (
                       <SelectItem key={d.id} value={d.id.toString()}>{d.name}</SelectItem>
                     ))}
@@ -327,10 +327,10 @@ export const UserManagementPanel: React.FC<UserManagementPanelProps> = ({ instit
               <div className="space-y-2">
                 <label className="text-xs text-gray-400">Institution</label>
                 <Select value={editingUser.defaultInstitution?.toString()} onValueChange={v => setEditingUser({ ...editingUser, defaultInstitution: v })}>
-                  <SelectTrigger className="bg-black/20 border-white/10 text-white">
+                  <SelectTrigger className="bg-black/20 border-[#ffffff1a] text-white">
                     <SelectValue placeholder="Select Institution" />
                   </SelectTrigger>
-                  <SelectContent className="bg-gray-800 border-white/10 text-white">
+                  <SelectContent className="bg-gray-800 border-[#ffffff1a] text-white">
                     {institutions.map(i => (
                       <SelectItem key={i.id} value={i.id.toString()}>{i.name}</SelectItem>
                     ))}

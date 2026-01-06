@@ -53,20 +53,14 @@ export const ActiveCampaignsWidget = () => {
                 </button>
 
                 {/* Empty State */}
-                {campaigns.length === 0 && (
-                    <div className="min-w-[280px] h-[180px] rounded-2xl border border-white/5 bg-white/5 flex flex-col items-center justify-center p-6 text-center text-gray-500 snap-start shrink-0">
-                        <Flag className="mb-2 opacity-20" size={32} />
-                        <p className="text-sm font-medium">No active campaigns</p>
-                        <p className="text-xs opacity-60 mt-1">Create one to get started</p>
-                    </div>
-                )}
+
 
                 {/* Campaign Cards */}
                 {campaigns.map(campaign => (
                     <div
                         key={campaign.id}
                         onClick={() => router.push(`/campaigns/${campaign.id}`)}
-                        className="min-w-[280px] h-[180px] rounded-2xl border border-white/10 bg-[#1e293b]/50 backdrop-blur-sm p-5 flex flex-col justify-between hover:border-blue-500/50 hover:shadow-lg hover:shadow-blue-500/10 transition-all cursor-pointer snap-start group relative overflow-hidden"
+                        className="min-w-[280px] h-[180px] rounded-2xl border border-[#ffffff1a] bg-[#1e293b]/50 backdrop-blur-sm p-5 flex flex-col justify-between hover:border-blue-500/50 hover:shadow-lg hover:shadow-blue-500/10 transition-all cursor-pointer snap-start group relative overflow-hidden"
                     >
                         {/* Phase Awareness Strip */}
                         <div className={`absolute top-0 left-0 right-0 h-1 ${campaign.phase === 'planning' ? 'bg-blue-500' :

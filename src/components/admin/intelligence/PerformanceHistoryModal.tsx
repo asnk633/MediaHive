@@ -130,10 +130,10 @@ export function PerformanceHistoryModal({
         <Dialog open={isOpen} onOpenChange={(open) => !open && onClose()}>
             <DialogContent
                 showCloseButton={false}
-                className="max-w-4xl w-full max-h-[90vh] overflow-hidden bg-gradient-to-br from-[#1a2639] to-[#0f172a] border-white/10 p-0 gap-0 rounded-2xl shadow-2xl"
+                className="max-w-4xl w-full max-h-[90vh] overflow-hidden bg-gradient-to-br from-[#1a2639] to-[#0f172a] border-[#ffffff1a] p-0 gap-0 rounded-2xl shadow-2xl"
             >
                 {/* Header */}
-                <div className="flex items-center justify-between p-6 border-b border-white/10 bg-white/5 shrink-0">
+                <div className="flex items-center justify-between p-6 border-b border-[#ffffff1a] bg-white/5 shrink-0">
                     <div className="flex items-center gap-4">
                         <div className="w-12 h-12 rounded-full overflow-hidden bg-white/10 ring-2 ring-white/10">
                             <SafeAvatar
@@ -219,7 +219,7 @@ export function PerformanceHistoryModal({
 
                             {/* Team Context */}
                             {benchmark && benchmark.relativeStatus !== 'Insufficient Team Data' && (
-                                <div className="pt-8 border-t border-white/10">
+                                <div className="pt-8 border-t border-[#ffffff1a]">
                                     <div className="flex items-center gap-3 mb-6">
                                         <div className="p-2 rounded-lg bg-indigo-500/10 text-indigo-400">
                                             <Users size={18} />
@@ -228,17 +228,17 @@ export function PerformanceHistoryModal({
                                     </div>
 
                                     <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
-                                        <div className="bg-white/5 rounded-xl p-5 border border-white/10 hover:bg-white/10 transition-colors group">
+                                        <div className="bg-white/5 rounded-xl p-5 border border-[#ffffff1a] hover:bg-white/10 transition-colors group">
                                             <p className="text-[10px] uppercase font-bold text-white/40 mb-2 group-hover:text-white/60 transition-colors">Team Median</p>
                                             <p className="text-3xl font-bold text-white font-[gill-sans-mt,sans-serif]">{benchmark.teamMedian}</p>
                                         </div>
 
-                                        <div className="bg-white/5 rounded-xl p-5 border border-white/10 hover:bg-white/10 transition-colors group">
+                                        <div className="bg-white/5 rounded-xl p-5 border border-[#ffffff1a] hover:bg-white/10 transition-colors group">
                                             <p className="text-[10px] uppercase font-bold text-white/40 mb-2 group-hover:text-white/60 transition-colors">Your Percentile</p>
                                             <p className="text-3xl font-bold text-white font-[gill-sans-mt,sans-serif]">{benchmark.percentile}<span className="text-lg text-white/40 ml-1">th</span></p>
                                         </div>
 
-                                        <div className="bg-white/5 rounded-xl p-5 border border-white/10 hover:bg-white/10 transition-colors group">
+                                        <div className="bg-white/5 rounded-xl p-5 border border-[#ffffff1a] hover:bg-white/10 transition-colors group">
                                             <p className="text-[10px] uppercase font-bold text-white/40 mb-2 group-hover:text-white/60 transition-colors">Relative Position</p>
                                             <RelativeStatusBadge status={benchmark.relativeStatus} />
                                         </div>
@@ -247,7 +247,7 @@ export function PerformanceHistoryModal({
                             )}
 
                             {/* Admin Review Section */}
-                            <div className="pt-8 border-t border-white/10">
+                            <div className="pt-8 border-t border-[#ffffff1a]">
                                 <div className="flex items-center gap-3 mb-6">
                                     <div className="p-2 rounded-lg bg-blue-500/10 text-blue-400">
                                         <Shield size={18} />
@@ -255,7 +255,7 @@ export function PerformanceHistoryModal({
                                     <h4 className="text-sm font-bold text-white uppercase tracking-wider">Admin Review</h4>
                                 </div>
 
-                                <div className="bg-white/5 rounded-2xl border border-white/10 p-5 overflow-hidden relative">
+                                <div className="bg-white/5 rounded-2xl border border-[#ffffff1a] p-5 overflow-hidden relative">
                                     <div className="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-blue-500 to-indigo-500 opacity-50" />
 
                                     <div className="flex flex-col md:flex-row gap-5">
@@ -265,7 +265,7 @@ export function PerformanceHistoryModal({
                                                 value={note}
                                                 onChange={(e) => setNote(e.target.value)}
                                                 placeholder="Record your observation or decision..."
-                                                className="w-full bg-black/20 border border-white/10 rounded-xl p-4 text-sm text-white focus:outline-none focus:ring-2 focus:ring-blue-500/50 focus:border-transparent min-h-[100px] placeholder:text-white/20 transition-all resize-none"
+                                                className="w-full bg-black/20 border border-[#ffffff1a] rounded-xl p-4 text-sm text-white focus:outline-none focus:ring-2 focus:ring-blue-500/50 focus:border-transparent min-h-[100px] placeholder:text-white/20 transition-all resize-none"
                                             />
                                         </div>
                                         <div className="w-full md:w-1/3 space-y-4">
@@ -275,7 +275,7 @@ export function PerformanceHistoryModal({
                                                     <select
                                                         value={actionType}
                                                         onChange={(e) => setActionType(e.target.value)}
-                                                        className="w-full bg-black/20 border border-white/10 rounded-xl p-3 text-sm text-white focus:outline-none focus:ring-2 focus:ring-blue-500/50 appearance-none cursor-pointer hover:bg-white/5 transition-colors"
+                                                        className="w-full bg-black/20 border border-[#ffffff1a] rounded-xl p-3 text-sm text-white focus:outline-none focus:ring-2 focus:ring-blue-500/50 appearance-none cursor-pointer hover:bg-white/5 transition-colors"
                                                     >
                                                         <option className="bg-[#1a2639]">Observation</option>
                                                         <option className="bg-[#1a2639]">Counselled</option>
@@ -300,7 +300,7 @@ export function PerformanceHistoryModal({
 
                             {/* Past Interventions Timeline */}
                             {interventions.length > 0 && (
-                                <div className="pt-8 border-t border-white/10">
+                                <div className="pt-8 border-t border-[#ffffff1a]">
                                     <div className="flex items-center gap-3 mb-6">
                                         <div className="p-2 rounded-lg bg-emerald-500/10 text-emerald-400">
                                             <MessageSquare size={18} />
@@ -320,7 +320,7 @@ export function PerformanceHistoryModal({
                                                         {item.riskLevelAtTime} Risk
                                                     </span>
                                                 </div>
-                                                <div className="bg-white/5 rounded-2xl p-4 border border-white/5 hover:border-white/10 transition-colors">
+                                                <div className="bg-white/5 rounded-2xl p-4 border border-white/5 hover:border-[#ffffff1a] transition-colors">
                                                     <div className="flex items-center justify-between mb-3 border-b border-white/5 pb-3">
                                                         <span className="text-sm font-bold text-white">{item.actionType}</span>
                                                         <span className="text-[10px] font-medium text-white/40">

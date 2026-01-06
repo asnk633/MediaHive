@@ -102,15 +102,15 @@ export function UploadModal({ open, onClose, onSuccess, eventId, taskId }: Uploa
     };
 
     // Styles matching CreateEventForm "Night Sky" theme
-    const inputClasses = "bg-[#0a0c10] border-white/10 text-white placeholder:text-white/30 focus:border-blue-500/50 focus:ring-blue-500/10 transition-all rounded-xl h-11 file:text-white file:bg-white/10 file:border-0 file:rounded-lg file:mr-4 file:px-3 file:py-1 file:hover:bg-white/20 cursor-pointer";
+    const inputClasses = "bg-[#0a0c10] border-[#ffffff1a] text-white placeholder:text-white/30 focus:border-blue-500/50 focus:ring-blue-500/10 transition-all rounded-xl h-11 file:text-white file:bg-white/10 file:border-0 file:rounded-lg file:mr-4 file:px-3 file:py-1 file:hover:bg-white/20 cursor-pointer";
     const labelClasses = "uppercase text-[10px] font-bold tracking-widest text-white/50 mb-1.5 block";
-    const selectTriggerClasses = "bg-[#0a0c10] border-white/10 text-white focus:ring-blue-500/10 h-11 rounded-xl";
-    const selectContentClasses = "bg-[#0a0c10] border-white/10 text-white";
+    const selectTriggerClasses = "bg-[#0a0c10] border-[#ffffff1a] text-white focus:ring-blue-500/10 h-11 rounded-xl";
+    const selectContentClasses = "bg-[#0a0c10] border-[#ffffff1a] text-white";
     const selectItemClasses = "hover:bg-white/5 text-white focus:bg-white/5 focus:text-white cursor-pointer";
 
     return (
         <Dialog open={open} onOpenChange={onClose}>
-            <DialogContent aria-describedby={undefined} className="sm:max-w-md bg-[#10111a] text-white border-white/10 shadow-[0_0_50px_-12px_rgba(0,0,0,0.5)] p-6 rounded-[24px]">
+            <DialogContent aria-describedby={undefined} className="sm:max-w-md bg-[#10111a] text-white border-[#ffffff1a] shadow-[0_0_50px_-12px_rgba(0,0,0,0.5)] p-6 rounded-[24px]">
                 <DialogHeader className="mb-4">
                     <DialogTitle className="text-xl font-bold tracking-tight text-white flex items-center gap-3">
                         <div className="p-2.5 rounded-xl bg-blue-600/10 text-blue-500">
@@ -138,7 +138,7 @@ export function UploadModal({ open, onClose, onSuccess, eventId, taskId }: Uploa
                     </div>
 
                     {user?.role === 'admin' && (
-                        <div className="space-y-5 pt-4 border-t border-white/10 animate-in slide-in-from-top-2">
+                        <div className="space-y-5 pt-4 border-t border-[#ffffff1a] animate-in slide-in-from-top-2">
                             <div className="space-y-3">
                                 <Label className={labelClasses}>Visibility Settings</Label>
                                 <Select value={visibilityMode} onValueChange={(v: any) => setVisibilityMode(v)}>
@@ -176,7 +176,7 @@ export function UploadModal({ open, onClose, onSuccess, eventId, taskId }: Uploa
                                         setValue('department', '');
                                     }
                                 }}>
-                                    <TabsList className="grid w-full grid-cols-2 bg-[#0a0c10] border border-white/10 rounded-xl p-1 h-auto">
+                                    <TabsList className="grid w-full grid-cols-2 bg-[#0a0c10] border border-[#ffffff1a] rounded-xl p-1 h-auto">
                                         <TabsTrigger
                                             value="department"
                                             className="data-[state=active]:bg-blue-600 data-[state=active]:text-white data-[state=active]:shadow-lg text-gray-400 rounded-lg py-2 transition-all"

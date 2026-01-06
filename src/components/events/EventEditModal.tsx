@@ -209,10 +209,10 @@ export const EventEditModal: React.FC<EventEditModalProps> = ({ event, isOpen, o
     return (
         <Dialog open={isOpen} onOpenChange={(open) => !open && onClose()}>
             <DialogContent
-                className="max-w-2xl bg-[#141e30] border-white/10 p-0 gap-0 overflow-hidden flex flex-col max-h-[90vh]"
+                className="max-w-2xl bg-[#141e30] border-[#ffffff1a] p-0 gap-0 overflow-hidden flex flex-col max-h-[90vh]"
             >
                 {/* Header */}
-                <div className="px-6 py-4 border-b border-white/10 flex justify-between items-center bg-white/5 shrink-0">
+                <div className="px-6 py-4 border-b border-[#ffffff1a] flex justify-between items-center bg-white/5 shrink-0">
                     <DialogTitle className="text-xl font-bold text-white flex items-center gap-2">
                         <AlertCircle className="text-blue-400" size={20} />
                         Edit Event
@@ -230,7 +230,7 @@ export const EventEditModal: React.FC<EventEditModalProps> = ({ event, isOpen, o
                             <div className="relative group">
                                 <AlignLeft size={18} className="absolute left-4 top-1/2 -translate-y-1/2 text-white/30 group-focus-within:text-blue-400 transition-colors" />
                                 <input
-                                    className="w-full bg-white/5 border border-white/10 rounded-xl pl-12 pr-4 py-3 text-white placeholder-white/20 focus:ring-2 focus:ring-blue-500/50 outline-none transition-all"
+                                    className="w-full bg-white/5 border border-[#ffffff1a] rounded-xl pl-12 pr-4 py-3 text-white placeholder-white/20 focus:ring-2 focus:ring-blue-500/50 outline-none transition-all"
                                     placeholder="Enter event title"
                                     value={formData.title}
                                     onChange={e => setFormData({ ...formData, title: e.target.value })}
@@ -247,7 +247,7 @@ export const EventEditModal: React.FC<EventEditModalProps> = ({ event, isOpen, o
                                         <Button
                                             variant={"outline"}
                                             className={cn(
-                                                "w-full bg-white/5 border-white/10 hover:bg-white/10 text-left font-normal h-[50px] rounded-xl justify-start pl-4",
+                                                "w-full bg-white/5 border-[#ffffff1a] hover:bg-white/10 text-left font-normal h-[50px] rounded-xl justify-start pl-4",
                                                 !formData.date && "text-muted-foreground"
                                             )}
                                         >
@@ -274,7 +274,7 @@ export const EventEditModal: React.FC<EventEditModalProps> = ({ event, isOpen, o
                                             <Button
                                                 variant={"outline"}
                                                 className={cn(
-                                                    "w-full bg-white/5 border border-white/10 hover:bg-white/10 text-left font-normal h-[50px] rounded-xl justify-start pl-4",
+                                                    "w-full bg-white/5 border border-[#ffffff1a] hover:bg-white/10 text-left font-normal h-[50px] rounded-xl justify-start pl-4",
                                                     !formData.time && "text-muted-foreground"
                                                 )}
                                             >
@@ -305,7 +305,7 @@ export const EventEditModal: React.FC<EventEditModalProps> = ({ event, isOpen, o
                             <div className="relative group">
                                 <MapPin size={18} className="absolute left-4 top-1/2 -translate-y-1/2 text-white/30 group-focus-within:text-blue-400 transition-colors" />
                                 <input
-                                    className="w-full bg-white/5 border border-white/10 rounded-xl pl-12 pr-4 py-3 text-white placeholder-white/20 focus:ring-2 focus:ring-blue-500/50 outline-none transition-all"
+                                    className="w-full bg-white/5 border border-[#ffffff1a] rounded-xl pl-12 pr-4 py-3 text-white placeholder-white/20 focus:ring-2 focus:ring-blue-500/50 outline-none transition-all"
                                     placeholder="Location (Optional)"
                                     value={formData.location}
                                     onChange={e => setFormData({ ...formData, location: e.target.value })}
@@ -318,7 +318,7 @@ export const EventEditModal: React.FC<EventEditModalProps> = ({ event, isOpen, o
                             <div className="relative group">
                                 <Briefcase size={18} className="absolute left-4 top-1/2 -translate-y-1/2 text-white/30 group-focus-within:text-blue-400 transition-colors" />
                                 <select
-                                    className="w-full bg-white/5 border border-white/10 rounded-xl pl-12 pr-4 py-3 text-white focus:ring-2 focus:ring-blue-500/50 outline-none appearance-none cursor-pointer"
+                                    className="w-full bg-white/5 border border-[#ffffff1a] rounded-xl pl-12 pr-4 py-3 text-white focus:ring-2 focus:ring-blue-500/50 outline-none appearance-none cursor-pointer"
                                     value={formData.department}
                                     onChange={e => setFormData({ ...formData, department: e.target.value })}
                                 >
@@ -357,7 +357,7 @@ export const EventEditModal: React.FC<EventEditModalProps> = ({ event, isOpen, o
                                                 <Camera size={14} className={isSelected ? 'text-blue-400' : 'text-white/20'} />
                                                 <div className={`
                                                 w-4 h-4 rounded-full border flex items-center justify-center
-                                                ${isSelected ? 'bg-blue-600 border-blue-400' : 'bg-transparent border-white/10'}
+                                                ${isSelected ? 'bg-blue-600 border-blue-400' : 'bg-transparent border-[#ffffff1a]'}
                                             `}>
                                                     {isSelected && <Check size={10} className="text-white" />}
                                                 </div>
@@ -378,7 +378,7 @@ export const EventEditModal: React.FC<EventEditModalProps> = ({ event, isOpen, o
                         <div>
                             <label className="block text-xs font-bold text-white/40 uppercase tracking-widest mb-2 px-1">Description</label>
                             <textarea
-                                className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-white placeholder-white/20 focus:ring-2 focus:ring-blue-500/50 outline-none transition-all min-h-[120px]"
+                                className="w-full bg-white/5 border border-[#ffffff1a] rounded-xl px-4 py-3 text-white placeholder-white/20 focus:ring-2 focus:ring-blue-500/50 outline-none transition-all min-h-[120px]"
                                 placeholder="Add description or notes..."
                                 rows={4}
                                 value={formData.description}
@@ -388,7 +388,7 @@ export const EventEditModal: React.FC<EventEditModalProps> = ({ event, isOpen, o
 
                         {event.isSystemEvent && isAdmin && (
                             <div className="space-y-4">
-                                <div className="bg-white/5 border border-white/10 rounded-xl p-4">
+                                <div className="bg-white/5 border border-[#ffffff1a] rounded-xl p-4">
                                     <div className="flex items-center justify-between mb-4">
                                         <div className="flex-1">
                                             <label className="text-sm font-bold text-white block">Recurring Event</label>
@@ -401,16 +401,16 @@ export const EventEditModal: React.FC<EventEditModalProps> = ({ event, isOpen, o
                                     </div>
 
                                     {isRecurring && (
-                                        <div className="pt-4 border-t border-white/10 grid grid-cols-1 md:grid-cols-2 gap-4">
+                                        <div className="pt-4 border-t border-[#ffffff1a] grid grid-cols-1 md:grid-cols-2 gap-4">
                                             <div className="space-y-2">
                                                 <label className="text-xs font-bold text-white/50 uppercase">Frequency</label>
                                                 <div className="relative">
                                                     <Repeat size={16} className="absolute left-3 top-1/2 -translate-y-1/2 text-white/40" />
                                                     <Select value={recurrenceFreq} onValueChange={(val: any) => setRecurrenceFreq(val)}>
-                                                        <SelectTrigger className="w-full bg-[#0a0c10] border-white/10 text-white pl-9 h-11">
+                                                        <SelectTrigger className="w-full bg-[#0a0c10] border-[#ffffff1a] text-white pl-9 h-11">
                                                             <SelectValue />
                                                         </SelectTrigger>
-                                                        <SelectContent className="bg-[#141e30] border-white/10 text-white">
+                                                        <SelectContent className="bg-[#141e30] border-[#ffffff1a] text-white">
                                                             <SelectItem value="weekly">Weekly</SelectItem>
                                                             <SelectItem value="monthly">Monthly</SelectItem>
                                                             <SelectItem value="yearly">Yearly</SelectItem>
@@ -425,7 +425,7 @@ export const EventEditModal: React.FC<EventEditModalProps> = ({ event, isOpen, o
                                                         <Button
                                                             variant={"outline"}
                                                             className={cn(
-                                                                "w-full bg-[#0a0c10] border-white/10 text-white justify-start text-left font-normal h-11",
+                                                                "w-full bg-[#0a0c10] border-[#ffffff1a] text-white justify-start text-left font-normal h-11",
                                                                 !recurrenceEndDate && "text-white/30"
                                                             )}
                                                         >
@@ -433,7 +433,7 @@ export const EventEditModal: React.FC<EventEditModalProps> = ({ event, isOpen, o
                                                             {recurrenceEndDate ? format(new Date(recurrenceEndDate), "PPP") : <span>No End Date</span>}
                                                         </Button>
                                                     </PopoverTrigger>
-                                                    <PopoverContent className="w-auto p-0 bg-[#141e30] border-white/10 text-white" align="start">
+                                                    <PopoverContent className="w-auto p-0 bg-[#141e30] border-[#ffffff1a] text-white" align="start">
                                                         <Calendar
                                                             mode="single"
                                                             selected={recurrenceEndDate ? new Date(recurrenceEndDate) : undefined}
@@ -481,7 +481,7 @@ export const EventEditModal: React.FC<EventEditModalProps> = ({ event, isOpen, o
                 </div>
 
                 {/* Footer */}
-                <div className="p-6 border-t border-white/10 bg-white/5 flex gap-3 justify-end items-center shrink-0">
+                <div className="p-6 border-t border-[#ffffff1a] bg-white/5 flex gap-3 justify-end items-center shrink-0">
                     <button
                         onClick={onClose}
                         className="px-6 py-2.5 rounded-xl text-white/60 hover:text-white hover:bg-white/5 transition-all text-sm font-medium"

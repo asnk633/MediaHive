@@ -190,7 +190,7 @@ export function ImageCropper({ imageSrc, onCropComplete, onCancel }: ImageCroppe
 
     return (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/80 backdrop-blur-sm px-4">
-            <div className="bg-[#0f172a] border border-white/10 rounded-2xl p-6 w-full max-w-md shadow-2xl flex flex-col gap-6 max-h-[90vh] overflow-y-auto custom-scrollbar">
+            <div className="bg-[#0f172a] border border-[#ffffff1a] rounded-2xl p-6 w-full max-w-md shadow-2xl flex flex-col gap-6 max-h-[90vh] overflow-y-auto custom-scrollbar">
                 <div className="flex justify-between items-center">
                     <h3 className="text-xl font-bold text-white">Adjust Image</h3>
                     <Button type="button" variant="ghost" size="icon" onClick={onCancel} className="bg-white/5 hover:bg-white/10 text-white rounded-full h-8 w-8">
@@ -218,7 +218,7 @@ export function ImageCropper({ imageSrc, onCropComplete, onCancel }: ImageCroppe
                     ))}
                 </div>
 
-                <div className="flex items-center justify-center bg-black/50 rounded-xl border border-white/10 p-4 min-h-[300px]">
+                <div className="flex items-center justify-center bg-black/50 rounded-xl border border-[#ffffff1a] p-4 min-h-[300px]">
                     <div
                         ref={containerRef}
                         className="relative overflow-hidden cursor-move touch-none shadow-2xl"
@@ -266,7 +266,7 @@ export function ImageCropper({ imageSrc, onCropComplete, onCancel }: ImageCroppe
                             type="button"
                             variant="outline"
                             onClick={onCancel}
-                            className="bg-white/5 border-white/10 text-white hover:bg-white/10"
+                            className="bg-white/5 border-[#ffffff1a] text-white hover:bg-white/10"
                         >
                             Cancel
                         </Button>

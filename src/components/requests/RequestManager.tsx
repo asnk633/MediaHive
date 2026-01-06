@@ -68,7 +68,7 @@ export default function RequestManager() {
     return (
         <div className="space-y-8">
             <section>
-                <h3 className="text-lg font-semibold text-white mb-4 border-b border-white/10 pb-2">Active & Pending</h3>
+                <h3 className="text-lg font-semibold text-white mb-4 border-b border-[#ffffff1a] pb-2">Active & Pending</h3>
                 <div className="space-y-4">
                     {pendingRequests.length === 0 && activeRequests.length === 0 && (
                         <div className="text-slate-500 italic">No active requests.</div>
@@ -87,7 +87,7 @@ export default function RequestManager() {
             </section>
 
             <section>
-                <h3 className="text-lg font-semibold text-white mb-4 border-b border-white/10 pb-2">History</h3>
+                <h3 className="text-lg font-semibold text-white mb-4 border-b border-[#ffffff1a] pb-2">History</h3>
                 <div className="space-y-4 opacity-75">
                     {historyRequests.length === 0 && (
                         <div className="text-slate-500 italic">No history.</div>
@@ -292,7 +292,7 @@ function IssueDialog({ request, onIssue, open, onOpenChange }: { request: Device
 
     return (
         <Dialog open={open} onOpenChange={onOpenChange}>
-            <DialogContent className="bg-slate-900 border-white/10">
+            <DialogContent className="bg-slate-900 border-[#ffffff1a]">
                 <DialogHeader>
                     <DialogTitle>Issue Equipment</DialogTitle>
                 </DialogHeader>
@@ -317,7 +317,7 @@ function IssueDialog({ request, onIssue, open, onOpenChange }: { request: Device
                         <div className="space-y-2">
                             <Label>Select Asset to Link</Label>
                             <Select onValueChange={setSelectedId} value={selectedId}>
-                                <SelectTrigger className="bg-slate-800 border-white/10">
+                                <SelectTrigger className="bg-slate-800 border-[#ffffff1a]">
                                     <SelectValue placeholder="Select available item..." />
                                 </SelectTrigger>
                                 <SelectContent>
@@ -359,12 +359,12 @@ function ReturnDialog({ request, onReturn }: { request: DeviceRequest, onReturn:
     return (
         <Dialog>
             <DialogTrigger asChild>
-                <Button size="sm" variant={isInspection ? "default" : "outline"} className={isInspection ? "bg-purple-600 hover:bg-purple-500 text-white gap-2 border-none animate-pulse shadow-lg shadow-purple-500/20" : "border-white/10 bg-slate-800 text-slate-300 gap-2"}>
+                <Button size="sm" variant={isInspection ? "default" : "outline"} className={isInspection ? "bg-purple-600 hover:bg-purple-500 text-white gap-2 border-none animate-pulse shadow-lg shadow-purple-500/20" : "border-[#ffffff1a] bg-slate-800 text-slate-300 gap-2"}>
                     {isInspection ? <AlertTriangle size={16} /> : <CornerDownLeft size={16} />}
                     {isInspection ? "Inspect & Restock" : "Restock Device"}
                 </Button>
             </DialogTrigger>
-            <DialogContent className="bg-slate-900 border-white/10">
+            <DialogContent className="bg-slate-900 border-[#ffffff1a]">
                 <DialogHeader>
                     <DialogTitle>{isInspection ? "Inspect Returned Item" : "Process Device Restock"}</DialogTitle>
                 </DialogHeader>
@@ -385,7 +385,7 @@ function ReturnDialog({ request, onReturn }: { request: DeviceRequest, onReturn:
                     <div className="space-y-2">
                         <Label>Condition on Return</Label>
                         <Select onValueChange={(v) => setCondition(v as InventoryCondition)} defaultValue="good">
-                            <SelectTrigger className="bg-slate-800 border-white/10">
+                            <SelectTrigger className="bg-slate-800 border-[#ffffff1a]">
                                 <SelectValue />
                             </SelectTrigger>
                             <SelectContent>
@@ -399,7 +399,7 @@ function ReturnDialog({ request, onReturn }: { request: DeviceRequest, onReturn:
                     </div>
                     <div className="space-y-2">
                         <Label>Notes / Damage Report</Label>
-                        <Input value={notes} onChange={e => setNotes(e.target.value)} placeholder="Optional remarks..." className="bg-slate-800 border-white/10" />
+                        <Input value={notes} onChange={e => setNotes(e.target.value)} placeholder="Optional remarks..." className="bg-slate-800 border-[#ffffff1a]" />
                     </div>
                 </div>
                 <DialogFooter>

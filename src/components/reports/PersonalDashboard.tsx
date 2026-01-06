@@ -104,7 +104,7 @@ export function PersonalDashboard() {
 
             <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
                 {/* Chart Section */}
-                <Card className="lg:col-span-2 bg-[#0f172a] border-white/10">
+                <Card className="lg:col-span-2 bg-[#0f172a] border-[#ffffff1a]">
                     <CardHeader className="border-b border-white/5 pb-4">
                         <CardTitle className="text-lg font-medium text-white flex items-center gap-2">
                             <Activity className="w-5 h-5 text-indigo-400" />
@@ -150,7 +150,7 @@ export function PersonalDashboard() {
                 </Card>
 
                 {/* Recent Activity */}
-                <Card className="bg-[#0f172a] border-white/10">
+                <Card className="bg-[#0f172a] border-[#ffffff1a]">
                     <CardHeader className="border-b border-white/5 pb-4">
                         <CardTitle className="text-lg font-medium text-white flex items-center gap-2">
                             <CheckCircle2 className="w-5 h-5 text-green-400" />
@@ -186,7 +186,7 @@ export function PersonalDashboard() {
 
 function StatCard({ label, value, icon: Icon, color, bg, border, alert }: any) {
     return (
-        <Card className={`bg-white/5 backdrop-blur-sm border ${alert ? 'border-red-500/50 animate-pulse' : 'border-white/10'} hover:bg-white/10 transition-colors`}>
+        <Card className={`bg-white/5 backdrop-blur-sm border ${alert ? 'border-red-500/50 animate-pulse' : 'border-[#ffffff1a]'} hover:bg-white/10 transition-colors`}>
             <CardContent className="p-6 flex items-center gap-4">
                 <div className={`p-3 rounded-lg ${bg} ${border} border`}>
                     <Icon className={`w-6 h-6 ${color}`} />

@@ -98,7 +98,7 @@ export const LeaveRequestForm: React.FC<LeaveRequestFormProps> = ({ onSuccess, o
         bg-[#0a0c10] 
         text-white 
         placeholder:text-white/30
-        border border-white/10 
+        border border-[#ffffff1a] 
         rounded-2xl 
         py-4 px-4 
         outline-none 
@@ -112,7 +112,7 @@ export const LeaveRequestForm: React.FC<LeaveRequestFormProps> = ({ onSuccess, o
     return (
         <form onSubmit={handleSubmit} className="space-y-6">
             {/* Balance Display */}
-            <div className="bg-white/5 border border-white/10 rounded-2xl p-5">
+            <div className="bg-white/5 border border-[#ffffff1a] rounded-2xl p-5">
                 <LeaveBalanceDisplay compact />
             </div>
 
@@ -127,7 +127,7 @@ export const LeaveRequestForm: React.FC<LeaveRequestFormProps> = ({ onSuccess, o
                                 relative flex items-center justify-center p-4 rounded-xl border cursor-pointer transition-all duration-200
                                 ${leaveType === type
                                     ? 'bg-blue-500/10 border-blue-500/50 shadow-[0_0_15px_rgba(59,130,246,0.15)]'
-                                    : 'bg-white/5 border-white/10 hover:border-white/20 hover:bg-white/10'
+                                    : 'bg-white/5 border-[#ffffff1a] hover:border-white/20 hover:bg-white/10'
                                 }
                             `}
                         >

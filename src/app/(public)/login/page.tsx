@@ -130,7 +130,7 @@ export default function LoginPage() {
             {/* Glass Card */}
             <form
                 onSubmit={handleSubmit}
-                className="glass-card w-full max-w-md p-8 flex flex-col gap-6 relative z-10 border border-white/10"
+                className="glass-card w-full max-w-md p-8 flex flex-col gap-6 relative z-10 border border-[#ffffff1a]"
             >
                 <div className="space-y-2">
                     <label className="text-xs font-bold text-blue-100/80 uppercase tracking-wider pl-1">Email</label>
@@ -138,7 +138,7 @@ export default function LoginPage() {
                         type="email"
                         value={email}
                         onChange={(e) => setEmail(e.target.value)}
-                        className="w-full h-12 rounded-xl bg-white/5 border border-white/10 px-4 text-white placeholder-white/20 outline-none focus:ring-2 focus:ring-blue-500/50 focus:border-blue-500/50 transition-all font-medium"
+                        className="w-full h-12 rounded-xl bg-white/5 border border-[#ffffff1a] px-4 text-white placeholder-white/20 outline-none focus:ring-2 focus:ring-blue-500/50 focus:border-blue-500/50 transition-all font-medium"
                         placeholder="user@thaiba.in"
                     />
                 </div>
@@ -149,7 +149,7 @@ export default function LoginPage() {
                         type="password"
                         value={password}
                         onChange={(e) => setPassword(e.target.value)}
-                        className="w-full h-12 rounded-xl bg-white/5 border border-white/10 px-4 text-white placeholder-white/20 outline-none focus:ring-2 focus:ring-blue-500/50 focus:border-blue-500/50 transition-all font-medium"
+                        className="w-full h-12 rounded-xl bg-white/5 border border-[#ffffff1a] px-4 text-white placeholder-white/20 outline-none focus:ring-2 focus:ring-blue-500/50 focus:border-blue-500/50 transition-all font-medium"
                         placeholder="••••••••"
                     />
                     <div className="flex justify-end">
@@ -243,7 +243,7 @@ export default function LoginPage() {
                                         type="email"
                                         value={resetEmail}
                                         onChange={(e) => setResetEmail(e.target.value)}
-                                        className="w-full h-12 rounded-xl bg-white/5 border border-white/10 px-4 text-white placeholder-white/20 outline-none focus:ring-2 focus:ring-blue-500/50 focus:border-blue-500/50 transition-all font-medium"
+                                        className="w-full h-12 rounded-xl bg-white/5 border border-[#ffffff1a] px-4 text-white placeholder-white/20 outline-none focus:ring-2 focus:ring-blue-500/50 focus:border-blue-500/50 transition-all font-medium"
                                         placeholder="your@email.com"
                                         required
                                         disabled={resetSubmitting}

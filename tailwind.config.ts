@@ -142,7 +142,7 @@ const config: Config = {
           secondary: 'var(--text-secondary)',
         },
         // Updated Semantic Mappings for Glassmorphism
-        border: "var(--border-subtle)",
+        border: "hsl(var(--border))",
         card: {
           DEFAULT: "var(--bg-card)",
           foreground: "var(--text-primary)",

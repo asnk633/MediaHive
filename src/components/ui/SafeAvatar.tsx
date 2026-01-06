@@ -65,7 +65,7 @@ export const SafeAvatar: React.FC<SafeAvatarProps> = ({
 
     return (
         <div
-            className={`relative rounded-full overflow-hidden bg-white/10 flex items-center justify-center shrink-0 border border-white/10 ${sizeClasses} ${className}`}
+            className={`relative rounded-full overflow-hidden bg-white/10 flex items-center justify-center shrink-0 border border-[#ffffff1a] ${sizeClasses} ${className}`}
             style={!className.includes('w-') ? containerStyle : undefined}
             title={name || alt}
         >

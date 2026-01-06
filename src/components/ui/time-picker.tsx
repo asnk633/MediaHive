@@ -33,10 +33,10 @@ export function TimePicker({ value, onChange }: TimePickerProps) {
     const minutes = [0, 15, 30, 45]; // 15 min intervals
 
     return (
-        <div className="flex bg-[#141e30] border border-white/10 rounded-xl overflow-hidden shadow-2xl w-[320px]">
+        <div className="flex bg-[#141e30] border border-[#ffffff1a] rounded-xl overflow-hidden shadow-2xl w-[320px]">
             {/* Hours Column */}
-            <div className="flex-1 border-r border-white/5">
-                <div className="h-10 flex items-center justify-center bg-white/5 text-xs font-bold text-white/50 uppercase tracking-widest border-b border-white/5">
+            <div className="flex-1 border-r border-[#ffffff0d]">
+                <div className="h-10 flex items-center justify-center bg-white/5 text-xs font-bold text-white/50 uppercase tracking-widest border-b border-[#ffffff0d]">
                     Hour
                 </div>
                 <ScrollArea className="h-[200px]">
@@ -62,8 +62,8 @@ export function TimePicker({ value, onChange }: TimePickerProps) {
             </div>
 
             {/* Minutes Column */}
-            <div className="flex-1 border-r border-white/5">
-                <div className="h-10 flex items-center justify-center bg-white/5 text-xs font-bold text-white/50 uppercase tracking-widest border-b border-white/5">
+            <div className="flex-1 border-r border-[#ffffff0d]">
+                <div className="h-10 flex items-center justify-center bg-white/5 text-xs font-bold text-white/50 uppercase tracking-widest border-b border-[#ffffff0d]">
                     Min
                 </div>
                 <ScrollArea className="h-[200px]">

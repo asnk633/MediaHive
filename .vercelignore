@@ -14,9 +14,7 @@ src/app/(shell)/updates/
 # Ignore heavy admin APIs not needed for core app
 src/app/api/admin/
 src/app/api/cron/
-src/app/api/system-events/
-src/app/api/device-logs/
-src/app/api/device-requests/
+
 
 # Ignore test & debug material
 __tests__/

@@ -69,7 +69,7 @@ export default function FilesPage() {
   };
 
   return (
-    <div className="flex flex-col min-h-screen app-body-padding px-4 pb-24 max-w-7xl mx-auto">
+    <div className="flex flex-col min-h-screen px-4 max-w-7xl mx-auto">
       {/* ... (Header) ... */}
       <header className="mb-8 pt-6 flex flex-col md:flex-row md:items-center justify-between gap-4">
         <div>

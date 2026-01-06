@@ -1,6 +1,7 @@
 'use client';
 
-import React, { useEffect, useState, useMemo } from 'react';
+import { useRouter } from 'next/navigation';
+import React, { useState, useEffect, useMemo } from 'react';
 import { InventoryGrid } from './InventoryGrid';
 import { InventoryFilters } from './InventoryFilters';
 import { InventoryItem, InventoryApiResponse } from '@/types/inventory';
@@ -14,10 +15,11 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { Plus } from 'lucide-react';
+import { Plus, Clock } from 'lucide-react';
 
 export default function InventoryView() {
     const { user } = useAuth();
+    const router = useRouter(); // Added router
     const [items, setItems] = useState<InventoryItem[]>([]);
     const [loading, setLoading] = useState(true);
 
@@ -74,10 +76,21 @@ export default function InventoryView() {
                     </p>
                 </div>
 
-                {/* Admin Actions */}
-                {user?.role === 'admin' && (
-                    <CreateItemDialog onSuccess={fetchInventory} />
-                )}
+                {/* Actions */}
+                <div className="flex items-center gap-3">
+                    <Button
+                        variant="ghost"
+                        onClick={() => router.push('/inventory/requests')}
+                        className="text-slate-300 hover:text-white hover:bg-white/10"
+                    >
+                        <Clock className="w-4 h-4 mr-2" />
+                        My Requests
+                    </Button>
+
+                    {user?.role === 'admin' && (
+                        <CreateItemDialog onSuccess={fetchInventory} />
+                    )}
+                </div>
             </div>
 
             {/* Filters */}

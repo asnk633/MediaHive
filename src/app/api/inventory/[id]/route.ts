@@ -1,22 +1,30 @@
-import { NextRequest } from 'next/server';
+import { NextRequest, NextResponse } from 'next/server';
 import { adminDb } from '@/lib/firebase/server';
 import { verifyUser } from '@/lib/server-utils';
 
+export const dynamic = 'force-dynamic';
+
 const COLLECTION = 'inventory';
+
+function calculateStatus(quantity: number, threshold: number): 'ok' | 'low' | 'out' {
+    if (quantity <= 0) return 'out';
+    if (quantity <= threshold) return 'low';
+    return 'ok';
+}
 
 export async function GET(
     request: NextRequest,
-    { params }: { params: Promise<{ id: string }> } // Params are now Promises in Next.js 15+
+    { params }: { params: Promise<{ id: string }> }
 ) {
     try {
         const user = await verifyUser(request);
         if (!user) {
-            return Response.json({ error: 'Unauthorized' }, { status: 401 });
+            return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
         }
 
         const { id } = await params;
         if (!id) {
-            return Response.json({ error: 'ID is required' }, { status: 400 });
+            return NextResponse.json({ error: 'ID is required' }, { status: 400 });
         }
 
         const db = adminDb;
@@ -24,26 +32,25 @@ export async function GET(
         const doc = await docRef.get();
 
         if (!doc.exists) {
-            return Response.json({ error: 'Item not found' }, { status: 404 });
+            return NextResponse.json({ error: 'Item not found' }, { status: 404 });
         }
 
         const data = doc.data();
         const item = {
             id: doc.id,
             ...data,
-            // Handle Timestamp conversion
             createdAt: data?.createdAt?.toDate?.()?.toISOString() || data?.createdAt,
             updatedAt: data?.updatedAt?.toDate?.()?.toISOString() || data?.updatedAt,
             purchaseDate: data?.purchaseDate?.toDate?.()?.toISOString() || data?.purchaseDate,
         };
 
-        return Response.json(item);
+        return NextResponse.json(item);
     } catch (error: any) {
         console.error('Error fetching inventory item:', error);
-        return Response.json({ error: error.message || 'Failed to fetch item' }, { status: 500 });
+        return NextResponse.json({ error: error.message || 'Failed to fetch item' }, { status: 500 });
     }
 }
-// PATCH: Update an item
+
 export async function PATCH(
     request: NextRequest,
     { params }: { params: Promise<{ id: string }> }
@@ -51,39 +58,67 @@ export async function PATCH(
     try {
         const user = await verifyUser(request);
         if (!user || user.role !== 'admin') {
-            return Response.json({ error: 'Unauthorized' }, { status: 403 });
+            return NextResponse.json({ error: 'Forbidden' }, { status: 403 });
         }
 
         const { id } = await params;
         if (!id) {
-            return Response.json({ error: 'ID is required' }, { status: 400 });
+            return NextResponse.json({ error: 'ID is required' }, { status: 400 });
         }
 
         const body = await request.json();
         const db = adminDb;
         const docRef = db.collection(COLLECTION).doc(id);
 
-        // Update timestamp
-        const updateData = {
-            ...body,
-            updatedAt: new Date(),
-            // Ensure purchasedDate is treated correctly if present
-            ...(body.purchaseDate ? { purchaseDate: new Date(body.purchaseDate) } : {}),
-        };
+        // Transaction to ensure atomicity when recalculating status
+        const updatedItem = await db.runTransaction(async (t) => {
+            const doc = await t.get(docRef);
+            if (!doc.exists) {
+                throw new Error('Item not found');
+            }
 
-        // Remove ID from body if present to avoid overwriting doc ID (though Firestore ignores it usually)
-        delete updateData.id;
+            const currentData = doc.data()!;
 
-        await docRef.update(updateData);
+            // Merge new values with old to calculate status
+            const newQuantity = body.quantity !== undefined ? Number(body.quantity) : currentData.quantity;
+            const newThreshold = body.threshold !== undefined ? Number(body.threshold) : currentData.threshold;
 
-        return Response.json({ success: true, id });
+            const updates: any = {
+                ...body,
+                updatedAt: new Date(),
+                status: calculateStatus(newQuantity, newThreshold)
+            };
+
+            // Protect immutable fields
+            delete updates.id;
+            delete updates.createdAt;
+            delete updates.createdBy;
+
+            if (updates.purchaseDate) {
+                updates.purchaseDate = new Date(updates.purchaseDate);
+            }
+
+            t.update(docRef, updates);
+
+            return { id, ...currentData, ...updates };
+        });
+
+        // Serialize dates before returning
+        return NextResponse.json({
+            success: true,
+            item: {
+                ...updatedItem,
+                updatedAt: updatedItem.updatedAt.toISOString(),
+                createdAt: updatedItem.createdAt?.toDate ? updatedItem.createdAt.toDate().toISOString() : updatedItem.createdAt
+            }
+        });
+
     } catch (error: any) {
         console.error('Error updating inventory item:', error);
-        return Response.json({ error: error.message || 'Failed to update item' }, { status: 500 });
+        return NextResponse.json({ error: error.message || 'Failed to update item' }, { status: error.message === 'Item not found' ? 404 : 500 });
     }
 }
 
-// DELETE: Remove an item
 export async function DELETE(
     request: NextRequest,
     { params }: { params: Promise<{ id: string }> }
@@ -91,20 +126,20 @@ export async function DELETE(
     try {
         const user = await verifyUser(request);
         if (!user || user.role !== 'admin') {
-            return Response.json({ error: 'Unauthorized' }, { status: 403 });
+            return NextResponse.json({ error: 'Forbidden' }, { status: 403 });
         }
 
         const { id } = await params;
         if (!id) {
-            return Response.json({ error: 'ID is required' }, { status: 400 });
+            return NextResponse.json({ error: 'ID is required' }, { status: 400 });
         }
 
         const db = adminDb;
         await db.collection(COLLECTION).doc(id).delete();
 
-        return Response.json({ success: true, id });
+        return NextResponse.json({ success: true, id });
     } catch (error: any) {
         console.error('Error deleting inventory item:', error);
-        return Response.json({ error: error.message || 'Failed to delete item' }, { status: 500 });
+        return NextResponse.json({ error: error.message || 'Failed to delete item' }, { status: 500 });
     }
 }

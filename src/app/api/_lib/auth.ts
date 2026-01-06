@@ -4,7 +4,7 @@
 
 import { NextRequest } from 'next/server';
 import { TaskStatus } from '@/types';
-import { logApiError } from '../api-utils/logging';
+import { loggingMiddleware } from '../api-utils/logging';
 import { getUserFromRequest as getSessionUser } from './session';
 import { AuthUser, UserRole } from './types';
 

@@ -155,7 +155,8 @@ export async function POST(request: NextRequest) {
 
       const { adminAuth } = await import('@/lib/firebase/server');
       const auth = adminAuth;
-      await auth.verifyIdToken(token);
+      const decodedToken = await auth.verifyIdToken(token);
+      console.log('[AUTH AUDIT] Verified Token for UID:', decodedToken.uid, 'Project ID (aud):', decodedToken.aud);
     }
 
     const db = adminDb;

@@ -20,6 +20,7 @@ try {
 
         if (projectId && clientEmail && privateKey) {
             // console.log('[FIREBASE ADMIN] Credentials detected: YES'); // Reduced verbosity for production
+            console.log('[FIREBASE ADMIN] Initializing with cert...');
             adminApp = admin.initializeApp({
                 credential: admin.credential.cert({
                     projectId,
@@ -42,6 +43,10 @@ try {
     }
 } catch (error) {
     console.error('Firebase Admin Init Error:', error);
+}
+
+if (adminApp) {
+    console.log('[FIREBASE ADMIN] Server Instance Ready. Project ID:', adminApp.options.projectId);
 }
 
 // Helper proxy to throw error on access if not initialized

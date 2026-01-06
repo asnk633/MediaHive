@@ -29,7 +29,7 @@ export async function GET(request: NextRequest) {
             outOfStockCount
         ] = await Promise.all([
             db.collection('tasks').count().get(),
-            db.collection('system-events').count().get(), // Check collection name
+            db.collection('system-events').count().get(),
             db.collection('inventory').count().get(),
             db.collection('inventory').where('status', '==', 'low').count().get(),
             db.collection('inventory').where('status', '==', 'out').count().get(),

@@ -69,7 +69,7 @@ export default function InventoryTable() {
                 )}
             </div>
 
-            <div className="rounded-md border border-white/10 overflow-hidden bg-slate-950/30">
+            <div className="rounded-md border border-white/10 overflow-hidden overflow-x-auto bg-slate-950/30">
                 <Table>
                     <TableHeader className="bg-slate-900/50">
                         <TableRow className="border-white/5 hover:bg-transparent">
@@ -112,7 +112,6 @@ export default function InventoryTable() {
                                         {formatDistanceToNow(new Date(item.updatedAt), { addSuffix: true })}
                                     </TableCell>
                                     <TableCell className="text-right">
-                                        {/* Actions could go here, e.g. Edit */}
                                         {user?.role === 'admin' && (
                                             <EditItemDialog item={item} onSuccess={fetchInventory} />
                                         )}

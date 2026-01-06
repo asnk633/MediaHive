@@ -68,8 +68,6 @@ export async function GET() {
         }, { status });
 
     } catch (error: any) {
-
-    } catch (error: any) {
         console.error('[HEALTH_CHECK_CRITICAL_FAILURE]', error);
 
         health.status = 'error';

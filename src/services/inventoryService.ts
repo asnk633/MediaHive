@@ -3,7 +3,9 @@ import { InventoryItem } from '@/types/inventory';
 import { AuthUser } from '@/contexts/AuthContext';
 import { apiClient, apiPost } from '@/lib/apiClient';
 
-// Inventory API is disabled for stability. All functions return empty/stubbed responses.
+// Inventory API Service
+// Phase 1 Consumables Implementation
+// Legacy Asset operations are currently piped through here although API validation might prevent Asset creation.
 export const inventoryService = {
     // READ: Get all items (Team & Admin)
     getAll: async (): Promise<InventoryItem[]> => {

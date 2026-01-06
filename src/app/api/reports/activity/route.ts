@@ -11,6 +11,10 @@ export async function GET(request: NextRequest) {
             return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
         }
 
+        if (user.role !== 'admin' && user.role !== 'team') {
+            return NextResponse.json({ error: 'Forbidden' }, { status: 403 });
+        }
+
         const db = adminDb;
         const LIMIT_PER_SOURCE = 5;
 

@@ -183,7 +183,16 @@ export default function ReportsDashboard() {
     );
 }
 
-function StatsCard({ title, value, label, icon, loading, className }: any) {
+interface StatsCardProps {
+    title: string;
+    value?: number; // Optional because wait for data
+    label?: string;
+    icon: React.ReactNode;
+    loading: boolean;
+    className?: string;
+}
+
+function StatsCard({ title, value, label, icon, loading, className }: StatsCardProps) {
     return (
         <Card className={`border shadow-lg ${className}`}>
             <CardContent className="p-6">
@@ -193,7 +202,7 @@ function StatsCard({ title, value, label, icon, loading, className }: any) {
                         {loading ? (
                             <Skeleton className="h-8 w-16 bg-white/10" />
                         ) : (
-                            <h3 className="text-3xl font-bold text-white tracking-tight">{value}</h3>
+                            <h3 className="text-3xl font-bold text-white tracking-tight">{value ?? 0}</h3>
                         )}
                         {label && <p className="text-xs text-slate-500">{label}</p>}
                     </div>

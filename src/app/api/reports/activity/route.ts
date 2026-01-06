@@ -34,7 +34,7 @@ export async function GET(request: NextRequest) {
         // If an index is missing, Firestore usually throws FAILED_PRECONDITION.
         // We will catch these individually to avoid failing the whole report.
 
-        const fetchSafely = async (query: firebase.firestore.Query, label: string) => {
+        const fetchSafely = async (query: FirebaseFirestore.Query, label: string) => {
             try {
                 return await query.get();
             } catch (e: any) {

@@ -53,12 +53,10 @@ export async function GET() {
         }, { status });
 
     } catch (error: any) {
-        // Critical Failure Catch
         console.error('[HEALTH_CHECK_CRITICAL_FAILURE]', error);
-
-        health.status = 'error';
-        health.services.database = 'unhealthy';
-
-        return NextResponse.json(health, { status: 503 });
+        return NextResponse.json({
+            status: 'error',
+            services: { database: 'unhealthy', auth: 'unknown' }
+        }, { status: 503 });
     }
 }

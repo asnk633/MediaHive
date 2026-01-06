@@ -40,7 +40,7 @@ export function TeamContributionChart({ data }: { data: DataItem[] }) {
                             color: 'white'
                         }}
                         itemStyle={{ color: 'white' }}
-                        formatter={(value: number) => [`${value} Tasks`, 'Completed']}
+                        formatter={(value: any) => [`${value} Tasks`, 'Completed']}
                     />
                     <Legend
                         verticalAlign="bottom"

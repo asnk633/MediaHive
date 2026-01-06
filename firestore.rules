@@ -2,12 +2,25 @@ rules_version = '2';
 service cloud.firestore {
   match /databases/{database}/documents {
 
+    // --- HELPER FUNCTIONS ---
+
     function isSignedIn() {
       return request.auth != null;
     }
 
+    // Role Resolution (Expensive: 1 Read per evaluation if not cached)
+    // Note: This relies on the physical 'users' document existing.
+    function getUserData() {
+      return get(/databases/$(database)/documents/users/$(request.auth.uid)).data;
+    }
+
     function userRole() {
-      return get(/databases/$(database)/documents/users/$(request.auth.uid)).data.role;
+      return getUserData().role;
+    }
+
+    // Institution Scoping Guard
+    function userInstitutionId() {
+      return getUserData().institutionId;
     }
 
     function isAdmin() {
@@ -26,79 +39,68 @@ service cloud.firestore {
       return resource.data.createdBy == request.auth.uid;
     }
 
-    function canGuestUpdate(resource) {
-      return request.resource.data
-        .diff(resource.data)
-        .affectedKeys()
-        .hasOnly(["title", "description"]);
+    // --- SCOPED ACCESS GUARDS ---
+    // Enforce that the resource belongs to the same institution as the user.
+    function isScoped(resource) {
+       return resource.data.institutionId == userInstitutionId();
+    }
+    
+    // For Create requests, ensure the new document is tagged correctly.
+    function isScopedCreate(requestData) {
+       return requestData.institutionId == userInstitutionId();
     }
 
-    function canTeamUpdate(resource) {
-      return !(resource.data.status == "pending" &&
-               request.resource.data.status == "todo");
-    }
+    // --- SPECIFIC RULES ---
 
+    // TASKS
     match /tasks/{taskId} {
-
-      allow read: if isSignedIn() &&
-        (
-          isAdmin() ||
-          isTeam() ||
-          (isGuest() && resource.data.createdBy == request.auth.uid)
-        );
-
-      allow create: if isSignedIn() &&
-        (
-          isAdmin() ||
-          isTeam() ||
-          (isGuest() &&
-            request.resource.data.createdBy == request.auth.uid &&
-            request.resource.data.status == "pending" &&
-            request.resource.data.priority == "low" &&
-            !("assignee" in request.resource.data)
-          )
-        );
-
-      allow update: if isSignedIn() &&
-        (
-          isAdmin() ||
-          (isTeam() && canTeamUpdate(resource)) ||
-          (isGuest() && isOwner(resource) && canGuestUpdate(resource))
-        );
-
-      allow delete: if isSignedIn() && isAdmin();
+      allow read: if isSignedIn() && isScoped(resource) && (isAdmin() || isTeam() || (isGuest() && isOwner(resource)));
+      allow create: if isSignedIn() && isScopedCreate(request.resource.data) && (isAdmin() || isTeam() || (isGuest() && request.resource.data.status == 'pending'));
+      allow update: if isSignedIn() && isScoped(resource) && (isAdmin() || (isTeam() && resource.data.status != 'done') || (isGuest() && isOwner(resource)));
+      allow delete: if isSignedIn() && isScoped(resource) && isAdmin();
     }
 
-    match /tasks/{taskId}/comments/{commentId} {
-      allow read: if isSignedIn();
-      allow create: if isSignedIn();
-      allow update, delete: if isSignedIn() &&
-        (
-          isAdmin() ||
-          resource.data.authorId == request.auth.uid
-        );
+    // DEVICE REQUESTS
+    match /device_requests/{requestId} {
+      allow read: if isSignedIn() && isScoped(resource) && (isAdmin() || isTeam() || isOwner(resource));
+      allow create: if isSignedIn() && isScopedCreate(request.resource.data); 
+      allow update: if isSignedIn() && isScoped(resource) && isAdmin();
+      allow delete: if isSignedIn() && isScoped(resource) && isAdmin();
     }
 
-    match /events/{eventId} {
-      allow read: if isSignedIn();
-      allow create: if isSignedIn() &&
-        (
-          isAdmin() ||
-          isTeam() ||
-          (isGuest() && request.resource.data.status == "pending")
-        );
-      allow update, delete: if isSignedIn() && isAdmin();
+    // INVENTORY
+    match /inventory/{itemId} {
+      allow read: if isSignedIn() && isScoped(resource);
+      allow create, update: if isSignedIn() && isScopedCreate(request.resource.data) && (isAdmin() || isTeam());
+      allow delete: if isSignedIn() && isScoped(resource) && isAdmin();
     }
 
-    match /files/{fileId} {
-      allow read: if isSignedIn();
-      allow create: if isSignedIn() && (isAdmin() || isTeam());
-      allow delete: if isSignedIn() && isAdmin();
+    // SYSTEM EVENTS (Audit Logs)
+    match /system-events/{eventId} {
+      allow read: if isSignedIn() && isScoped(resource) && isAdmin();
+      allow create: if isSignedIn() && isScopedCreate(request.resource.data) && isAdmin(); 
+      allow delete: if false; // Audit logs are immutable
     }
 
+    // USERS
     match /users/{userId} {
-      allow read: if isSignedIn();
-      allow write: if isSignedIn() && isAdmin();
+      // Users can read own profile. Admins can read all (scoped?). 
+      // User profiles are global conceptually but might need scoping if multi-tenant strict.
+      // For now, allow own read + Admin write.
+      allow read: if isSignedIn() && (request.auth.uid == userId || isAdmin());
+      allow write: if isSignedIn() && isAdmin(); 
+    }
+    
+    // LEGACY / MISC (Deny by default unless specified)
+    match /notifications/{notifId} {
+        allow read: if isSignedIn() && (resource.data.userId == request.auth.uid || isAdmin());
+        allow write: if false; // Server-side only
+    }
+
+    // FILES (Metadata)
+    match /files/{fileId} {
+       allow read: if isSignedIn(); // Broad read for attached media
+       allow write: if false; // Server-side only management
     }
   }
 }

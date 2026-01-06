@@ -1,4 +1,4 @@
-```typescript
+
 // src/app/api/_lib/auth.ts
 // RBAC helpers for API routes
 

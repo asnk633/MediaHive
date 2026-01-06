@@ -52,7 +52,7 @@ export async function verifyUser(request: Request): Promise<AuthenticatedUser | 
                     email: decodedToken.email,
                     email_verified: decodedToken.email_verified,
                     ...userData,
-                    role: userData.role || decodedToken.role || 'guest', // Fallback to token role if DB missing
+                    role: userData?.role || decodedToken.role || 'guest', // Fallback to token role if DB missing
                 } as AuthenticatedUser;
             }
             return {
@@ -81,7 +81,7 @@ export async function verifyUser(request: Request): Promise<AuthenticatedUser | 
             return {
                 ...decoded,
                 ...userData, // Mix in DB data like strict 'role'
-                role: userData.role || decoded.role || 'guest',
+                role: userData?.role || decoded.role || 'guest',
                 uid: decoded.uid // Ensure UID is from token
             } as AuthenticatedUser;
         }

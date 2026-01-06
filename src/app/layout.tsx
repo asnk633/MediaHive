@@ -5,6 +5,14 @@ import { ReactNode } from 'react';
 import { AuthProvider } from "@/contexts/AuthContext";
 import { ThemeProvider } from "@/context/ThemeProvider";
 
+import { Inter } from 'next/font/google';
+
+const inter = Inter({
+  subsets: ['latin'],
+  variable: '--font-inter',
+  display: 'swap',
+});
+
 export const metadata = {
   title: 'MediaHive',
   description: 'Media management system for Thaiba Garden',
@@ -23,7 +31,7 @@ export default function RootLayout({ children }: { children: ReactNode }) {
   const useNewUI = process.env.NEXT_PUBLIC_NEW_UI === "true";
 
   return (
-    <html lang="en" data-theme="dark" className="dark" suppressHydrationWarning={true}>
+    <html lang="en" data-theme="dark" className={`dark ${inter.variable}`} suppressHydrationWarning={true}>
       <body className="min-h-screen" suppressHydrationWarning={true}>
         <ThemeProvider>
           <AuthProvider>

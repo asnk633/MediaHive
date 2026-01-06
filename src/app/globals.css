@@ -31,6 +31,11 @@
     --border: 217.2 32.6% 17.5%;
     --input: 217.2 32.6% 17.5%;
     --ring: 212.7 26.8% 83.9%;
+
+    /* Global Shell Dimensions */
+    --header-height: calc(72px + env(safe-area-inset-top));
+    --bottom-nav-height: calc(80px + 24px + env(safe-area-inset-bottom));
+    /* Height (h-20) + Bottom Margin (bottom-6) */
   }
 }
 
@@ -45,6 +50,8 @@
     /* Night Sky Theme Background */
     background: radial-gradient(circle at top center, #1e293b 0%, #0f172a 50%, #020617 100%);
     min-height: 100vh;
+    padding-bottom: var(--bottom-nav-height);
+    /* Prevent content overlap with fixed BottomNav */
   }
 }
 

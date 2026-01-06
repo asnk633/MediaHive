@@ -96,7 +96,7 @@ export default function ProfilePage() {
   };
 
   return (
-    <div className="flex flex-col gap-6 px-4 pt-20 pb-24 max-w-lg mx-auto">
+    <div className="flex flex-col gap-6 px-4 max-w-lg mx-auto">
       {/* Hidden file input */}
       <input
         ref={fileInputRef}

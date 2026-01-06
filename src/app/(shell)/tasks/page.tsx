@@ -120,7 +120,7 @@ export default function TasksPage() {
   };
 
   return (
-    <div className="flex flex-col min-h-[calc(100vh-6rem)] px-4 pt-20 gap-6 pb-32 max-w-[1600px] mx-auto w-full">
+    <div className="flex flex-col min-h-[calc(100vh-6rem)] px-4 gap-6 max-w-[1600px] mx-auto w-full">
       {/* Header */}
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <div>

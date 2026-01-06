@@ -77,7 +77,7 @@ export default function CalendarPage() {
   }, [events, tasks, filter]);
 
   return (
-    <div className="min-h-full px-4 pb-32 pt-6 max-w-2xl mx-auto">
+    <div className="min-h-full px-4 max-w-2xl mx-auto">
       <header className="mb-8 flex items-end justify-between">
         <div>
           <h1 className="text-3xl font-bold tracking-tight text-[var(--text)] mb-1">{view === 'timeline' ? 'Timeline' : view === 'month' ? 'Month View' : 'Week View'}</h1>

@@ -37,8 +37,14 @@ export default function ShellLayout({ children }: { children: React.ReactNode })
               <TopBar />
             </div>
 
-            {/* Main Content Area - Scrolls independently - Added pb-32 for Bottom Nav clearance */}
-            <main className="flex-1 overflow-y-auto overflow-x-hidden pt-6 pb-32 print:pt-0 print:pb-0 print:overflow-visible print:h-auto">
+            {/* Main Content Area - Scrolls independently */}
+            <main
+              className="flex-1 overflow-y-auto overflow-x-hidden pt-6 print:pt-0 print:pb-0 print:overflow-visible print:h-auto"
+              style={{
+                paddingBottom: 'var(--bottom-nav-height)',
+                paddingTop: 'calc(var(--header-height) + 1.5rem)'
+              }}
+            >
               <ErrorBoundary>
                 <Suspense fallback={
                   <div className="flex items-center justify-center p-12">

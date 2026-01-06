@@ -267,7 +267,7 @@ function IssueDialog({ request, onIssue, open, onOpenChange }: { request: Device
         const load = async () => {
             try {
                 const all = await inventoryService.getAll();
-                const avail = all.filter(i => i.status === 'available' || !i.status);
+                const avail = all.filter(i => (i.status as string) === 'available' || !i.status);
                 setItems(avail);
 
                 // Auto-fallback: Try to match by name exactly
@@ -323,7 +323,7 @@ function IssueDialog({ request, onIssue, open, onOpenChange }: { request: Device
                                 <SelectContent>
                                     {displayItems.map(item => (
                                         <SelectItem key={item.id} value={item.id}>
-                                            {item.name} ({item.serialNumber || 'No Serial'})
+                                            {item.name} ({(item as any).serialNumber || 'No Serial'})
                                         </SelectItem>
                                     ))}
                                 </SelectContent>

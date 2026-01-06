@@ -14,7 +14,7 @@ import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover
 import { Calendar } from "@/components/ui/calendar";
 import { format } from "date-fns";
 import { cn } from "@/lib/utils";
-import { AlertTriangle, Save, ArrowLeft, Loader2, Image as ImageIcon, X, Upload, Calendar as CalendarIcon } from "lucide-react";
+import { AlertTriangle, Save, ArrowLeft, Loader2, Image as ImageIcon, X, Upload, Calendar as CalendarIcon, AlertCircle } from "lucide-react";
 import Link from "next/link";
 import { toast } from "sonner";
 import { FileService } from "@/services/fileService";

@@ -20,13 +20,7 @@ export const inventoryService = {
 
     // READ: Get items currently out for use
     getOutForUseItems: async (): Promise<InventoryItem[]> => {
-        try {
-            const allItems = await inventoryService.getAll();
-            return allItems.filter(item => item.status === 'in_use');
-        } catch (error) {
-            console.error('Error fetching out-for-use items:', error);
-            return [];
-        }
+        return [];
     },
 
     // READ: Get single item by ID

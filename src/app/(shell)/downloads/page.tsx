@@ -71,7 +71,7 @@ export default function FilesPage() {
   return (
     <div className="flex flex-col min-h-screen px-4 max-w-7xl mx-auto">
       {/* ... (Header) ... */}
-      <header className="mb-8 pt-6 flex flex-col md:flex-row md:items-center justify-between gap-4">
+      <header className="mb-8 flex flex-col md:flex-row md:items-center justify-between gap-4">
         <div>
           <h1 className="text-3xl font-display font-bold text-[var(--text-primary)] mb-1 flex items-center gap-3">
             <FolderOpen className="text-indigo-500" /> Downloads

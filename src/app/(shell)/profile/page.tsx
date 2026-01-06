@@ -107,7 +107,7 @@ export default function ProfilePage() {
       />
 
       {/* Header / Avatar */}
-      <div className="flex flex-col items-center pt-6 pb-2">
+      <div className="flex flex-col items-center pb-2">
         <div className="relative group">
           <button
             onClick={handleAvatarClick}

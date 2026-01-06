@@ -2,7 +2,7 @@
 import { getFirebaseAuth } from '@/firebase/client';
 import { apiClient } from '@/lib/apiClient';
 import { DeviceRequest, DeviceLog } from '@/types/deviceRequest';
-import { InventoryItem, InventoryCondition } from '@/types/inventory';
+import { InventoryAsset, InventoryCondition } from '@/types/inventory';
 import { AuthUser } from '@/contexts/AuthContext';
 
 const REQUESTS_COLLECTION = 'device_requests';
@@ -18,7 +18,7 @@ export const deviceRequestService = {
         const response = await apiClient(`/api/device-requests?userId=${uid}`, {
             method: 'GET'
         });
-        
+
         return response.requests || [];
     },
 
@@ -27,7 +27,7 @@ export const deviceRequestService = {
         const response = await apiClient('/api/device-requests', {
             method: 'GET'
         });
-        
+
         return response.requests || [];
     },
 
@@ -35,7 +35,7 @@ export const deviceRequestService = {
         const response = await apiClient(`/api/device-requests/${id}`, {
             method: 'GET'
         });
-        
+
         return response.request || null;
     },
 
@@ -49,7 +49,7 @@ export const deviceRequestService = {
                 status: 'pending'
             })
         });
-        
+
         return response.id;
     },
 
@@ -93,7 +93,7 @@ export const deviceRequestService = {
         const response = await apiClient(`/api/device-logs/active?requestId=${requestId}`, {
             method: 'GET'
         });
-        
+
         return response.logId || null;
     },
 

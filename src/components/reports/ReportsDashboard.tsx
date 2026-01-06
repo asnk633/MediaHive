@@ -1,19 +1,14 @@
 'use client';
 
 import React, { useEffect, useState } from 'react';
+import { apiClient } from '@/lib/apiClient';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { AdminIntelligenceView } from './AdminIntelligenceView';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Skeleton } from '@/components/ui/skeleton';
-import { apiClient } from '@/lib/apiClient';
-import {
-    CheckCircle2,
-    AlertTriangle,
-    Calendar,
-    Package,
-    Activity,
-    ArrowRight
-} from 'lucide-react';
-import { formatDistanceToNow } from 'date-fns';
+import { Activity, LayoutDashboard, List } from 'lucide-react';
 import { Badge } from '@/components/ui/badge';
+import { formatDistanceToNow } from 'date-fns';
 
 interface ReportOverview {
     totalTasks: number;
@@ -67,48 +62,29 @@ export default function ReportsDashboard() {
     }, []);
 
     return (
-        <div className="space-y-8">
-            {/* Overview Stats */}
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
-                <StatsCard
-                    title="Total Tasks"
-                    value={overview?.totalTasks}
-                    icon={<CheckCircle2 className="text-blue-500" />}
-                    loading={loadingOverview}
-                    className="bg-blue-950/20 border-blue-900/50"
-                />
-                <StatsCard
-                    title="System Events"
-                    value={overview?.totalEvents}
-                    icon={<Calendar className="text-purple-500" />}
-                    loading={loadingOverview}
-                    className="bg-purple-950/20 border-purple-900/50"
-                />
-                <StatsCard
-                    title="Inventory Items"
-                    value={overview?.totalInventory}
-                    icon={<Package className="text-emerald-500" />}
-                    loading={loadingOverview}
-                    className="bg-emerald-950/20 border-emerald-900/50"
-                />
-                <StatsCard
-                    title="Attention Needed"
-                    value={(overview?.lowStock || 0) + (overview?.outOfStock || 0)}
-                    label="Low / Out of Stock"
-                    icon={<AlertTriangle className="text-amber-500" />}
-                    loading={loadingOverview}
-                    className="bg-amber-950/20 border-amber-900/50"
-                />
-            </div>
+        <div className="space-y-6">
+            <Tabs defaultValue="intelligence" className="w-full space-y-6">
+                <TabsList className="bg-slate-900/50 border border-white/10 p-1">
+                    <TabsTrigger value="intelligence" className="data-[state=active]:bg-blue-600 data-[state=active]:text-white text-slate-400">
+                        <LayoutDashboard size={16} className="mr-2" /> Admin Intelligence
+                    </TabsTrigger>
+                    <TabsTrigger value="activity" className="data-[state=active]:bg-blue-600 data-[state=active]:text-white text-slate-400">
+                        <List size={16} className="mr-2" /> Activity Logs
+                    </TabsTrigger>
+                </TabsList>
 
-            {/* Activity Timeline */}
-            <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-                <div className="lg:col-span-2">
+                {/* TAB 1: ADMIN INTELLIGENCE */}
+                <TabsContent value="intelligence" className="focus-visible:outline-none">
+                    <AdminIntelligenceView overview={overview} loading={loadingOverview} />
+                </TabsContent>
+
+                {/* TAB 2: ACTIVITY LOGS (Legacy View Preserved) */}
+                <TabsContent value="activity" className="focus-visible:outline-none">
                     <Card className="bg-slate-900/30 border-white/10">
-                        <CardHeader className="flex flex-row items-center justify-between">
+                        <CardHeader>
                             <CardTitle className="flex items-center gap-2">
                                 <Activity className="w-5 h-5 text-slate-400" />
-                                Recent Activity
+                                System Activity
                             </CardTitle>
                         </CardHeader>
                         <CardContent>
@@ -153,65 +129,9 @@ export default function ReportsDashboard() {
                             )}
                         </CardContent>
                     </Card>
-                </div>
-
-                <div className="lg:col-span-1">
-                    <Card className="bg-slate-900/30 border-white/10 h-full">
-                        <CardHeader>
-                            <CardTitle>Quick Insights</CardTitle>
-                        </CardHeader>
-                        <CardContent className="space-y-4">
-                            <div className="p-4 rounded-lg bg-blue-500/10 border border-blue-500/20 text-sm text-blue-200">
-                                <p className="font-semibold mb-1">System Health</p>
-                                <p className="text-xs text-blue-300/70">
-                                    All API checkpoints are responding optimally. Cache hit rates are within expected limits.
-                                </p>
-                            </div>
-
-                            <div className="p-4 rounded-lg bg-emerald-500/10 border border-emerald-500/20 text-sm text-emerald-200">
-                                <p className="font-semibold mb-1">Inventory Status</p>
-                                <p className="text-xs text-emerald-300/70">
-                                    {overview ? `${overview.totalInventory} items tracked.` : 'Tracking items...'}
-                                    {overview && overview.outOfStock > 0 && ` ${overview.outOfStock} items represent stock-outs.`}
-                                </p>
-                            </div>
-                        </CardContent>
-                    </Card>
-                </div>
-            </div>
+                </TabsContent>
+            </Tabs>
         </div>
-    );
-}
-
-interface StatsCardProps {
-    title: string;
-    value?: number; // Optional because wait for data
-    label?: string;
-    icon: React.ReactNode;
-    loading: boolean;
-    className?: string;
-}
-
-function StatsCard({ title, value, label, icon, loading, className }: StatsCardProps) {
-    return (
-        <Card className={`border shadow-lg ${className}`}>
-            <CardContent className="p-6">
-                <div className="flex justify-between items-start">
-                    <div className="space-y-1">
-                        <p className="text-sm font-medium text-slate-400">{title}</p>
-                        {loading ? (
-                            <Skeleton className="h-8 w-16 bg-white/10" />
-                        ) : (
-                            <h3 className="text-3xl font-bold text-white tracking-tight">{value ?? 0}</h3>
-                        )}
-                        {label && <p className="text-xs text-slate-500">{label}</p>}
-                    </div>
-                    <div className="p-2 bg-slate-950/50 rounded-lg">
-                        {icon}
-                    </div>
-                </div>
-            </CardContent>
-        </Card>
     );
 }
 

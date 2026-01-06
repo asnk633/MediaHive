@@ -128,14 +128,14 @@ export default function Home() {
     // Only Admin triggers general house cleaning
     if (user.role === 'admin') {
       // Run quietly in background
-      fetch('/api/cron/cleanup', { method: 'DELETE' })
-        .then(async res => {
-          if (!res.ok) {
-            const errorData = await res.json().catch(() => ({}));
-            console.warn('[Background Cleanup] Skipped or Failed:', errorData.error || res.statusText);
-          }
-        })
-        .catch(err => console.warn('[Background Cleanup] Network Issue:', err));
+      // fetch('/api/cron/cleanup', { method: 'DELETE' })
+      //   .then(async res => {
+      //     if (!res.ok) {
+      //       const errorData = await res.json().catch(() => ({}));
+      //       console.warn('[Background Cleanup] Skipped or Failed:', errorData.error || res.statusText);
+      //     }
+      //   })
+      //   .catch(err => console.warn('[Background Cleanup] Network Issue:', err));
     }
   }, [user?.uid, fetchData]);
 

@@ -1,255 +1,63 @@
-@import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@600;700;800&family=Poppins:wght@300;400;500;600&display=swap');
-@import "tailwindcss";
-@import '../styles/brand-tokens.css';
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
 
-/* ---------- Brand Tokens (Thaiba MediaHive Blueprint) ---------- */
-/* NOTE: Most tokens are now in brand-tokens.css. 
-   These variables are kept for backward compatibility with 
-   legacy components not yet migrated. */
+@layer base {
+  :root {
+    /* Night Sky Theme - Production Verified */
+    --background: 222 47% 11%;
+    /* #0f172a - Slate 900 */
+    --foreground: 210 40% 98%;
+    /* Slate 50 */
 
-:root {
-  /* Legacy mapping to new tokens */
-  --bg-app: var(--color-bg-app);
-  --bg-card: var(--color-white);
-  --bg-panel: var(--color-white);
+    --card: 222 47% 11%;
+    --card-foreground: 210 40% 98%;
 
-  --primary-start: var(--color-primary-start);
-  --primary-end: var(--color-primary-end);
-  --accent-purple: var(--color-accent-purple);
-  --accent-success: var(--color-accent-success);
-  --accent-warm: var(--color-accent-warning);
+    --popover: 222 47% 11%;
+    --popover-foreground: 210 40% 98%;
 
-  --text-primary: var(--color-text-primary);
-  --text-secondary: var(--color-text-secondary);
-  --text-muted: #919EAB;
+    --primary: 217 91% 60%;
+    /* #3b82f6 - Blue 500 */
+    --primary-foreground: 222 47.4% 11.2%;
 
-  --border-subtle: var(--color-border);
-  --border-focus: rgba(0, 150, 255, 0.5);
+    --secondary: 217 33% 17%;
+    /* Slate 800 */
+    --secondary-foreground: 210 40% 98%;
 
-  --shadow-card: var(--shadow-md);
+    --muted: 217 33% 17%;
+    --muted-foreground: 215 20.2% 65.1%;
 
-  /* Fallbacks for shell layout */
-  --nav-height: 72px;
-  --bottom-nav-height: 80px;
-  --fab-size: 68px;
+    --accent: 217 33% 17%;
+    --accent-foreground: 210 40% 98%;
 
-  /* Fonts */
-  --font-display: 'Montserrat', sans-serif;
-  --font-body: 'Poppins', sans-serif;
-}
+    --destructive: 0 62.8% 30.6%;
+    --destructive-foreground: 210 40% 98%;
 
-/* Dark Theme Override (Optional / System) */
-/* Dark Theme Override (Glassmorphism Redesign) */
-[data-theme='dark'] {
-  /* Rich deep gradient background: Deep Slate -> Midnight Blue */
-  --bg-app: radial-gradient(circle at 50% 0%, #1e293b 0%, #0f172a 40%, #020617 100%);
+    --border: 217 33% 17%;
+    --input: 217 33% 17%;
+    --ring: 224 76% 48%;
+    /* Blue 600 */
 
-  /* Glass Card Variables */
-  --bg-card: rgba(255, 255, 255, 0.03);
-  /* Extremely subtle white tint */
-  --bg-panel: rgba(15, 23, 42, 0.6);
-  /* Darker semi-transparent for panels */
-
-  --text-primary: #f8fafc;
-  /* Slate-50 */
-  --text-secondary: #94a3b8;
-  /* Slate-400 */
-
-  /* Glass Borders & Shadows */
-  --border-subtle: rgba(255, 255, 255, 0.08);
-  --shadow-card: 0 8px 32px 0 rgba(0, 0, 0, 0.36);
-}
-
-/* Base Reset & Typography */
-body {
-  background: var(--bg-app);
-  background-attachment: fixed;
-  /* Ensures gradient covers full height cleanly */
-  color: var(--color-text-primary);
-  font-family: var(--font-body);
-  font-size: 16px;
-  margin: 0;
-  min-height: 100vh;
-  -webkit-font-smoothing: antialiased;
-}
-
-/* Glass Card Effect */
-.glass-card {
-  backdrop-filter: blur(15px);
-  box-shadow: inset 0 0 20px rgba(255, 255, 255, 0.192),
-    inset 0 0 5px rgba(255, 255, 255, 0.274), 0 5px 5px rgba(0, 0, 0, 0.164);
-  border-radius: 15px;
-  border: none;
-}
-
-.dark .glass-card {
-  box-shadow: inset 0 0 20px rgba(255, 255, 255, 0.05),
-    inset 0 0 5px rgba(255, 255, 255, 0.1), 0 5px 5px rgba(0, 0, 0, 0.3);
-}
-
-h1,
-h2,
-h3,
-.display-text {
-  font-family: var(--font-display);
-}
-
-/* Global Utilities */
-.app-body-padding {
-  padding-top: 88px;
-  padding-bottom: 120px;
-}
-
-/* Premium Sheen Effect */
-@keyframes sheen {
-  0% {
-    transform: translateX(-150%) skewX(-15deg);
-  }
-
-  100% {
-    transform: translateX(150%) skewX(-15deg);
+    --radius: 0.5rem;
   }
 }
 
-.hover-sheen {
-  position: relative;
-  overflow: hidden;
-}
+@layer base {
+  * {
+    @apply border-border;
+  }
 
-.hover-sheen::after {
-  content: '';
-  position: absolute;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-  background: linear-gradient(120deg, transparent, rgba(255, 255, 255, 0.2), transparent);
-  transform: translateX(-100%);
-  transition: none;
-  pointer-events: none;
-  /* Ensure it doesn't block interactions */
-}
-
-.hover-sheen:hover::after {
-  animation: sheen 0.6s ease-in-out;
-}
-
-/* Custom Scrollbar for Dark Mode Panels */
-.scrollbar-thin::-webkit-scrollbar {
-  width: 6px;
-  height: 6px;
-}
-
-.scrollbar-thin::-webkit-scrollbar-track {
-  background: transparent;
-}
-
-.scrollbar-thin::-webkit-scrollbar-thumb {
-  background: rgba(255, 255, 255, 0.1);
-  border-radius: 10px;
-}
-
-.scrollbar-thin::-webkit-scrollbar-thumb:hover {
-  background: rgba(255, 255, 255, 0.2);
-}
-
-/* ---------- Text Cycle Loader ---------- */
-.spinnerContainer {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-}
-
-.spinner {
-  width: 56px;
-  height: 56px;
-  display: grid;
-  border: 4px solid #0000;
-  border-radius: 50%;
-  border-right-color: #299fff;
-  animation: tri-spinner 1s infinite linear;
-}
-
-.spinner::before,
-.spinner::after {
-  content: "";
-  grid-area: 1/1;
-  margin: 2px;
-  border: inherit;
-  border-radius: 50%;
-  animation: tri-spinner 2s infinite;
-}
-
-.spinner::after {
-  margin: 8px;
-  animation-duration: 3s;
-}
-
-@keyframes tri-spinner {
-  100% {
-    transform: rotate(1turn);
+  body {
+    @apply bg-background text-foreground;
   }
 }
 
-.loader-text {
-  color: #94a3b8;
-  /* text-slate-400 */
-  font-family: var(--font-body);
-  font-weight: 500;
-  font-size: 18px;
-  /* Slightly smaller than 25px to fit mobile better */
-  box-sizing: content-box;
-  height: 30px;
-  /* Adjusted */
-  padding: 10px 10px;
-  display: flex;
-  border-radius: 8px;
-  margin-top: 10px;
-}
-
-.words {
-  overflow: hidden;
-  height: 100%;
-}
-
-.word {
-  display: block;
-  height: 100%;
-  padding-left: 6px;
-  color: #299fff;
-  animation: cycle-words 5s infinite;
-}
-
-@keyframes cycle-words {
-  10% {
-    transform: translateY(-112%);
+@layer utilities {
+  .glass {
+    @apply bg-opacity-20 backdrop-blur-lg bg-white/10 border border-white/10;
   }
 
-  25% {
-    transform: translateY(-100%);
-  }
-
-  35% {
-    transform: translateY(-212%);
-  }
-
-  50% {
-    transform: translateY(-200%);
-  }
-
-  60% {
-    transform: translateY(-312%);
-  }
-
-  75% {
-    transform: translateY(-300%);
-  }
-
-  85% {
-    transform: translateY(-412%);
-  }
-
-  100% {
-    transform: translateY(-400%);
+  .glass-card {
+    @apply bg-slate-900/50 backdrop-blur-xl border border-white/10 shadow-xl;
   }
 }

@@ -242,7 +242,7 @@ export default function InventoryForm({ initialData, mode }: InventoryFormProps)
 
     // ... (access check render)
 
-    return (
+
     return (
         <div className="max-w-2xl mx-auto p-8 text-center bg-slate-900/50 rounded-2xl border border-white/10">
             <div className="flex justify-center mb-4">
@@ -259,5 +259,5 @@ export default function InventoryForm({ initialData, mode }: InventoryFormProps)
             </div>
         </div>
     );
-    );
+
 }

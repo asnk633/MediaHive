@@ -34,6 +34,39 @@ export async function verifyUser(request: Request): Promise<AuthenticatedUser | 
         console.warn('[verifyUser] No __session cookie found.');
     }
 
+    // Priority 1: Authorization Header (Bearer Token)
+    const authHeader = request.headers.get('Authorization');
+    if (authHeader && authHeader.startsWith('Bearer ')) {
+        const token = authHeader.split('Bearer ')[1];
+        try {
+            console.log('[verifyUser] Verifying ID Token from Header');
+            const decodedToken = await adminAuth.verifyIdToken(token);
+
+            // Allow Super Admin role override from Claims if needed, or fetch from DB
+            // Fetch user profile to get the LATEST role
+            const userDoc = await adminDb.collection('users').doc(decodedToken.uid).get();
+            if (userDoc.exists) {
+                const userData = userDoc.data();
+                return {
+                    uid: decodedToken.uid,
+                    email: decodedToken.email,
+                    email_verified: decodedToken.email_verified,
+                    ...userData,
+                    role: userData.role || decodedToken.role || 'guest', // Fallback to token role if DB missing
+                } as AuthenticatedUser;
+            }
+            return {
+                uid: decodedToken.uid,
+                email: decodedToken.email,
+                email_verified: decodedToken.email_verified,
+                role: 'guest'
+            } as AuthenticatedUser;
+        } catch (e: any) {
+            console.warn('[verifyUser] Header token verification failed:', e.message);
+            // Fallthrough to cookie
+        }
+    }
+
     if (!sessionCookie) {
         return null;
     }
@@ -48,6 +81,7 @@ export async function verifyUser(request: Request): Promise<AuthenticatedUser | 
             return {
                 ...decoded,
                 ...userData, // Mix in DB data like strict 'role'
+                role: userData.role || decoded.role || 'guest',
                 uid: decoded.uid // Ensure UID is from token
             } as AuthenticatedUser;
         }

@@ -29,13 +29,9 @@ export async function GET() {
 
         // 2. Check Auth
         try {
-            // Check Credential Connectivity
             await adminAuth.listUsers(1);
-
-            // Check Token Minting
             const testUid = 'health-check-probe';
             await adminAuth.createCustomToken(testUid);
-
             console.log('[HEALTH] Auth Cycle Valid. Project:', adminAuth.app.options.projectId);
         } catch (e) {
             console.error('Auth Health Check Failed', e);
@@ -57,6 +53,7 @@ export async function GET() {
         }, { status });
 
     } catch (error: any) {
+        // Critical Failure Catch
         console.error('[HEALTH_CHECK_CRITICAL_FAILURE]', error);
 
         health.status = 'error';

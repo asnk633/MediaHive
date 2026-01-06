@@ -207,9 +207,9 @@ export default function Home() {
         )}
       </AnimatePresence>
 
-      <div className="container mx-auto px-4 py-8 max-w-7xl">
+      <div className="container mx-auto px-4 pb-8 max-w-7xl">
         {/* Header */}
-        <header className="mb-8 pt-6">
+        <header className="mb-8">
 
           <h1 className="text-5xl font-display font-medium text-white leading-tight tracking-tight">
             {welcome.greeting}, <br />

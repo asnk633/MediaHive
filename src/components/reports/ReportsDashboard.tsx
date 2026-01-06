@@ -101,8 +101,12 @@ export default function ReportsDashboard() {
                                     ))}
                                 </div>
                             ) : activity.length === 0 ? (
-                                <div className="text-center py-10 text-slate-500">
-                                    No recent activity found.
+                                <div className="flex flex-col items-center justify-center py-16 text-center border2 border-dashed border-[#ffffff1a] rounded-xl bg-slate-900/20">
+                                    <div className="w-16 h-16 rounded-full bg-white/5 flex items-center justify-center mb-4">
+                                        <Activity className="w-8 h-8 text-white/20" />
+                                    </div>
+                                    <h3 className="text-white/40 font-medium">No activity recorded</h3>
+                                    <p className="text-white/20 text-sm mt-1">System logs will appear here.</p>
                                 </div>
                             ) : (
                                 <div className="relative border-l border-[#ffffff1a] ml-4 space-y-8 py-2">

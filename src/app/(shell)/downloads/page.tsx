@@ -113,10 +113,12 @@ export default function FilesPage() {
           ))}
         </div>
       ) : filteredFiles.length === 0 ? (
-        <div className="text-center py-20 bg-[var(--bg-surface)] rounded-2xl border border-[var(--border-subtle)] border-dashed">
-          <FolderOpen size={48} className="mx-auto text-[var(--text-secondary)] opacity-50 mb-4" />
-          <h3 className="text-lg font-bold text-[var(--text-primary)]">No files found</h3>
-          <p className="text-[var(--text-secondary)]">
+        <div className="flex flex-col items-center justify-center py-20 text-center border border-dashed border-[#ffffff1a] rounded-xl bg-slate-900/20">
+          <div className="w-16 h-16 bg-white/5 rounded-full flex items-center justify-center mb-4">
+            <FolderOpen className="text-white/20" size={32} />
+          </div>
+          <h3 className="text-xl font-medium text-white/40 mb-2">No files found</h3>
+          <p className="text-white/20 max-w-sm mx-auto">
             {search ? "Try adjusting your search." : "Upload a file to get started."}
           </p>
         </div>

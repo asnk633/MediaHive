@@ -34,11 +34,11 @@ export const InventoryGrid: React.FC<InventoryGridProps> = ({
     if (items.length === 0) {
         return (
             <div className="flex flex-col items-center justify-center py-20 text-center border border-dashed border-[#ffffff1a] rounded-xl bg-slate-900/20">
-                <div className="w-16 h-16 bg-slate-800/50 rounded-full flex items-center justify-center mb-4">
-                    <FileQuestion className="text-slate-500" size={32} />
+                <div className="w-16 h-16 bg-white/5 rounded-full flex items-center justify-center mb-4">
+                    <FileQuestion className="text-white/20" size={32} />
                 </div>
-                <h3 className="text-xl font-medium text-white mb-2">No items found</h3>
-                <p className="text-slate-400 max-w-sm">
+                <h3 className="text-xl font-medium text-white/40 mb-2">No items found</h3>
+                <p className="text-white/20 max-w-sm">
                     Try adjusting your filters or search terms.
                 </p>
             </div>

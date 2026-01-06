@@ -10,7 +10,7 @@ export default function MyRequestsPage() {
     return (
         <div className="flex flex-col min-h-screen px-4 max-w-7xl mx-auto">
             {/* Header */}
-            <div className="flex items-center gap-4 mb-8 pt-6">
+            <div className="flex items-center gap-4 mb-6">
                 <Link
                     href="/inventory"
                     className="p-2 -ml-2 rounded-full hover:bg-white/5 text-gray-400 hover:text-white transition-colors"

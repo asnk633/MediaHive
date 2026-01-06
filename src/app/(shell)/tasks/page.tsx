@@ -122,7 +122,7 @@ export default function TasksPage() {
   return (
     <div className="flex flex-col min-h-[calc(100vh-6rem)] px-4 gap-6 max-w-[1600px] mx-auto w-full">
       {/* Header */}
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-6">
         <div>
           <h1 className="text-3xl font-bold tracking-tight text-[var(--text-primary)] flex items-center gap-3">
             <CheckSquare className="text-blue-500" />

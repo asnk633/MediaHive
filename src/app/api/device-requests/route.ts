@@ -6,14 +6,37 @@ import { verifyUser } from '@/lib/server-utils';
 import { ServerNotification } from '@/lib/server-notification';
 
 export async function GET(request: NextRequest) {
-    // Stub implementation to ensure safe return
-    return NextResponse.json({
-        items: [],
-        meta: {
-            stub: true,
-            message: 'Device requests stubbed'
+    try {
+        const user = await verifyUser(request);
+        if (!user) {
+            return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
         }
-    });
+
+        // Optional: Role check? Assuming team/admin can view requests.
+        // If strict inventory management, maybe only admin?
+        // For now, let's allow authenticated users to see requests (or at least their own?)
+        // Let's default to Admin seeing all, Users seeing theirs?
+
+        let query: FirebaseFirestore.Query = adminDb.collection('device_requests');
+
+        if (user.role !== 'admin') {
+            // Non-admins only see their own requests
+            query = query.where('requester.uid', '==', user.uid);
+        }
+
+        const snapshot = await query.orderBy('createdAt', 'desc').get();
+        const items = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+
+        return NextResponse.json({
+            items,
+            meta: {
+                total: items.length
+            }
+        });
+    } catch (error: any) {
+        console.error('GET device-requests error:', error);
+        return NextResponse.json({ error: 'Internal Server Error' }, { status: 500 });
+    }
 }
 
 export async function POST(request: NextRequest) {

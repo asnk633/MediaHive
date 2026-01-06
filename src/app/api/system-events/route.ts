@@ -8,14 +8,32 @@ const COLLECTION = 'system_events';
 
 // --- GET Request Handler ---
 export async function GET(request: NextRequest) {
-    // Stub implementation
-    return NextResponse.json({
-        events: [],
-        meta: {
-            stub: true,
-            message: 'System events stubbed'
+    try {
+        const { firestore } = await getFirebaseServices();
+        const user = await verifyUser(request);
+        if (!user) {
+            return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
         }
-    });
+
+        // Fetch system events
+        // Assuming recently created first
+        const snapshot = await firestore.collection(COLLECTION)
+            .orderBy('createdAt', 'desc')
+            .limit(50)
+            .get();
+
+        const events = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+
+        return NextResponse.json({
+            events,
+            meta: {
+                total: events.length
+            }
+        });
+    } catch (error: any) {
+        console.error('GET system-events error:', error);
+        return NextResponse.json({ error: 'Internal Server Error' }, { status: 500 });
+    }
 }
 
 // --- POST Request Handler ---

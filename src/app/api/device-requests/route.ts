@@ -12,20 +12,41 @@ export async function GET(request: NextRequest) {
             return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
         }
 
-        // Optional: Role check? Assuming team/admin can view requests.
-        // If strict inventory management, maybe only admin?
-        // For now, let's allow authenticated users to see requests (or at least their own?)
-        // Let's default to Admin seeing all, Users seeing theirs?
-
         let query: FirebaseFirestore.Query = adminDb.collection('device_requests');
+
+        // Phase 1: Scoping
+        if (user.institutionId) {
+            query = query.where('institutionId', '==', user.institutionId);
+        }
 
         if (user.role !== 'admin') {
             // Non-admins only see their own requests
             query = query.where('requester.uid', '==', user.uid);
         }
 
-        const snapshot = await query.orderBy('createdAt', 'desc').get();
+        // To avoid "Index Required" 500 errors on composite queries (institutionId + requester + sort),
+        // we'll fetch then sort in memory if the dataset is small (device requests usually are).
+        // Or we use basic sort if just admin.
+
+        let snapshot;
+        // Optimization: If simple query, use DB sort. If complex, memory sort.
+        if (user.role === 'admin') {
+            // Admin: institutionId + createdAt desc -> Needs index usually
+            // Fallback: fetch all for institution then sort
+            snapshot = await query.get();
+        } else {
+            // User: institutionId + requester + createdAt -> Needs complex index
+            snapshot = await query.get();
+        }
+
         const items = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+
+        // In-memory sort to guarantee no 500s from missing indexes during stabilization
+        items.sort((a: any, b: any) => {
+            const dateA = new Date(a.createdAt || 0).getTime();
+            const dateB = new Date(b.createdAt || 0).getTime();
+            return dateB - dateA; // Descending
+        });
 
         return NextResponse.json({
             items,
@@ -35,7 +56,7 @@ export async function GET(request: NextRequest) {
         });
     } catch (error: any) {
         console.error('GET device-requests error:', error);
-        return NextResponse.json({ error: 'Internal Server Error' }, { status: 500 });
+        return NextResponse.json({ error: 'Internal Server Error', details: error.message }, { status: 500 });
     }
 }
 
@@ -60,7 +81,6 @@ export async function POST(request: NextRequest) {
         };
 
         // Allow Admin to request on behalf of others
-        // We look for 'requester' in data, which DeviceRequestForm sends.
         if (user.role === 'admin' && data.requester && data.requester.uid) {
             requester = {
                 uid: data.requester.uid,
@@ -73,7 +93,8 @@ export async function POST(request: NextRequest) {
             ...data,
             requester,
             status: 'pending',
-            createdBy: user.uid, // Track who actually created it
+            institutionId: user.institutionId || 'thaiba-media-main', // Enforce Scope
+            createdBy: user.uid,
             createdAt: new Date().toISOString(),
             updatedAt: new Date().toISOString()
         };
@@ -83,11 +104,10 @@ export async function POST(request: NextRequest) {
 
         // Notify Admins
         try {
-            // Only notify if the requester is NOT an admin (prevent self-notification spam if admin creates request)
             if (user.role !== 'admin') {
                 const adminIds = await ServerNotification.getAdminIds();
                 await ServerNotification.broadcast(adminIds, {
-                    type: 'info', // Using generic info type
+                    type: 'info',
                     title: 'New Device Request',
                     message: `${newRequest.requester.name} requested ${newRequest.description}`,
                     entityType: 'device_request',
@@ -99,7 +119,6 @@ export async function POST(request: NextRequest) {
             }
         } catch (notifError) {
             console.error('Failed to send admin notification:', notifError);
-            // Non-blocking error
         }
 
         return Response.json({ id: docRef.id, message: 'Request created' });

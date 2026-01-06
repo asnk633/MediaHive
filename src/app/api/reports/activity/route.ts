@@ -17,27 +17,42 @@ export async function GET(request: NextRequest) {
 
         const db = adminDb;
         const LIMIT_PER_SOURCE = 5;
+        const instId = user.institutionId;
 
-        // Parallel fetches for recent activity
+        // Scoped Queries
+        let tasksQ = db.collection('tasks').orderBy('updatedAt', 'desc').limit(LIMIT_PER_SOURCE);
+        let eventsQ = db.collection('system-events').orderBy('createdAt', 'desc').limit(LIMIT_PER_SOURCE);
+        let inventoryQ = db.collection('inventory').orderBy('updatedAt', 'desc').limit(LIMIT_PER_SOURCE);
+
+        if (instId) {
+            tasksQ = tasksQ.where('institutionId', '==', instId);
+            // eventsQ = eventsQ.where('institutionId', '==', instId); // DANGER: Composite Index (institutionId + createdAt) required
+            inventoryQ = inventoryQ.where('institutionId', '==', instId);
+        }
+
+        // Parallel fetches with INDEX PROTECTION
+        // If an index is missing, Firestore usually throws FAILED_PRECONDITION.
+        // We will catch these individually to avoid failing the whole report.
+
+        const fetchSafely = async (query: firebase.firestore.Query, label: string) => {
+            try {
+                return await query.get();
+            } catch (e: any) {
+                console.warn(`[Report Activity] Failed to fetch ${label}:`, e.message);
+                return { docs: [] }; // Return empty on failure
+            }
+        };
+
         const [recentTasks, recentEvents, recentInventory] = await Promise.all([
-            db.collection('tasks')
-                .orderBy('updatedAt', 'desc')
-                .limit(LIMIT_PER_SOURCE)
-                .get(),
-            db.collection('system-events')
-                .orderBy('createdAt', 'desc')
-                .limit(LIMIT_PER_SOURCE)
-                .get(),
-            db.collection('inventory')
-                .orderBy('updatedAt', 'desc')
-                .limit(LIMIT_PER_SOURCE)
-                .get()
+            fetchSafely(tasksQ, 'tasks'),
+            fetchSafely(eventsQ, 'events'), // Might fail if filtered by instId without index. 
+            fetchSafely(inventoryQ, 'inventory')
         ]);
 
         // Normalization
         const activities: any[] = [];
 
-        recentTasks.docs.forEach(doc => {
+        recentTasks.docs.forEach((doc: any) => {
             const data = doc.data();
             activities.push({
                 id: doc.id,
@@ -49,29 +64,34 @@ export async function GET(request: NextRequest) {
             });
         });
 
-        recentEvents.docs.forEach(doc => {
-            const data = doc.data();
-            activities.push({
-                id: doc.id,
-                type: 'event',
-                title: data.title || 'System Event',
-                description: data.description || 'No description',
-                timestamp: data.createdAt?.toDate?.()?.toISOString() || new Date().toISOString(),
-                meta: { severity: data.severity }
+        // Use strict type check for events
+        if (recentEvents && recentEvents.docs) {
+            recentEvents.docs.forEach((doc: any) => {
+                const data = doc.data();
+                activities.push({
+                    id: doc.id,
+                    type: 'event',
+                    title: data.title || 'System Event',
+                    description: data.description || 'No description',
+                    timestamp: data.createdAt?.toDate?.()?.toISOString() || new Date().toISOString(),
+                    meta: { severity: data.severity }
+                });
             });
-        });
+        }
 
-        recentInventory.docs.forEach(doc => {
-            const data = doc.data();
-            activities.push({
-                id: doc.id,
-                type: 'inventory',
-                title: `Stock Update: ${data.name}`,
-                description: `Quantity: ${data.quantity} ${data.unit}`,
-                timestamp: data.updatedAt?.toDate?.()?.toISOString() || new Date().toISOString(),
-                meta: { status: data.status, quantity: data.quantity }
+        if (recentInventory && recentInventory.docs) {
+            recentInventory.docs.forEach((doc: any) => {
+                const data = doc.data();
+                activities.push({
+                    id: doc.id,
+                    type: 'inventory',
+                    title: `Stock Update: ${data.name}`,
+                    description: `Quantity: ${data.quantity} ${data.unit}`,
+                    timestamp: data.updatedAt?.toDate?.()?.toISOString() || new Date().toISOString(),
+                    meta: { status: data.status, quantity: data.quantity }
+                });
             });
-        });
+        }
 
         // Sort combined list by timestamp desc
         activities.sort((a, b) => new Date(b.timestamp).getTime() - new Date(a.timestamp).getTime());

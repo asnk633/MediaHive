@@ -32,6 +32,17 @@ async function bootstrapSuperAdmin() {
     try {
       userRecord = await admin.auth().getUserByEmail(email);
       console.log(`Found user: ${userRecord.uid} (${userRecord.email})`);
+
+      // Phase 1: Force alignment for existing admins too
+      await admin.firestore().collection('users').doc(userRecord.uid).set({
+        email: email, // ensure email matches
+        name: userRecord.displayName || 'Super Admin',
+        role: 'admin',
+        active: true,
+        institutionId: 'thaiba-media-main',
+        updatedAt: admin.firestore.FieldValue.serverTimestamp()
+      }, { merge: true });
+      console.log(`Normalized user compliance for: ${userRecord.uid}`);
     } catch (error) {
       if (error.code === 'auth/user-not-found') {
         console.log(`User with email ${email} does not exist. Creating user...`);
@@ -43,6 +54,18 @@ async function bootstrapSuperAdmin() {
           displayName: 'Super Admin',
           disabled: false,
         });
+
+        // Ensure we always update the profile with institutionId, even if created/existing
+        await admin.firestore().collection('users').doc(userRecord.uid).set({
+          email: email,
+          name: 'Super Admin',
+          role: 'admin',
+          active: true,
+          institutionId: 'thaiba-media-main', // Phase 1: Force alignment
+          updatedAt: admin.firestore.FieldValue.serverTimestamp()
+        }, { merge: true });
+
+        console.log(`Created/Updated user doc for: ${userRecord.uid}`);
 
         console.log(`Created user: ${userRecord.uid} (${userRecord.email})`);
       } else {

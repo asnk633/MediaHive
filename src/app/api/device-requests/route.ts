@@ -1,46 +1,19 @@
-import { NextRequest } from 'next/server';
+import { NextRequest, NextResponse } from 'next/server';
+
+export const dynamic = 'force-dynamic';
 import { adminDb } from '@/lib/firebase/server';
 import { verifyUser } from '@/lib/server-utils';
 import { ServerNotification } from '@/lib/server-notification';
 
 export async function GET(request: NextRequest) {
-    try {
-        const user = await verifyUser(request);
-        if (!user) {
-            return Response.json({ error: 'Unauthorized' }, { status: 401 });
+    // Stub implementation to ensure safe return
+    return NextResponse.json({
+        items: [],
+        meta: {
+            stub: true,
+            message: 'Device requests stubbed'
         }
-
-        const { searchParams } = new URL(request.url);
-        const userId = searchParams.get('userId');
-
-        const db = adminDb;
-        let query: FirebaseFirestore.Query = db.collection('device_requests');
-
-        if (userId) {
-            // If user is not admin, they can only see their own requests
-            if (user.role !== 'admin' && user.uid !== userId) {
-                return Response.json({ error: 'Forbidden' }, { status: 403 });
-            }
-            query = query.where('requester.uid', '==', userId);
-        } else {
-            // If no userId, only admin can see all
-            if (user.role !== 'admin') {
-                // Default to own requests if not admin and no userId specified
-                query = query.where('requester.uid', '==', user.uid);
-            }
-        }
-
-        const snapshot = await query.orderBy('createdAt', 'desc').get();
-        const requests = snapshot.docs.map(doc => ({
-            id: doc.id,
-            ...doc.data()
-        }));
-
-        return Response.json({ requests });
-    } catch (error: any) {
-        console.error('Error fetching device requests:', error);
-        return Response.json({ error: error.message || 'Failed to fetch device requests' }, { status: 500 });
-    }
+    });
 }
 
 export async function POST(request: NextRequest) {

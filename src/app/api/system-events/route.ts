@@ -1,4 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
+
+export const dynamic = 'force-dynamic';
 import { getFirebaseServices, verifyUser } from '@/lib/server-utils';
 import { logEventCreated, logEventUpdated, logEventDeleted } from '@/app/api/_lib/audit';
 
@@ -6,33 +8,14 @@ const COLLECTION = 'system_events';
 
 // --- GET Request Handler ---
 export async function GET(request: NextRequest) {
-    try {
-        const { firestore } = await getFirebaseServices();
-        const user = await verifyUser(request);
-        if (!user) {
-            return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+    // Stub implementation
+    return NextResponse.json({
+        events: [],
+        meta: {
+            stub: true,
+            message: 'System events stubbed'
         }
-
-        // List events 
-        let query = firestore.collection(COLLECTION);
-
-        // Order by created date or maybe we should just fetch all
-        // System events are usually few, so fetching all is fine for now
-
-        const snapshot = await query.get();
-        const events = snapshot.docs.map((doc: any) => ({
-            id: doc.id,
-            ...doc.data()
-        }));
-
-        return NextResponse.json(events, { status: 200 });
-    } catch (error: any) {
-        console.error('GET error:', error);
-        return NextResponse.json(
-            { error: 'Internal server error: ' + (error as Error).message },
-            { status: 500 }
-        );
-    }
+    });
 }
 
 // --- POST Request Handler ---

@@ -18,11 +18,9 @@ export default function BottomNavigation() {
   const items = [
     { key: 'home', label: 'Home', href: '/home', icon: Home },
     { key: 'tasks', label: 'Tasks', href: '/tasks', icon: CheckSquare },
-    { key: 'events', label: 'Events', href: '/events', icon: Calendar },
     { key: 'spacer', label: '', href: '', icon: null },
     { key: 'inventory', label: 'Inventory', href: '/inventory', icon: Package },
     { key: 'downloads', label: 'Files', href: '/downloads', icon: Download },
-    { key: 'reports', label: 'Reports', href: '/reports', icon: BarChart3 },
   ];
 
   return (
@@ -47,12 +45,16 @@ export default function BottomNavigation() {
           ease: "easeInOut"
         }
       }}
-      className="fixed bottom-6 left-1/2 -translate-x-1/2 bg-[#0f172a]/90 backdrop-blur-2xl flex items-center justify-around h-20 z-30 border border-[#ffffff1a] rounded-[40px]"
+      className="fixed bottom-6 left-1/2 -translate-x-1/2 z-30 bg-[#0f172a]/90 backdrop-blur-2xl border border-[#ffffff1a] rounded-[40px] h-20"
       style={{
         bottom: 'calc(1.5rem + env(safe-area-inset-bottom))',
         width: '26rem',
         minWidth: '26rem',
-        maxWidth: '26rem'
+        maxWidth: '26rem',
+        display: 'grid',
+        gridTemplateColumns: '1fr 1fr 80px 1fr 1fr',
+        alignItems: 'center',
+        justifyItems: 'center'
       }}
     >
       {items.map((item) => {

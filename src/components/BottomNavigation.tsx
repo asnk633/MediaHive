@@ -41,7 +41,7 @@ export default function BottomNavigation() {
         <div
           className="absolute left-1/2 -translate-x-1/2 z-50"
           style={{
-            bottom: '80px', // 80px from bottom of NAV container
+            bottom: '8px', // Vertically centered: (80px - 64px) / 2 = 8px
             width: 'auto',
             height: 'auto'
           }}

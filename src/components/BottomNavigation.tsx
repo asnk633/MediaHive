@@ -57,15 +57,20 @@ export default function BottomNavigation() {
         justifyItems: 'center'
       }}
     >
-      {items.map((item) => {
+      {items.map((item, index) => {
         if (item.key === 'spacer') return <div key="spacer" className="w-20" />;
         const Icon = item.icon!;
         const active = isActive(item.href);
+
+        // Micro-adjustments for visual centering relative to FAB
+        const isLeftSide = index < 2; // Home, Tasks
+        const microOffset = isLeftSide ? 'translate-x-[2px]' : '-translate-x-[2px]';
+
         return (
           <Link
             key={item.key}
             href={item.href}
-            className={`group relative flex flex-col items-center justify-center w-12 h-full transition-all duration-300 ${active ? 'text-blue-400' : 'text-slate-500 hover:text-slate-300'}`}
+            className={`group relative flex flex-col items-center justify-center w-12 h-full transition-all duration-300 ${microOffset} ${active ? 'text-blue-400' : 'text-slate-500 hover:text-slate-300'}`}
           >
             {/* Active Glow Background */}
             {active && (

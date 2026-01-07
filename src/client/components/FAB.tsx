@@ -10,9 +10,16 @@ interface FABProps {
   onMainClick?: () => void;
 }
 
+import { createPortal } from "react-dom";
+
 export default function FAB({ onMainClick }: FABProps) {
   const [isOpen, setIsOpen] = useState(false);
   const { user } = useAuth();
+  const [mounted, setMounted] = useState(false);
+
+  React.useEffect(() => {
+    setMounted(true);
+  }, []);
 
   // If onMainClick is provided, it overrides the menu behavior
   const handleClick = () => {
@@ -25,9 +32,9 @@ export default function FAB({ onMainClick }: FABProps) {
 
 
   const allActions = [
-    { label: "Task", icon: CheckSquare, color: "bg-teal-500/20 text-teal-300 border-teal-500/30", href: "/tasks/new", delay: 0.1 },
-    { label: "Event", icon: Calendar, color: "bg-purple-500/20 text-purple-300 border-purple-500/30", href: "/events/new", delay: 0.05 },
-    { label: "Notify", icon: Bell, color: "bg-orange-500/20 text-orange-300 border-orange-500/30", href: "/notifications/new", delay: 0, role: 'admin' },
+    { label: "Task", icon: CheckSquare, color: "bg-teal-500/20 text-teal-300 border-teal-500/30 hover:border-teal-400 hover:bg-teal-500/30", shadow: "shadow-[0_0_15px_rgba(20,184,166,0.3)]", href: "/tasks/new", delay: 0.1 },
+    { label: "Event", icon: Calendar, color: "bg-purple-500/20 text-purple-300 border-purple-500/30 hover:border-purple-400 hover:bg-purple-500/30", shadow: "shadow-[0_0_15px_rgba(168,85,247,0.3)]", href: "/events/new", delay: 0.05 },
+    { label: "Notify", icon: Bell, color: "bg-orange-500/20 text-orange-300 border-orange-500/30 hover:border-orange-400 hover:bg-orange-500/30", shadow: "shadow-[0_0_15px_rgba(249,115,22,0.3)]", href: "/notifications/new", delay: 0, role: 'admin' },
   ];
 
   const actions = allActions.filter(action => !action.role || action.role === user?.role);
@@ -55,7 +62,16 @@ export default function FAB({ onMainClick }: FABProps) {
   return (
     <>
       <AnimatePresence>
-        {isOpen && <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} className="fixed inset-0 bg-black/60 backdrop-blur-sm z-40" onClick={() => setIsOpen(false)} />}
+        {isOpen && mounted && createPortal(
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            className="fixed inset-0 bg-black/60 backdrop-blur-md z-[100]"
+            onClick={() => setIsOpen(false)}
+          />,
+          document.body
+        )}
       </AnimatePresence>
       <div className="relative flex flex-col-reverse items-center gap-4">
         <motion.button
@@ -70,15 +86,15 @@ export default function FAB({ onMainClick }: FABProps) {
         </motion.button>
         <AnimatePresence>
           {isOpen && (
-            <div className="absolute bottom-20 flex flex-col items-center gap-5 w-max">
+            <div className="absolute bottom-20 flex flex-col items-center gap-5 w-max z-[110]">
               {actions.map((action) => (
                 <Link key={action.label} href={action.href} onClick={() => setIsOpen(false)}>
                   <motion.div initial={{ opacity: 0, y: 20, scale: 0.8 }} animate={{ opacity: 1, y: 0, scale: 1 }} exit={{ opacity: 0, y: 10, scale: 0.8 }} transition={{ delay: action.delay }} className="flex flex-col items-center gap-2 group">
-                    <div className={`w-14 h-14 rounded-full backdrop-blur-xl border shadow-lg flex items-center justify-center transition-all duration-300 group-hover:scale-110 hover-sheen relative overflow-hidden ${action.color}`}>
+                    <div className={`w-14 h-14 rounded-full backdrop-blur-xl border flex items-center justify-center transition-all duration-300 group-hover:scale-110 hover-sheen relative overflow-hidden ${action.color} ${action.shadow}`}>
                       <action.icon size={24} strokeWidth={2} />
                     </div>
                     {/* Clean Label */}
-                    <span className="text-white text-[10px] font-bold px-3 py-1 rounded-full bg-black/80 backdrop-blur-md border border-[#ffffff1a] shadow-md">{action.label}</span>
+                    <span className="text-white text-[10px] font-bold px-3 py-1 rounded-full bg-black/80 backdrop-blur-md border border-[#ffffff1a] shadow-[0_4px_10px_rgba(0,0,0,0.5)]">{action.label}</span>
                   </motion.div>
                 </Link>
               ))}

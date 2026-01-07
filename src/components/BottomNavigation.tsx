@@ -52,25 +52,21 @@ export default function BottomNavigation() {
         minWidth: '26rem',
         maxWidth: '26rem',
         display: 'grid',
-        gridTemplateColumns: '1fr 1fr 80px 1fr 1fr',
+        gridTemplateColumns: '0.95fr 0.95fr 80px 1.05fr 1.05fr',
         alignItems: 'center',
         justifyItems: 'center'
       }}
     >
-      {items.map((item, index) => {
+      {items.map((item) => {
         if (item.key === 'spacer') return <div key="spacer" className="w-20" />;
         const Icon = item.icon!;
         const active = isActive(item.href);
-
-        // Micro-adjustments for visual centering relative to FAB
-        const isLeftSide = index < 2; // Home, Tasks
-        const microOffset = isLeftSide ? '-translate-x-[4px]' : 'translate-x-[4px]';
 
         return (
           <Link
             key={item.key}
             href={item.href}
-            className={`group relative flex flex-col items-center justify-center w-12 h-full transition-all duration-300 ${microOffset} ${active ? 'text-blue-400' : 'text-slate-500 hover:text-slate-300'}`}
+            className={`group relative flex flex-col items-center justify-center w-12 h-full transition-all duration-300 ${active ? 'text-blue-400' : 'text-slate-500 hover:text-slate-300'}`}
           >
             {/* Active Glow Background */}
             {active && (

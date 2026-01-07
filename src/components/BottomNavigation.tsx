@@ -64,7 +64,7 @@ export default function BottomNavigation() {
 
         // Micro-adjustments for visual centering relative to FAB
         const isLeftSide = index < 2; // Home, Tasks
-        const microOffset = isLeftSide ? 'translate-x-[2px]' : '-translate-x-[2px]';
+        const microOffset = isLeftSide ? '-translate-x-[4px]' : 'translate-x-[4px]';
 
         return (
           <Link

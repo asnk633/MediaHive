@@ -47,9 +47,12 @@ export default function BottomNavigation() {
           ease: "easeInOut"
         }
       }}
-      className="fixed bottom-6 left-1/2 -translate-x-1/2 w-[calc(100%-32px)] max-w-md bg-[#0f172a]/90 backdrop-blur-2xl flex items-center justify-around h-20 z-30 border border-[#ffffff1a] rounded-[40px]"
+      className="fixed bottom-6 left-1/2 -translate-x-1/2 bg-[#0f172a]/90 backdrop-blur-2xl flex items-center justify-around h-20 z-30 border border-[#ffffff1a] rounded-[40px]"
       style={{
         bottom: 'calc(1.5rem + env(safe-area-inset-bottom))',
+        width: '26rem',
+        minWidth: '26rem',
+        maxWidth: '26rem'
       }}
     >
       {items.map((item) => {

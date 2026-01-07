@@ -67,8 +67,8 @@ export default function FAB({ onMainClick }: FABProps) {
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
-            className="fixed inset-0 bg-black/30 z-[20]"
-            style={{ backdropFilter: 'blur(24px)', WebkitBackdropFilter: 'blur(24px)' }}
+            className="fixed inset-0 bg-red-900/50 z-[100]"
+            style={{ backdropFilter: 'blur(10px)' }}
             onClick={() => setIsOpen(false)}
           />,
           document.body

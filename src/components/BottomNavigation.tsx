@@ -4,7 +4,7 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { Home, CheckSquare, Calendar, User, Download, BarChart3, Package } from "lucide-react";
 import { motion } from "framer-motion";
-import FAB from './FAB'; // Assuming FAB component is in the same directory or a known path
+import FAB from "@/client/components/FAB";
 
 export default function BottomNavigation() {
   const pathname = usePathname();

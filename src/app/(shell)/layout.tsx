@@ -5,7 +5,7 @@ import BottomNav from "@/components/BottomNavigation";
 import TopBar from "@/components/TopBar";
 import { ToastProvider } from "@/components/ToastProvider";
 import { ClientDataProvider } from "./ClientDataContext";
-import FAB from "@/client/components/FAB";
+
 import { initPWA } from "@/lib/init-pwa";
 import { ClientOfflineStatusIndicator as OfflineStatusIndicator } from "@/components/ClientOfflineStatusIndicator";
 import { HydrationDetector } from "@/components/HydrationDetector";
@@ -62,10 +62,7 @@ export default function ShellLayout({ children }: { children: React.ReactNode })
             <HydrationDetector />
           </div>
 
-          {/* ROOT-LEVEL FIXED ELEMENTS - Outside any transformed containers */}
-          <div className="print:hidden">
-            <FAB />
-          </div>
+
 
           <div className="print:hidden">
             <BottomNav />

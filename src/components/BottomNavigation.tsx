@@ -36,18 +36,8 @@ export default function BottomNavigation() {
           height: '5rem', // h-20
         }}
       >
-        {/* FAB - Positioned absolutely relative to this shared wrapper */}
-        {/* We use negative bottom to "pop out" of the nav container */}
-        <div
-          className="absolute left-1/2 -translate-x-1/2 z-50"
-          style={{
-            bottom: '8px', // Vertically centered: (80px - 64px) / 2 = 8px
-            width: 'auto',
-            height: 'auto'
-          }}
-        >
-          <FAB />
-        </div>
+        {/* FAB - Portals to body with fixed positioning */}
+        <FAB />
 
         <motion.nav
           ref={navRef}

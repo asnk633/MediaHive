@@ -59,22 +59,24 @@ export default function FAB({ onMainClick }: FABProps) {
 
   if (isHidden) return null;
 
-  return (
+  return mounted ? createPortal(
     <>
       <AnimatePresence>
-        {isOpen && mounted && createPortal(
+        {isOpen && (
           <motion.div
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
-            className="fixed inset-0 bg-black/40 z-[20]"
+            className="fixed inset-0 bg-black/40 z-[40]"
             style={{ backdropFilter: 'blur(16px)', WebkitBackdropFilter: 'blur(16px)' }}
             onClick={() => setIsOpen(false)}
-          />,
-          document.body
+          />
         )}
       </AnimatePresence>
-      <div className="relative flex flex-col-reverse items-center gap-4">
+      <div
+        className="fixed left-1/2 -translate-x-1/2 z-[50] flex flex-col-reverse items-center gap-4"
+        style={{ bottom: 'calc(1.5rem + 8px + env(safe-area-inset-bottom))' }}
+      >
         <motion.button
           className="w-16 h-16 rounded-full text-white shadow-[0_8px_30px_rgba(79,70,229,0.5)] flex items-center justify-center relative z-20 bg-gradient-to-br from-blue-600 to-violet-600 hover-sheen overflow-hidden border border-white/20"
           onClick={() => setIsOpen(!isOpen)}
@@ -103,6 +105,7 @@ export default function FAB({ onMainClick }: FABProps) {
           )}
         </AnimatePresence>
       </div>
-    </>
-  );
+    </>,
+    document.body
+  ) : null;
 }

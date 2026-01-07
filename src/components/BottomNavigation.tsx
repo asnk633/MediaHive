@@ -52,7 +52,7 @@ export default function BottomNavigation() {
         minWidth: '26rem',
         maxWidth: '26rem',
         display: 'grid',
-        gridTemplateColumns: '0.95fr 0.95fr 80px 1.05fr 1.05fr',
+        gridTemplateColumns: '84px 84px 80px 84px 84px',
         alignItems: 'center',
         justifyItems: 'center'
       }}

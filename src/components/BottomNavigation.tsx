@@ -19,9 +19,11 @@ export default function BottomNavigation() {
   const items = [
     { key: 'home', label: 'Home', href: '/home', icon: Home },
     { key: 'tasks', label: 'Tasks', href: '/tasks', icon: CheckSquare },
+    { key: 'events', label: 'Events', href: '/events', icon: Calendar },
     { key: 'spacer', label: '', href: '', icon: null },
     { key: 'inventory', label: 'Inventory', href: '/inventory', icon: Package },
     { key: 'downloads', label: 'Files', href: '/downloads', icon: Download },
+    { key: 'reports', label: 'Reports', href: '/reports', icon: BarChart3 },
   ];
 
   return (
@@ -71,7 +73,7 @@ export default function BottomNavigation() {
           className="w-full h-full bg-[#0f172a]/90 backdrop-blur-2xl border border-[#ffffff1a] rounded-[40px]"
           style={{
             display: 'grid',
-            gridTemplateColumns: '84px 84px 80px 84px 84px',
+            gridTemplateColumns: '56px 56px 56px 80px 56px 56px 56px',
             alignItems: 'center',
             justifyItems: 'center'
           }}

@@ -25,6 +25,7 @@ export default function ShellLayout({ children }: { children: React.ReactNode })
     <ProtectedRoute>
       <ToastProvider>
         <ClientDataProvider>
+          {/* Shell Container - NO transforms/filters that break position:fixed */}
           <div className="min-h-screen flex flex-col">
             {/* Keyboard Navigation Detector */}
             <KeyboardNavigationDetector />
@@ -59,16 +60,15 @@ export default function ShellLayout({ children }: { children: React.ReactNode })
             {/* Offline & Hydration Indicators */}
             <OfflineStatusIndicator />
             <HydrationDetector />
+          </div>
 
-            {/* Floating Action Button */}
-            <div className="print:hidden">
-              <FAB />
-            </div>
+          {/* ROOT-LEVEL FIXED ELEMENTS - Outside any transformed containers */}
+          <div className="print:hidden">
+            <FAB />
+          </div>
 
-            {/* Bottom Navigation */}
-            <div className="print:hidden">
-              <BottomNav />
-            </div>
+          <div className="print:hidden">
+            <BottomNav />
           </div>
         </ClientDataProvider>
       </ToastProvider>

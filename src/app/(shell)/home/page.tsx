@@ -20,6 +20,8 @@ import { ActivityFeed } from "@/components/home/widgets/ActivityFeed";
 import { ActiveCampaignsWidget } from "@/components/home/widgets/ActiveCampaignsWidget";
 import { OverdueAlertsWidget } from "@/components/home/widgets/OverdueAlertsWidget"; // Added
 import { SectionHeader } from "@/components/ui/SectionHeader";
+import { PageLayout } from "@/components/ui/layout/PageLayout";
+import { PageHeader } from "@/components/ui/layout/PageHeader";
 
 // Services & Types
 import { CanonicalDataService, TaskStats } from "@/services/canonicalDataService";
@@ -207,16 +209,19 @@ export default function Home() {
         )}
       </AnimatePresence>
 
-      <div className="container mx-auto px-4 pb-8 max-w-7xl">
+      <PageLayout mode="plain">
         {/* Header */}
-        <header className="mb-6">
-
-          <h1 className="text-5xl font-display font-medium text-white leading-tight tracking-tight">
-            {welcome.greeting}, <br />
-            <span className="text-transparent bg-clip-text bg-gradient-to-r from-blue-400 to-violet-400 font-bold">{displayName}.</span>
-          </h1>
-          <p className="mt-3 text-gray-400 text-lg font-light ml-1">{welcome.message}</p>
-        </header>
+        <PageHeader
+          title={
+            <div className="flex flex-col">
+              <span className="text-5xl font-display font-medium text-white leading-tight tracking-tight">
+                {welcome.greeting}, <br />
+                <span className="text-transparent bg-clip-text bg-gradient-to-r from-blue-400 to-violet-400 font-bold">{displayName}.</span>
+              </span>
+            </div>
+          }
+          description={welcome.message}
+        />
 
         {/* ADMIN ONLY: Overdue Alerts */}
         {role === 'admin' && (
@@ -325,7 +330,7 @@ export default function Home() {
             )}
           </div>
         </div>
-      </div>
+      </PageLayout>
 
       {/* Modals */}
       <EventDetailsModal

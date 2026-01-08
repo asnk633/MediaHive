@@ -1,15 +1,17 @@
 'use client';
 import React from 'react';
 import ReportsDashboard from '@/components/reports/ReportsDashboard';
+import { PageLayout } from "@/components/ui/layout/PageLayout";
+import { PageHeader } from "@/components/ui/layout/PageHeader";
 
 export default function ReportsPage() {
   return (
-    <div className="px-6 pb-6 space-y-6">
-      <div className="mb-6">
-        <h1 className="text-2xl font-bold text-white">Intelligence & Reporting</h1>
-        <p className="text-slate-400">Real-time overview of system activity and resource status.</p>
-      </div>
+    <PageLayout mode="plain">
+      <PageHeader
+        title="Intelligence & Reporting"
+        description="Real-time overview of system activity and resource status."
+      />
       <ReportsDashboard />
-    </div>
+    </PageLayout>
   );
 }

@@ -1,7 +1,8 @@
 'use client';
 
-import { useRouter } from 'next/navigation';
 import React, { useState, useEffect, useMemo } from 'react';
+import { useRouter } from 'next/navigation';
+import { PageHeader } from "@/components/ui/layout/PageHeader";
 import { InventoryGrid } from './InventoryGrid';
 import { InventoryFilters } from './InventoryFilters';
 import { InventoryItem, InventoryApiResponse } from '@/types/inventory';
@@ -65,33 +66,46 @@ export default function InventoryView() {
 
     return (
         <div className="space-y-6">
-            {/* Header / Top Bar */}
-            <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
-                <div>
-                    <h1 className="text-3xl font-display font-bold text-white tracking-tight">
-                        Inventory
-                    </h1>
-                    <p className="text-slate-400 mt-1">
-                        Manage and request studio assets.
-                    </p>
-                </div>
+            {/* Header / Top Bar uses PageHeader via parent or directly here? 
+                The plan is to use PageLayout in the parent page (inventory/page.tsx).
+                So this component should just rendering the header using PageHeader, OR better,
+                the parent page renders PageHeader, and this component renders the rest.
+                HOWEVER, looking at my `InventoryPage` update in step 833, I wrapped `<InventoryView />` in PageLayout mode="plain".
+                So `InventoryView` MUST render `PageHeader` as its first child to align with others?
+                OR I should have put `PageHeader` in `InventoryPage`.
+                
+                Actually, to be consistent with `Tasks` and others where the page controls the layout:
+                I should move the Header OUT of here into `InventoryPage.tsx`?
+                
+                Wait, in `InventoryPage` I wrote:
+                <PageLayout mode="plain">
+                    <InventoryView />
+                </PageLayout>
+                
+                So `InventoryView` is the content. If `InventoryView` has the header, then it is fine as long as it uses `PageHeader`.
+                
+                Let's replace the custom header with `PageHeader` component here.
+            */}
+            <PageHeader
+                title="Inventory"
+                description="Manage and request studio assets."
+                actions={
+                    <div className="flex items-center gap-3">
+                        <Button
+                            variant="ghost"
+                            onClick={() => router.push('/inventory/requests')}
+                            className="text-slate-300 hover:text-white hover:bg-white/10"
+                        >
+                            <Clock className="w-4 h-4 mr-2" />
+                            My Requests
+                        </Button>
 
-                {/* Actions */}
-                <div className="flex items-center gap-3">
-                    <Button
-                        variant="ghost"
-                        onClick={() => router.push('/inventory/requests')}
-                        className="text-slate-300 hover:text-white hover:bg-white/10"
-                    >
-                        <Clock className="w-4 h-4 mr-2" />
-                        My Requests
-                    </Button>
-
-                    {user?.role === 'admin' && (
-                        <CreateItemDialog onSuccess={fetchInventory} />
-                    )}
-                </div>
-            </div>
+                        {user?.role === 'admin' && (
+                            <CreateItemDialog onSuccess={fetchInventory} />
+                        )}
+                    </div>
+                }
+            />
 
             {/* Filters */}
             <InventoryFilters

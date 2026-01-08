@@ -16,6 +16,8 @@ import { UpcomingEventsStrip } from "@/components/events/UpcomingEventsStrip";
 
 import { Switch } from "@/components/ui/switch";
 import { Label } from "@/components/ui/label";
+import { PageLayout } from "@/components/ui/layout/PageLayout";
+import { PageHeader } from "@/components/ui/layout/PageHeader";
 
 export default function EventsPage() {
     return (
@@ -99,45 +101,42 @@ function EventsContent() {
     };
 
     return (
-        <div className="flex flex-col min-h-screen px-4 md:max-w-4xl mx-auto">
-            {/* Header */}
-            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-6">
-                <div>
-                    <h1 className="text-3xl font-bold tracking-tight text-[var(--color-text-primary)]">Events</h1>
-                    <p className="text-[var(--color-text-secondary)] mt-1">Schedule and manage your timeline.</p>
-                </div>
+        <PageLayout mode="plain">
+            <PageHeader
+                title="Events"
+                description="Schedule and manage your timeline."
+                actions={
+                    <div className="flex items-center gap-4 self-start sm:self-auto">
+                        {/* Year Toggle */}
+                        {view === 'list' && (
+                            <div className="flex items-center gap-2 px-3 py-2 bg-white/5 border border-[#ffffff1a] rounded-xl">
+                                <Label htmlFor="year-toggle" className="text-sm font-medium text-white/70 whitespace-nowrap">This Year Only</Label>
+                                <Switch
+                                    id="year-toggle"
+                                    checked={showCurrentYearOnly}
+                                    onCheckedChange={setShowCurrentYearOnly}
+                                />
+                            </div>
+                        )}
 
-                {/* Controls */}
-                <div className="flex items-center gap-4 self-start sm:self-auto">
-                    {/* Year Toggle */}
-                    {view === 'list' && (
-                        <div className="flex items-center gap-2 px-3 py-2 bg-white/5 border border-[#ffffff1a] rounded-xl">
-                            <Label htmlFor="year-toggle" className="text-sm font-medium text-white/70 whitespace-nowrap">This Year Only</Label>
-                            <Switch
-                                id="year-toggle"
-                                checked={showCurrentYearOnly}
-                                onCheckedChange={setShowCurrentYearOnly}
-                            />
+                        {/* View Switcher */}
+                        <div className="flex items-center p-1 bg-[var(--color-bg-subtle)] rounded-xl border border-[var(--color-border)]">
+                            <button
+                                onClick={() => setView('calendar')}
+                                className={`p-2 rounded-lg transition-all ${view === 'calendar' ? 'bg-white dark:bg-[#10111a] text-blue-600 shadow-sm' : 'text-[var(--color-text-secondary)] hover:text-[var(--color-text-primary)]'}`}
+                            >
+                                <LayoutGrid size={20} />
+                            </button>
+                            <button
+                                onClick={() => setView('list')}
+                                className={`p-2 rounded-lg transition-all ${view === 'list' ? 'bg-white dark:bg-[#10111a] text-blue-600 shadow-sm' : 'text-[var(--color-text-secondary)] hover:text-[var(--color-text-primary)]'}`}
+                            >
+                                <List size={20} />
+                            </button>
                         </div>
-                    )}
-
-                    {/* View Switcher */}
-                    <div className="flex items-center p-1 bg-[var(--color-bg-subtle)] rounded-xl border border-[var(--color-border)]">
-                        <button
-                            onClick={() => setView('calendar')}
-                            className={`p-2 rounded-lg transition-all ${view === 'calendar' ? 'bg-white dark:bg-[#10111a] text-blue-600 shadow-sm' : 'text-[var(--color-text-secondary)] hover:text-[var(--color-text-primary)]'}`}
-                        >
-                            <LayoutGrid size={20} />
-                        </button>
-                        <button
-                            onClick={() => setView('list')}
-                            className={`p-2 rounded-lg transition-all ${view === 'list' ? 'bg-white dark:bg-[#10111a] text-blue-600 shadow-sm' : 'text-[var(--color-text-secondary)] hover:text-[var(--color-text-primary)]'}`}
-                        >
-                            <List size={20} />
-                        </button>
                     </div>
-                </div>
-            </div>
+                }
+            />
 
             {/* Content */}
             <div className="flex-1">
@@ -194,6 +193,6 @@ function EventsContent() {
                 onClose={() => setIsModalOpen(false)}
                 initialDate={initialModalDate}
             />
-        </div>
+        </PageLayout>
     );
 }

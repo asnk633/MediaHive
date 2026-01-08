@@ -9,6 +9,8 @@ import { UploadModal } from '@/components/files/UploadModal';
 import { Plus, FolderOpen, Search, Filter } from 'lucide-react';
 import { motion } from 'framer-motion';
 import { toast } from 'sonner';
+import { PageLayout } from "@/components/ui/layout/PageLayout";
+import { PageHeader } from "@/components/ui/layout/PageHeader";
 
 export default function FilesPage() {
   const { user } = useAuth();
@@ -69,28 +71,24 @@ export default function FilesPage() {
   };
 
   return (
-    <div className="flex flex-col min-h-screen px-4 max-w-7xl mx-auto">
-      {/* ... (Header) ... */}
-      <header className="mb-6 flex flex-col md:flex-row md:items-center justify-between gap-4">
-        <div>
-          <h1 className="text-3xl font-display font-bold text-[var(--text-primary)] mb-1 flex items-center gap-3">
-            <FolderOpen className="text-indigo-500" /> Downloads
-          </h1>
-          <p className="text-[var(--text-secondary)]">Manage your downloaded files.</p>
-        </div>
-
-        <div className="flex items-center gap-3">
-          {canUpload && (
-            <button
-              onClick={() => setUploadOpen(true)}
-              className="flex items-center gap-2 px-4 py-2 bg-indigo-600 hover:bg-indigo-700 text-white rounded-xl font-bold shadow-lg shadow-indigo-500/20 transition-all"
-            >
-              <Plus size={20} />
-              Upload
-            </button>
-          )}
-        </div>
-      </header>
+    <PageLayout mode="plain">
+      <PageHeader
+        title="Downloads"
+        description="Manage your downloaded files."
+        actions={
+          <div className="flex items-center gap-3">
+            {canUpload && (
+              <button
+                onClick={() => setUploadOpen(true)}
+                className="flex items-center gap-2 px-4 py-2 bg-indigo-600 hover:bg-indigo-700 text-white rounded-xl font-bold shadow-lg shadow-indigo-500/20 transition-all"
+              >
+                <Plus size={20} />
+                Upload
+              </button>
+            )}
+          </div>
+        }
+      />
 
       {/* Toolbar */}
       <div className="flex gap-3 mb-6">
@@ -174,7 +172,7 @@ export default function FilesPage() {
           </div>
         </div>
       )}
-    </div>
+    </PageLayout>
   );
 
 }

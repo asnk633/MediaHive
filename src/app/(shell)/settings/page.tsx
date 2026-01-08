@@ -5,12 +5,18 @@ import { SettingsLayout } from '@/components/settings/SettingsLayout';
 import { ProfileSettingsView } from '@/components/settings/views/ProfileSettingsView';
 import { NotificationSettingsView } from '@/components/settings/views/NotificationSettingsView';
 import { ShieldAlert, Building2 } from 'lucide-react';
+import { PageLayout } from "@/components/ui/layout/PageLayout";
+import { PageHeader } from "@/components/ui/layout/PageHeader";
 
 export default function SettingsPage() {
     const [activeTab, setActiveTab] = useState<'profile' | 'notifications' | 'users' | 'institution'>('profile');
 
     return (
-        <div className="p-6 md:p-8 max-w-[1600px] mx-auto">
+        <PageLayout mode="plain">
+            <PageHeader
+                title="Settings"
+                description="Manage your account."
+            />
             <SettingsLayout activeTab={activeTab} onTabChange={setActiveTab}>
 
                 {activeTab === 'profile' && <ProfileSettingsView />}
@@ -38,6 +44,6 @@ export default function SettingsPage() {
                 )}
 
             </SettingsLayout>
-        </div>
+        </PageLayout>
     );
 }

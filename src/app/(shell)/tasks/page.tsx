@@ -124,12 +124,7 @@ export default function TasksPage() {
   return (
     <PageLayout mode="plain">
       <PageHeader
-        title={
-          <span className="flex items-center gap-3">
-            <CheckSquare className="text-blue-500" />
-            Tasks
-          </span>
-        }
+        title="Tasks"
         description="Accountability-focused task management."
         actions={
           <Link href="/tasks/new">

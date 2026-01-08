@@ -13,11 +13,11 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Calendar } from "@/components/ui/calendar";
 import { format } from "date-fns";
 import { cn } from "@/lib/utils";
-import { Save, Loader2, Image as ImageIcon, X, Upload } from "lucide-react";
+import { Save, Loader2, Image as ImageIcon, X, Upload, Info } from "lucide-react";
 import { toast } from "sonner";
 import { FileService } from "@/services/fileService";
 import { ImageCropper } from "@/components/ui/ImageCropper";
-import { INVENTORY_CATEGORIES, InventoryCondition, InventoryAssetStatus } from "@/types/inventory";
+import { INVENTORY_CATEGORIES, INVENTORY_GUIDE, InventoryCondition, InventoryAssetStatus } from "@/types/inventory";
 import { inventoryService } from "@/services/inventoryService";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { CalendarIcon } from "lucide-react";
@@ -118,6 +118,8 @@ export default function AddInventoryPage() {
         // Basic Validation
         if (!formData.name.trim()) return toast.error("Asset Name is required");
         if (!formData.category) return toast.error("Category is required");
+        if (!formData.condition) return toast.error("Condition is required");
+        if (!formData.status) return toast.error("Status is required");
 
         try {
             setLoading(true);
@@ -252,7 +254,29 @@ export default function AddInventoryPage() {
 
                         {/* Category */}
                         <div className="space-y-2">
-                            <Label className="text-slate-300">Category <span className="text-red-400">*</span></Label>
+                            <div className="flex items-center gap-2">
+                                <Label className="text-slate-300">Category <span className="text-red-400">*</span></Label>
+                                <Popover>
+                                    <PopoverTrigger asChild>
+                                        <button type="button" className="text-slate-500 hover:text-white transition-colors">
+                                            <Info className="w-4 h-4" />
+                                        </button>
+                                    </PopoverTrigger>
+                                    <PopoverContent className="w-80 p-4 bg-[#0f172a] border-white/10 text-slate-300 shadow-xl max-h-[400px] overflow-y-auto" align="start">
+                                        <div className="space-y-3">
+                                            <h4 className="font-medium text-white border-b border-white/10 pb-2">Categorization Guide</h4>
+                                            <div className="space-y-4 text-xs">
+                                                {Object.entries(INVENTORY_GUIDE).map(([cat, desc]) => (
+                                                    <div key={cat}>
+                                                        <span className="text-blue-400 font-medium block mb-0.5">{cat}</span>
+                                                        <span className="text-slate-400">{desc}</span>
+                                                    </div>
+                                                ))}
+                                            </div>
+                                        </div>
+                                    </PopoverContent>
+                                </Popover>
+                            </div>
                             <Select
                                 value={formData.category}
                                 onValueChange={val => setFormData(prev => ({ ...prev, category: val }))}
@@ -266,11 +290,17 @@ export default function AddInventoryPage() {
                                     ))}
                                 </SelectContent>
                             </Select>
+
+                            {formData.category && INVENTORY_GUIDE[formData.category as keyof typeof INVENTORY_GUIDE] && (
+                                <p className="text-xs text-blue-400/80 bg-blue-500/5 px-3 py-2 rounded-lg border border-blue-500/10">
+                                    {INVENTORY_GUIDE[formData.category as keyof typeof INVENTORY_GUIDE]}
+                                </p>
+                            )}
                         </div>
 
                         {/* Condition */}
                         <div className="space-y-2">
-                            <Label className="text-slate-300">Condition</Label>
+                            <Label className="text-slate-300">Condition <span className="text-red-400">*</span></Label>
                             <Select
                                 value={formData.condition}
                                 onValueChange={(val: InventoryCondition) => setFormData(prev => ({ ...prev, condition: val }))}
@@ -288,7 +318,7 @@ export default function AddInventoryPage() {
 
                         {/* Status */}
                         <div className="space-y-2">
-                            <Label className="text-slate-300">Status</Label>
+                            <Label className="text-slate-300">Status <span className="text-red-400">*</span></Label>
                             <Select
                                 value={formData.status}
                                 onValueChange={(val: InventoryAssetStatus) => setFormData(prev => ({ ...prev, status: val }))}

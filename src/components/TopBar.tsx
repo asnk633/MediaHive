@@ -36,13 +36,13 @@ export default function TopBar({ title = "Thaiba MediaHive" }: { title?: string 
   };
 
   return (
-    <header className="fixed top-0 left-0 right-0 bg-[var(--color-bg-glass)] backdrop-blur-md border-b border-[var(--color-border)] z-30 flex items-end justify-between px-4 lg:px-8 transition-all pb-3" style={{ height: 'calc(72px + env(safe-area-inset-top))', paddingTop: 'env(safe-area-inset-top)' }}>
+    <header className="fixed top-0 left-0 right-0 bg-background/60 backdrop-blur-xl border-b border-white/[0.02] z-30 flex items-end justify-between px-4 lg:px-8 transition-all pb-3" style={{ height: 'calc(72px + env(safe-area-inset-top))', paddingTop: 'env(safe-area-inset-top)' }}>
       <div className="flex items-center gap-3">
         {/* Logo Icon */}
         <div className="w-10 h-10 flex items-center justify-center">
           <img src="/mediahive-icon.png" alt="Logo" className="w-full h-full object-contain" />
         </div>
-        <h1 className="font-display font-bold text-xl text-[var(--color-text-primary)] hidden lg:block">{title}</h1>
+        <h1 className="font-display font-semibold text-xl text-foreground hidden lg:block">{title}</h1>
       </div>
 
       <div className="flex items-center gap-3">
@@ -50,9 +50,9 @@ export default function TopBar({ title = "Thaiba MediaHive" }: { title?: string 
         <Link href="/settings">
           <button
             aria-label="Settings"
-            className="p-2 rounded-full text-gray-500 hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors"
+            className="p-2 rounded-full text-muted-foreground hover:bg-gray-100 dark:hover:bg-gray-700 hover:text-foreground transition-colors"
           >
-            <Settings size={20} />
+            <Settings size={20} strokeWidth={2.25} />
           </button>
         </Link>
 
@@ -72,8 +72,8 @@ export default function TopBar({ title = "Thaiba MediaHive" }: { title?: string 
               />
             </div>
             <div className="hidden md:block text-left">
-              <div className="text-sm font-semibold text-text-primary">{user?.name || 'User'}</div>
-              <div className="text-xs text-text-secondary capitalize">{user?.role || 'guest'}</div>
+              <div className="text-sm font-medium text-foreground">{user?.name || 'User'}</div>
+              <div className="text-xs text-muted-foreground capitalize">{user?.role || 'guest'}</div>
             </div>
           </button>
 

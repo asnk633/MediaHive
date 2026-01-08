@@ -10,6 +10,8 @@ import { CanonicalDataService } from "@/services/canonicalDataService";
 import { TaskDetailsModal } from "@/components/tasks/TaskDetailsModal";
 import { EditTaskDialog } from "@/components/tasks/EditTaskDialog";
 import { TaskService } from "@/services/tasks";
+import { PageLayout } from "@/components/ui/layout/PageLayout";
+import { PageHeader } from "@/components/ui/layout/PageHeader";
 
 export default function TasksPage() {
   const [tasks, setTasks] = useState<Task[]>([]);
@@ -120,19 +122,16 @@ export default function TasksPage() {
   };
 
   return (
-    <div className="flex flex-col min-h-[calc(100vh-6rem)] px-4 gap-6 max-w-[1600px] mx-auto w-full">
-      {/* Header */}
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-6">
-        <div>
-          <h1 className="text-3xl font-bold tracking-tight text-[var(--text-primary)] flex items-center gap-3">
+    <PageLayout mode="plain">
+      <PageHeader
+        title={
+          <span className="flex items-center gap-3">
             <CheckSquare className="text-blue-500" />
             Tasks
-          </h1>
-          <p className="text-[var(--text-secondary)] mt-1">Accountability-focused task management.</p>
-        </div>
-
-        <div className="flex items-center gap-3">
-          {/* Add Task Button */}
+          </span>
+        }
+        description="Accountability-focused task management."
+        actions={
           <Link href="/tasks/new">
             <button
               aria-label="New Task"
@@ -142,8 +141,8 @@ export default function TasksPage() {
               <span className="hidden sm:inline">New Task</span>
             </button>
           </Link>
-        </div>
-      </div>
+        }
+      />
 
       {/* Content */}
       <div className="flex-1">
@@ -172,6 +171,6 @@ export default function TasksPage() {
           onUpdate={handleTaskUpdate}
         />
       )}
-    </div>
+    </PageLayout>
   );
 }

@@ -1,11 +1,15 @@
-// src/components/ui/PageContainer.tsx
-import React, { PropsWithChildren } from "react";
-import "./page-container.css";
+import React, { ReactNode } from 'react';
+import { cn } from '@/lib/utils';
 
-export default function PageContainer({ children, className = "" }: PropsWithChildren<{ className?: string }>) {
+interface PageContainerProps {
+  children: ReactNode;
+  className?: string;
+}
+
+export function PageContainer({ children, className }: PageContainerProps) {
   return (
-    <main className={`ds-page ${className}`}>
-      <div className="ds-page-inner">{children}</div>
-    </main>
+    <div className={cn("w-full max-w-7xl mx-auto px-4 sm:px-6 lg:px-8", className)}>
+      {children}
+    </div>
   );
 }

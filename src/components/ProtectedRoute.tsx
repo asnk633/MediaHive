@@ -1,27 +1,28 @@
 'use client';
 import { useEffect } from 'react';
-import { useRouter, usePathname } from 'next/navigation';
+import { useRouter } from 'next/navigation';
 import { useAuth } from '@/contexts/AuthContext';
-import { TextCycleLoader } from './ui/TextCycleLoader';
+import { AppLoader } from './ui/AppLoader';
 
-export default function ProtectedRoute({ children }: { children: React.ReactNode }) {
+interface ProtectedRouteProps {
+    children: React.ReactNode;
+    requireAdmin?: boolean;
+}
+
+export default function ProtectedRoute({ children, requireAdmin = false }: ProtectedRouteProps) {
     const { user, loading } = useAuth();
     const router = useRouter();
-    const pathname = usePathname();
 
     useEffect(() => {
         if (!loading && !user) {
-            // Store the attempted path to redirect after login
-            sessionStorage.setItem('redirectAfterLogin', pathname);
-            router.push('/login');
+            router.replace('/login');
         }
-    }, [user, loading, router, pathname]);
+    }, [user, loading, router]);
 
-    // Show loading state while checking auth
     if (loading) {
         return (
-            <div className="min-h-screen flex items-center justify-center bg-[var(--color-bg-app)]">
-                <TextCycleLoader />
+            <div className="flex items-center justify-center min-h-screen bg-night-sky">
+                <AppLoader />
             </div>
         );
     }

@@ -6,17 +6,19 @@ import { CalendarMasterList } from '@/components/admin/CalendarMasterList';
 import { Button } from '@/components/ui/button';
 import { ChevronLeft } from 'lucide-react';
 import { useAuth } from '@/contexts/AuthContext';
-import { TextCycleLoader } from '@/components/ui/TextCycleLoader';
+import { AppLoader } from '@/components/ui/AppLoader';
 
 export default function CalendarMasterPage() {
     const router = useRouter();
     const { user, loading } = useAuth();
 
-    if (loading) return (
-        <div className="min-h-screen bg-[var(--color-bg-primary)] flex items-center justify-center text-white">
-            <TextCycleLoader />
-        </div>
-    );
+    if (loading) {
+        return (
+            <div className="flex items-center justify-center h-screen">
+                <AppLoader />
+            </div>
+        );
+    }
 
     if (!user || user.role !== 'admin') {
         // router.push('/home'); // Can't push while rendering? UseEffect is better but for now naive return is safer to prevent hydration mismatch

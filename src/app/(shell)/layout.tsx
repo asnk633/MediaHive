@@ -13,7 +13,7 @@ import ErrorBoundary from "@/components/ErrorBoundary";
 import { OfflineBanner } from "@/components/OfflineBanner";
 import { KeyboardNavigationDetector } from "@/components/KeyboardNavigationDetector";
 import ProtectedRoute from "@/components/ProtectedRoute";
-import { TextCycleLoader } from "@/components/ui/TextCycleLoader";
+import { AppLoader } from "@/components/ui/AppLoader";
 
 export default function ShellLayout({ children }: { children: React.ReactNode }) {
   // Initialize PWA functionality
@@ -26,7 +26,7 @@ export default function ShellLayout({ children }: { children: React.ReactNode })
       <ToastProvider>
         <ClientDataProvider>
           {/* Shell Container - NO transforms/filters that break position:fixed */}
-          <div className="min-h-screen flex flex-col">
+          <div className="min-h-screen flex flex-col bg-night-sky">
             {/* Keyboard Navigation Detector */}
             <KeyboardNavigationDetector />
 
@@ -49,7 +49,7 @@ export default function ShellLayout({ children }: { children: React.ReactNode })
               <ErrorBoundary>
                 <Suspense fallback={
                   <div className="flex items-center justify-center p-12">
-                    <TextCycleLoader />
+                    <AppLoader />
                   </div>
                 }>
                   {children}

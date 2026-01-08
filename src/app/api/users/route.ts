@@ -126,6 +126,25 @@ export async function PUT(request: NextRequest) {
 
     // Update the user in Firestore
     const userRef = db.collection('users').doc(uid);
+
+    // Enforce XOR Affiliation Logic
+    const { institutionId, departmentId } = data;
+
+    // Logic: 
+    // If BOTH are present -> Error
+    // If neither is present -> Warning? Or allow for legacy?
+    // Strict Mode: One must be present.
+    // For now, we validate if they are explicitly being updated.
+
+    if (institutionId && departmentId) {
+      return Response.json({ error: 'User cannot be affiliated with both an Institution and a Department.' }, { status: 400 });
+    }
+
+    // If updating, ensure we clear the other one if needed.
+    // However, the client should send null for the one being cleared.
+    // If client sends { institutionId: 'xyz' }, we should probably set departmentId: null automatically?
+    // Let's rely on client sending { institutionId: 'xyz', departmentId: null }.
+
     await userRef.update(data);
 
     return Response.json({ message: 'User updated successfully' });

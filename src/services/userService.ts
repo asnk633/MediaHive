@@ -1,4 +1,7 @@
 import { apiClient } from '@/lib/apiClient';
+import { User } from '@/types/user';
+
+export type { User };
 
 // API helper function
 const apiRequest = async (endpoint: string, options: RequestInit = {}) => {
@@ -6,18 +9,6 @@ const apiRequest = async (endpoint: string, options: RequestInit = {}) => {
     return apiClient(url, options);
 };
 
-export interface User {
-    uid: string;
-    name: string;
-    email: string;
-    role: string;
-    avatarUrl?: string;
-    avatarUpdatedAt?: any;
-    defaultDepartment?: string;
-    defaultInstitution?: string;
-    createdAt?: string;
-    officialName?: string;
-}
 
 const USERS_COLLECTION = 'users';
 

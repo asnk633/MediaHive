@@ -1,0 +1,187 @@
+"use client";
+
+import React, { useState, useEffect } from 'react';
+import { User } from '@/services/userService';
+import { Institution, Department } from '@/types/structure';
+import { Button } from '@/components/ui/button';
+import { Input } from '@/components/ui/input';
+import { Label } from '@/components/ui/label';
+import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
+import { Loader2 } from 'lucide-react';
+import { toast } from 'sonner';
+
+interface UserDialogProps {
+    open: boolean;
+    onOpenChange: (open: boolean) => void;
+    user: User | null; // null = create mode
+    onSave: (data: Partial<User>) => Promise<void>;
+    institutions: Institution[];
+    departments: Department[]; // User can be affiliated directly to a department OR institution
+}
+
+export function UserDialog({ open, onOpenChange, user, onSave, institutions, departments }: UserDialogProps) {
+    const [loading, setLoading] = useState(false);
+
+    // Form State
+    const [role, setRole] = useState('guest');
+
+    // Affiliation State
+    // XOR: affiliationType = 'institution' | 'department'
+    const [affiliationType, setAffiliationType] = useState<'institution' | 'department'>('institution');
+    const [selectedInstitution, setSelectedInstitution] = useState<string>('');
+    const [selectedDepartment, setSelectedDepartment] = useState<string>('');
+
+    useEffect(() => {
+        if (open) {
+            if (user) {
+                setRole(user.role);
+                // Determine affiliation
+                if (user.institutionId) {
+                    setAffiliationType('institution');
+                    setSelectedInstitution(user.institutionId);
+                    setSelectedDepartment('');
+                } else if (user.departmentId) {
+                    setAffiliationType('department');
+                    setSelectedDepartment(user.departmentId);
+                    setSelectedInstitution('');
+                } else {
+                    // Default fallback or floating user
+                    setAffiliationType('institution');
+                    setSelectedInstitution('');
+                    setSelectedDepartment('');
+                }
+            } else {
+                // Reset for create
+                setRole('guest');
+                setAffiliationType('institution');
+                setSelectedInstitution('');
+                setSelectedDepartment('');
+            }
+        }
+    }, [open, user]);
+
+    const handleSave = async () => {
+        setLoading(true);
+        try {
+            const payload: any = { role };
+
+            if (affiliationType === 'institution') {
+                if (!selectedInstitution) {
+                    toast.error("Please select an institution");
+                    setLoading(false);
+                    return;
+                }
+                payload.institutionId = selectedInstitution;
+                payload.departmentId = null; // Clear other
+            } else {
+                if (!selectedDepartment) {
+                    toast.error("Please select a department");
+                    setLoading(false);
+                    return;
+                }
+                payload.departmentId = selectedDepartment;
+                payload.institutionId = null; // Clear other
+            }
+
+            await onSave(payload);
+            onOpenChange(false);
+        } catch (error) {
+            console.error(error);
+        } finally {
+            setLoading(false);
+        }
+    };
+
+    return (
+        <Dialog open={open} onOpenChange={onOpenChange}>
+            <DialogContent className="bg-slate-900 border-white/10 sm:max-w-[500px]">
+                <DialogHeader>
+                    <DialogTitle className="text-white">
+                        {user ? `Edit User: ${user.name}` : 'Invite User'}
+                    </DialogTitle>
+                </DialogHeader>
+
+                <div className="space-y-6 pt-4">
+                    {/* Role Selection */}
+                    <div className="space-y-2">
+                        <Label className="text-slate-300">Role</Label>
+                        <Select value={role} onValueChange={setRole}>
+                            <SelectTrigger className="bg-slate-800 border-white/10 text-white">
+                                <SelectValue />
+                            </SelectTrigger>
+                            <SelectContent className="bg-slate-800 border-white/10">
+                                <SelectItem value="admin">Admin</SelectItem>
+                                <SelectItem value="team">Team Member</SelectItem>
+                                <SelectItem value="guest">Guest</SelectItem>
+                            </SelectContent>
+                        </Select>
+                    </div>
+
+                    {/* Affiliation Switch */}
+                    <div className="space-y-2">
+                        <Label className="text-slate-300">Affiliation</Label>
+                        <Tabs
+                            value={affiliationType}
+                            onValueChange={(v) => setAffiliationType(v as any)}
+                            className="w-full"
+                        >
+                            <TabsList className="bg-slate-800 border border-white/5 w-full">
+                                <TabsTrigger value="institution" className="flex-1">Institution</TabsTrigger>
+                                <TabsTrigger value="department" className="flex-1">Department</TabsTrigger>
+                            </TabsList>
+
+                            <div className="mt-4 p-4 bg-slate-800/50 rounded-xl border border-white/5">
+                                <TabsContent value="institution" className="mt-0">
+                                    <Label className="text-xs text-slate-400 mb-2 block">Select Institution</Label>
+                                    <Select value={selectedInstitution} onValueChange={setSelectedInstitution}>
+                                        <SelectTrigger className="bg-slate-900 border-white/10 text-white">
+                                            <SelectValue placeholder="Choose Institution..." />
+                                        </SelectTrigger>
+                                        <SelectContent className="bg-slate-900 border-white/10">
+                                            {institutions.map(inst => (
+                                                <SelectItem key={inst.id} value={inst.id}>
+                                                    {inst.name}
+                                                </SelectItem>
+                                            ))}
+                                        </SelectContent>
+                                    </Select>
+                                </TabsContent>
+
+                                <TabsContent value="department" className="mt-0">
+                                    <Label className="text-xs text-slate-400 mb-2 block">Select Global Department</Label>
+                                    <Select value={selectedDepartment} onValueChange={setSelectedDepartment}>
+                                        <SelectTrigger className="bg-slate-900 border-white/10 text-white">
+                                            <SelectValue placeholder="Choose Department..." />
+                                        </SelectTrigger>
+                                        <SelectContent className="bg-slate-900 border-white/10">
+                                            {departments.map(dept => (
+                                                <SelectItem key={dept.id} value={dept.id}>
+                                                    {dept.name}
+                                                </SelectItem>
+                                            ))}
+                                        </SelectContent>
+                                    </Select>
+                                </TabsContent>
+                            </div>
+                        </Tabs>
+                    </div>
+
+                    <div className="flex justify-end gap-3 pt-4">
+                        <Button variant="ghost" type="button" onClick={() => onOpenChange(false)} className="text-slate-400">
+                            Cancel
+                        </Button>
+                        <Button
+                            onClick={handleSave}
+                            disabled={loading}
+                            className="bg-blue-600 hover:bg-blue-500 text-white"
+                        >
+                            {loading ? <Loader2 className="w-4 h-4 animate-spin" /> : "Save Changes"}
+                        </Button>
+                    </div>
+                </div>
+            </DialogContent>
+        </Dialog>
+    );
+}

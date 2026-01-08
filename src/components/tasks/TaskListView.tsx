@@ -15,6 +15,13 @@ import {
     DropdownMenuItem,
     DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
+import {
+    Select,
+    SelectContent,
+    SelectItem,
+    SelectTrigger,
+    SelectValue,
+} from "@/components/ui/select";
 import { cn } from "@/lib/utils";
 
 interface TaskListViewProps {
@@ -235,33 +242,37 @@ const TaskListViewComponent: React.FC<TaskListViewProps> = ({ tasks, loading = f
                 </div>
 
                 {/* Filters */}
+                {/* Filters */}
                 <div className="flex items-center gap-3">
                     <Filter className="w-4 h-4 text-gray-500" />
-                    <select
-                        value={filterStatus}
-                        onChange={(e) => setFilterStatus(e.target.value)}
-                        className="bg-transparent border-none text-sm font-medium text-gray-400 focus:ring-0 cursor-pointer hover:text-white transition-colors [&>option]:bg-[#0f172a] [&>option]:text-white"
-                    >
-                        <option value="all" className="bg-[#0f172a] text-white">Any Status</option>
-                        <option value="todo" className="bg-[#0f172a] text-white">Pending</option>
-                        <option value="in_progress" className="bg-[#0f172a] text-white">Working</option>
-                        <option value="review" className="bg-[#0f172a] text-white">On Hold</option>
-                        <option value="done" className="bg-[#0f172a] text-white">Completed</option>
-                    </select>
+
+                    <Select value={filterStatus} onValueChange={setFilterStatus}>
+                        <SelectTrigger className="w-[140px] border-none bg-transparent hover:bg-white/[0.05] text-gray-400 hover:text-white h-auto py-1 px-2 rounded-lg shadow-none">
+                            <SelectValue placeholder="Status" />
+                        </SelectTrigger>
+                        <SelectContent>
+                            <SelectItem value="all">Any Status</SelectItem>
+                            <SelectItem value="todo">Pending</SelectItem>
+                            <SelectItem value="in_progress">Working</SelectItem>
+                            <SelectItem value="review">On Hold</SelectItem>
+                            <SelectItem value="done">Completed</SelectItem>
+                        </SelectContent>
+                    </Select>
 
                     <div className="w-px h-4 bg-white/10" />
 
-                    <select
-                        value={filterPriority}
-                        onChange={(e) => setFilterPriority(e.target.value)}
-                        className="bg-transparent border-none text-sm font-medium text-gray-400 focus:ring-0 cursor-pointer hover:text-white transition-colors [&>option]:bg-[#0f172a] [&>option]:text-white"
-                    >
-                        <option value="all" className="bg-[#0f172a] text-white">Any Priority</option>
-                        <option value="urgent" className="bg-[#0f172a] text-white">Urgent</option>
-                        <option value="high" className="bg-[#0f172a] text-white">High</option>
-                        <option value="medium" className="bg-[#0f172a] text-white">Medium</option>
-                        <option value="low" className="bg-[#0f172a] text-white">Low</option>
-                    </select>
+                    <Select value={filterPriority} onValueChange={setFilterPriority}>
+                        <SelectTrigger className="w-[140px] border-none bg-transparent hover:bg-white/[0.05] text-gray-400 hover:text-white h-auto py-1 px-2 rounded-lg shadow-none">
+                            <SelectValue placeholder="Priority" />
+                        </SelectTrigger>
+                        <SelectContent>
+                            <SelectItem value="all">Any Priority</SelectItem>
+                            <SelectItem value="urgent">Urgent</SelectItem>
+                            <SelectItem value="high">High</SelectItem>
+                            <SelectItem value="medium">Medium</SelectItem>
+                            <SelectItem value="low">Low</SelectItem>
+                        </SelectContent>
+                    </Select>
                 </div>
             </div>
 

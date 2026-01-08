@@ -6,8 +6,16 @@ export interface User {
     name: string;
     role: 'admin' | 'team' | 'guest';
     photoURL?: string;
-    defaultDepartment?: string;
+
+    // Affiliation (One must be set, strictly XOR in logic)
+    institutionId?: string;
+    departmentId?: string;
+
+    /** @deprecated Use institutionId */
     defaultInstitution?: string;
+    /** @deprecated Use departmentId */
+    defaultDepartment?: string;
+
     createdAt?: string;
     officialName?: string;
     avatarUrl?: string;

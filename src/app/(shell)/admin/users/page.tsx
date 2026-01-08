@@ -1,235 +1,164 @@
 "use client";
-import React, { useEffect, useState } from 'react';
-import { useAuth } from '@/contexts/AuthContext';
-import { apiClient, apiGet } from '@/lib/apiClient';
-import { motion } from 'framer-motion';
-import { Shield, User as UserIcon, Users, Save } from 'lucide-react';
-import { RoleEditor } from '@/components/admin/RoleEditor';
-import { User } from '@/types/user';
-import { UserService } from '@/services/userService';
 
-export default function UserManagementPage() {
-    const { user } = useAuth(); // Role from context (for protection)
-    const { user: authUser } = useAuth(); // Auth token source
+import React, { useState, useEffect } from 'react';
+import { PageLayout } from "@/components/ui/layout/PageLayout";
+import { PageHeader } from "@/components/ui/layout/PageHeader";
+import { UserService, User } from '@/services/userService';
+import { StructureService } from '@/services/structureService';
+import { Institution, Department } from '@/types/structure';
+import { Button } from '@/components/ui/button';
+import { Input } from '@/components/ui/input';
+import { Search, Loader2, User as UserIcon, Building, Users } from 'lucide-react';
+import { UserDialog } from './UserDialog';
+import { toast } from 'sonner';
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+
+export default function UsersPage() {
     const [users, setUsers] = useState<User[]>([]);
+    const [institutions, setInstitutions] = useState<Institution[]>([]);
+    const [departments, setDepartments] = useState<Department[]>([]);
     const [loading, setLoading] = useState(true);
-    const [saving, setSaving] = useState<string | null>(null);
+    const [search, setSearch] = useState('');
 
-    const [departmentsList, setDepartmentsList] = useState<string[]>([]);
-    const [institutionsList, setInstitutionsList] = useState<string[]>([]);
+    // Dialog State
+    const [dialogOpen, setDialogOpen] = useState(false);
+    const [selectedUser, setSelectedUser] = useState<User | null>(null);
 
-    useEffect(() => {
-        fetchUsers();
-        fetchOrgData();
-    }, []);
-
-    const fetchOrgData = async () => {
-        try {
-            const [deptData, instData] = await Promise.all([
-                apiGet<{ id: string; name: string }[]>('/api/departments?limit=1000'),
-                apiGet<{ id: string; name: string }[]>('/api/institutions?limit=1000')
-            ]);
-            setDepartmentsList(deptData.map(d => d.name));
-            setInstitutionsList(instData.map(i => i.name));
-        } catch (error) {
-            console.error('Failed to fetch org data:', error);
-        }
-    };
-
-    const fetchUsers = async () => {
+    const fetchData = async () => {
         setLoading(true);
         try {
-            const clientUsers = await UserService.getAllUsers();
-            setUsers(clientUsers as User[]);
-        } catch (e) {
-            console.warn("Failed to fetch users via UserService", e);
-            setUsers([]);
+            const [usersData, instData, deptData] = await Promise.all([
+                UserService.getAllUsers(),
+                StructureService.getInstitutions(), // Active only by default
+                StructureService.getDepartments()   // Active only by default
+            ]);
+            setUsers(usersData);
+            setInstitutions(instData.institutions || []);
+            setDepartments(deptData.departments || []);
+        } catch (error) {
+            console.error(error);
+            toast.error("Failed to load data");
         } finally {
             setLoading(false);
         }
     };
 
-    const handleUpdate = async (uid: string, field: keyof User, value: string) => {
-        setSaving(uid);
-        try {
-            const payload: any = { uid };
+    useEffect(() => {
+        fetchData();
+    }, []);
 
-            if (field === 'role') {
-                payload.role = value;
-                // Enforce "Media & IT Office" for Admin/Team
-                if (value === 'admin' || value === 'team') {
-                    payload.defaultDepartment = 'Media & IT Office';
-                    payload.defaultInstitution = '';
-                }
-            } else if (field === 'name') {
-                payload.name = value;
-            } else if (field === 'officialName') {
-                payload.officialName = value;
-            } else if (field === 'defaultDepartment') {
-                payload.defaultDepartment = value;
-            } else if (field === 'defaultInstitution') {
-                payload.defaultInstitution = value;
-            }
-
-            await apiClient('/api/admin/users', {
-                method: 'POST',
-                body: JSON.stringify(payload)
-            });
-
-        } catch (e) {
-            console.warn("API Update failed, trying Client SDK", e);
-            try {
-                const updateData: any = { [field]: value };
-                // Logic to clear other field if needed (Client SDK fallback)
-                if (field === 'defaultDepartment' && value) updateData.defaultInstitution = "";
-                if (field === 'defaultInstitution' && value) updateData.defaultDepartment = "";
-
-                // Enforce "Media & IT Office" for Admin/Team in fallback
-                if (field === 'role' && (value === 'admin' || value === 'team')) {
-                    updateData.defaultDepartment = 'Media & IT Office';
-                    updateData.defaultInstitution = '';
-                }
-
-                await UserService.updateUser(uid, updateData);
-            } catch (clientErr) {
-                console.error("Client update failed", clientErr);
-                alert("Failed to update user");
-                setSaving(null);
-                return;
-            }
-        }
-
-        setUsers(prev => prev.map(u => {
-            if (u.uid !== uid) return u;
-
-            let updates: any = { [field]: value };
-
-            // Enforce Exclusivity logic
-            if (field === 'defaultDepartment' && value) updates.defaultInstitution = "";
-            if (field === 'defaultInstitution' && value) updates.defaultDepartment = "";
-
-            // Enforce Rule for Admin/Team
-            if (field === 'role' && (value === 'admin' || value === 'team')) {
-                updates.defaultDepartment = 'Media & IT Office';
-                updates.defaultInstitution = '';
-            }
-
-            return { ...u, ...updates };
-        }));
-
-        setSaving(null);
+    const handleEdit = (user: User) => {
+        setSelectedUser(user);
+        setDialogOpen(true);
     };
 
-    if (user?.role !== 'admin') {
-        return <div className="p-8 text-center text-white">Access Denied. Admins only.</div>;
-    }
+    const handleSaveUser = async (data: Partial<User>) => {
+        if (!selectedUser) return; // Create not fully supported in this simplified flow yet?
+        // Actually, let's support update only first as per requirement to clean up existing users.
+        try {
+            await UserService.updateUser(selectedUser.uid, data);
+            toast.success("User updated successfully");
+            fetchData();
+        } catch (error) {
+            toast.error("Failed to update user");
+            throw error;
+        }
+    };
 
-    // Helper to check if organization options should be locked
-    const isOrgLocked = (role: string) => role === 'admin' || role === 'team';
+    // Helper to get affiliation name
+    const getAffiliation = (user: User) => {
+        if (user.institutionId) {
+            const inst = institutions.find(i => i.id === user.institutionId);
+            return { type: 'Institution', name: inst ? inst.name : 'Unknown Institution', icon: Building };
+        }
+        if (user.departmentId) {
+            const dept = departments.find(d => d.id === user.departmentId);
+            return { type: 'Department', name: dept ? dept.name : 'Unknown Department', icon: Users };
+        }
+        return { type: 'None', name: 'No Affiliation', icon: UserIcon };
+    };
+
+    const filteredUsers = users.filter(u =>
+        u.name.toLowerCase().includes(search.toLowerCase()) ||
+        u.email.toLowerCase().includes(search.toLowerCase())
+    );
 
     return (
-        <div className="flex flex-col min-h-screen app-body-padding px-4 pb-24 max-w-7xl mx-auto">
-            <header className="mb-8 pt-6">
-                <h1 className="text-3xl font-display font-bold text-white mb-2">Team Management</h1>
-                <p className="text-[var(--color-text-secondary)]">Manage user roles and default organization settings.</p>
-            </header>
+        <PageLayout mode="plain">
+            <PageHeader
+                title="User Management"
+                description="Manage users, roles, and affiliations."
+            />
 
-            <div className="grid gap-4">
-                {loading ? (
-                    <div className="text-white flex items-center justify-center py-20 opacity-50">
-                        <div className="animate-pulse">Loading team members...</div>
+            <div className="mt-6 space-y-6">
+                <div className="flex items-center gap-4">
+                    <div className="relative flex-1 max-w-md">
+                        <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-500" size={18} />
+                        <Input
+                            placeholder="Search users..."
+                            className="pl-10 bg-slate-900/50 border-[#ffffff1a] text-white"
+                            value={search}
+                            onChange={(e) => setSearch(e.target.value)}
+                        />
                     </div>
+                </div>
+
+                {loading ? (
+                    <div className="flex justify-center p-12"><Loader2 className="w-8 h-8 text-blue-500 animate-spin" /></div>
                 ) : (
-                    users.map((u) => (
-                        <motion.div
-                            key={u.uid}
-                            initial={{ opacity: 0, y: 10 }}
-                            animate={{ opacity: 1, y: 0 }}
-                            className="group relative bg-white/5 backdrop-blur-md border border-white/5 rounded-[20px] p-6 shadow-[0px_4px_20px_rgba(0,0,0,0.2)] hover:bg-white/10 hover-sheen transition-all duration-300 overflow-hidden"
-                        >
-                            <div className="flex flex-col xl:flex-row xl:items-start justify-between gap-6 relative z-10">
-                                {/* Identity */}
-                                <div className="flex items-start gap-4 min-w-[280px]">
-                                    <div className="w-12 h-12 rounded-full bg-gradient-to-br from-indigo-500 to-purple-500 flex items-center justify-center text-white font-bold text-lg shrink-0 mt-1 shadow-lg ring-2 ring-white/10">
-                                        {u.name ? u.name[0].toUpperCase() : u.email?.[0].toUpperCase() || 'U'}
+                    <div className="grid gap-4">
+                        {filteredUsers.map(user => {
+                            const affiliation = getAffiliation(user);
+                            const Icon = affiliation.icon;
+
+                            return (
+                                <div key={user.uid} className="p-4 rounded-xl bg-slate-900/50 border border-white/5 flex flex-col sm:flex-row sm:items-center justify-between gap-4 hover:border-white/10 transition-colors">
+                                    <div className="flex items-center gap-4">
+                                        <Avatar className="h-10 w-10 border border-white/10">
+                                            <AvatarImage src={user.avatarUrl || user.photoURL} />
+                                            <AvatarFallback className="bg-slate-800 text-slate-400">{user.name.charAt(0)}</AvatarFallback>
+                                        </Avatar>
+                                        <div>
+                                            <h4 className="text-white font-medium">{user.name}</h4>
+                                            <div className="text-sm text-slate-500">{user.email}</div>
+                                        </div>
                                     </div>
-                                    <div className="flex-1 w-full">
-                                        <input
-                                            defaultValue={u.officialName || u.name}
-                                            onBlur={(e) => {
-                                                const val = e.target.value.trim();
-                                                const current = u.officialName || u.name;
-                                                if (val !== current && val.length > 0) {
-                                                    handleUpdate(u.uid, 'officialName', val);
-                                                }
-                                            }}
-                                            className="bg-transparent text-white font-semibold border-b border-transparent hover:border-blue-500/50 focus:border-blue-500 focus:outline-none transition-colors w-full p-1 text-lg tracking-tight placeholder-white/20"
-                                            placeholder="Name"
-                                        />
-                                        <p className="text-sm text-gray-400 truncate px-1">{u.email}</p>
-                                        {u.createdAt && (
-                                            <p className="text-xs text-gray-500 mt-1 px-1">
-                                                Joined {new Date(u.createdAt).toLocaleDateString()}
-                                            </p>
-                                        )}
+
+                                    <div className="flex flex-col sm:flex-row sm:items-center gap-4 sm:gap-8">
+                                        <div className="flex items-center gap-2 text-sm text-slate-300 min-w-[200px]">
+                                            <Icon className="w-4 h-4 text-slate-500" />
+                                            <span className="truncate">{affiliation.name}</span>
+                                            <span className="text-xs text-slate-600 ml-1">({affiliation.type})</span>
+                                        </div>
+
+                                        <div className="flex items-center gap-4">
+                                            <span className={`px-3 py-1 rounded-full text-xs font-medium 
+                                                ${user.role === 'admin' ? 'bg-purple-500/10 text-purple-400' :
+                                                    user.role === 'team' ? 'bg-blue-500/10 text-blue-400' :
+                                                        'bg-slate-500/10 text-slate-400'}`}>
+                                                {user.role}
+                                            </span>
+
+                                            <Button variant="ghost" size="sm" onClick={() => handleEdit(user)}>
+                                                Edit
+                                            </Button>
+                                        </div>
                                     </div>
                                 </div>
-
-                                {/* Controls */}
-                                <div className="flex flex-col md:flex-row gap-4 w-full">
-
-                                    {/* Role */}
-                                    <div className="flex-1 min-w-[140px]">
-                                        <label className="block text-xs text-gray-500 uppercase font-bold tracking-wider mb-2 ml-1">Role</label>
-                                        <RoleEditor
-                                            uid={u.uid}
-                                            currentRole={u.role || 'guest'}
-                                            onRoleUpdate={(newRole) => {
-                                                // Optimistic update for the list
-                                                setUsers(prev => prev.map(user =>
-                                                    user.uid === u.uid ? { ...user, role: newRole as User['role'] } : user
-                                                ));
-                                            }}
-                                        />
-                                    </div>
-
-                                    {/* Department */}
-                                    <div className="flex-[2] min-w-[200px]">
-                                        <label className="block text-xs text-gray-500 uppercase font-bold tracking-wider mb-2 ml-1">Default Department</label>
-                                        <select
-                                            value={u.defaultDepartment || ""}
-                                            onChange={(e) => handleUpdate(u.uid, 'defaultDepartment', e.target.value)}
-                                            disabled={saving === u.uid || !!u.defaultInstitution || isOrgLocked(u.role)}
-                                            className={`w-full bg-black/20 text-white border border-[#ffffff1a] rounded-xl px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500/50 cursor-pointer hover:bg-white/5 transition-colors ${u.defaultInstitution || isOrgLocked(u.role) ? 'opacity-40 cursor-not-allowed' : ''}`}
-                                        >
-                                            <option value="" className="bg-slate-900">Select Department...</option>
-                                            {departmentsList.map(dept => (
-                                                <option key={dept} value={dept} className="bg-slate-900">{dept}</option>
-                                            ))}
-                                        </select>
-                                    </div>
-
-                                    {/* Institution */}
-                                    <div className="flex-[2] min-w-[200px]">
-                                        <label className="block text-xs text-gray-500 uppercase font-bold tracking-wider mb-2 ml-1">Default Institution</label>
-                                        <select
-                                            value={u.defaultInstitution || ""}
-                                            onChange={(e) => handleUpdate(u.uid, 'defaultInstitution', e.target.value)}
-                                            disabled={saving === u.uid || !!u.defaultDepartment || isOrgLocked(u.role)}
-                                            className={`w-full bg-black/20 text-white border border-[#ffffff1a] rounded-xl px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500/50 cursor-pointer hover:bg-white/5 transition-colors ${u.defaultDepartment || isOrgLocked(u.role) ? 'opacity-40 cursor-not-allowed' : ''}`}
-                                        >
-                                            <option value="" className="bg-slate-900">Select Institution...</option>
-                                            {institutionsList.map(inst => (
-                                                <option key={inst} value={inst} className="bg-slate-900">{inst}</option>
-                                            ))}
-                                        </select>
-                                    </div>
-                                </div>
-                            </div>
-                        </motion.div>
-                    ))
+                            );
+                        })}
+                    </div>
                 )}
             </div>
-        </div>
+
+            <UserDialog
+                open={dialogOpen}
+                onOpenChange={setDialogOpen}
+                user={selectedUser}
+                onSave={handleSaveUser}
+                institutions={institutions}
+                departments={departments}
+            />
+        </PageLayout>
     );
 }

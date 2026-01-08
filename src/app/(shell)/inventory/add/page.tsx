@@ -262,14 +262,25 @@ export default function AddInventoryPage() {
                                             <Info className="w-4 h-4" />
                                         </button>
                                     </PopoverTrigger>
-                                    <PopoverContent className="w-80 p-4 bg-[#0f172a] border-white/10 text-slate-300 shadow-xl max-h-[400px] overflow-y-auto" align="start">
-                                        <div className="space-y-3">
-                                            <h4 className="font-medium text-white border-b border-white/10 pb-2">Categorization Guide</h4>
-                                            <div className="space-y-4 text-xs">
+                                    <PopoverContent
+                                        className="w-96 p-0 bg-slate-900/80 backdrop-blur-xl border border-white/10 shadow-2xl rounded-2xl overflow-hidden"
+                                        align="start"
+                                        sideOffset={8}
+                                    >
+                                        <div className="p-4 border-b border-white/5 bg-white/5">
+                                            <div className="flex items-center gap-2 text-white font-medium">
+                                                <Info className="w-4 h-4 text-blue-400" />
+                                                <h3>Categorization Guide</h3>
+                                            </div>
+                                            <p className="text-xs text-slate-400 mt-1">Select the most accurate category for your asset.</p>
+                                        </div>
+
+                                        <div className="max-h-[400px] overflow-y-auto p-2 scrollbar-thin scrollbar-thumb-white/10 scrollbar-track-transparent">
+                                            <div className="space-y-1">
                                                 {Object.entries(INVENTORY_GUIDE).map(([cat, desc]) => (
-                                                    <div key={cat}>
-                                                        <span className="text-blue-400 font-medium block mb-0.5">{cat}</span>
-                                                        <span className="text-slate-400">{desc}</span>
+                                                    <div key={cat} className="group p-3 hover:bg-white/5 rounded-xl transition-colors">
+                                                        <span className="text-blue-400 font-medium text-sm block mb-1 group-hover:text-blue-300 transition-colors">{cat}</span>
+                                                        <span className="text-slate-400 text-xs leading-relaxed block">{desc}</span>
                                                     </div>
                                                 ))}
                                             </div>

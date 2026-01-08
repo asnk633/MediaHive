@@ -1,23 +1,35 @@
 import React from 'react';
-import { InventoryItem } from '@/types/inventory';
+import { InventoryItem, InventoryIssue } from '@/types/inventory';
 import { InventoryCard } from './InventoryCard';
 import { FileQuestion } from 'lucide-react';
 
 interface InventoryGridProps {
     items: InventoryItem[];
+    activeIssues?: InventoryIssue[];
+    pendingRequestItemIds?: Set<string>;
     loading?: boolean;
     role?: string;
     onRequest?: (item: InventoryItem) => void;
     onEdit?: (item: InventoryItem) => void;
+    onReturn?: (item: InventoryItem) => void;
 }
 
 export const InventoryGrid: React.FC<InventoryGridProps> = ({
     items,
+    activeIssues = [],
+    pendingRequestItemIds,
     loading,
     role,
     onRequest,
-    onEdit
+    onEdit,
+    onReturn
 }) => {
+    // Optimization: Create map for O(1) access
+    const issueMap = React.useMemo(() => {
+        const map = new Map<string, InventoryIssue>();
+        activeIssues.forEach(issue => map.set(issue.itemId, issue));
+        return map;
+    }, [activeIssues]);
 
     // Loading State
     if (loading) {
@@ -52,9 +64,12 @@ export const InventoryGrid: React.FC<InventoryGridProps> = ({
                 <InventoryCard
                     key={item.id}
                     item={item}
+                    activeIssue={issueMap.get(item.id)}
+                    hasPendingRequest={pendingRequestItemIds?.has(item.id)}
                     role={role}
                     onRequest={onRequest}
                     onEdit={onEdit}
+                    onReturn={onReturn}
                 />
             ))}
         </div>

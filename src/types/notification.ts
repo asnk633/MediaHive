@@ -25,6 +25,11 @@ export type NotificationType =
     | 'task_status_suggestion'  // Task State Automation
     | 'task_ready_signal'      // Task State Automation
     | 'task_comment'           // Correction workflow
+    | 'inventory_issued'       // Phase 6.3
+    | 'inventory_returned'     // Phase 6.3
+    | 'inventory_due_soon'     // Phase 6.3
+    | 'inventory_overdue'      // Phase 6.3
+    | 'inventory_escalated'    // Phase 6.3
     | 'info';                  // Generic info
 
 export type NotificationEntityType = 'task' | 'event' | 'announcement' | 'file' | 'device_request';

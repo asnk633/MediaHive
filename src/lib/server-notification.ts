@@ -511,5 +511,136 @@ export const ServerNotification = {
             console.error("Error checking stale tasks:", e);
             throw e;
         }
+    },
+
+    /**
+     * Check Inventory Notifications (CRON)
+ * Handles: Reminders (24h), Overdue (Immediate), Escalation (48h)
+ */
+    checkInventoryStatus: async () => {
+        const now = Timestamp.now();
+        const nowMillis = now.toDate().getTime();
+        const oneDayMillis = 24 * 60 * 60 * 1000;
+        const twoDaysMillis = 48 * 60 * 60 * 1000;
+        const tomorrow = new Date(nowMillis + oneDayMillis);
+
+        try {
+            const issuesRef = db.collection('inventory_issues');
+            // Optimisation: Fetch only 'issued' items
+            const snapshot = await issuesRef.where('status', '==', 'issued').get();
+
+            let notificationsSent = 0;
+            const batch = db.batch();
+
+            const adminIds = await ServerNotification.getAdminIds();
+
+            for (const doc of snapshot.docs) {
+                const issue = doc.data() as any; // Cast as any because type might not match 1:1 with Firestore data
+                const expectedReturn = new Date(issue.expectedReturnAt);
+                const expectedReturnMillis = expectedReturn.getTime();
+
+                // Safety check for valid date
+                if (isNaN(expectedReturnMillis)) continue;
+
+                // 1. Reminder (24h before)
+                // Conditions: Not reminded, and due time is within next 24h
+                const isDueSoon = expectedReturnMillis > nowMillis && expectedReturnMillis <= tomorrow.getTime();
+                if (isDueSoon && !issue.reminded24h) {
+                    const notifRef = db.collection(NOTIFICATIONS_COLLECTION).doc();
+                    batch.set(notifRef, {
+                        userId: issue.issuedToUserId,
+                        type: 'inventory_due_soon',
+                        title: 'Equipment Due Soon',
+                        message: `Your item "${issue.itemName}" is due tomorrow at ${expectedReturn.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}.`,
+                        entityType: 'device_request',
+                        entityId: issue.id, // Usually Issue ID or Request ID? Issue ID is cleaner.
+                        actionUrl: `/inventory`, // No issue detail page yet
+                        priority: 'high',
+                        isRead: false,
+                        isArchived: false,
+                        createdAt: Timestamp.now()
+                    });
+                    batch.update(doc.ref, { reminded24h: true });
+                    notificationsSent++;
+                }
+
+                // 2. Overdue (Immediate after passing time)
+                const isOverdue = expectedReturnMillis < nowMillis;
+                if (isOverdue && !issue.overdueNotified) {
+                    const notifRef = db.collection(NOTIFICATIONS_COLLECTION).doc();
+                    // Notify User
+                    batch.set(notifRef, {
+                        userId: issue.issuedToUserId,
+                        type: 'inventory_overdue',
+                        title: 'Equipment Overdue',
+                        message: `Item "${issue.itemName}" is OVERDUE. Please return it immediately.`,
+                        entityType: 'device_request',
+                        entityId: issue.id,
+                        actionUrl: `/inventory`,
+                        priority: 'high',
+                        isRead: false,
+                        isArchived: false,
+                        createdAt: Timestamp.now()
+                    });
+
+                    // Notify Admins
+                    adminIds.forEach(adminId => {
+                        const adminNotifRef = db.collection(NOTIFICATIONS_COLLECTION).doc();
+                        batch.set(adminNotifRef, {
+                            userId: adminId,
+                            type: 'inventory_overdue',
+                            title: 'Inventory Overdue Alert',
+                            message: `User ${issue.issuedToUserId} is late returning "${issue.itemName}".`,
+                            entityType: 'device_request',
+                            entityId: issue.id,
+                            actionUrl: `/inventory/requests`, // Admins go to requests/list
+                            priority: 'high',
+                            isRead: false,
+                            isArchived: false,
+                            createdAt: Timestamp.now()
+                        });
+                        notificationsSent++;
+                    });
+
+                    batch.update(doc.ref, { overdueNotified: true });
+                    notificationsSent++;
+                }
+
+                // 3. Escalation (48h Overdue)
+                const isEscalated = expectedReturnMillis < (nowMillis - twoDaysMillis);
+                if (isEscalated && !issue.escalationNotified) {
+                    // Notify Admins only (User already knows)
+                    adminIds.forEach(adminId => {
+                        const adminNotifRef = db.collection(NOTIFICATIONS_COLLECTION).doc();
+                        batch.set(adminNotifRef, {
+                            userId: adminId,
+                            type: 'inventory_escalated',
+                            title: 'Inventory Escalation',
+                            message: `ESCALATION: "${issue.itemName}" is 48h overdue (held by ${issue.issuedToUserId}).`,
+                            entityType: 'device_request',
+                            entityId: issue.id,
+                            actionUrl: `/inventory/requests`,
+                            priority: 'high',
+                            isRead: false,
+                            isArchived: false,
+                            createdAt: Timestamp.now()
+                        });
+                        notificationsSent++;
+                    });
+
+                    batch.update(doc.ref, { escalationNotified: true });
+                }
+            }
+
+            if (notificationsSent > 0) {
+                await batch.commit();
+            }
+
+            return { processed: snapshot.size, notificationsSent };
+
+        } catch (e) {
+            console.error("Error checking inventory status:", e);
+            throw e;
+        }
     }
 };

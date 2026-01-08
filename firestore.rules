@@ -8,7 +8,7 @@ service cloud.firestore {
       return request.auth != null;
     }
 
-    // Role Resolution (Expensive: 1 Read per evaluation if not cached)
+    // Role Resolution
     // Note: This relies on the physical 'users' document existing.
     function getUserData() {
       return get(/databases/$(database)/documents/users/$(request.auth.uid)).data;
@@ -52,15 +52,19 @@ service cloud.firestore {
 
     // --- SPECIFIC RULES ---
 
-    // TASKS
+    // 1. TASKS
     match /tasks/{taskId} {
       allow read: if isSignedIn() && isScoped(resource) && (isAdmin() || isTeam() || (isGuest() && isOwner(resource)));
       allow create: if isSignedIn() && isScopedCreate(request.resource.data) && (isAdmin() || isTeam() || (isGuest() && request.resource.data.status == 'pending'));
-      allow update: if isSignedIn() && isScoped(resource) && (isAdmin() || (isTeam() && resource.data.status != 'done') || (isGuest() && isOwner(resource)));
+      allow update: if isSignedIn() && isScoped(resource) && (
+        isAdmin() || 
+        (isTeam() && resource.data.status != 'done') || 
+        (isGuest() && isOwner(resource) && request.resource.data.diff(resource.data).affectedKeys().hasOnly(['status', 'remarks', 'updatedAt']))
+      );
       allow delete: if isSignedIn() && isScoped(resource) && isAdmin();
     }
 
-    // DEVICE REQUESTS
+    // 2. DEVICE REQUESTS
     match /device_requests/{requestId} {
       allow read: if isSignedIn() && isScoped(resource) && (isAdmin() || isTeam() || isOwner(resource));
       allow create: if isSignedIn() && isScopedCreate(request.resource.data); 
@@ -68,39 +72,121 @@ service cloud.firestore {
       allow delete: if isSignedIn() && isScoped(resource) && isAdmin();
     }
 
-    // INVENTORY
+    // 3. INVENTORY (Strict Admin Ownership)
     match /inventory/{itemId} {
       allow read: if isSignedIn() && isScoped(resource);
-      allow create, update: if isSignedIn() && isScopedCreate(request.resource.data) && (isAdmin() || isTeam());
+      // Create: Admin Only
+      allow create: if isSignedIn() && isScopedCreate(request.resource.data) && isAdmin();
+      // Update: Admin (All) OR Team (Status/Condition Only)
+      allow update: if isSignedIn() && isScoped(resource) && (
+        isAdmin() || 
+        (isTeam() && request.resource.data.diff(resource.data).affectedKeys().hasOnly(['status', 'condition', 'updatedAt']))
+      );
+      // Delete: Admin Only
       allow delete: if isSignedIn() && isScoped(resource) && isAdmin();
     }
 
-    // SYSTEM EVENTS (Audit Logs)
+    // 4. INVENTORY LOGS (New - Immutable Audit Trail)
+    match /inventory_logs/{logId} {
+        // Read: Admin or Team
+        allow read: if isSignedIn() && isScoped(resource) && (isAdmin() || isTeam());
+        // Create: Admin or Team (Append Only)
+        allow create: if isSignedIn() && isScopedCreate(request.resource.data) && (isAdmin() || isTeam());
+        // Update/Delete: Deny (Immutable)
+        allow write: if false; 
+    }
+
+    // 5. INVENTORY REQUESTS (Guest Requests)
+    match /inventory_requests/{id} {
+      allow read: if isSignedIn() && isScoped(resource);
+
+      allow create: if isSignedIn()
+        && isGuest()
+        && isScopedCreate(request.resource.data)
+        && request.resource.data.status == "pending";
+
+      allow update: if isSignedIn()
+        && isAdmin()
+        && request.resource.data.diff(resource.data)
+           .affectedKeys()
+           .hasOnly(['status', 'approvedBy', 'approvedAt', 'rejectionReason']);
+
+      allow delete: if false;
+    }
+
+    // 6. INVENTORY ISSUES (Issuance & Returns)
+    match /inventory_issues/{id} {
+      allow read: if isSignedIn() && isScoped(resource);
+
+      allow create: if isSignedIn()
+        && isScopedCreate(request.resource.data)
+        && (isAdmin() || isTeam());
+
+      allow update: if isSignedIn()
+        && isScoped(resource)
+        && (isAdmin() || isTeam())
+        && request.resource.data.diff(resource.data)
+           .affectedKeys()
+           .hasOnly(['returnedAt', 'conditionIn', 'status']);
+
+      allow delete: if isSignedIn() && isAdmin();
+    }
+
+    // 7. EVENTS (Strict Admin/Team Management)
+    match /events/{eventId} {
+        // Read: All Scoped Users
+        allow read: if isSignedIn() && isScoped(resource);
+        // Create: Admin, Team, Guest (Restricted to 'request' type)
+        allow create: if isSignedIn() && isScopedCreate(request.resource.data) && (
+            isAdmin() || 
+            isTeam() || 
+            (isGuest() && request.resource.data.type == 'request')
+        );
+        // Update: Admin or Team (Guests CANNOT update)
+        // Team cannot change critical metadata (createdBy, institution, type)
+        allow update: if isSignedIn() && isScoped(resource) && (
+            isAdmin() || 
+            (isTeam() && !request.resource.data.diff(resource.data).affectedKeys().hasAny(['createdBy', 'institutionId', 'type']))
+        );
+        // Delete: Admin Only
+        allow delete: if isSignedIn() && isScoped(resource) && isAdmin();
+    }
+    
+    // 6. SYSTEM EVENTS (Audit Logs - Immutable)
     match /system-events/{eventId} {
       allow read: if isSignedIn() && isScoped(resource) && isAdmin();
       allow create: if isSignedIn() && isScopedCreate(request.resource.data) && isAdmin(); 
-      allow delete: if false; // Audit logs are immutable
+      allow delete: if false; 
     }
 
-    // USERS
+    // 7. NOTIFICATIONS (Expanded Admin Access)
+    match /notifications/{notifId} {
+        // Read: Target User OR Admin
+        allow read: if isSignedIn() && (resource.data.userId == request.auth.uid || isAdmin());
+        // Create/Update: Admin Only
+        allow write: if isSignedIn() && isAdmin();
+    }
+
+    // 8. STRUCTURE (Institutions & Departments - Admin Config)
+    match /institutions/{instId} {
+        allow read: if isSignedIn();
+        allow write: if isSignedIn() && isAdmin();
+    }
+    match /departments/{deptId} {
+        allow read: if isSignedIn();
+        allow write: if isSignedIn() && isAdmin();
+    }
+
+    // 9. USERS (Admin Managed)
     match /users/{userId} {
-      // Users can read own profile. Admins can read all (scoped?). 
-      // User profiles are global conceptually but might need scoping if multi-tenant strict.
-      // For now, allow own read + Admin write.
       allow read: if isSignedIn() && (request.auth.uid == userId || isAdmin());
       allow write: if isSignedIn() && isAdmin(); 
     }
-    
-    // LEGACY / MISC (Deny by default unless specified)
-    match /notifications/{notifId} {
-        allow read: if isSignedIn() && (resource.data.userId == request.auth.uid || isAdmin());
-        allow write: if false; // Server-side only
-    }
 
-    // FILES (Metadata)
+    // 10. FILES (Metadata only - Storage rules separate)
     match /files/{fileId} {
-       allow read: if isSignedIn(); // Broad read for attached media
-       allow write: if false; // Server-side only management
+       allow read: if isSignedIn(); 
+       allow write: if false; 
     }
   }
 }

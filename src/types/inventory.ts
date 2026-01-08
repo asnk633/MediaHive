@@ -110,3 +110,53 @@ export interface InventoryApiResponse {
         hasMore: boolean;
     };
 }
+
+// Phase 6: Requests & Issuance
+export interface InventoryRequest {
+    id: string;
+    itemId: string;
+    itemName: string;
+    requestedBy: string; // uid
+    requestedByRole: 'guest' | 'team' | 'admin';
+    purpose: string;
+    institutionId: string;
+    status: 'pending' | 'approved' | 'rejected' | 'issued';
+
+    // Audit
+    createdAt: any;
+    approvedAt?: any;
+    approvedBy?: string;
+    rejectionReason?: string;
+    issuedIssueId?: string; // Link to the issue record
+}
+
+export interface InventoryIssue {
+    id: string;
+    itemId: string;
+    itemName: string;
+    issuedToUserId: string;
+    issuedToRole: 'guest' | 'team';
+    issuedBy: string; // uid
+
+    issuedFor: {
+        institutionId?: string;
+        projectNote?: string;
+    };
+
+    conditionOut: InventoryCondition;
+    conditionIn?: InventoryCondition;
+    returnRemarks?: string; // Mandatory if broken/lost
+
+    status: 'issued' | 'returned';
+
+    // Dates
+    issuedAt: any;
+    expectedReturnAt: string; // ISO
+    returnedAt?: any;
+    institutionId: string;
+
+    // Notification State
+    reminded24h?: boolean;
+    overdueNotified?: boolean;
+    escalationNotified?: boolean;
+}

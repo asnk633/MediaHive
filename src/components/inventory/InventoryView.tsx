@@ -5,19 +5,31 @@ import { useRouter } from 'next/navigation';
 import { PageHeader } from "@/components/ui/layout/PageHeader";
 import { InventoryGrid } from './InventoryGrid';
 import { InventoryFilters, SortOption } from './InventoryFilters';
-import { InventoryItem, InventoryApiResponse, INVENTORY_CATEGORIES, INVENTORY_GUIDE } from '@/types/inventory';
+import { InventoryItem, InventoryApiResponse, INVENTORY_CATEGORIES, INVENTORY_GUIDE, InventoryIssue } from '@/types/inventory';
 import { apiClient } from '@/lib/apiClient';
 import { useAuth } from '@/contexts/AuthContext';
 import { toast } from 'sonner';
 import { Button } from '@/components/ui/button';
 import { Plus, Clock, ChevronDown, ChevronUp, Info } from 'lucide-react';
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/components/ui/collapsible";
+import { InventoryRequestDialog } from './InventoryRequestDialog';
+import { IssueItemDialog } from './IssueItemDialog';
+import { ReturnItemDialog } from './ReturnItemDialog';
+import { inventoryIssueService } from '@/services/inventoryIssueService';
+import { inventoryRequestService } from '@/services/inventoryRequestService';
 
 export default function InventoryView() {
     const { user } = useAuth();
     const router = useRouter();
     const [items, setItems] = useState<InventoryItem[]>([]);
     const [loading, setLoading] = useState(true);
+    const [activeIssues, setActiveIssues] = useState<InventoryIssue[]>([]);
+    const [myRequests, setMyRequests] = useState<Set<string>>(new Set()); // Set of Item IDs
+
+    // Dialog States
+    const [requestDialogItem, setRequestDialogItem] = useState<InventoryItem | null>(null);
+    const [issueDialogItem, setIssueDialogItem] = useState<InventoryItem | null>(null);
+    const [returnDialogIssue, setReturnDialogIssue] = useState<InventoryIssue | null>(null);
 
     // Filter State
     const [search, setSearch] = useState('');
@@ -27,26 +39,67 @@ export default function InventoryView() {
     // Guide State
     const [isGuideOpen, setIsGuideOpen] = useState(false);
 
-    // Fetch
-    const fetchInventory = async () => {
+    // Imports
+    // We need inventoryRequestService here. It was not imported in the original file I see?
+    // Let me check imports. It was NOT imported in InventoryView.tsx. I need to add import too.
+    // Wait, I can't see the top of the file in this tool call.
+    // I will use multi_replace to add import and update fetch logic.
+
+    const fetchData = async () => {
         setLoading(true);
         try {
-            const data = await apiClient<InventoryApiResponse>(`/api/inventory?limit=300`);
-            setItems(data.items || []);
+            const promises: Promise<any>[] = [
+                apiClient<InventoryApiResponse>(`/api/inventory?limit=300`),
+                inventoryIssueService.getActiveIssues()
+            ];
+
+            // If Guest, fetch my requests to disable buttons
+            if (user && user.role !== 'admin' && user.role !== 'team') {
+                promises.push(inventoryRequestService.getMyRequests(user.uid));
+            }
+
+            const results = await Promise.all(promises);
+            const invData = results[0];
+            const issuesData = results[1];
+            const myRequestsData = results[2] || [];
+
+            setItems(invData.items || []);
+            setActiveIssues(issuesData);
+
+            if (myRequestsData.length > 0) {
+                // Filter for pending/approved only? Or all? User said "already requested".
+                // Usually pending or approved. rejected means they can request again?
+                const activeReqs = myRequestsData.filter((r: any) => r.status === 'pending' || r.status === 'approved');
+                setMyRequests(new Set(activeReqs.map((r: any) => r.itemId)));
+            } else {
+                setMyRequests(new Set());
+            }
+
         } catch (error) {
-            console.error('Failed to fetch inventory:', error);
+            console.error('Failed to fetch data:', error);
         } finally {
             setLoading(false);
         }
     };
 
     useEffect(() => {
-        fetchInventory();
-    }, []);
+        if (user) fetchData();
+    }, [user]);
 
     // Derived State
     const processedItems = useMemo(() => {
-        let result = items.filter(item => {
+        // Create a map of In-Use Item IDs
+        const issuedItemIds = new Set(activeIssues.map(i => i.itemId));
+
+        // Derive Status
+        const itemsWithDerivedStatus = items.map(item => {
+            if (issuedItemIds.has(item.id)) {
+                return { ...item, status: 'in_use' };
+            }
+            return item;
+        });
+
+        let result = itemsWithDerivedStatus.filter(item => {
             const matchesSearch = item.name.toLowerCase().includes(search.toLowerCase()) ||
                 item.category.toLowerCase().includes(search.toLowerCase()) ||
                 (item.serialNumber && item.serialNumber.toLowerCase().includes(search.toLowerCase()));
@@ -72,10 +125,27 @@ export default function InventoryView() {
         });
 
         return result;
-    }, [items, search, category, sortBy]);
+    }, [items, activeIssues, search, category, sortBy]);
 
     const handleRequest = (item: InventoryItem) => {
-        toast.info(`requesting ${item.name} (Coming Soon)`);
+        if (user?.role === 'admin' || user?.role === 'team') {
+            // Admin/Team -> Issue directly (Shortcut)
+            setIssueDialogItem(item);
+        } else {
+            // Guest -> Request
+            setRequestDialogItem(item);
+        }
+    };
+
+    const handleReturn = (item: InventoryItem) => {
+        // Find active issue for this item
+        const issue = activeIssues.find(i => i.itemId === item.id);
+        if (issue) {
+            setReturnDialogIssue(issue);
+        } else {
+            toast.error("Issue record not found for this item.");
+            fetchData(); // Sync up
+        }
     };
 
     return (
@@ -91,7 +161,7 @@ export default function InventoryView() {
                             className="text-slate-300 hover:text-white hover:bg-white/10"
                         >
                             <Clock className="w-4 h-4 mr-2" />
-                            My Requests
+                            {user?.role === 'admin' ? 'Requests' : 'My Requests'}
                         </Button>
 
                         {user?.role === 'admin' && (
@@ -141,11 +211,43 @@ export default function InventoryView() {
             <InventoryGrid
                 items={processedItems}
                 loading={loading}
+                activeIssues={activeIssues}
+                pendingRequestItemIds={myRequests}
                 role={user?.role}
                 onRequest={handleRequest}
+                onReturn={handleReturn}
                 onEdit={user?.role === 'admin' ? (item) => {
                     router.push(`/inventory/edit/${item.id}`);
                 } : undefined}
+            />
+
+            {/* Dialogs */}
+            <InventoryRequestDialog
+                item={requestDialogItem}
+                open={!!requestDialogItem}
+                onOpenChange={(open) => !open && setRequestDialogItem(null)}
+            />
+
+            <IssueItemDialog
+                item={issueDialogItem}
+                open={!!issueDialogItem}
+                onOpenChange={(open) => {
+                    if (!open) setIssueDialogItem(null);
+                    // Refresh data on close to update status
+                    if (!open) fetchData();
+                }}
+            />
+
+            <ReturnItemDialog
+                issue={returnDialogIssue}
+                open={!!returnDialogIssue}
+                onOpenChange={(open) => {
+                    if (!open) setReturnDialogIssue(null);
+                }}
+                onReturnComplete={() => {
+                    setReturnDialogIssue(null);
+                    fetchData();
+                }}
             />
         </div>
     );

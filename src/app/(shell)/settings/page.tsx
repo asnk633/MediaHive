@@ -22,24 +22,30 @@ export default function SettingsPage() {
                 {activeTab === 'profile' && <ProfileSettingsView />}
                 {activeTab === 'notifications' && <NotificationSettingsView />}
 
-                {/* Admin Stubs - Protected by Menu Logic but good to guard here too */}
+                {/* Admin Links */}
                 {activeTab === 'users' && (
-                    <div className="flex flex-col items-center justify-center py-20 text-center opacity-50">
-                        <ShieldAlert size={48} className="mb-4 text-slate-600" />
-                        <h3 className="text-lg font-medium text-slate-400">Restricted Area</h3>
-                        <p className="text-sm text-slate-600 max-w-sm mt-2">
-                            User Management Module is being refactored for Phase 4.
+                    <div className="flex flex-col items-center justify-center py-20 text-center">
+                        <ShieldAlert size={48} className="mb-4 text-blue-400" />
+                        <h3 className="text-lg font-medium text-white">User Management</h3>
+                        <p className="text-sm text-slate-400 max-w-sm mt-2 mb-6">
+                            Manage users, roles, and affiliations in the dedicated module.
                         </p>
+                        <a href="/admin/users" className="px-4 py-2 bg-blue-600 hover:bg-blue-500 text-white rounded-xl transition-colors">
+                            Go to User Management
+                        </a>
                     </div>
                 )}
 
                 {activeTab === 'institution' && (
-                    <div className="flex flex-col items-center justify-center py-20 text-center opacity-50">
-                        <Building2 size={48} className="mb-4 text-slate-600" />
-                        <h3 className="text-lg font-medium text-slate-400">Institution Config</h3>
-                        <p className="text-sm text-slate-600 max-w-sm mt-2">
-                            Global settings are currently locked.
+                    <div className="flex flex-col items-center justify-center py-20 text-center">
+                        <Building2 size={48} className="mb-4 text-pink-400" />
+                        <h3 className="text-lg font-medium text-white">Organization Structure</h3>
+                        <p className="text-sm text-slate-400 max-w-sm mt-2 mb-6">
+                            Manage global institutions and departments.
                         </p>
+                        <a href="/admin/structure" className="px-4 py-2 bg-pink-600 hover:bg-pink-500 text-white rounded-xl transition-colors">
+                            Go to Structure Configuration
+                        </a>
                     </div>
                 )}
 

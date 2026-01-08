@@ -9,7 +9,20 @@ export const StructureService = {
     // Institutions
     getInstitutions: async (showArchived = false) => {
         const query = showArchived ? '?archived=true' : '';
-        return apiRequest<{ institutions: Institution[] }>(`/institutions${query}`);
+        try {
+            return await apiRequest<{ institutions: Institution[] }>(`/institutions${query}`);
+        } catch (error: any) {
+            if (process.env.NODE_ENV === 'development' && (error?.status === 403 || error?.status === 401)) {
+                console.warn("[StructureService] Dev Mode: Returning Mock Institutions due to 403/401", error);
+                return {
+                    institutions: [
+                        { id: 'inst_1', name: 'Thaiba Garden', status: 'active' as const, createdAt: new Date().toISOString() },
+                        { id: 'inst_2', name: 'Orchids School', status: 'active' as const, createdAt: new Date().toISOString() }
+                    ]
+                };
+            }
+            throw error;
+        }
     },
 
     createInstitution: async (name: string) => {
@@ -29,7 +42,20 @@ export const StructureService = {
     // Departments
     getDepartments: async (showArchived = false) => {
         const query = showArchived ? '?archived=true' : '';
-        return apiRequest<{ departments: Department[] }>(`/departments${query}`);
+        try {
+            return await apiRequest<{ departments: Department[] }>(`/departments${query}`);
+        } catch (error: any) {
+            if (process.env.NODE_ENV === 'development' && (error?.status === 403 || error?.status === 401)) {
+                console.warn("[StructureService] Dev Mode: Returning Mock Departments due to 403/401", error);
+                return {
+                    departments: [
+                        { id: 'dept_1', name: 'Media Team', status: 'active' as const, createdAt: new Date().toISOString() },
+                        { id: 'dept_2', name: 'IT Support', status: 'active' as const, createdAt: new Date().toISOString() }
+                    ]
+                };
+            }
+            throw error;
+        }
     },
 
     createDepartment: async (name: string) => {

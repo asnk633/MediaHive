@@ -32,6 +32,16 @@ export const UserService = {
             });
             return response.users || [];
         } catch (error: any) {
+            // Mock data for Dev Mode 403/401 (Admin Check Failure)
+            if (process.env.NODE_ENV === 'development' && (error?.status === 403 || error?.status === 401)) {
+                console.warn("[UserService] Dev Mode: Returning Mock Users due to 403/401", error);
+                return [
+                    { uid: 'mock_1', name: 'Admin User', email: 'admin@thaiba.com', role: 'admin', institutionId: 'inst_1', createdAt: new Date().toISOString() },
+                    { uid: 'mock_2', name: 'Team Lead', email: 'team@thaiba.com', role: 'team', departmentId: 'dept_1', createdAt: new Date().toISOString() },
+                    { uid: 'mock_3', name: 'Guest User', email: 'guest@thaiba.com', role: 'guest', createdAt: new Date().toISOString() }
+                ];
+            }
+
             // Silently handle 403/404/Network errors to keep console clean
             if (isNetworkError(error) || error.message?.includes('Forbidden') || error.message?.includes('Not Found')) {
                 console.warn(`[UserService] Failed to fetch users: ${error.message}`);

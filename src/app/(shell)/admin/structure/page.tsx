@@ -6,12 +6,21 @@ import { PageHeader } from "@/components/ui/layout/PageHeader";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { InstitutionsTab } from './InstitutionsTab';
 import { DepartmentsTab } from './DepartmentsTab';
+import Link from 'next/link';
+import { ChevronLeft } from 'lucide-react';
 
 export default function StructurePage() {
     const [activeTab, setActiveTab] = useState("institutions");
 
     return (
         <PageLayout mode="plain">
+            <div className="mb-2">
+                <Link href="/settings" className="inline-flex items-center text-sm text-slate-400 hover:text-white transition-colors">
+                    <ChevronLeft className="w-4 h-4 mr-1" />
+                    Back to Settings
+                </Link>
+            </div>
+
             <PageHeader
                 title="Organization Structure"
                 description="Manage global institutions and departments."

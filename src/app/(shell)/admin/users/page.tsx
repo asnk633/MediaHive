@@ -8,10 +8,11 @@ import { StructureService } from '@/services/structureService';
 import { Institution, Department } from '@/types/structure';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
-import { Search, Loader2, User as UserIcon, Building, Users } from 'lucide-react';
+import { Search, Loader2, User as UserIcon, Building, Users, ChevronLeft, AlertTriangle } from 'lucide-react';
 import { UserDialog } from './UserDialog';
 import { toast } from 'sonner';
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import Link from 'next/link';
 
 export default function UsersPage() {
     const [users, setUsers] = useState<User[]>([]);
@@ -85,8 +86,25 @@ export default function UsersPage() {
 
     return (
         <PageLayout mode="plain">
+            <div className="mb-2">
+                <Link href="/settings" className="inline-flex items-center text-sm text-slate-400 hover:text-white transition-colors">
+                    <ChevronLeft className="w-4 h-4 mr-1" />
+                    Back to Settings
+                </Link>
+            </div>
+
             <PageHeader
-                title="User Management"
+                title={
+                    <div className="flex items-center gap-3">
+                        User Management
+                        {process.env.NODE_ENV === 'development' && (
+                            <div className="px-2 py-0.5 rounded-full bg-amber-500/10 border border-amber-500/20 text-amber-500 text-xs font-medium flex items-center gap-1">
+                                <AlertTriangle className="w-3 h-3" />
+                                DEV MOCK MODE
+                            </div>
+                        )}
+                    </div>
+                }
                 description="Manage users, roles, and affiliations."
             />
 

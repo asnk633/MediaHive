@@ -47,7 +47,7 @@
     "@headlessui/react": "^2.2.9",
     "@heroicons/react": "^2.2.0",
     "@hookform/resolvers": "^5.1.1",
-    "@libsql/client": "^0.15.15",
+    "@libsql/client": "^0.17.0",
     "@number-flow/react": "^0.5.10",
     "@opentelemetry/api": "^1.9.0",
     "@radix-ui/react-accordion": "^1.2.11",

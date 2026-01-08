@@ -152,7 +152,7 @@ const config: Config = {
       borderRadius: tokens.borderRadius,
       boxShadow: tokens.shadows,
       fontFamily: {
-        sans: ['var(--font-inter)', 'system-ui', 'sans-serif'],
+        sans: ['var(--font-poppins)', 'system-ui', 'sans-serif'],
       },
       animation: {
         'fade-in': 'fadeIn 0.3s ease-out',

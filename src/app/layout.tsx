@@ -5,11 +5,12 @@ import { ReactNode } from 'react';
 import { AuthProvider } from "@/contexts/AuthContext";
 import { ThemeProvider } from "@/context/ThemeProvider";
 
-import { Inter } from 'next/font/google';
+import { Poppins } from 'next/font/google';
 
-const inter = Inter({
+const poppins = Poppins({
   subsets: ['latin'],
-  variable: '--font-inter',
+  weight: ['300', '400', '500', '600', '700'],
+  variable: '--font-poppins',
   display: 'swap',
 });
 
@@ -31,7 +32,7 @@ export default function RootLayout({ children }: { children: ReactNode }) {
   const useNewUI = process.env.NEXT_PUBLIC_NEW_UI === "true";
 
   return (
-    <html lang="en" data-theme="dark" className={`dark ${inter.variable}`} suppressHydrationWarning={true}>
+    <html lang="en" data-theme="dark" className={`dark ${poppins.variable}`} suppressHydrationWarning={true}>
       <body className="min-h-screen" suppressHydrationWarning={true}>
         <ThemeProvider>
           <AuthProvider>

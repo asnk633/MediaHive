@@ -178,7 +178,7 @@
     "@types/react-dom": "^19",
     "@types/react-syntax-highlighter": "^15.5.13",
     "@types/sanitize-html": "^2.16.0",
-    "@types/three": "^0.178.0",
+    "@types/three": "^0.182.0",
     "autocannon": "^7.15.0",
     "autoprefixer": "^10.4.16",
     "chrome-launcher": "^0.15.0",

@@ -10,7 +10,7 @@ import { apiClient } from '@/lib/apiClient';
 import { useAuth } from '@/contexts/AuthContext';
 import { toast } from 'sonner';
 import { Button } from '@/components/ui/button';
-import { Plus, Clock, ChevronDown, ChevronUp, Info } from 'lucide-react';
+import { Plus, Clock, ChevronDown, ChevronUp, Info, FileDown } from 'lucide-react';
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/components/ui/collapsible";
 import { InventoryRequestDialog } from './InventoryRequestDialog';
 import { IssueItemDialog } from './IssueItemDialog';
@@ -165,12 +165,35 @@ export default function InventoryView() {
                         </Button>
 
                         {user?.role === 'admin' && (
-                            <Button
-                                onClick={() => router.push('/inventory/add')}
-                                className="bg-blue-600 hover:bg-blue-500 text-white shadow-lg shadow-blue-900/20"
-                            >
-                                <Plus size={18} className="mr-2" /> Add Asset
-                            </Button>
+                            <>
+                                <Button
+                                    variant="ghost"
+                                    onClick={() => {
+                                        const exportData = items.map(item => ({
+                                            Name: item.name,
+                                            Category: item.category,
+                                            Status: item.status,
+                                            Condition: item.condition,
+                                            Quantity: item.quantity,
+                                            Location: item.locationStr || '',
+                                            Serial: item.serialNumber || '',
+                                            Notes: item.notes || '',
+                                            LastUpdated: item.updatedAt ? new Date(item.updatedAt).toLocaleDateString() : ''
+                                        }));
+                                        import('@/utils/export').then(mod => mod.downloadCSV(exportData, `inventory_${new Date().toISOString().split('T')[0]}.csv`));
+                                    }}
+                                    className="text-slate-300 hover:text-white hover:bg-white/10 hidden sm:flex"
+                                >
+                                    <FileDown className="w-4 h-4 mr-2" />
+                                    Export
+                                </Button>
+                                <Button
+                                    onClick={() => router.push('/inventory/add')}
+                                    className="bg-blue-600 hover:bg-blue-500 text-white shadow-lg shadow-blue-900/20"
+                                >
+                                    <Plus size={18} className="mr-2" /> Add Asset
+                                </Button>
+                            </>
                         )}
                     </div>
                 }

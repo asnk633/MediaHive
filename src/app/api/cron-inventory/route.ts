@@ -3,6 +3,7 @@ import { ServerNotification } from '@/lib/server-notification';
 
 export const dynamic = 'force-dynamic';
 
+// PHASE 6 LOCKED — Inventory lifecycle, notifications & cron stable
 export async function GET() {
     try {
         await ServerNotification.checkInventoryStatus();

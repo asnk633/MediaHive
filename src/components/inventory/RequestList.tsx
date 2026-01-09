@@ -86,7 +86,28 @@ export default function RequestList() {
         }
     };
 
-    if (loading) return <div className="text-center p-8 text-slate-500"><Loader2 className="animate-spin w-8 h-8 mx-auto mb-2" />Loading requests...</div>;
+    if (loading) {
+        return (
+            <div className="space-y-4">
+                {Array.from({ length: 5 }).map((_, i) => (
+                    <div key={i} className="bg-slate-900/50 border border-white/5 rounded-xl p-4 flex flex-col md:flex-row gap-4 items-start md:items-center justify-between">
+                        <div className="space-y-2 w-full">
+                            <div className="flex items-center gap-2">
+                                <div className="h-4 w-16 bg-white/5 rounded animate-pulse" />
+                                <div className="h-3 w-24 bg-white/5 rounded animate-pulse" />
+                            </div>
+                            <div className="h-5 w-1/3 bg-white/5 rounded animate-pulse" />
+                            <div className="h-4 w-1/2 bg-white/5 rounded animate-pulse" />
+                        </div>
+                        <div className="flex gap-2">
+                            <div className="h-8 w-20 bg-white/5 rounded animate-pulse" />
+                            <div className="h-8 w-20 bg-white/5 rounded animate-pulse" />
+                        </div>
+                    </div>
+                ))}
+            </div>
+        );
+    }
 
     return (
         <div className="space-y-4">

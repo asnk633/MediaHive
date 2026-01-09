@@ -1,3 +1,5 @@
+import React from 'react';
+import Image from 'next/image';
 import { InventoryItem, InventoryIssue } from '@/types/inventory';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
@@ -15,7 +17,8 @@ interface InventoryCardProps {
     onReturn?: (item: InventoryItem) => void;
 }
 
-export const InventoryCard: React.FC<InventoryCardProps> = ({ item, activeIssue, hasPendingRequest, role, onRequest, onEdit, onReturn }) => {
+// Optimization: Prevent re-renders on grid filtering
+export const InventoryCard = React.memo<InventoryCardProps>(({ item, activeIssue, hasPendingRequest, role, onRequest, onEdit, onReturn }) => {
     // Adaptive Status Logic
     const status = item.status;
     const isOk = status === 'ok' || status === 'available';
@@ -34,10 +37,12 @@ export const InventoryCard: React.FC<InventoryCardProps> = ({ item, activeIssue,
             {/* Image / Thumbnail Placeholder */}
             <div className="aspect-video w-full bg-slate-950/50 relative flex items-center justify-center border-b border-white/5 group-hover:bg-slate-950/70 transition-colors overflow-hidden">
                 {item.imageUrl ? (
-                    <img
+                    <Image
                         src={item.imageUrl}
                         alt={item.name}
-                        className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
+                        fill
+                        sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 25vw"
+                        className="object-cover transition-transform duration-500 group-hover:scale-105"
                     />
                 ) : (
                     <Box className="w-12 h-12 text-slate-700 group-hover:text-blue-500/50 transition-colors" />
@@ -137,4 +142,4 @@ export const InventoryCard: React.FC<InventoryCardProps> = ({ item, activeIssue,
             </div>
         </Card>
     );
-};
+});

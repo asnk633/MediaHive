@@ -18,7 +18,8 @@ import { MyWorkflowWidget } from "@/components/home/widgets/MyWorkflowWidget";
 import { TimelineWidget } from "@/components/home/widgets/TimelineWidget";
 import { ActivityFeed } from "@/components/home/widgets/ActivityFeed";
 import { ActiveCampaignsWidget } from "@/components/home/widgets/ActiveCampaignsWidget";
-import { OverdueAlertsWidget } from "@/components/home/widgets/OverdueAlertsWidget"; // Added
+import { OverdueAlertsWidget } from "@/components/home/widgets/OverdueAlertsWidget";
+import { InventoryStatsWidget } from "@/components/home/widgets/InventoryStatsWidget";
 import { SectionHeader } from "@/components/ui/SectionHeader";
 import { PageLayout } from "@/components/ui/layout/PageLayout";
 import { PageHeader } from "@/components/ui/layout/PageHeader";
@@ -49,9 +50,33 @@ export default function Home() {
   // Initial Loading Checks
   if (loading || !user) {
     return (
-      <div className="min-h-screen bg-[var(--color-bg-primary)] flex items-center justify-center">
-        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-500" />
-      </div>
+      <PageLayout mode="plain">
+        <div className="space-y-8 animate-pulse">
+          {/* Header Skeleton */}
+          <div className="space-y-4">
+            <div className="h-12 w-1/3 bg-white/5 rounded-lg" />
+            <div className="h-6 w-1/4 bg-white/5 rounded" />
+          </div>
+
+          {/* Top Widgets Skeleton */}
+          <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-4 md:gap-5">
+            {Array.from({ length: 5 }).map((_, i) => (
+              <div key={i} className="h-32 bg-white/5 rounded-xl border border-white/5" />
+            ))}
+          </div>
+
+          {/* Main Grid Skeleton */}
+          <div className="grid grid-cols-1 xl:grid-cols-3 gap-8">
+            <div className="xl:col-span-2 space-y-6">
+              <div className="h-64 bg-white/5 rounded-xl border border-white/5" />
+              <div className="h-48 bg-white/5 rounded-xl border border-white/5" />
+            </div>
+            <div className="xl:col-span-1 space-y-6">
+              <div className="h-96 bg-white/5 rounded-xl border border-white/5" />
+            </div>
+          </div>
+        </div>
+      </PageLayout>
     );
   }
 
@@ -223,9 +248,13 @@ export default function Home() {
           description={welcome.message}
         />
 
-        {/* ADMIN ONLY: Overdue Alerts */}
+        {/* ADMIN ONLY: Overdue Alerts + Inventory Stats */}
         {role === 'admin' && (
-          <OverdueAlertsWidget />
+          <>
+            <OverdueAlertsWidget />
+            <SectionHeader title="Inventory Snapshot" />
+            <InventoryStatsWidget />
+          </>
         )}
 
         {/* ADMIN & TEAM: Overview Cards */}

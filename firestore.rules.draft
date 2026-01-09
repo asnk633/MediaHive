@@ -2,6 +2,14 @@ rules_version = '2';
 service cloud.firestore {
   match /databases/{database}/documents {
 
+    // ==================================================================================
+    // PHASE 7: SECURITY HARDENING (DRAFT)
+    // ==================================================================================
+    // RISK: Role resolution relies on 'get()' from 'users' collection.
+    // COST: 1 Read per document access check.
+    // IMPACT: Changing roles in 'users' doc takes effect immediately.
+    // ==================================================================================
+
     // --- HELPER FUNCTIONS ---
 
     function isSignedIn() {
@@ -52,27 +60,9 @@ service cloud.firestore {
        return requestData.institutionId == userInstitutionId();
     }
 
-    // --- SPECIFIC RULES ---
-
-    // 1. TASKS
-    match /tasks/{taskId} {
-      allow read: if isSignedIn() && isScoped(resource) && (isAdmin() || isTeam() || (isGuest() && isOwner(resource)));
-      allow create: if isSignedIn() && isScopedCreate(request.resource.data) && (isAdmin() || isTeam() || (isGuest() && request.resource.data.status == 'pending'));
-      allow update: if isSignedIn() && isScoped(resource) && (
-        isAdmin() || 
-        (isTeam() && resource.data.status != 'done') || 
-        (isGuest() && isOwner(resource) && request.resource.data.diff(resource.data).affectedKeys().hasOnly(['status', 'remarks', 'updatedAt']))
-      );
-      allow delete: if isSignedIn() && isScoped(resource) && isAdmin();
-    }
-
-    // 2. DEVICE REQUESTS
-    match /device_requests/{requestId} {
-      allow read: if isSignedIn() && isScoped(resource) && (isAdmin() || isTeam() || isOwner(resource));
-      allow create: if isSignedIn() && isScopedCreate(request.resource.data); 
-      allow update: if isSignedIn() && isScoped(resource) && isAdmin();
-      allow delete: if isSignedIn() && isScoped(resource) && isAdmin();
-    }
+    // ==================================================================================
+    // COLLECTIONS
+    // ==================================================================================
 
     // 1. INVENTORY (Strict Asset Control)
     // RISK: If Admin UI uses client-side writes, they WILL be blocked if not scoped correctly.
@@ -164,33 +154,6 @@ service cloud.firestore {
       allow delete: if isSignedIn() && isAdmin();
     }
 
-    // 7. EVENTS (Strict Admin/Team Management)
-    match /events/{eventId} {
-        // Read: All Scoped Users
-        allow read: if isSignedIn() && isScoped(resource);
-        // Create: Admin, Team, Guest (Restricted to 'request' type)
-        allow create: if isSignedIn() && isScopedCreate(request.resource.data) && (
-            isAdmin() || 
-            isTeam() || 
-            (isGuest() && request.resource.data.type == 'request')
-        );
-        // Update: Admin or Team (Guests CANNOT update)
-        // Team cannot change critical metadata (createdBy, institution, type)
-        allow update: if isSignedIn() && isScoped(resource) && (
-            isAdmin() || 
-            (isTeam() && !request.resource.data.diff(resource.data).affectedKeys().hasAny(['createdBy', 'institutionId', 'type']))
-        );
-        // Delete: Admin Only
-        allow delete: if isSignedIn() && isScoped(resource) && isAdmin();
-    }
-    
-    // 6. SYSTEM EVENTS (Audit Logs - Immutable)
-    match /system-events/{eventId} {
-      allow read: if isSignedIn() && isScoped(resource) && isAdmin();
-      allow create: if isSignedIn() && isScopedCreate(request.resource.data) && isAdmin(); 
-      allow delete: if false; 
-    }
-
     // 5. NOTIFICATIONS (Private & System Managed)
     match /notifications/{notifId} {
         // Read: Target User OR Admin
@@ -239,11 +202,39 @@ service cloud.firestore {
       // CREATE/DELETE: Admin Only (Strict Access Control)
       allow create, delete: if isSignedIn() && isAdmin();
     }
-
-    // 10. FILES (Metadata only - Storage rules separate)
+    
+    // --- Legacy / Other Collections Preserved ---
     match /files/{fileId} {
        allow read: if isSignedIn(); 
        allow write: if false; 
+    }
+    
+    match /events/{eventId} {
+        // Using existing logic structure for safety
+        allow read: if isSignedIn() && isScoped(resource);
+        allow create: if isSignedIn() && isScopedCreate(request.resource.data) && (isAdmin() || isTeam() || (isGuest() && request.resource.data.type == 'request'));
+        allow update: if isSignedIn() && isScoped(resource) && (isAdmin() || (isTeam() && !request.resource.data.diff(resource.data).affectedKeys().hasAny(['createdBy', 'institutionId', 'type'])));
+        allow delete: if isSignedIn() && isScoped(resource) && isAdmin();
+    }
+    
+    match /tasks/{taskId} {
+      allow read: if isSignedIn() && isScoped(resource) && (isAdmin() || isTeam() || (isGuest() && isOwner(resource)));
+      allow create: if isSignedIn() && isScopedCreate(request.resource.data) && (isAdmin() || isTeam() || (isGuest() && request.resource.data.status == 'pending'));
+      allow update: if isSignedIn() && isScoped(resource) && (isAdmin() || (isTeam() && resource.data.status != 'done') || (isGuest() && isOwner(resource) && request.resource.data.diff(resource.data).affectedKeys().hasOnly(['status', 'remarks', 'updatedAt'])));
+      allow delete: if isSignedIn() && isScoped(resource) && isAdmin();
+    }
+    
+    match /device_requests/{requestId} {
+      allow read: if isSignedIn() && isScoped(resource) && (isAdmin() || isTeam() || isOwner(resource));
+      allow create: if isSignedIn() && isScopedCreate(request.resource.data); 
+      allow update: if isSignedIn() && isScoped(resource) && isAdmin();
+      allow delete: if isSignedIn() && isScoped(resource) && isAdmin();
+    }
+    
+    match /system-events/{eventId} {
+      allow read: if isSignedIn() && isScoped(resource) && isAdmin();
+      allow create: if isSignedIn() && isScopedCreate(request.resource.data) && isAdmin(); 
+      allow delete: if false; 
     }
   }
 }

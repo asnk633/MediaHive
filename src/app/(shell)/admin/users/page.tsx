@@ -187,11 +187,11 @@ export default function UsersPage() {
                                     <div className="flex items-center gap-4">
                                         <Avatar className="h-10 w-10 border border-white/10">
                                             <AvatarImage src={user.avatarUrl || user.photoURL} />
-                                            <AvatarFallback className="bg-slate-800 text-slate-400">{user.name.charAt(0)}</AvatarFallback>
+                                            <AvatarFallback className="bg-slate-800 text-slate-400">{(user.name || user.email || '?').charAt(0).toUpperCase()}</AvatarFallback>
                                         </Avatar>
                                         <div>
-                                            <h4 className="text-white font-medium">{user.name}</h4>
-                                            <div className="text-sm text-slate-500">{user.email}</div>
+                                            <h4 className="text-white font-medium">{user.name || 'Unnamed User'}</h4>
+                                            <div className="text-sm text-slate-500">{user.email || 'No Email'}</div>
                                         </div>
                                     </div>
 

@@ -6,7 +6,7 @@ import { Institution, Department } from '@/types/structure';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
-import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from '@/components/ui/dialog';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
 import { Loader2 } from 'lucide-react';
@@ -110,8 +110,11 @@ export function UserDialog({ open, onOpenChange, user, onSave, institutions, dep
             <DialogContent className="bg-slate-900 border-white/10 sm:max-w-[500px]">
                 <DialogHeader>
                     <DialogTitle className="text-white">
-                        {user ? `Edit User: ${user.name}` : 'Invite User'}
+                        {user ? `Edit User: ${user.name || 'User'}` : 'Invite User'}
                     </DialogTitle>
+                    <DialogDescription className="text-slate-400">
+                        {user ? 'Update user roles and affiliations.' : 'Invite a new member to the organization.'}
+                    </DialogDescription>
                 </DialogHeader>
 
                 <div className="space-y-6 pt-4">

@@ -265,8 +265,11 @@ export default function Home() {
               {overviewCards.map((stat, i) => (
                 <OverviewCard
                   key={i}
-                  {...stat}
+                  icon={stat.icon}
                   count={stat.count.toString()}
+                  label={stat.label}
+                  subLabel={stat.subLabel}
+                  variant={stat.variant}
                   onClick={() => router.push(`/tasks?status=${stat.status}`)}
                   showIndicator={hasOverdueInStatus(stat.status)}
                 />

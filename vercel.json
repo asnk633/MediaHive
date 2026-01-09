@@ -1,7 +1,7 @@
 {
     "crons": [
         {
-            "path": "/api/cron/notifications/inventory",
+            "path": "/api/cron-inventory",
             "schedule": "0 9 * * *"
         }
     ]

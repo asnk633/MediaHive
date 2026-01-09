@@ -66,7 +66,6 @@ export const InventoryStatsWidget = () => {
                 count={stats.inUse.toString()}
                 label="Active"
                 subLabel="Currently In Use"
-                status="in_progress"
                 onClick={() => router.push('/inventory')}
             />
             <OverviewCard
@@ -74,7 +73,6 @@ export const InventoryStatsWidget = () => {
                 count={stats.value.toString()} // Using 'Unavailable' count here
                 label="Alerts"
                 subLabel="Broken / Lost / Out"
-                status="review" // orange/red
                 onClick={() => router.push('/inventory')}
             />
             <OverviewCard
@@ -82,7 +80,6 @@ export const InventoryStatsWidget = () => {
                 count={`${Math.round((stats.inUse / (stats.total || 1)) * 100)}%`}
                 label="Utilization"
                 subLabel="Asset Usage Rate"
-                status="done"
                 onClick={() => router.push('/inventory')}
             />
         </div>

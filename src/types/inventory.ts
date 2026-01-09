@@ -93,6 +93,8 @@ export interface InventoryItem {
     remarks?: string;
     purchasePrice?: number;
     assetStatus?: InventoryAssetStatus;
+    locationStr?: string;
+    notes?: string;
 
     // Audit Fields
     createdAt: string; // ISO String from API

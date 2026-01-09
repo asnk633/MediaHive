@@ -21,7 +21,8 @@ export const createInvite = async (
   email: string,
   role: 'admin' | 'team' | 'guest',
   invitedByUserId: string,
-  institutionId: string
+  institutionId: string | null = null,
+  departmentId: string | null = null
 ): Promise<string> => {
   // Check if feature is enabled
   if (!isFeatureEnabled('inviteAccessLayer')) {
@@ -39,10 +40,11 @@ export const createInvite = async (
       email,
       role,
       invitedByUserId,
-      institutionId
+      institutionId,
+      departmentId
     })
   });
-  
+
   return response.id;
 };
 
@@ -56,7 +58,7 @@ export const validateInvite = async (inviteId: string): Promise<Invite | null> =
   const response = await apiClient(`/api/invites/${inviteId}/validate`, {
     method: 'GET'
   });
-  
+
   return response.invite || null;
 };
 
@@ -83,7 +85,7 @@ export const getInstitutionInvites = async (institutionId: string): Promise<Invi
   const response = await apiClient(`/api/invites?institutionId=${institutionId}`, {
     method: 'GET'
   });
-  
+
   return response.invites || [];
 };
 

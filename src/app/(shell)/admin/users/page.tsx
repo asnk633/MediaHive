@@ -13,6 +13,8 @@ import { UserDialog } from './UserDialog';
 import { toast } from 'sonner';
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import Link from 'next/link';
+import { createInvite } from '@/services/inviteService';
+import { useAuth } from '@/contexts/AuthContext';
 
 export default function UsersPage() {
     const [users, setUsers] = useState<User[]>([]);
@@ -48,20 +50,51 @@ export default function UsersPage() {
         fetchData();
     }, []);
 
+    const { user: currentUser } = useAuth(); // Needed for invitedByUserId
+
     const handleEdit = (user: User) => {
         setSelectedUser(user);
         setDialogOpen(true);
     };
 
-    const handleSaveUser = async (data: Partial<User>) => {
-        if (!selectedUser) return; // Create not fully supported in this simplified flow yet?
-        // Actually, let's support update only first as per requirement to clean up existing users.
+    const handleAdd = () => {
+        setSelectedUser(null);
+        setDialogOpen(true);
+    };
+
+    const handleSaveUser = async (data: Partial<User> & { email?: string }) => {
         try {
-            await UserService.updateUser(selectedUser.uid, data);
-            toast.success("User updated successfully");
+            if (selectedUser) {
+                // Update Logic
+                await UserService.updateUser(selectedUser.uid, data);
+                toast.success("User updated successfully");
+            } else {
+                // Create logic (Invite)
+                if (!currentUser?.uid) {
+                    toast.error("You must be logged in to invite users");
+                    return;
+                }
+                if (!data.email) {
+                    toast.error("Email is required");
+                    return;
+                }
+
+                // Using the updated createInvite signature (supporting Department)
+                // Note: role cast is safe due to Dialog validation
+                await createInvite(
+                    data.email,
+                    data.role as 'admin' | 'team' | 'guest',
+                    currentUser.uid,
+                    data.institutionId || null,
+                    data.departmentId || null
+                );
+
+                toast.success(`Invitation sent to ${data.email}`);
+            }
             fetchData();
-        } catch (error) {
-            toast.error("Failed to update user");
+        } catch (error: any) {
+            console.error("User Action Failed:", error);
+            toast.error(error.message || "Failed to save user");
             throw error;
         }
     };
@@ -106,6 +139,12 @@ export default function UsersPage() {
                     </div>
                 }
                 description="Manage users, roles, and affiliations."
+                actions={
+                    <Button onClick={handleAdd} className="bg-blue-600 hover:bg-blue-500 text-white gap-2">
+                        <Users className="w-4 h-4" />
+                        Add User
+                    </Button>
+                }
             />
 
             <div className="mt-6 space-y-6">
@@ -123,6 +162,20 @@ export default function UsersPage() {
 
                 {loading ? (
                     <div className="flex justify-center p-12"><Loader2 className="w-8 h-8 text-blue-500 animate-spin" /></div>
+                ) : users.length === 0 ? (
+                    // Empty State
+                    <div className="flex flex-col items-center justify-center py-20 bg-slate-900/30 border border-white/5 rounded-2xl border-dashed">
+                        <div className="bg-slate-800/50 p-4 rounded-full mb-4">
+                            <Users className="w-8 h-8 text-slate-400" />
+                        </div>
+                        <h3 className="text-xl font-medium text-white mb-2">No users found</h3>
+                        <p className="text-slate-400 text-center max-w-md mb-6">
+                            Get started by adding your first team member or administrator to the platform.
+                        </p>
+                        <Button onClick={handleAdd} variant="outline" className="border-white/10 text-white hover:bg-white/5">
+                            Add User
+                        </Button>
+                    </div>
                 ) : (
                     <div className="grid gap-4">
                         {filteredUsers.map(user => {

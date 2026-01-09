@@ -67,6 +67,17 @@ export function UserDialog({ open, onOpenChange, user, onSave, institutions, dep
         try {
             const payload: any = { role };
 
+            // Logic for Email
+            if (!user) {
+                const emailInput = document.getElementById('user-email') as HTMLInputElement;
+                if (!emailInput || !emailInput.value) {
+                    toast.error("Please enter an email address");
+                    setLoading(false);
+                    return;
+                }
+                payload.email = emailInput.value;
+            }
+
             if (affiliationType === 'institution') {
                 if (!selectedInstitution) {
                     toast.error("Please select an institution");
@@ -104,6 +115,18 @@ export function UserDialog({ open, onOpenChange, user, onSave, institutions, dep
                 </DialogHeader>
 
                 <div className="space-y-6 pt-4">
+                    {/* Email Input (Create Mode Only) */}
+                    {!user && (
+                        <div className="space-y-2">
+                            <Label className="text-slate-300">Email Address <span className="text-red-400">*</span></Label>
+                            <Input
+                                placeholder="colleague@thaiba.com"
+                                className="bg-slate-800 border-white/10 text-white"
+                                id="user-email"
+                            />
+                        </div>
+                    )}
+
                     {/* Role Selection */}
                     <div className="space-y-2">
                         <Label className="text-slate-300">Role</Label>

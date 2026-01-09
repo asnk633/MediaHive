@@ -8,7 +8,8 @@ export const InviteServiceServer = {
         email: string,
         role: 'admin' | 'team' | 'guest',
         invitedByUserId: string,
-        institutionId: string
+        institutionId: string | null, // Made nullable to support dept-only
+        departmentId: string | null   // Added departmentId
     ): Promise<string> => {
         // Feature check usually safe if shared config
 
@@ -21,7 +22,8 @@ export const InviteServiceServer = {
             email,
             role,
             invitedBy: invitedByUserId,
-            institutionId,
+            institutionId, // Can be null
+            departmentId,  // Can be null
             createdAt: FieldValue.serverTimestamp(),
             expiresAt: Timestamp.fromDate(expiresAt),
             used: false

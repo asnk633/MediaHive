@@ -137,13 +137,34 @@ export async function verifyUser(request: Request): Promise<AuthenticatedUser | 
                 // Fetch user profile to get the LATEST role
                 const userDoc = await adminDb.collection('users').doc(payload.uid as string).get();
                 if (userDoc.exists) {
-                    const userData = userDoc.data();
+                    const userData = userDoc.data() as any;
+                    let finalRole = userData.role || 'guest';
+
+                    // Apply Whitelist Override (Time Travel)
+                    // Note: Payload from jose might not have email directly if not in Claims. 
+                    // We might need to rely on DB or Claims if available.
+                    // Actually, payload usually has email.
+                    const email = (payload.email as string) || userData.email;
+                    const whitelistRole = getRoleFromEmail(email || '');
+
+                    if (whitelistRole) finalRole = whitelistRole;
+
                     return {
                         uid: payload.uid as string,
                         ...userData,
+                        role: finalRole,
                     } as AuthenticatedUser;
                 }
-                return { uid: payload.uid as string, role: 'guest', email_verified: false } as AuthenticatedUser;
+
+                // No DB record? Try whitelist anyway if email is in payload
+                const email = payload.email as string;
+                const whitelistRole = getRoleFromEmail(email || '');
+
+                return {
+                    uid: payload.uid as string,
+                    role: whitelistRole || 'guest',
+                    email_verified: false
+                } as AuthenticatedUser;
             }
         } catch (innerError: any) {
             console.warn('[TIME TRAVEL] Custom verification failed:', innerError.message);

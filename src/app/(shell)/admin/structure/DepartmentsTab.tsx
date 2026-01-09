@@ -7,7 +7,7 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Plus, Archive, Loader2, Users } from 'lucide-react';
 import { toast } from 'sonner';
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger, DialogDescription } from '@/components/ui/dialog';
 import { Label } from '@/components/ui/label';
 
 export function DepartmentsTab() {
@@ -76,6 +76,9 @@ export function DepartmentsTab() {
                     <DialogContent className="bg-slate-900 border-white/10">
                         <DialogHeader>
                             <DialogTitle className="text-white">New Department</DialogTitle>
+                            <DialogDescription className="text-slate-400">
+                                Create a new global department for user assignment.
+                            </DialogDescription>
                         </DialogHeader>
                         <form onSubmit={handleCreate} className="space-y-4 pt-4">
                             <div className="space-y-2">

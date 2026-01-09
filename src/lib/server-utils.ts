@@ -11,6 +11,24 @@ export async function getFirebaseServices() {
 
 export const getFirebaseAdminDb = () => adminDb;
 
+// Email-based role assignment (Mirroring Client Logic)
+const getRoleFromEmail = (email: string): Role | null => {
+    if (!email) return null;
+    const lowerEmail = email.toLowerCase();
+
+    // Permanent admin
+    if (lowerEmail === 'media@thaibagarden.com') {
+        return 'admin';
+    }
+
+    // Team members
+    if (lowerEmail === 'anumadmax@gmail.com' || lowerEmail === 'kmspallikkunnu@gmail.com') {
+        return 'team';
+    }
+
+    return null;
+};
+
 // Define a consistent return type for the user
 export interface AuthenticatedUser {
     uid: string;
@@ -45,21 +63,27 @@ export async function verifyUser(request: Request): Promise<AuthenticatedUser | 
             // Allow Super Admin role override from Claims if needed, or fetch from DB
             // Fetch user profile to get the LATEST role
             const userDoc = await adminDb.collection('users').doc(decodedToken.uid).get();
+            let finalRole = decodedToken.role || 'guest';
+            let userData: any = {};
+
             if (userDoc.exists) {
-                const userData = userDoc.data();
-                return {
-                    uid: decodedToken.uid,
-                    email: decodedToken.email,
-                    email_verified: decodedToken.email_verified,
-                    ...userData,
-                    role: userData?.role || decodedToken.role || 'guest', // Fallback to token role if DB missing
-                } as AuthenticatedUser;
+                userData = userDoc.data();
+                finalRole = userData?.role || finalRole;
             }
+
+            // Apply Whitelist Override (Bootstrapping)
+            const whitelistRole = getRoleFromEmail(decodedToken.email || '');
+            if (whitelistRole) {
+                console.log(`[verifyUser] Whitelist override applied for ${decodedToken.email}: ${whitelistRole}`);
+                finalRole = whitelistRole;
+            }
+
             return {
                 uid: decodedToken.uid,
                 email: decodedToken.email,
                 email_verified: decodedToken.email_verified,
-                role: 'guest'
+                ...userData,
+                role: finalRole as Role | string,
             } as AuthenticatedUser;
         } catch (e: any) {
             console.warn('[verifyUser] Header token verification failed:', e.message);
@@ -76,17 +100,27 @@ export async function verifyUser(request: Request): Promise<AuthenticatedUser | 
 
         // Fetch user profile to get the LATEST role
         const userDoc = await adminDb.collection('users').doc(decoded.uid).get();
+        let finalRole = decoded.role || 'guest';
+        let userData: any = {};
+
         if (userDoc.exists) {
-            const userData = userDoc.data();
-            return {
-                ...decoded,
-                ...userData, // Mix in DB data like strict 'role'
-                role: userData?.role || decoded.role || 'guest',
-                uid: decoded.uid // Ensure UID is from token
-            } as AuthenticatedUser;
+            userData = userDoc.data();
+            finalRole = userData?.role || finalRole;
         }
 
-        return decoded as unknown as AuthenticatedUser;
+        // Apply Whitelist Override (Bootstrapping)
+        const whitelistRole = getRoleFromEmail(decoded.email || '');
+        if (whitelistRole) {
+            console.log(`[verifyUser] Whitelist override applied for ${decoded.email}: ${whitelistRole}`);
+            finalRole = whitelistRole;
+        }
+
+        return {
+            ...decoded,
+            ...userData, // Mix in DB data
+            role: finalRole as Role | string,
+            uid: decoded.uid // Ensure UID is from token
+        } as AuthenticatedUser;
     } catch (e: any) {
         // --- TIME TRAVEL FALLBACK ---
         // If standard Firebase verification fails (likely due to clock skew 2026 vs 2025),

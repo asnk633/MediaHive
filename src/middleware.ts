@@ -18,6 +18,11 @@ const authLimiter = new RateLimiterMemory({
 export async function middleware(request: NextRequest) {
     const path = request.nextUrl.pathname;
 
+    // Exclude Cron Jobs from middleware to prevent any interference (404s, rate limits, etc.)
+    if (path.startsWith('/api/cron')) {
+        return NextResponse.next();
+    }
+
     // Perform rate limiting checks...
     if (path.startsWith('/api')) {
         const ip = request.headers.get('x-forwarded-for') || 'unknown';

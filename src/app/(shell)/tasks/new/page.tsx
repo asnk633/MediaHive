@@ -54,12 +54,12 @@ export default function NewTaskPage() {
   useEffect(() => {
     const fetchOrgs = async () => {
       try {
-        const [depts, insts] = await Promise.all([
-          apiClient<{ id: number; name: string }[]>('/api/departments?limit=1000'),
-          apiClient<{ id: number; name: string }[]>('/api/institutions?limit=1000')
+        const [deptData, instData] = await Promise.all([
+          StructureService.getDepartments(),
+          StructureService.getInstitutions()
         ]);
-        setDepartmentsList(depts);
-        setInstitutionsList(insts);
+        setDepartmentsList(deptData.departments);
+        setInstitutionsList(instData.institutions);
       } catch (e) {
         console.error("Failed to fetch organizations", e);
       }

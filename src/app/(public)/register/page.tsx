@@ -6,6 +6,15 @@ import { useState, type FormEvent } from "react";
 import { createUserWithEmailAndPassword, updateProfile } from "firebase/auth";
 import { getFirebaseAuth } from "@/firebase/client";
 import { apiClient } from '@/lib/apiClient';
+import { Institution, Department } from "@/types/structure";
+import { StructureService } from "@/services/structureService";
+import {
+    Select,
+    SelectContent,
+    SelectItem,
+    SelectTrigger,
+    SelectValue,
+} from "@/components/ui/select";
 
 
 export default function RegisterPage() {
@@ -16,6 +25,29 @@ export default function RegisterPage() {
     const [password, setPassword] = useState("");
     const [confirmPassword, setConfirmPassword] = useState("");
     const [agree, setAgree] = useState(false);
+
+    // Structure State
+    const [institutions, setInstitutions] = useState<Institution[]>([]);
+    const [departments, setDepartments] = useState<Department[]>([]);
+    const [selectedInstitution, setSelectedInstitution] = useState("");
+    const [selectedDepartment, setSelectedDepartment] = useState("");
+
+    // Fetch Structure on Mount
+    useState(() => {
+        const fetchStructure = async () => {
+            try {
+                const [instData, deptData] = await Promise.all([
+                    StructureService.getInstitutions(),
+                    StructureService.getDepartments()
+                ]);
+                setInstitutions(instData.institutions);
+                setDepartments(deptData.departments);
+            } catch (err) {
+                console.error("Failed to load registration options", err);
+            }
+        };
+        fetchStructure();
+    });
 
     const [error, setError] = useState<string | null>(null);
     const [submitting, setSubmitting] = useState(false);
@@ -77,17 +109,19 @@ export default function RegisterPage() {
 
             // Get the ID token to send to the server-side API
             const idToken = await userCredential.user.getIdToken();
-            
+
             // Create user profile document via server-side API route
             const result = await apiClient('/api/registerUser', {
                 method: 'POST',
                 body: JSON.stringify({
                     idToken,
                     fullName,
-                    email: normalizedEmail
+                    email: normalizedEmail,
+                    institutionId: selectedInstitution,
+                    departmentId: selectedDepartment
                 })
             });
-            
+
             if (result.skipped) {
                 console.warn('User profile already existed, creation was skipped');
             }
@@ -99,6 +133,8 @@ export default function RegisterPage() {
                     email: normalizedEmail,
                     uid: userId,
                     role: "team",
+                    institutionId: selectedInstitution,
+                    departmentId: selectedDepartment,
                     createdAt: new Date().toISOString(),
                 };
                 localStorage.setItem("thaiba-tasks:user", JSON.stringify(user));
@@ -173,6 +209,52 @@ export default function RegisterPage() {
                         className="w-full h-11 rounded-xl bg-white/5 border border-[#ffffff1a] px-4 text-white placeholder-white/20 outline-none focus:ring-2 focus:ring-blue-500/50 focus:border-blue-500/50 transition-all font-medium"
                         placeholder="you@thaiba.in"
                     />
+                </div>
+
+                <div className="grid grid-cols-2 gap-4">
+                    <div className="space-y-1">
+                        <label className={`text-xs font-bold uppercase tracking-wider pl-1 transition-colors ${selectedDepartment ? 'text-slate-500' : 'text-blue-100/80'}`}>Institution</label>
+                        <Select
+                            value={selectedInstitution}
+                            onValueChange={(val) => {
+                                setSelectedInstitution(val);
+                                if (val) setSelectedDepartment("");
+                            }}
+                        >
+                            <SelectTrigger className={`w-full h-11 rounded-xl bg-white/5 border border-[#ffffff1a] px-4 text-white placeholder-white/20 outline-none focus:ring-2 focus:ring-blue-500/50 focus:border-blue-500/50 transition-all font-medium ${selectedDepartment ? 'opacity-50' : ''}`}>
+                                <SelectValue placeholder="Select Institution" />
+                            </SelectTrigger>
+                            <SelectContent className="bg-[#0b1220]/90 border border-white/10 backdrop-blur-xl text-white">
+                                {institutions.map(inst => (
+                                    <SelectItem key={inst.id} value={inst.id} className="focus:bg-white/10 focus:text-white text-slate-300">
+                                        {inst.name}
+                                    </SelectItem>
+                                ))}
+                            </SelectContent>
+                        </Select>
+                    </div>
+
+                    <div className="space-y-1">
+                        <label className={`text-xs font-bold uppercase tracking-wider pl-1 transition-colors ${selectedInstitution ? 'text-slate-500' : 'text-blue-100/80'}`}>Office / Unit</label>
+                        <Select
+                            value={selectedDepartment}
+                            onValueChange={(val) => {
+                                setSelectedDepartment(val);
+                                if (val) setSelectedInstitution("");
+                            }}
+                        >
+                            <SelectTrigger className={`w-full h-11 rounded-xl bg-white/5 border border-[#ffffff1a] px-4 text-white placeholder-white/20 outline-none focus:ring-2 focus:ring-blue-500/50 focus:border-blue-500/50 transition-all font-medium ${selectedInstitution ? 'opacity-50' : ''}`}>
+                                <SelectValue placeholder="Select Office / Unit" />
+                            </SelectTrigger>
+                            <SelectContent className="bg-[#0b1220]/90 border border-white/10 backdrop-blur-xl text-white">
+                                {departments.map(dept => (
+                                    <SelectItem key={dept.id} value={dept.id} className="focus:bg-white/10 focus:text-white text-slate-300">
+                                        {dept.name}
+                                    </SelectItem>
+                                ))}
+                            </SelectContent>
+                        </Select>
+                    </div>
                 </div>
 
                 <div className="grid grid-cols-2 gap-4">

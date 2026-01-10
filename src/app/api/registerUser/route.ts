@@ -5,7 +5,7 @@ import { adminDb } from '@/lib/firebase/server';
 
 export async function POST(request: NextRequest) {
   try {
-    const { idToken, fullName, email } = await request.json();
+    const { idToken, fullName, email, institutionId: reqInstitutionId, departmentId: reqDepartmentId } = await request.json();
 
     if (!idToken || !fullName || !email) {
       return Response.json(
@@ -33,11 +33,63 @@ export async function POST(request: NextRequest) {
       });
     }
 
+    // --- CHECK FOR INVITE ---
+    const normalizedEmail = email.toLowerCase().trim();
+    let role = 'guest'; // Default to guest if no invite
+
+    // Default to user selection, but Invite takes precedence
+    let institutionId = reqInstitutionId || null;
+    let departmentId = reqDepartmentId || null;
+
+    const invitesSnap = await db.collection('invites')
+      .where('email', '==', normalizedEmail)
+      .where('used', '==', false)
+      .limit(1)
+      .get();
+
+    if (!invitesSnap.empty) {
+      const inviteDoc = invitesSnap.docs[0];
+      const inviteData = inviteDoc.data();
+
+      console.log(`Found active invite for ${normalizedEmail}:`, inviteData);
+
+      role = inviteData.role || 'guest';
+
+      // Override with invite data if present (Invite Authority)
+      if (inviteData.institutionId) institutionId = inviteData.institutionId;
+      if (inviteData.departmentId) departmentId = inviteData.departmentId;
+
+      // Mark invite as used
+      await inviteDoc.ref.update({
+        used: true,
+        usedBy: userId,
+        usedAt: FieldValue.serverTimestamp()
+      });
+    } else {
+      console.log(`No active invite found for ${normalizedEmail}, assigning default role.`);
+    }
+
+    // --- AUTO-ASSIGN HQ IF UNIT SELECTED ---
+    // If user is in a Unit (Department) but has no specific Institution, assign to HQ.
+    if (departmentId && !institutionId) {
+      try {
+        const { ensureHeadquartersInstitution } = await import('@/lib/server-utils');
+        institutionId = await ensureHeadquartersInstitution();
+        console.log(`[Register] Assigned ${normalizedEmail} to HQ (${institutionId}) because they selected a Unit.`);
+      } catch (hqError) {
+        console.error('[Register] Failed to assign HQ:', hqError);
+        // Fallback: proceed without institutionId (or fail? Let's proceed to avoid blocking signup, 
+        // but this will cause the original issue. Better to log error. Permissions will fail later but user is created.)
+      }
+    }
+
     // Create the user profile document
     await userRef.set({
       fullName: fullName.trim(),
-      email: email.toLowerCase().trim(),
-      role: 'team', // Default role for new users
+      email: normalizedEmail,
+      role,
+      institutionId,
+      departmentId,
       createdAt: FieldValue.serverTimestamp(),
       updatedAt: FieldValue.serverTimestamp(),
       emailVerified: decodedToken.email_verified || false

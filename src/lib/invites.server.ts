@@ -9,7 +9,8 @@ export const InviteServiceServer = {
         role: 'admin' | 'team' | 'guest',
         invitedByUserId: string,
         institutionId: string | null, // Made nullable to support dept-only
-        departmentId: string | null   // Added departmentId
+        departmentId: string | null,   // Added departmentId
+        name?: string // Added name
     ): Promise<string> => {
         // Feature check usually safe if shared config
 
@@ -24,6 +25,7 @@ export const InviteServiceServer = {
             invitedBy: invitedByUserId,
             institutionId, // Can be null
             departmentId,  // Can be null
+            name: name || null, // Store name
             createdAt: FieldValue.serverTimestamp(),
             expiresAt: Timestamp.fromDate(expiresAt),
             used: false
@@ -44,6 +46,23 @@ export const InviteServiceServer = {
                 id: doc.id,
                 ...data,
                 // Serialize timestamps if needed, or return raw data if API route handles it
+                createdAt: data.createdAt?.toDate ? data.createdAt.toDate() : data.createdAt,
+                expiresAt: data.expiresAt?.toDate ? data.expiresAt.toDate() : data.expiresAt,
+            };
+        });
+    },
+
+    getAllInvites: async () => {
+        const snapshot = await adminDb.collection('invites')
+            .orderBy('createdAt', 'desc')
+            .limit(100)
+            .get();
+
+        return snapshot.docs.map(doc => {
+            const data = doc.data();
+            return {
+                id: doc.id,
+                ...data,
                 createdAt: data.createdAt?.toDate ? data.createdAt.toDate() : data.createdAt,
                 expiresAt: data.expiresAt?.toDate ? data.expiresAt.toDate() : data.expiresAt,
             };

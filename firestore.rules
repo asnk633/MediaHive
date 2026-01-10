@@ -26,11 +26,12 @@ service cloud.firestore {
 
     // Role Helpers
     function isAdmin() {
-      return userRole() == "admin";
+      // Check Custom Claims first (Performance & Reliability)
+      return request.auth.token.admin == true || userRole() == "admin";
     }
 
     function isTeam() {
-      return userRole() == "team";
+      return request.auth.token.isTeam == true || userRole() == "team";
     }
 
     function isGuest() {
@@ -77,8 +78,8 @@ service cloud.firestore {
     // 1. INVENTORY (Strict Asset Control)
     // RISK: If Admin UI uses client-side writes, they WILL be blocked if not scoped correctly.
     match /inventory/{itemId} {
-      // Read: All roles (within Scope)
-      allow read: if isSignedIn() && isScoped(resource);
+      // Read: All roles (within Scope) OR Admin
+      allow read: if isSignedIn() && (isScoped(resource) || isAdmin());
       
       // Create: Admin OR Team (Team allowed for flexibility, consider restricting to Admin if strict)
       allow create: if isSignedIn() && isScopedCreate(request.resource.data) && (isAdmin() || isTeam());
@@ -145,8 +146,9 @@ service cloud.firestore {
     // 4. INVENTORY ISSUES (Active Loans)
     match /inventory_issues/{id} {
       // Read: Staff (to manage) + The Borrower (to see their loan)
-      allow read: if isSignedIn() && isScoped(resource) && (
-        isAdmin() || isTeam() || resource.data.issuedToUserId == request.auth.uid
+      allow read: if isSignedIn() && (
+        isAdmin() || 
+        (isScoped(resource) && (isTeam() || resource.data.issuedToUserId == request.auth.uid))
       );
 
       // Create: Staff Only (Issuing an item)

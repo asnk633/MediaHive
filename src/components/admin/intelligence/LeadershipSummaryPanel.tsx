@@ -140,7 +140,7 @@ export function LeadershipSummaryPanel() {
                     <div className="flex-1 bg-[#0f172a] border border-[#ffffff1a] rounded-2xl p-6 shadow-xl flex flex-col justify-between">
                         <div className="flex justify-between items-start">
                             <div>
-                                <h3 className="text-xs font-bold text-white/40 uppercase tracking-widest">Department Health</h3>
+                                <h3 className="text-xs font-bold text-white/40 uppercase tracking-widest">Office / Unit Health</h3>
                                 <div className={cn("text-4xl font-bold mt-2 font-mono tracking-tighter shadow-glow", getScoreColor(departmentHealth.score))}>
                                     {departmentHealth.score}
                                 </div>

@@ -5,7 +5,8 @@ import { Institution } from '@/types/structure';
 
 export async function GET(request: NextRequest) {
   try {
-    await requireAdminWithVerifiedEmail(request);
+    // Public access allowed for registration
+    // await requireAdminWithVerifiedEmail(request);
 
     const url = new URL(request.url);
     const showArchived = url.searchParams.get('archived') === 'true';

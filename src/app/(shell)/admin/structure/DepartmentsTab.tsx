@@ -41,12 +41,12 @@ export function DepartmentsTab() {
         setCreating(true);
         try {
             await StructureService.createDepartment(newName);
-            toast.success("Department created");
+            toast.success("Office / Unit created");
             setNewName('');
             setCreateOpen(false);
             fetchDepartments();
         } catch (error) {
-            toast.error("Failed to create department");
+            toast.error("Failed to create office / unit");
         } finally {
             setCreating(false);
         }
@@ -56,7 +56,7 @@ export function DepartmentsTab() {
         const newStatus = currentStatus === 'active' ? 'archived' : 'active';
         try {
             await StructureService.updateDepartment(id, { status: newStatus });
-            toast.success(`Department ${newStatus === 'active' ? 'activated' : 'archived'}`);
+            toast.success(`Office / Unit ${newStatus === 'active' ? 'activated' : 'archived'}`);
             fetchDepartments();
         } catch (error) {
             toast.error("Status update failed");
@@ -66,18 +66,18 @@ export function DepartmentsTab() {
     return (
         <div className="space-y-6">
             <div className="flex justify-between items-center">
-                <h3 className="text-lg font-medium text-slate-200">Global Departments</h3>
+                <h3 className="text-lg font-medium text-slate-200">Offices / Units</h3>
                 <Dialog open={createOpen} onOpenChange={setCreateOpen}>
                     <DialogTrigger asChild>
                         <Button className="bg-blue-600 hover:bg-blue-500 text-white">
-                            <Plus className="w-4 h-4 mr-2" /> Add Department
+                            <Plus className="w-4 h-4 mr-2" /> Add Office / Unit
                         </Button>
                     </DialogTrigger>
                     <DialogContent className="bg-slate-900 border-white/10">
                         <DialogHeader>
-                            <DialogTitle className="text-white">New Department</DialogTitle>
+                            <DialogTitle className="text-white">New Office / Unit</DialogTitle>
                             <DialogDescription className="text-slate-400">
-                                Create a new global department for user assignment.
+                                Create a new global office / unit for user assignment.
                             </DialogDescription>
                         </DialogHeader>
                         <form onSubmit={handleCreate} className="space-y-4 pt-4">
@@ -134,9 +134,9 @@ export function DepartmentsTab() {
                     {departments.length === 0 && (
                         <div className="col-span-full flex flex-col items-center justify-center py-16 text-center border border-dashed border-white/10 rounded-xl bg-slate-900/30">
                             <Users className="w-12 h-12 text-slate-600 mb-4" />
-                            <h3 className="text-lg font-medium text-slate-400">No departments found</h3>
+                            <h3 className="text-lg font-medium text-slate-400">No offices / units found</h3>
                             <p className="text-sm text-slate-500 max-w-sm mt-2">
-                                Create global departments to assign users to.
+                                Create global offices / units to assign users to.
                             </p>
                         </div>
                     )}

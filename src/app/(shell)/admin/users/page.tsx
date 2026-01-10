@@ -13,11 +13,13 @@ import { UserDialog } from './UserDialog';
 import { toast } from 'sonner';
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import Link from 'next/link';
-import { createInvite } from '@/services/inviteService';
+import { createInvite, getInstitutionInvites, Invite } from '@/services/inviteService';
 import { useAuth } from '@/contexts/AuthContext';
+import { apiClient } from '@/lib/apiClient';
 
 export default function UsersPage() {
     const [users, setUsers] = useState<User[]>([]);
+    const [invites, setInvites] = useState<Invite[]>([]);
     const [institutions, setInstitutions] = useState<Institution[]>([]);
     const [departments, setDepartments] = useState<Department[]>([]);
     const [loading, setLoading] = useState(true);
@@ -30,14 +32,18 @@ export default function UsersPage() {
     const fetchData = async () => {
         setLoading(true);
         try {
-            const [usersData, instData, deptData] = await Promise.all([
+            const [usersData, instData, deptData, inviteData] = await Promise.all([
                 UserService.getAllUsers(),
                 StructureService.getInstitutions(), // Active only by default
-                StructureService.getDepartments()   // Active only by default
+                StructureService.getDepartments(),   // Active only by default
+                // Fetch invites via raw API to get "all" if global admin (service method usually limits to inst)
+                // We'll use a direct API call here to benefit from the clearer logic we just added to the route
+                apiClient<{ success: boolean, invites: Invite[] }>('/api/invites')
             ]);
             setUsers(usersData);
             setInstitutions(instData.institutions || []);
             setDepartments(deptData.departments || []);
+            setInvites(inviteData.invites || []);
         } catch (error) {
             console.error(error);
             toast.error("Failed to load data");
@@ -62,7 +68,7 @@ export default function UsersPage() {
         setDialogOpen(true);
     };
 
-    const handleSaveUser = async (data: Partial<User> & { email?: string }) => {
+    const handleSaveUser = async (data: Partial<User> & { email?: string, name?: string }) => {
         try {
             if (selectedUser) {
                 // Update Logic
@@ -86,7 +92,9 @@ export default function UsersPage() {
                     data.role as 'admin' | 'team' | 'guest',
                     currentUser.uid,
                     data.institutionId || null,
-                    data.departmentId || null
+                    data.institutionId || null,
+                    data.departmentId || null,
+                    data.name || null // Pass name to invite
                 );
 
                 toast.success(`Invitation sent to ${data.email}`);
@@ -107,12 +115,29 @@ export default function UsersPage() {
         }
         if (user.departmentId) {
             const dept = departments.find(d => d.id === user.departmentId);
-            return { type: 'Department', name: dept ? dept.name : 'Unknown Department', icon: Users };
+            return { type: 'Office / Unit', name: dept ? dept.name : 'Unknown Office / Unit', icon: Users };
         }
         return { type: 'None', name: 'No Affiliation', icon: UserIcon };
     };
 
-    const filteredUsers = users.filter(u =>
+    // Merge Users and Invites for Display
+    const allItems = [
+        ...users.map(u => ({ ...u, type: 'user' as const })),
+        ...invites.map(i => ({
+            uid: i.id, // Use invite ID as temp UID
+            name: i.name || i.email.split('@')[0], // Use invite name if available
+            email: i.email,
+            role: i.role,
+            institutionId: i.institutionId,
+            departmentId: i.departmentId,
+            photoURL: null,
+            avatarUrl: null,
+            status: 'invited',
+            type: 'invite' as const
+        }))
+    ];
+
+    const filteredItems = allItems.filter(u =>
         (u.name && u.name.toLowerCase().includes(search.toLowerCase())) ||
         (u.email && u.email.toLowerCase().includes(search.toLowerCase()))
     );
@@ -178,9 +203,12 @@ export default function UsersPage() {
                     </div>
                 ) : (
                     <div className="grid gap-4">
-                        {filteredUsers.map(user => {
+                        {filteredItems.map(item => {
+                            // Cast to User for compatible structure usage (invite has compatible fields)
+                            const user = item as unknown as User;
                             const affiliation = getAffiliation(user);
                             const Icon = affiliation.icon;
+                            const isInvite = item.type === 'invite';
 
                             return (
                                 <div key={user.uid} className="p-4 rounded-xl bg-slate-900/50 border border-white/5 flex flex-col sm:flex-row sm:items-center justify-between gap-4 hover:border-white/10 transition-colors">
@@ -210,9 +238,17 @@ export default function UsersPage() {
                                                 {user.role}
                                             </span>
 
-                                            <Button variant="ghost" size="sm" onClick={() => handleEdit(user)}>
-                                                Edit
-                                            </Button>
+                                            {isInvite && (
+                                                <span className="px-2 py-1 rounded-full text-[10px] font-bold bg-amber-500/10 text-amber-400 border border-amber-500/20 uppercase tracking-wider">
+                                                    Pending
+                                                </span>
+                                            )}
+
+                                            {!isInvite && (
+                                                <Button variant="ghost" size="sm" onClick={() => handleEdit(user)}>
+                                                    Edit
+                                                </Button>
+                                            )}
                                         </div>
                                     </div>
                                 </div>

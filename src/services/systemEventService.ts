@@ -29,8 +29,13 @@ export const SystemEventService = {
 
     getAllSystemEvents: async (): Promise<SystemEvent[]> => {
         try {
-            const data = await apiClient('/api/system-events', { method: 'GET' });
-            return data as SystemEvent[];
+            const data: any = await apiClient('/api/system-events', { method: 'GET' });
+            // Handle both array response and { events: [...] } wrapper
+            if (Array.isArray(data)) return data;
+            if (data && Array.isArray(data.events)) return data.events;
+            // Fallback for unexpected shapes
+            console.warn('[SystemEventService] Unexpected API response format:', data);
+            return [];
         } catch (error) {
             console.error('Failed to fetch system events:', error);
             return [];
@@ -79,6 +84,11 @@ export const SystemEventService = {
         const expanded: SystemEvent[] = [];
         const startOfYear = new Date(viewYear, 0, 1);
         const endOfYear = new Date(viewYear, 11, 31);
+
+        if (!Array.isArray(events)) {
+            console.warn("[SystemEventService] expandEventsForView received non-array:", events);
+            return [];
+        }
 
         events.forEach(event => {
             if (event.isRecurring && event.recurrence) {

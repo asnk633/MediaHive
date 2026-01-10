@@ -164,7 +164,7 @@ export const LeaveAnalytics: React.FC<LeaveAnalyticsProps> = ({ data }) => {
             {byDepartment.length > 0 && (
                 <div className="bg-white/5 border border-[#ffffff1a] rounded-2xl p-6">
                     <h3 className="text-sm font-bold text-white/70 uppercase tracking-wider mb-4">
-                        Leaves by Department
+                        Leaves by Office / Unit
                     </h3>
                     <ResponsiveContainer width="100%" height={300}>
                         <BarChart data={byDepartment} layout="vertical">

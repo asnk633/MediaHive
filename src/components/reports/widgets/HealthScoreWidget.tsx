@@ -56,7 +56,7 @@ export const HealthScoreWidget: React.FC<HealthScoreWidgetProps> = ({ score, tre
                         <span className={cn("text-4xl font-bold tracking-tighter", colorClass.split(' ')[0])}>
                             {score}
                         </span>
-                        <span className="text-xs text-slate-400 uppercase tracking-widest mt-1">Health Score</span>
+                        <span className="text-[10px] text-slate-500 font-medium uppercase tracking-wider mt-1">Health Score</span>
                     </div>
                 </div>
 

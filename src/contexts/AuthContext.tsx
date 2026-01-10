@@ -18,6 +18,8 @@ export type AuthUser = {
   defaultInstitution?: string;
   officialName?: string;
   avatarUrl?: string; // Phase 0: Ensure avatarUrl is available in session
+  institutionId?: string;
+  departmentId?: string;
 };
 
 type AuthUserStatus = 'unauthenticated' | 'authenticating' | 'authenticated';
@@ -159,6 +161,9 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
             isSuperAdmin: idTokenResult.claims.superAdmin === true,
             defaultDepartment: userData.defaultDepartment,
             defaultInstitution: userData.defaultInstitution,
+            // Map standard ID fields (Fix for InventoryView)
+            institutionId: userData.institutionId || userData.defaultInstitution,
+            departmentId: userData.departmentId || userData.defaultDepartment,
             officialName: userData.officialName,
             avatarUrl: userData.avatarUrl || fbUser.photoURL,
           };

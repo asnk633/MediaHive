@@ -348,7 +348,7 @@ export const CreateEventForm = ({ initialDate, onSuccess, onCancel, isModal = fa
                                 )}
 
                                 <SelectGroup>
-                                    <SelectLabel className="text-white/50 text-xs font-bold uppercase tracking-wider px-2 py-1.5 mt-2">Departments</SelectLabel>
+                                    <SelectLabel className="text-white/50 text-xs font-bold uppercase tracking-wider px-2 py-1.5 mt-2">Offices / Units</SelectLabel>
                                     {departmentsList.map(d => (
                                         <SelectItem key={`dept_${d.id}`} value={`dept_${d.id}`}>{d.name}</SelectItem>
                                     ))}
@@ -449,11 +449,11 @@ export const CreateEventForm = ({ initialDate, onSuccess, onCancel, isModal = fa
                             <Briefcase size={20} className={iconClasses} />
                             <Select value={department} onValueChange={setDepartment}>
                                 <SelectTrigger className="w-full bg-[#0a0c10] border-[#ffffff1a] text-white h-14 rounded-2xl pl-12">
-                                    <SelectValue placeholder="Select Department" />
+                                    <SelectValue placeholder="Select Office / Unit" />
                                 </SelectTrigger>
                                 <SelectContent className="bg-[#141e30] border-[#ffffff1a] text-white max-h-80">
                                     <SelectGroup>
-                                        <SelectLabel className="text-white/50 text-xs font-bold uppercase tracking-wider px-2 py-1.5">Departments</SelectLabel>
+                                        <SelectLabel className="text-white/50 text-xs font-bold uppercase tracking-wider px-2 py-1.5">Offices / Units</SelectLabel>
                                         {departmentsList.map(dept => (
                                             <SelectItem key={dept.id} value={dept.name}>{dept.name}</SelectItem>
                                         ))}

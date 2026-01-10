@@ -49,7 +49,7 @@ export async function GET(request: NextRequest) {
           return {
             uid: doc.id,
             role: userData.role,
-            name: userData.officialName || userData.name || userData.email || 'Unknown',
+            name: userData.officialName || userData.fullName || userData.name || userData.email || 'Unknown',
             email: userData.email,
             avatarUrl: userData.avatarUrl,
             photoURL: userData.photoURL
@@ -77,7 +77,7 @@ export async function GET(request: NextRequest) {
           return {
             uid: doc.id,
             role: userData.role,
-            name: userData.officialName || userData.name || userData.email || 'Unknown',
+            name: userData.officialName || userData.fullName || userData.name || userData.email || 'Unknown',
             avatarUrl: userData.avatarUrl,
             photoURL: userData.photoURL
           };
@@ -98,10 +98,14 @@ export async function GET(request: NextRequest) {
       const decodedToken = await requireAdminWithVerifiedEmail(request);
 
       const usersSnapshot = await db.collection('users').get();
-      const users = usersSnapshot.docs.map(doc => ({
-        uid: doc.id,
-        ...doc.data()
-      }));
+      const users = usersSnapshot.docs.map(doc => {
+        const userData = doc.data();
+        return {
+          uid: doc.id,
+          ...userData,
+          name: userData.officialName || userData.fullName || userData.name || userData.email || 'Unknown'
+        };
+      });
 
       return Response.json({ users });
     }
@@ -127,18 +131,37 @@ export async function PUT(request: NextRequest) {
     // Update the user in Firestore
     const userRef = db.collection('users').doc(uid);
 
-    // Enforce XOR Affiliation Logic
-    const { institutionId, departmentId } = data;
+    // Enforce XOR Affiliation Logic (Modified for HQ Auto-Assign)
+    let { institutionId, departmentId } = data;
 
     // Logic: 
-    // If BOTH are present -> Error
-    // If neither is present -> Warning? Or allow for legacy?
-    // Strict Mode: One must be present.
-    // For now, we validate if they are explicitly being updated.
+    // If user is assigned to a Department (Unit), they MUST belong to an Institution for permissions to work.
+    // We automatically assign them to "Thaiba Garden HQ" in this case.
 
+    if (departmentId) {
+      if (!institutionId) {
+        // Auto-assign HQ
+        const { ensureHeadquartersInstitution } = await import('@/lib/server-utils');
+        const hqId = await ensureHeadquartersInstitution();
+
+        // Mutate the data object to be saved
+        data.institutionId = hqId;
+        console.log(`[UpdateUser] Auto-assigned HQ (${hqId}) to user ${uid} because Department was set.`);
+      }
+      // If institutionId WAS provided along with departmentId, we allow it (e.g. maybe specific unit in specific inst?)
+      // For now, we assume the "One or the other" UI means "Standard Inst" OR "HQ Unit".
+    } else if (institutionId) {
+      // If Institution is set, Department should be null (per current UI logic)
+      // We ensure data.departmentId is null if not provided? 
+      // The UI sends explicit null. We trust the UI or the partial update.
+    }
+
+    /* 
+    // REMOVED: Strict XOR check. database now allows both if one is HQ.
     if (institutionId && departmentId) {
       return Response.json({ error: 'User cannot be affiliated with both an Institution and a Department.' }, { status: 400 });
     }
+    */
 
     // If updating, ensure we clear the other one if needed.
     // However, the client should send null for the one being cleared.

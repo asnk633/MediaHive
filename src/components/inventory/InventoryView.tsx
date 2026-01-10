@@ -50,8 +50,16 @@ export default function InventoryView() {
         try {
             const promises: Promise<any>[] = [
                 apiClient<InventoryApiResponse>(`/api/inventory?limit=300`),
-                inventoryIssueService.getActiveIssues()
             ];
+
+            // Issues (Only fetch if scoped)
+            if (user?.institutionId) {
+                console.log('[InventoryView] Fetching issues for institution:', user.institutionId);
+                promises.push(inventoryIssueService.getActiveIssues(user.institutionId));
+            } else {
+                console.warn('[InventoryView] User has no institutionId. Skipping issues fetch.');
+                promises.push(Promise.resolve([]));
+            }
 
             // If Guest, fetch my requests to disable buttons
             if (user && user.role !== 'admin' && user.role !== 'team') {

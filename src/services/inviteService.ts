@@ -9,6 +9,8 @@ export interface Invite {
   role: 'admin' | 'team' | 'guest';
   invitedBy: string; // userId of the admin who created the invite
   institutionId: string; // tenant isolation
+  departmentId?: string | null;
+  name?: string | null; // Added name
   createdAt: Date;
   expiresAt: Date;
   used: boolean;
@@ -22,7 +24,8 @@ export const createInvite = async (
   role: 'admin' | 'team' | 'guest',
   invitedByUserId: string,
   institutionId: string | null = null,
-  departmentId: string | null = null
+  departmentId: string | null = null,
+  name: string | null = null // Added name
 ): Promise<string> => {
   // Check if feature is enabled
   if (!isFeatureEnabled('inviteAccessLayer')) {
@@ -41,7 +44,8 @@ export const createInvite = async (
       role,
       invitedByUserId,
       institutionId,
-      departmentId
+      departmentId,
+      name
     })
   });
 

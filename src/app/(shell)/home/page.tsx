@@ -19,7 +19,7 @@ import { TimelineWidget } from "@/components/home/widgets/TimelineWidget";
 import { ActivityFeed } from "@/components/home/widgets/ActivityFeed";
 import { ActiveCampaignsWidget } from "@/components/home/widgets/ActiveCampaignsWidget";
 import { OverdueAlertsWidget } from "@/components/home/widgets/OverdueAlertsWidget";
-import { InventoryStatsWidget } from "@/components/home/widgets/InventoryStatsWidget";
+
 import { SectionHeader } from "@/components/ui/SectionHeader";
 import { PageLayout } from "@/components/ui/layout/PageLayout";
 import { PageHeader } from "@/components/ui/layout/PageHeader";
@@ -252,8 +252,7 @@ export default function Home() {
         {role === 'admin' && (
           <>
             <OverdueAlertsWidget />
-            <SectionHeader title="Inventory Snapshot" />
-            <InventoryStatsWidget />
+
           </>
         )}
 

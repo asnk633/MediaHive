@@ -220,7 +220,7 @@ export const UserManagementPanel: React.FC<UserManagementPanelProps> = ({ instit
                       >
                         {user.role}
                       </Badge>
-                      {/* Show Department/Institution if available */}
+                      {/* Show Office / Unit / Institution if available */}
                       {user.defaultDepartment && (
                         <Badge variant="secondary" className="bg-white/5 text-white/60">
                           {departments.find(d => d.id === parseInt(user.defaultDepartment) || d.name === user.defaultDepartment)?.name || user.defaultDepartment}
@@ -311,10 +311,10 @@ export const UserManagementPanel: React.FC<UserManagementPanelProps> = ({ instit
               </div>
 
               <div className="space-y-2">
-                <label className="text-xs text-gray-400">Department</label>
+                <label className="text-xs text-gray-400">Office / Unit</label>
                 <Select value={editingUser.defaultDepartment?.toString()} onValueChange={v => setEditingUser({ ...editingUser, defaultDepartment: v })}>
                   <SelectTrigger className="bg-black/20 border-[#ffffff1a] text-white">
-                    <SelectValue placeholder="Select Department" />
+                    <SelectValue placeholder="Select Office / Unit" />
                   </SelectTrigger>
                   <SelectContent className="bg-gray-800 border-[#ffffff1a] text-white">
                     {departments.map(d => (

@@ -123,7 +123,7 @@ export function ExportModal({ isOpen, onClose, availableUsers }: ExportModalProp
                                             }`}
                                     >
                                         <Building size={20} className="mb-2" />
-                                        <span className="text-xs font-medium">Department</span>
+                                        <span className="text-xs font-medium">Office / Unit</span>
                                     </button>
                                     <button
                                         onClick={() => setExportType('attendance')}

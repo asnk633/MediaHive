@@ -65,7 +65,22 @@ export function UserDialog({ open, onOpenChange, user, onSave, institutions, dep
     const handleSave = async () => {
         setLoading(true);
         try {
+            // Payload initialized strictly below
             const payload: any = { role };
+
+            // Logic for Name
+            const nameInput = document.getElementById('user-name') as HTMLInputElement;
+            const nameValue = nameInput?.value?.trim() || null;
+
+            if (user) {
+                // For existing users, update 'officialName' to override others
+                if (nameValue && nameValue !== user.name) {
+                    payload.officialName = nameValue;
+                }
+            } else {
+                // For invites, pass 'name'
+                payload.name = nameValue;
+            }
 
             // Logic for Email
             if (!user) {
@@ -88,7 +103,7 @@ export function UserDialog({ open, onOpenChange, user, onSave, institutions, dep
                 payload.departmentId = null; // Clear other
             } else {
                 if (!selectedDepartment) {
-                    toast.error("Please select a department");
+                    toast.error("Please select an office / unit");
                     setLoading(false);
                     return;
                 }
@@ -118,6 +133,17 @@ export function UserDialog({ open, onOpenChange, user, onSave, institutions, dep
                 </DialogHeader>
 
                 <div className="space-y-6 pt-4">
+                    {/* Name Input (Optional for Invite, Editable for User) */}
+                    <div className="space-y-2">
+                        <Label className="text-slate-300">Name <span className="text-slate-500 text-xs">(Optional)</span></Label>
+                        <Input
+                            placeholder="John Doe"
+                            className="bg-slate-800 border-white/10 text-white"
+                            id="user-name"
+                            defaultValue={user?.name || ''}
+                        />
+                    </div>
+
                     {/* Email Input (Create Mode Only) */}
                     {!user && (
                         <div className="space-y-2">
@@ -155,7 +181,7 @@ export function UserDialog({ open, onOpenChange, user, onSave, institutions, dep
                         >
                             <TabsList className="bg-slate-800 border border-white/5 w-full">
                                 <TabsTrigger value="institution" className="flex-1">Institution</TabsTrigger>
-                                <TabsTrigger value="department" className="flex-1">Department</TabsTrigger>
+                                <TabsTrigger value="department" className="flex-1">Office / Unit</TabsTrigger>
                             </TabsList>
 
                             <div className="mt-4 p-4 bg-slate-800/50 rounded-xl border border-white/5">
@@ -176,10 +202,10 @@ export function UserDialog({ open, onOpenChange, user, onSave, institutions, dep
                                 </TabsContent>
 
                                 <TabsContent value="department" className="mt-0">
-                                    <Label className="text-xs text-slate-400 mb-2 block">Select Global Department</Label>
+                                    <Label className="text-xs text-slate-400 mb-2 block">Select Global Office / Unit</Label>
                                     <Select value={selectedDepartment} onValueChange={setSelectedDepartment}>
                                         <SelectTrigger className="bg-slate-900 border-white/10 text-white">
-                                            <SelectValue placeholder="Choose Department..." />
+                                            <SelectValue placeholder="Choose Office / Unit..." />
                                         </SelectTrigger>
                                         <SelectContent className="bg-slate-900 border-white/10">
                                             {departments.map(dept => (

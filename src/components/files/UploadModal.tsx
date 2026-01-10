@@ -155,7 +155,7 @@ export function UploadModal({ open, onClose, onSuccess, eventId, taskId }: Uploa
                                 {visibilityMode !== 'all' && (
                                     <div className="grid grid-cols-2 gap-3 animate-in fade-in pt-2">
                                         <div className="space-y-1">
-                                            <Label className={labelClasses}>Departments</Label>
+                                            <Label className={labelClasses}>Offices / Units</Label>
                                             <Input placeholder="Comma separated" {...register('departments')} className={inputClasses} />
                                         </div>
                                         <div className="space-y-1">
@@ -181,7 +181,7 @@ export function UploadModal({ open, onClose, onSuccess, eventId, taskId }: Uploa
                                             value="department"
                                             className="data-[state=active]:bg-blue-600 data-[state=active]:text-white data-[state=active]:shadow-lg text-gray-400 rounded-lg py-2 transition-all"
                                         >
-                                            Department
+                                            Office / Unit
                                         </TabsTrigger>
                                         <TabsTrigger
                                             value="institution"
@@ -193,7 +193,7 @@ export function UploadModal({ open, onClose, onSuccess, eventId, taskId }: Uploa
                                     <TabsContent value="department" className="mt-3">
                                         <Select onValueChange={(v) => setValue('department', v)}>
                                             <SelectTrigger className={selectTriggerClasses}>
-                                                <SelectValue placeholder="Select Department" />
+                                                <SelectValue placeholder="Select Office / Unit" />
                                             </SelectTrigger>
                                             <SelectContent className={selectContentClasses}>
                                                 <SelectItem value="General" className={selectItemClasses}>General</SelectItem>

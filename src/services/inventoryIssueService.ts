@@ -31,16 +31,29 @@ export const inventoryIssueService = {
     },
 
     // Get Active Issues (For Availability Check)
-    getActiveIssues: async () => {
+    getActiveIssues: async (institutionId?: string) => {
         // We only care about items currently 'issued'
-        const q = query(collection(db, COLLECTION), where("status", "==", "issued"));
+        let q = query(collection(db, COLLECTION), where("status", "==", "issued"));
+
+        // Scope by institution if provided (Active Users/Admins should always provide this)
+        if (institutionId) {
+            q = query(q, where("institutionId", "==", institutionId));
+        }
+
         const snap = await getDocs(q);
         return snap.docs.map(d => ({ id: d.id, ...d.data() } as InventoryIssue));
     },
 
     // Get All Issues (History)
-    getAll: async () => {
-        const q = query(collection(db, COLLECTION), orderBy("issuedAt", "desc"));
+    getAll: async (institutionId?: string) => {
+        let q = query(collection(db, COLLECTION), orderBy("issuedAt", "desc"));
+
+        // Scope by institution
+        if (institutionId) {
+            // Note: Compound index might be needed: institutionId ASC, issuedAt DESC
+            q = query(collection(db, COLLECTION), where("institutionId", "==", institutionId), orderBy("issuedAt", "desc"));
+        }
+
         const snap = await getDocs(q);
         return snap.docs.map(d => ({ id: d.id, ...d.data() } as InventoryIssue));
     },

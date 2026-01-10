@@ -314,7 +314,7 @@ export const EventEditModal: React.FC<EventEditModalProps> = ({ event, isOpen, o
                         </div>
 
                         <div>
-                            <label className="block text-xs font-bold text-white/40 uppercase tracking-widest mb-2 px-1">Department / Institution</label>
+                            <label className="block text-xs font-bold text-white/40 uppercase tracking-widest mb-2 px-1">Office / Unit / Institution</label>
                             <div className="relative group">
                                 <Briefcase size={18} className="absolute left-4 top-1/2 -translate-y-1/2 text-white/30 group-focus-within:text-blue-400 transition-colors" />
                                 <select
@@ -323,7 +323,7 @@ export const EventEditModal: React.FC<EventEditModalProps> = ({ event, isOpen, o
                                     onChange={e => setFormData({ ...formData, department: e.target.value })}
                                 >
                                     <option value="" className="bg-[#141e30]">Select Organization</option>
-                                    <optgroup label="DEPARTMENTS" className="bg-[#141e30] text-white/40 font-bold">
+                                    <optgroup label="OFFICES / UNITS" className="bg-[#141e30] text-white/40 font-bold">
                                         {DEPARTMENTS.map(dept => (
                                             <option key={dept} value={dept} className="bg-[#141e30] text-white">{dept}</option>
                                         ))}

@@ -248,7 +248,7 @@ export const EventDetailsModal: React.FC<EventDetailsModalProps> = ({ event, isO
                                         <Briefcase size={20} />
                                     </div>
                                     <div className="flex-1 min-w-0">
-                                        <p className="text-[10px] uppercase font-bold text-white/40 tracking-wider">Department</p>
+                                        <p className="text-[10px] uppercase font-bold text-white/40 tracking-wider">Office / Unit</p>
                                         <p className="text-sm font-semibold text-white break-words">{event.department || 'General'}</p>
                                     </div>
                                 </div>

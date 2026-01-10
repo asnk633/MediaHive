@@ -343,7 +343,7 @@ export default function NewTaskPage() {
                     >
                       <option value="" className="bg-[#13161c]">Select Org</option>
 
-                      <optgroup label="DEPARTMENTS" className="bg-[#13161c] text-gray-500 font-bold">
+                      <optgroup label="OFFICES / UNITS" className="bg-[#13161c] text-gray-500 font-bold">
                         {departmentsList.map(dept => (
                           <option key={dept.id} value={dept.name} className="bg-[#13161c] text-gray-300 font-normal">
                             {dept.name}
@@ -398,7 +398,7 @@ export default function NewTaskPage() {
                     >
                       <option value="" className="bg-[#13161c]">Select Identity...</option>
 
-                      <optgroup label="DEPARTMENTS" className="bg-[#13161c] text-gray-500 font-bold">
+                      <optgroup label="OFFICES / UNITS" className="bg-[#13161c] text-gray-500 font-bold">
                         {departmentsList.map(dept => (
                           <option key={`dept_${dept.id}`} value={`dept_${dept.id}`} className="bg-[#13161c] text-gray-300 font-normal">
                             {dept.name}

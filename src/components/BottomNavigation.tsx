@@ -32,7 +32,7 @@ export default function BottomNavigation() {
         className="fixed left-1/2 -translate-x-1/2 z-30"
         style={{
           bottom: 'calc(1.5rem + env(safe-area-inset-bottom))',
-          width: '26rem',
+          width: '30rem', // Enlarged width
           height: '5rem', // h-20
         }}
       >
@@ -60,10 +60,10 @@ export default function BottomNavigation() {
               ease: "easeInOut"
             }
           }}
-          className="w-full h-full bg-[#0f172a]/90 backdrop-blur-2xl border border-[#ffffff1a] rounded-[40px]"
+          className="w-full h-full bg-[#0f172a]/90 backdrop-blur-2xl border border-[#ffffff1a] rounded-[40px] px-4"
           style={{
             display: 'grid',
-            gridTemplateColumns: '56px 56px 56px 80px 56px 56px 56px',
+            gridTemplateColumns: 'repeat(3, 1fr) 80px repeat(3, 1fr)',
             alignItems: 'center',
             justifyItems: 'center'
           }}

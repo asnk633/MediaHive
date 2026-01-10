@@ -190,3 +190,37 @@ export async function authorizeByPermission(request: Request, permission: Permis
 
     return { authorized: true, user };
 }
+
+export const HEADQUARTERS_NAME = 'Thaiba Garden HQ';
+
+/**
+ * Ensures that the Headquarters institution exists and returns its ID.
+ * This is used to assign a default institution to users who belong to a specific Department (Unit/Office).
+ */
+export async function ensureHeadquartersInstitution(): Promise<string> {
+    const db = adminDb;
+    const institutionsRef = db.collection('institutions');
+
+    // 1. Check if HQ exists
+    const querySnapshot = await institutionsRef
+        .where('name', '==', HEADQUARTERS_NAME)
+        .limit(1)
+        .get();
+
+    if (!querySnapshot.empty) {
+        return querySnapshot.docs[0].id;
+    }
+
+    // 2. Create HQ if missing
+    console.log(`[Structure] '${HEADQUARTERS_NAME}' not found. Creating automatically...`);
+    const newDocRef = institutionsRef.doc();
+    await newDocRef.set({
+        name: HEADQUARTERS_NAME,
+        status: 'active',
+        createdAt: new Date().toISOString(),
+        updatedAt: new Date().toISOString()
+    });
+
+    console.log(`[Structure] Created Headquarters with ID: ${newDocRef.id}`);
+    return newDocRef.id;
+}

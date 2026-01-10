@@ -63,12 +63,12 @@ export const DepartmentManagement = () => {
                 method: 'POST',
                 body: JSON.stringify({ name: createName })
             });
-            toast.success("Department created");
+            toast.success("Office / Unit created");
             setCreateName('');
             setIsCreating(false);
             fetchDepartments();
         } catch (e) {
-            toast.error("Failed to create department");
+            toast.error("Failed to create office / unit");
         } finally {
             setSaving(null);
         }
@@ -83,11 +83,11 @@ export const DepartmentManagement = () => {
                 method: 'PUT',
                 body: JSON.stringify({ name: editName })
             });
-            toast.success("Department updated");
+            toast.success("Office / Unit updated");
             setEditingId(null);
             fetchDepartments();
         } catch (e) {
-            toast.error("Failed to update department");
+            toast.error("Failed to update office / unit");
         } finally {
             setSaving(null);
         }
@@ -102,11 +102,11 @@ export const DepartmentManagement = () => {
             await apiClient(`/api/departments?id=${id}`, {
                 method: 'DELETE'
             });
-            toast.success("Department deleted");
+            toast.success("Office / Unit deleted");
             fetchDepartments();
         } catch (e) {
             console.error(e);
-            toast.error("Failed to delete department");
+            toast.error("Failed to delete office / unit");
         } finally {
             setSaving(null);
             setDeleteConfirmId(null);
@@ -127,8 +127,8 @@ export const DepartmentManagement = () => {
         <div className="max-w-4xl mx-auto">
             <div className="mb-6 flex justify-between items-center">
                 <div>
-                    <h2 className="text-xl font-semibold text-white">Departments</h2>
-                    <p className="text-sm text-[var(--color-text-secondary)]">Manage specific departments</p>
+                    <h2 className="text-xl font-semibold text-white">Offices / Units</h2>
+                    <p className="text-sm text-[var(--color-text-secondary)]">Manage specific offices / units</p>
                 </div>
                 {!isCreating && (
                     <button
@@ -136,7 +136,7 @@ export const DepartmentManagement = () => {
                         className="flex items-center gap-2 bg-indigo-600 hover:bg-indigo-700 text-white px-4 py-2 rounded-lg transition-colors"
                     >
                         <Plus size={18} />
-                        Add Department
+                        Add Office / Unit
                     </button>
                 )}
             </div>
@@ -157,7 +157,7 @@ export const DepartmentManagement = () => {
                                 autoFocus
                                 value={createName}
                                 onChange={(e) => setCreateName(e.target.value)}
-                                placeholder="Enter department name..."
+                                placeholder="Enter office / unit name..."
                                 className="flex-1 bg-transparent border-none text-white focus:outline-none focus:ring-0 placeholder-white/30 text-lg font-medium"
                             />
                             <div className="flex gap-2">
@@ -181,12 +181,12 @@ export const DepartmentManagement = () => {
                 )}
 
                 {loading ? (
-                    <div className="text-white text-center py-8">Loading departments...</div>
+                    <div className="text-white text-center py-8">Loading offices / units...</div>
                 ) : departments.length === 0 && !isCreating ? (
                     <div className="text-center py-12 text-[var(--color-text-secondary)] bg-[var(--color-bg-surface)] rounded-[20px] border border-[var(--color-border)]">
                         <Briefcase className="mx-auto mb-4" size={48} />
-                        <p>No departments found.</p>
-                        <p className="mt-2">Create your first department to get started.</p>
+                        <p>No offices / units found.</p>
+                        <p className="mt-2">Create your first office / unit to get started.</p>
                     </div>
                 ) : (
                     departments.map((dept) => (
@@ -209,7 +209,7 @@ export const DepartmentManagement = () => {
                                             value={editName}
                                             onChange={(e) => setEditName(e.target.value)}
                                             className="flex-1 bg-white/5 border border-[#ffffff1a] rounded-lg px-3 py-2 text-white focus:outline-none focus:border-blue-500 transition-colors"
-                                            placeholder="Department Name"
+                                            placeholder="Office / Unit Name"
                                             onKeyDown={(e) => {
                                                 if (e.key === 'Enter') handleUpdate(dept.id);
                                                 if (e.key === 'Escape') setEditingId(null);
@@ -280,7 +280,7 @@ export const DepartmentManagement = () => {
                     <AlertDialogHeader>
                         <AlertDialogTitle>Are you absolutely sure?</AlertDialogTitle>
                         <AlertDialogDescription className="text-slate-400">
-                            This action cannot be undone. This will permanently delete the department
+                            This action cannot be undone. This will permanently delete the office / unit
                             and remove it from our servers.
                         </AlertDialogDescription>
                     </AlertDialogHeader>

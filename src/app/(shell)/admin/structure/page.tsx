@@ -23,7 +23,7 @@ export default function StructurePage() {
 
             <PageHeader
                 title="Organization Structure"
-                description="Manage global institutions and departments."
+                description="Manage global institutions and offices / units."
             />
 
             <div className="mt-6">
@@ -33,7 +33,7 @@ export default function StructurePage() {
                             Institutions
                         </TabsTrigger>
                         <TabsTrigger value="departments" className="rounded-lg data-[state=active]:bg-blue-600 data-[state=active]:text-white">
-                            Departments
+                            Offices / Units
                         </TabsTrigger>
                     </TabsList>
 

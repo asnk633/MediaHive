@@ -100,7 +100,7 @@ export function OverviewDashboard() {
                         setFilters({ ...filters, department: val, institution: val ? '' : filters.institution });
                     }}
                 >
-                    <option value="" className="bg-slate-900">All Departments</option>
+                    <option value="" className="bg-slate-900">All Offices / Units</option>
                     {departmentsList.map((dept) => (
                         <option key={dept} value={dept} className="bg-slate-900">{dept}</option>
                     ))}

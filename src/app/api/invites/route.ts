@@ -16,7 +16,7 @@ export async function POST(request: NextRequest) {
       return Response.json({ error: 'Access denied. Admin role required.' }, { status: 403 });
     }
 
-    const { email, role, institutionId, departmentId } = await request.json();
+    const { email, role, institutionId, departmentId, name } = await request.json();
 
     // Validate input
     if (!email || !role) {
@@ -46,7 +46,7 @@ export async function POST(request: NextRequest) {
     }
 
     // Create the invite
-    const inviteId = await InviteServiceServer.createInvite(email, role, user.uid, finalInstitutionId, finalDepartmentId);
+    const inviteId = await InviteServiceServer.createInvite(email, role, user.uid, finalInstitutionId, finalDepartmentId, name);
 
     // In a real implementation, you would send an email here
     // For now, we'll just return the invite ID for testing
@@ -74,8 +74,15 @@ export async function GET(request: NextRequest) {
       return Response.json({ error: 'Access denied. Admin role required.' }, { status: 403 });
     }
 
-    // Get all invites for the institution
-    const invites = await InviteServiceServer.getInstitutionInvites(user.institutionId || 'default');
+    // Get invites based on admin scope
+    let invites = [];
+    if (user.institutionId) {
+      invites = await InviteServiceServer.getInstitutionInvites(user.institutionId);
+    } else {
+      // Global Admin sees all (or global) invites
+      // For now, let's fetch ALL to be safe and ensure visibility of Dept-only invites
+      invites = await InviteServiceServer.getAllInvites();
+    }
 
     return Response.json({ success: true, invites });
   } catch (error: any) {

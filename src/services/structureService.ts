@@ -10,17 +10,13 @@ export const StructureService = {
     getInstitutions: async (showArchived = false) => {
         const query = showArchived ? '?archived=true' : '';
         try {
-            return await apiRequest<{ institutions: Institution[] }>(`/institutions${query}`);
+            const data = await apiRequest<{ institutions: Institution[] }>(`/institutions${query}`);
+            // Sort alphabetical
+            return {
+                institutions: (data.institutions || []).sort((a, b) => a.name.localeCompare(b.name))
+            };
         } catch (error: any) {
-            if (process.env.NODE_ENV === 'development' && (error?.status === 403 || error?.status === 401)) {
-                console.warn("[StructureService] Dev Mode: Returning Mock Institutions due to 403/401", error);
-                return {
-                    institutions: [
-                        { id: 'inst_1', name: 'Thaiba Garden', status: 'active' as const, createdAt: new Date().toISOString() },
-                        { id: 'inst_2', name: 'Orchids School', status: 'active' as const, createdAt: new Date().toISOString() }
-                    ]
-                };
-            }
+            console.error("[StructureService] Failed to fetch institutions", error);
             throw error;
         }
     },
@@ -43,17 +39,12 @@ export const StructureService = {
     getDepartments: async (showArchived = false) => {
         const query = showArchived ? '?archived=true' : '';
         try {
-            return await apiRequest<{ departments: Department[] }>(`/departments${query}`);
+            const data = await apiRequest<{ departments: Department[] }>(`/departments${query}`);
+            return {
+                departments: (data.departments || []).sort((a, b) => a.name.localeCompare(b.name))
+            };
         } catch (error: any) {
-            if (process.env.NODE_ENV === 'development' && (error?.status === 403 || error?.status === 401)) {
-                console.warn("[StructureService] Dev Mode: Returning Mock Departments due to 403/401", error);
-                return {
-                    departments: [
-                        { id: 'dept_1', name: 'Media Team', status: 'active' as const, createdAt: new Date().toISOString() },
-                        { id: 'dept_2', name: 'IT Support', status: 'active' as const, createdAt: new Date().toISOString() }
-                    ]
-                };
-            }
+            console.error("[StructureService] Failed to fetch departments", error);
             throw error;
         }
     },

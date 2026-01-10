@@ -11,6 +11,7 @@ import { format } from "date-fns";
 
 import { TaskService } from '@/services/tasks';
 import { UserService } from '@/services/userService';
+import { StructureService } from '@/services/structureService';
 import { apiClient } from '@/lib/apiClient';
 
 export default function NewTaskPage() {

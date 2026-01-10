@@ -20,6 +20,7 @@ import {
     PopoverTrigger,
 } from '@/components/ui/popover';
 import { apiClient } from '@/lib/apiClient';
+import { StructureService } from '@/services/structureService';
 import { SystemEventService } from '@/services/systemEventService';
 import { UserService } from '@/services/userService';
 import { useAuth } from '@/contexts/AuthContext';
@@ -89,12 +90,12 @@ export const CreateEventForm = ({ initialDate, onSuccess, onCancel, isModal = fa
     useEffect(() => {
         const fetchOrgs = async () => {
             try {
-                const [depts, insts] = await Promise.all([
-                    apiClient<{ id: number; name: string }[]>('/api/departments?limit=1000'),
-                    apiClient<{ id: number; name: string }[]>('/api/institutions?limit=1000')
+                const [deptData, instData] = await Promise.all([
+                    StructureService.getDepartments(),
+                    StructureService.getInstitutions()
                 ]);
-                setDepartmentsList(depts);
-                setInstitutionsList(insts);
+                setDepartmentsList(deptData.departments);
+                setInstitutionsList(instData.institutions);
             } catch (e) {
                 console.error("Failed to fetch organizations", e);
             }

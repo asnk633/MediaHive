@@ -92,7 +92,6 @@ export default function UsersPage() {
                     data.role as 'admin' | 'team' | 'guest',
                     currentUser.uid,
                     data.institutionId || null,
-                    data.institutionId || null,
                     data.departmentId || null,
                     data.name || null // Pass name to invite
                 );

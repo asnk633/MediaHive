@@ -39,8 +39,8 @@ export const CreateEventForm = ({ initialDate, onSuccess, onCancel, isModal = fa
     const [loading, setLoading] = useState(false);
 
     // Organization Data
-    const [departmentsList, setDepartmentsList] = useState<{ id: number; name: string }[]>([]);
-    const [institutionsList, setInstitutionsList] = useState<{ id: number; name: string }[]>([]);
+    const [departmentsList, setDepartmentsList] = useState<{ id: string; name: string }[]>([]);
+    const [institutionsList, setInstitutionsList] = useState<{ id: string; name: string }[]>([]);
 
     // Form State
     const [isSystemEvent, setIsSystemEvent] = useState(forceSystemEvent);

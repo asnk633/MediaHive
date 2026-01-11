@@ -25,7 +25,7 @@ export async function GET(request: NextRequest) {
 
         // 3. Enrich with User Data from Firestore
         // Collect unique UIDs
-        const uids = Array.from(new Set(logs.map((log: any) => log.userId)));
+        const uids = Array.from(new Set(logs.map((log: any) => log.userId))) as string[];
 
         // Fetch User Profiles (Optimization: multi-get)
         // Since Firestore doesn't support "get all these IDs" in one go smoothly without `where 'in'`, 
@@ -39,7 +39,7 @@ export async function GET(request: NextRequest) {
         if (uids.length > 0) {
             // Use Promise.all with chunking if needed, but for 20 logs, UIDs <= 20.
             const userDocs = await Promise.all(
-                uids.map(uid => adminDb.collection('users').doc(uid).get())
+                uids.map((uid: string) => adminDb.collection('users').doc(uid).get())
             );
 
             userDocs.forEach(doc => {
@@ -54,7 +54,7 @@ export async function GET(request: NextRequest) {
         }
 
         // 4. Transform for Frontend
-        const feed = logs.map(log => {
+        const feed = logs.map((log: any) => {
             const userInfo = userMap.get(log.userId) || { name: 'Unknown User' };
 
             // Parse details if it's a string (it is, based on schema default)

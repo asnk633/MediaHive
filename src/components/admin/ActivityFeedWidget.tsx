@@ -122,8 +122,8 @@ export const ActivityFeedWidget = () => {
                                 <SafeAvatar
                                     src={item.user.avatarUrl}
                                     alt={item.user.name}
+                                    name={item.user.name}
                                     className="w-8 h-8 rounded-lg border border-white/10"
-                                    fallbackClassName="bg-slate-800 text-xs"
                                 />
                             </div>
                             <div className="flex-1 min-w-0">

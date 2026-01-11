@@ -138,20 +138,47 @@ export const TaskDetailsModal: React.FC<TaskDetailsModalProps> = ({ task, isOpen
                     {/* Modal Content */}
                     <motion.div
                         layoutId={`task-card-${task.id}`}
-                        className="relative w-full max-w-2xl bg-gradient-to-br from-[#1a2639] to-[#0f172a] rounded-3xl shadow-2xl overflow-hidden border border-[#ffffff1a] flex flex-col max-h-[90vh]"
+                        initial={{ scale: 0.98, opacity: 0 }}
+                        animate={{ scale: 1, opacity: 1 }}
+                        exit={{ scale: 0.98, opacity: 0 }}
+                        transition={{ duration: 0.2, ease: "easeOut" }}
+                        className="relative w-full max-w-2xl rounded-3xl shadow-2xl overflow-hidden border border-[#ffffff1a] flex flex-col max-h-[90vh]"
+                        style={{
+                            background: 'linear-gradient(135deg, #1a2639 0%, #0f172a 50%, #0a0e1a 100%)',
+                        }}
                     >
+                        {/* Continuous Background Pattern Overlay */}
+                        <div
+                            className="absolute inset-0 opacity-[0.03] pointer-events-none"
+                            style={{
+                                backgroundImage: 'radial-gradient(circle at 2px 2px, white 1px, transparent 0)',
+                                backgroundSize: '24px 24px'
+                            }}
+                        />
+
+                        {/* Radial Glow Effect */}
+                        <div
+                            className="absolute top-0 left-1/2 -translate-x-1/2 w-full h-64 opacity-20 pointer-events-none"
+                            style={{
+                                background: 'radial-gradient(ellipse at top, rgba(59, 130, 246, 0.3) 0%, transparent 70%)',
+                            }}
+                        />
+
                         {/* Header Image/Pattern Area */}
-                        <div className="h-32 bg-blue-600/20 relative overflow-hidden shrink-0">
-                            <div className="absolute inset-0 opacity-20 pointer-events-none"
-                                style={{ backgroundImage: 'radial-gradient(circle at 2px 2px, white 1px, transparent 0)', backgroundSize: '24px 24px' }}
-                            />
-                            <div className="absolute top-4 right-4 flex items-center gap-2">
+                        <div className="h-32 relative overflow-hidden shrink-0">
+                            {/* Enhanced gradient overlay for smooth transition */}
+                            <div className="absolute inset-0 bg-gradient-to-b from-blue-600/20 via-blue-600/10 to-transparent" />
+
+                            {/* Subtle bottom fade for seamless content transition */}
+                            <div className="absolute bottom-0 left-0 right-0 h-16 bg-gradient-to-b from-transparent to-[#1a2639]/80" />
+
+                            <div className="absolute top-4 right-4 flex items-center gap-2 z-10">
                                 {(user?.role === 'admin' || user?.role === 'team' || user?.uid === task?.createdBy?.uid) && (
                                     <button
                                         onClick={() => {
                                             onEdit();
                                         }}
-                                        className="p-2 bg-black/20 hover:bg-black/40 rounded-full transition-colors text-white"
+                                        className="p-2 bg-black/20 hover:bg-black/40 rounded-full transition-all hover:scale-110 text-white backdrop-blur-sm"
                                         title="Edit Task"
                                     >
                                         <Edit2 size={20} />
@@ -159,18 +186,18 @@ export const TaskDetailsModal: React.FC<TaskDetailsModalProps> = ({ task, isOpen
                                 )}
                                 <button
                                     onClick={onClose}
-                                    className="p-2 bg-black/20 hover:bg-black/40 rounded-full transition-colors text-white"
+                                    className="p-2 bg-black/20 hover:bg-black/40 rounded-full transition-all hover:scale-110 text-white backdrop-blur-sm"
                                 >
                                     <X size={20} />
                                 </button>
                             </div>
 
-                            <div className="absolute bottom-0 left-0 p-6 w-full bg-gradient-to-t from-[#1a2639] to-transparent">
+                            <div className="absolute bottom-0 left-0 p-6 w-full">
                                 <div className="flex items-center gap-3">
-                                    <span className={`px-3 py-1 rounded-full text-[10px] font-bold tracking-widest uppercase border ${priorityColors[task.priority!] || priorityColors.low} `}>
+                                    <span className={`px-3 py-1 rounded-full text-[10px] font-bold tracking-widest uppercase border ${priorityColors[task.priority!] || priorityColors.low} backdrop-blur-sm`}>
                                         {task.priority || 'low'} Priority
                                     </span>
-                                    <div className="flex items-center gap-2 px-3 py-1 rounded-full bg-white/5 border border-[#ffffff1a] text-xs font-medium text-white/70">
+                                    <div className="flex items-center gap-2 px-3 py-1 rounded-full bg-white/5 border border-[#ffffff1a] text-xs font-medium text-white/70 backdrop-blur-sm">
                                         {statusIcons[task.status]}
                                         <span className="capitalize">{task.status.replace('_', ' ')}</span>
                                     </div>
@@ -178,8 +205,8 @@ export const TaskDetailsModal: React.FC<TaskDetailsModalProps> = ({ task, isOpen
                             </div>
                         </div>
 
-                        {/* Content */}
-                        <div className="p-8 overflow-y-auto custom-scrollbar">
+                        {/* Content with Custom Scrollbar */}
+                        <div className="p-8 overflow-y-auto task-detail-scrollbar flex-1">
                             <motion.h2
                                 initial={{ y: 20, opacity: 0 }}
                                 animate={{ y: 0, opacity: 1 }}
@@ -207,7 +234,7 @@ export const TaskDetailsModal: React.FC<TaskDetailsModalProps> = ({ task, isOpen
                                 initial={{ y: 20, opacity: 0 }}
                                 animate={{ y: 0, opacity: 1 }}
                                 transition={{ delay: 0.3 }}
-                                className="grid grid-cols-1 md:grid-cols-2 gap-6 p-6 bg-white/5 rounded-2xl border border-white/5"
+                                className="grid grid-cols-1 md:grid-cols-2 gap-6 p-6 bg-white/5 rounded-2xl border border-white/5 backdrop-blur-sm"
                             >
                                 <div className="space-y-4">
                                     <div className="flex items-center gap-3 text-white/60">
@@ -250,7 +277,7 @@ export const TaskDetailsModal: React.FC<TaskDetailsModalProps> = ({ task, isOpen
                                                     </PopoverTrigger>
                                                     <PopoverContent className="w-56 p-2 bg-[#0f172a] border-[#ffffff1a] text-white z-[110]" align="end" side="bottom">
                                                         <div className="text-xs font-bold text-gray-500 px-2 py-1 mb-1 tracking-wider">SELECT MEMBER</div>
-                                                        <div className="max-h-60 overflow-y-auto custom-scrollbar">
+                                                        <div className="max-h-60 overflow-y-auto task-detail-scrollbar">
                                                             {teamMembers.map((m) => {
                                                                 const isAssigned = Array.isArray(task.assignedTo) && task.assignedTo.some(current => typeof current === 'string' ? current === m.uid : current.uid === m.uid);
                                                                 return (
@@ -286,7 +313,7 @@ export const TaskDetailsModal: React.FC<TaskDetailsModalProps> = ({ task, isOpen
                                                     const name = assignee.name || teamMember?.name || 'Unknown';
 
                                                     return (
-                                                        <div key={i} className="flex items-center gap-2 bg-white/10 px-3 py-1.5 rounded-lg border border-[#ffffff1a] group cursor-default">
+                                                        <div key={i} className="flex items-center gap-2 bg-white/10 px-3 py-1.5 rounded-lg border border-[#ffffff1a] group cursor-default backdrop-blur-sm">
                                                             <SafeAvatar
                                                                 src={avatarUrl}
                                                                 name={name}
@@ -305,34 +332,57 @@ export const TaskDetailsModal: React.FC<TaskDetailsModalProps> = ({ task, isOpen
                                     </div>
                                 </div>
                             </motion.div>
+
+                            {/* Deliverables Section */}
+                            <motion.div
+                                initial={{ y: 20, opacity: 0 }}
+                                animate={{ y: 0, opacity: 1 }}
+                                transition={{ delay: 0.4 }}
+                                className="mt-8 pt-8 border-t border-[#ffffff1a]"
+                            >
+                                <div className="flex items-center justify-between mb-4">
+                                    <h3 className="text-sm font-bold text-gray-400 uppercase tracking-widest flex items-center gap-2">
+                                        <FileCheck size={16} /> Deliverables
+                                    </h3>
+                                    {(user?.role === 'admin' || user?.role === 'team' || (Array.isArray(task.assignedTo) && task.assignedTo.some((u: any) => (typeof u === 'string' ? u : u.uid) === user?.uid))) && (
+                                        <button
+                                            onClick={() => setShowDeliverableUpload(true)}
+                                            className="text-xs font-bold text-blue-400 hover:text-blue-300 flex items-center gap-1 bg-blue-500/10 px-3 py-1.5 rounded-lg border border-blue-500/20 hover:bg-blue-500/20 transition-all"
+                                        >
+                                            <UploadCloud size={14} /> Upload Version
+                                        </button>
+                                    )}
+                                </div>
+
+                                <DeliverablesList
+                                    taskId={task.id}
+                                    refreshTrigger={deliverableRefreshTrigger}
+                                />
+                            </motion.div>
                         </div>
 
-                        {/* Deliverables Section */}
-                        <motion.div
-                            initial={{ y: 20, opacity: 0 }}
-                            animate={{ y: 0, opacity: 1 }}
-                            transition={{ delay: 0.4 }}
-                            className="mt-8 pt-8 border-t border-[#ffffff1a]"
-                        >
-                            <div className="flex items-center justify-between mb-4">
-                                <h3 className="text-sm font-bold text-gray-400 uppercase tracking-widest flex items-center gap-2">
-                                    <FileCheck size={16} /> Deliverables
-                                </h3>
-                                {(user?.role === 'admin' || user?.role === 'team' || (Array.isArray(task.assignedTo) && task.assignedTo.some((u: any) => (typeof u === 'string' ? u : u.uid) === user?.uid))) && (
-                                    <button
-                                        onClick={() => setShowDeliverableUpload(true)}
-                                        className="text-xs font-bold text-blue-400 hover:text-blue-300 flex items-center gap-1 bg-blue-500/10 px-3 py-1.5 rounded-lg border border-blue-500/20 hover:bg-blue-500/20 transition-all"
-                                    >
-                                        <UploadCloud size={14} /> Upload Version
-                                    </button>
-                                )}
-                            </div>
-
-                            <DeliverablesList
-                                taskId={task.id}
-                                refreshTrigger={deliverableRefreshTrigger}
-                            />
-                        </motion.div>
+                        {/* Custom Scrollbar Styles */}
+                        <style jsx>{`
+                            .task-detail-scrollbar::-webkit-scrollbar {
+                                width: 6px;
+                            }
+                            .task-detail-scrollbar::-webkit-scrollbar-track {
+                                background: transparent;
+                            }
+                            .task-detail-scrollbar::-webkit-scrollbar-thumb {
+                                background: rgba(255, 255, 255, 0.15);
+                                border-radius: 10px;
+                                transition: background 0.2s ease;
+                            }
+                            .task-detail-scrollbar::-webkit-scrollbar-thumb:hover {
+                                background: rgba(255, 255, 255, 0.25);
+                            }
+                            /* Firefox fallback */
+                            .task-detail-scrollbar {
+                                scrollbar-width: thin;
+                                scrollbar-color: rgba(255, 255, 255, 0.15) transparent;
+                            }
+                        `}</style>
                     </motion.div>
                 </div>
             )}

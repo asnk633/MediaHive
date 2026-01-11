@@ -15,13 +15,21 @@ export async function GET(request: NextRequest) {
             return NextResponse.json({ error: 'Unauthorized' }, { status: 403 });
         }
 
-        // 2. Fetch Audit Logs from SQLite
-        const db = await getDb();
-        const logs = await db
-            .select()
-            .from(auditLog)
-            .orderBy(desc(auditLog.timestamp))
-            .limit(20);
+        // 2. Fetch Audit Logs from SQLite (with graceful fallback for serverless)
+        let logs: any[] = [];
+        try {
+            const db = await getDb();
+            logs = await db
+                .select()
+                .from(auditLog)
+                .orderBy(desc(auditLog.timestamp))
+                .limit(20);
+        } catch (dbError: any) {
+            // Gracefully handle database errors in serverless environments
+            console.warn('[Activity Feed] Database not available (likely serverless environment):', dbError.message);
+            // Return empty feed instead of crashing
+            return NextResponse.json({ feed: [] });
+        }
 
         // 3. Enrich with User Data from Firestore
         // Collect unique UIDs

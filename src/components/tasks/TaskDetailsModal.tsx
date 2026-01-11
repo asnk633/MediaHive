@@ -164,204 +164,228 @@ export const TaskDetailsModal: React.FC<TaskDetailsModalProps> = ({ task, isOpen
                             }}
                         />
 
-                        {/* Header Image/Pattern Area */}
-                        <div className="h-32 relative overflow-hidden shrink-0">
-                            {/* Enhanced gradient overlay for smooth transition */}
-                            <div className="absolute inset-0 bg-gradient-to-b from-blue-600/20 via-blue-600/10 to-transparent" />
+                        {/* ANCHORED HEADER - Frosted Glass Container */}
+                        <div className="relative shrink-0 border-b border-[#ffffff1a]/50">
+                            {/* Header Background Pattern */}
+                            <div className="h-32 relative overflow-hidden">
+                                {/* Enhanced gradient overlay */}
+                                <div className="absolute inset-0 bg-gradient-to-b from-blue-600/20 via-blue-600/10 to-transparent" />
 
-                            {/* Subtle bottom fade for seamless content transition */}
-                            <div className="absolute bottom-0 left-0 right-0 h-16 bg-gradient-to-b from-transparent to-[#1a2639]/80" />
-
-                            <div className="absolute top-4 right-4 flex items-center gap-2 z-10">
-                                {(user?.role === 'admin' || user?.role === 'team' || user?.uid === task?.createdBy?.uid) && (
+                                {/* Action Buttons */}
+                                <div className="absolute top-4 right-4 flex items-center gap-2 z-10">
+                                    {(user?.role === 'admin' || user?.role === 'team' || user?.uid === task?.createdBy?.uid) && (
+                                        <button
+                                            onClick={() => {
+                                                onEdit();
+                                            }}
+                                            className="p-2 bg-black/20 hover:bg-black/40 rounded-full transition-all hover:scale-110 text-white backdrop-blur-sm"
+                                            title="Edit Task"
+                                        >
+                                            <Edit2 size={20} />
+                                        </button>
+                                    )}
                                     <button
-                                        onClick={() => {
-                                            onEdit();
-                                        }}
+                                        onClick={onClose}
                                         className="p-2 bg-black/20 hover:bg-black/40 rounded-full transition-all hover:scale-110 text-white backdrop-blur-sm"
-                                        title="Edit Task"
                                     >
-                                        <Edit2 size={20} />
+                                        <X size={20} />
                                     </button>
-                                )}
-                                <button
-                                    onClick={onClose}
-                                    className="p-2 bg-black/20 hover:bg-black/40 rounded-full transition-all hover:scale-110 text-white backdrop-blur-sm"
-                                >
-                                    <X size={20} />
-                                </button>
+                                </div>
                             </div>
 
-                            <div className="absolute bottom-0 left-0 p-6 w-full">
-                                <div className="flex items-center gap-3">
-                                    <span className={`px-3 py-1 rounded-full text-[10px] font-bold tracking-widest uppercase border ${priorityColors[task.priority!] || priorityColors.low} backdrop-blur-sm`}>
+                            {/* Frosted Header Content Container */}
+                            <div className="relative px-8 py-6 bg-white/[0.02] backdrop-blur-sm">
+                                {/* Badges */}
+                                <div className="flex items-center gap-3 mb-4">
+                                    <span className={`px-3 py-1.5 rounded-full text-[10px] font-bold tracking-widest uppercase border ${priorityColors[task.priority!] || priorityColors.low} backdrop-blur-sm`}>
                                         {task.priority || 'low'} Priority
                                     </span>
-                                    <div className="flex items-center gap-2 px-3 py-1 rounded-full bg-white/5 border border-[#ffffff1a] text-xs font-medium text-white/70 backdrop-blur-sm">
+                                    <div className="flex items-center gap-2 px-3 py-1.5 rounded-full bg-white/5 border border-[#ffffff1a] text-xs font-medium text-white/70 backdrop-blur-sm">
                                         {statusIcons[task.status]}
                                         <span className="capitalize">{task.status.replace('_', ' ')}</span>
                                     </div>
                                 </div>
+
+                                {/* Title */}
+                                <motion.h2
+                                    initial={{ y: 10, opacity: 0 }}
+                                    animate={{ y: 0, opacity: 1 }}
+                                    transition={{ delay: 0.1 }}
+                                    className="text-3xl font-bold text-white leading-tight"
+                                >
+                                    {task.title}
+                                </motion.h2>
+                            </div>
+
+                            {/* Subtle shadow fade at bottom */}
+                            <div className="absolute bottom-0 left-0 right-0 h-px bg-gradient-to-r from-transparent via-white/10 to-transparent" />
+                        </div>
+
+                        {/* SCROLL WELL - Recessed Content Area */}
+                        <div className="flex-1 relative overflow-hidden">
+                            {/* Top fade mask */}
+                            <div className="absolute top-0 left-0 right-0 h-8 bg-gradient-to-b from-[#1a2639] to-transparent z-10 pointer-events-none" />
+
+                            {/* Bottom fade mask */}
+                            <div className="absolute bottom-0 left-0 right-0 h-12 bg-gradient-to-t from-[#1a2639] to-transparent z-10 pointer-events-none" />
+
+                            {/* Scrollable Content with Inset Shadow */}
+                            <div
+                                className="h-full overflow-y-auto task-detail-scrollbar px-8 py-6"
+                                style={{
+                                    boxShadow: 'inset 0 4px 8px rgba(0, 0, 0, 0.2)',
+                                }}
+                            >
+                                <TaskRatingComponent
+                                    task={task}
+                                    onRatingSubmitted={onClose}
+                                />
+
+                                {/* Description with Improved Typography */}
+                                <motion.div
+                                    initial={{ y: 20, opacity: 0 }}
+                                    animate={{ y: 0, opacity: 1 }}
+                                    transition={{ delay: 0.2 }}
+                                    className="text-base text-blue-100/60 leading-relaxed mb-8 whitespace-pre-wrap"
+                                    style={{ lineHeight: '1.8' }}
+                                >
+                                    {task.description || <span className="italic opacity-40">No description provided.</span>}
+                                </motion.div>
+
+                                {/* Info Card */}
+                                <motion.div
+                                    initial={{ y: 20, opacity: 0 }}
+                                    animate={{ y: 0, opacity: 1 }}
+                                    transition={{ delay: 0.3 }}
+                                    className="grid grid-cols-1 md:grid-cols-2 gap-6 p-6 bg-white/[0.03] rounded-2xl border border-white/5 backdrop-blur-sm mb-8"
+                                >
+                                    <div className="space-y-5">
+                                        <div className="flex items-center gap-3 text-white/60">
+                                            <Calendar size={18} className="text-blue-400" />
+                                            <div>
+                                                <p className="text-[10px] uppercase tracking-wider font-bold opacity-40 mb-1">Due Date</p>
+                                                <p className="text-sm text-white/90 font-medium">
+                                                    {(() => {
+                                                        if (!task.dueDate) return 'No due date';
+                                                        const date = task.dueDate.seconds
+                                                            ? new Date(task.dueDate.seconds * 1000)
+                                                            : new Date(task.dueDate);
+                                                        return !isNaN(date.getTime()) ? format(date, 'EEEE, dd/MM/yyyy') : 'Invalid Date';
+                                                    })()}
+                                                </p>
+                                            </div>
+                                        </div>
+
+                                        <div className="flex items-center gap-3 text-white/60">
+                                            <User size={18} className="text-blue-400" />
+                                            <div>
+                                                <p className="text-[10px] uppercase tracking-wider font-bold opacity-40 mb-1">Requested By</p>
+                                                <p className="text-sm text-white/90 font-medium">
+                                                    {typeof task.createdBy === 'object' ? task.createdBy.name : 'Unknown User'}
+                                                </p>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <div className="space-y-4">
+                                        <div className="flex flex-col gap-2">
+                                            <div className="flex items-center justify-between">
+                                                <p className="text-[10px] uppercase tracking-wider font-bold text-white/30">Assigned Team Members</p>
+                                                {(user?.role === 'admin' || (user?.role === 'team' && typeof task.createdBy === 'object' && task.createdBy.uid === user.uid)) && (
+                                                    <Popover>
+                                                        <PopoverTrigger asChild>
+                                                            <button className="text-[10px] font-bold text-blue-400 hover:text-blue-300 transition-colors uppercase tracking-wider flex items-center gap-1">
+                                                                <UserIcon size={12} /> Assign
+                                                            </button>
+                                                        </PopoverTrigger>
+                                                        <PopoverContent className="w-56 p-2 bg-[#0f172a] border-[#ffffff1a] text-white z-[110]" align="end" side="bottom">
+                                                            <div className="text-xs font-bold text-gray-500 px-2 py-1 mb-1 tracking-wider">SELECT MEMBER</div>
+                                                            <div className="max-h-60 overflow-y-auto task-detail-scrollbar">
+                                                                {teamMembers.map((m) => {
+                                                                    const isAssigned = Array.isArray(task.assignedTo) && task.assignedTo.some(current => typeof current === 'string' ? current === m.uid : current.uid === m.uid);
+                                                                    return (
+                                                                        <div
+                                                                            key={m.uid}
+                                                                            onClick={() => handleToggleAssign(m)}
+                                                                            className={`flex items-center gap-2 px-2 py-2 rounded-lg cursor-pointer text-sm transition-colors ${isAssigned ? 'bg-indigo-500/20 text-indigo-300' : 'hover:bg-white/5 text-gray-300'}`}
+                                                                        >
+                                                                            <div className={`w-4 h-4 rounded border flex items-center justify-center ${isAssigned ? 'bg-indigo-500 border-indigo-500' : 'border-gray-500'}`}>
+                                                                                {isAssigned && <span className="text-white text-[10px]">✓</span>}
+                                                                            </div>
+                                                                            {m.name}
+                                                                        </div>
+                                                                    );
+                                                                })}
+                                                            </div>
+                                                        </PopoverContent>
+                                                    </Popover>
+                                                )}
+                                            </div>
+                                            <div className="flex flex-wrap gap-2">
+                                                {Array.isArray(task.assignedTo) && task.assignedTo.length > 0 ? (
+                                                    task.assignedTo.map((assignee: any, i) => {
+                                                        const uid = typeof assignee === 'string' ? assignee : assignee.uid;
+
+                                                        // Robust Lookup: UID -> Name Match (for migrated accounts)
+                                                        let teamMember = teamMembers.find(m => m.uid === uid);
+                                                        if (!teamMember && assignee.name) {
+                                                            teamMember = teamMembers.find(m => m.name === assignee.name);
+                                                        }
+
+                                                        const avatarUrl = assignee.avatarUrl || teamMember?.avatarUrl;
+                                                        const name = assignee.name || teamMember?.name || 'Unknown';
+
+                                                        return (
+                                                            <div key={i} className="flex items-center gap-2 bg-white/10 px-3 py-1.5 rounded-lg border border-[#ffffff1a] group cursor-default backdrop-blur-sm">
+                                                                <SafeAvatar
+                                                                    src={avatarUrl}
+                                                                    name={name}
+                                                                    alt={name}
+                                                                    size={24}
+                                                                    className="border border-[#ffffff1a]"
+                                                                />
+                                                                <span className="text-xs text-white/90">{name}</span>
+                                                            </div>
+                                                        );
+                                                    })
+                                                ) : (
+                                                    <p className="text-xs text-white/40 italic">No one assigned</p>
+                                                )}
+                                            </div>
+                                        </div>
+                                    </div>
+                                </motion.div>
+
+                                {/* Deliverables Section */}
+                                <motion.div
+                                    initial={{ y: 20, opacity: 0 }}
+                                    animate={{ y: 0, opacity: 1 }}
+                                    transition={{ delay: 0.4 }}
+                                    className="pt-6 border-t border-[#ffffff1a]/50"
+                                >
+                                    <div className="flex items-center justify-between mb-4">
+                                        <h3 className="text-sm font-bold text-gray-400 uppercase tracking-widest flex items-center gap-2">
+                                            <FileCheck size={16} /> Deliverables
+                                        </h3>
+                                        {(user?.role === 'admin' || user?.role === 'team' || (Array.isArray(task.assignedTo) && task.assignedTo.some((u: any) => (typeof u === 'string' ? u : u.uid) === user?.uid))) && (
+                                            <button
+                                                onClick={() => setShowDeliverableUpload(true)}
+                                                className="text-xs font-bold text-blue-400 hover:text-blue-300 flex items-center gap-1 bg-blue-500/10 px-3 py-1.5 rounded-lg border border-blue-500/20 hover:bg-blue-500/20 transition-all"
+                                            >
+                                                <UploadCloud size={14} /> Upload Version
+                                            </button>
+                                        )}
+                                    </div>
+
+                                    <DeliverablesList
+                                        taskId={task.id}
+                                        refreshTrigger={deliverableRefreshTrigger}
+                                    />
+                                </motion.div>
                             </div>
                         </div>
 
-                        {/* Content with Custom Scrollbar */}
-                        <div className="p-8 overflow-y-auto task-detail-scrollbar flex-1">
-                            <motion.h2
-                                initial={{ y: 20, opacity: 0 }}
-                                animate={{ y: 0, opacity: 1 }}
-                                transition={{ delay: 0.1 }}
-                                className="text-3xl font-bold text-white mb-4 leading-tight"
-                            >
-                                {task.title}
-                            </motion.h2>
-
-                            <TaskRatingComponent
-                                task={task}
-                                onRatingSubmitted={onClose}
-                            />
-
-                            <motion.div
-                                initial={{ y: 20, opacity: 0 }}
-                                animate={{ y: 0, opacity: 1 }}
-                                transition={{ delay: 0.2 }}
-                                className="text-lg text-blue-100/70 leading-relaxed mb-8 whitespace-pre-wrap"
-                            >
-                                {task.description || <span className="italic opacity-50">No description provided.</span>}
-                            </motion.div>
-
-                            <motion.div
-                                initial={{ y: 20, opacity: 0 }}
-                                animate={{ y: 0, opacity: 1 }}
-                                transition={{ delay: 0.3 }}
-                                className="grid grid-cols-1 md:grid-cols-2 gap-6 p-6 bg-white/5 rounded-2xl border border-white/5 backdrop-blur-sm"
-                            >
-                                <div className="space-y-4">
-                                    <div className="flex items-center gap-3 text-white/60">
-                                        <Calendar size={18} className="text-blue-400" />
-                                        <div>
-                                            <p className="text-[10px] uppercase tracking-wider font-bold opacity-50">Due Date</p>
-                                            <p className="text-sm text-white font-medium">
-                                                {(() => {
-                                                    if (!task.dueDate) return 'No due date';
-                                                    const date = task.dueDate.seconds
-                                                        ? new Date(task.dueDate.seconds * 1000)
-                                                        : new Date(task.dueDate);
-                                                    return !isNaN(date.getTime()) ? format(date, 'EEEE, dd/MM/yyyy') : 'Invalid Date';
-                                                })()}
-                                            </p>
-                                        </div>
-                                    </div>
-
-                                    <div className="flex items-center gap-3 text-white/60">
-                                        <User size={18} className="text-blue-400" />
-                                        <div>
-                                            <p className="text-[10px] uppercase tracking-wider font-bold opacity-50">Requested By</p>
-                                            <p className="text-sm text-white font-medium">
-                                                {typeof task.createdBy === 'object' ? task.createdBy.name : 'Unknown User'}
-                                            </p>
-                                        </div>
-                                    </div>
-                                </div>
-
-                                <div className="space-y-4">
-                                    <div className="flex flex-col gap-2">
-                                        <div className="flex items-center justify-between">
-                                            <p className="text-[10px] uppercase tracking-wider font-bold text-white/30">Assigned Team Members</p>
-                                            {(user?.role === 'admin' || (user?.role === 'team' && typeof task.createdBy === 'object' && task.createdBy.uid === user.uid)) && (
-                                                <Popover>
-                                                    <PopoverTrigger asChild>
-                                                        <button className="text-[10px] font-bold text-blue-400 hover:text-blue-300 transition-colors uppercase tracking-wider flex items-center gap-1">
-                                                            <UserIcon size={12} /> Assign
-                                                        </button>
-                                                    </PopoverTrigger>
-                                                    <PopoverContent className="w-56 p-2 bg-[#0f172a] border-[#ffffff1a] text-white z-[110]" align="end" side="bottom">
-                                                        <div className="text-xs font-bold text-gray-500 px-2 py-1 mb-1 tracking-wider">SELECT MEMBER</div>
-                                                        <div className="max-h-60 overflow-y-auto task-detail-scrollbar">
-                                                            {teamMembers.map((m) => {
-                                                                const isAssigned = Array.isArray(task.assignedTo) && task.assignedTo.some(current => typeof current === 'string' ? current === m.uid : current.uid === m.uid);
-                                                                return (
-                                                                    <div
-                                                                        key={m.uid}
-                                                                        onClick={() => handleToggleAssign(m)}
-                                                                        className={`flex items-center gap-2 px-2 py-2 rounded-lg cursor-pointer text-sm transition-colors ${isAssigned ? 'bg-indigo-500/20 text-indigo-300' : 'hover:bg-white/5 text-gray-300'}`}
-                                                                    >
-                                                                        <div className={`w-4 h-4 rounded border flex items-center justify-center ${isAssigned ? 'bg-indigo-500 border-indigo-500' : 'border-gray-500'}`}>
-                                                                            {isAssigned && <span className="text-white text-[10px]">✓</span>}
-                                                                        </div>
-                                                                        {m.name}
-                                                                    </div>
-                                                                );
-                                                            })}
-                                                        </div>
-                                                    </PopoverContent>
-                                                </Popover>
-                                            )}
-                                        </div>
-                                        <div className="flex flex-wrap gap-2">
-                                            {Array.isArray(task.assignedTo) && task.assignedTo.length > 0 ? (
-                                                task.assignedTo.map((assignee: any, i) => {
-                                                    const uid = typeof assignee === 'string' ? assignee : assignee.uid;
-
-                                                    // Robust Lookup: UID -> Name Match (for migrated accounts)
-                                                    let teamMember = teamMembers.find(m => m.uid === uid);
-                                                    if (!teamMember && assignee.name) {
-                                                        teamMember = teamMembers.find(m => m.name === assignee.name);
-                                                    }
-
-                                                    const avatarUrl = assignee.avatarUrl || teamMember?.avatarUrl;
-                                                    const name = assignee.name || teamMember?.name || 'Unknown';
-
-                                                    return (
-                                                        <div key={i} className="flex items-center gap-2 bg-white/10 px-3 py-1.5 rounded-lg border border-[#ffffff1a] group cursor-default backdrop-blur-sm">
-                                                            <SafeAvatar
-                                                                src={avatarUrl}
-                                                                name={name}
-                                                                alt={name}
-                                                                size={24}
-                                                                className="border border-[#ffffff1a]"
-                                                            />
-                                                            <span className="text-xs text-white/90">{name}</span>
-                                                        </div>
-                                                    );
-                                                })
-                                            ) : (
-                                                <p className="text-xs text-white/40 italic">No one assigned</p>
-                                            )}
-                                        </div>
-                                    </div>
-                                </div>
-                            </motion.div>
-
-                            {/* Deliverables Section */}
-                            <motion.div
-                                initial={{ y: 20, opacity: 0 }}
-                                animate={{ y: 0, opacity: 1 }}
-                                transition={{ delay: 0.4 }}
-                                className="mt-8 pt-8 border-t border-[#ffffff1a]"
-                            >
-                                <div className="flex items-center justify-between mb-4">
-                                    <h3 className="text-sm font-bold text-gray-400 uppercase tracking-widest flex items-center gap-2">
-                                        <FileCheck size={16} /> Deliverables
-                                    </h3>
-                                    {(user?.role === 'admin' || user?.role === 'team' || (Array.isArray(task.assignedTo) && task.assignedTo.some((u: any) => (typeof u === 'string' ? u : u.uid) === user?.uid))) && (
-                                        <button
-                                            onClick={() => setShowDeliverableUpload(true)}
-                                            className="text-xs font-bold text-blue-400 hover:text-blue-300 flex items-center gap-1 bg-blue-500/10 px-3 py-1.5 rounded-lg border border-blue-500/20 hover:bg-blue-500/20 transition-all"
-                                        >
-                                            <UploadCloud size={14} /> Upload Version
-                                        </button>
-                                    )}
-                                </div>
-
-                                <DeliverablesList
-                                    taskId={task.id}
-                                    refreshTrigger={deliverableRefreshTrigger}
-                                />
-                            </motion.div>
-                        </div>
-
-                        {/* Custom Scrollbar Styles */}
+                        {/* Custom Scrollbar Styles - Fade on Hover */}
                         <style jsx>{`
                             .task-detail-scrollbar::-webkit-scrollbar {
                                 width: 6px;
@@ -370,17 +394,20 @@ export const TaskDetailsModal: React.FC<TaskDetailsModalProps> = ({ task, isOpen
                                 background: transparent;
                             }
                             .task-detail-scrollbar::-webkit-scrollbar-thumb {
-                                background: rgba(255, 255, 255, 0.15);
+                                background: rgba(255, 255, 255, 0.08);
                                 border-radius: 10px;
-                                transition: background 0.2s ease;
+                                transition: background 0.3s ease;
+                            }
+                            .task-detail-scrollbar:hover::-webkit-scrollbar-thumb {
+                                background: rgba(255, 255, 255, 0.15);
                             }
                             .task-detail-scrollbar::-webkit-scrollbar-thumb:hover {
-                                background: rgba(255, 255, 255, 0.25);
+                                background: rgba(255, 255, 255, 0.2);
                             }
                             /* Firefox fallback */
                             .task-detail-scrollbar {
                                 scrollbar-width: thin;
-                                scrollbar-color: rgba(255, 255, 255, 0.15) transparent;
+                                scrollbar-color: rgba(255, 255, 255, 0.08) transparent;
                             }
                         `}</style>
                     </motion.div>

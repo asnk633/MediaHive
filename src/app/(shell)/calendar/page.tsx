@@ -24,6 +24,7 @@ export default function CalendarPage() {
   const searchParams = useSearchParams();
   const router = useRouter();
   const [isEventModalOpen, setIsEventModalOpen] = useState(false);
+  const [selectedDate, setSelectedDate] = useState<Date | undefined>(undefined);
   const [filter, setFilter] = useState<'all' | 'events' | 'tasks'>('all');
   const [view, setView] = useState<CalendarView>('timeline');
 
@@ -35,6 +36,7 @@ export default function CalendarPage() {
 
   const handleModalClose = () => {
     setIsEventModalOpen(false);
+    setSelectedDate(undefined);
     const params = new URLSearchParams(searchParams.toString());
     params.delete('modal');
     router.replace(`/calendar?${params.toString()}`, { scroll: false });
@@ -205,7 +207,12 @@ export default function CalendarPage() {
               <DayPicker
                 mode="single"
                 selected={new Date()}
-                onDayClick={() => { }}
+                onDayClick={(date) => {
+                  if (date) {
+                    setSelectedDate(date);
+                    setIsEventModalOpen(true);
+                  }
+                }}
                 className="p-4"
                 modifiersClassNames={{
                   today: 'bg-[var(--accent)] text-white',
@@ -227,6 +234,7 @@ export default function CalendarPage() {
       <EventModal
         isOpen={isEventModalOpen}
         onClose={handleModalClose}
+        defaultDate={selectedDate}
       />
     </div>
   );

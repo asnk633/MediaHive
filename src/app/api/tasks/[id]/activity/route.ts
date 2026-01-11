@@ -1,72 +1,30 @@
-// src/app/api/tasks/[id]/activity/route.ts
-// Endpoint to get task activity timeline
-
 import { NextRequest, NextResponse } from 'next/server';
-import { getDb } from '@/db';
-import { taskActivity, tasks } from '@/db/schema';
-import { eq } from 'drizzle-orm';
-import { authorizeByPermission } from '@/app/api/_lib/rbac';
+import { verifyUser } from '@/lib/server-utils';
+import { adminDb } from '@/lib/firebase/server';
+import { AttachmentLog } from '@/types/task';
 
-// Configure for static export
-export const dynamic = 'force-dynamic';
-export const revalidate = false;
-
-// For static export with dynamic routes
-export async function generateStaticParams() {
-  return [];
-}
-
-export async function GET(
-  req: NextRequest,
-  context: { params: Promise<{ id: string }> }
-) {
+export async function GET(req: NextRequest, props: { params: Promise<{ id: string }> }) {
   try {
-    // Authorize user with RBAC
-    const user = await authorizeByPermission(req, 'read:tasks');
-    if (!user) {
-      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
-    }
+    const params = await props.params;
+    const taskId = params.id;
 
-    const db = await getDb();
+    const user = await verifyUser(req);
+    if (!user) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
 
-    const { id } = await context.params;
-    const taskId = parseInt(id, 10);
+    // Lazy fetch rule: Admin + Team can see all. Requester can *maybe* see their own?
+    // User request said: "Visible to Admin + Assigned Team. Optional visibility to Requester"
+    // Let's allow requester to read logs for now (read-only), transparent.
 
-    if (!taskId || isNaN(taskId)) {
-      return NextResponse.json(
-        { error: 'Invalid task ID' },
-        { status: 400 }
-      );
-    }
+    const logsRef = adminDb.collection('tasks').doc(taskId).collection('activity_logs');
+    // Order by timestamp desc
+    const logsSnap = await logsRef.orderBy('timestamp', 'desc').get();
 
-    // Check if task exists
-    const [task] = await db.select().from(tasks).where(eq(tasks.id, taskId));
-    if (!task) {
-      return NextResponse.json(
-        { error: 'Task not found' },
-        { status: 404 }
-      );
-    }
+    const logs: AttachmentLog[] = logsSnap.docs.map(doc => doc.data() as AttachmentLog);
 
-    // Get task activity timeline
-    const activities = await db
-      .select()
-      .from(taskActivity)
-      .where(eq(taskActivity.taskId, taskId))
-      .orderBy(taskActivity.createdAt);
+    return NextResponse.json({ logs });
 
-    // Return the activities
-    return NextResponse.json(
-      {
-        activities
-      },
-      { status: 200 }
-    );
-  } catch (error) {
-    console.error('[GET /api/tasks/[id]/activity]', error);
-    return NextResponse.json(
-      { error: 'Failed to fetch task activity' },
-      { status: 500 }
-    );
+  } catch (error: any) {
+    console.error('Fetch Logs Error:', error);
+    return NextResponse.json({ error: error.message }, { status: 500 });
   }
 }

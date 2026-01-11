@@ -128,8 +128,6 @@ export function EditTaskDialog({ open, onOpenChange, task, onUpdate }: EditTaskD
                 const finalAssignedTo = assignedToIds.map(id => {
                     const member = teamMembers.find(m => m.uid === id);
                     if (member) return { uid: member.uid, name: member.name };
-                    // If it's myself and not in list?
-                    if (id === user?.uid) return { uid: user.uid, name: user.name || 'Admin' };
                     return null;
                 }).filter(Boolean);
                 updates.assignedTo = finalAssignedTo;

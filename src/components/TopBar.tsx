@@ -1,6 +1,6 @@
 "use client";
 import React, { useState } from "react";
-import { Settings, User, WifiOff, LogOut, Package } from 'lucide-react';
+import { Settings, User, WifiOff, LogOut, Package, Activity } from 'lucide-react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { SafeAvatar } from "@/components/ui/SafeAvatar";
@@ -108,6 +108,19 @@ export default function TopBar({ title = "Thaiba MediaHive" }: { title?: string 
 
                 {/* Menu Items */}
                 <div className="p-3 space-y-1">
+                  {user?.role === 'admin' && (
+                    <Link
+                      href="/admin"
+                      onClick={() => setShowUserMenu(false)}
+                      className="flex items-center gap-3 px-4 py-3 rounded-xl hover:bg-white/10 transition-all group bg-gradient-to-r from-blue-500/10 to-purple-500/10 border border-white/5 mb-1"
+                    >
+                      <Activity size={20} className="text-blue-400 group-hover:scale-110 transition-transform" />
+                      <div>
+                        <span className="text-sm font-bold text-white block">Command Center</span>
+                        <span className="text-[10px] text-blue-300 block">System Operations</span>
+                      </div>
+                    </Link>
+                  )}
                   <Link
                     href="/inventory/requests"
                     onClick={() => setShowUserMenu(false)}

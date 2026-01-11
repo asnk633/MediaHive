@@ -108,13 +108,13 @@ export default function UsersPage() {
 
     // Helper to get affiliation name
     const getAffiliation = (user: User) => {
-        if (user.institutionId) {
-            const inst = institutions.find(i => i.id === user.institutionId);
-            return { type: 'Institution', name: inst ? inst.name : 'Unknown Institution', icon: Building };
-        }
         if (user.departmentId) {
             const dept = departments.find(d => d.id === user.departmentId);
             return { type: 'Office / Unit', name: dept ? dept.name : 'Unknown Office / Unit', icon: Users };
+        }
+        if (user.institutionId) {
+            const inst = institutions.find(i => i.id === user.institutionId);
+            return { type: 'Institution', name: inst ? inst.name : 'Unknown Institution', icon: Building };
         }
         return { type: 'None', name: 'No Affiliation', icon: UserIcon };
     };
@@ -228,6 +228,12 @@ export default function UsersPage() {
                                             <span className="truncate">{affiliation.name}</span>
                                             <span className="text-xs text-slate-600 ml-1">({affiliation.type})</span>
                                         </div>
+
+                                        {user.isActive === false && (
+                                            <span className="px-2 py-0.5 rounded text-[10px] font-bold bg-red-500/10 text-red-400 border border-red-500/20 uppercase tracking-wider">
+                                                Inactive
+                                            </span>
+                                        )}
 
                                         <div className="flex items-center gap-4">
                                             <span className={`px-3 py-1 rounded-full text-xs font-medium 

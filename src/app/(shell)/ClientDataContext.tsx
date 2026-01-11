@@ -283,6 +283,7 @@ export function ClientDataProvider({ children }: { children: React.ReactNode }) 
         body: JSON.stringify({
           title: input.title,
           description: input.description ?? "",
+          date: input.startAt, // API requires 'date'
           startAt: input.startAt,
           endAt: input.endAt ?? null,
           location: input.location ?? "",

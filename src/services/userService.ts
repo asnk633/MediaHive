@@ -36,9 +36,9 @@ export const UserService = {
             if (process.env.NODE_ENV === 'development' && (error?.status === 403 || error?.status === 401)) {
                 console.warn("[UserService] Dev Mode: Returning Mock Users due to 403/401", error);
                 return [
-                    { uid: 'mock_1', name: 'Admin User', email: 'admin@thaiba.com', role: 'admin', institutionId: 'inst_1', createdAt: new Date().toISOString() },
-                    { uid: 'mock_2', name: 'Team Lead', email: 'team@thaiba.com', role: 'team', departmentId: 'dept_1', createdAt: new Date().toISOString() },
-                    { uid: 'mock_3', name: 'Guest User', email: 'guest@thaiba.com', role: 'guest', createdAt: new Date().toISOString() }
+                    { uid: 'mock_1', name: 'Admin User', email: 'admin@thaiba.com', role: 'admin', institutionId: 'inst_1', createdAt: new Date().toISOString(), isActive: true },
+                    { uid: 'mock_2', name: 'Team Lead', email: 'team@thaiba.com', role: 'team', departmentId: 'dept_1', createdAt: new Date().toISOString(), isActive: true },
+                    { uid: 'mock_3', name: 'Guest User', email: 'guest@thaiba.com', role: 'guest', createdAt: new Date().toISOString(), isActive: true }
                 ];
             }
 

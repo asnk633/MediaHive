@@ -42,19 +42,19 @@ export const TaskService = {
 
         const pollTasks = async () => {
             if (isCancelled) return;
-            
+
             try {
                 const data = await apiClient('/api/tasks', {
                     method: 'GET'
                 });
-                
+
                 callback(data.tasks || []);
             } catch (error) {
                 console.warn('Task polling failed:', error);
                 // Fallback to local storage if API fails
                 if (!isCancelled) callback(loadFromLocal());
             }
-            
+
             // Continue polling every 30 seconds
             if (!isCancelled) {
                 pollInterval = setTimeout(pollTasks, 30000);
@@ -67,7 +67,7 @@ export const TaskService = {
         if (typeof window !== 'undefined') {
             const handleStorage = () => callback(loadFromLocal());
             window.addEventListener('task-update', handleStorage);
-            
+
             return () => {
                 isCancelled = true;
                 if (pollInterval) clearTimeout(pollInterval);
@@ -86,7 +86,7 @@ export const TaskService = {
             const data = await apiClient(`/api/tasks/${id}`, {
                 method: 'GET'
             });
-            
+
             return data.task || null;
         } catch (e) {
             console.error("Error fetching task", e);
@@ -127,6 +127,36 @@ export const TaskService = {
                 assignedToId: member.uid,
                 assignedUserName: member.name
             }),
+        });
+    },
+
+    uploadAttachment: async (taskId: string, file: File, section: 'requester-inputs' | 'team-working-files' | 'team-final-exports') => {
+        const formData = new FormData();
+        formData.append('file', file);
+        formData.append('section', section);
+
+        return apiClient(`/api/tasks/${taskId}/attachments`, {
+            method: 'POST',
+            body: formData,
+        });
+    },
+
+    deleteAttachment: async (taskId: string, fileId: string) => {
+        return apiClient(`/api/tasks/${taskId}/attachments?fileId=${fileId}`, {
+            method: 'DELETE'
+        });
+    },
+
+    toggleAttachmentVisibility: async (taskId: string, fileId: string, showInDownloads: boolean) => {
+        return apiClient(`/api/tasks/${taskId}/attachments`, {
+            method: 'PATCH',
+            body: JSON.stringify({ fileId, showInDownloads })
+        });
+    },
+
+    fetchAttachmentActivity: async (taskId: string) => {
+        return apiClient(`/api/tasks/${taskId}/activity`, {
+            method: 'GET'
         });
     }
 };

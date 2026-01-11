@@ -13,17 +13,22 @@ interface CreateEventModalProps {
 export const CreateEventModal = ({ isOpen, onClose, isMobile = true, initialDate, forceSystemEvent }: CreateEventModalProps) => {
     if (!isOpen) return null;
 
-    const overlayClasses = "fixed inset-0 bg-black/40 backdrop-blur-sm z-[60] flex";
+    const overlayClasses = "fixed inset-0 bg-black/40 backdrop-blur-sm z-[40] flex";
     const containerClasses = isMobile
         ? `${overlayClasses} items-end`
         : `${overlayClasses} items-center justify-center`;
 
     const modalClasses = isMobile
-        ? "w-full bg-[#10111a] rounded-t-[32px] p-6 animate-slide-up shadow-[0_-8px_30px_rgba(0,0,0,0.5)] max-h-[90vh] overflow-y-auto border-t border-[#ffffff1a]"
-        : "w-full max-w-lg bg-[#10111a] rounded-[24px] p-8 animate-fade-in shadow-2xl border border-[#ffffff1a]";
+        ? "w-full bg-[#10111a] rounded-t-[32px] p-6 animate-slide-up shadow-[0_-8px_30px_rgba(0,0,0,0.5)] max-h-[90vh] overflow-y-auto border-t border-[#ffffff1a] relative z-[45]"
+        : "w-full max-w-lg bg-[#10111a] rounded-[24px] p-8 animate-fade-in shadow-2xl border border-[#ffffff1a] relative z-[45]";
 
     return (
-        <div className={containerClasses} onClick={onClose}>
+        <div className={containerClasses} onClick={(e) => {
+            // Only close if clicking directly on the overlay backdrop (not on children)
+            if (e.target === e.currentTarget) {
+                onClose();
+            }
+        }}>
             <div className={modalClasses} onClick={e => e.stopPropagation()}>
                 {/* Mobile Pull Handle */}
                 {isMobile && <div className="w-12 h-1.5 bg-white/10 rounded-full mx-auto mb-6" />}

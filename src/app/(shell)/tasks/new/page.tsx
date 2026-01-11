@@ -32,8 +32,8 @@ export default function NewTaskPage() {
   }, [campaignId]);
 
   // Organization Data
-  const [departmentsList, setDepartmentsList] = useState<{ id: number; name: string }[]>([]);
-  const [institutionsList, setInstitutionsList] = useState<{ id: number; name: string }[]>([]);
+  const [departmentsList, setDepartmentsList] = useState<{ id: string; name: string }[]>([]);
+  const [institutionsList, setInstitutionsList] = useState<{ id: string; name: string }[]>([]);
 
   if (!user) return null;
 
@@ -42,6 +42,8 @@ export default function NewTaskPage() {
   const [dueDate, setDueDate] = useState<Date | undefined>(undefined);
   const [priority, setPriority] = useState<'low' | 'medium' | 'high'>('medium');
   const [assignedToIds, setAssignedToIds] = useState<string[]>([]);
+  const [files, setFiles] = useState<File[]>([]);
+  const [uploadProgress, setUploadProgress] = useState<string>('');
 
   // Create As Logic
   const canCreateOnBehalf = user.role === 'admin' || user.role === 'team';
@@ -122,7 +124,6 @@ export default function NewTaskPage() {
           // Actually, earlier code had `mockMembers` error.
           // We should use `teamMembers` + `user`.
 
-          if (id === user.uid) return { uid: user.uid, name: user.name || 'Unknown' };
           const member = teamMembers.find(m => m.uid === id);
           if (member) return { uid: member.uid, name: member.name };
           return null;
@@ -139,11 +140,11 @@ export default function NewTaskPage() {
       // Only process if toggle is Active AND we have a selected ID
       if (canCreateOnBehalf && createAs === 'onBehalfOf' && onBehalfOfId) {
         if (onBehalfOfId.startsWith('dept_')) {
-          const id = parseInt(onBehalfOfId.split('_')[1]);
+          const id = onBehalfOfId.split('_')[1];
           const dept = departmentsList.find(d => d.id === id);
           if (dept) onBehalfOfData = { id: dept.id, name: dept.name, type: 'department' };
         } else if (onBehalfOfId.startsWith('inst_')) {
-          const id = parseInt(onBehalfOfId.split('_')[1]);
+          const id = onBehalfOfId.split('_')[1];
           const inst = institutionsList.find(i => i.id === id);
           if (inst) onBehalfOfData = { id: inst.id, name: inst.name, type: 'institution' };
         }
@@ -170,6 +171,22 @@ export default function NewTaskPage() {
         campaignId: campaignId || undefined,
         onBehalfOf: onBehalfOfData
       } as any); // Cast because TaskService might be strict
+
+      // Upload Attachments
+      if (files.length > 0) {
+        setUploadProgress(`0/${files.length}`);
+        let uploadedCount = 0;
+        for (const file of files) {
+          try {
+            await TaskService.uploadAttachment(newTaskId, file, 'requester-inputs');
+            uploadedCount++;
+            setUploadProgress(`${uploadedCount}/${files.length}`);
+          } catch (e) {
+            console.error(`Failed to upload ${file.name}`, e);
+            // Don't halt the whole process, just log
+          }
+        }
+      }
 
       // Notify Admins if Guest created it
       if (isGuest) {
@@ -263,7 +280,7 @@ export default function NewTaskPage() {
             {/* Title & Desc Group */}
             <div className="space-y-5">
               <div className="space-y-2">
-                <label className="text-[10px] font-bold text-blue-300/70 uppercase tracking-widest ml-1">Title</label>
+                <label className="block text-sm font-medium text-white/70 mb-2">Task Title</label>
                 <input
                   type="text"
                   value={title}
@@ -274,7 +291,7 @@ export default function NewTaskPage() {
               </div>
 
               <div className="space-y-2">
-                <label className="text-[10px] font-bold text-blue-300/70 uppercase tracking-widest ml-1">Description</label>
+                <label className="block text-sm font-medium text-white/70 mb-2">Description</label>
                 <textarea
                   value={description}
                   onChange={e => setDescription(e.target.value)}
@@ -288,7 +305,7 @@ export default function NewTaskPage() {
             {/* Date & Department/Institution Grid */}
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 pt-2">
               <div className="space-y-2">
-                <label className="text-[10px] font-bold text-gray-500 uppercase tracking-widest ml-1 flex items-center gap-1">
+                <label className="block text-sm font-medium text-white/70 mb-2">
                   Due Date
                 </label>
                 <Popover>
@@ -330,7 +347,7 @@ export default function NewTaskPage() {
               {/* Unified Department or Institution Dropdown (Myself Mode) */}
               {createAs === 'myself' && (
                 <div className="space-y-2">
-                  <label className="text-[10px] font-bold text-gray-500 uppercase tracking-widest ml-1 flex items-center gap-1">
+                  <label className="block text-sm font-medium text-white/70 mb-2">
                     Department / Unit
                   </label>
                   <div className="relative">
@@ -370,8 +387,8 @@ export default function NewTaskPage() {
               {/* Identity Selector (On Behalf Of Mode) - Replaces Department */}
               {canCreateOnBehalf && createAs === 'onBehalfOf' && (
                 <div className="space-y-2 animate-in fade-in zoom-in-95 duration-200">
-                  <label className="text-[10px] font-bold text-blue-400 uppercase tracking-widest ml-1 flex items-center gap-1">
-                    Publishing On Behalf Of (Identity)
+                  <label className="block text-sm font-medium text-blue-400 mb-2">
+                    Publishing On Behalf Of <span className="text-white/40 text-xs">(Identity)</span>
                   </label>
                   <div className="relative">
                     <div className="absolute inset-y-0 left-3 flex items-center pointer-events-none text-blue-500/50">
@@ -384,11 +401,11 @@ export default function NewTaskPage() {
                         setOnBehalfOfId(val);
                         // Auto-sync selectedOrg with the chosen Identity name
                         if (val.startsWith('dept_')) {
-                          const id = parseInt(val.split('_')[1]);
+                          const id = val.split('_')[1];
                           const dept = departmentsList.find(d => d.id === id);
                           if (dept) setSelectedOrg(dept.name);
                         } else if (val.startsWith('inst_')) {
-                          const id = parseInt(val.split('_')[1]);
+                          const id = val.split('_')[1];
                           const inst = institutionsList.find(i => i.id === id);
                           if (inst) setSelectedOrg(inst.name);
                         } else {
@@ -426,7 +443,7 @@ export default function NewTaskPage() {
             {/* Priority - Admin Only */}
             {isAdmin && (
               <div className="space-y-3 pt-4 border-t border-white/5">
-                <label className="text-[10px] font-bold text-gray-500 uppercase tracking-widest ml-1">
+                <label className="block text-sm font-medium text-white/70 mb-2">
                   Priority
                 </label>
                 <div className="grid grid-cols-3 gap-2">
@@ -452,39 +469,11 @@ export default function NewTaskPage() {
             {/* Assigned To - Admin Only */}
             {isAdmin && (
               <div className="space-y-3 pt-2">
-                <label className="text-[10px] font-bold text-gray-500 uppercase tracking-widest ml-1">
-                  Assigned To
+                <label className="block text-sm font-medium text-white/70 mb-2">
+                  Assign To Team Members
                 </label>
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
-                  {/* Myself - Hide if Super Admin (Media Admin) */}
-                  {user.email !== 'media@thaibagarden.com' && (
-                    <label
-                      className={`group flex items-center p-3 rounded-xl border cursor-pointer transition-all duration-300 ${assignedToIds.includes(user?.uid || '')
-                        ? 'bg-gradient-to-r from-blue-500/20 to-indigo-500/10 border-blue-500/30 shadow-[0_0_10px_rgba(59,130,246,0.1)]'
-                        : 'bg-white/5 border-white/5 hover:bg-white/10'
-                        }`}
-                    >
-                      <div className={`w-5 h-5 rounded-full flex items-center justify-center border transition-colors ${assignedToIds.includes(user?.uid || '') ? 'border-blue-400 bg-blue-500' : 'border-gray-600 bg-transparent group-hover:border-gray-500'
-                        }`}>
-                        {assignedToIds.includes(user?.uid || '') && <div className="w-1.5 h-1.5 bg-white rounded-full" />}
-                      </div>
-                      <input
-                        type="checkbox"
-                        className="hidden"
-                        checked={assignedToIds.includes(user?.uid || '')}
-                        onChange={(e) => {
-                          if (e.target.checked && user?.uid) {
-                            setAssignedToIds([...assignedToIds, user.uid]);
-                          } else if (user?.uid) {
-                            setAssignedToIds(assignedToIds.filter(id => id !== user.uid));
-                          }
-                        }}
-                      />
-                      <span className={`ml-3 text-sm font-medium transition-colors ${assignedToIds.includes(user?.uid || '') ? 'text-blue-100' : 'text-gray-400 group-hover:text-gray-300'}`}>
-                        Myself <span className="text-xs opacity-60">({user?.officialName || user?.name})</span>
-                      </span>
-                    </label>
-                  )}
+
                   {teamMembers.map(m => (
                     <label
                       key={m.uid}
@@ -518,6 +507,50 @@ export default function NewTaskPage() {
               </div>
             )}
 
+            {/* Attachments Section */}
+            <div className="space-y-3 pt-4 border-t border-white/5">
+              <label className="block text-sm font-medium text-white/70 mb-2">
+                Attachments <span className="text-white/40 text-xs">(Optional)</span>
+              </label>
+              <div className="bg-white/5 rounded-2xl border border-dashed border-white/10 p-6 text-center hover:bg-white/10 transition-colors relative group">
+                <input
+                  type="file"
+                  multiple
+                  className="absolute inset-0 w-full h-full opacity-0 cursor-pointer z-10"
+                  onChange={(e) => {
+                    if (e.target.files) {
+                      setFiles(prev => [...prev, ...Array.from(e.target.files!)]);
+                    }
+                  }}
+                />
+                <div className="flex flex-col items-center gap-2 pointer-events-none">
+                  <div className="w-10 h-10 rounded-full bg-blue-500/10 flex items-center justify-center text-blue-400 group-hover:scale-110 transition-transform">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" /><polyline points="17 8 12 3 7 8" /><line x1="12" x2="12" y1="3" y2="15" /></svg>
+                  </div>
+                  <p className="text-sm text-gray-400 group-hover:text-gray-300">
+                    Click or drag files here
+                  </p>
+                </div>
+              </div>
+              {/* File List */}
+              {files.length > 0 && (
+                <div className="space-y-2 mt-2">
+                  {files.map((file, i) => (
+                    <div key={i} className="flex items-center justify-between p-2 bg-white/5 rounded-lg border border-white/5">
+                      <span className="text-xs text-gray-300 truncate max-w-[200px]">{file.name}</span>
+                      <button
+                        type="button"
+                        onClick={() => setFiles(files.filter((_, idx) => idx !== i))}
+                        className="text-gray-500 hover:text-red-400 p-1"
+                      >
+                        <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M18 6 6 18" /><path d="m6 6 12 12" /></svg>
+                      </button>
+                    </div>
+                  ))}
+                </div>
+              )}
+            </div>
+
             {/* Read Only Info */}
             <div className="pt-6 mt-2 border-t border-white/5 flex items-center justify-between opacity-60">
               <div className="flex items-center gap-3">
@@ -546,7 +579,7 @@ export default function NewTaskPage() {
               {loading ? (
                 <>
                   <div className="animate-spin rounded-full h-5 w-5 border-b-2 border-white" />
-                  Saving...
+                  {uploadProgress ? `Uploading (${uploadProgress})...` : 'Saving...'}
                 </>
               ) : (
                 'Create Task'

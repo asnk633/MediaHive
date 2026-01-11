@@ -69,6 +69,12 @@ export async function verifyUser(request: Request): Promise<AuthenticatedUser | 
             if (userDoc.exists) {
                 userData = userDoc.data();
                 finalRole = userData?.role || finalRole;
+
+                // Phase 15: Enforce Active Status
+                if (userData.isActive === false) {
+                    console.warn(`[verifyUser] Access Denied: User ${decodedToken.uid} is inactive.`);
+                    return null;
+                }
             }
 
             // Apply Whitelist Override (Bootstrapping)
@@ -106,6 +112,12 @@ export async function verifyUser(request: Request): Promise<AuthenticatedUser | 
         if (userDoc.exists) {
             userData = userDoc.data();
             finalRole = userData?.role || finalRole;
+
+            // Phase 15: Enforce Active Status
+            if (userData.isActive === false) {
+                console.warn(`[verifyUser] Access Denied: User ${decoded.uid} is inactive.`);
+                return null;
+            }
         }
 
         // Apply Whitelist Override (Bootstrapping)

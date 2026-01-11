@@ -125,6 +125,19 @@ export function sanitizeForDrive(name: string): string {
  */
 export async function makeFilePublic(drive: any, fileId: string): Promise<boolean> {
     try {
+        // Idempotency: Check if already public
+        const listRes = await drive.permissions.list({
+            fileId,
+            fields: 'permissions(id, type, role)',
+            supportsAllDrives: true,
+        });
+
+        const existingPerm = listRes.data.permissions?.find((p: any) => p.type === 'anyone' && p.role === 'reader');
+        if (existingPerm) {
+            console.log(`[Drive] File ${fileId} is already public.`);
+            return true;
+        }
+
         await drive.permissions.create({
             fileId,
             requestBody: {
@@ -138,6 +151,37 @@ export async function makeFilePublic(drive: any, fileId: string): Promise<boolea
     } catch (error: any) {
         console.error(`[Drive] Failed to make file ${fileId} public:`, error);
         // We don't throw here to avoid failing the whole upload, but we log it.
+        return false;
+    }
+}
+
+/**
+ * Removes 'anyone' reader permissions, making the file effectively private
+ * (or restricted to inherited folder permissions).
+ */
+export async function makeFilePrivate(drive: any, fileId: string): Promise<boolean> {
+    try {
+        // List permissions to find the 'anyone' permission
+        const res = await drive.permissions.list({
+            fileId,
+            fields: 'permissions(id, type, role)',
+            supportsAllDrives: true,
+        });
+
+        const sensitivePerm = res.data.permissions?.find((p: any) => p.type === 'anyone' && p.role === 'reader');
+
+        if (sensitivePerm && sensitivePerm.id) {
+            await drive.permissions.delete({
+                fileId,
+                permissionId: sensitivePerm.id,
+                supportsAllDrives: true,
+            });
+            console.log(`[Drive] File ${fileId} is now PRIVATE (removed 'anyone' link).`);
+            return true;
+        }
+        return true; // Already private
+    } catch (error: any) {
+        console.error(`[Drive] Failed to make file ${fileId} private:`, error);
         return false;
     }
 }

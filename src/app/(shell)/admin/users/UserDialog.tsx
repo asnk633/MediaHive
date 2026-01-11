@@ -9,6 +9,7 @@ import { Label } from '@/components/ui/label';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from '@/components/ui/dialog';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
+import { Switch } from "@/components/ui/switch";
 import { Loader2 } from 'lucide-react';
 import { toast } from 'sonner';
 
@@ -26,6 +27,7 @@ export function UserDialog({ open, onOpenChange, user, onSave, institutions, dep
 
     // Form State
     const [role, setRole] = useState('guest');
+    const [isActive, setIsActive] = useState(true);
 
     // Affiliation State
     // XOR: affiliationType = 'institution' | 'department'
@@ -55,6 +57,7 @@ export function UserDialog({ open, onOpenChange, user, onSave, institutions, dep
             } else {
                 // Reset for create
                 setRole('guest');
+                setIsActive(true);
                 setAffiliationType('institution');
                 setSelectedInstitution('');
                 setSelectedDepartment('');
@@ -66,17 +69,23 @@ export function UserDialog({ open, onOpenChange, user, onSave, institutions, dep
         setLoading(true);
         try {
             // Payload initialized strictly below
-            const payload: any = { role };
+            const payload: any = { role, isActive };
 
             // Logic for Name
             const nameInput = document.getElementById('user-name') as HTMLInputElement;
             const nameValue = nameInput?.value?.trim() || null;
 
+            if (!nameValue) {
+                toast.error('Full Name is required');
+                setLoading(false);
+                return;
+            }
+
             if (user) {
                 // For existing users, update 'officialName' to override others
-                if (nameValue && nameValue !== user.name) {
-                    payload.officialName = nameValue;
-                }
+                // Also update 'name' as fallback
+                payload.officialName = nameValue;
+                payload.name = nameValue;
             } else {
                 // For invites, pass 'name'
                 payload.name = nameValue;
@@ -85,8 +94,22 @@ export function UserDialog({ open, onOpenChange, user, onSave, institutions, dep
             // Logic for Email
             if (!user) {
                 const emailInput = document.getElementById('user-email') as HTMLInputElement;
+
+                if (!nameValue) {
+                    toast.error('Full Name is required');
+                    setLoading(false);
+                    return;
+                }
+
                 if (!emailInput || !emailInput.value) {
                     toast.error("Please enter an email address");
+                    setLoading(false);
+                    return;
+                }
+
+                // Validate email format
+                if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(emailInput.value)) {
+                    toast.error('Valid email is required');
                     setLoading(false);
                     return;
                 }
@@ -135,19 +158,19 @@ export function UserDialog({ open, onOpenChange, user, onSave, institutions, dep
                 <div className="space-y-6 pt-4">
                     {/* Name Input (Optional for Invite, Editable for User) */}
                     <div className="space-y-2">
-                        <Label className="text-slate-300">Name <span className="text-slate-500 text-xs">(Optional)</span></Label>
+                        <Label className="text-sm font-medium text-white/70">Full Name <span className="text-red-400">*</span></Label>
                         <Input
                             placeholder="John Doe"
                             className="bg-slate-800 border-white/10 text-white"
                             id="user-name"
-                            defaultValue={user?.name || ''}
+                            defaultValue={user?.officialName || user?.name || ''}
                         />
                     </div>
 
                     {/* Email Input (Create Mode Only) */}
                     {!user && (
                         <div className="space-y-2">
-                            <Label className="text-slate-300">Email Address <span className="text-red-400">*</span></Label>
+                            <Label className="text-sm font-medium text-white/70">Email Address <span className="text-red-400">*</span></Label>
                             <Input
                                 placeholder="colleague@thaiba.com"
                                 className="bg-slate-800 border-white/10 text-white"
@@ -158,7 +181,7 @@ export function UserDialog({ open, onOpenChange, user, onSave, institutions, dep
 
                     {/* Role Selection */}
                     <div className="space-y-2">
-                        <Label className="text-slate-300">Role</Label>
+                        <Label className="text-sm font-medium text-white/70">Role</Label>
                         <Select value={role} onValueChange={setRole}>
                             <SelectTrigger className="bg-slate-800 border-white/10 text-white">
                                 <SelectValue />
@@ -173,7 +196,7 @@ export function UserDialog({ open, onOpenChange, user, onSave, institutions, dep
 
                     {/* Affiliation Switch */}
                     <div className="space-y-2">
-                        <Label className="text-slate-300">Affiliation</Label>
+                        <Label className="text-sm font-medium text-white/70">Affiliation</Label>
                         <Tabs
                             value={affiliationType}
                             onValueChange={(v) => setAffiliationType(v as any)}
@@ -186,7 +209,7 @@ export function UserDialog({ open, onOpenChange, user, onSave, institutions, dep
 
                             <div className="mt-4 p-4 bg-slate-800/50 rounded-xl border border-white/5">
                                 <TabsContent value="institution" className="mt-0">
-                                    <Label className="text-xs text-slate-400 mb-2 block">Select Institution</Label>
+                                    <Label className="text-xs text-white/50 mb-2 block">Select Institution</Label>
                                     <Select value={selectedInstitution} onValueChange={setSelectedInstitution}>
                                         <SelectTrigger className="bg-slate-900 border-white/10 text-white">
                                             <SelectValue placeholder="Choose Institution..." />
@@ -202,7 +225,7 @@ export function UserDialog({ open, onOpenChange, user, onSave, institutions, dep
                                 </TabsContent>
 
                                 <TabsContent value="department" className="mt-0">
-                                    <Label className="text-xs text-slate-400 mb-2 block">Select Global Office / Unit</Label>
+                                    <Label className="text-xs text-white/50 mb-2 block">Select Global Office / Unit</Label>
                                     <Select value={selectedDepartment} onValueChange={setSelectedDepartment}>
                                         <SelectTrigger className="bg-slate-900 border-white/10 text-white">
                                             <SelectValue placeholder="Choose Office / Unit..." />
@@ -218,6 +241,21 @@ export function UserDialog({ open, onOpenChange, user, onSave, institutions, dep
                                 </TabsContent>
                             </div>
                         </Tabs>
+                    </div>
+
+                    {/* Active Status Switch */}
+                    <div className="flex items-center justify-between p-4 rounded-xl bg-slate-800/50 border border-white/5">
+                        <div className="space-y-0.5">
+                            <Label className="text-sm font-medium text-white/70">Account Status</Label>
+                            <div className="text-xs text-slate-400">
+                                {isActive ? 'User can access the system' : 'User access is suspended'}
+                            </div>
+                        </div>
+                        <Switch
+                            checked={isActive}
+                            onCheckedChange={setIsActive}
+                            className="data-[state=checked]:bg-green-500"
+                        />
                     </div>
 
                     <div className="flex justify-end gap-3 pt-4">

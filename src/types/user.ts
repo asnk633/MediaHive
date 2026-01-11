@@ -11,6 +11,8 @@ export interface User {
     institutionId?: string;
     departmentId?: string;
 
+    isActive?: boolean; // Defaults to true if undefined
+
     /** @deprecated Use institutionId */
     defaultInstitution?: string;
     /** @deprecated Use departmentId */

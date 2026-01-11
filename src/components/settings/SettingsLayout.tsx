@@ -8,7 +8,7 @@ import { useAuth } from '@/contexts/AuthContext';
 
 interface SettingsLayoutProps {
     children: React.ReactNode;
-    activeTab: 'profile' | 'notifications' | 'users' | 'institution';
+    activeTab: 'profile' | 'notifications';
     onTabChange: (tab: any) => void;
 }
 
@@ -25,13 +25,7 @@ export const SettingsLayout: React.FC<SettingsLayoutProps> = ({
         { id: 'notifications', label: 'Notifications', icon: <Bell size={18} /> },
     ];
 
-    // Only show Admin tabs if Admin
-    if (isAdmin) {
-        menuItems.push(
-            { id: 'users', label: 'Users & Roles', icon: <Shield size={18} /> },
-            { id: 'institution', label: 'Institution', icon: <Building2 size={18} /> }
-        );
-    }
+
 
     return (
         <div className="flex flex-col lg:flex-row gap-8 min-h-[600px]">

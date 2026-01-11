@@ -26,7 +26,7 @@ async function initializeDatabase() {
       // Local SQLite via better-sqlite3 (dynamic import to avoid build issues)
       const { drizzle: drizzleSqlite } = await import('drizzle-orm/better-sqlite3');
       const Database = (await import('better-sqlite3')).default;
-      const dbPath = (process.env.DATABASE_URL || 'file:./dev.db').replace(/^file:/, '');
+      const dbPath = (process.env.DATABASE_URL || 'file:./dev2.db').replace(/^file:/, '');
       const sqlite = new Database(dbPath);
       _db = drizzleSqlite(sqlite, { schema });
     }

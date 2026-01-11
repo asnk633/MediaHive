@@ -149,17 +149,19 @@ export const EventService = {
                     dateStr = new Date(event.date as any).toISOString();
                 }
 
-                const mediaTask: Omit<Task, 'id' | 'createdAt'> = {
-                    title: `Media Request: ${event.title}`,
-                    description: `Event Coverage Requested: ${event.mediaCoverage.join(', ')}\n\nLocation: ${event.location}\nDate: ${new Date(dateStr).toDateString()}`,
+                const mediaTask = {
+                    title: `Media: ${event.title}`,
+                    description: `Media coverage request for event: ${event.title}\n\n${event.description}`,
                     status: 'todo' as const,
-                    priority: 'high',
-                    department: 'Media',
+                    priority: 'medium' as const, // Default for media requests
+                    department: event.department || 'General',
                     dueDate: dateStr as any, // Task type likely expects string or Date, ensuring string ISO
                     assignedTo: [],
                     assignedBy: { uid: event.createdBy.uid, name: event.createdBy.name, role: event.createdBy.role || 'user' },
                     createdBy: { uid: event.createdBy.uid, name: event.createdBy.name, role: event.createdBy.role || 'user' },
-                    eventId
+                    eventId,
+                    files: [],
+                    ratedAt: null
                 };
 
                 await TaskService.addTask(mediaTask);

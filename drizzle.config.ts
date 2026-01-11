@@ -18,7 +18,7 @@ const dbConfig: Config = defineConfig({
     url: TURSO_URL!,
     authToken: TURSO_TOKEN!,
   } : {
-    url: process.env.DATABASE_URL || 'file:./dev.db',
+    url: process.env.DATABASE_URL || 'file:./dev2.db',
   },
 });
 

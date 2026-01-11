@@ -20,13 +20,14 @@ export async function GET(request: NextRequest) {
                 return {
                     uid: doc.id,
                     role: userData.role,
-                    name: userData.officialName || userData.name || userData.email || 'Unknown',
+                    name: userData.officialName || userData.name || userData.displayName || userData.email || 'Unknown',
                     email: userData.email,
                     avatarUrl: userData.avatarUrl,
-                    photoURL: userData.photoURL
+                    photoURL: userData.photoURL,
+                    isActive: userData.isActive ?? true
                 };
             })
-            .filter(user => user.role === 'team' || user.role === 'admin')
+            .filter(user => user.role === 'team' && user.isActive !== false)
             .map(user => ({
                 uid: user.uid,
                 name: user.name,

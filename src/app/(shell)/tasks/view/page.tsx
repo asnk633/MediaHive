@@ -30,6 +30,8 @@ import { SafeAvatar } from '@/components/ui/SafeAvatar'
 import { getRelativeTime } from '@/lib/utils'
 import { DeliverableService } from '@/services/deliverableService'
 import { NotificationService } from '@/services/notificationService'
+import { AttachmentSection } from '@/components/tasks/AttachmentSection'
+import { TaskFile } from '@/types/task'
 // Define the task type based on what we know from Firebase
 interface FirebaseTask {
     id: string
@@ -51,6 +53,7 @@ interface FirebaseTask {
     createdAt: any // Firestore Timestamp
     firstDeliverableAt?: any // Firestore Timestamp
     activity?: TaskActivity[]
+    files?: TaskFile[]
 }
 
 interface TaskActivity {
@@ -647,6 +650,15 @@ function TaskDetailContent() {
                         </CardContent>
                     </Card>
 
+                    {/* Attachments Section */}
+                    <AttachmentSection
+                        task={task as any}
+                        onUpdate={() => {
+                            fetchTask();
+                            // Also refresh media files if needed, though they are separate now
+                        }}
+                    />
+
                     <Card className="border-none
                         bg-gradient-to-br from-[#141e30] to-[#243b55]
                         shadow-[5px_10px_50px_rgba(0,0,0,0.5),-5px_0px_250px_rgba(0,0,0,0.5)]
@@ -933,7 +945,7 @@ function TaskDetailContent() {
                     </Card>
                 </div>
             </div>
-        </div>
+        </div >
     )
 }
 

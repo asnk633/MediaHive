@@ -70,6 +70,38 @@ export interface Task {
             name: string;
             role: string;
         };
-        ratedAt: any; // Timestamp
     };
+    ratedAt: any; // Timestamp
+    files?: TaskFile[];
+}
+
+export type TaskFileSection = 'requester-inputs' | 'team-working-files' | 'team-final-exports';
+
+export interface TaskFile {
+    id: string; // Drive ID
+    name: string;
+    mimeType: string;
+    url: string; // View/Download link
+    uploadedBy: {
+        uid: string;
+        name: string;
+        role: string;
+    };
+    uploadedAt: string; // ISO String
+    section: TaskFileSection;
+    showInDownloads?: boolean; // Controls visibility on Downloads page
+    size?: number; // Optional size in bytes
+}
+
+export interface AttachmentLog {
+    id: string; // uuid
+    fileId: string;
+    fileName: string;
+    action: 'upload' | 'delete' | 'visibility_public' | 'visibility_private';
+    performedBy: {
+        uid: string;
+        name: string;
+        role: string;
+    };
+    timestamp: string; // ISO
 }

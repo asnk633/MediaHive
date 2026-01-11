@@ -51,7 +51,11 @@ export const CreateEventForm = ({ initialDate, onSuccess, onCancel, isModal = fa
     const [description, setDescription] = useState('');
     const [department, setDepartment] = useState('Operations');
     const [createdById, setCreatedById] = useState('');
-    const [teamMembers, setTeamMembers] = useState<{ uid: string; name: string }[]>([]);
+    const [teamMembers, setTeamMembers] = useState<{ uid: string; name: string; departmentId?: string; institutionId?: string; defaultDepartment?: string }[]>([]);
+
+    // Create On Behalf Of State
+    const [createOnBehalfOf, setCreateOnBehalfOf] = useState(false);
+    const [selectedUserId, setSelectedUserId] = useState('');
 
     // Recurrence State
     const [recurrenceFreq, setRecurrenceFreq] = useState<'daily' | 'weekly' | 'monthly' | 'yearly'>('yearly');
@@ -59,6 +63,10 @@ export const CreateEventForm = ({ initialDate, onSuccess, onCancel, isModal = fa
 
     // New State for Media Coverage
     const [mediaCoverage, setMediaCoverage] = useState<string[]>([]);
+
+    // Popover State (to fix overlay bug)
+    const [datePopoverOpen, setDatePopoverOpen] = useState(false);
+    const [recurrenceEndPopoverOpen, setRecurrenceEndPopoverOpen] = useState(false);
 
     // Media Options
     const mediaOptions = [
@@ -76,11 +84,33 @@ export const CreateEventForm = ({ initialDate, onSuccess, onCancel, isModal = fa
         );
     };
 
-    // Fetch real team members from Firestore
+    // Fetch real team members from Firestore with department info
     useEffect(() => {
         const fetchTeamMembers = async () => {
             const members = await UserService.getTeamMembers();
-            const otherMembers = members.filter(m => m.uid !== user?.uid);
+            // Fetch full user details including department for each member
+            const membersWithDept = await Promise.all(
+                members.map(async (m) => {
+                    try {
+                        const response = await apiClient(`/api/users/${m.uid}`, { method: 'GET' });
+                        const userDoc = response.user;
+                        return {
+                            uid: m.uid,
+                            name: m.name,
+                            departmentId: userDoc?.departmentId,
+                            institutionId: userDoc?.institutionId,
+                            defaultDepartment: userDoc?.defaultDepartment,
+                        };
+                    } catch (e) {
+                        // Fallback if user details can't be fetched
+                        return {
+                            uid: m.uid,
+                            name: m.name,
+                        };
+                    }
+                })
+            );
+            const otherMembers = membersWithDept.filter(m => m.uid !== user?.uid);
             setTeamMembers(otherMembers);
         };
         fetchTeamMembers();
@@ -162,30 +192,12 @@ export const CreateEventForm = ({ initialDate, onSuccess, onCancel, isModal = fa
             if (!time) return;
 
             let finalCreatedBy = { uid: user?.uid || 'anon', name: user?.officialName || user?.name || 'Guest' };
-            let onBehalfOfPayload = undefined;
 
-            if (user?.role === 'admin' || user?.role === 'team') {
-                if (createdById === user?.uid || createdById === 'self' || !createdById) {
-                    // Default to self
-                    finalCreatedBy = { uid: user?.uid || 'anon', name: user?.officialName || user?.name || 'User' };
-                } else if (createdById.startsWith('dept_')) {
-                    const id = parseInt(createdById.split('_')[1]);
-                    const dept = departmentsList.find(d => d.id === id);
-                    if (dept) {
-                        onBehalfOfPayload = { id: dept.id, name: dept.name, type: 'department' };
-                    }
-                } else if (createdById.startsWith('inst_')) {
-                    const id = parseInt(createdById.split('_')[1]);
-                    const inst = institutionsList.find(i => i.id === id);
-                    if (inst) {
-                        onBehalfOfPayload = { id: inst.id, name: inst.name, type: 'institution' };
-                    }
-                } else if (user?.role === 'admin') {
-                    // Admin assigning to another team member
-                    const selected = teamMembers.find(m => m.uid === createdById);
-                    if (selected) {
-                        finalCreatedBy = { uid: selected.uid, name: selected.name };
-                    }
+            // Admin creating on behalf of another user
+            if (user?.role === 'admin' && createOnBehalfOf && selectedUserId) {
+                const selected = teamMembers.find(m => m.uid === selectedUserId);
+                if (selected) {
+                    finalCreatedBy = { uid: selected.uid, name: selected.name };
                 }
             }
 
@@ -199,7 +211,6 @@ export const CreateEventForm = ({ initialDate, onSuccess, onCancel, isModal = fa
                     department,
                     type: 'other',
                     createdBy: finalCreatedBy,
-                    onBehalfOf: onBehalfOfPayload,
                     mediaCoverage,
                 })
             });
@@ -228,7 +239,7 @@ export const CreateEventForm = ({ initialDate, onSuccess, onCancel, isModal = fa
         focus:border-blue-500/50 focus:ring-4 focus:ring-blue-500/10
         hover:border-white/20
     `;
-    const labelClasses = "block text-xs font-bold text-white/50 uppercase tracking-wider mb-2 ml-1";
+    const labelClasses = "block text-sm font-medium text-white/70 mb-2";
 
     return (
         <form className="space-y-8" onSubmit={handleSubmit}>
@@ -264,7 +275,7 @@ export const CreateEventForm = ({ initialDate, onSuccess, onCancel, isModal = fa
                         {isSystemEvent && (
                             <div className="pt-4 border-t border-[#ffffff1a] grid grid-cols-1 md:grid-cols-2 gap-4">
                                 <div className="space-y-2">
-                                    <label className="text-xs font-bold text-white/50 uppercase">Frequency</label>
+                                    <label className={labelClasses}>Frequency</label>
                                     <div className="relative">
                                         <Repeat size={16} className="absolute left-3 top-1/2 -translate-y-1/2 text-white/40" />
                                         <Select value={recurrenceFreq} onValueChange={(val: any) => setRecurrenceFreq(val)}>
@@ -280,8 +291,8 @@ export const CreateEventForm = ({ initialDate, onSuccess, onCancel, isModal = fa
                                     </div>
                                 </div>
                                 <div className="space-y-2">
-                                    <label className="text-xs font-bold text-white/50 uppercase">Repeat Until</label>
-                                    <Popover>
+                                    <label className={labelClasses}>Repeat Until <span className="text-white/40 text-xs">(Optional)</span></label>
+                                    <Popover open={recurrenceEndPopoverOpen} onOpenChange={setRecurrenceEndPopoverOpen}>
                                         <PopoverTrigger asChild>
                                             <Button
                                                 variant={"outline"}
@@ -298,7 +309,10 @@ export const CreateEventForm = ({ initialDate, onSuccess, onCancel, isModal = fa
                                             <Calendar
                                                 mode="single"
                                                 selected={recurrenceEndDate ? new Date(recurrenceEndDate) : undefined}
-                                                onSelect={(d) => setRecurrenceEndDate(d ? d.toISOString() : '')}
+                                                onSelect={(d) => {
+                                                    setRecurrenceEndDate(d ? d.toISOString() : '');
+                                                    setRecurrenceEndPopoverOpen(false);
+                                                }}
                                                 initialFocus
                                                 disabled={(date) => date < new Date()}
                                             />
@@ -311,7 +325,7 @@ export const CreateEventForm = ({ initialDate, onSuccess, onCancel, isModal = fa
                 )}
 
                 <div className="space-y-2">
-                    <label className={labelClasses}>Event Details</label>
+                    <label className={labelClasses}>Event Title</label>
                     <div className={inputContainerClasses}>
                         <AlignLeft size={20} className={iconClasses} />
                         <input
@@ -327,117 +341,186 @@ export const CreateEventForm = ({ initialDate, onSuccess, onCancel, isModal = fa
             </div>
 
 
-            {/* Creator Selection: Admin & Team */}
+            {/* Created By Section - Role-Based Behavior */}
             {
-                (user?.role === 'admin' || user?.role === 'team') && !isSystemEvent && (
-                    <div className={inputContainerClasses}>
-                        <User size={20} className={iconClasses} />
-                        <Select value={createdById} onValueChange={setCreatedById}>
-                            <SelectTrigger className="w-full bg-[#0a0c10] border-[#ffffff1a] text-white h-14 rounded-2xl pl-12">
-                                <SelectValue placeholder="Select Creator" />
-                            </SelectTrigger>
-                            <SelectContent className="bg-[#141e30] border-[#ffffff1a] text-white max-h-80">
-                                <SelectItem value={user?.uid || 'self'}>Myself ({user?.officialName || user?.name})</SelectItem>
+                !isSystemEvent && (
+                    <>
+                        {/* Admin Only: Create On Behalf Of Toggle */}
+                        {user?.role === 'admin' && (
+                            <div className="space-y-4 p-4 rounded-2xl bg-white/5 border border-[#ffffff1a]">
+                                <div className="flex items-center justify-between">
+                                    <div className="flex-1">
+                                        <label className="text-sm font-bold text-white block">Create On Behalf Of</label>
+                                        <span className="text-xs text-white/50 block mt-1">Assign this event to another user</span>
+                                    </div>
+                                    <button
+                                        type="button"
+                                        onClick={() => {
+                                            const newValue = !createOnBehalfOf;
+                                            setCreateOnBehalfOf(newValue);
+                                            if (!newValue) {
+                                                // Reset when toggling off
+                                                setSelectedUserId('');
+                                            }
+                                        }}
+                                        className={`
+                                            relative inline-flex h-7 w-12 shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors duration-200 ease-in-out focus:outline-none focus:ring-2 focus:ring-blue-600 focus:ring-offset-2 focus:ring-offset-[#0a0c10]
+                                            ${createOnBehalfOf ? 'bg-blue-600' : 'bg-white/10'}
+                                        `}
+                                    >
+                                        <span className="sr-only">Create on behalf of</span>
+                                        <span
+                                            aria-hidden="true"
+                                            className={`
+                                                pointer-events-none inline-block h-6 w-6 transform rounded-full bg-white shadow ring-0 transition duration-200 ease-in-out
+                                                ${createOnBehalfOf ? 'translate-x-5' : 'translate-x-0'}
+                                            `}
+                                        />
+                                    </button>
+                                </div>
+                            </div>
+                        )}
 
-                                {user?.role === 'admin' && teamMembers.length > 0 && (
-                                    <SelectGroup>
-                                        <SelectLabel className="text-white/50 text-xs font-bold uppercase tracking-wider px-2 py-1.5 mt-2">Team Members</SelectLabel>
-                                        {teamMembers.map(m => (
-                                            <SelectItem key={m.uid} value={m.uid}>{m.name}</SelectItem>
-                                        ))}
-                                    </SelectGroup>
-                                )}
-
-                                <SelectGroup>
-                                    <SelectLabel className="text-white/50 text-xs font-bold uppercase tracking-wider px-2 py-1.5 mt-2">Offices / Units</SelectLabel>
-                                    {departmentsList.map(d => (
-                                        <SelectItem key={`dept_${d.id}`} value={`dept_${d.id}`}>{d.name}</SelectItem>
-                                    ))}
-                                </SelectGroup>
-
-                                <SelectGroup>
-                                    <SelectLabel className="text-white/50 text-xs font-bold uppercase tracking-wider px-2 py-1.5 mt-2">Institutions</SelectLabel>
-                                    {institutionsList.map(i => (
-                                        <SelectItem key={`inst_${i.id}`} value={`inst_${i.id}`}>{i.name}</SelectItem>
-                                    ))}
-                                </SelectGroup>
-                            </SelectContent>
-                        </Select>
-                    </div>
+                        {/* Created By Field */}
+                        <div className="space-y-2">
+                            <label className={labelClasses}>Created By</label>
+                            {user?.role === 'admin' && createOnBehalfOf ? (
+                                // Admin in "On Behalf" mode: User dropdown
+                                <div className={inputContainerClasses}>
+                                    <User size={20} className={iconClasses} />
+                                    <Select
+                                        value={selectedUserId}
+                                        onValueChange={(uid) => {
+                                            setSelectedUserId(uid);
+                                            // Auto-populate department from selected user
+                                            const selected = teamMembers.find(m => m.uid === uid);
+                                            if (selected) {
+                                                // Try to find department name from departmentId
+                                                let deptName = 'Operations';
+                                                if (selected.departmentId) {
+                                                    const dept = departmentsList.find(d => d.id.toString() === selected.departmentId);
+                                                    if (dept) deptName = dept.name;
+                                                } else if (selected.institutionId) {
+                                                    const inst = institutionsList.find(i => i.id.toString() === selected.institutionId);
+                                                    if (inst) deptName = inst.name;
+                                                } else if (selected.defaultDepartment) {
+                                                    deptName = selected.defaultDepartment;
+                                                }
+                                                setDepartment(deptName);
+                                            }
+                                        }}
+                                    >
+                                        <SelectTrigger className="w-full bg-[#0a0c10] border-[#ffffff1a] text-white h-14 rounded-2xl pl-12">
+                                            <SelectValue placeholder="Select User" />
+                                        </SelectTrigger>
+                                        <SelectContent className="bg-[#141e30] border-[#ffffff1a] text-white max-h-80">
+                                            <SelectGroup>
+                                                <SelectLabel className="text-white/50 text-xs font-bold uppercase tracking-wider px-2 py-1.5">Team Members & Guests</SelectLabel>
+                                                {teamMembers.map(m => (
+                                                    <SelectItem key={m.uid} value={m.uid}>{m.name}</SelectItem>
+                                                ))}
+                                            </SelectGroup>
+                                        </SelectContent>
+                                    </Select>
+                                </div>
+                            ) : (
+                                // All other cases: Read-only display
+                                <div className={inputContainerClasses}>
+                                    <User size={20} className={iconClasses} />
+                                    <div className={`${inputClasses} flex items-center bg-white/5 cursor-not-allowed`}>
+                                        <span className="text-white/70">{user?.officialName || user?.name || 'Current User'}</span>
+                                    </div>
+                                </div>
+                            )}
+                        </div>
+                    </>
                 )
             }
 
+
             {/* Date & Time Grid */}
             <div className="grid grid-cols-2 gap-4">
-                <div className={inputContainerClasses}>
-                    <Popover>
-                        <PopoverTrigger asChild>
-                            <Button
-                                variant={"outline"}
-                                className={cn(
-                                    inputClasses,
-                                    "flex items-center justify-start gap-3 pl-4 h-14 font-medium",
-                                    !date && "text-white/30 font-normal"
-                                )}
-                            >
-                                <CalendarIcon size={20} className="text-white/40 shrink-0" />
-                                <span className="truncate">
-                                    {date ? format(new Date(date), "MMM dd, yyyy") : "Pick a date"}
-                                </span>
-                            </Button>
-                        </PopoverTrigger>
-                        <PopoverContent className="w-auto p-0 border-[#ffffff1a] bg-[#141e30] text-white" align="start">
-                            <Calendar
-                                mode="single"
-                                selected={date ? new Date(date) : undefined}
-                                onSelect={(d) => setDate(d ? format(d, 'yyyy-MM-dd') : '')}
-                                initialFocus
-                                className="bg-[#141e30] text-white rounded-xl border border-[#ffffff1a]"
-                            />
-                        </PopoverContent>
-                    </Popover>
-                </div>
-                {!isSystemEvent && (
+                <div className="space-y-2">
+                    <label className={labelClasses}>Event Date</label>
                     <div className={inputContainerClasses}>
-                        <Popover>
+                        <Popover open={datePopoverOpen} onOpenChange={setDatePopoverOpen}>
                             <PopoverTrigger asChild>
                                 <Button
                                     variant={"outline"}
                                     className={cn(
                                         inputClasses,
                                         "flex items-center justify-start gap-3 pl-4 h-14 font-medium",
-                                        !time && "text-white/30 font-normal"
+                                        !date && "text-white/30 font-normal"
                                     )}
                                 >
-                                    <Clock size={20} className="text-white/40 shrink-0" />
+                                    <CalendarIcon size={20} className="text-white/40 shrink-0" />
                                     <span className="truncate">
-                                        {time ? (() => {
-                                            const [h, m] = time.split(':');
-                                            const date = new Date();
-                                            date.setHours(parseInt(h), parseInt(m));
-                                            return format(date, 'h:mm a');
-                                        })() : "Pick a time"}
+                                        {date ? format(new Date(date), "MMM dd, yyyy") : "Pick a date"}
                                     </span>
                                 </Button>
                             </PopoverTrigger>
-                            <PopoverContent className="w-auto p-0 border-none bg-transparent" align="start">
-                                <TimePicker value={time} onChange={setTime} />
+                            <PopoverContent className="w-auto p-0 border-[#ffffff1a] bg-[#141e30] text-white" align="start">
+                                <Calendar
+                                    mode="single"
+                                    selected={date ? new Date(date) : undefined}
+                                    onSelect={(d) => {
+                                        setDate(d ? format(d, 'yyyy-MM-dd') : '');
+                                        setDatePopoverOpen(false);
+                                    }}
+                                    initialFocus
+                                    className="bg-[#141e30] text-white rounded-xl border border-[#ffffff1a]"
+                                />
                             </PopoverContent>
                         </Popover>
+                    </div>
+                </div>
+                {!isSystemEvent && (
+                    <div className="space-y-2">
+                        <label className={labelClasses}>Start Time</label>
+                        <div className={inputContainerClasses}>
+                            <Popover>
+                                <PopoverTrigger asChild>
+                                    <Button
+                                        variant={"outline"}
+                                        className={cn(
+                                            inputClasses,
+                                            "flex items-center justify-start gap-3 pl-4 h-14 font-medium",
+                                            !time && "text-white/30 font-normal"
+                                        )}
+                                    >
+                                        <Clock size={20} className="text-white/40 shrink-0" />
+                                        <span className="truncate">
+                                            {time ? (() => {
+                                                const [h, m] = time.split(':');
+                                                const date = new Date();
+                                                date.setHours(parseInt(h), parseInt(m));
+                                                return format(date, 'h:mm a');
+                                            })() : "Pick a time"}
+                                        </span>
+                                    </Button>
+                                </PopoverTrigger>
+                                <PopoverContent className="w-auto p-0 border-none bg-transparent" align="start">
+                                    <TimePicker value={time} onChange={setTime} />
+                                </PopoverContent>
+                            </Popover>
+                        </div>
                     </div>
                 )}
             </div>
 
             {/* Location */}
-            <div className={inputContainerClasses}>
-                <MapPin size={20} className={iconClasses} />
-                <input
-                    type="text"
-                    value={location}
-                    onChange={e => setLocation(e.target.value)}
-                    placeholder="Location (Optional)"
-                    className={inputClasses}
-                />
+            <div className="space-y-2">
+                <label className={labelClasses}>Location <span className="text-white/40 text-xs">(Optional)</span></label>
+                <div className={inputContainerClasses}>
+                    <MapPin size={20} className={iconClasses} />
+                    <input
+                        type="text"
+                        value={location}
+                        onChange={e => setLocation(e.target.value)}
+                        placeholder="Location (Optional)"
+                        className={inputClasses}
+                    />
+                </div>
             </div>
 
 
@@ -445,28 +528,51 @@ export const CreateEventForm = ({ initialDate, onSuccess, onCancel, isModal = fa
             {
                 !isSystemEvent && (
                     <>
-                        {/* Department */}
-                        <div className={inputContainerClasses}>
-                            <Briefcase size={20} className={iconClasses} />
-                            <Select value={department} onValueChange={setDepartment}>
-                                <SelectTrigger className="w-full bg-[#0a0c10] border-[#ffffff1a] text-white h-14 rounded-2xl pl-12">
-                                    <SelectValue placeholder="Select Office / Unit" />
-                                </SelectTrigger>
-                                <SelectContent className="bg-[#141e30] border-[#ffffff1a] text-white max-h-80">
-                                    <SelectGroup>
-                                        <SelectLabel className="text-white/50 text-xs font-bold uppercase tracking-wider px-2 py-1.5">Offices / Units</SelectLabel>
-                                        {departmentsList.map(dept => (
-                                            <SelectItem key={dept.id} value={dept.name}>{dept.name}</SelectItem>
-                                        ))}
-                                    </SelectGroup>
-                                    <SelectGroup>
-                                        <SelectLabel className="text-white/50 text-xs font-bold uppercase tracking-wider px-2 py-1.5 mt-2">Institutions</SelectLabel>
-                                        {institutionsList.map(inst => (
-                                            <SelectItem key={inst.id} value={inst.name}>{inst.name}</SelectItem>
-                                        ))}
-                                    </SelectGroup>
-                                </SelectContent>
-                            </Select>
+                        {/* Department / Unit */}
+                        <div className="space-y-2">
+                            <label className={labelClasses}>Department / Unit</label>
+                            {user?.role === 'admin' && createOnBehalfOf && selectedUserId ? (
+                                // Admin in "On Behalf" mode with user selected: Read-only (auto-populated)
+                                <div className={inputContainerClasses}>
+                                    <Briefcase size={20} className={iconClasses} />
+                                    <div className={`${inputClasses} flex items-center bg-white/5 cursor-not-allowed`}>
+                                        <span className="text-white/70">{department}</span>
+                                    </div>
+                                    <p className="text-xs text-white/40 mt-2">Auto-populated from selected user</p>
+                                </div>
+                            ) : user?.role === 'admin' && !createOnBehalfOf ? (
+                                // Admin default mode: Editable dropdown
+                                <div className={inputContainerClasses}>
+                                    <Briefcase size={20} className={iconClasses} />
+                                    <Select value={department} onValueChange={setDepartment}>
+                                        <SelectTrigger className="w-full bg-[#0a0c10] border-[#ffffff1a] text-white h-14 rounded-2xl pl-12">
+                                            <SelectValue placeholder="Select Office / Unit" />
+                                        </SelectTrigger>
+                                        <SelectContent className="bg-[#141e30] border-[#ffffff1a] text-white max-h-80">
+                                            <SelectGroup>
+                                                <SelectLabel className="text-white/50 text-xs font-bold uppercase tracking-wider px-2 py-1.5">Offices / Units</SelectLabel>
+                                                {departmentsList.map(dept => (
+                                                    <SelectItem key={dept.id} value={dept.name}>{dept.name}</SelectItem>
+                                                ))}
+                                            </SelectGroup>
+                                            <SelectGroup>
+                                                <SelectLabel className="text-white/50 text-xs font-bold uppercase tracking-wider px-2 py-1.5 mt-2">Institutions</SelectLabel>
+                                                {institutionsList.map(inst => (
+                                                    <SelectItem key={inst.id} value={inst.name}>{inst.name}</SelectItem>
+                                                ))}
+                                            </SelectGroup>
+                                        </SelectContent>
+                                    </Select>
+                                </div>
+                            ) : (
+                                // Guest/Team: Read-only (auto-filled from user profile)
+                                <div className={inputContainerClasses}>
+                                    <Briefcase size={20} className={iconClasses} />
+                                    <div className={`${inputClasses} flex items-center bg-white/5 cursor-not-allowed`}>
+                                        <span className="text-white/70">{department}</span>
+                                    </div>
+                                </div>
+                            )}
                         </div>
 
                         {/* Media Coverage - Cards Style */}
@@ -516,15 +622,18 @@ export const CreateEventForm = ({ initialDate, onSuccess, onCancel, isModal = fa
             }
 
             {/* Description */}
-            <div className={inputContainerClasses}>
-                <AlignLeft size={20} className={`${iconClasses} top-6 -translate-y-0`} />
-                <textarea
-                    value={description}
-                    onChange={e => setDescription(e.target.value)}
-                    rows={4}
-                    placeholder="Add description or notes..."
-                    className={`${inputClasses} pt-4 pl-12 resize-none min-h-[120px]`}
-                />
+            <div className="space-y-2">
+                <label className={labelClasses}>Description <span className="text-white/40 text-xs">(Optional)</span></label>
+                <div className={inputContainerClasses}>
+                    <AlignLeft size={20} className={`${iconClasses} top-6 -translate-y-0`} />
+                    <textarea
+                        value={description}
+                        onChange={e => setDescription(e.target.value)}
+                        rows={4}
+                        placeholder="Add description or notes..."
+                        className={`${inputClasses} pt-4 pl-12 resize-none min-h-[120px]`}
+                    />
+                </div>
             </div>
 
             {/* Actions */}

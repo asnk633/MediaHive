@@ -129,7 +129,7 @@ export function EventModal({ isOpen, onClose, defaultDate, eventToEdit }: EventM
     return (
         <AnimatePresence>
             {isOpen && (
-                <div className="fixed inset-0 z-[110] flex items-center justify-center p-4">
+                <div className="fixed inset-0 z-[200] flex items-center justify-center p-4">
                     <motion.div
                         initial={{ opacity: 0 }}
                         animate={{ opacity: 1 }}
@@ -179,11 +179,14 @@ export function EventModal({ isOpen, onClose, defaultDate, eventToEdit }: EventM
 
                                 {/* Title */}
                                 <div>
+                                    <label className="block text-sm font-medium text-white/70 mb-2">
+                                        Event Title {isSystemEvent && <span className="text-white/40">(System-wide)</span>}
+                                    </label>
                                     <div className="relative group">
                                         <AlignLeft size={18} className="absolute left-4 top-1/2 -translate-y-1/2 text-white/30 group-focus-within:text-blue-400 transition-colors pointer-events-none" />
                                         <input
                                             className="w-full bg-white/5 border border-[#ffffff1a] rounded-xl pl-12 pr-4 py-3 text-white placeholder-white/30 focus:ring-2 focus:ring-blue-500/50 outline-none transition-all"
-                                            placeholder={isSystemEvent ? "77th Republic Day of India" : "Enter event title"}
+                                            placeholder={isSystemEvent ? "e.g. 77th Republic Day of India" : "e.g. Team Meeting"}
                                             value={formData.title}
                                             onChange={e => setFormData({ ...formData, title: e.target.value })}
                                             required
@@ -194,7 +197,7 @@ export function EventModal({ isOpen, onClose, defaultDate, eventToEdit }: EventM
                                 {/* Date & Time */}
                                 <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                                     <div>
-                                        <label className="block text-xs font-medium text-white/50 mb-2">Pick a date</label>
+                                        <label className="block text-sm font-medium text-white/70 mb-2">Event Date</label>
                                         <div className="relative group">
                                             <CalendarIcon size={18} className="absolute left-4 top-1/2 -translate-y-1/2 text-white/30 group-focus-within:text-blue-400 transition-colors pointer-events-none" />
                                             <input
@@ -202,14 +205,14 @@ export function EventModal({ isOpen, onClose, defaultDate, eventToEdit }: EventM
                                                 value={formData.date}
                                                 onChange={e => setFormData({ ...formData, date: e.target.value })}
                                                 required
-                                                className="w-full bg-white/5 border border-[#ffffff1a] rounded-xl pl-12 pr-4 py-3 text-white focus:ring-2 focus:ring-blue-500/50 outline-none [color-scheme:dark]"
+                                                className="w-full bg-white/5 border border-[#ffffff1a] rounded-xl pl-12 pr-4 py-3 text-white focus:ring-2 focus:ring-blue-500/50 outline-none [color-scheme:dark] [&::-webkit-calendar-picker-indicator]:cursor-pointer [&::-webkit-calendar-picker-indicator]:opacity-100"
                                             />
                                         </div>
                                     </div>
 
                                     {!isSystemEvent && (
                                         <div>
-                                            <label className="block text-xs font-medium text-white/50 mb-2">Start Time</label>
+                                            <label className="block text-sm font-medium text-white/70 mb-2">Start Time</label>
                                             <div className="relative group">
                                                 <Clock size={18} className="absolute left-4 top-1/2 -translate-y-1/2 text-white/30 group-focus-within:text-blue-400 transition-colors pointer-events-none" />
                                                 <input
@@ -217,7 +220,7 @@ export function EventModal({ isOpen, onClose, defaultDate, eventToEdit }: EventM
                                                     value={formData.startTime}
                                                     onChange={e => setFormData({ ...formData, startTime: e.target.value })}
                                                     required
-                                                    className="w-full bg-white/5 border border-[#ffffff1a] rounded-xl pl-12 pr-4 py-3 text-white focus:ring-2 focus:ring-blue-500/50 outline-none [color-scheme:dark]"
+                                                    className="w-full bg-white/5 border border-[#ffffff1a] rounded-xl pl-12 pr-4 py-3 text-white focus:ring-2 focus:ring-blue-500/50 outline-none [color-scheme:dark] [&::-webkit-calendar-picker-indicator]:cursor-pointer [&::-webkit-calendar-picker-indicator]:opacity-100"
                                                 />
                                             </div>
                                         </div>
@@ -235,7 +238,9 @@ export function EventModal({ isOpen, onClose, defaultDate, eventToEdit }: EventM
                                 {/* Location */}
                                 {!isSystemEvent && (
                                     <div>
-                                        <label className="block text-xs font-medium text-white/50 mb-2">Location (Optional)</label>
+                                        <label className="block text-sm font-medium text-white/70 mb-2">
+                                            Location <span className="text-white/40 text-xs">(Optional)</span>
+                                        </label>
                                         <div className="relative group">
                                             <MapPin size={18} className="absolute left-4 top-1/2 -translate-y-1/2 text-white/30 group-focus-within:text-blue-400 transition-colors pointer-events-none" />
                                             <input
@@ -250,11 +255,13 @@ export function EventModal({ isOpen, onClose, defaultDate, eventToEdit }: EventM
 
                                 {/* Description */}
                                 <div>
-                                    <label className="block text-xs font-medium text-white/50 mb-2">Add description</label>
+                                    <label className="block text-sm font-medium text-white/70 mb-2">
+                                        Description <span className="text-white/40 text-xs">(Optional)</span>
+                                    </label>
                                     <textarea
                                         value={formData.description}
                                         onChange={e => setFormData({ ...formData, description: e.target.value })}
-                                        placeholder="Add details..."
+                                        placeholder="Add event details, agenda, or notes..."
                                         className="w-full bg-white/5 border border-[#ffffff1a] rounded-xl px-4 py-3 text-white placeholder-white/30 focus:ring-2 focus:ring-blue-500/50 outline-none transition-all min-h-[100px]"
                                         rows={4}
                                     />

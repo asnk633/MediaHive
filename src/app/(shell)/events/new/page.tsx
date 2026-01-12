@@ -8,9 +8,10 @@ export default function NewEventPage() {
     const router = useRouter();
 
     return (
-        <div className="min-h-full flex items-center justify-center bg-gradient-to-b from-slate-950 to-[#0B0D10] py-6 px-4 sm:px-6 relative overflow-hidden">
-            {/* Ambient Background */}
-            <div className="fixed inset-0 bg-[radial-gradient(circle_at_50%_0%,rgba(59,130,246,0.15),transparent_50%)] pointer-events-none" />
+        <div className="min-h-full flex items-center justify-center py-6 px-4 sm:px-6 relative">
+            {/* Full-screen Background Layer */}
+            <div className="fixed inset-0 bg-gradient-to-b from-slate-950 to-[#0B0D10] z-0" />
+            <div className="fixed inset-0 bg-[radial-gradient(circle_at_50%_0%,rgba(59,130,246,0.15),transparent_50%)] pointer-events-none z-0" />
 
             {/* Centered Glass Card */}
             <div className="w-full max-w-xl relative z-10">

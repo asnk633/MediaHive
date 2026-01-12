@@ -17,6 +17,8 @@ import { CampaignService } from "@/services/campaignService";
 import { Campaign } from "@/types/campaign";
 import { useAuth } from "@/contexts/AuthContext";
 import { UserService } from "@/services/userService";
+import { DeliverablesList } from '@/components/deliverables/DeliverablesList';
+import { DeliverableUploadModal } from '@/components/deliverables/DeliverableUploadModal';
 
 interface EditTaskDialogProps {
     open: boolean;
@@ -46,6 +48,10 @@ export function EditTaskDialog({ open, onOpenChange, task, onUpdate }: EditTaskD
     const [assignedToIds, setAssignedToIds] = useState<string[]>([]);
     const [teamMembers, setTeamMembers] = useState<{ uid: string; name: string }[]>([]);
     const [isSubmitting, setIsSubmitting] = useState(false);
+
+    // Attachments State
+    const [showUploadModal, setShowUploadModal] = useState(false);
+    const [refreshTrigger, setRefreshTrigger] = useState(0);
 
     useEffect(() => {
         if (open && user) {
@@ -187,7 +193,10 @@ export function EditTaskDialog({ open, onOpenChange, task, onUpdate }: EditTaskD
 
     return (
         <Dialog open={open} onOpenChange={onOpenChange}>
-            <DialogContent className="z-[150] sm:max-w-md bg-[#10111a] text-white border-[#ffffff1a] shadow-[0_0_50px_-12px_rgba(0,0,0,0.5)] p-6 rounded-[24px]">
+            <DialogContent
+                overlayClassName="z-[150]"
+                className="z-[150] sm:max-w-2xl bg-[#10111a] text-white border-[#ffffff1a] shadow-[0_0_50px_-12px_rgba(0,0,0,0.5)] p-6 rounded-[24px] backdrop-blur-3xl"
+            >
                 <DialogHeader className="mb-4">
                     <DialogTitle className="text-xl font-bold tracking-tight text-white flex items-center gap-3">
                         <div className={cn("p-2.5 rounded-xl text-blue-500", canSave ? "bg-blue-600/10" : "bg-white/5 text-white/50")}>
@@ -229,7 +238,7 @@ export function EditTaskDialog({ open, onOpenChange, task, onUpdate }: EditTaskD
                             value={description}
                             onChange={(e) => setDescription(e.target.value)}
                             className={cn(
-                                "bg-[#0a0c10] border-[#ffffff1a] text-white placeholder:text-white/30 focus:border-blue-500/50 focus:ring-blue-500/10 transition-all rounded-xl min-h-[100px] disabled:opacity-50 disabled:cursor-not-allowed"
+                                "bg-[#0a0c10] border-[#ffffff1a] text-white placeholder:text-white/30 focus:border-blue-500/50 focus:ring-blue-500/10 transition-all rounded-xl min-h-[120px] custom-scrollbar disabled:opacity-50 disabled:cursor-not-allowed resize-none"
                             )}
                             placeholder="Provide more context..."
                             disabled={!canEditContent}
@@ -274,7 +283,7 @@ export function EditTaskDialog({ open, onOpenChange, task, onUpdate }: EditTaskD
                                             <Users size={16} className="opacity-50" />
                                         </Button>
                                     </PopoverTrigger>
-                                    <PopoverContent className="w-[200px] p-0 bg-[#0a0c10] border-[#ffffff1a] text-white shadow-xl" align="start">
+                                    <PopoverContent className="w-[200px] p-0 bg-[#0a0c10] border-[#ffffff1a] text-white shadow-xl z-[200]" align="start">
                                         <div className="p-2 space-y-1 max-h-[200px] overflow-y-auto">
                                             {teamMembers.map(m => (
                                                 <div
@@ -354,13 +363,31 @@ export function EditTaskDialog({ open, onOpenChange, task, onUpdate }: EditTaskD
                                     <SelectValue placeholder="Select Campaign" />
                                 </div>
                             </SelectTrigger>
-                            <SelectContent className="bg-[#0a0c10] border-[#ffffff1a] text-white">
+                            <SelectContent className="bg-[#0a0c10] border-[#ffffff1a] text-white z-[200]">
                                 <SelectItem value="none" className="text-white/50 italic">No Campaign</SelectItem>
                                 {campaigns.map(c => (
                                     <SelectItem key={c.id} value={c.id}>{c.name}</SelectItem>
                                 ))}
                             </SelectContent>
                         </Select>
+                    </div>
+
+                    <div className="space-y-4 pt-4 border-t border-white/5">
+                        <div className="flex items-center justify-between">
+                            <Label className={labelClasses}>Attachments / Deliverables</Label>
+                            <Button
+                                type="button"
+                                variant="outline"
+                                size="sm"
+                                onClick={() => setShowUploadModal(true)} // Open Upload Modal
+                                className="h-7 text-xs border-blue-500/30 text-blue-400 hover:bg-blue-500/10 hover:text-blue-300"
+                            >
+                                <Users className="w-3 h-3 mr-1.5" /> Upload File
+                            </Button>
+                        </div>
+                        <div className="bg-[#0a0c10] border border-[#ffffff1a] rounded-xl p-4 min-h-[100px] max-h-[250px] overflow-y-auto custom-scrollbar">
+                            <DeliverablesList taskId={task.id} refreshTrigger={refreshTrigger} />
+                        </div>
                     </div>
 
                     <div className="flex justify-end gap-3 pt-6 border-t border-white/5">
@@ -386,6 +413,14 @@ export function EditTaskDialog({ open, onOpenChange, task, onUpdate }: EditTaskD
                     </div>
                 </form>
             </DialogContent>
-        </Dialog >
+
+            {/* Upload Modal - Rendered outside to prevent context conflicts, though Portals handle it, simpler DOM structure helps */}
+            <DeliverableUploadModal
+                taskId={task.id}
+                isOpen={showUploadModal}
+                onClose={() => setShowUploadModal(false)}
+                onUploadComplete={() => setRefreshTrigger(prev => prev + 1)}
+            />
+        </Dialog>
     );
 }

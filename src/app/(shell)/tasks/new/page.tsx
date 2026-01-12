@@ -103,7 +103,7 @@ export default function NewTaskPage() {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!title || !description || !dueDate || !selectedOrg) {
+    if (!title || !dueDate || !selectedOrg) {
       alert('Please fill all required fields');
       return;
     }
@@ -222,9 +222,11 @@ export default function NewTaskPage() {
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gradient-to-b from-slate-950 to-[#0B0D10] py-20 px-4 sm:px-6 relative overflow-hidden">
-      {/* Ambient Background */}
-      <div className="fixed inset-0 bg-[radial-gradient(circle_at_50%_0%,rgba(59,130,246,0.15),transparent_50%)] pointer-events-none" />
+    <div className="min-h-screen flex items-center justify-center py-20 px-4 sm:px-6 relative overflow-hidden">
+      {/* Fixed Full-screen Background */}
+      <div className="fixed inset-0 bg-gradient-to-b from-slate-950 to-[#0B0D10] z-0" />
+      {/* Ambient Overlay */}
+      <div className="fixed inset-0 bg-[radial-gradient(circle_at_50%_0%,rgba(59,130,246,0.15),transparent_50%)] pointer-events-none z-0" />
 
       {/* Centered Card */}
       <div className="w-full max-w-xl relative z-10">
@@ -348,7 +350,7 @@ export default function NewTaskPage() {
               {createAs === 'myself' && (
                 <div className="space-y-2">
                   <label className="block text-sm font-medium text-white/70 mb-2">
-                    Department / Unit
+                    Requested By <span className="text-white/40 text-xs">(Department / Unit / Office)</span>
                   </label>
                   <div className="relative">
                     <div className="absolute inset-y-0 left-3 flex items-center pointer-events-none text-gray-500">
@@ -359,7 +361,7 @@ export default function NewTaskPage() {
                       onChange={(e) => setSelectedOrg(e.target.value)}
                       className="w-full bg-white/5 hover:bg-white/10 pl-10 pr-8 py-3 rounded-xl border border-[#ffffff1a] focus:border-blue-500/50 outline-none text-sm text-white appearance-none [&>optgroup]:bg-[#13161c] [&>option]:bg-[#13161c] cursor-pointer transition-colors"
                     >
-                      <option value="" className="bg-[#13161c]">Select Org</option>
+                      <option value="" className="bg-[#13161c]">Select Requesting Unit...</option>
 
                       <optgroup label="OFFICES / UNITS" className="bg-[#13161c] text-gray-500 font-bold">
                         {departmentsList.map(dept => (

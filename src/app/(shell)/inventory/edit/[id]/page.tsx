@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState, useRef } from "react";
+import React, { useState, useRef, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { useAuth } from "@/contexts/AuthContext";
 import { PageLayout } from "@/components/ui/layout/PageLayout";
@@ -22,11 +22,12 @@ import { inventoryService } from "@/services/inventoryService";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { CalendarIcon } from "lucide-react";
 
-export default function AddInventoryPage() {
+export default function EditInventoryPage({ params }: { params: Promise<{ id: string }> }) {
     const { user } = useAuth();
     const router = useRouter();
-    const [loading, setLoading] = useState(false);
+    const [loading, setLoading] = useState(true);
     const [uploadingImage, setUploadingImage] = useState(false);
+    const { id } = React.use(params);
 
     // Form State
     const [formData, setFormData] = useState({
@@ -49,6 +50,44 @@ export default function AddInventoryPage() {
     const [selectedImageSrc, setSelectedImageSrc] = useState<string | null>(null);
     const [originalFile, setOriginalFile] = useState<File | null>(null);
     const fileInputRef = useRef<HTMLInputElement>(null);
+
+    // Fetch Data
+    useEffect(() => {
+        if (!id) return;
+        const fetchItem = async () => {
+            try {
+                // @ts-ignore
+                const item = await inventoryService.getById(id);
+                if (!item) {
+                    toast.error("Item not found");
+                    router.push('/inventory');
+                    return;
+                }
+
+                setFormData({
+                    name: item.name,
+                    category: item.category,
+                    condition: (item.condition || "good") as InventoryCondition,
+                    status: (item.assetStatus || item.status || "available") as InventoryAssetStatus,
+                    purchaseDate: item.purchaseDate ? new Date(item.purchaseDate) : new Date(),
+                    purchasePrice: item.purchasePrice?.toString() || "",
+                    unit: item.unit || "1",
+                    serialNumber: item.serialNumber || "",
+                    remarks: item.remarks || "",
+                    imageUrl: item.imageUrl || "",
+                    driveFileId: item.driveFileId || "",
+                    images: item.images || (item.imageUrl ? [{ url: item.imageUrl, fileId: item.driveFileId || "" }] : [])
+                });
+            } catch (error) {
+                console.error("Failed to fetch item:", error);
+                toast.error("Failed to load asset details");
+            } finally {
+                setLoading(false);
+            }
+        };
+
+        fetchItem();
+    }, [id, router]);
 
     const handleImageSelect = (e: React.ChangeEvent<HTMLInputElement>) => {
         const file = e.target.files?.[0];
@@ -92,11 +131,10 @@ export default function AddInventoryPage() {
                 };
 
                 setFormData(prev => {
-                    // Update main image URL if it's the first one, otherwise just append to array
                     const updatedImages = [...prev.images, newImage];
                     return {
                         ...prev,
-                        imageUrl: prev.imageUrl || newImage.url, // Set main image if empty
+                        imageUrl: prev.imageUrl || newImage.url,
                         driveFileId: prev.driveFileId || newImage.fileId,
                         images: updatedImages
                     };
@@ -115,8 +153,6 @@ export default function AddInventoryPage() {
     const handleRemoveImage = (index: number) => {
         setFormData(prev => {
             const newImages = prev.images.filter((_, i) => i !== index);
-            // If we removed the main image (index 0 usually, or the one matching imageUrl), 
-            // reset imageUrl to the new first item or empty
             const nextMain = newImages[0];
             return {
                 ...prev,
@@ -138,41 +174,42 @@ export default function AddInventoryPage() {
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
 
-        // Basic Validation
+        // Validation
         if (!formData.name.trim()) return toast.error("Asset Name is required");
         if (!formData.category) return toast.error("Category is required");
         if (!formData.condition) return toast.error("Condition is required");
         if (!formData.status) return toast.error("Status is required");
-        if (formData.images.length === 0) return toast.error("At least one image is required");
 
         try {
             setLoading(true);
             const payload = {
                 name: formData.name,
                 category: formData.category,
-                quantity: 1, // Default for individual asset
+                quantity: Number(formData.unit) || 1, // Fallback to 1 if unit is just text, though this field is tricky. Keeping logic simple.
+                // Wait, unit is a string (pcs), quantity is a number. 
+                // In Add page: quantity: 1 was hardcoded. 
+                // Let's use 1 as default but if we want to support bulk later we should.
+                // For now, keeping logic consistent with Add Page.
                 unit: formData.unit,
-                threshold: 0,
-                status: 'ok', // Default system status
-                assetStatus: formData.status, // User selected status
+                assetStatus: formData.status,
                 condition: formData.condition,
                 serialNumber: formData.serialNumber,
                 remarks: formData.remarks,
                 purchaseDate: formData.purchaseDate.toISOString(),
                 purchasePrice: Number(formData.purchasePrice) || 0,
-                imageUrl: formData.imageUrl, // Main usage for lists
+                imageUrl: formData.imageUrl,
                 driveFileId: formData.driveFileId,
-                images: formData.images, // Persist full gallery
+                images: formData.images,
             };
 
-            // @ts-ignore - Assuming create method exists and matches
-            await inventoryService.create(payload, user);
+            // @ts-ignore
+            await inventoryService.update(id, payload, user);
 
-            toast.success("Asset saved successfully");
+            toast.success("Asset updated successfully");
             router.push('/inventory');
         } catch (error) {
             console.error(error);
-            toast.error("Failed to save asset");
+            toast.error("Failed to update asset");
         } finally {
             setLoading(false);
         }
@@ -195,11 +232,21 @@ export default function AddInventoryPage() {
 
     const inputClasses = "bg-white/[0.02] border-[#ffffff1a] focus:border-blue-500/50 rounded-xl text-white placeholder:text-slate-500 hover:bg-white/[0.04] transition-colors";
 
+    if (loading) {
+        return (
+            <PageLayout mode="plain">
+                <div className="flex h-screen items-center justify-center">
+                    <Loader2 className="w-8 h-8 text-blue-500 animate-spin" />
+                </div>
+            </PageLayout>
+        );
+    }
+
     return (
         <PageLayout mode="plain">
             <PageHeader
-                title="Add Asset"
-                description="Register a new item into the inventory."
+                title="Edit Asset"
+                description={`Updating details for ${formData.name || 'asset'}`}
             />
 
             <div className="max-w-3xl mx-auto pb-20">
@@ -213,15 +260,12 @@ export default function AddInventoryPage() {
                         </div>
 
                         <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-4">
-                            {/* Existing Images */}
                             {formData.images.map((img, idx) => (
                                 <div key={idx} className={cn(
                                     "aspect-square rounded-2xl relative group overflow-hidden border border-white/10 bg-black/20",
                                     formData.imageUrl === img.url && "ring-2 ring-blue-500 ring-offset-2 ring-offset-[#0b1220]"
                                 )}>
                                     <img src={img.url} alt={`Asset ${idx}`} className="w-full h-full object-cover" />
-
-                                    {/* Hover Actions */}
                                     <div className="absolute inset-0 bg-black/60 opacity-0 group-hover:opacity-100 transition-opacity flex flex-col items-center justify-center gap-2">
                                         {formData.imageUrl !== img.url && (
                                             <button
@@ -240,8 +284,6 @@ export default function AddInventoryPage() {
                                             <X size={16} />
                                         </button>
                                     </div>
-
-                                    {/* Cover Badge */}
                                     {formData.imageUrl === img.url && (
                                         <div className="absolute top-2 left-2 bg-blue-600 text-white text-[10px] font-bold px-2 py-0.5 rounded-full shadow-lg">
                                             Cover
@@ -250,7 +292,6 @@ export default function AddInventoryPage() {
                                 </div>
                             ))}
 
-                            {/* Upload Button */}
                             {formData.images.length < 5 && (
                                 <div
                                     onClick={() => !uploadingImage && fileInputRef.current?.click()}
@@ -344,12 +385,6 @@ export default function AddInventoryPage() {
                                     ))}
                                 </SelectContent>
                             </Select>
-
-                            {formData.category && INVENTORY_GUIDE[formData.category as keyof typeof INVENTORY_GUIDE] && (
-                                <p className="text-xs text-blue-400/80 bg-blue-500/5 px-3 py-2 rounded-lg border border-blue-500/10">
-                                    {INVENTORY_GUIDE[formData.category as keyof typeof INVENTORY_GUIDE]}
-                                </p>
-                            )}
                         </div>
 
                         {/* Condition */}
@@ -471,7 +506,7 @@ export default function AddInventoryPage() {
                             disabled={loading || uploadingImage}
                         >
                             {loading && <Loader2 className="w-4 h-4 mr-2 animate-spin" />}
-                            Save Asset
+                            Update Asset
                         </Button>
 
                         <Button

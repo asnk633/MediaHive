@@ -101,6 +101,18 @@ export async function POST(request: NextRequest) {
             createdBy: user.uid,
             createdAt: new Date(),
             updatedAt: new Date(),
+            // Extended Data Support (Pass-through)
+            imageUrl: data.imageUrl || null,
+            images: data.images || [], // Persist multi-images
+            driveFileId: data.driveFileId || null,
+            condition: data.condition,
+            serialNumber: data.serialNumber,
+            remarks: data.remarks,
+            purchasePrice: Number(data.purchasePrice) || 0,
+            assetStatus: data.assetStatus,
+            locationStr: data.locationStr || null,
+            notes: data.notes || null,
+            purchaseDate: data.purchaseDate // ISO String
         };
 
         const docRef = await db.collection(COLLECTION).add(newItem);

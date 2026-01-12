@@ -12,6 +12,7 @@ interface InventoryGridProps {
     onRequest?: (item: InventoryItem) => void;
     onEdit?: (item: InventoryItem) => void;
     onReturn?: (item: InventoryItem) => void;
+    onView?: (item: InventoryItem) => void;
 }
 
 export const InventoryGrid: React.FC<InventoryGridProps> = ({
@@ -22,7 +23,8 @@ export const InventoryGrid: React.FC<InventoryGridProps> = ({
     role,
     onRequest,
     onEdit,
-    onReturn
+    onReturn,
+    onView
 }) => {
     // Optimization: Create map for O(1) access
     const issueMap = React.useMemo(() => {
@@ -84,6 +86,7 @@ export const InventoryGrid: React.FC<InventoryGridProps> = ({
                     onRequest={onRequest}
                     onEdit={onEdit}
                     onReturn={onReturn}
+                    onView={onView}
                 />
             ))}
         </div>

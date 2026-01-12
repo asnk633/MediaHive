@@ -38,12 +38,16 @@ export function UploadModal({ open, onClose, onSuccess, eventId, taskId }: Uploa
         if (open) {
             const fetchOrgs = async () => {
                 try {
-                    const [depts, insts] = await Promise.all([
-                        apiClient<{ name: string }[]>('/api/departments?limit=1000'),
-                        apiClient<{ name: string }[]>('/api/institutions?limit=1000')
+                    const [deptsRes, instsRes] = await Promise.all([
+                        apiClient<{ departments: { name: string }[] }>('/api/departments?limit=1000'),
+                        apiClient<{ institutions: { name: string }[] }>('/api/institutions?limit=1000')
                     ]);
-                    setDepartmentsList(depts.map(d => d.name));
-                    setInstitutionsList(insts.map(i => i.name));
+
+                    const departments = deptsRes.departments || [];
+                    const institutions = instsRes.institutions || [];
+
+                    setDepartmentsList(departments.map(d => d.name));
+                    setInstitutionsList(institutions.map(i => i.name));
                 } catch (e) {
                     console.error("Failed to fetch organizations", e);
                 }

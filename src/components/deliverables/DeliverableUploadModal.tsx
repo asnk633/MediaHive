@@ -1,7 +1,10 @@
-import React, { useRef, useState } from 'react';
+import React, { useState } from 'react';
 import { useAuth } from '@/contexts/AuthContext';
 import { DeliverableService } from '@/services/deliverableService';
 import { X, UploadCloud, File as FileIcon, Loader2, AlertCircle } from 'lucide-react';
+import { useDropzone } from 'react-dropzone';
+import { toast } from 'sonner';
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from "@/components/ui/dialog";
 
 interface DeliverableUploadModalProps {
     taskId: string;
@@ -20,17 +23,23 @@ export const DeliverableUploadModal: React.FC<DeliverableUploadModalProps> = ({
     const [file, setFile] = useState<File | null>(null);
     const [uploading, setUploading] = useState(false);
     const [error, setError] = useState<string | null>(null);
-    const fileInputRef = useRef<HTMLInputElement>(null);
-
     const [customName, setCustomName] = useState('');
 
-    const handleFileSelect = (e: React.ChangeEvent<HTMLInputElement>) => {
-        if (e.target.files && e.target.files[0]) {
-            setFile(e.target.files[0]);
-            setCustomName(e.target.files[0].name); // Default to filename
+    const onDrop = (acceptedFiles: File[]) => {
+        if (acceptedFiles && acceptedFiles[0]) {
+            setFile(acceptedFiles[0]);
+            setCustomName(acceptedFiles[0].name);
             setError(null);
         }
     };
+
+    const { getRootProps, getInputProps, isDragActive } = useDropzone({
+        onDrop,
+        multiple: false,
+        onDropRejected: () => {
+            toast.error("File type not accepted or too large");
+        }
+    });
 
     const handleUpload = async () => {
         if (!file || !user) return;
@@ -57,56 +66,44 @@ export const DeliverableUploadModal: React.FC<DeliverableUploadModalProps> = ({
         }
     };
 
-    const handleDrop = (e: React.DragEvent) => {
-        e.preventDefault();
-        e.stopPropagation();
-        if (e.dataTransfer.files && e.dataTransfer.files[0]) {
-            setFile(e.dataTransfer.files[0]);
-            setCustomName(e.dataTransfer.files[0].name); // Default to filename
-            setError(null);
-        }
-    };
-
-    // ...
-
-    if (!isOpen) return null;
-
     return (
-        <div className="fixed inset-0 z-[150] flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm">
-            <div
-                className="bg-[#1a2639] rounded-2xl w-full max-w-md border border-[#ffffff1a] shadow-2xl overflow-hidden"
-                onClick={(e) => e.stopPropagation()}
+        <Dialog open={isOpen} onOpenChange={(open) => !open && onClose()}>
+            <DialogContent
+                overlayClassName="z-[200]"
+                className="z-[200] max-w-md bg-[#1a2639] border-[#ffffff1a] shadow-2xl p-0 overflow-hidden text-white backdrop-blur-3xl rounded-3xl"
             >
-                {/* Header */}
-                <div className="flex items-center justify-between px-6 py-4 border-b border-white/5">
-                    <h3 className="text-lg font-bold text-white">Upload New Version</h3>
-                    <button
-                        onClick={onClose}
-                        className="p-1 rounded-full hover:bg-white/10 text-gray-400 hover:text-white transition-colors"
-                    >
-                        <X size={20} />
-                    </button>
-                </div>
+                <DialogHeader className="px-6 py-4 border-b border-white/5 bg-white/5">
+                    <DialogTitle className="text-lg font-bold text-white flex items-center gap-2">
+                        Upload New Version
+                    </DialogTitle>
+                    <DialogDescription className="sr-only">
+                        Upload a file for this task.
+                    </DialogDescription>
+                </DialogHeader>
 
                 {/* Body */}
                 <div className="p-6">
                     {!file ? (
                         <div
-                            className="border-2 border-dashed border-white/20 rounded-xl p-8 flex flex-col items-center justify-center text-center hover:bg-white/5 transition-colors cursor-pointer group"
-                            onClick={() => fileInputRef.current?.click()}
-                            onDragOver={(e) => { e.preventDefault(); }}
-                            onDrop={handleDrop}
+                            {...getRootProps()}
+                            className={`
+                                border-2 border-dashed rounded-xl p-8 flex flex-col items-center justify-center text-center transition-all cursor-pointer group outline-none
+                                ${isDragActive
+                                    ? 'border-blue-500 bg-blue-500/10'
+                                    : 'border-white/20 hover:bg-white/5'
+                                }
+                            `}
                         >
-                            <input
-                                type="file"
-                                ref={fileInputRef}
-                                className="hidden"
-                                onChange={handleFileSelect}
-                            />
-                            <div className="w-12 h-12 rounded-full bg-blue-500/10 text-blue-400 flex items-center justify-center mb-4 group-hover:scale-110 transition-transform">
+                            <input {...getInputProps()} />
+                            <div className={`
+                                w-12 h-12 rounded-full flex items-center justify-center mb-4 transition-transform group-hover:scale-110
+                                ${isDragActive ? 'bg-blue-500 text-white' : 'bg-blue-500/10 text-blue-400'}
+                            `}>
                                 <UploadCloud size={24} />
                             </div>
-                            <p className="text-sm font-medium text-white mb-1">Click to upload or drag and drop</p>
+                            <p className="text-sm font-medium text-white mb-1">
+                                {isDragActive ? "Drop the file here" : "Click to upload or drag and drop"}
+                            </p>
                             <p className="text-xs text-gray-500">Supports Images, Videos, PDFs, etc.</p>
                         </div>
                     ) : (
@@ -127,7 +124,6 @@ export const DeliverableUploadModal: React.FC<DeliverableUploadModalProps> = ({
                                 </button>
                             </div>
 
-                            {/* Custom Name Input */}
                             <div className="space-y-1">
                                 <label className="text-xs font-bold text-gray-400 uppercase tracking-widest pl-1">
                                     File Name (Optional)
@@ -169,7 +165,7 @@ export const DeliverableUploadModal: React.FC<DeliverableUploadModalProps> = ({
                         {uploading ? 'Uploading...' : 'Upload File'}
                     </button>
                 </div>
-            </div>
-        </div>
+            </DialogContent>
+        </Dialog>
     );
 };

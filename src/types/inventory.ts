@@ -87,11 +87,17 @@ export interface InventoryItem {
 
     // Extended Asset Fields
     imageUrl?: string;
+    images?: {
+        url: string;
+        fileId: string;
+    }[]; // Multi-image support
     driveFileId?: string;
     condition?: InventoryCondition;
     serialNumber?: string;
     remarks?: string;
     purchasePrice?: number;
+    brand?: string;
+    model?: string;
     assetStatus?: InventoryAssetStatus;
     locationStr?: string;
     notes?: string;

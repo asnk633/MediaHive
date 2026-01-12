@@ -128,6 +128,11 @@ export const apiClient = async <T = any>(endpoint: string, options: ApiOptions =
       ...options.headers,
     } as Record<string, string>;
 
+    // If body is FormData, delete Content-Type to let browser set it with boundary
+    if (options.body instanceof FormData) {
+      delete headers['Content-Type'];
+    }
+
     // Automatically attach Firebase ID token if user is signed in
     try {
       const auth = getAuth();

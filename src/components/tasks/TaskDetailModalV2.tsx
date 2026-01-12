@@ -150,7 +150,7 @@ export const TaskDetailModalV2: React.FC<TaskDetailsModalProps> = ({ task, isOpe
                             }}
                         >
                             {/* Action Buttons - Top Right, Minimal */}
-                            <div className="absolute top-6 right-6 flex items-center gap-2">
+                            <div className="absolute top-6 right-6 flex items-center gap-2 z-20">
                                 {(user?.role === 'admin' || user?.role === 'team' || user?.uid === task?.createdBy?.uid) && (
                                     <button
                                         onClick={onEdit}
@@ -230,7 +230,7 @@ export const TaskDetailModalV2: React.FC<TaskDetailsModalProps> = ({ task, isOpe
                                         <div>
                                             <p className="text-[10px] uppercase tracking-wider font-bold text-white/30 mb-1.5">Requested By</p>
                                             <p className="text-sm text-white/90">
-                                                {typeof task.createdBy === 'object' ? task.createdBy.name : 'Unknown User'}
+                                                {task.department || task.createdBy?.name || <span className="opacity-50">Not specified</span>}
                                             </p>
                                         </div>
                                     </div>

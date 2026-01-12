@@ -4,6 +4,7 @@ import React, { useState, useEffect, useMemo } from 'react';
 import { useRouter } from 'next/navigation';
 import { PageHeader } from "@/components/ui/layout/PageHeader";
 import { InventoryGrid } from './InventoryGrid';
+import { InventoryDetailDialog } from './InventoryDetailDialog';
 import { InventoryFilters, SortOption } from './InventoryFilters';
 import { InventoryItem, InventoryApiResponse, INVENTORY_CATEGORIES, INVENTORY_GUIDE, InventoryIssue } from '@/types/inventory';
 import { apiClient } from '@/lib/apiClient';
@@ -30,6 +31,7 @@ export default function InventoryView() {
     const [requestDialogItem, setRequestDialogItem] = useState<InventoryItem | null>(null);
     const [issueDialogItem, setIssueDialogItem] = useState<InventoryItem | null>(null);
     const [returnDialogIssue, setReturnDialogIssue] = useState<InventoryIssue | null>(null);
+    const [viewItem, setViewItem] = useState<InventoryItem | null>(null);
 
     // Filter State
     const [search, setSearch] = useState('');
@@ -250,9 +252,24 @@ export default function InventoryView() {
                 onEdit={user?.role === 'admin' ? (item) => {
                     router.push(`/inventory/edit/${item.id}`);
                 } : undefined}
+                onView={setViewItem}
             />
 
             {/* Dialogs */}
+            <InventoryDetailDialog
+                item={viewItem}
+                open={!!viewItem}
+                onOpenChange={(open) => !open && setViewItem(null)}
+                role={user?.role}
+                onEdit={user?.role === 'admin' ? (item) => {
+                    setViewItem(null); // Close view
+                    router.push(`/inventory/edit/${item.id}`);
+                } : undefined}
+                onRequest={(item) => {
+                    setViewItem(null);
+                    handleRequest(item);
+                }}
+            />
             <InventoryRequestDialog
                 item={requestDialogItem}
                 open={!!requestDialogItem}

@@ -314,11 +314,12 @@ const TaskListViewComponent: React.FC<TaskListViewProps> = ({ tasks, loading = f
             {/* Task Table-List */}
             <div className="rounded-2xl border border-[#ffffff1a] bg-[#0f172a] shadow-2xl overflow-hidden min-h-[400px]">
                 {/* Header Row */}
-                <div className="grid grid-cols-12 gap-4 px-6 py-3 bg-black/20 border-b border-white/5 text-[10px] uppercase font-bold text-white/30 tracking-widest">
-                    <div className="col-span-6 md:col-span-6">Task & Priority</div>
-                    <div className="col-span-3 md:col-span-2 hidden md:block">Assignee</div>
-                    <div className="col-span-3 md:col-span-2">Status</div>
-                    <div className="col-span-3 md:col-span-2 text-right">Due Date</div>
+                <div className="grid grid-cols-12 md:grid-cols-[3.5fr_2.5fr_1.5fr_1.2fr_0.8fr] gap-2 px-6 py-3 bg-black/20 border-b border-white/5 text-[10px] uppercase font-bold text-white/30 tracking-widest">
+                    <div className="col-span-12 md:col-span-1">Task & Priority</div>
+                    <div className="hidden md:block text-white/40">Requested By</div>
+                    <div className="hidden md:block">Assignee</div>
+                    <div className="hidden md:block">Status</div>
+                    <div className="hidden md:block text-right">Due Date</div>
                 </div>
 
                 {loading ? (
@@ -345,7 +346,7 @@ const TaskListViewComponent: React.FC<TaskListViewProps> = ({ tasks, loading = f
                                     key={task.id}
                                     onClick={() => onTaskClick?.(task)}
                                     className={cn(
-                                        "group grid grid-cols-12 gap-4 px-6 py-4 items-center transition-all hover:bg-white/[0.02]",
+                                        "group grid grid-cols-12 md:grid-cols-[3.5fr_2.5fr_1.5fr_1.2fr_0.8fr] gap-2 px-6 py-4 items-center transition-all hover:bg-white/[0.02]",
                                         isSelected && "bg-blue-500/5",
                                         isOverdue && "bg-red-500/[0.02] shadow-[inset_2px_0_0_0_#ef4444]"
                                     )}
@@ -353,8 +354,8 @@ const TaskListViewComponent: React.FC<TaskListViewProps> = ({ tasks, loading = f
                                     tabIndex={0}
                                     onKeyDown={(e) => e.key === 'Enter' && onTaskClick?.(task)}
                                 >
-                                    {/* Title & Priority */}
-                                    <div className="col-span-6 md:col-span-6 flex items-center gap-3 overflow-hidden">
+                                    {/* Task Column (Title, Priority AND Mobile Metadata) */}
+                                    <div className="col-span-12 md:col-span-1 flex items-center gap-3 overflow-hidden">
                                         <div onClick={e => e.stopPropagation()} className="shrink-0 pt-1">
                                             {isAdmin ? (
                                                 <div
@@ -369,7 +370,7 @@ const TaskListViewComponent: React.FC<TaskListViewProps> = ({ tasks, loading = f
                                                 <div className={cn("w-1.5 h-1.5 rounded-full mt-1.5", isOverdue ? "bg-red-500" : "bg-white/10")} />
                                             )}
                                         </div>
-                                        <div className="min-w-0 flex flex-col gap-1">
+                                        <div className="min-w-0 flex flex-col gap-1 w-full">
                                             <div className="flex items-center gap-2">
                                                 <h3 className={cn("text-sm font-medium text-gray-200 truncate group-hover:text-white transition-colors", task.status === 'done' && "line-through opacity-50")}>{task.title}</h3>
                                                 {/* INLINE PRIORITY EDIT - ADMIN ONLY */}
@@ -396,16 +397,35 @@ const TaskListViewComponent: React.FC<TaskListViewProps> = ({ tasks, loading = f
                                                     )}
                                                 </div>
                                             </div>
+
+                                            {/* Mobile: Requested By Stacked */}
+                                            <div className="md:hidden flex flex-col gap-1">
+                                                <span className="text-xs text-white/50 truncate font-medium">
+                                                    {task.department || "No Department"}
+                                                </span>
+                                                <div className="flex items-center justify-between text-[10px] text-gray-500">
+                                                    <span>{task.status || 'todo'}</span>
+                                                    <span>{dueDate ? format(dueDate, 'MMM d') : '-'}</span>
+                                                </div>
+                                            </div>
+
                                             {isOverdue && (
-                                                <span className="text-[10px] font-bold text-red-500 uppercase tracking-wide flex items-center gap-1">
+                                                <span className="text-[10px] font-bold text-red-500 uppercase tracking-wide flex items-center gap-1 md:hidden">
                                                     <AlertCircle size={10} /> Overdue
                                                 </span>
                                             )}
                                         </div>
                                     </div>
 
+                                    {/* Desktop: Requested By */}
+                                    <div className="hidden md:flex flex-col justify-center pr-4">
+                                        <span className="text-sm text-white/70 font-medium line-clamp-2 leading-tight" title={task.department}>
+                                            {task.department || <span className="text-white/20 italic">Not specified</span>}
+                                        </span>
+                                    </div>
+
                                     {/* Assignee - INLINE EDIT - ADMIN ONLY */}
-                                    <div className="col-span-2 hidden md:flex flex-col justify-center gap-1" onClick={e => isAdmin ? e.stopPropagation() : null}>
+                                    <div className="hidden md:flex flex-col justify-center gap-1" onClick={e => isAdmin ? e.stopPropagation() : null}>
                                         {isAdmin ? (
                                             <DropdownMenu>
                                                 <DropdownMenuTrigger asChild>
@@ -489,7 +509,7 @@ const TaskListViewComponent: React.FC<TaskListViewProps> = ({ tasks, loading = f
                                         const canEditStatus = isAdmin || isAssignee;
 
                                         return (
-                                            <div className="col-span-3 md:col-span-2 flex items-center" onClick={e => canEditStatus ? e.stopPropagation() : null}>
+                                            <div className="hidden md:flex items-center" onClick={e => canEditStatus ? e.stopPropagation() : null}>
                                                 {canEditStatus ? (
                                                     <DropdownMenu>
                                                         <DropdownMenuTrigger asChild>
@@ -517,7 +537,7 @@ const TaskListViewComponent: React.FC<TaskListViewProps> = ({ tasks, loading = f
                                     })()}
 
                                     {/* Due Date */}
-                                    <div className="col-span-3 md:col-span-2 text-right">
+                                    <div className="hidden md:block text-right">
                                         <div className={cn("text-xs font-mono", isOverdue ? "text-red-400 font-bold" : "text-gray-400")}>
                                             {dueDate ? format(dueDate, 'MMM d') : '-'}
                                         </div>

@@ -1,6 +1,7 @@
 "use client";
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
+import { createPortal } from 'react-dom';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Task } from '@/types/task';
 import { Clock, Calendar, CheckCircle2, User as UserIcon, AlertCircle, X, Edit2, UploadCloud, FileCheck, Circle, User } from 'lucide-react';
@@ -106,9 +107,17 @@ export const TaskDetailModalV2: React.FC<TaskDetailsModalProps> = ({ task, isOpe
         { name: 'Deliverable Upload', handler: () => setShowDeliverableUpload(true), visible: (user?.role === 'admin' || user?.role === 'team') }
     ]);
 
-    if (!task) return null;
+    const [mounted, setMounted] = useState(false);
 
-    return (
+    useEffect(() => {
+        setMounted(true);
+        return () => setMounted(false);
+    }, []);
+
+    if (!task) return null;
+    if (!mounted) return null;
+
+    return createPortal(
         <AnimatePresence>
             {isOpen && (
                 <div key="task-detail-modal" className="fixed inset-0 z-[100] flex items-center justify-center p-4">
@@ -118,7 +127,7 @@ export const TaskDetailModalV2: React.FC<TaskDetailsModalProps> = ({ task, isOpe
                         animate={{ opacity: 1 }}
                         exit={{ opacity: 0 }}
                         onClick={onClose}
-                        className="absolute inset-0 bg-black/80"
+                        className="absolute inset-0 bg-black/80 backdrop-blur-sm"
                     />
 
                     {/* Modal - Minimal Aesthetic Layer */}
@@ -329,6 +338,7 @@ export const TaskDetailModalV2: React.FC<TaskDetailsModalProps> = ({ task, isOpe
                     onUploadComplete={() => setDeliverableRefreshTrigger(prev => prev + 1)}
                 />
             )}
-        </AnimatePresence>
+        </AnimatePresence>,
+        document.body
     );
 };

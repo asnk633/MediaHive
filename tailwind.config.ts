@@ -147,7 +147,7 @@ const config: Config = {
           DEFAULT: "var(--bg-card)",
           foreground: "var(--text-primary)",
         },
-        background: "var(--bg-app)",
+        background: "hsl(var(--background))",
       },
       borderRadius: tokens.borderRadius,
       boxShadow: tokens.shadows,

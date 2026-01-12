@@ -111,7 +111,7 @@ export const TaskDetailModalV2: React.FC<TaskDetailsModalProps> = ({ task, isOpe
     return (
         <AnimatePresence>
             {isOpen && (
-                <div className="fixed inset-0 z-[100] flex items-center justify-center p-4">
+                <div key="task-detail-modal" className="fixed inset-0 z-[100] flex items-center justify-center p-4">
                     {/* Backdrop */}
                     <motion.div
                         initial={{ opacity: 0 }}

@@ -7,7 +7,7 @@ import { useAuth } from "@/contexts/AuthContext";
 import Link from "next/link";
 import { useRouter, useSearchParams } from "next/navigation";
 import { CanonicalDataService } from "@/services/canonicalDataService";
-import { TaskDetailsModal } from "@/components/tasks/TaskDetailsModal";
+import { TaskDetailModalV2 } from "@/components/tasks/TaskDetailModalV2";
 import { EditTaskDialog } from "@/components/tasks/EditTaskDialog";
 import { TaskService } from "@/services/tasks";
 import { PageLayout } from "@/components/ui/layout/PageLayout";
@@ -150,7 +150,7 @@ export default function TasksPage() {
       </div>
 
       {/* Detail Modal */}
-      <TaskDetailsModal
+      <TaskDetailModalV2
         task={selectedTask}
         isOpen={!!selectedTask}
         onClose={handleCloseModal}

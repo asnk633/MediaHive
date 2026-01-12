@@ -33,11 +33,18 @@
     --ring: 212.7 26.8% 83.9%;
 
     /* Global Shell Dimensions */
-    --header-height: calc(72px + env(safe-area-inset-top));
+    --header-base-height: 56px;
+    --header-height: calc(var(--header-base-height) + env(safe-area-inset-top));
     --bottom-nav-height: calc(80px + 24px + env(safe-area-inset-bottom));
     /* Visual Tuning */
     --fab-bottom-offset: calc(26px + env(safe-area-inset-bottom));
     /* Height (h-20) + Bottom Margin (bottom-6) */
+  }
+}
+
+@media (min-width: 1024px) {
+  :root {
+    --header-base-height: 64px;
   }
 }
 

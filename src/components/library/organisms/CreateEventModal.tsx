@@ -1,4 +1,5 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
+import { createPortal } from 'react-dom';
 import { X } from 'lucide-react';
 import { CreateEventForm } from './CreateEventForm';
 
@@ -11,18 +12,25 @@ interface CreateEventModalProps {
 }
 
 export const CreateEventModal = ({ isOpen, onClose, isMobile = true, initialDate, forceSystemEvent }: CreateEventModalProps) => {
-    if (!isOpen) return null;
+    const [mounted, setMounted] = useState(false);
 
-    const overlayClasses = "fixed inset-0 bg-black/40 backdrop-blur-sm z-[40] flex";
+    useEffect(() => {
+        setMounted(true);
+        return () => setMounted(false);
+    }, []);
+
+    if (!isOpen || !mounted) return null;
+
+    const overlayClasses = "fixed inset-0 bg-black/60 backdrop-blur-sm z-[100] flex";
     const containerClasses = isMobile
         ? `${overlayClasses} items-end`
         : `${overlayClasses} items-center justify-center`;
 
     const modalClasses = isMobile
-        ? "w-full bg-[#10111a] rounded-t-[32px] p-6 animate-slide-up shadow-[0_-8px_30px_rgba(0,0,0,0.5)] max-h-[90vh] overflow-y-auto border-t border-[#ffffff1a] relative z-[45]"
-        : "w-full max-w-lg bg-[#10111a] rounded-[24px] p-8 animate-fade-in shadow-2xl border border-[#ffffff1a] relative z-[45]";
+        ? "w-full bg-[#10111a] rounded-t-[32px] p-6 animate-slide-up shadow-[0_-8px_30px_rgba(0,0,0,0.5)] max-h-[90vh] overflow-y-auto border-t border-[#ffffff1a] relative z-[101]"
+        : "w-full max-w-lg bg-[#10111a] rounded-[24px] p-8 animate-fade-in shadow-2xl border border-[#ffffff1a] relative z-[101]";
 
-    return (
+    return createPortal(
         <div className={containerClasses} onClick={(e) => {
             // Only close if clicking directly on the overlay backdrop (not on children)
             if (e.target === e.currentTarget) {
@@ -48,6 +56,7 @@ export const CreateEventModal = ({ isOpen, onClose, isMobile = true, initialDate
                     forceSystemEvent={forceSystemEvent}
                 />
             </div>
-        </div>
+        </div>,
+        document.body
     );
 };

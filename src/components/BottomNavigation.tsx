@@ -18,7 +18,7 @@ export default function BottomNavigation() {
   const isOnAllowedPage = allowedPages.some(page =>
     pathname === page || pathname?.startsWith(page + '/')
   );
-  const hasModalParam = searchParams.has('id');
+  const hasModalParam = searchParams.has('id') || searchParams.has('action');
   const showFAB = isOnAllowedPage && !hasModalParam;
 
   const items = [

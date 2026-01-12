@@ -36,7 +36,20 @@ function EventsContent() {
     const { user } = useAuth();
 
     // UI States
-    const [isModalOpen, setIsModalOpen] = useState(false);
+    // Sync modal state with URL
+    const openCreateModal = () => {
+        const params = new URLSearchParams(searchParams);
+        params.set('action', 'create');
+        router.push(`?${params.toString()}`);
+    };
+
+    const closeCreateModal = () => {
+        const params = new URLSearchParams(searchParams);
+        params.delete('action');
+        router.push(`?${params.toString()}`);
+    };
+
+    const isModalOpen = searchParams.get('action') === 'create';
     const [selectedDate, setSelectedDate] = useState<Date>(new Date());
     const [initialModalDate, setInitialModalDate] = useState<Date | undefined>(undefined);
 
@@ -46,17 +59,13 @@ function EventsContent() {
 
     const eventIdParam = searchParams.get('id');
 
-    // Persistence for View Toggle removed to default to "All Future" view
-
-
-
     useEffect(() => {
         if (!user) {
-            console.log("EventsPage: No user, skipping subscription");
+            // console.log("EventsPage: No user, skipping subscription");
             return;
         }
 
-        console.log("EventsPage: Subscribing to events for user:", user.uid);
+        // console.log("EventsPage: Subscribing to events for user:", user.uid);
         const unsubscribe = EventService.subscribeToEvents((allEvents) => {
             // Client-side filtering to match CanonicalDataService logic
             let filtered = allEvents;
@@ -71,9 +80,6 @@ function EventsContent() {
                         : event.createdBy.uid === user.uid))
                 );
             }
-
-            // 2. Demo data filtering (if we wanted to exclude it, but page passed includeDemoData: true, so we keep it)
-            // If we wanted to hide demo data: filtered = filtered.filter(e => e.isDemoData !== true);
 
             setEvents(filtered);
         });
@@ -97,7 +103,7 @@ function EventsContent() {
 
     const handleDateClick = (date: Date) => {
         setInitialModalDate(date);
-        setIsModalOpen(true);
+        openCreateModal();
     };
 
     return (
@@ -190,7 +196,7 @@ function EventsContent() {
             {/* Modal */}
             <CreateEventModal
                 isOpen={isModalOpen}
-                onClose={() => setIsModalOpen(false)}
+                onClose={closeCreateModal}
                 initialDate={initialModalDate}
             />
         </PageLayout>

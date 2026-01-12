@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Calendar as CalendarIcon, Clock, MapPin, AlignLeft, User, Briefcase, Camera, Check, Repeat } from 'lucide-react';
+import { Calendar as CalendarIcon, Clock, MapPin, AlignLeft, User, Briefcase, Camera, Check, Repeat, Lock, Shield } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { format } from 'date-fns';
 import { Button } from '@/components/ui/button';
@@ -241,6 +241,10 @@ export const CreateEventForm = ({ initialDate, onSuccess, onCancel, isModal = fa
     `;
     const labelClasses = "block text-sm font-medium text-white/70 mb-2";
 
+    // Field State Styles (for role-based clarity)
+    const lockedFieldClasses = "bg-white/[0.02] border-[#ffffff0d] text-white/60 cursor-not-allowed";
+    const derivedFieldClasses = "bg-white/[0.02] border-[#ffffff0d] text-white/70 cursor-not-allowed";
+
     return (
         <form className="space-y-8" onSubmit={handleSubmit}>
             {/* Title Section */}
@@ -347,7 +351,13 @@ export const CreateEventForm = ({ initialDate, onSuccess, onCancel, isModal = fa
                     <>
                         {/* Admin Only: Create On Behalf Of Toggle */}
                         {user?.role === 'admin' && (
-                            <div className="space-y-4 p-4 rounded-2xl bg-white/5 border border-[#ffffff1a]">
+                            <div className="space-y-4 p-5 rounded-2xl bg-blue-500/5 border-2 border-blue-500/20">
+                                <div className="flex items-center gap-2 mb-1">
+                                    <Shield size={16} className="text-blue-400" />
+                                    <span className="text-xs font-bold uppercase tracking-wider text-blue-400">
+                                        Administrative Action
+                                    </span>
+                                </div>
                                 <div className="flex items-center justify-between">
                                     <div className="flex-1">
                                         <label className="text-sm font-bold text-white block">Create On Behalf Of</label>
@@ -424,13 +434,18 @@ export const CreateEventForm = ({ initialDate, onSuccess, onCancel, isModal = fa
                                     </Select>
                                 </div>
                             ) : (
-                                // All other cases: Read-only display
-                                <div className={inputContainerClasses}>
-                                    <User size={20} className={iconClasses} />
-                                    <div className={`${inputClasses} flex items-center bg-white/5 cursor-not-allowed`}>
-                                        <span className="text-white/70">{user?.officialName || user?.name || 'Current User'}</span>
+                                // All other cases: Read-only display with lock icon
+                                <>
+                                    <div className={inputContainerClasses}>
+                                        <Lock size={16} className="absolute left-4 top-1/2 -translate-y-1/2 text-white/30 z-10" />
+                                        <div className={`w-full border rounded-2xl py-4 pl-12 pr-4 flex items-center ${lockedFieldClasses}`}>
+                                            <span>{user?.officialName || user?.name || 'Current User'}</span>
+                                        </div>
                                     </div>
-                                </div>
+                                    <p className="text-xs text-white/40 mt-1.5">
+                                        {user?.role === 'admin' ? 'Your account' : 'Auto-filled from your profile'}
+                                    </p>
+                                </>
                             )}
                         </div>
                     </>
@@ -533,13 +548,17 @@ export const CreateEventForm = ({ initialDate, onSuccess, onCancel, isModal = fa
                             <label className={labelClasses}>Department / Unit</label>
                             {user?.role === 'admin' && createOnBehalfOf && selectedUserId ? (
                                 // Admin in "On Behalf" mode with user selected: Read-only (auto-populated)
-                                <div className={inputContainerClasses}>
-                                    <Briefcase size={20} className={iconClasses} />
-                                    <div className={`${inputClasses} flex items-center bg-white/5 cursor-not-allowed`}>
-                                        <span className="text-white/70">{department}</span>
+                                <>
+                                    <div className={inputContainerClasses}>
+                                        <Lock size={16} className="absolute left-4 top-1/2 -translate-y-1/2 text-white/30 z-10" />
+                                        <div className={`w-full border rounded-2xl py-4 pl-12 pr-4 flex items-center ${derivedFieldClasses}`}>
+                                            <span>{department}</span>
+                                        </div>
                                     </div>
-                                    <p className="text-xs text-white/40 mt-2">Auto-populated from selected user</p>
-                                </div>
+                                    <p className="text-xs text-white/40 mt-1.5">
+                                        Auto-synced from {teamMembers.find(m => m.uid === selectedUserId)?.name || 'selected user'}'s department
+                                    </p>
+                                </>
                             ) : user?.role === 'admin' && !createOnBehalfOf ? (
                                 // Admin default mode: Editable dropdown
                                 <div className={inputContainerClasses}>
@@ -566,12 +585,15 @@ export const CreateEventForm = ({ initialDate, onSuccess, onCancel, isModal = fa
                                 </div>
                             ) : (
                                 // Guest/Team: Read-only (auto-filled from user profile)
-                                <div className={inputContainerClasses}>
-                                    <Briefcase size={20} className={iconClasses} />
-                                    <div className={`${inputClasses} flex items-center bg-white/5 cursor-not-allowed`}>
-                                        <span className="text-white/70">{department}</span>
+                                <>
+                                    <div className={inputContainerClasses}>
+                                        <Lock size={16} className="absolute left-4 top-1/2 -translate-y-1/2 text-white/30 z-10" />
+                                        <div className={`w-full border rounded-2xl py-4 pl-12 pr-4 flex items-center ${derivedFieldClasses}`}>
+                                            <span>{department}</span>
+                                        </div>
                                     </div>
-                                </div>
+                                    <p className="text-xs text-white/40 mt-1.5">Derived from your department</p>
+                                </>
                             )}
                         </div>
 

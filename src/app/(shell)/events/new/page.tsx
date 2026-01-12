@@ -8,7 +8,7 @@ export default function NewEventPage() {
     const router = useRouter();
 
     return (
-        <div className="min-h-full flex items-center justify-center bg-gradient-to-b from-slate-950 to-[#0B0D10] py-20 px-4 sm:px-6 relative overflow-hidden">
+        <div className="min-h-full flex items-center justify-center bg-gradient-to-b from-slate-950 to-[#0B0D10] py-6 px-4 sm:px-6 relative overflow-hidden">
             {/* Ambient Background */}
             <div className="fixed inset-0 bg-[radial-gradient(circle_at_50%_0%,rgba(59,130,246,0.15),transparent_50%)] pointer-events-none" />
 

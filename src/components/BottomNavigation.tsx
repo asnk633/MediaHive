@@ -13,6 +13,12 @@ export default function BottomNavigation() {
   const navRef = React.useRef<HTMLElement>(null);
   const [width, setWidth] = React.useState(0);
 
+  // Exclude specific paths where BottomNav causes layout issues
+  const excludedPaths = ['/events/new'];
+  if (excludedPaths.includes(pathname || '')) {
+    return null;
+  }
+
   // FAB Context-Aware Visibility Control
   const allowedPages = ['/home', '/tasks', '/events', '/inventory', '/downloads', '/reports'];
   const isOnAllowedPage = allowedPages.some(page =>

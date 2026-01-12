@@ -36,7 +36,7 @@ export default function TopBar({ title = "Thaiba MediaHive" }: { title?: string 
   };
 
   return (
-    <header className="fixed top-0 left-0 right-0 bg-[#020617]/95 backdrop-blur-md border-b border-white/[0.05] z-30 flex items-end justify-between px-4 lg:px-8 transition-all pb-3 shadow-sm" style={{ height: 'calc(72px + env(safe-area-inset-top))', paddingTop: 'env(safe-area-inset-top)' }}>
+    <header className="fixed top-0 left-0 right-0 bg-[#020617]/75 backdrop-blur-xl border-b border-white/[0.08] z-30 flex items-end justify-between px-4 lg:px-8 transition-all pb-3 shadow-[0_8px_32px_rgba(0,0,0,0.4)]" style={{ height: 'calc(72px + env(safe-area-inset-top))', paddingTop: 'env(safe-area-inset-top)' }}>
       <div className="flex items-center gap-3">
         {/* Logo Icon */}
         <div className="w-10 h-10 flex items-center justify-center">

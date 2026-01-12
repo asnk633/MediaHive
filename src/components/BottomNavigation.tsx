@@ -1,20 +1,25 @@
 "use client";
 import React from 'react';
 import Link from "next/link";
-import { usePathname } from "next/navigation";
+import { usePathname, useSearchParams } from "next/navigation";
 import { Home, CheckSquare, Calendar, User, Download, BarChart3, Package } from "lucide-react";
 import { motion } from "framer-motion";
 import FAB from "@/client/components/FAB";
 
 export default function BottomNavigation() {
   const pathname = usePathname();
+  const searchParams = useSearchParams();
   const isActive = (href: string) => pathname === href || pathname?.startsWith(href + "/");
   const navRef = React.useRef<HTMLElement>(null);
   const [width, setWidth] = React.useState(0);
 
-
-
-
+  // FAB Context-Aware Visibility Control
+  const allowedPages = ['/home', '/tasks', '/events', '/inventory', '/downloads', '/reports'];
+  const isOnAllowedPage = allowedPages.some(page =>
+    pathname === page || pathname?.startsWith(page + '/')
+  );
+  const hasModalParam = searchParams.has('id');
+  const showFAB = isOnAllowedPage && !hasModalParam;
 
   const items = [
     { key: 'home', label: 'Home', href: '/home', icon: Home },
@@ -36,8 +41,8 @@ export default function BottomNavigation() {
           height: '5rem', // h-20
         }}
       >
-        {/* FAB - Portals to body with fixed positioning */}
-        <FAB />
+        {/* FAB - Context-Aware Visibility */}
+        {showFAB && <FAB />}
 
         <motion.nav
           ref={navRef}

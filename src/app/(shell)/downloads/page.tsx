@@ -6,11 +6,13 @@ import { FileService } from '@/services/fileService';
 import { DriveFile } from '@/types/file';
 import { FileCard } from '@/components/files/FileCard';
 import { UploadModal } from '@/components/files/UploadModal';
-import { Plus, FolderOpen, Search, Filter } from 'lucide-react';
+import { Plus, FolderOpen, Search, Filter, HardDrive, Download } from 'lucide-react';
 import { motion } from 'framer-motion';
 import { toast } from 'sonner';
 import { PageLayout } from "@/components/ui/layout/PageLayout";
 import { PageHeader } from "@/components/ui/layout/PageHeader";
+import { DriveQueueView } from '@/components/admin/DriveQueueView';
+import { cn } from '@/lib/utils';
 
 export default function FilesPage() {
   const { user } = useAuth();
@@ -21,11 +23,17 @@ export default function FilesPage() {
   const [deleteId, setDeleteId] = useState<string | null>(null);
   const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
 
+  // View State: 'files' | 'queue'
+  const [viewMode, setViewMode] = useState<'files' | 'queue'>('files');
+
   const canUpload = user?.role === 'admin' || user?.role === 'team';
+  const isAdmin = user?.role === 'admin';
 
   useEffect(() => {
-    loadFiles();
-  }, [user]);
+    if (viewMode === 'files') {
+      loadFiles();
+    }
+  }, [user, viewMode]);
 
   const loadFiles = async () => {
     if (!user) return;
@@ -78,7 +86,37 @@ export default function FilesPage() {
         description="Manage your downloaded files."
         actions={
           <div className="flex items-center gap-3">
-            {canUpload && (
+            {/* Admin View Toggle */}
+            {isAdmin && (
+              <div className="flex bg-[var(--bg-surface)] p-1 rounded-xl border border-[var(--border-subtle)] mr-2">
+                <button
+                  onClick={() => setViewMode('files')}
+                  className={cn(
+                    "flex items-center gap-2 px-3 py-1.5 rounded-lg text-sm font-medium transition-all",
+                    viewMode === 'files'
+                      ? "bg-indigo-500/10 text-indigo-400"
+                      : "text-white/50 hover:text-white hover:bg-white/5"
+                  )}
+                >
+                  <Download size={16} />
+                  Published
+                </button>
+                <button
+                  onClick={() => setViewMode('queue')}
+                  className={cn(
+                    "flex items-center gap-2 px-3 py-1.5 rounded-lg text-sm font-medium transition-all",
+                    viewMode === 'queue'
+                      ? "bg-emerald-500/10 text-emerald-400"
+                      : "text-white/50 hover:text-white hover:bg-white/5"
+                  )}
+                >
+                  <HardDrive size={16} />
+                  Detected
+                </button>
+              </div>
+            )}
+
+            {canUpload && viewMode === 'files' && (
               <button
                 onClick={() => setUploadOpen(true)}
                 className="flex items-center gap-2 px-4 py-2 bg-indigo-600 hover:bg-indigo-700 text-white rounded-xl font-bold shadow-lg shadow-indigo-500/20 transition-all"
@@ -91,52 +129,60 @@ export default function FilesPage() {
         }
       />
 
-      {/* Toolbar */}
-      <div className="flex gap-3 mb-6">
-        <div className="relative flex-1 max-w-md">
-          <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-[var(--text-secondary)]" size={18} />
-          <input
-            type="text"
-            placeholder="Search files..."
-            value={search}
-            onChange={(e) => setSearch(e.target.value)}
-            className="w-full pl-10 pr-4 py-2.5 rounded-xl bg-[var(--bg-surface)] border border-[var(--border-subtle)] focus:outline-none focus:border-indigo-500 transition-colors text-[var(--text-primary)]"
-          />
-        </div>
-      </div>
-
-      {loading ? (
-        <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-5 gap-4">
-          {[1, 2, 3, 4].map(i => (
-            <div key={i} className="h-40 rounded-xl bg-[var(--bg-panel)] animate-pulse" />
-          ))}
-        </div>
-      ) : filteredFiles.length === 0 ? (
-        <div className="flex flex-col items-center justify-center py-20 text-center border border-dashed border-[#ffffff1a] rounded-xl bg-slate-900/20">
-          <div className="w-16 h-16 bg-white/5 rounded-full flex items-center justify-center mb-4">
-            <FolderOpen className="text-white/20" size={32} />
-          </div>
-          <h3 className="text-xl font-medium text-white/40 mb-2">No files found</h3>
-          <p className="text-white/20 max-w-sm mx-auto">
-            {search ? "Try adjusting your search." : "Upload a file to get started."}
-          </p>
+      {viewMode === 'queue' ? (
+        <div className="mt-6">
+          <DriveQueueView />
         </div>
       ) : (
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 xl:grid-cols-5 gap-4">
-          {filteredFiles.map(file => (
-            <motion.div
-              key={file.id}
-              initial={{ opacity: 0, y: 10 }}
-              animate={{ opacity: 1, y: 0 }}
-            >
-              <FileCard
-                file={file}
-                canEdit={user?.role === 'admin'}
-                onDelete={handleDelete}
+        <>
+          {/* Toolbar */}
+          <div className="flex gap-3 mb-6">
+            <div className="relative flex-1 max-w-md">
+              <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-[var(--text-secondary)]" size={18} />
+              <input
+                type="text"
+                placeholder="Search files..."
+                value={search}
+                onChange={(e) => setSearch(e.target.value)}
+                className="w-full pl-10 pr-4 py-2.5 rounded-xl bg-[var(--bg-surface)] border border-[var(--border-subtle)] focus:outline-none focus:border-indigo-500 transition-colors text-[var(--text-primary)]"
               />
-            </motion.div>
-          ))}
-        </div>
+            </div>
+          </div>
+
+          {loading ? (
+            <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-5 gap-4">
+              {[1, 2, 3, 4].map(i => (
+                <div key={i} className="h-40 rounded-xl bg-[var(--bg-panel)] animate-pulse" />
+              ))}
+            </div>
+          ) : filteredFiles.length === 0 ? (
+            <div className="flex flex-col items-center justify-center py-20 text-center border border-dashed border-[#ffffff1a] rounded-xl bg-slate-900/20">
+              <div className="w-16 h-16 bg-white/5 rounded-full flex items-center justify-center mb-4">
+                <FolderOpen className="text-white/20" size={32} />
+              </div>
+              <h3 className="text-xl font-medium text-white/40 mb-2">No files found</h3>
+              <p className="text-white/20 max-w-sm mx-auto">
+                {search ? "Try adjusting your search." : "Upload a file to get started."}
+              </p>
+            </div>
+          ) : (
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 xl:grid-cols-5 gap-4">
+              {filteredFiles.map(file => (
+                <motion.div
+                  key={file.id}
+                  initial={{ opacity: 0, y: 10 }}
+                  animate={{ opacity: 1, y: 0 }}
+                >
+                  <FileCard
+                    file={file}
+                    canEdit={user?.role === 'admin'}
+                    onDelete={handleDelete}
+                  />
+                </motion.div>
+              ))}
+            </div>
+          )}
+        </>
       )}
 
       <UploadModal

@@ -5,6 +5,7 @@ import { Readable } from 'stream';
 import { verifyUser } from '@/lib/server-utils';
 import { adminDb } from '@/lib/firebase/server';
 import { FieldValue } from 'firebase-admin/firestore';
+import { logServerActivity } from '@/lib/server/activity-logger';
 
 import { NextRequest, NextResponse } from 'next/server';
 
@@ -162,6 +163,8 @@ export async function POST(req: NextRequest) {
                     }
 
                     // 2. Upload to Drive (Piping stream directly)
+                    console.log(`[Upload] Starting Upload to Drive (Resumable forced) for: ${filename}`);
+                    // Use 'resource' alias and pass uploadType in options as well to force it
                     const driveFile = await drive.files.create({
                         requestBody: {
                             name: metadata.name || filename,
@@ -172,7 +175,7 @@ export async function POST(req: NextRequest) {
                             mimeType: mimeType,
                             body: stream, // Stream piped directly from request
                         },
-                        fields: 'id, webViewLink, webContentLink',
+                        fields: 'id, webViewLink, webContentLink, size',
                         supportsAllDrives: true,
                     });
 
@@ -207,7 +210,8 @@ export async function POST(req: NextRequest) {
                         visibility: metadata.visibility || { mode: 'all' },
                         folderId: targetFolderId,
                         path: metadata.folder ? `${metadata.folder}/${metadata.subfolder || ''}` : 'Auto',
-                        size: 0
+                        size: driveFile.data.size ? Number(driveFile.data.size) : 0,
+                        uploadContext: metadata.uploadContext || (metadata.taskId ? 'task_attachment' : 'downloads_direct')
                     };
 
                     // Add institutionId only if it exists
@@ -230,6 +234,19 @@ export async function POST(req: NextRequest) {
 
                     await db.collection('files').add(fileDoc);
                     console.log('Metadata saved to Firestore');
+
+                    await logServerActivity({
+                        type: 'file_uploaded',
+                        entityType: 'file',
+                        entityId: fileDoc.driveFileId || 'unknown',
+                        title: `File Uploaded: ${fileDoc.name}`,
+                        performedBy: user.name || 'Unknown',
+                        performedByRole: user.role || 'viewer',
+                        metadata: {
+                            folder: fileDoc.path,
+                            type: fileDoc.type
+                        }
+                    });
 
                     // 4. Trigger Notification (Phase 1.5)
                     try {

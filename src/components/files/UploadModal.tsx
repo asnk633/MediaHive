@@ -144,7 +144,7 @@ export function UploadModal({ open, onClose, onSuccess, eventId, taskId }: Uploa
                         />
                     </div>
 
-                    {user?.role === 'admin' && (
+                    {(user?.role === 'admin' || user?.role === 'team') && (
                         <div className="space-y-5 pt-4 border-t border-[#ffffff1a] animate-in slide-in-from-top-2">
                             <div className="space-y-3">
                                 <Label className={labelClasses}>Visibility Settings</Label>

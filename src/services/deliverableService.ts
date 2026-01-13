@@ -65,17 +65,7 @@ export const DeliverableService = {
                 throw new Error('Failed to upload deliverable to Drive');
             }
 
-            // Log Activity if Final
-            if (isFinal) {
-                const { ActivityService } = await import('@/services/activityService');
-                ActivityService.logActivity({
-                    type: 'file_published',
-                    entityType: 'file',
-                    entityId: uploadResult.fileId || 'unknown',
-                    title: `Final deliverable '${finalFileName}' published`,
-                    metadata: { taskId, version: nextVersion }
-                });
-            }
+            // Activity logging is now handled server-side in POST /api/deliverables
 
             // 3. Save to API
             const newDeliverableData: Omit<Deliverable, 'id' | 'createdAt'> = {

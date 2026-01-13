@@ -1,76 +1,76 @@
-
 import { NextRequest, NextResponse } from 'next/server';
 import { adminDb } from '@/lib/firebase/server';
 import { verifyUser } from '@/lib/server-utils';
+import { logServerActivity } from '@/lib/server/activity-logger';
 import { SystemActivity } from '@/types/activity';
-import { Timestamp } from 'firebase-admin/firestore';
 
 export const dynamic = 'force-dynamic';
 
-export async function GET(req: NextRequest) {
+export async function GET(request: NextRequest) {
     try {
-        const user = await verifyUser(req);
+        const user = await verifyUser(request);
         if (!user) {
             return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
         }
 
-        const { searchParams } = new URL(req.url);
-        const limitStr = searchParams.get('limit') || '50';
-        const limit = parseInt(limitStr);
+        const limitParam = request.nextUrl.searchParams.get('limit') || '50';
+        const limit = parseInt(limitParam, 10);
 
-        const snapshot = await adminDb.collection('activities')
+        const snapshot = await adminDb
+            .collection('system_activities')
             .orderBy('timestamp', 'desc')
             .limit(limit)
             .get();
 
-        const activities: SystemActivity[] = snapshot.docs.map(doc => {
+        const activities = snapshot.docs.map(doc => {
             const data = doc.data();
             return {
                 id: doc.id,
                 ...data,
-                timestamp: data.timestamp?.toDate ? data.timestamp.toDate().toISOString() : data.timestamp
-            } as SystemActivity;
+                // Convert Firestore Timestamp to Date/String if needed (serialized JSON handles ISO/Numbers usually)
+                timestamp: data.timestamp?.toDate ? data.timestamp.toDate() : data.timestamp
+            };
         });
 
         return NextResponse.json({ activities });
 
     } catch (error: any) {
-        console.error('GET /api/activities error:', error);
-        return NextResponse.json({ error: error.message }, { status: 500 });
+        console.error('Error fetching activities:', error);
+        return NextResponse.json(
+            { error: 'Internal server error: ' + error.message },
+            { status: 500 }
+        );
     }
 }
 
-export async function POST(req: NextRequest) {
+export async function POST(request: NextRequest) {
     try {
-        const user = await verifyUser(req);
+        const user = await verifyUser(request);
         if (!user) {
             return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
         }
 
-        const body = await req.json();
+        const body = await request.json();
 
         // Basic validation
-        if (!body.title || !body.type) {
+        if (!body.type || !body.entityType || !body.title) {
             return NextResponse.json({ error: 'Missing required fields' }, { status: 400 });
         }
 
-        const newActivity = {
+        // Attach reliable user info
+        await logServerActivity({
             ...body,
-            timestamp: Timestamp.now(),
-            performedBy: user.name || 'Unknown',
+            performedBy: user.name || 'Unknown User',
             performedByRole: user.role || 'guest'
-        };
-
-        const ref = await adminDb.collection('activities').add(newActivity);
-
-        return NextResponse.json({
-            id: ref.id,
-            ...newActivity,
-            timestamp: newActivity.timestamp.toDate().toISOString()
         });
 
+        return NextResponse.json({ success: true });
+
     } catch (error: any) {
-        console.error('POST /api/activities error:', error);
-        return NextResponse.json({ error: error.message }, { status: 500 });
+        console.error('Error creating activity:', error);
+        return NextResponse.json(
+            { error: 'Internal server error: ' + error.message },
+            { status: 500 }
+        );
     }
 }

@@ -1,6 +1,7 @@
 import { NextResponse } from 'next/server';
 import { getFirebaseServices, verifyUser } from '@/lib/server-utils';
 import { ServerNotification } from '@/lib/server-notification';
+import { logServerActivity } from '@/lib/server/activity-logger';
 
 // Dynamic route
 export async function GET(
@@ -139,11 +140,39 @@ export async function PATCH(
         // Robust UID extraction
         const creatorUid = typeof currentTask.createdBy === 'object' ? currentTask.createdBy.uid : currentTask.createdBy;
 
+
         if (creatorUid && creatorUid !== user.uid) {
           const nameStr = addedAssignees.length === 1 ? "a team member" : `${addedAssignees.length} team members`;
           await ServerNotification.notifyTaskAssignedToCreator(id, currentTask.title || 'Untitled Task', creatorUid, user.uid, nameStr);
         }
       }
+
+      await logServerActivity({
+        type: 'task_assigned',
+        entityType: 'task',
+        entityId: id,
+        title: `Task Assigned: ${data.assignedTo.length} users`,
+        performedBy: user.name || 'Unknown',
+        performedByRole: user.role || 'admin',
+        metadata: {
+          addedAssignees
+        }
+      });
+    }
+
+    if (data.status && data.status !== currentTask.status) {
+      await logServerActivity({
+        type: data.status === 'done' ? 'task_completed' : 'task_status_change',
+        entityType: 'task',
+        entityId: id,
+        title: `Task Status: ${data.status}`,
+        performedBy: user.name || 'Unknown',
+        performedByRole: user.role || 'admin',
+        metadata: {
+          oldStatus: currentTask.status,
+          newStatus: data.status
+        }
+      });
     }
 
     return NextResponse.json({ success: true });
@@ -164,7 +193,21 @@ export async function DELETE(
     if (!user || user.role !== 'admin') return NextResponse.json({ error: 'Forbidden' }, { status: 403 });
 
     const { id } = await params;
+
+    // Fetch title before delete for log
+    const docSnap = await firestore.collection('tasks').doc(id).get();
+    const taskTitle = docSnap.exists ? docSnap.data()?.title : 'Unknown Task';
+
     await firestore.collection('tasks').doc(id).delete();
+
+    await logServerActivity({
+      type: 'task_deleted',
+      entityType: 'task',
+      entityId: id,
+      title: `Task Deleted: ${taskTitle}`,
+      performedBy: user.name || 'Unknown',
+      performedByRole: user.role || 'admin'
+    });
 
     return NextResponse.json({ success: true });
   } catch (error) {

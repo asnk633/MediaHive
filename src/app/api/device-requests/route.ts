@@ -4,6 +4,7 @@ export const dynamic = 'force-dynamic';
 import { adminDb } from '@/lib/firebase/server';
 import { verifyUser } from '@/lib/server-utils';
 import { ServerNotification } from '@/lib/server-notification';
+import { logServerActivity } from '@/lib/server/activity-logger';
 
 export async function GET(request: NextRequest) {
     try {
@@ -101,6 +102,19 @@ export async function POST(request: NextRequest) {
 
         const db = adminDb;
         const docRef = await db.collection('device_requests').add(newRequest);
+
+        await logServerActivity({
+            type: 'inventory_request',
+            entityType: 'inventory',
+            entityId: docRef.id,
+            title: `Request: ${data.itemCategory} (${data.quantity || 1})`,
+            performedBy: requester.name,
+            performedByRole: requester.role || 'viewer',
+            metadata: {
+                startDate: data.startDate,
+                endDate: data.endDate
+            }
+        });
 
         // Notify Admins
         try {

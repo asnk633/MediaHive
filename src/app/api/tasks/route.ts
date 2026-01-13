@@ -1,8 +1,10 @@
 import { NextRequest } from 'next/server';
 import { adminDb } from '@/lib/firebase/server';
 import { requireAdminWithVerifiedEmail } from '@/lib/emailVerificationGuard';
-import { verifyUser } from '@/lib/server-utils';
+import { getFirebaseServices, verifyUser } from '@/lib/server-utils';
 import { verifyIdempotency } from '@/lib/idempotency';
+import { ServerNotification } from '@/lib/server-notification';
+import { logServerActivity } from '@/lib/server/activity-logger';
 
 export async function GET(request: NextRequest) {
   try {
@@ -137,6 +139,19 @@ export async function POST(request: NextRequest) {
     const taskRef = await db.collection('tasks').add(newTask);
 
     // If Guest, notify Admins about pending approval
+    await logServerActivity({
+      type: 'task_created',
+      entityType: 'task',
+      entityId: taskRef.id,
+      title: `Task Created: ${newTask.title}`,
+      performedBy: user.name || 'Unknown',
+      performedByRole: user.role || 'guest',
+      metadata: {
+        priority: newTask.priority,
+        status: newTask.status
+      }
+    });
+
     if (isGuest) {
       try {
         const { ServerNotification } = await import('@/lib/server-notification');
@@ -346,6 +361,15 @@ export async function DELETE(request: NextRequest) {
 
     // Delete the task from Firestore
     await db.collection('tasks').doc(taskId).delete();
+
+    await logServerActivity({
+      type: 'task_deleted',
+      entityType: 'task',
+      entityId: taskId,
+      title: `Task Deleted: ${task?.title || 'Unknown'}`,
+      performedBy: user.name || 'Unknown',
+      performedByRole: user.role || 'admin'
+    });
 
     return Response.json({ message: 'Task deleted successfully' });
   } catch (error: any) {

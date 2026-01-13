@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { adminDb } from '@/lib/firebase/server';
 import { verifyUser } from '@/lib/server-utils';
+import { logServerActivity } from '@/lib/server/activity-logger';
 
 export const dynamic = 'force-dynamic';
 
@@ -103,6 +104,20 @@ export async function PATCH(
             return { id, ...currentData, ...updates };
         });
 
+
+
+        await logServerActivity({
+            type: 'inventory_update',
+            entityType: 'inventory',
+            entityId: id,
+            title: `Asset Updated: ${updatedItem?.name || 'Unknown Asset'}`,
+            performedBy: user.name || 'Unknown',
+            performedByRole: user.role || 'admin',
+            metadata: {
+                changes: Object.keys(body)
+            }
+        });
+
         // Serialize dates before returning
         return NextResponse.json({
             success: true,
@@ -136,6 +151,15 @@ export async function DELETE(
 
         const db = adminDb;
         await db.collection(COLLECTION).doc(id).delete();
+
+        await logServerActivity({
+            type: 'inventory_update',
+            entityType: 'inventory',
+            entityId: id,
+            title: `Asset Deleted`,
+            performedBy: user.name || 'Unknown',
+            performedByRole: user.role || 'admin'
+        });
 
         return NextResponse.json({ success: true, id });
     } catch (error: any) {

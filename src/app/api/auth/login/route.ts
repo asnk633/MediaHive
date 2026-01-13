@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { adminAuth } from "@/lib/firebase/server";
 import { cookies } from "next/headers";
+import { logServerActivity } from "@/lib/server/activity-logger";
 
 export async function POST(request: NextRequest) {
     let idToken = "";
@@ -31,6 +32,19 @@ export async function POST(request: NextRequest) {
             path: "/",
             sameSite: "lax",
             domain: process.env.COOKIE_DOMAIN || undefined,
+        });
+
+        // Log Login Activity
+        await logServerActivity({
+            type: 'user_login',
+            entityType: 'user',
+            entityId: decodedToken.uid || 'unknown',
+            title: 'User Login',
+            performedBy: decodedToken.name || decodedToken.email || 'Unknown User',
+            performedByRole: (decodedToken.role as string) || 'viewer', // Role is usually in custom claims
+            metadata: {
+                method: 'email'
+            }
         });
 
         return response;

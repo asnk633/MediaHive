@@ -8,7 +8,7 @@ const PRIVATE_KEY = process.env.GOOGLE_PRIVATE_KEY?.replace(/\\n/g, '\n');
 // NOTE: formatted private key is crucial. env vars often mess up newlines.
 const SHARED_DRIVE_FOLDER_ID = process.env.GOOGLE_DRIVE_FOLDER_ID;
 
-const SCOPES = ['https://www.googleapis.com/auth/drive.file'];
+const SCOPES = ['https://www.googleapis.com/auth/drive'];
 
 export async function getDriveClient() {
     if (!CLIENT_EMAIL || !PRIVATE_KEY) {

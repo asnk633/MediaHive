@@ -4,6 +4,7 @@ import { ensureTaskFolder } from "@/lib/drive-init";
 import { adminDb } from "@/lib/firebase/server";
 import { FieldValue } from "firebase-admin/firestore";
 import { Readable } from "stream";
+import { logServerActivity } from "@/lib/server/activity-logger";
 
 const db = adminDb;
 
@@ -52,6 +53,19 @@ export async function POST(req: NextRequest) {
             };
 
             await deliverableRef.set(deliverableData);
+
+            await logServerActivity({
+                type: 'file_published',
+                entityType: 'file',
+                entityId: driveFileId,
+                title: `Deliverable Published: ${fileName}`,
+                performedBy: name || 'Unknown',
+                performedByRole: role || 'viewer',
+                metadata: {
+                    taskId,
+                    version: deliverableData.version
+                }
+            });
 
             // 3. Update Task Timestamps
             const taskUpdate: any = {

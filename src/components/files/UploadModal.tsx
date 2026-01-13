@@ -90,7 +90,10 @@ export function UploadModal({ open, onClose, onSuccess, eventId, taskId }: Uploa
                 subfolder: data.subfolder,
                 // Linkage
                 eventId: eventId,
-                taskId: taskId
+                taskId: taskId,
+                // DIRECT DOWNLOADS UPLOAD - ALWAYS FINAL & PUBLIC
+                uploadContext: 'downloads_direct',
+                isFinal: true
             };
 
             await FileService.uploadFile(file, metadata as any);

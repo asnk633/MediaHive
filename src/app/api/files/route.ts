@@ -17,6 +17,7 @@ export async function GET(req: NextRequest) {
         const taskId = searchParams.get('taskId');
         const eventId = searchParams.get('eventId');
         const limit = parseInt(searchParams.get('limit') || '50');
+        const scope = searchParams.get('scope'); // 'downloads' | 'all' (default)
 
         // Fetch files from Firestore 'files' collection
         let filesQuery = adminDb.collection('files').orderBy('createdAt', 'desc');
@@ -26,6 +27,13 @@ export async function GET(req: NextRequest) {
             filesQuery = adminDb.collection('files').where('taskId', '==', taskId);
         } else if (eventId) {
             filesQuery = adminDb.collection('files').where('eventId', '==', eventId);
+        }
+
+        // STRICT DOWNLOADS SCOPE ENFORCEMENT
+        if (scope === 'downloads') {
+            // Must support multiple valid contexts, so we use 'in' operator
+            // Valid contexts: 'task_final', 'downloads_direct'
+            filesQuery = filesQuery.where('uploadContext', 'in', ['task_final', 'downloads_direct']);
         }
 
         const snapshot = await filesQuery.limit(limit).get();

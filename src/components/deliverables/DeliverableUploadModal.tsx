@@ -23,7 +23,11 @@ export const DeliverableUploadModal: React.FC<DeliverableUploadModalProps> = ({
     const [file, setFile] = useState<File | null>(null);
     const [uploading, setUploading] = useState(false);
     const [error, setError] = useState<string | null>(null);
+
     const [customName, setCustomName] = useState('');
+    const [isFinal, setIsFinal] = useState(false); // Controls uploadContext
+
+    const canMarkFinal = user?.role === 'admin' || user?.role === 'team';
 
     const onDrop = (acceptedFiles: File[]) => {
         if (acceptedFiles && acceptedFiles[0]) {
@@ -53,11 +57,13 @@ export const DeliverableUploadModal: React.FC<DeliverableUploadModalProps> = ({
                 name: user.name || 'Unknown',
                 role: user.role,
                 avatarUrl: user.avatarUrl
-            }, customName); // Pass custom name
+
+            }, customName, isFinal); // Pass isFinal flag
             onUploadComplete();
             onClose();
             setFile(null);
             setCustomName('');
+            setIsFinal(false);
         } catch (err: any) {
             console.error('Upload failed', err);
             setError(err.message || 'Failed to upload file. Please try again.');
@@ -136,13 +142,34 @@ export const DeliverableUploadModal: React.FC<DeliverableUploadModalProps> = ({
                                     placeholder="Enter a custom name for this version..."
                                 />
                             </div>
-                        </div>
-                    )}
 
-                    {error && (
-                        <div className="mt-4 flex items-center gap-2 text-xs text-red-400 bg-red-500/10 p-3 rounded-lg border border-red-500/20">
-                            <AlertCircle size={14} />
-                            {error}
+                            {canMarkFinal && (
+                                <div className="bg-blue-500/10 border border-blue-500/20 rounded-xl p-4 flex items-start gap-3">
+                                    <input
+                                        type="checkbox"
+                                        id="isFinal"
+                                        checked={isFinal}
+                                        onChange={(e) => setIsFinal(e.target.checked)}
+                                        className="mt-1 w-4 h-4 rounded border-gray-400 text-blue-600 focus:ring-blue-500 bg-transparent"
+                                    />
+                                    <div className="flex-1">
+                                        <label htmlFor="isFinal" className="text-sm font-bold text-blue-100 block cursor-pointer select-none">
+                                            Publish as Final Output (Visible in Downloads)
+                                        </label>
+                                        <p className="text-xs text-blue-300/70 mt-1 leading-relaxed">
+                                            Only final, share-ready files should be published to Downloads.
+                                            Drafts and working files should remain as attachments.
+                                        </p>
+                                    </div>
+                                </div>
+                            )}
+
+                            {error && (
+                                <div className="mt-4 flex items-center gap-2 text-xs text-red-400 bg-red-500/10 p-3 rounded-lg border border-red-500/20">
+                                    <AlertCircle size={14} />
+                                    {error}
+                                </div>
+                            )}
                         </div>
                     )}
                 </div>
@@ -166,6 +193,6 @@ export const DeliverableUploadModal: React.FC<DeliverableUploadModalProps> = ({
                     </button>
                 </div>
             </DialogContent>
-        </Dialog>
+        </Dialog >
     );
 };

@@ -13,7 +13,8 @@ export const DeliverableService = {
         taskId: string,
         file: File,
         uploader: { uid: string; name: string; role?: string; avatarUrl?: string },
-        customName?: string
+        customName?: string,
+        isFinal: boolean = false
     ): Promise<Deliverable> => {
         try {
             // 1. Determine Version Number by fetching existing deliverables for the task
@@ -52,13 +53,28 @@ export const DeliverableService = {
                 uploadedByRole: uploader.role,
                 visibility: { mode: 'all' }, // CRITICAL: Public access
                 taskId: taskId,
-                version: nextVersion
+                version: nextVersion,
+                // SCOPE CONTROL LOGIC
+                isFinal: isFinal,
+                uploadContext: isFinal ? 'task_final' : 'task_attachment'
             };
 
             const uploadResult = await FileService.uploadFile(file, metadata as any);
 
             if (!uploadResult.success) {
                 throw new Error('Failed to upload deliverable to Drive');
+            }
+
+            // Log Activity if Final
+            if (isFinal) {
+                const { ActivityService } = await import('@/services/activityService');
+                ActivityService.logActivity({
+                    type: 'file_published',
+                    entityType: 'file',
+                    entityId: uploadResult.fileId || 'unknown',
+                    title: `Final deliverable '${finalFileName}' published`,
+                    metadata: { taskId, version: nextVersion }
+                });
             }
 
             // 3. Save to API

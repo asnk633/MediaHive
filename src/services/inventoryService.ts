@@ -36,6 +36,16 @@ export const inventoryService = {
     // CREATE: (Admin only)
     create: async (data: Omit<InventoryItem, 'id' | 'createdAt' | 'updatedAt' | 'createdBy'>, user: AuthUser): Promise<string> => {
         const newItem = await apiPost('/api/inventory', data);
+
+        // Log Activity
+        const { ActivityService } = await import('@/services/activityService');
+        ActivityService.logActivity({
+            type: 'inventory_create',
+            entityType: 'inventory',
+            entityId: newItem.id,
+            title: `Asset '${data.name}' created`,
+        });
+
         return newItem.id;
     },
 
@@ -44,6 +54,16 @@ export const inventoryService = {
         await apiClient(`/api/inventory/${id}`, {
             method: 'PATCH',
             body: JSON.stringify(data)
+        });
+
+        // Log Activity
+        const { ActivityService } = await import('@/services/activityService');
+        ActivityService.logActivity({
+            type: 'inventory_update',
+            entityType: 'inventory',
+            entityId: id,
+            title: `Asset updated`,
+            metadata: { changes: Object.keys(data) }
         });
     },
 

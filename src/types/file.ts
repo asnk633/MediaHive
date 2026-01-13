@@ -20,6 +20,11 @@ export interface DriveFile {
     createdAt: any; // Timestamp
     visibility: FileVisibility;
     department?: string;
+
+    // Authorization Context (Strict Downloads Scope)
+    uploadContext?: 'task_attachment' | 'task_final' | 'downloads_direct';
+    isFinal?: boolean; // Derived from uploadContext (optional helper)
+
     // Proofing & Versions
     proofingStatus?: 'pending' | 'approved' | 'rejected' | 'changes_requested';
     isActiveVersion?: boolean;

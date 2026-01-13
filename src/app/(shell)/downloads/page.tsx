@@ -31,7 +31,8 @@ export default function FilesPage() {
     if (!user) return;
     setLoading(true);
     try {
-      const data = await FileService.getFiles(user.role, user.defaultDepartment, user.defaultInstitution);
+      // STRICT SCOPE: Only show authoritative downloads
+      const data = await FileService.getFiles(user.role, user.defaultDepartment, user.defaultInstitution, 'downloads');
       setFiles(data);
     } catch (e) {
       console.error(e);

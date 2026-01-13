@@ -3,9 +3,9 @@ import { apiClient, apiDelete } from '@/lib/apiClient';
 
 export const FileService = {
     // Fetch files based on user role and visibility
-    getFiles: async (userRole: string, userDepartment?: string, userInstitution?: string): Promise<DriveFile[]> => {
+    getFiles: async (userRole: string, userDepartment?: string, userInstitution?: string, scope: 'all' | 'downloads' = 'all'): Promise<DriveFile[]> => {
         try {
-            const response = await apiClient<{ files: DriveFile[] }>('/api/files');
+            const response = await apiClient<{ files: DriveFile[] }>(`/api/files?scope=${scope}`);
             return response.files || [];
         } catch (error) {
             console.error('FileService.getFiles error:', error);

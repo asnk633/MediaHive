@@ -314,11 +314,13 @@ const TaskListViewComponent: React.FC<TaskListViewProps> = ({ tasks, loading = f
             {/* Task Table-List */}
             <div className="rounded-2xl border border-[#ffffff1a] bg-[#0f172a] shadow-2xl overflow-hidden min-h-[400px]">
                 {/* Header Row */}
-                <div className="grid grid-cols-12 md:grid-cols-[3.5fr_2.5fr_1.5fr_1.2fr_0.8fr] gap-2 px-6 py-3 bg-black/20 border-b border-white/5 text-[10px] uppercase font-bold text-white/30 tracking-widest">
-                    <div className="col-span-12 md:col-span-1">Task & Priority</div>
+                {/* Header Row */}
+                <div className="grid grid-cols-12 md:grid-cols-[3fr_2fr_1.4fr_1.2fr_0.9fr_0.7fr] gap-2 px-6 py-3 bg-black/20 border-b border-white/5 text-[10px] uppercase font-bold text-white/30 tracking-widest">
+                    <div className="col-span-12 md:col-span-1">Task</div>
                     <div className="hidden md:block text-white/40">Requested By</div>
                     <div className="hidden md:block">Assignee</div>
                     <div className="hidden md:block">Status</div>
+                    <div className="hidden md:block">Priority</div>
                     <div className="hidden md:block text-right">Due Date</div>
                 </div>
 
@@ -346,7 +348,7 @@ const TaskListViewComponent: React.FC<TaskListViewProps> = ({ tasks, loading = f
                                     key={task.id}
                                     onClick={() => onTaskClick?.(task)}
                                     className={cn(
-                                        "group grid grid-cols-12 md:grid-cols-[3.5fr_2.5fr_1.5fr_1.2fr_0.8fr] gap-2 px-6 py-4 items-center transition-all hover:bg-white/[0.02]",
+                                        "group grid grid-cols-12 md:grid-cols-[3fr_2fr_1.4fr_1.2fr_0.9fr_0.7fr] gap-2 px-6 py-4 items-center transition-all hover:bg-white/[0.02]",
                                         isSelected && "bg-blue-500/5",
                                         isOverdue && "bg-red-500/[0.02] shadow-[inset_2px_0_0_0_#ef4444]"
                                     )}
@@ -354,7 +356,7 @@ const TaskListViewComponent: React.FC<TaskListViewProps> = ({ tasks, loading = f
                                     tabIndex={0}
                                     onKeyDown={(e) => e.key === 'Enter' && onTaskClick?.(task)}
                                 >
-                                    {/* Task Column (Title, Priority AND Mobile Metadata) */}
+                                    {/* Task Column (Title ONLY) */}
                                     <div className="col-span-12 md:col-span-1 flex items-center gap-3 overflow-hidden">
                                         <div onClick={e => e.stopPropagation()} className="shrink-0 pt-1">
                                             {isAdmin ? (
@@ -373,38 +375,19 @@ const TaskListViewComponent: React.FC<TaskListViewProps> = ({ tasks, loading = f
                                         <div className="min-w-0 flex flex-col gap-1 w-full">
                                             <div className="flex items-center gap-2">
                                                 <h3 className={cn("text-sm font-medium text-gray-200 truncate group-hover:text-white transition-colors", task.status === 'done' && "line-through opacity-50")}>{task.title}</h3>
-                                                {/* INLINE PRIORITY EDIT - ADMIN ONLY */}
-                                                <div onClick={e => isAdmin ? e.stopPropagation() : null}>
-                                                    {isAdmin ? (
-                                                        <DropdownMenu>
-                                                            <DropdownMenuTrigger asChild>
-                                                                <PriorityBadge priority={task.priority || 'low'} />
-                                                            </DropdownMenuTrigger>
-                                                            <DropdownMenuContent align="start" className="bg-[#1e293b] border-[#ffffff1a] text-white">
-                                                                {['urgent', 'high', 'medium', 'low'].map(p => (
-                                                                    <DropdownMenuItem
-                                                                        key={p}
-                                                                        onClick={() => handlePriorityUpdate(task.id, p)}
-                                                                        className="capitalize cursor-pointer hover:bg-white/5"
-                                                                    >
-                                                                        {p}
-                                                                    </DropdownMenuItem>
-                                                                ))}
-                                                            </DropdownMenuContent>
-                                                        </DropdownMenu>
-                                                    ) : (
-                                                        <PriorityBadge priority={task.priority || 'low'} className="cursor-default hover:bg-transparent" />
-                                                    )}
-                                                </div>
                                             </div>
 
-                                            {/* Mobile: Requested By Stacked */}
+                                            {/* Mobile: Stacked Metadata */}
                                             <div className="md:hidden flex flex-col gap-1">
                                                 <span className="text-xs text-white/50 truncate font-medium">
                                                     {task.department || "No Department"}
                                                 </span>
                                                 <div className="flex items-center justify-between text-[10px] text-gray-500">
-                                                    <span>{task.status || 'todo'}</span>
+                                                    <div className="flex items-center gap-2">
+                                                        <span>{task.status || 'todo'}</span>
+                                                        {/* Mobile Priority Stacked under Status */}
+                                                        <PriorityBadge priority={task.priority || 'low'} className="scale-90 origin-left" />
+                                                    </div>
                                                     <span>{dueDate ? format(dueDate, 'MMM d') : '-'}</span>
                                                 </div>
                                             </div>
@@ -424,7 +407,7 @@ const TaskListViewComponent: React.FC<TaskListViewProps> = ({ tasks, loading = f
                                         </span>
                                     </div>
 
-                                    {/* Assignee - INLINE EDIT - ADMIN ONLY */}
+                                    {/* Assignee */}
                                     <div className="hidden md:flex flex-col justify-center gap-1" onClick={e => isAdmin ? e.stopPropagation() : null}>
                                         {isAdmin ? (
                                             <DropdownMenu>
@@ -503,7 +486,7 @@ const TaskListViewComponent: React.FC<TaskListViewProps> = ({ tasks, loading = f
                                         )}
                                     </div>
 
-                                    {/* Status - INLINE EDIT - ADMIN OR ASSIGNEE */}
+                                    {/* Status */}
                                     {(() => {
                                         const isAssignee = Array.isArray(task.assignedTo) && task.assignedTo.some(a => (typeof a === 'string' ? a : a.uid) === user?.uid);
                                         const canEditStatus = isAdmin || isAssignee;
@@ -536,6 +519,30 @@ const TaskListViewComponent: React.FC<TaskListViewProps> = ({ tasks, loading = f
                                         );
                                     })()}
 
+                                    {/* NEW PRIORITY COLUMN */}
+                                    <div className="hidden md:flex items-center" onClick={e => isAdmin ? e.stopPropagation() : null}>
+                                        {isAdmin ? (
+                                            <DropdownMenu>
+                                                <DropdownMenuTrigger asChild>
+                                                    <PriorityBadge priority={task.priority || 'low'} />
+                                                </DropdownMenuTrigger>
+                                                <DropdownMenuContent align="start" className="bg-[#1e293b] border-[#ffffff1a] text-white">
+                                                    {['urgent', 'high', 'medium', 'low'].map(p => (
+                                                        <DropdownMenuItem
+                                                            key={p}
+                                                            onClick={() => handlePriorityUpdate(task.id, p)}
+                                                            className="capitalize cursor-pointer hover:bg-white/5"
+                                                        >
+                                                            {p}
+                                                        </DropdownMenuItem>
+                                                    ))}
+                                                </DropdownMenuContent>
+                                            </DropdownMenu>
+                                        ) : (
+                                            <PriorityBadge priority={task.priority || 'low'} className="cursor-default hover:bg-transparent" />
+                                        )}
+                                    </div>
+
                                     {/* Due Date */}
                                     <div className="hidden md:block text-right">
                                         <div className={cn("text-xs font-mono", isOverdue ? "text-red-400 font-bold" : "text-gray-400")}>
@@ -547,8 +554,6 @@ const TaskListViewComponent: React.FC<TaskListViewProps> = ({ tasks, loading = f
                                             </div>
                                         )}
                                     </div>
-
-
                                 </div>
                             );
                         })}

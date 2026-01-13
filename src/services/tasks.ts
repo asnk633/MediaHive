@@ -101,6 +101,17 @@ export const TaskService = {
             method: 'POST',
             body: JSON.stringify(task),
         });
+
+        // Log Activity
+        const { ActivityService } = await import('@/services/activityService');
+        ActivityService.logActivity({
+            type: 'task_created',
+            entityType: 'task',
+            entityId: response.id,
+            title: `Task '${task.title}' created`,
+            metadata: { priority: task.priority }
+        });
+
         return { id: response.id };
     },
 
@@ -110,13 +121,37 @@ export const TaskService = {
             method: 'PUT',
             body: JSON.stringify({ id, ...updates }),
         });
+
+        // Log Activity
+        const { ActivityService } = await import('@/services/activityService');
+
+        if (updates.status) {
+            ActivityService.logActivity({
+                type: 'task_status_change',
+                entityType: 'task',
+                entityId: id,
+                title: `Task status updated to '${updates.status}'`,
+                metadata: { newStatus: updates.status }
+            });
+        }
     },
 
     deleteTask: async (id: string) => {
         // Route through server API instead of direct Firestore write
-        return apiClient(`/api/tasks?id=${encodeURIComponent(id)}`, {
+        const result = await apiClient(`/api/tasks?id=${encodeURIComponent(id)}`, {
             method: 'DELETE',
         });
+
+        // Log Activity
+        const { ActivityService } = await import('@/services/activityService');
+        ActivityService.logActivity({
+            type: 'task_deleted',
+            entityType: 'task',
+            entityId: id,
+            title: `Task deleted`,
+        });
+
+        return result;
     },
 
     toggleTaskAssignee: async (taskId: string, member: { uid: string; name: string }) => {

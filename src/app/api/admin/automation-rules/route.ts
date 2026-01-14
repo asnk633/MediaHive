@@ -18,18 +18,20 @@ export async function GET(req: NextRequest) {
         const customRules = snap.docs.map(d => d.data() as AutomationRule);
 
         // Transform System Defaults to array format for UI
-        const systemRules = Object.entries(DEFAULT_SYSTEM_RULES).map(([eventType, rule]) => ({
-            ...rule,
-            id: `system_${eventType}`,
-            scopeType: 'global',
-            scopeId: 'global',
-            eventType,
-            enabled: true,
-            locked: true,
-            priority: 0,
-            version: 1,
-            conditions: rule.conditions || []
-        }));
+        const systemRules = Object.entries(DEFAULT_SYSTEM_RULES)
+            .filter(([_, r]) => !!r)
+            .map(([eventType, rule]) => ({
+                ...rule!,
+                id: `system_${eventType}`,
+                scopeType: 'global' as const,
+                scopeId: 'global',
+                eventType,
+                enabled: true,
+                locked: true,
+                priority: 0,
+                version: 1,
+                conditions: rule.conditions || []
+            }));
 
         return NextResponse.json({ custom: customRules, system: systemRules });
     } catch (e) {

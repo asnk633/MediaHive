@@ -135,7 +135,7 @@ export default function SecurityRulesPage() {
                             // Fix: handleToggle logic in parent handles the flip. 
                             // But Switch onCheckedChange gives NEW value.
                             // So let's align.
-                            onChange={(checked) => handleToggle('allowGuestTasks', !checked)}
+                            onChange={(checked: boolean) => handleToggle('allowGuestTasks', !checked)}
                             icon={<Users className="w-5 h-5 text-indigo-400" />}
                             loading={loading}
                         />
@@ -144,7 +144,7 @@ export default function SecurityRulesPage() {
                             label="Public File Default"
                             description="Newly uploaded files are public by default."
                             checked={settings?.publicFilesDefault ?? true}
-                            onChange={(checked) => handleToggle('publicFilesDefault', !checked)}
+                            onChange={(checked: boolean) => handleToggle('publicFilesDefault', !checked)}
                             icon={<Eye className="w-5 h-5 text-green-400" />}
                             loading={loading}
                         />
@@ -153,7 +153,7 @@ export default function SecurityRulesPage() {
                             label="Auto-Drive Scanning"
                             description="Automatically ingest files from Google Drive."
                             checked={settings?.driveAutoScan ?? true}
-                            onChange={(checked) => handleToggle('driveAutoScan', !checked)}
+                            onChange={(checked: boolean) => handleToggle('driveAutoScan', !checked)}
                             icon={<Database className="w-5 h-5 text-blue-400" />}
                             loading={loading}
                         />

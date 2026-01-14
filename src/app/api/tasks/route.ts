@@ -267,7 +267,7 @@ export async function PUT(request: NextRequest) {
 
         await logSystemActivity({
           actorId: user.uid,
-          actorRole: user.role,
+          actorRole: user.role || 'unknown',
           action: 'task_structure_changed',
           entityType: 'task',
           entityId: id,

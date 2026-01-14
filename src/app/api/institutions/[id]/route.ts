@@ -42,17 +42,16 @@ export async function PATCH(request: NextRequest, { params }: { params: Promise<
         // Audit Logging
         if (updates.name && oldData?.name !== updates.name) {
             await logSystemActivity({
+                actorId: user.uid,
+                actorRole: user.role,
                 action: 'institution_renamed',
                 severity: 'warning',
                 entityType: 'institution',
                 entityId: id,
-                details: {
+                summary: `Institution renamed from '${oldData?.name}' to '${updates.name}'`,
+                metadata: {
                     oldName: oldData?.name,
                     newName: updates.name,
-                    summary: `Institution renamed from '${oldData?.name}' to '${updates.name}'`
-                },
-                actorId: user.uid,
-                metadata: {
                     previousValue: oldData?.name,
                     newValue: updates.name
                 }

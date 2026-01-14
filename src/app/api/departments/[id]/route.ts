@@ -39,25 +39,21 @@ export async function PATCH(request: NextRequest, { params }: { params: Promise<
 
         await docRef.update(updates);
 
-        // Audit Logging
-        if (updates.name && oldData?.name !== updates.name) {
-            await logSystemActivity({
-                action: 'unit_renamed',
-                severity: 'warning',
-                entityType: 'department',
-                entityId: id,
-                details: {
-                    oldName: oldData?.name,
-                    newName: updates.name,
-                    summary: `Office/Unit renamed from '${oldData?.name}' to '${updates.name}'`
-                },
-                actorId: user.uid,
-                metadata: {
-                    previousValue: oldData?.name,
-                    newValue: updates.name
-                }
-            });
-        }
+        await logSystemActivity({
+            actorId: user.uid,
+            actorRole: user.role,
+            action: 'unit_renamed',
+            severity: 'warning',
+            entityType: 'department',
+            entityId: id,
+            summary: `Office/Unit renamed from '${oldData?.name}' to '${updates.name}'`,
+            metadata: {
+                oldName: oldData?.name,
+                newName: updates.name,
+                previousValue: oldData?.name,
+                newValue: updates.name
+            }
+        });
 
         return Response.json({
             id,

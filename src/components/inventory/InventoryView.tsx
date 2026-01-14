@@ -65,7 +65,7 @@ export default function InventoryView() {
 
             // If Guest, fetch my requests to disable buttons
             if (user && user.role !== 'admin' && user.role !== 'team') {
-                promises.push(inventoryRequestService.getMyRequests(user.uid));
+                promises.push(inventoryRequestService.getMyRequests(user.uid, user.institutionId || ''));
             }
 
             const results = await Promise.all(promises);

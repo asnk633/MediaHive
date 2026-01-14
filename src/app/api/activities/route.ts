@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { adminDb } from '@/lib/firebase/server';
 import { verifyUser } from '@/lib/server-utils';
-import { logServerActivity } from '@/lib/server/activity-logger';
+import { logSystemActivity } from '@/lib/server/activity-logger';
 import { SystemActivity } from '@/types/activity';
 
 export const dynamic = 'force-dynamic';
@@ -58,10 +58,20 @@ export async function POST(request: NextRequest) {
         }
 
         // Attach reliable user info
-        await logServerActivity({
-            ...body,
-            performedBy: user.name || 'Unknown User',
-            performedByRole: user.role || 'guest'
+        await logSystemActivity({
+            actorId: user.uid,
+            actorRole: user.role || 'viewer',
+            action: body.type || 'client_action',
+            entityType: body.entityType || 'unknown',
+            entityId: body.entityId || 'unknown',
+            summary: body.title || 'Client Activity',
+            source: 'system',
+            severity: 'info',
+            visibility: { mode: 'admin' },
+            metadata: {
+                ...body.metadata,
+                originalBody: body
+            }
         });
 
         return NextResponse.json({ success: true });

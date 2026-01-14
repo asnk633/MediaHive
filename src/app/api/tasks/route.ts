@@ -4,7 +4,7 @@ import { requireAdminWithVerifiedEmail } from '@/lib/emailVerificationGuard';
 import { getFirebaseServices, verifyUser } from '@/lib/server-utils';
 import { verifyIdempotency } from '@/lib/idempotency';
 import { ServerNotification } from '@/lib/server-notification';
-import { logServerActivity } from '@/lib/server/activity-logger';
+import { logSystemActivity } from '@/lib/server/activity-logger';
 
 export async function GET(request: NextRequest) {
   try {
@@ -114,6 +114,19 @@ export async function POST(request: NextRequest) {
 
     // Add the creator information
     const isGuest = user.role === 'guest';
+
+    // Structure Resolution:
+    // 1. Explicitly provided (e.g. from form)
+    // 2. Fallback to User's Institution
+    // 3. Fallback to global default (Config)
+    // 4. REJECT if none
+    const institutionId = taskData.institutionId || user.institutionId || process.env.DEFAULT_INSTITUTION_ID;
+
+    // Integrity Check - NO FALLBACK TO '1'
+    if (!institutionId) {
+      return Response.json({ error: 'Structure Error: Missing institutionId. Please select an institution.' }, { status: 400 });
+    }
+
     const newTask = {
       ...taskData,
       tags, // Include the enhanced tags list
@@ -124,32 +137,31 @@ export async function POST(request: NextRequest) {
       approvalStatus: isGuest ? 'pending' : 'approved',
       // Force status to pending for guests
       status: isGuest ? 'pending' : (taskData.status || 'todo'),
-      institutionId: user.institutionId || '1',
+      institutionId: institutionId,
+      departmentId: taskData.departmentId || null, // Ensure explicit null if not set, or preserve passed value
       createdAt: new Date(),
       updatedAt: new Date()
     };
 
-    // Clean up auxiliary fields not meant for DB
-    delete (newTask as any).onBehalfOf;
-
-    // db is already defined above
-    // const db = getFirebaseAdminDb();
+    // Clean up legacy fields - Never write free-text structure again
+    delete (newTask as any).department; // Legacy freeze
 
     // Add the task to Firestore
     const taskRef = await db.collection('tasks').add(newTask);
 
     // If Guest, notify Admins about pending approval
-    await logServerActivity({
-      type: 'task_created',
+    await logSystemActivity({
+      actorId: user.uid,
+      actorRole: user.role || 'guest',
+      action: 'task_created',
       entityType: 'task',
       entityId: taskRef.id,
-      title: `Task Created: ${newTask.title}`,
-      performedBy: user.name || 'Unknown',
-      performedByRole: user.role || 'guest',
+      summary: `Task created: ${newTask.title}`,
       metadata: {
         priority: newTask.priority,
         status: newTask.status
-      }
+      },
+      visibility: { mode: 'internal' }
     });
 
     if (isGuest) {
@@ -213,10 +225,9 @@ export async function PUT(request: NextRequest) {
       return Response.json({ error: 'Task ID is required' }, { status: 400 });
     }
 
-    // Protect immutable fields
+    // Protect immutable fields (Owner/Time)
     delete (updateData as any).createdBy;
     delete (updateData as any).createdAt;
-    delete (updateData as any).institutionId;
 
     const db = adminDb;
 
@@ -229,9 +240,8 @@ export async function PUT(request: NextRequest) {
     const task = taskDoc.data()!;
 
     // Check if user has permission to update this task
-    // Users can update their own tasks, if they're an admin, OR if they are assigned to it.
     const isCreator = task && task.createdBy && task.createdBy.uid === user.uid;
-    const isAdmin = user.role === 'admin' || user.role === 'team'; // Treating team as admin-like for editing, similar to expected behavior
+    const isAdmin = user.role === 'admin' || user.role === 'team';
 
     const assignedArray = Array.isArray(task.assignedTo) ? task.assignedTo : [];
     const isAssignee = assignedArray.some((u: any) => {
@@ -244,6 +254,33 @@ export async function PUT(request: NextRequest) {
 
     if (!isCreator && !isAdmin && !isAssignee) {
       return Response.json({ error: 'Forbidden: Cannot update this task ' + `(Debug: Role=${user.role}, IsAssignee=${isAssignee})` }, { status: 403 });
+    }
+
+    // Structure Protection: Only Admins can move tasks between Structures
+    if (!isAdmin) {
+      delete (updateData as any).institutionId;
+      delete (updateData as any).departmentId;
+    } else {
+      // Log Structure Change if Admin is changing it
+      if ((updateData.institutionId && updateData.institutionId !== task.institutionId) ||
+        (updateData.departmentId && updateData.departmentId !== task.departmentId)) {
+
+        await logSystemActivity({
+          actorId: user.uid,
+          actorRole: user.role,
+          action: 'task_structure_changed',
+          entityType: 'task',
+          entityId: id,
+          severity: 'warning',
+          summary: `Task moved to Inst: ${updateData.institutionId || task.institutionId}, Dept: ${updateData.departmentId || 'None'}`,
+          metadata: {
+            oldInstitution: task.institutionId,
+            newInstitution: updateData.institutionId,
+            oldDepartment: task.departmentId,
+            newDepartment: updateData.departmentId
+          }
+        });
+      }
     }
 
     // Add updatedBy and updatedAt fields
@@ -264,9 +301,6 @@ export async function PUT(request: NextRequest) {
         updatePayload.status = 'todo';
       }
 
-      // Optional: We could trigger a notification here to the Guest "Your task has been approved"
-      // But the requirements said "verifying that all necessary notifications (Guest: Approved...)"
-      // So we SHOULD trigger it.
       // Notify Guest that task is approved
       try {
         const { ServerNotification } = await import('@/lib/server-notification');
@@ -284,7 +318,6 @@ export async function PUT(request: NextRequest) {
         }
       } catch (e) {
         console.error('Failed to notify guest of approval:', e);
-        // Non-blocking
       }
     }
 
@@ -362,13 +395,15 @@ export async function DELETE(request: NextRequest) {
     // Delete the task from Firestore
     await db.collection('tasks').doc(taskId).delete();
 
-    await logServerActivity({
-      type: 'task_deleted',
+    await logSystemActivity({
+      actorId: user.uid,
+      actorRole: user.role || 'guest',
+      action: 'task_deleted',
       entityType: 'task',
       entityId: taskId,
-      title: `Task Deleted: ${task?.title || 'Unknown'}`,
-      performedBy: user.name || 'Unknown',
-      performedByRole: user.role || 'admin'
+      summary: `Task deleted: ${task?.title || 'Unknown'}`,
+      severity: 'warning',
+      visibility: { mode: 'admin' }
     });
 
     return Response.json({ message: 'Task deleted successfully' });

@@ -4,7 +4,7 @@ import React from 'react';
 import { PageLayout } from "@/components/ui/layout/PageLayout";
 import { PageHeader } from "@/components/ui/layout/PageHeader";
 import { ActivityFeedWidget } from "@/components/admin/ActivityFeedWidget";
-import { Users, Building, Activity, Shield } from 'lucide-react';
+import { Users, Building, Activity, Shield, Zap, Bell } from 'lucide-react';
 import Link from 'next/link';
 
 export default function AdminDashboardPage() {
@@ -36,21 +36,37 @@ export default function AdminDashboardPage() {
                             <p className="text-sm text-slate-400">Institutions, Units, and Hierarchy.</p>
                         </Link>
 
-                        <div className="p-6 rounded-2xl bg-white/5 border border-white/10 opacity-50 cursor-not-allowed">
-                            <div className="w-12 h-12 rounded-xl bg-emerald-500/20 text-emerald-400 flex items-center justify-center mb-4">
+                        <Link href="/admin/security" className="p-6 rounded-2xl bg-white/5 border border-white/10 hover:bg-white/10 transition-colors group">
+                            <div className="w-12 h-12 rounded-xl bg-emerald-500/20 text-emerald-400 flex items-center justify-center mb-4 group-hover:scale-110 transition-transform">
                                 <Shield size={24} />
                             </div>
                             <h3 className="text-lg font-bold text-white mb-1">Security Rules</h3>
-                            <p className="text-sm text-slate-400">Access policies (Coming Soon).</p>
-                        </div>
+                            <p className="text-sm text-slate-400">Access policies and protection.</p>
+                        </Link>
 
-                        <div className="p-6 rounded-2xl bg-white/5 border border-white/10 opacity-50 cursor-not-allowed">
-                            <div className="w-12 h-12 rounded-xl bg-amber-500/20 text-amber-400 flex items-center justify-center mb-4">
+                        <Link href="/admin/system-health" className="p-6 rounded-2xl bg-white/5 border border-white/10 hover:bg-white/10 transition-colors group">
+                            <div className="w-12 h-12 rounded-xl bg-amber-500/20 text-amber-400 flex items-center justify-center mb-4 group-hover:scale-110 transition-transform">
                                 <Activity size={24} />
                             </div>
                             <h3 className="text-lg font-bold text-white mb-1">System Health</h3>
-                            <p className="text-sm text-slate-400">Performance metrics (Coming Soon).</p>
-                        </div>
+                            <p className="text-sm text-slate-400">Live operational status.</p>
+                        </Link>
+
+                        <Link href="/admin/notification-policies" className="p-6 rounded-2xl bg-white/5 border border-white/10 hover:bg-white/10 transition-colors group">
+                            <div className="w-12 h-12 rounded-xl bg-indigo-500/20 text-indigo-400 flex items-center justify-center mb-4 group-hover:scale-110 transition-transform">
+                                <Bell size={24} />
+                            </div>
+                            <h3 className="text-lg font-bold text-white mb-1">Notification Policies</h3>
+                            <p className="text-sm text-slate-400">Control reminders and escalations in simple terms.</p>
+                        </Link>
+
+                        <Link href="/admin/automation-rules" className="p-6 rounded-2xl bg-white/5 border border-white/10 hover:bg-white/10 transition-colors group">
+                            <div className="w-12 h-12 rounded-xl bg-orange-500/20 text-orange-400 flex items-center justify-center mb-4 group-hover:scale-110 transition-transform">
+                                <Zap size={24} />
+                            </div>
+                            <h3 className="text-lg font-bold text-white mb-1">Automation Rules</h3>
+                            <p className="text-sm text-slate-400">Advanced: detailed trigger logic.</p>
+                        </Link>
                     </div>
                 </div>
 

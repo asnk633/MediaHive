@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { verifyUser } from '@/lib/server-utils';
 import { DriveScannerService } from '@/lib/drive-scanner';
+import { logSystemActivity } from '@/lib/server/activity-logger';
 
 export async function POST(req: NextRequest) {
     try {
@@ -10,6 +11,22 @@ export async function POST(req: NextRequest) {
         }
 
         const { count, logs } = await DriveScannerService.scanIncomingFolder();
+
+        if (count > 0) {
+            await logSystemActivity({
+                actorId: user.uid,
+                actorRole: user.role,
+                action: 'drive_scan_completed',
+                entityType: 'drive_scan',
+                entityId: 'scan_' + Date.now(),
+                summary: `Drive scan found ${count} new files`,
+                metadata: {
+                    count,
+                    logs
+                },
+                visibility: { mode: 'admin' }
+            });
+        }
 
         return NextResponse.json({
             success: true,

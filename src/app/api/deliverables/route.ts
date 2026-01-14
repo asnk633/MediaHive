@@ -4,7 +4,7 @@ import { ensureTaskFolder } from "@/lib/drive-init";
 import { adminDb } from "@/lib/firebase/server";
 import { FieldValue } from "firebase-admin/firestore";
 import { Readable } from "stream";
-import { logServerActivity } from "@/lib/server/activity-logger";
+import { logSystemActivity } from "@/lib/server/activity-logger";
 
 const db = adminDb;
 
@@ -54,13 +54,16 @@ export async function POST(req: NextRequest) {
 
             await deliverableRef.set(deliverableData);
 
-            await logServerActivity({
-                type: 'file_published',
-                entityType: 'file',
+            await logSystemActivity({
+                actorId: uid,
+                actorRole: role || 'viewer',
+                action: 'file_published',
+                entityType: 'drive_file',
                 entityId: driveFileId,
-                title: `Deliverable Published: ${fileName}`,
-                performedBy: name || 'Unknown',
-                performedByRole: role || 'viewer',
+                summary: `Deliverable Published: ${fileName}`,
+                source: 'system',
+                severity: 'info',
+                visibility: { mode: 'admin' },
                 metadata: {
                     taskId,
                     version: deliverableData.version

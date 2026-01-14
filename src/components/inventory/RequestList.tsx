@@ -30,10 +30,15 @@ export default function RequestList() {
         setLoading(true);
         try {
             let data: InventoryRequest[] = [];
+            if (!user.institutionId) {
+                console.error("User missing institutionId");
+                return;
+            }
+
             if (isAdmin) {
-                data = await inventoryRequestService.getAll();
+                data = await inventoryRequestService.getAll(user.institutionId);
             } else {
-                data = await inventoryRequestService.getMyRequests(user.uid);
+                data = await inventoryRequestService.getMyRequests(user.uid, user.institutionId);
             }
             setRequests(data);
         } catch (error) {

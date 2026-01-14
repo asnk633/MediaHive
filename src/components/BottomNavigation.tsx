@@ -20,7 +20,7 @@ export default function BottomNavigation() {
   }
 
   // FAB Context-Aware Visibility Control
-  const allowedPages = ['/home', '/tasks', '/events', '/inventory', '/downloads', '/reports'];
+  const allowedPages = ['/home', '/tasks', '/events', '/inventory', '/downloads', '/reports', '/admin', '/settings', '/profile'];
   const isOnAllowedPage = allowedPages.some(page =>
     pathname === page || pathname?.startsWith(page + '/')
   );
@@ -42,8 +42,8 @@ export default function BottomNavigation() {
       <div
         className="fixed left-1/2 -translate-x-1/2 z-30"
         style={{
-          bottom: 'calc(1.5rem + env(safe-area-inset-bottom))',
-          width: '30rem', // Enlarged width
+          bottom: 'calc(1.5rem + var(--safe-bottom, 0px))',
+          width: 'min(30rem, calc(100vw - 2rem))', // Responsive width (max 30rem, but fits mobile)
           height: '5rem', // h-20
         }}
       >
@@ -71,7 +71,7 @@ export default function BottomNavigation() {
               ease: "easeInOut"
             }
           }}
-          className="w-full h-full bg-[#0f172a]/90 backdrop-blur-2xl border border-[#ffffff1a] rounded-[40px] px-4"
+          className="w-full h-full bg-[#0f172a]/90 backdrop-blur-2xl border border-[#ffffff1a] rounded-[40px] px-2"
           style={{
             display: 'grid',
             gridTemplateColumns: 'repeat(3, 1fr) 80px repeat(3, 1fr)',
@@ -88,7 +88,7 @@ export default function BottomNavigation() {
               <Link
                 key={item.key}
                 href={item.href}
-                className={`group relative flex flex-col items-center justify-center w-12 h-full transition-all duration-300 ${active ? 'text-blue-400' : 'text-slate-500 hover:text-slate-300'}`}
+                className={`group relative flex flex-col items-center justify-center w-full h-full transition-all duration-300 ${active ? 'text-blue-400' : 'text-slate-500 hover:text-slate-300'}`}
               >
                 {/* Active Glow Background */}
                 {active && (

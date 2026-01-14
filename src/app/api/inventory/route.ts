@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { adminDb } from '@/lib/firebase/server';
 import { verifyUser } from '@/lib/server-utils';
-import { logServerActivity } from '@/lib/server/activity-logger';
+import { logSystemActivity } from '@/lib/server/activity-logger';
 
 export const dynamic = 'force-dynamic';
 
@@ -118,17 +118,17 @@ export async function POST(request: NextRequest) {
 
         const docRef = await db.collection(COLLECTION).add(newItem);
 
-        await logServerActivity({
-            type: 'inventory_create',
-            entityType: 'inventory',
+        await logSystemActivity({
+            actorId: user.uid,
+            actorRole: user.role || 'viewer',
+            action: 'inventory_item_create',
+            entityType: 'inventory_item',
             entityId: docRef.id,
-            title: `Asset Created: ${newItem.name}`,
-            performedBy: user.name || 'Unknown',
-            performedByRole: user.role || 'admin',
-            metadata: {
-                quantity: newItem.quantity,
-                category: newItem.category
-            }
+            summary: `Added item: ${data.name}`,
+            source: 'system',
+            severity: 'info',
+            visibility: { mode: 'admin' },
+            metadata: { category: data.category }
         });
 
         return NextResponse.json({

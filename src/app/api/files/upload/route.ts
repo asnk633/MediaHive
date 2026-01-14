@@ -5,7 +5,7 @@ import { Readable } from 'stream';
 import { verifyUser } from '@/lib/server-utils';
 import { adminDb } from '@/lib/firebase/server';
 import { FieldValue } from 'firebase-admin/firestore';
-import { logServerActivity } from '@/lib/server/activity-logger';
+import { logSystemActivity } from '@/lib/server/activity-logger';
 
 import { NextRequest, NextResponse } from 'next/server';
 
@@ -235,17 +235,18 @@ export async function POST(req: NextRequest) {
                     await db.collection('files').add(fileDoc);
                     console.log('Metadata saved to Firestore');
 
-                    await logServerActivity({
-                        type: 'file_uploaded',
+                    await logSystemActivity({
+                        actorId: user.uid,
+                        actorRole: user.role || 'viewer',
+                        action: 'file_uploaded',
                         entityType: 'file',
                         entityId: fileDoc.driveFileId || 'unknown',
-                        title: `File Uploaded: ${fileDoc.name}`,
-                        performedBy: user.name || 'Unknown',
-                        performedByRole: user.role || 'viewer',
+                        summary: `File Uploaded: ${fileDoc.name}`,
                         metadata: {
                             folder: fileDoc.path,
                             type: fileDoc.type
-                        }
+                        },
+                        visibility: { mode: 'internal' }
                     });
 
                     // 4. Trigger Notification (Phase 1.5)

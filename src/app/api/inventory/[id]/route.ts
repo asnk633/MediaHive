@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { adminDb } from '@/lib/firebase/server';
 import { verifyUser } from '@/lib/server-utils';
-import { logServerActivity } from '@/lib/server/activity-logger';
+import { logSystemActivity } from '@/lib/server/activity-logger';
 
 export const dynamic = 'force-dynamic';
 
@@ -104,18 +104,17 @@ export async function PATCH(
             return { id, ...currentData, ...updates };
         });
 
-
-
-        await logServerActivity({
-            type: 'inventory_update',
-            entityType: 'inventory',
+        await logSystemActivity({
+            actorId: user.uid,
+            actorRole: user.role || 'viewer',
+            action: 'inventory_item_update',
+            entityType: 'inventory_item',
             entityId: id,
-            title: `Asset Updated: ${updatedItem?.name || 'Unknown Asset'}`,
-            performedBy: user.name || 'Unknown',
-            performedByRole: user.role || 'admin',
-            metadata: {
-                changes: Object.keys(body)
-            }
+            summary: `Updated item: ${updatedItem?.name || 'Unknown Item'}`,
+            source: 'system',
+            severity: 'info',
+            visibility: { mode: 'admin' },
+            metadata: { updates: Object.keys(body) }
         });
 
         // Serialize dates before returning
@@ -152,13 +151,16 @@ export async function DELETE(
         const db = adminDb;
         await db.collection(COLLECTION).doc(id).delete();
 
-        await logServerActivity({
-            type: 'inventory_update',
-            entityType: 'inventory',
+        await logSystemActivity({
+            actorId: user.uid,
+            actorRole: user.role || 'admin',
+            action: 'inventory_item_delete',
+            entityType: 'inventory_item',
             entityId: id,
-            title: `Asset Deleted`,
-            performedBy: user.name || 'Unknown',
-            performedByRole: user.role || 'admin'
+            summary: `Deleted inventory asset: ${id}`,
+            source: 'system',
+            severity: 'warning',
+            visibility: { mode: 'admin' }
         });
 
         return NextResponse.json({ success: true, id });

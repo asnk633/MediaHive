@@ -1,10 +1,14 @@
 import { NextRequest } from 'next/server';
 import { adminDb } from '@/lib/firebase/server';
-import { requireAdminWithVerifiedEmail } from '@/lib/emailVerificationGuard';
+import { verifyUser } from '@/lib/server-utils';
+import { logSystemActivity } from '@/lib/server/activity-logger';
 
 export async function PATCH(request: NextRequest, { params }: { params: Promise<{ id: string }> }) {
     try {
-        await requireAdminWithVerifiedEmail(request);
+        const user = await verifyUser(request);
+        if (!user || user.role !== 'admin') {
+            return Response.json({ error: 'Unauthorized' }, { status: 403 });
+        }
 
         const { id } = await params;
         if (!id) return Response.json({ error: 'ID required' }, { status: 400 });
@@ -20,6 +24,7 @@ export async function PATCH(request: NextRequest, { params }: { params: Promise<
             return Response.json({ error: 'Department not found' }, { status: 404 });
         }
 
+        const oldData = docStart.data();
         const updates: any = {
             updatedAt: new Date().toISOString()
         };
@@ -34,14 +39,34 @@ export async function PATCH(request: NextRequest, { params }: { params: Promise<
 
         await docRef.update(updates);
 
+        // Audit Logging
+        if (updates.name && oldData?.name !== updates.name) {
+            await logSystemActivity({
+                action: 'unit_renamed',
+                severity: 'warning',
+                entityType: 'department',
+                entityId: id,
+                details: {
+                    oldName: oldData?.name,
+                    newName: updates.name,
+                    summary: `Office/Unit renamed from '${oldData?.name}' to '${updates.name}'`
+                },
+                actorId: user.uid,
+                metadata: {
+                    previousValue: oldData?.name,
+                    newValue: updates.name
+                }
+            });
+        }
+
         return Response.json({
             id,
-            ...docStart.data(),
+            ...oldData,
             ...updates
         });
 
     } catch (error: any) {
         console.error('Error updating department:', error);
-        return Response.json({ error: error.message || 'Failed to update department' }, { status: 403 });
+        return Response.json({ error: error.message || 'Failed to update department' }, { status: 500 });
     }
 }

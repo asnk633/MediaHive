@@ -30,9 +30,10 @@ export type NotificationType =
     | 'inventory_due_soon'     // Phase 6.3
     | 'inventory_overdue'      // Phase 6.3
     | 'inventory_escalated'    // Phase 6.3
+    | 'system_update'          // System Updates Feature
     | 'info';                  // Generic info
 
-export type NotificationEntityType = 'task' | 'event' | 'announcement' | 'file' | 'device_request';
+export type NotificationEntityType = 'task' | 'event' | 'announcement' | 'file' | 'device_request' | 'system_update';
 export type NotificationPriority = 'high' | 'medium' | 'low';
 
 export interface AppNotification {

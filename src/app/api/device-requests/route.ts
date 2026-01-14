@@ -1,10 +1,9 @@
 import { NextRequest, NextResponse } from 'next/server';
-
 export const dynamic = 'force-dynamic';
 import { adminDb } from '@/lib/firebase/server';
 import { verifyUser } from '@/lib/server-utils';
 import { ServerNotification } from '@/lib/server-notification';
-import { logServerActivity } from '@/lib/server/activity-logger';
+import { logSystemActivity } from '@/lib/server/activity-logger';
 
 export async function GET(request: NextRequest) {
     try {
@@ -25,35 +24,19 @@ export async function GET(request: NextRequest) {
             query = query.where('requester.uid', '==', user.uid);
         }
 
-        // To avoid "Index Required" 500 errors on composite queries (institutionId + requester + sort),
-        // we'll fetch then sort in memory if the dataset is small (device requests usually are).
-        // Or we use basic sort if just admin.
-
-        let snapshot;
-        // Optimization: If simple query, use DB sort. If complex, memory sort.
-        if (user.role === 'admin') {
-            // Admin: institutionId + createdAt desc -> Needs index usually
-            // Fallback: fetch all for institution then sort
-            snapshot = await query.get();
-        } else {
-            // User: institutionId + requester + createdAt -> Needs complex index
-            snapshot = await query.get();
-        }
-
+        let snapshot = await query.get();
         const items = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
 
-        // In-memory sort to guarantee no 500s from missing indexes during stabilization
+        // In-memory sort
         items.sort((a: any, b: any) => {
             const dateA = new Date(a.createdAt || 0).getTime();
             const dateB = new Date(b.createdAt || 0).getTime();
-            return dateB - dateA; // Descending
+            return dateB - dateA;
         });
 
         return NextResponse.json({
             items,
-            meta: {
-                total: items.length
-            }
+            meta: { total: items.length }
         });
     } catch (error: any) {
         console.error('GET device-requests error:', error);
@@ -103,13 +86,16 @@ export async function POST(request: NextRequest) {
         const db = adminDb;
         const docRef = await db.collection('device_requests').add(newRequest);
 
-        await logServerActivity({
-            type: 'inventory_request',
-            entityType: 'inventory',
+        await logSystemActivity({
+            actorId: user.uid,
+            actorRole: requester.role || 'viewer',
+            action: 'inventory_request_create',
+            entityType: 'inventory_request',
             entityId: docRef.id,
-            title: `Request: ${data.itemCategory} (${data.quantity || 1})`,
-            performedBy: requester.name,
-            performedByRole: requester.role || 'viewer',
+            summary: `Request: ${data.itemCategory} (${data.quantity || 1})`,
+            source: 'system',
+            severity: 'info',
+            visibility: { mode: 'admin' },
             metadata: {
                 startDate: data.startDate,
                 endDate: data.endDate

@@ -5,7 +5,7 @@ import { StructureService } from '@/services/structureService';
 import { Department } from '@/types/structure';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
-import { Plus, Archive, Loader2, Users } from 'lucide-react';
+import { Plus, Archive, Loader2, Users, Edit2 } from 'lucide-react';
 import { toast } from 'sonner';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger, DialogDescription } from '@/components/ui/dialog';
 import { Label } from '@/components/ui/label';
@@ -16,6 +16,29 @@ export function DepartmentsTab() {
     const [createOpen, setCreateOpen] = useState(false);
     const [newName, setNewName] = useState('');
     const [creating, setCreating] = useState(false);
+
+    // Edit State
+    const [editOpen, setEditOpen] = useState(false);
+    const [editingDept, setEditingDept] = useState<Department | null>(null);
+    const [editName, setEditName] = useState('');
+    const [saving, setSaving] = useState(false);
+
+    const handleUpdate = async (e: React.FormEvent) => {
+        e.preventDefault();
+        if (!editingDept || !editName.trim()) return;
+
+        setSaving(true);
+        try {
+            await StructureService.updateDepartment(editingDept.id, { name: editName });
+            toast.success("Office / Unit name updated");
+            setEditOpen(false);
+            fetchDepartments();
+        } catch (error) {
+            toast.error("Failed to update office / unit");
+        } finally {
+            setSaving(false);
+        }
+    };
 
     const fetchDepartments = async () => {
         setLoading(true);
@@ -118,7 +141,20 @@ export function DepartmentsTab() {
                                 </div>
                             </div>
 
-                            <div className="flex justify-end pt-2 border-t border-white/5">
+                            <div className="flex justify-end pt-2 border-t border-white/5 gap-2">
+                                <Button
+                                    variant="ghost"
+                                    size="sm"
+                                    onClick={() => {
+                                        setEditingDept(dept);
+                                        setEditName(dept.name);
+                                        setEditOpen(true);
+                                    }}
+                                    className="text-slate-400 hover:text-white hover:bg-white/5"
+                                >
+                                    <Edit2 className="w-4 h-4 mr-2" />
+                                    Edit
+                                </Button>
                                 <Button
                                     variant="ghost"
                                     size="sm"
@@ -142,6 +178,32 @@ export function DepartmentsTab() {
                     )}
                 </div>
             )}
+
+            {/* Edit Dialog */}
+            <Dialog open={editOpen} onOpenChange={setEditOpen}>
+                <DialogContent className="bg-slate-900 border-white/10">
+                    <DialogHeader>
+                        <DialogTitle className="text-white">Edit Office / Unit</DialogTitle>
+                        <DialogDescription className="text-slate-400">
+                            Update the display name. Changes will propagate globally.
+                        </DialogDescription>
+                    </DialogHeader>
+                    <form onSubmit={handleUpdate} className="space-y-4 pt-4">
+                        <div className="space-y-2">
+                            <Label className="text-slate-300">Display Name</Label>
+                            <Input
+                                value={editName}
+                                onChange={e => setEditName(e.target.value)}
+                                placeholder="e.g. Media Team"
+                                className="bg-slate-800 border-white/10 text-white"
+                            />
+                        </div>
+                        <Button type="submit" disabled={saving} className="w-full bg-blue-600 hover:bg-blue-500">
+                            {saving ? <Loader2 className="w-4 h-4 animate-spin" /> : "Save Changes"}
+                        </Button>
+                    </form>
+                </DialogContent>
+            </Dialog>
         </div>
     );
 }

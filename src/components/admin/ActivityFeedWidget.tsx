@@ -99,8 +99,8 @@ export const ActivityFeedWidget = () => {
     }
 
     return (
-        <div className="bg-slate-900/50 border border-white/5 rounded-2xl overflow-hidden backdrop-blur-sm">
-            <div className="px-6 py-4 border-b border-white/5 flex justify-between items-center">
+        <div className="bg-gradient-to-b from-slate-900/80 to-slate-950/90 border border-white/10 rounded-2xl overflow-hidden backdrop-blur-xl shadow-xl">
+            <div className="px-6 py-4 border-b border-white/5 flex justify-between items-center bg-white/5">
                 <h3 className="font-medium text-white flex items-center gap-2">
                     <Activity size={18} className="text-blue-400" />
                     Live Operations
@@ -110,36 +110,36 @@ export const ActivityFeedWidget = () => {
                         <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
                         <span className="relative inline-flex rounded-full h-2 w-2 bg-emerald-500"></span>
                     </span>
-                    <span className="text-xs text-slate-500 font-mono">LIVE</span>
+                    <span className="text-xs text-slate-500 font-mono tracking-wider">LIVE</span>
                 </div>
             </div>
 
-            <div className="max-h-[400px] overflow-y-auto scrollbar-thin scrollbar-thumb-white/10 scrollbar-track-transparent">
+            <div className="max-h-[400px] overflow-y-auto pr-1 [&::-webkit-scrollbar]:w-1.5 [&::-webkit-scrollbar-track]:bg-transparent [&::-webkit-scrollbar-thumb]:bg-slate-700/30 [&::-webkit-scrollbar-thumb]:rounded-full hover:[&::-webkit-scrollbar-thumb]:bg-slate-600/60">
                 <div className="divide-y divide-white/5">
                     {feed.map((item) => (
-                        <div key={item.id} className="p-4 flex gap-4 hover:bg-white/5 transition-colors group">
+                        <div key={item.id} className="p-4 flex gap-4 hover:bg-blue-500/5 transition-colors group">
                             <div className="mt-1">
                                 <SafeAvatar
                                     src={item.user.avatarUrl}
                                     alt={item.user.name}
                                     name={item.user.name}
-                                    className="w-8 h-8 rounded-lg border border-white/10"
+                                    className="w-8 h-8 rounded-lg border border-white/10 shadow-sm"
                                 />
                             </div>
                             <div className="flex-1 min-w-0">
                                 <div className="flex justify-between items-start gap-2">
                                     <div className="text-sm text-slate-300">
-                                        <span className="font-medium text-white hover:underline cursor-pointer">{item.user.name}</span>
+                                        <span className="font-medium text-white hover:text-blue-400 transition-colors cursor-pointer">{item.user.name}</span>
                                         {' '}
                                         {formatAction(item)}
                                     </div>
-                                    <span className="text-[10px] text-slate-500 whitespace-nowrap pt-1">
+                                    <span className="text-[10px] text-slate-600 whitespace-nowrap pt-1 font-mono">
                                         {formatDistanceToNow(new Date(item.timestamp), { addSuffix: true })}
                                     </span>
                                 </div>
 
-                                <div className="mt-1.5 flex items-center gap-2">
-                                    <div className="flex items-center gap-1.5 px-2 py-0.5 rounded-md bg-white/5 border border-white/5 text-[10px] text-slate-400 uppercase tracking-wide">
+                                <div className="mt-2 flex items-center gap-2">
+                                    <div className="flex items-center gap-1.5 px-2 py-0.5 rounded-md bg-white/5 border border-white/5 text-[10px] text-slate-400 uppercase tracking-wide group-hover:border-white/10 transition-colors">
                                         {getIcon(item.resourceType, item.action)}
                                         {item.resourceType.replace('_', ' ')}
                                     </div>

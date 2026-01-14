@@ -75,7 +75,7 @@ export default function FAB({ onMainClick }: FABProps) {
       </AnimatePresence>
       <div
         className="fixed left-1/2 -translate-x-1/2 z-[50] flex flex-col-reverse items-center gap-4"
-        style={{ bottom: 'calc(1.5rem + 8px + env(safe-area-inset-bottom))' }}
+        style={{ bottom: 'calc(1.5rem + 8px + var(--safe-bottom, 0px))' }}
       >
         <motion.button
           className="w-16 h-16 rounded-full text-white shadow-[0_8px_30px_rgba(79,70,229,0.5)] flex items-center justify-center relative z-20 bg-gradient-to-br from-blue-600 to-violet-600 hover-sheen overflow-hidden border border-white/20"

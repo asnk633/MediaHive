@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { adminAuth } from "@/lib/firebase/server";
 import { cookies } from "next/headers";
-import { logServerActivity } from "@/lib/server/activity-logger";
+import { logSystemActivity } from "@/lib/server/activity-logger";
 
 export async function POST(request: NextRequest) {
     let idToken = "";
@@ -35,15 +35,19 @@ export async function POST(request: NextRequest) {
         });
 
         // Log Login Activity
-        await logServerActivity({
-            type: 'user_login',
+        await logSystemActivity({
+            actorId: decodedToken.uid,
+            actorRole: (decodedToken.role as string) || 'viewer',
+            action: 'user_login',
             entityType: 'user',
-            entityId: decodedToken.uid || 'unknown',
-            title: 'User Login',
-            performedBy: decodedToken.name || decodedToken.email || 'Unknown User',
-            performedByRole: (decodedToken.role as string) || 'viewer', // Role is usually in custom claims
+            entityId: decodedToken.uid,
+            summary: `User logged in: ${decodedToken.email || 'Unknown Email'}`,
+            source: 'system',
+            severity: 'info',
+            visibility: { mode: 'admin' },
             metadata: {
-                method: 'email'
+                method: 'email',
+                email: decodedToken.email
             }
         });
 

@@ -24,9 +24,14 @@ export interface Task {
     approvalStatus?: 'pending' | 'approved' | 'correction_requested';
     priority: 'low' | 'medium' | 'high' | 'urgent';
     dueDate: any; // Firestore Timestamp
-    department: string;
-    institutionId?: number;
-    departmentId?: number;
+    /**
+     * @deprecated Use departmentId or institutionId instead.
+     * Kept for audit/debug of legacy tasks.
+     * Do not write to this field.
+     */
+    department?: string;
+    institutionId?: string | number;
+    departmentId?: string | number;
     eventId?: string;
     assignedBy: {
         uid: string;

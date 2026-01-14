@@ -8,7 +8,8 @@ import {
     FileText,
     Calendar,
     Megaphone,
-    User
+    User,
+    Sparkles
 } from 'lucide-react';
 import { formatDistanceToNow } from 'date-fns';
 
@@ -17,8 +18,8 @@ interface NotificationItemProps {
     onClick: (notification: AppNotification) => void;
 }
 
-const getIcon = (type: string) => {
-    switch (type) {
+const getIcon = (notification: AppNotification) => {
+    switch (notification.type) {
         case 'task_assigned': return <User size={18} className="text-blue-400" />;
         case 'task_completed': return <CheckCircle size={18} className="text-green-400" />;
         case 'priority_updated': return <AlertTriangle size={18} className="text-orange-400" />;
@@ -26,6 +27,16 @@ const getIcon = (type: string) => {
         case 'event_created': return <Calendar size={18} className="text-purple-400" />;
         case 'event_reminder': return <Clock size={18} className="text-purple-400" />;
         case 'announcement': return <Megaphone size={18} className="text-yellow-400" />;
+        case 'system_update': {
+            // Severity Color Logic
+            const severity = notification.metadata?.severity || 'info';
+            // Or look at priority: critical -> high
+            const colorClass = notification.priority === 'high' ? 'text-red-500'
+                : notification.metadata?.severity === 'important' ? 'text-orange-400'
+                    : 'text-blue-400';
+
+            return <Megaphone size={18} className={colorClass} />;
+        }
         default: return <Bell size={18} className="text-gray-400" />;
     }
 };
@@ -40,7 +51,7 @@ export const NotificationItem: React.FC<NotificationItemProps> = ({ notification
       `}
         >
             <div className={`mt-1 flex-shrink-0 p-1.5 rounded-lg ${notification.isRead ? 'bg-white/5' : 'bg-white/10'}`}>
-                {getIcon(notification.type)}
+                {getIcon(notification)}
             </div>
             <div className="flex-1 min-w-0">
                 <p className={`text-sm font-semibold ${notification.isRead ? 'text-gray-400' : 'text-gray-100'}`}>

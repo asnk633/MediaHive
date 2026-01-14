@@ -1,7 +1,4 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { getDb } from '@/db';
-import { auditLog } from '@/db/schema';
-import { desc } from 'drizzle-orm';
 import { verifyUser } from '@/lib/server-utils';
 import { adminDb } from '@/lib/firebase/server';
 
@@ -15,37 +12,21 @@ export async function GET(request: NextRequest) {
             return NextResponse.json({ error: 'Unauthorized' }, { status: 403 });
         }
 
-        // 2. Fetch Audit Logs from SQLite (with graceful fallback for serverless)
-        let logs: any[] = [];
-        try {
-            const db = await getDb();
-            logs = await db
-                .select()
-                .from(auditLog)
-                .orderBy(desc(auditLog.timestamp))
-                .limit(20);
-        } catch (dbError: any) {
-            // Gracefully handle database errors in serverless environments
-            console.warn('[Activity Feed] Database not available (likely serverless environment):', dbError.message);
-            // Return empty feed instead of crashing
-            return NextResponse.json({ feed: [] });
-        }
+        // 2. Fetch Logs from Firestore (system_activity)
+        const snapshot = await adminDb.collection('system_activity')
+            .orderBy('createdAt', 'desc')
+            .limit(20)
+            .get();
+
+        const logs = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
 
         // 3. Enrich with User Data from Firestore
-        // Collect unique UIDs
-        const uids = Array.from(new Set(logs.map((log: any) => log.userId))) as string[];
-
-        // Fetch User Profiles (Optimization: multi-get)
-        // Since Firestore doesn't support "get all these IDs" in one go smoothly without `where 'in'`, 
-        // and `where 'in'` is limited to 10 or 30, we'll just fetch all users if uids count is high, 
-        // or loop get if low. For the feed, we might have 10-20 unique users max.
-        // Actually, let's just fetch all users for simplicity and cache them in memory for this request? 
-        // No, `getAllUsers` is safer. Or just `Promise.all` the handful of unique UIDs.
+        // Collect unique Actor IDs
+        const uids = Array.from(new Set(logs.map((log: any) => log.actorId))) as string[];
 
         const userMap = new Map<string, { name: string, avatarUrl?: string }>();
 
         if (uids.length > 0) {
-            // Use Promise.all with chunking if needed, but for 20 logs, UIDs <= 20.
             const userDocs = await Promise.all(
                 uids.map((uid: string) => adminDb.collection('users').doc(uid).get())
             );
@@ -63,25 +44,25 @@ export async function GET(request: NextRequest) {
 
         // 4. Transform for Frontend
         const feed = logs.map((log: any) => {
-            const userInfo = userMap.get(log.userId) || { name: 'Unknown User' };
+            const userInfo = userMap.get(log.actorId) || { name: 'Unknown User' };
 
-            // Parse details if it's a string (it is, based on schema default)
-            let parsedDetails = {};
-            try {
-                parsedDetails = typeof log.details === 'string' ? JSON.parse(log.details) : log.details;
-            } catch (e) {
-                // ignore parse error
+            // Handle timestamp normalization (Firestore Timestamp vs ISO string)
+            let timestamp = new Date().toISOString();
+            if (log.createdAt && typeof log.createdAt.toDate === 'function') {
+                timestamp = log.createdAt.toDate().toISOString();
+            } else if (log.createdAt) {
+                timestamp = new Date(log.createdAt).toISOString();
             }
 
             return {
                 id: log.id,
-                action: log.action,
-                resourceType: log.resourceType,
-                resourceId: log.resourceId,
-                timestamp: log.timestamp,
-                details: parsedDetails,
+                action: log.action || 'activity',
+                resourceType: log.entityType || 'system',
+                resourceId: log.entityId,
+                timestamp: timestamp,
+                details: log.metadata || log.details || {},
                 user: {
-                    uid: log.userId,
+                    uid: log.actorId,
                     name: userInfo.name,
                     avatarUrl: userInfo.avatarUrl
                 }
@@ -93,7 +74,7 @@ export async function GET(request: NextRequest) {
     } catch (error: any) {
         console.error('Error fetching activity feed:', error);
         return NextResponse.json(
-            { error: 'Internal server error: ' + error.message, stack: error.stack },
+            { error: 'Internal server error: ' + error.message },
             { status: 500 }
         );
     }

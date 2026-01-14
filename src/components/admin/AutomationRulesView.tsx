@@ -1,0 +1,556 @@
+'use client';
+
+import React, { useState, useEffect } from 'react';
+import { AutomationRule, RuleAction, ConditionOperator } from '@/types/automation-rules';
+import { Loader2, Plus, Lock, Send, ShieldAlert, Archive, Copy, Play, Info, ChevronRight, Zap, AlertTriangle, ChevronDown } from 'lucide-react';
+import Link from 'next/link';
+
+interface RulesData {
+    custom: AutomationRule[];
+    system: any[];
+}
+
+export default function AutomationRulesView() {
+    const [data, setData] = useState<RulesData>({ custom: [], system: [] });
+    const [loading, setLoading] = useState(true);
+    const [isEditorOpen, setIsEditorOpen] = useState(false);
+    const [editingRule, setEditingRule] = useState<AutomationRule | null>(null);
+
+    const fetchRules = async () => {
+        setLoading(true);
+        try {
+            const res = await fetch('/api/admin/automation-rules');
+            if (res.ok) {
+                const json = await res.json();
+                setData(json);
+            }
+        } catch (e) {
+            console.error(e);
+        } finally {
+            setLoading(false);
+        }
+    };
+
+    useEffect(() => {
+        fetchRules();
+    }, []);
+
+    const handleCreate = () => {
+        setEditingRule(null);
+        setIsEditorOpen(true);
+    };
+
+    const handleEdit = (rule: AutomationRule) => {
+        if (rule.locked) return;
+        setEditingRule(rule);
+        setIsEditorOpen(true);
+    };
+
+    const handleClone = (rule: AutomationRule) => {
+        const draft = {
+            ...rule,
+            id: '',
+            version: 0,
+            locked: false,
+            enabled: false
+        };
+        setEditingRule(draft);
+        setIsEditorOpen(true);
+    };
+
+    const handleActivate = async (id: string) => {
+        if (!confirm('Activate this rule? Previous versions will be disabled.')) return;
+        try {
+            const res = await fetch('/api/admin/automation-rules', {
+                method: 'PATCH',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ id, command: 'activate' })
+            });
+            if (res.ok) fetchRules();
+        } catch (e) {
+            alert('Failed to activate');
+        }
+    };
+
+    const handleSave = async (rule: Partial<AutomationRule>) => {
+        try {
+            const method = rule.id && rule.version ? 'PUT' : 'POST';
+            const res = await fetch('/api/admin/automation-rules', {
+                method,
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(rule)
+            });
+            if (res.ok) {
+                setIsEditorOpen(false);
+                fetchRules();
+            } else {
+                alert('Failed to save');
+            }
+        } catch (e) {
+            alert('Error saving');
+        }
+    };
+
+    const activeRules = data.custom.filter(r => r.enabled);
+    const drafts = data.custom.filter(r => !r.enabled);
+
+    return (
+        <div className="min-h-screen bg-gradient-to-b from-[#020617] via-[#0B1120] to-black text-slate-200">
+            <div className="max-w-[1400px] mx-auto px-6 py-10 space-y-12">
+
+                {/* Header & Warning Panel */}
+                <div className="space-y-8">
+                    <div className="flex flex-col md:flex-row justify-between items-start gap-6 border-b border-white/5 pb-8">
+                        <div>
+                            <div className="flex items-center gap-3 mb-2">
+                                <div className="p-2.5 bg-indigo-500/10 rounded-xl text-indigo-400 border border-indigo-500/20 shadow-inner">
+                                    <Zap size={24} className="fill-indigo-500/20" />
+                                </div>
+                                <h1 className="text-3xl font-bold tracking-tight text-white">Automation Engine</h1>
+                            </div>
+                            <p className="text-slate-400 max-w-2xl font-light text-lg">
+                                Advanced control plane for logic resolution, scope priority, and event triggers.
+                            </p>
+                        </div>
+                        <button
+                            onClick={handleCreate}
+                            className="flex items-center gap-2 px-6 py-3 bg-indigo-600 hover:bg-indigo-500 text-white rounded-xl transition-all font-semibold shadow-xl shadow-indigo-900/20 hover:scale-[1.02]"
+                        >
+                            <Plus className="w-5 h-5" />
+                            Create Custom Rule
+                        </button>
+                    </div>
+
+                    {/* Disclaimer Alert */}
+                    <div className="relative overflow-hidden flex items-start gap-5 p-5 rounded-2xl border border-amber-500/20 bg-amber-500/[0.03] backdrop-blur-sm">
+                        <div className="absolute top-0 right-0 p-3 opacity-10">
+                            <AlertTriangle className="w-32 h-32 text-amber-500 rotate-12" />
+                        </div>
+                        <div className="p-2 bg-amber-500/10 rounded-lg shrink-0 text-amber-500">
+                            <Info className="w-6 h-6" />
+                        </div>
+                        <div className="space-y-1 z-10">
+                            <h4 className="text-base font-semibold text-amber-200 tracking-wide uppercase text-xs">Advanced Configuration</h4>
+                            <p className="text-amber-100/70 leading-relaxed max-w-3xl">
+                                This interface exposes raw engine logic. For standard notification settings (reminders, due dates), use the <Link href="/admin/notification-policies" className="text-amber-400 hover:text-amber-300 underline underline-offset-4 decoration-amber-500/30 font-medium">Simplified Policy Editor</Link>. Changes here override global defaults and may affect system stability.
+                            </p>
+                        </div>
+                    </div>
+                </div>
+
+                {loading ? (
+                    <div className="flex justify-center p-32">
+                        <Loader2 className="w-12 h-12 text-indigo-500 animate-spin opacity-50" />
+                    </div>
+                ) : (
+                    <div className="grid grid-cols-1 xl:grid-cols-12 gap-10 items-start">
+
+                        {/* Main Column: Active & Drafts (8 cols) */}
+                        <div className="xl:col-span-8 space-y-16">
+                            {/* Active Rules Section */}
+                            <section className="space-y-6">
+                                <div className="flex items-center gap-3">
+                                    <h2 className="text-xl font-bold text-white flex items-center gap-3">
+                                        <span className="flex w-3 h-3 rounded-full bg-emerald-500 shadow-[0_0_12px_rgba(16,185,129,0.8)] animate-pulse" />
+                                        Active Overrides
+                                    </h2>
+                                    <span className="px-2.5 py-0.5 rounded-full bg-white/5 text-xs text-slate-400 font-mono border border-white/5">{activeRules.length}</span>
+                                </div>
+
+                                {activeRules.length === 0 ? (
+                                    <div className="p-12 text-center rounded-3xl border border-dashed border-white/5 bg-white/[0.02]">
+                                        <p className="text-slate-600 font-mono text-sm">No custom overrides active. System defaults are in control.</p>
+                                    </div>
+                                ) : (
+                                    <div className="grid gap-5">
+                                        {activeRules.map(rule => (
+                                            <RuleCard
+                                                key={rule.id}
+                                                rule={rule}
+                                                onEdit={handleEdit}
+                                                onClone={handleClone}
+                                                onActivate={handleActivate}
+                                                variant="active"
+                                            />
+                                        ))}
+                                    </div>
+                                )}
+                            </section>
+
+                            {/* Drafts Section */}
+                            {drafts.length > 0 && (
+                                <section className="space-y-6">
+                                    <div className="flex items-center gap-3 opacity-60 hover:opacity-100 transition-opacity">
+                                        <h2 className="text-lg font-bold text-slate-400 flex items-center gap-3">
+                                            <span className="w-2.5 h-2.5 rounded-full bg-amber-500/50" />
+                                            Drafts & Inactive
+                                        </h2>
+                                        <span className="px-2 py-0.5 rounded-full bg-white/5 text-xs text-slate-500 font-mono border border-white/5">{drafts.length}</span>
+                                    </div>
+                                    <div className="grid gap-4 opacity-80">
+                                        {drafts.map(rule => (
+                                            <RuleCard
+                                                key={rule.id}
+                                                rule={rule}
+                                                onEdit={handleEdit}
+                                                onClone={handleClone}
+                                                onActivate={handleActivate}
+                                                variant="draft"
+                                            />
+                                        ))}
+                                    </div>
+                                </section>
+                            )}
+                        </div>
+
+                        {/* Sidebar: System Defaults (4 cols) */}
+                        <div className="xl:col-span-4 space-y-6 xl:sticky xl:top-8">
+                            <div className="flex items-center gap-2 pb-4 border-b border-white/5">
+                                <Lock className="w-4 h-4 text-slate-600" />
+                                <h2 className="text-sm font-bold text-slate-500 uppercase tracking-widest">System Defaults</h2>
+                            </div>
+                            <div className="grid gap-3 opacity-60 grayscale hover:grayscale-0 hover:opacity-100 transition-all duration-500 ease-out">
+                                {data.system.map((rule: any) => (
+                                    <RuleCard
+                                        key={rule.id}
+                                        rule={rule}
+                                        readOnly
+                                        variant="locked"
+                                    />
+                                ))}
+                            </div>
+                        </div>
+                    </div>
+                )}
+            </div>
+
+            {isEditorOpen && (
+                <RuleEditor
+                    initialData={editingRule}
+                    onClose={() => setIsEditorOpen(false)}
+                    onSave={handleSave}
+                />
+            )}
+        </div>
+    );
+}
+
+function RuleCard({ rule, readOnly, onEdit, onClone, onActivate, variant = 'active' }: any) {
+    const [expanded, setExpanded] = useState(false);
+
+    // Visual Variants
+    const isLocked = variant === 'locked';
+    const isDraft = variant === 'draft';
+    const isActive = variant === 'active';
+
+    const baseStyles = isLocked
+        ? 'bg-transparent border border-white/5 text-slate-500' // Ghosted
+        : isDraft
+            ? 'bg-slate-900/20 border border-dashed border-slate-700/50' // Draft
+            : 'bg-[#0F172A] border border-white/10 shadow-lg shadow-black/40'; // Active
+
+    const actionColors = {
+        notify: 'bg-emerald-500/10 text-emerald-400 border-emerald-500/20',
+        escalate: 'bg-rose-500/10 text-rose-400 border-rose-500/20',
+        suppress: 'bg-slate-500/10 text-slate-400 border-slate-500/20',
+        audit: 'bg-blue-500/10 text-blue-400 border-blue-500/20'
+    };
+
+    const actionColor = actionColors[rule.action as keyof typeof actionColors] || actionColors.notify;
+
+    return (
+        <div className={`
+            group relative p-5 rounded-xl transition-all duration-300
+            ${baseStyles}
+            ${!isLocked && 'hover:border-indigo-500/30'}
+        `}>
+            {/* Active Indicator Strip */}
+            {isActive && <div className="absolute left-0 top-4 bottom-4 w-1 bg-indigo-500 rounded-r-full shadow-[0_0_10px_rgba(99,102,241,0.5)]" />}
+
+            {/* Main Row */}
+            <div className={`flex justify-between items-start gap-4 ${isActive ? 'pl-3' : ''}`}>
+
+                {/* Visual Logic: Action -> Scope -> Key */}
+                <div className="flex flex-col gap-3 flex-1 min-w-0">
+
+                    {/* Top Row: Action & Scope */}
+                    <div className="flex items-center flex-wrap gap-2">
+                        <div className={`
+                            px-2.5 py-1 rounded text-[11px] font-bold uppercase tracking-wider border
+                            ${isLocked ? 'bg-slate-800 border-slate-700 text-slate-500' : actionColor}
+                        `}>
+                            {rule.action}
+                        </div>
+
+                        <div className="flex items-center gap-1.5 px-2 py-1 rounded bg-white/5 border border-white/5 text-xs font-mono text-slate-400">
+                            <span className={isActive ? 'text-indigo-300' : ''}>{rule.scopeType}</span>
+                            {rule.scopeId !== 'global' && (
+                                <>
+                                    <span className="text-slate-600">/</span>
+                                    <span className="text-slate-300 truncate max-w-[120px]">{rule.scopeId}</span>
+                                </>
+                            )}
+                        </div>
+
+                        {rule.priority > 0 && !isLocked && (
+                            <span className="text-[10px] text-orange-400/80 font-mono px-1.5 border border-orange-500/20 rounded">
+                                PRI:{rule.priority}
+                            </span>
+                        )}
+                    </div>
+
+                    {/* Key (De-emphasized) */}
+                    <div className="min-w-0">
+                        <h3 className={`font-mono text-sm truncate opacity-70 ${isLocked ? 'text-slate-600' : 'text-slate-300'}`} title={rule.ruleKey}>
+                            {rule.ruleKey}
+                        </h3>
+                    </div>
+                </div>
+
+                {/* Right: Actions */}
+                <div className="flex items-center gap-1 shrink-0">
+                    {!readOnly && rule.locked && (
+                        <button onClick={() => onClone(rule)} className="p-2 text-slate-600 hover:text-white hover:bg-white/5 rounded-lg transition-colors" title="Clone as Draft">
+                            <Copy className="w-4 h-4" />
+                        </button>
+                    )}
+                    {!readOnly && !rule.locked && (
+                        <>
+                            <button onClick={() => onActivate(rule.id)} className="p-2 text-emerald-500/50 hover:text-emerald-400 hover:bg-emerald-500/10 rounded-lg transition-colors" title="Activate">
+                                <Play className="w-4 h-4" />
+                            </button>
+                            <button onClick={() => onEdit(rule)} className="p-2 text-blue-500/50 hover:text-blue-400 hover:bg-blue-500/10 rounded-lg transition-colors" title="Edit">
+                                <span className="text-[10px] font-bold">EDIT</span>
+                            </button>
+                        </>
+                    )}
+
+                    {/* Toggle Expand */}
+                    <button
+                        onClick={() => setExpanded(!expanded)}
+                        className={`p-2 rounded-lg transition-all ${expanded ? 'bg-white/10 text-white' : 'text-slate-700 hover:text-slate-400'}`}
+                    >
+                        <ChevronRight className={`w-4 h-4 transition-transform ${expanded ? 'rotate-90' : ''}`} />
+                    </button>
+                </div>
+            </div>
+
+            {/* Expanded Details */}
+            {expanded && (
+                <div className="mt-4 pt-4 border-t border-white/5 space-y-4 animate-in slide-in-from-top-1 duration-200">
+                    <div className="grid gap-2">
+                        <label className="text-[10px] font-bold text-slate-600 uppercase tracking-widest pl-1">Conditions</label>
+                        {rule.conditions.map((c: any, i: number) => (
+                            <div key={i} className={`
+                                flex items-center gap-3 text-sm font-mono p-2 rounded border
+                                ${isLocked ? 'bg-transparent border-slate-800 text-slate-600' : 'bg-black/40 border-white/5'}
+                            `}>
+                                <span className={isLocked ? '' : 'text-blue-400'}>{c.field}</span>
+                                <span className="text-slate-600 text-xs">{c.operator}</span>
+                                <span className={isLocked ? '' : 'text-amber-400'}>{String(c.value)}</span>
+                            </div>
+                        ))}
+                    </div>
+                    {rule.eventType && (
+                        <div className="flex items-center gap-2 px-2">
+                            <span className="text-[10px] uppercase tracking-wider text-slate-600">Trigger:</span>
+                            <span className="text-xs text-slate-500 font-mono">{rule.eventType}</span>
+                        </div>
+                    )}
+                    <div className="flex justify-end pt-2">
+                        <span className="text-[10px] text-slate-700 font-mono">ID: {rule.id || 'NEW'}</span>
+                    </div>
+                </div>
+            )}
+        </div>
+    );
+}
+
+function RuleEditor({ initialData, onClose, onSave }: any) {
+    const [formData, setFormData] = useState<Partial<AutomationRule>>({
+        ruleKey: '',
+        scopeType: 'global',
+        scopeId: 'global',
+        eventType: 'task_overdue',
+        action: 'notify',
+        priority: 1,
+        conditions: [],
+        ...initialData
+    });
+
+    const isEdit = !!initialData?.id;
+
+    const updateCondition = (idx: number, field: string, value: any) => {
+        const newConditions = [...(formData.conditions || [])];
+        newConditions[idx] = { ...newConditions[idx], [field]: value };
+        setFormData({ ...formData, conditions: newConditions });
+    };
+
+    const addCondition = () => {
+        setFormData({ ...formData, conditions: [...(formData.conditions || []), { field: '', operator: 'eq', value: '' }] });
+    };
+
+    const removeCondition = (idx: number) => {
+        setFormData({ ...formData, conditions: (formData.conditions || []).filter((_, i) => i !== idx) });
+    };
+
+    return (
+        <div className="fixed inset-0 bg-[#020617]/90 backdrop-blur-sm flex items-center justify-center p-4 z-50">
+            {/* Modal Content - Styled for Night Sky */}
+            <div className="bg-[#0B1120] border border-white/10 rounded-2xl w-full max-w-2xl max-h-[90vh] overflow-y-auto shadow-2xl shadow-black/80 ring-1 ring-white/5">
+                <div className="p-6 border-b border-white/5 sticky top-0 bg-[#0B1120]/95 backdrop-blur z-10 flex justify-between items-center">
+                    <div>
+                        <h2 className="text-lg font-bold text-white">
+                            {isEdit && !initialData.locked ? 'Edit Rule Draft' : 'New Rule Draft'}
+                        </h2>
+                        <p className="text-xs text-slate-500 mt-0.5">Define logic and outcomes manually.</p>
+                    </div>
+                    <button onClick={onClose} className="p-2 text-slate-500 hover:text-white hover:bg-white/5 rounded-lg transition-colors">✕</button>
+                </div>
+
+                <div className="p-8 space-y-8">
+                    {/* Basic Info */}
+                    <div className="grid grid-cols-2 gap-6">
+                        <div className="space-y-2">
+                            <label className="block text-xs font-medium text-slate-400 uppercase tracking-wide">Rule Key (Stable ID)</label>
+                            <input
+                                className="w-full bg-white/5 border border-white/5 rounded-xl px-4 py-3 text-sm text-white focus:outline-none focus:border-indigo-500/50 focus:ring-1 focus:ring-indigo-500/50 transition-all font-mono placeholder:text-slate-700"
+                                value={formData.ruleKey}
+                                onChange={e => setFormData({ ...formData, ruleKey: e.target.value })}
+                                disabled={isEdit && !!formData.id}
+                                placeholder="e.g. task_overdue_custom"
+                            />
+                        </div>
+                        <div className="space-y-2">
+                            <label className="block text-xs font-medium text-slate-400 uppercase tracking-wide">Event Trigger</label>
+                            <div className="relative">
+                                <select
+                                    className="w-full appearance-none bg-white/5 border border-white/5 rounded-xl px-4 py-3 text-sm text-white focus:outline-none focus:border-indigo-500/50 transition-all cursor-pointer"
+                                    value={formData.eventType}
+                                    onChange={e => setFormData({ ...formData, eventType: e.target.value })}
+                                >
+                                    {['task_due_soon', 'task_overdue', 'task_stale_warning', 'task_stale_escalation', 'inventory_due_soon', 'inventory_overdue', 'inventory_escalated'].map(e => (
+                                        <option key={e} value={e} className="bg-[#0B1120]">{e}</option>
+                                    ))}
+                                </select>
+                                <ChevronDown className="absolute right-4 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-500 pointer-events-none" />
+                            </div>
+                        </div>
+                    </div>
+
+                    <div className="grid grid-cols-3 gap-6">
+                        <div className="space-y-2">
+                            <label className="block text-xs font-medium text-slate-400 uppercase tracking-wide">Scope Type</label>
+                            <div className="relative">
+                                <select
+                                    className="w-full appearance-none bg-white/5 border border-white/5 rounded-xl px-4 py-3 text-sm text-white focus:outline-none focus:border-indigo-500/50 cursor-pointer"
+                                    value={formData.scopeType}
+                                    onChange={e => setFormData({ ...formData, scopeType: e.target.value as any })}
+                                >
+                                    <option value="global" className="bg-[#0B1120]">Global</option>
+                                    <option value="institution" className="bg-[#0B1120]">Institution</option>
+                                    <option value="unit" className="bg-[#0B1120]">Unit</option>
+                                </select>
+                                <ChevronDown className="absolute right-4 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-500 pointer-events-none" />
+                            </div>
+                        </div>
+                        <div className="col-span-2 space-y-2">
+                            <label className="block text-xs font-medium text-slate-400 uppercase tracking-wide">Scope ID (Optional for Global)</label>
+                            <input
+                                className="w-full bg-white/5 border border-white/5 rounded-xl px-4 py-3 text-sm text-white focus:outline-none focus:border-indigo-500/50 font-mono placeholder:text-slate-700"
+                                value={formData.scopeId}
+                                onChange={e => setFormData({ ...formData, scopeId: e.target.value })}
+                                placeholder="Global ID or Specific Unit ID"
+                            />
+                        </div>
+                    </div>
+
+                    {/* Conditions */}
+                    <div className="space-y-4 p-5 rounded-2xl bg-white/[0.02] border border-white/5">
+                        <div className="flex justify-between items-center">
+                            <label className="block text-xs font-bold text-slate-400 uppercase tracking-widest">Logic Conditions (AND)</label>
+                            <button onClick={addCondition} className="text-xs text-indigo-400 hover:text-indigo-300 flex items-center gap-1.5 font-bold transition-colors uppercase tracking-wide">
+                                <Plus className="w-3.5 h-3.5" /> Add Condition
+                            </button>
+                        </div>
+                        <div className="space-y-3">
+                            {formData.conditions?.length === 0 && (
+                                <div className="text-center py-6 border border-dashed border-white/5 rounded-xl text-slate-600 text-xs italic">
+                                    No specific conditions. Rule will trigger on every event.
+                                </div>
+                            )}
+                            {formData.conditions?.map((c, i) => (
+                                <div key={i} className="flex gap-3">
+                                    <input
+                                        placeholder="Field (e.g. hoursOverdue)"
+                                        className="flex-1 bg-black/20 border border-white/5 rounded-lg px-3 py-2 text-sm text-white font-mono placeholder:text-slate-700 focus:border-indigo-500/50 outline-none transition-colors"
+                                        value={c.field}
+                                        onChange={e => updateCondition(i, 'field', e.target.value)}
+                                    />
+                                    <div className="relative w-28">
+                                        <select
+                                            className="w-full appearance-none bg-black/20 border border-white/5 rounded-lg px-3 py-2 text-sm text-slate-300 focus:border-indigo-500/50 outline-none cursor-pointer"
+                                            value={c.operator}
+                                            onChange={e => updateCondition(i, 'operator', e.target.value)}
+                                        >
+                                            {['eq', 'neq', 'gt', 'gte', 'lt', 'lte', 'contains'].map(op => (
+                                                <option key={op} value={op} className="bg-[#0B1120]">{op}</option>
+                                            ))}
+                                        </select>
+                                    </div>
+                                    <input
+                                        placeholder="Value"
+                                        className="w-28 bg-black/20 border border-white/5 rounded-lg px-3 py-2 text-sm text-white font-mono placeholder:text-slate-700 focus:border-indigo-500/50 outline-none transition-colors"
+                                        value={c.value}
+                                        onChange={e => updateCondition(i, 'value', e.target.value)}
+                                    />
+                                    <button onClick={() => removeCondition(i)} className="text-slate-700 hover:text-rose-500 transition-colors px-2">✕</button>
+                                </div>
+                            ))}
+                        </div>
+                    </div>
+
+                    {/* Action */}
+                    <div className="grid grid-cols-2 gap-6">
+                        <div className="space-y-2">
+                            <label className="block text-xs font-medium text-slate-400 uppercase tracking-wide">Resulting Action</label>
+                            <div className="relative">
+                                <select
+                                    className="w-full appearance-none bg-white/5 border border-white/5 rounded-xl px-4 py-3 text-sm text-white focus:outline-none focus:border-indigo-500/50 cursor-pointer"
+                                    value={formData.action}
+                                    onChange={e => setFormData({ ...formData, action: e.target.value as RuleAction })}
+                                >
+                                    <option value="notify" className="bg-[#0B1120]">Notify User (Standard)</option>
+                                    <option value="escalate" className="bg-[#0B1120]">Escalate (Admin/Manager)</option>
+                                    <option value="suppress" className="bg-[#0B1120]">Suppress (Do Nothing)</option>
+                                    <option value="audit" className="bg-[#0B1120]">Log Only (Silent)</option>
+                                </select>
+                                <ChevronDown className="absolute right-4 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-500 pointer-events-none" />
+                            </div>
+                        </div>
+                        <div className="space-y-2">
+                            <label className="block text-xs font-medium text-slate-400 uppercase tracking-wide">Priority Score</label>
+                            <input
+                                type="number"
+                                className="w-full bg-white/5 border border-white/5 rounded-xl px-4 py-3 text-sm text-white focus:outline-none focus:border-indigo-500/50 placeholder:text-slate-700"
+                                value={formData.priority}
+                                onChange={e => setFormData({ ...formData, priority: parseInt(e.target.value) })}
+                                placeholder="Higher wins (e.g. 10)"
+                            />
+                        </div>
+                    </div>
+                </div>
+
+                <div className="p-6 border-t border-white/5 flex justify-end gap-3 bg-white/[0.02] rounded-b-2xl">
+                    <button onClick={onClose} className="px-5 py-2.5 text-slate-400 hover:text-white text-sm font-medium transition-colors">Cancel</button>
+                    <button
+                        onClick={() => onSave(formData)}
+                        className="px-8 py-2.5 bg-indigo-600 hover:bg-indigo-500 text-white rounded-xl text-sm font-semibold shadow-xl shadow-indigo-500/20 transition-all hover:scale-[1.02]"
+                    >
+                        Save Rule
+                    </button>
+                </div>
+            </div>
+        </div>
+    );
+}

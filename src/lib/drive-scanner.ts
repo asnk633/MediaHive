@@ -2,7 +2,7 @@ import { adminDb } from '@/lib/firebase/server';
 import { getDriveClient, ensureFolderPath } from '@/lib/drive';
 import { DriveQueueItem } from '@/types/drive-queue';
 import { FieldValue } from 'firebase-admin/firestore';
-import { logServerActivity } from '@/lib/server/activity-logger';
+import { logSystemActivity } from '@/lib/server/activity-logger';
 
 const INCOMING_FOLDER_NAME = 'MediaHive/Incoming';
 const QUEUE_COLLECTION = 'drive_queue';
@@ -173,13 +173,16 @@ export class DriveScannerService {
                 });
 
                 // Log activity
-                await logServerActivity({
-                    type: 'drive_file_detected' as any,
+                await logSystemActivity({
+                    actorId: 'system',
+                    actorRole: 'system',
+                    action: 'drive_file_detected',
                     entityType: 'drive_queue_item',
-                    entityId: file.id, // Using Drive ID as reference or use the new Doc ID
-                    title: `Drive File Detected: ${file.name}`,
-                    performedBy: 'System',
-                    performedByRole: 'system',
+                    entityId: file.id || 'unknown',
+                    summary: `Drive File Detected: ${file.name}`,
+                    source: 'system',
+                    severity: 'info',
+                    visibility: { mode: 'admin' },
                     metadata: {
                         driveId: file.id,
                         size: file.size

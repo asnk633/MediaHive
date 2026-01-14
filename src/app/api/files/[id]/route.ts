@@ -3,7 +3,7 @@ import { NextRequest, NextResponse } from 'next/server';
 import { adminDb } from '@/lib/firebase/server';
 import { verifyUser } from '@/lib/server-utils';
 import { getDriveClient } from '@/lib/drive';
-import { logServerActivity } from '@/lib/server/activity-logger';
+import { logSystemActivity } from '@/lib/server/activity-logger';
 
 export const dynamic = 'force-dynamic';
 
@@ -99,16 +99,18 @@ export async function DELETE(
         // 2. Delete from Firestore
         await docRef.delete();
 
-        await logServerActivity({
-            type: 'file_deleted',
+        await logSystemActivity({
+            actorId: user.uid,
+            actorRole: user.role || 'viewer',
+            action: 'file_deleted',
             entityType: 'file',
             entityId: id,
-            title: `File Deleted: ${fileData?.name || 'Unknown File'}`,
-            performedBy: user.name || 'Unknown',
-            performedByRole: user.role || 'viewer',
+            summary: `File deleted: ${fileData?.name || 'Unknown File'}`,
+            severity: 'warning',
             metadata: {
                 driveId: fileData?.driveFileId
-            }
+            },
+            visibility: { mode: 'admin' }
         });
 
         return NextResponse.json({ success: true, id });

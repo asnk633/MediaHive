@@ -23,6 +23,7 @@ import {
     SelectValue,
 } from "@/components/ui/select";
 import { cn } from "@/lib/utils";
+import { ResolvedStructureName } from "@/components/admin/structure/ResolvedStructureName";
 
 interface TaskListViewProps {
     tasks: Task[];
@@ -380,7 +381,11 @@ const TaskListViewComponent: React.FC<TaskListViewProps> = ({ tasks, loading = f
                                             {/* Mobile: Stacked Metadata */}
                                             <div className="md:hidden flex flex-col gap-1">
                                                 <span className="text-xs text-white/50 truncate font-medium">
-                                                    {task.department || "No Department"}
+                                                    <ResolvedStructureName
+                                                        id={task.departmentId || task.institutionId}
+                                                        type={task.departmentId ? 'department' : 'institution'}
+                                                        fallback={(!task.departmentId && !task.institutionId) ? task.department : undefined}
+                                                    />
                                                 </span>
                                                 <div className="flex items-center justify-between text-[10px] text-gray-500">
                                                     <div className="flex items-center gap-2">
@@ -402,8 +407,12 @@ const TaskListViewComponent: React.FC<TaskListViewProps> = ({ tasks, loading = f
 
                                     {/* Desktop: Requested By */}
                                     <div className="hidden md:flex flex-col justify-center pr-4">
-                                        <span className="text-sm text-white/70 font-medium line-clamp-2 leading-tight" title={task.department}>
-                                            {task.department || <span className="text-white/20 italic">Not specified</span>}
+                                        <span className="text-sm text-white/70 font-medium line-clamp-2 leading-tight">
+                                            <ResolvedStructureName
+                                                id={task.departmentId || task.institutionId}
+                                                type={task.departmentId ? 'department' : 'institution'}
+                                                fallback={(!task.departmentId && !task.institutionId) ? task.department : undefined}
+                                            />
                                         </span>
                                     </div>
 

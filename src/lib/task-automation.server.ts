@@ -1,7 +1,8 @@
 import 'server-only';
 import { adminDb } from '@/lib/firebase/server';
 import { FieldValue } from 'firebase-admin/firestore';
-import { isFeatureEnabled } from '@/app/featureFlags'; // This is usually safe, assuming featureFlags is shared/env based
+import { isFeatureEnabled } from '@/app/featureFlags';
+import { StructurePolicyService } from '@/lib/structure-policies.server';
 
 export const TaskAutomationServiceServer = {
     /**
@@ -20,8 +21,23 @@ export const TaskAutomationServiceServer = {
             if (!taskSnap.exists) return;
             const taskData = taskSnap.data()!;
 
-            // Only suggest if task status is "pending" or "todo"
             if (taskData.status !== 'pending' && taskData.status !== 'todo') {
+                return;
+            }
+
+            // Structure Policy Check
+            const institutionId = (taskData.institutionId || 'global').toString();
+            // departmentId might be absent or null
+            const departmentId = taskData.departmentId ? taskData.departmentId.toString() : undefined;
+
+            const policyCheck = await StructurePolicyService.resolveAutomationPolicy({
+                institutionId,
+                departmentId,
+                eventType: 'task_status_suggestion'
+            });
+
+            if (!policyCheck.allowed) {
+                console.debug(`[StructurePolicy] Skipped 'task_status_suggestion' for task ${taskId}: ${policyCheck.reason} (${policyCheck.source})`);
                 return;
             }
 

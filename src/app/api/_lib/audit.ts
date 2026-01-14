@@ -17,12 +17,18 @@ export async function logAuditEvent(
 ) {
   try {
     // Robustly handle tenantId
-    let safeTenantId = 1;
+    let safeTenantId: number | null = null;
+
     if (typeof tenantId === 'number') {
       safeTenantId = tenantId;
     } else if (typeof tenantId === 'string') {
       const parsed = parseInt(tenantId, 10);
       if (!isNaN(parsed)) safeTenantId = parsed;
+    }
+
+    if (safeTenantId === null) {
+      console.warn(`Audit Log Skipped: Invalid tenantId (${tenantId}) for action ${action}`);
+      return null;
     }
 
     const db = await getDb();
@@ -101,4 +107,8 @@ export async function logAutomationRuleUpdated(userId: string, tenantId: number 
 
 export async function logStaleTaskNotification(userId: string, tenantId: number | string, taskId: string, details?: any, ipAddress?: string | null, userAgent?: string | null) {
   return logAuditEvent(userId, 'notify', 'stale_task', tenantId, taskId, details, ipAddress, userAgent);
+}
+
+export async function logSystemActivity(userId: string, tenantId: number | string, details: any, ipAddress?: string | null, userAgent?: string | null) {
+  return logAuditEvent(userId, 'system_activity', 'system', tenantId, null, details, ipAddress, userAgent);
 }

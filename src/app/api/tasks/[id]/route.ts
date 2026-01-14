@@ -1,7 +1,7 @@
 import { NextResponse } from 'next/server';
 import { getFirebaseServices, verifyUser } from '@/lib/server-utils';
 import { ServerNotification } from '@/lib/server-notification';
-import { logServerActivity } from '@/lib/server/activity-logger';
+import { logSystemActivity } from '@/lib/server/activity-logger';
 
 // Dynamic route
 export async function GET(
@@ -147,31 +147,49 @@ export async function PATCH(
         }
       }
 
-      await logServerActivity({
-        type: 'task_assigned',
+      await logSystemActivity({
+        actorId: user.uid,
+        actorRole: user.role || 'guest',
+        action: 'task_assigned',
         entityType: 'task',
         entityId: id,
-        title: `Task Assigned: ${data.assignedTo.length} users`,
-        performedBy: user.name || 'Unknown',
-        performedByRole: user.role || 'admin',
+        summary: `Task assigned to ${addedAssignees.length} new users`,
         metadata: {
           addedAssignees
-        }
+        },
+        visibility: { mode: 'internal' }
       });
     }
 
     if (data.status && data.status !== currentTask.status) {
-      await logServerActivity({
-        type: data.status === 'done' ? 'task_completed' : 'task_status_change',
+      await logSystemActivity({
+        actorId: user.uid,
+        actorRole: user.role || 'guest',
+        action: data.status === 'done' ? 'task_completed' : 'task_status_change',
         entityType: 'task',
         entityId: id,
-        title: `Task Status: ${data.status}`,
-        performedBy: user.name || 'Unknown',
-        performedByRole: user.role || 'admin',
+        summary: `Task status changed to ${data.status}`,
         metadata: {
           oldStatus: currentTask.status,
           newStatus: data.status
-        }
+        },
+        visibility: { mode: 'internal' }
+      });
+    }
+
+    if (!data.assignedTo && (!data.status || data.status === currentTask.status)) {
+      // Generic update (if not status or assignment)
+      await logSystemActivity({
+        actorId: user.uid,
+        actorRole: user.role || 'guest',
+        action: 'task_updated',
+        entityType: 'task',
+        entityId: id,
+        summary: `Task details updated`,
+        metadata: {
+          updatedFields: Object.keys(data)
+        },
+        visibility: { mode: 'internal' }
       });
     }
 
@@ -200,13 +218,15 @@ export async function DELETE(
 
     await firestore.collection('tasks').doc(id).delete();
 
-    await logServerActivity({
-      type: 'task_deleted',
+    await logSystemActivity({
+      actorId: user.uid,
+      actorRole: user.role || 'guest',
+      action: 'task_deleted',
       entityType: 'task',
       entityId: id,
-      title: `Task Deleted: ${taskTitle}`,
-      performedBy: user.name || 'Unknown',
-      performedByRole: user.role || 'admin'
+      summary: `Task deleted: ${taskTitle}`,
+      severity: 'warning',
+      visibility: { mode: 'admin' }
     });
 
     return NextResponse.json({ success: true });

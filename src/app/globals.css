@@ -34,10 +34,12 @@
 
     /* Global Shell Dimensions */
     --header-base-height: 75px;
-    --header-height: calc(var(--header-base-height) + env(safe-area-inset-top));
-    --bottom-nav-height: calc(80px + 24px + env(safe-area-inset-bottom));
+    --header-height: calc(var(--header-base-height) + env(safe-area-inset-top, 0px));
+
+    --safe-bottom: env(safe-area-inset-bottom, 0px);
+    --bottom-nav-height: calc(80px + 24px + env(safe-area-inset-bottom, 0px));
     /* Visual Tuning */
-    --fab-bottom-offset: calc(26px + env(safe-area-inset-bottom));
+    --fab-bottom-offset: calc(26px + env(safe-area-inset-bottom, 0px));
     /* Height (h-20) + Bottom Margin (bottom-6) */
   }
 }

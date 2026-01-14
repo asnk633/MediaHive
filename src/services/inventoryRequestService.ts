@@ -16,16 +16,25 @@ export const inventoryRequestService = {
         return docRef.id;
     },
 
-    // Get All Requests (Admin)
-    getAll: async () => {
-        const q = query(collection(db, COLLECTION), orderBy("createdAt", "desc"));
+    // Get All Requests (Admin) - Scoped
+    getAll: async (institutionId: string) => {
+        const q = query(
+            collection(db, COLLECTION),
+            where("institutionId", "==", institutionId),
+            orderBy("createdAt", "desc")
+        );
         const snap = await getDocs(q);
         return snap.docs.map(d => ({ id: d.id, ...d.data() } as InventoryRequest));
     },
 
-    // Get My Requests (Guest)
-    getMyRequests: async (uid: string) => {
-        const q = query(collection(db, COLLECTION), where("requestedBy", "==", uid), orderBy("createdAt", "desc"));
+    // Get My Requests (Guest) - Scoped
+    getMyRequests: async (uid: string, institutionId: string) => {
+        const q = query(
+            collection(db, COLLECTION),
+            where("userId", "==", uid),
+            where("institutionId", "==", institutionId), // Ensure scoping query matches rules
+            orderBy("createdAt", "desc")
+        );
         const snap = await getDocs(q);
         return snap.docs.map(d => ({ id: d.id, ...d.data() } as InventoryRequest));
     },

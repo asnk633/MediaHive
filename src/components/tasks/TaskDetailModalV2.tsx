@@ -16,6 +16,7 @@ import { useDevWiring } from '@/hooks/useDevWiring';
 import { TaskRatingComponent } from '@/components/tasks/TaskRatingComponent';
 import { UserService } from '@/services/userService';
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
+import { ResolvedStructureName } from "@/components/admin/structure/ResolvedStructureName";
 
 interface TaskDetailsModalProps {
     task: Task | null;
@@ -230,7 +231,11 @@ export const TaskDetailModalV2: React.FC<TaskDetailsModalProps> = ({ task, isOpe
                                         <div>
                                             <p className="text-[10px] uppercase tracking-wider font-bold text-white/30 mb-1.5">Requested By</p>
                                             <p className="text-sm text-white/90">
-                                                {task.department || task.createdBy?.name || <span className="opacity-50">Not specified</span>}
+                                                <ResolvedStructureName
+                                                    id={task.departmentId || task.institutionId}
+                                                    type={task.departmentId ? 'department' : 'institution'}
+                                                    fallback={(!task.departmentId && !task.institutionId) ? (task.department || task.createdBy?.name) : undefined}
+                                                />
                                             </p>
                                         </div>
                                     </div>

@@ -6,7 +6,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { AdminIntelligenceView } from './AdminIntelligenceView';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Skeleton } from '@/components/ui/skeleton';
-import { Activity, LayoutDashboard, List } from 'lucide-react';
+import { BarChart3, Calendar, FileText, TrendingUp, Users, List, LayoutDashboard, History, Activity, Download } from "lucide-react";
 import { Badge } from '@/components/ui/badge';
 import { formatDistanceToNow } from 'date-fns';
 
@@ -21,7 +21,8 @@ interface ReportOverview {
 
 interface ActivityItem {
     id: string;
-    type: 'task' | 'event' | 'inventory';
+    type: string;
+    severity: 'info' | 'warning' | 'critical';
     title: string;
     description: string;
     timestamp: string;
@@ -30,9 +31,95 @@ interface ActivityItem {
 
 export default function ReportsDashboard() {
     const [overview, setOverview] = useState<ReportOverview | null>(null);
-    const [activity, setActivity] = useState<ActivityItem[]>([]);
+    const [selectedPeriod, setSelectedPeriod] = useState('60d'); // Default to 60 days (Soft Retention)
+    const [filterSeverity, setFilterSeverity] = useState<string>(''); // '' | 'info' | 'warning' | 'critical'
+
+    // Advanced Filters (Manual Apply)
+    const [filterActor, setFilterActor] = useState('');
+    const [filterEntityType, setFilterEntityType] = useState('');
+    const [appliedFilters, setAppliedFilters] = useState({ actor: '', entityType: '' });
+
+    const [activities, setActivities] = useState<ActivityItem[]>([]);
     const [loadingOverview, setLoadingOverview] = useState(true);
-    const [loadingActivity, setLoadingActivity] = useState(true);
+    const [loading, setLoading] = useState(true);
+    const [userRole, setUserRole] = useState<string>('viewer'); // State to track role
+
+    // Check role from API or Context (Simple simulation here, properly user should come from props or context)
+    // For now, if fetch fails with 403, we know.
+
+    const fetchActivities = async () => {
+        try {
+            setLoading(true);
+            const queryParams = new URLSearchParams();
+            if (filterSeverity) queryParams.set('severity', filterSeverity);
+            if (appliedFilters.actor) queryParams.set('actorId', appliedFilters.actor);
+            if (appliedFilters.entityType) queryParams.set('entityType', appliedFilters.entityType);
+
+            // Period logic
+            const now = new Date();
+            let fromDate: Date | null = null;
+
+            if (selectedPeriod === '7d') {
+                fromDate = new Date(now.setDate(now.getDate() - 7));
+            } else if (selectedPeriod === '30d') {
+                fromDate = new Date(now.setDate(now.getDate() - 30));
+            } else if (selectedPeriod === '60d') {
+                fromDate = new Date(now.setDate(now.getDate() - 60));
+            } else { // 'all' - explicit opt-in
+                fromDate = null;
+            }
+
+            if (fromDate) {
+                queryParams.set('from', fromDate.toISOString());
+            }
+
+            const res = await fetch(`/api/reports/activity?${queryParams.toString()}`);
+
+            if (res.status === 403) {
+                // Not admin
+                setActivities([]);
+                setLoading(false);
+                return;
+            }
+
+            const data = await res.json();
+            if (data.activity) {
+                setActivities(data.activity);
+            }
+        } catch (error) {
+            console.error('Failed to fetch activity:', error);
+        } finally {
+            setLoading(false);
+        }
+    };
+
+    const handleApplyFilters = () => {
+        setAppliedFilters({
+            actor: filterActor,
+            entityType: filterEntityType
+        });
+    };
+
+    const handleExport = (format: 'csv' | 'json') => {
+        // Trigger download via window location or direct fetch blob
+        const queryParams = new URLSearchParams();
+        if (filterSeverity) queryParams.set('severity', filterSeverity);
+        if (appliedFilters.actor) queryParams.set('actorId', appliedFilters.actor);
+        if (appliedFilters.entityType) queryParams.set('entityType', appliedFilters.entityType);
+
+        // Date params for export need to match fetch logic
+        const now = new Date();
+        let fromDate: Date | null = null;
+        if (selectedPeriod === '7d') now.setDate(now.getDate() - 7);
+        else if (selectedPeriod === '30d') now.setDate(now.getDate() - 30);
+        else if (selectedPeriod === '60d') now.setDate(now.getDate() - 60);
+        else if (selectedPeriod === 'all') fromDate = null;
+
+        if (fromDate) queryParams.set('from', fromDate.toISOString()); // Logic here slightly duplicated but safe enough
+
+        queryParams.set('export', format);
+        window.location.href = `/api/reports/activity?${queryParams.toString()}`;
+    };
 
     useEffect(() => {
         const fetchOverview = async () => {
@@ -46,32 +133,27 @@ export default function ReportsDashboard() {
             }
         };
 
-        const fetchActivity = async () => {
-            try {
-                const data = await apiClient<{ activity: ActivityItem[] }>('/api/reports/activity');
-                setActivity(data.activity);
-            } catch (error) {
-                console.error('Failed to load activity', error);
-            } finally {
-                setLoadingActivity(false);
-            }
-        };
-
         fetchOverview();
-        fetchActivity();
-    }, []);
+        fetchActivities(); // Initial fetch for activities
+    }, [selectedPeriod, filterSeverity, appliedFilters]);
 
     return (
         <div className="space-y-6">
             <Tabs defaultValue="intelligence" className="w-full space-y-6">
-                <TabsList className="bg-slate-900/50 border border-[#ffffff1a] p-1">
-                    <TabsTrigger value="intelligence" className="data-[state=active]:bg-blue-600 data-[state=active]:text-white text-slate-400">
-                        <LayoutDashboard size={16} className="mr-2" /> Admin Intelligence
-                    </TabsTrigger>
-                    <TabsTrigger value="activity" className="data-[state=active]:bg-blue-600 data-[state=active]:text-white text-slate-400">
-                        <List size={16} className="mr-2" /> Activity Logs
-                    </TabsTrigger>
-                </TabsList>
+                <div className="w-full overflow-x-auto pb-2 -mb-2">
+                    <TabsList className="bg-slate-900/50 border border-[#ffffff1a] p-1 w-full md:w-auto inline-flex">
+                        <TabsTrigger value="intelligence" className="flex-1 md:flex-none data-[state=active]:bg-blue-600 data-[state=active]:text-white text-slate-400">
+                            <LayoutDashboard size={16} className="mr-2" /> Admin Intelligence
+                        </TabsTrigger>
+                        <TabsTrigger
+                            value="activity"
+                            className="flex-1 md:flex-none data-[state=active]:bg-blue-600 data-[state=active]:text-white text-slate-400"
+                            title="This is a read-only audit log. Entries cannot be edited or deleted."
+                        >
+                            <List size={16} className="mr-2" /> System Activity (Admin Only)
+                        </TabsTrigger>
+                    </TabsList>
+                </div>
 
                 {/* TAB 1: ADMIN INTELLIGENCE */}
                 <TabsContent value="intelligence" className="focus-visible:outline-none">
@@ -80,15 +162,87 @@ export default function ReportsDashboard() {
 
                 {/* TAB 2: ACTIVITY LOGS (Legacy View Preserved) */}
                 <TabsContent value="activity" className="focus-visible:outline-none">
-                    <Card className="bg-slate-900/30 border-[#ffffff1a]">
-                        <CardHeader>
-                            <CardTitle className="flex items-center gap-2">
-                                <Activity className="w-5 h-5 text-slate-400" />
-                                System Activity
-                            </CardTitle>
-                        </CardHeader>
-                        <CardContent>
-                            {loadingActivity ? (
+                    {/* Header Controls */}
+                    <div className="flex flex-col gap-4 bg-[#ffffff05] p-4 rounded-xl border border-[#ffffff0a]">
+
+                        {/* Row 1: Primary Filters */}
+                        <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-2">
+                            <div className="flex flex-col md:flex-row space-y-2 md:space-y-0 md:space-x-2 w-full md:w-auto">
+                                <select
+                                    value={filterSeverity}
+                                    onChange={(e) => setFilterSeverity(e.target.value)}
+                                    className="bg-[#0f121a] border border-[#ffffff1a] text-white/70 text-sm rounded px-3 py-2 md:py-1 w-full md:w-auto focus:outline-none focus:border-blue-500"
+                                >
+                                    <option value="">All Severity</option>
+                                    <option value="info">Info</option>
+                                    <option value="warning">Warning</option>
+                                    <option value="critical">Critical</option>
+                                </select>
+
+                                <select
+                                    value={selectedPeriod}
+                                    onChange={(e) => setSelectedPeriod(e.target.value)}
+                                    className="bg-[#0f121a] border border-[#ffffff1a] text-white/70 text-sm rounded px-3 py-2 md:py-1 w-full md:w-auto focus:outline-none focus:border-blue-500"
+                                >
+                                    <option value="7d">Last 7 Days</option>
+                                    <option value="30d">Last 30 Days</option>
+                                    <option value="60d">Last 60 Days (Default)</option>
+                                    <option value="all">All Time</option>
+                                </select>
+                            </div>
+
+                            <button
+                                onClick={() => handleExport('csv')}
+                                className="w-full md:w-auto flex items-center justify-center space-x-2 px-3 py-2 md:py-1.5 bg-[#ffffff05] hover:bg-[#ffffff0a] border border-[#ffffff1a] rounded text-sm text-white/70 transition-colors"
+                            >
+                                <Download className="w-4 h-4" />
+                                <span>CSV</span>
+                            </button>
+                        </div>
+
+                        {/* Row 2: Advanced Manual Filters */}
+                        <div className="flex flex-col md:flex-row items-stretch md:items-center gap-2 pt-2 border-t border-[#ffffff0a]">
+                            <input
+                                type="text"
+                                placeholder="Filter by Actor ID"
+                                value={filterActor}
+                                onChange={(e) => setFilterActor(e.target.value)}
+                                className="bg-[#0f121a] border border-[#ffffff1a] text-white/70 text-sm rounded px-3 py-2 md:py-1 w-full md:w-40 focus:outline-none focus:border-blue-500 placeholder:text-white/20"
+                            />
+                            <input
+                                type="text"
+                                placeholder="Entity Type (e.g. task)"
+                                value={filterEntityType}
+                                onChange={(e) => setFilterEntityType(e.target.value)}
+                                className="bg-[#0f121a] border border-[#ffffff1a] text-white/70 text-sm rounded px-3 py-2 md:py-1 w-full md:w-40 focus:outline-none focus:border-blue-500 placeholder:text-white/20"
+                            />
+                            <div className="flex gap-2">
+                                <button
+                                    onClick={handleApplyFilters}
+                                    className="flex-1 md:flex-none px-3 py-2 md:py-1 bg-blue-600/20 hover:bg-blue-600/40 text-blue-500 text-sm rounded border border-blue-500/50 transition-colors"
+                                >
+                                    Apply Filters
+                                </button>
+                                {(filterActor || filterEntityType) && (
+                                    <button
+                                        onClick={() => { setFilterActor(''); setFilterEntityType(''); setAppliedFilters({ actor: '', entityType: '' }); }}
+                                        className="px-3 md:px-0 text-white/40 text-xs hover:text-white border border-[#ffffff1a] md:border-none rounded md:rounded-none"
+                                    >
+                                        Clear
+                                    </button>
+                                )}
+                            </div>
+                        </div>
+                    </div>
+
+                    <div className="bg-[#0f121a]/50 rounded-2xl border border-[#ffffff0a] p-6 backdrop-blur-xl">
+                        <h2 className="text-xl font-semibold text-white mb-6 flex items-center space-x-2">
+                            <History className="w-5 h-5 text-blue-400" />
+                            <span>System Activity Logs</span>
+                        </h2>
+
+                        <div className="space-y-6">
+                            {loading ? (
                                 <div className="space-y-4">
                                     {[1, 2, 3].map(i => (
                                         <div key={i} className="flex gap-4">
@@ -100,17 +254,17 @@ export default function ReportsDashboard() {
                                         </div>
                                     ))}
                                 </div>
-                            ) : activity.length === 0 ? (
+                            ) : activities.length === 0 ? (
                                 <div className="flex flex-col items-center justify-center py-16 text-center border2 border-dashed border-[#ffffff1a] rounded-xl bg-slate-900/20">
                                     <div className="w-16 h-16 rounded-full bg-white/5 flex items-center justify-center mb-4">
                                         <Activity className="w-8 h-8 text-white/20" />
                                     </div>
                                     <h3 className="text-white/40 font-medium">No activity recorded</h3>
-                                    <p className="text-white/20 text-sm mt-1">System logs will appear here.</p>
+                                    <p className="text-white/20 text-sm mt-1">No system events yet. Activity will appear as actions occur.</p>
                                 </div>
                             ) : (
                                 <div className="relative border-l border-[#ffffff1a] ml-4 space-y-8 py-2">
-                                    {activity.map((item, index) => (
+                                    {activities.map((item, index) => (
                                         <div key={item.id + index} className="relative pl-8">
                                             <div className={`absolute -left-[9px] top-1 w-4 h-4 rounded-full border-2 border-slate-900 ${getActivityColor(item.type)}`} />
                                             <div className="space-y-1">
@@ -121,7 +275,7 @@ export default function ReportsDashboard() {
                                                     </span>
                                                 </div>
                                                 <p className="text-sm text-slate-400">{item.description}</p>
-                                                {item.type === 'task' && (
+                                                {item.type === 'task' && item.meta?.status && (
                                                     <Badge variant="outline" className="text-[10px] border-[#ffffff1a] text-slate-400 mt-1">
                                                         {item.meta.status}
                                                     </Badge>
@@ -131,12 +285,21 @@ export default function ReportsDashboard() {
                                     ))}
                                 </div>
                             )}
-                        </CardContent>
-                    </Card>
+                        </div>
+                    </div>
                 </TabsContent>
             </Tabs>
         </div>
     );
+}
+
+// Helper for severity color
+function getSeverityColor(severity: string) {
+    switch (severity) {
+        case 'critical': return 'bg-red-500/20 text-red-500 border-red-500/50';
+        case 'warning': return 'bg-orange-500/20 text-orange-500 border-orange-500/50';
+        default: return 'bg-blue-500/20 text-blue-500 border-blue-500/50';
+    }
 }
 
 function getActivityColor(type: string) {
@@ -144,6 +307,9 @@ function getActivityColor(type: string) {
         case 'task': return 'bg-blue-500';
         case 'event': return 'bg-purple-500';
         case 'inventory': return 'bg-emerald-500';
+        case 'file': return 'bg-orange-500';
+        case 'drive_scan': return 'bg-yellow-500';
+        case 'permission': return 'bg-red-500';
         default: return 'bg-slate-500';
     }
 }

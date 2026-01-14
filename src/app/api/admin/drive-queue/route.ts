@@ -2,7 +2,7 @@ import { NextRequest, NextResponse } from 'next/server';
 import { verifyUser } from '@/lib/server-utils';
 import { adminDb } from '@/lib/firebase/server';
 import { makeFilePublic } from '@/lib/drive';
-import { logServerActivity } from '@/lib/server/activity-logger';
+import { logSystemActivity } from '@/lib/server/activity-logger';
 import { getDriveClient } from '@/lib/drive';
 import { FieldValue } from 'firebase-admin/firestore';
 
@@ -172,20 +172,7 @@ async function processItem(id: string, action: string, user: any, drive: any, me
             processedBy: user.uid
         });
 
-        // 4. Activity Log
-        await logServerActivity({
-            type: 'drive_file_approved' as any,
-            entityType: 'file',
-            entityId: item.driveFileId, // Using Drive ID as common key
-            title: `Drive File Approved: ${finalName}`,
-            performedBy: user.name || 'Admin',
-            performedByRole: 'admin',
-            metadata: {
-                originalSize: item.size,
-                originalName: item.name,
-                appliedMetadata: metadata
-            }
-        });
+        return { id: item.driveFileId, name: finalName, action: 'approved' };
 
     } else if (action === 'reject') {
         await docRef.update({
@@ -194,14 +181,7 @@ async function processItem(id: string, action: string, user: any, drive: any, me
             processedBy: user.uid
         });
 
-        await logServerActivity({
-            type: 'drive_file_rejected' as any,
-            entityType: 'drive_queue_item',
-            entityId: item.driveFileId,
-            title: `Drive File Rejected: ${item.name}`,
-            performedBy: user.name || 'Admin',
-            performedByRole: 'admin'
-        });
+        return { id: item.driveFileId, name: item.name, action: 'rejected' };
     }
 }
 
@@ -227,15 +207,54 @@ export async function POST(req: NextRequest) {
 
         // Process sequentially to be safe with rate limits, or parallel?
         // Sequential is safer for reliability and logging order.
+        const processedItems: any[] = [];
+
+        // Process sequentially to be safe with rate limits, or parallel?
+        // Sequential is safer for reliability and logging order.
         for (const id of ids) {
             try {
-                await processItem(id, action, user, drive, metadata);
+                const result = await processItem(id, action, user, drive, metadata);
+                if (result) processedItems.push(result);
                 results.success++;
             } catch (e: any) {
                 console.error(`Failed to process item ${id}:`, e);
                 results.failed++;
                 results.errors.push({ id, error: e.message });
             }
+        }
+
+        // --- BULK LOGGING ---
+        if (processedItems.length > 0) {
+            const isBulk = processedItems.length > 1;
+            const firstItem = processedItems[0];
+
+            let actionKey = action === 'approve' ? 'drive_file_approved' : 'drive_file_rejected';
+            let summary = '';
+
+            if (isBulk) {
+                summary = `Bulk ${action}d ${processedItems.length} files`; // e.g. Bulk approved 5 files
+            } else {
+                summary = action === 'approve'
+                    ? `File published: ${firstItem.name}`
+                    : `File rejected: ${firstItem.name}`;
+            }
+
+            await logSystemActivity({
+                actorId: user.uid,
+                actorRole: user.role,
+                action: actionKey,
+                entityType: 'file', // or drive_queue_item
+                entityId: isBulk ? `bulk_${Date.now()}` : firstItem.id,
+                summary: summary,
+                severity: action === 'reject' ? 'warning' : 'info',
+                metadata: {
+                    count: processedItems.length,
+                    ids: processedItems.map(i => i.id),
+                    names: processedItems.map(i => i.name),
+                    action
+                },
+                visibility: action === 'approve' ? { mode: 'public' } : { mode: 'admin' }
+            });
         }
 
         return NextResponse.json(results);

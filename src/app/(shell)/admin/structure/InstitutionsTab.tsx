@@ -17,6 +17,29 @@ export function InstitutionsTab() {
     const [newName, setNewName] = useState('');
     const [creating, setCreating] = useState(false);
 
+    // Edit State
+    const [editOpen, setEditOpen] = useState(false);
+    const [editingInst, setEditingInst] = useState<Institution | null>(null);
+    const [editName, setEditName] = useState('');
+    const [saving, setSaving] = useState(false);
+
+    const handleUpdate = async (e: React.FormEvent) => {
+        e.preventDefault();
+        if (!editingInst || !editName.trim()) return;
+
+        setSaving(true);
+        try {
+            await StructureService.updateInstitution(editingInst.id, { name: editName });
+            toast.success("Institution name updated");
+            setEditOpen(false);
+            fetchInstitutions();
+        } catch (error) {
+            toast.error("Failed to update institution");
+        } finally {
+            setSaving(false);
+        }
+    };
+
     const fetchInstitutions = async () => {
         setLoading(true);
         try {
@@ -118,7 +141,20 @@ export function InstitutionsTab() {
                                 </div>
                             </div>
 
-                            <div className="flex justify-end pt-2 border-t border-white/5">
+                            <div className="flex justify-end pt-2 border-t border-white/5 gap-2">
+                                <Button
+                                    variant="ghost"
+                                    size="sm"
+                                    onClick={() => {
+                                        setEditingInst(inst);
+                                        setEditName(inst.name);
+                                        setEditOpen(true);
+                                    }}
+                                    className="text-slate-400 hover:text-white hover:bg-white/5"
+                                >
+                                    <Edit2 className="w-4 h-4 mr-2" />
+                                    Edit
+                                </Button>
                                 <Button
                                     variant="ghost"
                                     size="sm"
@@ -142,6 +178,32 @@ export function InstitutionsTab() {
                     )}
                 </div>
             )}
+
+            {/* Edit Dialog */}
+            <Dialog open={editOpen} onOpenChange={setEditOpen}>
+                <DialogContent className="bg-slate-900 border-white/10">
+                    <DialogHeader>
+                        <DialogTitle className="text-white">Edit Institution</DialogTitle>
+                        <DialogDescription className="text-slate-400">
+                            Update the display name. Changes will propagate globally.
+                        </DialogDescription>
+                    </DialogHeader>
+                    <form onSubmit={handleUpdate} className="space-y-4 pt-4">
+                        <div className="space-y-2">
+                            <Label className="text-slate-300">Display Name</Label>
+                            <Input
+                                value={editName}
+                                onChange={e => setEditName(e.target.value)}
+                                placeholder="e.g. Thaiba Garden"
+                                className="bg-slate-800 border-white/10 text-white"
+                            />
+                        </div>
+                        <Button type="submit" disabled={saving} className="w-full bg-blue-600 hover:bg-blue-500">
+                            {saving ? <Loader2 className="w-4 h-4 animate-spin" /> : "Save Changes"}
+                        </Button>
+                    </form>
+                </DialogContent>
+            </Dialog>
         </div>
     );
 }

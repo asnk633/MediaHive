@@ -109,13 +109,14 @@ export default function ReportsDashboard() {
 
         // Date params for export need to match fetch logic
         const now = new Date();
-        let fromDate: Date | null = null;
-        if (selectedPeriod === '7d') now.setDate(now.getDate() - 7);
-        else if (selectedPeriod === '30d') now.setDate(now.getDate() - 30);
-        else if (selectedPeriod === '60d') now.setDate(now.getDate() - 60);
-        else if (selectedPeriod === 'all') fromDate = null;
-
-        if (fromDate) queryParams.set('from', fromDate.toISOString()); // Logic here slightly duplicated but safe enough
+        if (selectedPeriod === '7d') {
+            queryParams.set('from', new Date(now.setDate(now.getDate() - 7)).toISOString());
+        } else if (selectedPeriod === '30d') {
+            queryParams.set('from', new Date(now.setDate(now.getDate() - 30)).toISOString());
+        } else if (selectedPeriod === '60d') {
+            queryParams.set('from', new Date(now.setDate(now.getDate() - 60)).toISOString());
+        }
+        // For 'all', don't set 'from' parameter
 
         queryParams.set('export', format);
         window.location.href = `/api/reports/activity?${queryParams.toString()}`;

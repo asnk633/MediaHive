@@ -28,7 +28,7 @@ export default function StructurePage() {
 
             <div className="mt-6">
                 <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
-                    <TabsList className="bg-slate-900/50 border border-white/10 rounded-xl p-1">
+                    <TabsList className="bg-white/5 border border-white/10 rounded-xl p-1">
                         <TabsTrigger value="institutions" className="rounded-lg data-[state=active]:bg-blue-600 data-[state=active]:text-white">
                             Institutions
                         </TabsTrigger>

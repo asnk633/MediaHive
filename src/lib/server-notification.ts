@@ -434,7 +434,7 @@ export const ServerNotification = {
                 // Context
                 // Overdue means dueAt < now.
                 const dueAt = task.dueAt?.toDate ? task.dueAt.toDate() : new Date(task.dueAt);
-                const hoursOverdue = (now.getTime() - dueAt.getTime()) / (1000 * 60 * 60);
+                const hoursOverdue = (now.toMillis() - dueAt.getTime()) / (1000 * 60 * 60);
 
                 // Rule
                 const ruleResult = await AutomationRulesService.evaluate({

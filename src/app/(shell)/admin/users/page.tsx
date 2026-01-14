@@ -177,7 +177,7 @@ export default function UsersPage() {
                         <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-500" size={18} />
                         <Input
                             placeholder="Search users..."
-                            className="pl-10 bg-slate-900/50 border-[#ffffff1a] text-white"
+                            className="pl-10 bg-white/5 border-white/10 text-white"
                             value={search}
                             onChange={(e) => setSearch(e.target.value)}
                         />
@@ -188,8 +188,8 @@ export default function UsersPage() {
                     <div className="flex justify-center p-12"><Loader2 className="w-8 h-8 text-blue-500 animate-spin" /></div>
                 ) : users.length === 0 ? (
                     // Empty State
-                    <div className="flex flex-col items-center justify-center py-20 bg-slate-900/30 border border-white/5 rounded-2xl border-dashed">
-                        <div className="bg-slate-800/50 p-4 rounded-full mb-4">
+                    <div className="flex flex-col items-center justify-center py-20 bg-white/5 border border-white/5 rounded-2xl border-dashed">
+                        <div className="bg-white/5 p-4 rounded-full mb-4">
                             <Users className="w-8 h-8 text-slate-400" />
                         </div>
                         <h3 className="text-xl font-medium text-white mb-2">No users found</h3>
@@ -210,7 +210,7 @@ export default function UsersPage() {
                             const isInvite = item.type === 'invite';
 
                             return (
-                                <div key={user.uid} className="p-4 rounded-xl bg-slate-900/50 border border-white/5 flex flex-col sm:flex-row sm:items-center justify-between gap-4 hover:border-white/10 transition-colors">
+                                <div key={user.uid} className="p-4 rounded-xl bg-white/5 border border-white/5 flex flex-col sm:flex-row sm:items-center justify-between gap-4 hover:border-white/10 transition-colors">
                                     <div className="flex items-center gap-4">
                                         <Avatar className="h-10 w-10 border border-white/10">
                                             <AvatarImage src={user.avatarUrl || user.photoURL} />

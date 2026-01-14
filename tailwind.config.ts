@@ -2,19 +2,19 @@ import type { Config } from "tailwindcss";
 const tokens = {
   colors: {
     primary: {
-      DEFAULT: "#10b981", // emerald-500
+      DEFAULT: "#6366f1", // indigo-500 (Sky Aura Core)
       foreground: "#ffffff",
-      50: "#ecfdf5",
-      100: "#d1fae5",
-      200: "#a7f3d0",
-      300: "#6ee7b7",
-      400: "#34d399",
-      500: "#10b981",
-      600: "#059669",
-      700: "#047857",
-      800: "#065f46",
-      900: "#064e3b",
-      950: "#022c22",
+      50: "#eif1ff",
+      100: "#e0e7ff",
+      200: "#c7d2fe",
+      300: "#a5b4fc",
+      400: "#818cf8",
+      500: "#6366f1",
+      600: "#4f46e5",
+      700: "#4338ca",
+      800: "#3730a3",
+      900: "#312e81",
+      950: "#1e1b4b",
     },
     accent: {
       DEFAULT: "#3b82f6", // blue-500
@@ -73,17 +73,17 @@ const tokens = {
   shadows: {
     soft: "0 4px 20px -2px rgba(0, 0, 0, 0.2)",
     elevated: "0 10px 40px -10px rgba(0, 0, 0, 0.5)",
-    glow: "0 0 20px rgba(16, 185, 129, 0.3)", // Primary glow
+    glow: "0 0 20px rgba(99, 102, 241, 0.25)", // Indigo glow (Sky Aura)
   },
   motion: {
     duration: {
-      fast: 0.15,
-      normal: 0.25,
-      slow: 0.4,
+      fast: 0.2, // Slightly slower start
+      normal: 0.3, // "Confident" speed
+      slow: 0.5,
     },
     ease: {
-      out: [0.215, 0.61, 0.355, 1], // easeOutCubic
-      inOut: [0.645, 0.045, 0.355, 1], // easeInOutCubic
+      out: [0.22, 1, 0.36, 1], // Custom Ease Out
+      inOut: [0.65, 0, 0.35, 1],
     }
   }
 };

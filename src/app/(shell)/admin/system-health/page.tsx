@@ -102,7 +102,7 @@ export default function SystemHealthPage() {
                     />
                 </div>
 
-                <div className="bg-slate-900/50 border border-white/5 rounded-xl p-6">
+                <div className="bg-white/5 border border-white/5 rounded-xl p-6">
                     <h3 className="text-lg font-medium text-white mb-4 flex items-center gap-2">
                         <Activity className="w-5 h-5 text-blue-400" />
                         Health Logic Explanation
@@ -160,7 +160,7 @@ function HealthCard({ title, status, icon, description, detail, loading }: any) 
     };
 
     return (
-        <div className="bg-slate-900/50 border border-white/5 p-5 rounded-xl relative overflow-hidden group hover:border-white/10 transition-colors">
+        <div className="bg-white/5 border border-white/5 p-5 rounded-xl relative overflow-hidden group hover:border-white/10 transition-colors">
             {loading ? (
                 <div className="animate-pulse space-y-3">
                     <div className="h-4 w-24 bg-white/10 rounded" />

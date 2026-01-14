@@ -306,7 +306,7 @@ export default function AddInventoryPage() {
                                         </button>
                                     </PopoverTrigger>
                                     <PopoverContent
-                                        className="w-96 p-0 bg-slate-900/80 backdrop-blur-xl border border-white/10 shadow-2xl rounded-2xl overflow-hidden"
+                                        className="w-96 p-0 bg-slate-950/90 backdrop-blur-xl border border-white/10 shadow-2xl rounded-2xl overflow-hidden"
                                         align="start"
                                         sideOffset={8}
                                     >

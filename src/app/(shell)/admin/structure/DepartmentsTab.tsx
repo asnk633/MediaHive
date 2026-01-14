@@ -96,7 +96,7 @@ export function DepartmentsTab() {
                             <Plus className="w-4 h-4 mr-2" /> Add Office / Unit
                         </Button>
                     </DialogTrigger>
-                    <DialogContent className="bg-slate-900 border-white/10">
+                    <DialogContent className="bg-slate-950/90 backdrop-blur-xl border-white/10">
                         <DialogHeader>
                             <DialogTitle className="text-white">New Office / Unit</DialogTitle>
                             <DialogDescription className="text-slate-400">
@@ -126,7 +126,7 @@ export function DepartmentsTab() {
             ) : (
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
                     {departments.map(dept => (
-                        <div key={dept.id} className="p-4 rounded-xl bg-slate-900/50 border border-white/5 flex flex-col justify-between gap-4 hover:border-white/10 transition-colors">
+                        <div key={dept.id} className="p-4 rounded-xl bg-white/5 border border-white/5 flex flex-col justify-between gap-4 hover:border-white/10 transition-colors">
                             <div className="flex items-start justify-between">
                                 <div className="flex items-center gap-3">
                                     <div className="w-10 h-10 rounded-lg bg-pink-500/10 flex items-center justify-center text-pink-400">
@@ -168,7 +168,7 @@ export function DepartmentsTab() {
                         </div>
                     ))}
                     {departments.length === 0 && (
-                        <div className="col-span-full flex flex-col items-center justify-center py-16 text-center border border-dashed border-white/10 rounded-xl bg-slate-900/30">
+                        <div className="col-span-full flex flex-col items-center justify-center py-16 text-center border border-dashed border-white/10 rounded-xl bg-white/5">
                             <Users className="w-12 h-12 text-slate-600 mb-4" />
                             <h3 className="text-lg font-medium text-slate-400">No offices / units found</h3>
                             <p className="text-sm text-slate-500 max-w-sm mt-2">
@@ -181,7 +181,7 @@ export function DepartmentsTab() {
 
             {/* Edit Dialog */}
             <Dialog open={editOpen} onOpenChange={setEditOpen}>
-                <DialogContent className="bg-slate-900 border-white/10">
+                <DialogContent className="bg-slate-950/90 backdrop-blur-xl border-white/10">
                     <DialogHeader>
                         <DialogTitle className="text-white">Edit Office / Unit</DialogTitle>
                         <DialogDescription className="text-slate-400">

@@ -222,15 +222,10 @@ export default function NewTaskPage() {
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center py-20 px-4 sm:px-6 relative overflow-hidden">
-      {/* Fixed Full-screen Background */}
-      <div className="fixed inset-0 bg-gradient-to-b from-slate-950 to-[#0B0D10] z-0" />
-      {/* Ambient Overlay */}
-      <div className="fixed inset-0 bg-[radial-gradient(circle_at_50%_0%,rgba(59,130,246,0.15),transparent_50%)] pointer-events-none z-0" />
-
+    <div className="min-h-screen flex items-center justify-center py-20 px-4 sm:px-6 relative">
       {/* Centered Card */}
       <div className="w-full max-w-xl relative z-10">
-        <div className="bg-[#13161c]/90 backdrop-blur-3xl border border-[#ffffff1a] rounded-3xl p-6 sm:p-8 shadow-2xl ring-1 ring-white/5">
+        <div className="glass-card rounded-3xl p-6 sm:p-8 shadow-2xl ring-1 ring-white/5">
           {/* Header */}
           <div className="flex items-center justify-between mb-8 pb-4 border-b border-white/5">
             <button

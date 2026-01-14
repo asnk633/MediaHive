@@ -3,22 +3,24 @@ import { verifyUser } from '@/lib/server-utils';
 import { InstitutionPolicyService } from '@/lib/institution-policies.server';
 import { InstitutionPolicy } from '@/types/institution-policy';
 
-export async function GET(request: NextRequest, { params }: { params: { id: string } }) {
+export async function GET(request: NextRequest, { params }: { params: Promise<{ id: string }> }) {
     try {
+        const { id } = await params;
         const user = await verifyUser(request);
         if (!user || user.role !== 'admin') {
             return NextResponse.json({ error: 'Unauthorized' }, { status: 403 });
         }
 
-        const policy = await InstitutionPolicyService.resolve(params.id);
+        const policy = await InstitutionPolicyService.resolve(id);
         return NextResponse.json({ policy });
     } catch (error: any) {
         return NextResponse.json({ error: error.message }, { status: 500 });
     }
 }
 
-export async function PUT(request: NextRequest, { params }: { params: { id: string } }) {
+export async function PUT(request: NextRequest, { params }: { params: Promise<{ id: string }> }) {
     try {
+        const { id } = await params;
         const user = await verifyUser(request);
         if (!user || user.role !== 'admin') {
             return NextResponse.json({ error: 'Unauthorized' }, { status: 403 });
@@ -27,7 +29,7 @@ export async function PUT(request: NextRequest, { params }: { params: { id: stri
         const body = await request.json();
         const { rules } = body;
 
-        await InstitutionPolicyService.updatePolicy(params.id, rules);
+        await InstitutionPolicyService.updatePolicy(id, rules);
 
         return NextResponse.json({ success: true });
     } catch (error: any) {

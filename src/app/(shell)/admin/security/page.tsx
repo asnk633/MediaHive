@@ -6,7 +6,7 @@ import { PageHeader } from "@/components/ui/layout/PageHeader";
 import { Button } from "@/components/ui/button";
 import { ArrowLeft, Shield, Lock, Users, Eye, Database, Globe, Check, X } from "lucide-react";
 import { useRouter } from "next/navigation";
-import { apiClient } from "@/lib/apiClient";
+import { apiClient, apiPost } from '@/lib/apiClient';
 import { toast } from "sonner";
 import { Switch } from "@/components/ui/switch";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
@@ -46,10 +46,7 @@ export default function SecurityRulesPage() {
         setSettings(prev => prev ? { ...prev, [key]: newValue } : null);
 
         try {
-            await apiClient('/api/admin/settings', {
-                method: 'POST',
-                body: { key, value: newValue }
-            });
+            await apiPost('/api/admin/settings', { key, value: newValue });
             toast.success("Security rule updated");
         } catch (error) {
             console.error("Failed to update setting:", error);
@@ -75,7 +72,7 @@ export default function SecurityRulesPage() {
             <div className="max-w-5xl mx-auto pb-20 space-y-8">
 
                 {/* Section 1: Read-Only Overview */}
-                <Card className="bg-slate-900/50 border-white/5">
+                <Card className="bg-white/5 border-white/5">
                     <CardHeader>
                         <CardTitle className="flex items-center gap-2">
                             <Shield className="w-5 h-5 text-blue-400" />
@@ -135,7 +132,6 @@ export default function SecurityRulesPage() {
                             label="Guest Task Creation"
                             description="Allow guests to submit tasks for approval."
                             checked={settings?.allowGuestTasks ?? true}
-                            onCheckedChange={(v) => handleToggle('allowGuestTasks', !v)} // Note: handleToggle expects current val, logic is flipped inside. Wait.
                             // Fix: handleToggle logic in parent handles the flip. 
                             // But Switch onCheckedChange gives NEW value.
                             // So let's align.
@@ -180,7 +176,7 @@ function RoleBadge({ role, access, color }: { role: string, access: string, colo
 
 function SecurityToggle({ label, description, checked, onChange, icon, loading }: any) {
     return (
-        <div className="bg-slate-900/50 border border-white/5 p-4 rounded-xl flex flex-col justify-between gap-4">
+        <div className="bg-white/5 border border-white/5 p-4 rounded-xl flex flex-col justify-between gap-4">
             <div className="flex items-start justify-between">
                 <div className="flex items-center gap-3">
                     <div className="p-2 bg-white/5 rounded-lg">{icon}</div>

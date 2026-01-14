@@ -515,8 +515,8 @@ function TaskDetailContent() {
                 <div className="lg:col-span-8 space-y-6">
 
                     <Card className="border-none overflow-hidden relative group
-                        bg-gradient-to-br from-[#141e30] to-[#243b55]
-                        shadow-[5px_10px_50px_rgba(0,0,0,0.5),-5px_0px_250px_rgba(0,0,0,0.5)]
+                        glass-card
+                        shadow-[0_10px_40px_-10px_rgba(0,0,0,0.5)]
                         rounded-[15px]
                         text-white
                     ">
@@ -660,8 +660,8 @@ function TaskDetailContent() {
                     />
 
                     <Card className="border-none
-                        bg-gradient-to-br from-[#141e30] to-[#243b55]
-                        shadow-[5px_10px_50px_rgba(0,0,0,0.5),-5px_0px_250px_rgba(0,0,0,0.5)]
+                        glass-card
+                        shadow-[0_10px_40px_-10px_rgba(0,0,0,0.5)]
                         rounded-[15px]
                         text-white
                     ">

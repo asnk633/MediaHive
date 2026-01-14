@@ -2,12 +2,13 @@ import { NextRequest, NextResponse } from 'next/server';
 import { adminDb } from '@/lib/firebase/server';
 import { verifyUser } from '@/lib/server-utils';
 
-export async function GET(request: NextRequest, { params }: { params: { id: string } }) {
+export async function GET(request: NextRequest, { params }: { params: Promise<{ id: string }> }) {
     try {
+        const { id } = await params;
         const user = await verifyUser(request);
         if (!user) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
 
-        const doc = await adminDb.collection('system_updates').doc(params.id).get();
+        const doc = await adminDb.collection('system_updates').doc(id).get();
         if (!doc.exists) {
             return NextResponse.json({ error: 'Not Found' }, { status: 404 });
         }

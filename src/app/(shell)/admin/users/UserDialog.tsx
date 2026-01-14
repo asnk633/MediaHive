@@ -145,7 +145,7 @@ export function UserDialog({ open, onOpenChange, user, onSave, institutions, dep
 
     return (
         <Dialog open={open} onOpenChange={onOpenChange}>
-            <DialogContent className="bg-slate-900 border-white/10 sm:max-w-[500px]">
+            <DialogContent className="bg-slate-950/90 backdrop-blur-xl border-white/10 sm:max-w-[500px]">
                 <DialogHeader>
                     <DialogTitle className="text-white">
                         {user ? `Edit User: ${user.name || 'User'}` : 'Invite User'}
@@ -211,10 +211,10 @@ export function UserDialog({ open, onOpenChange, user, onSave, institutions, dep
                                 <TabsContent value="institution" className="mt-0">
                                     <Label className="text-xs text-white/50 mb-2 block">Select Institution</Label>
                                     <Select value={selectedInstitution} onValueChange={setSelectedInstitution}>
-                                        <SelectTrigger className="bg-slate-900 border-white/10 text-white">
+                                        <SelectTrigger className="bg-white/5 border-white/10 text-white">
                                             <SelectValue placeholder="Choose Institution..." />
                                         </SelectTrigger>
-                                        <SelectContent className="bg-slate-900 border-white/10">
+                                        <SelectContent className="bg-slate-950/90 backdrop-blur-xl border-white/10">
                                             {institutions.map(inst => (
                                                 <SelectItem key={inst.id} value={inst.id}>
                                                     {inst.name}
@@ -227,10 +227,10 @@ export function UserDialog({ open, onOpenChange, user, onSave, institutions, dep
                                 <TabsContent value="department" className="mt-0">
                                     <Label className="text-xs text-white/50 mb-2 block">Select Global Office / Unit</Label>
                                     <Select value={selectedDepartment} onValueChange={setSelectedDepartment}>
-                                        <SelectTrigger className="bg-slate-900 border-white/10 text-white">
+                                        <SelectTrigger className="bg-white/5 border-white/10 text-white">
                                             <SelectValue placeholder="Choose Office / Unit..." />
                                         </SelectTrigger>
-                                        <SelectContent className="bg-slate-900 border-white/10">
+                                        <SelectContent className="bg-slate-950/90 backdrop-blur-xl border-white/10">
                                             {departments.map(dept => (
                                                 <SelectItem key={dept.id} value={dept.id}>
                                                     {dept.name}

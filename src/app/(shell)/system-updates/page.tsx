@@ -61,7 +61,7 @@ export default function SystemUpdatesFeedPage() {
                 <div className="grid gap-4">
                     {updates.map(update => (
                         <Link href={`/system-updates/${update.id}`} key={update.id}>
-                            <Card className="bg-slate-950/40 border-slate-800 hover:bg-slate-900/50 transition-colors cursor-pointer group">
+                            <Card className="bg-white/5 border-white/5 hover:bg-white/10 transition-colors cursor-pointer group">
                                 <CardContent className="p-6">
                                     <div className="flex justify-between items-start gap-4">
                                         <div className="space-y-2 flex-1">

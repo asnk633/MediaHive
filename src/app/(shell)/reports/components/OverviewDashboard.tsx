@@ -21,7 +21,7 @@ import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, Di
 import { Label } from '@/components/ui/label';
 
 const StatCard = ({ label, value, icon: Icon, colorClass, subtext }: { label: string, value: number, icon: any, colorClass: string, subtext?: string }) => (
-    <div className="bg-slate-900/50 border border-white/5 rounded-xl p-4 flex flex-col gap-2">
+    <div className="bg-white/5 border border-white/5 rounded-xl p-4 flex flex-col gap-2">
         <div className="flex items-center gap-3">
             <div className={`p-2 rounded-lg bg-white/5 ${colorClass}`}>
                 <Icon size={20} />
@@ -87,7 +87,7 @@ export function OverviewDashboard() {
 
     return (
         <div className="space-y-6">
-            <div className="flex flex-wrap items-center gap-4 bg-slate-900/50 p-4 rounded-xl border border-white/5">
+            <div className="flex flex-wrap items-center gap-4 bg-white/5 p-4 rounded-xl border border-white/5">
                 <div className="flex items-center gap-2 text-white/80 font-medium">
                     <Filter size={18} /> Filters:
                 </div>
@@ -102,7 +102,7 @@ export function OverviewDashboard() {
                 >
                     <option value="" className="bg-slate-900">All Offices / Units</option>
                     {departmentsList.map((dept) => (
-                        <option key={dept} value={dept} className="bg-slate-900">{dept}</option>
+                        <option key={dept} value={dept} className="bg-slate-950">{dept}</option>
                     ))}
                 </select>
 
@@ -116,7 +116,7 @@ export function OverviewDashboard() {
                 >
                     <option value="" className="bg-slate-900">All Institutions</option>
                     {institutionsList.map((inst) => (
-                        <option key={inst} value={inst} className="bg-slate-900">{inst}</option>
+                        <option key={inst} value={inst} className="bg-slate-950">{inst}</option>
                     ))}
                 </select>
 
@@ -283,7 +283,7 @@ function ReportDownloadButton() {
                                 className="w-full bg-black/20 border border-[#ffffff1a] rounded-md p-2 text-sm text-white"
                             >
                                 {months.map((m, i) => (
-                                    <option key={i} value={i} className="bg-slate-900">{m}</option>
+                                    <option key={i} value={i} className="bg-slate-950">{m}</option>
                                 ))}
                             </select>
                         </div>
@@ -295,7 +295,7 @@ function ReportDownloadButton() {
                                 className="w-full bg-black/20 border border-[#ffffff1a] rounded-md p-2 text-sm text-white"
                             >
                                 {years.map((y) => (
-                                    <option key={y} value={y} className="bg-slate-900">{y}</option>
+                                    <option key={y} value={y} className="bg-slate-950">{y}</option>
                                 ))}
                             </select>
                         </div>

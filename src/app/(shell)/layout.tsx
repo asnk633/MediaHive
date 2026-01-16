@@ -14,6 +14,7 @@ import { OfflineBanner } from "@/components/OfflineBanner";
 import { KeyboardNavigationDetector } from "@/components/KeyboardNavigationDetector";
 import ProtectedRoute from "@/components/ProtectedRoute";
 import { AppLoader } from "@/components/ui/AppLoader";
+import { GuestOnboardingWrapper } from "@/components/onboarding/GuestOnboardingWrapper";
 
 export default function ShellLayout({ children }: { children: React.ReactNode }) {
   // Initialize PWA functionality
@@ -58,6 +59,7 @@ export default function ShellLayout({ children }: { children: React.ReactNode })
             </main>
 
             {/* Offline & Hydration Indicators */}
+            <GuestOnboardingWrapper />
             <OfflineStatusIndicator />
             <HydrationDetector />
           </div>

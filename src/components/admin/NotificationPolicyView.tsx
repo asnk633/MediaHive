@@ -190,43 +190,43 @@ export default function NotificationPolicyView() {
     };
 
     return (
-        <div className="min-h-screen bg-gradient-to-b from-indigo-950 via-slate-950 to-black text-slate-200">
+        <div className="min-h-screen bg-background text-foreground animate-in fade-in duration-500">
             <div className="max-w-7xl mx-auto px-6 py-12 space-y-12">
 
                 {/* Header Section */}
                 <div className="flex flex-col md:flex-row justify-between items-start md:items-end gap-x-8 gap-y-6">
                     <div className="space-y-4">
-                        <h1 className="text-4xl font-extrabold tracking-tight text-white drop-shadow-sm">Notification Policies</h1>
-                        <p className="text-slate-400 text-lg font-light leading-relaxed max-w-2xl">
+                        <h1 className="text-4xl font-extrabold tracking-tight text-foreground drop-shadow-sm">Notification Policies</h1>
+                        <p className="text-muted text-lg font-light leading-relaxed max-w-2xl">
                             Configure how and when the system alerts your team. Manage reminders, overdue warnings, and automatic escalations.
                         </p>
                     </div>
 
                     {/* Modern Scope Selector - Glassy & Integrated */}
                     <div className="flex flex-col gap-2 min-w-[280px]">
-                        <span className="text-[10px] font-bold uppercase tracking-widest text-indigo-400/80 ml-1">Configuration Scope</span>
+                        <span className="text-[10px] font-bold uppercase tracking-widest text-indigo-500/80 ml-1">Configuration Scope</span>
                         <div className="relative group">
                             <div className="absolute inset-0 bg-indigo-500/20 blur-md rounded-xl group-hover:bg-indigo-500/30 transition-all duration-500" />
-                            <div className="relative flex items-center gap-2 bg-[#0B1120]/80 p-1.5 rounded-xl border border-white/10 backdrop-blur-xl shadow-2xl">
+                            <div className="relative flex items-center gap-2 bg-surface/80 p-1.5 rounded-xl border border-soft backdrop-blur-xl shadow-lg">
                                 <div className="relative flex-1">
                                     <select
-                                        className="w-full appearance-none bg-transparent text-sm font-semibold text-white pl-3.5 pr-8 py-2.5 outline-none cursor-pointer"
+                                        className="w-full appearance-none bg-transparent text-sm font-semibold text-foreground pl-3.5 pr-8 py-2.5 outline-none cursor-pointer"
                                         value={scopeType}
                                         onChange={(e) => {
                                             setScopeType(e.target.value as any);
                                             setScopeId(e.target.value === 'global' ? 'global' : '');
                                         }}
                                     >
-                                        <option value="global" className="bg-slate-900">Global Policy</option>
-                                        <option value="institution" className="bg-slate-900">Institution Policy</option>
-                                        <option value="unit" className="bg-slate-900">Unit Policy</option>
+                                        <option value="global" className="bg-surface">Global Policy</option>
+                                        <option value="institution" className="bg-surface">Institution Policy</option>
+                                        <option value="unit" className="bg-surface">Unit Policy</option>
                                     </select>
-                                    <ChevronDown className="w-4 h-4 text-indigo-400 absolute right-3 top-1/2 -translate-y-1/2 pointer-events-none" />
+                                    <ChevronDown className="w-4 h-4 text-indigo-500 absolute right-3 top-1/2 -translate-y-1/2 pointer-events-none" />
                                 </div>
 
                                 {scopeType !== 'global' && (
                                     <input
-                                        className="bg-white/5 text-sm text-white px-3 py-2.5 rounded-lg border border-transparent focus:border-indigo-500/50 focus:bg-indigo-500/10 outline-none transition-all w-32 placeholder:text-slate-600 font-mono"
+                                        className="bg-muted/10 text-sm text-foreground px-3 py-2.5 rounded-lg border border-transparent focus:border-indigo-500/50 focus:bg-indigo-500/10 outline-none transition-all w-32 placeholder:text-muted font-mono"
                                         placeholder="ID..."
                                         value={scopeId}
                                         onChange={(e) => setScopeId(e.target.value)}
@@ -242,9 +242,9 @@ export default function NotificationPolicyView() {
                     <div className="flex flex-col items-center justify-center p-32 space-y-6">
                         <div className="relative">
                             <div className="absolute inset-0 bg-indigo-500/50 blur-xl animate-pulse rounded-full" />
-                            <Loader2 className="w-12 h-12 text-white relative animate-spin" />
+                            <Loader2 className="w-12 h-12 text-foreground relative animate-spin" />
                         </div>
-                        <p className="text-slate-500 font-light tracking-wide animate-pulse">Synchronizing Policies...</p>
+                        <p className="text-muted font-light tracking-wide animate-pulse">Synchronizing Policies...</p>
                     </div>
                 ) : (
                     <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
@@ -288,15 +288,15 @@ function PolicyCard({ config, currentValue, isEnabled, onSave, isProcessing }: a
             group relative flex flex-col p-6 rounded-2xl border transition-all duration-500 ease-out
             overflow-hidden isolate
             ${enabled
-                ? 'bg-[#0F172A] border-white/5 shadow-2xl shadow-black/50'
-                : 'bg-[#0B1120] border-white/[0.02] shadow-none opacity-80'
+                ? 'bg-surface border-soft shadow-xl shadow-black/5'
+                : 'bg-muted/5 border-transparent shadow-none opacity-80'
             }
         `}>
             {/* Glow Effects */}
             {enabled && (
                 <>
                     <div className="absolute inset-0 bg-gradient-to-br from-indigo-500/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-700 pointer-events-none" />
-                    <div className="absolute top-0 right-0 w-32 h-32 bg-indigo-500/10 blur-[60px] rounded-full pointer-events-none" />
+                    <div className="absolute top-0 right-0 w-32 h-32 bg-indigo-500/5 blur-[60px] rounded-full pointer-events-none" />
                 </>
             )}
 
@@ -306,17 +306,17 @@ function PolicyCard({ config, currentValue, isEnabled, onSave, isProcessing }: a
                     <div className={`
                         p-3.5 rounded-2xl transition-all duration-300
                         ${enabled
-                            ? `bg-gradient-to-br ${config.bg} to-transparent text-white ring-1 ring-inset ring-white/10 shadow-lg`
-                            : 'bg-slate-800/50 text-slate-500 saturate-0 scale-95'
+                            ? `bg-gradient-to-br ${config.bg} to-transparent text-foreground ring-1 ring-inset ring-soft shadow-md`
+                            : 'bg-muted/10 text-muted saturate-0 scale-95'
                         }
                     `}>
-                        <Icon size={24} className={enabled ? 'stroke-indigo-100 drop-shadow-md' : ''} />
+                        <Icon size={24} className={enabled ? 'stroke-indigo-500 drop-shadow-sm' : ''} />
                     </div>
                     <div>
-                        <h3 className={`font-semibold text-lg leading-tight transition-colors ${enabled ? 'text-white' : 'text-slate-500'}`}>
+                        <h3 className={`font-semibold text-lg leading-tight transition-colors ${enabled ? 'text-foreground' : 'text-muted'}`}>
                             {config.title}
                         </h3>
-                        <p className="text-sm text-slate-500 mt-1.5 font-light leading-relaxed line-clamp-2">
+                        <p className="text-sm text-muted mt-1.5 font-light leading-relaxed line-clamp-2">
                             {config.description}
                         </p>
                     </div>
@@ -326,10 +326,10 @@ function PolicyCard({ config, currentValue, isEnabled, onSave, isProcessing }: a
                 <button
                     onClick={() => setEnabled(!enabled)}
                     className={`
-                        relative w-[60px] h-[32px] rounded-full transition-all duration-300 ease-in-out shrink-0 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-offset-[#0B1120] focus:ring-indigo-500/50
+                        relative w-[60px] h-[32px] rounded-full transition-all duration-300 ease-in-out shrink-0 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-offset-background focus:ring-indigo-500/50
                         ${enabled
-                            ? 'bg-indigo-600 shadow-[0_0_15px_rgba(79,70,229,0.4)]'
-                            : 'bg-slate-800 hover:bg-slate-700'
+                            ? 'bg-indigo-600 shadow-md'
+                            : 'bg-muted hover:bg-muted/80'
                         }
                     `}
                 >
@@ -346,18 +346,18 @@ function PolicyCard({ config, currentValue, isEnabled, onSave, isProcessing }: a
             {/* Input Section */}
             <div className="relative z-10 space-y-6 mt-auto">
                 <div className={`
-                    flex items-center justify-between py-2 px-1 border-b border-white/5 transition-all duration-300
+                    flex items-center justify-between py-2 px-1 border-b border-soft transition-all duration-300
                     ${!enabled ? 'opacity-30 grayscale pointer-events-none' : 'opacity-100'}
                 `}>
-                    <span className="text-sm text-slate-400 font-medium">Alert Threshold</span>
+                    <span className="text-sm text-muted font-medium">Alert Threshold</span>
                     <div className="flex items-baseline gap-2 group/input">
                         <input
                             type="number"
-                            className="w-20 bg-transparent text-right text-2xl font-bold text-white outline-none placeholder:text-slate-700 font-mono transition-colors group-hover/input:text-indigo-200"
+                            className="w-20 bg-transparent text-right text-2xl font-bold text-foreground outline-none placeholder:text-muted font-mono transition-colors group-hover/input:text-indigo-500"
                             value={val}
                             onChange={(e) => setVal(Number(e.target.value))}
                         />
-                        <span className="text-xs font-bold text-slate-600 uppercase tracking-widest">{config.unit}</span>
+                        <span className="text-xs font-bold text-muted-foreground uppercase tracking-widest">{config.unit}</span>
                     </div>
                 </div>
 

@@ -53,11 +53,11 @@ export default function SystemHealthPage() {
                 description="Live operational status of core system components."
                 actions={
                     <div className="flex items-center gap-2">
-                        <Button variant="ghost" onClick={fetchHealth} disabled={refreshing} className="text-slate-400 hover:text-white">
+                        <Button variant="ghost" onClick={fetchHealth} disabled={refreshing} className="text-muted hover:text-foreground">
                             <RefreshCw size={16} className={cn("mr-2", refreshing && "animate-spin")} />
                             Refresh
                         </Button>
-                        <Button variant="ghost" onClick={() => router.push('/admin')} className="gap-2 text-slate-400 hover:text-white">
+                        <Button variant="ghost" onClick={() => router.push('/admin')} className="gap-2 text-muted hover:text-foreground">
                             <ArrowLeft size={16} />
                             Back
                         </Button>
@@ -102,23 +102,23 @@ export default function SystemHealthPage() {
                     />
                 </div>
 
-                <div className="bg-white/5 border border-white/5 rounded-xl p-6">
-                    <h3 className="text-lg font-medium text-white mb-4 flex items-center gap-2">
-                        <Activity className="w-5 h-5 text-blue-400" />
+                <div className="bg-surface border border-soft rounded-xl p-6 shadow-sm">
+                    <h3 className="text-lg font-medium text-foreground mb-4 flex items-center gap-2">
+                        <Activity className="w-5 h-5 text-blue-500" />
                         Health Logic Explanation
                     </h3>
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-8 text-sm text-slate-400">
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-8 text-sm text-muted">
                         <ul className="space-y-3">
                             <li className="flex gap-3">
                                 <div className="w-2 h-2 rounded-full bg-green-500 mt-1.5 shrink-0" />
                                 <div>
-                                    <strong className="text-slate-200">API Response:</strong> Checks if the internal API can receive and process requests without error.
+                                    <strong className="text-foreground">API Response:</strong> Checks if the internal API can receive and process requests without error.
                                 </div>
                             </li>
                             <li className="flex gap-3">
                                 <div className="w-2 h-2 rounded-full bg-green-500 mt-1.5 shrink-0" />
                                 <div>
-                                    <strong className="text-slate-200">Database:</strong> Verifies connectivity to Firestore via the Firebase Admin SDK.
+                                    <strong className="text-foreground">Database:</strong> Verifies connectivity to Firestore via the Firebase Admin SDK.
                                 </div>
                             </li>
                         </ul>
@@ -126,13 +126,13 @@ export default function SystemHealthPage() {
                             <li className="flex gap-3">
                                 <div className="w-2 h-2 rounded-full bg-green-500 mt-1.5 shrink-0" />
                                 <div>
-                                    <strong className="text-slate-200">Drive Integration:</strong> Monitors the `system_activity` log for recent `drive_scan` actions. If no scans occur for &gt;24h, this may show as degraded.
+                                    <strong className="text-foreground">Drive Integration:</strong> Monitors the `system_activity` log for recent `drive_scan` actions. If no scans occur for &gt;24h, this may show as degraded.
                                 </div>
                             </li>
                             <li className="flex gap-3">
                                 <div className="w-2 h-2 rounded-full bg-green-500 mt-1.5 shrink-0" />
                                 <div>
-                                    <strong className="text-slate-200">Activity Logger:</strong> Checks if the system is successfully writing to the audit log. Critical for security and data integrity.
+                                    <strong className="text-foreground">Activity Logger:</strong> Checks if the system is successfully writing to the audit log. Critical for security and data integrity.
                                 </div>
                             </li>
                         </ul>
@@ -160,32 +160,33 @@ function HealthCard({ title, status, icon, description, detail, loading }: any) 
     };
 
     return (
-        <div className="bg-white/5 border border-white/5 p-5 rounded-xl relative overflow-hidden group hover:border-white/10 transition-colors">
+        <div className="bg-surface border border-soft p-5 rounded-xl relative overflow-hidden group hover:border-muted/30 transition-colors shadow-sm">
             {loading ? (
                 <div className="animate-pulse space-y-3">
-                    <div className="h-4 w-24 bg-white/10 rounded" />
-                    <div className="h-8 w-16 bg-white/10 rounded" />
+                    <div className="h-4 w-24 bg-muted/20 rounded" />
+                    <div className="h-8 w-16 bg-muted/20 rounded" />
                 </div>
             ) : (
                 <>
                     <div className="flex justify-between items-start mb-4">
-                        <div className="p-2 bg-white/5 rounded-lg text-slate-300">
+                        <div className="p-2 bg-muted/10 rounded-lg text-muted">
                             {icon}
                         </div>
-                        <div className={`flex items-center gap-1.5 px-2 py-1 rounded-full bg-white/5 border border-white/5 text-[10px] uppercase font-bold tracking-wider ${status === 'healthy' ? 'text-green-400' : status === 'degraded' ? 'text-amber-400' : 'text-red-400'}`}>
+                        <div className={`flex items-center gap-1.5 px-2 py-1 rounded-full bg-accent-primary-soft border border-soft text-[10px] uppercase font-bold tracking-wider ${status === 'healthy' ? 'text-green-500' : status === 'degraded' ? 'text-amber-500' : 'text-red-500'}`}>
                             <div className={`w-1.5 h-1.5 rounded-full ${statusColor[status as keyof typeof statusColor]} animate-pulse`} />
                             {statusText[status as keyof typeof statusText]}
                         </div>
                     </div>
 
-                    <h3 className="text-lg font-semibold text-white mb-1">{title}</h3>
-                    <p className="text-xs text-slate-400 mb-4">{description}</p>
+                    <h3 className="text-lg font-semibold text-foreground mb-1">{title}</h3>
+                    <p className="text-xs text-muted mb-4">{description}</p>
 
-                    <div className="pt-4 border-t border-white/5">
-                        <p className="text-xs text-slate-500 font-mono">{detail}</p>
+                    <div className="pt-4 border-t border-soft">
+                        <p className="text-xs text-muted font-mono">{detail}</p>
                     </div>
                 </>
             )}
         </div>
     );
+
 }

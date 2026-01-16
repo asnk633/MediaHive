@@ -9,16 +9,10 @@ export function getPreferredTheme(): Theme {
 export default function useTheme(initial?: Theme) {
     const [theme] = useState<Theme>("dark");
 
-    // Force strict Dark Mode on mount
+    // Legacy hook - now controlled by ThemeContext.tsx
+    // We prevent this hook from interfering with the global theme.
     useEffect(() => {
-        try {
-            const root = document.documentElement;
-            root.setAttribute("data-theme", "dark");
-            root.classList.add("dark");
-
-            // Clear any legacy 'light' setting
-            localStorage.setItem("theme", "dark");
-        } catch (e) { }
+        // No-op
     }, []);
 
     const toggle = useCallback(() => {

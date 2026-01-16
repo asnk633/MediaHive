@@ -24,20 +24,20 @@ export const StatusChart = ({ stats }: StatusChartProps) => {
 
     if (!isReady) {
         return (
-            <div className="bg-white/5 backdrop-blur-md border border-[#ffffff1a] rounded-2xl p-5 shadow-xl h-[350px] animate-pulse" />
+            <div className="bg-surface backdrop-blur-md rounded-2xl p-5 shadow-xl h-[350px] animate-pulse" />
         );
     }
 
     if (activeData.length === 0) {
         return (
-            <div className="bg-white/5 backdrop-blur-md border border-[#ffffff1a] rounded-2xl p-5 shadow-xl h-[350px] flex items-center justify-center">
+            <div className="bg-surface backdrop-blur-md rounded-2xl p-5 shadow-xl h-[350px] flex items-center justify-center">
                 <p className="text-gray-400 text-sm">No task data available</p>
             </div>
         );
     }
 
     return (
-        <div className="bg-white/5 backdrop-blur-md border border-[#ffffff1a] rounded-2xl p-5 shadow-xl flex flex-col h-[350px]">
+        <div className="bg-surface backdrop-blur-md rounded-2xl p-5 shadow-xl flex flex-col h-[350px]">
             <h3 className="text-lg font-bold text-white mb-4">Task Status Distribution</h3>
             <div className="flex-1 w-full min-h-0">
                 <SafeResponsiveContainer width="100%" height="100%">

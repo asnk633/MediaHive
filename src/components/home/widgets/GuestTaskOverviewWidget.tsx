@@ -35,7 +35,7 @@ export function GuestTaskOverviewWidget({ stats }: GuestTaskOverviewWidgetProps)
 
             {/* Card 1: Today's Workload */}
             <motion.div
-                className="bg-black/20 backdrop-blur-md border border-white/5 rounded-2xl p-6 relative overflow-hidden group hover:bg-white/5 transition-colors"
+                className="bg-surface backdrop-blur-md rounded-2xl p-6 relative overflow-hidden group hover:bg-surface/80 transition-colors shadow-sm"
                 initial={{ opacity: 0, y: 10 }}
                 animate={{ opacity: 1, y: 0 }}
             >
@@ -45,10 +45,10 @@ export function GuestTaskOverviewWidget({ stats }: GuestTaskOverviewWidgetProps)
 
                 <div className="flex items-center justify-between mb-2">
                     <div className="flex items-center gap-3">
-                        <div className="p-2 bg-blue-500/10 rounded-lg text-blue-400">
+                        <div className="p-2 bg-blue-500/10 rounded-lg text-blue-500">
                             <BarChart3 size={20} />
                         </div>
-                        <h3 className="text-gray-400 font-medium text-sm">Today&apos;s Workload at media office</h3>
+                        <h3 className="text-muted-foreground font-medium text-sm">Today&apos;s Workload at media office</h3>
                     </div>
                 </div>
 
@@ -58,14 +58,14 @@ export function GuestTaskOverviewWidget({ stats }: GuestTaskOverviewWidgetProps)
                 </div>
 
                 <div>
-                    <p className="text-3xl font-bold text-white tracking-tight">{todaysWorkload}</p>
-                    <p className="text-sm text-gray-500 mt-1">In progress & due today</p>
+                    <p className="text-3xl font-bold text-foreground tracking-tight">{todaysWorkload}</p>
+                    <p className="text-sm text-muted-foreground mt-1">In progress & due today</p>
                 </div>
             </motion.div>
 
             {/* Card 2: Tasks Scheduled - Next 7 Days */}
             <motion.div
-                className="bg-black/20 backdrop-blur-md border border-white/5 rounded-2xl p-6 relative overflow-hidden group hover:bg-white/5 transition-colors"
+                className="bg-surface backdrop-blur-md rounded-2xl p-6 relative overflow-hidden group hover:bg-surface/80 transition-colors shadow-sm"
                 initial={{ opacity: 0, y: 10 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ delay: 0.1 }}
@@ -75,15 +75,15 @@ export function GuestTaskOverviewWidget({ stats }: GuestTaskOverviewWidgetProps)
                 </div>
 
                 <div className="flex items-center gap-3 mb-2">
-                    <div className="p-2 bg-violet-500/10 rounded-lg text-violet-400">
+                    <div className="p-2 bg-violet-500/10 rounded-lg text-violet-500">
                         <CalendarDays size={20} />
                     </div>
-                    <h3 className="text-gray-400 font-medium text-sm">Tasks Scheduled</h3>
+                    <h3 className="text-muted-foreground font-medium text-sm">Tasks Scheduled</h3>
                 </div>
 
                 <div className="mt-4">
-                    <p className="text-3xl font-bold text-white tracking-tight">{next7DaysLoad}</p>
-                    <p className="text-sm text-gray-500 mt-1">Due next 7 days</p>
+                    <p className="text-3xl font-bold text-foreground tracking-tight">{next7DaysLoad}</p>
+                    <p className="text-sm text-muted-foreground mt-1">Due next 7 days</p>
                 </div>
             </motion.div>
         </div>

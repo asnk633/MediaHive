@@ -30,12 +30,12 @@ export function EventListView({ events, onEventClick, showCurrentYearOnly = fals
 
     if (events.length === 0) {
         return (
-            <div className="flex flex-col items-center justify-center py-20 text-center">
-                <div className="w-16 h-16 bg-gray-100 dark:bg-gray-800 rounded-full flex items-center justify-center mb-4">
-                    <Calendar className="text-gray-400" size={32} />
+            <div className="flex flex-col items-center justify-center py-20 text-center bg-glass backdrop-blur-sm rounded-2xl shadow-sm">
+                <div className="w-16 h-16 bg-surface/50 rounded-full flex items-center justify-center mb-4">
+                    <Calendar className="text-muted/60" size={32} />
                 </div>
-                <h3 className="text-lg font-bold text-[var(--color-text-primary)]">No events yet</h3>
-                <p className="text-[var(--color-text-secondary)]">Create an event to get started.</p>
+                <h3 className="text-lg font-bold text-foreground">No events yet</h3>
+                <p className="text-muted text-sm">Create an event to get started.</p>
             </div>
         );
     }
@@ -81,11 +81,11 @@ export function EventListView({ events, onEventClick, showCurrentYearOnly = fals
 
     if (sortedYears.length === 0) {
         return (
-            <div className="flex flex-col items-center justify-center py-20 text-center opacity-70">
-                <div className="w-12 h-12 bg-white/5 rounded-full flex items-center justify-center mb-3">
-                    <Calendar className="text-white/40" size={24} />
+            <div className="flex flex-col items-center justify-center py-20 text-center opacity-70 bg-glass backdrop-blur-sm rounded-2xl shadow-sm">
+                <div className="w-12 h-12 bg-surface/50 rounded-full flex items-center justify-center mb-3">
+                    <Calendar className="text-muted/50" size={24} />
                 </div>
-                <p className="text-white/60">No upcoming events found for this period.</p>
+                <p className="text-muted text-sm">No upcoming events found for this period.</p>
             </div>
         );
     }
@@ -106,7 +106,7 @@ export function EventListView({ events, onEventClick, showCurrentYearOnly = fals
                             disabled={showCurrentYearOnly}
                             className={`
                                 relative pl-6 pr-4 py-2 w-full flex items-center gap-4 text-left group
-                                ${showCurrentYearOnly ? 'cursor-default' : 'cursor-pointer hover:bg-white/5 rounded-lg transition-colors'}
+                                ${showCurrentYearOnly ? 'cursor-default' : 'cursor-pointer hover:bg-surface/50 rounded-lg transition-colors'}
                             `}
                         >
                             <div className={`absolute left-0 top-0 bottom-0 w-1 rounded-full transition-colors ${year === currentYear ? 'bg-gradient-to-b from-blue-500 to-blue-600' : 'bg-white/10 group-hover:bg-white/30'}`} />
@@ -117,7 +117,7 @@ export function EventListView({ events, onEventClick, showCurrentYearOnly = fals
 
                             {!showCurrentYearOnly && (
                                 <div className="ml-auto flex items-center gap-3">
-                                    <span className="bg-white/10 text-white/50 text-xs font-bold px-3 py-1 rounded-full border border-white/5">
+                                    <span className="bg-glass text-muted text-xs font-bold px-3 py-1 rounded-full shadow-sm">
                                         {Object.values(yearGroup.months).reduce((sum, m) => sum + m.events.length, 0)} Events
                                     </span>
                                     <div className="text-white/30 group-hover:text-white transition-colors">
@@ -235,10 +235,11 @@ function EventCard({ event, onEventClick, isAdmin, user }: { event: Event, onEve
                 hover:-translate-y-1
                 transition-all duration-300 ease-in-out
                 cursor-pointer group
-                border
+                transition-all duration-300 ease-in-out
+                cursor-pointer group
                 relative
                 overflow-hidden
-                ${isPending ? 'bg-amber-900/20 border-amber-500/50' : 'bg-gradient-to-r from-[#141e30] to-[#243b55] border-white/5'}
+                ${isPending ? 'bg-amber-900/20 border-none ring-1 ring-amber-500/50' : 'bg-surface shadow-sm border-none'}
             `}
         >
             {isPending && (
@@ -248,7 +249,7 @@ function EventCard({ event, onEventClick, isAdmin, user }: { event: Event, onEve
             )}
 
             {/* Date Box */}
-            <div className={`flex-shrink-0 flex sm:flex-col items-center justify-center gap-1 sm:gap-0 w-full sm:w-16 sm:h-16 ${isPending ? 'bg-amber-500/20 border-amber-500/30' : 'bg-white/10 border-[#ffffff1a]'} backdrop-blur-md rounded-xl text-white shadow-inner`}>
+            <div className={`flex-shrink-0 flex sm:flex-col items-center justify-center gap-1 sm:gap-0 w-full sm:w-16 sm:h-16 ${isPending ? 'bg-amber-500/20' : 'bg-glass shadow-inner'} backdrop-blur-md rounded-xl text-foreground`}>
                 <span className="text-[10px] font-bold uppercase tracking-wider text-white/70">{format(eventDate, 'MMM')}</span>
                 <span className="text-xl font-bold font-[gill-sans-mt,sans-serif]">{format(eventDate, 'd')}</span>
             </div>
@@ -256,7 +257,7 @@ function EventCard({ event, onEventClick, isAdmin, user }: { event: Event, onEve
             {/* Details */}
             <div className="flex-1 min-w-0">
                 <div className="flex justify-between items-start">
-                    <h3 className="text-lg font-bold mb-1 truncate pr-8 font-[gill-sans-mt,sans-serif] tracking-wide text-white">
+                    <h3 className="text-lg font-bold mb-1 truncate pr-8 font-[gill-sans-mt,sans-serif] tracking-wide text-foreground">
                         {event.title}
                     </h3>
                     <div className="flex gap-2">
@@ -268,7 +269,7 @@ function EventCard({ event, onEventClick, isAdmin, user }: { event: Event, onEve
                                 Approve
                             </button>
                         )}
-                        <button className="text-white/60 hover:text-white p-1 rounded-full hover:bg-white/10 transition-colors">
+                        <button className="text-muted hover:text-foreground p-1 rounded-full hover:bg-glass transition-colors">
                             <MoreVertical size={18} />
                         </button>
                     </div>
@@ -279,13 +280,13 @@ function EventCard({ event, onEventClick, isAdmin, user }: { event: Event, onEve
                 </p>
 
                 <div className="flex flex-wrap gap-3 text-xs font-medium text-white/60">
-                    <div className={`flex items-center gap-1.5 px-2.5 py-1 rounded-lg border ${isPending ? 'bg-amber-500/10 border-amber-500/20' : 'bg-black/20 border-white/5'}`}>
-                        <Clock size={13} className={isPending ? "text-amber-400" : "text-blue-400"} />
+                    <div className={`flex items-center gap-1.5 px-2.5 py-1 rounded-lg ${isPending ? 'bg-amber-500/10 text-amber-500' : 'bg-glass text-muted'}`}>
+                        <Clock size={13} className={isPending ? "text-amber-500" : "text-primary"} />
                         {format(eventDate, 'h:mm a')}
                     </div>
                     {event.location && (
-                        <div className={`flex items-center gap-1.5 px-2.5 py-1 rounded-lg border ${isPending ? 'bg-amber-500/10 border-amber-500/20' : 'bg-black/20 border-white/5'}`}>
-                            <MapPin size={13} className={isPending ? "text-amber-400" : "text-red-400"} />
+                        <div className={`flex items-center gap-1.5 px-2.5 py-1 rounded-lg ${isPending ? 'bg-amber-500/10 text-amber-500' : 'bg-glass text-muted'}`}>
+                            <MapPin size={13} className={isPending ? "text-amber-500" : "text-destructive"} />
                             {event.location}
                         </div>
                     )}
@@ -311,30 +312,30 @@ function SystemEventCard({ event, onEventClick }: { event: Event, onEventClick: 
             className={`
                 flex items-center gap-4 p-3 
                 rounded-xl
-                bg-[#0f172a]/80 border border-blue-900/30
-                hover:bg-[#1e293b] hover:border-blue-500/30
+                bg-glass shadow-sm
+                hover:bg-surface hover:shadow-md
                 transition-all duration-200
                 cursor-pointer group
             `}
         >
             {/* Compact Date */}
-            <div className="flex-shrink-0 w-12 h-12 bg-blue-900/20 rounded-lg flex flex-col items-center justify-center border border-blue-500/10 group-hover:border-blue-500/30 transition-colors">
-                <span className="text-[9px] font-bold text-blue-200 uppercase">{format(eventDate, 'MMM')}</span>
-                <span className="text-base font-bold text-blue-100 leading-none">{format(eventDate, 'd')}</span>
+            <div className="flex-shrink-0 w-12 h-12 bg-primary/10 rounded-lg flex flex-col items-center justify-center group-hover:bg-primary/20 transition-colors">
+                <span className="text-[9px] font-bold text-primary uppercase">{format(eventDate, 'MMM')}</span>
+                <span className="text-base font-bold text-primary leading-none">{format(eventDate, 'd')}</span>
             </div>
 
             {/* Content */}
             <div className="flex-1 min-w-0">
                 <div className="flex items-center justify-between gap-2">
-                    <h3 className="text-sm font-bold text-blue-100 truncate">
+                    <h3 className="text-sm font-bold text-foreground truncate">
                         {event.title}
                     </h3>
-                    <div className="px-1.5 py-0.5 rounded text-[9px] font-bold bg-blue-500/20 text-blue-300 border border-blue-500/20 uppercase tracking-wider">
+                    <div className="px-1.5 py-0.5 rounded text-[9px] font-bold bg-primary/10 text-primary uppercase tracking-wider">
                         {recFreq}
                     </div>
                 </div>
 
-                <div className="flex items-center gap-3 mt-1 text-[10px] text-blue-200/50">
+                <div className="flex items-center gap-3 mt-1 text-[10px] text-muted">
                     <div className="flex items-center gap-1">
                         <Clock size={10} />
                         {format(eventDate, 'h:mm a')}

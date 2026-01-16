@@ -2,36 +2,118 @@
 @tailwind components;
 @tailwind utilities;
 
+/* 
+   !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+   !! DESIGN CONTRACT ENFORCEMENT                                       !!
+   !! DO NOT ADD GLOBAL STYLE OVERRIDES WITHOUT APPROVAL.               !!
+   !! REFER TO docs/design-contract.md.                                 !!
+   !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+*/
+
 @layer base {
+
+  /* 
+   * GLOBAL THEME SYSTEM
+   * Default: Aura (Locked)
+   */
+  html[data-theme="aura"] {
+    --bg-root: radial-gradient(1200px 600px at top, #312e81 0%, #1e1b4b 45%, #020617 100%);
+    --bg-elevated: rgba(15, 23, 42, 0.75);
+    --bg-surface: rgba(15, 23, 42, 0.55);
+    --bg-glass: rgba(255, 255, 255, 0.04);
+
+    --border-soft: rgba(255, 255, 255, 0.06);
+    --border-strong: rgba(99, 102, 241, 0.35);
+
+    --text-primary: #f8fafc;
+    --text-secondary: #c7d2fe;
+    --text-muted: #94a3b8;
+    --text-inverse: #020617;
+
+    --accent-primary: #6366f1;
+    --accent-primary-soft: rgba(99, 102, 241, 0.18);
+    --accent-warning: #facc15;
+    --accent-danger: #fb7185;
+    --accent-success: #34d399;
+
+    --shadow-soft: 0 8px 30px rgba(0, 0, 0, 0.45);
+    --shadow-medium: 0 12px 40px rgba(0, 0, 0, 0.6);
+    --shadow-strong: 0 20px 60px rgba(99, 102, 241, 0.25);
+
+    --toggle-track: #4f46e5;
+    --toggle-thumb: #ffffff;
+
+    --scrollbar-thumb: rgba(99, 102, 241, 0.55);
+  }
+
+  /* Dusk (Dark · Low-Glow) */
+  html[data-theme="dusk"] {
+    --bg-root: linear-gradient(180deg, #020617 0%, #020617 100%);
+    --bg-elevated: rgba(15, 23, 42, 0.9);
+    --bg-surface: rgba(15, 23, 42, 0.7);
+    --bg-glass: rgba(255, 255, 255, 0.025);
+
+    --border-soft: rgba(255, 255, 255, 0.05);
+    --border-strong: rgba(99, 102, 241, 0.25);
+
+    --text-primary: #e5e7eb;
+    --text-secondary: #a5b4fc;
+    --text-muted: #9ca3af;
+    --text-inverse: #020617;
+
+    --accent-primary: #818cf8;
+    --accent-primary-soft: rgba(129, 140, 248, 0.12);
+    --accent-warning: #fde047;
+    --accent-danger: #f87171;
+    --accent-success: #4ade80;
+
+    --shadow-soft: 0 6px 20px rgba(0, 0, 0, 0.5);
+    --shadow-medium: 0 10px 30px rgba(0, 0, 0, 0.65);
+    --shadow-strong: none;
+
+    --toggle-track: #64748b;
+    --toggle-thumb: #e5e7eb;
+
+    --scrollbar-thumb: rgba(148, 163, 184, 0.5);
+  }
+
+  /* Frost (Light) */
+  html[data-theme="frost"] {
+    --bg-root: #f8fafc;
+    /* slate-50 */
+    --bg-elevated: #ffffff;
+    --bg-surface: rgba(255, 255, 255, 0.92);
+    --bg-glass: rgba(255, 255, 255, 0.75);
+
+    --border-soft: rgba(15, 23, 42, 0.08);
+    /* slate-900/8 */
+    --border-strong: rgba(15, 23, 42, 0.14);
+
+    --text-primary: #0f172a;
+    /* slate-900 */
+    --text-secondary: #334155;
+    /* slate-700 */
+    --text-muted: #475569;
+    /* slate-600 */
+    --text-inverse: #ffffff;
+
+    --accent-primary: #4f46e5;
+    --accent-primary-soft: rgba(79, 70, 229, 0.1);
+    --accent-warning: #ca8a04;
+    --accent-danger: #dc2626;
+    --accent-success: #16a34a;
+
+    --shadow-soft: 0 4px 12px rgba(15, 23, 42, 0.06);
+    --shadow-medium: 0 8px 24px rgba(15, 23, 42, 0.08);
+    --shadow-strong: 0 16px 40px rgba(15, 23, 42, 0.12);
+
+    --toggle-track: #e2e8f0;
+    --toggle-thumb: #ffffff;
+
+    --scrollbar-thumb: rgba(99, 102, 241, 0.4);
+  }
+
   :root {
-    --background: 222.2 84% 4.9%;
-    --foreground: 210 40% 98%;
-
-    --card: 222.2 84% 4.9%;
-    --card-foreground: 210 40% 98%;
-
-    --popover: 222.2 84% 4.9%;
-    --popover-foreground: 210 40% 98%;
-
-    --primary: 217.2 91.2% 59.8%;
-    --primary-foreground: 222.2 47.4% 11.2%;
-
-    --secondary: 217.2 32.6% 17.5%;
-    --secondary-foreground: 210 40% 98%;
-
-    --muted: 217.2 32.6% 17.5%;
-    --muted-foreground: 215 20.2% 65.1%;
-
-    --accent: 217.2 32.6% 17.5%;
-    --accent-foreground: 210 40% 98%;
-
-    --destructive: 0 62.8% 30.6%;
-    --destructive-foreground: 210 40% 98%;
-
-    --border: 217.2 32.6% 17.5%;
-    --input: 217.2 32.6% 17.5%;
-    --ring: 212.7 26.8% 83.9%;
-
     /* Global Shell Dimensions */
     --header-base-height: 75px;
     --header-height: calc(var(--header-base-height) + env(safe-area-inset-top, 0px));
@@ -40,7 +122,6 @@
     --bottom-nav-height: calc(80px + 24px + env(safe-area-inset-bottom, 0px));
     /* Visual Tuning */
     --fab-bottom-offset: calc(26px + env(safe-area-inset-bottom, 0px));
-    /* Height (h-20) + Bottom Margin (bottom-6) */
   }
 }
 
@@ -51,20 +132,18 @@
 
   /* Global Typography Colors */
   h1 {
-    @apply text-white;
+    @apply text-foreground;
   }
 
   h2,
   h3 {
-    @apply text-slate-100;
+    @apply text-foreground;
   }
 
   body {
-    background: radial-gradient(circle at top center, #312e81 0%, #1e1b4b 40%, #000000 100%);
+    background: var(--bg-root);
     background-attachment: fixed;
-    /* Neutral darkest slate */
-    @apply text-slate-200;
-    /* Default body text */
+    color: var(--text-primary);
     min-height: 100vh;
     padding-bottom: var(--bottom-nav-height);
     /* Prevent content overlap with fixed BottomNav */

@@ -12,6 +12,7 @@ This repository is the hybrid output generated and polished from Orchids + local
 - ✅ Features: Tasks (list + Kanban), Calendar (list view), Files hub, Notifications, Profile (avatar upload), Attendance check-in/out
 - ✅ E2E tests (Playwright) — included and runnable locally & via GitHub Actions
 - ✅ CI workflow added: runs Playwright tests on push (see GitHub Actions → *CI — Tests & Playwright*)
+- 🔒 **Design Contract**: UI rules are locked. See [docs/design-contract.md](docs/design-contract.md).
 
 ---
 

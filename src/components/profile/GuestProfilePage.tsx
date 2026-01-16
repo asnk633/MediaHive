@@ -50,7 +50,7 @@ export function GuestProfilePage() {
         .slice(0, 5);
 
     return (
-        <div className="max-w-4xl mx-auto pt-20 px-4 pb-20">
+        <div className="min-h-screen bg-background relative overflow-hidden pb-20 lg:pb-0">
             <div className="bg-white/5 backdrop-blur-md border border-[#ffffff1a] rounded-3xl p-8 mb-8">
                 <div className="flex flex-col md:flex-row items-center gap-8">
                     <div className="relative">

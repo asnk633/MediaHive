@@ -26,7 +26,7 @@ export const TasksFromMeWidget = ({ tasks, userId, title = "Tasks from Me" }: Ta
             case 'completed': return 'bg-green-500/20 text-green-400 border-green-500/30';
             case 'in_progress': return 'bg-blue-500/20 text-blue-400 border-blue-500/30';
             case 'review': return 'bg-yellow-500/20 text-yellow-400 border-yellow-500/30';
-            default: return 'bg-white/5 text-gray-400 border-[#ffffff1a]';
+            default: return 'bg-glass text-gray-400 shadow-sm';
         }
     };
 
@@ -52,7 +52,7 @@ export const TasksFromMeWidget = ({ tasks, userId, title = "Tasks from Me" }: Ta
                         {title}
                     </h3>
                 </div>
-                <div className="p-6 bg-white/5 backdrop-blur-md rounded-2xl border border-white/5 text-center">
+                <div className="p-6 bg-surface backdrop-blur-md rounded-2xl shadow-sm text-center">
                     <p className="text-gray-400 text-sm">No active requests found.</p>
                 </div>
             </div>
@@ -77,7 +77,7 @@ export const TasksFromMeWidget = ({ tasks, userId, title = "Tasks from Me" }: Ta
                 {myTasks.map(task => {
                     const isDone = task.status === 'done';
                     return (
-                        <div key={task.id} className={`group flex items-center justify-between p-4 bg-white/5 backdrop-blur-md rounded-2xl border border-white/5 hover:bg-white/10 hover:border-[#ffffff1a] transition-all duration-300 ${isDone ? 'opacity-50 grayscale' : ''}`}>
+                        <div key={task.id} className={`group flex items-center justify-between p-4 bg-surface backdrop-blur-md rounded-2xl shadow-sm hover:bg-surface/80 hover:shadow-md transition-all duration-300 ${isDone ? 'opacity-50 grayscale' : ''}`}>
                             <div className="flex-1 min-w-0 mr-4">
                                 <p className={`text-sm font-semibold truncate ${isDone ? 'text-gray-500 line-through' : 'text-gray-200 group-hover:text-white'}`}>
                                     {task.title}
@@ -109,7 +109,7 @@ export const TasksFromMeWidget = ({ tasks, userId, title = "Tasks from Me" }: Ta
                                 </div>
                             </div>
 
-                            <div className={`px-2.5 py-1 rounded-lg text-[10px] font-bold uppercase tracking-wider border whitespace-nowrap ${getStatusColor(task.status)}`}>
+                            <div className={`px-2.5 py-1 rounded-lg text-[10px] font-bold uppercase tracking-wider whitespace-nowrap shadow-sm ${getStatusColor(task.status)}`}>
                                 {formatStatus(task.status)}
                             </div>
                         </div>

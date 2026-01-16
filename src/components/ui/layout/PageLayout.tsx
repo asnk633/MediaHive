@@ -15,7 +15,7 @@ export function PageLayout({ children, className, mode = 'standard' }: PageLayou
     return (
         <PageContainer className={cn("pt-8 pb-12 space-y-12", className)}>
             {mode === 'standard' ? (
-                <div className="bg-white/[0.01] rounded-3xl p-6 sm:p-8 space-y-10 border border-white/[0.02]">
+                <div className="bg-glass rounded-3xl p-6 sm:p-8 space-y-10 border border-border">
                     {children}
                 </div>
             ) : (

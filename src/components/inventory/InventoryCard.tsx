@@ -42,10 +42,10 @@ export const InventoryCard = React.memo<InventoryCardProps>(({ item, activeIssue
     return (
         <Card
             onClick={() => onView?.(item)}
-            className={`group relative overflow-hidden bg-slate-900/40 border-white/5 transition-all duration-300 backdrop-blur-sm cursor-pointer ${isOverdue ? 'border-red-500/50 shadow-lg shadow-red-900/20' : 'hover:border-blue-500/30'}`}
+            className={`group relative overflow-hidden bg-glass border-soft transition-all duration-300 backdrop-blur-md cursor-pointer ${isOverdue ? 'border-destructive/50 shadow-lg shadow-destructive/20' : 'hover:border-primary/30 hover:shadow-md'}`}
         >
             {/* Image / Thumbnail Placeholder */}
-            <div className="aspect-video w-full bg-slate-950/50 relative flex items-center justify-center border-b border-white/5 group-hover:bg-slate-950/70 transition-colors overflow-hidden"
+            <div className="aspect-video w-full bg-surface/50 relative flex items-center justify-center border-b border-soft group-hover:bg-surface/80 transition-colors overflow-hidden"
                 onClick={(e) => {
                     // Check if carousel arrow was clicked, if so, stop propagation? 
                     // Actually, carousel arrows usually sit on top. 
@@ -83,10 +83,12 @@ export const InventoryCard = React.memo<InventoryCardProps>(({ item, activeIssue
                             </CarouselContent>
                             <div onClick={(e) => e.stopPropagation()}>
                                 <CarouselPrevious
-                                    className="left-2 bg-black/50 border-white/10 opacity-0 group-hover:opacity-100 transition-opacity"
+                                    className="left-2 bg-black/50 border-white/10 opacity-0 group-hover:opacity-100 transition-opacity focus-visible:opacity-100 focus-visible:ring-2 focus-visible:ring-primary"
+                                    aria-label="Previous image"
                                 />
                                 <CarouselNext
-                                    className="right-2 bg-black/50 border-white/10 opacity-0 group-hover:opacity-100 transition-opacity"
+                                    className="right-2 bg-black/50 border-white/10 opacity-0 group-hover:opacity-100 transition-opacity focus-visible:opacity-100 focus-visible:ring-2 focus-visible:ring-primary"
+                                    aria-label="Next image"
                                 />
                             </div>
 
@@ -200,9 +202,12 @@ export const InventoryCard = React.memo<InventoryCardProps>(({ item, activeIssue
                         /* Request Action (Default) */
                         onRequest && (
                             <Button
-                                className={`flex-1 text-white shadow-lg ${hasPendingRequest ? 'bg-slate-700/50 text-slate-400 cursor-not-allowed' : 'bg-blue-600 hover:bg-blue-500 shadow-blue-900/20'}`}
+                                className={`flex-1 text-white shadow-lg h-11 sm:h-10 ${hasPendingRequest ? 'bg-slate-700/50 text-slate-400 cursor-not-allowed' : 'bg-blue-600 hover:bg-blue-500 shadow-blue-900/20'}`}
                                 disabled={isOut || isInUse || hasPendingRequest}
-                                onClick={() => onRequest(item)}
+                                onClick={(e) => {
+                                    e.stopPropagation();
+                                    onRequest(item);
+                                }}
                             >
                                 {hasPendingRequest ? 'Pending' : 'Request'}
                             </Button>

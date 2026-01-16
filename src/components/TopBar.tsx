@@ -36,7 +36,7 @@ export default function TopBar({ title = "Thaiba MediaHive" }: { title?: string 
   };
 
   return (
-    <header className="fixed top-0 left-0 right-0 bg-[#020617]/75 backdrop-blur-xl border-b border-white/[0.08] z-30 flex items-end justify-between px-4 lg:px-8 transition-all pb-3 shadow-[0_8px_32px_rgba(0,0,0,0.4)]" style={{ height: 'var(--header-height)', paddingTop: 'env(safe-area-inset-top)' }}>
+    <header className="fixed top-0 left-0 right-0 bg-glass backdrop-blur-xl border-b border-soft z-30 flex items-end justify-between px-4 lg:px-8 transition-all pb-3 shadow-sm" style={{ height: 'var(--header-height)', paddingTop: 'env(safe-area-inset-top)' }}>
       <div className="flex items-center gap-3">
         {/* Logo Icon */}
         <div className="w-10 h-10 flex items-center justify-center">
@@ -84,11 +84,11 @@ export default function TopBar({ title = "Thaiba MediaHive" }: { title?: string 
                 className="fixed inset-0 z-40"
                 onClick={() => setShowUserMenu(false)}
               />
-              <div className="absolute right-0 top-full mt-2 w-72 bg-[#0a0c10]/95 backdrop-blur-xl rounded-2xl shadow-2xl border border-[#ffffff1a] z-50 overflow-hidden">
+              <div className="absolute right-0 top-full mt-2 w-72 bg-card backdrop-blur-xl rounded-2xl shadow-strong border border-soft z-50 overflow-hidden">
                 {/* User Info Section */}
-                <div className="p-5 border-b border-[#ffffff1a] bg-gradient-to-br from-blue-500/10 to-purple-500/10">
+                <div className="p-5 border-b border-soft bg-gradient-to-br from-primary/5 to-purple-500/5">
                   <div className="flex items-center gap-3 mb-3">
-                    <div className="w-14 h-14 rounded-full overflow-hidden bg-white/10 border-2 border-blue-400/30">
+                    <div className="w-14 h-14 rounded-full overflow-hidden bg-primary/10 border-2 border-primary/20">
                       <SafeAvatar
                         src={user?.avatarUrl}
                         alt={user?.name || "Profile"}
@@ -97,8 +97,8 @@ export default function TopBar({ title = "Thaiba MediaHive" }: { title?: string 
                       />
                     </div>
                     <div className="flex-1 min-w-0">
-                      <div className="font-bold text-white text-base truncate">{user?.name || 'User'}</div>
-                      <div className="text-xs text-white/60 truncate">{user?.email}</div>
+                      <div className="font-bold text-foreground text-base truncate">{user?.name || 'User'}</div>
+                      <div className="text-xs text-muted truncate">{user?.email}</div>
                     </div>
                   </div>
                   <span className={`inline-flex items-center px-3 py-1.5 rounded-full text-xs font-bold uppercase tracking-wider shadow-lg ${getRoleBadgeColor(user?.role || 'guest')}`}>
@@ -112,11 +112,11 @@ export default function TopBar({ title = "Thaiba MediaHive" }: { title?: string 
                     <Link
                       href="/admin"
                       onClick={() => setShowUserMenu(false)}
-                      className="flex items-center gap-3 px-4 py-3 rounded-xl hover:bg-white/10 transition-all group bg-gradient-to-r from-blue-500/10 to-purple-500/10 border border-white/5 mb-1"
+                      className="flex items-center gap-3 px-4 py-3 rounded-xl hover:bg-surface/50 transition-all group bg-gradient-to-r from-primary/5 to-purple-500/5 border border-soft mb-1"
                     >
                       <Activity size={20} className="text-blue-400 group-hover:scale-110 transition-transform" />
                       <div>
-                        <span className="text-sm font-bold text-white block">Command Center</span>
+                        <span className="text-sm font-bold text-foreground block">Command Center</span>
                         <span className="text-[10px] text-blue-300 block">System Operations</span>
                       </div>
                     </Link>
@@ -124,28 +124,28 @@ export default function TopBar({ title = "Thaiba MediaHive" }: { title?: string 
                   <Link
                     href="/inventory/requests"
                     onClick={() => setShowUserMenu(false)}
-                    className="flex items-center gap-3 px-4 py-3 rounded-xl hover:bg-white/10 transition-all group"
+                    className="flex items-center gap-3 px-4 py-3 rounded-xl hover:bg-surface/50 transition-all group"
                   >
                     <Package size={20} className="text-blue-400 group-hover:scale-110 transition-transform" />
-                    <span className="text-sm font-medium text-white">My Requests</span>
+                    <span className="text-sm font-medium text-foreground">My Requests</span>
                   </Link>
 
                   <Link
                     href="/profile"
                     onClick={() => setShowUserMenu(false)}
-                    className="flex items-center gap-3 px-4 py-3 rounded-xl hover:bg-white/10 transition-all group"
+                    className="flex items-center gap-3 px-4 py-3 rounded-xl hover:bg-surface/50 transition-all group"
                   >
                     <User size={20} className="text-purple-400 group-hover:scale-110 transition-transform" />
-                    <span className="text-sm font-medium text-white">View Profile</span>
+                    <span className="text-sm font-medium text-foreground">View Profile</span>
                   </Link>
 
-                  <div className="pt-2 mt-2 border-t border-[#ffffff1a]">
+                  <div className="pt-2 mt-2 border-t border-soft">
                     <button
                       onClick={handleSignOut}
-                      className="w-full flex items-center gap-3 px-4 py-3 rounded-xl hover:bg-red-500/20 transition-all text-left group"
+                      className="w-full flex items-center gap-3 px-4 py-3 rounded-xl hover:bg-destructive/10 transition-all text-left group"
                     >
-                      <LogOut size={20} className="text-red-400 group-hover:scale-110 transition-transform" />
-                      <span className="text-sm font-bold text-red-400 group-hover:text-red-300">Sign Out</span>
+                      <LogOut size={20} className="text-destructive group-hover:scale-110 transition-transform" />
+                      <span className="text-sm font-bold text-destructive group-hover:text-destructive/80">Sign Out</span>
                     </button>
                   </div>
                 </div>

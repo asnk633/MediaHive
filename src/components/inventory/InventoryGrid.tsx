@@ -38,19 +38,19 @@ export const InventoryGrid: React.FC<InventoryGridProps> = ({
         return (
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
                 {Array.from({ length: 8 }).map((_, i) => (
-                    <div key={i} className="rounded-xl bg-slate-900/40 border border-white/5 p-4 space-y-4">
+                    <div key={i} className="rounded-xl bg-surface border border-soft p-4 space-y-4">
                         {/* Image Skeleton */}
-                        <div className="w-full aspect-[4/5] rounded-lg bg-white/5 animate-pulse" />
+                        <div className="w-full aspect-[4/5] rounded-lg bg-muted/10 animate-pulse" />
 
                         {/* Content Skeleton */}
                         <div className="space-y-2">
-                            <div className="h-4 w-3/4 bg-white/5 rounded animate-pulse" />
-                            <div className="h-3 w-1/2 bg-white/5 rounded animate-pulse" />
+                            <div className="h-4 w-3/4 bg-muted/20 rounded animate-pulse" />
+                            <div className="h-3 w-1/2 bg-muted/20 rounded animate-pulse" />
                         </div>
 
                         <div className="flex gap-2 pt-2">
-                            <div className="h-6 w-16 bg-white/5 rounded animate-pulse" />
-                            <div className="h-6 w-16 bg-white/5 rounded animate-pulse" />
+                            <div className="h-6 w-16 bg-muted/10 rounded animate-pulse" />
+                            <div className="h-6 w-16 bg-muted/10 rounded animate-pulse" />
                         </div>
                     </div>
                 ))}
@@ -61,12 +61,12 @@ export const InventoryGrid: React.FC<InventoryGridProps> = ({
     // Empty State
     if (items.length === 0) {
         return (
-            <div className="flex flex-col items-center justify-center py-20 text-center border border-dashed border-[#ffffff1a] rounded-xl bg-slate-900/20">
-                <div className="w-16 h-16 bg-white/5 rounded-full flex items-center justify-center mb-4">
-                    <FileQuestion className="text-white/20" size={32} />
+            <div className="flex flex-col items-center justify-center py-20 text-center rounded-2xl bg-glass backdrop-blur-sm shadow-sm">
+                <div className="w-16 h-16 bg-surface/50 rounded-full flex items-center justify-center mb-4 shadow-sm">
+                    <FileQuestion className="text-muted/50" size={32} />
                 </div>
-                <h3 className="text-xl font-medium text-white/40 mb-2">No items found</h3>
-                <p className="text-white/20 max-w-sm">
+                <h3 className="text-xl font-bold text-foreground/70 mb-2">No items found</h3>
+                <p className="text-muted max-w-sm text-sm">
                     Try adjusting your filters or search terms.
                 </p>
             </div>

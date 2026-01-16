@@ -105,7 +105,7 @@ export async function POST(request: NextRequest) {
                                 doc.ref.update(updates).then(() => {
                                     return logSystemActivity({
                                         actorId: user.uid,
-                                        actorRole: user.role,
+                                        actorRole: user.role || 'admin',
                                         action: 'task_structure_backfilled',
                                         entityType: 'task',
                                         entityId: doc.id,

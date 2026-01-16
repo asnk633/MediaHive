@@ -23,7 +23,7 @@ import {
     AlertDialogTitle,
     AlertDialogTrigger,
 } from "@/components/ui/alert-dialog";
-import { Dialog, DialogContent, DialogTitle } from "@/components/ui/dialog";
+import { Dialog, DialogContent, DialogTitle, DialogDescription } from "@/components/ui/dialog";
 import { toast } from 'sonner';
 
 interface EventDetailsModalProps {
@@ -110,13 +110,17 @@ export const EventDetailsModal: React.FC<EventDetailsModalProps> = ({ event, isO
         <Dialog open={isOpen} onOpenChange={(open) => !open && onClose()}>
             <DialogContent
                 showCloseButton={false}
-                className="max-w-5xl bg-gradient-to-br from-[#1a2639] to-[#0f172a] border-[#ffffff1a] p-0 gap-0 overflow-hidden flex flex-col max-h-[90vh] rounded-3xl"
+                className="max-w-5xl bg-background border-none p-0 gap-0 overflow-hidden flex flex-col max-h-[90vh] rounded-3xl shadow-2xl"
             >
+
                 {/* Screen readers title */}
                 <DialogTitle className="sr-only">Event Details: {event.title}</DialogTitle>
+                <DialogDescription className="sr-only">
+                    Detailed view of the event including time, location, and media coverage options.
+                </DialogDescription>
 
                 {/* Header Image/Pattern Area */}
-                <div className="h-32 bg-gradient-to-r from-blue-600/20 to-indigo-600/20 relative overflow-hidden shrink-0">
+                <div className="h-32 bg-gradient-to-r from-primary/10 to-indigo-500/10 relative overflow-hidden shrink-0">
                     <div className="absolute inset-0 opacity-20 pointer-events-none">
                         <div className="absolute top-[-50%] left-[-20%] w-[140%] h-[200%] rotate-12 bg-[radial-gradient(circle,rgba(255,255,255,0.1)_1px,transparent_1px)] bg-[size:20px_20px]" />
                     </div>
@@ -127,7 +131,7 @@ export const EventDetailsModal: React.FC<EventDetailsModalProps> = ({ event, isO
                     type="button"
                     onClick={onClose}
                     disabled={isDeleting || isDeleteOpen}
-                    className="absolute top-4 right-4 p-2 bg-black/20 hover:bg-black/40 text-white rounded-full transition-all z-50 backdrop-blur-md border border-[#ffffff1a] disabled:opacity-50 disabled:cursor-not-allowed cursor-pointer"
+                    className="absolute top-4 right-4 p-2 bg-black/20 hover:bg-black/40 text-white rounded-full transition-all z-50 backdrop-blur-md border-none disabled:opacity-50 disabled:cursor-not-allowed cursor-pointer"
                 >
                     <X size={20} />
                 </button>
@@ -137,20 +141,20 @@ export const EventDetailsModal: React.FC<EventDetailsModalProps> = ({ event, isO
                     <div className="flex flex-col md:flex-row md:items-end justify-between gap-4">
                         <div className="flex-1">
                             <div className="flex items-center gap-3 mb-2">
-                                <span className={`px-3 py-1 rounded-full text-[10px] font-bold uppercase tracking-wider border ${event.isSystemEvent ? 'bg-amber-500/10 text-amber-400 border-amber-500/20' :
-                                    event.type === 'meeting' ? 'bg-blue-500/10 text-blue-400 border-blue-500/20' :
-                                        event.type === 'workshop' ? 'bg-purple-500/10 text-purple-400 border-purple-500/20' :
-                                            'bg-emerald-500/10 text-emerald-400 border-emerald-500/20'
+                                <span className={`px-3 py-1 rounded-full text-[10px] font-bold uppercase tracking-wider ${event.isSystemEvent ? 'bg-amber-500/10 text-amber-500' :
+                                    event.type === 'meeting' ? 'bg-blue-500/10 text-blue-500' :
+                                        event.type === 'workshop' ? 'bg-purple-500/10 text-purple-500' :
+                                            'bg-emerald-500/10 text-emerald-500'
                                     }`}>
                                     {event.isSystemEvent ? 'System Event' : event.type}
                                 </span>
                                 {event.status === 'pending' && (
-                                    <span className="px-3 py-1 rounded-full text-[10px] font-bold uppercase tracking-wider bg-amber-500/10 text-amber-400 border border-amber-500/20">
+                                    <span className="px-3 py-1 rounded-full text-[10px] font-bold uppercase tracking-wider bg-amber-500/10 text-amber-500">
                                         Pending Approval
                                     </span>
                                 )}
                             </div>
-                            <h2 className="text-3xl md:text-4xl font-bold text-white tracking-tight">
+                            <h2 className="text-3xl md:text-4xl font-bold text-foreground tracking-tight">
                                 {event.title}
                             </h2>
                         </div>
@@ -174,23 +178,23 @@ export const EventDetailsModal: React.FC<EventDetailsModalProps> = ({ event, isO
                         {/* Left Column: Main Info */}
                         <div className="md:col-span-3 space-y-8">
                             <section>
-                                <h3 className="text-xs font-bold text-white/40 uppercase tracking-widest mb-4 flex items-center gap-2">
+                                <h3 className="text-xs font-bold text-muted uppercase tracking-widest mb-4 flex items-center gap-2">
                                     <Info size={14} /> Description
                                 </h3>
-                                <p className="text-white/80 leading-relaxed text-lg">
+                                <p className="text-foreground/80 leading-relaxed text-lg">
                                     {event.description || "No description provided."}
                                 </p>
                             </section>
 
                             {/* Media Coverage */}
                             {event.mediaCoverage && event.mediaCoverage.length > 0 && (
-                                <section className="bg-white/5 border border-[#ffffff1a] rounded-2xl p-6">
+                                <section className="bg-glass rounded-2xl p-6 shadow-sm">
                                     <h3 className="text-sm font-bold text-blue-400 flex items-center gap-2 mb-4">
                                         <Video size={18} /> Media Coverage Requested
                                     </h3>
                                     <div className="flex flex-wrap gap-3">
                                         {event.mediaCoverage.map((item, i) => (
-                                            <div key={i} className="flex items-center gap-3 text-white/70 text-sm py-2 px-3 bg-white/5 rounded-lg border border-white/5 whitespace-nowrap">
+                                            <div key={i} className="flex items-center gap-3 text-muted text-sm py-2 px-3 bg-surface rounded-lg whitespace-nowrap">
                                                 <CheckCircle2 size={16} className="text-emerald-500 shrink-0" />
                                                 {item}
                                             </div>
@@ -201,79 +205,90 @@ export const EventDetailsModal: React.FC<EventDetailsModalProps> = ({ event, isO
 
                             {/* Media Gallery */}
                             <section>
-                                <h3 className="text-xs font-bold text-white/40 uppercase tracking-widest mb-4">Media Gallery</h3>
+                                <h3 className="text-xs font-bold text-muted uppercase tracking-widest mb-4">Media Gallery</h3>
                                 <EventMediaTab eventId={event.id} files={[]} />
                             </section>
                         </div>
 
                         {/* Right Column: Metadata */}
                         <div className="md:col-span-2 space-y-6">
-                            <div className="bg-white/5 border border-[#ffffff1a] rounded-2xl p-5 space-y-6">
+                            <div className="bg-glass rounded-2xl p-5 space-y-6 shadow-sm">
                                 <div className="flex items-center gap-4">
-                                    <div className="w-10 h-10 rounded-xl bg-blue-500/10 flex items-center justify-center text-blue-400 border border-blue-500/20">
+                                    <div className="w-10 h-10 rounded-xl bg-primary/10 flex items-center justify-center text-primary">
                                         <Calendar size={20} />
                                     </div>
                                     <div className="flex-1 min-w-0">
-                                        <p className="text-[10px] uppercase font-bold text-white/40 tracking-wider">Date</p>
-                                        <p className="text-sm font-semibold text-white">{format(eventDate, 'EEEE, dd/MM/yyyy')}</p>
+                                        <p className="text-[10px] uppercase font-bold text-muted tracking-wider">Date</p>
+                                        <p className="text-sm font-semibold text-foreground">{format(eventDate, 'EEEE, dd/MM/yyyy')}</p>
                                     </div>
                                 </div>
 
                                 <div className="flex items-center gap-4">
-                                    <div className="w-10 h-10 rounded-xl bg-indigo-500/10 flex items-center justify-center text-indigo-400 border border-indigo-500/20 shrink-0">
+                                    <div className="w-10 h-10 rounded-xl bg-indigo-500/10 flex items-center justify-center text-indigo-500 shrink-0">
                                         <Clock size={20} />
                                     </div>
                                     <div className="flex-1 min-w-0">
-                                        <p className="text-[10px] uppercase font-bold text-white/40 tracking-wider">Time</p>
-                                        <p className="text-sm font-semibold text-white">
+                                        <p className="text-[10px] uppercase font-bold text-muted tracking-wider">Time</p>
+                                        <p className="text-sm font-semibold text-foreground">
                                             {startTime ? format(startTime, 'h:mm a') : 'TBD'}
                                         </p>
                                     </div>
                                 </div>
 
                                 <div className="flex items-center gap-4">
-                                    <div className="w-10 h-10 rounded-xl bg-emerald-500/10 flex items-center justify-center text-emerald-400 border border-emerald-500/20 shrink-0">
+                                    <div className="w-10 h-10 rounded-xl bg-emerald-500/10 flex items-center justify-center text-emerald-500 shrink-0">
                                         <MapPin size={20} />
                                     </div>
                                     <div className="flex-1 min-w-0">
-                                        <p className="text-[10px] uppercase font-bold text-white/40 tracking-wider">Location</p>
-                                        <p className="text-sm font-semibold text-white">
+                                        <p className="text-[10px] uppercase font-bold text-muted tracking-wider">Location</p>
+                                        <p className="text-sm font-semibold text-foreground">
                                             {event.location || 'No location set'}
                                         </p>
                                     </div>
                                 </div>
 
                                 <div className="flex items-center gap-4">
-                                    <div className="w-10 h-10 rounded-xl bg-purple-500/10 flex items-center justify-center text-purple-400 border border-purple-500/20 shrink-0">
+                                    <div className="w-10 h-10 rounded-xl bg-purple-500/10 flex items-center justify-center text-purple-500 shrink-0">
                                         <Briefcase size={20} />
                                     </div>
                                     <div className="flex-1 min-w-0">
-                                        <p className="text-[10px] uppercase font-bold text-white/40 tracking-wider">Office / Unit</p>
-                                        <p className="text-sm font-semibold text-white break-words">{event.department || 'General'}</p>
+                                        <p className="text-[10px] uppercase font-bold text-muted tracking-wider">Office / Unit</p>
+                                        <p className="text-sm font-semibold text-foreground break-words">
+                                            {/* Priority: On Behalf Of Name -> Department Field -> General */}
+                                            {event.onBehalfOf?.name || event.department || 'General'}
+                                        </p>
                                     </div>
                                 </div>
                             </div>
 
-                            <div className="bg-white/5 border border-[#ffffff1a] rounded-2xl p-5">
-                                <h3 className="text-[10px] uppercase font-bold text-white/40 tracking-wider mb-4 flex items-center gap-2">
+                            <div className="bg-glass rounded-2xl p-5 shadow-sm">
+                                <h3 className="text-[10px] uppercase font-bold text-muted tracking-wider mb-4 flex items-center gap-2">
                                     <User size={12} /> {event.createdBy?.role === 'guest' ? 'Created By' : 'Organizer'}
                                 </h3>
                                 <div className="flex items-center gap-3">
-                                    <div className="w-10 h-10 rounded-full bg-gradient-to-br from-blue-600 to-indigo-600 flex items-center justify-center text-white font-bold border border-[#ffffff1a] shadow-lg">
-                                        {event.createdBy?.role === 'guest'
-                                            ? (event.createdBy?.name?.charAt(0) || '?')
-                                            : (event.department?.charAt(0) || 'O')}
+                                    <div className="w-10 h-10 rounded-full bg-gradient-to-br from-blue-600 to-indigo-600 flex items-center justify-center text-white font-bold shadow-lg">
+                                        {/* Avatar Initials logic */}
+                                        {(() => {
+                                            const entity = event.organizer || event.createdBy;
+                                            return entity?.name ? entity.name.charAt(0) : (event.department?.charAt(0) || 'O');
+                                        })()}
                                     </div>
                                     <div className="min-w-0 flex-1">
-                                        <p className="text-sm font-bold text-white break-words">
-                                            {event.createdBy?.role === 'guest'
-                                                ? (event.createdBy?.name || 'Unknown')
-                                                : (event.department || 'Official Event')}
+                                        <p className="text-sm font-bold text-foreground break-words">
+                                            {/* Organizer Name Logic */}
+                                            {(() => {
+                                                const entity = event.organizer || event.createdBy;
+                                                return entity?.name || event.department || 'Unknown';
+                                            })()}
                                         </p>
-                                        <p className="text-[10px] text-white/60 capitalize">
-                                            {event.createdBy?.role === 'guest'
-                                                ? (event.department ? `Organizer: ${event.department}` : 'Guest User')
-                                                : 'Event Organizer'}
+                                        <p className="text-[10px] text-muted capitalize">
+                                            {/* Organizer Role/Context Logic */}
+                                            {(() => {
+                                                const entity = event.organizer || event.createdBy;
+                                                if (entity?.role === 'guest') return 'Guest User';
+                                                if (event.onBehalfOf?.name) return `On Behalf of ${event.onBehalfOf.name}`;
+                                                return 'Event Organizer';
+                                            })()}
                                         </p>
                                     </div>
                                 </div>
@@ -283,19 +298,19 @@ export const EventDetailsModal: React.FC<EventDetailsModalProps> = ({ event, isO
                 </div>
 
                 {/* Footer */}
-                <div className="px-8 py-5 border-t border-[#ffffff1a] bg-black/20 flex flex-col sm:flex-row justify-between items-center gap-4 shrink-0">
-                    <div className="text-[10px] text-white/30 font-medium">
+                <div className="px-8 py-5 border-t border-soft/50 bg-background flex flex-col sm:flex-row justify-between items-center gap-4 shrink-0">
+                    <div className="text-[10px] text-muted font-medium">
                         EVENT ID: {event.id}
                     </div>
                     <div className="flex gap-3">
-                        <button className="p-2.5 text-white/60 hover:text-white hover:bg-white/5 transition-all rounded-xl border border-transparent hover:border-[#ffffff1a]">
+                        <button className="p-2.5 text-muted hover:text-foreground hover:bg-surface transition-all rounded-xl border border-transparent hover:border-soft">
                             <Share2 size={18} />
                         </button>
                         {canDelete && (
                             <AlertDialog open={isDeleteOpen} onOpenChange={setIsDeleteOpen}>
                                 <AlertDialogTrigger asChild>
                                     <button
-                                        className="p-2.5 text-red-400 hover:text-red-300 hover:bg-red-500/10 transition-all rounded-xl border border-transparent hover:border-red-500/20 disabled:opacity-50"
+                                        className="p-2.5 text-destructive hover:text-red-500 hover:bg-destructive/10 transition-all rounded-xl border border-transparent disabled:opacity-50"
                                         onClick={(e) => {
                                             e.stopPropagation();
                                             // Let the dialog trigger handle the open state naturally or ensure state sync
@@ -306,17 +321,17 @@ export const EventDetailsModal: React.FC<EventDetailsModalProps> = ({ event, isO
                                         <Trash2 size={18} />
                                     </button>
                                 </AlertDialogTrigger>
-                                <AlertDialogContent className="bg-[#1a2639] border-[#ffffff1a] text-white z-[120]">
+                                <AlertDialogContent className="bg-surface border-soft text-foreground z-[120]">
                                     <AlertDialogHeader>
                                         <AlertDialogTitle>Delete Event?</AlertDialogTitle>
-                                        <AlertDialogDescription className="text-white/60">
+                                        <AlertDialogDescription className="text-muted">
                                             Are you sure you want to delete this event? This action cannot be undone.
                                         </AlertDialogDescription>
                                     </AlertDialogHeader>
                                     <AlertDialogFooter>
                                         <AlertDialogCancel
                                             onClick={() => setIsDeleteOpen(false)}
-                                            className="bg-transparent border-[#ffffff1a] text-white hover:bg-white/5 hover:text-white"
+                                            className="bg-transparent border-soft text-muted hover:bg-surface hover:text-foreground"
                                         >
                                             Cancel
                                         </AlertDialogCancel>

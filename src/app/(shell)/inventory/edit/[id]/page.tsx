@@ -230,7 +230,7 @@ export default function EditInventoryPage({ params }: { params: Promise<{ id: st
         { value: "retired", label: "Retired" },
     ];
 
-    const inputClasses = "bg-white/[0.02] border-[#ffffff1a] focus:border-blue-500/50 rounded-xl text-white placeholder:text-slate-500 hover:bg-white/[0.04] transition-colors";
+    const inputClasses = "bg-background border-soft focus:border-primary/50 rounded-xl text-foreground placeholder:text-muted hover:border-muted transition-colors";
 
     if (loading) {
         return (
@@ -255,14 +255,14 @@ export default function EditInventoryPage({ params }: { params: Promise<{ id: st
                     {/* Image Section */}
                     <div className="space-y-4">
                         <div className="flex items-center justify-between">
-                            <Label className="text-slate-300">Asset Images ({formData.images.length}/5)</Label>
-                            {formData.images.length > 0 && <span className="text-xs text-slate-500">First image is cover</span>}
+                            <Label className="text-muted">Asset Images ({formData.images.length}/5)</Label>
+                            {formData.images.length > 0 && <span className="text-xs text-muted">First image is cover</span>}
                         </div>
 
                         <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-4">
                             {formData.images.map((img, idx) => (
                                 <div key={idx} className={cn(
-                                    "aspect-square rounded-2xl relative group overflow-hidden border border-white/10 bg-black/20",
+                                    "aspect-square rounded-2xl relative group overflow-hidden border border-soft bg-surface",
                                     formData.imageUrl === img.url && "ring-2 ring-blue-500 ring-offset-2 ring-offset-[#0b1220]"
                                 )}>
                                     <img src={img.url} alt={`Asset ${idx}`} className="w-full h-full object-cover" />
@@ -296,7 +296,7 @@ export default function EditInventoryPage({ params }: { params: Promise<{ id: st
                                 <div
                                     onClick={() => !uploadingImage && fileInputRef.current?.click()}
                                     className={cn(
-                                        "aspect-square rounded-2xl border-2 border-dashed border-white/10 flex flex-col items-center justify-center cursor-pointer hover:bg-white/5 transition-all group overflow-hidden relative",
+                                        "aspect-square rounded-2xl border-2 border-dashed border-soft flex flex-col items-center justify-center cursor-pointer hover:bg-muted/5 transition-all group overflow-hidden relative",
                                         uploadingImage && "pointer-events-none opacity-50"
                                     )}
                                 >
@@ -304,10 +304,10 @@ export default function EditInventoryPage({ params }: { params: Promise<{ id: st
                                         <Loader2 className="w-6 h-6 text-blue-500 animate-spin" />
                                     ) : (
                                         <>
-                                            <div className="w-8 h-8 rounded-full bg-blue-500/10 flex items-center justify-center mb-2 group-hover:bg-blue-500/20 transition-colors">
-                                                <Upload className="w-4 h-4 text-blue-400" />
+                                            <div className="w-8 h-8 rounded-full bg-primary/10 flex items-center justify-center mb-2 group-hover:bg-primary/20 transition-colors">
+                                                <Upload className="w-4 h-4 text-primary" />
                                             </div>
-                                            <span className="text-xs text-slate-400">Add Photo</span>
+                                            <span className="text-xs text-muted">Add Photo</span>
                                         </>
                                     )}
                                 </div>
@@ -326,7 +326,7 @@ export default function EditInventoryPage({ params }: { params: Promise<{ id: st
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                         {/* Name */}
                         <div className="space-y-2 md:col-span-2">
-                            <Label className="text-slate-300">Asset Name <span className="text-red-400">*</span></Label>
+                            <Label className="text-muted">Asset Name <span className="text-destructive">*</span></Label>
                             <Input
                                 value={formData.name}
                                 onChange={e => setFormData(prev => ({ ...prev, name: e.target.value }))}
@@ -339,32 +339,32 @@ export default function EditInventoryPage({ params }: { params: Promise<{ id: st
                         {/* Category */}
                         <div className="space-y-2">
                             <div className="flex items-center gap-2">
-                                <Label className="text-slate-300">Category <span className="text-red-400">*</span></Label>
+                                <Label className="text-muted">Category <span className="text-destructive">*</span></Label>
                                 <Popover>
                                     <PopoverTrigger asChild>
-                                        <button type="button" className="text-slate-500 hover:text-white transition-colors">
+                                        <button type="button" className="text-muted hover:text-foreground transition-colors">
                                             <Info className="w-4 h-4" />
                                         </button>
                                     </PopoverTrigger>
                                     <PopoverContent
-                                        className="w-96 p-0 bg-slate-950/90 backdrop-blur-xl border border-white/10 shadow-2xl rounded-2xl overflow-hidden"
+                                        className="w-96 p-0 bg-popover/90 backdrop-blur-xl border border-soft shadow-2xl rounded-2xl overflow-hidden"
                                         align="start"
                                         sideOffset={8}
                                     >
-                                        <div className="p-4 border-b border-white/5 bg-white/5">
-                                            <div className="flex items-center gap-2 text-white font-medium">
-                                                <Info className="w-4 h-4 text-blue-400" />
+                                        <div className="p-4 border-b border-soft bg-muted/5">
+                                            <div className="flex items-center gap-2 text-foreground font-medium">
+                                                <Info className="w-4 h-4 text-primary" />
                                                 <h3>Categorization Guide</h3>
                                             </div>
-                                            <p className="text-xs text-slate-400 mt-1">Select the most accurate category for your asset.</p>
+                                            <p className="text-xs text-muted mt-1">Select the most accurate category for your asset.</p>
                                         </div>
 
-                                        <div className="max-h-[400px] overflow-y-auto p-2 scrollbar-thin scrollbar-thumb-white/10 scrollbar-track-transparent">
+                                        <div className="max-h-[400px] overflow-y-auto p-2 scrollbar-thin scrollbar-thumb-muted/10 scrollbar-track-transparent">
                                             <div className="space-y-1">
                                                 {Object.entries(INVENTORY_GUIDE).map(([cat, desc]) => (
-                                                    <div key={cat} className="group p-3 hover:bg-white/5 rounded-xl transition-colors">
-                                                        <span className="text-blue-400 font-medium text-sm block mb-1 group-hover:text-blue-300 transition-colors">{cat}</span>
-                                                        <span className="text-slate-400 text-xs leading-relaxed block">{desc}</span>
+                                                    <div key={cat} className="group p-3 hover:bg-muted/5 rounded-xl transition-colors">
+                                                        <span className="text-primary font-medium text-sm block mb-1 group-hover:text-primary transition-colors">{cat}</span>
+                                                        <span className="text-muted text-xs leading-relaxed block">{desc}</span>
                                                     </div>
                                                 ))}
                                             </div>
@@ -389,7 +389,7 @@ export default function EditInventoryPage({ params }: { params: Promise<{ id: st
 
                         {/* Condition */}
                         <div className="space-y-2">
-                            <Label className="text-slate-300">Condition <span className="text-red-400">*</span></Label>
+                            <Label className="text-muted">Condition <span className="text-destructive">*</span></Label>
                             <Select
                                 value={formData.condition}
                                 onValueChange={(val: InventoryCondition) => setFormData(prev => ({ ...prev, condition: val }))}
@@ -407,7 +407,7 @@ export default function EditInventoryPage({ params }: { params: Promise<{ id: st
 
                         {/* Status */}
                         <div className="space-y-2">
-                            <Label className="text-slate-300">Status <span className="text-red-400">*</span></Label>
+                            <Label className="text-muted">Status <span className="text-destructive">*</span></Label>
                             <Select
                                 value={formData.status}
                                 onValueChange={(val: InventoryAssetStatus) => setFormData(prev => ({ ...prev, status: val }))}
@@ -425,7 +425,7 @@ export default function EditInventoryPage({ params }: { params: Promise<{ id: st
 
                         {/* Purchase Date */}
                         <div className="space-y-2">
-                            <Label className="text-slate-300">Purchase Date</Label>
+                            <Label className="text-muted">Purchase Date</Label>
                             <Popover>
                                 <PopoverTrigger asChild>
                                     <Button
@@ -439,7 +439,7 @@ export default function EditInventoryPage({ params }: { params: Promise<{ id: st
                                         {formData.purchaseDate ? format(formData.purchaseDate, "PPP") : <span>Pick a date</span>}
                                     </Button>
                                 </PopoverTrigger>
-                                <PopoverContent className="w-auto p-0 bg-[#0b1220] border-white/10" align="start">
+                                <PopoverContent className="w-auto p-0 bg-popover border-soft" align="start">
                                     <Calendar
                                         mode="single"
                                         selected={formData.purchaseDate}
@@ -451,9 +451,9 @@ export default function EditInventoryPage({ params }: { params: Promise<{ id: st
                         </div>
 
                         <div className="space-y-2">
-                            <Label className="text-slate-300">Purchased Price</Label>
+                            <Label className="text-muted">Purchased Price</Label>
                             <div className="relative">
-                                <span className="absolute left-3 top-2.5 text-slate-500 text-sm">₹</span>
+                                <span className="absolute left-3 top-2.5 text-muted text-sm">₹</span>
                                 <Input
                                     type="number"
                                     value={formData.purchasePrice}
@@ -466,7 +466,7 @@ export default function EditInventoryPage({ params }: { params: Promise<{ id: st
 
                         {/* Unit */}
                         <div className="space-y-2">
-                            <Label className="text-slate-300">Unit</Label>
+                            <Label className="text-muted">Unit</Label>
                             <Input
                                 value={formData.unit}
                                 onChange={e => setFormData(prev => ({ ...prev, unit: e.target.value }))}
@@ -477,7 +477,7 @@ export default function EditInventoryPage({ params }: { params: Promise<{ id: st
 
                         {/* Serial Number */}
                         <div className="space-y-2">
-                            <Label className="text-slate-300">Serial Number</Label>
+                            <Label className="text-muted">Serial Number</Label>
                             <Input
                                 value={formData.serialNumber}
                                 onChange={e => setFormData(prev => ({ ...prev, serialNumber: e.target.value }))}
@@ -489,7 +489,7 @@ export default function EditInventoryPage({ params }: { params: Promise<{ id: st
 
                     {/* Remarks */}
                     <div className="space-y-2">
-                        <Label className="text-slate-300">Remarks</Label>
+                        <Label className="text-muted">Remarks</Label>
                         <Textarea
                             value={formData.remarks}
                             onChange={e => setFormData(prev => ({ ...prev, remarks: e.target.value }))}
@@ -499,10 +499,10 @@ export default function EditInventoryPage({ params }: { params: Promise<{ id: st
                     </div>
 
                     {/* Actions */}
-                    <div className="flex items-center gap-4 pt-4 border-t border-white/10">
+                    <div className="flex items-center gap-4 pt-4 border-t border-soft">
                         <Button
                             type="submit"
-                            className="bg-blue-600 hover:bg-blue-700 text-white px-8 rounded-xl shadow-lg shadow-blue-500/20"
+                            className="bg-primary hover:bg-primary/90 text-primary-foreground px-8 rounded-xl shadow-lg shadow-primary/20"
                             disabled={loading || uploadingImage}
                         >
                             {loading && <Loader2 className="w-4 h-4 mr-2 animate-spin" />}
@@ -513,7 +513,7 @@ export default function EditInventoryPage({ params }: { params: Promise<{ id: st
                             type="button"
                             variant="ghost"
                             onClick={() => router.back()}
-                            className="text-slate-400 hover:text-white hover:bg-white/5 rounded-xl"
+                            className="text-muted hover:text-foreground hover:bg-muted/10 rounded-xl"
                             disabled={loading}
                         >
                             Cancel

@@ -53,9 +53,9 @@ export const TimelineWidget = ({ tasks, events }: TimelineWidgetProps) => {
         const isTask = item.type === 'task';
         const isPast = item.date < new Date();
         return (
-            <div key={`${item.type}-${item.data.id}`} className={`flex gap-4 p-3 bg-white/5 backdrop-blur-md rounded-xl border border-white/5 hover:bg-white/10 transition-colors ${isPast ? 'opacity-50 grayscale-[0.5]' : ''}`}>
+            <div key={`${item.type}-${item.data.id}`} className={`flex gap-4 p-3 bg-surface backdrop-blur-md rounded-xl shadow-sm hover:bg-surface/80 hover:shadow-md transition-colors ${isPast ? 'opacity-50 grayscale-[0.5]' : ''}`}>
                 {/* Icon Column */}
-                <div className={`w-10 h-10 rounded-lg flex items-center justify-center shrink-0 border ${isTask ? 'bg-blue-500/20 text-blue-400 border-blue-500/30' : 'bg-purple-500/20 text-purple-400 border-purple-500/30'}`}>
+                <div className={`w-10 h-10 rounded-lg flex items-center justify-center shrink-0 ${isTask ? 'bg-blue-500/20 text-blue-400' : 'bg-purple-500/20 text-purple-400'}`}>
                     {isTask ? <CheckSquare size={18} /> : <Calendar size={18} />}
                 </div>
 
@@ -95,7 +95,7 @@ export const TimelineWidget = ({ tasks, events }: TimelineWidgetProps) => {
                     <span className="w-1.5 h-1.5 rounded-full bg-blue-400 shadow-[0_0_8px_rgba(96,165,250,0.8)]" />
                     Today
                 </h4>
-                <div className="space-y-3 pl-3 border-l border-[#ffffff1a] ml-0.5">
+                <div className="space-y-3 pl-3 border-l border-soft ml-0.5">
                     {(() => {
                         const pastToday = todayItems.filter(item => isPastToday(item.date));
                         const futureToday = todayItems.filter(item => isFutureToday(item.date));
@@ -128,7 +128,7 @@ export const TimelineWidget = ({ tasks, events }: TimelineWidgetProps) => {
                     <h4 className="text-xs font-bold text-gray-500 uppercase tracking-wider mb-3 mt-6">
                         Next 7 Days
                     </h4>
-                    <div className="space-y-3 pl-3 border-l border-[#ffffff1a] ml-0.5">
+                    <div className="space-y-3 pl-3 border-l border-soft ml-0.5">
                         {upcomingItems.map(renderItem)}
                     </div>
                 </div>

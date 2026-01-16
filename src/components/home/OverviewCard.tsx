@@ -32,33 +32,38 @@ export function OverviewCard({
         <div
             onClick={onClick}
             className={cn(
-                "relative flex flex-col p-6 rounded-[25px] transition-all duration-300 cursor-pointer overflow-hidden group hover:-translate-y-1 hover-sheen animate-in fade-in zoom-in-95 duration-500",
-                isPrimary
-                    ? "bg-gradient-to-br from-[#141e30] to-[#243b55] text-white shadow-[5px_10px_50px_rgba(0,0,0,0.5),-5px_0px_20px_rgba(255,255,255,0.05)] border-none"
-                    : "bg-white/5 backdrop-blur-md border border-[#ffffff1a] text-white shadow-[0px_4px_20px_rgba(0,0,0,0.2)] hover:bg-white/10"
+                "relative flex flex-col p-6 rounded-xl transition-all duration-300 cursor-pointer overflow-hidden group hover:-translate-y-1 animate-in fade-in zoom-in-95 duration-500",
+                // Base Style (Inventory Match - Modified for Borderless)
+                "bg-surface backdrop-blur-sm shadow-sm",
+                // Hover
+                "hover:shadow-lg hover:bg-surface/80",
+                // Primary Variant (Subtle distinction instead of new gradient)
+                isPrimary && "shadow-strong bg-primary/5",
+                // Indicator Glow
+                showIndicator && "shadow-destructive/10"
             )}
         >
             <div className="flex justify-between items-start mb-6">
                 <div
                     className={cn(
-                        "p-3 rounded-2xl backdrop-blur-md transition-colors",
+                        "p-3 rounded-lg transition-colors",
                         isPrimary
-                            ? "bg-white/10 text-blue-300 shadow-inner border border-[#ffffff1a]"
-                            : "bg-white/5 text-gray-300 border border-white/5"
+                            ? "bg-primary/10 text-primary"
+                            : "bg-glass text-secondary group-hover:text-primary group-hover:bg-primary/10"
                     )}
                 >
                     <Icon size={24} strokeWidth={1.5} />
                 </div>
                 {/* Decorative Pill/Dot */}
                 <div className={cn("h-2 w-2 rounded-full transition-colors duration-300",
-                    showIndicator ? "bg-red-500 shadow-[0_0_10px_rgba(239,68,68,0.8)] animate-pulse" :
-                        isPrimary ? "bg-blue-400 shadow-[0_0_10px_rgba(96,165,250,0.8)]" : "bg-white/20"
+                    showIndicator ? "bg-destructive shadow-[0_0_10px_rgba(239,68,68,0.8)] animate-pulse" :
+                        isPrimary ? "bg-primary shadow-[0_0_10px_rgba(96,165,250,0.8)]" : "bg-glass group-hover:bg-primary/50"
                 )} />
             </div>
 
             <div className="mt-auto z-10 relative">
                 <div className="flex items-end gap-2 mb-1">
-                    <h3 className="text-4xl font-bold tracking-tight text-white drop-shadow-sm">
+                    <h3 className="text-3xl font-bold tracking-tight text-foreground group-hover:text-foreground transition-colors">
                         {count}
                     </h3>
                     {trend && (
@@ -70,24 +75,27 @@ export function OverviewCard({
                         </div>
                     )}
                 </div>
-                <p className={cn("text-xs font-bold uppercase tracking-widest", isPrimary ? "text-blue-200" : "text-gray-400")}>
+                <p className={cn("text-xs font-bold uppercase tracking-widest transition-colors",
+                    isPrimary ? "text-secondary" : "text-muted group-hover:text-secondary")}>
                     {label}
                 </p>
-                <div className={cn("mt-4 pt-4 border-t flex items-center justify-between", isPrimary ? "border-[#ffffff1a]" : "border-[#ffffff1a]")}>
-                    <p className={cn("text-xs font-medium", isPrimary ? "text-white/60" : "text-gray-500")}>
+                <div className={cn("mt-4 pt-4 flex items-center justify-between transition-colors",
+                    "border-t border-soft/50")}>
+                    <p className={cn("text-xs font-medium transition-colors",
+                        "text-muted group-hover:text-secondary")}>
                         {subLabel}
                     </p>
-                    <div className={cn("text-[10px] px-2 py-1 rounded-full border",
-                        isPrimary ? "border-[#ffffff1a] bg-white/5 text-white/80" : "border-white/5 bg-black/20 text-gray-400"
+                    <div className={cn("text-[10px] px-2 py-1 rounded-full border transition-all",
+                        "border-soft bg-glass text-muted group-hover:bg-primary/10 group-hover:text-primary group-hover:border-primary/20"
                     )}>
                         View
                     </div>
                 </div>
             </div>
 
-            {/* Background Glow for Primary */}
+            {/* Subtle Gradient overlay for primary only - very soft */}
             {isPrimary && (
-                <div className="absolute -bottom-10 -right-10 w-40 h-40 bg-blue-500/20 rounded-full blur-[50px] pointer-events-none" />
+                <div className="absolute inset-0 bg-blue-500/5 pointer-events-none" />
             )}
         </div>
     );

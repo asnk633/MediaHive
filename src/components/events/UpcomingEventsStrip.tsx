@@ -46,11 +46,11 @@ export function UpcomingEventsStrip({ events, onEventClick }: UpcomingEventsStri
                 <h3 className="text-xs font-bold text-white/50 uppercase tracking-widest mb-3 pl-1 flex items-center gap-2">
                     Events in next 7 days
                 </h3>
-                <div className="w-full bg-white/5 border border-[#ffffff1a] rounded-xl p-6 text-center flex flex-col items-center justify-center gap-2">
+                <div className="w-full bg-glass rounded-xl p-6 text-center flex flex-col items-center justify-center gap-2 shadow-sm">
                     <div className="w-10 h-10 rounded-full bg-white/5 flex items-center justify-center text-white/20 mb-1">
                         <PartyPopper size={20} />
                     </div>
-                    <p className="text-sm text-white/50 font-medium">No events in the next 7 days</p>
+                    <p className="text-sm text-muted font-medium">No events in the next 7 days</p>
                 </div>
             </div>
         );
@@ -58,7 +58,7 @@ export function UpcomingEventsStrip({ events, onEventClick }: UpcomingEventsStri
 
     return (
         <div className="w-full mb-8">
-            <h3 className="text-xs font-bold text-white/50 uppercase tracking-widest mb-3 pl-1 flex items-center gap-2">
+            <h3 className="text-xs font-bold text-muted uppercase tracking-widest mb-3 pl-1 flex items-center gap-2">
                 Events in next 7 days
             </h3>
 
@@ -76,27 +76,27 @@ export function UpcomingEventsStrip({ events, onEventClick }: UpcomingEventsStri
                             onClick={() => onEventClick(event)}
                             className={`
                                 flex-shrink-0 w-44 sm:w-52 p-4 rounded-xl 
-                                border cursor-pointer snap-start relative overflow-hidden
+                                border-none cursor-pointer snap-start relative overflow-hidden
                                 transition-all hover:-translate-y-1 active:scale-95
-                                flex flex-col justify-between min-h-[120px]
+                                flex flex-col justify-between min-h-[120px] shadow-sm hover:shadow-md
                                 ${isSystem
-                                    ? 'bg-gradient-to-br from-blue-900/40 to-slate-900/60 border-blue-500/30'
-                                    : 'bg-white/5 border-[#ffffff1a] hover:bg-white/10'
+                                    ? 'bg-glass backdrop-blur-xl shadow-lg border-none'
+                                    : 'bg-glass backdrop-blur-md shadow-sm hover:shadow-md border-none'
                                 }
                             `}
                         >
                             {/* Accent Line */}
-                            <div className={`absolute top-0 left-0 w-full h-1 ${isSystem ? 'bg-blue-500' : 'bg-white/20'}`} />
+                            <div className={`absolute top-0 left-0 w-full h-1 ${isSystem ? 'bg-primary' : 'bg-primary/20'}`} />
 
                             <div className="flex justify-between items-start mb-3">
                                 <div className="flex items-center gap-2">
                                     <div className={`
                                         flex flex-col items-center justify-center w-10 h-10 rounded-lg border 
                                         ${isToday
-                                            ? 'bg-emerald-500/20 text-emerald-300 border-emerald-500/30'
+                                            ? 'bg-emerald-500/10 text-emerald-400 border-none'
                                             : isSystem
-                                                ? 'bg-blue-500/20 text-blue-200 border-blue-500/30'
-                                                : 'bg-white/10 text-white/70 border-[#ffffff1a]'
+                                                ? 'bg-primary/10 text-primary border-none'
+                                                : 'bg-surface text-muted border-none'
                                         }
                                     `}>
                                         <span className="text-[9px] font-bold uppercase leading-none opacity-80">
@@ -107,11 +107,11 @@ export function UpcomingEventsStrip({ events, onEventClick }: UpcomingEventsStri
                                         </span>
                                     </div>
                                     <div className="flex flex-col">
-                                        <span className="text-[10px] text-white/40 uppercase font-bold tracking-wider">
+                                        <span className="text-[10px] text-muted uppercase font-bold tracking-wider">
                                             {format(eventDate, 'EEE')}
                                         </span>
                                         {isSystem && (
-                                            <span className="text-[10px] text-blue-400 font-bold bg-blue-500/10 px-1.5 py-0.5 rounded-full mt-1 w-fit">
+                                            <span className="text-[10px] text-primary font-bold bg-primary/10 px-1.5 py-0.5 rounded-full mt-1 w-fit">
                                                 System
                                             </span>
                                         )}
@@ -120,10 +120,10 @@ export function UpcomingEventsStrip({ events, onEventClick }: UpcomingEventsStri
                             </div>
 
                             <div>
-                                <h4 className="text-sm font-bold text-white line-clamp-2 leading-snug mb-2" title={event.title}>
+                                <h4 className="text-sm font-bold text-foreground line-clamp-2 leading-snug mb-2" title={event.title}>
                                     {event.title}
                                 </h4>
-                                <div className="flex items-center gap-2 text-[11px] text-white/50">
+                                <div className="flex items-center gap-2 text-[11px] text-muted">
                                     <Clock size={12} />
                                     <span>{format(eventDate, 'h:mm a')}</span>
                                 </div>
@@ -142,10 +142,10 @@ export function UpcomingEventsStrip({ events, onEventClick }: UpcomingEventsStri
                         onClick={() => router.push('/events')}
                         className="
                             flex-shrink-0 w-32 p-4 rounded-xl 
-                            border border-white/5 bg-white/5 
+                            bg-glass backdrop-blur-sm shadow-sm
                             cursor-pointer snap-start
-                            transition-all hover:bg-white/10 hover:border-white/20
-                            flex flex-col items-center justify-center gap-2 text-white/60 hover:text-white
+                            transition-all hover:bg-surface hover:shadow-md border-none
+                            flex flex-col items-center justify-center gap-2 text-muted hover:text-foreground
                         "
                     >
                         <div className="w-10 h-10 rounded-full bg-white/10 flex items-center justify-center">

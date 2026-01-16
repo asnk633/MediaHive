@@ -46,8 +46,8 @@ export const MyWorkflowWidget = ({ tasks, userId }: MyWorkflowWidgetProps) => {
             className={`
                 flex flex-col items-center justify-center p-4 rounded-xl border transition-all duration-300 w-full relative group
                 ${count > 0
-                    ? `bg-white/5 backdrop-blur-md border-[#ffffff1a] hover:bg-white/10 ${colorClass}`
-                    : 'bg-white/5 border-white/5 opacity-50 cursor-default'
+                    ? `bg-glass backdrop-blur-md hover:bg-surface shadow-sm ${colorClass}`
+                    : 'bg-glass opacity-50 cursor-default shadow-sm'
                 }
             `}
         >

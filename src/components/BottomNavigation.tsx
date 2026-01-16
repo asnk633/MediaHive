@@ -4,6 +4,7 @@ import Link from "next/link";
 import { usePathname, useSearchParams } from "next/navigation";
 import { Home, CheckSquare, Calendar, User, Download, BarChart3, Package } from "lucide-react";
 import { motion } from "framer-motion";
+import { useAuth } from '@/contexts/AuthContext';
 import FAB from "@/client/components/FAB";
 
 export default function BottomNavigation() {
@@ -20,12 +21,16 @@ export default function BottomNavigation() {
   }
 
   // FAB Context-Aware Visibility Control
-  const allowedPages = ['/home', '/tasks', '/events', '/inventory', '/downloads', '/reports', '/admin', '/settings', '/profile'];
+  const allowedPages = ['/home', '/tasks', '/events', '/inventory', '/downloads', '/reports', '/admin', '/settings', '/profile', '/notifications'];
   const isOnAllowedPage = allowedPages.some(page =>
     pathname === page || pathname?.startsWith(page + '/')
   );
   const hasModalParam = searchParams.has('id') || searchParams.has('action');
   const showFAB = isOnAllowedPage && !hasModalParam;
+
+  const { user } = useAuth(); // Helper to access auth context
+  // Assume guest if no role or specific guest role
+  const isGuest = user?.role === 'guest';
 
   const items = [
     { key: 'home', label: 'Home', href: '/home', icon: Home },
@@ -34,7 +39,10 @@ export default function BottomNavigation() {
     { key: 'spacer', label: '', href: '', icon: null },
     { key: 'inventory', label: 'Inventory', href: '/inventory', icon: Package },
     { key: 'downloads', label: 'Files', href: '/downloads', icon: Download },
-    { key: 'reports', label: 'Reports', href: '/reports', icon: BarChart3 },
+    // Role-based Switch: Reports for Team/Admin, Profile for Guests
+    isGuest
+      ? { key: 'profile', label: 'Profile', href: '/profile', icon: User }
+      : { key: 'reports', label: 'Reports', href: '/reports', icon: BarChart3 },
   ];
 
   return (
@@ -57,9 +65,9 @@ export default function BottomNavigation() {
             y: 0,
             opacity: 1,
             boxShadow: [
-              "0 15px 35px -5px rgba(91, 66, 243, 0.4), 0 5px 15px rgba(0, 221, 235, 0.2)",
-              "0 15px 45px -5px rgba(91, 66, 243, 0.6), 0 10px 25px rgba(0, 221, 235, 0.4)",
-              "0 15px 35px -5px rgba(91, 66, 243, 0.4), 0 5px 15px rgba(0, 221, 235, 0.2)"
+              "0 15px 35px -5px rgba(91, 66, 243, 0.25), 0 5px 15px rgba(0, 221, 235, 0.15)",
+              "0 15px 45px -5px rgba(91, 66, 243, 0.35), 0 10px 25px rgba(0, 221, 235, 0.25)",
+              "0 15px 35px -5px rgba(91, 66, 243, 0.25), 0 5px 15px rgba(0, 221, 235, 0.15)"
             ]
           }}
           transition={{
@@ -71,7 +79,7 @@ export default function BottomNavigation() {
               ease: "easeInOut"
             }
           }}
-          className="w-full h-full bg-[#0f172a]/90 backdrop-blur-2xl border border-[#ffffff1a] rounded-[40px] px-2"
+          className="w-full h-full bg-glass backdrop-blur-3xl border-t border-soft rounded-[40px] px-2 shadow-[0_20px_40px_-10px_rgba(0,0,0,0.1),inset_0_1px_0_0_rgba(255,255,255,0.3)]"
           style={{
             display: 'grid',
             gridTemplateColumns: 'repeat(3, 1fr) 80px repeat(3, 1fr)',
@@ -88,13 +96,13 @@ export default function BottomNavigation() {
               <Link
                 key={item.key}
                 href={item.href}
-                className={`group relative flex flex-col items-center justify-center w-full h-full transition-all duration-300 ${active ? 'text-blue-400' : 'text-slate-500 hover:text-slate-300'}`}
+                className={`group relative flex flex-col items-center justify-center w-full h-full transition-all duration-300 ${active ? 'text-primary' : 'text-muted hover:text-foreground'}`}
               >
                 {/* Active Glow Background */}
                 {active && (
                   <motion.div
                     layoutId="nav-glow"
-                    className="absolute inset-0 bg-blue-500/10 rounded-full blur-xl -z-10"
+                    className="absolute inset-0 bg-primary/10 rounded-full blur-xl -z-10"
                     transition={{ type: "spring", bounce: 0.2, duration: 0.6 }}
                   />
                 )}
@@ -114,7 +122,7 @@ export default function BottomNavigation() {
                 {active && (
                   <motion.div
                     layoutId="nav-dot"
-                    className="absolute bottom-2 w-1 h-1 bg-blue-400 rounded-full"
+                    className="absolute bottom-2 w-1 h-1 bg-primary rounded-full"
                   />
                 )}
               </Link>

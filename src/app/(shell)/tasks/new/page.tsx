@@ -50,8 +50,8 @@ export default function NewTaskPage() {
   const [createAs, setCreateAs] = useState<'myself' | 'onBehalfOf'>('myself');
 
   // Unified state for department or institution
-  const [selectedOrg, setSelectedOrg] = useState<string>('');
-  const [onBehalfOfId, setOnBehalfOfId] = useState<string>(''); // NEW: Separate ID for On Behalf Of entity
+  const [selectedOrgId, setSelectedOrgId] = useState<string>(''); // Format: dept_{id} or inst_{id}
+  const [onBehalfOfId, setOnBehalfOfId] = useState<string>('');
 
   // Fetch Organizations
   useEffect(() => {
@@ -72,12 +72,16 @@ export default function NewTaskPage() {
 
   // Auto-fill from user defaults
   useEffect(() => {
+    if (departmentsList.length === 0 && institutionsList.length === 0) return;
+
     if (user.defaultDepartment) {
-      setSelectedOrg(user.defaultDepartment);
+      const dept = departmentsList.find(d => d.id === user.defaultDepartment || d.name === user.defaultDepartment);
+      if (dept) setSelectedOrgId(`dept_${dept.id}`);
     } else if (user.defaultInstitution) {
-      setSelectedOrg(user.defaultInstitution);
+      const inst = institutionsList.find(i => i.id === user.defaultInstitution || i.name === user.defaultInstitution);
+      if (inst) setSelectedOrgId(`inst_${inst.id}`);
     }
-  }, [user.defaultDepartment, user.defaultInstitution]);
+  }, [user.defaultDepartment, user.defaultInstitution, departmentsList, institutionsList]);
 
   const isGuest = user?.role?.toLowerCase() === 'guest';
   const isAdmin = user?.role === 'admin';
@@ -103,7 +107,7 @@ export default function NewTaskPage() {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!title || !dueDate || !selectedOrg) {
+    if (!title || !dueDate || !selectedOrgId) {
       alert('Please fill all required fields');
       return;
     }
@@ -150,13 +154,31 @@ export default function NewTaskPage() {
         }
       }
 
+      // Resolve Structure IDs
+      let departmentId = null;
+      let institutionId = undefined;
+      let departmentName = '';
+
+      if (selectedOrgId.startsWith('dept_')) {
+        const id = selectedOrgId.split('_')[1];
+        departmentId = id;
+        const d = departmentsList.find(dep => dep.id === id);
+        departmentName = d ? d.name : '';
+      } else if (selectedOrgId.startsWith('inst_')) {
+        const id = selectedOrgId.split('_')[1];
+        institutionId = id;
+        departmentId = null;
+      }
+
       const { id: newTaskId } = await TaskService.addTask({
         title,
         description,
         status: isGuest ? 'pending' : 'todo', // Guest defaults to Pending
         priority: isGuest ? 'low' : priority,
         dueDate: dueDate ? dueDate.toISOString() : new Date().toISOString(), // Fallback to now if somehow empty
-        department: selectedOrg,
+        department: departmentName,
+        departmentId,
+        institutionId,
         assignedBy: {
           uid: user.uid,
           name: user.officialName || user.name || user.email || 'Unknown',
@@ -352,15 +374,15 @@ export default function NewTaskPage() {
                       <Briefcase size={14} />
                     </div>
                     <select
-                      value={selectedOrg}
-                      onChange={(e) => setSelectedOrg(e.target.value)}
+                      value={selectedOrgId}
+                      onChange={(e) => setSelectedOrgId(e.target.value)}
                       className="w-full bg-white/5 hover:bg-white/10 pl-10 pr-8 py-3 rounded-xl border border-[#ffffff1a] focus:border-blue-500/50 outline-none text-sm text-white appearance-none [&>optgroup]:bg-[#13161c] [&>option]:bg-[#13161c] cursor-pointer transition-colors"
                     >
                       <option value="" className="bg-[#13161c]">Select Requesting Unit...</option>
 
                       <optgroup label="OFFICES / UNITS" className="bg-[#13161c] text-gray-500 font-bold">
                         {departmentsList.map(dept => (
-                          <option key={dept.id} value={dept.name} className="bg-[#13161c] text-gray-300 font-normal">
+                          <option key={dept.id} value={`dept_${dept.id}`} className="bg-[#13161c] text-gray-300 font-normal">
                             {dept.name}
                           </option>
                         ))}
@@ -368,7 +390,7 @@ export default function NewTaskPage() {
 
                       <optgroup label="INSTITUTIONS" className="bg-[#13161c] text-gray-500 font-bold">
                         {institutionsList.map(inst => (
-                          <option key={inst.id} value={inst.name} className="bg-[#13161c] text-gray-300 font-normal">
+                          <option key={inst.id} value={`inst_${inst.id}`} className="bg-[#13161c] text-gray-300 font-normal">
                             {inst.name}
                           </option>
                         ))}
@@ -397,16 +419,10 @@ export default function NewTaskPage() {
                         const val = e.target.value;
                         setOnBehalfOfId(val);
                         // Auto-sync selectedOrg with the chosen Identity name
-                        if (val.startsWith('dept_')) {
-                          const id = val.split('_')[1];
-                          const dept = departmentsList.find(d => d.id === id);
-                          if (dept) setSelectedOrg(dept.name);
-                        } else if (val.startsWith('inst_')) {
-                          const id = val.split('_')[1];
-                          const inst = institutionsList.find(i => i.id === id);
-                          if (inst) setSelectedOrg(inst.name);
+                        if (val) {
+                          setSelectedOrgId(val);
                         } else {
-                          setSelectedOrg('');
+                          setSelectedOrgId('');
                         }
                       }}
                       className="w-full bg-blue-500/10 hover:bg-blue-500/20 pl-10 pr-8 py-3 rounded-xl border border-blue-500/30 focus:border-blue-500 outline-none text-sm text-blue-100 appearance-none [&>optgroup]:bg-[#13161c] [&>option]:bg-[#13161c] cursor-pointer transition-colors"

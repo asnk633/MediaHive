@@ -14,7 +14,7 @@ export function PageHeader({ title, description, actions, className, size = 'def
         <div className={cn("flex flex-col gap-6 sm:flex-row sm:items-start sm:justify-between", className)}>
             <div className="space-y-2">
                 <h1 className={cn(
-                    "font-semibold tracking-tight text-white",
+                    "font-semibold tracking-tight text-foreground",
                     size === 'large' ? "text-4xl" : "text-3xl"
                 )}>
                     {title}

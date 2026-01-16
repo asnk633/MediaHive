@@ -15,7 +15,7 @@ export default function StructurePage() {
     return (
         <PageLayout mode="plain">
             <div className="mb-2">
-                <Link href="/settings" className="inline-flex items-center text-sm text-slate-400 hover:text-white transition-colors">
+                <Link href="/settings" className="inline-flex items-center text-sm text-muted hover:text-foreground transition-colors">
                     <ChevronLeft className="w-4 h-4 mr-1" />
                     Back to Settings
                 </Link>
@@ -28,11 +28,11 @@ export default function StructurePage() {
 
             <div className="mt-6">
                 <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
-                    <TabsList className="bg-white/5 border border-white/10 rounded-xl p-1">
-                        <TabsTrigger value="institutions" className="rounded-lg data-[state=active]:bg-blue-600 data-[state=active]:text-white">
+                    <TabsList className="bg-surface border border-soft rounded-xl p-1">
+                        <TabsTrigger value="institutions" className="rounded-lg data-[state=active]:bg-primary data-[state=active]:text-primary-foreground">
                             Institutions
                         </TabsTrigger>
-                        <TabsTrigger value="departments" className="rounded-lg data-[state=active]:bg-blue-600 data-[state=active]:text-white">
+                        <TabsTrigger value="departments" className="rounded-lg data-[state=active]:bg-primary data-[state=active]:text-primary-foreground">
                             Offices / Units
                         </TabsTrigger>
                     </TabsList>

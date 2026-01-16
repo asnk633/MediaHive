@@ -44,12 +44,12 @@ export const ActiveCampaignsWidget = () => {
                 {/* Create Card */}
                 <button
                     onClick={() => setIsCreateModalOpen(true)}
-                    className="min-w-[160px] h-[180px] rounded-2xl border border-dashed border-white/20 bg-white/5 hover:bg-white/10 flex flex-col items-center justify-center gap-3 transition-all group snap-start shrink-0"
+                    className="min-w-[160px] h-[180px] rounded-xl bg-glass hover:bg-primary/10 flex flex-col items-center justify-center gap-3 transition-all group snap-start shrink-0 shadow-sm hover:shadow-md"
                 >
                     <div className="w-10 h-10 rounded-full bg-blue-500/20 text-blue-400 flex items-center justify-center group-hover:scale-110 transition-transform">
                         <Plus size={24} />
                     </div>
-                    <span className="text-sm font-semibold text-gray-300 group-hover:text-white">New Campaign</span>
+                    <span className="text-sm font-semibold text-muted group-hover:text-primary">New Campaign</span>
                 </button>
 
                 {/* Empty State */}
@@ -60,7 +60,7 @@ export const ActiveCampaignsWidget = () => {
                     <div
                         key={campaign.id}
                         onClick={() => router.push(`/campaigns/${campaign.id}`)}
-                        className="min-w-[280px] h-[180px] rounded-2xl border border-[#ffffff1a] bg-[#1e293b]/50 backdrop-blur-sm p-5 flex flex-col justify-between hover:border-blue-500/50 hover:shadow-lg hover:shadow-blue-500/10 transition-all cursor-pointer snap-start group relative overflow-hidden"
+                        className="min-w-[280px] h-[180px] rounded-xl bg-surface backdrop-blur-sm p-5 flex flex-col justify-between hover:shadow-lg hover:shadow-strong transition-all cursor-pointer snap-start group relative overflow-hidden shadow-sm"
                     >
                         {/* Phase Awareness Strip */}
                         <div className={`absolute top-0 left-0 right-0 h-1 ${campaign.phase === 'planning' ? 'bg-blue-500' :
@@ -92,7 +92,7 @@ export const ActiveCampaignsWidget = () => {
                             <div className="text-xs text-gray-400">
                                 <p>Ends {new Date(campaign.endDate).toLocaleDateString(undefined, { month: 'short', day: 'numeric' })}</p>
                             </div>
-                            <div className="w-8 h-8 rounded-full bg-white/5 flex items-center justify-center text-gray-400 group-hover:bg-blue-500 group-hover:text-white transition-all">
+                            <div className="w-8 h-8 rounded-full bg-glass flex items-center justify-center text-gray-400 group-hover:bg-primary group-hover:text-white transition-all">
                                 <ArrowRight size={16} />
                             </div>
                         </div>

@@ -61,5 +61,26 @@ export const StructureService = {
             method: 'PATCH',
             body: JSON.stringify(data)
         });
+    },
+
+    // Resolvers
+    getInstitutionName: async (id: string): Promise<string> => {
+        try {
+            const { institutions } = await StructureService.getInstitutions();
+            const match = institutions.find(i => i.id === id);
+            return match ? match.name : id;
+        } catch {
+            return id;
+        }
+    },
+
+    getDepartmentName: async (id: string): Promise<string> => {
+        try {
+            const { departments } = await StructureService.getDepartments();
+            const match = departments.find(d => d.id === id);
+            return match ? match.name : id;
+        } catch {
+            return id;
+        }
     }
 };

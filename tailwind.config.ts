@@ -89,68 +89,79 @@ const tokens = {
 };
 
 const config: Config = {
+  // !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+  // !! DESIGN CONTRACT ENFORCEMENT                                       !!
+  // !! DO NOT ADD RAW COLORS. USE SEMANTIC TOKENS ONLY.                  !!
+  // !! REFER TO docs/design-contract.md BEFORE MAKING CHANGES.           !!
+  // !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+  darkMode: ["class"],
   content: [
     "./src/pages/**/*.{js,ts,jsx,tsx,mdx}",
     "./src/components/**/*.{js,ts,jsx,tsx,mdx}",
     "./src/app/**/*.{js,ts,jsx,tsx,mdx}",
     "./src/client/**/*.{js,ts,jsx,tsx,mdx}",
   ],
-  darkMode: 'class',
   theme: {
     extend: {
       colors: {
-        // Design System Tokens
-        ...tokens.colors,
-
-        // Shadcn/Semantic Mappings
-        // Shadcn/Semantic Mappings
-        input: "rgba(255, 255, 255, 0.1)",
-        ring: tokens.colors.primary.DEFAULT,
-        foreground: tokens.colors.text.primary,
-        primary: {
-          ...tokens.colors.primary,
-          start: 'var(--color-primary-start)',
-          end: 'var(--color-primary-end)',
-        },
-        secondary: {
-          DEFAULT: tokens.colors.surface.DEFAULT,
-          foreground: tokens.colors.text.primary,
-        },
-        destructive: {
-          DEFAULT: tokens.colors.status.error,
-          foreground: "#ffffff",
-        },
-        muted: {
-          DEFAULT: tokens.colors.surface.hover,
-          foreground: tokens.colors.text.muted,
-        },
-        accent: {
-          DEFAULT: tokens.colors.surface.active,
-          foreground: tokens.colors.text.primary,
+        // Design System Tokens (Mapped to CSS Variables)
+        background: "var(--bg-root)",
+        foreground: "var(--text-primary)",
+        card: {
+          DEFAULT: "var(--bg-elevated)",
+          foreground: "var(--text-primary)",
         },
         popover: {
-          DEFAULT: tokens.colors.surface.DEFAULT,
-          foreground: tokens.colors.text.primary,
+          DEFAULT: "var(--bg-surface)",
+          foreground: "var(--text-primary)",
         },
+        primary: {
+          DEFAULT: "var(--accent-primary)",
+          foreground: "var(--text-inverse)",
+        },
+        secondary: {
+          DEFAULT: "var(--text-secondary)",
+          foreground: "var(--text-primary)",
+        },
+        muted: {
+          DEFAULT: "var(--bg-surface)",
+          foreground: "var(--text-muted)",
+        },
+        accent: {
+          DEFAULT: "var(--accent-primary-soft)",
+          foreground: "var(--text-primary)",
+        },
+        destructive: {
+          DEFAULT: "var(--accent-danger)",
+          foreground: "var(--text-inverse)",
+        },
+        border: "var(--border-soft)",
+        input: "var(--border-strong)",
+        ring: "var(--accent-primary)",
 
-
-        // Brand Design Tokens
-        // white: 'var(--color-white)', // Disabled to allow standard opacity modifiers (bg-white/5)
-        bg: 'var(--bg-app)', // Updated to map to the new gradient variable
+        // Semantic aliases
+        bg: 'var(--bg-root)',
         text: {
           primary: 'var(--text-primary)',
           secondary: 'var(--text-secondary)',
         },
-        // Updated Semantic Mappings for Glassmorphism
-        border: "hsl(var(--border))",
-        card: {
-          DEFAULT: "var(--bg-card)",
-          foreground: "var(--text-primary)",
-        },
-        background: "hsl(var(--background))",
+        glass: "var(--bg-glass)",
+        surface: "var(--bg-surface)",
       },
       borderRadius: tokens.borderRadius,
-      boxShadow: tokens.shadows,
+      boxShadow: {
+        ...tokens.shadows,
+        soft: "var(--shadow-soft)",
+        medium: "var(--shadow-medium)",
+        strong: "var(--shadow-strong)",
+        // Keep glow if it doesn't conflict or map it?
+        // User didn't specify 'glow' explicitly in "Semantic Token Set" but 'shadow-strong' might be it.
+        // I will keep existing 'glow' if it's not overriding the contract, but user said "Use only CSS variables... All components must rely on semantic tokens".
+        // I will map to shadow-strong or remove specific 'glow' to enforce consistency if possible, 
+        // but 'glow' is used in token object definition above which I can't see the full context of if I'm replacing 'extend'.
+        // Wait, 'tokens' is defined above. 'extend' uses 'tokens'.
+        // I am replacing the 'colors' in 'extend'.
+      },
       fontFamily: {
         sans: ['var(--font-poppins)', 'system-ui', 'sans-serif'],
       },

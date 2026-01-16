@@ -69,7 +69,17 @@ export const MyFocusWidget = ({ tasks, userId }: MyFocusWidgetProps) => {
         }
     };
 
-    if (urgentTasks.length === 0 && myTasks.length === 0) return null;
+    if (urgentTasks.length === 0 && myTasks.length === 0) {
+        return (
+            <div className="p-6 rounded-2xl bg-glass backdrop-blur-md shadow-sm border-none flex flex-col items-center justify-center text-center space-y-2 animate-in fade-in duration-700">
+                <div className="w-12 h-12 rounded-full bg-surface/50 flex items-center justify-center mb-1">
+                    <div className="w-2 h-2 rounded-full bg-emerald-500/50 animate-pulse" />
+                </div>
+                <h3 className="text-sm font-bold text-foreground">All caught up</h3>
+                <p className="text-xs text-muted">Enjoy your day.</p>
+            </div>
+        );
+    }
 
     return (
         <div className="space-y-6">
@@ -85,7 +95,7 @@ export const MyFocusWidget = ({ tasks, userId }: MyFocusWidgetProps) => {
 
                     <div className="space-y-3">
                         {displayUrgent.map(task => (
-                            <div key={task.id} className="group relative flex items-center justify-between p-4 bg-gradient-to-r from-red-500/10 to-transparent border border-red-500/20 rounded-2xl transition-all duration-300 hover:border-red-500/40">
+                            <div key={task.id} className="group relative flex items-center justify-between p-4 bg-gradient-to-r from-red-500/10 to-transparent rounded-xl transition-all duration-300 hover:shadow-lg shadow-sm">
                                 <div className="flex items-center gap-4">
                                     <div className="w-10 h-10 rounded-xl bg-red-500/20 flex items-center justify-center text-red-400 border border-red-500/30">
                                         <AlertCircle size={20} />
@@ -121,12 +131,12 @@ export const MyFocusWidget = ({ tasks, userId }: MyFocusWidgetProps) => {
             {myTasks.length > 0 && (
                 <div className="space-y-3">
                     <div className="flex justify-between items-end mb-2">
-                        <h3 className="text-sm font-bold text-gray-400 uppercase tracking-widest ml-1">
+                        <h3 className="text-sm font-bold text-muted uppercase tracking-widest ml-1">
                             My Tasks
                         </h3>
                         <button
                             onClick={() => router.push('/tasks')}
-                            className="text-xs font-semibold text-blue-400 hover:text-blue-300 transition-colors"
+                            className="text-xs font-semibold text-primary hover:text-primary/80 transition-colors"
                         >
                             See All
                         </button>

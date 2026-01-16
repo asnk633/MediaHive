@@ -5,6 +5,7 @@ import { Label } from '@/components/ui/label';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { UserCircle } from 'lucide-react';
+import { ThemeSelector } from './ThemeSelector';
 
 export const ProfileSettingsView = () => {
     const { user } = useAuth();
@@ -16,6 +17,12 @@ export const ProfileSettingsView = () => {
                 <p className="text-sm text-slate-400">
                     This information will be displayed publicly to other team members.
                 </p>
+            </div>
+
+            {/* Theme Selector */}
+            <div className="space-y-4 pb-6 border-b border-white/5">
+                <h4 className="text-sm font-medium text-slate-300">Appearance</h4>
+                <ThemeSelector />
             </div>
 
             <div className="flex items-center gap-6 pb-6 border-b border-white/5">

@@ -1,4 +1,4 @@
-import React, { useState, useMemo } from 'react';
+import React, { useState, useMemo, useCallback } from 'react';
 import { Skeleton } from '@/components/ui/skeleton';
 import { Task } from '@/types/task';
 import { format } from 'date-fns';
@@ -169,14 +169,31 @@ const TaskListViewComponent: React.FC<TaskListViewProps> = ({ tasks, loading = f
         if (filterStatus !== 'all') result = result.filter(t => t.status === filterStatus);
         if (filterPriority !== 'all') result = result.filter(t => t.priority === filterPriority);
 
-        // Sorting: Overdue > Today > Soon
+        // Sorting:
+        // 1. Non-completed first
+        // 2. Completed: Recent > Old
+        // 3. Non-completed: Due Date ASC (Overdue > Today > Soon)
         result.sort((a, b) => {
+            const isDoneA = a.status === 'done';
+            const isDoneB = b.status === 'done';
+
+            // 1. Non-completed first
+            if (isDoneA && !isDoneB) return 1;
+            if (!isDoneA && isDoneB) return -1;
+
+            // 2. Both Completed: Sort by completedAt DESC (recent first)
+            if (isDoneA && isDoneB) {
+                const cA = safeDate(a.completedAt) || safeDate(a.updatedAt) || safeDate(a.createdAt);
+                const cB = safeDate(b.completedAt) || safeDate(b.updatedAt) || safeDate(b.createdAt);
+                if (!cA && !cB) return 0;
+                if (!cA) return 1;
+                if (!cB) return -1;
+                return cB.getTime() - cA.getTime();
+            }
+
+            // 3. Both Non-Completed: Due Date ASC
             const dateA = safeDate(a.dueDate);
             const dateB = safeDate(b.dueDate);
-
-            // Completed always last
-            if (a.status === 'done' && b.status !== 'done') return 1;
-            if (a.status !== 'done' && b.status === 'done') return -1;
 
             if (!dateA && !dateB) return 0;
             if (!dateA) return 1;
@@ -188,17 +205,17 @@ const TaskListViewComponent: React.FC<TaskListViewProps> = ({ tasks, loading = f
     }, [tasks, view, filterStatus, filterPriority, user]);
 
     // INLINE ACTIONS
-    const handleStatusUpdate = async (taskId: string, newStatus: Task['status']) => {
+    const handleStatusUpdate = useCallback(async (taskId: string, newStatus: Task['status']) => {
         onTaskUpdate?.(taskId, { status: newStatus });
         await TaskService.updateTask(taskId, { status: newStatus });
-    };
+    }, [onTaskUpdate]);
 
-    const handlePriorityUpdate = async (taskId: string, newPriority: string) => {
+    const handlePriorityUpdate = useCallback(async (taskId: string, newPriority: string) => {
         onTaskUpdate?.(taskId, { priority: newPriority as any });
         await TaskService.updateTask(taskId, { priority: newPriority as any });
-    };
+    }, [onTaskUpdate]);
 
-    const handleAssigneeToggle = async (taskId: string, member: { uid: string, name: string }) => {
+    const handleAssigneeToggle = useCallback(async (taskId: string, member: { uid: string, name: string }) => {
         const task = tasks.find(t => t.id === taskId);
         if (task) {
             const currentAssignees = task.assignedTo || [];
@@ -212,14 +229,14 @@ const TaskListViewComponent: React.FC<TaskListViewProps> = ({ tasks, loading = f
             onTaskUpdate?.(taskId, { assignedTo: newAssignees });
         }
         await TaskService.toggleTaskAssignee(taskId, member);
-    };
+    }, [tasks, onTaskUpdate]);
 
-    const toggleSelection = (taskId: string) => {
+    const toggleSelection = useCallback((taskId: string) => {
         if (!isAdmin) return;
         setSelectedTaskIds(prev =>
             prev.includes(taskId) ? prev.filter(id => id !== taskId) : [...prev, taskId]
         );
-    };
+    }, [isAdmin]);
 
     return (
         <div className="space-y-6">
@@ -227,14 +244,14 @@ const TaskListViewComponent: React.FC<TaskListViewProps> = ({ tasks, loading = f
             <div className="flex flex-col md:flex-row gap-4 items-start md:items-center justify-between border-b border-[#ffffff1a] pb-6">
 
                 {/* Views Pill */}
-                <div className="flex bg-black/40 p-1 rounded-lg border border-white/5">
+                <div className="flex bg-surface/20 p-1 rounded-lg border border-soft">
                     {(['all', 'mine', 'overdue'] as const).map((v) => (
                         <button
                             key={v}
                             onClick={() => setView(v)}
                             className={cn(
                                 "px-6 py-2 text-xs font-semibold uppercase tracking-wider rounded-md transition-all",
-                                view === v ? "bg-[#1e293b] text-white shadow-sm border border-[#ffffff1a]" : "text-gray-500 hover:text-gray-300"
+                                view === v ? "bg-card text-foreground shadow-sm border border-subtle" : "text-muted hover:text-foreground"
                             )}
                         >
                             {v === 'mine' ? 'My Tasks' : v === 'overdue' ? 'Attention Needed' : 'All Tasks'}
@@ -248,7 +265,10 @@ const TaskListViewComponent: React.FC<TaskListViewProps> = ({ tasks, loading = f
                     <Filter className="w-4 h-4 text-gray-500" />
 
                     <Select value={filterStatus} onValueChange={setFilterStatus}>
-                        <SelectTrigger className="w-[140px] border-none bg-transparent hover:bg-white/[0.05] text-gray-400 hover:text-white h-auto py-1 px-2 rounded-lg shadow-none">
+                        <SelectTrigger
+                            aria-label="Filter by status"
+                            className="w-[140px] border-none bg-surface/20 hover:bg-surface/40 text-muted hover:text-foreground h-auto py-1.5 px-3 rounded-lg shadow-sm transition-colors cursor-pointer focus:ring-2 focus:ring-primary/50"
+                        >
                             <SelectValue placeholder="Status" />
                         </SelectTrigger>
                         <SelectContent>
@@ -263,7 +283,10 @@ const TaskListViewComponent: React.FC<TaskListViewProps> = ({ tasks, loading = f
                     <div className="w-px h-4 bg-white/10" />
 
                     <Select value={filterPriority} onValueChange={setFilterPriority}>
-                        <SelectTrigger className="w-[140px] border-none bg-transparent hover:bg-white/[0.05] text-gray-400 hover:text-white h-auto py-1 px-2 rounded-lg shadow-none">
+                        <SelectTrigger
+                            aria-label="Filter by priority"
+                            className="w-[140px] border-none bg-surface/20 hover:bg-surface/40 text-muted hover:text-foreground h-auto py-1.5 px-3 rounded-lg shadow-sm transition-colors cursor-pointer focus:ring-2 focus:ring-primary/50"
+                        >
                             <SelectValue placeholder="Priority" />
                         </SelectTrigger>
                         <SelectContent>
@@ -291,9 +314,9 @@ const TaskListViewComponent: React.FC<TaskListViewProps> = ({ tasks, loading = f
                         {tasks.filter(t => t.approvalStatus === 'pending').map(task => (
                             <div key={task.id} className="grid grid-cols-12 gap-4 px-6 py-4 items-center bg-white/[0.02] hover:bg-white/[0.05] transition-colors">
                                 <div className="col-span-8 flex flex-col gap-1">
-                                    <h4 className="text-sm font-medium text-white">{task.title}</h4>
-                                    <div className="flex items-center gap-2 text-[10px] text-white/50">
-                                        <span>Requested by <span className="text-white">{typeof task.createdBy === 'object' ? task.createdBy.name : 'Guest'}</span></span>
+                                    <h4 className="text-sm font-medium text-foreground">{task.title}</h4>
+                                    <div className="flex items-center gap-2 text-[10px] text-muted">
+                                        <span>Requested by <span className="text-foreground">{typeof task.createdBy === 'object' ? task.createdBy.name : 'Guest'}</span></span>
                                         <span>•</span>
                                         <span>{task.description ? 'Has Description' : 'No Details'}</span>
                                     </div>
@@ -313,12 +336,12 @@ const TaskListViewComponent: React.FC<TaskListViewProps> = ({ tasks, loading = f
             )}
 
             {/* Task Table-List */}
-            <div className="rounded-2xl border border-[#ffffff1a] bg-[#0f172a] shadow-2xl overflow-hidden min-h-[400px]">
+            <div className="rounded-2xl border border-soft bg-surface shadow-sm overflow-hidden min-h-[400px]">
                 {/* Header Row */}
                 {/* Header Row */}
-                <div className="grid grid-cols-12 md:grid-cols-[3fr_2fr_1.4fr_1.2fr_0.9fr_0.7fr] gap-2 px-6 py-3 bg-black/20 border-b border-white/5 text-[10px] uppercase font-bold text-white/30 tracking-widest">
+                <div className="grid grid-cols-12 md:grid-cols-[3fr_2fr_1.4fr_1.2fr_0.9fr_0.7fr] gap-2 px-6 py-3 bg-muted/5 border-b border-soft text-[11px] font-bold text-foreground/70 tracking-wide uppercase">
                     <div className="col-span-12 md:col-span-1">Task</div>
-                    <div className="hidden md:block text-white/40">Requested By</div>
+                    <div className="hidden md:block text-muted">Requested By</div>
                     <div className="hidden md:block">Assignee</div>
                     <div className="hidden md:block">Status</div>
                     <div className="hidden md:block">Priority</div>
@@ -330,15 +353,15 @@ const TaskListViewComponent: React.FC<TaskListViewProps> = ({ tasks, loading = f
                         {[1, 2, 3, 4].map(i => <Skeleton key={i} className="h-12 w-full bg-white/5 rounded" />)}
                     </div>
                 ) : processedTasks.filter(t => isAdmin ? t.approvalStatus !== 'pending' : true).length === 0 ? (
-                    <div className="flex flex-col items-center justify-center h-64 text-center">
-                        <div className="w-16 h-16 rounded-full bg-white/5 flex items-center justify-center mb-4">
-                            <CheckCircle2 className="w-8 h-8 text-white/20" />
+                    <div className="flex flex-col items-center justify-center h-64 text-center bg-glass backdrop-blur-sm">
+                        <div className="w-16 h-16 rounded-full bg-surface/50 flex items-center justify-center mb-4 shadow-sm">
+                            <CheckCircle2 className="w-8 h-8 text-muted/50" />
                         </div>
-                        <h3 className="text-white/40 font-medium">All clear.</h3>
-                        <p className="text-white/20 text-sm mt-1">No tasks require attention.</p>
+                        <h3 className="text-foreground/70 font-bold">All clear.</h3>
+                        <p className="text-muted text-sm mt-1">No tasks require attention.</p>
                     </div>
                 ) : (
-                    <div className="divide-y divide-white/5">
+                    <div className="divide-y divide-soft">
                         {processedTasks.filter(t => isAdmin ? t.approvalStatus !== 'pending' : true).map(task => {
                             const dueDate = safeDate(task.dueDate);
                             const isOverdue = dueDate && dueDate < new Date() && task.status !== 'done';
@@ -349,7 +372,7 @@ const TaskListViewComponent: React.FC<TaskListViewProps> = ({ tasks, loading = f
                                     key={task.id}
                                     onClick={() => onTaskClick?.(task)}
                                     className={cn(
-                                        "group grid grid-cols-12 md:grid-cols-[3fr_2fr_1.4fr_1.2fr_0.9fr_0.7fr] gap-2 px-6 py-4 items-center transition-all hover:bg-white/[0.02]",
+                                        "group grid grid-cols-12 md:grid-cols-[3fr_2fr_1.4fr_1.2fr_0.9fr_0.7fr] gap-2 px-6 py-4 items-center transition-all bg-elevated hover:bg-primary/5 border-b border-soft last:border-0",
                                         isSelected && "bg-blue-500/5",
                                         isOverdue && "bg-red-500/[0.02] shadow-[inset_2px_0_0_0_#ef4444]"
                                     )}
@@ -363,7 +386,12 @@ const TaskListViewComponent: React.FC<TaskListViewProps> = ({ tasks, loading = f
                                             {isAdmin ? (
                                                 <div
                                                     onClick={() => toggleSelection(task.id)}
-                                                    className={cn("w-4 h-4 rounded border cursor-pointer transition-colors flex items-center justify-center",
+                                                    role="checkbox"
+                                                    aria-checked={isSelected}
+                                                    aria-label={`Select task ${task.title}`}
+                                                    tabIndex={0}
+                                                    onKeyDown={(e) => e.key === 'Enter' || e.key === ' ' ? toggleSelection(task.id) : null}
+                                                    className={cn("w-4 h-4 rounded border cursor-pointer transition-colors flex items-center justify-center focus:outline-none focus:ring-2 focus:ring-blue-500",
                                                         isSelected ? "bg-blue-500 border-blue-500" : "border-white/20 hover:border-white/40 bg-transparent"
                                                     )}
                                                 >
@@ -375,7 +403,7 @@ const TaskListViewComponent: React.FC<TaskListViewProps> = ({ tasks, loading = f
                                         </div>
                                         <div className="min-w-0 flex flex-col gap-1 w-full">
                                             <div className="flex items-center gap-2">
-                                                <h3 className={cn("text-sm font-medium text-gray-200 truncate group-hover:text-white transition-colors", task.status === 'done' && "line-through opacity-50")}>{task.title}</h3>
+                                                <h3 className={cn("text-sm font-medium text-foreground truncate transition-colors", task.status === 'done' && "line-through opacity-50 text-muted")}>{task.title}</h3>
                                             </div>
 
                                             {/* Mobile: Stacked Metadata */}
@@ -387,7 +415,7 @@ const TaskListViewComponent: React.FC<TaskListViewProps> = ({ tasks, loading = f
                                                         fallback={(!task.departmentId && !task.institutionId) ? task.department : undefined}
                                                     />
                                                 </span>
-                                                <div className="flex items-center justify-between text-[10px] text-gray-500">
+                                                <div className="flex items-center justify-between text-[10px] text-muted">
                                                     <div className="flex items-center gap-2">
                                                         <span>{task.status || 'todo'}</span>
                                                         {/* Mobile Priority Stacked under Status */}
@@ -407,7 +435,7 @@ const TaskListViewComponent: React.FC<TaskListViewProps> = ({ tasks, loading = f
 
                                     {/* Desktop: Requested By */}
                                     <div className="hidden md:flex flex-col justify-center pr-4">
-                                        <span className="text-sm text-white/70 font-medium line-clamp-2 leading-tight">
+                                        <span className="text-sm text-muted font-medium line-clamp-2 leading-tight">
                                             <ResolvedStructureName
                                                 id={task.departmentId || task.institutionId}
                                                 type={task.departmentId ? 'department' : 'institution'}
@@ -433,7 +461,7 @@ const TaskListViewComponent: React.FC<TaskListViewProps> = ({ tasks, loading = f
                                                                             size={20}
                                                                             className="text-[9px]"
                                                                         />
-                                                                        <span className="text-xs text-gray-400 truncate max-w-[100px] leading-tight">
+                                                                        <span className="text-xs text-muted truncate max-w-[100px] leading-tight group-hover:text-foreground transition-colors">
                                                                             {typeof assignee === 'object' ? assignee.name : 'Unknown'}
                                                                         </span>
                                                                     </div>
@@ -483,14 +511,14 @@ const TaskListViewComponent: React.FC<TaskListViewProps> = ({ tasks, loading = f
                                                                 size={20}
                                                                 className="text-[9px]"
                                                             />
-                                                            <span className="text-xs text-gray-400 truncate max-w-[100px] leading-tight">
+                                                            <span className="text-xs text-muted truncate max-w-[100px] leading-tight group-hover:text-foreground transition-colors">
                                                                 {typeof assignee === 'object' ? assignee.name : 'Unknown'}
                                                             </span>
                                                         </div>
                                                     ))}
                                                 </div>
                                             ) : (
-                                                <span className="text-xs text-gray-600 italic">Unassigned</span>
+                                                <span className="text-xs text-muted/60 italic group-hover:text-muted transition-colors">Unassigned</span>
                                             )
                                         )}
                                     </div>
@@ -554,11 +582,11 @@ const TaskListViewComponent: React.FC<TaskListViewProps> = ({ tasks, loading = f
 
                                     {/* Due Date */}
                                     <div className="hidden md:block text-right">
-                                        <div className={cn("text-xs font-mono", isOverdue ? "text-red-400 font-bold" : "text-gray-400")}>
+                                        <div className={cn("text-xs font-mono", isOverdue ? "text-red-500 font-bold" : "text-muted")}>
                                             {dueDate ? format(dueDate, 'MMM d') : '-'}
                                         </div>
                                         {dueDate && (
-                                            <div className="text-[10px] text-gray-600">
+                                            <div className="text-[10px] text-muted/60">
                                                 {format(dueDate, 'yyyy')}
                                             </div>
                                         )}

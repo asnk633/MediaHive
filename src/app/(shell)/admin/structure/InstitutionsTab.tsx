@@ -96,26 +96,29 @@ export function InstitutionsTab() {
                             <Plus className="w-4 h-4 mr-2" /> Add Institution
                         </Button>
                     </DialogTrigger>
-                    <DialogContent className="bg-slate-950/90 backdrop-blur-xl border-white/10">
+                    <DialogContent className="bg-surface backdrop-blur-xl border-soft">
                         <DialogHeader>
-                            <DialogTitle className="text-white">New Institution</DialogTitle>
-                            <DialogDescription className="text-slate-400">
+                            <DialogTitle className="text-foreground">New Institution</DialogTitle>
+                            <DialogDescription className="text-muted">
                                 Create a new institution to isolate resources.
                             </DialogDescription>
                         </DialogHeader>
                         <form onSubmit={handleCreate} className="space-y-4 pt-4">
                             <div className="space-y-2">
-                                <Label className="text-slate-300">Name</Label>
+                                <Label className="text-muted">Name</Label>
                                 <Input
                                     value={newName}
                                     onChange={e => setNewName(e.target.value)}
                                     placeholder="e.g. Thaiba Garden"
-                                    className="bg-slate-800 border-white/10 text-white"
+                                    className="bg-background border-soft text-foreground"
                                 />
                             </div>
-                            <Button type="submit" disabled={creating} className="w-full bg-blue-600 hover:bg-blue-500">
-                                {creating ? <Loader2 className="w-4 h-4 animate-spin" /> : "Create"}
-                            </Button>
+                            <div className="flex justify-end gap-2">
+                                <Button type="button" variant="ghost" onClick={() => setCreateOpen(false)} disabled={creating}>Cancel</Button>
+                                <Button type="submit" disabled={creating} className="bg-primary text-primary-foreground hover:bg-primary/90">
+                                    {creating ? "Creating..." : "Create"}
+                                </Button>
+                            </div>
                         </form>
                     </DialogContent>
                 </Dialog>

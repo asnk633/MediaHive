@@ -29,7 +29,7 @@ function Calendar({
     <DayPicker
       showOutsideDays={showOutsideDays}
       className={cn(
-        "p-4 bg-slate-950/40 backdrop-blur-xl border border-[#ffffff1a] shadow-2xl rounded-2xl group/calendar text-slate-100",
+        "p-4 bg-surface backdrop-blur-xl shadow-2xl rounded-2xl group/calendar text-foreground",
         String.raw`rtl:**:[.rdp-button\_next>svg]:rotate-180`,
         String.raw`rtl:**:[.rdp-button\_previous>svg]:rotate-180`,
         className
@@ -53,12 +53,12 @@ function Calendar({
         ),
         button_previous: cn(
           buttonVariants({ variant: buttonVariant }),
-          "h-8 w-8 bg-transparent p-0 opacity-50 hover:opacity-100 text-slate-300 hover:text-white hover:bg-white/10 transition-colors rounded-full",
+          "h-8 w-8 bg-transparent p-0 opacity-50 hover:opacity-100 text-muted hover:text-foreground hover:bg-surface transition-colors rounded-full",
           defaultClassNames.button_previous
         ),
         button_next: cn(
           buttonVariants({ variant: buttonVariant }),
-          "h-8 w-8 bg-transparent p-0 opacity-50 hover:opacity-100 text-slate-300 hover:text-white hover:bg-white/10 transition-colors rounded-full",
+          "h-8 w-8 bg-transparent p-0 opacity-50 hover:opacity-100 text-muted hover:text-foreground hover:bg-surface transition-colors rounded-full",
           defaultClassNames.button_next
         ),
         month_caption: cn(
@@ -70,18 +70,18 @@ function Calendar({
           defaultClassNames.dropdowns
         ),
         dropdown_root: cn(
-          "relative has-focus:border-blue-500 border border-[#ffffff1a] bg-slate-900/50 text-slate-200 shadow-sm rounded-md hover:bg-slate-800 transition-colors",
+          "relative has-focus:border-primary border-none bg-surface/50 text-foreground shadow-sm rounded-md hover:bg-surface transition-colors",
           defaultClassNames.dropdown_root
         ),
         dropdown: cn(
-          "absolute bg-slate-900 border border-[#ffffff1a] text-slate-200 shadow-xl rounded-md py-1",
+          "absolute bg-card text-foreground shadow-xl rounded-md py-1",
           defaultClassNames.dropdown
         ),
         caption_label: cn(
-          "select-none font-bold text-lg text-white tracking-wide",
+          "select-none font-bold text-lg text-foreground tracking-wide",
           captionLayout === "label"
             ? ""
-            : "rounded-md pl-2 pr-1 flex items-center gap-1 hover:bg-white/5 transition-colors",
+            : "rounded-md pl-2 pr-1 flex items-center gap-1 hover:bg-surface transition-colors",
           defaultClassNames.caption_label
         ),
         table: "w-full border-collapse",
@@ -104,13 +104,13 @@ function Calendar({
           defaultClassNames.day
         ),
         range_start: cn(
-          "rounded-l-md bg-blue-500/20 text-blue-100",
+          "rounded-l-md bg-primary/20 text-primary",
           defaultClassNames.range_start
         ),
-        range_middle: cn("bg-blue-500/10 text-blue-200 rounded-none", defaultClassNames.range_middle),
-        range_end: cn("rounded-r-md bg-blue-500/20 text-blue-100", defaultClassNames.range_end),
+        range_middle: cn("bg-primary/10 text-primary-foreground/70 rounded-none", defaultClassNames.range_middle),
+        range_end: cn("rounded-r-md bg-primary/20 text-primary", defaultClassNames.range_end),
         today: cn(
-          "bg-white/5 text-blue-400 font-semibold border border-blue-500/30 rounded-full",
+          "bg-primary/5 text-primary font-semibold rounded-full shadow-sm",
           defaultClassNames.today
         ),
         outside: cn(
@@ -203,19 +203,19 @@ function CalendarDayButton({
       className={cn(
         "aspect-square p-0 font-normal aria-selected:opacity-100 transition-all duration-300 relative z-10",
         // Default Hover
-        !modifiers.selected && "hover:bg-white/10 hover:text-white hover:scale-110",
+        !modifiers.selected && "hover:bg-surface hover:text-foreground hover:scale-110",
         // Selected Single (Pulse & Glow)
         modifiers.selected &&
         !modifiers.range_middle &&
-        "bg-blue-600 text-white shadow-[0_0_20px_rgba(37,99,235,0.6)] hover:bg-blue-500 hover:shadow-[0_0_25px_rgba(59,130,246,0.8)] scale-105",
+        "bg-primary text-primary-foreground shadow-lg hover:bg-primary/90 scale-105",
         // Range Middle
-        modifiers.range_middle && "bg-blue-500/10 text-blue-200 rounded-none",
+        modifiers.range_middle && "bg-primary/10 text-primary-foreground/70 rounded-none",
         // Range Ends
-        (modifiers.range_start || modifiers.range_end) && "bg-blue-600 text-white shadow-md",
+        (modifiers.range_start || modifiers.range_end) && "bg-primary text-primary-foreground shadow-md",
 
         // Today (Border & Glow)
         !modifiers.selected && modifiers.today &&
-        "border border-blue-400/50 text-blue-300 bg-blue-500/5 shadow-[0_0_10px_rgba(59,130,246,0.1)]",
+        "text-primary bg-primary/5 shadow-sm",
 
         // Force Rounding for single days
         (!modifiers.range_middle && !modifiers.range_start && !modifiers.range_end) && "rounded-full",

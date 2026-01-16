@@ -181,22 +181,22 @@ export const EditTaskModal: React.FC<EditTaskModalProps> = ({ task, isOpen, onCl
                         animate={{ opacity: 1 }}
                         exit={{ opacity: 0 }}
                         onClick={onClose}
-                        className="absolute inset-0 bg-black/70 backdrop-blur-sm"
+                        className="absolute inset-0 bg-background/80 backdrop-blur-sm"
                     />
 
                     <motion.div
                         initial={{ scale: 0.95, opacity: 0, y: 20 }}
                         animate={{ scale: 1, opacity: 1, y: 0 }}
                         exit={{ scale: 0.95, opacity: 0, y: 20 }}
-                        className="relative w-full max-w-xl bg-[#141e30] rounded-2xl shadow-2xl border border-[#ffffff1a] overflow-hidden flex flex-col max-h-[90vh]"
+                        className="relative w-full max-w-xl bg-card rounded-2xl shadow-strong border border-soft overflow-hidden flex flex-col max-h-[90vh]"
                     >
                         {/* Header */}
-                        <div className="px-6 py-4 border-b border-[#ffffff1a] flex justify-between items-center bg-white/5">
-                            <h3 className="text-xl font-bold text-white flex items-center gap-2">
-                                <AlertCircle className="text-blue-400" size={20} />
+                        <div className="px-6 py-4 border-b border-soft flex justify-between items-center bg-muted/50">
+                            <h3 className="text-xl font-bold text-foreground flex items-center gap-2">
+                                <AlertCircle className="text-primary" size={20} />
                                 Edit Task
                             </h3>
-                            <button onClick={onClose} className="p-2 hover:bg-white/10 rounded-full transition-colors text-white/70 hover:text-white">
+                            <button onClick={onClose} className="p-2 hover:bg-muted/50 rounded-full transition-colors text-muted-foreground hover:text-foreground">
                                 <X size={20} />
                             </button>
                         </div>
@@ -205,9 +205,9 @@ export const EditTaskModal: React.FC<EditTaskModalProps> = ({ task, isOpen, onCl
                         <div className="p-6 overflow-y-auto custom-scrollbar flex-1">
                             <form id="edit-task-form" onSubmit={handleSubmit} className="space-y-6">
                                 <div>
-                                    <label className="block text-xs font-bold text-white/40 uppercase tracking-widest mb-2 px-1">Task Title</label>
+                                    <label className="block text-xs font-bold text-muted-foreground uppercase tracking-widest mb-2 px-1">Task Title</label>
                                     <input
-                                        className="w-full bg-white/5 border border-[#ffffff1a] rounded-xl px-4 py-3 text-white placeholder-white/20 focus:ring-2 focus:ring-blue-500/50 outline-none transition-all"
+                                        className="w-full bg-surface border border-soft rounded-xl px-4 py-3 text-foreground placeholder:text-muted-foreground/50 focus:ring-2 focus:ring-primary/50 outline-none transition-all"
                                         placeholder="Enter task title"
                                         value={formData.title}
                                         onChange={e => setFormData({ ...formData, title: e.target.value })}
@@ -217,9 +217,9 @@ export const EditTaskModal: React.FC<EditTaskModalProps> = ({ task, isOpen, onCl
                                 </div>
 
                                 <div>
-                                    <label className="block text-xs font-bold text-white/40 uppercase tracking-widest mb-2 px-1">Description</label>
+                                    <label className="block text-xs font-bold text-muted-foreground uppercase tracking-widest mb-2 px-1">Description</label>
                                     <textarea
-                                        className="w-full bg-white/5 border border-[#ffffff1a] rounded-xl px-4 py-3 text-white placeholder-white/20 focus:ring-2 focus:ring-blue-500/50 outline-none transition-all min-h-[120px]"
+                                        className="w-full bg-surface border border-soft rounded-xl px-4 py-3 text-foreground placeholder:text-muted-foreground/50 focus:ring-2 focus:ring-primary/50 outline-none transition-all min-h-[120px]"
                                         placeholder="Describe the task details..."
                                         rows={4}
                                         value={formData.description}
@@ -231,39 +231,39 @@ export const EditTaskModal: React.FC<EditTaskModalProps> = ({ task, isOpen, onCl
 
                                 <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                                     <div>
-                                        <label className="block text-xs font-bold text-white/40 uppercase tracking-widest mb-2 px-1">Status</label>
+                                        <label className="block text-xs font-bold text-muted-foreground uppercase tracking-widest mb-2 px-1">Status</label>
                                         <div className="relative">
                                             <select
-                                                className="w-full bg-white/5 border border-[#ffffff1a] rounded-xl px-4 py-3 text-white focus:ring-2 focus:ring-blue-500/50 outline-none appearance-none cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed"
+                                                className="w-full bg-surface border border-soft rounded-xl px-4 py-3 text-foreground focus:ring-2 focus:ring-primary/50 outline-none appearance-none cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed"
                                                 value={formData.status}
                                                 onChange={e => setFormData({ ...formData, status: e.target.value })}
                                                 disabled={!canEditStatus}
                                             >
-                                                <option value="pending" className="bg-[#141e30]">Pending</option>
-                                                <option value="todo" className="bg-[#141e30]">To Do</option>
-                                                <option value="in_progress" className="bg-[#141e30]">In Progress</option>
-                                                <option value="on_hold" className="bg-[#141e30]">On Hold</option>
-                                                <option value="review" className="bg-[#141e30]">Review</option>
-                                                <option value="done" className="bg-[#141e30]">Done</option>
+                                                <option value="pending" className="bg-popover text-foreground">Pending</option>
+                                                <option value="todo" className="bg-popover text-foreground">To Do</option>
+                                                <option value="in_progress" className="bg-popover text-foreground">In Progress</option>
+                                                <option value="on_hold" className="bg-popover text-foreground">On Hold</option>
+                                                <option value="review" className="bg-popover text-foreground">Review</option>
+                                                <option value="done" className="bg-popover text-foreground">Done</option>
                                             </select>
-                                            <div className="absolute right-4 top-1/2 -translate-y-1/2 pointer-events-none text-white/20">
+                                            <div className="absolute right-4 top-1/2 -translate-y-1/2 pointer-events-none text-muted-foreground">
                                                 <Check size={16} />
                                             </div>
                                         </div>
                                     </div>
 
                                     <div>
-                                        <label className="block text-xs font-bold text-white/40 uppercase tracking-widest mb-2 px-1">Priority</label>
+                                        <label className="block text-xs font-bold text-muted-foreground uppercase tracking-widest mb-2 px-1">Priority</label>
                                         <div className="relative">
                                             <select
-                                                className="w-full bg-white/5 border border-[#ffffff1a] rounded-xl px-4 py-3 text-white focus:ring-2 focus:ring-blue-500/50 outline-none appearance-none cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed"
+                                                className="w-full bg-surface border border-soft rounded-xl px-4 py-3 text-foreground focus:ring-2 focus:ring-primary/50 outline-none appearance-none cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed"
                                                 value={formData.priority}
                                                 onChange={e => setFormData({ ...formData, priority: e.target.value })}
                                                 disabled={!canEditPriority}
                                             >
-                                                <option value="low" className="bg-[#141e30]">Low</option>
-                                                <option value="medium" className="bg-[#141e30]">Medium</option>
-                                                <option value="high" className="bg-[#141e30]">High</option>
+                                                <option value="low" className="bg-popover text-foreground">Low</option>
+                                                <option value="medium" className="bg-popover text-foreground">Medium</option>
+                                                <option value="high" className="bg-popover text-foreground">High</option>
                                             </select>
                                             <div className="absolute right-4 top-1/2 -translate-y-1/2 pointer-events-none text-white/20">
                                                 <Flag size={16} />
@@ -273,35 +273,35 @@ export const EditTaskModal: React.FC<EditTaskModalProps> = ({ task, isOpen, onCl
                                 </div>
 
                                 <div>
-                                    <label className="block text-xs font-bold text-white/40 uppercase tracking-widest mb-2 px-1">Due Date</label>
+                                    <label className="block text-xs font-bold text-muted-foreground uppercase tracking-widest mb-2 px-1">Due Date</label>
                                     <div className="relative">
                                         <input
                                             type="date"
-                                            className="w-full bg-white/5 border border-[#ffffff1a] rounded-xl px-4 py-3 text-white focus:ring-2 focus:ring-blue-500/50 outline-none block disabled:opacity-50 disabled:cursor-not-allowed"
+                                            className="w-full bg-surface border border-soft rounded-xl px-4 py-3 text-foreground focus:ring-2 focus:ring-primary/50 outline-none block disabled:opacity-50 disabled:cursor-not-allowed"
                                             value={formData.dueDate}
                                             onChange={e => setFormData({ ...formData, dueDate: e.target.value })}
                                             disabled={!canEditDueDate}
                                         />
-                                        <Calendar className="absolute right-4 top-1/2 -translate-y-1/2 pointer-events-none text-white/20" size={18} />
+                                        <Calendar className="absolute right-4 top-1/2 -translate-y-1/2 pointer-events-none text-muted-foreground" size={18} />
                                     </div>
                                 </div>
 
                                 {/* Campaign Selector */}
                                 <div>
-                                    <label className="block text-xs font-bold text-white/40 uppercase tracking-widest mb-2 px-1">Campaign</label>
+                                    <label className="block text-xs font-bold text-muted-foreground uppercase tracking-widest mb-2 px-1">Campaign</label>
                                     <div className="relative">
                                         <select
-                                            className="w-full bg-white/5 border border-[#ffffff1a] rounded-xl px-4 py-3 text-white focus:ring-2 focus:ring-blue-500/50 outline-none appearance-none cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed"
+                                            className="w-full bg-surface border border-soft rounded-xl px-4 py-3 text-foreground focus:ring-2 focus:ring-primary/50 outline-none appearance-none cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed"
                                             value={formData.campaignId || ''}
                                             onChange={e => setFormData({ ...formData, campaignId: e.target.value })}
                                             disabled={!canEditContent}
                                         >
-                                            <option value="" className="bg-[#141e30]">No Campaign</option>
+                                            <option value="" className="bg-popover text-foreground">No Campaign</option>
                                             {campaigns.map(c => (
-                                                <option key={c.id} value={c.id} className="bg-[#141e30]">{c.name}</option>
+                                                <option key={c.id} value={c.id} className="bg-popover text-foreground">{c.name}</option>
                                             ))}
                                         </select>
-                                        <div className="absolute right-4 top-1/2 -translate-y-1/2 pointer-events-none text-white/20">
+                                        <div className="absolute right-4 top-1/2 -translate-y-1/2 pointer-events-none text-muted-foreground">
                                             <Flag size={16} />
                                         </div>
                                     </div>
@@ -314,24 +314,24 @@ export const EditTaskModal: React.FC<EditTaskModalProps> = ({ task, isOpen, onCl
 
                                 {canAssign && (
                                     <div className="space-y-3">
-                                        <label className="block text-xs font-bold text-white/40 uppercase tracking-widest px-1">Assign Team Members</label>
-                                        <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 max-h-48 overflow-y-auto p-4 bg-black/20 rounded-xl border border-white/5 custom-scrollbar">
+                                        <label className="block text-xs font-bold text-muted-foreground uppercase tracking-widest px-1">Assign Team Members</label>
+                                        <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 max-h-48 overflow-y-auto p-4 bg-muted/50 rounded-xl border border-soft custom-scrollbar">
                                             {teamMembers.map(m => (
                                                 <label
                                                     key={m.uid}
                                                     className={`
                                                         flex items-center gap-3 p-3 rounded-xl border cursor-pointer transition-all
                                                         ${formData.assignedToIds.includes(m.uid)
-                                                            ? 'bg-blue-600/10 border-blue-500/50 text-white'
-                                                            : 'bg-white/5 border-white/5 text-white/50 hover:bg-white/10'
+                                                            ? 'bg-primary/10 border-primary/20 text-foreground'
+                                                            : 'bg-surface border-transparent text-muted-foreground hover:bg-muted/50'
                                                         }
                                                     `}
                                                 >
                                                     <div className={`
                                                         w-6 h-6 rounded-md flex items-center justify-center border transition-all
-                                                        ${formData.assignedToIds.includes(m.uid) ? 'bg-blue-600 border-blue-400' : 'bg-transparent border-[#ffffff1a]'}
+                                                        ${formData.assignedToIds.includes(m.uid) ? 'bg-primary border-primary' : 'bg-transparent border-soft'}
                                                     `}>
-                                                        {formData.assignedToIds.includes(m.uid) && <Check size={14} className="text-white" />}
+                                                        {formData.assignedToIds.includes(m.uid) && <Check size={14} className="text-primary-foreground" />}
                                                     </div>
                                                     <input
                                                         type="checkbox"
@@ -350,7 +350,7 @@ export const EditTaskModal: React.FC<EditTaskModalProps> = ({ task, isOpen, onCl
                                 )}
 
 
-                                <div className="pt-6 mt-6 border-t border-[#ffffff1a]">
+                                <div className="pt-6 mt-6 border-t border-soft">
                                     <DeliverablesList
                                         taskId={task.id}
                                     />
@@ -359,10 +359,10 @@ export const EditTaskModal: React.FC<EditTaskModalProps> = ({ task, isOpen, onCl
                         </div>
 
                         {/* Footer */}
-                        <div className="p-6 border-t border-[#ffffff1a] bg-white/5 flex gap-3 justify-end items-center">
+                        <div className="p-6 border-t border-soft bg-muted/50 flex gap-3 justify-end items-center">
                             <button
                                 onClick={onClose}
-                                className="px-6 py-2.5 rounded-xl text-white/60 hover:text-white hover:bg-white/5 transition-all text-sm font-medium"
+                                className="px-6 py-2.5 rounded-xl text-muted-foreground hover:text-foreground hover:bg-muted/50 transition-all text-sm font-medium"
                             >
                                 Cancel
                             </button>
@@ -370,7 +370,7 @@ export const EditTaskModal: React.FC<EditTaskModalProps> = ({ task, isOpen, onCl
                                 form="edit-task-form"
                                 type="submit"
                                 disabled={loading}
-                                className="flex items-center gap-2 px-8 py-2.5 bg-blue-600 hover:bg-blue-500 text-white rounded-xl shadow-lg shadow-blue-600/20 transition-all text-sm font-bold disabled:opacity-50"
+                                className="flex items-center gap-2 px-8 py-2.5 bg-primary hover:bg-primary/90 text-primary-foreground rounded-xl shadow-lg shadow-primary/20 transition-all text-sm font-bold disabled:opacity-50"
                             >
                                 {loading ? 'Saving...' : (
                                     <>

@@ -227,7 +227,7 @@ export default function Home() {
             initial={{ opacity: 1 }}
             exit={{ opacity: 0 }}
             transition={{ duration: 0.5 }}
-            className="fixed inset-0 bg-[var(--color-bg-primary)] z-50 flex items-center justify-center"
+            className="fixed inset-0 bg-background z-50 flex items-center justify-center"
           >
             <RippleLogo />
           </motion.div>
@@ -239,7 +239,7 @@ export default function Home() {
         <PageHeader
           title={
             <div className="flex flex-col">
-              <span className="text-5xl font-display font-medium text-white leading-tight tracking-tight">
+              <span className="text-5xl font-display font-medium text-foreground leading-tight tracking-tight">
                 {welcome.greeting}, <br />
                 <span className="text-transparent bg-clip-text bg-gradient-to-r from-blue-400 to-violet-400 font-bold">{displayName}.</span>
               </span>

@@ -3,6 +3,7 @@ import { toast } from 'sonner';
 import { Event } from '@/types/event';
 import { SystemEventService } from '@/services/systemEventService';
 import { UserService } from '@/services/userService';
+import { StructureService } from '@/services/structureService';
 import { useAuth } from '@/contexts/AuthContext';
 import { apiClient } from '@/lib/apiClient';
 import {
@@ -10,7 +11,6 @@ import {
     Briefcase, Camera, Send, AlertCircle, Check, Repeat
 } from 'lucide-react';
 import { format } from 'date-fns';
-import { DEPARTMENTS, INSTITUTIONS } from '@/lib/constants/organizations';
 import { cn } from '@/lib/utils';
 import { Button } from '@/components/ui/button';
 import { Calendar } from '@/components/ui/calendar';
@@ -28,7 +28,7 @@ import {
 } from "@/components/ui/select";
 import { Switch } from "@/components/ui/switch";
 import { TimePicker } from '@/components/ui/time-picker';
-import { Dialog, DialogContent, DialogTitle } from '@/components/ui/dialog';
+import { Dialog, DialogContent, DialogTitle, DialogDescription } from '@/components/ui/dialog';
 
 interface EventEditModalProps {
     event: Event;
@@ -41,6 +41,10 @@ export const EventEditModal: React.FC<EventEditModalProps> = ({ event, isOpen, o
     const isAdmin = user?.role === 'admin';
     const [loading, setLoading] = useState(false);
     const [teamMembers, setTeamMembers] = useState<{ uid: string; name: string }[]>([]);
+
+    // Organization Data
+    const [departmentsList, setDepartmentsList] = useState<{ id: string; name: string }[]>([]);
+    const [institutionsList, setInstitutionsList] = useState<{ id: string; name: string }[]>([]);
 
     // Recurrence State
     const [isRecurring, setIsRecurring] = useState(false);
@@ -70,8 +74,24 @@ export const EventEditModal: React.FC<EventEditModalProps> = ({ event, isOpen, o
         "Drone Photography",
     ];
 
-    // Close on ESC handled by Radix Dialog
+    // Fetch Organizations
+    useEffect(() => {
+        const fetchOrgs = async () => {
+            try {
+                const [deptData, instData] = await Promise.all([
+                    StructureService.getDepartments(),
+                    StructureService.getInstitutions()
+                ]);
+                setDepartmentsList(deptData.departments);
+                setInstitutionsList(instData.institutions);
+            } catch (e) {
+                console.error("Failed to fetch organizations", e);
+            }
+        };
+        fetchOrgs();
+    }, []);
 
+    // Fetch Team Members
     useEffect(() => {
         if (isAdmin) {
             const fetchTeamMembers = async () => {
@@ -91,10 +111,10 @@ export const EventEditModal: React.FC<EventEditModalProps> = ({ event, isOpen, o
         return isNaN(d.getTime()) ? null : d;
     };
 
+    // Initialize Form Data
     useEffect(() => {
         if (event) {
             const eventDate = getDateObject(event.date) || new Date();
-            // For time, fallback to eventDate if startTime is missing (common for ISO string events which contain time)
             const startTimeCandidate = getDateObject(event.startTime) || eventDate;
             const eventTime = startTimeCandidate || new Date();
 
@@ -104,7 +124,7 @@ export const EventEditModal: React.FC<EventEditModalProps> = ({ event, isOpen, o
                 time: format(eventTime, 'HH:mm'),
                 location: event.location || '',
                 description: event.description || '',
-                department: event.department || '',
+                department: event.department || '', // Existing logic uses Name
                 type: event.type || 'other',
                 mediaCoverage: event.mediaCoverage || [],
                 createdById: event.createdBy?.uid || '',
@@ -113,7 +133,6 @@ export const EventEditModal: React.FC<EventEditModalProps> = ({ event, isOpen, o
 
             // Initialize Recurrence logic
             if (event.isSystemEvent) {
-                // We access the system event properties via type casting or loose access since 'Event' type is union
                 const sysEvent = event as any;
                 setIsRecurring(sysEvent.isRecurring || false);
                 if (sysEvent.recurrence) {
@@ -165,41 +184,71 @@ export const EventEditModal: React.FC<EventEditModalProps> = ({ event, isOpen, o
                     title: formData.title,
                     description: formData.description,
                     type: formData.type as any,
-                    date: dateTime.toISOString(), // Send as ISO string
+                    date: dateTime.toISOString(),
                     isRecurring: isRecurring,
                     recurrence: recurrencePayload,
                     isMediaOffDay: formData.isMediaOffDay
                 };
 
-                // Strip suffix if present (recurring events have _YYYY-MM-DD)
                 const realId = event.id.replace(/_\d{4}-\d{2}-\d{2}$/, '');
-
                 await SystemEventService.updateSystemEvent(realId, payload);
             } else if (!event.isSystemEvent) {
                 // Logic for User Events
+                // Resolve Department/Institution ID
+                let deptId = '';
+                let deptType: 'department' | 'institution' = 'department';
+                let targetInstitutionId = event.institutionId;
+                let targetDepartmentId = event.departmentId;
+
+                const foundDept = departmentsList.find(d => d.name === formData.department);
+                if (foundDept) {
+                    deptId = foundDept.id;
+                    deptType = 'department';
+                    targetDepartmentId = foundDept.id;
+                } else {
+                    const foundInst = institutionsList.find(i => i.name === formData.department);
+                    if (foundInst) {
+                        deptId = foundInst.id;
+                        deptType = 'institution';
+                        targetInstitutionId = foundInst.id;
+                        targetDepartmentId = undefined; // Clear departmentId if it's an institution
+                    }
+                }
+
+                const onBehalfOf = {
+                    id: deptId || 'unknown',
+                    name: formData.department,
+                    type: deptType
+                };
+
                 const payload = {
                     title: formData.title,
-                    date: dateTime.toISOString(), // Send as ISO string
-                    startTime: dateTime.toISOString(), // Send as ISO string
+                    date: dateTime.toISOString(),
+                    startTime: dateTime.toISOString(),
                     location: formData.location,
                     description: formData.description,
                     department: formData.department,
                     type: formData.type,
                     createdBy: finalCreatedBy,
                     mediaCoverage: formData.mediaCoverage,
+                    onBehalfOf,
+                    institutionId: targetInstitutionId,
+                    departmentId: targetDepartmentId
                 };
+
+                // Using PUT since we updated the route handler to PUT. 
+                // Wait, if I change to PUT here, I must be sure the route accepts PUT.
+                // I implemented PUT. So this is correct.
                 await apiClient(`/api/events/${event.id}`, {
-                    method: 'PATCH',
+                    method: 'PUT',
                     body: JSON.stringify(payload)
                 });
             }
-
 
             onClose();
             toast.success("Event updated successfully");
         } catch (error: any) {
             console.error("Failed to update event:", error);
-            // Show the actual error message from the server
             toast.error(error.message || "Failed to update event");
         } finally {
             setLoading(false);
@@ -209,15 +258,18 @@ export const EventEditModal: React.FC<EventEditModalProps> = ({ event, isOpen, o
     return (
         <Dialog open={isOpen} onOpenChange={(open) => !open && onClose()}>
             <DialogContent
-                className="max-w-2xl bg-[#141e30] border-[#ffffff1a] p-0 gap-0 overflow-hidden flex flex-col max-h-[90vh]"
+                className="max-w-2xl bg-surface border-none p-0 gap-0 overflow-hidden flex flex-col max-h-[90vh] shadow-2xl rounded-2xl"
             >
                 {/* Header */}
-                <div className="px-6 py-4 border-b border-[#ffffff1a] flex justify-between items-center bg-white/5 shrink-0">
-                    <DialogTitle className="text-xl font-bold text-white flex items-center gap-2">
+                <div className="px-6 py-4 border-b border-soft/50 flex justify-between items-center bg-surface shrink-0">
+                    <DialogTitle className="text-xl font-bold text-foreground flex items-center gap-2">
                         <AlertCircle className="text-blue-400" size={20} />
                         Edit Event
                     </DialogTitle>
-                    <button onClick={onClose} className="p-2 hover:bg-white/10 rounded-full transition-colors text-white/70 hover:text-white">
+                    <DialogDescription className="sr-only">
+                        Form to edit information for the event including title, date, and description.
+                    </DialogDescription>
+                    <button onClick={onClose} className="p-2 hover:bg-glass rounded-full transition-colors text-muted hover:text-foreground">
                         <X size={20} />
                     </button>
                 </div>
@@ -226,11 +278,11 @@ export const EventEditModal: React.FC<EventEditModalProps> = ({ event, isOpen, o
                 <div className="p-6 overflow-y-auto custom-scrollbar flex-1 min-h-0">
                     <form id="edit-event-form" onSubmit={handleSubmit} className="space-y-6">
                         <div>
-                            <label className="block text-xs font-bold text-white/40 uppercase tracking-widest mb-2 px-1">Event Title</label>
+                            <label className="block text-xs font-bold text-muted uppercase tracking-widest mb-2 px-1">Event Title</label>
                             <div className="relative group">
-                                <AlignLeft size={18} className="absolute left-4 top-1/2 -translate-y-1/2 text-white/30 group-focus-within:text-blue-400 transition-colors" />
+                                <AlignLeft size={18} className="absolute left-4 top-1/2 -translate-y-1/2 text-muted group-focus-within:text-primary transition-colors" />
                                 <input
-                                    className="w-full bg-white/5 border border-[#ffffff1a] rounded-xl pl-12 pr-4 py-3 text-white placeholder-white/20 focus:ring-2 focus:ring-blue-500/50 outline-none transition-all"
+                                    className="w-full bg-glass border-none rounded-xl pl-12 pr-4 py-3 text-foreground placeholder-muted focus:ring-2 focus:ring-primary/50 outline-none transition-all shadow-sm"
                                     placeholder="Enter event title"
                                     value={formData.title}
                                     onChange={e => setFormData({ ...formData, title: e.target.value })}
@@ -241,17 +293,17 @@ export const EventEditModal: React.FC<EventEditModalProps> = ({ event, isOpen, o
 
                         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                             <div>
-                                <label className="block text-xs font-bold text-white/40 uppercase tracking-widest mb-2 px-1">Date</label>
+                                <label className="block text-xs font-bold text-muted uppercase tracking-widest mb-2 px-1">Date</label>
                                 <Popover>
                                     <PopoverTrigger asChild>
                                         <Button
                                             variant={"outline"}
                                             className={cn(
-                                                "w-full bg-white/5 border-[#ffffff1a] hover:bg-white/10 text-left font-normal h-[50px] rounded-xl justify-start pl-4",
+                                                "w-full bg-glass border-none hover:bg-surface text-left font-normal h-[50px] rounded-xl justify-start pl-4 shadow-sm",
                                                 !formData.date && "text-muted-foreground"
                                             )}
                                         >
-                                            <CalendarIcon size={18} className="text-white/40 mr-3.5" />
+                                            <CalendarIcon size={18} className="text-muted mr-3.5" />
                                             {formData.date ? format(new Date(formData.date), "MMM dd, yyyy") : <span>Pick a date</span>}
                                         </Button>
                                     </PopoverTrigger>
@@ -267,19 +319,19 @@ export const EventEditModal: React.FC<EventEditModalProps> = ({ event, isOpen, o
                             </div>
 
                             <div>
-                                <label className="block text-xs font-bold text-white/40 uppercase tracking-widest mb-2 px-1">Time</label>
+                                <label className="block text-xs font-bold text-muted uppercase tracking-widest mb-2 px-1">Time</label>
                                 <div className="relative group">
                                     <Popover>
                                         <PopoverTrigger asChild>
                                             <Button
                                                 variant={"outline"}
                                                 className={cn(
-                                                    "w-full bg-white/5 border border-[#ffffff1a] hover:bg-white/10 text-left font-normal h-[50px] rounded-xl justify-start pl-4",
+                                                    "w-full bg-glass border-none hover:bg-surface text-left font-normal h-[50px] rounded-xl justify-start pl-4 shadow-sm",
                                                     !formData.time && "text-muted-foreground"
                                                 )}
                                             >
-                                                <Clock size={18} className="text-white/40 mr-3.5" />
-                                                <span className="text-white">
+                                                <Clock size={18} className="text-muted mr-3.5" />
+                                                <span className="text-foreground">
                                                     {formData.time ? (() => {
                                                         const [h, m] = formData.time.split(':');
                                                         const date = new Date();
@@ -301,11 +353,11 @@ export const EventEditModal: React.FC<EventEditModalProps> = ({ event, isOpen, o
                         </div>
 
                         <div>
-                            <label className="block text-xs font-bold text-white/40 uppercase tracking-widest mb-2 px-1">Location</label>
+                            <label className="block text-xs font-bold text-muted uppercase tracking-widest mb-2 px-1">Location</label>
                             <div className="relative group">
-                                <MapPin size={18} className="absolute left-4 top-1/2 -translate-y-1/2 text-white/30 group-focus-within:text-blue-400 transition-colors" />
+                                <MapPin size={18} className="absolute left-4 top-1/2 -translate-y-1/2 text-muted group-focus-within:text-primary transition-colors" />
                                 <input
-                                    className="w-full bg-white/5 border border-[#ffffff1a] rounded-xl pl-12 pr-4 py-3 text-white placeholder-white/20 focus:ring-2 focus:ring-blue-500/50 outline-none transition-all"
+                                    className="w-full bg-glass border-none rounded-xl pl-12 pr-4 py-3 text-foreground placeholder-muted focus:ring-2 focus:ring-primary/50 outline-none transition-all shadow-sm"
                                     placeholder="Location (Optional)"
                                     value={formData.location}
                                     onChange={e => setFormData({ ...formData, location: e.target.value })}
@@ -314,23 +366,23 @@ export const EventEditModal: React.FC<EventEditModalProps> = ({ event, isOpen, o
                         </div>
 
                         <div>
-                            <label className="block text-xs font-bold text-white/40 uppercase tracking-widest mb-2 px-1">Office / Unit / Institution</label>
+                            <label className="block text-xs font-bold text-muted uppercase tracking-widest mb-2 px-1">Office / Unit / Institution</label>
                             <div className="relative group">
-                                <Briefcase size={18} className="absolute left-4 top-1/2 -translate-y-1/2 text-white/30 group-focus-within:text-blue-400 transition-colors" />
+                                <Briefcase size={18} className="absolute left-4 top-1/2 -translate-y-1/2 text-muted group-focus-within:text-primary transition-colors" />
                                 <select
-                                    className="w-full bg-white/5 border border-[#ffffff1a] rounded-xl pl-12 pr-4 py-3 text-white focus:ring-2 focus:ring-blue-500/50 outline-none appearance-none cursor-pointer"
+                                    className="w-full bg-glass border-none rounded-xl pl-12 pr-4 py-3 text-foreground focus:ring-2 focus:ring-primary/50 outline-none appearance-none cursor-pointer shadow-sm"
                                     value={formData.department}
                                     onChange={e => setFormData({ ...formData, department: e.target.value })}
                                 >
-                                    <option value="" className="bg-[#141e30]">Select Organization</option>
-                                    <optgroup label="OFFICES / UNITS" className="bg-[#141e30] text-white/40 font-bold">
-                                        {DEPARTMENTS.map(dept => (
-                                            <option key={dept} value={dept} className="bg-[#141e30] text-white">{dept}</option>
+                                    <option value="" className="bg-surface text-muted">Select Organization</option>
+                                    <optgroup label="OFFICES / UNITS" className="bg-surface text-muted font-bold">
+                                        {departmentsList.map(dept => (
+                                            <option key={dept.id} value={dept.name} className="bg-surface text-foreground">{dept.name}</option>
                                         ))}
                                     </optgroup>
-                                    <optgroup label="INSTITUTIONS" className="bg-[#141e30] text-white/40 font-bold">
-                                        {INSTITUTIONS.map(inst => (
-                                            <option key={inst} value={inst} className="bg-[#141e30] text-white">{inst}</option>
+                                    <optgroup label="INSTITUTIONS" className="bg-surface text-muted font-bold">
+                                        {institutionsList.map(inst => (
+                                            <option key={inst.id} value={inst.name} className="bg-surface text-foreground">{inst.name}</option>
                                         ))}
                                     </optgroup>
                                 </select>
@@ -338,7 +390,7 @@ export const EventEditModal: React.FC<EventEditModalProps> = ({ event, isOpen, o
                         </div>
 
                         <div>
-                            <label className="block text-xs font-bold text-white/40 uppercase tracking-widest mb-4 px-1">Media Coverage Requested</label>
+                            <label className="block text-xs font-bold text-muted uppercase tracking-widest mb-4 px-1">Media Coverage Requested</label>
                             <div className="grid grid-cols-2 sm:grid-cols-3 gap-3">
                                 {mediaOptions.map((option) => {
                                     const isSelected = formData.mediaCoverage.includes(option);
@@ -348,16 +400,16 @@ export const EventEditModal: React.FC<EventEditModalProps> = ({ event, isOpen, o
                                             className={`
                                             flex flex-col gap-2 p-3 rounded-xl border cursor-pointer transition-all
                                             ${isSelected
-                                                    ? 'bg-blue-600/20 border-blue-500/50 text-white'
-                                                    : 'bg-white/5 border-white/5 text-white/50 hover:bg-white/10'
+                                                    ? 'bg-primary/20 border-primary/50 text-foreground'
+                                                    : 'bg-glass border-none text-muted hover:bg-surface shadow-sm'
                                                 }
                                         `}
                                         >
                                             <div className="flex justify-between items-center">
-                                                <Camera size={14} className={isSelected ? 'text-blue-400' : 'text-white/20'} />
+                                                <Camera size={14} className={isSelected ? 'text-primary' : 'text-muted'} />
                                                 <div className={`
                                                 w-4 h-4 rounded-full border flex items-center justify-center
-                                                ${isSelected ? 'bg-blue-600 border-blue-400' : 'bg-transparent border-[#ffffff1a]'}
+                                                ${isSelected ? 'bg-primary border-primary' : 'bg-transparent border-soft'}
                                             `}>
                                                     {isSelected && <Check size={10} className="text-white" />}
                                                 </div>
@@ -376,9 +428,9 @@ export const EventEditModal: React.FC<EventEditModalProps> = ({ event, isOpen, o
                         </div>
 
                         <div>
-                            <label className="block text-xs font-bold text-white/40 uppercase tracking-widest mb-2 px-1">Description</label>
+                            <label className="block text-xs font-bold text-muted uppercase tracking-widest mb-2 px-1">Description</label>
                             <textarea
-                                className="w-full bg-white/5 border border-[#ffffff1a] rounded-xl px-4 py-3 text-white placeholder-white/20 focus:ring-2 focus:ring-blue-500/50 outline-none transition-all min-h-[120px]"
+                                className="w-full bg-glass border-none rounded-xl px-4 py-3 text-foreground placeholder-muted focus:ring-2 focus:ring-primary/50 outline-none transition-all min-h-[120px] shadow-sm"
                                 placeholder="Add description or notes..."
                                 rows={4}
                                 value={formData.description}
@@ -388,11 +440,11 @@ export const EventEditModal: React.FC<EventEditModalProps> = ({ event, isOpen, o
 
                         {event.isSystemEvent && isAdmin && (
                             <div className="space-y-4">
-                                <div className="bg-white/5 border border-[#ffffff1a] rounded-xl p-4">
+                                <div className="bg-glass rounded-xl p-4 shadow-sm">
                                     <div className="flex items-center justify-between mb-4">
                                         <div className="flex-1">
-                                            <label className="text-sm font-bold text-white block">Recurring Event</label>
-                                            <span className="text-xs text-white/50 block mt-1">Enable repetition for this event</span>
+                                            <label className="text-sm font-bold text-foreground block">Recurring Event</label>
+                                            <span className="text-xs text-muted block mt-1">Enable repetition for this event</span>
                                         </div>
                                         <Switch
                                             checked={isRecurring}
@@ -401,16 +453,16 @@ export const EventEditModal: React.FC<EventEditModalProps> = ({ event, isOpen, o
                                     </div>
 
                                     {isRecurring && (
-                                        <div className="pt-4 border-t border-[#ffffff1a] grid grid-cols-1 md:grid-cols-2 gap-4">
+                                        <div className="pt-4 border-t border-soft/50 grid grid-cols-1 md:grid-cols-2 gap-4">
                                             <div className="space-y-2">
-                                                <label className="text-xs font-bold text-white/50 uppercase">Frequency</label>
+                                                <label className="text-xs font-bold text-muted uppercase">Frequency</label>
                                                 <div className="relative">
-                                                    <Repeat size={16} className="absolute left-3 top-1/2 -translate-y-1/2 text-white/40" />
+                                                    <Repeat size={16} className="absolute left-3 top-1/2 -translate-y-1/2 text-muted" />
                                                     <Select value={recurrenceFreq} onValueChange={(val: any) => setRecurrenceFreq(val)}>
-                                                        <SelectTrigger className="w-full bg-[#0a0c10] border-[#ffffff1a] text-white pl-9 h-11">
+                                                        <SelectTrigger className="w-full bg-surface border-none text-foreground pl-9 h-11">
                                                             <SelectValue />
                                                         </SelectTrigger>
-                                                        <SelectContent className="bg-[#141e30] border-[#ffffff1a] text-white">
+                                                        <SelectContent className="bg-surface border-soft text-foreground">
                                                             <SelectItem value="weekly">Weekly</SelectItem>
                                                             <SelectItem value="monthly">Monthly</SelectItem>
                                                             <SelectItem value="yearly">Yearly</SelectItem>
@@ -419,21 +471,21 @@ export const EventEditModal: React.FC<EventEditModalProps> = ({ event, isOpen, o
                                                 </div>
                                             </div>
                                             <div className="space-y-2">
-                                                <label className="text-xs font-bold text-white/50 uppercase">Repeat Until</label>
+                                                <label className="text-xs font-bold text-muted uppercase">Repeat Until</label>
                                                 <Popover>
                                                     <PopoverTrigger asChild>
                                                         <Button
                                                             variant={"outline"}
                                                             className={cn(
-                                                                "w-full bg-[#0a0c10] border-[#ffffff1a] text-white justify-start text-left font-normal h-11",
-                                                                !recurrenceEndDate && "text-white/30"
+                                                                "w-full bg-surface border-none text-foreground justify-start text-left font-normal h-11",
+                                                                !recurrenceEndDate && "text-muted"
                                                             )}
                                                         >
                                                             <CalendarIcon className="mr-2 h-4 w-4 opacity-50" />
                                                             {recurrenceEndDate ? format(new Date(recurrenceEndDate), "PPP") : <span>No End Date</span>}
                                                         </Button>
                                                     </PopoverTrigger>
-                                                    <PopoverContent className="w-auto p-0 bg-[#141e30] border-[#ffffff1a] text-white" align="start">
+                                                    <PopoverContent className="w-auto p-0 bg-surface border-soft text-foreground" align="start">
                                                         <Calendar
                                                             mode="single"
                                                             selected={recurrenceEndDate ? new Date(recurrenceEndDate) : undefined}
@@ -448,11 +500,11 @@ export const EventEditModal: React.FC<EventEditModalProps> = ({ event, isOpen, o
                                     )}
                                 </div>
 
-                                <div className="bg-red-500/10 border border-red-500/20 rounded-xl p-4">
+                                <div className="bg-red-500/10 border-none rounded-xl p-4">
                                     <label className="flex items-center gap-3 cursor-pointer">
                                         <div className={`
                                         w-5 h-5 rounded border flex items-center justify-center transition-colors
-                                        ${formData.isMediaOffDay ? 'bg-red-500 border-red-500' : 'border-white/30 bg-transparent'}
+                                        ${formData.isMediaOffDay ? 'bg-red-500 border-red-500' : 'border-soft bg-transparent'}
                                     `}>
                                             {formData.isMediaOffDay && <Check size={14} className="text-white" />}
                                         </div>
@@ -472,7 +524,7 @@ export const EventEditModal: React.FC<EventEditModalProps> = ({ event, isOpen, o
                         )}
 
                         {new Date(formData.date).getDay() === 0 && (
-                            <div className="flex items-center gap-2 p-3 rounded-lg bg-orange-500/10 border border-orange-500/20 text-orange-200 text-xs">
+                            <div className="flex items-center gap-2 p-3 rounded-lg bg-orange-500/10 text-orange-200 text-xs">
                                 <AlertCircle size={14} />
                                 <span>Warning: The selected date is a Sunday (Media Off Day).</span>
                             </div>
@@ -481,10 +533,10 @@ export const EventEditModal: React.FC<EventEditModalProps> = ({ event, isOpen, o
                 </div>
 
                 {/* Footer */}
-                <div className="p-6 border-t border-[#ffffff1a] bg-white/5 flex gap-3 justify-end items-center shrink-0">
+                <div className="p-6 border-t border-soft/50 bg-surface flex gap-3 justify-end items-center shrink-0">
                     <button
                         onClick={onClose}
-                        className="px-6 py-2.5 rounded-xl text-white/60 hover:text-white hover:bg-white/5 transition-all text-sm font-medium"
+                        className="px-6 py-2.5 rounded-xl text-muted hover:text-foreground hover:bg-glass transition-all text-sm font-medium"
                     >
                         Cancel
                     </button>
@@ -495,7 +547,7 @@ export const EventEditModal: React.FC<EventEditModalProps> = ({ event, isOpen, o
                         className="flex items-center gap-2 px-8 py-2.5 bg-blue-600 hover:bg-blue-500 text-white rounded-xl shadow-lg shadow-blue-600/20 transition-all text-sm font-bold disabled:opacity-50"
                     >
                         {loading ? (
-                            <div className="animate-spin rounded-full h-4 w-4 border-2 border-white/30 border-t-white" />
+                            <div className="animate-spin rounded-full h-4 w-4 border-2 border-primary/30 border-t-primary" />
                         ) : (
                             <>
                                 <Send size={16} />

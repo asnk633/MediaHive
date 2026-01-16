@@ -126,8 +126,8 @@ export function NotificationForm({ initialData, onSubmitSuccess, onCancel }: Not
     });
   };
 
-  const inputClasses = "w-full bg-black/20 backdrop-blur-sm p-3 rounded-xl border border-white/5 shadow-inner focus:bg-black/40 focus:ring-2 focus:ring-blue-500/30 focus:border-blue-500/50 outline-none transition-all placeholder:text-gray-700 font-medium text-white";
-  const labelClasses = "text-[10px] font-bold text-blue-300/70 uppercase tracking-widest ml-1";
+  const inputClasses = "w-full bg-background backdrop-blur-sm p-3 rounded-xl border border-soft shadow-inner focus:bg-surface focus:ring-2 focus:ring-primary/30 focus:border-primary/50 outline-none transition-all placeholder:text-muted font-medium text-foreground";
+  const labelClasses = "text-[10px] font-bold text-muted uppercase tracking-widest ml-1";
 
   return (
     <>
@@ -135,7 +135,7 @@ export function NotificationForm({ initialData, onSubmitSuccess, onCancel }: Not
         <div className="space-y-2">
           <label htmlFor="title" className={labelClasses}>Title</label>
           <div className="relative">
-            <div className="absolute inset-y-0 left-3 flex items-center pointer-events-none text-gray-500">
+            <div className="absolute inset-y-0 left-3 flex items-center pointer-events-none text-muted">
               <Megaphone size={16} />
             </div>
             <Controller
@@ -151,7 +151,7 @@ export function NotificationForm({ initialData, onSubmitSuccess, onCancel }: Not
               )}
             />
           </div>
-          {errors.title && <p className="text-xs text-red-400 ml-1">{errors.title.message}</p>}
+          {errors.title && <p className="text-xs text-red-500 ml-1">{errors.title.message}</p>}
         </div>
 
         <div className="space-y-2">
@@ -169,7 +169,7 @@ export function NotificationForm({ initialData, onSubmitSuccess, onCancel }: Not
               />
             )}
           />
-          {errors.body && <p className="text-xs text-red-400 ml-1">{errors.body.message}</p>}
+          {errors.body && <p className="text-xs text-red-500 ml-1">{errors.body.message}</p>}
         </div>
 
         <div className="space-y-2">
@@ -183,8 +183,8 @@ export function NotificationForm({ initialData, onSubmitSuccess, onCancel }: Not
                 className={cn(
                   "px-4 py-2 rounded-xl text-xs font-bold uppercase tracking-wider transition-all duration-300 border",
                   selectedAudiences.includes(audience)
-                    ? "bg-blue-500/20 border-blue-500/50 text-blue-100 shadow-[0_0_15px_rgba(59,130,246,0.3)]"
-                    : "bg-white/5 border-white/5 text-gray-500 hover:bg-white/10 hover:text-gray-300"
+                    ? "bg-primary/20 border-primary/50 text-primary shadow-sm"
+                    : "bg-surface border-soft text-muted hover:bg-muted/10 hover:text-foreground"
                 )}
               >
                 {audience}
@@ -201,7 +201,7 @@ export function NotificationForm({ initialData, onSubmitSuccess, onCancel }: Not
             control={control}
             render={({ field }) => (
               <div className="relative">
-                <div className="absolute inset-y-0 left-3 flex items-center pointer-events-none text-gray-500">
+                <div className="absolute inset-y-0 left-3 flex items-center pointer-events-none text-muted">
                   <Calendar size={16} />
                 </div>
                 <input
@@ -209,7 +209,7 @@ export function NotificationForm({ initialData, onSubmitSuccess, onCancel }: Not
                   type="datetime-local"
                   value={field.value ? new Date(field.value).toISOString().slice(0, 16) : ''}
                   onChange={(e) => field.onChange(e.target.value ? new Date(e.target.value) : null)}
-                  className={`${inputClasses} pl-10 [color-scheme:dark]`}
+                  className={`${inputClasses} pl-10`}
                 />
               </div>
             )}
@@ -230,24 +230,24 @@ export function NotificationForm({ initialData, onSubmitSuccess, onCancel }: Not
             <button
               type="button"
               onClick={() => fileInputRef.current?.click()}
-              className="flex items-center justify-center gap-2 w-full py-3 border border-dashed border-[#ffffff1a] rounded-xl bg-white/5 hover:bg-white/10 transition-colors text-gray-400 hover:text-gray-200 text-sm font-medium"
+              className="flex items-center justify-center gap-2 w-full py-3 border border-dashed border-soft rounded-xl bg-surface hover:bg-muted/5 transition-colors text-muted hover:text-foreground text-sm font-medium"
             >
               <Paperclip className="w-4 h-4" />
               {mediaFile ? 'Change File' : 'Choose Image or PDF'}
             </button>
 
             {mediaFile && (
-              <div className="flex items-center justify-between bg-blue-500/10 border border-blue-500/20 rounded-xl px-4 py-3 text-blue-100">
+              <div className="flex items-center justify-between bg-primary/10 border border-primary/20 rounded-xl px-4 py-3 text-primary">
                 <div className="flex items-center gap-3">
-                  <div className="w-8 h-8 rounded-lg bg-blue-500/20 flex items-center justify-center">
-                    <Paperclip className="w-4 h-4 text-blue-300" />
+                  <div className="w-8 h-8 rounded-lg bg-primary/20 flex items-center justify-center">
+                    <Paperclip className="w-4 h-4 text-primary" />
                   </div>
                   <span className="text-sm font-medium truncate max-w-[200px]">{mediaFile.name}</span>
                 </div>
                 <button
                   type="button"
                   onClick={removeMedia}
-                  className="text-blue-300 hover:text-white transition-colors"
+                  className="text-primary hover:text-primary/70 transition-colors"
                 >
                   <X className="w-4 h-4" />
                 </button>
@@ -256,11 +256,11 @@ export function NotificationForm({ initialData, onSubmitSuccess, onCancel }: Not
           </div>
         </div>
 
-        <div className="flex gap-3 pt-6 mt-6 border-t border-white/5">
+        <div className="flex gap-3 pt-6 mt-6 border-t border-soft">
           <button
             type="button"
             onClick={handlePreview}
-            className="flex-1 py-4 text-gray-400 font-bold bg-white/5 hover:bg-white/10 hover:text-white rounded-xl transition-all border border-white/5 flex items-center justify-center gap-2"
+            className="flex-1 py-4 text-muted font-bold bg-surface hover:bg-muted/10 hover:text-foreground rounded-xl transition-all border border-soft flex items-center justify-center gap-2"
           >
             <Eye className="w-4 h-4" />
             Preview

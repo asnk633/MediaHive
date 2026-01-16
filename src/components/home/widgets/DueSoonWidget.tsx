@@ -34,7 +34,7 @@ export const DueSoonWidget = ({ tasks, userRole }: DueSoonWidgetProps) => {
     if (dueSoonTasks.length === 0) return null;
 
     return (
-        <div className="bg-white/5 backdrop-blur-md border border-[#ffffff1a] rounded-2xl p-5 shadow-xl animate-in fade-in slide-in-from-bottom-2">
+        <div className="bg-surface backdrop-blur-md rounded-2xl p-5 shadow-xl animate-in fade-in slide-in-from-bottom-2">
             <div className="flex items-center justify-between mb-4">
                 <h3 className="text-lg font-bold text-white flex items-center gap-2">
                     <Clock className="w-5 h-5 text-amber-400" />
@@ -50,7 +50,7 @@ export const DueSoonWidget = ({ tasks, userRole }: DueSoonWidgetProps) => {
                     <div
                         key={task.id}
                         onClick={() => router.push(`/tasks/view?id=${task.id}`)}
-                        className="group bg-white/5 hover:bg-white/10 border border-white/5 hover:border-amber-500/30 rounded-xl p-3 cursor-pointer transition-all duration-300"
+                        className="group bg-glass hover:bg-surface shadow-sm hover:shadow-md rounded-xl p-3 cursor-pointer transition-all duration-300"
                     >
                         <div className="flex items-start justify-between gap-3">
                             <div className="flex-1 min-w-0">

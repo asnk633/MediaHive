@@ -115,8 +115,8 @@ function EventsContent() {
                     <div className="flex items-center gap-4 self-start sm:self-auto">
                         {/* Year Toggle */}
                         {view === 'list' && (
-                            <div className="flex items-center gap-2 px-3 py-2 bg-white/5 border border-[#ffffff1a] rounded-xl">
-                                <Label htmlFor="year-toggle" className="text-sm font-medium text-white/70 whitespace-nowrap">This Year Only</Label>
+                            <div className="flex items-center gap-2 px-3 py-2 bg-surface rounded-xl shadow-sm">
+                                <Label htmlFor="year-toggle" className="text-sm font-medium text-muted whitespace-nowrap">This Year Only</Label>
                                 <Switch
                                     id="year-toggle"
                                     checked={showCurrentYearOnly}
@@ -126,16 +126,16 @@ function EventsContent() {
                         )}
 
                         {/* View Switcher */}
-                        <div className="flex items-center p-1 bg-[var(--color-bg-subtle)] rounded-xl border border-[var(--color-border)]">
+                        <div className="flex items-center p-1 bg-surface rounded-xl shadow-sm">
                             <button
                                 onClick={() => setView('calendar')}
-                                className={`p-2 rounded-lg transition-all ${view === 'calendar' ? 'bg-white dark:bg-[#10111a] text-blue-600 shadow-sm' : 'text-[var(--color-text-secondary)] hover:text-[var(--color-text-primary)]'}`}
+                                className={`p-2 rounded-lg transition-all ${view === 'calendar' ? 'bg-primary/10 text-primary shadow-sm' : 'text-muted hover:text-foreground'}`}
                             >
                                 <LayoutGrid size={20} />
                             </button>
                             <button
                                 onClick={() => setView('list')}
-                                className={`p-2 rounded-lg transition-all ${view === 'list' ? 'bg-white dark:bg-[#10111a] text-blue-600 shadow-sm' : 'text-[var(--color-text-secondary)] hover:text-[var(--color-text-primary)]'}`}
+                                className={`p-2 rounded-lg transition-all ${view === 'list' ? 'bg-primary/10 text-primary shadow-sm' : 'text-muted hover:text-foreground'}`}
                             >
                                 <List size={20} />
                             </button>

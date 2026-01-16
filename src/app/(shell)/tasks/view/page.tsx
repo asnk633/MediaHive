@@ -495,12 +495,12 @@ function TaskDetailContent() {
                 {canManage && (
                     <DropdownMenu>
                         <DropdownMenuTrigger asChild>
-                            <Button variant="ghost" size="icon" className="hover:bg-white/10">
+                            <Button variant="ghost" size="icon" className="hover:bg-glass">
                                 <MoreHorizontal className="h-4 w-4" />
                             </Button>
                         </DropdownMenuTrigger>
-                        <DropdownMenuContent align="end" className="bg-[#0f172a] border-[#ffffff1a] text-white">
-                            <DropdownMenuItem onClick={() => setEditDialogOpen(true)} className="hover:bg-white/10 cursor-pointer focus:bg-white/10 focus:text-white">
+                        <DropdownMenuContent align="end" className="bg-card border-soft text-white">
+                            <DropdownMenuItem onClick={() => setEditDialogOpen(true)} className="hover:bg-glass cursor-pointer focus:bg-glass focus:text-white">
                                 <Edit className="mr-2 h-4 w-4" />
                                 Edit Task Details
                             </DropdownMenuItem>
@@ -533,7 +533,7 @@ function TaskDetailContent() {
                                 <div>
                                     <h1 className="text-3xl font-bold tracking-tight mb-3 text-white drop-shadow-md">{task.title}</h1>
                                     <div className="flex flex-wrap gap-3 text-sm">
-                                        <Badge variant="outline" className={`capitalize px-3 py-1 border-white/20 bg-white/10 backdrop-blur-md text-white shadow-sm`}>
+                                        <Badge variant="outline" className={`capitalize px-3 py-1 border-soft bg-glass backdrop-blur-md text-white shadow-sm`}>
                                             {task.status === 'in_progress' ? 'On It' : task.status.replace('_', ' ')}
                                         </Badge>
 
@@ -546,7 +546,7 @@ function TaskDetailContent() {
                                             {task.priority}
                                         </div>
 
-                                        <div className="flex items-center text-blue-200/80 bg-white/5 px-3 py-1 rounded-full text-xs border border-[#ffffff1a]" title="Due Date">
+                                        <div className="flex items-center text-blue-200/80 bg-glass px-3 py-1 rounded-full text-xs border border-soft" title="Due Date">
                                             <Calendar className="mr-1.5 h-3 w-3" />
                                             {formatDate(task.dueDate)}
                                         </div>
@@ -558,7 +558,7 @@ function TaskDetailContent() {
                         <CardContent className="space-y-8">
                             <div className="prose prose-invert max-w-none">
                                 <h3 className="text-xs font-bold uppercase tracking-widest text-blue-300/70 mb-3 ml-1">Description</h3>
-                                <div className="bg-white/5 backdrop-blur-sm p-6 rounded-2xl border border-[#ffffff1a] text-blue-50 text-base leading-relaxed shadow-inner">
+                                <div className="bg-glass backdrop-blur-sm p-6 rounded-xl border border-soft text-blue-50 text-base leading-relaxed shadow-inner">
                                     {task.description || <span className="italic text-white/40">No description provided.</span>}
                                 </div>
                             </div>
@@ -583,7 +583,7 @@ function TaskDetailContent() {
                             )}
 
                             <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                                <div className="p-4 rounded-2xl bg-white/5 border border-[#ffffff1a] backdrop-blur-sm hover:bg-white/10 transition-colors group/box">
+                                <div className="p-4 rounded-xl bg-glass border border-soft backdrop-blur-sm hover:bg-glass/80 transition-colors group/box">
                                     <h3 className="text-[10px] font-bold uppercase text-blue-300/60 mb-2 tracking-wider">Created By</h3>
                                     <div className="flex items-center gap-3">
                                         <SafeAvatar
@@ -596,7 +596,7 @@ function TaskDetailContent() {
                                         <span className="font-medium text-white group-hover/box:text-blue-200 transition-colors">{creatorName || 'Loading...'}</span>
                                     </div>
                                 </div>
-                                <div className="p-4 rounded-2xl bg-white/5 border border-[#ffffff1a] backdrop-blur-sm hover:bg-white/10 transition-colors group/box">
+                                <div className="p-4 rounded-xl bg-glass border border-soft backdrop-blur-sm hover:bg-glass/80 transition-colors group/box">
                                     <h3 className="text-[10px] font-bold uppercase text-blue-300/60 mb-2 tracking-wider">Assigned To</h3>
                                     <div className="flex -space-x-3 overflow-hidden py-1 items-center pl-1">
                                         {task.assignedTo && task.assignedTo.length > 0 ? (
@@ -621,7 +621,7 @@ function TaskDetailContent() {
                                                             name={name}
                                                             alt={name || 'Assignee'}
                                                             size="md"
-                                                            className="w-10 h-10 ring-2 ring-[#1e2a3b] shadow-lg transform hover:-translate-y-1 transition-transform relative z-0 hover:z-10 bg-gradient-to-br from-indigo-500 to-purple-600"
+                                                            className="w-10 h-10 ring-2 ring-background shadow-lg transform hover:-translate-y-1 transition-transform relative z-0 hover:z-10 bg-gradient-to-br from-indigo-500 to-purple-600"
                                                         />
                                                         {/* Debug Info */}
                                                         {/* <div className="text-[10px] text-white/50">{JSON.stringify(assignee)}</div> */}
@@ -633,7 +633,7 @@ function TaskDetailContent() {
                                         )}
                                     </div>
                                 </div>
-                                <div className="p-4 rounded-2xl bg-white/5 border border-[#ffffff1a] backdrop-blur-sm hover:bg-white/10 transition-colors group/box">                                    <h3 className="text-[10px] font-bold uppercase text-blue-300/60 mb-2 tracking-wider">Due Date</h3>
+                                <div className="p-4 rounded-xl bg-glass border border-soft backdrop-blur-sm hover:bg-glass/80 transition-colors group/box">                                    <h3 className="text-[10px] font-bold uppercase text-blue-300/60 mb-2 tracking-wider">Due Date</h3>
                                     <div className="flex items-center gap-2 text-sm font-medium text-white">
                                         <div className="p-1.5 rounded-md bg-blue-500/20 text-blue-300 group-hover/box:text-blue-200">
                                             <Clock className="h-4 w-4" />
@@ -668,7 +668,7 @@ function TaskDetailContent() {
                         <CardHeader>
                             <CardTitle className="flex items-center gap-2 text-white text-xl">
                                 <span>Activity & Comments</span>
-                                <span className="bg-white/10 text-blue-200 text-xs px-2 py-0.5 rounded-full border border-[#ffffff1a]">{task.activity?.length || 0}</span>
+                                <span className="bg-glass text-blue-200 text-xs px-2 py-0.5 rounded-full border border-soft">{task.activity?.length || 0}</span>
                             </CardTitle>
                         </CardHeader>
                         <CardContent>
@@ -677,7 +677,7 @@ function TaskDetailContent() {
                                     placeholder="Write a comment..."
                                     value={comment}
                                     onChange={(e) => setComment(e.target.value)}
-                                    className="min-h-[100px] bg-white/5 border-[#ffffff1a] focus:border-blue-400/50 focus:bg-white/10 resize-none pr-12 pb-10 placeholder:text-white/20 text-white rounded-xl transition-all"
+                                    className="min-h-[100px] bg-glass border-soft focus:border-strong focus:bg-glass/80 resize-none pr-12 pb-10 placeholder:text-muted text-white rounded-xl transition-all"
                                 />
                                 <div className="absolute bottom-3 right-3 opacity-100 transition-opacity">
                                     <Button
@@ -694,7 +694,7 @@ function TaskDetailContent() {
                             <div className="space-y-6 max-h-[500px] overflow-y-auto pr-2 custom-scrollbar">
                                 {(task.activity || []).length === 0 ? (
                                     <div className="text-center py-10 opacity-50">
-                                        <div className="inline-flex h-12 w-12 items-center justify-center rounded-full bg-white/5 mb-3 border border-[#ffffff1a]">
+                                        <div className="inline-flex h-12 w-12 items-center justify-center rounded-full bg-glass mb-3 border border-soft">
                                             <MoreHorizontal className="h-6 w-6 text-white" />
                                         </div>
                                         <p className="text-white text-sm">No recent activity</p>
@@ -724,7 +724,7 @@ function TaskDetailContent() {
                                                         </Badge>
                                                     </div>
                                                 )}
-                                                <div className="text-sm text-white/90 bg-white/5 p-3.5 rounded-2xl rounded-tl-none border border-white/5 group-hover/activity:bg-white/10 transition-colors">
+                                                <div className="text-sm text-white/90 bg-glass p-3.5 rounded-2xl rounded-tl-none border border-soft group-hover/activity:bg-glass transition-colors">
                                                     {activity.content}
                                                 </div>
                                             </div>
@@ -744,7 +744,7 @@ function TaskDetailContent() {
                             variant="secondary"
                             size="sm"
                             onClick={() => setUploadModalOpen(true)}
-                            className="bg-white/10 hover:bg-white/20 text-white border border-[#ffffff1a]"
+                            className="bg-glass hover:bg-glass text-white border border-soft"
                         >
                             <UploadCloud className="mr-2 h-4 w-4" />
                             Upload Media
@@ -825,17 +825,17 @@ function TaskDetailContent() {
                                 ) : (
                                     <>
                                         {(task.status || 'todo') !== 'todo' && task.status !== 'pending' && (
-                                            <Button variant="outline" className="w-full justify-start border-[#ffffff1a] bg-white/5 hover:bg-white/10 text-white h-11" onClick={() => handleStatusChange('todo')} disabled={updating}>
+                                            <Button variant="outline" className="w-full justify-start border-soft bg-glass hover:bg-glass text-white h-11" onClick={() => handleStatusChange('todo')} disabled={updating}>
                                                 Mark as Todo
                                             </Button>
                                         )}
                                         {(task.status || 'todo') !== 'in_progress' && task.status !== 'pending' && (
-                                            <Button variant="outline" className="w-full justify-start border-[#ffffff1a] bg-white/5 hover:bg-blue-500/20 hover:border-blue-500/50 hover:text-blue-200 text-white h-11" onClick={() => handleStatusChange('in_progress')} disabled={updating}>
+                                            <Button variant="outline" className="w-full justify-start border-soft bg-glass hover:bg-blue-500/20 hover:border-strong hover:text-blue-200 text-white h-11" onClick={() => handleStatusChange('in_progress')} disabled={updating}>
                                                 Mark In Progress
                                             </Button>
                                         )}
                                         {(task.status || 'todo') !== 'done' && (
-                                            <Button variant="outline" className="w-full justify-start border-[#ffffff1a] bg-white/5 hover:bg-green-500/20 hover:border-green-500/50 hover:text-green-200 text-white h-11" onClick={() => handleStatusChange('done')} disabled={updating}>
+                                            <Button variant="outline" className="w-full justify-start border-soft bg-glass hover:bg-green-500/20 hover:border-green-500/50 hover:text-green-200 text-white h-11" onClick={() => handleStatusChange('done')} disabled={updating}>
                                                 Mark as Done
                                             </Button>
                                         )}
@@ -895,7 +895,7 @@ function TaskDetailContent() {
                                         const avatarUrl = (typeof assignee === 'object' ? assignee.avatarUrl : undefined) || teamMember?.avatarUrl;
 
                                         return (
-                                            <div key={uid + index} className="flex items-center gap-3 p-3 bg-white/5 rounded-xl border border-white/5 hover:bg-white/10 transition-all group/member">
+                                            <div key={uid + index} className="flex items-center gap-3 p-3 bg-glass rounded-xl border border-soft hover:bg-glass transition-all group/member">
                                                 <SafeAvatar
                                                     src={avatarUrl}
                                                     name={name}
@@ -908,7 +908,7 @@ function TaskDetailContent() {
                                         )
                                     })
                                 ) : (
-                                    <div className="text-center p-6 border border-dashed border-[#ffffff1a] rounded-xl bg-white/[0.02] text-white/40 text-sm">
+                                    <div className="text-center p-6 border border-dashed border-soft rounded-xl bg-glass text-white/40 text-sm">
                                         No team members assigned
                                     </div>
                                 )}
@@ -919,12 +919,12 @@ function TaskDetailContent() {
                                     <Label className="text-[10px] font-bold text-blue-300/60 mb-3 block uppercase tracking-wider">Add Member</Label>
                                     <div className="flex gap-2">
                                         <Select value={selectedAssignee} onValueChange={setSelectedAssignee}>
-                                            <SelectTrigger className="flex-1 bg-white/5 border-[#ffffff1a] text-white focus:ring-blue-500/50 h-10">
+                                            <SelectTrigger className="flex-1 bg-glass border-soft text-white focus:ring-primary/50 h-10">
                                                 <SelectValue placeholder="Select member" />
                                             </SelectTrigger>
                                             <SelectContent className="bg-[#1e2a3b] border-[#ffffff1a] text-white">
                                                 {teamMembers.map((member) => (
-                                                    <SelectItem key={member.uid} value={member.uid} className="focus:bg-white/10 focus:text-white hover:bg-white/10 cursor-pointer">
+                                                    <SelectItem key={member.uid} value={member.uid} className="focus:bg-glass focus:text-white hover:bg-glass cursor-pointer">
                                                         {member.displayName}
                                                     </SelectItem>
                                                 ))}

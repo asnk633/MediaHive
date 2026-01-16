@@ -42,7 +42,7 @@ export function OverdueAlertsWidget() {
         <motion.div
             initial={{ opacity: 0, y: -20 }}
             animate={{ opacity: 1, y: 0 }}
-            className="mb-8 bg-red-500/10 border border-red-500/20 rounded-2xl p-6 relative overflow-hidden"
+            className="mb-8 bg-red-500/10 rounded-2xl p-6 relative overflow-hidden shadow-sm"
         >
             <div className="absolute top-0 right-0 w-32 h-32 bg-red-500/20 blur-[50px] rounded-full pointer-events-none" />
 
@@ -57,7 +57,7 @@ export function OverdueAlertsWidget() {
                 {overdueItems.map(req => {
                     const daysOverdue = differenceInDays(new Date(), new Date(req.endDate as any));
                     return (
-                        <div key={req.id} className="bg-slate-900/50 border border-red-500/30 rounded-xl p-4 hover:border-red-500/50 transition-colors">
+                        <div key={req.id} className="bg-surface rounded-xl p-4 transition-colors shadow-sm hover:shadow-md">
                             <div className="flex justify-between items-start mb-2">
                                 <h3 className="font-semibold text-white">{req.assignedItemName || req.itemCategory}</h3>
                                 <span className="text-xs font-bold text-red-400 bg-red-500/10 px-2 py-1 rounded-full">

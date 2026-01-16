@@ -57,23 +57,23 @@ export function AuditLogTable() {
     }
 
     return (
-        <div className="bg-[#0f172a] border border-[#ffffff1a] rounded-2xl shadow-2xl overflow-hidden">
+        <div className="bg-surface border border-soft rounded-2xl shadow-sm overflow-hidden">
             <div className="p-6 border-b border-white/5 flex items-center justify-between">
                 <div className="flex items-center gap-3">
-                    <Shield className="text-emerald-400" size={24} />
+                    <Shield className="text-emerald-500" size={24} />
                     <div>
-                        <h2 className="text-xl font-bold text-white tracking-wide">Compliance Audit Log</h2>
-                        <p className="text-xs text-white/40 mt-0.5">Immutable record of administrative actions</p>
+                        <h2 className="text-xl font-bold text-foreground tracking-wide">Compliance Audit Log</h2>
+                        <p className="text-xs text-muted mt-0.5">Immutable record of administrative actions</p>
                     </div>
                 </div>
-                <div className="text-xs font-mono text-emerald-400 bg-emerald-500/10 px-3 py-1 rounded border border-emerald-500/20">
+                <div className="text-xs font-mono text-emerald-600 bg-emerald-500/10 px-3 py-1 rounded border border-emerald-500/20">
                     SECURE_LOGGING_ACTIVE
                 </div>
             </div>
 
             <div className="overflow-x-auto">
                 <table className="w-full text-left">
-                    <thead className="bg-black/20 text-xs uppercase text-white/40 font-semibold tracking-wider">
+                    <thead className="bg-muted/5 text-xs uppercase text-muted font-bold tracking-wider">
                         <tr>
                             <th className="px-6 py-4">Timestamp</th>
                             <th className="px-6 py-4">Performed By</th>
@@ -82,7 +82,7 @@ export function AuditLogTable() {
                             <th className="px-6 py-4 text-right">Reference ID</th>
                         </tr>
                     </thead>
-                    <tbody className="divide-y divide-white/5">
+                    <tbody className="divide-y divide-soft">
                         {loading ? (
                             Array.from({ length: 5 }).map((_, i) => (
                                 <tr key={i} className="animate-pulse">
@@ -93,7 +93,7 @@ export function AuditLogTable() {
                             ))
                         ) : logs.length === 0 ? (
                             <tr>
-                                <td colSpan={5} className="px-6 py-12 text-center text-white/30 italic">
+                                <td colSpan={5} className="px-6 py-12 text-center text-muted italic">
                                     No audit records found.
                                 </td>
                             </tr>
@@ -131,15 +131,15 @@ export function AuditLogTable() {
                                     if (type === 'event') {
                                         if (action === 'create') {
                                             return (
-                                                <span className="text-white/80">
-                                                    Created event <span className="text-white font-medium">"{detailsObj.title || 'Untitled'}"</span>
+                                                <span className="text-muted/80">
+                                                    Created event <span className="text-foreground font-medium">"{detailsObj.title || 'Untitled'}"</span>
                                                 </span>
                                             );
                                         }
                                         if (action === 'update') {
                                             const changes = Array.isArray(detailsObj.changes) ? detailsObj.changes.join(', ') : 'details';
                                             return (
-                                                <span className="text-white/80">
+                                                <span className="text-muted/80">
                                                     Updated {changes} for event {log.resourceId}
                                                 </span>
                                             );
@@ -162,12 +162,12 @@ export function AuditLogTable() {
 
                                     // 4. Notifications
                                     if (type === 'notification') {
-                                        return <span className="text-white/80">Sent a {detailsObj.type || ''} notification</span>;
+                                        return <span className="text-muted/80">Sent a {detailsObj.type || ''} notification</span>;
                                     }
 
                                     // 5. Login/Logout
-                                    if (action === 'login') return <span className="text-emerald-400 font-medium">System Access Granted</span>;
-                                    if (action === 'logout') return <span className="text-white/50">System Session Ended</span>;
+                                    if (action === 'login') return <span className="text-emerald-500 font-medium">System Access Granted</span>;
+                                    if (action === 'logout') return <span className="text-muted/50">System Session Ended</span>;
 
                                     // Generic Fallback (Cleaned up)
                                     if (Object.keys(detailsObj).length > 0 && !detailsObj.raw) {
@@ -176,7 +176,7 @@ export function AuditLogTable() {
                                                 {Object.entries(detailsObj).map(([k, v]) => {
                                                     if (k === 'changes' || typeof v === 'object') return null;
                                                     return (
-                                                        <span key={k} className="px-1.5 py-0.5 rounded bg-white/5 text-white/60 text-[10px]">
+                                                        <span key={k} className="px-1.5 py-0.5 rounded bg-muted/10 text-muted/80 text-[10px]">
                                                             {k}: {String(v)}
                                                         </span>
                                                     );
@@ -185,24 +185,24 @@ export function AuditLogTable() {
                                         );
                                     }
 
-                                    return <span className="text-white/30 italic">No additional details</span>;
+                                    return <span className="text-muted/30 italic">No additional details</span>;
                                 };
 
                                 return (
-                                    <tr key={log.id} className="hover:bg-white/5 transition-colors group">
-                                        <td className="px-6 py-4 text-white/70 font-mono text-xs whitespace-nowrap">
+                                    <tr key={log.id} className="hover:bg-primary/5 transition-colors group border-b border-soft last:border-0">
+                                        <td className="px-6 py-4 text-muted/70 font-mono text-xs whitespace-nowrap">
                                             {format(new Date(log.timestamp), 'MMM d, h:mm a')}
                                         </td>
                                         <td className="px-6 py-4">
                                             <div className="flex items-center gap-3">
-                                                <div className="w-8 h-8 rounded-full bg-gradient-to-br from-indigo-500 to-indigo-700 flex items-center justify-center shadow-lg">
+                                                <div className="w-8 h-8 rounded-full bg-gradient-to-br from-indigo-500 to-indigo-700 flex items-center justify-center shadow-sm">
                                                     <User size={14} className="text-white" />
                                                 </div>
                                                 <div>
-                                                    <div className="text-sm text-white font-medium">
+                                                    <div className="text-sm text-foreground font-medium">
                                                         {log.user?.fullName || 'Unknown System User'}
                                                     </div>
-                                                    <div className="text-[10px] text-white/40 font-mono">
+                                                    <div className="text-[10px] text-muted/60 font-mono">
                                                         {log.user?.email || `ID: ${log.userId.substring(0, 8)}...`}
                                                     </div>
                                                 </div>
@@ -212,10 +212,10 @@ export function AuditLogTable() {
                                         {/* Combined Action & Context */}
                                         <td className="px-6 py-4">
                                             <div className="flex flex-col">
-                                                <span className="text-xs font-bold text-white uppercase tracking-wider mb-1 opacity-70">
+                                                <span className="text-xs font-bold text-foreground uppercase tracking-wider mb-1 opacity-70">
                                                     {log.action.replace(/_/g, ' ')}
                                                 </span>
-                                                <span className="text-xs text-indigo-300 font-mono">
+                                                <span className="text-xs text-indigo-500 font-mono">
                                                     {log.resourceType}
                                                 </span>
                                             </div>
@@ -228,7 +228,7 @@ export function AuditLogTable() {
 
                                         {/* Raw technical ID detail (hidden by default, visible on hover/group) */}
                                         <td className="px-6 py-4 text-right">
-                                            <span className="text-[10px] bg-black/20 text-white/20 px-2 py-1 rounded font-mono group-hover:text-white/50 transition-colors">
+                                            <span className="text-[10px] bg-muted/20 text-muted/60 px-2 py-1 rounded font-mono group-hover:text-muted transition-colors">
                                                 ID: {log.resourceId?.substring(0, 8) || 'N/A'}
                                             </span>
                                         </td>
@@ -241,22 +241,22 @@ export function AuditLogTable() {
             </div>
 
             {/* Pagination */}
-            <div className="p-4 border-t border-white/5 flex items-center justify-between bg-black/20">
-                <span className="text-xs text-white/40">
+            <div className="p-4 border-t border-soft flex items-center justify-between bg-muted/5">
+                <span className="text-xs text-muted">
                     Page {page} of {totalPages}
                 </span>
                 <div className="flex gap-2">
                     <button
                         onClick={() => setPage(p => Math.max(1, p - 1))}
                         disabled={page === 1 || loading}
-                        className="p-1 px-3 rounded bg-white/5 hover:bg-white/10 disabled:opacity-30 disabled:cursor-not-allowed text-white transition-colors"
+                        className="p-1 px-3 rounded bg-surface border border-soft hover:bg-surface/80 disabled:opacity-30 disabled:cursor-not-allowed text-foreground transition-colors"
                     >
                         Previous
                     </button>
                     <button
                         onClick={() => setPage(p => Math.min(totalPages, p + 1))}
                         disabled={page === totalPages || loading}
-                        className="p-1 px-3 rounded bg-white/5 hover:bg-white/10 disabled:opacity-30 disabled:cursor-not-allowed text-white transition-colors"
+                        className="p-1 px-3 rounded bg-surface border border-soft hover:bg-surface/80 disabled:opacity-30 disabled:cursor-not-allowed text-foreground transition-colors"
                     >
                         Next
                     </button>

@@ -13,19 +13,19 @@ export const WorkloadTable: React.FC<WorkloadTableProps> = ({ data }) => {
     const sorted = [...data].sort((a, b) => a.name.localeCompare(b.name));
 
     return (
-        <div className="bg-white/5 backdrop-blur-md rounded-[20px] border border-white/5 overflow-hidden shadow-[0px_4px_20px_rgba(0,0,0,0.2)]">
-            <div className="px-6 py-5 border-b border-white/5 bg-white/5 flex items-center justify-between">
-                <h3 className="font-bold text-white flex items-center gap-2">
-                    <UsersIcon size={18} className="text-blue-400" /> Team Workload
+        <div className="bg-surface backdrop-blur-md rounded-[20px] border border-soft overflow-hidden shadow-sm">
+            <div className="px-6 py-5 border-b border-soft bg-muted/5 flex items-center justify-between">
+                <h3 className="font-bold text-foreground flex items-center gap-2">
+                    <UsersIcon size={18} className="text-blue-500" /> Team Workload
                 </h3>
-                <span className="text-[10px] font-bold text-blue-200 uppercase tracking-wider bg-blue-500/20 px-3 py-1 rounded-full border border-blue-500/20">
+                <span className="text-[10px] font-bold text-blue-600 uppercase tracking-wider bg-blue-500/10 px-3 py-1 rounded-full border border-blue-500/20">
                     {data.length} Members
                 </span>
             </div>
 
             <div className="overflow-x-auto">
                 <table className="w-full text-sm text-left">
-                    <thead className="text-xs text-gray-400 uppercase bg-black/20">
+                    <thead className="text-xs text-muted uppercase bg-muted/10">
                         <tr>
                             <th className="px-6 py-4 font-bold tracking-wider">Member</th>
                             <th className="px-6 py-4 font-bold tracking-wider text-center">Assigned</th>
@@ -35,19 +35,19 @@ export const WorkloadTable: React.FC<WorkloadTableProps> = ({ data }) => {
                             <th className="px-6 py-4 font-bold tracking-wider text-center text-red-400">Overdue</th>
                         </tr>
                     </thead>
-                    <tbody className="divide-y divide-white/5">
+                    <tbody className="divide-y divide-soft">
                         {sorted.map(user => (
-                            <tr key={user.uid} className="hover:bg-white/5 transition-colors group">
-                                <td className="px-6 py-4 font-medium text-white flex items-center gap-3">
+                            <tr key={user.uid} className="hover:bg-primary/5 transition-colors group">
+                                <td className="px-6 py-4 font-medium text-foreground flex items-center gap-3">
                                     <div className="w-9 h-9 rounded-full bg-gradient-to-br from-indigo-500/80 to-purple-500/80 text-white flex items-center justify-center font-bold text-xs shadow-inner">
                                         {user.name.charAt(0).toUpperCase()}
                                     </div>
                                     <div>
-                                        <div className="line-clamp-1 font-semibold group-hover:text-blue-300 transition-colors">{user.name}</div>
+                                        <div className="line-clamp-1 font-semibold group-hover:text-blue-500 transition-colors">{user.name}</div>
                                         <div className={cn("text-[10px] capitalize tracking-wide px-2 py-0.5 rounded-full w-fit mt-1", getRoleBadgeColors(user.role))}>{user.role}</div>
                                     </div>
                                 </td>
-                                <td className="px-6 py-4 text-center font-bold text-gray-300">
+                                <td className="px-6 py-4 text-center font-bold text-muted">
                                     {user.totalAssigned}
                                 </td>
                                 <td className="px-6 py-4 text-center font-medium text-gray-400">
@@ -74,7 +74,7 @@ export const WorkloadTable: React.FC<WorkloadTableProps> = ({ data }) => {
                 </table>
             </div>
             {data.length === 0 && (
-                <div className="p-12 text-center text-gray-500 text-sm">
+                <div className="p-12 text-center text-muted text-sm">
                     No team data available.
                 </div>
             )}

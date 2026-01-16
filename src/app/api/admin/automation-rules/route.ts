@@ -30,7 +30,7 @@ export async function GET(req: NextRequest) {
                 locked: true,
                 priority: 0,
                 version: 1,
-                conditions: rule.conditions || []
+                conditions: rule!.conditions || []
             }));
 
         return NextResponse.json({ custom: customRules, system: systemRules });

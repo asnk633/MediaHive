@@ -37,109 +37,158 @@ export function CalendarView({ currentDate, onDateChange, events, onDateClick, o
 
     const weekDays = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
 
+    // Optimization: Pre-calculate events by day key (yyyy-MM-dd)
+    // This reduces complexity from O(Days * Events) to O(Events) + O(Days)
+    const eventsByDay = React.useMemo(() => {
+        const map: Record<string, Event[]> = {};
+        events.forEach(event => {
+            let date: Date;
+            if ((event.date as any).seconds) {
+                date = new Date((event.date as any).seconds * 1000);
+            } else {
+                date = new Date(event.date as any);
+            }
+
+            if (!isNaN(date.getTime())) {
+                const key = format(date, 'yyyy-MM-dd');
+                if (!map[key]) map[key] = [];
+                map[key].push(event);
+            }
+        });
+        return map;
+    }, [events]);
+
     return (
         <div className="
-            bg-gradient-to-r from-[#141e30] to-[#243b55]
-            rounded-[15px]
-            shadow-[5px_10px_50px_rgba(0,0,0,0.7),-5px_0px_250px_rgba(0,0,0,0.7)]
+            bg-glass
+            backdrop-blur-xl
+            rounded-2xl
+            shadow-lg
             overflow-hidden
-            text-white
+            text-foreground
         ">
             {/* Header */}
-            <div className="flex items-center justify-between p-6 border-b border-[#ffffff1a]">
-                <h2 className="text-xl font-bold text-white tracking-wide font-[gill-sans-mt,sans-serif]">
+            <div className="flex items-center justify-between p-6">
+                <h2 className="text-xl font-bold text-foreground tracking-wide">
                     {format(currentDate, 'MMMM yyyy')}
                 </h2>
                 <div className="flex gap-2">
-                    <button onClick={prevMonth} className="p-2 hover:bg-white/10 rounded-full transition-colors text-white/70 hover:text-white">
+                    <button
+                        onClick={prevMonth}
+                        aria-label="Previous month"
+                        className="p-2 bg-glass backdrop-blur-sm hover:shadow-md rounded-full transition-all text-muted hover:text-primary focus-visible:ring-2 focus-visible:ring-primary focus-visible:outline-none"
+                    >
                         <ChevronLeft size={20} />
                     </button>
-                    <button onClick={nextMonth} className="p-2 hover:bg-white/10 rounded-full transition-colors text-white/70 hover:text-white">
+                    <button
+                        onClick={nextMonth}
+                        aria-label="Next month"
+                        className="p-2 bg-glass backdrop-blur-sm hover:shadow-md rounded-full transition-all text-muted hover:text-primary focus-visible:ring-2 focus-visible:ring-primary focus-visible:outline-none"
+                    >
                         <ChevronRight size={20} />
                     </button>
                 </div>
             </div>
 
             {/* Grid Header */}
-            <div className="grid grid-cols-7 bg-white/5 border-b border-[#ffffff1a]">
-                {weekDays.map(day => (
-                    <div key={day} className="py-3 text-center text-[10px] font-bold text-white/50 uppercase tracking-widest">
-                        {day}
-                    </div>
-                ))}
+            <div className="grid grid-cols-7 bg-transparent">
+                {
+                    weekDays.map(day => (
+                        <div key={day} className="py-4 text-center text-[10px] font-bold text-muted uppercase tracking-widest">
+                            {day}
+                        </div>
+                    ))
+                }
             </div>
 
             {/* Days Grid */}
             <div className="grid grid-cols-7">
-                {days.map((day) => {
-                    const isCurrentMonth = isSameMonth(day, monthStart);
-                    const isToday = isSameDay(day, new Date());
+                {
+                    days.map((day) => {
+                        const isCurrentMonth = isSameMonth(day, monthStart);
+                        const isToday = isSameDay(day, new Date());
+                        const isSelected = isSameDay(day, currentDate);
+                        const dayKey = format(day, 'yyyy-MM-dd');
+                        const dayEvents = eventsByDay[dayKey] || [];
+                        const hasEvents = dayEvents.length > 0;
 
-                    // Check for events on this day
-                    const dayEvents = events.filter(e => {
-                        const seconds = (e.date as any).seconds || (e.date as any)._seconds;
-                        if (seconds) return isSameDay(new Date(seconds * 1000), day);
-                        // Fallback for JS Date objects if they slip in
-                        return isSameDay(new Date((e.date as any)), day);
-                    });
-                    const hasEvents = dayEvents.length > 0;
-
-                    return (
-                        <div
-                            key={day.toString()}
-                            onClick={() => onDateClick(day)}
-                            className={`
-                                min-h-[100px] border-b border-r border-[#ffffff1a] relative p-2 cursor-pointer transition-all duration-200
-                                ${!isCurrentMonth ? 'bg-white/[0.02] text-white/20' : 'hover:bg-white/10 text-white/90'}
-                                ${isToday ? 'bg-indigo-500/20 shadow-inner' : ''}
+                        return (
+                            <div
+                                key={day.toString()}
+                                onClick={() => onDateClick(day)}
+                                className={`
+                                group relative p-2 cursor-pointer transition-all duration-300 border-none outline-none
+                                ${isCurrentMonth ? 'text-foreground hover:bg-glass hover:backdrop-blur-md hover:shadow-sm z-0 hover:z-10' : 'text-muted/30 bg-black/5 dark:bg-black/20'}
+                                ${isSelected ? 'bg-glass shadow-md z-10 ring-1 ring-primary/20' : ''}
+                                ${isToday ? 'font-bold' : ''}
+                                rounded-lg
+                                m-1
+                                min-h-[100px] sm:min-h-[120px]
                             `}
-                        >
-                            <div className="flex justify-between items-start">
-                                <span className={`
-                                    text-sm font-medium w-7 h-7 flex items-center justify-center rounded-full
+                            >
+                                <div className="flex justify-between items-start mb-2">
+                                    <span className={`
+                                    w-7 h-7 flex items-center justify-center rounded-full text-sm font-medium transition-all
                                     ${isToday
-                                        ? 'bg-blue-500 text-white shadow-lg shadow-blue-500/40'
-                                        : 'text-white/80'}
+                                            ? 'bg-primary text-primary-foreground shadow-md scale-110'
+                                            : 'text-muted group-hover:text-foreground'
+                                        }
                                 `}>
-                                    {format(day, 'd')}
-                                </span>
-                                {hasEvents && (
-                                    <div className="flex gap-1 mt-1">
-                                        <div className="h-1.5 w-1.5 rounded-full bg-blue-400 shadow-[0_0_8px_rgba(96,165,250,0.6)]"></div>
-                                    </div>
-                                )}
-                            </div>
+                                        {format(day, 'd')}
+                                    </span>
+                                    {hasEvents && (
+                                        <div className="flex gap-1 mt-1">
+                                            {/* Mobile Dot Indicator (Replacing list on small screens if needed, but we keep list for now) */}
+                                            <div className="h-1.5 w-1.5 rounded-full bg-blue-400 shadow-[0_0_8px_rgba(96,165,250,0.6)]"></div>
+                                        </div>
+                                    )}
+                                </div>
 
-                            {/* Event Titles */}
-                            <div className="mt-2 space-y-1 hidden sm:block">
-                                {dayEvents.slice(0, 2).map(ev => (
-                                    <motion.div
-                                        key={ev.id}
-                                        layoutId={`event-card-${ev.id}`}
-                                        onClick={(e) => {
-                                            e.stopPropagation();
-                                            onEventClick(ev);
-                                        }}
-                                        className={`
-                                            text-[10px] truncate px-2 py-0.5 rounded-[4px] border font-medium backdrop-blur-sm transition-colors
+                                {/* Event Titles - Mobile Optimized */}
+                                <div className="mt-2 space-y-1">
+                                    {/* Visible on all screens now, but styled for touch on mobile? No, keeping hidden on very small screens might be better? 
+                                       The original code had 'hidden sm:block'. 
+                                       Constraint: "App feels native on mobile". 
+                                       On phone, 7 cols is very narrow. Text won't fit. 
+                                       Better to keep dots on mobile day view, and maybe show list below?
+                                       Or just ensure if they ARE visible (larger phones/tablets), they are tappable.
+                                       I will keep 'hidden sm:block' for textual events to avoid clutter/overflow, 
+                                       but rely on the cell click (onDateClick) to open the day view/modal for mobile.
+                                       I will just ensure the cell itself is touch-friendly.
+                                    */}
+                                    <div className="hidden sm:block">
+                                        {dayEvents.slice(0, 2).map(ev => (
+                                            <motion.div
+                                                key={ev.id}
+                                                layoutId={`event-card-${ev.id}`}
+                                                onClick={(e) => {
+                                                    e.stopPropagation();
+                                                    onEventClick(ev);
+                                                }}
+                                                transition={{ duration: 0.2 }}
+                                                className={`
+                                            text-[10px] px-2 py-1.5 rounded-lg truncate w-full block mb-1.5 shadow-sm backdrop-blur-sm cursor-pointer
                                             ${(ev as any).isSystemEvent
-                                                ? 'bg-transparent border border-[#ffffff1a] text-white/40 hover:bg-white/5 hover:text-white/60' // Faded System Event
-                                                : 'bg-blue-600/40 border-blue-500/50 text-white shadow-sm hover:bg-blue-600/60 font-bold'} // Highlighted User Event
+                                                        ? 'bg-secondary/80 text-secondary-foreground border-l-2 border-secondary'
+                                                        : 'bg-glass text-foreground hover:bg-surface/80 hover:shadow-md transition-all border-none relative overflow-hidden group'}
                                         `}
-                                    >
-                                        {(ev as any).isSystemEvent && <span className="mr-1">🏢</span>}
-                                        {ev.title}
-                                    </motion.div>
-                                ))}
-                                {dayEvents.length > 2 && (
-                                    <div className="text-[10px] text-white/40 pl-1 font-medium">
-                                        +{dayEvents.length - 2} more
+                                            >
+                                                {!(ev as any).isSystemEvent && <div className="absolute left-0 top-0 bottom-0 w-1 bg-primary/50 group-hover:bg-primary transition-colors" />}
+                                                {(ev as any).isSystemEvent && <span className="mr-1">🏢</span>}
+                                                {ev.title}
+                                            </motion.div>
+                                        ))}
+                                        {dayEvents.length > 2 && (
+                                            <div className="text-[10px] text-muted pl-1 font-medium">
+                                                +{dayEvents.length - 2} more
+                                            </div>
+                                        )}
                                     </div>
-                                )}
+                                </div>
                             </div>
-                        </div>
-                    );
-                })}
+                        );
+                    })
+                }
             </div>
         </div>
     );

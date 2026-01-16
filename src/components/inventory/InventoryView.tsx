@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState, useEffect, useMemo } from 'react';
+import React, { useState, useEffect, useMemo, useCallback } from 'react';
 import { useRouter } from 'next/navigation';
 import { PageHeader } from "@/components/ui/layout/PageHeader";
 import { InventoryGrid } from './InventoryGrid';
@@ -45,40 +45,48 @@ export default function InventoryView() {
     // We need inventoryRequestService here. It was not imported in the original file I see?
     // Let me check imports. It was NOT imported in InventoryView.tsx. I need to add import too.
     // Wait, I can't see the top of the file in this tool call.
-    // I will use multi_replace to add import and update fetch logic.
+    // I will use multi_replace to add import { inventoryRequestService } from '@/services/inventoryRequestService';
 
     const fetchData = async () => {
         setLoading(true);
         try {
-            const promises: Promise<any>[] = [
-                apiClient<InventoryApiResponse>(`/api/inventory?limit=300`),
-            ];
+            // 1. Fetch Items (Critical)
+            const itemsPromise = apiClient<InventoryApiResponse>(`/api/inventory?limit=300`)
+                .then(res => res.items || [])
+                .catch(err => {
+                    console.error("Failed to fetch inventory items", err);
+                    return [];
+                });
 
-            // Issues (Only fetch if scoped)
-            if (user?.institutionId) {
-                console.log('[InventoryView] Fetching issues for institution:', user.institutionId);
-                promises.push(inventoryIssueService.getActiveIssues(user.institutionId));
-            } else {
-                console.warn('[InventoryView] User has no institutionId. Skipping issues fetch.');
-                promises.push(Promise.resolve([]));
-            }
+            // 2. Fetch Issues (Optional - Context Aware)
+            const issuesPromise = (user?.institutionId)
+                ? inventoryIssueService.getActiveIssues(user.institutionId)
+                    .catch(err => {
+                        console.warn('Failed to fetch active issues (likely permission restricted):', err);
+                        return [];
+                    })
+                : Promise.resolve([]);
 
-            // If Guest, fetch my requests to disable buttons
-            if (user && user.role !== 'admin' && user.role !== 'team') {
-                promises.push(inventoryRequestService.getMyRequests(user.uid, user.institutionId || ''));
-            }
+            // 3. Fetch My Requests (Optional - Guest/Standard Only)
+            const requestsPromise = (user && user.role !== 'admin' && user.role !== 'team')
+                ? inventoryRequestService.getMyRequests(user.uid, user.institutionId || '')
+                    .catch(err => {
+                        console.warn('Failed to fetch my requests:', err);
+                        return [];
+                    })
+                : Promise.resolve([]);
 
-            const results = await Promise.all(promises);
-            const invData = results[0];
-            const issuesData = results[1];
-            const myRequestsData = results[2] || [];
+            const [fetchedItems, fetchedIssues, myRequestsData] = await Promise.all([
+                itemsPromise,
+                issuesPromise,
+                requestsPromise
+            ]);
 
-            setItems(invData.items || []);
-            setActiveIssues(issuesData);
+            setItems(fetchedItems);
+            setActiveIssues(fetchedIssues);
 
             if (myRequestsData.length > 0) {
-                // Filter for pending/approved only? Or all? User said "already requested".
-                // Usually pending or approved. rejected means they can request again?
+                // Filter for pending/approved only
                 const activeReqs = myRequestsData.filter((r: any) => r.status === 'pending' || r.status === 'approved');
                 setMyRequests(new Set(activeReqs.map((r: any) => r.itemId)));
             } else {
@@ -86,7 +94,8 @@ export default function InventoryView() {
             }
 
         } catch (error) {
-            console.error('Failed to fetch data:', error);
+            console.error('Critical failure in inventory load:', error);
+            toast.error("Failed to load inventory");
         } finally {
             setLoading(false);
         }
@@ -137,7 +146,7 @@ export default function InventoryView() {
         return result;
     }, [items, activeIssues, search, category, sortBy]);
 
-    const handleRequest = (item: InventoryItem) => {
+    const handleRequest = useCallback((item: InventoryItem) => {
         if (user?.role === 'admin' || user?.role === 'team') {
             // Admin/Team -> Issue directly (Shortcut)
             setIssueDialogItem(item);
@@ -145,9 +154,9 @@ export default function InventoryView() {
             // Guest -> Request
             setRequestDialogItem(item);
         }
-    };
+    }, [user?.role]);
 
-    const handleReturn = (item: InventoryItem) => {
+    const handleReturn = useCallback((item: InventoryItem) => {
         // Find active issue for this item
         const issue = activeIssues.find(i => i.itemId === item.id);
         if (issue) {
@@ -156,7 +165,11 @@ export default function InventoryView() {
             toast.error("Issue record not found for this item.");
             fetchData(); // Sync up
         }
-    };
+    }, [activeIssues]);
+
+    const handleEdit = useCallback((item: InventoryItem) => {
+        router.push(`/inventory/edit/${item.id}`);
+    }, [router]);
 
     return (
         <div className="space-y-6">
@@ -249,9 +262,7 @@ export default function InventoryView() {
                 role={user?.role}
                 onRequest={handleRequest}
                 onReturn={handleReturn}
-                onEdit={user?.role === 'admin' ? (item) => {
-                    router.push(`/inventory/edit/${item.id}`);
-                } : undefined}
+                onEdit={user?.role === 'admin' ? handleEdit : undefined}
                 onView={setViewItem}
             />
 
@@ -263,7 +274,7 @@ export default function InventoryView() {
                 role={user?.role}
                 onEdit={user?.role === 'admin' ? (item) => {
                     setViewItem(null); // Close view
-                    router.push(`/inventory/edit/${item.id}`);
+                    handleEdit(item);
                 } : undefined}
                 onRequest={(item) => {
                     setViewItem(null);

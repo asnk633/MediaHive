@@ -61,24 +61,24 @@ export default function InventoryTable() {
         <div className="space-y-4">
             <div className="flex items-center justify-between">
                 <div>
-                    <h2 className="text-xl font-bold text-white">Inventory</h2>
-                    <p className="text-sm text-slate-400">Total Items: {total}</p>
+                    <h2 className="text-xl font-bold text-foreground">Inventory</h2>
+                    <p className="text-sm text-muted">Total Items: {total}</p>
                 </div>
                 {user?.role === 'admin' && (
                     <CreateItemDialog onSuccess={fetchInventory} />
                 )}
             </div>
 
-            <div className="rounded-md border border-[#ffffff1a] overflow-hidden overflow-x-auto bg-slate-950/30">
+            <div className="rounded-md border border-soft overflow-hidden overflow-x-auto bg-surface/30">
                 <Table>
-                    <TableHeader className="bg-slate-900/50">
-                        <TableRow className="border-white/5 hover:bg-transparent">
-                            <TableHead className="text-slate-400">Name</TableHead>
-                            <TableHead className="text-slate-400">Category</TableHead>
-                            <TableHead className="text-slate-400">Quantity</TableHead>
-                            <TableHead className="text-slate-400">Status</TableHead>
-                            <TableHead className="text-slate-400">Last Updated</TableHead>
-                            <TableHead className="text-right text-slate-400">Actions</TableHead>
+                    <TableHeader className="bg-muted/5">
+                        <TableRow className="border-soft hover:bg-transparent">
+                            <TableHead className="text-muted">Name</TableHead>
+                            <TableHead className="text-muted">Category</TableHead>
+                            <TableHead className="text-muted">Quantity</TableHead>
+                            <TableHead className="text-muted">Status</TableHead>
+                            <TableHead className="text-muted">Last Updated</TableHead>
+                            <TableHead className="text-right text-muted">Actions</TableHead>
                         </TableRow>
                     </TableHeader>
                     <TableBody>
@@ -95,20 +95,20 @@ export default function InventoryTable() {
                             ))
                         ) : items.length === 0 ? (
                             <TableRow>
-                                <TableCell colSpan={6} className="h-32 text-center text-slate-500">
+                                <TableCell colSpan={6} className="h-32 text-center text-muted">
                                     No items found.
                                 </TableCell>
                             </TableRow>
                         ) : (
                             items.map((item) => (
-                                <TableRow key={item.id} className="border-white/5 hover:bg-white/5">
-                                    <TableCell className="font-medium text-white">{item.name}</TableCell>
-                                    <TableCell className="text-slate-300">{item.category}</TableCell>
-                                    <TableCell className="text-slate-300">
-                                        {item.quantity} <span className="text-xs text-slate-500">{item.unit}</span>
+                                <TableRow key={item.id} className="border-soft hover:bg-primary/5">
+                                    <TableCell className="font-medium text-foreground">{item.name}</TableCell>
+                                    <TableCell className="text-muted/80">{item.category}</TableCell>
+                                    <TableCell className="text-muted/80">
+                                        {item.quantity} <span className="text-xs text-muted">{item.unit}</span>
                                     </TableCell>
                                     <TableCell>{getStatusBadge(item.status)}</TableCell>
-                                    <TableCell className="text-xs text-slate-400">
+                                    <TableCell className="text-xs text-muted">
                                         {formatDistanceToNow(new Date(item.updatedAt), { addSuffix: true })}
                                     </TableCell>
                                     <TableCell className="text-right">
@@ -130,17 +130,17 @@ export default function InventoryTable() {
                     size="sm"
                     onClick={() => setPage(p => Math.max(0, p - 1))}
                     disabled={page === 0 || loading}
-                    className="border-[#ffffff1a] text-white hover:bg-white/5 bg-transparent"
+                    className="border-soft text-foreground hover:bg-surface/50 bg-transparent"
                 >
                     Previous
                 </Button>
-                <span className="text-sm text-slate-400">Page {page + 1}</span>
+                <span className="text-sm text-muted">Page {page + 1}</span>
                 <Button
                     variant="outline"
                     size="sm"
                     onClick={() => setPage(p => p + 1)}
                     disabled={!hasMore || loading}
-                    className="border-[#ffffff1a] text-white hover:bg-white/5 bg-transparent"
+                    className="border-soft text-foreground hover:bg-surface/50 bg-transparent"
                 >
                     Next
                 </Button>
@@ -183,23 +183,23 @@ function CreateItemDialog({ onSuccess }: { onSuccess: () => void }) {
                     <Plus size={16} className="mr-2" /> Add Item
                 </Button>
             </DialogTrigger>
-            <DialogContent className="bg-slate-900 border-[#ffffff1a] text-white sm:max-w-[425px]">
+            <DialogContent className="bg-surface border-soft text-foreground sm:max-w-[425px]">
                 <DialogHeader>
                     <DialogTitle>Add Inventory Item</DialogTitle>
                 </DialogHeader>
                 <form onSubmit={handleSubmit} className="space-y-4 mt-4">
                     <div className="space-y-2">
                         <Label>Name</Label>
-                        <Input name="name" required placeholder="e.g. AA Batteries" className="bg-white/5 border-[#ffffff1a]" />
+                        <Input name="name" required placeholder="e.g. AA Batteries" className="bg-surface/50 border-soft" />
                     </div>
                     <div className="grid grid-cols-2 gap-4">
                         <div className="space-y-2">
                             <Label>Category</Label>
                             <Select name="category" required defaultValue="General">
-                                <SelectTrigger className="bg-white/5 border-[#ffffff1a]">
+                                <SelectTrigger className="bg-surface/50 border-soft">
                                     <SelectValue />
                                 </SelectTrigger>
-                                <SelectContent className="bg-slate-900 border-[#ffffff1a] text-white">
+                                <SelectContent className="bg-surface border-soft text-foreground">
                                     <SelectItem value="General">General</SelectItem>
                                     <SelectItem value="Electronics">Electronics</SelectItem>
                                     <SelectItem value="Cables">Cables</SelectItem>
@@ -209,21 +209,21 @@ function CreateItemDialog({ onSuccess }: { onSuccess: () => void }) {
                         </div>
                         <div className="space-y-2">
                             <Label>Unit</Label>
-                            <Input name="unit" required placeholder="pcs, kg" className="bg-white/5 border-[#ffffff1a]" />
+                            <Input name="unit" required placeholder="pcs, kg" className="bg-surface/50 border-soft" />
                         </div>
                     </div>
                     <div className="grid grid-cols-2 gap-4">
                         <div className="space-y-2">
                             <Label>Quantity</Label>
-                            <Input name="quantity" type="number" required min="0" className="bg-white/5 border-[#ffffff1a]" />
+                            <Input name="quantity" type="number" required min="0" className="bg-surface/50 border-soft" />
                         </div>
                         <div className="space-y-2">
                             <Label>Low Stock Threshold</Label>
-                            <Input name="threshold" type="number" required min="0" className="bg-white/5 border-[#ffffff1a]" />
+                            <Input name="threshold" type="number" required min="0" className="bg-surface/50 border-soft" />
                         </div>
                     </div>
                     <div className="pt-2 flex justify-end">
-                        <Button type="submit" disabled={submitting} className="bg-blue-600 hover:bg-blue-500">
+                        <Button type="submit" disabled={submitting} className="bg-blue-600 hover:bg-blue-500 text-white">
                             {submitting ? 'Saving...' : 'Create Item'}
                         </Button>
                     </div>
@@ -267,7 +267,7 @@ function EditItemDialog({ item, onSuccess }: { item: InventoryItem, onSuccess: (
                     <RefreshCw size={14} className="text-slate-400" />
                 </Button>
             </DialogTrigger>
-            <DialogContent className="bg-slate-900 border-[#ffffff1a] text-white sm:max-w-[425px]">
+            <DialogContent className="bg-surface border-soft text-foreground sm:max-w-[425px]">
                 <DialogHeader>
                     <DialogTitle>Update Stock: {item.name}</DialogTitle>
                 </DialogHeader>
@@ -275,15 +275,15 @@ function EditItemDialog({ item, onSuccess }: { item: InventoryItem, onSuccess: (
                     <div className="grid grid-cols-2 gap-4">
                         <div className="space-y-2">
                             <Label>Quantity</Label>
-                            <Input name="quantity" type="number" required min="0" defaultValue={item.quantity} className="bg-white/5 border-[#ffffff1a]" />
+                            <Input name="quantity" type="number" required min="0" defaultValue={item.quantity} className="bg-surface/50 border-soft" />
                         </div>
                         <div className="space-y-2">
                             <Label>Low Stock Threshold</Label>
-                            <Input name="threshold" type="number" required min="0" defaultValue={item.threshold} className="bg-white/5 border-[#ffffff1a]" />
+                            <Input name="threshold" type="number" required min="0" defaultValue={item.threshold} className="bg-surface/50 border-soft" />
                         </div>
                     </div>
                     <div className="pt-2 flex justify-end">
-                        <Button type="submit" disabled={submitting} className="bg-blue-600 hover:bg-blue-500">
+                        <Button type="submit" disabled={submitting} className="bg-blue-600 hover:bg-blue-500 text-white">
                             {submitting ? 'Updating...' : 'Update Stock'}
                         </Button>
                     </div>

@@ -22,4 +22,16 @@ export interface Event {
     isDemoData?: boolean;
     isSystemEvent?: boolean;
     isMediaOffDay?: boolean;
+    onBehalfOf?: {
+        id: string;
+        name: string;
+        type: 'department' | 'institution';
+    };
+    organizer?: {
+        uid: string;
+        name: string;
+        role: string;
+    };
+    institutionId?: string;
+    departmentId?: string;
 }

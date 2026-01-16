@@ -94,8 +94,8 @@ export default function FilesPage() {
                   className={cn(
                     "flex items-center gap-2 px-3 py-1.5 rounded-lg text-sm font-medium transition-all",
                     viewMode === 'files'
-                      ? "bg-indigo-500/10 text-indigo-400"
-                      : "text-white/50 hover:text-white hover:bg-white/5"
+                      ? "bg-indigo-500/10 text-indigo-500"
+                      : "text-muted-foreground hover:text-foreground hover:bg-surface/50"
                   )}
                 >
                   <Download size={16} />
@@ -106,8 +106,8 @@ export default function FilesPage() {
                   className={cn(
                     "flex items-center gap-2 px-3 py-1.5 rounded-lg text-sm font-medium transition-all",
                     viewMode === 'queue'
-                      ? "bg-emerald-500/10 text-emerald-400"
-                      : "text-white/50 hover:text-white hover:bg-white/5"
+                      ? "bg-emerald-500/10 text-emerald-500"
+                      : "text-muted-foreground hover:text-foreground hover:bg-surface/50"
                   )}
                 >
                   <HardDrive size={16} />
@@ -156,9 +156,9 @@ export default function FilesPage() {
               ))}
             </div>
           ) : filteredFiles.length === 0 ? (
-            <div className="flex flex-col items-center justify-center py-20 text-center border border-dashed border-[#ffffff1a] rounded-xl bg-slate-900/20">
-              <div className="w-16 h-16 bg-white/5 rounded-full flex items-center justify-center mb-4">
-                <FolderOpen className="text-white/20" size={32} />
+            <div className="flex flex-col items-center justify-center py-20 text-center border border-dashed border-soft rounded-xl bg-glass">
+              <div className="w-16 h-16 bg-glass rounded-full flex items-center justify-center mb-4">
+                <FolderOpen className="text-muted" size={32} />
               </div>
               <h3 className="text-xl font-medium text-white/40 mb-2">No files found</h3>
               <p className="text-white/20 max-w-sm mx-auto">

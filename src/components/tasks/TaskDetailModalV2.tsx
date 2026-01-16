@@ -128,7 +128,7 @@ export const TaskDetailModalV2: React.FC<TaskDetailsModalProps> = ({ task, isOpe
                         animate={{ opacity: 1 }}
                         exit={{ opacity: 0 }}
                         onClick={onClose}
-                        className="absolute inset-0 bg-black/80 backdrop-blur-sm"
+                        className="absolute inset-0 bg-background/80 backdrop-blur-sm"
                     />
 
                     {/* Modal - Minimal Aesthetic Layer */}
@@ -137,17 +137,14 @@ export const TaskDetailModalV2: React.FC<TaskDetailsModalProps> = ({ task, isOpe
                         animate={{ scale: 1, opacity: 1 }}
                         exit={{ scale: 0.98, opacity: 0 }}
                         transition={{ duration: 0.2 }}
-                        className="relative w-full max-w-2xl rounded-2xl overflow-hidden border border-white/10 flex flex-col max-h-[90vh]"
-                        style={{
-                            background: 'linear-gradient(135deg, #0a0e1a 0%, #0f172a 100%)'
-                        }}
+                        className="relative w-full max-w-2xl rounded-2xl overflow-hidden border border-soft flex flex-col max-h-[90vh] bg-gradient-to-br from-card to-background shadow-strong"
+                        style={{}}
                     >
                         {/* HEADER BLOCK - Identity, Authoritative, 180px */}
                         <div
-                            className="relative shrink-0 border-b-2 border-white/10"
+                            className="relative shrink-0 border-b-2 border-soft bg-muted/10"
                             style={{
                                 height: '180px',
-                                background: '#1a2639'
                             }}
                         >
                             {/* Action Buttons - Top Right, Minimal */}
@@ -155,7 +152,7 @@ export const TaskDetailModalV2: React.FC<TaskDetailsModalProps> = ({ task, isOpe
                                 {(user?.role === 'admin' || user?.role === 'team' || user?.uid === task?.createdBy?.uid) && (
                                     <button
                                         onClick={onEdit}
-                                        className="p-2 bg-white/10 hover:bg-white/20 rounded-lg transition-colors text-white backdrop-blur-sm"
+                                        className="p-2 bg-surface/50 hover:bg-surface rounded-lg transition-colors text-foreground backdrop-blur-sm shadow-sm"
                                         title="Edit Task"
                                     >
                                         <Edit2 size={18} />
@@ -163,7 +160,7 @@ export const TaskDetailModalV2: React.FC<TaskDetailsModalProps> = ({ task, isOpe
                                 )}
                                 <button
                                     onClick={onClose}
-                                    className="p-2 bg-white/10 hover:bg-white/20 rounded-lg transition-colors text-white backdrop-blur-sm"
+                                    className="p-2 bg-surface/50 hover:bg-surface rounded-lg transition-colors text-foreground backdrop-blur-sm shadow-sm"
                                 >
                                     <X size={18} />
                                 </button>
@@ -176,14 +173,14 @@ export const TaskDetailModalV2: React.FC<TaskDetailsModalProps> = ({ task, isOpe
                                     <span className={`px-2.5 py-1 rounded-md text-[9px] font-bold tracking-widest uppercase border ${priorityColors[task.priority!] || priorityColors.low}`}>
                                         {task.priority || 'low'}
                                     </span>
-                                    <div className="flex items-center gap-1.5 px-2.5 py-1 rounded-md bg-white/5 border border-white/10 text-[9px] font-bold uppercase tracking-widest text-white/60">
+                                    <div className="flex items-center gap-1.5 px-2.5 py-1 rounded-md bg-surface border border-soft text-[9px] font-bold uppercase tracking-widest text-muted-foreground">
                                         {statusIcons[task.status]}
-                                        <span>{task.status.replace('_', ' ')}</span>
+                                        <span className="text-foreground">{task.status.replace('_', ' ')}</span>
                                     </div>
                                 </div>
 
                                 {/* Title - HERO, Dominant */}
-                                <h1 className="text-4xl font-black text-white leading-tight max-w-[85%]">
+                                <h1 className="text-4xl font-black text-foreground leading-tight max-w-[85%]">
                                     {task.title}
                                 </h1>
                             </div>
@@ -191,8 +188,7 @@ export const TaskDetailModalV2: React.FC<TaskDetailsModalProps> = ({ task, isOpe
 
                         {/* BODY - Reading Surface, Calm, Scrollable */}
                         <div
-                            className="flex-1 overflow-y-auto px-8 py-8"
-                            style={{ background: '#0f172a' }}
+                            className="flex-1 overflow-y-auto px-8 py-8 bg-background"
                         >
                             <TaskRatingComponent
                                 task={task}
@@ -201,20 +197,20 @@ export const TaskDetailModalV2: React.FC<TaskDetailsModalProps> = ({ task, isOpe
 
                             {/* Description - Primary Reading */}
                             <div
-                                className="text-base text-white/70 mb-8 max-w-prose"
+                                className="text-base text-muted-foreground mb-8 max-w-prose"
                                 style={{ lineHeight: '1.8' }}
                             >
-                                {task.description || <span className="italic text-white/40">No description provided.</span>}
+                                {task.description || <span className="italic text-muted-foreground/60">No description provided.</span>}
                             </div>
 
                             {/* Info Card - Simple */}
-                            <div className="grid grid-cols-1 md:grid-cols-2 gap-6 p-6 bg-white/[0.02] rounded-xl border border-white/10 mb-8">
+                            <div className="grid grid-cols-1 md:grid-cols-2 gap-6 p-6 bg-surface/40 rounded-xl border border-soft mb-8">
                                 <div className="space-y-6">
                                     <div className="flex items-start gap-3">
-                                        <Calendar size={16} className="text-blue-400 mt-0.5 shrink-0" />
+                                        <Calendar size={16} className="text-primary mt-0.5 shrink-0" />
                                         <div>
-                                            <p className="text-[10px] uppercase tracking-wider font-bold text-white/30 mb-1.5">Due Date</p>
-                                            <p className="text-sm text-white/90">
+                                            <p className="text-[10px] uppercase tracking-wider font-bold text-muted-foreground mb-1.5">Due Date</p>
+                                            <p className="text-sm text-foreground">
                                                 {(() => {
                                                     if (!task.dueDate) return 'No due date';
                                                     const date = task.dueDate.seconds
@@ -227,10 +223,10 @@ export const TaskDetailModalV2: React.FC<TaskDetailsModalProps> = ({ task, isOpe
                                     </div>
 
                                     <div className="flex items-start gap-3">
-                                        <User size={16} className="text-blue-400 mt-0.5 shrink-0" />
+                                        <User size={16} className="text-primary mt-0.5 shrink-0" />
                                         <div>
-                                            <p className="text-[10px] uppercase tracking-wider font-bold text-white/30 mb-1.5">Requested By</p>
-                                            <p className="text-sm text-white/90">
+                                            <p className="text-[10px] uppercase tracking-wider font-bold text-muted-foreground mb-1.5">Requested By</p>
+                                            <p className="text-sm text-foreground">
                                                 <ResolvedStructureName
                                                     id={task.departmentId || task.institutionId}
                                                     type={task.departmentId ? 'department' : 'institution'}
@@ -243,16 +239,16 @@ export const TaskDetailModalV2: React.FC<TaskDetailsModalProps> = ({ task, isOpe
 
                                 <div className="space-y-3">
                                     <div className="flex items-center justify-between">
-                                        <p className="text-[10px] uppercase tracking-wider font-bold text-white/30">Assigned Team</p>
+                                        <p className="text-[10px] uppercase tracking-wider font-bold text-muted-foreground">Assigned Team</p>
                                         {(user?.role === 'admin' || (user?.role === 'team' && typeof task.createdBy === 'object' && task.createdBy.uid === user.uid)) && (
                                             <Popover>
                                                 <PopoverTrigger asChild>
-                                                    <button className="text-[10px] font-bold text-blue-400 hover:text-blue-300 transition-colors uppercase tracking-wider flex items-center gap-1">
+                                                    <button className="text-[10px] font-bold text-primary hover:text-primary/80 transition-colors uppercase tracking-wider flex items-center gap-1">
                                                         <UserIcon size={11} /> Assign
                                                     </button>
                                                 </PopoverTrigger>
-                                                <PopoverContent className="w-56 p-2 bg-[#0f172a] border-[#ffffff1a] text-white z-[110]" align="end" side="bottom">
-                                                    <div className="text-xs font-bold text-gray-500 px-2 py-1 mb-1 tracking-wider">SELECT MEMBER</div>
+                                                <PopoverContent className="w-56 p-2 bg-popover border-soft text-foreground z-[110]" align="end" side="bottom">
+                                                    <div className="text-xs font-bold text-muted-foreground px-2 py-1 mb-1 tracking-wider">SELECT MEMBER</div>
                                                     <div className="max-h-60 overflow-y-auto">
                                                         {teamMembers.map((m) => {
                                                             const isAssigned = Array.isArray(task.assignedTo) && task.assignedTo.some(current => typeof current === 'string' ? current === m.uid : current.uid === m.uid);
@@ -260,10 +256,10 @@ export const TaskDetailModalV2: React.FC<TaskDetailsModalProps> = ({ task, isOpe
                                                                 <div
                                                                     key={m.uid}
                                                                     onClick={() => handleToggleAssign(m)}
-                                                                    className={`flex items-center gap-2 px-2 py-2 rounded-lg cursor-pointer text-sm transition-colors ${isAssigned ? 'bg-indigo-500/20 text-indigo-300' : 'hover:bg-white/5 text-gray-300'}`}
+                                                                    className={`flex items-center gap-2 px-2 py-2 rounded-lg cursor-pointer text-sm transition-colors ${isAssigned ? 'bg-primary/10 text-primary' : 'hover:bg-muted/50 text-foreground'}`}
                                                                 >
-                                                                    <div className={`w-4 h-4 rounded border flex items-center justify-center ${isAssigned ? 'bg-indigo-500 border-indigo-500' : 'border-gray-500'}`}>
-                                                                        {isAssigned && <span className="text-white text-[10px]">✓</span>}
+                                                                    <div className={`w-4 h-4 rounded border flex items-center justify-center ${isAssigned ? 'bg-primary border-primary' : 'border-muted-foreground'}`}>
+                                                                        {isAssigned && <span className="text-primary-foreground text-[10px]">✓</span>}
                                                                     </div>
                                                                     {m.name}
                                                                 </div>
@@ -286,20 +282,20 @@ export const TaskDetailModalV2: React.FC<TaskDetailsModalProps> = ({ task, isOpe
                                                 const name = assignee.name || teamMember?.name || 'Unknown';
 
                                                 return (
-                                                    <div key={i} className="flex items-center gap-2 bg-white/5 px-2.5 py-1.5 rounded-lg border border-white/10">
+                                                    <div key={i} className="flex items-center gap-2 bg-surface px-2.5 py-1.5 rounded-lg border border-soft">
                                                         <SafeAvatar
                                                             src={avatarUrl}
                                                             name={name}
                                                             alt={name}
                                                             size={20}
-                                                            className="border border-white/10"
+                                                            className="border border-soft"
                                                         />
-                                                        <span className="text-xs text-white/80">{name}</span>
+                                                        <span className="text-xs text-foreground/80">{name}</span>
                                                     </div>
                                                 );
                                             })
                                         ) : (
-                                            <p className="text-xs text-white/40 italic">No one assigned</p>
+                                            <p className="text-xs text-muted-foreground/60 italic">No one assigned</p>
                                         )}
                                     </div>
                                 </div>
@@ -307,17 +303,16 @@ export const TaskDetailModalV2: React.FC<TaskDetailsModalProps> = ({ task, isOpe
 
                             {/* Deliverables Section - Operational */}
                             <div
-                                className="pt-6 mt-8 -mx-8 px-8 pb-8 border-t border-white/10"
-                                style={{ background: '#0a0e1a' }}
+                                className="pt-6 mt-8 -mx-8 px-8 pb-8 border-t border-soft bg-muted/5"
                             >
                                 <div className="flex items-center justify-between mb-6">
-                                    <h3 className="text-sm font-bold text-white/50 uppercase tracking-widest flex items-center gap-2">
+                                    <h3 className="text-sm font-bold text-muted-foreground uppercase tracking-widest flex items-center gap-2">
                                         <FileCheck size={14} /> Deliverables
                                     </h3>
                                     {(user?.role === 'admin' || user?.role === 'team' || (Array.isArray(task.assignedTo) && task.assignedTo.some((u: any) => (typeof u === 'string' ? u : u.uid) === user?.uid))) && (
                                         <button
                                             onClick={() => setShowDeliverableUpload(true)}
-                                            className="text-xs font-bold text-blue-400 hover:text-blue-300 flex items-center gap-1.5 px-3 py-1.5 rounded-lg border border-blue-500/30 hover:border-blue-500/50 transition-colors"
+                                            className="text-xs font-bold text-primary hover:text-primary/80 flex items-center gap-1.5 px-3 py-1.5 rounded-lg border border-primary/30 hover:border-primary/50 transition-colors"
                                         >
                                             <UploadCloud size={13} /> Upload
                                         </button>

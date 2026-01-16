@@ -157,27 +157,27 @@ export const NotificationBell = () => {
             >
                 <Bell size={20} />
                 {unreadCount > 0 && (
-                    <span className="absolute top-1 right-1 w-4 h-4 bg-red-500 text-white text-[10px] font-bold flex items-center justify-center rounded-full ring-2 ring-[var(--bg-surface)]">
+                    <span className="absolute top-1 right-1 w-4 h-4 bg-red-500 text-white text-[10px] font-bold flex items-center justify-center rounded-full ring-2 ring-background">
                         {unreadCount > 9 ? '9+' : unreadCount}
                     </span>
                 )}
             </button>
 
             {isOpen && (
-                <div className="absolute right-0 mt-2 w-80 md:w-96 bg-[#0f172a] border border-white/20 rounded-2xl shadow-2xl z-50 overflow-hidden text-left ring-1 ring-black/50">
-                    <div className="p-4 border-b border-[#ffffff1a] flex justify-between items-center bg-white/5">
-                        <h3 className="font-bold text-white text-sm tracking-wide uppercase">Notifications</h3>
+                <div className="absolute right-0 mt-2 w-80 md:w-96 bg-popover border border-border rounded-2xl shadow-2xl z-50 overflow-hidden text-left ring-1 ring-black/5">
+                    <div className="p-4 border-b border-border flex justify-between items-center bg-muted/5">
+                        <h3 className="font-bold text-popover-foreground text-sm tracking-wide uppercase">Notifications</h3>
                         {unreadCount > 0 && (
                             <button
                                 onClick={handleMarkAllRead}
-                                className="text-xs text-blue-400 hover:text-blue-300 font-semibold transition-colors"
+                                className="text-xs text-primary hover:text-primary/80 font-semibold transition-colors"
                             >
                                 Mark all as read
                             </button>
                         )}
                     </div>
 
-                    <div className="max-h-[60vh] overflow-y-auto scrollbar-thin scrollbar-thumb-white/10 scrollbar-track-transparent">
+                    <div className="max-h-[60vh] overflow-y-auto scrollbar-thin scrollbar-thumb-muted/10 scrollbar-track-transparent">
                         {displayList.length > 0 ? (
                             displayList.map(item => {
                                 if ('isGroup' in item) {
@@ -197,21 +197,21 @@ export const NotificationBell = () => {
                                         <div
                                             key={item.id}
                                             onClick={() => handleNotificationClick(item)}
-                                            className="flex items-start gap-4 p-4 cursor-pointer transition-colors border-b border-[#ffffff1a] hover:bg-white/5 group"
+                                            className="flex items-start gap-4 p-4 cursor-pointer transition-colors border-b border-border hover:bg-muted/5 group"
                                         >
                                             <div className="mt-1 flex-shrink-0">
-                                                <div className="w-10 h-10 bg-blue-500/20 rounded-xl flex items-center justify-center border border-blue-500/30 group-hover:border-blue-500/50 transition-colors">
-                                                    <Layers size={20} className="text-blue-400" />
+                                                <div className="w-10 h-10 bg-primary/10 rounded-xl flex items-center justify-center border border-primary/20 group-hover:border-primary/40 transition-colors">
+                                                    <Layers size={20} className="text-primary" />
                                                 </div>
                                             </div>
                                             <div className="flex-1 min-w-0">
-                                                <p className="text-sm font-medium text-gray-200 group-hover:text-white transition-colors">
-                                                    {item.count} updates on <span className="font-bold text-white">'{entityName}'</span>
+                                                <p className="text-sm font-medium text-muted-foreground group-hover:text-foreground transition-colors">
+                                                    {item.count} updates on <span className="font-bold text-foreground">'{entityName}'</span>
                                                 </p>
-                                                <p className="text-xs text-gray-500 mt-1">
+                                                <p className="text-xs text-muted-foreground/70 mt-1">
                                                     Click to view all
                                                 </p>
-                                                <p className="text-[10px] text-gray-600 mt-2 font-medium uppercase tracking-wider">
+                                                <p className="text-[10px] text-muted-foreground/60 mt-2 font-medium uppercase tracking-wider">
                                                     {typeof item.latestCreatedAt === 'string'
                                                         ? formatDistanceToNow(new Date(item.latestCreatedAt), { addSuffix: true })
                                                         : item.latestCreatedAt?.seconds
@@ -220,13 +220,13 @@ export const NotificationBell = () => {
                                                     }
                                                 </p>
                                             </div>
-                                            <div className="w-2 h-2 rounded-full bg-blue-500 mt-2 flex-shrink-0 shadow-[0_0_8px_rgba(59,130,246,0.6)]" />
+                                            <div className="w-2 h-2 rounded-full bg-primary mt-2 flex-shrink-0 shadow-[0_0_8px_rgba(59,130,246,0.6)]" />
                                         </div>
                                     );
                                 } else {
                                     // Single Item
                                     return (
-                                        <div key={item.id} className="border-b border-[#ffffff1a] last:border-0 hover:bg-white/5 transition-colors">
+                                        <div key={item.id} className="border-b border-border last:border-0 hover:bg-muted/5 transition-colors">
                                             <NotificationItem
                                                 notification={item}
                                                 onClick={handleNotificationClick}
@@ -236,16 +236,16 @@ export const NotificationBell = () => {
                                 }
                             })
                         ) : (
-                            <div className="flex flex-col items-center justify-center h-64 text-gray-500">
-                                <div className="p-4 bg-white/5 rounded-full mb-4">
+                            <div className="flex flex-col items-center justify-center h-64 text-muted-foreground">
+                                <div className="p-4 bg-muted/10 rounded-full mb-4">
                                     <Layers size={32} className="opacity-40" />
                                 </div>
                                 <p className="text-sm font-medium">No notifications yet</p>
                             </div>
                         )}
                     </div>
-                    <div className="p-3 border-t border-[#ffffff1a] bg-[#0f172a] text-center">
-                        <small className="text-[10px] text-gray-600 font-medium uppercase tracking-widest">Notifications are stored for 30 days</small>
+                    <div className="p-3 border-t border-border bg-popover text-center">
+                        <small className="text-[10px] text-muted-foreground font-medium uppercase tracking-widest">Notifications are stored for 30 days</small>
                     </div>
                 </div>
             )}

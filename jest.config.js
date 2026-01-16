@@ -18,7 +18,8 @@ module.exports = {
   // only run meaningful unit tests from src/__tests__/components
   testMatch: [
     "<rootDir>/src/__tests__/components/**/*.test.ts?(x)",
-    "<rootDir>/src/__tests__/components/**/*.spec.ts?(x)"
+    "<rootDir>/src/__tests__/components/**/*.spec.ts?(x)",
+    "<rootDir>/src/__tests__/unit/**/*.test.ts?(x)"
   ],
   testPathIgnorePatterns: [
     "/node_modules/",

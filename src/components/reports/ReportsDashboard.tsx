@@ -125,10 +125,21 @@ export default function ReportsDashboard() {
     useEffect(() => {
         const fetchOverview = async () => {
             try {
+                // Determine if we should even try
+                // Note: userRole state is currently just 'viewer' default in this component, real auth comes from context passed down or inferred.
+                // Since this component uses apiClient which handles auth, we just rely on the response.
+
                 const data = await apiClient<{ overview: ReportOverview }>('/api/reports/overview');
                 setOverview(data.overview);
-            } catch (error) {
-                console.error('Failed to load overview', error);
+            } catch (error: any) {
+                // Check if it's a 403 Forbidden
+                if (error?.status === 403 || error?.message?.includes('Forbidden')) {
+                    // Expected for Guests/Viewers. Do nothing or show "Access Denied" UI.
+                    // The Tabs (Intelligence/Activity) are admin focused anyway.
+                    console.log("User is not authorized for Report Overview (Guest/Viewer)");
+                } else {
+                    console.error('Failed to load overview', error);
+                }
             } finally {
                 setLoadingOverview(false);
             }

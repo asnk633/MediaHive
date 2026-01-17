@@ -8,6 +8,8 @@ import { Clock, Calendar, CheckCircle2, User as UserIcon, AlertCircle, X, Edit2,
 import { format } from 'date-fns';
 import { useAuth } from '@/contexts/AuthContext';
 import { SafeAvatar } from '@/components/ui/SafeAvatar';
+import { useRouter } from 'next/navigation';
+import { AttachmentSection } from '@/components/tasks/AttachmentSection';
 import { DeliverablesList } from '@/components/deliverables/DeliverablesList';
 import { DeliverableUploadModal } from '@/components/deliverables/DeliverableUploadModal';
 import { TaskService } from '@/services/tasks';
@@ -43,6 +45,7 @@ const priorityColors = {
 
 export const TaskDetailModalV2: React.FC<TaskDetailsModalProps> = ({ task, isOpen, onClose, onEdit }) => {
     const { user } = useAuth();
+    const router = useRouter();
     const [showDeliverableUpload, setShowDeliverableUpload] = useState(false);
     const [deliverableRefreshTrigger, setDeliverableRefreshTrigger] = useState(0);
     const [teamMembers, setTeamMembers] = useState<{ uid: string; name: string; avatarUrl?: string }[]>([]);
@@ -62,7 +65,9 @@ export const TaskDetailModalV2: React.FC<TaskDetailsModalProps> = ({ task, isOpe
         }
     };
 
-    // Fetch team members
+    const [fullTask, setFullTask] = useState<Task>(task || {} as Task);
+
+    // Fetch team members & Fresh Task Data
     React.useEffect(() => {
         const fetchTeam = async () => {
             const members = await UserService.getTeamMembers();
@@ -72,8 +77,22 @@ export const TaskDetailModalV2: React.FC<TaskDetailsModalProps> = ({ task, isOpe
                 avatarUrl: m.avatarUrl || m.photoURL
             })));
         };
-        if (isOpen) fetchTeam();
-    }, [isOpen]);
+
+        if (isOpen) {
+            // Only fetch team members for Admin or Team roles
+            if (user?.role === 'admin' || user?.role === 'team') {
+                fetchTeam();
+            }
+            if (task?.id) {
+                // Ensure we display latest task info immediately
+                setFullTask(task);
+                // Then hydrate with fresh data from server
+                TaskService.getTask(task.id).then(fresh => {
+                    if (fresh) setFullTask(fresh);
+                });
+            }
+        }
+    }, [isOpen, task]);
 
     const handleToggleAssign = async (member: { uid: string, name: string }) => {
         if (!task) return;
@@ -301,27 +320,18 @@ export const TaskDetailModalV2: React.FC<TaskDetailsModalProps> = ({ task, isOpe
                                 </div>
                             </div>
 
-                            {/* Deliverables Section - Operational */}
+                            {/* Attachments Section - Consolidated */}
                             <div
                                 className="pt-6 mt-8 -mx-8 px-8 pb-8 border-t border-soft bg-muted/5"
                             >
-                                <div className="flex items-center justify-between mb-6">
-                                    <h3 className="text-sm font-bold text-muted-foreground uppercase tracking-widest flex items-center gap-2">
-                                        <FileCheck size={14} /> Deliverables
-                                    </h3>
-                                    {(user?.role === 'admin' || user?.role === 'team' || (Array.isArray(task.assignedTo) && task.assignedTo.some((u: any) => (typeof u === 'string' ? u : u.uid) === user?.uid))) && (
-                                        <button
-                                            onClick={() => setShowDeliverableUpload(true)}
-                                            className="text-xs font-bold text-primary hover:text-primary/80 flex items-center gap-1.5 px-3 py-1.5 rounded-lg border border-primary/30 hover:border-primary/50 transition-colors"
-                                        >
-                                            <UploadCloud size={13} /> Upload
-                                        </button>
-                                    )}
-                                </div>
-
-                                <DeliverablesList
-                                    taskId={task.id}
-                                    refreshTrigger={deliverableRefreshTrigger}
+                                <AttachmentSection
+                                    task={fullTask}
+                                    onUpdate={() => {
+                                        router.refresh();
+                                        if (task?.id) {
+                                            TaskService.getTask(task.id).then(t => t && setFullTask(t));
+                                        }
+                                    }}
                                 />
                             </div>
                         </div>
@@ -329,15 +339,7 @@ export const TaskDetailModalV2: React.FC<TaskDetailsModalProps> = ({ task, isOpe
                 </div>
             )}
 
-            {/* Deliverable Upload Modal */}
-            {task?.id && (
-                <DeliverableUploadModal
-                    taskId={task.id}
-                    isOpen={showDeliverableUpload}
-                    onClose={() => setShowDeliverableUpload(false)}
-                    onUploadComplete={() => setDeliverableRefreshTrigger(prev => prev + 1)}
-                />
-            )}
+
         </AnimatePresence>,
         document.body
     );

@@ -16,7 +16,7 @@ import { PageHeader } from "@/components/ui/layout/PageHeader";
 export default function TasksPage() {
   const [tasks, setTasks] = useState<Task[]>([]);
   const [loading, setLoading] = useState(true);
-  const { user } = useAuth();
+  const { user, authStatus } = useAuth();
   const router = useRouter();
   const searchParams = useSearchParams();
 
@@ -37,7 +37,8 @@ export default function TasksPage() {
     const fetchTasks = async () => {
       if (typeof document !== 'undefined' && document.hidden) return;
 
-      if (user) {
+      // Only fetch if strictly authenticated to avoid 401s from racing conditions
+      if (user && authStatus === 'authenticated') {
         try {
           const fetchedTasks = await CanonicalDataService.getTasks({
             role: user.role,
@@ -52,8 +53,9 @@ export default function TasksPage() {
         } catch (error: any) {
           if (isSubscribed) {
             setLoading(false);
-            if (error.message?.includes('429')) {
-              console.warn('[TasksPage] Rate limited.');
+            const msg = error.message?.toLowerCase() || '';
+            if (msg.includes('429') || msg.includes('401') || msg.includes('unauthorized')) {
+              if (msg.includes('429')) console.warn('[TasksPage] Rate limited.');
             } else {
               console.error('[TasksPage] Failed to fetch tasks:', error);
             }

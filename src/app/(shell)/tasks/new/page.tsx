@@ -71,17 +71,36 @@ export default function NewTaskPage() {
   }, []);
 
   // Auto-fill from user defaults
+  // Auto-fill from user defaults
+  // We use a separate effect for this to ensure it runs when either User defaults exist OR when lists are loaded.
+  // We explicitly check length inside to avoid adding the arrays themselves to the dependency list if they are causing strict mode issues,
+  // though typically state arrays are stable. The error "changed size" suggests something else might be going on, 
+  // so we will stringify the dependence or just use the length as a proxy for "loaded".
   useEffect(() => {
     if (departmentsList.length === 0 && institutionsList.length === 0) return;
 
-    if (user.defaultDepartment) {
-      const dept = departmentsList.find(d => d.id === user.defaultDepartment || d.name === user.defaultDepartment);
-      if (dept) setSelectedOrgId(`dept_${dept.id}`);
-    } else if (user.defaultInstitution) {
-      const inst = institutionsList.find(i => i.id === user.defaultInstitution || i.name === user.defaultInstitution);
-      if (inst) setSelectedOrgId(`inst_${inst.id}`);
+    // Helper to find dept/inst
+    // Check Explicit IDs first (New standard), then explicit defaults, then name matches
+    const userDeptId = user.departmentId || user.defaultDepartment;
+    const userInstId = user.institutionId || user.defaultInstitution;
+
+    if (userDeptId) {
+      const dept = departmentsList.find(d => d.id === userDeptId || d.name === userDeptId);
+      if (dept) {
+        setSelectedOrgId(`dept_${dept.id}`);
+        return;
+      }
     }
-  }, [user.defaultDepartment, user.defaultInstitution, departmentsList, institutionsList]);
+
+    if (userInstId) {
+      const inst = institutionsList.find(i => i.id === userInstId || i.name === userInstId);
+      if (inst) {
+        setSelectedOrgId(`inst_${inst.id}`);
+        return;
+      }
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [user.departmentId, user.institutionId, user.defaultDepartment, user.defaultInstitution, departmentsList.length, institutionsList.length]);
 
   const isGuest = user?.role?.toLowerCase() === 'guest';
   const isAdmin = user?.role === 'admin';
@@ -369,37 +388,61 @@ export default function NewTaskPage() {
                   <label className="block text-sm font-medium text-white/70 mb-2">
                     Requested By <span className="text-white/40 text-xs">(Department / Unit / Office)</span>
                   </label>
-                  <div className="relative">
-                    <div className="absolute inset-y-0 left-3 flex items-center pointer-events-none text-gray-500">
-                      <Briefcase size={14} />
-                    </div>
-                    <select
-                      value={selectedOrgId}
-                      onChange={(e) => setSelectedOrgId(e.target.value)}
-                      className="w-full bg-white/5 hover:bg-white/10 pl-10 pr-8 py-3 rounded-xl border border-[#ffffff1a] focus:border-blue-500/50 outline-none text-sm text-white appearance-none [&>optgroup]:bg-[#13161c] [&>option]:bg-[#13161c] cursor-pointer transition-colors"
-                    >
-                      <option value="" className="bg-[#13161c]">Select Requesting Unit...</option>
 
-                      <optgroup label="OFFICES / UNITS" className="bg-[#13161c] text-gray-500 font-bold">
-                        {departmentsList.map(dept => (
-                          <option key={dept.id} value={`dept_${dept.id}`} className="bg-[#13161c] text-gray-300 font-normal">
-                            {dept.name}
-                          </option>
-                        ))}
-                      </optgroup>
-
-                      <optgroup label="INSTITUTIONS" className="bg-[#13161c] text-gray-500 font-bold">
-                        {institutionsList.map(inst => (
-                          <option key={inst.id} value={`inst_${inst.id}`} className="bg-[#13161c] text-gray-300 font-normal">
-                            {inst.name}
-                          </option>
-                        ))}
-                      </optgroup>
-                    </select>
-                    <div className="absolute inset-y-0 right-3 flex items-center pointer-events-none text-gray-500">
-                      <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M19 9l-7 7-7-7" /></svg>
+                  {isGuest ? (
+                    /* Read-Only View for Guests */
+                    <div className="w-full bg-white/5 pl-4 pr-4 py-3 rounded-xl border border-[#ffffff1a] text-sm text-white flex items-center gap-3">
+                      <Briefcase size={14} className="text-gray-400" />
+                      <span>
+                        {(() => {
+                          if (!selectedOrgId) return <span className="text-gray-500 italic">No Department Assigned (Contact Admin)</span>;
+                          if (selectedOrgId.startsWith('dept_')) {
+                            const id = selectedOrgId.split('_')[1];
+                            return departmentsList.find(d => d.id === id)?.name || "Unknown Department";
+                          }
+                          if (selectedOrgId.startsWith('inst_')) {
+                            const id = selectedOrgId.split('_')[1];
+                            return institutionsList.find(i => i.id === id)?.name || "Unknown Institution";
+                          }
+                          return "Unknown Unit";
+                        })()}
+                      </span>
+                      {selectedOrgId && <span className="ml-auto text-xs text-green-400/70 italic">Auto-set</span>}
                     </div>
-                  </div>
+                  ) : (
+                    /* Interactive Dropdown for others */
+                    <div className="relative">
+                      <div className="absolute inset-y-0 left-3 flex items-center pointer-events-none text-gray-500">
+                        <Briefcase size={14} />
+                      </div>
+                      <select
+                        value={selectedOrgId}
+                        onChange={(e) => setSelectedOrgId(e.target.value)}
+                        className="w-full bg-white/5 hover:bg-white/10 pl-10 pr-8 py-3 rounded-xl border border-[#ffffff1a] focus:border-blue-500/50 outline-none text-sm text-white appearance-none [&>optgroup]:bg-[#13161c] [&>option]:bg-[#13161c] cursor-pointer transition-colors"
+                      >
+                        <option value="" className="bg-[#13161c]">Select Requesting Unit...</option>
+
+                        <optgroup label="OFFICES / UNITS" className="bg-[#13161c] text-gray-500 font-bold">
+                          {departmentsList.map(dept => (
+                            <option key={dept.id} value={`dept_${dept.id}`} className="bg-[#13161c] text-gray-300 font-normal">
+                              {dept.name}
+                            </option>
+                          ))}
+                        </optgroup>
+
+                        <optgroup label="INSTITUTIONS" className="bg-[#13161c] text-gray-500 font-bold">
+                          {institutionsList.map(inst => (
+                            <option key={inst.id} value={`inst_${inst.id}`} className="bg-[#13161c] text-gray-300 font-normal">
+                              {inst.name}
+                            </option>
+                          ))}
+                        </optgroup>
+                      </select>
+                      <div className="absolute inset-y-0 right-3 flex items-center pointer-events-none text-gray-500">
+                        <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M19 9l-7 7-7-7" /></svg>
+                      </div>
+                    </div>
+                  )}
                 </div>
               )}
 

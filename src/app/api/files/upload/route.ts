@@ -232,19 +232,21 @@ export async function POST(req: NextRequest) {
                         fileDoc.taskId = metadata.taskId;
                     }
 
-                    await db.collection('files').add(fileDoc);
-                    console.log('Metadata saved to Firestore');
+
+                    const docRef = await db.collection('files').add(fileDoc);
+                    console.log('Metadata saved to Firestore with ID:', docRef.id);
 
                     await logSystemActivity({
                         actorId: user.uid,
                         actorRole: user.role || 'viewer',
                         action: 'file_uploaded',
                         entityType: 'file',
-                        entityId: fileDoc.driveFileId || 'unknown',
+                        entityId: docRef.id,
                         summary: `File Uploaded: ${fileDoc.name}`,
                         metadata: {
                             folder: fileDoc.path,
-                            type: fileDoc.type
+                            type: fileDoc.type,
+                            driveId: fileId
                         },
                         visibility: { mode: 'internal' }
                     });
@@ -291,7 +293,7 @@ export async function POST(req: NextRequest) {
                         // Don't fail the upload just because notification failed
                     }
 
-                    resolve({ success: true, fileId, ...fileDoc });
+                    resolve({ success: true, id: docRef.id, fileId, ...fileDoc });
 
                 } catch (err: any) {
                     console.error('Upload stream error:', err);

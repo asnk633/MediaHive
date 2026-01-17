@@ -12,8 +12,17 @@ export async function GET(request: NextRequest) {
             return Response.json({ error: 'Unauthorized' }, { status: 401 });
         }
 
-        // Logic from original route.ts
-        const usersSnapshot = await db.collection('users').get();
+        // Optimized Query: Only fetch 'team' role
+        // Also 'isActive' != false (requires index if mixed with == query?)
+        // Firestore allows inequality on one field.
+        // Query: where('role', '==', 'team').where('isActive', '!=', false)?
+        // Or simply fetch all team members and filter isActive locally (much smaller set than "All Users").
+        // Let's filter by role server-side first (Huge win).
+
+        const usersSnapshot = await db.collection('users')
+            .where('role', '==', 'team')
+            .get();
+
         const teamMembers = usersSnapshot.docs
             .map(doc => {
                 const userData = doc.data();
@@ -27,7 +36,8 @@ export async function GET(request: NextRequest) {
                     isActive: userData.isActive ?? true
                 };
             })
-            .filter(user => user.role === 'team' && user.isActive !== false)
+            // Filter inactive client-side (safe, small dataset)
+            .filter(user => user.isActive !== false)
             .map(user => ({
                 uid: user.uid,
                 name: user.name,

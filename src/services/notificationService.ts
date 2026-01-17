@@ -2,7 +2,7 @@ import { AppNotification, CreateNotificationParams, NotificationType } from '@/t
 import { apiClient } from '@/lib/apiClient';
 
 // API helper function
-const apiRequest = async (endpoint: string, options: RequestInit = {}) => {
+const apiRequest = async (endpoint: string, options: any = {}) => {
   const url = `/api/notifications${endpoint}`;
   return apiClient(url, options);
 };
@@ -61,11 +61,15 @@ export class NotificationService {
   static async getUserNotifications(limitCount = 50): Promise<AppNotification[]> {
     try {
       const response = await apiRequest(`?limit=${limitCount}`, {
-        method: 'GET'
+        method: 'GET',
+        silent: true
       });
       return response.notifications || [];
-    } catch (error) {
-      console.error('Error fetching notifications:', error);
+    } catch (error: any) {
+      const msg = error.message?.toLowerCase() || '';
+      if (!msg.includes('unauthorized') && !msg.includes('401')) {
+        console.error('Error fetching notifications:', error);
+      }
       throw error;
     }
   }
@@ -153,12 +157,16 @@ export function listenNotifications(userId: string, callback: (notifications: Ap
 
     try {
       const data = await apiClient(`/api/notifications?limit=50`, {
-        method: 'GET'
+        method: 'GET',
+        silent: true
       });
 
       callback(data.notifications || []);
-    } catch (error) {
-      console.warn('Notification polling failed:', error);
+    } catch (error: any) {
+      const msg = error.message?.toLowerCase() || '';
+      if (!msg.includes('unauthorized') && !msg.includes('401')) {
+        console.warn('Notification polling failed:', error);
+      }
     }
 
     // Continue polling every 30 seconds

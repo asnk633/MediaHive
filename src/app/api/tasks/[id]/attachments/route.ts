@@ -54,38 +54,80 @@ export async function POST(req: NextRequest, props: { params: Promise<{ id: stri
         }
 
         // 3. Drive Setup
-        const drive = await getDriveClient();
         let rootFolderId = DRIVE_CONFIG.folderId!;
-        const rootName = 'Thaiba-Media-Tasks';
-        rootFolderId = await ensureFolderPath(drive, rootFolderId, [rootName]);
+        let drive: any;
+        let taskFolderId: string;
+        let targetFolderId: string;
 
-        const taskFolderName = `Task-${taskId}`;
-        const taskFolderId = await ensureFolderPath(drive, rootFolderId, [taskFolderName]);
+        try {
+            drive = await getDriveClient();
+            const rootName = 'Thaiba-Media-Tasks';
+            rootFolderId = await ensureFolderPath(drive, rootFolderId, [rootName]);
+
+            const taskFolderName = `Task-${taskId}`;
+            taskFolderId = await ensureFolderPath(drive, rootFolderId, [taskFolderName]);
+        } catch (driveErr: any) {
+            console.error('Drive Setup Failed:', driveErr);
+            throw new Error(`Failed to access Google Drive folders: ${driveErr.message}`);
+        }
+
+        if (!taskFolderId) {
+            console.error('CRITICAL: taskFolderId is undefined after ensureFolderPath');
+            throw new Error('Drive Setup Error: Could not resolve or create task folder.');
+        }
+        console.log(`[DEBUG_UPLOAD] Resolved Task Folder ID: ${taskFolderId} (Root: ${rootFolderId})`);
 
         if (taskData.driveFolderId !== taskFolderId) {
             await taskRef.update({ driveFolderId: taskFolderId });
         }
 
-        const subfolderName = section;
-        const targetFolderId = await ensureFolderPath(drive, taskFolderId, [subfolderName]);
+        // Add propagation delay to ensure Task Folder is recognized by Drive API
+        // "File not found" errors occurring here suggest specific Drive replicas haven't synced the new folder yet
+        await new Promise(resolve => setTimeout(resolve, 2000));
 
-        // 4. Upload File
-        const buffer = Buffer.from(await file.arrayBuffer());
-        const stream = Readable.from(buffer);
+        try {
+            const subfolderName = section;
+            console.log(`[DEBUG_UPLOAD] Ensuring subfolder '${subfolderName}' in parent '${taskFolderId}'`);
+            targetFolderId = await ensureFolderPath(drive, taskFolderId, [subfolderName]);
+            console.log(`[DEBUG_UPLOAD] Target Folder ID: ${targetFolderId}`);
 
-        const driveFile = await drive.files.create({
-            requestBody: {
-                name: file.name,
-                parents: [targetFolderId],
-            },
-            media: {
-                mimeType: file.type,
-                body: stream,
-            },
-            fields: 'id, webViewLink, webContentLink',
-        });
+            // Explicit verification of folder existence before upload
+            // This catches "File not found" issues where the folder ID is valid but not visible to the service account
+            try {
+                await drive.files.get({
+                    fileId: targetFolderId,
+                    fields: 'id, name, mimeType',
+                    supportsAllDrives: true
+                });
+                console.log(`[DEBUG_UPLOAD] Verified folder ${targetFolderId} exists and is accessible.`);
+            } catch (verifyErr: any) {
+                console.error(`[DEBUG_UPLOAD] CRITICAL: Folder ${targetFolderId} returned by ensureFolderPath is NOT accessible via files.get().`, verifyErr);
+                throw new Error(`Folder verification failed: ${verifyErr.message}`);
+            }
 
-        const fileId = driveFile.data.id!;
+            // 4. Upload File
+            const buffer = Buffer.from(await file.arrayBuffer());
+            const stream = Readable.from(buffer);
+
+            const driveFile = await drive.files.create({
+                requestBody: {
+                    name: file.name,
+                    parents: [targetFolderId],
+                },
+                media: {
+                    mimeType: file.type,
+                    body: stream,
+                },
+                fields: 'id, webViewLink, webContentLink',
+                supportsAllDrives: true,
+            });
+
+            var fileId = driveFile.data.id!;
+            var webViewLink = driveFile.data.webViewLink;
+        } catch (uploadErr: any) {
+            console.error('Drive Upload Failed:', uploadErr);
+            throw new Error(`Failed to upload file to Drive: ${uploadErr.message}`);
+        }
 
         // 5. Apply Permissions
         if (showInDownloads) {
@@ -93,11 +135,33 @@ export async function POST(req: NextRequest, props: { params: Promise<{ id: stri
         }
 
         // 6. Create Metadata Object
+        // IMPORTANT: We must also save this to the global 'files' collection for consistency/verification
+        // and use the Firestore ID as the primary ID, not the Drive ID.
+
+        const metadataForDb = {
+            userId: user.uid,
+            name: file.name,
+            originalName: file.name,
+            size: file.size,
+            type: file.type,
+            storageUrl: webViewLink || '',
+            storagePath: `tasks/${taskId}/${section}/${file.name}`, // Virtual path concept
+            uploadedDate: new Date().toISOString(),
+            uploadedBy: user.uid,
+            driveFileId: fileId,
+            taskId: taskId,
+            section: section,
+            createdAt: admin.firestore.FieldValue.serverTimestamp()
+        };
+
+        const fileDocRef = await adminDb.collection('files').add(metadataForDb);
+        const fileFirestoreId = fileDocRef.id;
+
         const newFile: TaskFile = {
-            id: fileId,
+            id: fileFirestoreId, // Use Firestore ID
             name: file.name,
             mimeType: file.type,
-            url: driveFile.data.webViewLink || '',
+            url: webViewLink || '',
             size: file.size,
             section: section,
             showInDownloads: showInDownloads,
@@ -112,7 +176,7 @@ export async function POST(req: NextRequest, props: { params: Promise<{ id: stri
         // 7. Activity Log (SUBCOLLECTION)
         const log: AttachmentLog = {
             id: randomUUID(),
-            fileId,
+            fileId: fileFirestoreId,
             fileName: newFile.name,
             action: 'upload',
             performedBy: {
@@ -132,10 +196,27 @@ export async function POST(req: NextRequest, props: { params: Promise<{ id: stri
         batch.set(logRef, log);
         await batch.commit();
 
-        return NextResponse.json({ success: true, file: newFile });
+        // Log system activity
+        const { logSystemActivity } = await import('@/lib/server/activity-logger');
+        await logSystemActivity({
+            actorId: user.uid,
+            actorRole: user.role || 'viewer',
+            action: 'file_uploaded',
+            entityType: 'file',
+            entityId: fileFirestoreId,
+            summary: `Task Attachment Uploaded: ${file.name}`,
+            metadata: {
+                taskId,
+                section
+            },
+            visibility: { mode: 'internal' }
+        });
+
+        return NextResponse.json({ success: true, file: newFile, id: fileFirestoreId });
 
     } catch (error: any) {
-        console.error('Upload Error:', error);
+        console.error('Upload Error Stack:', error.stack);
+        console.error('Upload Error Message:', error.message);
         return NextResponse.json({ error: error.message }, { status: 500 });
     }
 }

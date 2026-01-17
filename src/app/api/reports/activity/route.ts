@@ -21,7 +21,8 @@ export async function GET(req: NextRequest) {
         const severity = searchParams.get('severity'); // info, warning, critical
         let fromDate = searchParams.get('from');
         const toDate = searchParams.get('to');
-        const limitParam = parseInt(searchParams.get('limit') || '50');
+        let limitParam = parseInt(searchParams.get('limit') || '50');
+        if (limitParam > 100) limitParam = 100; // Safety cap
         const exportFormat = searchParams.get('export'); // 'csv' | 'json'
 
         // --- RETENTION POLICY (Default 60 Days) ---

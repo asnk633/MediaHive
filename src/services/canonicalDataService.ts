@@ -74,8 +74,13 @@ export class CanonicalDataService {
       if (filters.assignedTo) queryParams.append('assignedTo', filters.assignedTo);
       if (filters.createdBy) queryParams.append('createdBy', filters.createdBy);
 
+      // Default to 100 to support client-side filtering compatibility (e.g. MyWorkflowWidget)
+      // This is a safety cap to prevent O(N) reads while preserving UI functionality
+      queryParams.append('limit', '100');
+
       const data = await apiClient(`/api/tasks?${queryParams.toString()}`, {
-        method: 'GET'
+        method: 'GET',
+        silent: true
       });
 
       const tasks = data.tasks || [];
@@ -103,8 +108,8 @@ export class CanonicalDataService {
           ...task,
           smartMetadata: SmartRulesEngine.processTask(task)
         }));
-    } catch (error) {
-      if (!isNetworkError(error)) {
+    } catch (error: any) {
+      if (!isNetworkError(error) && !error.message?.includes('Unauthorized')) {
         console.error('Error fetching tasks:', error);
       }
       return [];
@@ -134,7 +139,8 @@ export class CanonicalDataService {
       if (filters.status) filters.status.forEach(status => queryParams.append('status', status));
 
       const data = await apiClient(`/api/tasks/stats?${queryParams.toString()}`, {
-        method: 'GET'
+        method: 'GET',
+        silent: true
       });
 
       // Augment API stats with client-side robust calculation if needed, 
@@ -155,7 +161,7 @@ export class CanonicalDataService {
         return this.calculateStatsFromTasks(tasks);
       }
 
-      if (!isNetworkError(error)) {
+      if (!isNetworkError(error) && !error.message?.includes('Unauthorized')) {
         console.error('Error fetching task stats:', error);
       }
       return this.getEmptyStats();
@@ -233,8 +239,12 @@ export class CanonicalDataService {
       if (filters.status) filters.status.forEach(status => queryParams.append('status', status));
       if (filters.createdBy) queryParams.append('createdBy', filters.createdBy);
 
+      // Limit to 100 recent events for safety
+      queryParams.append('limit', '100');
+
       const data = await apiClient(`/api/events?${queryParams.toString()}`, {
-        method: 'GET'
+        method: 'GET',
+        silent: true
       });
 
       const userEvents = data.events || [];
@@ -262,8 +272,8 @@ export class CanonicalDataService {
         console.warn('Failed to load system events in CanonicalDataService:', err);
         return userEvents;
       }
-    } catch (error) {
-      if (!isNetworkError(error)) {
+    } catch (error: any) {
+      if (!isNetworkError(error) && !error.message?.includes('Unauthorized')) {
         console.error('Error fetching events:', error);
       }
       return [];
@@ -314,8 +324,8 @@ export class CanonicalDataService {
         next7Days,
         next30Days
       };
-    } catch (error) {
-      if (!isNetworkError(error)) {
+    } catch (error: any) {
+      if (!isNetworkError(error) && !error.message?.includes('Unauthorized')) {
         console.error('Error fetching event stats:', error);
       }
       return { upcoming: 0, completed: 0, next7Days: 0, next30Days: 0 };
@@ -395,7 +405,8 @@ export class CanonicalDataService {
       if (institutionId) queryParams.append('institutionId', institutionId);
 
       const data = await apiClient(`/api/users?${queryParams.toString()}`, {
-        method: 'GET'
+        method: 'GET',
+        silent: true
       });
 
       return data.users || [];
@@ -405,7 +416,7 @@ export class CanonicalDataService {
         // console.warn('User list suppressed due to permissions');
         return [];
       }
-      if (!isNetworkError(error)) {
+      if (!isNetworkError(error) && !error.message?.includes('Unauthorized')) {
         console.error('Error fetching users:', error);
       }
       return [];

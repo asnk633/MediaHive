@@ -103,7 +103,15 @@ export async function GET(request: NextRequest) {
     const performedBy = searchParams.get('performedBy');
 
     // Get all audit logs (in a real app, you'd want to add pagination and filtering)
-    const snapshot = await db.collection('audit_logs').orderBy('timestamp', 'desc').get();
+    // Get audit logs with limit
+    let query = db.collection('audit_logs').orderBy('timestamp', 'desc');
+
+    // Apply filters if present
+    if (action) query = query.where('action', '==', action);
+    if (targetUserId) query = query.where('targetUserId', '==', targetUserId);
+    if (performedBy) query = query.where('performedBy', '==', performedBy);
+
+    const snapshot = await query.limit(limit).get();
 
     const logs = snapshot.docs.map(doc => ({
       id: doc.id,

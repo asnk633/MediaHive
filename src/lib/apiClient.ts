@@ -15,6 +15,7 @@ const isDev = process.env.NODE_ENV === 'development';
 interface ApiOptions extends RequestInit {
   url?: string;
   skipDedup?: boolean;
+  silent?: boolean;
 }
 
 // Helper: Sleep for specified milliseconds
@@ -134,28 +135,41 @@ export const apiClient = async <T = any>(endpoint: string, options: ApiOptions =
     }
 
     // Automatically attach Firebase ID token if user is signed in
-    try {
-      const auth = getAuth();
-      if (auth.currentUser) {
-        const token = await auth.currentUser.getIdToken();
-        headers['Authorization'] = `Bearer ${token}`;
+    // BUT: respect explicitly passed Authorization headers (e.g., from AuthContext)
+    const headersRecord = options.headers as Record<string, string> | undefined;
+    if (!headersRecord?.['Authorization']) {
+      try {
+        const auth = getAuth();
+        console.log('[API Client] auth.currentUser exists:', !!auth.currentUser, 'for endpoint:', endpoint);
+        if (auth.currentUser) {
+          // Force refresh if we are hitting a 401 recently? No, standard get is fine.
+          const token = await auth.currentUser.getIdToken();
+          headers['Authorization'] = `Bearer ${token}`;
+          console.log('[API Client] Token attached for:', endpoint);
+        } else {
+          console.warn('[API Client] No currentUser available for:', endpoint);
+        }
+      } catch (error) {
+        if (isDev) console.warn('[API Client] Failed to attach auth token:', error);
       }
-    } catch (error) {
-      // Silently fail to attach token if auth not initialized or other error
-      // The request will proceed (and likely fail 401) but existing error handling will catch that
-      if (isDev) console.warn('[API Client] Failed to attach auth token:', error);
+    } else {
+      // Use the explicitly provided Authorization header
+      headers['Authorization'] = headersRecord?.['Authorization'] || '';
+      console.log('[API Client] Using provided Authorization header for:', endpoint);
     }
 
     // Make the fetch request
     const response = await fetch(url, {
       ...options,
       headers,
-      credentials: 'same-origin', // Ensure cookies are sent
+      credentials: 'include', // Changed from 'same-origin' to 'include' for better cookie handling
     });
 
     // Handle 401 Unauthorized
     if (response.status === 401) {
-      console.warn(`[API Client] 401 Unauthorized for endpoint: ${endpoint}`);
+      if (!options.silent) {
+        console.warn(`[API Client] 401 Unauthorized for endpoint: ${endpoint}`);
+      }
       let errorMsg = 'Unauthorized: Please sign in again';
       try {
         const errData = await response.json();

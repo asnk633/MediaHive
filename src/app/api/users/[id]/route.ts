@@ -18,6 +18,12 @@ export async function GET(
         // Await params (Next.js 15+ requirement)
         const { id: userId } = await params;
 
+        // Explicitly ignore 'admins' and 'team' to avoid conflict with static routes
+        // (Next.js should prioritize static routes, but this safety check prevents logic errors if it doesn't)
+        if (userId === 'admins' || userId === 'team') {
+            return Response.json({ error: 'Route conflict: Use dedicated endpoint' }, { status: 404 });
+        }
+
         if (!userId) {
             return Response.json({ error: 'User ID is required' }, { status: 400 });
         }

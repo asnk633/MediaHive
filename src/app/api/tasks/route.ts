@@ -8,49 +8,125 @@ import { logSystemActivity } from '@/lib/server/activity-logger';
 
 export async function GET(request: NextRequest) {
   try {
-    // Verify the user is authenticated
+    // Verify authentication
     const user = await verifyUser(request);
     if (!user) {
       return Response.json({ error: 'Unauthorized' }, { status: 401 });
     }
 
     const url = new URL(request.url);
-    const taskId = url.pathname.split('/').pop(); // Get the last part of the path for individual task
-
     const db = adminDb;
 
-    if (taskId && taskId !== 'tasks') {
-      // Fetch individual task by ID
-      const taskDoc = await db.collection('tasks').doc(taskId).get();
+    // Check if this is a request for a specific ID (Legacy/Fallback handling)
+    // In strict Next.js App Router, [id] should handle this, but preserving logic just in case.
+    const pathSegments = url.pathname.split('/');
+    const lastSegment = pathSegments.pop();
+    const isListRequest = lastSegment === 'tasks' || lastSegment === '';
 
-      if (!taskDoc.exists) {
-        return Response.json({ error: 'Task not found' }, { status: 404 });
-      }
-
-      const taskData = taskDoc.data();
-      return Response.json({ task: { id: taskDoc.id, ...taskData } });
-    } else {
-
-      // Fetch all tasks
-      let query = db.collection('tasks').orderBy('createdAt', 'desc');
-      const tasksSnapshot = await query.get();
-
-      let tasks: any[] = tasksSnapshot.docs.map(doc => ({
-        id: doc.id,
-        ...doc.data()
-      }));
-
-      // Apply filters in-memory (to avoid Firestore index requirements for now)
-      const createdBy = url.searchParams.get('createdBy');
-      if (createdBy) {
-        tasks = tasks.filter((task: any) => task.createdBy?.uid === createdBy);
-      }
-
-
-      return Response.json({ tasks });
+    if (!isListRequest && lastSegment) {
+      const taskDoc = await db.collection('tasks').doc(lastSegment).get();
+      if (!taskDoc.exists) return Response.json({ error: 'Task not found' }, { status: 404 });
+      return Response.json({ task: { id: taskDoc.id, ...taskDoc.data() } });
     }
+
+    // --- OPTIMIZED LIST FETCH ---
+    // GUARDRAIL: DO NOT REMOVE LIMIT CAP (100) OR UNBOUNDED READS WILL REGRESS COST
+    // PATTERN: Server-side Filtering + Pagination required.
+
+    // 1. Parse Query Parameters
+    const limitParam = parseInt(url.searchParams.get('limit') || '20', 10);
+    const safeLimit = Math.min(Math.max(limitParam, 1), 100); // Enforce 1-100 limit
+    const cursor = url.searchParams.get('cursor'); // Pagination token
+
+    // Filters
+    const institutionId = url.searchParams.get('institutionId');
+    const status = url.searchParams.get('status');
+    const createdBy = url.searchParams.get('createdBy');
+    // Note: assignedTo filter is complex (array of objects), skipping server-side for now to avoid schema dependency.
+
+    // 2. Build Query
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    let query: any = db.collection('tasks');
+
+    // Mandatory Scoping (if provided)
+    if (institutionId) {
+      query = query.where('institutionId', '==', institutionId);
+    }
+
+    // Apply Filters
+    const statuses = url.searchParams.getAll('status');
+    if (statuses.length > 0) {
+      // If multiple statuses, use 'in' operator (Max 10 per Firestore limit)
+      // If single, use '=='
+      if (statuses.length === 1) {
+        query = query.where('status', '==', statuses[0]);
+      } else {
+        query = query.where('status', 'in', statuses.slice(0, 10));
+      }
+    }
+    if (createdBy) {
+      query = query.where('createdBy.uid', '==', createdBy);
+    }
+
+    // Ordering (Required for pagination)
+    query = query.orderBy('createdAt', 'desc');
+
+    // Cursor Pagination
+    if (cursor) {
+      try {
+        // Expected cursor format: "ISOString" (since we order by createdAt)
+        // For standard robust pagination, we just pass the value.
+        // If sorting by multiple fields, we need multiple values.
+        // Here we stick to simple 'createdAt' based cursor.
+        const cursorDate = new Date(cursor);
+        if (!isNaN(cursorDate.getTime())) {
+          // Create a proper Timestamp object for Firestore
+          // Note: We need the exact timestamp type. 
+          // Since we use admin SDK, dates are usually converted to Timestamps.
+          query = query.startAfter(cursorDate);
+        }
+      } catch (e) {
+        console.warn('Invalid cursor format', e);
+      }
+    }
+
+    // limiting (fetching one extra to detect next page)
+    const snapshot = await query.limit(safeLimit + 1).get();
+
+    // 3. Process Results
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    const tasks = snapshot.docs.map((doc: any) => ({
+      id: doc.id,
+      ...doc.data()
+    }));
+
+    let nextPageToken = null;
+    if (tasks.length > safeLimit) {
+      const nextItem = tasks.pop(); // Remove the extra item
+      // Use the last item of the valid set as the cursor
+      const lastItem = tasks[tasks.length - 1];
+      if (lastItem && lastItem.createdAt) {
+        // Check if createdAt is a Firestore Timestamp or Date
+        const dateVal = (lastItem.createdAt as any).toDate ? (lastItem.createdAt as any).toDate() : new Date(lastItem.createdAt);
+        nextPageToken = dateVal.toISOString();
+      }
+    }
+
+    return Response.json({
+      tasks,
+      meta: {
+        limit: safeLimit,
+        count: tasks.length,
+        nextPageToken
+      }
+    });
+
   } catch (error: any) {
-    console.error('Error fetching tasks:', error);
+    console.error('Error fetching tasks internal:', error);
+    // Helpful error for missing indexes
+    if (error.code === 5 || error.message?.includes('index')) {
+      console.error('MISSING INDEX:', error.details || error.message);
+    }
     return Response.json({ error: error.message || 'Failed to fetch tasks' }, { status: 500 });
   }
 }

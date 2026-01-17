@@ -54,26 +54,45 @@ export async function verifyUser(request: Request): Promise<AuthenticatedUser | 
 
     // Priority 1: Authorization Header (Bearer Token)
     const authHeader = request.headers.get('Authorization');
+    console.log('[verifyUser] Authorization header present:', !!authHeader);
     if (authHeader && authHeader.startsWith('Bearer ')) {
         const token = authHeader.split('Bearer ')[1];
+        console.log('[verifyUser] Token extracted, length:', token?.length);
         try {
-            console.log('[verifyUser] Verifying ID Token from Header');
+            console.log('[verifyUser] Attempting to verify ID Token from Header');
             const decodedToken = await adminAuth.verifyIdToken(token);
+            console.log('[verifyUser] Token verified successfully for uid:', decodedToken.uid);
 
             // Allow Super Admin role override from Claims if needed, or fetch from DB
             // Fetch user profile to get the LATEST role
-            const userDoc = await adminDb.collection('users').doc(decodedToken.uid).get();
             let finalRole = decodedToken.role || 'guest';
             let userData: any = {};
 
-            if (userDoc.exists) {
-                userData = userDoc.data();
-                finalRole = userData?.role || finalRole;
+            try {
+                const userDoc = await adminDb.collection('users').doc(decodedToken.uid).get();
 
-                // Phase 15: Enforce Active Status
-                if (userData.isActive === false) {
-                    console.warn(`[verifyUser] Access Denied: User ${decodedToken.uid} is inactive.`);
-                    return null;
+                if (userDoc.exists) {
+                    userData = userDoc.data();
+                    finalRole = userData?.role || finalRole;
+
+                    // Phase 15: Enforce Active Status
+                    if (userData.isActive === false) {
+                        console.warn(`[verifyUser] Access Denied: User ${decodedToken.uid} is inactive.`);
+                        return null;
+                    }
+                }
+            } catch (dbError: any) {
+                // Handle quota exceeded gracefully - use token data as fallback
+                if (dbError.code === 8 || dbError.message?.includes('RESOURCE_EXHAUSTED')) {
+                    console.warn('[verifyUser] Firestore quota exceeded, using token data as fallback');
+                    // Use token data directly
+                    userData = {
+                        uid: decodedToken.uid,
+                        email: decodedToken.email,
+                        email_verified: decodedToken.email_verified
+                    };
+                } else {
+                    throw dbError; // Re-throw other errors
                 }
             }
 
@@ -92,7 +111,7 @@ export async function verifyUser(request: Request): Promise<AuthenticatedUser | 
                 role: finalRole as Role | string,
             } as AuthenticatedUser;
         } catch (e: any) {
-            console.warn('[verifyUser] Header token verification failed:', e.message);
+            console.error('[verifyUser] Header token verification failed:', e.code, e.message);
             // Fallthrough to cookie
         }
     }

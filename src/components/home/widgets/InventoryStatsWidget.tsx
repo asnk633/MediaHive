@@ -21,27 +21,15 @@ export const InventoryStatsWidget = () => {
     useEffect(() => {
         const fetchStats = async () => {
             try {
-                // Fetch basic inventory data (Limit 1000 to get decent approximation or all)
-                // For a real app, use a dedicated stats endpoint. For now, client-side Agg.
-                const data = await apiClient<InventoryApiResponse>('/api/inventory?limit=1000');
-                const items = data.items || [];
+                // Efficiently fetch pre-aggregated stats from server
+                const statsData = await apiClient<StatsState & { utilization: number, unavailable: number }>('/api/inventory/stats');
 
-                // We also need active issues to count 'In Use' accurately if relying on issues, 
-                // but items usually have status 'in_use' updated?
-                // Actually the derived state in View does it. The raw item might not unless updated by cloud function.
-                // Let's assume 'status' field is reasonably up to date or use simple filtering.
-                // Re-calculating 'overdue' requires issues. 
-                // Let's keep it simple: Count by status field. 
-                // For Overdue, we can't easily know without issues. 
-                // Let's count 'in_use' items.
-
-                let total = items.length;
-                let inUse = items.filter(i => i.status === 'in_use').length;
-                let unavailable = items.filter(i => ['broken', 'lost', 'out'].includes(i.status)).length;
-
-                // Value is not in schema yet, ignore.
-
-                setStats({ total, inUse, overdue: 0, value: unavailable }); // Overdue 0 for now
+                setStats({
+                    total: statsData.total,
+                    inUse: statsData.inUse,
+                    overdue: 0, // Not supported by aggregate yet
+                    value: statsData.unavailable // Mapping unavailable to Alerts/Value card
+                });
             } catch (e) {
                 console.error("Failed to load inventory stats", e);
             } finally {

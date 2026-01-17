@@ -5,111 +5,74 @@ import { verifyUser } from '@/lib/server-utils';
 
 export async function GET(request: NextRequest) {
   try {
+    // GUARDRAIL: Role-based filtering or specific ID is required to avoid full user base scans.
+    // Use /admins or /team for dedicated lists, or ?role=XYZ query.
     const url = new URL(request.url);
-    const pathParts = url.pathname.split('/');
+    const pathParts = url.pathname.split('/').filter(Boolean); // Remove empty strings
     const lastPathPart = pathParts[pathParts.length - 1]; // Get the last part of the path
 
     const db = adminDb;
 
-    // Check if this is a specific user request (e.g., /api/users/uid)
-    if (lastPathPart && lastPathPart !== 'users' && lastPathPart !== 'team' && lastPathPart !== 'admins') {
-      // For fetching a single user, we need to verify the user is authenticated
-      // and can only access their own profile or be an admin
+    // Check if this is a request for a specific ID (Legacy/Fallback handling)
+    // In strict Next.js App Router, [id] should handle this, but preserving logic just in case.
+    if (lastPathPart && !['users', 'team', 'admins'].includes(lastPathPart)) {
+      // ... (Preserving legacy single-user fetch logic just in case)
       const user = await verifyUser(request);
-      if (!user) {
-        return Response.json({ error: 'Unauthorized' }, { status: 401 });
-      }
-
-      // Users can only fetch their own profile, or admins can fetch any profile
-      if (user.uid !== lastPathPart && user.role !== 'admin') {
-        return Response.json({ error: 'Forbidden: Cannot access other user\'s profile' }, { status: 403 });
-      }
+      if (!user) return Response.json({ error: 'Unauthorized' }, { status: 401 });
+      if (user.uid !== lastPathPart && user.role !== 'admin') return Response.json({ error: 'Forbidden' }, { status: 403 });
 
       const userDoc = await db.collection('users').doc(lastPathPart).get();
-
-      if (!userDoc.exists) {
-        return Response.json({ error: 'User not found' }, { status: 404 });
-      }
-
-      const userData = userDoc.data();
-      return Response.json({ user: { uid: userDoc.id, ...userData } });
+      if (!userDoc.exists) return Response.json({ error: 'User not found' }, { status: 404 });
+      return Response.json({ user: { uid: userDoc.id, ...userDoc.data() } });
     }
-    // Handle team members route
-    else if (lastPathPart === 'team') {
-      // Check if user is authenticated and has admin privileges
-      const user = await verifyUser(request);
-      if (!user) {
-        return Response.json({ error: 'Unauthorized' }, { status: 401 });
-      }
 
-      const usersSnapshot = await db.collection('users').get();
-      const teamMembers = usersSnapshot.docs
-        .map(doc => {
-          const userData = doc.data();
-          return {
-            uid: doc.id,
-            role: userData.role,
-            name: userData.officialName || userData.name || userData.displayName || userData.email || 'Unknown',
-            email: userData.email,
-            avatarUrl: userData.avatarUrl,
-            photoURL: userData.photoURL,
-            isActive: userData.isActive ?? true
-          };
-        })
-        .filter(user => user.role === 'team' && user.isActive !== false)
-        .map(user => ({
-          uid: user.uid,
-          name: user.name,
-          avatarUrl: user.avatarUrl,
-          photoURL: user.photoURL
-        }));
+    // --- OPTIMIZED LIST FETCH ---
+    // Handles /api/users?role=...&limit=...
 
-      return Response.json({ teamMembers });
+    // Auth Check
+    const decodedToken = await requireAdminWithVerifiedEmail(request);
+
+    // Parse Query
+    const role = url.searchParams.get('role');
+    const limit = parseInt(url.searchParams.get('limit') || '50', 10);
+    const safeLimit = Math.min(Math.max(limit, 1), 100);
+    // Cursor could be added here similar to Tasks API if needed, 
+    // but users list is often smaller. Adding simplified limit logic first.
+    const cursor = url.searchParams.get('cursor');
+
+    let query: FirebaseFirestore.Query = db.collection('users');
+
+    // Server-Side Filters (Index SAFE)
+    if (role) {
+      query = query.where('role', '==', role);
     }
-    // Handle admins route
-    else if (lastPathPart === 'admins') {
-      // Check if user is authenticated and has admin privileges
-      await requireAdminWithVerifiedEmail(request);
 
-      const usersSnapshot = await db.collection('users').get();
-      const admins = usersSnapshot.docs
-        .map(doc => {
-          const userData = doc.data();
-          return {
-            uid: doc.id,
-            role: userData.role,
-            name: userData.officialName || userData.name || userData.displayName || userData.email || 'Unknown',
-            avatarUrl: userData.avatarUrl,
-            photoURL: userData.photoURL
-          };
-        })
-        .filter(user => user.role === 'admin')
-        .map(user => ({
-          uid: user.uid,
-          name: user.name,
-          avatarUrl: user.avatarUrl,
-          photoURL: user.photoURL
-        }));
+    // Ordering needed for pagination
+    // Default order by name? or created? Firestore docs are unordered by default.
+    // Let's order by name or email if possible, but 'name' might be missing.
+    // 'email' is usually present.
+    // query = query.orderBy('email'); 
 
-      return Response.json({ admins });
-    }
-    // Default: fetch all users (admin only)
-    else {
-      // Check if user is authenticated and has admin privileges for fetching all users
-      const decodedToken = await requireAdminWithVerifiedEmail(request);
+    // For now, simple limit without specific ordering (Firestore orders by ID? No, random/docID).
+    // To support cursor, we need deterministic ordering.
+    // query = query.orderBy(admin.firestore.FieldPath.documentId());
 
-      const usersSnapshot = await db.collection('users').get();
-      const users = usersSnapshot.docs.map(doc => {
-        const userData = doc.data();
-        return {
-          uid: doc.id,
-          ...userData,
-          name: userData.officialName || userData.name || userData.displayName || userData.email || 'Unknown'
-        };
-      });
+    // Applying Limit
+    query = query.limit(safeLimit);
 
-      return Response.json({ users });
-    }
+    const usersSnapshot = await query.get();
+
+    const users = usersSnapshot.docs.map(doc => {
+      const userData = doc.data();
+      return {
+        uid: doc.id,
+        ...userData,
+        name: userData.officialName || userData.name || userData.displayName || userData.email || 'Unknown'
+      };
+    });
+
+    return Response.json({ users });
+
   } catch (error: any) {
     console.error('Error fetching users:', error);
     return Response.json({ error: error.message || 'Failed to fetch users' }, { status: 403 });
@@ -204,57 +167,8 @@ export async function POST(request: NextRequest) {
 
     const db = adminDb;
 
-    // Handle team members route
-    if (path.includes('/team')) {
-      const usersSnapshot = await db.collection('users').get();
-      const teamMembers = usersSnapshot.docs
-        .map(doc => {
-          const userData = doc.data();
-          return {
-            uid: doc.id,
-            role: userData.role,
-            name: userData.officialName || userData.name || userData.displayName || userData.email || 'Unknown',
-            email: userData.email,
-            avatarUrl: userData.avatarUrl,
-            photoURL: userData.photoURL,
-            isActive: userData.isActive ?? true
-          };
-        })
-        .filter(user => user.role === 'team' && user.isActive !== false)
-        .map(user => ({
-          uid: user.uid,
-          name: user.name,
-          avatarUrl: user.avatarUrl,
-          photoURL: user.photoURL
-        }));
-
-      return Response.json({ teamMembers });
-    }
-
-    // Handle admins route
-    if (path.includes('/admins')) {
-      const usersSnapshot = await db.collection('users').get();
-      const admins = usersSnapshot.docs
-        .map(doc => {
-          const userData = doc.data();
-          return {
-            uid: doc.id,
-            role: userData.role,
-            name: userData.officialName || userData.name || userData.displayName || userData.email || 'Unknown',
-            avatarUrl: userData.avatarUrl,
-            photoURL: userData.photoURL
-          };
-        })
-        .filter(user => user.role === 'admin')
-        .map(user => ({
-          uid: user.uid,
-          name: user.name,
-          avatarUrl: user.avatarUrl,
-          photoURL: user.photoURL
-        }));
-
-      return Response.json({ admins });
-    }
+    // Legacy route handling (team/admins) removed as they have dedicated route files.
+    // Continue to main logic...
 
     return Response.json({ error: 'Invalid route' }, { status: 400 });
   } catch (error: any) {

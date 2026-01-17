@@ -12,8 +12,8 @@ export async function GET(request: NextRequest) {
 
     const db = adminDb;
 
-    // Fetch all users from Firestore
-    const usersSnapshot = await db.collection('users').get();
+    // Fetch users with safety limit (Admin should rely on search/pagination eventually, but hard cap for now)
+    const usersSnapshot = await db.collection('users').limit(100).get();
     const users = usersSnapshot.docs.map(doc => ({
       id: doc.id,
       ...doc.data()

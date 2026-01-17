@@ -123,12 +123,18 @@ const TaskListViewComponent: React.FC<TaskListViewProps> = ({ tasks, loading = f
     const [teamMembers, setTeamMembers] = useState<{ uid: string; name: string }[]>([]);
 
     React.useEffect(() => {
-        const fetchTeam = async () => {
-            const members = await UserService.getTeamMembers();
-            setTeamMembers(members);
-        };
-        fetchTeam();
-    }, []);
+        if (isAdmin) {
+            const fetchTeam = async () => {
+                try {
+                    const members = await UserService.getTeamMembers();
+                    setTeamMembers(members);
+                } catch (error) {
+                    console.error("Failed to fetch team members", error);
+                }
+            };
+            fetchTeam();
+        }
+    }, [isAdmin]);
 
     // Signal to hide FAB when bulk actions are active
     React.useEffect(() => {
@@ -151,11 +157,13 @@ const TaskListViewComponent: React.FC<TaskListViewProps> = ({ tasks, loading = f
 
         if (view === 'mine' && user) {
             result = result.filter(t => {
-                if (!t.assignedTo) return false;
-                if (Array.isArray(t.assignedTo)) {
-                    return t.assignedTo.some(a => (typeof a === 'string' ? a : a.uid) === user.uid);
-                }
-                return false;
+                // Case A: Assigned to me
+                const isAssigned = t.assignedTo && Array.isArray(t.assignedTo) && t.assignedTo.some(a => (typeof a === 'string' ? a : a.uid) === user.uid);
+
+                // Case B: Created by me (Important for Guests)
+                const isCreatedBy = (typeof t.createdBy === 'string' ? t.createdBy : t.createdBy?.uid) === user.uid;
+
+                return isAssigned || isCreatedBy;
             });
         }
         if (view === 'overdue') {

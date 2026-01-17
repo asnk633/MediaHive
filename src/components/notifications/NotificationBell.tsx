@@ -10,7 +10,7 @@ import { formatDistanceToNow } from 'date-fns';
 import { apiClient } from '@/lib/apiClient';
 
 export const NotificationBell = () => {
-    const { user } = useAuth();
+    const { user, authStatus } = useAuth();
     const router = useRouter();
     const [isOpen, setIsOpen] = useState(false);
     const [notifications, setNotifications] = useState<AppNotification[]>([]);
@@ -19,7 +19,7 @@ export const NotificationBell = () => {
 
     // Poll for notifications
     useEffect(() => {
-        if (!user) return;
+        if (!user || authStatus !== 'authenticated') return;
 
         // Initial load
         const fetchNotifications = async () => {
@@ -31,8 +31,9 @@ export const NotificationBell = () => {
                 const count = data.filter(n => !n.isRead).length;
                 setUnreadCount(count);
             } catch (error: any) {
-                // Silently ignore 403/429 failures in polling to avoid console spam
-                if (error.message?.includes('429') || error.message?.includes('403')) {
+                // Silently ignore 403/429 failures and 401 Unauthorized in polling to avoid console spam
+                const msg = error.message?.toLowerCase() || '';
+                if (msg.includes('429') || msg.includes('403') || msg.includes('401') || msg.includes('unauthorized')) {
                     // console.warn('Polling suppressed:', error.message);
                     return;
                 }
@@ -48,7 +49,7 @@ export const NotificationBell = () => {
         return () => {
             clearInterval(pollInterval);
         };
-    }, [user?.uid]); // Stable dependency: only re-run if UID changes
+    }, [user?.uid, authStatus]); // Stable dependency: only re-run if UID changes or auth status confirms
 
     // Close on click outside
     useEffect(() => {

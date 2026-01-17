@@ -76,22 +76,40 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
         try {
           // 1. Sync session with server (Create Session Cookie) FIRST
           // This ensures subsequent API calls (like /api/users/me) have a valid cookie
-          try {
-            // Get fresh ID token
-            const idToken = await fbUser.getIdToken();
-            // We use standard fetch here to avoid circular dep or apiClient overhead before auth is settled
-            const loginRes = await fetch('/api/auth/login', {
-              method: 'POST',
-              headers: {
-                'Authorization': `Bearer ${idToken}`
-              }
-            });
+          let sessionSynced = false;
+          let retries = 3;
 
-            if (!loginRes.ok) {
-              console.warn('Session sync warning:', await loginRes.text());
+          while (!sessionSynced && retries > 0) {
+            try {
+              // Get fresh ID token
+              const idToken = await fbUser.getIdToken();
+              // We use standard fetch here to avoid circular dep or apiClient overhead before auth is settled
+              const loginRes = await fetch('/api/auth/login', {
+                method: 'POST',
+                headers: {
+                  'Authorization': `Bearer ${idToken}`
+                }
+              });
+
+              if (loginRes.ok) {
+                sessionSynced = true;
+                console.log('[AUTH] Session cookie created successfully');
+                // Give the browser a moment to process the Set-Cookie header
+                await new Promise(resolve => setTimeout(resolve, 100));
+              } else {
+                console.warn('Session sync warning:', await loginRes.text());
+                retries--;
+                if (retries > 0) {
+                  await new Promise(resolve => setTimeout(resolve, 500));
+                }
+              }
+            } catch (err) {
+              console.error('Failed to sync session cookie:', err);
+              retries--;
+              if (retries > 0) {
+                await new Promise(resolve => setTimeout(resolve, 500));
+              }
             }
-          } catch (err) {
-            console.error('Failed to sync session cookie:', err);
           }
 
           const email = fbUser.email || '';
@@ -114,13 +132,20 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
               throw new Error('Current user profile must use /api/users/me');
             }
 
+            // Let apiClient auto-attach the token
             const result = await apiClient(endpoint, {
-              method: 'GET'
+              method: 'GET',
+              silent: true
             });
 
             userData = result.user || result || {}; // Handle both wrapped and unwrapped responses
-          } catch (error) {
-            console.warn("User profile does not exist yet. Waiting for registration flow.");
+          } catch (error: any) {
+            // Suppress 401 logs for initial check (common for new/guest users)
+            if (error.message && error.message.includes('Unauthorized')) {
+              console.debug("User profile check: Unauthorized (Session likely establishing)");
+            } else {
+              console.warn("User profile check failed:", error.message);
+            }
             // User profile doesn't exist yet, use minimal data
             // Determine role from email as fallback
             const fallbackRole = getRoleFromEmail(email);

@@ -43,12 +43,40 @@ export async function GET(request: NextRequest) {
     // Non-admin users only see approved events
     if (user.role !== 'admin') {
       query = query.where('status', '==', 'approved');
+      // --- OPTIMIZED EVENT FETCH ---
+      // GUARDRAIL: DATE RANGE OR LIMIT IS MANDATORY. DO NOT REMOVE SAFETY LIMITS.
+      // Index Required: institutionId + date, status + date.
     }
 
-    // Order by date (newest/future first) to ensure we see upcoming events
-    query = query.orderBy('date', 'desc');
+    // 1. Date Range Filtering (Critical Optimization)
+    // Allows fetching only a specific month/week
+    const startDate = searchParams.get('startDate');
+    const endDate = searchParams.get('endDate');
 
-    const snapshot = await query.limit(500).get();
+    if (startDate && endDate) {
+      // Query specific range
+      // Note: 'date' field format compliance (ISO String vs Timestamp) is assumed to match input
+      query = query.where('date', '>=', startDate).where('date', '<=', endDate);
+
+      // Month view usually wants Ascending order (1st to 30th)
+      query = query.orderBy('date', 'asc');
+
+      // Safety limit, but high enough for a busy month
+      query = query.limit(1000);
+    } else {
+      // Fallback: Recent events (Blind fetch reduced)
+      // If no range specified, we default to "Future events" or "Recent created"?
+      // Original behavior: orderBy date desc.
+      query = query.orderBy('date', 'desc');
+
+      // REDUCED LIMIT: 500 -> 50
+      // Pagination should be used if more are needed.
+      const limitParam = parseInt(searchParams.get('limit') || '50', 10);
+      const safeLimit = Math.min(Math.max(limitParam, 1), 100);
+      query = query.limit(safeLimit);
+    }
+
+    const snapshot = await query.get();
     const events = snapshot.docs.map((doc: any) => ({
       id: doc.id,
       ...doc.data()

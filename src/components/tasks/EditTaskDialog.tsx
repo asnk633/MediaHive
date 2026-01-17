@@ -13,12 +13,15 @@ import { cn } from "@/lib/utils";
 import { Loader2, Edit3, Calendar as CalendarIcon, Layers, Users } from "lucide-react";
 import { toast } from "sonner";
 import { format } from "date-fns";
+import { TaskService } from "@/services/tasks";
 import { CampaignService } from "@/services/campaignService";
 import { Campaign } from "@/types/campaign";
 import { useAuth } from "@/contexts/AuthContext";
 import { UserService } from "@/services/userService";
+import { useRouter } from 'next/navigation';
 import { DeliverablesList } from '@/components/deliverables/DeliverablesList';
 import { DeliverableUploadModal } from '@/components/deliverables/DeliverableUploadModal';
+import { AttachmentSection } from '@/components/tasks/AttachmentSection';
 
 interface EditTaskDialogProps {
     open: boolean;
@@ -39,6 +42,8 @@ interface EditTaskDialogProps {
 
 export function EditTaskDialog({ open, onOpenChange, task, onUpdate }: EditTaskDialogProps) {
     const { user } = useAuth();
+    const router = useRouter();
+    const [fullTask, setFullTask] = useState<any>(task);
     const [title, setTitle] = useState(task.title);
     const [description, setDescription] = useState(task.description || "");
     const [priority, setPriority] = useState<"low" | "medium" | "high" | "urgent">(task.priority);
@@ -54,17 +59,17 @@ export function EditTaskDialog({ open, onOpenChange, task, onUpdate }: EditTaskD
     const [refreshTrigger, setRefreshTrigger] = useState(0);
 
     useEffect(() => {
-        if (open && user) {
+        if (open && user && task?.id) {
+            // Local state initialization from prop
             setTitle(task.title);
             setDescription(task.description || "");
             setPriority(task.priority);
             setCampaignId(task.campaignId || "none");
             setAssignedToIds(task.assignedTo?.map(m => m.uid) || []);
 
-            // Handle Date Format for Input
+            // Handle Date
             if (task.dueDate) {
                 try {
-                    // If firestore timestamp
                     const dateObj = task.dueDate.seconds
                         ? new Date(task.dueDate.seconds * 1000)
                         : (typeof task.dueDate === 'string' ? new Date(task.dueDate) : null);
@@ -75,17 +80,28 @@ export function EditTaskDialog({ open, onOpenChange, task, onUpdate }: EditTaskD
                         setDueDate(undefined);
                     }
                 } catch (e) {
-                    console.error("Date parsing error", e);
                     setDueDate(undefined);
                 }
             } else {
                 setDueDate(undefined);
             }
 
-            // Fetch Campaigns
+            // Campaigns & Team
+            // Campaigns
             loadCampaigns();
-            // Fetch Team Members
-            loadTeamMembers();
+
+            // Team (Admins only)
+            if (isAdmin) {
+                loadTeamMembers();
+            }
+
+            // HYDRATE: Fetch fresh task data to ensure 'files' and other dynamic fields are up to date
+            // This fixes the issue where List View might pass a stale or partial object without files
+            TaskService.getTask(task.id).then(fresh => {
+                if (fresh) {
+                    setFullTask(fresh);
+                }
+            });
         }
     }, [open, task, user]);
 
@@ -385,8 +401,15 @@ export function EditTaskDialog({ open, onOpenChange, task, onUpdate }: EditTaskD
                                 <Users className="w-3 h-3 mr-1.5" /> Upload File
                             </Button>
                         </div>
-                        <div className="bg-[#0a0c10] border border-[#ffffff1a] rounded-xl p-4 min-h-[100px] max-h-[250px] overflow-y-auto custom-scrollbar">
-                            <DeliverablesList taskId={task.id} refreshTrigger={refreshTrigger} />
+                        <div className="bg-[#0a0c10] border border-[#ffffff1a] rounded-xl p-4 min-h-[100px] max-h-[500px] overflow-y-auto custom-scrollbar">
+                            <AttachmentSection
+                                task={fullTask}
+                                onUpdate={() => {
+                                    router.refresh();
+                                    // Refresh local ref as well
+                                    TaskService.getTask(task.id).then(t => t && setFullTask(t));
+                                }}
+                            />
                         </div>
                     </div>
 

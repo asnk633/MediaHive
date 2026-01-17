@@ -2,6 +2,7 @@ import { NextResponse, NextRequest } from 'next/server';
 import { verifyUser } from '@/lib/server-utils';
 import { adminDb } from '@/lib/firebase/server';
 
+
 export const dynamic = 'force-dynamic';
 
 export async function GET(req: NextRequest) {

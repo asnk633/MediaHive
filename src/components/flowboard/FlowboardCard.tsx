@@ -2,7 +2,6 @@ import React, { useMemo } from 'react';
 import { Task, SmartMetadata } from '@/types/task';
 import { formatDistanceToNow } from 'date-fns';
 import { Calendar, User as UserIcon, AlertTriangle, Clock, Ban } from 'lucide-react';
-import { toast } from 'sonner';
 
 interface FlowboardCardProps {
     task: Task;
@@ -28,8 +27,6 @@ export const FlowboardCard: React.FC<FlowboardCardProps> = ({ task, smartData, o
             onClick={(e) => {
                 e.preventDefault();
                 e.stopPropagation();
-                // console.log('FlowboardCard Clicked', task.id); 
-                // toast.info(`Debug: Opening task ${task.id.slice(0, 4)}`); // Uncomment to visualize click capture
                 onClick(task);
             }}
             className={`

@@ -135,7 +135,8 @@ export const TaskDetailModalV2: React.FC<TaskDetailsModalProps> = ({ task, isOpe
         return () => setMounted(false);
     }, []);
 
-    useModalHistory(isOpen, onClose);
+    // DISABLED: useModalHistory was causing unwanted navigation back to /home
+    // useModalHistory(isOpen, onClose);
 
     if (!task) return null;
     if (!mounted) return null;

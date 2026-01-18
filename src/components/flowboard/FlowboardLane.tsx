@@ -106,8 +106,8 @@ export const FlowboardLane: React.FC<FlowboardLaneProps> = ({
                         />
                     ))
                 )}
-                {/* Spacer for bottom scrolling */}
-                <div className="h-4" />
+                {/* Spacer for bottom scrolling to avoid BottomNav overlap */}
+                <div className="h-32" />
             </div>
         </div>
     );

@@ -31,7 +31,7 @@ export const FlowboardCard: React.FC<FlowboardCardProps> = ({ task, smartData, o
             }}
             className={`
                 group relative p-3 rounded-xl border border-white/5 bg-[#1A1F2E]/80 backdrop-blur-sm 
-                hover:bg-white/10 hover:border-[#ffffff1a] transition-all cursor-pointer shadow-sm hover:shadow-md
+                hover:bg-white/10 hover:border-[#ffffff1a] transition-all cursor-pointer shadow-sm hover:shadow-md relative z-10
                 ${smartData.needsAttention ? 'ring-1 ring-red-500/50 shadow-[0_0_15px_-3px_rgba(239,68,68,0.2)]' : ''}
                 ${smartData.isBlocked ? 'ring-1 ring-amber-500/50 shadow-[0_0_15px_-3px_rgba(245,158,11,0.2)]' : ''}
                 ${smartData.inferredStage === 'publish' && task.status === 'done' ? 'opacity-60 grayscale-[0.5]' : ''}

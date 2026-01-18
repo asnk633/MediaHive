@@ -409,8 +409,7 @@ export function EditTaskDialog({ open, onOpenChange, task, onUpdate }: EditTaskD
                             <AttachmentSection
                                 task={fullTask}
                                 onUpdate={() => {
-                                    router.refresh();
-                                    // Refresh local ref as well
+                                    // Refresh local data only
                                     TaskService.getTask(task.id).then(t => t && setFullTask(t));
                                 }}
                             />

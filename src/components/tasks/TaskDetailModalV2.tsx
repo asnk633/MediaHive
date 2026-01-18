@@ -330,10 +330,8 @@ export const TaskDetailModalV2: React.FC<TaskDetailsModalProps> = ({ task, isOpe
                                 <AttachmentSection
                                     task={fullTask}
                                     onUpdate={() => {
-                                        router.refresh();
-                                        if (task?.id) {
-                                            TaskService.getTask(task.id).then(t => t && setFullTask(t));
-                                        }
+                                        // Just trigger local refresh, not full page refresh
+                                        TaskService.getTask(task.id).then(t => t && setFullTask(t));
                                     }}
                                 />
                             </div>

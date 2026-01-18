@@ -50,12 +50,12 @@ export const FlowboardLane: React.FC<FlowboardLaneProps> = ({
         .sort((a, b) => b.count - a.count);
 
     return (
-        <div className="flex flex-col h-full min-w-[280px] w-[280px] bg-[#0B0E14]/50 border-r border-white/5 first:pl-0 last:border-r-0 relative">
+        <div className="flex flex-col h-full min-w-[280px] w-[280px] bg-white/5 border-r border-white/5 first:pl-0 last:border-r-0 relative">
             {/* Top Glimmer */}
             <div className={`absolute top-0 inset-x-0 h-32 bg-gradient-to-b ${bgGradient} to-transparent pointer-events-none`} />
 
             {/* Header */}
-            <div className={`p-4 border-b border-white/5 shrink-0 sticky top-0 bg-[#0B0E14]/95 backdrop-blur-md z-10 space-y-3`}>
+            <div className={`p-4 border-b border-white/5 shrink-0 sticky top-0 bg-transparent backdrop-blur-md z-10 space-y-3`}>
                 <div className="flex items-center justify-between">
                     <div className="flex items-center gap-2">
                         <h3 className="text-sm font-bold text-gray-200 uppercase tracking-wider">{title}</h3>

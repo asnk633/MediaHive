@@ -91,7 +91,7 @@ export default function FlowboardPage() {
     }
 
     return (
-        <div className="flex flex-col h-full bg-[#0B0E14] text-white overflow-hidden">
+        <div className="flex flex-col h-full bg-transparent text-white overflow-hidden">
             {/* Header Removed as per user request */}
 
             {/* Board Area */}

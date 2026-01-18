@@ -15,8 +15,7 @@ if (self.location.hostname !== 'localhost' && self.location.hostname !== '127.0.
 // CRITICAL: Do NOT add /_next/* files here. They change every build.
 const FILES_TO_CACHE = [
   '/',
-  '/manifest.json',
-  '/icon.png',
+  '/manifest.webmanifest',
   '/offline.html',
 ];
 
@@ -67,78 +66,31 @@ self.addEventListener('activate', (event) => {
 });
 
 // Fetch event - implement caching strategies
+// Fetch event - implement caching strategies
 self.addEventListener('fetch', (event) => {
   const { request } = event;
   const url = new URL(request.url);
 
-  // 0. DISABLE CACHING ON LOCALHOST (Fixes hydration mismatches)
+  // 0. DISABLE CACHING ON LOCALHOST
   if (self.location.hostname === 'localhost' || self.location.hostname === '127.0.0.1') {
-    return; // Go straight to network
-  }
-
-  // 0.1. IGNORE NON-GET REQUESTS (POST, PUT, DELETE, HEAD)
-  // The Cache API only supports GET requests.
-  if (request.method !== 'GET') {
     return;
   }
 
-  // 1. IGNORE Dynamic Next.js Chunks & HMR
-  // These are heavy, change often, and cause "Failed to cache" errors
+  // 1. SAFETY FIRST: IGNORE SENSITIVE & DYNAMIC ROUTES (Network Only)
   if (
-    url.pathname.includes('/_next/static/') ||
-    url.pathname.includes('/_next/image') ||
-    url.pathname.includes('webpack') ||
+    request.method !== 'GET' ||
+    url.pathname.startsWith('/api/') ||
+    url.pathname.startsWith('/auth/') ||
+    url.pathname.startsWith('/login') ||
+    url.pathname.startsWith('/logout') ||
+    url.pathname.startsWith('/admin') ||
+    url.pathname.includes('/_next/') ||
     request.url.includes('socket.io')
   ) {
-    // Let the network handle it. Do not cache.
     return;
   }
 
-  // 2. API Requests (Network First -> Cache Fallback)
-  if (request.url.includes('/api/')) {
-    event.respondWith(
-      fetch(request)
-        .then((response) => {
-          // Cache successful API responses (only 200 OK)
-          if (response.status === 200) {
-            const responseClone = response.clone();
-            caches.open(DATA_CACHE_NAME)
-              .then((cache) => {
-                // Defensive put
-                try {
-                  cache.put(request, responseClone);
-                } catch (e) {
-                  // Ignore cache put failures
-                }
-              });
-          }
-          return response;
-        })
-        .catch(() => {
-          // Fallback to cache when offline
-          return caches.match(request)
-            .then((response) => {
-              if (response) {
-                return response;
-              }
-
-              // For task and kanban routes, return app shell for offline fallback
-              if (url.pathname.startsWith('/tasks') || url.pathname.startsWith('/kanban')) {
-                return caches.match('/');
-              }
-
-              return new Response('Network error and no cache', {
-                status: 503,
-                statusText: 'Service Unavailable',
-                headers: { 'Content-Type': 'text/plain' }
-              });
-            });
-        })
-    );
-    return;
-  }
-
-  // 3. Static Assets (Cache First -> Network)
+  // 2. STATIC ASSETS (Cache First -> Network)
   if (
     request.destination === 'script' ||
     request.destination === 'style' ||
@@ -148,49 +100,35 @@ self.addEventListener('fetch', (event) => {
     event.respondWith(
       caches.match(request)
         .then((response) => {
-          // Return cached version if available
           if (response) {
             return response;
           }
-
-          // Otherwise fetch from network
-          return fetch(request)
-            .then((response) => {
-              // Cache valid responses
-              if (response.status === 200 && response.type === 'basic') {
-                const responseClone = response.clone();
-                caches.open(CACHE_NAME)
-                  .then((cache) => {
-                    try {
-                      cache.put(request, responseClone);
-                    } catch (e) {
-                      // Ignore
-                    }
-                  });
-              }
-              return response;
-            })
-            .catch((error) => {
-              // For document requests, return app shell as fallback
-              if (request.destination === 'document') {
-                return caches.match('/')
-                  .then(res => res || caches.match('/offline.html'));
-              }
-              // Don't throw, just fail gracefully
-              return new Response('Offline', { status: 503, statusText: 'Offline' });
-            });
+          return fetch(request).then((networkResponse) => {
+            if (networkResponse.status === 200 && networkResponse.type === 'basic') {
+              const responseClone = networkResponse.clone();
+              caches.open(CACHE_NAME).then((cache) => {
+                try { cache.put(request, responseClone); } catch (e) { }
+              });
+            }
+            return networkResponse;
+          });
         })
     );
     return;
   }
 
-  // 4. Default: Network First, Cache Fallback
-  event.respondWith(
-    fetch(request)
-      .catch(() => {
-        return caches.match(request);
-      })
-  );
+  // 3. NAVIGATION REQUESTS (Network First -> Offline Fallback)
+  if (request.mode === 'navigate') {
+    event.respondWith(
+      fetch(request)
+        .catch(() => {
+          return caches.match('/offline.html');
+        })
+    );
+    return;
+  }
+
+  return;
 });
 
 // Handle background sync for offline mutations
@@ -202,13 +140,5 @@ self.addEventListener('sync', (event) => {
 
 // Process queued offline mutations
 async function processOfflineMutations() {
-  // This would be implemented to process the offline queue
-  // For now, we'll just log that sync was triggered
   console.log('[Service Worker] Processing offline mutations');
-
-  // In a real implementation, this would:
-  // 1. Retrieve queued mutations from IndexedDB
-  // 2. Send them to the server
-  // 3. Update local data with server responses
-  // 4. Clear processed mutations from the queue
 }

@@ -254,7 +254,22 @@
 }
 
 @media (prefers-reduced-motion: reduce) {
-  .animate-text-cycle {
-    animation: none;
+  .animate-text-cycle,
+  .animate-in,
+  [class*="animate-"] {
+    animation: none !important;
+    transition: none !important;
+  }
+}
+
+@layer utilities {
+  @keyframes softPulse {
+    0% { opacity: 0.25; }
+    50% { opacity: 0.35; }
+    100% { opacity: 0.25; }
+  }
+  
+  .animate-soft-pulse {
+    animation: softPulse 2s ease-in-out infinite;
   }
 }

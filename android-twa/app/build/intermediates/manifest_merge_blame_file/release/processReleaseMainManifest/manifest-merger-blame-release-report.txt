@@ -1,0 +1,370 @@
+1<?xml version="1.0" encoding="utf-8"?>
+2<manifest xmlns:android="http://schemas.android.com/apk/res/android"
+3    package="com.thaibagarden.mediahive"
+4    android:versionCode="2"
+5    android:versionName="1.0.0" >
+6
+7    <uses-sdk
+8        android:minSdkVersion="21"
+9        android:targetSdkVersion="35" />
+10
+11    <queries>
+11-->[com.google.androidbrowserhelper:androidbrowserhelper:2.6.2] C:\Users\Shukoor Rahman\.gradle\caches\8.11.1\transforms\5053e02be90783e54992393be394bb70\transformed\androidbrowserhelper-2.6.2\AndroidManifest.xml:22:5-30:15
+12        <intent>
+12-->[com.google.androidbrowserhelper:androidbrowserhelper:2.6.2] C:\Users\Shukoor Rahman\.gradle\caches\8.11.1\transforms\5053e02be90783e54992393be394bb70\transformed\androidbrowserhelper-2.6.2\AndroidManifest.xml:23:9-29:18
+13            <action android:name="android.intent.action.VIEW" />
+13-->D:\orchids\android-twa\app\src\main\AndroidManifest.xml:122:17-69
+13-->D:\orchids\android-twa\app\src\main\AndroidManifest.xml:122:25-66
+14
+15            <category android:name="android.intent.category.BROWSABLE" />
+15-->D:\orchids\android-twa\app\src\main\AndroidManifest.xml:124:17-78
+15-->D:\orchids\android-twa\app\src\main\AndroidManifest.xml:124:27-75
+16
+17            <data android:scheme="https" />
+17-->D:\orchids\android-twa\app\src\main\AndroidManifest.xml:125:17-127:55
+17-->D:\orchids\android-twa\app\src\main\AndroidManifest.xml:126:21-43
+18        </intent>
+19    </queries>
+20
+21    <permission
+21-->[androidx.core:core:1.13.0] C:\Users\Shukoor Rahman\.gradle\caches\8.11.1\transforms\a5429f7b20c607b890f08b5283ad4ec0\transformed\core-1.13.0\AndroidManifest.xml:22:5-24:47
+22        android:name="com.thaibagarden.mediahive.DYNAMIC_RECEIVER_NOT_EXPORTED_PERMISSION"
+22-->[androidx.core:core:1.13.0] C:\Users\Shukoor Rahman\.gradle\caches\8.11.1\transforms\a5429f7b20c607b890f08b5283ad4ec0\transformed\core-1.13.0\AndroidManifest.xml:23:9-81
+23        android:protectionLevel="signature" />
+23-->[androidx.core:core:1.13.0] C:\Users\Shukoor Rahman\.gradle\caches\8.11.1\transforms\a5429f7b20c607b890f08b5283ad4ec0\transformed\core-1.13.0\AndroidManifest.xml:24:9-44
+24
+25    <uses-permission android:name="com.thaibagarden.mediahive.DYNAMIC_RECEIVER_NOT_EXPORTED_PERMISSION" />
+25-->[androidx.core:core:1.13.0] C:\Users\Shukoor Rahman\.gradle\caches\8.11.1\transforms\a5429f7b20c607b890f08b5283ad4ec0\transformed\core-1.13.0\AndroidManifest.xml:26:5-97
+25-->[androidx.core:core:1.13.0] C:\Users\Shukoor Rahman\.gradle\caches\8.11.1\transforms\a5429f7b20c607b890f08b5283ad4ec0\transformed\core-1.13.0\AndroidManifest.xml:26:22-94
+26
+27    <application
+27-->D:\orchids\android-twa\app\src\main\AndroidManifest.xml:4:5-162:19
+28        android:name="com.thaibagarden.mediahive.Application"
+28-->D:\orchids\android-twa\app\src\main\AndroidManifest.xml:5:9-35
+29        android:allowBackup="true"
+29-->D:\orchids\android-twa\app\src\main\AndroidManifest.xml:6:9-35
+30        android:appComponentFactory="androidx.core.app.CoreComponentFactory"
+30-->[androidx.core:core:1.13.0] C:\Users\Shukoor Rahman\.gradle\caches\8.11.1\transforms\a5429f7b20c607b890f08b5283ad4ec0\transformed\core-1.13.0\AndroidManifest.xml:28:18-86
+31        android:extractNativeLibs="true"
+32        android:icon="@mipmap/ic_launcher"
+32-->D:\orchids\android-twa\app\src\main\AndroidManifest.xml:7:9-43
+33        android:label="@string/appName"
+33-->D:\orchids\android-twa\app\src\main\AndroidManifest.xml:8:9-40
+34        android:manageSpaceActivity="com.google.androidbrowserhelper.trusted.ManageDataLauncherActivity"
+34-->D:\orchids\android-twa\app\src\main\AndroidManifest.xml:9:9-105
+35        android:supportsRtl="true"
+35-->D:\orchids\android-twa\app\src\main\AndroidManifest.xml:10:9-35
+36        android:theme="@android:style/Theme.Translucent.NoTitleBar" >
+36-->D:\orchids\android-twa\app\src\main\AndroidManifest.xml:11:9-68
+37
+38        <!-- Asset statements -->
+39        <meta-data
+39-->D:\orchids\android-twa\app\src\main\AndroidManifest.xml:14:9-16:58
+40            android:name="asset_statements"
+40-->D:\orchids\android-twa\app\src\main\AndroidManifest.xml:15:13-44
+41            android:resource="@string/assetStatements" />
+41-->D:\orchids\android-twa\app\src\main\AndroidManifest.xml:16:13-55
+42
+43        <!-- Web Manifest -->
+44        <meta-data
+44-->D:\orchids\android-twa\app\src\main\AndroidManifest.xml:19:9-21:54
+45            android:name="web_manifest_url"
+45-->D:\orchids\android-twa\app\src\main\AndroidManifest.xml:20:13-44
+46            android:value="@string/webManifestUrl" />
+46-->D:\orchids\android-twa\app\src\main\AndroidManifest.xml:21:13-51
+47
+48        <!-- Generator -->
+49        <meta-data
+49-->D:\orchids\android-twa\app\src\main\AndroidManifest.xml:24:9-26:52
+50            android:name="twa_generator"
+50-->D:\orchids\android-twa\app\src\main\AndroidManifest.xml:25:13-41
+51            android:value="@string/generatorApp" />
+51-->D:\orchids\android-twa\app\src\main\AndroidManifest.xml:26:13-49
+52
+53        <!-- Manage storage -->
+54        <activity
+54-->D:\orchids\android-twa\app\src\main\AndroidManifest.xml:29:9-43:20
+55            android:name="com.google.androidbrowserhelper.trusted.ManageDataLauncherActivity"
+55-->D:\orchids\android-twa\app\src\main\AndroidManifest.xml:30:13-94
+56            android:enabled="true"
+56-->D:\orchids\android-twa\app\src\main\AndroidManifest.xml:32:13-35
+57            android:excludeFromRecents="true"
+57-->D:\orchids\android-twa\app\src\main\AndroidManifest.xml:33:13-46
+58            android:exported="false" >
+58-->D:\orchids\android-twa\app\src\main\AndroidManifest.xml:31:13-37
+59            <meta-data
+59-->D:\orchids\android-twa\app\src\main\AndroidManifest.xml:35:13-37:53
+60                android:name="android.support.customtabs.trusted.MANAGE_SPACE_URL"
+60-->D:\orchids\android-twa\app\src\main\AndroidManifest.xml:36:17-83
+61                android:value="@string/launchUrl" />
+61-->D:\orchids\android-twa\app\src\main\AndroidManifest.xml:37:17-50
+62
+63            <intent-filter>
+63-->D:\orchids\android-twa\app\src\main\AndroidManifest.xml:39:13-42:29
+64                <action android:name="android.intent.action.APPLICATION_PREFERENCES" />
+64-->D:\orchids\android-twa\app\src\main\AndroidManifest.xml:40:17-88
+64-->D:\orchids\android-twa\app\src\main\AndroidManifest.xml:40:25-85
+65
+66                <category android:name="android.intent.category.DEFAULT" />
+66-->D:\orchids\android-twa\app\src\main\AndroidManifest.xml:41:17-76
+66-->D:\orchids\android-twa\app\src\main\AndroidManifest.xml:41:27-73
+67            </intent-filter>
+68        </activity>
+69
+70        <!-- Launcher Activity -->
+71        <activity
+71-->D:\orchids\android-twa\app\src\main\AndroidManifest.xml:46:9-129:20
+72            android:name="com.thaibagarden.mediahive.LauncherActivity"
+72-->D:\orchids\android-twa\app\src\main\AndroidManifest.xml:47:13-45
+73            android:alwaysRetainTaskState="true"
+73-->D:\orchids\android-twa\app\src\main\AndroidManifest.xml:48:13-49
+74            android:exported="true"
+74-->D:\orchids\android-twa\app\src\main\AndroidManifest.xml:50:13-36
+75            android:label="@string/launcherName"
+75-->D:\orchids\android-twa\app\src\main\AndroidManifest.xml:49:13-49
+76            android:theme="@style/Theme.Launcher" >
+76-->D:\orchids\android-twa\app\src\main\AndroidManifest.xml:51:13-50
+77
+78            <!-- Default launch URL -->
+79            <meta-data
+79-->D:\orchids\android-twa\app\src\main\AndroidManifest.xml:54:13-56:53
+80                android:name="android.support.customtabs.trusted.DEFAULT_URL"
+80-->D:\orchids\android-twa\app\src\main\AndroidManifest.xml:55:17-78
+81                android:value="@string/launchUrl" />
+81-->D:\orchids\android-twa\app\src\main\AndroidManifest.xml:56:17-50
+82
+83            <!-- System colors -->
+84            <meta-data
+84-->D:\orchids\android-twa\app\src\main\AndroidManifest.xml:59:13-61:58
+85                android:name="android.support.customtabs.trusted.STATUS_BAR_COLOR"
+85-->D:\orchids\android-twa\app\src\main\AndroidManifest.xml:60:17-83
+86                android:resource="@color/colorPrimary" />
+86-->D:\orchids\android-twa\app\src\main\AndroidManifest.xml:61:17-55
+87            <meta-data
+87-->D:\orchids\android-twa\app\src\main\AndroidManifest.xml:63:13-65:62
+88                android:name="android.support.customtabs.trusted.STATUS_BAR_COLOR_DARK"
+88-->D:\orchids\android-twa\app\src\main\AndroidManifest.xml:64:17-88
+89                android:resource="@color/colorPrimaryDark" />
+89-->D:\orchids\android-twa\app\src\main\AndroidManifest.xml:65:17-59
+90            <meta-data
+90-->D:\orchids\android-twa\app\src\main\AndroidManifest.xml:67:13-69:61
+91                android:name="android.support.customtabs.trusted.NAVIGATION_BAR_COLOR"
+91-->D:\orchids\android-twa\app\src\main\AndroidManifest.xml:68:17-87
+92                android:resource="@color/navigationColor" />
+92-->D:\orchids\android-twa\app\src\main\AndroidManifest.xml:69:17-58
+93            <meta-data
+93-->D:\orchids\android-twa\app\src\main\AndroidManifest.xml:71:13-73:65
+94                android:name="android.support.customtabs.trusted.NAVIGATION_BAR_COLOR_DARK"
+94-->D:\orchids\android-twa\app\src\main\AndroidManifest.xml:72:17-92
+95                android:resource="@color/navigationColorDark" />
+95-->D:\orchids\android-twa\app\src\main\AndroidManifest.xml:73:17-62
+96            <meta-data
+96-->D:\orchids\android-twa\app\src\main\AndroidManifest.xml:75:13-77:68
+97                android:name="android.browser.trusted.NAVIGATION_BAR_DIVIDER_COLOR"
+97-->D:\orchids\android-twa\app\src\main\AndroidManifest.xml:76:17-84
+98                android:resource="@color/navigationDividerColor" />
+98-->D:\orchids\android-twa\app\src\main\AndroidManifest.xml:77:17-65
+99            <meta-data
+99-->D:\orchids\android-twa\app\src\main\AndroidManifest.xml:79:13-81:72
+100                android:name="android.browser.trusted.NAVIGATION_BAR_DIVIDER_COLOR_DARK"
+100-->D:\orchids\android-twa\app\src\main\AndroidManifest.xml:80:17-89
+101                android:resource="@color/navigationDividerColorDark" />
+101-->D:\orchids\android-twa\app\src\main\AndroidManifest.xml:81:17-69
+102
+103            <!-- Splash screen -->
+104
+105
+106            <!--
+107            <meta-data
+108                android:name="android.support.customtabs.trusted.SPLASH_SCREEN_FADE_OUT_DURATION"
+109                android:value="@integer/splashScreenFadeOutDuration" />
+110            -->
+111
+112
+113            <!-- File provider -->
+114            <meta-data
+114-->D:\orchids\android-twa\app\src\main\AndroidManifest.xml:95:13-97:61
+115                android:name="android.support.customtabs.trusted.FILE_PROVIDER_AUTHORITY"
+115-->D:\orchids\android-twa\app\src\main\AndroidManifest.xml:96:17-90
+116                android:value="@string/providerAuthority" />
+116-->D:\orchids\android-twa\app\src\main\AndroidManifest.xml:97:17-58
+117
+118            <!-- Shortcuts -->
+119            <meta-data
+119-->D:\orchids\android-twa\app\src\main\AndroidManifest.xml:100:13-102:53
+120                android:name="android.app.shortcuts"
+120-->D:\orchids\android-twa\app\src\main\AndroidManifest.xml:101:17-53
+121                android:resource="@xml/shortcuts" />
+121-->D:\orchids\android-twa\app\src\main\AndroidManifest.xml:102:17-50
+122
+123            <!-- Fallback -->
+124            <meta-data
+124-->D:\orchids\android-twa\app\src\main\AndroidManifest.xml:105:13-107:56
+125                android:name="android.support.customtabs.trusted.FALLBACK_STRATEGY"
+125-->D:\orchids\android-twa\app\src\main\AndroidManifest.xml:106:17-84
+126                android:value="@string/fallbackType" />
+126-->D:\orchids\android-twa\app\src\main\AndroidManifest.xml:107:17-53
+127
+128            <!-- Orientation -->
+129            <meta-data
+129-->D:\orchids\android-twa\app\src\main\AndroidManifest.xml:110:13-112:55
+130                android:name="android.support.customtabs.trusted.SCREEN_ORIENTATION"
+130-->D:\orchids\android-twa\app\src\main\AndroidManifest.xml:111:17-85
+131                android:value="@string/orientation" />
+131-->D:\orchids\android-twa\app\src\main\AndroidManifest.xml:112:17-52
+132
+133            <!-- Launcher intent -->
+134            <intent-filter>
+134-->D:\orchids\android-twa\app\src\main\AndroidManifest.xml:115:13-118:29
+135                <action android:name="android.intent.action.MAIN" />
+135-->D:\orchids\android-twa\app\src\main\AndroidManifest.xml:116:17-69
+135-->D:\orchids\android-twa\app\src\main\AndroidManifest.xml:116:25-66
+136
+137                <category android:name="android.intent.category.LAUNCHER" />
+137-->D:\orchids\android-twa\app\src\main\AndroidManifest.xml:117:17-77
+137-->D:\orchids\android-twa\app\src\main\AndroidManifest.xml:117:27-74
+138            </intent-filter>
+139
+140            <!-- Deep links -->
+141            <intent-filter android:autoVerify="true" >
+141-->D:\orchids\android-twa\app\src\main\AndroidManifest.xml:121:13-128:29
+141-->D:\orchids\android-twa\app\src\main\AndroidManifest.xml:121:28-53
+142                <action android:name="android.intent.action.VIEW" />
+142-->D:\orchids\android-twa\app\src\main\AndroidManifest.xml:122:17-69
+142-->D:\orchids\android-twa\app\src\main\AndroidManifest.xml:122:25-66
+143
+144                <category android:name="android.intent.category.DEFAULT" />
+144-->D:\orchids\android-twa\app\src\main\AndroidManifest.xml:41:17-76
+144-->D:\orchids\android-twa\app\src\main\AndroidManifest.xml:41:27-73
+145                <category android:name="android.intent.category.BROWSABLE" />
+145-->D:\orchids\android-twa\app\src\main\AndroidManifest.xml:124:17-78
+145-->D:\orchids\android-twa\app\src\main\AndroidManifest.xml:124:27-75
+146
+147                <data
+147-->D:\orchids\android-twa\app\src\main\AndroidManifest.xml:125:17-127:55
+148                    android:host="@string/hostName"
+148-->D:\orchids\android-twa\app\src\main\AndroidManifest.xml:127:21-52
+149                    android:scheme="https" />
+149-->D:\orchids\android-twa\app\src\main\AndroidManifest.xml:126:21-43
+150            </intent-filter>
+151        </activity>
+152
+153        <!-- TWA helpers -->
+154        <activity android:name="com.google.androidbrowserhelper.trusted.FocusActivity" />
+154-->D:\orchids\android-twa\app\src\main\AndroidManifest.xml:132:9-90
+154-->D:\orchids\android-twa\app\src\main\AndroidManifest.xml:132:19-87
+155        <activity
+155-->D:\orchids\android-twa\app\src\main\AndroidManifest.xml:134:9-136:62
+156            android:name="com.google.androidbrowserhelper.trusted.WebViewFallbackActivity"
+156-->D:\orchids\android-twa\app\src\main\AndroidManifest.xml:135:13-91
+157            android:configChanges="orientation|screenSize" />
+157-->D:\orchids\android-twa\app\src\main\AndroidManifest.xml:136:13-59
+158
+159        <!-- File provider -->
+160        <provider
+160-->D:\orchids\android-twa\app\src\main\AndroidManifest.xml:139:9-148:20
+161            android:name="androidx.core.content.FileProvider"
+161-->D:\orchids\android-twa\app\src\main\AndroidManifest.xml:140:13-62
+162            android:authorities="@string/providerAuthority"
+162-->D:\orchids\android-twa\app\src\main\AndroidManifest.xml:141:13-60
+163            android:exported="false"
+163-->D:\orchids\android-twa\app\src\main\AndroidManifest.xml:143:13-37
+164            android:grantUriPermissions="true" >
+164-->D:\orchids\android-twa\app\src\main\AndroidManifest.xml:142:13-47
+165            <meta-data
+165-->D:\orchids\android-twa\app\src\main\AndroidManifest.xml:145:13-147:53
+166                android:name="android.support.FILE_PROVIDER_PATHS"
+166-->D:\orchids\android-twa\app\src\main\AndroidManifest.xml:146:17-67
+167                android:resource="@xml/filepaths" />
+167-->D:\orchids\android-twa\app\src\main\AndroidManifest.xml:147:17-50
+168        </provider>
+169
+170        <!-- Notification delegation service -->
+171        <service
+171-->D:\orchids\android-twa\app\src\main\AndroidManifest.xml:151:9-160:19
+172            android:name="com.thaibagarden.mediahive.DelegationService"
+172-->D:\orchids\android-twa\app\src\main\AndroidManifest.xml:152:13-46
+173            android:enabled="@bool/enableNotification"
+173-->D:\orchids\android-twa\app\src\main\AndroidManifest.xml:153:13-55
+174            android:exported="@bool/enableNotification" >
+174-->D:\orchids\android-twa\app\src\main\AndroidManifest.xml:154:13-56
+175            <intent-filter>
+175-->D:\orchids\android-twa\app\src\main\AndroidManifest.xml:156:13-159:29
+176                <action android:name="android.support.customtabs.trusted.TRUSTED_WEB_ACTIVITY_SERVICE" />
+176-->D:\orchids\android-twa\app\src\main\AndroidManifest.xml:157:17-106
+176-->D:\orchids\android-twa\app\src\main\AndroidManifest.xml:157:25-103
+177
+178                <category android:name="android.intent.category.DEFAULT" />
+178-->D:\orchids\android-twa\app\src\main\AndroidManifest.xml:41:17-76
+178-->D:\orchids\android-twa\app\src\main\AndroidManifest.xml:41:27-73
+179            </intent-filter>
+180        </service>
+181
+182        <provider
+182-->[androidx.emoji2:emoji2:1.3.0] C:\Users\Shukoor Rahman\.gradle\caches\8.11.1\transforms\5cb7738f5242d8c4e38c8ffa2b265b31\transformed\emoji2-1.3.0\AndroidManifest.xml:24:9-32:20
+183            android:name="androidx.startup.InitializationProvider"
+183-->[androidx.emoji2:emoji2:1.3.0] C:\Users\Shukoor Rahman\.gradle\caches\8.11.1\transforms\5cb7738f5242d8c4e38c8ffa2b265b31\transformed\emoji2-1.3.0\AndroidManifest.xml:25:13-67
+184            android:authorities="com.thaibagarden.mediahive.androidx-startup"
+184-->[androidx.emoji2:emoji2:1.3.0] C:\Users\Shukoor Rahman\.gradle\caches\8.11.1\transforms\5cb7738f5242d8c4e38c8ffa2b265b31\transformed\emoji2-1.3.0\AndroidManifest.xml:26:13-68
+185            android:exported="false" >
+185-->[androidx.emoji2:emoji2:1.3.0] C:\Users\Shukoor Rahman\.gradle\caches\8.11.1\transforms\5cb7738f5242d8c4e38c8ffa2b265b31\transformed\emoji2-1.3.0\AndroidManifest.xml:27:13-37
+186            <meta-data
+186-->[androidx.emoji2:emoji2:1.3.0] C:\Users\Shukoor Rahman\.gradle\caches\8.11.1\transforms\5cb7738f5242d8c4e38c8ffa2b265b31\transformed\emoji2-1.3.0\AndroidManifest.xml:29:13-31:52
+187                android:name="androidx.emoji2.text.EmojiCompatInitializer"
+187-->[androidx.emoji2:emoji2:1.3.0] C:\Users\Shukoor Rahman\.gradle\caches\8.11.1\transforms\5cb7738f5242d8c4e38c8ffa2b265b31\transformed\emoji2-1.3.0\AndroidManifest.xml:30:17-75
+188                android:value="androidx.startup" />
+188-->[androidx.emoji2:emoji2:1.3.0] C:\Users\Shukoor Rahman\.gradle\caches\8.11.1\transforms\5cb7738f5242d8c4e38c8ffa2b265b31\transformed\emoji2-1.3.0\AndroidManifest.xml:31:17-49
+189            <meta-data
+189-->[androidx.lifecycle:lifecycle-process:2.6.2] C:\Users\Shukoor Rahman\.gradle\caches\8.11.1\transforms\4bc52031417e9743197e36b704fe409f\transformed\lifecycle-process-2.6.2\AndroidManifest.xml:29:13-31:52
+190                android:name="androidx.lifecycle.ProcessLifecycleInitializer"
+190-->[androidx.lifecycle:lifecycle-process:2.6.2] C:\Users\Shukoor Rahman\.gradle\caches\8.11.1\transforms\4bc52031417e9743197e36b704fe409f\transformed\lifecycle-process-2.6.2\AndroidManifest.xml:30:17-78
+191                android:value="androidx.startup" />
+191-->[androidx.lifecycle:lifecycle-process:2.6.2] C:\Users\Shukoor Rahman\.gradle\caches\8.11.1\transforms\4bc52031417e9743197e36b704fe409f\transformed\lifecycle-process-2.6.2\AndroidManifest.xml:31:17-49
+192            <meta-data
+192-->[androidx.profileinstaller:profileinstaller:1.3.1] C:\Users\Shukoor Rahman\.gradle\caches\8.11.1\transforms\bb4a0d32d1b17a1dcea0cf71d2bde5e0\transformed\profileinstaller-1.3.1\AndroidManifest.xml:29:13-31:52
+193                android:name="androidx.profileinstaller.ProfileInstallerInitializer"
+193-->[androidx.profileinstaller:profileinstaller:1.3.1] C:\Users\Shukoor Rahman\.gradle\caches\8.11.1\transforms\bb4a0d32d1b17a1dcea0cf71d2bde5e0\transformed\profileinstaller-1.3.1\AndroidManifest.xml:30:17-85
+194                android:value="androidx.startup" />
+194-->[androidx.profileinstaller:profileinstaller:1.3.1] C:\Users\Shukoor Rahman\.gradle\caches\8.11.1\transforms\bb4a0d32d1b17a1dcea0cf71d2bde5e0\transformed\profileinstaller-1.3.1\AndroidManifest.xml:31:17-49
+195        </provider>
+196
+197        <receiver
+197-->[androidx.profileinstaller:profileinstaller:1.3.1] C:\Users\Shukoor Rahman\.gradle\caches\8.11.1\transforms\bb4a0d32d1b17a1dcea0cf71d2bde5e0\transformed\profileinstaller-1.3.1\AndroidManifest.xml:34:9-52:20
+198            android:name="androidx.profileinstaller.ProfileInstallReceiver"
+198-->[androidx.profileinstaller:profileinstaller:1.3.1] C:\Users\Shukoor Rahman\.gradle\caches\8.11.1\transforms\bb4a0d32d1b17a1dcea0cf71d2bde5e0\transformed\profileinstaller-1.3.1\AndroidManifest.xml:35:13-76
+199            android:directBootAware="false"
+199-->[androidx.profileinstaller:profileinstaller:1.3.1] C:\Users\Shukoor Rahman\.gradle\caches\8.11.1\transforms\bb4a0d32d1b17a1dcea0cf71d2bde5e0\transformed\profileinstaller-1.3.1\AndroidManifest.xml:36:13-44
+200            android:enabled="true"
+200-->[androidx.profileinstaller:profileinstaller:1.3.1] C:\Users\Shukoor Rahman\.gradle\caches\8.11.1\transforms\bb4a0d32d1b17a1dcea0cf71d2bde5e0\transformed\profileinstaller-1.3.1\AndroidManifest.xml:37:13-35
+201            android:exported="true"
+201-->[androidx.profileinstaller:profileinstaller:1.3.1] C:\Users\Shukoor Rahman\.gradle\caches\8.11.1\transforms\bb4a0d32d1b17a1dcea0cf71d2bde5e0\transformed\profileinstaller-1.3.1\AndroidManifest.xml:38:13-36
+202            android:permission="android.permission.DUMP" >
+202-->[androidx.profileinstaller:profileinstaller:1.3.1] C:\Users\Shukoor Rahman\.gradle\caches\8.11.1\transforms\bb4a0d32d1b17a1dcea0cf71d2bde5e0\transformed\profileinstaller-1.3.1\AndroidManifest.xml:39:13-57
+203            <intent-filter>
+203-->[androidx.profileinstaller:profileinstaller:1.3.1] C:\Users\Shukoor Rahman\.gradle\caches\8.11.1\transforms\bb4a0d32d1b17a1dcea0cf71d2bde5e0\transformed\profileinstaller-1.3.1\AndroidManifest.xml:40:13-42:29
+204                <action android:name="androidx.profileinstaller.action.INSTALL_PROFILE" />
+204-->[androidx.profileinstaller:profileinstaller:1.3.1] C:\Users\Shukoor Rahman\.gradle\caches\8.11.1\transforms\bb4a0d32d1b17a1dcea0cf71d2bde5e0\transformed\profileinstaller-1.3.1\AndroidManifest.xml:41:17-91
+204-->[androidx.profileinstaller:profileinstaller:1.3.1] C:\Users\Shukoor Rahman\.gradle\caches\8.11.1\transforms\bb4a0d32d1b17a1dcea0cf71d2bde5e0\transformed\profileinstaller-1.3.1\AndroidManifest.xml:41:25-88
+205            </intent-filter>
+206            <intent-filter>
+206-->[androidx.profileinstaller:profileinstaller:1.3.1] C:\Users\Shukoor Rahman\.gradle\caches\8.11.1\transforms\bb4a0d32d1b17a1dcea0cf71d2bde5e0\transformed\profileinstaller-1.3.1\AndroidManifest.xml:43:13-45:29
+207                <action android:name="androidx.profileinstaller.action.SKIP_FILE" />
+207-->[androidx.profileinstaller:profileinstaller:1.3.1] C:\Users\Shukoor Rahman\.gradle\caches\8.11.1\transforms\bb4a0d32d1b17a1dcea0cf71d2bde5e0\transformed\profileinstaller-1.3.1\AndroidManifest.xml:44:17-85
+207-->[androidx.profileinstaller:profileinstaller:1.3.1] C:\Users\Shukoor Rahman\.gradle\caches\8.11.1\transforms\bb4a0d32d1b17a1dcea0cf71d2bde5e0\transformed\profileinstaller-1.3.1\AndroidManifest.xml:44:25-82
+208            </intent-filter>
+209            <intent-filter>
+209-->[androidx.profileinstaller:profileinstaller:1.3.1] C:\Users\Shukoor Rahman\.gradle\caches\8.11.1\transforms\bb4a0d32d1b17a1dcea0cf71d2bde5e0\transformed\profileinstaller-1.3.1\AndroidManifest.xml:46:13-48:29
+210                <action android:name="androidx.profileinstaller.action.SAVE_PROFILE" />
+210-->[androidx.profileinstaller:profileinstaller:1.3.1] C:\Users\Shukoor Rahman\.gradle\caches\8.11.1\transforms\bb4a0d32d1b17a1dcea0cf71d2bde5e0\transformed\profileinstaller-1.3.1\AndroidManifest.xml:47:17-88
+210-->[androidx.profileinstaller:profileinstaller:1.3.1] C:\Users\Shukoor Rahman\.gradle\caches\8.11.1\transforms\bb4a0d32d1b17a1dcea0cf71d2bde5e0\transformed\profileinstaller-1.3.1\AndroidManifest.xml:47:25-85
+211            </intent-filter>
+212            <intent-filter>
+212-->[androidx.profileinstaller:profileinstaller:1.3.1] C:\Users\Shukoor Rahman\.gradle\caches\8.11.1\transforms\bb4a0d32d1b17a1dcea0cf71d2bde5e0\transformed\profileinstaller-1.3.1\AndroidManifest.xml:49:13-51:29
+213                <action android:name="androidx.profileinstaller.action.BENCHMARK_OPERATION" />
+213-->[androidx.profileinstaller:profileinstaller:1.3.1] C:\Users\Shukoor Rahman\.gradle\caches\8.11.1\transforms\bb4a0d32d1b17a1dcea0cf71d2bde5e0\transformed\profileinstaller-1.3.1\AndroidManifest.xml:50:17-95
+213-->[androidx.profileinstaller:profileinstaller:1.3.1] C:\Users\Shukoor Rahman\.gradle\caches\8.11.1\transforms\bb4a0d32d1b17a1dcea0cf71d2bde5e0\transformed\profileinstaller-1.3.1\AndroidManifest.xml:50:25-92
+214            </intent-filter>
+215        </receiver>
+216    </application>
+217
+218</manifest>

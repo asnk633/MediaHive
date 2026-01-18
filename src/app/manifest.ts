@@ -2,10 +2,11 @@ import { MetadataRoute } from 'next';
 
 export default function manifest(): MetadataRoute.Manifest {
     return {
-        name: 'Thaiba Garden Media Manager',
-        short_name: 'Media Manager',
+        name: 'MediaHive',
+        short_name: 'MediaHive',
         description: 'Media management system for Thaiba Garden',
         start_url: '/',
+        scope: '/',
         display: 'standalone',
         background_color: '#0f172a', // Aura dark blue
         theme_color: '#0f172a',
@@ -19,6 +20,12 @@ export default function manifest(): MetadataRoute.Manifest {
                 src: '/android-chrome-512x512.png',
                 sizes: '512x512',
                 type: 'image/png',
+            },
+            {
+                src: '/android-chrome-512x512.png',
+                sizes: '512x512',
+                type: 'image/png',
+                purpose: 'maskable',
             },
         ],
         orientation: 'portrait',

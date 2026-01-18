@@ -1,0 +1,42 @@
+[
+    {
+        "merged": "com.thaibagarden.mediahive.app-debug-25:/xml_filepaths.xml.flat",
+        "source": "com.thaibagarden.mediahive.app-main-27:/xml/filepaths.xml"
+    },
+    {
+        "merged": "com.thaibagarden.mediahive.app-debug-25:/mipmap-xhdpi_ic_launcher_foreground.png.flat",
+        "source": "com.thaibagarden.mediahive.app-main-27:/mipmap-xhdpi/ic_launcher_foreground.png"
+    },
+    {
+        "merged": "com.thaibagarden.mediahive.app-debug-25:/xml_shortcuts.xml.flat",
+        "source": "com.thaibagarden.mediahive.app-main-27:/xml/shortcuts.xml"
+    },
+    {
+        "merged": "com.thaibagarden.mediahive.app-debug-25:/mipmap-anydpi-v26_ic_launcher.xml.flat",
+        "source": "com.thaibagarden.mediahive.app-main-27:/mipmap-anydpi-v26/ic_launcher.xml"
+    },
+    {
+        "merged": "com.thaibagarden.mediahive.app-debug-25:/mipmap-mdpi_ic_launcher_foreground.png.flat",
+        "source": "com.thaibagarden.mediahive.app-main-27:/mipmap-mdpi/ic_launcher_foreground.png"
+    },
+    {
+        "merged": "com.thaibagarden.mediahive.app-debug-25:/mipmap-xxhdpi_ic_launcher_foreground.png.flat",
+        "source": "com.thaibagarden.mediahive.app-main-27:/mipmap-xxhdpi/ic_launcher_foreground.png"
+    },
+    {
+        "merged": "com.thaibagarden.mediahive.app-debug-25:/drawable-anydpi_splash.xml.flat",
+        "source": "com.thaibagarden.mediahive.app-main-27:/drawable-anydpi/splash.xml"
+    },
+    {
+        "merged": "com.thaibagarden.mediahive.app-debug-25:/drawable-anydpi_shortcut_legacy_background.xml.flat",
+        "source": "com.thaibagarden.mediahive.app-main-27:/drawable-anydpi/shortcut_legacy_background.xml"
+    },
+    {
+        "merged": "com.thaibagarden.mediahive.app-debug-25:/mipmap-hdpi_ic_launcher_foreground.png.flat",
+        "source": "com.thaibagarden.mediahive.app-main-27:/mipmap-hdpi/ic_launcher_foreground.png"
+    },
+    {
+        "merged": "com.thaibagarden.mediahive.app-debug-25:/mipmap-xxxhdpi_ic_launcher_foreground.png.flat",
+        "source": "com.thaibagarden.mediahive.app-main-27:/mipmap-xxxhdpi/ic_launcher_foreground.png"
+    }
+]

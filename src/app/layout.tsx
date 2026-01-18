@@ -7,6 +7,8 @@ import { ThemeProvider } from "@/contexts/ThemeContext";
 
 import { Poppins } from 'next/font/google';
 
+import WelcomeGate from '@/components/layout/WelcomeGate';
+
 const poppins = Poppins({
   subsets: ['latin'],
   weight: ['300', '400', '500', '600', '700'],
@@ -36,7 +38,9 @@ export default function RootLayout({ children }: { children: ReactNode }) {
       <body className="min-h-screen" suppressHydrationWarning={true}>
         <ThemeProvider>
           <AuthProvider>
-            {children}
+            <WelcomeGate>
+              {children}
+            </WelcomeGate>
           </AuthProvider>
         </ThemeProvider>
       </body>

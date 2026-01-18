@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <bool name="enableNotification">true</bool>
+    <bool name="enableSiteSettingsShortcut">true</bool>
+    <color name="backgroundColor">#0F172A</color>
+    <color name="colorPrimary">#0F172A</color>
+    <color name="colorPrimaryDark">#000000</color>
+    <color name="ic_launcher_background">#FFFFFF</color>
+    <color name="navigationColor">#0F172A</color>
+    <color name="navigationColorDark">#000000</color>
+    <color name="navigationDividerColor">#000000</color>
+    <color name="navigationDividerColorDark">#000000</color>
+    <color name="shortcut_background">#F5F5F5</color>
+    <integer name="splashScreenFadeOutDuration">300</integer>
+    <string name="appName" translatable="false">MediaHive</string>
+    <string name="assetStatements">
+    [{
+        \"relation\": [\"delegate_permission/common.handle_all_urls\"],
+        \"target\": {
+            \"namespace\": \"web\",
+            \"site\": \"https://thaiba-garden-media-manager.vercel.app\"
+        }
+    }]
+    
+  </string>
+    <string name="fallbackType" translatable="false">customtabs</string>
+    <string name="generatorApp" translatable="false">bubblewrap-cli</string>
+    <string name="hostName" translatable="false">thaiba-garden-media-manager.vercel.app</string>
+    <string name="launchUrl" translatable="false">https://thaiba-garden-media-manager.vercel.app/</string>
+    <string name="launcherName" translatable="false">MediaHive</string>
+    <string name="orientation" translatable="false">default</string>
+    <string name="providerAuthority" translatable="false">com.thaibagarden.mediahive.fileprovider</string>
+    <string name="webManifestUrl" translatable="false">https://thaiba-garden-media-manager.vercel.app/manifest.webmanifest</string>
+    <style name="Theme.Launcher" parent="Theme.AppCompat.NoActionBar">
+        <item name="android:windowBackground">@android:color/white</item>
+    </style>
+</resources>

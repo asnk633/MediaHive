@@ -1,0 +1,21 @@
+{
+    "packageId": "com.thaibagarden.mediahive",
+    "host": "thaiba-garden-media-manager.vercel.app",
+    "name": "MediaHive",
+    "launcherName": "MediaHive",
+    "display": "standalone",
+    "themeColor": "#0f172a",
+    "navigationColor": "#0f172a",
+    "backgroundColor": "#0f172a",
+    "startUrl": "/",
+    "iconUrl": "https://thaiba-garden-media-manager.vercel.app/android-chrome-512x512.png",
+    "maskableIconUrl": "https://thaiba-garden-media-manager.vercel.app/android-chrome-512x512.png",
+    "appVersion": "1.0.0",
+    "appVersionCode": 1,
+    "signingKey": {
+        "path": "./android.keystore",
+        "alias": "android"
+    },
+    "generatorApp": "bubblewrap-cli",
+    "webManifestUrl": "https://thaiba-garden-media-manager.vercel.app/manifest.webmanifest"
+}

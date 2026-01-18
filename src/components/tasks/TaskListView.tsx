@@ -380,7 +380,11 @@ const TaskListViewComponent: React.FC<TaskListViewProps> = ({ tasks, loading = f
                             return (
                                 <div
                                     key={task.id}
-                                    onClick={() => onTaskClick?.(task)}
+                                    onClick={(e) => {
+                                        e.preventDefault();
+                                        e.stopPropagation();
+                                        onTaskClick?.(task);
+                                    }}
                                     className={cn(
                                         "group grid grid-cols-12 md:grid-cols-[3fr_2fr_1.4fr_1.2fr_0.9fr_0.7fr] gap-2 px-6 py-4 items-center transition-all bg-elevated hover:bg-primary/5 border-b border-soft last:border-0",
                                         isSelected && "bg-blue-500/5",

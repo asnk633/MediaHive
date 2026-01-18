@@ -1,7 +1,1 @@
-// Mock task service for build purposes
-
-export function listenTasks(callback: (tasks: any[]) => void) {
-  // Mock implementation
-  callback([]);
-  return () => {};
-}
+// File deleted as part of Build 1 Cleanup.

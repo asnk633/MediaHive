@@ -189,21 +189,25 @@ export function EditTaskDialog({ open, onOpenChange, task, onUpdate }: EditTaskD
     const taskCreatorId = (task as any).createdBy?.uid || (task as any).createdBy;
     const isCreator = user?.uid === taskCreatorId;
 
-    const canEditContent = isAdmin || isSuperAdmin || isCreator;
+    const assignedArray = Array.isArray(task.assignedTo) ? task.assignedTo : [];
+    const isAssignee = assignedArray.some((u: any) => (typeof u === 'string' ? u : u.uid) === user?.uid);
 
-    // Priority:
-    // Guest: NEVER (isGuest check enforced)
-    // Team: Only if creator
-    // Admin: Always
-    const canEditPriority = isAdmin || isSuperAdmin || (isTeam && isCreator);
+    // --- STRICT PERMISSION UI RULES (Matching Backend) ---
+    const canEditContent = isAdmin || isSuperAdmin || isTeam || isCreator;
+
+    // Priority: ADMIN ONLY
+    const canEditPriority = isAdmin || isSuperAdmin;
+
+    // Assignee: ADMIN ONLY
+    // (Handled directly in JSX by conditional rendering)
 
     // Status: 
-    // Team: Always (for assigned tasks or general tasks) - User said "Team members can only change the status... on tasked created by other users"
-    // Guest: "other task are are view only" -> No status change for others.
-    const canEditStatus = isAdmin || isSuperAdmin || isTeam || isCreator;
+    // - Admin: Always
+    // - Team/Guest: Only if Assginee
+    // Note: Guest Creator CANNOT change status unless assigned (strict workflow)
+    const canEditStatus = isAdmin || isSuperAdmin || isAssignee;
 
-    // Meta (Priority, Date, etc.) - Alias to priority logic for now
-    const canEditMeta = isAdmin || isSuperAdmin || (isTeam && isCreator);
+    const canEditMeta = isAdmin || isSuperAdmin; // For Due Date etc.
 
     const canSave = canEditContent || canEditPriority || canEditStatus;
 

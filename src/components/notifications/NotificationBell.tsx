@@ -245,7 +245,13 @@ export const NotificationBell = () => {
                             </div>
                         )}
                     </div>
-                    <div className="p-3 border-t border-border bg-popover text-center">
+                    <div className="p-3 border-t border-border bg-popover text-center flex flex-col gap-2">
+                        <button
+                            onClick={() => { setIsOpen(false); router.push('/notifications'); }}
+                            className="text-xs font-bold text-primary hover:text-primary/80 uppercase tracking-wider transition-colors"
+                        >
+                            View Full Inbox
+                        </button>
                         <small className="text-[10px] text-muted-foreground font-medium uppercase tracking-widest">Notifications are stored for 30 days</small>
                     </div>
                 </div>

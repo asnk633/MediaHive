@@ -34,13 +34,21 @@ export async function POST(req: NextRequest, props: { params: Promise<{ id: stri
         const isAdmin = user.role === 'admin';
         const isTeam = user.role === 'team';
 
+        // Check assignment
+        const assignedToArray = Array.isArray(taskData.assignedTo) ? taskData.assignedTo : [];
+        const isAssignee = assignedToArray.some((u: any) => {
+            const uid = typeof u === 'string' ? u : u.uid;
+            return uid === user.uid;
+        });
+
         if (section === 'requester-inputs') {
-            if (!isAdmin && !isCreator) {
-                return NextResponse.json({ error: 'Only the requester or admin can upload to this section' }, { status: 403 });
+            if (!isAdmin && !isCreator && !isAssignee) {
+                return NextResponse.json({ error: 'Only the requester, assignee, or admin can upload to this section' }, { status: 403 });
             }
         } else if (section === 'team-working-files' || section === 'team-final-exports') {
-            if (!isAdmin && !isTeam) {
-                return NextResponse.json({ error: 'Only team members or admin can upload to team sections' }, { status: 403 });
+            // Allow Assignees (even if Guest role) to upload deliverables
+            if (!isAdmin && !isTeam && !isAssignee) {
+                return NextResponse.json({ error: 'Only team members, assignees, or admin can upload to team sections' }, { status: 403 });
             }
         } else {
             return NextResponse.json({ error: 'Invalid section' }, { status: 400 });

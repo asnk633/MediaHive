@@ -315,21 +315,78 @@ export async function PUT(request: NextRequest) {
 
     const task = taskDoc.data()!;
 
-    // Check if user has permission to update this task
-    const isCreator = task && task.createdBy && task.createdBy.uid === user.uid;
-    const isAdmin = user.role === 'admin' || user.role === 'team';
+    // --- STRICT PERMISSION MATRIX ---
+    // 1. Admin / SuperAdmin: Full Access
+    // 2. Team: 
+    //    - Can edit Title/Description (Global)
+    //    - Can edit Status (IF Assignee)
+    //    - CANNOT edit Priority, Assignee (unless Admin)
+    // 3. Guest:
+    //    - Can edit Title/Description (IF Creator)
+    //    - CANNOT edit Priority, Assignee, Status
 
+    const isCreator = user.uid === (task.createdBy?.uid || task.createdBy);
     const assignedArray = Array.isArray(task.assignedTo) ? task.assignedTo : [];
-    const isAssignee = assignedArray.some((u: any) => {
-      const uid = typeof u === 'string' ? u : u.uid;
-      return uid === user.uid;
-    });
+    const isAssignee = assignedArray.some((u: any) => (typeof u === 'string' ? u : u.uid) === user.uid);
+    const isAdmin = user.role === 'admin' || (user as any).isSuperAdmin;
+    const isTeam = user.role === 'team';
 
-    console.log(`[API Debug] Task Update (Bulk/Main Route): TaskId=${id}, User=${user.uid}, Role=${user.role}`);
-    console.log(`[API Debug] Permissions: IsAdmin=${isAdmin}, IsCreator=${isCreator}, IsAssignee=${isAssignee}`);
+    // BLOCKED ACTIONS CHECK
+    if (!isAdmin) {
+      // Enforce forbidden fields
+      if (updateData.priority) {
+        return Response.json({ error: 'Forbidden: Only Admins can change Priority' }, { status: 403 });
+      }
+      if (updateData.assignedTo) {
+        return Response.json({ error: 'Forbidden: Only Admins can change Assignees' }, { status: 403 });
+      }
+    }
 
-    if (!isCreator && !isAdmin && !isAssignee) {
-      return Response.json({ error: 'Forbidden: Cannot update this task ' + `(Debug: Role=${user.role}, IsAssignee=${isAssignee})` }, { status: 403 });
+    // UPDATE RIGHTS CHECK
+    let allowedToUpdate = false;
+
+    if (isAdmin) {
+      allowedToUpdate = true;
+    }
+    else if (isTeam) {
+      // Team can always edit content (Title/Desc)
+      // Check if they are trying to edit Status?
+      if (updateData.status) {
+        // Only allow status change if Assignee
+        if (isAssignee) {
+          allowedToUpdate = true;
+        } else {
+          // Trying to change status but NOT assignee?
+          // If they are ONLY changing title/desc, it's allowed.
+          // If status is present, block it.
+          return Response.json({ error: 'Forbidden: You must be assigned to this task to change its status' }, { status: 403 });
+        }
+      }
+      // If just changing title/desc/campaign, allow it
+      allowedToUpdate = true;
+    }
+    else {
+      // Guest
+      if (isCreator) {
+        // Creator can edit Title/Desc
+        // Check for forbidden fields
+        if (updateData.status) {
+          return Response.json({ error: 'Forbidden: Guests cannot change status directly' }, { status: 403 });
+        }
+        allowedToUpdate = true;
+      } else {
+        // Guest who is NOT creator? Read only.
+        // UNLESS they are assigned? (Rare, but possible).
+        if (isAssignee && updateData.status) {
+          allowedToUpdate = true; // Allow assignee to update status
+        } else {
+          return Response.json({ error: 'Forbidden: You can only edit tasks you created' }, { status: 403 });
+        }
+      }
+    }
+
+    if (!allowedToUpdate) {
+      return Response.json({ error: 'Forbidden' }, { status: 403 });
     }
 
     // Structure Protection: Only Admins can move tasks between Structures

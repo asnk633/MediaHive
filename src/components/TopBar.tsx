@@ -99,6 +99,7 @@ export default function TopBar({ title = "Thaiba MediaHive" }: { title?: string 
                     <div className="flex-1 min-w-0">
                       <div className="font-bold text-foreground text-base truncate">{user?.name || 'User'}</div>
                       <div className="text-xs text-muted truncate">{user?.email}</div>
+                      <div className="text-[10px] text-gray-500 font-mono mt-0.5">v{process.env.NEXT_PUBLIC_APP_VERSION || '2.5.1'}</div>
                     </div>
                   </div>
                   <span className={`inline-flex items-center px-3 py-1.5 rounded-full text-xs font-bold uppercase tracking-wider shadow-lg ${getRoleBadgeColor(user?.role || 'guest')}`}>

@@ -1,8 +1,8 @@
 // public/sw.js
 // Service Worker for PWA offline-first functionality
 
-const CACHE_NAME = 'thaiba-media-staging-v2';
-const DATA_CACHE_NAME = 'thaiba-media-staging-data-v2';
+const CACHE_NAME = 'thaiba-media-prod-v2-5-1';
+const DATA_CACHE_NAME = 'thaiba-media-prod-data-v2-5-1';
 
 // Silence logs in production
 if (self.location.hostname !== 'localhost' && self.location.hostname !== '127.0.0.1') {

@@ -5,7 +5,7 @@ import { TaskService } from '@/services/tasks';
 import { Task, SmartMetadata } from '@/types/task';
 import { SmartRulesEngine } from '@/services/smartRulesEngine';
 import { FlowboardLane } from '@/components/flowboard/FlowboardLane';
-import { EditTaskModal } from '@/components/tasks/EditTaskModal';
+import { EditTaskDialog } from '@/components/tasks/EditTaskDialog';
 import { WorkflowHealthWidget } from '@/app/(shell)/reports/components/WorkflowHealthWidget'; // Maybe reuse parts or layout?
 import { Loader2 } from 'lucide-react';
 
@@ -147,10 +147,20 @@ export default function FlowboardPage() {
 
             {/* Edit Modal */}
             {selectedTask && (
-                <EditTaskModal
+                <EditTaskDialog
                     task={selectedTask}
-                    isOpen={!!selectedTask}
-                    onClose={() => setSelectedTask(null)}
+                    open={!!selectedTask}
+                    onOpenChange={(open) => !open && setSelectedTask(null)}
+                    onUpdate={async (updates) => {
+                        if (!selectedTask) return false;
+                        try {
+                            await TaskService.updateTask(selectedTask.id, updates);
+                            return true;
+                        } catch (e) {
+                            console.error("Failed to update task", e);
+                            return false;
+                        }
+                    }}
                 />
             )}
         </div>

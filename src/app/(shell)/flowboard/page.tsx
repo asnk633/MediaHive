@@ -102,7 +102,10 @@ export default function FlowboardPage() {
                         stageId="intake"
                         color="gray"
                         tasks={groupedTasks.intake}
-                        onTaskClick={setSelectedTask}
+                        onTaskClick={(task) => {
+                            console.log('🟢 [FLOWBOARD PAGE] setSelectedTask called for:', task.id);
+                            setSelectedTask(task);
+                        }}
                         userCapacity={userCapacity}
                         userNames={userNames}
                     />

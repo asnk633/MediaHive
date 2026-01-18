@@ -25,24 +25,9 @@ export const FlowboardCard: React.FC<FlowboardCardProps> = ({ task, smartData, o
     return (
         <div
             onClick={(e) => {
-                const urlBefore = window.location.href;
-                console.log('🔵 [FLOWBOARD CARD] Click captured! Task:', task.id, 'URL before:', urlBefore);
-
                 e.preventDefault();
                 e.stopPropagation();
-
-                console.log('🔵 [FLOWBOARD CARD] After preventDefault/stopPropagation, calling onClick...');
                 onClick(task);
-
-                // Check if URL changed synchronously
-                setTimeout(() => {
-                    const urlAfter = window.location.href;
-                    if (urlBefore !== urlAfter) {
-                        console.error('❌ [FLOWBOARD CARD] URL CHANGED! Before:', urlBefore, 'After:', urlAfter);
-                    } else {
-                        console.log('✅ [FLOWBOARD CARD] URL unchanged, behavior correct');
-                    }
-                }, 100);
             }}
             className={`
                 group relative p-3 rounded-xl border border-white/5 bg-[#1A1F2E]/80 backdrop-blur-sm 

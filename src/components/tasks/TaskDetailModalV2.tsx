@@ -150,7 +150,7 @@ export const TaskDetailModalV2: React.FC<TaskDetailsModalProps> = ({ task, isOpe
                         animate={{ opacity: 1 }}
                         exit={{ opacity: 0 }}
                         onClick={onClose}
-                        className="absolute inset-0 bg-background/80 backdrop-blur-sm"
+                        className="absolute inset-0 bg-[#0B0E14]/98 backdrop-blur-sm"
                     />
 
                     {/* Modal - Minimal Aesthetic Layer */}

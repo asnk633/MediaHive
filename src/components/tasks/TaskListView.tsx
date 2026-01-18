@@ -24,6 +24,7 @@ import {
 } from "@/components/ui/select";
 import { cn } from "@/lib/utils";
 import { ResolvedStructureName } from "@/components/admin/structure/ResolvedStructureName";
+import { triggerHaptic } from "@/lib/haptics";
 
 interface TaskListViewProps {
     tasks: Task[];
@@ -214,6 +215,7 @@ const TaskListViewComponent: React.FC<TaskListViewProps> = ({ tasks, loading = f
 
     // INLINE ACTIONS
     const handleStatusUpdate = useCallback(async (taskId: string, newStatus: Task['status']) => {
+        triggerHaptic();
         onTaskUpdate?.(taskId, { status: newStatus });
         await TaskService.updateTask(taskId, { status: newStatus });
     }, [onTaskUpdate]);

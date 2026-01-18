@@ -4,6 +4,7 @@ import { useState } from "react";
 import { useClientData } from "@/app/(shell)/ClientDataContext";
 import ModalBase from "@/components/ModalBase";
 import { Loader2 } from "lucide-react";
+import { triggerHapticSuccess } from "@/lib/haptics";
 
 export default function CreateTaskModalGuest({ open, onClose }: { open: boolean; onClose: () => void; }) {
   const { createTask } = useClientData();
@@ -26,6 +27,7 @@ export default function CreateTaskModalGuest({ open, onClose }: { open: boolean;
         title: title.trim(),
         description: description.trim() || undefined
       });
+      triggerHapticSuccess();
       onClose();
       setTitle("");
       setDescription("");

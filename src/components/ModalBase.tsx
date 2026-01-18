@@ -1,6 +1,7 @@
 "use client";
 
 import React, { useEffect, useRef } from "react";
+import { useModalHistory } from "@/hooks/useModalHistory";
 
 export default function ModalBase({
   open,
@@ -24,6 +25,8 @@ export default function ModalBase({
     document.addEventListener("keydown", onKey);
     return () => document.removeEventListener("keydown", onKey);
   }, [open, onClose]);
+
+  useModalHistory(open, onClose);
 
   // Scroll lock
   useEffect(() => {

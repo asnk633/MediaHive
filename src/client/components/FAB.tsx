@@ -4,6 +4,7 @@ import { motion, AnimatePresence } from "framer-motion";
 import { useAuth } from "@/contexts/AuthContext";
 import { Plus, CheckSquare, Calendar, Bell, Users, Package } from "lucide-react";
 import Link from "next/link";
+import { triggerHaptic } from "@/lib/haptics";
 
 
 interface FABProps {
@@ -23,6 +24,7 @@ export default function FAB({ onMainClick }: FABProps) {
 
   // If onMainClick is provided, it overrides the menu behavior
   const handleClick = () => {
+    triggerHaptic();
     if (onMainClick) {
       onMainClick();
     } else {
@@ -79,7 +81,10 @@ export default function FAB({ onMainClick }: FABProps) {
       >
         <motion.button
           className="w-16 h-16 rounded-full text-white shadow-[0_8px_30px_rgba(79,70,229,0.5)] flex items-center justify-center relative z-20 bg-gradient-to-br from-blue-600 to-violet-600 hover-sheen overflow-hidden border border-white/20"
-          onClick={() => setIsOpen(!isOpen)}
+          onClick={() => {
+            triggerHaptic();
+            setIsOpen(!isOpen);
+          }}
           aria-label="Open Actions Menu"
           aria-expanded={isOpen}
           whileTap={{ scale: 0.95 }}

@@ -19,6 +19,7 @@ import { TaskRatingComponent } from '@/components/tasks/TaskRatingComponent';
 import { UserService } from '@/services/userService';
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { ResolvedStructureName } from "@/components/admin/structure/ResolvedStructureName";
+import { useModalHistory } from "@/hooks/useModalHistory";
 
 interface TaskDetailsModalProps {
     task: Task | null;
@@ -133,6 +134,8 @@ export const TaskDetailModalV2: React.FC<TaskDetailsModalProps> = ({ task, isOpe
         setMounted(true);
         return () => setMounted(false);
     }, []);
+
+    useModalHistory(isOpen, onClose);
 
     if (!task) return null;
     if (!mounted) return null;

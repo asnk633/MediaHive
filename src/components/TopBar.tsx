@@ -139,6 +139,15 @@ export default function TopBar({ title = "Thaiba MediaHive" }: { title?: string 
                     <span className="text-sm font-medium text-foreground">View Profile</span>
                   </Link>
 
+                  <Link
+                    href="/activity"
+                    onClick={() => setShowUserMenu(false)}
+                    className="flex items-center gap-3 px-4 py-3 rounded-xl hover:bg-surface/50 transition-all group"
+                  >
+                    <Activity size={20} className="text-orange-400 group-hover:scale-110 transition-transform" />
+                    <span className="text-sm font-medium text-foreground">Activity Feed</span>
+                  </Link>
+
                   <div className="pt-2 mt-2 border-t border-soft">
                     <button
                       onClick={handleSignOut}

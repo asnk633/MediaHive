@@ -9,7 +9,7 @@ import { Task } from '@/types/task';
 import { ArrowLeft, Calendar, Layers, Clock, CheckCircle, AlertCircle } from 'lucide-react';
 import { format } from 'date-fns';
 import { toast } from 'sonner';
-import { Flowboard } from '@/components/flowboard/Flowboard';
+
 
 export default function CampaignDashboardPage() {
     const { id } = useParams();

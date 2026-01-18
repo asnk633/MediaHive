@@ -109,7 +109,7 @@ export const NotificationInbox: React.FC = () => {
     return (
         <div className="max-w-4xl mx-auto space-y-6">
             {/* Toolbar */}
-            <div className="flex flex-col sm:flex-row gap-4 justify-between items-center bg-card/50 p-4 rounded-2xl border border-soft backdrop-blur-sm">
+            <div className="flex flex-col sm:flex-row gap-4 justify-between items-center bg-white/5 p-4 rounded-2xl border border-white/10 backdrop-blur-sm">
                 <div className="flex items-center gap-2 p-1 bg-surface rounded-xl border border-soft">
                     {(['all', 'unread', 'mentions'] as FilterType[]).map((f) => (
                         <button
@@ -139,7 +139,7 @@ export const NotificationInbox: React.FC = () => {
             </div>
 
             {/* List */}
-            <div className="bg-card rounded-2xl border border-soft overflow-hidden shadow-sm">
+            <div className="bg-white/5 rounded-2xl border border-white/10 overflow-hidden shadow-sm">
                 {filteredNotifications.length > 0 ? (
                     <div className="divide-y divide-border">
                         {filteredNotifications.map(notification => (

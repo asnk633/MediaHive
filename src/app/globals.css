@@ -141,8 +141,7 @@
   }
 
   html {
-    background-color: #0f172a;
-    /* Hardcoded slate-900 to prevent white flash/overscroll */
+    /* Background removed to allow body gradient to shine */
     overscroll-behavior-y: none;
   }
 

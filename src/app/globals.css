@@ -140,6 +140,12 @@
     @apply text-foreground;
   }
 
+  html {
+    background-color: #0f172a;
+    /* Hardcoded slate-900 to prevent white flash/overscroll */
+    overscroll-behavior-y: none;
+  }
+
   body {
     background: var(--bg-root);
     background-attachment: fixed;
@@ -147,6 +153,7 @@
     min-height: 100vh;
     padding-bottom: var(--bottom-nav-height);
     /* Prevent content overlap with fixed BottomNav */
+    overscroll-behavior-y: none;
   }
 }
 
@@ -254,6 +261,7 @@
 }
 
 @media (prefers-reduced-motion: reduce) {
+
   .animate-text-cycle,
   .animate-in,
   [class*="animate-"] {
@@ -264,11 +272,19 @@
 
 @layer utilities {
   @keyframes softPulse {
-    0% { opacity: 0.25; }
-    50% { opacity: 0.35; }
-    100% { opacity: 0.25; }
+    0% {
+      opacity: 0.25;
+    }
+
+    50% {
+      opacity: 0.35;
+    }
+
+    100% {
+      opacity: 0.25;
+    }
   }
-  
+
   .animate-soft-pulse {
     animation: softPulse 2s ease-in-out infinite;
   }

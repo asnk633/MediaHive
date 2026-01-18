@@ -1,0 +1,12 @@
+[
+  {
+    "relation": ["delegate_permission/common.handle_all_urls"],
+    "target": {
+      "namespace": "android_app",
+      "package_name": "com.thaibagarden.mediahive",
+      "sha256_cert_fingerprints": [
+        "9D:9C:C3:5E:4F:C1:EA:61:25:1C:32:1D:3E:CA:1E:94:EE:5B:B0:B9:5B:7E:50:24:98:5A:93:09:FE:D7:79:04"
+      ]
+    }
+  }
+]

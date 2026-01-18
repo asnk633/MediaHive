@@ -24,7 +24,11 @@ export const FlowboardCard: React.FC<FlowboardCardProps> = ({ task, smartData, o
 
     return (
         <div
-            onClick={() => onClick(task)}
+            onClick={(e) => {
+                e.preventDefault();
+                e.stopPropagation();
+                onClick(task);
+            }}
             className={`
                 group relative p-3 rounded-xl border border-white/5 bg-[#1A1F2E]/80 backdrop-blur-sm 
                 hover:bg-white/10 hover:border-[#ffffff1a] transition-all cursor-pointer shadow-sm hover:shadow-md

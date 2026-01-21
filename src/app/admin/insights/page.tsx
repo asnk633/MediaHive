@@ -1,7 +1,7 @@
-// src/app/admin/insights/page.tsx
-// Unified Reporting Dashboard
-
 'use client';
+
+export const dynamic = 'force-static';
+
 
 import React, { useState, useEffect } from 'react';
 import { InstitutionAssistant } from '@/components/AI/InstitutionAssistant';
@@ -23,7 +23,7 @@ interface DashboardData {
 const getDateRange = (period: string) => {
   const now = new Date();
   let startDate = new Date();
-  
+
   switch (period) {
     case 'day':
       startDate = new Date(now.getFullYear(), now.getMonth(), now.getDate() - 1);
@@ -40,7 +40,7 @@ const getDateRange = (period: string) => {
     default:
       startDate = new Date(now.getFullYear(), now.getMonth(), now.getDate() - 7);
   }
-  
+
   return { startDate, endDate: now };
 };
 
@@ -48,12 +48,12 @@ const getDateRange = (period: string) => {
 const getTaskWorkloadData = async (tenantId: string, period: string) => {
   try {
     const { startDate } = getDateRange(period);
-    
+
     // Fetch data from API
     const workloadData = await apiClient(`/api/insights/task-workload?tenantId=${tenantId}&period=${period}`, {
       method: 'GET'
     });
-    
+
     return workloadData;
   } catch (error) {
     console.error('Error fetching task workload data:', error);
@@ -69,12 +69,12 @@ const getTaskWorkloadData = async (tenantId: string, period: string) => {
 const getTatMetricsData = async (tenantId: string, period: string) => {
   try {
     const { startDate } = getDateRange(period);
-    
+
     // Fetch data from API
     const tatData = await apiClient(`/api/insights/tat-metrics?tenantId=${tenantId}&period=${period}`, {
       method: 'GET'
     });
-    
+
     return tatData;
   } catch (error) {
     console.error('Error fetching TAT metrics:', error);
@@ -90,12 +90,12 @@ const getTatMetricsData = async (tenantId: string, period: string) => {
 const getSlaComplianceData = async (tenantId: string, period: string) => {
   try {
     const { startDate } = getDateRange(period);
-    
+
     // Fetch data from API
     const slaData = await apiClient(`/api/insights/sla-compliance?tenantId=${tenantId}&period=${period}`, {
       method: 'GET'
     });
-    
+
     return slaData;
   } catch (error) {
     console.error('Error fetching SLA compliance data:', error);
@@ -111,12 +111,12 @@ const getSlaComplianceData = async (tenantId: string, period: string) => {
 const getEventFrequencyData = async (tenantId: string, period: string) => {
   try {
     const { startDate } = getDateRange(period);
-    
+
     // Fetch data from API
     const eventData = await apiClient(`/api/insights/event-frequency?tenantId=${tenantId}&period=${period}`, {
       method: 'GET'
     });
-    
+
     return eventData;
   } catch (error) {
     console.error('Error fetching event frequency data:', error);
@@ -136,12 +136,12 @@ const getEventFrequencyData = async (tenantId: string, period: string) => {
 const getMediaOutputData = async (tenantId: string, period: string) => {
   try {
     const { startDate } = getDateRange(period);
-    
+
     // Fetch data from API
     const mediaData = await apiClient(`/api/insights/media-output?tenantId=${tenantId}&period=${period}`, {
       method: 'GET'
     });
-    
+
     return mediaData;
   } catch (error) {
     console.error('Error fetching media output data:', error);
@@ -160,12 +160,12 @@ const getMediaOutputData = async (tenantId: string, period: string) => {
 const getTeamActivityData = async (tenantId: string, period: string) => {
   try {
     const { startDate } = getDateRange(period);
-    
+
     // Fetch data from API
     const teamData = await apiClient(`/api/insights/team-activity?tenantId=${tenantId}&period=${period}`, {
       method: 'GET'
     });
-    
+
     return teamData;
   } catch (error) {
     console.error('Error fetching team activity data:', error);
@@ -182,12 +182,12 @@ const getTeamActivityData = async (tenantId: string, period: string) => {
 const getPerformanceAnomaliesData = async (tenantId: string, period: string) => {
   try {
     const { startDate } = getDateRange(period);
-    
+
     // Fetch data from API
     const anomalies = await apiClient(`/api/insights/performance-anomalies?tenantId=${tenantId}&period=${period}`, {
       method: 'GET'
     });
-    
+
     return anomalies;
   } catch (error) {
     console.error('Error fetching performance anomalies:', error);
@@ -221,7 +221,7 @@ export default function InsightsPage() {
     const fetchDashboardData = async () => {
       try {
         setLoading(true);
-        
+
         // Fetch all real data in parallel
         const [
           productionPipeline,
@@ -242,7 +242,7 @@ export default function InsightsPage() {
           getTeamActivityData(selectedTenant, selectedPeriod),
           getPerformanceAnomaliesData(selectedTenant, selectedPeriod)
         ]);
-        
+
         const realData: DashboardData = {
           taskWorkload,
           tatMetrics,
@@ -253,7 +253,7 @@ export default function InsightsPage() {
           productionPipeline,
           performanceAnomalies
         };
-        
+
         setDashboardData(realData);
       } catch (error) {
         console.error('Failed to fetch dashboard data:', error);
@@ -320,7 +320,7 @@ export default function InsightsPage() {
             }
           ]
         };
-        
+
         setDashboardData(mockData);
       } finally {
         setLoading(false);
@@ -335,7 +335,7 @@ export default function InsightsPage() {
       const response = await apiClient(`/api/insights/export?format=${format}&period=${selectedPeriod}&tenant=${selectedTenant}`, {
         method: 'GET'
       });
-      
+
       // Create a temporary link to download the file
       const url = response.url; // Assuming the API returns a download URL
       const a = document.createElement('a');
@@ -356,7 +356,7 @@ export default function InsightsPage() {
         method: 'POST',
         body: JSON.stringify({ period: selectedPeriod, tenant: selectedTenant }),
       });
-      
+
       if (response.success) {
         alert('Email summary sent successfully');
       } else {
@@ -381,7 +381,7 @@ export default function InsightsPage() {
       <div className="flex justify-between items-center mb-6">
         <h1 className="text-2xl font-bold">Management Insights</h1>
         <div className="flex space-x-2">
-          <select 
+          <select
             value={selectedTenant}
             onChange={(e) => setSelectedTenant(e.target.value)}
             className="border rounded p-2"
@@ -391,7 +391,7 @@ export default function InsightsPage() {
             <option value="2">TG Bangkok</option>
             <option value="3">TG Chiang Mai</option>
           </select>
-          <select 
+          <select
             value={selectedPeriod}
             onChange={(e) => setSelectedPeriod(e.target.value)}
             className="border rounded p-2"
@@ -401,19 +401,19 @@ export default function InsightsPage() {
             <option value="month">This Month</option>
             <option value="quarter">This Quarter</option>
           </select>
-          <button 
+          <button
             onClick={() => exportData('pdf')}
             className="bg-red-500 hover:bg-red-700 text-white px-3 py-2 rounded"
           >
             Export PDF
           </button>
-          <button 
+          <button
             onClick={() => exportData('csv')}
             className="bg-green-500 hover:bg-green-700 text-white px-3 py-2 rounded"
           >
             Export CSV
           </button>
-          <button 
+          <button
             onClick={sendEmailSummary}
             className="bg-blue-500 hover:bg-blue-700 text-white px-3 py-2 rounded"
           >
@@ -432,10 +432,9 @@ export default function InsightsPage() {
                 <span>{item.institution}</span>
                 <span className="flex items-center">
                   {item.workload} tasks
-                  <span className={`ml-2 text-xs ${
-                    item.trend === 'up' ? 'text-red-500' : 
-                    item.trend === 'down' ? 'text-green-500' : 'text-gray-500'
-                  }`}>
+                  <span className={`ml-2 text-xs ${item.trend === 'up' ? 'text-red-500' :
+                      item.trend === 'down' ? 'text-green-500' : 'text-gray-500'
+                    }`}>
                     {item.trend === 'up' ? '↑' : item.trend === 'down' ? '↓' : '→'}
                   </span>
                 </span>
@@ -459,8 +458,8 @@ export default function InsightsPage() {
             <div className="flex justify-between">
               <span>Trend:</span>
               <span className={
-                dashboardData.tatMetrics.trend === 'improving' ? 'text-green-500' : 
-                dashboardData.tatMetrics.trend === 'declining' ? 'text-red-500' : 'text-gray-500'
+                dashboardData.tatMetrics.trend === 'improving' ? 'text-green-500' :
+                  dashboardData.tatMetrics.trend === 'declining' ? 'text-red-500' : 'text-gray-500'
               }>
                 {dashboardData.tatMetrics.trend}
               </span>
@@ -474,10 +473,10 @@ export default function InsightsPage() {
           <div className="flex items-center justify-center h-32">
             <div className="relative w-32 h-32">
               <div className="absolute inset-0 rounded-full border-8 border-gray-200"></div>
-              <div 
-                className="absolute inset-0 rounded-full border-8 border-transparent" 
-                style={{ 
-                  borderTopColor: '#10B981', 
+              <div
+                className="absolute inset-0 rounded-full border-8 border-transparent"
+                style={{
+                  borderTopColor: '#10B981',
                   borderRightColor: '#10B981',
                   transform: `rotate(${dashboardData.slaCompliance.compliant * 3.6}deg)`
                 }}
@@ -489,7 +488,7 @@ export default function InsightsPage() {
           </div>
           <div className="text-center mt-2">
             <span className="text-sm text-gray-600">
-              {dashboardData.slaCompliance.compliant}% compliant, 
+              {dashboardData.slaCompliance.compliant}% compliant,
               {dashboardData.slaCompliance.nonCompliant}% non-compliant
             </span>
           </div>
@@ -504,9 +503,9 @@ export default function InsightsPage() {
             {dashboardData.eventFrequency.map((day, index) => (
               <div key={index} className="text-center">
                 <div className="text-xs text-gray-500">{day.day}</div>
-                <div 
+                <div
                   className="w-8 h-8 rounded flex items-center justify-center text-white text-xs font-bold mt-1"
-                  style={{ 
+                  style={{
                     backgroundColor: `rgba(59, 130, 246, ${day.count / 25})`
                   }}
                 >
@@ -523,7 +522,7 @@ export default function InsightsPage() {
           <div className="h-48 flex items-end space-x-2">
             {dashboardData.mediaOutput.map((month, index) => (
               <div key={index} className="flex flex-col items-center flex-1">
-                <div 
+                <div
                   className="w-full bg-blue-500 rounded-t"
                   style={{ height: `${(month.count / 100) * 100}%` }}
                 ></div>
@@ -550,8 +549,8 @@ export default function InsightsPage() {
                     <span>{team.activity}%</span>
                   </div>
                   <div className="w-full bg-gray-200 rounded-full h-2 mt-1">
-                    <div 
-                      className="bg-blue-500 h-2 rounded-full" 
+                    <div
+                      className="bg-blue-500 h-2 rounded-full"
                       style={{ width: `${team.activity}%` }}
                     ></div>
                   </div>
@@ -582,25 +581,23 @@ export default function InsightsPage() {
               <div className="text-sm">Delayed</div>
             </div>
           </div>
-          
+
           {/* Performance Anomalies */}
           <div className="mt-4">
             <h3 className="font-bold mb-2">Performance Anomalies</h3>
             <div className="space-y-2">
               {dashboardData.performanceAnomalies.map((anomaly) => (
-                <div 
-                  key={anomaly.id} 
-                  className={`p-3 rounded ${
-                    anomaly.severity === 'high' ? 'bg-red-50 border border-red-200' : 
-                    anomaly.severity === 'medium' ? 'bg-yellow-50 border border-yellow-200' : 
-                    'bg-blue-50 border border-blue-200'
-                  }`}
+                <div
+                  key={anomaly.id}
+                  className={`p-3 rounded ${anomaly.severity === 'high' ? 'bg-red-50 border border-red-200' :
+                      anomaly.severity === 'medium' ? 'bg-yellow-50 border border-yellow-200' :
+                        'bg-blue-50 border border-blue-200'
+                    }`}
                 >
-                  <div className={`font-bold ${
-                    anomaly.severity === 'high' ? 'text-red-800' : 
-                    anomaly.severity === 'medium' ? 'text-yellow-800' : 
-                    'text-blue-800'
-                  }`}>
+                  <div className={`font-bold ${anomaly.severity === 'high' ? 'text-red-800' :
+                      anomaly.severity === 'medium' ? 'text-yellow-800' :
+                        'text-blue-800'
+                    }`}>
                     {anomaly.type.charAt(0).toUpperCase() + anomaly.type.slice(1)}
                   </div>
                   <div className="text-sm">{anomaly.description}</div>

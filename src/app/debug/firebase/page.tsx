@@ -1,4 +1,8 @@
 'use client';
+
+export const dynamic = 'force-static';
+
+
 import React, { useEffect, useState } from 'react';
 
 export default function FirebaseDebugPage() {

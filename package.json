@@ -7,6 +7,8 @@
     "dev": "node scripts/dev.js",
     "build": "next build",
     "build:web-for-capacitor": "node scripts/check-envs.js && node scripts/validate-firebase-config.js && next build",
+    "build:mobile": "cross-env IS_MOBILE=true next build",
+    "cap:sync": "npx cap sync android",
     "start": "next start",
     "lint": "next lint",
     "test:e2e": "BASE_URL=http://localhost:3000 playwright test",

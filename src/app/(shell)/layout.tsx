@@ -1,4 +1,5 @@
-"use client";
+'use client';
+export const dynamic = 'force-dynamic';
 
 import React, { useEffect, Suspense } from "react";
 import BottomNav from "@/components/BottomNavigation";

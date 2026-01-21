@@ -1,4 +1,5 @@
-"use client";
+'use client';
+export const dynamic = 'force-static';
 
 import { useRouter } from "next/navigation";
 import Link from "next/link";

@@ -1,5 +1,7 @@
-// src/app/admin/monitoring/page.tsx
-// Admin Monitoring Dashboard Page
+'use client';
+
+export const dynamic = 'force-static';
+
 
 import { MonitoringDashboard } from '@/components/MonitoringDashboard';
 

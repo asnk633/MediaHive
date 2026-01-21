@@ -2,7 +2,7 @@ import 'server-only';
 import { adminDb } from '@/lib/firebase/server';
 import { Timestamp } from 'firebase-admin/firestore';
 import { AppNotification, NotificationType, NotificationPriority } from '@/types/notification';
-import { logStaleTaskNotification } from '@/app/api/_lib/audit';
+import { logStaleTaskNotification } from '@/server/lib/audit';
 import { StructurePolicyService } from '@/lib/structure-policies.server';
 import { RolePolicyService } from '@/lib/role-policies.server';
 import { AutomationRulesService } from '@/lib/automation-rules.server';

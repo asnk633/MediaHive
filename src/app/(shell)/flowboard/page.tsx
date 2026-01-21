@@ -1,4 +1,7 @@
-// Flowboard feature removed - use /tasks instead
+export const dynamic = 'force-dynamic';
+
+import FlowboardClient from './FlowboardClient';
+
 export default function FlowboardPage() {
-    return null;
+    return <FlowboardClient />;
 }

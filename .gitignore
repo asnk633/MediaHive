@@ -80,6 +80,7 @@ firestore_users*.json
 # --- OS / tooling ---
 .DS_Store
 Thumbs.db
+.tmp/
 
 # Firebase Admin credentials
 credentials/

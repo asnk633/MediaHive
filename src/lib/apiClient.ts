@@ -1,4 +1,4 @@
-import { getAuth } from 'firebase/auth';
+// import { getAuth } from 'firebase/auth'; // Dynamic import used instead to prevent build-time toxicity
 
 // Request deduplication cache
 const inflightRequests = new Map<string, Promise<any>>();
@@ -111,8 +111,18 @@ function show429Toast() {
 // Main API client function
 export const apiClient = async <T = any>(endpoint: string, options: ApiOptions = {}): Promise<T> => {
   // Construct the full URL
-  const baseUrl = typeof window !== 'undefined' ? '' : 'http://localhost:3000';
-  const url = `${baseUrl}${endpoint}`;
+  // Priority: 1. Relative (standard web), 2. Static env var, 3. Manual fallback
+  const envBaseUrl = process.env.NEXT_PUBLIC_API_URL;
+  const baseUrl = typeof window !== 'undefined'
+    ? (window.location.origin.includes('localhost') && envBaseUrl ? envBaseUrl : '')
+    : 'http://localhost:3000';
+
+  // If we are on capacitor://localhost or similar, we MUST use the remote base URL
+  const effectiveBaseUrl = (typeof window !== 'undefined' && (window.location.protocol === 'capacitor:' || window.location.hostname === 'localhost'))
+    ? (envBaseUrl || '')
+    : baseUrl;
+
+  const url = `${effectiveBaseUrl}${endpoint}`;
 
   const requestKey = `${options.method || 'GET'}:${url}`;
 
@@ -139,6 +149,7 @@ export const apiClient = async <T = any>(endpoint: string, options: ApiOptions =
     const headersRecord = options.headers as Record<string, string> | undefined;
     if (!headersRecord?.['Authorization']) {
       try {
+        const { getAuth } = await import('firebase/auth');
         const auth = getAuth();
         console.log('[API Client] auth.currentUser exists:', !!auth.currentUser, 'for endpoint:', endpoint);
         if (auth.currentUser) {

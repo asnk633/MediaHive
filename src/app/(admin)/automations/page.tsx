@@ -1,7 +1,7 @@
-// src/app/(admin)/automations/page.tsx
-// Automation Rules Admin Page
-
 'use client';
+
+export const dynamic = 'force-static';
+
 
 import React, { useState, useEffect } from 'react';
 import { apiClient } from '@/lib/apiClient';
@@ -125,11 +125,11 @@ export default function AutomationsPage() {
   // Create or update a rule
   const handleSaveRule = async (e: React.FormEvent) => {
     e.preventDefault();
-    
+
     try {
       const url = editingRule ? `/api/automation-rules/${editingRule.id}` : '/api/automation-rules';
       const method = editingRule ? 'PUT' : 'POST';
-      
+
       const data = await apiClient(url, {
         method,
         body: JSON.stringify({
@@ -142,7 +142,7 @@ export default function AutomationsPage() {
           enabled: ruleForm.enabled
         }),
       });
-      
+
       if (editingRule) {
         setRules(rules.map(rule => rule.id === editingRule.id ? data.rule : rule));
       } else {
@@ -176,8 +176,8 @@ export default function AutomationsPage() {
         method: 'PATCH',
         body: JSON.stringify({ enabled: !enabled }),
       });
-      
-      setRules(rules.map(rule => 
+
+      setRules(rules.map(rule =>
         rule.id === ruleId ? { ...rule, enabled: data.rule.enabled } : rule
       ));
     } catch (error) {
@@ -195,7 +195,7 @@ export default function AutomationsPage() {
       await apiClient(`/api/automation-rules/${ruleId}`, {
         method: 'DELETE',
       });
-      
+
       setRules(rules.filter(rule => rule.id !== ruleId));
     } catch (error) {
       console.error('Failed to delete automation rule:', error);
@@ -237,7 +237,7 @@ export default function AutomationsPage() {
   const updateCondition = (id: string, field: keyof Condition, value: any) => {
     setRuleForm({
       ...ruleForm,
-      conditions: ruleForm.conditions.map(cond => 
+      conditions: ruleForm.conditions.map(cond =>
         cond.id === id ? { ...cond, [field]: value } : cond
       )
     });
@@ -270,7 +270,7 @@ export default function AutomationsPage() {
   const updateAction = (id: string, field: string, value: any) => {
     setRuleForm({
       ...ruleForm,
-      actions: ruleForm.actions.map(action => 
+      actions: ruleForm.actions.map(action =>
         action.id === id ? { ...action, [field]: value } : action
       )
     });
@@ -310,21 +310,19 @@ export default function AutomationsPage() {
         <nav className="-mb-px flex space-x-8">
           <button
             onClick={() => setActiveTab('list')}
-            className={`py-4 px-1 border-b-2 font-medium text-sm ${
-              activeTab === 'list'
+            className={`py-4 px-1 border-b-2 font-medium text-sm ${activeTab === 'list'
                 ? 'border-blue-500 text-blue-600'
                 : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'
-            }`}
+              }`}
           >
             Rule List
           </button>
           <button
             onClick={() => setActiveTab('builder')}
-            className={`py-4 px-1 border-b-2 font-medium text-sm ${
-              activeTab === 'builder'
+            className={`py-4 px-1 border-b-2 font-medium text-sm ${activeTab === 'builder'
                 ? 'border-blue-500 text-blue-600'
                 : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'
-            }`}
+              }`}
           >
             Rule Builder
           </button>
@@ -397,7 +395,7 @@ export default function AutomationsPage() {
                 ))}
               </tbody>
             </table>
-            
+
             {rules.length === 0 && (
               <div className="text-center py-8">
                 <p className="text-gray-500">No automation rules found.</p>
@@ -431,13 +429,12 @@ export default function AutomationsPage() {
               <h3 className="text-lg font-medium mb-4">Start with a Template</h3>
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 {TEMPLATES.map((template) => (
-                  <div 
+                  <div
                     key={template.id}
-                    className={`border rounded-lg p-4 cursor-pointer ${
-                      selectedTemplate === template.id 
-                        ? 'border-blue-500 bg-blue-50' 
+                    className={`border rounded-lg p-4 cursor-pointer ${selectedTemplate === template.id
+                        ? 'border-blue-500 bg-blue-50'
                         : 'border-gray-200 hover:border-gray-300'
-                    }`}
+                      }`}
                     onClick={() => handleTemplateSelect(template.id)}
                   >
                     <h4 className="font-medium">{template.name}</h4>
@@ -463,7 +460,7 @@ export default function AutomationsPage() {
                 required
               />
             </div>
-            
+
             <div className="mb-6">
               <label className="block text-gray-700 text-sm font-bold mb-2" htmlFor="description">
                 Description
@@ -501,7 +498,7 @@ export default function AutomationsPage() {
                     <option value="notification_received">Notification Received</option>
                   </select>
                 </div>
-                
+
                 {/* Trigger Configuration */}
                 <div className="mt-4">
                   <label className="block text-gray-700 text-sm font-bold mb-2">
@@ -537,7 +534,7 @@ export default function AutomationsPage() {
                   Add Condition
                 </button>
               </div>
-              
+
               {ruleForm.conditions.length === 0 ? (
                 <div className="text-center py-4 text-gray-500">
                   No conditions added. Click "Add Condition" to create one.
@@ -556,7 +553,7 @@ export default function AutomationsPage() {
                           Remove
                         </button>
                       </div>
-                      
+
                       <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                         <div>
                           <label className="block text-gray-700 text-sm font-bold mb-2">
@@ -573,7 +570,7 @@ export default function AutomationsPage() {
                             <option value="assignedUser">Assigned User</option>
                           </select>
                         </div>
-                        
+
                         <div>
                           <label className="block text-gray-700 text-sm font-bold mb-2">
                             Operator
@@ -590,7 +587,7 @@ export default function AutomationsPage() {
                             <option value="less_than">Less Than</option>
                           </select>
                         </div>
-                        
+
                         <div>
                           <label className="block text-gray-700 text-sm font-bold mb-2">
                             Value
@@ -621,7 +618,7 @@ export default function AutomationsPage() {
                   Add Action
                 </button>
               </div>
-              
+
               {ruleForm.actions.length === 0 ? (
                 <div className="text-center py-4 text-gray-500">
                   No actions added. Click "Add Action" to create one.
@@ -640,7 +637,7 @@ export default function AutomationsPage() {
                           Remove
                         </button>
                       </div>
-                      
+
                       <div className="mb-4">
                         <label className="block text-gray-700 text-sm font-bold mb-2">
                           Action Type
@@ -657,7 +654,7 @@ export default function AutomationsPage() {
                           <option value="auto_update_status">Auto-update Status</option>
                         </select>
                       </div>
-                      
+
                       {/* Action Configuration */}
                       <div>
                         <label className="block text-gray-700 text-sm font-bold mb-2">

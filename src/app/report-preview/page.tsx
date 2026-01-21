@@ -1,4 +1,7 @@
-"use client";
+'use client';
+
+export const dynamic = 'force-static';
+
 
 import React, { useEffect, useState, Suspense } from "react";
 import { useSearchParams, useRouter } from "next/navigation";

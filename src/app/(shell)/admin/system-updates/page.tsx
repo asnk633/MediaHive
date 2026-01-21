@@ -1,9 +1,8 @@
-import { SystemUpdatesView } from '@/components/admin/SystemUpdatesView';
+'use client';
 
-export const metadata = {
-    title: 'System Updates | Admin',
-    description: 'Manage and broadcast system updates'
-};
+
+
+import { SystemUpdatesView } from '@/components/admin/SystemUpdatesView';
 
 export default function SystemUpdatesPage() {
     return <SystemUpdatesView />;

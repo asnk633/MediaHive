@@ -1,4 +1,6 @@
-"use client";
+'use client';
+
+
 
 import React from 'react';
 import { PageLayout } from "@/components/ui/layout/PageLayout";

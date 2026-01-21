@@ -4,7 +4,8 @@ import { Settings, User, WifiOff, LogOut, Package, Activity } from 'lucide-react
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { SafeAvatar } from "@/components/ui/SafeAvatar";
-import { NotificationBell } from "@/components/notifications/NotificationBell";
+import dynamic from 'next/dynamic';
+const NotificationBell = dynamic(() => import('@/components/notifications/NotificationBell').then(mod => mod.NotificationBell), { ssr: false });
 import { useAuth } from "@/contexts/AuthContext";
 
 export default function TopBar({ title = "Thaiba MediaHive" }: { title?: string }) {

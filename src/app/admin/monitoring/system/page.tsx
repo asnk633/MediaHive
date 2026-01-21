@@ -1,7 +1,5 @@
-// src/app/admin/monitoring/system/page.tsx
-// System Monitoring Dashboard
-
 'use client';
+export const dynamic = 'force-static';
 
 import React, { useState, useEffect } from 'react';
 import { apiClient } from '@/lib/apiClient';
@@ -40,7 +38,7 @@ export default function SystemMonitoringPage() {
           method: 'GET'
         });
         setSystemStats(systemData);
-        
+
         // Fetch audit stats
         const auditData = await apiClient(`/api/audit-log/stats?period=${selectedPeriod}&tenant=${selectedTenant}`, {
           method: 'GET'
@@ -54,7 +52,7 @@ export default function SystemMonitoringPage() {
     };
 
     fetchStats();
-    
+
     // Refresh stats every 30 seconds
     const interval = setInterval(fetchStats, 30000);
     return () => clearInterval(interval);
@@ -73,7 +71,7 @@ export default function SystemMonitoringPage() {
       <div className="flex justify-between items-center mb-6">
         <h1 className="text-2xl font-bold">System Monitoring</h1>
         <div className="flex space-x-2">
-          <select 
+          <select
             value={selectedTenant}
             onChange={(e) => setSelectedTenant(e.target.value)}
             className="border rounded p-2"
@@ -83,7 +81,7 @@ export default function SystemMonitoringPage() {
             <option value="2">TG Bangkok</option>
             <option value="3">TG Chiang Mai</option>
           </select>
-          <select 
+          <select
             value={selectedPeriod}
             onChange={(e) => setSelectedPeriod(e.target.value)}
             className="border rounded p-2"
@@ -101,39 +99,37 @@ export default function SystemMonitoringPage() {
           <h2 className="text-lg font-bold mb-3">Uptime</h2>
           <div className="text-3xl font-bold text-green-600">{systemStats.uptime}</div>
         </div>
-        
+
         <div className="bg-white shadow rounded p-4">
           <h2 className="text-lg font-bold mb-3">CPU Usage</h2>
           <div className="flex items-center">
             <div className="text-3xl font-bold">{systemStats.cpuUsage}%</div>
             <div className="ml-4 w-full bg-gray-200 rounded-full h-2">
-              <div 
-                className={`h-2 rounded-full ${
-                  systemStats.cpuUsage > 80 ? 'bg-red-500' : 
+              <div
+                className={`h-2 rounded-full ${systemStats.cpuUsage > 80 ? 'bg-red-500' :
                   systemStats.cpuUsage > 60 ? 'bg-yellow-500' : 'bg-green-500'
-                }`}
+                  }`}
                 style={{ width: `${systemStats.cpuUsage}%` }}
               ></div>
             </div>
           </div>
         </div>
-        
+
         <div className="bg-white shadow rounded p-4">
           <h2 className="text-lg font-bold mb-3">Memory Usage</h2>
           <div className="flex items-center">
             <div className="text-3xl font-bold">{systemStats.memoryUsage}%</div>
             <div className="ml-4 w-full bg-gray-200 rounded-full h-2">
-              <div 
-                className={`h-2 rounded-full ${
-                  systemStats.memoryUsage > 80 ? 'bg-red-500' : 
+              <div
+                className={`h-2 rounded-full ${systemStats.memoryUsage > 80 ? 'bg-red-500' :
                   systemStats.memoryUsage > 60 ? 'bg-yellow-500' : 'bg-green-500'
-                }`}
+                  }`}
                 style={{ width: `${systemStats.memoryUsage}%` }}
               ></div>
             </div>
           </div>
         </div>
-        
+
         <div className="bg-white shadow rounded p-4">
           <h2 className="text-lg font-bold mb-3">Active Users</h2>
           <div className="text-3xl font-bold text-blue-600">{systemStats.activeUsers}</div>
@@ -146,23 +142,22 @@ export default function SystemMonitoringPage() {
           <h2 className="text-lg font-bold mb-3">Total Requests</h2>
           <div className="text-3xl font-bold">{systemStats.totalRequests.toLocaleString()}</div>
         </div>
-        
+
         <div className="bg-white shadow rounded p-4">
           <h2 className="text-lg font-bold mb-3">Error Rate</h2>
           <div className="flex items-center">
             <div className="text-3xl font-bold">{systemStats.errorRate}%</div>
             <div className="ml-4 w-full bg-gray-200 rounded-full h-2">
-              <div 
-                className={`h-2 rounded-full ${
-                  systemStats.errorRate > 5 ? 'bg-red-500' : 
+              <div
+                className={`h-2 rounded-full ${systemStats.errorRate > 5 ? 'bg-red-500' :
                   systemStats.errorRate > 2 ? 'bg-yellow-500' : 'bg-green-500'
-                }`}
+                  }`}
                 style={{ width: `${Math.min(100, systemStats.errorRate * 10)}%` }}
               ></div>
             </div>
           </div>
         </div>
-        
+
         <div className="bg-white shadow rounded p-4">
           <h2 className="text-lg font-bold mb-3">Avg Response Time</h2>
           <div className="text-3xl font-bold">{systemStats.responseTime}ms</div>
@@ -185,7 +180,7 @@ export default function SystemMonitoringPage() {
             ))}
           </div>
         </div>
-        
+
         {/* Top Resource Types */}
         <div className="bg-white shadow rounded p-4">
           <h2 className="text-lg font-bold mb-3">Top Resource Types</h2>
@@ -208,7 +203,7 @@ export default function SystemMonitoringPage() {
         <div className="h-64 flex items-end space-x-2">
           {auditStats.dailyCounts.map((day, index) => (
             <div key={index} className="flex flex-col items-center flex-1">
-              <div 
+              <div
                 className="w-full bg-blue-500 rounded-t"
                 style={{ height: `${(day.count / Math.max(...auditStats.dailyCounts.map(d => d.count))) * 100}%` }}
               ></div>

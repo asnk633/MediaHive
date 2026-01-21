@@ -4,7 +4,7 @@ import { getAuth, Auth, browserLocalPersistence, inMemoryPersistence, setPersist
 import { getFirestore, Firestore, initializeFirestore, setLogLevel } from 'firebase/firestore';
 import { getStorage, FirebaseStorage } from 'firebase/storage';
 import { networkMonitor, withNetworkRetry } from '@/utils/networkMonitor';
-import firebaseApp from './app'; // Centralized Firebase app initialization
+import { getFirebaseApp } from './app';
 
 // Enable verbose logging to debug timeouts only in development
 if (typeof window !== 'undefined' && process.env.NODE_ENV === 'development') {
@@ -24,13 +24,13 @@ const log = {
   },
   error: (...args: any[]) => console.error(...args) // Errors always show
 };
-
 // Initialize Firebase with robust error handling
 async function initializeFirebase() {
   try {
+    const app = getFirebaseApp();
     // Use the centralized app instance
-    log.info('[FIREBASE] Using centralized Firebase app with Project ID:', firebaseApp.options.projectId);
-    return firebaseApp;
+    log.info('[FIREBASE] Using centralized Firebase app with Project ID:', app.options.projectId);
+    return app;
   } catch (error) {
     console.error('[FIREBASE] Failed to initialize Firebase:', error);
     throw error;

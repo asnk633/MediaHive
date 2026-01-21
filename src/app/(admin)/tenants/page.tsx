@@ -1,7 +1,7 @@
-// src/app/(admin)/tenants/page.tsx
-// Tenant Management Page
-
 'use client';
+
+export const dynamic = 'force-static';
+
 
 import React, { useState, useEffect } from 'react';
 import { apiClient } from '@/lib/apiClient';
@@ -49,11 +49,11 @@ export default function TenantsPage() {
   // Create or update a tenant
   const handleSaveTenant = async (e: React.FormEvent) => {
     e.preventDefault();
-    
+
     try {
       const url = editingTenant ? `/api/tenants/${editingTenant.id}` : '/api/tenants';
       const method = editingTenant ? 'PUT' : 'POST';
-      
+
       const data = await apiClient(url, {
         method,
         body: JSON.stringify({
@@ -62,7 +62,7 @@ export default function TenantsPage() {
           settings: tenantForm.settings ? JSON.parse(tenantForm.settings) : {}
         }),
       });
-      
+
       if (editingTenant) {
         setTenants(tenants.map(tenant => tenant.id === editingTenant.id ? data.tenant : tenant));
       } else {
@@ -95,7 +95,7 @@ export default function TenantsPage() {
       await apiClient(`/api/tenants/${tenantId}`, {
         method: 'DELETE',
       });
-      
+
       setTenants(tenants.filter(tenant => tenant.id !== tenantId));
     } catch (error) {
       console.error('Failed to delete tenant:', error);
@@ -148,7 +148,7 @@ export default function TenantsPage() {
                 required
               />
             </div>
-            
+
             <div className="mb-4">
               <label className="block text-gray-700 text-sm font-bold mb-2" htmlFor="domain">
                 Domain
@@ -163,7 +163,7 @@ export default function TenantsPage() {
               />
               <p className="text-gray-600 text-xs mt-1">The unique domain for this tenant (e.g., campus1.thaibagarden.edu)</p>
             </div>
-            
+
             <div className="mb-6">
               <label className="block text-gray-700 text-sm font-bold mb-2" htmlFor="settings">
                 Settings (JSON)
@@ -177,7 +177,7 @@ export default function TenantsPage() {
                 placeholder='{"branding": {"primaryColor": "#007bff"}, "features": {"notifications": true}}'
               />
             </div>
-            
+
             <div className="flex items-center justify-between">
               <button
                 type="button"
@@ -245,7 +245,7 @@ export default function TenantsPage() {
             ))}
           </tbody>
         </table>
-        
+
         {tenants.length === 0 && (
           <div className="text-center py-8">
             <p className="text-gray-500">No tenants found.</p>

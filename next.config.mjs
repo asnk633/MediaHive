@@ -5,6 +5,11 @@ const withBundleAnalyzer = bundleAnalyzer({
 });
 
 const nextConfig = {
+  // Static export
+  output: 'export',
+  distDir: process.env.IS_MOBILE === 'true' ? 'out' : '.next',
+  typedRoutes: false,
+
   // External packages (native modules that shouldn't be bundled)
   serverExternalPackages: ['better-sqlite3'],
 
@@ -50,42 +55,6 @@ const nextConfig = {
         pathname: '**',
       },
     ],
-  },
-
-  // Security Headers
-  async headers() {
-    return [
-      {
-        source: '/:path*',
-        headers: [
-          {
-            key: 'X-DNS-Prefetch-Control',
-            value: 'on'
-          },
-          {
-            key: 'Strict-Transport-Security',
-            value: 'max-age=63072000; includeSubDomains; preload'
-          },
-          {
-            key: 'X-Content-Type-Options',
-            value: 'nosniff'
-          },
-          {
-            key: 'X-Frame-Options',
-            value: 'DENY'
-          },
-          {
-            key: 'Referrer-Policy',
-            value: 'origin-when-cross-origin'
-          },
-          {
-            // Basic Permissions Policy
-            key: 'Permissions-Policy',
-            value: 'camera=(), microphone=(), geolocation=()'
-          }
-        ],
-      },
-    ];
   },
 };
 

@@ -1,4 +1,7 @@
-"use client";
+'use client';
+
+export const dynamic = 'force-static';
+
 
 import React, { useState, useEffect } from 'react';
 import { useAuth } from '@/contexts/AuthContext';

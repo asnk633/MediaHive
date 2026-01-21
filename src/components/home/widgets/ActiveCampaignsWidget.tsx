@@ -59,7 +59,7 @@ export const ActiveCampaignsWidget = () => {
                 {campaigns.map(campaign => (
                     <div
                         key={campaign.id}
-                        onClick={() => router.push(`/campaigns/${campaign.id}`)}
+                        onClick={() => router.push(`/campaigns/view?id=${campaign.id}`)}
                         className="min-w-[280px] h-[180px] rounded-xl bg-surface backdrop-blur-sm p-5 flex flex-col justify-between hover:shadow-lg hover:shadow-strong transition-all cursor-pointer snap-start group relative overflow-hidden shadow-sm"
                     >
                         {/* Phase Awareness Strip */}

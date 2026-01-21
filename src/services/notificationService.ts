@@ -145,6 +145,21 @@ export class NotificationService {
       throw error;
     }
   }
+  /**
+   * Create a broadcast notification (admin only)
+   */
+  static async createBroadcastNotification(payload: any): Promise<{ success: boolean; message: string }> {
+    try {
+      const response = await apiRequest('/create', {
+        method: 'POST',
+        body: JSON.stringify(payload)
+      });
+      return { success: true, message: response.message || 'Broadcast sent' };
+    } catch (error: any) {
+      console.error('Error creating broadcast:', error);
+      return { success: false, message: error.message || 'Failed to send' };
+    }
+  }
 }
 
 export function listenNotifications(userId: string, callback: (notifications: AppNotification[]) => void) {

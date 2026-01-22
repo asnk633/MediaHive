@@ -4,10 +4,38 @@ import React from 'react';
 import { useRouter } from 'next/navigation';
 import { PageLayout } from '@/components/ui/layout/PageLayout';
 import { PageHeader } from '@/components/ui/layout/PageHeader';
-import { FileText, Activity, BarChart3, TrendingUp } from 'lucide-react';
+import { FileText, Activity, BarChart3, TrendingUp, WifiOff } from 'lucide-react';
+import { useState, useEffect } from 'react';
+
+import { OfflinePlaceholder } from '@/components/OfflinePlaceholder';
+import { useNative } from '@/hooks/useNative';
 
 export default function ReportsClient() {
     const router = useRouter();
+    const { isNative } = useNative();
+    const [isChecking, setIsChecking] = useState(true);
+
+    useEffect(() => {
+        setIsChecking(false);
+    }, []);
+
+    if (isChecking) return <div className="min-h-screen bg-[var(--bg-card)]" />;
+
+    // TODO: [Future Sync]
+    // Allow render for native.
+    /*
+    if (isNative) {
+        return (
+            <PageLayout mode="plain">
+                <OfflinePlaceholder
+                    title="Reports Unavailable"
+                    message="Generation of reports requires access to the server database. Please use the web version."
+                    icon={BarChart3}
+                />
+            </PageLayout>
+        );
+    }
+    */
 
     const reports = [
         {

@@ -1,7 +1,10 @@
-export const dynamic = 'force-dynamic';
-
+import { Suspense } from 'react';
 import TasksPageClient from './TasksPageClient';
 
 export default function TasksPage() {
-  return <TasksPageClient />;
+  return (
+    <Suspense fallback={<div className="min-h-screen bg-[var(--bg-card)]" />}>
+      <TasksPageClient />
+    </Suspense>
+  );
 }

@@ -1,9 +1,5 @@
-'use client';
-export const dynamic = 'force-dynamic';
+﻿import { ReactNode } from "react";
 
-
-import { ReactNode } from "react";
-
-export default function SettingsRootLayout({ children }: { children: ReactNode }) {
+export default function settingsLayout({ children }: { children: ReactNode }) {
     return <>{children}</>;
 }

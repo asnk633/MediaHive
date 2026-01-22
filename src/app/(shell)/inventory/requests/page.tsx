@@ -1,7 +1,10 @@
-export const dynamic = 'force-dynamic';
-
+import { Suspense } from 'react';
 import InventoryRequestsClient from './InventoryRequestsClient';
 
 export default function MyRequestsPage() {
-    return <InventoryRequestsClient />;
+    return (
+        <Suspense fallback={null}>
+            <InventoryRequestsClient />
+        </Suspense>
+    );
 }

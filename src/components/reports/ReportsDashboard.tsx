@@ -29,7 +29,10 @@ interface ActivityItem {
     meta: any;
 }
 
+import { useRouter } from 'next/navigation';
+
 export default function ReportsDashboard() {
+    const router = useRouter();
     const [overview, setOverview] = useState<ReportOverview | null>(null);
     const [selectedPeriod, setSelectedPeriod] = useState('60d'); // Default to 60 days (Soft Retention)
     const [filterSeverity, setFilterSeverity] = useState<string>(''); // '' | 'info' | 'warning' | 'critical'
@@ -119,7 +122,8 @@ export default function ReportsDashboard() {
         // For 'all', don't set 'from' parameter
 
         queryParams.set('export', format);
-        window.location.href = `/api/reports/activity?${queryParams.toString()}`;
+        // Use router to navigate to the download URL
+        router.push(`/api/reports/activity?${queryParams.toString()}`);
     };
 
     useEffect(() => {

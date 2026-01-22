@@ -1,7 +1,10 @@
-export const dynamic = 'force-dynamic';
-
+import { Suspense } from 'react';
 import SystemUpdateViewClient from './SystemUpdateViewClient';
 
 export default function SystemUpdateViewPage() {
-    return <SystemUpdateViewClient />;
+    return (
+        <Suspense fallback={<div className="min-h-screen bg-[var(--bg-card)]" />}>
+            <SystemUpdateViewClient />
+        </Suspense>
+    );
 }

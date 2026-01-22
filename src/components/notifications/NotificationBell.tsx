@@ -1,5 +1,6 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { Bell, Layers } from 'lucide-react';
+import { Capacitor } from '@capacitor/core';
 import { NotificationService } from '@/services/notificationService';
 import { AppNotification } from '@/types/notification';
 import { NotificationItem } from './NotificationItem';
@@ -43,11 +44,16 @@ export const NotificationBell = () => {
 
         fetchNotifications();
 
-        // Poll for updates every 30 seconds
-        const pollInterval = setInterval(fetchNotifications, 30000);
+        fetchNotifications();
+
+        // Poll for updates every 30 seconds (Web Only)
+        let pollInterval: NodeJS.Timeout;
+        if (!Capacitor.isNativePlatform()) {
+            pollInterval = setInterval(fetchNotifications, 30000);
+        }
 
         return () => {
-            clearInterval(pollInterval);
+            if (pollInterval) clearInterval(pollInterval);
         };
     }, [user?.uid, authStatus]); // Stable dependency: only re-run if UID changes or auth status confirms
 

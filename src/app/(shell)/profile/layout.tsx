@@ -1,9 +1,5 @@
-'use client';
-export const dynamic = 'force-dynamic';
+﻿import { ReactNode } from "react";
 
-
-import { ReactNode } from "react";
-
-export default function ProfileRootLayout({ children }: { children: ReactNode }) {
+export default function profileLayout({ children }: { children: ReactNode }) {
     return <>{children}</>;
 }

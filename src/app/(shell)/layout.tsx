@@ -1,5 +1,5 @@
 'use client';
-export const dynamic = 'force-dynamic';
+
 
 import React, { useEffect, Suspense } from "react";
 import BottomNav from "@/components/BottomNavigation";
@@ -68,7 +68,11 @@ export default function ShellLayout({ children }: { children: React.ReactNode })
 
 
           <div className="print:hidden">
-            <BottomNav />
+            <Suspense fallback={null}>
+              {process.env.IS_MOBILE !== 'true' || (typeof window !== 'undefined' && !window.location.pathname.startsWith('/reports/activity')) ? (
+                <BottomNav />
+              ) : null}
+            </Suspense>
           </div>
         </ClientDataProvider>
       </ToastProvider>

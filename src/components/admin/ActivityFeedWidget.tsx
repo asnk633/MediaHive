@@ -5,6 +5,7 @@ import { Layers, User, Calendar, FileText, Activity, Clock, ShieldAlert } from '
 import { formatDistanceToNow } from 'date-fns';
 import { apiClient } from '@/lib/apiClient';
 import { SafeAvatar } from "@/components/ui/SafeAvatar";
+import { useNative } from "@/hooks/useNative";
 
 interface ActivityItem {
     id: number;
@@ -37,11 +38,17 @@ export const ActivityFeedWidget = () => {
         }
     };
 
+    const { isNative } = useNative();
+
     useEffect(() => {
         fetchFeed();
-        const interval = setInterval(fetchFeed, 60000); // 60s poll
-        return () => clearInterval(interval);
-    }, []);
+
+        // Only poll on Web
+        if (!isNative) {
+            const interval = setInterval(fetchFeed, 60000); // 60s poll
+            return () => clearInterval(interval);
+        }
+    }, [isNative]);
 
     const getIcon = (type: string, action: string) => {
         if (action === 'login' || action === 'logout') return <User size={14} className="text-blue-400" />;

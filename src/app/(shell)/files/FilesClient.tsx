@@ -10,8 +10,14 @@ import { Plus, Search } from 'lucide-react';
 import { motion } from 'framer-motion';
 import { toast } from 'sonner';
 
+import { OfflinePlaceholder } from '@/components/OfflinePlaceholder';
+import { FolderX } from 'lucide-react';
+
+import { useNative } from '@/hooks/useNative';
+
 export default function FilesClient() {
     const { user } = useAuth();
+    const { isNative } = useNative();
     const [files, setFiles] = useState<DriveFile[]>([]);
     const [loading, setLoading] = useState(true);
     const [uploadOpen, setUploadOpen] = useState(false);
@@ -19,6 +25,31 @@ export default function FilesClient() {
     const [deleteId, setDeleteId] = useState<string | null>(null);
     const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
 
+    const [isChecking, setIsChecking] = useState(true);
+
+    useEffect(() => {
+        setIsChecking(false);
+    }, []);
+
+    if (isChecking) return <div className="h-screen bg-[var(--bg-card)]" />; // Simple empty state matching theme
+
+    // TODO: [Future Sync]
+    // When offline sync is implemented, we will invoke syncService here.
+    // For now, allow render. The loadFiles effect will try to fetch, possibly fail, which is handled.
+
+    /*
+    if (isNative) {
+        return (
+            <div className="flex flex-col h-screen app-body-padding pt-6">
+                <OfflinePlaceholder
+                    title="Cloud Storage"
+                    message="Access to cloud files requires an internet connection."
+                    icon={FolderX}
+                />
+            </div>
+        );
+    }
+    */
     const canUpload = user?.role === 'admin' || user?.role === 'team';
 
     useEffect(() => {

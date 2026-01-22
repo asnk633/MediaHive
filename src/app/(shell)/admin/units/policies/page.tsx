@@ -1,8 +1,6 @@
-export const dynamic = 'force-dynamic';
 
-import nextDynamic from 'next/dynamic';
 
-const AdminUnitPoliciesClient = nextDynamic(() => import('./AdminUnitPoliciesClient'), { ssr: false });
+import AdminUnitPoliciesClient from './AdminUnitPoliciesClient';
 
 export default function UnitPoliciesPage() {
     return <AdminUnitPoliciesClient />;

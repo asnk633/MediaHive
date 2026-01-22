@@ -1,10 +1,9 @@
 'use client';
-export const dynamic = 'force-dynamic';
 
 import './globals.css';
 // load design tokens and base (safe, non-invasive)
 import "../design-system/base.css";
-import { ReactNode } from 'react';
+import { ReactNode, Suspense } from 'react';
 import { AuthProvider } from "@/contexts/AuthContext";
 import { ThemeProvider } from "@/contexts/ThemeContext";
 
@@ -27,9 +26,11 @@ export default function RootLayout({ children }: { children: ReactNode }) {
       <body className="min-h-screen" suppressHydrationWarning={true}>
         <ThemeProvider>
           <AuthProvider>
-            <WelcomeGate>
-              {children}
-            </WelcomeGate>
+            <Suspense fallback={null}>
+              <WelcomeGate>
+                {children}
+              </WelcomeGate>
+            </Suspense>
           </AuthProvider>
         </ThemeProvider>
       </body>

@@ -1,7 +1,10 @@
-export const dynamic = 'force-dynamic';
-
+import { Suspense } from 'react';
 import ReportsActivityClient from './ReportsActivityClient';
 
 export default function ReportsActivityPage() {
-    return <ReportsActivityClient />;
+    return (
+        <Suspense fallback={null}>
+            <ReportsActivityClient />
+        </Suspense>
+    );
 }

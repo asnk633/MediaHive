@@ -7,6 +7,10 @@ const config: CapacitorConfig = {
   appId: 'com.thaibagarden.media',
   appName: 'Thaiba Garden Media Manager',
   webDir: 'out',
+  server: {
+    androidScheme: 'https',
+    cleartext: true
+  },
 
   plugins: {
     SplashScreen: {

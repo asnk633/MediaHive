@@ -1,7 +1,10 @@
-export const dynamic = 'force-dynamic';
-
+import { Suspense } from 'react';
 import NotificationsClient from './NotificationsClient';
 
 export default function NotificationsPage() {
-  return <NotificationsClient />;
+  return (
+    <Suspense fallback={null}>
+      <NotificationsClient />
+    </Suspense>
+  );
 }

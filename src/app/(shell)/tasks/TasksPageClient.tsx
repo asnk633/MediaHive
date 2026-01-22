@@ -2,6 +2,9 @@
 
 import React, { useEffect, useState } from "react";
 import { Plus, CheckSquare } from "lucide-react";
+import { Capacitor } from '@capacitor/core';
+import { OfflinePlaceholder } from "@/components/OfflinePlaceholder";
+import { useNative } from "@/hooks/useNative";
 import { Task } from "@/types/task";
 import { TaskListView } from "@/components/tasks/TaskListView";
 import { useAuth } from "@/contexts/AuthContext";
@@ -16,6 +19,7 @@ import { PageHeader } from "@/components/ui/layout/PageHeader";
 
 export default function TasksPageClient() {
     const [tasks, setTasks] = useState<Task[]>([]);
+    const { isNative } = useNative();
     const [loading, setLoading] = useState(true);
     const { user, authStatus } = useAuth();
     const router = useRouter();
@@ -36,6 +40,7 @@ export default function TasksPageClient() {
         let intervalId: NodeJS.Timeout | null = null;
 
         const fetchTasks = async () => {
+            if (isNative) return;
             if (typeof document !== 'undefined' && document.hidden) return;
 
             // Only fetch if strictly authenticated to avoid 401s from racing conditions
@@ -66,14 +71,21 @@ export default function TasksPageClient() {
         };
 
         fetchTasks();
-        intervalId = setInterval(fetchTasks, 30000);
+
+        // Only poll on Web
+        if (!Capacitor.isNativePlatform()) {
+            intervalId = setInterval(fetchTasks, 30000);
+        }
 
         const handleVisibilityChange = () => {
             if (document.hidden) {
                 if (intervalId) clearInterval(intervalId);
             } else {
                 fetchTasks();
-                intervalId = setInterval(fetchTasks, 30000);
+                // Only restore poll on Web
+                if (!Capacitor.isNativePlatform()) {
+                    intervalId = setInterval(fetchTasks, 30000);
+                }
             }
         };
 
@@ -124,6 +136,31 @@ export default function TasksPageClient() {
         setTasks(prev => prev.map(t => t.id === taskId ? { ...t, ...updates } : t));
     };
 
+    // TODO: [Future Sync]
+    // Allow render (view-only).
+    /*
+    // Mobile/Offline Guard
+    if (isNative) {
+        // TODO: [Future Sync]
+        // When offline sync is implemented, this guard should check:
+        // if (isNative && !syncService.isReady) ...
+        // Instead of hard blocking all native access.
+        return (
+            <PageLayout mode="plain">
+                <PageHeader
+                    title="Tasks"
+                    description="Accountability-focused task management."
+                />
+                <OfflinePlaceholder
+                    title="Tasks Sync"
+                    message="Tasks are currently online-only. Offline task management coming soon."
+                    icon={CheckSquare}
+                />
+            </PageLayout>
+        );
+    }
+    */
+
     return (
         <PageLayout mode="plain">
             <PageHeader
@@ -161,14 +198,16 @@ export default function TasksPageClient() {
             />
 
             {/* Edit Modal (Page Level) */}
-            {taskToEdit && (
-                <EditTaskDialog
-                    open={editDialogOpen}
-                    onOpenChange={setEditDialogOpen}
-                    task={taskToEdit}
-                    onUpdate={handleTaskUpdate}
-                />
-            )}
-        </PageLayout>
+            {
+                taskToEdit && (
+                    <EditTaskDialog
+                        open={editDialogOpen}
+                        onOpenChange={setEditDialogOpen}
+                        task={taskToEdit}
+                        onUpdate={handleTaskUpdate}
+                    />
+                )
+            }
+        </PageLayout >
     );
 }

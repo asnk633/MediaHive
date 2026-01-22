@@ -14,7 +14,36 @@ import { PageHeader } from "@/components/ui/layout/PageHeader";
 import { DriveQueueView } from '@/components/admin/DriveQueueView';
 import { cn } from '@/lib/utils';
 
+import { OfflinePlaceholder } from '@/components/OfflinePlaceholder';
+
+import { useNative } from '@/hooks/useNative';
+
 export default function DownloadsClient() {
+    const { isNative } = useNative();
+    const [isChecking, setIsChecking] = useState(true);
+
+    useEffect(() => {
+        setIsChecking(false);
+    }, []);
+
+    if (isChecking) return <div className="min-h-screen bg-[var(--bg-card)]" />;
+
+    // TODO: [Future Sync]
+    // Allow render for native.
+    /*
+    if (isNative) {
+        return (
+            <PageLayout mode="plain">
+                <OfflinePlaceholder
+                    title="Downloads Audit"
+                    message="Audit logs are centralized on the server."
+                    icon={Download}
+                />
+            </PageLayout>
+        );
+    }
+    */
+
     const { user } = useAuth();
     const [files, setFiles] = useState<DriveFile[]>([]);
     const [loading, setLoading] = useState(true);

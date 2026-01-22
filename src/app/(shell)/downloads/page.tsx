@@ -1,7 +1,10 @@
-export const dynamic = 'force-dynamic';
-
+import { Suspense } from 'react';
 import DownloadsClient from './DownloadsClient';
 
 export default function DownloadsPage() {
-  return <DownloadsClient />;
+  return (
+    <Suspense fallback={<div className="min-h-screen bg-[var(--bg-card)]" />}>
+      <DownloadsClient />
+    </Suspense>
+  );
 }

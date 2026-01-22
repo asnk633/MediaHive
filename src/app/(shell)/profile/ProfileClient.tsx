@@ -16,8 +16,11 @@ import { UserPreferences } from "@/components/profile/UserPreferences";
 import { ActivitySummary } from "@/components/profile/ActivitySummary";
 import { HelpInfoCard } from "@/components/profile/HelpInfoCard";
 
+import { useRouter } from "next/navigation";
+
 export default function ProfileClient() {
     const { user } = useAuth();
+    const router = useRouter();
     const [notifications, setNotifications] = useState(true);
 
     // Image Upload State
@@ -60,7 +63,7 @@ export default function ProfileClient() {
             const blob = await response.blob();
             const file = new File([blob], 'profile.jpg', { type: 'image/jpeg' });
             await uploadProfilePicture(user.uid, file);
-            window.location.reload();
+            router.refresh();
         } catch (error) {
             console.error('Upload failed:', error);
             alert('Failed to upload profile picture');
@@ -73,7 +76,7 @@ export default function ProfileClient() {
     const handleSignOut = async () => {
         try {
             await signOut(auth);
-            window.location.href = '/login';
+            router.push('/login');
         } catch (error) {
             console.error('Sign out failed:', error);
         }

@@ -26,16 +26,19 @@ const slides = [
     },
 ];
 
+import { useSearchParams } from 'next/navigation';
+
 export default function WelcomeGate({ children }: { children: React.ReactNode }) {
     // Stages: 'loading' -> 'splash' -> 'onboarding' -> 'content'
     const [stage, setStage] = useState<'loading' | 'splash' | 'onboarding' | 'content'>('loading');
     const [index, setIndex] = useState(0);
+    const searchParams = useSearchParams();
 
     useEffect(() => {
         if (typeof window === 'undefined') return;
 
         const hasSeen = localStorage.getItem('mediahive_welcome_seen');
-        const searchParams = new URLSearchParams(window.location.search);
+        // searchParams hook handles window.location.search access safely
         const forceReset = searchParams.get('reset_welcome') === 'true';
 
         if (hasSeen === 'true' && !forceReset) {

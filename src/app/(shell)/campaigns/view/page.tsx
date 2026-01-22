@@ -1,7 +1,10 @@
-export const dynamic = 'force-dynamic';
-
+import { Suspense } from 'react';
 import CampaignViewClient from './CampaignViewClient';
 
 export default function CampaignViewPage() {
-    return <CampaignViewClient />;
+    return (
+        <Suspense fallback={<div className="min-h-screen bg-[var(--bg-card)]" />}>
+            <CampaignViewClient />
+        </Suspense>
+    );
 }

@@ -4,10 +4,17 @@ const withBundleAnalyzer = bundleAnalyzer({
   enabled: process.env.ANALYZE === "true",
 });
 
+const isMobile = process.env.IS_MOBILE === 'true';
+
 const nextConfig = {
   // Static export
-  output: 'export',
-  distDir: process.env.IS_MOBILE === 'true' ? 'out' : '.next',
+  output: isMobile ? 'export' : 'standalone',
+  distDir: isMobile ? 'out' : '.next',
+  // Asset prefix for mobile to ensure local file resolution
+  assetPrefix: isMobile ? './' : undefined,
+  basePath: isMobile ? '' : undefined, // Explicitly empty for mobile
+  trailingSlash: true, // Required for Android WebView
+
   typedRoutes: false,
 
   // External packages (native modules that shouldn't be bundled)
@@ -34,6 +41,7 @@ const nextConfig = {
 
   // Optimize images
   images: {
+    unoptimized: isMobile,
     minimumCacheTTL: 60,
     remotePatterns: [
       {

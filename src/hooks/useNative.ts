@@ -7,6 +7,9 @@ export function useNative() {
 
     useEffect(() => {
         const native = Capacitor.isNativePlatform();
+        if (native) {
+            console.log("📱 Mobile Mode Activated (" + Capacitor.getPlatform() + ")");
+        }
         setIsNative(native);
         setPlatform(Capacitor.getPlatform() as 'web' | 'android' | 'ios');
     }, []);

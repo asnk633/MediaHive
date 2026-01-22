@@ -1,7 +1,7 @@
 "use client";
 import React, { useState } from "react";
 import { Settings, User, WifiOff, LogOut, Package, Activity } from 'lucide-react';
-import Link from 'next/link';
+
 import { useRouter } from 'next/navigation';
 import { SafeAvatar } from "@/components/ui/SafeAvatar";
 import dynamic from 'next/dynamic';
@@ -37,7 +37,7 @@ export default function TopBar({ title = "Thaiba MediaHive" }: { title?: string 
   };
 
   return (
-    <header className="fixed top-0 left-0 right-0 bg-glass backdrop-blur-xl border-b border-soft z-30 flex items-end justify-between px-4 lg:px-8 transition-all pb-3 shadow-sm" style={{ height: 'var(--header-height)', paddingTop: 'env(safe-area-inset-top)' }}>
+    <header className="fixed top-0 left-0 right-0 bg-glass/95 backdrop-blur-xl border-b border-soft z-50 flex items-end justify-between px-4 lg:px-8 transition-all pb-3 shadow-sm pointer-events-auto" style={{ height: 'var(--header-height)', paddingTop: 'env(safe-area-inset-top)' }}>
       <div className="flex items-center gap-3">
         {/* Logo Icon */}
         <div className="w-10 h-10 flex items-center justify-center">
@@ -48,14 +48,13 @@ export default function TopBar({ title = "Thaiba MediaHive" }: { title?: string 
 
       <div className="flex items-center gap-3">
         <NotificationBell />
-        <Link href="/settings">
-          <button
-            aria-label="Settings"
-            className="p-2 rounded-full text-muted-foreground hover:bg-gray-100 dark:hover:bg-gray-700 hover:text-foreground transition-colors"
-          >
-            <Settings size={20} strokeWidth={2.25} />
-          </button>
-        </Link>
+        <button
+          onClick={() => router.push('/settings')}
+          aria-label="Settings"
+          className="p-2 rounded-full text-muted-foreground hover:bg-gray-100 dark:hover:bg-gray-700 hover:text-foreground transition-colors"
+        >
+          <Settings size={20} strokeWidth={2.25} />
+        </button>
 
         {/* User Profile Menu */}
         <div className="relative">
@@ -111,44 +110,52 @@ export default function TopBar({ title = "Thaiba MediaHive" }: { title?: string 
                 {/* Menu Items */}
                 <div className="p-3 space-y-1">
                   {user?.role === 'admin' && (
-                    <Link
-                      href="/admin"
-                      onClick={() => setShowUserMenu(false)}
-                      className="flex items-center gap-3 px-4 py-3 rounded-xl hover:bg-surface/50 transition-all group bg-gradient-to-r from-primary/5 to-purple-500/5 border border-soft mb-1"
+                    <button
+                      onClick={() => {
+                        setShowUserMenu(false);
+                        router.push('/admin');
+                      }}
+                      className="w-full flex items-center gap-3 px-4 py-3 rounded-xl hover:bg-surface/50 transition-all group bg-gradient-to-r from-primary/5 to-purple-500/5 border border-soft mb-1 text-left"
                     >
                       <Activity size={20} className="text-blue-400 group-hover:scale-110 transition-transform" />
                       <div>
                         <span className="text-sm font-bold text-foreground block">Command Center</span>
                         <span className="text-[10px] text-blue-300 block">System Operations</span>
                       </div>
-                    </Link>
+                    </button>
                   )}
-                  <Link
-                    href="/inventory/requests"
-                    onClick={() => setShowUserMenu(false)}
-                    className="flex items-center gap-3 px-4 py-3 rounded-xl hover:bg-surface/50 transition-all group"
+                  <button
+                    onClick={() => {
+                      setShowUserMenu(false);
+                      router.push('/inventory/requests');
+                    }}
+                    className="w-full flex items-center gap-3 px-4 py-3 rounded-xl hover:bg-surface/50 transition-all group text-left"
                   >
                     <Package size={20} className="text-blue-400 group-hover:scale-110 transition-transform" />
                     <span className="text-sm font-medium text-foreground">My Requests</span>
-                  </Link>
+                  </button>
 
-                  <Link
-                    href="/profile"
-                    onClick={() => setShowUserMenu(false)}
-                    className="flex items-center gap-3 px-4 py-3 rounded-xl hover:bg-surface/50 transition-all group"
+                  <button
+                    onClick={() => {
+                      setShowUserMenu(false);
+                      router.push('/profile');
+                    }}
+                    className="w-full flex items-center gap-3 px-4 py-3 rounded-xl hover:bg-surface/50 transition-all group text-left"
                   >
                     <User size={20} className="text-purple-400 group-hover:scale-110 transition-transform" />
                     <span className="text-sm font-medium text-foreground">View Profile</span>
-                  </Link>
+                  </button>
 
-                  <Link
-                    href="/activity"
-                    onClick={() => setShowUserMenu(false)}
-                    className="flex items-center gap-3 px-4 py-3 rounded-xl hover:bg-surface/50 transition-all group"
+                  <button
+                    onClick={() => {
+                      setShowUserMenu(false);
+                      router.push('/activity');
+                    }}
+                    className="w-full flex items-center gap-3 px-4 py-3 rounded-xl hover:bg-surface/50 transition-all group text-left"
                   >
                     <Activity size={20} className="text-orange-400 group-hover:scale-110 transition-transform" />
                     <span className="text-sm font-medium text-foreground">Activity Feed</span>
-                  </Link>
+                  </button>
 
                   <div className="pt-2 mt-2 border-t border-soft">
                     <button

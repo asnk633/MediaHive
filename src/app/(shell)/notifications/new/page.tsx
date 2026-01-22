@@ -1,7 +1,10 @@
-export const dynamic = 'force-dynamic';
+import { Suspense } from 'react';
+import ClientBoundary from './ClientBoundary';
 
-import NotificationsNewClient from './NotificationsNewClient';
-
-export default function NewNotificationPage() {
-    return <NotificationsNewClient />;
+export default function NotificationsNewPage() {
+    return (
+        <Suspense fallback={null}>
+            <ClientBoundary />
+        </Suspense>
+    );
 }

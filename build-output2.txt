@@ -1,0 +1,189 @@
+﻿
+> thaiba-garden-media-manager@2.5.1 build:mobile
+> cross-env IS_MOBILE=true next build
+
+Γû▓ Next.js 16.1.3 (Turbopack)
+- Environments: .env.local, .env
+- Experiments (use with caution):
+  Γ¿» clientRouterFilter
+  ┬╖ optimizePackageImports
+  ┬╖ proxyClientMaxBodySize: "10gb"
+  ┬╖ serverActions
+
+  Creating an optimized production build ...
+Γ£ô Compiled successfully in 6.2s
+  Running TypeScript ...
+  Collecting page data using 19 workers ...
+  Generating static pages using 19 workers (0/46) ...
+npm : Γ¿» 
+useSearchParams() 
+should be wrapped in 
+a suspense boundary 
+at page "/notificatio
+ns/new". Read more: h
+ttps://nextjs.org/doc
+s/messages/missing-su
+spense-with-csr-bailo
+ut
+At line:1 char:1
++ npm run 
+build:mobile 2>&1 | 
+Out-File -FilePath 
+build-output2.txt 
+-Enc ...
++ ~~~~~~~~~~~~~~~~~~~
+~~~~~~
+    + CategoryInfo   
+           : NotSpe  
+  cified: (Γ¿» use   
+ SearchPa...ith-c    
+sr-bailout:Strin    
+g) [], RemoteExc    
+eption
+    + FullyQualified 
+   ErrorId : Native  
+  CommandError
+ 
+    at Q (D:\orchids\
+.next\server\chunks\s
+sr\node_modules_next_
+f2865b38._.js:2:2111)
+    at o (D:\orchids\
+.next\server\chunks\s
+sr\node_modules_next_
+f2865b38._.js:4:5284)
+    at o (D:\orchids\
+.next\server\chunks\s
+sr\[root-of-the-serve
+r]__ae199d17._.js:9:4
+376)
+    at an (D:\orchids
+\node_modules\next\di
+st\compiled\next-serv
+er\app-page-turbo.run
+time.prod.js:2:84360)
+    at ai (D:\orchids
+\node_modules\next\di
+st\compiled\next-serv
+er\app-page-turbo.run
+time.prod.js:2:86179)
+    at al (D:\orchids
+\node_modules\next\di
+st\compiled\next-serv
+er\app-page-turbo.run
+time.prod.js:2:107953
+)
+    at as (D:\orchids
+\node_modules\next\di
+st\compiled\next-serv
+er\app-page-turbo.run
+time.prod.js:2:105368
+)
+    at ai (D:\orchids
+\node_modules\next\di
+st\compiled\next-serv
+er\app-page-turbo.run
+time.prod.js:2:104322
+)
+    at al (D:\orchids
+\node_modules\next\di
+st\compiled\next-serv
+er\app-page-turbo.run
+time.prod.js:2:107953
+)
+    at as (D:\orchids
+\node_modules\next\di
+st\compiled\next-serv
+er\app-page-turbo.run
+time.prod.js:2:105368
+)
+Error occurred 
+prerendering page "/n
+otifications/new". 
+Read more: https://ne
+xtjs.org/docs/message
+s/prerender-error
+Export encountered 
+an error on /(shell)/
+notifications/new/pag
+e: 
+/notifications/new, 
+exiting the build.
+Γ¿» 
+useSearchParams() 
+should be wrapped in 
+a suspense boundary 
+at page 
+"/automations". Read 
+more: https://nextjs.
+org/docs/messages/mis
+sing-suspense-with-cs
+r-bailout
+    at Q (D:\orchids\
+.next\server\chunks\s
+sr\node_modules_next_
+f2865b38._.js:2:2111)
+    at o (D:\orchids\
+.next\server\chunks\s
+sr\node_modules_next_
+f2865b38._.js:4:5284)
+    at o (D:\orchids\
+.next\server\chunks\s
+sr\[root-of-the-serve
+r]__ae199d17._.js:9:4
+376)
+    at an (D:\orchids
+\node_modules\next\di
+st\compiled\next-serv
+er\app-page-turbo.run
+time.prod.js:2:84360)
+    at ai (D:\orchids
+\node_modules\next\di
+st\compiled\next-serv
+er\app-page-turbo.run
+time.prod.js:2:86179)
+    at al (D:\orchids
+\node_modules\next\di
+st\compiled\next-serv
+er\app-page-turbo.run
+time.prod.js:2:107953
+)
+    at as (D:\orchids
+\node_modules\next\di
+st\compiled\next-serv
+er\app-page-turbo.run
+time.prod.js:2:105368
+)
+    at ai (D:\orchids
+\node_modules\next\di
+st\compiled\next-serv
+er\app-page-turbo.run
+time.prod.js:2:104322
+)
+    at al (D:\orchids
+\node_modules\next\di
+st\compiled\next-serv
+er\app-page-turbo.run
+time.prod.js:2:107953
+)
+    at as (D:\orchids
+\node_modules\next\di
+st\compiled\next-serv
+er\app-page-turbo.run
+time.prod.js:2:105368
+)
+Error occurred 
+prerendering page 
+"/automations". Read 
+more: https://nextjs.
+org/docs/messages/pre
+render-error
+Export encountered 
+an error on /(admin)/
+automations/page: 
+/automations, 
+exiting the build.
+Γ¿» Next.js build 
+worker exited with 
+code: 1 and signal: 
+null

@@ -5,7 +5,7 @@ import { useRouter } from 'next/navigation';
 import { useForm, Controller } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { NotificationFormData, notificationFormSchema } from '@/lib/forms/validators';
-import { useAuth } from '@/contexts/AuthContext';
+import { useAuth } from '@/contexts/AuthContextProvider';
 import { toast } from 'sonner';
 import { Send, Eye, Loader2, Calendar, Paperclip, X, Users, Megaphone, Bell } from 'lucide-react';
 import { cn } from '@/lib/utils';

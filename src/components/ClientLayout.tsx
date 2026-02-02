@@ -1,7 +1,7 @@
 // src/components/ClientLayout.tsx
 "use client";
 
-import { useAuth } from "@/contexts/AuthContext";
+import { useAuth } from "@/contexts/AuthContextProvider";
 // BottomNav intentionally removed from ClientLayout.
 // Navigation (BottomNav) + FAB live in the shell layout at:
 // src/app/(shell)/layout.tsx — keep a single source-of-truth there.

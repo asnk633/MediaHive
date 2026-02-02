@@ -1,5 +1,6 @@
 import React, { useState } from "react";
-import { MoreHorizontal, CheckSquare } from "lucide-react";
+import { motion } from "framer-motion";
+import { MoreHorizontal, CheckSquare, Clock } from "lucide-react";
 import type { LucideIcon } from "lucide-react";
 import { cn } from "@/lib/utils";
 
@@ -32,48 +33,57 @@ export function TaskItem({ title, date, icon: Icon, isCompleted: initialComplete
     }
 
     return (
-        <div className="group relative flex items-center justify-between p-4 bg-surface backdrop-blur-sm rounded-xl transition-all duration-300 hover-sheen overflow-hidden text-white shadow-sm hover:shadow-md hover:bg-card">
-            <div className="flex items-center gap-4 z-10 relative">
+        <motion.div
+            initial={{ opacity: 0, y: 10 }}
+            animate={{ opacity: 1, y: 0 }}
+            className="group relative flex items-center justify-between p-5 bg-[#18181B] border border-[#242427] rounded-[24px] transition-all duration-normal hover:border-accent-primary/20 shadow-lg hover:shadow-neumorphic-raised select-none overflow-hidden"
+        >
+            <div className="flex items-center gap-5 z-10 relative">
                 <button
                     onClick={handleToggleComplete}
                     disabled={disableCompletion}
                     className={cn(
-                        "w-10 h-10 rounded-xl flex items-center justify-center transition-all duration-300 border backdrop-blur-sm",
-                        disableCompletion && "cursor-not-allowed opacity-50",
+                        "w-11 h-11 rounded-2xl flex items-center justify-center transition-all duration-normal border shadow-soft",
+                        disableCompletion && "cursor-not-allowed opacity-20",
                         isCompleted
-                            ? "bg-green-500/20 border-green-500/30 text-green-400 shadow-[0_0_15px_rgba(74,222,128,0.2)]"
-                            : "bg-glass border-soft text-muted hover:bg-primary/10 hover:border-strong hover:text-primary"
+                            ? "bg-[#242427] border-white/5 text-accent-primary shadow-neumorphic-inset"
+                            : "bg-[#242427] border-white/5 text-[#71717A] hover:text-accent-primary shadow-neumorphic-raised"
                     )}
                 >
-                    {/* If icon provided use it, else checkbox style */}
-                    {Icon ? <Icon size={20} /> : (
-                        <div className={cn("w-5 h-5 rounded-md border-2 transition-all",
-                            isCompleted ? "border-green-500 bg-green-500 scale-90" : "border-soft group-hover:border-primary/50 bg-transparent")}
+                    {Icon ? <Icon size={20} strokeWidth={2.5} /> : (
+                        <div className={cn("w-4 h-4 rounded-md border-2 transition-all",
+                            isCompleted ? "border-accent-primary bg-accent-primary scale-90" : "border-white/10 group-hover:border-accent-primary/40 bg-transparent")}
                         >
-                            {isCompleted && <CheckSquare size={16} className="text-white -ml-[2px] -mt-[2px]" />}
+                            {isCompleted && <CheckSquare size={14} className="text-[#18181B] -ml-[2px] -mt-[2px]" />}
                         </div>
                     )}
                 </button>
 
                 <div className="flex flex-col">
                     <span className={cn(
-                        "text-sm font-semibold transition-colors duration-300",
+                        "text-[15px] font-bold tracking-tight transition-all duration-normal",
                         isCompleted
-                            ? "line-through text-muted decoration-gray-600"
-                            : "text-primary/80 group-hover:text-primary"
+                            ? "line-through text-[#71717A]/40"
+                            : "text-[#F4F4F5] group-hover:text-accent-primary"
                     )}>
                         {title}
                     </span>
-                    <span className="text-xs font-medium tracking-wide transition-colors px-2 py-0.5 rounded-lg w-fit mt-1 border bg-glass border-soft text-muted group-hover:text-secondary">
-                        {date}
-                    </span>
+                    <div className="flex items-center gap-4 mt-1.5">
+                        <div className="flex items-center gap-2">
+                            <Clock size={12} className="text-[#71717A] group-hover:text-accent-primary/60 transition-colors" />
+                            <span className="text-[11px] font-bold text-[#71717A] opacity-60">
+                                {date}
+                            </span>
+                        </div>
+                    </div>
                 </div>
             </div>
 
-            {/* Right chevron or action indicator */}
-            <div className="opacity-0 group-hover:opacity-100 transition-opacity transform translate-x-2 group-hover:translate-x-0 text-white/20 group-hover:text-white/50">
-                <MoreHorizontal size={20} />
+            <div className="opacity-0 group-hover:opacity-100 transition-all duration-normal transform translate-x-3 group-hover:translate-x-0 relative z-10">
+                <button className="w-9 h-9 flex items-center justify-center text-[#71717A] hover:text-white bg-[#242427] border border-white/5 rounded-xl shadow-neumorphic-raised hover:bg-[#323236] transition-all">
+                    <MoreHorizontal size={18} />
+                </button>
             </div>
-        </div>
+        </motion.div>
     );
 }

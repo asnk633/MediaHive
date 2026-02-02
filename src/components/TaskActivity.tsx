@@ -5,7 +5,7 @@
 
 import React, { useState, useEffect } from 'react';
 import { usePermission } from '@/hooks/usePermission';
-import { useAuth } from '@/contexts/AuthContext';
+import { useAuth } from '@/contexts/AuthContextProvider';
 import { apiClient } from '@/lib/apiClient';
 
 interface Activity {

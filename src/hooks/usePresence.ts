@@ -18,16 +18,20 @@ export function usePresence(userId: string | number): boolean {
 
   // Schedule periodic presence updates using low-priority scheduling
   useEffect(() => {
+    const controller = new AbortController();
+
     const updatePresence = () => {
       schedulePresenceUpdate(async () => {
         try {
           await apiClient('/api/presence/ping', {
             method: 'POST',
+            signal: controller.signal,
             headers: {
               'Content-Type': 'application/json',
             },
           });
-        } catch (error) {
+        } catch (error: any) {
+          if (error.name === 'AbortError') return;
           console.error('Failed to update presence:', error);
         }
       });
@@ -41,6 +45,7 @@ export function usePresence(userId: string | number): boolean {
 
     return () => {
       clearInterval(interval);
+      controller.abort();
     };
   }, [userId]);
 

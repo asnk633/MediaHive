@@ -3,7 +3,7 @@
 import React from "react";
 import RequestList from "@/components/inventory/RequestList";
 import { ArrowLeft } from "lucide-react";
-import Link from "next/link";
+import AppLink from "@/components/AppLink";
 import { PageLayout } from "@/components/ui/layout/PageLayout";
 import { PageHeader } from "@/components/ui/layout/PageHeader";
 import { Button } from "@/components/ui/button";
@@ -15,17 +15,17 @@ export default function InventoryRequestsClient() {
                 title="Inventory Requests"
                 description="Track status of equipment and device requests."
                 actions={
-                    <Link href="/inventory">
+                    <AppLink href="/inventory">
                         <Button variant="ghost" className="gap-2 text-slate-400 hover:text-white">
                             <ArrowLeft size={16} />
                             Back to Inventory
                         </Button>
-                    </Link>
+                    </AppLink>
                 }
             />
 
             {/* Content */}
-            <div className="max-w-4xl mx-auto pb-20">
+            <div className="max-w-4xl mx-auto">
                 <RequestList />
             </div>
         </PageLayout>

@@ -1,10 +1,7 @@
-import { Suspense } from 'react';
+"use client";
+
 import CalendarClient from './CalendarClient';
 
 export default function CalendarPage() {
-  return (
-    <Suspense fallback={<div className="min-h-screen bg-[var(--bg-card)]" />}>
-      <CalendarClient />
-    </Suspense>
-  );
+  return <CalendarClient />;
 }

@@ -62,8 +62,8 @@ export function OverviewCard({
             </div>
 
             <div className="mt-auto z-10 relative">
-                <div className="flex items-end gap-2 mb-1">
-                    <h3 className="text-3xl font-bold tracking-tight text-foreground group-hover:text-foreground transition-colors">
+                <div className="flex items-end gap-2 mb-1.5 pl-0.5">
+                    <h3 className="text-3xl font-semibold tracking-tight text-foreground group-hover:text-foreground transition-colors">
                         {count}
                     </h3>
                     {trend && (
@@ -75,7 +75,7 @@ export function OverviewCard({
                         </div>
                     )}
                 </div>
-                <p className={cn("text-xs font-bold uppercase tracking-widest transition-colors",
+                <p className={cn("text-[11px] font-bold uppercase tracking-widest transition-colors pl-0.5",
                     isPrimary ? "text-secondary" : "text-muted group-hover:text-secondary")}>
                     {label}
                 </p>

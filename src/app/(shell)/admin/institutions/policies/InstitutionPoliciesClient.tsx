@@ -1,12 +1,12 @@
 'use client';
 
-import { useSearchParams, useRouter } from 'next/navigation';
+import { useRouter } from 'next/navigation';
 import { Button } from '@/components/ui/button';
 import { ArrowLeft, Building2 } from 'lucide-react';
 import { StructurePolicyEditor } from '@/components/admin/StructurePolicyEditor';
 
 export default function InstitutionPoliciesClient() {
-    const searchParams = useSearchParams();
+    const searchParams = typeof window !== 'undefined' ? new URLSearchParams(window.location.search) : new URLSearchParams();
     const id = searchParams.get('id');
     const router = useRouter();
 

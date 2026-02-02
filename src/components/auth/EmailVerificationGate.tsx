@@ -2,7 +2,7 @@
 
 import { useState, useEffect, ReactNode } from 'react';
 import { getAuth, sendEmailVerification, reload } from 'firebase/auth';
-import { useAuth } from '@/contexts/AuthContext';
+import { useAuth } from '@/contexts/AuthContextProvider';
 
 interface EmailVerificationGateProps {
   children: ReactNode;

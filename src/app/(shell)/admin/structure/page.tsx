@@ -8,7 +8,7 @@ import { PageHeader } from "@/components/ui/layout/PageHeader";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { InstitutionsTab } from './InstitutionsTab';
 import { DepartmentsTab } from './DepartmentsTab';
-import Link from 'next/link';
+import AppLink from '@/components/AppLink';
 import { ChevronLeft } from 'lucide-react';
 
 export default function StructurePage() {
@@ -17,10 +17,10 @@ export default function StructurePage() {
     return (
         <PageLayout mode="plain">
             <div className="mb-2">
-                <Link href="/settings" className="inline-flex items-center text-sm text-muted hover:text-foreground transition-colors">
+                <AppLink href="/settings" className="inline-flex items-center text-sm text-muted hover:text-foreground transition-colors">
                     <ChevronLeft className="w-4 h-4 mr-1" />
                     Back to Settings
-                </Link>
+                </AppLink>
             </div>
 
             <PageHeader

@@ -1,0 +1,9 @@
+src/components/requests/RequestManager.tsx(146,15): error TS1005: 'try' expected.
+src/components/requests/RequestManager.tsx(149,10): error TS1472: 'catch' or 'finally' expected.
+src/components/requests/RequestManager.tsx(473,1): error TS1005: '}' expected.
+src/config/loadingStateRules.ts(155,55): error TS1005: '>' expected.
+src/config/loadingStateRules.ts(156,53): error TS1005: '>' expected.
+src/config/loadingStateRules.ts(157,49): error TS1005: '>' expected.
+src/config/loadingStateRules.ts(157,54): error TS1005: ';' expected.
+src/config/loadingStateRules.ts(157,70): error TS1161: Unterminated regular expression literal.
+src/config/loadingStateRules.ts(158,22): error TS1005: '>' expected.

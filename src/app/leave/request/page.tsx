@@ -1,12 +1,12 @@
 'use client';
 
-export const dynamic = 'force-static';
 
 
 import React from 'react';
 import { useRouter } from 'next/navigation';
 import { LeaveRequestForm } from '@/components/leave/LeaveRequestForm';
 import { ChevronLeft } from 'lucide-react';
+import { nativeNavigate } from '@/lib/utils';
 
 export default function RequestLeavePage() {
     const router = useRouter();
@@ -32,10 +32,9 @@ export default function RequestLeavePage() {
                     </div>
                 </div>
 
-                {/* Form Card */}
                 <div className="bg-[#0f172a] border border-white/5 rounded-3xl p-8 shadow-2xl">
                     <LeaveRequestForm
-                        onSuccess={() => router.push('/leave/my-requests')}
+                        onSuccess={() => nativeNavigate('/leave/my-requests', router, 'RequestLeave (Success)')}
                         onCancel={() => router.back()}
                     />
                 </div>

@@ -4,7 +4,7 @@ import React, { useState } from 'react';
 import { User, Bell, Shield, Building2 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { cn } from '@/lib/utils';
-import { useAuth } from '@/contexts/AuthContext';
+import { useAuth } from '@/contexts/AuthContextProvider';
 
 interface SettingsLayoutProps {
     children: React.ReactNode;

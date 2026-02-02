@@ -1,12 +1,12 @@
 "use client";
 
 import { useEffect, useRef } from 'react';
-import { useRouter, usePathname, useSearchParams } from 'next/navigation';
+import { useRouter, usePathname } from 'next/navigation';
 
 export function useModalHistory(isOpen: boolean, onClose: () => void) {
     const pushedRef = useRef(false);
     const pathname = usePathname();
-    const searchParams = useSearchParams();
+    const searchParams = typeof window !== 'undefined' ? new URLSearchParams(window.location.search) : new URLSearchParams();
 
     useEffect(() => {
         if (!isOpen) return;

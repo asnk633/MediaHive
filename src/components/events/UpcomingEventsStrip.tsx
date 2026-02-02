@@ -3,6 +3,7 @@ import { format, addDays, isAfter, isBefore, startOfDay, endOfDay } from 'date-f
 import { Clock, Repeat, ArrowRight, CalendarDays, PartyPopper } from 'lucide-react';
 import { Event } from '@/types/event';
 import { useRouter } from 'next/navigation';
+import { nativeNavigate } from '@/lib/utils';
 
 interface UpcomingEventsStripProps {
     events: Event[];
@@ -139,7 +140,7 @@ export function UpcomingEventsStrip({ events, onEventClick }: UpcomingEventsStri
                 */}
                 {hasMore && (
                     <div
-                        onClick={() => router.push('/events')}
+                        onClick={() => nativeNavigate('/events', router, 'UpcomingEvents (More)')}
                         className="
                             flex-shrink-0 w-32 p-4 rounded-xl 
                             bg-glass backdrop-blur-sm shadow-sm

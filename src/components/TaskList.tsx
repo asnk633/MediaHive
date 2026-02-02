@@ -2,7 +2,7 @@
 'use client';
 import React from 'react';
 import { useTasks } from '@/contexts/TaskContext';
-import { useAuth } from '@/contexts/AuthContext';
+import { useAuth } from '@/contexts/AuthContextProvider';
 
 export default function TaskList({ tasks }: { tasks: any[] }) {
     const { updateTask } = useTasks();

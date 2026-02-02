@@ -30,6 +30,7 @@ interface ActivityItem {
 }
 
 import { useRouter } from 'next/navigation';
+import { nativeNavigate } from '@/lib/utils';
 
 export default function ReportsDashboard() {
     const router = useRouter();
@@ -76,16 +77,7 @@ export default function ReportsDashboard() {
                 queryParams.set('from', fromDate.toISOString());
             }
 
-            const res = await fetch(`/api/reports/activity?${queryParams.toString()}`);
-
-            if (res.status === 403) {
-                // Not admin
-                setActivities([]);
-                setLoading(false);
-                return;
-            }
-
-            const data = await res.json();
+            const data = await apiClient(`/api/reports/activity?${queryParams.toString()}`);
             if (data.activity) {
                 setActivities(data.activity);
             }
@@ -123,7 +115,7 @@ export default function ReportsDashboard() {
 
         queryParams.set('export', format);
         // Use router to navigate to the download URL
-        router.push(`/api/reports/activity?${queryParams.toString()}`);
+        nativeNavigate(`/api/reports/activity?${queryParams.toString()}`, router, 'Reports (Export)');
     };
 
     useEffect(() => {
@@ -275,7 +267,7 @@ export default function ReportsDashboard() {
                                     <div className="w-16 h-16 rounded-full bg-white/5 flex items-center justify-center mb-4">
                                         <Activity className="w-8 h-8 text-white/20" />
                                     </div>
-                                    <h3 className="text-white/40 font-medium">No activity recorded</h3>
+                                    <h3 className="text-white/40 font-medium">Log is quiet</h3>
                                     <p className="text-white/20 text-sm mt-1">No system events yet. Activity will appear as actions occur.</p>
                                 </div>
                             ) : (

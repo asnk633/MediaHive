@@ -18,7 +18,8 @@ export const FileService = {
         formData.append('metadata', JSON.stringify(metadata));
         formData.append('file', file);
 
-        const response = await fetch('/api/files/upload', {
+        // Use apiClient to ensure proper base URL handling for Android
+        const response = await apiClient<{ success: boolean; fileId: string; viewLink: string; downloadLink: string }>('/api/files/upload', {
             method: 'POST',
             body: formData,
             headers: {
@@ -26,13 +27,7 @@ export const FileService = {
             }
         });
 
-        if (!response.ok) {
-            const error = await response.json();
-            throw new Error(error.error || 'Upload failed');
-        }
-
-        const result = await response.json();
-        return result;
+        return response;
     },
 
     deleteFile: async (id: string) => {

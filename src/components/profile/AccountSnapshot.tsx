@@ -1,5 +1,5 @@
 import React from 'react';
-import { AuthUser } from '@/contexts/AuthContext';
+import { AuthUser } from '@/contexts/AuthContextProvider';
 import { Mail, Shield, Calendar, User } from 'lucide-react';
 import { format } from 'date-fns';
 

@@ -43,7 +43,7 @@ export const RiskDistributionWidget: React.FC<RiskDistributionProps> = ({ riskCo
 
                 <div className="flex justify-between text-xs text-slate-500">
                     <span className="flex items-center gap-1"><div className="w-2 h-2 rounded-full bg-emerald-500" /> Stable</span>
-                    <span className="flex items-center gap-1"><div className="w-2 h-2 rounded-full bg-red-500" /> Critical Intervention</span>
+                    <span className="flex items-center gap-1"><div className="w-2 h-2 rounded-full bg-red-500" /> Action Required</span>
                 </div>
             </CardContent>
         </Card>

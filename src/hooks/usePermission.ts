@@ -1,6 +1,6 @@
 "use client";
 
-import { useAuth } from "@/contexts/AuthContext";
+import { useAuth } from "@/contexts/AuthContextProvider";
 import { Permission, hasPermission, Role } from "@/lib/permissions";
 
 export function usePermission() {

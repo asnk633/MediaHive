@@ -5,7 +5,7 @@ import React, { useEffect, useState } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { apiClient } from '@/lib/apiClient';
 import { formatDistanceToNow } from 'date-fns';
-import Link from 'next/link';
+import AppLink from '@/components/AppLink';
 import { Megaphone } from 'lucide-react';
 
 interface SystemUpdate {
@@ -61,7 +61,7 @@ export default function SystemUpdatesFeedPage() {
             ) : (
                 <div className="grid gap-4">
                     {updates.map(update => (
-                        <Link href={`/system-updates/${update.id}`} key={update.id}>
+                        <AppLink href={`/system-updates/${update.id}`} key={update.id}>
                             <Card className="bg-white/5 border-white/5 hover:bg-white/10 transition-colors cursor-pointer group">
                                 <CardContent className="p-6">
                                     <div className="flex justify-between items-start gap-4">
@@ -84,7 +84,7 @@ export default function SystemUpdatesFeedPage() {
                                     </div>
                                 </CardContent>
                             </Card>
-                        </Link>
+                        </AppLink>
                     ))}
                 </div>
             )}

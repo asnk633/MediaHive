@@ -1,7 +1,7 @@
 "use client";
 
 import React, { useState, useEffect } from 'react';
-import { useAuth } from '@/contexts/AuthContext';
+import { useAuth } from '@/contexts/AuthContextProvider';
 import { LeaveType, LEAVE_TYPE_LABELS } from '@/types/leave';
 import { LeaveBalance } from '@/types/leaveBalance';
 import { LeaveBalanceService } from '@/services/leaveBalanceService';

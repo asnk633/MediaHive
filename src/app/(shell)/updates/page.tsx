@@ -2,7 +2,7 @@
 
 
 
-import Link from "next/link";
+import AppLink from "@/components/AppLink";
 import { useClientData } from "@/app/(shell)/ClientDataContext";
 import { Search, Bell, Info, AlertTriangle, CheckCircle2 } from "lucide-react";
 import { cn } from "@/lib/utils";
@@ -59,7 +59,7 @@ export default function UpdatesPage() {
         <div className="flex flex-col gap-3">
           {filteredNotifications.length > 0 ? (
             filteredNotifications.map((n) => (
-              <Link
+              <AppLink
                 href={`/updates/view?id=${n.id}`}
                 key={n.id}
                 className="glass-card flex items-start gap-4 p-4 hover:bg-[var(--panel)] transition-colors group relative"
@@ -85,7 +85,7 @@ export default function UpdatesPage() {
                   </div>
                   <p className="mt-1 text-xs text-[var(--muted)] line-clamp-2 leading-relaxed">{n.body}</p>
                 </div>
-              </Link>
+              </AppLink>
             ))
           ) : (
             <div className="flex flex-col items-center justify-center py-16 text-center">

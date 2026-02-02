@@ -13,7 +13,7 @@ export default function ActivityClient() {
                 description="A chronological timeline of what has happened in the workspace."
             />
 
-            <div className="flex-1 overflow-y-auto px-4 sm:px-6 pb-20">
+            <div>
                 <SmartActivityFeed />
             </div>
         </PageLayout>

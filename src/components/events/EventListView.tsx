@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { format } from 'date-fns';
 import { Calendar, MapPin, Clock, MoreVertical, Repeat, ChevronDown, ChevronRight } from 'lucide-react';
 import { Event } from '@/types/event';
-import { useAuth } from '@/contexts/AuthContext';
+import { useAuth } from '@/contexts/AuthContextProvider';
 import { AnimatePresence, motion } from 'framer-motion';
 
 interface EventListViewProps {
@@ -34,7 +34,7 @@ export function EventListView({ events, onEventClick, showCurrentYearOnly = fals
                 <div className="w-16 h-16 bg-surface/50 rounded-full flex items-center justify-center mb-4">
                     <Calendar className="text-muted/60" size={32} />
                 </div>
-                <h3 className="text-lg font-bold text-foreground">No events yet</h3>
+                <h3 className="text-lg font-bold text-foreground">Agenda is clear</h3>
                 <p className="text-muted text-sm">Create an event to get started.</p>
             </div>
         );

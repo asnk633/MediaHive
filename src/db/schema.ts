@@ -254,6 +254,17 @@ export const taskActivity = sqliteTable('task_activity', {
 });
 
 
+// Subtasks table for breaking down tasks into smaller steps
+export const subtasks = sqliteTable('subtasks', {
+  id: integer('id').primaryKey({ autoIncrement: true }),
+  parentTaskId: integer('parent_task_id').notNull().references(() => tasks.id, { onDelete: 'cascade' }),
+  title: text('title').notNull(),
+  completed: integer('completed', { mode: 'boolean' }).default(false),
+  createdById: integer('created_by_id').notNull().references(() => users.id),
+  createdAt: text('created_at').notNull(),
+  completedAt: text('completed_at'),
+});
+
 
 // Automation rules table for no-code workflow builder
 export const automationRules = sqliteTable('automation_rules', {

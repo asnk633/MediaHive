@@ -1,73 +1,82 @@
-# Design Contract & Lockdown Protocol
+# Design Contract & Lockdown Protocol (v2.0)
 
 > **STATUS**: LOCKED 🔒
-> **DATE**: 2026-01-15
-> **VERSION**: 1.0 (Mobile/PWA Release)
+> **DATE**: 2026-01-29
+> **PHASE**: A (Foundation Cleanup)
 
-This document serves as the **Single Source of Truth** for UI/UX development. Any deviation from these rules requires a formal revision of this contract.
+This document is the **Single Source of Truth** for the MediaHive design system. Deviations are strictly prohibited to ensure a calm, production-grade visual experience.
 
 ---
 
-## 1. Global Themes (Immutable)
+## 1. Theme System (Binary)
 
-The application supports exactly three themes. No new themes. No overrides.
+The application supports exactly two themes. All others are deprecated and removed.
 
-| Theme | Base Color | Usage |
+| Theme | Selector | Visual Philosophy |
 | :--- | :--- | :--- |
-| **Aura** (Default) | `#0f172a` (Slate 900) | Standard professional view. Deep blue/slate. |
-| **Dusk** | `#18181b` (Zinc 950) | High-contrast dark mode. Warm monochrome. |
-| **Frost** | `#ffffff` (White) | High-legibility light mode. Clean, no shadows. |
+| **Light** | `[data-theme="light"]` | White background, high contrast, grayscale-first. |
+| **Dark** | `[data-theme="dark"]` | True black (#000000) primary background, calm, no glow. |
 
-**Rule**: Never hardcode hex values for backgrounds. Always use `bg-background` or semantic tokens.
-
----
-
-## 2. UI Primitives (Canonical)
-
-All components MUST use these semantic tokens. Raw Tailwind colors (e.g., `bg-slate-800`, `border-gray-500`) are **FORBIDDEN** in production code.
-
-### Surfaces
--   `bg-root`: The absolute bottom layer of the app.
--   `bg-glass`: Used for cards, panels, and overlays. Must include `backdrop-blur`.
--   `bg-surface`: Opaque or semi-opaque fallback for content areas.
-
-### Text
--   `text-foreground`: Primary legibility (headings, body).
--   `text-muted`: Secondary information (labels, timestamps).
--   `text-primary`: Actionable items (links, buttons).
-
-### Interaction
--   `focus-visible:ring-primary`: **Mandatory** for all interactive elements.
--   `active:scale-95`: Standard tactile feedback for rows/cards.
+### Gradient Discipline
+- **Rule**: Gradients are forbidden as background fillers.
+- **Allowed Usage**: Primary action buttons, active navigation markers, or high-priority contextual emphasis.
+- **Limit**: Max 1 gradient instance visible per screen.
 
 ---
 
-## 3. Card System Interface
+## 2. Frozen Design Tokens
 
-The "Card" is the fundamental unit of the UI.
+### Spacing Scale (8pt Grid)
+All layout values must use this scale.
+- `4px` (xs)
+- `8px` (sm)
+- `12px` (md)
+- `16px` (lg)
+- `24px` (xl)
+- `32px` (2xl)
 
-**Standard**: Reference `InventoryCard.tsx` or `TaskItem.tsx`.
+### Border Radius Scale
+Reduced rounding to move away from "playful" AI UI to "intentional" production UI.
+- `4px` (Button/Input)
+- `8px` (Small Card)
+- `12px` (Large Card/Panel)
+- `full` (Avatar/Pill)
 
--   **Border**: None (or extremely subtle `white/5`).
--   **Shadow**: `shadow-lg` or `shadow-xl` for depth.
--   **Roundness**: `rounded-2xl` (Standard) or `rounded-3xl` (Panels).
--   **Padding**: `p-4` (Mobile), `p-6` (Desktop).
--   **Hover**: Lift effect (`-translate-y-1`), no border color change unless selected.
+### Elevation (Directional Shadows)
+No "glow" or "outer aura" shadows. Shadows must imply a light source from the top.
+- **none**: Flat components (Dividers/Inputs).
+- **soft**: Subtle depth for standard cards (`0 2px 4px rgba(0,0,0,0.05)`).
+- **medium**: Floating elements like TopBar/BottomNav (`0 4px 12px rgba(0,0,0,0.1)`).
 
 ---
 
-## 4. Mobile & PWA Constraints
+## 3. Screen-Class UI Separation
 
--   **Touch Target**: Minimum 44px for all interactions.
--   **Safe Area**: FABs and Bottom Nav must respect `env(safe-area-inset-bottom)`.
--   **Landscape**: Supported but not optimized (Portrait-first).
+### Mobile (Portrait Focus)
+- **Philosophy**: Minimalist, task-first.
+- **Constraint**: One primary action per screen.
+- **Density**: Low. Use whitespace to separate concerns.
+
+### Desktop / Tablet
+- **Philosophy**: Efficiency, command-center feel.
+- **Constraint**: High information density.
+- **Layout**: Persistent sidebar, multi-panel views.
 
 ---
 
-## 5. Development Guardrails
+## 4. Visual Weight Rules
 
-1.  **No New Fonts**: Use Inter/System default.
-2.  **No Logic Changes**: Backend routes are strictly out of scope.
-3.  **No Permissions**: Role-based access control is frozen.
+1. **Contrast over Color**: Use weight (font-weight), size, and spacing to imply hierarchy instead of varying colors.
+2. **Subtle Dividers**: Re-introduce thin (`1px`), low-contrast dividers to define layout boundaries.
+3. **No Decorative Glows**: Remove all background shines, glow-overlays, and multi-layer "Dribbble" styles.
 
-> **Verification**: If a change violates this contract, REJECT the PR.
+---
+
+## 5. Regression Guards
+
+> [!WARNING]
+> DO NOT re-introduce Aura, Frost, or Dusk themes.
+> DO NOT use ad-hoc hex codes.
+> DO NOT add new decorative gradients.
+
+Verification: Every UI change must be readable in grayscale.

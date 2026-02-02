@@ -4,9 +4,10 @@ import React, { useState, useEffect } from 'react';
 import { AppNotification } from '@/types/notification';
 import { NotificationService } from '@/services/notificationService';
 import { NotificationItem } from './NotificationItem';
-import { useAuth } from '@/contexts/AuthContext';
+import { useAuth } from '@/contexts/AuthContextProvider';
 import { useRouter } from 'next/navigation';
 import { apiClient } from '@/lib/apiClient';
+import { nativeNavigate } from '@/lib/utils';
 import { Loader2, CheckCheck, Filter } from 'lucide-react';
 import { toast } from 'sonner';
 
@@ -24,7 +25,7 @@ export const NotificationInbox: React.FC = () => {
         if (!user) return;
         try {
             // Limit to 100 for the inbox view for performance
-            const data = await NotificationService.getUserNotifications(100);
+            const data = await NotificationService.getUserNotifications({ limit: 100 });
             setNotifications(data);
             setUnreadCount(data.filter(n => !n.isRead).length);
             setLoading(false);
@@ -88,7 +89,7 @@ export const NotificationInbox: React.FC = () => {
             if (url.includes('/tasks/view/') && !url.includes('?id=')) {
                 url = url.replace('/tasks/view/', '/tasks/view?id=');
             }
-            router.push(url);
+            nativeNavigate(url, router, 'NotificationInbox (Click)');
         }
     };
 

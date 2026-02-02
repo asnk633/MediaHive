@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { Star, Send, Check } from 'lucide-react';
 import { Task } from '@/types/task';
-import { useAuth } from '@/contexts/AuthContext';
+import { useAuth } from '@/contexts/AuthContextProvider';
 import { toast } from 'sonner';
 import { TaskRatingService } from '@/services/taskRatingService';
 

@@ -2,6 +2,7 @@ import React from 'react';
 import { Task } from '@/types/task';
 import { format } from 'date-fns';
 import { useRouter } from 'next/navigation';
+import { nativeNavigate } from '@/lib/utils';
 
 interface TasksFromMeWidgetProps {
     tasks: Task[];
@@ -66,7 +67,7 @@ export const TasksFromMeWidget = ({ tasks, userId, title = "Tasks from Me" }: Ta
                     {title}
                 </h3>
                 <button
-                    onClick={() => router.push('/tasks')}
+                    onClick={() => nativeNavigate('/tasks', router, 'TasksFromMeWidget (See All)')}
                     className="text-xs font-semibold text-blue-400 hover:text-blue-300 transition-colors"
                 >
                     See All

@@ -4,11 +4,12 @@ import { Capacitor } from '@capacitor/core';
 import { NotificationService } from '@/services/notificationService';
 import { AppNotification } from '@/types/notification';
 import { NotificationItem } from './NotificationItem';
-import { useAuth } from '@/contexts/AuthContext';
+import { useAuth } from '@/contexts/AuthContextProvider';
 import { useRouter } from 'next/navigation';
 import { groupNotifications, GroupedNotification } from '@/lib/notification-grouping';
 import { formatDistanceToNow } from 'date-fns';
 import { apiClient } from '@/lib/apiClient';
+import { nativeNavigate } from '@/lib/utils';
 
 export const NotificationBell = () => {
     const { user, authStatus } = useAuth();
@@ -22,27 +23,25 @@ export const NotificationBell = () => {
     useEffect(() => {
         if (!user || authStatus !== 'authenticated') return;
 
+        const controller = new AbortController();
+
         // Initial load
         const fetchNotifications = async () => {
             try {
-                const data = await NotificationService.getUserNotifications();
+                const data = await NotificationService.getUserNotifications({ signal: controller.signal });
                 setNotifications(data);
-                // Calculate unread count from the live data
-                // (Assuming data includes isRead status)
                 const count = data.filter(n => !n.isRead).length;
                 setUnreadCount(count);
             } catch (error: any) {
+                if (error.name === 'AbortError') return;
                 // Silently ignore 403/429 failures and 401 Unauthorized in polling to avoid console spam
                 const msg = error.message?.toLowerCase() || '';
                 if (msg.includes('429') || msg.includes('403') || msg.includes('401') || msg.includes('unauthorized')) {
-                    // console.warn('Polling suppressed:', error.message);
                     return;
                 }
                 console.error('Failed to fetch notifications:', error);
             }
         };
-
-        fetchNotifications();
 
         fetchNotifications();
 
@@ -54,8 +53,9 @@ export const NotificationBell = () => {
 
         return () => {
             if (pollInterval) clearInterval(pollInterval);
+            controller.abort();
         };
-    }, [user?.uid, authStatus]); // Stable dependency: only re-run if UID changes or auth status confirms
+    }, [user?.uid, authStatus]);
 
     // Close on click outside
     useEffect(() => {
@@ -109,14 +109,13 @@ export const NotificationBell = () => {
                 if (url.includes('/tasks/view/') && !url.includes('?id=')) {
                     url = url.replace('/tasks/view/', '/tasks/view?id=');
                 }
-                router.push(url);
+                nativeNavigate(url, router, 'NotificationBell (Group URL Click)');
             } else if (target.entityType === 'task') {
                 setIsOpen(false);
-                router.push(`/tasks/view?id=${target.entityId}`);
+                nativeNavigate(`/tasks/view?id=${target.entityId}`, router, 'NotificationBell (Group Task Click)');
             } else if (target.entityType === 'event') {
                 setIsOpen(false);
-                // Assuming events have a view or just generic
-                router.push('/events');
+                nativeNavigate('/events', router, 'NotificationBell (Group Event Click)');
             }
 
         } else {
@@ -141,7 +140,7 @@ export const NotificationBell = () => {
                 if (url.includes('/tasks/view/') && !url.includes('?id=')) {
                     url = url.replace('/tasks/view/', '/tasks/view?id=');
                 }
-                router.push(url);
+                nativeNavigate(url, router, 'NotificationBell (Single URL Click)');
             }
         }
     };
@@ -160,6 +159,7 @@ export const NotificationBell = () => {
         <div className="relative" ref={dropdownRef}>
             <button
                 onClick={() => setIsOpen(!isOpen)}
+                title="Notifications coming soon"
                 className="relative p-2 rounded-full hover:bg-[var(--bg-hover)] transition-colors text-[var(--text-secondary)]"
             >
                 <Bell size={20} />
@@ -171,7 +171,7 @@ export const NotificationBell = () => {
             </button>
 
             {isOpen && (
-                <div className="absolute right-0 mt-2 w-80 md:w-96 bg-[#0f172a] border border-slate-800 rounded-2xl shadow-2xl z-50 overflow-hidden text-left ring-1 ring-white/10">
+                <div className="absolute right-0 mt-2 w-80 md:w-96 bg-slate-950/80 backdrop-blur-xl border border-white/10 rounded-2xl shadow-2xl z-50 overflow-hidden text-left ring-1 ring-white/5 animate-in fade-in zoom-in-95 duration-200">
                     <div className="p-4 border-b border-border flex justify-between items-center bg-muted/5">
                         <h3 className="font-bold text-popover-foreground text-sm tracking-wide uppercase">Notifications</h3>
                         {unreadCount > 0 && (
@@ -248,12 +248,13 @@ export const NotificationBell = () => {
                                     <Layers size={32} className="opacity-40" />
                                 </div>
                                 <p className="text-sm font-medium">No notifications yet</p>
+                                <p className="text-[10px] text-muted-foreground/50 mt-1 uppercase tracking-widest">Notification system coming soon</p>
                             </div>
                         )}
                     </div>
                     <div className="p-3 border-t border-border bg-popover text-center flex flex-col gap-2">
                         <button
-                            onClick={() => { setIsOpen(false); router.push('/notifications'); }}
+                            onClick={() => { setIsOpen(false); nativeNavigate('/notifications', router, 'NotificationBell (View Full Inbox)'); }}
                             className="text-xs font-bold text-primary hover:text-primary/80 uppercase tracking-wider transition-colors"
                         >
                             View Full Inbox

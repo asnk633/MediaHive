@@ -1,5 +1,5 @@
 "use client";
-import Link from "next/link";
+import AppLink from "@/components/AppLink";
 import { usePathname } from "next/navigation";
 
 const navItems = [
@@ -27,26 +27,25 @@ export function Navigation() {
       <div className="max-w-7xl mx-auto px-4">
         <div className="flex items-center justify-between h-16">
           <div className="flex items-center space-x-1">
-            <Link 
-              href="/" 
+            <AppLink
+              href="/"
               className="text-xl font-bold text-gray-900 hover:text-gray-700 transition-colors"
             >
               Orchids
-            </Link>
+            </AppLink>
           </div>
           <div className="flex items-center space-x-1 overflow-x-auto">
             {navItems.map((item) => (
-              <Link
+              <AppLink
                 key={item.href}
                 href={item.href}
-                className={`px-3 py-2 rounded-md text-sm font-medium transition-colors whitespace-nowrap ${
-                  pathname === item.href
+                className={`px-3 py-2 rounded-md text-sm font-medium transition-colors whitespace-nowrap ${pathname === item.href
                     ? "bg-gray-900 text-white"
                     : "text-gray-700 hover:text-gray-900 hover:bg-gray-100"
-                }`}
+                  }`}
               >
                 {item.label}
-              </Link>
+              </AppLink>
             ))}
           </div>
         </div>

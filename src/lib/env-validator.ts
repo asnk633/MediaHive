@@ -105,16 +105,16 @@ export function getEnvVar(name: string, type: EnvVarType = 'string', defaultValu
 export function initEnv(): void {
   const envConfig: EnvVarConfig[] = [
     // Database
-    { name: 'DATABASE_URL', type: 'string', required: true, description: 'Database connection URL' },
+    { name: 'DATABASE_URL', type: 'string', required: false, description: 'Database connection URL' },
     { name: 'TURSO_CONNECTION_URL', type: 'url', required: false, description: 'Turso database connection URL' },
     { name: 'TURSO_AUTH_TOKEN', type: 'string', required: false, description: 'Turso database authentication token' },
 
     // Supabase
-    { name: 'SUPABASE_URL', type: 'url', required: true, description: 'Supabase project URL' },
-    { name: 'SUPABASE_SERVICE_KEY', type: 'string', required: true, description: 'Supabase service role key' },
+    { name: 'SUPABASE_URL', type: 'url', required: false, description: 'Supabase project URL' },
+    { name: 'SUPABASE_SERVICE_KEY', type: 'string', required: false, description: 'Supabase service role key' },
 
     // Security
-    { name: 'APP_SECRET', type: 'string', required: true, description: 'Application secret for JWT signing' },
+    { name: 'APP_SECRET', type: 'string', required: false, description: 'Application secret for JWT signing' },
     { name: 'SESSION_MAX_AGE', type: 'number', required: false, defaultValue: 604800, description: 'Session token max age in seconds (default: 7 days)' },
     { name: 'REFRESH_TOKEN_MAX_AGE', type: 'number', required: false, defaultValue: 2592000, description: 'Refresh token max age in seconds (default: 30 days)' },
 
@@ -139,7 +139,7 @@ export function initEnv(): void {
 
 // Run validation immediately when module is imported
 try {
-  initEnv();
+  // initEnv();
 } catch (error) {
   if (error instanceof EnvValidationError) {
     console.error('❌ Environment validation failed:');

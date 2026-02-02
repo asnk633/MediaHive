@@ -1,9 +1,9 @@
 'use client';
 
-import React, { useEffect, useState, Suspense } from 'react';
+import React, { useEffect, useState } from 'react';
 import { apiClient } from '@/lib/apiClient';
 import { format } from 'date-fns';
-import { useSearchParams, useRouter } from 'next/navigation';
+import { useRouter } from 'next/navigation';
 import { Button } from '@/components/ui/button';
 import { ArrowLeft, Calendar, User } from 'lucide-react';
 import { PageLayout } from '@/components/ui/layout/PageLayout';
@@ -19,15 +19,11 @@ interface SystemUpdate {
 }
 
 export default function SystemUpdateDetailPage() {
-    return (
-        <Suspense fallback={<div className="p-8 text-center text-slate-500">Loading...</div>}>
-            <SystemUpdateContent />
-        </Suspense>
-    );
+    return <SystemUpdateContent />;
 }
 
 function SystemUpdateContent() {
-    const searchParams = useSearchParams();
+    const searchParams = typeof window !== 'undefined' ? new URLSearchParams(window.location.search) : new URLSearchParams();
     const id = searchParams.get('id');
     const router = useRouter();
     const [update, setUpdate] = useState<SystemUpdate | null>(null);

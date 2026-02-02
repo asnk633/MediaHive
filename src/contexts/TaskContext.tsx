@@ -1,6 +1,6 @@
 'use client';
 import React, { createContext, useContext, useState, useEffect } from 'react';
-import { useAuth } from './AuthContext';
+import { useAuth } from './AuthContextProvider';
 import { apiClient } from '@/lib/apiClient';
 import { Task } from '@/types/task';
 
@@ -33,26 +33,26 @@ export const TaskProvider: React.FC<{ children: React.ReactNode }> = ({ children
 
         const pollTasks = async () => {
             if (isCancelled) return;
-            
+
             try {
                 const data = await apiClient('/api/tasks', {
                     method: 'GET'
                 });
-                
+
                 // Sort tasks by createdAt in descending order manually
                 const sortedTasks = (data.tasks || []).sort((a: Task, b: Task) => {
                     const dateA = a.createdAt ? new Date(a.createdAt).getTime() : 0;
                     const dateB = b.createdAt ? new Date(b.createdAt).getTime() : 0;
                     return dateB - dateA;
                 });
-                
+
                 setTasks(sortedTasks);
                 setNetworkError(false);
             } catch (error) {
                 console.warn('Task polling failed:', error);
                 setNetworkError(true);
             }
-            
+
             if (!isCancelled) {
                 pollInterval = setTimeout(pollTasks, 30000); // Poll every 30 seconds
             }

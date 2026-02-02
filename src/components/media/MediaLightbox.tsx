@@ -4,7 +4,7 @@ import { ExtendedDriveFile } from '@/types/mediaComment';
 import { X, Download, ChevronLeft, ChevronRight, FileText, Image as ImageIcon, Video, Send, Check, AlertCircle, Upload, ChevronDown, CheckCircle } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Skeleton } from '@/components/ui/skeleton';
-import { useAuth } from '@/contexts/AuthContext';
+import { useAuth } from '@/contexts/AuthContextProvider';
 import { toast } from 'sonner';
 import { formatDate, getRelativeTime } from '@/lib/utils';
 import { MediaCommentService } from '@/services/mediaCommentService';
@@ -31,6 +31,7 @@ export function MediaLightbox({ file, files, loading = false, onClose, onNavigat
   const [versions, setVersions] = useState<ExtendedDriveFile[]>([]);
   const [showVersionsDropdown, setShowVersionsDropdown] = useState(false);
   const [isUploading, setIsUploading] = useState(false);
+  const [isActionLoading, setIsActionLoading] = useState(false);
   const [newVersionFile, setNewVersionFile] = useState<File | null>(null);
   const { user } = useAuth();
 
@@ -202,8 +203,9 @@ export function MediaLightbox({ file, files, loading = false, onClose, onNavigat
 
   // Handle proofing actions
   const handleProofingAction = async (action: 'approve' | 'request_changes') => {
-    if (!user) return;
+    if (!user || isActionLoading) return;
 
+    setIsActionLoading(true);
     const newStatus = action === 'approve' ? 'approved' : 'changes_requested';
     const success = await MediaProofingService.updateProofingStatus(
       file.id,
@@ -276,6 +278,7 @@ export function MediaLightbox({ file, files, loading = false, onClose, onNavigat
         { duration: 5000 }
       );
     }
+    setIsActionLoading(false);
   };
 
   // Check if user can perform proofing actions
@@ -412,10 +415,10 @@ export function MediaLightbox({ file, files, loading = false, onClose, onNavigat
                   {showProofingFeatures && file.proofingStatus && (
                     <div className="mt-2">
                       <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${file.proofingStatus === 'approved'
-                          ? 'bg-green-100 text-green-800'
-                          : file.proofingStatus === 'changes_requested'
-                            ? 'bg-yellow-100 text-yellow-800'
-                            : 'bg-gray-100 text-gray-800'
+                        ? 'bg-green-100 text-green-800'
+                        : file.proofingStatus === 'changes_requested'
+                          ? 'bg-yellow-100 text-yellow-800'
+                          : 'bg-gray-100 text-gray-800'
                         }`}>
                         {file.proofingStatus === 'approved' && <Check className="mr-1.5 h-3 w-3" />}
                         {file.proofingStatus === 'changes_requested' && <AlertCircle className="mr-1.5 h-3 w-3" />}
@@ -540,19 +543,37 @@ export function MediaLightbox({ file, files, loading = false, onClose, onNavigat
                         <Button
                           onClick={() => handleProofingAction('approve')}
                           className="flex-1 flex items-center justify-center gap-2 bg-green-600 hover:bg-green-500"
-                          disabled={file.proofingStatus === 'approved'}
+                          disabled={file.proofingStatus === 'approved' || isActionLoading}
                         >
-                          <Check size={16} />
-                          Approve
+                          {isActionLoading && file.proofingStatus !== 'approved' ? (
+                            <>
+                              <div className="animate-spin rounded-full h-3.5 w-3.5 border-2 border-white/30 border-t-white" />
+                              <span>Approving...</span>
+                            </>
+                          ) : (
+                            <>
+                              <Check size={16} />
+                              Approve
+                            </>
+                          )}
                         </Button>
                         <Button
                           onClick={() => handleProofingAction('request_changes')}
                           variant="outline"
                           className="flex-1 flex items-center justify-center gap-2 border-red-600 text-red-600 hover:bg-red-50"
-                          disabled={file.proofingStatus === 'changes_requested'}
+                          disabled={file.proofingStatus === 'changes_requested' || isActionLoading}
                         >
-                          <AlertCircle size={16} />
-                          Request Changes
+                          {isActionLoading && file.proofingStatus !== 'changes_requested' ? (
+                            <>
+                              <div className="animate-spin rounded-full h-3.5 w-3.5 border-2 border-red-500/30 border-t-red-500" />
+                              <span>Processing...</span>
+                            </>
+                          ) : (
+                            <>
+                              <AlertCircle size={16} />
+                              Request Changes
+                            </>
+                          )}
                         </Button>
                       </div>
                     </div>

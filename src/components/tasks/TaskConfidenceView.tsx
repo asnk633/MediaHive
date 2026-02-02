@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { Task } from '@/types/task';
 import { CanonicalDataService } from '@/services/canonicalDataService';
 import AdminConfidencePanel from './AdminConfidencePanel';
-import { useAuth } from '@/contexts/AuthContext';
+import { useAuth } from '@/contexts/AuthContextProvider';
 
 interface TaskConfidenceViewProps {
     tasks: Task[];

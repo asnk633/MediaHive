@@ -1,3 +1,4 @@
+'use client';
 
 import ProfileClient from './ProfileClient';
 

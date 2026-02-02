@@ -2,15 +2,16 @@ import React, { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Plus, CheckSquare, Calendar, CalendarCheck, X } from 'lucide-react';
 import { useRouter } from 'next/navigation';
+import { nativeNavigate } from '@/lib/utils';
 
 export const FAB = () => {
     const [isOpen, setIsOpen] = useState(false);
     const router = useRouter();
 
     const actions = [
-        { label: "Request Leave", icon: CalendarCheck, color: "text-amber-400", delay: 0.15, onClick: () => router.push('/leave/request') },
-        { label: "New Task", icon: CheckSquare, color: "text-green-400", delay: 0.1, onClick: () => { } },
-        { label: "New Event", icon: Calendar, color: "text-purple-400", delay: 0.05, onClick: () => { } },
+        { label: "Request Leave", icon: CalendarCheck, color: "text-amber-400", delay: 0.15, onClick: () => nativeNavigate('/leave/request', router, 'FAB (Request Leave)') },
+        { label: "New Task", icon: CheckSquare, color: "text-green-400", delay: 0.1, onClick: () => nativeNavigate('/tasks/new', router, 'FAB (New Task)') },
+        { label: "New Event", icon: Calendar, color: "text-purple-400", delay: 0.05, onClick: () => nativeNavigate('/events/new', router, 'FAB (New Event)') },
     ];
 
     return (

@@ -26,13 +26,25 @@ export function getFirebaseApp(): FirebaseApp {
   }
 
   // HARD RUNTIME GUARD: App crashes immediately if wrong Firebase project is used
+  // Only enforce this on the client to avoid crashing build workers when env vars are potentially missing
   const allowedProjectIds = ['thaiba-media-staging', 'media-app-93b73', 'thaiba-media-prod'];
-  if (!allowedProjectIds.includes(firebaseAppInstance.options.projectId || '')) {
-    const errorMsg = `[FIREBASE] CRITICAL ERROR: Expected one of [${allowedProjectIds.join(', ')}], but got '${firebaseAppInstance.options.projectId}'. App will crash to prevent using wrong Firebase project.`;
+  const currentProjectId = firebaseAppInstance.options.projectId || '';
+
+  // Get Data Mode
+  // We can't synchronously import IS_EMULATOR here easily if app.ts is used before config?
+  // Actually, config.ts is side-effect free.
+  const isEmulator = process.env.NEXT_PUBLIC_DATA_MODE === 'emulator';
+
+  if (!isEmulator && typeof window !== 'undefined' && !allowedProjectIds.includes(currentProjectId)) {
+    const errorMsg = `[FIREBASE] CRITICAL ERROR: Expected one of [${allowedProjectIds.join(', ')}], but got '${currentProjectId}'. App will crash to prevent using wrong Firebase project.`;
     console.error(errorMsg);
     throw new Error(errorMsg);
-  } else {
-    console.log(`[FIREBASE] Confirmed correct project ID: ${firebaseAppInstance.options.projectId}`);
+  } else if (typeof window !== 'undefined') {
+    if (isEmulator) {
+      console.log(`[FIREBASE] 🔧 EMULATOR MODE ACTIVE. Project ID Check Bypassed. (ID: ${currentProjectId})`);
+    } else {
+      console.log(`[FIREBASE] Confirmed correct project ID: ${currentProjectId}`);
+    }
   }
 
   return firebaseAppInstance;

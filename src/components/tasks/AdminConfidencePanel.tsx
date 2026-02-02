@@ -17,7 +17,7 @@ import { isFeatureEnabled } from '@/app/featureFlags';
 import { SystemHealthPanel } from '@/components/admin/SystemHealthPanel';
 import { InviteUserPanel } from '@/components/admin/InviteUserPanel';
 import { UserManagementPanel } from '@/components/admin/UserManagementPanel';
-import { useAuth } from '@/contexts/AuthContext';
+import { useAuth } from '@/contexts/AuthContextProvider';
 import { DemoDataButton } from '@/components/DemoDataButton';
 
 import { Event } from '@/types/event';

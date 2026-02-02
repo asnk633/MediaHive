@@ -10,7 +10,7 @@ import { User } from '@/types/user';
 import { AlertTriangle, Info, CheckCircle, XCircle, Eye, EyeOff } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { DemoDataService } from '@/services/demoDataService';
-import { useAuth } from '@/contexts/AuthContext';
+import { useAuth } from '@/contexts/AuthContextProvider';
 
 interface SystemHealthPanelProps {
   tasks: Task[];

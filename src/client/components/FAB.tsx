@@ -1,9 +1,9 @@
 "use client";
 import React, { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { useAuth } from "@/contexts/AuthContext";
+import { useAuth } from "@/contexts/AuthContextProvider";
 import { Plus, CheckSquare, Calendar, Bell, Users, Package } from "lucide-react";
-import Link from "next/link";
+import AppLink from "@/components/AppLink";
 import { triggerHaptic } from "@/lib/haptics";
 
 
@@ -34,9 +34,9 @@ export default function FAB({ onMainClick }: FABProps) {
 
 
   const allActions = [
-    { label: "Task", icon: CheckSquare, color: "bg-teal-500/20 text-teal-300 border-teal-500/30 hover:border-teal-400 hover:bg-teal-500/30", shadow: "shadow-[0_0_20px_rgba(20,184,166,0.5)]", href: "/tasks/new", delay: 0.1 },
-    { label: "Event", icon: Calendar, color: "bg-purple-500/20 text-purple-300 border-purple-500/30 hover:border-purple-400 hover:bg-purple-500/30", shadow: "shadow-[0_0_20px_rgba(168,85,247,0.5)]", href: "/events/new", delay: 0.05 },
-    { label: "Notify", icon: Bell, color: "bg-orange-500/20 text-orange-300 border-orange-500/30 hover:border-orange-400 hover:bg-orange-500/30", shadow: "shadow-[0_0_20px_rgba(249,115,22,0.5)]", href: "/notifications/new", delay: 0, role: 'admin' },
+    { label: "Task", icon: CheckSquare, href: "/tasks/new", delay: 0.1 },
+    { label: "Event", icon: Calendar, href: "/events/new", delay: 0.05 },
+    { label: "Notify", icon: Bell, href: "/notifications/new", delay: 0, role: 'admin' },
   ];
 
   const actions = allActions.filter(action => !action.role || action.role === user?.role);
@@ -61,26 +61,28 @@ export default function FAB({ onMainClick }: FABProps) {
 
   if (isHidden) return null;
 
-  return mounted ? createPortal(
+  return (
     <>
       <AnimatePresence>
         {isOpen && (
-          <motion.div
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            exit={{ opacity: 0 }}
-            className="fixed inset-0 bg-black/40 z-[40]"
-            style={{ backdropFilter: 'blur(16px)', WebkitBackdropFilter: 'blur(16px)' }}
-            onClick={() => setIsOpen(false)}
-          />
+          <div className="fixed inset-0 z-40 overflow-hidden pointer-events-auto">
+            <motion.div
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              className="absolute inset-0 bg-background/60"
+              style={{ backdropFilter: 'blur(8px)', WebkitBackdropFilter: 'blur(8px)' }}
+              onClick={() => setIsOpen(false)}
+            />
+          </div>
         )}
       </AnimatePresence>
       <div
-        className="fixed left-1/2 -translate-x-1/2 z-[50] flex flex-col-reverse items-center gap-4"
-        style={{ bottom: 'calc(1.5rem + 8px + var(--safe-bottom, 0px))' }}
+        className="absolute left-1/2 -translate-x-1/2 z-[50] flex flex-col-reverse items-center gap-4 pointer-events-auto"
+        style={{ bottom: 'calc(1.5rem + 8px)' }}
       >
         <motion.button
-          className="w-16 h-16 rounded-full text-white shadow-[0_8px_30px_rgba(79,70,229,0.5)] flex items-center justify-center relative z-20 bg-gradient-to-br from-blue-600 to-violet-600 hover-sheen overflow-hidden border border-white/20"
+          className="w-16 h-16 rounded-full text-primary-foreground shadow-medium flex items-center justify-center relative z-20 bg-primary hover:bg-primary/90 border border-border/50 overflow-hidden"
           onClick={() => {
             triggerHaptic();
             setIsOpen(!isOpen);
@@ -94,23 +96,23 @@ export default function FAB({ onMainClick }: FABProps) {
         </motion.button>
         <AnimatePresence>
           {isOpen && (
-            <div className="absolute bottom-20 flex flex-col items-center gap-5 w-max z-[110]">
+            <div className="absolute bottom-20 flex flex-col items-center gap-5 w-max z-[60]">
               {actions.map((action) => (
-                <Link key={action.label} href={action.href} onClick={() => setIsOpen(false)}>
+                <AppLink key={action.label} href={action.href} onClick={() => setIsOpen(false)}>
                   <motion.div initial={{ opacity: 0, y: 20, scale: 0.8 }} animate={{ opacity: 1, y: 0, scale: 1 }} exit={{ opacity: 0, y: 10, scale: 0.8 }} transition={{ delay: action.delay }} className="flex flex-col items-center gap-2 group">
-                    <div className={`w-14 h-14 rounded-full backdrop-blur-xl border-2 flex items-center justify-center transition-all duration-300 group-hover:scale-110 hover-sheen relative overflow-hidden ${action.color} ${action.shadow} shadow-lg ring-1 ring-white/20`}>
-                      <action.icon size={24} strokeWidth={2} />
+                    <div className="w-12 h-12 rounded-full bg-card border border-border flex items-center justify-center transition-all duration-200 group-hover:scale-110 shadow-soft relative overflow-hidden text-foreground">
+                      <action.icon size={20} strokeWidth={2} />
                     </div>
                     {/* Clean Label */}
-                    <span className="text-white text-[10px] font-bold px-3 py-1 rounded-full bg-slate-900/90 backdrop-blur-md border border-white/10 shadow-xl">{action.label}</span>
+                    <span className="text-foreground text-[10px] font-bold uppercase tracking-widest px-3 py-1 rounded-sm bg-card border border-border shadow-soft">{action.label}</span>
                   </motion.div>
-                </Link>
+                </AppLink>
               ))}
             </div>
           )}
         </AnimatePresence>
       </div>
-    </>,
-    document.body
-  ) : null;
+    </>
+  );
 }
+

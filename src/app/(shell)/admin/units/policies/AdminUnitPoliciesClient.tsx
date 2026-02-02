@@ -1,14 +1,10 @@
 'use client';
 
-import React, { Suspense } from 'react';
-import dynamic from 'next/dynamic';
+import React from 'react';
+import dynamicImport from 'next/dynamic';
 
-const UnitPoliciesContent = dynamic(() => import('./AdminUnitPoliciesContent'), { ssr: false });
+const UnitPoliciesContent = dynamicImport(() => import('./AdminUnitPoliciesContent'), { ssr: false });
 
 export default function AdminUnitPoliciesClient() {
-    return (
-        <Suspense fallback={<div className="p-8 text-white">Loading...</div>}>
-            <UnitPoliciesContent />
-        </Suspense>
-    );
+    return <UnitPoliciesContent />;
 }

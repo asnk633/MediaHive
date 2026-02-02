@@ -59,6 +59,13 @@ export async function initializeFirebaseServices() {
       // Initialize Auth with proper persistence for WebView environments
       auth = getAuth(app);
 
+      // Use process.env directly to avoid import issues
+      if (process.env.NEXT_PUBLIC_DATA_MODE === 'emulator') {
+        const { connectAuthEmulator } = await import('firebase/auth');
+        console.log('[FIREBASE] 🔧 Connecting to AUTH EMULATOR (localhost:9099)');
+        connectAuthEmulator(auth, "http://localhost:9099");
+      }
+
       // Detect WebView environment
       const isWebView = typeof window !== 'undefined' &&
         (window.navigator.userAgent.includes('wv') ||
@@ -127,6 +134,12 @@ export async function initializeFirebaseServices() {
         // Add network timeout settings
         experimentalTabSynchronization: false,
       } as any);
+
+      if (process.env.NEXT_PUBLIC_DATA_MODE === 'emulator') {
+        const { connectFirestoreEmulator } = await import('firebase/firestore');
+        console.log('[FIREBASE] 🔧 Connecting to FIRESTORE EMULATOR (localhost:8080)');
+        connectFirestoreEmulator(db, 'localhost', 8080);
+      }
 
       // Initialize Storage with increased retry times and browser-specific settings
       storage = getStorage(app);

@@ -1,11 +1,11 @@
 'use client';
 
-export const dynamic = 'force-static';
 
 
 import React, { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
-import { useAuth } from '@/contexts/AuthContext';
+import { useAuth } from '@/contexts/AuthContextProvider';
+import { nativeNavigate } from '@/lib/utils';
 import { LeaveRequest } from '@/types/leave';
 import { LeaveRequestService } from '@/services/leaveRequestService';
 import { LeaveApprovalCard } from '@/components/leave/LeaveApprovalCard';
@@ -23,7 +23,7 @@ export default function AdminLeaveRequestsPage() {
     // Check admin access
     useEffect(() => {
         if (user && user.role !== 'admin') {
-            router.push('/home');
+            nativeNavigate('/home', router, 'AdminLeaveRequests (Guard)');
         }
     }, [user, router]);
 

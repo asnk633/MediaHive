@@ -2,7 +2,7 @@
 
 import React, { useState, useRef } from "react";
 import { useRouter } from "next/navigation";
-import { useAuth } from "@/contexts/AuthContext";
+import { useAuth } from "@/contexts/AuthContextProvider";
 import { PageLayout } from "@/components/ui/layout/PageLayout";
 import { PageHeader } from "@/components/ui/layout/PageHeader";
 import { Button } from "@/components/ui/button";
@@ -12,7 +12,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Calendar } from "@/components/ui/calendar";
 import { format } from "date-fns";
-import { cn } from "@/lib/utils";
+import { cn, nativeNavigate } from "@/lib/utils";
 import { Save, Loader2, Image as ImageIcon, X, Upload, Info } from "lucide-react";
 import { toast } from "sonner";
 import { FileService } from "@/services/fileService";
@@ -87,8 +87,8 @@ export default function InventoryAddClient() {
             const result = await FileService.uploadFile(processedFile, metadata);
             if (result.success) {
                 const newImage = {
-                    url: result.previewLink || result.viewLink,
-                    fileId: result.driveFileId
+                    url: result.viewLink,
+                    fileId: result.fileId
                 };
 
                 setFormData(prev => {
@@ -169,7 +169,7 @@ export default function InventoryAddClient() {
             await inventoryService.create(payload, user);
 
             toast.success("Asset saved successfully");
-            router.push('/inventory');
+            nativeNavigate('/inventory', router, 'InventoryAdd (Success)');
         } catch (error) {
             console.error(error);
             toast.error("Failed to save asset");
@@ -202,7 +202,7 @@ export default function InventoryAddClient() {
                 description="Register a new item into the inventory."
             />
 
-            <div className="max-w-3xl mx-auto pb-20">
+            <div className="max-w-3xl mx-auto">
                 <form onSubmit={handleSubmit} className="space-y-8">
 
                     {/* Image Section */}
@@ -477,7 +477,7 @@ export default function InventoryAddClient() {
                         <Button
                             type="button"
                             variant="ghost"
-                            onClick={() => router.back()}
+                            onClick={() => nativeNavigate('/inventory', router, 'InventoryAdd (Back)')}
                             className="text-muted hover:text-foreground hover:bg-muted/10 rounded-xl"
                             disabled={loading}
                         >

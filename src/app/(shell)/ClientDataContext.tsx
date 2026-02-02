@@ -5,7 +5,7 @@ import "@/lib/client-fetch-wrapper"; // side‑effect import for fetch wrapper
 import React, { createContext, useCallback, useContext, useEffect, useState } from "react";
 import { useToast } from "@/components/ToastProvider";
 import { apiFromUiStatus, uiFromApiStatus, type UiStatus } from "./utils/uiMaps";
-import { useAuth } from "@/contexts/AuthContext";
+import { useAuth } from "@/contexts/AuthContextProvider";
 import { formatDistanceToNow } from "date-fns";
 import { apiClient } from "@/lib/apiClient";
 
@@ -43,6 +43,7 @@ type Store = {
   tasks: TaskLite[];
   notifications: NotificationLite[];
   events: EventLite[];
+  loading: boolean;
   createTask: (input: {
     title: string;
     description?: string;
@@ -62,6 +63,8 @@ type Store = {
     endAt?: string | null;
     location?: string;
   }) => Promise<void>;
+  error: string | null;
+  refresh: () => Promise<void>;
 };
 
 const Ctx = createContext<Store | null>(null);
@@ -139,15 +142,46 @@ export function ClientDataProvider({ children }: { children: React.ReactNode }) 
   }, []);
 
   const { user } = useAuth();
+  const getDevAuthHeaders = (): Record<string, string> => {
+    if (typeof window !== 'undefined' && window.location.hostname === 'localhost') {
+      return { 'x-dev-auth': 'true' };
+    }
+    return {};
+  };
+
   const toast = useToast();
 
   const [tasks, setTasks] = useState<TaskLite[]>([]);
   const [notifications, setNotifications] = useState<NotificationLite[]>([]);
   const [events, setEvents] = useState<EventLite[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
+
+  const loadAllData = useCallback(async () => {
+    if (!user) return;
+    setLoading(true);
+    setError(null);
+    try {
+      const [tsk, evt, ntf] = await Promise.all([
+        apiClient("/api/tasks?institutionId=1", { headers: getDevAuthHeaders() }),
+        apiClient("/api/events?institutionId=1", { headers: getDevAuthHeaders() }),
+        apiClient("/api/notifications?institutionId=1", { headers: getDevAuthHeaders() })
+      ]);
+      if (tsk?.tasks) setTasks(tsk.tasks.map(mapApiTask));
+      if (evt?.events) setEvents(evt.events.map(mapApiEvent));
+      if (ntf?.notifications) setNotifications(ntf.notifications);
+    } catch (e) {
+      console.error("Context data load error:", e);
+      setError("Sync didn’t work");
+    } finally {
+      setLoading(false);
+    }
+  }, [user]);
 
   // ----- Initial data load -----
   useEffect(() => {
-  }, []);
+    loadAllData();
+  }, [loadAllData]);
 
   // ----- CRUD helpers -----
   const createTask = useCallback(
@@ -307,11 +341,14 @@ export function ClientDataProvider({ children }: { children: React.ReactNode }) 
         tasks,
         notifications,
         events,
+        loading,
         createTask,
         updateTask,
         deleteTask,
         createNotification,
         createEvent,
+        error,
+        refresh: loadAllData,
       }}
     >
       {children}

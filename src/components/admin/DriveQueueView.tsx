@@ -25,6 +25,7 @@ import {
     DialogHeader,
     DialogTitle,
 } from "@/components/ui/dialog";
+import { apiClient } from '@/lib/apiClient';
 
 // Helper for safely parsing Firestore Timestamps (Admin SDK serializes to _seconds)
 function parseFirestoreDate(value: any): Date | null {
@@ -128,14 +129,9 @@ export function DriveQueueView() {
         // ... (rest of loadQueue)
 
         try {
-            const res = await fetch('/api/admin/drive-queue');
-            const data = await res.json();
-            if (res.ok) {
-                setItems(data);
-                setSelectedIds(new Set());
-            } else {
-                throw new Error(data.error);
-            }
+            const data = await apiClient('/api/admin/drive-queue');
+            setItems(data);
+            setSelectedIds(new Set());
         } catch (e) {
             console.error(e);
             toast.error('Failed to load queue');
@@ -146,11 +142,8 @@ export function DriveQueueView() {
 
     const loadFolderInfo = async () => {
         try {
-            const res = await fetch('/api/admin/drive-queue/meta');
-            const data = await res.json();
-            if (res.ok) {
-                setFolderInfo(data);
-            }
+            const data = await apiClient('/api/admin/drive-queue/meta');
+            setFolderInfo(data);
         } catch (e) {
             console.error('Failed to load folder info', e);
         }
@@ -160,19 +153,14 @@ export function DriveQueueView() {
         setScanning(true);
         setScanLogs([]);
         try {
-            const res = await fetch('/api/admin/drive-queue/scan', { method: 'POST' });
-            const data = await res.json();
+            const data = await apiClient('/api/admin/drive-queue/scan', { method: 'POST' });
 
             if (data.logs) {
                 setScanLogs(data.logs);
             }
 
-            if (res.ok) {
-                toast.success(data.message);
-                loadQueue();
-            } else {
-                throw new Error(data.error);
-            }
+            toast.success(data.message);
+            loadQueue();
         } catch (e: any) {
             toast.error(e.message || 'Scan failed');
         } finally {
@@ -251,23 +239,17 @@ export function DriveQueueView() {
                 body.metadata = payloadMetadata;
             }
 
-            const res = await fetch('/api/admin/drive-queue', {
+            const data = await apiClient('/api/admin/drive-queue', {
                 method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify(body)
             });
-            const data = await res.json();
 
-            if (res.ok) {
-                toast.success(action === 'approve' ? 'File approved & published' : 'File rejected');
-                setItems(prev => prev.filter(i => i.id !== id));
-                if (selectedIds.has(id)) {
-                    const newSet = new Set(selectedIds);
-                    newSet.delete(id);
-                    setSelectedIds(newSet);
-                }
-            } else {
-                throw new Error(data.error);
+            toast.success(action === 'approve' ? 'File approved & published' : 'File rejected');
+            setItems(prev => prev.filter(i => i.id !== id));
+            if (selectedIds.has(id)) {
+                const newSet = new Set(selectedIds);
+                newSet.delete(id);
+                setSelectedIds(newSet);
             }
         } catch (e: any) {
             toast.error(e.message || 'Action failed');
@@ -295,19 +277,13 @@ export function DriveQueueView() {
                 };
             }
 
-            const res = await fetch('/api/admin/drive-queue', {
+            const data = await apiClient('/api/admin/drive-queue', {
                 method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify(body)
             });
-            const data = await res.json();
 
-            if (res.ok) {
-                toast.success(`Bulk Action: ${data.success} succeeded, ${data.failed} failed`);
-                loadQueue();
-            } else {
-                throw new Error(data.error);
-            }
+            toast.success(`Bulk Action: ${data.success} succeeded, ${data.failed} failed`);
+            loadQueue();
         } catch (e: any) {
             toast.error(e.message || 'Bulk action failed');
         } finally {

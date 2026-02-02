@@ -1,3 +1,4 @@
+'use client';
 
 import InventoryClient from './InventoryClient';
 

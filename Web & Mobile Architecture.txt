@@ -1,0 +1,16 @@
+🧠 Final Architecture (Write This Down — This Is Canon)
+Web (Vercel + localhost)
+Frontend: Next.js
+Backend: Next.js API routes
+Origin: Same-origin
+Auth: Firebase Auth + Session Cookie
+API URL: RELATIVE (/api)
+
+Mobile (Capacitor)
+Frontend: WebView
+Backend: Vercel URL
+Origin: Cross-origin
+API URL: REQUIRED (NEXT_PUBLIC_API_URL)
+
+
+This split is correct and intentional.

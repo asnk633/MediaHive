@@ -1,3 +1,5 @@
+'use client';
+
 import React, { useEffect, useState } from 'react';
 import { ReportService, TaskStats, EventStats, FileStats, WorkloadStat, DashboardFilters } from '@/services/reportService';
 import { CanonicalDataService } from '@/services/canonicalDataService';
@@ -16,6 +18,7 @@ import {
 } from 'lucide-react';
 import { apiClient, apiGet } from '@/lib/apiClient';
 import { useRouter } from 'next/navigation';
+import { nativeNavigate } from '@/lib/utils';
 import { Button } from '@/components/ui/button';
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
 import { Label } from '@/components/ui/label';
@@ -254,7 +257,8 @@ function ReportDownloadButton() {
 
     const handleDownload = () => {
         // Navigate in same tab
-        router.push(`/report-preview?month=${month}&year=${year}`);
+        const year = new Date().getFullYear();
+        nativeNavigate(`/report-preview?month=${month}&year=${year}`, router, 'OverviewDashboard (Report Preview)');
     };
 
     return (

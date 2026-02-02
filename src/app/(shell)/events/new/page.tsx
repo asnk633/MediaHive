@@ -1,10 +1,7 @@
-import { Suspense } from 'react';
+'use client';
+
 import CreateEventClient from './CreateEventClient';
 
 export default function NewEventPage() {
-    return (
-        <Suspense fallback={<div className="min-h-screen bg-[var(--bg-card)]" />}>
-            <CreateEventClient />
-        </Suspense>
-    );
+    return <CreateEventClient />;
 }

@@ -1,7 +1,6 @@
 'use client';
 
 
-
 import React, { useEffect, useState } from "react";
 import { PageLayout } from "@/components/ui/layout/PageLayout";
 import { PageHeader } from "@/components/ui/layout/PageHeader";
@@ -9,6 +8,7 @@ import { Button } from "@/components/ui/button";
 import { ArrowLeft, Shield, Lock, Users, Eye, Database, Globe, Check, X } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { apiClient, apiPost } from '@/lib/apiClient';
+import { nativeNavigate } from "@/lib/utils";
 import { toast } from "sonner";
 import { Switch } from "@/components/ui/switch";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
@@ -64,7 +64,7 @@ export default function SecurityRulesPage() {
                 title="Security Rules"
                 description="Manage system access policies and protection rules."
                 actions={
-                    <Button variant="ghost" onClick={() => router.push('/admin')} className="gap-2 text-slate-400 hover:text-white">
+                    <Button variant="ghost" onClick={() => nativeNavigate('/admin', router, 'SecurityRules (Back)')} className="gap-2 text-slate-400 hover:text-white">
                         <ArrowLeft size={16} />
                         Back to Command Center
                     </Button>

@@ -1,7 +1,7 @@
 'use client';
 
 import React, { useState, useEffect } from "react";
-import { useAuth } from "@/contexts/AuthContext";
+import { useAuth } from "@/contexts/AuthContextProvider";
 import { LogOut } from "lucide-react";
 import ImageCropper from "@/components/ImageCropper";
 import { uploadProfilePicture } from "@/services/profilePicture";
@@ -17,6 +17,9 @@ import { ActivitySummary } from "@/components/profile/ActivitySummary";
 import { HelpInfoCard } from "@/components/profile/HelpInfoCard";
 
 import { useRouter } from "next/navigation";
+import { nativeNavigate } from "@/lib/utils";
+import { PageLayout } from "@/components/ui/layout/PageLayout";
+import { toast } from 'sonner';
 
 export default function ProfileClient() {
     const { user } = useAuth();
@@ -37,11 +40,11 @@ export default function ProfileClient() {
         const file = e.target.files?.[0];
         if (file) {
             if (file.size > 5 * 1024 * 1024) {
-                alert('File size must be less than 5MB');
+                toast.error('Image too large. Please choose a file under 5MB.');
                 return;
             }
             if (!file.type.startsWith('image/')) {
-                alert('Please select an image file');
+                toast.error('Invalid file type. Please select an image (JPG, PNG).');
                 return;
             }
             const reader = new FileReader();
@@ -66,7 +69,7 @@ export default function ProfileClient() {
             router.refresh();
         } catch (error) {
             console.error('Upload failed:', error);
-            alert('Failed to upload profile picture');
+            toast.error('Upload failed. Please check your connection and try again.');
         } finally {
             setUploading(false);
             setTempImageUrl(null);
@@ -76,15 +79,15 @@ export default function ProfileClient() {
     const handleSignOut = async () => {
         try {
             await signOut(auth);
-            router.push('/login');
+            nativeNavigate('/login', router, 'Profile (Sign Out)');
         } catch (error) {
             console.error('Sign out failed:', error);
         }
     };
 
     return (
-        <div className="min-h-screen app-body-padding pb-24 px-4">
-            <div className="max-w-5xl mx-auto space-y-6">
+        <PageLayout mode="plain">
+            <div className="space-y-6">
                 {/* Profile Header Card */}
                 <ProfileHeaderCard
                     user={user}
@@ -145,6 +148,6 @@ export default function ProfileClient() {
                     />
                 </div>
             )}
-        </div>
+        </PageLayout>
     );
 }

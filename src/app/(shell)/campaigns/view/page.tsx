@@ -1,10 +1,7 @@
-import { Suspense } from 'react';
+'use client';
+
 import CampaignViewClient from './CampaignViewClient';
 
 export default function CampaignViewPage() {
-    return (
-        <Suspense fallback={<div className="min-h-screen bg-[var(--bg-card)]" />}>
-            <CampaignViewClient />
-        </Suspense>
-    );
+    return <CampaignViewClient />;
 }

@@ -1,7 +1,7 @@
 'use client';
 
 import React, { useEffect, useState } from "react";
-import { useSearchParams, useRouter } from "next/navigation";
+import { useRouter } from "next/navigation";
 import { Task } from "@/types/task";
 import { format } from "date-fns";
 import { apiClient } from "@/lib/apiClient";
@@ -10,7 +10,7 @@ import { Loader2, Download, Printer, ArrowLeft } from "lucide-react";
 
 export default function ReportPreviewClient() {
     const router = useRouter();
-    const searchParams = useSearchParams();
+    const searchParams = typeof window !== 'undefined' ? new URLSearchParams(window.location.search) : new URLSearchParams();
     const month = parseInt(searchParams.get("month") || new Date().getMonth().toString());
     const year = parseInt(searchParams.get("year") || new Date().getFullYear().toString());
 

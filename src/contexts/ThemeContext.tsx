@@ -2,7 +2,7 @@
 
 import React, { createContext, useContext, useEffect, useState } from 'react';
 
-type Theme = 'aura' | 'dusk' | 'frost';
+type Theme = 'light' | 'dark';
 
 interface ThemeContextType {
     theme: Theme;
@@ -14,7 +14,7 @@ const ThemeContext = createContext<ThemeContextType | undefined>(undefined);
 const THEME_KEY = 'mediahive-theme';
 
 export function ThemeProvider({ children }: { children: React.ReactNode }) {
-    const [theme, setThemeState] = useState<Theme>('aura');
+    const [theme, setThemeState] = useState<Theme>('dark');
     const [mounted, setMounted] = useState(false);
 
     useEffect(() => {
@@ -22,15 +22,15 @@ export function ThemeProvider({ children }: { children: React.ReactNode }) {
         // 1. Check local storage
         const storedTheme = localStorage.getItem(THEME_KEY) as Theme;
 
-        // 2. Validate stored theme (fallback to aura if invalid)
-        if (storedTheme && ['aura', 'dusk', 'frost'].includes(storedTheme)) {
+        // 2. Validate stored theme (fallback to dark if invalid)
+        if (storedTheme && ['light', 'dark'].includes(storedTheme)) {
             setThemeState(storedTheme);
             document.documentElement.setAttribute('data-theme', storedTheme);
         } else {
-            // 3. Enforce Aura default
-            setThemeState('aura');
-            document.documentElement.setAttribute('data-theme', 'aura');
-            localStorage.setItem(THEME_KEY, 'aura');
+            // 3. Enforce Dark default (Media-first)
+            setThemeState('dark');
+            document.documentElement.setAttribute('data-theme', 'dark');
+            localStorage.setItem(THEME_KEY, 'dark');
         }
     }, []);
 

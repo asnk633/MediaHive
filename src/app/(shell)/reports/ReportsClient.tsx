@@ -3,6 +3,7 @@
 import React from 'react';
 import { useRouter } from 'next/navigation';
 import { PageLayout } from '@/components/ui/layout/PageLayout';
+import { nativeNavigate } from '@/lib/utils';
 import { PageHeader } from '@/components/ui/layout/PageHeader';
 import { FileText, Activity, BarChart3, TrendingUp, WifiOff } from 'lucide-react';
 import { useState, useEffect } from 'react';
@@ -88,7 +89,7 @@ export default function ReportsClient() {
                     return (
                         <button
                             key={report.href}
-                            onClick={() => router.push(report.href)}
+                            onClick={() => nativeNavigate(report.href, router, 'ReportsClient (Report Click)')}
                             className="group p-6 bg-[var(--bg-card)] border border-[var(--border-subtle)] rounded-2xl hover:border-[var(--border-primary)] transition-all text-left"
                         >
                             <div className={`inline-flex p-3 rounded-xl mb-4 ${colorClasses[report.color]}`}>

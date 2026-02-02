@@ -11,7 +11,7 @@
  * src/contexts/AuthContext.tsx and I will adapt this wrapper accordingly.
  */
 
-import * as AuthModule from "@/contexts/AuthContext";
+import * as AuthModule from "@/contexts/AuthContextProvider";
 
 // Prefer an actual named useAuth if present
 const useAuthHook = (AuthModule && ((AuthModule as any).useAuth ?? (AuthModule as any).default ?? null)) as any;

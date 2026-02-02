@@ -16,7 +16,7 @@ import { format } from "date-fns";
 import { TaskService } from "@/services/tasks";
 import { CampaignService } from "@/services/campaignService";
 import { Campaign } from "@/types/campaign";
-import { useAuth } from "@/contexts/AuthContext";
+import { useAuth } from "@/contexts/AuthContextProvider";
 import { UserService } from "@/services/userService";
 import { useRouter } from 'next/navigation';
 import { DeliverablesList } from '@/components/deliverables/DeliverablesList';
@@ -53,6 +53,7 @@ export function EditTaskDialog({ open, onOpenChange, task, onUpdate }: EditTaskD
     const [assignedToIds, setAssignedToIds] = useState<string[]>([]);
     const [teamMembers, setTeamMembers] = useState<{ uid: string; name: string }[]>([]);
     const [isSubmitting, setIsSubmitting] = useState(false);
+    const [error, setError] = useState<string | null>(null);
 
     // Attachments State
     const [showUploadModal, setShowUploadModal] = useState(false);
@@ -169,9 +170,10 @@ export function EditTaskDialog({ open, onOpenChange, task, onUpdate }: EditTaskD
                 toast.success("Task updated successfully");
                 onOpenChange(false);
             }
-        } catch (error) {
-            console.error("Update failed", error);
-            toast.error("Failed to update task");
+        } catch (err: any) {
+            console.error("Update failed", err);
+            const isApproval = (task as any).approvalStatus === 'pending';
+            setError(isApproval ? "Approval didn’t go through" : "Task couldn’t be updated");
         } finally {
             setIsSubmitting(false);
         }
@@ -415,6 +417,23 @@ export function EditTaskDialog({ open, onOpenChange, task, onUpdate }: EditTaskD
                             />
                         </div>
                     </div>
+
+                    {error && (
+                        <div className="flex items-center justify-center gap-3 py-2 animate-in fade-in slide-in-from-bottom-2">
+                            <span className="text-sm text-red-400 font-medium">{error}</span>
+                            <div className="w-1 h-1 bg-white/10 rounded-full" />
+                            <button
+                                type="button"
+                                onClick={(e) => {
+                                    setError(null);
+                                    handleSubmit(e as any);
+                                }}
+                                className="text-xs font-bold text-white/50 hover:text-white uppercase tracking-widest transition-colors flex items-center gap-1.5"
+                            >
+                                Retry
+                            </button>
+                        </div>
+                    )}
 
                     <div className="flex justify-end gap-3 pt-6 border-t border-white/5">
                         <Button

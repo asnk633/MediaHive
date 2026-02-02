@@ -11,18 +11,18 @@ interface PageHeaderProps {
 
 export function PageHeader({ title, description, actions, className, size = 'default' }: PageHeaderProps) {
     return (
-        <div className={cn("flex flex-col gap-6 sm:flex-row sm:items-start sm:justify-between", className)}>
-            <div className="space-y-2">
+        <div className={cn("flex flex-col gap-6 sm:flex-row sm:items-start sm:justify-between border-l-2 border-primary/20 pl-6 py-1", className)}>
+            <div className="space-y-4">
                 <h1 className={cn(
-                    "font-semibold tracking-tight text-foreground",
+                    "font-black tracking-tight text-foreground uppercase leading-none",
                     size === 'large' ? "text-4xl" : "text-3xl"
                 )}>
                     {title}
                 </h1>
                 {description && (
                     <p className={cn(
-                        "text-subtitle max-w-2xl",
-                        size === 'large' ? "text-lg" : "text-base"
+                        "text-muted-foreground font-medium uppercase tracking-[0.2em] opacity-40 leading-relaxed max-w-2xl",
+                        size === 'large' ? "text-[11px]" : "text-[10px]"
                     )}>
                         {description}
                     </p>

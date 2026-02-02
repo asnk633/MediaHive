@@ -6,21 +6,29 @@ import { Capacitor } from '@capacitor/core';
 import { OfflinePlaceholder } from "@/components/OfflinePlaceholder";
 import { useNative } from "@/hooks/useNative";
 import { Task } from "@/types/task";
-import { TaskListView } from "@/components/tasks/TaskListView";
-import { useAuth } from "@/contexts/AuthContext";
-import Link from "next/link";
+import { useAuth } from "@/contexts/AuthContextProvider";
+import AppLink from "@/components/AppLink";
 import { useRouter, useSearchParams } from "next/navigation";
+import { nativeNavigate } from "@/lib/utils";
 import { CanonicalDataService } from "@/services/canonicalDataService";
-import { TaskDetailModalV2 } from "@/components/tasks/TaskDetailModalV2";
-import { EditTaskDialog } from "@/components/tasks/EditTaskDialog";
 import { TaskService } from "@/services/tasks";
+import { PAGE_SETTLE_MS } from "@/config/performanceThresholds";
 import { PageLayout } from "@/components/ui/layout/PageLayout";
 import { PageHeader } from "@/components/ui/layout/PageHeader";
+import dynamic from 'next/dynamic';
+
+// Dynamic imports for heavy components
+const TaskListView = dynamic(() => import("@/components/tasks/TaskListView").then(mod => mod.TaskListView), {
+    loading: () => <div className="p-6 space-y-4"><div className="h-12 w-full bg-white/5 animate-pulse rounded" /></div>
+});
+const TaskDetailModalV2 = dynamic(() => import("@/components/tasks/TaskDetailModalV2").then(mod => mod.TaskDetailModalV2));
+const EditTaskDialog = dynamic(() => import("@/components/tasks/EditTaskDialog").then(mod => mod.EditTaskDialog));
 
 export default function TasksPageClient() {
     const [tasks, setTasks] = useState<Task[]>([]);
     const { isNative } = useNative();
     const [loading, setLoading] = useState(true);
+    const [error, setError] = useState<string | null>(null);
     const { user, authStatus } = useAuth();
     const router = useRouter();
     const searchParams = useSearchParams();
@@ -35,40 +43,50 @@ export default function TasksPageClient() {
         tasks.find(t => t.id === taskIdFromUrl) || null
         , [tasks, taskIdFromUrl]);
 
-    useEffect(() => {
-        let isSubscribed = true;
-        let intervalId: NodeJS.Timeout | null = null;
+    const fetchTasks = React.useCallback(async () => {
+        if (isNative) return;
+        if (typeof document !== 'undefined' && document.hidden) return;
 
-        const fetchTasks = async () => {
-            if (isNative) return;
-            if (typeof document !== 'undefined' && document.hidden) return;
+        // Only fetch if strictly authenticated to avoid 401s from racing conditions
+        if (user && authStatus === 'authenticated') {
+            // PERFORMANCE INSTRUMENTATION: Mark start of task list fetch
+            const startTime = performance.now();
 
-            // Only fetch if strictly authenticated to avoid 401s from racing conditions
-            if (user && authStatus === 'authenticated') {
-                try {
-                    const fetchedTasks = await CanonicalDataService.getTasks({
-                        role: user.role,
-                        userId: user.uid,
-                        includeDemoData: true
-                    });
+            try {
+                const fetchedTasks = await CanonicalDataService.getTasks({
+                    role: user.role,
+                    userId: user.uid,
+                    includeDemoData: true
+                });
 
-                    if (isSubscribed) {
-                        setTasks(fetchedTasks);
-                        setLoading(false);
-                    }
-                } catch (error: any) {
-                    if (isSubscribed) {
-                        setLoading(false);
-                        const msg = error.message?.toLowerCase() || '';
-                        if (msg.includes('429') || msg.includes('401') || msg.includes('unauthorized')) {
-                            if (msg.includes('429')) console.warn('[TasksPage] Rate limited.');
-                        } else {
-                            console.error('[TasksPage] Failed to fetch tasks:', error);
-                        }
-                    }
+                setTasks(fetchedTasks);
+                setError(null); // Clear error on success
+                setLoading(false);
+
+                // PERFORMANCE INSTRUMENTATION: Calculate duration
+                const duration = performance.now() - startTime;
+
+                if (duration > PAGE_SETTLE_MS) {
+                    console.warn(
+                        `[PERF] Task list fetch slow: ${duration.toFixed(0)}ms ` +
+                        `(threshold: ${PAGE_SETTLE_MS}ms, overage: +${(duration - PAGE_SETTLE_MS).toFixed(0)}ms)`
+                    );
                 }
+
+                // (Legacy marks removed to prevent race conditions)
+            } catch (err: any) {
+                console.error('[TasksPageClient] Error fetching tasks:', err);
+                if (err.message?.includes('Unauthorized') || err.message?.includes('401')) {
+                    // Suppress 401s during auth transitions
+                    return;
+                }
+                setError('Tasks couldn’t be loaded');
             }
-        };
+        }
+    }, [isNative, user, authStatus]);
+
+    useEffect(() => {
+        let intervalId: NodeJS.Timeout | null = null;
 
         fetchTasks();
 
@@ -77,6 +95,7 @@ export default function TasksPageClient() {
             intervalId = setInterval(fetchTasks, 30000);
         }
 
+        // Handles Task 84: Stale Data Truthfulness (Silent Refresh on Focus)
         const handleVisibilityChange = () => {
             if (document.hidden) {
                 if (intervalId) clearInterval(intervalId);
@@ -94,25 +113,30 @@ export default function TasksPageClient() {
         }
 
         return () => {
-            isSubscribed = false;
             if (intervalId) clearInterval(intervalId);
             if (typeof document !== 'undefined') {
                 document.removeEventListener('visibilitychange', handleVisibilityChange);
             }
         };
-    }, [user]);
+    }, [user, fetchTasks]);
 
     const handleTaskClick = (task: Task) => {
         // Update URL to trigger modal
         const params = new URLSearchParams(searchParams);
         params.set('id', task.id);
-        router.push(`/tasks?${params.toString()}`);
+        nativeNavigate(`/tasks?${params.toString()}`, router, 'TasksPage (Modal Open)');
     };
 
     const handleCloseModal = () => {
-        const params = new URLSearchParams(searchParams);
-        params.delete('id');
-        router.push(`/tasks?${params.toString()}`);
+        const returnTo = searchParams.get('returnTo');
+        if (returnTo === 'home') {
+            nativeNavigate('/home', router, 'TasksPage (Return to Home)');
+        } else {
+            const params = new URLSearchParams(searchParams);
+            params.delete('id');
+            params.delete('returnTo');
+            nativeNavigate(`/tasks?${params.toString()}`, router, 'TasksPage (Modal Close)');
+        }
     };
 
     const handleEditFromModal = () => {
@@ -167,7 +191,7 @@ export default function TasksPageClient() {
                 title="Tasks"
                 description="Accountability-focused task management."
                 actions={
-                    <Link href="/tasks/new">
+                    <AppLink href="/tasks/new">
                         <button
                             aria-label="New Task"
                             className="flex items-center gap-2 px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-xl shadow-lg dark:shadow-blue-900/50 light:shadow-blue-200 transition-all active:scale-95 text-sm font-semibold"
@@ -175,7 +199,7 @@ export default function TasksPageClient() {
                             <Plus size={18} />
                             <span className="hidden sm:inline">New Task</span>
                         </button>
-                    </Link>
+                    </AppLink>
                 }
             />
 
@@ -184,6 +208,8 @@ export default function TasksPageClient() {
                 <TaskListView
                     tasks={tasks}
                     loading={loading}
+                    error={error}
+                    onRetry={fetchTasks}
                     onTaskClick={handleTaskClick}
                     onTaskUpdate={handleOptimisticUpdate}
                 />

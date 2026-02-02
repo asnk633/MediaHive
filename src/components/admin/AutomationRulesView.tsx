@@ -3,7 +3,8 @@
 import React, { useState, useEffect } from 'react';
 import { AutomationRule, RuleAction, ConditionOperator } from '@/types/automation-rules';
 import { Loader2, Plus, Lock, Send, ShieldAlert, Archive, Copy, Play, Info, ChevronRight, Zap, AlertTriangle, ChevronDown } from 'lucide-react';
-import Link from 'next/link';
+import AppLink from '@/components/AppLink';
+import { apiClient } from '@/lib/apiClient';
 
 interface RulesData {
     custom: AutomationRule[];
@@ -19,11 +20,8 @@ export default function AutomationRulesView() {
     const fetchRules = async () => {
         setLoading(true);
         try {
-            const res = await fetch('/api/admin/automation-rules');
-            if (res.ok) {
-                const json = await res.json();
-                setData(json);
-            }
+            const json = await apiClient('/api/admin/automation-rules');
+            setData(json);
         } catch (e) {
             console.error(e);
         } finally {
@@ -61,12 +59,11 @@ export default function AutomationRulesView() {
     const handleActivate = async (id: string) => {
         if (!confirm('Activate this rule? Previous versions will be disabled.')) return;
         try {
-            const res = await fetch('/api/admin/automation-rules', {
+            await apiClient('/api/admin/automation-rules', {
                 method: 'PATCH',
-                headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({ id, command: 'activate' })
             });
-            if (res.ok) fetchRules();
+            fetchRules();
         } catch (e) {
             alert('Failed to activate');
         }
@@ -75,17 +72,12 @@ export default function AutomationRulesView() {
     const handleSave = async (rule: Partial<AutomationRule>) => {
         try {
             const method = rule.id && rule.version ? 'PUT' : 'POST';
-            const res = await fetch('/api/admin/automation-rules', {
+            await apiClient('/api/admin/automation-rules', {
                 method,
-                headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify(rule)
             });
-            if (res.ok) {
-                setIsEditorOpen(false);
-                fetchRules();
-            } else {
-                alert('Failed to save');
-            }
+            setIsEditorOpen(false);
+            fetchRules();
         } catch (e) {
             alert('Error saving');
         }
@@ -132,7 +124,7 @@ export default function AutomationRulesView() {
                         <div className="space-y-1 z-10">
                             <h4 className="text-base font-semibold text-amber-600 tracking-wide uppercase text-xs">Advanced Configuration</h4>
                             <p className="text-amber-900/80 dark:text-amber-100/70 leading-relaxed max-w-3xl">
-                                This interface exposes raw engine logic. For standard notification settings (reminders, due dates), use the <Link href="/admin/notification-policies" className="text-amber-600 hover:text-amber-700 underline underline-offset-4 decoration-amber-500/30 font-medium">Simplified Policy Editor</Link>. Changes here override global defaults and may affect system stability.
+                                This interface exposes raw engine logic. For standard notification settings (reminders, due dates), use the <AppLink href="/admin/notification-policies" className="text-amber-600 hover:text-amber-700 underline underline-offset-4 decoration-amber-500/30 font-medium">Simplified Policy Editor</AppLink>. Changes here override global defaults and may affect system stability.
                             </p>
                         </div>
                     </div>

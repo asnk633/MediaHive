@@ -1,6 +1,6 @@
 
 import { InventoryItem } from '@/types/inventory';
-import { AuthUser } from '@/contexts/AuthContext';
+import { AuthUser } from '@/contexts/AuthContextProvider';
 import { apiClient, apiPost } from '@/lib/apiClient';
 
 // Inventory API Service

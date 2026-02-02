@@ -5,7 +5,7 @@ import { Activity, UploadCloud, Trash2, Eye, EyeOff, Loader2, Clock } from 'luci
 import { format } from 'date-fns';
 import { cn } from '@/lib/utils';
 import { Button } from '@/components/ui/button';
-import { useAuth } from '@/contexts/AuthContext';
+import { useAuth } from '@/contexts/AuthContextProvider';
 
 interface AttachmentActivityLogProps {
     taskId: string;

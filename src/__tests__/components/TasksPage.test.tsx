@@ -1,6 +1,6 @@
 import { render, screen } from '@testing-library/react';
 import TasksPage from '@/app/(shell)/tasks/page';
-import { AuthContext } from '@/contexts/AuthContext';
+import { AuthContext } from '@/contexts/AuthContextProvider';
 
 // Mock Next.js Link component
 jest.mock('next/link', () => {

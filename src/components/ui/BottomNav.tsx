@@ -1,6 +1,6 @@
 // src/components/ui/BottomNav.tsx
 "use client";
-import Link from "next/link";
+import AppLink from "@/components/AppLink";
 import React from "react";
 import Icon from "@/client/components/Icon";
 import styles from "./bottomnav.module.css";
@@ -20,10 +20,10 @@ export default function BottomNav() {
       <ul className={styles.list}>
         {BOTTOM_NAV.map(item => (
           <li key={item.href} className={styles.item}>
-            <Link href={item.href} className={styles.link} aria-label={item.label}>
+            <AppLink href={item.href} className={styles.link} aria-label={item.label}>
               <Icon name={item.name as any} variant="duotone" className="w-6 h-6" />
               <span className={styles.label}>{item.label}</span>
-            </Link>
+            </AppLink>
           </li>
         ))}
       </ul>

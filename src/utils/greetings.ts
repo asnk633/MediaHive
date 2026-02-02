@@ -2,6 +2,7 @@
 export interface WelcomeMessage {
     greeting: string; // "Good Morning", "Good Afternoon", etc.
     message: string; // The random role-based message
+    icon: string;    // The emoji/icon
 }
 
 const adminWelcomeMessages = [
@@ -72,14 +73,52 @@ function getRandomMessage(role: string): string {
 }
 
 /**
- * Generates the full welcome object.
- * Logic:
- * 1. Calculate time greeting (Good Morning etc.)
- * 2. Select random message based on role.
+ * Resolves the primary name for a user based on technical hierarchy.
  */
-export function getWelcomeData(role: string): WelcomeMessage {
+function resolveName(user: any): string {
+    if (!user) return "";
+
+    // 1. Structured names (Primary Identity Authority)
+    if (user.firstName?.trim() && user.lastName?.trim()) {
+        return `${user.firstName} ${user.lastName}`;
+    }
+
+    // 2. Explicit display names
+    if (user.displayName?.trim()) return user.displayName;
+    if (user.name?.trim() && !user.name.includes('@')) return user.name;
+    if (user.officialName?.trim()) return user.officialName;
+
+    // 3. Individual name fields
+    if (user.firstName?.trim()) return user.firstName;
+    if (user.lastName?.trim()) return user.lastName;
+
+    // 4. Absolute fallback
+    return user.name || user.email || "";
+}
+
+/**
+ * Generates the full welcome object.
+ */
+export function getWelcomeData(user: any): WelcomeMessage {
+    const role = user?.role || 'guest';
+    const name = resolveName(user);
+    const timeGreeting = getTimeBasedGreeting();
+
+    const icon = ((): string => {
+        const hour = new Date().getHours();
+        if (hour >= 5 && hour < 12) return "🌅";
+        if (hour >= 12 && hour < 17) return "☀️";
+        if (hour >= 17 && hour < 21) return "🌆";
+        return "🌙";
+    })();
+
+    const greetingWithUser = name
+        ? `${timeGreeting}, ${name}`
+        : timeGreeting;
+
     return {
-        greeting: getTimeBasedGreeting(),
-        message: getRandomMessage(role)
+        greeting: greetingWithUser,
+        message: getRandomMessage(role),
+        icon
     };
 }

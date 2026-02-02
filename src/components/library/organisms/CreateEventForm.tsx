@@ -23,7 +23,7 @@ import { apiClient } from '@/lib/apiClient';
 import { StructureService } from '@/services/structureService';
 import { SystemEventService } from '@/services/systemEventService';
 import { UserService } from '@/services/userService';
-import { useAuth } from '@/contexts/AuthContext';
+import { useAuth } from '@/contexts/AuthContextProvider';
 import { TimePicker } from '@/components/ui/time-picker';
 
 interface CreateEventFormProps {

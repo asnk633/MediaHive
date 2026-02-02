@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { AuthUser } from '@/contexts/AuthContext';
+import { AuthUser } from '@/contexts/AuthContextProvider';
 import { Building2 } from 'lucide-react';
 import { StructureService } from '@/services/structureService';
 

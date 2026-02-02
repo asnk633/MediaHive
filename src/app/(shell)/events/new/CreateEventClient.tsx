@@ -5,7 +5,8 @@ import { useRouter } from 'next/navigation';
 import { CreateEventForm } from '@/components/library/organisms/CreateEventForm';
 import { Button } from '@/components/ui/button';
 import { ChevronLeft } from 'lucide-react';
-import { useAuth } from '@/contexts/AuthContext';
+import { useAuth } from '@/contexts/AuthContextProvider';
+import { nativeNavigate } from '@/lib/utils';
 
 export default function CreateEventClient() {
     const router = useRouter();
@@ -33,7 +34,7 @@ export default function CreateEventClient() {
 
                 {/* Form Container */}
                 <div className="bg-[#10111a] border border-white/5 rounded-2xl p-6 lg:p-8 shadow-xl backdrop-blur-sm">
-                    <CreateEventForm onSuccess={() => router.push('/events')} />
+                    <CreateEventForm onSuccess={() => nativeNavigate('/events', router, 'CreateEvent (Success)')} />
                 </div>
 
             </div>

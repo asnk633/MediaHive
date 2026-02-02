@@ -9,6 +9,7 @@ import { Button } from "@/components/ui/button";
 import { ArrowLeft, Activity, Database, Server, RefreshCw, FileText, HardDrive } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { apiClient } from "@/lib/apiClient";
+import { nativeNavigate } from "@/lib/utils";
 import { formatDistanceToNow } from "date-fns";
 import { cn } from "@/lib/utils";
 
@@ -59,7 +60,7 @@ export default function SystemHealthPage() {
                             <RefreshCw size={16} className={cn("mr-2", refreshing && "animate-spin")} />
                             Refresh
                         </Button>
-                        <Button variant="ghost" onClick={() => router.push('/admin')} className="gap-2 text-muted hover:text-foreground">
+                        <Button variant="ghost" onClick={() => nativeNavigate('/admin', router, 'SystemHealth (Back)')} className="gap-2 text-muted hover:text-foreground">
                             <ArrowLeft size={16} />
                             Back
                         </Button>

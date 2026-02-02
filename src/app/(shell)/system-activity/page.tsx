@@ -1,3 +1,4 @@
+'use client';
 
 import SystemActivityClient from './SystemActivityClient';
 

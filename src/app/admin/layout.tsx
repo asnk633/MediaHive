@@ -1,9 +1,11 @@
 'use client';
 
 
-import { useAuth } from '@/contexts/AuthContext';
+
+import { useAuth } from '@/contexts/AuthContextProvider';
 import { useRouter } from 'next/navigation';
 import { useEffect } from 'react';
+import { nativeNavigate } from '@/lib/utils';
 
 export default function AdminLayout({
     children,
@@ -20,7 +22,7 @@ export default function AdminLayout({
         // Redirect if not authenticated or not admin
         if (!user || user.role !== 'admin') {
             console.warn('Unauthorized access attempt to admin route');
-            router.push('/');
+            nativeNavigate("/", router, 'AdminLayout (Guard)');
         }
     }, [user, loading, router]);
 

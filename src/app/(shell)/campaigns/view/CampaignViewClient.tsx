@@ -1,8 +1,9 @@
 'use client';
 
-import React, { useEffect, useState, Suspense } from 'react';
-import { useSearchParams, useRouter } from 'next/navigation';
-import { useAuth } from '@/contexts/AuthContext';
+import React, { useEffect, useState } from 'react';
+import { useRouter } from 'next/navigation';
+import { nativeNavigate } from '@/lib/utils';
+import { useAuth } from '@/contexts/AuthContextProvider';
 import { CampaignService } from '@/services/campaignService';
 import { Campaign } from '@/types/campaign';
 import { Task } from '@/types/task';
@@ -11,15 +12,11 @@ import { format } from 'date-fns';
 import { toast } from 'sonner';
 
 export default function CampaignDashboardPage() {
-    return (
-        <Suspense fallback={<div className="p-8 text-center text-white">Loading...</div>}>
-            <CampaignDashboardContent />
-        </Suspense>
-    );
+    return <CampaignDashboardContent />;
 }
 
 function CampaignDashboardContent() {
-    const searchParams = useSearchParams();
+    const searchParams = typeof window !== 'undefined' ? new URLSearchParams(window.location.search) : new URLSearchParams();
     const id = searchParams.get('id');
     const router = useRouter();
     const { user } = useAuth();
@@ -35,7 +32,7 @@ function CampaignDashboardContent() {
                 const camp = await CampaignService.getCampaign(id as string);
                 if (!camp) {
                     toast.error("Campaign not found");
-                    router.push('/home');
+                    nativeNavigate('/home', router, 'CampaignView (NotFound)');
                     return;
                 }
                 setCampaign(camp);
@@ -86,7 +83,7 @@ function CampaignDashboardContent() {
 
                 <div className="flex items-center gap-3">
                     <button
-                        onClick={() => router.push(`/tasks/new?campaignId=${campaign.id}`)}
+                        onClick={() => nativeNavigate(`/tasks/new?campaignId=${campaign.id}`, router, 'CampaignView (New Task)')}
                         className="px-4 py-2 bg-blue-600 hover:bg-blue-500 text-white rounded-xl text-xs md:text-sm font-bold shadow-lg shadow-blue-900/20 transition-all hover:scale-105 flex items-center gap-2"
                     >
                         <Layers size={16} />
@@ -160,7 +157,7 @@ function CampaignDashboardContent() {
                 {tasks.length > 0 ? (
                     <div className="grid grid-cols-1 gap-3">
                         {tasks.map(task => (
-                            <div key={task.id} className="bg-white/5 border border-[#ffffff1a] rounded-xl p-4 hover:bg-white/10 transition-colors flex items-center justify-between group cursor-pointer" onClick={() => router.push(`/tasks/view?id=${task.id}`)}>
+                            <div key={task.id} className="bg-white/5 border border-[#ffffff1a] rounded-xl p-4 hover:bg-white/10 transition-colors flex items-center justify-between group cursor-pointer" onClick={() => nativeNavigate(`/tasks/view?id=${task.id}`, router, 'CampaignView (Task Click)')}>
                                 <div>
                                     <h3 className="text-white font-medium group-hover:text-blue-400 transition-colors">{task.title}</h3>
                                     <p className="text-sm text-gray-500 line-clamp-1">{task.description}</p>
@@ -184,7 +181,7 @@ function CampaignDashboardContent() {
                         <h3 className="text-white font-semibold text-lg">No tasks yet</h3>
                         <p className="text-sm mt-1">Start adding tasks to this campaign to track progress.</p>
                         <button
-                            onClick={() => router.push(`/tasks/new?campaignId=${campaign.id}`)}
+                            onClick={() => nativeNavigate(`/tasks/new?campaignId=${campaign.id}`, router, 'CampaignView (Empty New Task)')}
                             className="mt-4 px-6 py-2 bg-blue-600 hover:bg-blue-500 text-white rounded-xl text-sm font-semibold transition-colors"
                         >
                             Add First Task

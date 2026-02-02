@@ -1,7 +1,7 @@
 'use client';
 
 import React, { useEffect, useState } from 'react';
-import { useSearchParams, useRouter } from 'next/navigation';
+import { useRouter } from 'next/navigation';
 import { Button } from '@/components/ui/button';
 import { ArrowLeft, Layers } from 'lucide-react';
 import { apiClient } from '@/lib/apiClient';
@@ -10,7 +10,7 @@ import dynamic from 'next/dynamic';
 const StructurePolicyEditor = dynamic(() => import('@/components/admin/StructurePolicyEditor').then(mod => mod.StructurePolicyEditor), { ssr: false });
 
 export default function UnitPoliciesContent() {
-    const searchParams = useSearchParams();
+    const searchParams = typeof window !== 'undefined' ? new URLSearchParams(window.location.search) : new URLSearchParams();
     const id = searchParams.get('id');
     const router = useRouter();
     const [institutionId, setInstitutionId] = useState<string | undefined>(undefined);

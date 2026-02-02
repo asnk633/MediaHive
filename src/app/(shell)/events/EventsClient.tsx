@@ -1,7 +1,7 @@
 'use client';
 
 import React, { useState, useEffect } from 'react';
-import { useAuth } from '@/contexts/AuthContext';
+import { useAuth } from '@/contexts/AuthContextProvider';
 import { Event } from '@/types/event';
 import { EventService } from '@/services/events';
 import { CalendarView } from '@/components/events/CalendarView';
@@ -12,6 +12,7 @@ import { PageHeader } from '@/components/ui/layout/PageHeader';
 import { Button } from '@/components/ui/button';
 import { Plus, Calendar, List } from 'lucide-react';
 import { useRouter } from 'next/navigation';
+import { nativeNavigate } from '@/lib/utils';
 
 export default function EventsClient() {
     const router = useRouter();
@@ -66,7 +67,7 @@ export default function EventsClient() {
                             </button>
                         </div>
                         {canCreate && (
-                            <Button onClick={() => router.push('/events/new')}>
+                            <Button onClick={() => nativeNavigate('/events/new', router, 'Events (New)')}>
                                 <Plus size={16} />
                                 New Event
                             </Button>
@@ -104,7 +105,7 @@ export default function EventsClient() {
                     event={selectedEvent}
                     onClose={() => setSelectedEvent(null)}
                     onEdit={() => {
-                        router.push(`/events/edit?id=${selectedEvent.id}`);
+                        nativeNavigate(`/events/edit?id=${selectedEvent.id}`, router, 'Events (Edit)');
                         setSelectedEvent(null);
                     }}
                 />

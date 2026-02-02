@@ -1,8 +1,8 @@
-'use client';
+"use client";
 
-import React, { useState, useRef, useEffect, Suspense } from "react";
-import { useRouter, useSearchParams } from "next/navigation";
-import { useAuth } from "@/contexts/AuthContext";
+import React, { useState, useRef, useEffect } from "react";
+import { useRouter } from "next/navigation";
+import { useAuth } from "@/contexts/AuthContextProvider";
 import { PageLayout } from "@/components/ui/layout/PageLayout";
 import { PageHeader } from "@/components/ui/layout/PageHeader";
 import { Button } from "@/components/ui/button";
@@ -12,7 +12,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Calendar } from "@/components/ui/calendar";
 import { format } from "date-fns";
-import { cn } from "@/lib/utils";
+import { cn, nativeNavigate } from "@/lib/utils";
 import { Save, Loader2, Image as ImageIcon, X, Upload, Info } from "lucide-react";
 import { toast } from "sonner";
 import { FileService } from "@/services/fileService";
@@ -23,17 +23,13 @@ import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover
 import { CalendarIcon } from "lucide-react";
 
 export default function InventoryEditClient() {
-    return (
-        <Suspense fallback={<div className="p-8 text-center text-white">Loading...</div>}>
-            <EditInventoryContent />
-        </Suspense>
-    );
+    return <EditInventoryContent />;
 }
 
 function EditInventoryContent() {
     const { user } = useAuth();
     const router = useRouter();
-    const searchParams = useSearchParams();
+    const searchParams = typeof window !== 'undefined' ? new URLSearchParams(window.location.search) : new URLSearchParams();
     const id = searchParams.get('id');
     const [loading, setLoading] = useState(true);
     const [uploadingImage, setUploadingImage] = useState(false);
@@ -69,7 +65,7 @@ function EditInventoryContent() {
                 const item = await inventoryService.getById(id);
                 if (!item) {
                     toast.error("Item not found");
-                    router.push('/inventory');
+                    nativeNavigate('/inventory', router, 'InventoryEdit (NotFound)');
                     return;
                 }
 
@@ -135,8 +131,8 @@ function EditInventoryContent() {
             const result = await FileService.uploadFile(processedFile, metadata);
             if (result.success) {
                 const newImage = {
-                    url: result.previewLink || result.viewLink,
-                    fileId: result.driveFileId
+                    url: result.viewLink,
+                    fileId: result.fileId
                 };
 
                 setFormData(prev => {
@@ -211,7 +207,7 @@ function EditInventoryContent() {
             await inventoryService.update(id, payload, user);
 
             toast.success("Asset updated successfully");
-            router.push('/inventory');
+            nativeNavigate('/inventory', router, 'InventoryEdit (Success)');
         } catch (error) {
             console.error(error);
             toast.error("Failed to update asset");
@@ -254,7 +250,7 @@ function EditInventoryContent() {
                 description={`Updating details for ${formData.name || 'asset'}`}
             />
 
-            <div className="max-w-3xl mx-auto pb-20">
+            <div className="max-w-3xl mx-auto">
                 <form onSubmit={handleSubmit} className="space-y-8">
 
                     {/* Image Section */}
@@ -517,7 +513,7 @@ function EditInventoryContent() {
                         <Button
                             type="button"
                             variant="ghost"
-                            onClick={() => router.back()}
+                            onClick={() => nativeNavigate('/inventory', router, 'InventoryEdit (Back)')}
                             className="text-muted hover:text-foreground hover:bg-muted/10 rounded-xl"
                             disabled={loading}
                         >

@@ -8,10 +8,11 @@ import { InventoryDetailDialog } from './InventoryDetailDialog';
 import { InventoryFilters, SortOption } from './InventoryFilters';
 import { InventoryItem, InventoryApiResponse, INVENTORY_CATEGORIES, INVENTORY_GUIDE, InventoryIssue } from '@/types/inventory';
 import { apiClient } from '@/lib/apiClient';
-import { useAuth } from '@/contexts/AuthContext';
+import { useAuth } from '@/contexts/AuthContextProvider';
 import { toast } from 'sonner';
 import { Button } from '@/components/ui/button';
 import { Plus, Clock, ChevronDown, ChevronUp, Info, FileDown } from 'lucide-react';
+import { nativeNavigate } from '@/lib/utils';
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/components/ui/collapsible";
 import { InventoryRequestDialog } from './InventoryRequestDialog';
 import { IssueItemDialog } from './IssueItemDialog';
@@ -168,7 +169,7 @@ export default function InventoryView() {
     }, [activeIssues]);
 
     const handleEdit = useCallback((item: InventoryItem) => {
-        router.push(`/inventory/edit/${item.id}`);
+        nativeNavigate(`/inventory/edit?id=${item.id}`, router, 'InventoryView (Edit)');
     }, [router]);
 
     return (
@@ -180,7 +181,7 @@ export default function InventoryView() {
                     <div className="flex items-center gap-3">
                         <Button
                             variant="ghost"
-                            onClick={() => router.push('/inventory/requests')}
+                            onClick={() => nativeNavigate('/inventory/requests', router, 'InventoryView (Requests)')}
                             className="text-slate-300 hover:text-white hover:bg-white/10"
                         >
                             <Clock className="w-4 h-4 mr-2" />
@@ -211,7 +212,7 @@ export default function InventoryView() {
                                     Export
                                 </Button>
                                 <Button
-                                    onClick={() => router.push('/inventory/add')}
+                                    onClick={() => nativeNavigate('/inventory/add', router, 'InventoryView (Add Asset)')}
                                     className="bg-blue-600 hover:bg-blue-500 text-white shadow-lg shadow-blue-900/20"
                                 >
                                     <Plus size={18} className="mr-2" /> Add Asset

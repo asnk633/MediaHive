@@ -4,7 +4,7 @@ import React, { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { InventoryAsset, InventoryAssetStatus, InventoryCondition } from "@/types/inventory";
 import { inventoryService } from "@/services/inventoryService";
-import { useAuth } from "@/contexts/AuthContext";
+import { useAuth } from "@/contexts/AuthContextProvider";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -13,9 +13,9 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { Calendar } from "@/components/ui/calendar";
 import { format } from "date-fns";
-import { cn } from "@/lib/utils";
+import { cn, nativeNavigate } from "@/lib/utils";
 import { AlertTriangle, Save, ArrowLeft, Loader2, Image as ImageIcon, X, Upload, Calendar as CalendarIcon, AlertCircle } from "lucide-react";
-import Link from "next/link";
+import AppLink from "@/components/AppLink";
 import { toast } from "sonner";
 import { FileService } from "@/services/fileService";
 import { ImageCropper } from "@/components/ui/ImageCropper";
@@ -153,8 +153,8 @@ export default function InventoryForm({ initialData, mode }: InventoryFormProps)
             const result = await FileService.uploadFile(processedFile, metadata);
             if (result.success) {
                 const newImage = {
-                    url: result.previewLink || result.viewLink,
-                    fileId: result.driveFileId
+                    url: result.viewLink,
+                    fileId: result.fileId
                 };
 
                 setFormData(prev => {
@@ -226,11 +226,11 @@ export default function InventoryForm({ initialData, mode }: InventoryFormProps)
             if (mode === 'create') {
                 await inventoryService.create(basePayload as any, user);
                 toast.success("Item added to inventory.");
-                router.push('/inventory');
+                nativeNavigate('/inventory', router, 'InventoryForm (Create Success)');
             } else if (mode === 'edit' && initialData) {
                 await inventoryService.update(initialData.id, basePayload as any, user);
                 toast.success("Item updated successfully.");
-                router.push(`/inventory/${initialData.id}`);
+                nativeNavigate(`/inventory/${initialData.id}`, router, 'InventoryForm (Edit Success)');
             }
         } catch (error) {
             console.error(error);
@@ -253,9 +253,9 @@ export default function InventoryForm({ initialData, mode }: InventoryFormProps)
                 Legacy asset creation is deprecated. Please use the simplified Inventory system for consumables.
             </p>
             <div className="flex justify-center gap-4">
-                <Link href="/inventory">
+                <AppLink href="/inventory">
                     <Button variant="default">Go to Inventory</Button>
-                </Link>
+                </AppLink>
             </div>
         </div>
     );

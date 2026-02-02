@@ -26,16 +26,23 @@ const slides = [
     },
 ];
 
-import { useSearchParams } from 'next/navigation';
+
 
 export default function WelcomeGate({ children }: { children: React.ReactNode }) {
     // Stages: 'loading' -> 'splash' -> 'onboarding' -> 'content'
     const [stage, setStage] = useState<'loading' | 'splash' | 'onboarding' | 'content'>('loading');
     const [index, setIndex] = useState(0);
-    const searchParams = useSearchParams();
+    const searchParams = typeof window !== 'undefined' ? new URLSearchParams(window.location.search) : new URLSearchParams();
 
     useEffect(() => {
         if (typeof window === 'undefined') return;
+
+        // Force skip on Native platforms (Android/iOS) to ensure Dashboard renders immediately
+        // The defensive stub from layout.tsx ensures window.Capacitor is safe to check here
+        if ((window as any).Capacitor?.isNative) {
+            setStage('content');
+            return;
+        }
 
         const hasSeen = localStorage.getItem('mediahive_welcome_seen');
         // searchParams hook handles window.location.search access safely

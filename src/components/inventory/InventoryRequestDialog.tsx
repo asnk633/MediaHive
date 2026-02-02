@@ -8,7 +8,7 @@ import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { InventoryItem } from "@/types/inventory";
 import { inventoryRequestService } from "@/services/inventoryRequestService";
-import { useAuth } from "@/contexts/AuthContext";
+import { useAuth } from "@/contexts/AuthContextProvider";
 import { toast } from "sonner";
 import { Loader2 } from "lucide-react";
 

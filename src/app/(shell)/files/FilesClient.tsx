@@ -1,7 +1,7 @@
 'use client';
 
 import React, { useEffect, useState } from 'react';
-import { useAuth } from '@/contexts/AuthContext';
+import { useAuth } from '@/contexts/AuthContextProvider';
 import { FileService } from '@/services/fileService';
 import { DriveFile } from '@/types/file';
 import { FileCard } from '@/components/files/FileCard';

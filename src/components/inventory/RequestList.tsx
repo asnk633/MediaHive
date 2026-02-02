@@ -3,7 +3,7 @@
 import React, { useState, useEffect } from "react";
 import { InventoryRequest } from "@/types/inventory";
 import { inventoryRequestService } from "@/services/inventoryRequestService";
-import { useAuth } from "@/contexts/AuthContext";
+import { useAuth } from "@/contexts/AuthContextProvider";
 import { toast } from "sonner";
 import { format } from "date-fns";
 import { Check, X, Clock, Loader2, Package } from "lucide-react";

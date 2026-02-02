@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { useAuth } from '@/contexts/AuthContext';
+import { useAuth } from '@/contexts/AuthContextProvider';
 import { DeliverableService } from '@/services/deliverableService';
 import { X, UploadCloud, File as FileIcon, Loader2, AlertCircle } from 'lucide-react';
 import { useDropzone } from 'react-dropzone';

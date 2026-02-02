@@ -3,7 +3,7 @@
 import React from 'react';
 import InventoryView from '@/components/inventory/InventoryView';
 import { PageLayout } from '@/components/ui/layout/PageLayout';
-import { useAuth } from '@/contexts/AuthContext';
+import { useAuth } from '@/contexts/AuthContextProvider';
 import { InventoryStatsWidget } from '@/components/home/widgets/InventoryStatsWidget';
 import { SectionHeader } from '@/components/ui/SectionHeader';
 import { useState, useEffect } from 'react';

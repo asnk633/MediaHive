@@ -1,159 +1,168 @@
 import React, { useState } from 'react';
 import { Task } from '@/types/task';
 import { TaskItem } from '@/components/home/TaskItem';
-import { format, formatDistanceToNow } from 'date-fns';
-import { AlertCircle, Clock } from 'lucide-react';
+import { formatDistanceToNow } from 'date-fns';
+import { AlertCircle, Clock, CheckSquare, ArrowUpRight } from 'lucide-react';
 import { useRouter } from 'next/navigation';
+import { nativeNavigate } from '@/lib/utils';
+import { HomeTaskRow } from '@/components/home/HomeTaskRow';
+import { format, isSameDay, differenceInDays } from 'date-fns';
+import { useItemNavigation } from '@/hooks/useItemNavigation';
+import { TaskService } from '@/services/tasks'; // For completion action
 
 interface MyFocusWidgetProps {
     tasks: Task[];
     userId: string;
+    error?: string | null;
+    onRetry?: () => void;
+    todayOnly?: boolean;
+    maxItems?: number;
 }
 
-export const MyFocusWidget = ({ tasks, userId }: MyFocusWidgetProps) => {
+export const MyFocusWidget = ({ tasks, userId, error, onRetry, todayOnly, maxItems }: MyFocusWidgetProps) => {
     const router = useRouter();
     const [isExpanded, setIsExpanded] = useState(false);
     const now = new Date();
     const next48h = new Date(now.getTime() + 48 * 60 * 60 * 1000);
 
-    // Filter: Urgent / Due Soon
-    const urgentTasks = tasks.filter(task => { // Restore filter start
-        if (task.status === 'done') return false;
+    // 29.2.4 — SORTING & FILTERING
+    const filteredTasks = tasks.filter(task => {
+        if (task.status === 'done' && !isSameDay(task.completedAt ? (task.completedAt as any).seconds ? new Date((task.completedAt as any).seconds * 1000) : new Date(task.completedAt) : now, now)) {
+            return false; // Only show tasks completed TODAY if done
+        }
 
-        // Must be assigned to me
         const isAssigned = Array.isArray(task.assignedTo) &&
             task.assignedTo.some(a => (typeof a === 'string' ? a === userId : a.uid === userId));
         if (!isAssigned) return false;
 
-        // Check Priority
-        const isUrgentPriority = task.priority === 'high' || task.priority === 'urgent';
+        if (todayOnly) {
+            if (!task.dueDate) return false;
+            const dueDate = (task.dueDate as any).seconds ? new Date((task.dueDate as any).seconds * 1000) : new Date(task.dueDate);
+            const isToday = isSameDay(dueDate, now);
+            const isOverdue = dueDate < now;
 
-        // Check Due Date
-        let isDueSoon = false;
-        if (task.dueDate) {
-            const dateVal = (task.dueDate as any).seconds ? new Date((task.dueDate as any).seconds * 1000) : new Date(task.dueDate);
-            isDueSoon = dateVal <= next48h;
+            // Suppress tomorrow if today has items
+            if (!isToday && !isOverdue) return false;
+
+            return true;
         }
 
-        return isUrgentPriority || isDueSoon;
-    }); // Removed slice(0, 3) to handle expansion manually
+        return true;
+    });
 
-    const displayUrgent = isExpanded ? urgentTasks : urgentTasks.slice(0, 2);
-    const hiddenCount = urgentTasks.length - displayUrgent.length;
+    const sortedTasks = [...filteredTasks].sort((a, b) => {
+        const getDue = (t: Task) => t.dueDate ? (t.dueDate as any).seconds ? (t.dueDate as any).seconds * 1000 : new Date(t.dueDate).getTime() : 0;
+        const aDue = getDue(a);
+        const bDue = getDue(b);
+        const aOverdue = aDue < now.getTime() && a.status !== 'done';
+        const bOverdue = bDue < now.getTime() && b.status !== 'done';
 
-    // Filter: My Tasks (Assigned to me, NOT in urgent list to avoid duplication if desired, 
-    // but typically "My Tasks" lists everything. 
-    // User constraints said "My Focus" has a "My Tasks" subsection.
-    // Let's exclude urgent ones from the "My Tasks" list specifically to avoid redundancy in the same widget view).
+        if (aOverdue && !bOverdue) return -1;
+        if (!aOverdue && bOverdue) return 1;
 
-    const urgentIds = new Set(urgentTasks.map(t => t.id));
+        if (a.status === 'in_progress' && b.status !== 'in_progress' && !aOverdue && !bOverdue) return -1;
+        if (a.status !== 'in_progress' && b.status === 'in_progress' && !aOverdue && !bOverdue) return 1;
 
-    const myTasks = tasks.filter(task => { // Restore filter start
-        if (task.status === 'done') return false;
-        if (urgentIds.has(task.id)) return false;
+        return aDue - bDue;
+    });
 
-        const isAssigned = Array.isArray(task.assignedTo) &&
-            task.assignedTo.some(a => (typeof a === 'string' ? a === userId : a.uid === userId));
+    const displayTasks = sortedTasks.slice(0, maxItems || sortedTasks.length);
 
-        return isAssigned;
-    }).slice(0, 5);
+    // Phase 36-B: Keyboard Logic for Home
+    const { activeId } = useItemNavigation({
+        items: displayTasks,
+        getItemId: (t) => t.id,
+        onSelect: (t) => nativeNavigate(`/tasks?id=${t.id}&returnTo=home`, router, 'MyFocus:Row'),
+        onComplete: async (t) => {
+            // Quick complete from Home
+            await TaskService.updateTask(t.id, { status: 'done' });
+        }
+    });
 
-    const formatTaskDate = (date: any): string => {
+    const getTimeContext = (date: any): string => {
         if (!date) return "";
         try {
             const dateObj = date.seconds ? new Date(date.seconds * 1000) : new Date(date);
-            const relative = formatDistanceToNow(dateObj, { addSuffix: true });
-            return relative.replace('less than a minute', 'now');
+            const now = new Date();
+
+            if (isSameDay(dateObj, now)) {
+                return `Due today at ${format(dateObj, 'h:mm a')}`;
+            }
+
+            if (dateObj < now) {
+                const days = differenceInDays(now, dateObj);
+                return `Overdue by ${days === 0 ? 'today' : `${days} ${days === 1 ? 'day' : 'days'}`}`;
+            }
+
+            const tomorrow = new Date();
+            tomorrow.setDate(tomorrow.getDate() + 1);
+            if (isSameDay(dateObj, tomorrow)) {
+                return `Scheduled for tomorrow`;
+            }
+
+            return `Due ${format(dateObj, 'MMM d')}`;
         } catch (e) {
             return "";
         }
     };
 
-    if (urgentTasks.length === 0 && myTasks.length === 0) {
+
+
+    if (error) {
         return (
-            <div className="p-6 rounded-2xl bg-glass backdrop-blur-md shadow-sm border-none flex flex-col items-center justify-center text-center space-y-2 animate-in fade-in duration-700">
-                <div className="w-12 h-12 rounded-full bg-surface/50 flex items-center justify-center mb-1">
-                    <div className="w-2 h-2 rounded-full bg-emerald-500/50 animate-pulse" />
+            <div className="p-8 rounded-lg border border-red-500/20 bg-red-500/5 flex flex-col items-center justify-center text-center space-y-3">
+                <div className="w-10 h-10 rounded-full bg-red-500/10 flex items-center justify-center text-red-400 border border-red-500/20">
+                    <AlertCircle size={18} />
                 </div>
-                <h3 className="text-sm font-bold text-foreground">All caught up</h3>
-                <p className="text-xs text-muted">Enjoy your day.</p>
+                <div>
+                    <h3 className="text-sm font-semibold text-white">Focus Unavailable</h3>
+                    <p className="text-xs text-text-muted mt-1 mb-3">
+                        We couldn't load your focus items.
+                    </p>
+                    <button
+                        onClick={onRetry}
+                        className="px-3 py-1.5 text-xs font-medium bg-red-500/10 hover:bg-red-500/20 text-red-300 rounded border border-red-500/20 transition-colors"
+                    >
+                        Retry
+                    </button>
+                </div>
+            </div>
+        );
+    }
+
+    if (displayTasks.length === 0) {
+        return (
+            <div className="p-12 rounded-lg border border-border-subtle bg-canvas/50 flex flex-col items-center justify-center text-center space-y-4">
+                <div className="w-12 h-12 rounded-full border-2 border-border-subtle flex items-center justify-center text-text-secondary">
+                    <CheckSquare size={20} />
+                </div>
+                <div>
+                    <h3 className="text-base font-semibold text-white">No tasks scheduled for now</h3>
+                    <p className="text-sm text-text-secondary mt-1">
+                        Today's schedule is clear.
+                    </p>
+                </div>
             </div>
         );
     }
 
     return (
-        <div className="space-y-6">
-            {/* SUBSECTION 2.1: Due Soon / Urgent */}
-            {urgentTasks.length > 0 && (
-                <div className="space-y-3">
-                    <div className="flex items-center gap-2 mb-2">
-                        <div className="h-1.5 w-1.5 rounded-full bg-red-500 animate-pulse" />
-                        <h3 className="text-sm font-bold text-red-400 uppercase tracking-widest">
-                            Due Soon / Urgent
-                        </h3>
-                    </div>
-
-                    <div className="space-y-3">
-                        {displayUrgent.map(task => (
-                            <div key={task.id} className="group relative flex items-center justify-between p-4 bg-gradient-to-r from-red-500/10 to-transparent rounded-xl transition-all duration-300 hover:shadow-lg shadow-sm">
-                                <div className="flex items-center gap-4">
-                                    <div className="w-10 h-10 rounded-xl bg-red-500/20 flex items-center justify-center text-red-400 border border-red-500/30">
-                                        <AlertCircle size={20} />
-                                    </div>
-                                    <div>
-                                        <p className="text-sm font-bold text-white group-hover:text-red-100 transition-colors">
-                                            {task.title}
-                                        </p>
-                                        <p className="text-xs text-red-300/70 mt-0.5 flex items-center gap-1">
-                                            <Clock size={10} />
-                                            {formatTaskDate(task.dueDate)}
-                                            <span className="w-1 h-1 rounded-full bg-red-500/50 mx-1" />
-                                            {task.priority?.toUpperCase()}
-                                        </p>
-                                    </div>
-                                </div>
-                            </div>
-                        ))}
-
-                        {(hiddenCount > 0 || isExpanded && urgentTasks.length > 2) && (
-                            <button
-                                onClick={() => setIsExpanded(!isExpanded)}
-                                className="w-full py-2 text-xs font-medium text-red-400 hover:text-red-300 transition-colors flex items-center justify-center gap-2 border-t border-red-500/10 mt-2"
-                            >
-                                {isExpanded ? 'Show Less' : `+${hiddenCount} more urgent tasks`}
-                            </button>
-                        )}
-                    </div>
-                </div>
-            )}
-
-            {/* SUBSECTION 2.2: My Tasks */}
-            {myTasks.length > 0 && (
-                <div className="space-y-3">
-                    <div className="flex justify-between items-end mb-2">
-                        <h3 className="text-sm font-bold text-muted uppercase tracking-widest ml-1">
-                            My Tasks
-                        </h3>
-                        <button
-                            onClick={() => router.push('/tasks')}
-                            className="text-xs font-semibold text-primary hover:text-primary/80 transition-colors"
-                        >
-                            See All
-                        </button>
-                    </div>
-
-                    <div className="space-y-3">
-                        {myTasks.map(task => (
-                            <TaskItem
-                                key={task.id}
-                                title={task.title}
-                                date={formatTaskDate(task.dueDate)}
-                                isCompleted={false}
-                            />
-                        ))}
-                    </div>
-                </div>
-            )}
+        <div className="overflow-hidden glass-card rounded-2xl border border-white/5">
+            <div className="divide-y divide-white/5">
+                {displayTasks.map((task, index) => (
+                    <HomeTaskRow
+                        key={task.id}
+                        task={task}
+                        timeContext={getTimeContext(task.dueDate)}
+                        isFirst={index === 0}
+                        isActive={activeId === task.id}
+                        onClick={() => nativeNavigate(`/tasks?id=${task.id}&returnTo=home`, router, 'MyFocus:Row')}
+                        onComplete={async () => {
+                            await TaskService.updateTask(task.id, { status: 'done' });
+                        }}
+                    />
+                ))}
+            </div>
         </div>
     );
-};
+}

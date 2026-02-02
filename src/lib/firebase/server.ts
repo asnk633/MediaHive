@@ -13,35 +13,53 @@ try {
     if (admin.apps.length > 0) {
         adminApp = admin.apps[0]!;
     } else {
-        const projectId = process.env.FIREBASE_ADMIN_PROJECT_ID || process.env.FIREBASE_PROJECT_ID || process.env.NEXT_PUBLIC_FIREBASE_PROJECT_ID;
-        const clientEmail = process.env.FIREBASE_ADMIN_CLIENT_EMAIL || process.env.FIREBASE_CLIENT_EMAIL || process.env.GOOGLE_SERVICE_ACCOUNT_EMAIL;
-        // Handle private key replacement for Vercel/System env vars
-        const privateKey = (process.env.FIREBASE_ADMIN_PRIVATE_KEY || process.env.FIREBASE_PRIVATE_KEY || process.env.GOOGLE_PRIVATE_KEY || '').replace(/\\n/g, '\n');
+        // Direct env check is safer than importing config here to avoid circular dep or alias issues in server-only context
+        const IS_EMULATOR = process.env.NEXT_PUBLIC_DATA_MODE === 'emulator';
 
-        if (projectId && clientEmail && privateKey) {
-            console.log('[FIREBASE ADMIN] Initializing with cert for:', projectId);
+        // EMULATOR CONFIGURATION
+        if (IS_EMULATOR) {
+            console.log('[FIREBASE ADMIN] 🔧 Using FIRESTORE EMULATOR (localhost:8080)');
+            process.env.FIRESTORE_EMULATOR_HOST = 'localhost:8080';
+            process.env.FIREBASE_AUTH_EMULATOR_HOST = 'localhost:9099';
+            process.env.FIREBASE_STORAGE_EMULATOR_HOST = 'localhost:9199';
 
-            // Explicit guard: Check for mismatch
-            if (projectId !== 'thaiba-media-prod') {
-                console.warn(`[FIREBASE ADMIN] WARNING: Project ID mismatch! Expected 'thaiba-media-prod', got '${projectId}'`);
-            }
-
+            // In emulator mode, we can initialize with dummy credentials
             adminApp = admin.initializeApp({
-                credential: admin.credential.cert({
-                    projectId,
-                    clientEmail,
-                    privateKey,
-                }),
-                projectId: projectId, // Explicitly set projectId
+                projectId: 'thaiba-media-staging', // Use staging ID for emulator
             });
-        } else {
-            // Log critical failure elements (redacted)
-            console.error('[FIREBASE ADMIN] CRITICAL: Missing Env Vars', {
-                hasProjectId: !!projectId,
-                hasClientEmail: !!clientEmail,
-                hasPrivateKey: !!privateKey
-            });
-            console.warn('Firebase Admin Env Vars Missing. App will crash if DB accessed.');
+        }
+        // PRODUCTION CONFIGURATION
+        else {
+            const projectId = process.env.FIREBASE_ADMIN_PROJECT_ID || process.env.FIREBASE_PROJECT_ID || process.env.NEXT_PUBLIC_FIREBASE_PROJECT_ID;
+            const clientEmail = process.env.FIREBASE_ADMIN_CLIENT_EMAIL || process.env.FIREBASE_CLIENT_EMAIL || process.env.GOOGLE_SERVICE_ACCOUNT_EMAIL;
+            // Handle private key replacement for Vercel/System env vars
+            const privateKey = (process.env.FIREBASE_ADMIN_PRIVATE_KEY || process.env.FIREBASE_PRIVATE_KEY || process.env.GOOGLE_PRIVATE_KEY || '').replace(/\\n/g, '\n');
+
+            if (projectId && clientEmail && privateKey) {
+                console.log('[FIREBASE ADMIN] Initializing with cert for:', projectId);
+
+                // Explicit guard: Check for mismatch
+                if (projectId !== 'thaiba-media-prod') {
+                    console.warn(`[FIREBASE ADMIN] WARNING: Project ID mismatch! Expected 'thaiba-media-prod', got '${projectId}'`);
+                }
+
+                adminApp = admin.initializeApp({
+                    credential: admin.credential.cert({
+                        projectId,
+                        clientEmail,
+                        privateKey,
+                    }),
+                    projectId: projectId, // Explicitly set projectId
+                });
+            } else {
+                // Log critical failure elements (redacted)
+                console.error('[FIREBASE ADMIN] CRITICAL: Missing Env Vars', {
+                    hasProjectId: !!projectId,
+                    hasClientEmail: !!clientEmail,
+                    hasPrivateKey: !!privateKey
+                });
+                console.warn('Firebase Admin Env Vars Missing. App will crash if DB accessed.');
+            }
         }
     }
 } catch (error) {

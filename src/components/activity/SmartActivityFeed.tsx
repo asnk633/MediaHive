@@ -3,7 +3,7 @@
 import React, { useState, useEffect } from 'react';
 import { ActivityService } from '@/services/activityService';
 import { SystemActivity } from '@/types/activity';
-import { useAuth } from '@/contexts/AuthContext';
+import { useAuth } from '@/contexts/AuthContextProvider';
 import { formatDistanceToNow, isToday, isYesterday, format } from 'date-fns';
 import {
     Activity,
@@ -20,6 +20,7 @@ import {
 } from 'lucide-react';
 import { Loader2 } from 'lucide-react';
 import { useRouter } from 'next/navigation';
+import { nativeNavigate } from '@/lib/utils';
 
 type ActivityFilter = 'all' | 'my_activity' | 'mentions';
 
@@ -105,8 +106,8 @@ export const SmartActivityFeed: React.FC = () => {
     };
 
     const handleItemClick = (act: SystemActivity) => {
-        if (act.entityType === 'task' && act.entityId) router.push(`/tasks/view?id=${act.entityId}`);
-        if (act.entityType === 'file' && act.entityId) router.push(`/downloads`); // Generic redirect as file view URL varies
+        if (act.entityType === 'task' && act.entityId) nativeNavigate(`/tasks/view?id=${act.entityId}`, router, 'SmartActivity (Task)');
+        if (act.entityType === 'file' && act.entityId) nativeNavigate(`/downloads`, router, 'SmartActivity (Downloads)'); // Generic redirect as file view URL varies
         // Add more handlers as needed
     };
 

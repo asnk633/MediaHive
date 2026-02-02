@@ -3,7 +3,7 @@ import { getFirebaseAuth } from '@/firebase/client';
 import { apiClient } from '@/lib/apiClient';
 import { DeviceRequest, DeviceLog } from '@/types/deviceRequest';
 import { InventoryAsset, InventoryCondition } from '@/types/inventory';
-import { AuthUser } from '@/contexts/AuthContext';
+import { AuthUser } from '@/contexts/AuthContextProvider';
 
 const REQUESTS_COLLECTION = 'device_requests';
 const LOGS_COLLECTION = 'device_logs';

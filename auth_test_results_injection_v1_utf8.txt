@@ -1,0 +1,15 @@
+﻿
+Running 2 tests using 1 worker
+
+[BROWSER][log] [NAV] Native hard-nav to: /login/
+  Γ£ô  1 [chromium] ΓÇ║ e2e\playwright\auth-invariants.spec.ts:25:9 ΓÇ║ Auth Invariants ΓÇ║ Unauthenticated user visiting /home redirects to /login (866ms)
+[BROWSER][log] [NAV] Native hard-nav to: /login/
+[BROWSER][warning] [AUTH][TEST-BYPASS] Active: Injecting test-only authenticated session.
+[BROWSER][warning] [AUTH][TEST-BYPASS] Active: Injecting test-only authenticated session.
+[BROWSER][log] [NAV] Native hard-nav to: /home/
+[BROWSER][warning] [AUTH][TEST-BYPASS] Active: Injecting test-only authenticated session.
+[BROWSER][log] [NAV] Native hard-nav to: /home/
+[BROWSER][log] [NAV] Native hard-nav to: /login/
+  Γ£ô  2 [chromium] ΓÇ║ e2e\playwright\auth-invariants.spec.ts:33:9 ΓÇ║ Auth Invariants ΓÇ║ Full Auth Cycle: Login (Injection) -> Redirect -> Logout -> Persistence (1.2s)
+
+  2 passed (3.1s)

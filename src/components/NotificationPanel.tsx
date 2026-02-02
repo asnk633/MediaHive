@@ -3,11 +3,12 @@ import { Layers } from 'lucide-react';
 import { NotificationService } from '@/services/notificationService';
 import { AppNotification } from '@/types/notification';
 import { NotificationItem } from '@/components/notifications/NotificationItem';
-import { useAuth } from '@/contexts/AuthContext';
+import { useAuth } from '@/contexts/AuthContextProvider';
 import { useRouter } from 'next/navigation';
 import { groupNotifications, GroupedNotification } from '@/lib/notification-grouping';
 import { formatDistanceToNow } from 'date-fns';
 import { apiClient } from '@/lib/apiClient';
+import { nativeNavigate } from '@/lib/utils';
 
 export const NotificationPanel = () => {
     const { user } = useAuth();
@@ -20,7 +21,7 @@ export const NotificationPanel = () => {
 
         const fetchNotifications = async () => {
             try {
-                const data = await NotificationService.getUserNotifications(100); // Fetch more for panel
+                const data = await NotificationService.getUserNotifications({ limit: 100 }); // Fetch more for panel
                 setNotifications(data);
             } catch (e) {
                 console.error(e);
@@ -60,11 +61,11 @@ export const NotificationPanel = () => {
                 if (url.includes('/tasks/view/') && !url.includes('?id=')) {
                     url = url.replace('/tasks/view/', '/tasks/view?id=');
                 }
-                router.push(url);
+                nativeNavigate(url, router, 'NotificationPanel (Group Click)');
             } else if (target.entityType === 'task') {
-                router.push(`/tasks/view?id=${target.entityId}`);
+                nativeNavigate(`/tasks/view?id=${target.entityId}`, router, 'NotificationPanel (Group Task)');
             } else if (target.entityType === 'event') {
-                router.push('/events');
+                nativeNavigate('/events', router, 'NotificationPanel (Group Event)');
             }
 
         } else {
@@ -87,7 +88,7 @@ export const NotificationPanel = () => {
                 if (url.includes('/tasks/view/') && !url.includes('?id=')) {
                     url = url.replace('/tasks/view/', '/tasks/view?id=');
                 }
-                router.push(url);
+                nativeNavigate(url, router, 'NotificationPanel (Single Click)');
             }
         }
     };

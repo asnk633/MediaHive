@@ -14,9 +14,9 @@ import { Search, Loader2, User as UserIcon, Building, Users, ChevronLeft, AlertT
 import { UserDialog } from './UserDialog';
 import { toast } from 'sonner';
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import Link from 'next/link';
+import AppLink from '@/components/AppLink';
 import { createInvite, getInstitutionInvites, Invite } from '@/services/inviteService';
-import { useAuth } from '@/contexts/AuthContext';
+import { useAuth } from '@/contexts/AuthContextProvider';
 import { apiClient } from '@/lib/apiClient';
 
 export default function UsersPage() {
@@ -146,10 +146,10 @@ export default function UsersPage() {
     return (
         <PageLayout mode="plain">
             <div className="mb-2">
-                <Link href="/settings" className="inline-flex items-center text-sm text-slate-400 hover:text-white transition-colors">
+                <AppLink href="/settings" className="inline-flex items-center text-sm text-slate-400 hover:text-white transition-colors">
                     <ChevronLeft className="w-4 h-4 mr-1" />
                     Back to Settings
-                </Link>
+                </AppLink>
             </div>
 
             <PageHeader

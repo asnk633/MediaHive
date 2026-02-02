@@ -1,7 +1,6 @@
 'use client';
-import { useEffect } from 'react';
-import { useRouter } from 'next/navigation';
-import { useAuth } from '@/contexts/AuthContext';
+import { useAuth } from '@/contexts/AuthContextProvider';
+import LoginClient from './auth/LoginClient';
 import { AppLoader } from './ui/AppLoader';
 
 interface ProtectedRouteProps {
@@ -11,13 +10,6 @@ interface ProtectedRouteProps {
 
 export default function ProtectedRoute({ children, requireAdmin = false }: ProtectedRouteProps) {
     const { user, loading } = useAuth();
-    const router = useRouter();
-
-    useEffect(() => {
-        if (!loading && !user) {
-            router.replace('/login');
-        }
-    }, [user, loading, router]);
 
     if (loading) {
         return (
@@ -27,11 +19,16 @@ export default function ProtectedRoute({ children, requireAdmin = false }: Prote
         );
     }
 
-    // If not logged in, show nothing (will redirect)
     if (!user) {
+        if (typeof window !== 'undefined') {
+            const currentPath = window.location.pathname;
+            if (currentPath !== '/login' && currentPath !== '/login/') {
+                console.log('[ProtectedRoute] Unauthenticated - redirecting to /login');
+                window.location.href = '/login/';
+            }
+        }
         return null;
     }
 
-    // User is authenticated, show the protected content
     return <>{children}</>;
 }

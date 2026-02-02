@@ -1,15 +1,15 @@
 "use client";
 import React from 'react';
-import Link from "next/link";
-import { usePathname, useSearchParams } from "next/navigation";
+import AppLink from "@/components/AppLink";
+import { usePathname } from "next/navigation";
 import { Home, CheckSquare, Calendar, User, Download, BarChart3, Package } from "lucide-react";
 import { motion } from "framer-motion";
-import { useAuth } from '@/contexts/AuthContext';
+import { useAuth } from '@/contexts/AuthContextProvider';
 import FAB from "@/client/components/FAB";
 
 export default function BottomNavigation() {
   const pathname = usePathname();
-  const searchParams = useSearchParams();
+
   const isActive = (href: string) => pathname === href || pathname?.startsWith(href + "/");
   const navRef = React.useRef<HTMLElement>(null);
   const [width, setWidth] = React.useState(0);
@@ -25,7 +25,7 @@ export default function BottomNavigation() {
   const isOnAllowedPage = allowedPages.some(page =>
     pathname === page || pathname?.startsWith(page + '/')
   );
-  const hasModalParam = searchParams.has('id') || searchParams.has('action');
+  const hasModalParam = typeof window !== 'undefined' && (window.location.search.includes('id=') || window.location.search.includes('action='));
   const showFAB = isOnAllowedPage && !hasModalParam;
 
   const { user } = useAuth(); // Helper to access auth context
@@ -48,84 +48,62 @@ export default function BottomNavigation() {
   return (
     <>
       <div
-        className="fixed left-1/2 -translate-x-1/2 z-30"
+        className="fixed left-1/2 -translate-x-1/2 z-30 pointer-events-none"
         style={{
-          bottom: 'calc(1.5rem + var(--safe-bottom, 0px))',
-          width: 'min(30rem, calc(100vw - 2rem))', // Responsive width (max 30rem, but fits mobile)
-          height: '5rem', // h-20
+          bottom: 'calc(1.5rem + var(--safe-bottom))',
+          width: 'min(36rem, calc(100vw - 2rem))', // slightly wider for desktop/tablet feel
+          height: '4.5rem', // slightly shorter/tighter
+          transform: 'translateX(-50%) translateY(calc(-1 * var(--keyboard-offset, 0px)))'
         }}
       >
         {/* FAB - Context-Aware Visibility */}
-        {showFAB && <FAB />}
+        <div className="pointer-events-auto">
+          {showFAB && <FAB />}
+        </div>
 
         <motion.nav
           ref={navRef}
-          initial={{ y: 100, opacity: 0 }}
-          animate={{
-            y: 0,
-            opacity: 1,
-            boxShadow: [
-              "0 15px 35px -5px rgba(91, 66, 243, 0.25), 0 5px 15px rgba(0, 221, 235, 0.15)",
-              "0 15px 45px -5px rgba(91, 66, 243, 0.35), 0 10px 25px rgba(0, 221, 235, 0.25)",
-              "0 15px 35px -5px rgba(91, 66, 243, 0.25), 0 5px 15px rgba(0, 221, 235, 0.15)"
-            ]
-          }}
-          transition={{
-            y: { duration: 0.5, ease: "easeOut" },
-            opacity: { duration: 0.5 },
-            boxShadow: {
-              duration: 4,
-              repeat: Infinity,
-              ease: "easeInOut"
-            }
-          }}
-          className="w-full h-full bg-glass backdrop-blur-3xl border-t border-soft rounded-[40px] px-2 shadow-[0_20px_40px_-10px_rgba(0,0,0,0.1),inset_0_1px_0_0_rgba(255,255,255,0.3)]"
+          initial={{ y: 50, opacity: 0 }}
+          animate={{ y: 0, opacity: 1 }}
+          className="w-full h-full bg-[#18181B]/95 backdrop-blur-xl border border-[#242427] rounded-3xl px-1 shadow-strong dock-glow pointer-events-auto overflow-hidden relative"
           style={{
             display: 'grid',
-            gridTemplateColumns: 'repeat(3, 1fr) 80px repeat(3, 1fr)',
+            gridTemplateColumns: 'repeat(3, 1fr) 72px repeat(3, 1fr)',
             alignItems: 'center',
             justifyItems: 'center'
           }}
         >
           {items.map((item) => {
-            if (item.key === 'spacer') return <div key="spacer" className="w-20" />;
+            if (item.key === 'spacer') return <div key="spacer" className="w-18" />;
             const Icon = item.icon!;
             const active = isActive(item.href);
 
             return (
-              <Link
+              <AppLink
                 key={item.key}
                 href={item.href}
-                className={`group relative flex flex-col items-center justify-center w-full h-full transition-all duration-300 ${active ? 'text-primary' : 'text-muted hover:text-foreground'}`}
+                className={`group relative flex flex-col items-center justify-center w-full h-full transition-all duration-200 ${active ? 'text-primary' : 'text-muted-foreground hover:text-foreground'}`}
               >
-                {/* Active Glow Background */}
+                {/* Active Indicator Bar (Cyber-Executive under-glow) */}
                 {active && (
                   <motion.div
-                    layoutId="nav-glow"
-                    className="absolute inset-0 bg-primary/10 rounded-full blur-xl -z-10"
-                    transition={{ type: "spring", bounce: 0.2, duration: 0.6 }}
+                    layoutId="nav-active-glow"
+                    className="absolute bottom-0 w-12 h-6 bg-accent-primary/20 blur-xl rounded-full"
+                    transition={{ type: "spring", bounce: 0, duration: 0.3 }}
                   />
                 )}
 
                 <Icon
-                  size={24}
-                  className={`transition-all duration-300 ${active ? 'stroke-[2.5px] -translate-y-1' : 'stroke-2 group-hover:-translate-y-0.5'}`}
+                  size={22}
+                  className={`transition-all duration-300 ${active ? 'text-accent-primary drop-shadow-[0_0_8px_rgba(34,211,238,0.5)] translate-y-0' : 'text-zinc-500 group-hover:text-white'}`}
                 />
 
                 <span
-                  className={`text-[10px] font-medium mt-1 transition-all duration-300 ${active ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-2 group-hover:opacity-100 group-hover:translate-y-0'}`}
+                  className={`text-[9px] font-bold uppercase tracking-widest mt-1.5 transition-all duration-200 ${active ? 'opacity-100' : 'opacity-0 scale-90 translate-y-1 group-hover:opacity-60 group-hover:translate-y-0 group-hover:scale-100'}`}
                 >
                   {item.label}
                 </span>
-
-                {/* Active Dot */}
-                {active && (
-                  <motion.div
-                    layoutId="nav-dot"
-                    className="absolute bottom-2 w-1 h-1 bg-primary rounded-full"
-                  />
-                )}
-              </Link>
+              </AppLink>
             );
           })}
         </motion.nav>

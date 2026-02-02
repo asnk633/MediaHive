@@ -2,16 +2,16 @@
 
 import React from 'react';
 import { useRouter } from 'next/navigation';
-import { useSearchParams } from 'next/navigation';
+
 import { CalendarMasterList } from '@/components/admin/CalendarMasterList';
 import { Button } from '@/components/ui/button';
 import { ChevronLeft } from 'lucide-react';
-import { useAuth } from '@/contexts/AuthContext';
+import { useAuth } from '@/contexts/AuthContextProvider';
 import { AppLoader } from '@/components/ui/AppLoader';
 
 export default function CalendarMasterClient() {
     const router = useRouter();
-    const searchParams = useSearchParams();
+    const searchParams = typeof window !== 'undefined' ? new URLSearchParams(window.location.search) : new URLSearchParams();
     const { user, loading } = useAuth();
 
     if (loading) {

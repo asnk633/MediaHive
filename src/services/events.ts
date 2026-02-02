@@ -116,7 +116,17 @@ export const EventService = {
         if (typeof window !== 'undefined') {
             const handleStorage = () => callback(loadFromLocal());
             window.addEventListener('event-update', handleStorage);
-            windowCleanup = () => window.removeEventListener('event-update', handleStorage);
+
+            // Task 84: Silent Refresh on Focus
+            const handleFocus = () => {
+                if (!isCancelled) pollEvents();
+            };
+            window.addEventListener('focus', handleFocus);
+
+            windowCleanup = () => {
+                window.removeEventListener('event-update', handleStorage);
+                window.removeEventListener('focus', handleFocus);
+            };
         }
 
         // Return a cleanup function that actually works

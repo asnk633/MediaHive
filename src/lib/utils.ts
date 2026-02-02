@@ -45,3 +45,34 @@ export function getInitials(name: string | null | undefined): string {
   const last = parts[parts.length - 1][0];
   return (first + last).toUpperCase();
 }
+
+/**
+ * For Capacitor/native environments, replace Next router navigation with HARD navigation
+ * to avoid RSC requests on initial boot.
+ * 
+ * CRITICAL: Native Capacitor environments using static export will trigger unintended
+ * _rsc requests when using soft-navigation (router.push/replace) immediately after boot.
+ * This helper ensures a full page reload via window.location.href which stabilizes the app.
+ */
+export function nativeNavigate(path: string, router?: any, source?: string) {
+  if (typeof window !== 'undefined' && (window as any).Capacitor) {
+    const target = path.endsWith('/') ? path : path + '/';
+    console.log('[NAV SOURCE]', source || 'Unknown');
+    console.log('[NAV] Native hard-nav to:', target);
+    window.location.href = target;
+  } else if (router) {
+    router.replace(path);
+  }
+}
+
+/**
+ * Helper to race a promise against a timeout
+ */
+export function withTimeout<T>(promise: Promise<T>, timeoutMs: number, name: string): Promise<T> {
+  return Promise.race([
+    promise,
+    new Promise<never>((_, reject) =>
+      setTimeout(() => reject(new Error(`[TIMEOUT] ${name} exceeded ${timeoutMs}ms`)), timeoutMs)
+    )
+  ]);
+}

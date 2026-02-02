@@ -1,12 +1,12 @@
 'use client';
 
-export const dynamic = 'force-static';
 
 
 import React, { useState, useEffect } from 'react';
-import { useAuth } from '@/contexts/AuthContext';
+import { useAuth } from '@/contexts/AuthContextProvider';
 import { useRouter } from 'next/navigation';
 import { getFirebaseAuth } from '@/firebase/client';
+import { nativeNavigate } from '@/lib/utils';
 import { LeaveAnalytics } from '@/components/leave/LeaveAnalytics';
 import { Loader2, Download, Calendar } from 'lucide-react';
 import { toast } from 'sonner';
@@ -29,7 +29,7 @@ export default function LeaveAnalyticsPage() {
             try {
                 const auth = await getFirebaseAuth();
                 if (!auth.currentUser) {
-                    router.push('/');
+                    nativeNavigate('/', router, 'LeaveAnalytics (No Auth)');
                     return;
                 }
 
@@ -40,20 +40,20 @@ export default function LeaveAnalyticsPage() {
                 });
 
                 if (!response.success) {
-                    router.push('/');
+                    nativeNavigate('/', router, 'LeaveAnalytics (Role Fetch Fail)');
                     return;
                 }
 
                 if (response.role !== 'admin') {
                     toast.error('Admin access required');
-                    router.push('/');
+                    nativeNavigate('/', router, 'LeaveAnalytics (Not Admin)');
                     return;
                 }
 
                 fetchAnalytics();
             } catch (error) {
                 console.error('Error checking admin status:', error);
-                router.push('/');
+                nativeNavigate('/', router, 'LeaveAnalytics (Check Admin Catch)');
             }
         };
 

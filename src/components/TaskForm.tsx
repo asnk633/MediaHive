@@ -1,7 +1,7 @@
 // src/components/TaskForm.tsx
 'use client';
 import React, { useState } from 'react';
-import { useAuth } from '@/contexts/AuthContext';
+import { useAuth } from '@/contexts/AuthContextProvider';
 
 export default function TaskForm({ onCancel, onSubmit }: { onCancel: () => void; onSubmit: (d: any) => Promise<void> }) {
   const [title, setTitle] = useState('');

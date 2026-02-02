@@ -6,7 +6,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { Task } from '@/types/task';
 import { Clock, Calendar, CheckCircle2, User as UserIcon, AlertCircle, X, Edit2, UploadCloud, FileCheck, Circle, User } from 'lucide-react';
 import { format } from 'date-fns';
-import { useAuth } from '@/contexts/AuthContext';
+import { useAuth } from '@/contexts/AuthContextProvider';
 import { SafeAvatar } from '@/components/ui/SafeAvatar';
 import { useRouter } from 'next/navigation';
 import { AttachmentSection } from '@/components/tasks/AttachmentSection';
@@ -20,6 +20,8 @@ import { UserService } from '@/services/userService';
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { ResolvedStructureName } from "@/components/admin/structure/ResolvedStructureName";
 import { useModalHistory } from "@/hooks/useModalHistory";
+import { TaskComments } from '@/components/tasks/TaskComments';
+import { TaskSubtasks } from '@/components/tasks/TaskSubtasks';
 
 interface TaskDetailsModalProps {
     task: Task | null;
@@ -47,26 +49,31 @@ const priorityColors = {
 export const TaskDetailModalV2: React.FC<TaskDetailsModalProps> = ({ task, isOpen, onClose, onEdit }) => {
     const { user } = useAuth();
     const router = useRouter();
+    const canDelete = user?.role === 'admin';
     const [showDeliverableUpload, setShowDeliverableUpload] = useState(false);
     const [deliverableRefreshTrigger, setDeliverableRefreshTrigger] = useState(0);
     const [teamMembers, setTeamMembers] = useState<{ uid: string; name: string; avatarUrl?: string }[]>([]);
 
-    const canDelete = user?.role === 'admin' || (user?.uid && task?.createdBy?.uid === user.uid);
+    const [isDeleting, setIsDeleting] = useState(false);
+    const [error, setError] = useState<string | null>(null);
 
     const handleDelete = async () => {
-        if (!task) return;
-        if (!confirm('Are you sure you want to delete this task? This action cannot be undone.')) return;
+        if (!task || isDeleting) return;
+
+        setIsDeleting(true);
+        setError(null);
         try {
             await TaskService.deleteTask(task.id);
-            toast.success('Task deleted');
-            onClose();
+            onClose(); // Only close after success
         } catch (e) {
             console.error(e);
-            toast.error('Failed to delete task');
+            setError('Task couldn’t be deleted');
+            setIsDeleting(false);
         }
     };
 
     const [fullTask, setFullTask] = useState<Task>(task || {} as Task);
+    const [isLoadingDetails, setIsLoadingDetails] = useState(false);
 
     // Fetch team members & Fresh Task Data
     React.useEffect(() => {
@@ -85,11 +92,16 @@ export const TaskDetailModalV2: React.FC<TaskDetailsModalProps> = ({ task, isOpe
                 fetchTeam();
             }
             if (task?.id) {
+                // PERCEPTUAL SIGNAL: Set loading state immediately
+                setIsLoadingDetails(true);
+
                 // Ensure we display latest task info immediately
                 setFullTask(task);
                 // Then hydrate with fresh data from server
                 TaskService.getTask(task.id).then(fresh => {
                     if (fresh) setFullTask(fresh);
+                }).finally(() => {
+                    setIsLoadingDetails(false);
                 });
             }
         }
@@ -97,29 +109,35 @@ export const TaskDetailModalV2: React.FC<TaskDetailsModalProps> = ({ task, isOpe
 
     const handleToggleAssign = async (member: { uid: string, name: string }) => {
         if (!task) return;
-        await TaskService.toggleTaskAssignee(task.id, { uid: member.uid, name: member.name });
+        setError(null);
+        try {
+            await TaskService.toggleTaskAssignee(task.id, { uid: member.uid, name: member.name });
 
-        const isCurrentlyAssigned = Array.isArray(task.assignedTo) && task.assignedTo.some((current: any) => {
-            const currentUid = typeof current === 'string' ? current : current.uid;
-            return currentUid === member.uid;
-        });
-
-        if (!isCurrentlyAssigned) {
-            const { NotificationService } = await import('@/services/notificationService');
-            await NotificationService.createNotification({
-                userId: member.uid,
-                sourceUserId: user!.uid,
-                type: 'task_assigned',
-                title: 'New Assignment',
-                message: `You have been assigned to "${task.title}"`,
-                entityType: 'task',
-                entityId: task.id,
-                actionUrl: `/tasks/view?id=${task.id}`,
-                priority: 'high'
+            const isCurrentlyAssigned = Array.isArray(task.assignedTo) && task.assignedTo.some((current: any) => {
+                const currentUid = typeof current === 'string' ? current : current.uid;
+                return currentUid === member.uid;
             });
-        }
 
-        onEdit();
+            if (!isCurrentlyAssigned) {
+                const { NotificationService } = await import('@/services/notificationService');
+                await NotificationService.createNotification({
+                    userId: member.uid,
+                    sourceUserId: user!.uid,
+                    type: 'task_assigned',
+                    title: 'New Assignment',
+                    message: `You have been assigned to "${task.title}"`,
+                    entityType: 'task',
+                    entityId: task.id,
+                    actionUrl: `/tasks/view?id=${task.id}`,
+                    priority: 'high'
+                });
+            }
+
+            onEdit();
+        } catch (err: any) {
+            console.error(err);
+            setError('Assignment didn’t go through');
+        }
     };
 
     useDevWiring('TaskDetailModalV2', [
@@ -134,6 +152,39 @@ export const TaskDetailModalV2: React.FC<TaskDetailsModalProps> = ({ task, isOpe
         setMounted(true);
         return () => setMounted(false);
     }, []);
+
+    // Close on Escape (Task 79)
+    useEffect(() => {
+        const handleKeyDown = (e: KeyboardEvent) => {
+            if (e.key === 'Escape' && isOpen) onClose();
+        };
+        window.addEventListener('keydown', handleKeyDown);
+        return () => window.removeEventListener('keydown', handleKeyDown);
+    }, [isOpen, onClose]);
+
+    // Focus Management (Task 73)
+    useEffect(() => {
+        if (isOpen && mounted) {
+            // Save current focus
+            const previousFocus = document.activeElement as HTMLElement;
+
+            // Find modal and focus it (or first interactive element)
+            // We use a small timeout to ensure Portal is rendered
+            setTimeout(() => {
+                const modal = document.querySelector('[role="dialog"]');
+                if (modal instanceof HTMLElement) {
+                    modal.focus();
+                }
+            }, 50);
+
+            return () => {
+                // Restore focus on close
+                if (previousFocus && previousFocus.focus) {
+                    previousFocus.focus();
+                }
+            };
+        }
+    }, [isOpen, mounted]);
 
     // DISABLED: useModalHistory was causing unwanted navigation back to /home
     // useModalHistory(isOpen, onClose);
@@ -160,8 +211,11 @@ export const TaskDetailModalV2: React.FC<TaskDetailsModalProps> = ({ task, isOpe
                         animate={{ scale: 1, opacity: 1 }}
                         exit={{ scale: 0.98, opacity: 0 }}
                         transition={{ duration: 0.2 }}
-                        className="relative w-full max-w-2xl rounded-2xl overflow-hidden border border-soft flex flex-col max-h-[90vh] bg-gradient-to-br from-card to-background shadow-strong"
+                        className="relative w-full max-w-2xl rounded-2xl overflow-hidden border border-soft flex flex-col max-h-[90vh] bg-gradient-to-br from-card to-background shadow-strong outline-none"
                         style={{}}
+                        role="dialog"
+                        aria-modal="true"
+                        tabIndex={-1}
                     >
                         {/* HEADER BLOCK - Identity, Authoritative, 180px */}
                         <div
@@ -175,7 +229,8 @@ export const TaskDetailModalV2: React.FC<TaskDetailsModalProps> = ({ task, isOpe
                                 {(user?.role === 'admin' || user?.role === 'team' || user?.uid === task?.createdBy?.uid) && (
                                     <button
                                         onClick={onEdit}
-                                        className="p-2 bg-surface/50 hover:bg-surface rounded-lg transition-colors text-foreground backdrop-blur-sm shadow-sm"
+                                        disabled={isDeleting}
+                                        className="p-2 bg-surface/50 hover:bg-surface rounded-lg transition-colors text-foreground backdrop-blur-sm shadow-sm disabled:opacity-50"
                                         title="Edit Task"
                                     >
                                         <Edit2 size={18} />
@@ -183,7 +238,8 @@ export const TaskDetailModalV2: React.FC<TaskDetailsModalProps> = ({ task, isOpe
                                 )}
                                 <button
                                     onClick={onClose}
-                                    className="p-2 bg-surface/50 hover:bg-surface rounded-lg transition-colors text-foreground backdrop-blur-sm shadow-sm"
+                                    disabled={isDeleting}
+                                    className="p-2 bg-surface/50 hover:bg-surface rounded-lg transition-colors text-foreground backdrop-blur-sm shadow-sm disabled:opacity-50"
                                 >
                                     <X size={18} />
                                 </button>
@@ -192,20 +248,59 @@ export const TaskDetailModalV2: React.FC<TaskDetailsModalProps> = ({ task, isOpe
                             {/* Identity Content - Centered, Grouped */}
                             <div className="absolute inset-0 flex flex-col justify-center px-8">
                                 {/* Badges - Small, Subordinate */}
-                                <div className="flex items-center gap-2 mb-4">
-                                    <span className={`px-2.5 py-1 rounded-md text-[9px] font-bold tracking-widest uppercase border ${priorityColors[task.priority!] || priorityColors.low}`}>
+                                <div className="flex items-center gap-3 mb-4">
+                                    <span className={`px-2.5 py-1 rounded-md text-[10px] font-bold tracking-widest uppercase border ${priorityColors[task.priority!] || priorityColors.low}`}>
                                         {task.priority || 'low'}
                                     </span>
-                                    <div className="flex items-center gap-1.5 px-2.5 py-1 rounded-md bg-surface border border-soft text-[9px] font-bold uppercase tracking-widest text-muted-foreground">
+                                    <div className="flex items-center gap-1.5 px-2.5 py-1 rounded-md bg-surface border border-soft text-[10px] font-bold uppercase tracking-widest text-muted-foreground">
                                         {statusIcons[task.status]}
                                         <span className="text-foreground">{task.status.replace('_', ' ')}</span>
                                     </div>
+                                    {/* Promoted Due Date - Answering 'Why it matters' */}
+                                    {task.dueDate && (
+                                        <div className="flex items-center gap-1.5 text-[10px] font-bold uppercase tracking-widest text-muted-foreground/80">
+                                            <span className="w-1 h-1 rounded-full bg-border-strong" />
+                                            <span>
+                                                Due {(() => {
+                                                    const date = (task.dueDate as any).seconds
+                                                        ? new Date((task.dueDate as any).seconds * 1000)
+                                                        : new Date(task.dueDate);
+                                                    return !isNaN(date.getTime()) ? format(date, 'MMM d') : '';
+                                                })()}
+                                            </span>
+                                        </div>
+                                    )}
                                 </div>
 
-                                {/* Title - HERO, Dominant */}
-                                <h1 className="text-4xl font-black text-foreground leading-tight max-w-[85%]">
-                                    {task.title}
-                                </h1>
+                                {/* Title - Large, Bold, Centered */}
+                                <h2 className="text-2xl font-bold text-foreground text-center leading-tight">
+                                    {fullTask.title || 'Untitled Task'}
+                                </h2>
+
+                                {/* PERCEPTUAL SIGNAL: Loading indicator */}
+                                {isLoadingDetails && (
+                                    <p className="text-xs text-muted/60 text-center mt-2">
+                                        Loading details...
+                                    </p>
+                                )}
+                                {isDeleting && (
+                                    <div className="flex items-center justify-center gap-2 mt-2 text-red-400 font-bold text-xs uppercase tracking-widest">
+                                        <div className="animate-spin rounded-full h-3 w-3 border-2 border-red-400/30 border-t-red-400" />
+                                        <span>Deleting...</span>
+                                    </div>
+                                )}
+                                {error && (
+                                    <div className="flex items-center justify-center gap-3 py-2 mt-2 animate-in fade-in slide-in-from-top-2 bg-red-400/10 rounded-lg border border-red-400/20 max-w-sm mx-auto">
+                                        <span className="text-[10px] text-red-400 font-bold uppercase tracking-widest">{error}</span>
+                                        <div className="w-1 h-1 bg-red-400/30 rounded-full" />
+                                        <button
+                                            onClick={() => setError(null)}
+                                            className="text-[10px] font-bold text-white/50 hover:text-white uppercase tracking-widest transition-colors"
+                                        >
+                                            Dismiss
+                                        </button>
+                                    </div>
+                                )}
                             </div>
                         </div>
 
@@ -226,30 +321,17 @@ export const TaskDetailModalV2: React.FC<TaskDetailsModalProps> = ({ task, isOpe
                                 {task.description || <span className="italic text-muted-foreground/60">No description provided.</span>}
                             </div>
 
-                            {/* Info Card - Simple */}
-                            <div className="grid grid-cols-1 md:grid-cols-2 gap-6 p-6 bg-surface/40 rounded-xl border border-soft mb-8">
+                            {/* Info Card - Simple & Demoted */}
+                            <div className="grid grid-cols-1 md:grid-cols-2 gap-6 p-6 bg-surface/20 rounded-xl border border-soft/50 mb-8">
                                 <div className="space-y-6">
-                                    <div className="flex items-start gap-3">
-                                        <Calendar size={16} className="text-primary mt-0.5 shrink-0" />
-                                        <div>
-                                            <p className="text-[10px] uppercase tracking-wider font-bold text-muted-foreground mb-1.5">Due Date</p>
-                                            <p className="text-sm text-foreground">
-                                                {(() => {
-                                                    if (!task.dueDate) return 'No due date';
-                                                    const date = task.dueDate.seconds
-                                                        ? new Date(task.dueDate.seconds * 1000)
-                                                        : new Date(task.dueDate);
-                                                    return !isNaN(date.getTime()) ? format(date, 'EEEE, dd/MM/yyyy') : 'Invalid Date';
-                                                })()}
-                                            </p>
-                                        </div>
-                                    </div>
+                                    {/* Due Date moved to Header for Emphasis */}
+                                    {/* <div className="flex items-start gap-3">...</div> */}
 
                                     <div className="flex items-start gap-3">
-                                        <User size={16} className="text-primary mt-0.5 shrink-0" />
+                                        <User size={16} className="text-muted-foreground/60 mt-0.5 shrink-0" />
                                         <div>
-                                            <p className="text-[10px] uppercase tracking-wider font-bold text-muted-foreground mb-1.5">Requested By</p>
-                                            <p className="text-sm text-foreground">
+                                            <p className="text-[10px] uppercase tracking-wider font-bold text-muted-foreground/60 mb-1.5">Requested By</p>
+                                            <p className="text-xs text-muted-foreground">
                                                 <ResolvedStructureName
                                                     id={task.departmentId || task.institutionId}
                                                     type={task.departmentId ? 'department' : 'institution'}
@@ -262,11 +344,11 @@ export const TaskDetailModalV2: React.FC<TaskDetailsModalProps> = ({ task, isOpe
 
                                 <div className="space-y-3">
                                     <div className="flex items-center justify-between">
-                                        <p className="text-[10px] uppercase tracking-wider font-bold text-muted-foreground">Assigned Team</p>
+                                        <p className="text-[10px] uppercase tracking-wider font-bold text-muted-foreground/60">Assigned Team</p>
                                         {(user?.role === 'admin' || (user?.role === 'team' && typeof task.createdBy === 'object' && task.createdBy.uid === user.uid)) && (
                                             <Popover>
                                                 <PopoverTrigger asChild>
-                                                    <button className="text-[10px] font-bold text-primary hover:text-primary/80 transition-colors uppercase tracking-wider flex items-center gap-1">
+                                                    <button className="text-[10px] font-bold text-primary hover:text-primary/80 transition-colors uppercase tracking-wider flex items-center gap-1 opacity-70 hover:opacity-100">
                                                         <UserIcon size={11} /> Assign
                                                     </button>
                                                 </PopoverTrigger>
@@ -305,20 +387,20 @@ export const TaskDetailModalV2: React.FC<TaskDetailsModalProps> = ({ task, isOpe
                                                 const name = assignee.name || teamMember?.name || 'Unknown';
 
                                                 return (
-                                                    <div key={i} className="flex items-center gap-2 bg-surface px-2.5 py-1.5 rounded-lg border border-soft">
+                                                    <div key={i} className="flex items-center gap-2 bg-surface/50 px-2.5 py-1.5 rounded-lg border border-soft/50">
                                                         <SafeAvatar
                                                             src={avatarUrl}
                                                             name={name}
                                                             alt={name}
-                                                            size={20}
+                                                            size={16}
                                                             className="border border-soft"
                                                         />
-                                                        <span className="text-xs text-foreground/80">{name}</span>
+                                                        <span className="text-[11px] text-muted-foreground">{name}</span>
                                                     </div>
                                                 );
                                             })
                                         ) : (
-                                            <p className="text-xs text-muted-foreground/60 italic">No one assigned</p>
+                                            <p className="text-[10px] text-muted-foreground/40 italic">No one assigned</p>
                                         )}
                                     </div>
                                 </div>
@@ -332,6 +414,30 @@ export const TaskDetailModalV2: React.FC<TaskDetailsModalProps> = ({ task, isOpe
                                     task={fullTask}
                                     onUpdate={() => {
                                         // Just trigger local refresh, not full page refresh
+                                        TaskService.getTask(task.id).then(t => t && setFullTask(t));
+                                    }}
+                                />
+                            </div>
+
+                            {/* Subtasks Section */}
+                            {((fullTask.subtasks?.length ?? 0) > 0 || user?.role === 'admin' || user?.role === 'team') && (
+                                <div className="pt-6 mt-8 -mx-8 px-8 pb-8 border-t border-soft bg-muted/5">
+                                    <TaskSubtasks
+                                        taskId={task.id}
+                                        subtasks={fullTask.subtasks || []}
+                                        onUpdate={() => {
+                                            TaskService.getTask(task.id).then(t => t && setFullTask(t));
+                                        }}
+                                    />
+                                </div>
+                            )}
+
+                            {/* Comments Section */}
+                            <div className="pt-6 mt-8 -mx-8 px-8 pb-8 border-t border-soft bg-muted/5">
+                                <TaskComments
+                                    taskId={task.id}
+                                    activity={fullTask.activity || []}
+                                    onCommentAdded={() => {
                                         TaskService.getTask(task.id).then(t => t && setFullTask(t));
                                     }}
                                 />

@@ -1,16 +1,16 @@
 'use client';
 
-export const dynamic = 'force-static';
 
 
 import React, { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
-import { useAuth } from '@/contexts/AuthContext';
+import { useAuth } from '@/contexts/AuthContextProvider';
 import { LeaveRequest, LeaveStatus } from '@/types/leave';
 import { LeaveRequestService } from '@/services/leaveRequestService';
 import { LeaveRequestCard } from '@/components/leave/LeaveRequestCard';
 import { ChevronLeft, Loader2, Plus } from 'lucide-react';
 import { toast } from 'sonner';
+import { nativeNavigate } from '@/lib/utils';
 
 export default function MyRequestsPage() {
     const router = useRouter();
@@ -75,7 +75,7 @@ export default function MyRequestsPage() {
                         </div>
                     </div>
                     <button
-                        onClick={() => router.push('/leave/request')}
+                        onClick={() => nativeNavigate('/leave/request', router, 'MyRequests (New Request)')}
                         className="flex items-center gap-2 px-4 py-2 bg-blue-600 hover:bg-blue-500 text-white text-sm font-bold rounded-lg transition-colors"
                     >
                         <Plus size={16} />
@@ -127,7 +127,7 @@ export default function MyRequestsPage() {
                             </p>
                             {filter === 'all' && (
                                 <button
-                                    onClick={() => router.push('/leave/request')}
+                                    onClick={() => nativeNavigate('/leave/request', router, 'MyRequests (Submit First)')}
                                     className="px-6 py-3 bg-blue-600 hover:bg-blue-500 text-white font-bold rounded-lg transition-colors"
                                 >
                                     Submit Your First Request

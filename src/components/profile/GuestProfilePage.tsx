@@ -1,7 +1,8 @@
 import React, { useEffect, useState } from 'react';
-import { useAuth } from '@/contexts/AuthContext';
+import { useAuth } from '@/contexts/AuthContextProvider';
 import { SafeAvatar } from '@/components/ui/SafeAvatar';
 import { useRouter } from 'next/navigation';
+import { nativeNavigate } from '@/lib/utils';
 import { ClipboardList, CheckCircle, Clock } from 'lucide-react';
 import { CanonicalDataService } from '@/services/canonicalDataService';
 import { Task } from '@/types/task';
@@ -80,7 +81,7 @@ export function GuestProfilePage() {
 
                     <div className="flex flex-col gap-3 w-full md:w-auto">
                         <button
-                            onClick={() => router.push('/tasks')}
+                            onClick={() => nativeNavigate('/tasks', router, 'GuestProfile (View Requests)')}
                             className="bg-blue-600 hover:bg-blue-500 text-white px-6 py-3 rounded-xl font-medium transition-all shadow-lg shadow-blue-500/20 active:scale-95 flex items-center justify-center gap-2"
                         >
                             <ClipboardList size={18} />
@@ -127,7 +128,7 @@ export function GuestProfilePage() {
                     ) : recentActivity.length > 0 ? (
                         recentActivity.map(task => (
                             <div key={task.id}
-                                onClick={() => router.push(`/tasks/view?id=${task.id}`)}
+                                onClick={() => nativeNavigate(`/tasks/view?id=${task.id}`, router, 'GuestProfile (Task Click)')}
                                 className="flex items-center justify-between p-4 bg-white/5 rounded-xl border border-white/5 hover:bg-white/10 transition-colors cursor-pointer group"
                             >
                                 <div className="flex items-center gap-4">

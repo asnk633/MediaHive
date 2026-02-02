@@ -1,16 +1,14 @@
-// capacitor.config.ts
-// Capacitor configuration for mobile wrapper
-
-import { CapacitorConfig } from '@capacitor/cli';
+import type { CapacitorConfig } from '@capacitor/cli';
 
 const config: CapacitorConfig = {
   appId: 'com.thaibagarden.media',
   appName: 'Thaiba Garden Media Manager',
   webDir: 'out',
   server: {
-    androidScheme: 'https',
-    cleartext: true
+    // Serve from bundled app assets (file:// protocol)
+    // This ensures apiClient detects native environment correctly
   },
+
 
   plugins: {
     SplashScreen: {
@@ -21,7 +19,6 @@ const config: CapacitorConfig = {
       androidScaleType: "CENTER_CROP",
       showSpinner: true,
       androidSpinnerStyle: "large",
-      iosSpinnerStyle: "small",
       spinnerColor: "#ffffff",
       splashFullScreen: true,
       splashImmersive: true,

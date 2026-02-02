@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { X, Calendar as CalendarIcon, Info } from 'lucide-react';
-import { useAuth } from '@/contexts/AuthContext';
+import { useAuth } from '@/contexts/AuthContextProvider';
 import { CampaignService } from '@/services/campaignService';
 import { toast } from 'sonner';
 import { format } from 'date-fns';

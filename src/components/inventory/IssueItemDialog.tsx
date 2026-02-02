@@ -9,7 +9,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { InventoryItem, InventoryCondition, InventoryRequest } from "@/types/inventory";
 import { inventoryIssueService } from "@/services/inventoryIssueService";
 import { inventoryRequestService } from "@/services/inventoryRequestService";
-import { useAuth } from "@/contexts/AuthContext";
+import { useAuth } from "@/contexts/AuthContextProvider";
 import { toast } from "sonner";
 import { Loader2, CalendarIcon } from "lucide-react";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";

@@ -15,11 +15,11 @@ export function PageLayout({ children, className, mode = 'standard' }: PageLayou
     return (
         <PageContainer className={cn("pt-8 pb-12 space-y-12", className)}>
             {mode === 'standard' ? (
-                <div className="bg-white/[0.02] backdrop-blur-sm rounded-3xl p-6 sm:p-8 space-y-10 border border-white/10">
+                <div className="bg-panel rounded-sm p-6 sm:p-10 space-y-12 border border-border/20 shadow-medium">
                     {children}
                 </div>
             ) : (
-                <div className="space-y-10">
+                <div className="space-y-12">
                     {children}
                 </div>
             )}

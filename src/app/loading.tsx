@@ -1,5 +1,4 @@
 'use client';
-export const dynamic = 'force-static';
 
 
 import { AppLoader } from "@/components/ui/AppLoader";

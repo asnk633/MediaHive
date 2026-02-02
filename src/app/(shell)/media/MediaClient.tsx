@@ -1,7 +1,7 @@
 'use client';
 
-import React, { useState, useEffect } from 'react';
-import { useAuth } from '@/contexts/AuthContext';
+import React, { useState, useEffect, useRef } from 'react';
+import { useAuth } from '@/contexts/AuthContextProvider';
 import { FileService } from '@/services/fileService';
 import { DriveFile } from '@/types/file';
 import { MediaGalleryGrid } from '@/components/media/MediaGalleryGrid';
@@ -13,25 +13,69 @@ export default function MediaClient() {
     const [files, setFiles] = useState<DriveFile[]>([]);
     const [filteredFiles, setFilteredFiles] = useState<DriveFile[]>([]);
     const [loading, setLoading] = useState(true);
+    const [error, setError] = useState<string | null>(null);
     const [search, setSearch] = useState('');
     const [selectedFile, setSelectedFile] = useState<DriveFile | null>(null);
     const [sortBy, setSortBy] = useState<'recent' | 'name' | 'type'>('recent');
+    const isMountedRef = useRef(true);
+
+    useEffect(() => {
+        console.log('[MEDIA] page mounted');
+        isMountedRef.current = true;
+        
+        return () => {
+            isMountedRef.current = false;
+        };
+    }, []);
 
     useEffect(() => {
         loadFiles();
+        
+        return () => {
+            isMountedRef.current = false;
+        };
     }, [user]);
 
     const loadFiles = async () => {
         if (!user) return;
+        
+        console.log('[MEDIA] starting fetch', user?.uid);
+        
+        // Reset error state
+        setError(null);
         setLoading(true);
+        
+        // Set timeout fallback
+        const timeoutId = setTimeout(() => {
+            if (isMountedRef.current) {
+                console.log('[MEDIA] fetch timeout - setting error state');
+                setError('Request timed out. Please try again.');
+                setLoading(false);
+            }
+        }, 20000); // 20 second timeout
+        
         try {
             const data = await FileService.getFiles(user.role, user.defaultDepartment, user.defaultInstitution);
-            setFiles(data);
-            setFilteredFiles(data);
-        } catch (e) {
-            console.error(e);
+            
+            if (isMountedRef.current) {
+                console.log('[MEDIA] fetch success', data.length, 'files');
+                setFiles(data);
+                setFilteredFiles(data);
+                setError(null);
+            }
+        } catch (e: any) {
+            console.log('[MEDIA] fetch error', e);
+            if (isMountedRef.current) {
+                setError(e.message || 'Failed to load media files');
+                // Set empty arrays to avoid undefined state
+                setFiles([]);
+                setFilteredFiles([]);
+            }
         } finally {
-            setLoading(false);
+            if (isMountedRef.current) {
+                clearTimeout(timeoutId);
+                setLoading(false);
+            }
         }
     };
 
@@ -87,11 +131,29 @@ export default function MediaClient() {
             </div>
 
             <div className="flex-1 overflow-y-auto pb-20">
-                <MediaGalleryGrid
-                    files={filteredFiles}
-                    loading={loading}
-                    onFileSelect={setSelectedFile}
-                />
+                {error ? (
+                    <div className="flex flex-col items-center justify-center h-full text-center p-8">
+                        <div className="text-red-500 mb-4">
+                            <svg xmlns="http://www.w3.org/2000/svg" className="h-16 w-16 mx-auto" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
+                            </svg>
+                        </div>
+                        <h3 className="text-xl font-semibold text-[var(--text-primary)] mb-2">Failed to Load Media</h3>
+                        <p className="text-[var(--text-secondary)] mb-6 max-w-md">{error}</p>
+                        <button 
+                            onClick={loadFiles}
+                            className="px-6 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg transition-colors"
+                        >
+                            Try Again
+                        </button>
+                    </div>
+                ) : (
+                    <MediaGalleryGrid
+                        files={filteredFiles}
+                        loading={loading}
+                        onFileSelect={setSelectedFile}
+                    />
+                )}
             </div>
 
             {selectedFile && (

@@ -153,10 +153,14 @@ export const apiClient = async <T = any>(endpoint: string, options: ApiOptions =
   let url: string;
 
   // 🔒 MOBILE: Must have absolute URL
+  // 🔒 MOBILE: Must have absolute URL
   if (isOnMobile) {
-    if (!envBaseUrl || envBaseUrl === '') {
+    // If endpoint is already absolute, use it directly
+    if (endpoint.startsWith('http')) {
+      url = endpoint;
+    } else if (!envBaseUrl || envBaseUrl === '') {
       // Fallback for safety - arguably should come from config
-      url = `https://api.thaibagarden.com${endpoint}`;
+      url = `https://thaiba-garden-media-manager.vercel.app${endpoint}`;
       console.warn(`[API] Native platform detected but no NEXT_PUBLIC_API_URL. Defaulting to: ${url}`);
     } else if (envBaseUrl.startsWith('http')) {
       url = `${envBaseUrl}${endpoint}`;
@@ -164,12 +168,14 @@ export const apiClient = async <T = any>(endpoint: string, options: ApiOptions =
       // If envBaseUrl is malformed or relative, we must fallback to a known hardcoded prod (or throw)
       // But let's try to construct it.
       console.error(`[API] Native platform detected but API_URL is relative: ${envBaseUrl}. usage likely fails.`);
-      url = `https://api.thaibagarden.com${endpoint}`;
+      url = `https://thaiba-garden-media-manager.vercel.app${endpoint}`;
     }
   }
   // 🌐 WEB: Use Configured API URL (if present) or fall back to Relative (Proxy)
   else {
-    if (envBaseUrl && envBaseUrl.startsWith('http')) {
+    if (endpoint.startsWith('http')) {
+      url = endpoint;
+    } else if (envBaseUrl && envBaseUrl.startsWith('http')) {
       url = `${envBaseUrl}${endpoint}`;
     } else {
       url = endpoint;

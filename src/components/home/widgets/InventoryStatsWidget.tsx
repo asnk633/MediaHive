@@ -1,6 +1,7 @@
 "use client";
 import React, { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
+import { nativeNavigate } from '@/lib/utils';
 import { apiClient } from '@/lib/apiClient';
 import { InventoryApiResponse } from '@/types/inventory';
 import { OverviewCard } from '@/components/home/OverviewCard';
@@ -48,28 +49,28 @@ export const InventoryStatsWidget = () => {
                 count={stats.total.toString()}
                 label="Assets"
                 subLabel="Total Inventory"
-                onClick={() => router.push('/inventory')}
+                onClick={() => nativeNavigate('/inventory', router, 'InventoryStats (Assets)')}
             />
             <OverviewCard
                 icon={Layers}
                 count={stats.inUse.toString()}
                 label="Active"
                 subLabel="Currently In Use"
-                onClick={() => router.push('/inventory')}
+                onClick={() => nativeNavigate('/inventory', router, 'InventoryStats (Active)')}
             />
             <OverviewCard
                 icon={AlertTriangle}
                 count={stats.value.toString()} // Using 'Unavailable' count here
                 label="Alerts"
                 subLabel="Broken / Lost / Out"
-                onClick={() => router.push('/inventory')}
+                onClick={() => nativeNavigate('/inventory', router, 'InventoryStats (Alerts)')}
             />
             <OverviewCard
                 icon={TrendingUp}
                 count={`${Math.round((stats.inUse / (stats.total || 1)) * 100)}%`}
                 label="Utilization"
                 subLabel="Asset Usage Rate"
-                onClick={() => router.push('/inventory')}
+                onClick={() => nativeNavigate('/inventory', router, 'InventoryStats (Utilization)')}
             />
         </div>
     );

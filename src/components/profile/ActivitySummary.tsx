@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { AuthUser } from '@/contexts/AuthContext';
+import { AuthUser } from '@/contexts/AuthContextProvider';
 import { CheckCircle2, Clock, Pin } from 'lucide-react';
 import { db } from '@/firebase/client';
 import { collection, query, where, getCountFromServer } from 'firebase/firestore';

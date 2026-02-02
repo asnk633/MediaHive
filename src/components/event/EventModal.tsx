@@ -1,7 +1,7 @@
 import { useState, useEffect } from "react";
 import { X, Calendar as CalendarIcon, Clock, MapPin, AlignLeft, Building2, Repeat, Send } from "lucide-react";
 import { useClientData } from "@/app/(shell)/ClientDataContext";
-import { useAuth } from '@/contexts/AuthContext';
+import { useAuth } from '@/contexts/AuthContextProvider';
 import { SystemEventService } from "@/services/systemEventService";
 import { motion, AnimatePresence } from 'framer-motion';
 
@@ -25,22 +25,44 @@ export function EventModal({ isOpen, onClose, defaultDate, eventToEdit }: EventM
         day: new Date().getDate()
     });
 
+    // Smart Defaults
+    const getSmartTimes = () => {
+        const now = new Date();
+        const nextHour = new Date(now);
+        nextHour.setHours(now.getHours() + 1, 0, 0, 0);
+
+        const endHour = new Date(nextHour);
+        endHour.setHours(nextHour.getHours() + 1);
+
+        return {
+            start: nextHour.toTimeString().slice(0, 5), // HH:MM
+            end: endHour.toTimeString().slice(0, 5)
+        };
+    };
+
+    const smartTimes = getSmartTimes();
+
     const [formData, setFormData] = useState({
         title: "",
         description: "",
         date: defaultDate ? defaultDate.toISOString().split('T')[0] : new Date().toISOString().split('T')[0],
-        startTime: "09:00",
-        endTime: "10:00",
+        startTime: smartTimes.start,
+        endTime: smartTimes.end,
         location: "",
     });
 
-    // Close on ESC
+    // Close on ESC & Submit on Cmd+Enter
     useEffect(() => {
-        const handleEsc = (e: KeyboardEvent) => {
+        const handleKeyDown = (e: KeyboardEvent) => {
             if (e.key === 'Escape') onClose();
+            if ((e.metaKey || e.ctrlKey) && e.key === 'Enter') {
+                e.preventDefault();
+                const form = document.getElementById('event-form') as HTMLFormElement;
+                if (form) form.requestSubmit();
+            }
         };
-        window.addEventListener('keydown', handleEsc);
-        return () => window.removeEventListener('keydown', handleEsc);
+        window.addEventListener('keydown', handleKeyDown);
+        return () => window.removeEventListener('keydown', handleKeyDown);
     }, [onClose]);
 
     // Populate form if editing
@@ -63,10 +85,29 @@ export function EventModal({ isOpen, onClose, defaultDate, eventToEdit }: EventM
                 title: eventToEdit.title || "",
                 description: eventToEdit.description || "",
                 date: dateStr || new Date().toISOString().split('T')[0],
-                startTime: "09:00",
+                startTime: "09:00", // Keep fixed 09:00 for edits if missing, to avoid shifting existing data unexpectedly? 
+                // Actually if editing an event without time, it might be better to keep 09:00 or what is in DB.
+                // But wait, the previous code had 09:00 hardcoded.
                 endTime: "10:00",
                 location: eventToEdit.location || "",
             });
+            // Note: If eventToEdit has times, we should use them. The previous code didn't seem to extract times from eventToEdit?
+            // Let's look at lines 53-60... it only extracts date.
+            // If the event object has startAt/endAt, we should parse them.
+            if (eventToEdit.startAt) {
+                const s = new Date(eventToEdit.startAt);
+                const e = eventToEdit.endAt ? new Date(eventToEdit.endAt) : new Date(s.getTime() + 60 * 60 * 1000);
+                setFormData(prev => ({
+                    ...prev,
+                    startTime: s.toTimeString().slice(0, 5),
+                    endTime: e.toTimeString().slice(0, 5)
+                }));
+            } else {
+                // Fallback for edit without time? Default to smart times? Or 09:00?
+                // If it's an existing event without time, it's likely an all-day event or legacy.
+                // Let's leave the hardcoded 09:00 for *editing* to minimize noise, OR use the smart defaults if it's a "New" event passing through here?
+                // Wait, this block is if(eventToEdit).
+            }
 
             if (isSystem && eventToEdit.recurrence) {
                 setRecurrence(eventToEdit.recurrence);
@@ -288,7 +329,7 @@ export function EventModal({ isOpen, onClose, defaultDate, eventToEdit }: EventM
                                 ) : (
                                     <>
                                         <Send size={16} />
-                                        {eventToEdit ? "Save Changes" : "Create Event"}
+                                        {eventToEdit ? "Save" : "Create"}
                                     </>
                                 )}
                             </button>

@@ -11,7 +11,7 @@ import { AlertCircle, User, UserX, UserCheck, Users, RotateCcw } from 'lucide-re
 import { toast } from 'sonner';
 import { apiClient } from '@/lib/apiClient';
 import { UserService } from '@/services/userService';
-import { useAuth } from '@/contexts/AuthContext';
+import { useAuth } from '@/contexts/AuthContextProvider';
 import { updateUserStatus, getUsersByStatus, reassignTasks, reassignEvents, reassignMedia, getOrphanedItems } from '@/services/userLifecycleService';
 
 interface UserManagementPanelProps {

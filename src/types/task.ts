@@ -78,6 +78,15 @@ export interface Task {
     };
     ratedAt: any; // Timestamp
     files?: TaskFile[];
+    subtasks?: {
+        id: string;
+        title: string;
+        completed: boolean;
+        createdById: string;
+        createdAt: { seconds: number; nanoseconds: number } | string;
+        completedAt?: { seconds: number; nanoseconds: number } | string | null;
+    }[];
+    activity?: any[]; // Task activity/comments log
 }
 
 export type TaskFileSection = 'requester-inputs' | 'team-working-files' | 'team-final-exports';

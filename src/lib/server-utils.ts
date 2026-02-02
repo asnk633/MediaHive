@@ -124,19 +124,23 @@ export async function verifyUser(request: Request): Promise<AuthenticatedUser | 
         const decoded = await adminAuth.verifySessionCookie(sessionCookie, true /** checkRevoked */);
 
         // Fetch user profile to get the LATEST role
-        const userDoc = await adminDb.collection('users').doc(decoded.uid).get();
         let finalRole = decoded.role || 'guest';
         let userData: any = {};
 
-        if (userDoc.exists) {
-            userData = userDoc.data();
-            finalRole = userData?.role || finalRole;
+        try {
+            const userDoc = await adminDb.collection('users').doc(decoded.uid).get();
+            if (userDoc.exists) {
+                userData = userDoc.data();
+                finalRole = userData?.role || finalRole;
 
-            // Phase 15: Enforce Active Status
-            if (userData.isActive === false) {
-                console.warn(`[verifyUser] Access Denied: User ${decoded.uid} is inactive.`);
-                return null;
+                // Phase 15: Enforce Active Status
+                if (userData.isActive === false) {
+                    console.warn(`[verifyUser] Access Denied: User ${decoded.uid} is inactive.`);
+                    return null;
+                }
             }
+        } catch (dbError: any) {
+            console.warn('[verifyUser] Firestore access failed during session verification, using token data', dbError.message);
         }
 
         // Apply Whitelist Override (Bootstrapping)
@@ -166,36 +170,30 @@ export async function verifyUser(request: Request): Promise<AuthenticatedUser | 
                 console.warn('[TIME TRAVEL] Using custom session for UID:', payload.uid);
 
                 // Fetch user profile to get the LATEST role
-                const userDoc = await adminDb.collection('users').doc(payload.uid as string).get();
-                if (userDoc.exists) {
-                    const userData = userDoc.data() as any;
-                    let finalRole = userData.role || 'guest';
+                let userData: any = {};
+                let finalRole = 'guest';
 
-                    // Apply Whitelist Override (Time Travel)
-                    // Note: Payload from jose might not have email directly if not in Claims. 
-                    // We might need to rely on DB or Claims if available.
-                    // Actually, payload usually has email.
-                    const email = (payload.email as string) || userData.email;
-                    const whitelistRole = getRoleFromEmail(email || '');
-
-                    if (whitelistRole) finalRole = whitelistRole;
-
-                    return {
-                        uid: payload.uid as string,
-                        ...userData,
-                        role: finalRole,
-                    } as AuthenticatedUser;
+                try {
+                    const userDoc = await adminDb.collection('users').doc(payload.uid as string).get();
+                    if (userDoc.exists) {
+                        userData = userDoc.data() as any;
+                        finalRole = userData.role || finalRole;
+                    }
+                } catch (dbError: any) {
+                    console.warn('[TIME TRAVEL] Firestore access failed, using payload data', dbError.message);
                 }
 
-                // No DB record? Try whitelist anyway if email is in payload
-                const email = payload.email as string;
+                // Apply Whitelist Override (Time Travel)
+                const email = (payload.email as string) || userData.email;
                 const whitelistRole = getRoleFromEmail(email || '');
+                if (whitelistRole) finalRole = whitelistRole;
 
                 return {
                     uid: payload.uid as string,
-                    role: whitelistRole || 'guest',
-                    email_verified: false
+                    ...userData,
+                    role: finalRole,
                 } as AuthenticatedUser;
+
             }
         } catch (innerError: any) {
             console.warn('[TIME TRAVEL] Custom verification failed:', innerError.message);

@@ -1,10 +1,7 @@
-import { Suspense } from 'react';
+'use client';
+
 import DownloadsClient from './DownloadsClient';
 
 export default function DownloadsPage() {
-  return (
-    <Suspense fallback={<div className="min-h-screen bg-[var(--bg-card)]" />}>
-      <DownloadsClient />
-    </Suspense>
-  );
+  return <DownloadsClient />;
 }

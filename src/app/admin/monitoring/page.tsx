@@ -1,6 +1,5 @@
 'use client';
 
-export const dynamic = 'force-static';
 
 
 import { MonitoringDashboard } from '@/components/MonitoringDashboard';

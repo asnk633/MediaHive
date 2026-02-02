@@ -1,10 +1,7 @@
-import { Suspense } from 'react';
+'use client';
+
 import ReportPreviewClient from './ReportPreviewClient';
 
 export default function ReportPreviewPage() {
-    return (
-        <Suspense fallback={<div>Loading Report...</div>}>
-            <ReportPreviewClient />
-        </Suspense>
-    );
+    return <ReportPreviewClient />;
 }

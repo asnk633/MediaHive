@@ -1,3 +1,4 @@
+'use client';
 
 import MediaClient from './MediaClient';
 

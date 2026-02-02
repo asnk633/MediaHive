@@ -58,14 +58,17 @@ export class NotificationService {
   /**
    * Fetch active (non-archived) notifications for the current user
    */
-  static async getUserNotifications(limitCount = 50): Promise<AppNotification[]> {
+  static async getUserNotifications(options: { limit?: number, signal?: AbortSignal } = {}): Promise<AppNotification[]> {
+    const { limit = 50, signal } = options;
     try {
-      const response = await apiRequest(`?limit=${limitCount}`, {
+      const response = await apiRequest(`?limit=${limit}`, {
         method: 'GET',
-        silent: true
+        silent: true,
+        signal
       });
       return response.notifications || [];
     } catch (error: any) {
+      if (error.name === 'AbortError') throw error;
       const msg = error.message?.toLowerCase() || '';
       if (!msg.includes('unauthorized') && !msg.includes('401')) {
         console.error('Error fetching notifications:', error);
@@ -170,6 +173,12 @@ export function listenNotifications(userId: string, callback: (notifications: Ap
   const pollNotifications = async () => {
     if (isCancelled) return;
 
+    // PRODUCTION PASS: Only poll if tab is visible
+    if (typeof document !== 'undefined' && document.hidden) {
+      pollInterval = setTimeout(pollNotifications, 60000); // Check again in 1m if hidden
+      return;
+    }
+
     try {
       const data = await apiClient(`/api/notifications?limit=50`, {
         method: 'GET',
@@ -184,9 +193,9 @@ export function listenNotifications(userId: string, callback: (notifications: Ap
       }
     }
 
-    // Continue polling every 30 seconds
+    // PRODUCTION PASS: Use 60s window for active polling to save battery/network
     if (!isCancelled) {
-      pollInterval = setTimeout(pollNotifications, 30000);
+      pollInterval = setTimeout(pollNotifications, 60000);
     }
   };
 

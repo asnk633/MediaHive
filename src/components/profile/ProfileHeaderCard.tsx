@@ -3,7 +3,7 @@ import { Settings } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { SafeAvatar } from '@/components/ui/SafeAvatar';
 import { getRoleBadgeColors } from '@/lib/roleStyles';
-import { AuthUser } from '@/contexts/AuthContext';
+import { AuthUser } from '@/contexts/AuthContextProvider';
 
 interface ProfileHeaderCardProps {
     user: AuthUser | null;

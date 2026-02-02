@@ -20,10 +20,9 @@ export async function uploadProfilePicture(userId: string, imageBlob: Blob): Pro
 
         // Upload via our server API (which routes to Google Drive)
         // Note: userId is derived from session on the server side for security
-        const response = await fetch('/api/users/me/avatar', {
+        const response = await apiClient('/api/users/me/avatar', {
             method: 'POST',
             body: formData,
-            credentials: 'include', // Ensure cookies are sent even if origin slightly differs (e.g. specialized environments)
         });
 
         if (!response.ok) {

@@ -1,10 +1,9 @@
 'use client';
 
-export const dynamic = 'force-static';
 
 
 import React from 'react';
-import { useAuth } from '@/contexts/AuthContext';
+import { useAuth } from '@/contexts/AuthContextProvider';
 import { PageLayout } from "@/components/ui/layout/PageLayout";
 import { PageHeader } from "@/components/ui/layout/PageHeader";
 import { DriveQueueView } from '@/components/admin/DriveQueueView';

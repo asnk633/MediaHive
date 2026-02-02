@@ -43,6 +43,18 @@ export const TaskService = {
         const pollTasks = async () => {
             if (isCancelled) return;
 
+            // QUOTA OPTIMIZATION: Only poll frequently in 'firebase' (prod/staging) mode.
+            // In 'emulator' or 'local', we disable automatic polling to save bandwidth/noise,
+            // or poll very infrequently.
+            const isProdMode = process.env.NEXT_PUBLIC_DATA_MODE === 'firebase';
+
+            if (!isProdMode) {
+                console.log('[TaskService] 🌿 Polling disabled in DEV/EMULATOR mode. Manual refresh required.');
+                // Load once then stop
+                callback(loadFromLocal());
+                return;
+            }
+
             try {
                 const data = await apiClient('/api/tasks', {
                     method: 'GET'
@@ -79,6 +91,16 @@ export const TaskService = {
             isCancelled = true;
             if (pollInterval) clearTimeout(pollInterval);
         };
+    },
+
+    getTasks: async (): Promise<Task[]> => {
+        try {
+            const data = await apiClient('/api/tasks', { method: 'GET' });
+            return (data.tasks || []) as Task[];
+        } catch (e) {
+            console.error("Error fetching tasks", e);
+            return loadFromLocal();
+        }
     },
 
     getTask: async (id: string): Promise<Task | null> => {

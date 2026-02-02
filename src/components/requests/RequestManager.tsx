@@ -5,7 +5,7 @@ import { DeviceRequest } from "@/types/deviceRequest";
 import { deviceRequestService } from "@/services/deviceRequestService";
 import { inventoryService } from "@/services/inventoryService";
 import { InventoryItem, InventoryCondition } from "@/types/inventory";
-import { useAuth } from "@/contexts/AuthContext";
+import { useAuth } from "@/contexts/AuthContextProvider";
 import { Button } from "@/components/ui/button";
 import { toast } from "sonner";
 import { format } from "date-fns";
@@ -42,8 +42,6 @@ export default function RequestManager() {
         setLoading(true);
         try {
             // If admin, load all. If team/guest, load own.
-            // Currently service has separate methods, but let's just use getAll for admin.
-            // Wait, standard users shouldn't see ALL.
             let data: DeviceRequest[] = [];
             if (user.role === 'admin') {
                 data = await deviceRequestService.getAllRequests();
@@ -59,7 +57,7 @@ export default function RequestManager() {
         }
     };
 
-    if (loading) return <div className="p-8 text-center">Loading requests...</div>;
+    if (loading) return <div className="p-8 text-center text-slate-500 animate-pulse italic">Syncing requests...</div>;
 
     const pendingRequests = requests.filter(r => r.status === 'pending');
     const activeRequests = requests.filter(r => ['approved', 'issued', 'waiting_inspection'].includes(r.status));
@@ -115,7 +113,10 @@ function RequestCard({ request, isAdmin, onRefresh }: { request: DeviceRequest, 
         waiting_inspection: "bg-purple-500/20 text-purple-300 border-purple-500/30",
     };
 
+    const [isActionLoading, setIsActionLoading] = useState<string | null>(null);
+
     const handleAction = async (action: 'approve' | 'reject' | 'issue' | 'return' | 'mark_returned', payload?: any) => {
+        setIsActionLoading(action);
         try {
             if (action === 'approve') {
                 await deviceRequestService.updateRequest(request.id, { status: 'approved' });
@@ -124,42 +125,33 @@ function RequestCard({ request, isAdmin, onRefresh }: { request: DeviceRequest, 
                 await deviceRequestService.updateRequest(request.id, { status: 'rejected' });
                 toast.success("Request rejected.");
             } else if (action === 'issue') {
-                // Payload should contain itemId and condition
                 if (!payload?.itemId) { toast.error("Select an item to issue."); return; }
-                await deviceRequestService.issueItem(request.id, payload.itemId, user!.uid, 'good'); // Assuming good condition on issue for now, or add selector
+                await deviceRequestService.issueItem(request.id, payload.itemId, user!.uid, 'good');
                 toast.success("Item issued successfully.");
             } else if (action === 'return') {
-                // Payload: condition, notes, logId
                 if (!payload?.condition) { toast.error("Select return condition."); return; }
-
-                // We need active Log ID.
                 const logId = await deviceRequestService.getActiveLogId(request.id);
                 if (!logId) { toast.error("Active log not found for this request."); return; }
-
                 await deviceRequestService.returnItemWithLogId(request.id, logId, user!.uid, payload.condition, payload.notes);
-                toast.success("Item returned.");
             } else if (action === 'mark_returned') {
                 await deviceRequestService.updateRequest(request.id, { status: 'waiting_inspection' });
-                toast.success("Marked as returned. Admin notified.");
             }
             onRefresh();
         } catch (error: any) {
             console.error(error);
             toast.error(error.message || "Action failed.");
+        } finally {
+            setIsActionLoading(null);
         }
     };
 
     const [showIssueDialog, setShowIssueDialog] = useState(false);
 
-    const handleIssueClick = () => {
-        setShowIssueDialog(true);
-    };
-
     const getSafeDate = (dateVal: any) => {
         if (!dateVal) return new Date();
-        if (dateVal.toDate) return dateVal.toDate(); // Firestore Timestamp
-        if (typeof dateVal === 'object' && 'seconds' in dateVal) return new Date(dateVal.seconds * 1000); // Serialized Timestamp
-        return new Date(dateVal); // String or Number
+        if (dateVal.toDate) return dateVal.toDate();
+        if (typeof dateVal === 'object' && 'seconds' in dateVal) return new Date(dateVal.seconds * 1000);
+        return new Date(dateVal);
     };
 
     const start = getSafeDate(request.startDate);
@@ -194,7 +186,6 @@ function RequestCard({ request, isAdmin, onRefresh }: { request: DeviceRequest, 
                 </div>
             </div>
 
-            {/* Actions */}
             <div className="flex items-center gap-2">
                 {isAdmin ? (
                     <>
@@ -202,22 +193,56 @@ function RequestCard({ request, isAdmin, onRefresh }: { request: DeviceRequest, 
                             <>
                                 {request.status === 'pending' && (
                                     <>
-                                        <Button size="sm" variant="ghost" className="text-red-400 hover:bg-red-500/10 hover:text-red-300" onClick={() => handleAction('reject')}>Reject</Button>
-                                        <Button size="sm" className="bg-blue-600 hover:bg-blue-500 text-white" onClick={() => handleAction('approve')}>Approve</Button>
+                                        <Button
+                                            size="sm"
+                                            variant="ghost"
+                                            className="text-red-400 hover:bg-red-500/10 hover:text-red-300"
+                                            onClick={() => handleAction('reject')}
+                                            disabled={!!isActionLoading}
+                                        >
+                                            {isActionLoading === 'reject' ? 'Rejecting...' : 'Reject'}
+                                        </Button>
+                                        <Button
+                                            size="sm"
+                                            className="bg-blue-600 hover:bg-blue-500 text-white"
+                                            onClick={() => handleAction('approve')}
+                                            disabled={!!isActionLoading}
+                                        >
+                                            {isActionLoading === 'approve' ? (
+                                                <>
+                                                    <div className="animate-spin rounded-full h-3.5 w-3.5 border-2 border-white/30 border-t-white mr-2" />
+                                                    Approving...
+                                                </>
+                                            ) : 'Approve'}
+                                        </Button>
                                         <div className="h-4 w-px bg-white/10 mx-1" />
                                     </>
                                 )}
-                                <Button size="sm" className="bg-green-600 hover:bg-green-500 text-white gap-2" onClick={handleIssueClick}>
-                                    <Package size={16} /> Issue Now
+                                <Button
+                                    size="sm"
+                                    className="bg-green-600 hover:bg-green-500 text-white gap-2"
+                                    onClick={() => setShowIssueDialog(true)}
+                                    disabled={!!isActionLoading}
+                                >
+                                    {isActionLoading === 'issue' ? (
+                                        <>
+                                            <div className="animate-spin rounded-full h-3.5 w-3.5 border-2 border-white/30 border-t-white" />
+                                            Issuing...
+                                        </>
+                                    ) : (
+                                        <>
+                                            <Package size={16} /> Issue Now
+                                        </>
+                                    )}
                                 </Button>
 
                                 <IssueDialog
                                     open={showIssueDialog}
                                     onOpenChange={setShowIssueDialog}
                                     request={request}
+                                    isActionLoading={isActionLoading === 'issue'}
                                     onIssue={(itemId) => {
                                         handleAction('issue', { itemId });
-                                        setShowIssueDialog(false);
                                     }}
                                 />
                             </>
@@ -228,12 +253,26 @@ function RequestCard({ request, isAdmin, onRefresh }: { request: DeviceRequest, 
                         )}
                     </>
                 ) : (
-                    // Guest / Standard User Actions
                     <>
                         {request.status === 'issued' && (
-                            <Button size="sm" variant="outline" className="border-purple-500/50 text-purple-300 hover:bg-purple-500/10" onClick={() => handleAction('mark_returned')}>
-                                <CornerDownLeft size={16} className="mr-2" />
-                                Mark Returned
+                            <Button
+                                size="sm"
+                                variant="outline"
+                                className="border-purple-500/50 text-purple-300 hover:bg-purple-500/10"
+                                onClick={() => handleAction('mark_returned')}
+                                disabled={!!isActionLoading}
+                            >
+                                {isActionLoading === 'mark_returned' ? (
+                                    <>
+                                        <div className="animate-spin rounded-full h-3.5 w-3.5 border-2 border-purple-500/30 border-t-purple-500 mr-2" />
+                                        Processing...
+                                    </>
+                                ) : (
+                                    <>
+                                        <CornerDownLeft size={16} className="mr-2" />
+                                        Mark Returned
+                                    </>
+                                )}
                             </Button>
                         )}
                         {request.status === 'waiting_inspection' && (
@@ -246,31 +285,22 @@ function RequestCard({ request, isAdmin, onRefresh }: { request: DeviceRequest, 
     );
 }
 
-// Dialogs
-
-function IssueDialog({ request, onIssue, open, onOpenChange }: { request: DeviceRequest, onIssue: (itemId: string) => void, open: boolean, onOpenChange: (open: boolean) => void }) {
+function IssueDialog({ request, onIssue, open, onOpenChange, isActionLoading }: { request: DeviceRequest, onIssue: (itemId: string) => void, open: boolean, onOpenChange: (open: boolean) => void, isActionLoading: boolean }) {
     const [items, setItems] = useState<InventoryItem[]>([]);
     const [selectedId, setSelectedId] = useState("");
-
-    // Derived state
     const isDirectIssue = !!request.assignedItemId;
 
     useEffect(() => {
         if (!open) return;
-
         if (isDirectIssue) {
             setSelectedId(request.assignedItemId!);
             return;
         }
-
-        // Load available items
         const load = async () => {
             try {
                 const all = await inventoryService.getAll();
                 const avail = all.filter(i => (i.status as string) === 'available' || !i.status);
                 setItems(avail);
-
-                // Auto-fallback: Try to match by name exactly
                 if (request.description) {
                     const match = avail.find(i => i.name.toLowerCase() === request.description?.toLowerCase());
                     if (match) setSelectedId(match.id);
@@ -282,13 +312,15 @@ function IssueDialog({ request, onIssue, open, onOpenChange }: { request: Device
         load();
     }, [request, open, isDirectIssue]);
 
-    const filteredItems = items.filter(i =>
+    const displayItems = items.filter(i =>
         i.category.toLowerCase().includes(request.itemCategory.toLowerCase()) ||
         request.itemCategory.toLowerCase().includes(i.category.toLowerCase()) ||
         request.itemCategory === "Other"
-    );
-    // Fallback to all if no match
-    const displayItems = filteredItems.length > 0 ? filteredItems : items;
+    ).length > 0 ? items.filter(i =>
+        i.category.toLowerCase().includes(request.itemCategory.toLowerCase()) ||
+        request.itemCategory.toLowerCase().includes(i.category.toLowerCase()) ||
+        request.itemCategory === "Other"
+    ) : items;
 
     return (
         <Dialog open={open} onOpenChange={onOpenChange}>
@@ -305,14 +337,12 @@ function IssueDialog({ request, onIssue, open, onOpenChange }: { request: Device
                             <p className="text-slate-300 mt-1">
                                 Confirm handing over <span className="font-bold text-white">{request.description}</span>?
                             </p>
-                            <div className="text-xs text-slate-500 mt-2">Asset Link Pre-Verified ({request.assignedItemName || 'Linked'})</div>
                         </div>
                     </div>
                 ) : (
                     <div className="space-y-4 my-4">
                         <div className="p-3 bg-blue-500/10 border border-blue-500/20 rounded-lg text-sm text-blue-200">
                             Requesting: <span className="font-bold text-white">{request.description}</span>
-                            <div className="text-xs text-blue-300/70 mt-1">Category: {request.itemCategory}</div>
                         </div>
                         <div className="space-y-2">
                             <Label>Select Asset to Link</Label>
@@ -333,13 +363,17 @@ function IssueDialog({ request, onIssue, open, onOpenChange }: { request: Device
                 )}
 
                 <DialogFooter>
-                    <Button onClick={() => { onIssue(selectedId); }} disabled={!selectedId} className="w-full sm:w-auto bg-green-600 hover:bg-green-500">
-                        {isDirectIssue ? 'Confirm & Issue' : 'Confirm Issue'}
+                    <Button
+                        onClick={() => onIssue(selectedId)}
+                        disabled={!selectedId || isActionLoading}
+                        className="w-full sm:w-auto bg-green-600 hover:bg-green-500"
+                    >
+                        {isActionLoading ? "Processing..." : "Confirm Issue"}
                     </Button>
                 </DialogFooter>
             </DialogContent>
         </Dialog>
-    )
+    );
 }
 
 function ReturnDialog({ request, onReturn }: { request: DeviceRequest, onReturn: (condition: InventoryCondition, notes: string) => void }) {
@@ -359,7 +393,7 @@ function ReturnDialog({ request, onReturn }: { request: DeviceRequest, onReturn:
     return (
         <Dialog>
             <DialogTrigger asChild>
-                <Button size="sm" variant={isInspection ? "default" : "outline"} className={isInspection ? "bg-purple-600 hover:bg-purple-500 text-white gap-2 border-none animate-pulse shadow-lg shadow-purple-500/20" : "border-[#ffffff1a] bg-slate-800 text-slate-300 gap-2"}>
+                <Button size="sm" variant={isInspection ? "default" : "outline"} className={isInspection ? "bg-purple-600 hover:bg-purple-500 text-white gap-2 border-none animate-pulse" : "border-[#ffffff1a] bg-slate-800 text-slate-300 gap-2"}>
                     {isInspection ? <AlertTriangle size={16} /> : <CornerDownLeft size={16} />}
                     {isInspection ? "Inspect & Restock" : "Restock Device"}
                 </Button>
@@ -369,15 +403,6 @@ function ReturnDialog({ request, onReturn }: { request: DeviceRequest, onReturn:
                     <DialogTitle>{isInspection ? "Inspect Returned Item" : "Process Device Restock"}</DialogTitle>
                 </DialogHeader>
                 <div className="space-y-4 my-4">
-                    {isInspection && (
-                        <div className="p-3 bg-purple-500/10 border border-purple-500/20 rounded-lg flex items-start gap-3">
-                            <AlertTriangle className="text-purple-400 shrink-0 mt-0.5" size={16} />
-                            <div className="text-sm text-purple-200">
-                                <strong>User marked as returned.</strong> Verify the item's condition before restocking.
-                            </div>
-                        </div>
-                    )}
-
                     <div className="p-3 bg-slate-800 rounded-lg flex justify-between">
                         <span className="text-slate-400">Item:</span>
                         <span className="font-bold text-white">{itemName || 'Loading...'}</span>
@@ -409,5 +434,5 @@ function ReturnDialog({ request, onReturn }: { request: DeviceRequest, onReturn:
                 </DialogFooter>
             </DialogContent>
         </Dialog>
-    )
+    );
 }

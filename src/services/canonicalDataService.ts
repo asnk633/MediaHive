@@ -1,9 +1,8 @@
-import { getFirebaseAuth } from '@/firebase/client';
 import { apiClient } from '@/lib/apiClient';
 import { Task } from '@/types/task';
 import { Event } from '@/types/event';
-import { User } from '@/types/user';
-import { SmartRulesEngine } from './smartRulesEngine';
+import { SmartRulesEngine } from '@/services/smartRulesEngine';
+import { TASK_FETCH_LIMIT, EVENT_FETCH_LIMIT, COMPLETED_TASK_RETENTION_DAYS } from '@/config/systemLimits';
 
 // Helper to check for network/auth errors to avoid console noise
 const isNetworkError = (error: any) => {
@@ -11,9 +10,10 @@ const isNetworkError = (error: any) => {
   const code = error?.code || '';
   return (
     code === 'auth/network-request-failed' ||
-    msg.includes('offline') ||
     msg.includes('network') ||
-    msg.includes('Connection failed')
+    msg.includes('timeout') ||
+    msg.includes('Unauthorized') ||
+    msg.includes('401')
   );
 };
 
@@ -58,6 +58,14 @@ export interface EventStats {
   next30Days: number;
 }
 
+/**
+ * CanonicalDataService
+ * 
+ * Centralized service for fetching and processing canonical data (tasks, events).
+ * Applies role-based filtering, smart rules, and virtual cleanup.
+ * 
+ * CRITICAL: All data fetching goes through this service to ensure consistency.
+ */
 export class CanonicalDataService {
   /**
    * Get tasks with consistent filtering based on user role and filters
@@ -74,22 +82,27 @@ export class CanonicalDataService {
       if (filters.assignedTo) queryParams.append('assignedTo', filters.assignedTo);
       if (filters.createdBy) queryParams.append('createdBy', filters.createdBy);
 
-      // Default to 100 to support client-side filtering compatibility (e.g. MyWorkflowWidget)
+      // Default to TASK_FETCH_LIMIT to support client-side filtering compatibility (e.g. MyWorkflowWidget)
       // This is a safety cap to prevent O(N) reads while preserving UI functionality
-      queryParams.append('limit', '100');
+      queryParams.append('limit', String(TASK_FETCH_LIMIT));
 
+      const fetchStart = Date.now();
+      console.log(`[BOOT][STEP] Fetching tasks for role: ${filters.role || 'unknown'}`);
       const data = await apiClient(`/api/tasks?${queryParams.toString()}`, {
         method: 'GET',
         silent: true
       });
+      console.log(`[BOOT][DONE] Tasks fetched in ${Date.now() - fetchStart}ms`);
 
       const tasks = data.tasks || [];
+      const total = data.total || tasks.length; // Backend should provide total
+      const isCapped = tasks.length >= TASK_FETCH_LIMIT && total > tasks.length;
 
       // Apply Smart Rules to tasks and Filter (Virtual Cleanup)
       const now = new Date();
-      const sevenDaysAgo = new Date(now.getTime() - 7 * 24 * 60 * 60 * 1000);
+      const sevenDaysAgo = new Date(now.getTime() - COMPLETED_TASK_RETENTION_DAYS * 24 * 60 * 60 * 1000);
 
-      return tasks
+      const processedTasks = tasks
         .filter((task: Task) => {
           // 1. Exclude explicitly archived tasks
           if ((task as any).isArchived) return false;
@@ -108,6 +121,23 @@ export class CanonicalDataService {
           ...task,
           smartMetadata: SmartRulesEngine.processTask(task)
         }));
+
+      // CRITICAL: Attach metadata for UI disclosure
+      (processedTasks as any).__meta = {
+        total,
+        isCapped,
+        limit: TASK_FETCH_LIMIT
+      };
+
+      // DEGRADATION TELEMETRY: Log when system is not showing full truth
+      if (isCapped) {
+        console.warn(
+          `[DEGRADATION] Tasks capped at ${TASK_FETCH_LIMIT} of ${total} total. ` +
+          `Showing partial results. Filters: ${JSON.stringify(filters)}`
+        );
+      }
+
+      return processedTasks;
     } catch (error: any) {
       if (!isNetworkError(error) && !error.message?.includes('Unauthorized')) {
         console.error('Error fetching tasks:', error);
@@ -119,12 +149,12 @@ export class CanonicalDataService {
   /**
    * Get task statistics with consistent filtering
    */
-  static async getTaskStats(filters: TaskFilters = {}): Promise<TaskStats> {
-    // TEMP: Disable API call for launch stability to prevent 404s
-    const API_TASK_STATS_ENABLED = false;
+  static async getTaskStats(filters: TaskFilters = {}, options: { disableFallback?: boolean } = {}): Promise<TaskStats> {
+    // Gate API stats behind dev mode flag
+    const API_TASK_STATS_ENABLED = process.env.NEXT_PUBLIC_DEV_NO_API !== 'true';
 
     if (!API_TASK_STATS_ENABLED) {
-      // console.warn('[CanonicalDataService] /api/tasks/stats disabled, using client-side aggregation');
+      if (options.disableFallback) return this.getEmptyStats();
       const tasks = await this.getTasks(filters);
       return this.calculateStatsFromTasks(tasks);
     }
@@ -143,18 +173,21 @@ export class CanonicalDataService {
         silent: true
       });
 
-      // Augment API stats with client-side robust calculation if needed, 
-      // or if the API doesn't return the new fields yet.
-      // Ideally API returns it, but for safety in this refactor we can re-calculate from tasks if we fetched them, 
-      // but here we only fetched stats. 
-      // Safe Fallback: If any key field is missing, we might want to fetch tasks. 
-      // For now, let's assume if API doesn't give it, we treat it as 0 unless we fetch tasks.
-      // Actually, simplest path for this Refactor: Just always use client-side aggregation for now to ensure 100% accuracy with new requirements without touching API code.
-      // Reverting to client-side aggregation for immediate stability on new "dueToday" requirement.
-      const tasks = await this.getTasks(filters);
-      return this.calculateStatsFromTasks(tasks);
+      // If we got data, return it (calculating derived fields if missing)
+      if (data && typeof data.todo === 'number') {
+        // We could still augment if needed, but assuming API is authority
+        return data as TaskStats;
+      }
+
+      // If API returned structure mismatch, fallback logic triggers
+      throw new Error('Invalid Stats Data');
 
     } catch (error: any) {
+      if (options.disableFallback) {
+        console.warn('[CanonicalDataService] Stats API failed and fallback disabled.', error.message);
+        return this.getEmptyStats();
+      }
+
       if (error.message?.includes('Not Found') || error.message?.includes('404')) {
         console.warn('[CanonicalDataService] /api/tasks/stats missing, falling back to client-side aggregation');
         const tasks = await this.getTasks(filters);
@@ -185,7 +218,7 @@ export class CanonicalDataService {
     };
   }
 
-  private static calculateStatsFromTasks(tasks: Task[]): TaskStats {
+  public static calculateStatsFromTasks(tasks: Task[]): TaskStats {
     const stats = this.getEmptyStats();
     const now = new Date();
     const todayStart = new Date(now.getFullYear(), now.getMonth(), now.getDate());
@@ -239,15 +272,20 @@ export class CanonicalDataService {
       if (filters.status) filters.status.forEach(status => queryParams.append('status', status));
       if (filters.createdBy) queryParams.append('createdBy', filters.createdBy);
 
-      // Limit to 100 recent events for safety
-      queryParams.append('limit', '100');
+      // Limit to EVENT_FETCH_LIMIT recent events for safety
+      queryParams.append('limit', String(EVENT_FETCH_LIMIT));
 
+      const fetchStart = Date.now();
+      console.log(`[BOOT][STEP] Fetching events for role: ${filters.role || 'unknown'}`);
       const data = await apiClient(`/api/events?${queryParams.toString()}`, {
         method: 'GET',
         silent: true
       });
+      console.log(`[BOOT][DONE] Events fetched in ${Date.now() - fetchStart}ms`);
 
       const userEvents = data.events || [];
+      const total = data.total || userEvents.length;
+      const isCapped = userEvents.length >= EVENT_FETCH_LIMIT && total > userEvents.length;
 
       // Merge System Events logic (similar to EventService)
       try {
@@ -267,7 +305,24 @@ export class CanonicalDataService {
           // eslint-disable-next-line @typescript-eslint/no-explicit-any
         })) as any[];
 
-        return [...userEvents, ...formattedSystemEvents];
+        const allEvents = [...userEvents, ...formattedSystemEvents];
+
+        // Attach metadata for UI disclosure
+        (allEvents as any).__meta = {
+          total,
+          isCapped,
+          limit: EVENT_FETCH_LIMIT
+        };
+
+        // DEGRADATION TELEMETRY: Log when system is not showing full truth
+        if (isCapped) {
+          console.warn(
+            `[DEGRADATION] Events capped at ${EVENT_FETCH_LIMIT} of ${total} total. ` +
+            `Showing partial results. Filters: ${JSON.stringify(filters)}`
+          );
+        }
+
+        return allEvents;
       } catch (err) {
         console.warn('Failed to load system events in CanonicalDataService:', err);
         return userEvents;
@@ -391,8 +446,10 @@ export class CanonicalDataService {
    * Get media files for admin confidence panel
    */
   static async getMediaFiles(institutionId?: string) {
-    // TEMP: API disabled for launch stability
-    // console.warn('[CanonicalDataService] getMediaFiles disabled (no API)');
+    // Gate API call behind dev mode flag
+    if (process.env.NEXT_PUBLIC_DEV_NO_API === 'true') {
+      return [];
+    }
     return [];
   }
 

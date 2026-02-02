@@ -7,7 +7,8 @@ import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { User, Shield, Eye, FileText, Home, ListTodo, Users } from 'lucide-react';
-import { useAuth } from '@/contexts/AuthContext';
+import { useAuth } from '@/contexts/AuthContextProvider';
+import { nativeNavigate } from '@/lib/utils';
 
 interface FirstLoginWelcomeProps {
   userRole: 'admin' | 'team' | 'guest';
@@ -25,7 +26,7 @@ export const FirstLoginWelcome: React.FC<FirstLoginWelcomeProps> = ({ userRole, 
     const checkFeatureAndStatus = async () => {
       const enabled = isFeatureEnabled('inviteAccessLayer');
       setIsFeatureEnabledFlag(enabled);
-      
+
       if (enabled && user) {
         // Check if this is the user's first login
         try {
@@ -49,14 +50,14 @@ export const FirstLoginWelcome: React.FC<FirstLoginWelcomeProps> = ({ userRole, 
     // Mark as seen in localStorage
     localStorage.setItem(`welcome-seen-${userId}`, 'true');
     setShowWelcome(false);
-    
+
     // Redirect based on role
     if (userRole === 'admin') {
-      router.push('/admin');
+      nativeNavigate('/admin', router);
     } else if (userRole === 'team') {
-      router.push('/tasks');
+      nativeNavigate('/tasks', router);
     } else { // guest
-      router.push('/tasks/assigned');
+      nativeNavigate('/tasks/assigned', router);
     }
   };
 
@@ -130,13 +131,13 @@ export const FirstLoginWelcome: React.FC<FirstLoginWelcomeProps> = ({ userRole, 
             {welcomeContent.title}
           </CardTitle>
           <div className="mt-2">
-            <Badge 
-              variant="outline" 
+            <Badge
+              variant="outline"
               className={
-                userRole === 'admin' 
-                  ? 'border-red-500/30 text-red-300' 
-                  : userRole === 'team' 
-                    ? 'border-blue-500/30 text-blue-300' 
+                userRole === 'admin'
+                  ? 'border-red-500/30 text-red-300'
+                  : userRole === 'team'
+                    ? 'border-blue-500/30 text-blue-300'
                     : 'border-green-500/30 text-green-300'
               }
             >
@@ -146,7 +147,7 @@ export const FirstLoginWelcome: React.FC<FirstLoginWelcomeProps> = ({ userRole, 
         </CardHeader>
         <CardContent>
           <p className="text-gray-300 mb-4">{welcomeContent.message}</p>
-          
+
           <div className="space-y-2 mb-6">
             {welcomeContent.hints.map((hint, index) => (
               <div key={index} className="flex items-start gap-2">
@@ -155,7 +156,7 @@ export const FirstLoginWelcome: React.FC<FirstLoginWelcomeProps> = ({ userRole, 
               </div>
             ))}
           </div>
-          
+
           <div className="flex gap-2">
             <Button
               variant="outline"
@@ -171,7 +172,7 @@ export const FirstLoginWelcome: React.FC<FirstLoginWelcomeProps> = ({ userRole, 
               Continue to Dashboard
             </Button>
           </div>
-          
+
           <div className="mt-4 text-center text-xs text-gray-500">
             {userRole === 'admin' && (
               <div className="flex items-center justify-center gap-1">

@@ -1,12 +1,13 @@
 "use client";
 
 import React, { useState } from "react";
-import { useRouter, useSearchParams } from "next/navigation";
+import { useRouter } from "next/navigation";
+import { nativeNavigate } from "@/lib/utils";
 import { DeviceRequest } from "@/types/deviceRequest";
 import { deviceRequestService } from "@/services/deviceRequestService";
 import { inventoryService } from "@/services/inventoryService";
 import { InventoryItem } from "@/types/inventory";
-import { useAuth } from "@/contexts/AuthContext";
+import { useAuth } from "@/contexts/AuthContextProvider";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -24,7 +25,7 @@ const CATEGORIES = [
 export default function DeviceRequestForm() {
     const { user } = useAuth();
     const router = useRouter();
-    const searchParams = useSearchParams();
+    const searchParams = typeof window !== 'undefined' ? new URLSearchParams(window.location.search) : new URLSearchParams();
     const itemIdParam = searchParams.get('itemId');
 
     const [loading, setLoading] = useState(false);
@@ -121,7 +122,7 @@ export default function DeviceRequestForm() {
             });
 
             toast.success("Request submitted successfully!");
-            router.push('/inventory/requests'); // Redirect to My Requests
+            nativeNavigate('/inventory/requests', router, 'DeviceRequest (Success)'); // Redirect to My Requests
         } catch (error) {
             console.error(error);
             toast.error("Failed to submit request.");

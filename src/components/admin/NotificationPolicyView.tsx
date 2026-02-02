@@ -3,6 +3,7 @@
 import React, { useState, useEffect } from 'react';
 import { AutomationRule, RuleAction } from '@/types/automation-rules';
 import { Loader2, Save, Bell, AlertTriangle, Clock, Play, ChevronDown, Check } from 'lucide-react';
+import { apiClient } from '@/lib/apiClient';
 
 // Configuration Mapping
 const POLICY_CONFIG = [
@@ -111,12 +112,9 @@ export default function NotificationPolicyView() {
     const fetchRules = async () => {
         setLoading(true);
         try {
-            const res = await fetch('/api/admin/automation-rules');
-            if (res.ok) {
-                const json = await res.json();
-                setRules(json.custom);
-                setSystemRules(json.system);
-            }
+            const json = await apiClient('/api/admin/automation-rules');
+            setRules(json.custom);
+            setSystemRules(json.system);
         } catch (e) {
             console.error(e);
         } finally {
@@ -164,22 +162,17 @@ export default function NotificationPolicyView() {
                 payload.conditions.push({ field: config.field, operator: 'gt', value: 0 });
             }
 
-            const createRes = await fetch('/api/admin/automation-rules', {
+            const createRes = await apiClient('/api/admin/automation-rules', {
                 method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify(payload)
             });
+            
+            const { rule } = createRes;
 
-            if (!createRes.ok) throw new Error('Failed to create draft');
-            const { rule } = await createRes.json();
-
-            const activateRes = await fetch('/api/admin/automation-rules', {
+            await apiClient('/api/admin/automation-rules', {
                 method: 'PATCH',
-                headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({ id: rule.id, command: 'activate' })
             });
-
-            if (!activateRes.ok) throw new Error('Failed to activate');
 
             await fetchRules();
         } catch (e) {

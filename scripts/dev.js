@@ -2,6 +2,15 @@ const { findAvailablePort } = require("./findAvailablePort");
 const { spawn } = require("child_process");
 
 (async () => {
+  // Ensure middleware is enabled (in case a build script left it disabled)
+  try {
+    const { execSync } = require('child_process');
+    execSync('node scripts/toggle-middleware.js enable', { stdio: 'inherit' });
+  } catch (e) {
+    console.warn('Failed to restore middleware:', e.message);
+  }
+
+  console.log("DEV.JS API =", process.env.NEXT_PUBLIC_API_URL);
   // In CI, use fixed port 3000 to match Playwright config
   // Otherwise, find an available port for local development
   // Force port 3000 to avoid confusion

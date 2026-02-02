@@ -1,20 +1,16 @@
 'use client';
 
-import React, { Suspense } from "react";
+import React from "react";
 import { ArrowLeft } from "lucide-react";
-import { useRouter, useSearchParams } from "next/navigation";
+import { useRouter } from "next/navigation";
 
 export default function NotificationDetail() {
-    return (
-        <Suspense fallback={<div className="p-6">Loading...</div>}>
-            <NotificationDetailContent />
-        </Suspense>
-    );
+    return <NotificationDetailContent />;
 }
 
 function NotificationDetailContent() {
     const router = useRouter();
-    const searchParams = useSearchParams();
+    const searchParams = typeof window !== 'undefined' ? new URLSearchParams(window.location.search) : new URLSearchParams();
     const id = searchParams.get('id');
 
     return (

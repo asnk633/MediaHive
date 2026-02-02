@@ -2,7 +2,7 @@ import React from 'react';
 import { Task } from '@/types/task';
 import { formatDistanceToNow } from 'date-fns';
 import { Activity, PlusCircle, Edit3 } from 'lucide-react';
-import { cn } from '@/lib/utils';
+import { cn, nativeNavigate } from '@/lib/utils';
 import { useRouter } from 'next/navigation';
 
 interface GuestActivityFeedProps {
@@ -61,7 +61,7 @@ export const GuestActivityFeed = ({ tasks }: GuestActivityFeedProps) => {
                     <div
                         key={`${act.id}-${act.type}`}
                         className="flex gap-3 relative pb-4 last:pb-0 cursor-pointer group"
-                        onClick={() => router.push(`/tasks/view?id=${act.id}`)}
+                        onClick={() => nativeNavigate(`/tasks/view?id=${act.id}`, router, 'GuestActivityFeed (Task)')}
                     >
                         {/* Timeline Line */}
                         <div className="absolute left-[9px] top-8 bottom-0 w-px bg-white/10 last:hidden" />

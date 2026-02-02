@@ -1,0 +1,162 @@
+﻿
+Running 6 tests using 3 workers
+
+  Γ£ÿ  1 [chromium] ΓÇ║ e2e\playwright\auth-invariants.spec.ts:16:9 ΓÇ║ Auth Invariants ΓÇ║ Unauthenticated user visiting /home redirects to /login (5.4s)
+  Γ£ÿ  3 [webkit] ΓÇ║ e2e\playwright\auth-invariants.spec.ts:16:9 ΓÇ║ Auth Invariants ΓÇ║ Unauthenticated user visiting /home redirects to /login (5.7s)
+  Γ£ÿ  2 [firefox] ΓÇ║ e2e\playwright\auth-invariants.spec.ts:16:9 ΓÇ║ Auth Invariants ΓÇ║ Unauthenticated user visiting /home redirects to /login (6.1s)
+  Γ£ÿ  4 [chromium] ΓÇ║ e2e\playwright\auth-invariants.spec.ts:28:9 ΓÇ║ Auth Invariants ΓÇ║ Full Auth Cycle: Login -> Redirect -> Logout -> Persistence (20.6s)
+  Γ£ÿ  5 [webkit] ΓÇ║ e2e\playwright\auth-invariants.spec.ts:28:9 ΓÇ║ Auth Invariants ΓÇ║ Full Auth Cycle: Login -> Redirect -> Logout -> Persistence (21.8s)
+  Γ£ÿ  6 [firefox] ΓÇ║ e2e\playwright\auth-invariants.spec.ts:28:9 ΓÇ║ Auth Invariants ΓÇ║ Full Auth Cycle: Login -> Redirect -> Logout -> Persistence (21.4s)
+
+
+  1) [chromium] ΓÇ║ e2e\playwright\auth-invariants.spec.ts:16:9 ΓÇ║ Auth Invariants ΓÇ║ Unauthenticated user visiting /home redirects to /login 
+
+    Error: [2mexpect([22m[31mpage[39m[2m).[22mtoHaveURL[2m([22m[32mexpected[39m[2m)[22m failed
+
+    Expected pattern: [32m/\/login\/?/[39m
+    Received string:  [31m"http://localhost:3000/home/"[39m
+    Timeout: 5000ms
+
+    Call log:
+    [2m  - Expect "toHaveURL" with timeout 5000ms[22m
+    [2m    9 ├ù unexpected value "http://localhost:3000/home/"[22m
+
+
+      20 |         // Should redirect to login
+      21 |         // Use a regex to handle trailing slashes and potential query params
+    > 22 |         await expect(page).toHaveURL(/\/login\/?/);
+         |                            ^
+      23 |
+      24 |         // Verify we see the login welcome text
+      25 |         await expect(page.locator('h1')).toContainText('Welcome');
+        at D:\MediaHive App\e2e\playwright\auth-invariants.spec.ts:22:28
+
+    Error Context: test-results\auth-invariants-Auth-Invar-75c61-ing-home-redirects-to-login-chromium\error-context.md
+
+  2) [chromium] ΓÇ║ e2e\playwright\auth-invariants.spec.ts:28:9 ΓÇ║ Auth Invariants ΓÇ║ Full Auth Cycle: Login -> Redirect -> Logout -> Persistence 
+
+    Error: [2mexpect([22m[31mpage[39m[2m).[22mtoHaveURL[2m([22m[32mexpected[39m[2m)[22m failed
+
+    Expected pattern: [32m/\/home\/?/[39m
+    Received string:  [31m"http://localhost:3000/login/"[39m
+    Timeout: 20000ms
+
+    Call log:
+    [2m  - Expect "toHaveURL" with timeout 20000ms[22m
+    [2m    23 ├ù unexpected value "http://localhost:3000/login/"[22m
+
+
+      37 |         // 3. Authenticated: Visit /login should redirect to /home
+      38 |         // The app might already be navigating to /home, so we wait for /home first
+    > 39 |         await expect(page).toHaveURL(/\/home\/?/, { timeout: 20000 });
+         |                            ^
+      40 |
+      41 |         // Now try going back to /login manually
+      42 |         await page.goto('/login/');
+        at D:\MediaHive App\e2e\playwright\auth-invariants.spec.ts:39:28
+
+    Error Context: test-results\auth-invariants-Auth-Invar-a5676-rect---Logout---Persistence-chromium\error-context.md
+
+  3) [firefox] ΓÇ║ e2e\playwright\auth-invariants.spec.ts:16:9 ΓÇ║ Auth Invariants ΓÇ║ Unauthenticated user visiting /home redirects to /login 
+
+    Error: [2mexpect([22m[31mpage[39m[2m).[22mtoHaveURL[2m([22m[32mexpected[39m[2m)[22m failed
+
+    Expected pattern: [32m/\/login\/?/[39m
+    Received string:  [31m"http://localhost:3000/home/"[39m
+    Timeout: 5000ms
+
+    Call log:
+    [2m  - Expect "toHaveURL" with timeout 5000ms[22m
+    [2m    9 ├ù unexpected value "http://localhost:3000/home/"[22m
+
+
+      20 |         // Should redirect to login
+      21 |         // Use a regex to handle trailing slashes and potential query params
+    > 22 |         await expect(page).toHaveURL(/\/login\/?/);
+         |                            ^
+      23 |
+      24 |         // Verify we see the login welcome text
+      25 |         await expect(page.locator('h1')).toContainText('Welcome');
+        at D:\MediaHive App\e2e\playwright\auth-invariants.spec.ts:22:28
+
+    Error Context: test-results\auth-invariants-Auth-Invar-75c61-ing-home-redirects-to-login-firefox\error-context.md
+
+  4) [firefox] ΓÇ║ e2e\playwright\auth-invariants.spec.ts:28:9 ΓÇ║ Auth Invariants ΓÇ║ Full Auth Cycle: Login -> Redirect -> Logout -> Persistence 
+
+    Error: [2mexpect([22m[31mpage[39m[2m).[22mtoHaveURL[2m([22m[32mexpected[39m[2m)[22m failed
+
+    Expected pattern: [32m/\/home\/?/[39m
+    Received string:  [31m"http://localhost:3000/login/"[39m
+    Timeout: 20000ms
+
+    Call log:
+    [2m  - Expect "toHaveURL" with timeout 20000ms[22m
+    [2m    23 ├ù unexpected value "http://localhost:3000/login/"[22m
+
+
+      37 |         // 3. Authenticated: Visit /login should redirect to /home
+      38 |         // The app might already be navigating to /home, so we wait for /home first
+    > 39 |         await expect(page).toHaveURL(/\/home\/?/, { timeout: 20000 });
+         |                            ^
+      40 |
+      41 |         // Now try going back to /login manually
+      42 |         await page.goto('/login/');
+        at D:\MediaHive App\e2e\playwright\auth-invariants.spec.ts:39:28
+
+    Error Context: test-results\auth-invariants-Auth-Invar-a5676-rect---Logout---Persistence-firefox\error-context.md
+
+  5) [webkit] ΓÇ║ e2e\playwright\auth-invariants.spec.ts:16:9 ΓÇ║ Auth Invariants ΓÇ║ Unauthenticated user visiting /home redirects to /login 
+
+    Error: [2mexpect([22m[31mpage[39m[2m).[22mtoHaveURL[2m([22m[32mexpected[39m[2m)[22m failed
+
+    Expected pattern: [32m/\/login\/?/[39m
+    Received string:  [31m"http://localhost:3000/home/"[39m
+    Timeout: 5000ms
+
+    Call log:
+    [2m  - Expect "toHaveURL" with timeout 5000ms[22m
+    [2m    9 ├ù unexpected value "http://localhost:3000/home/"[22m
+
+
+      20 |         // Should redirect to login
+      21 |         // Use a regex to handle trailing slashes and potential query params
+    > 22 |         await expect(page).toHaveURL(/\/login\/?/);
+         |                            ^
+      23 |
+      24 |         // Verify we see the login welcome text
+      25 |         await expect(page.locator('h1')).toContainText('Welcome');
+        at D:\MediaHive App\e2e\playwright\auth-invariants.spec.ts:22:28
+
+    Error Context: test-results\auth-invariants-Auth-Invar-75c61-ing-home-redirects-to-login-webkit\error-context.md
+
+  6) [webkit] ΓÇ║ e2e\playwright\auth-invariants.spec.ts:28:9 ΓÇ║ Auth Invariants ΓÇ║ Full Auth Cycle: Login -> Redirect -> Logout -> Persistence 
+
+    Error: [2mexpect([22m[31mpage[39m[2m).[22mtoHaveURL[2m([22m[32mexpected[39m[2m)[22m failed
+
+    Expected pattern: [32m/\/home\/?/[39m
+    Received string:  [31m"http://localhost:3000/login/"[39m
+    Timeout: 20000ms
+
+    Call log:
+    [2m  - Expect "toHaveURL" with timeout 20000ms[22m
+    [2m    23 ├ù unexpected value "http://localhost:3000/login/"[22m
+
+
+      37 |         // 3. Authenticated: Visit /login should redirect to /home
+      38 |         // The app might already be navigating to /home, so we wait for /home first
+    > 39 |         await expect(page).toHaveURL(/\/home\/?/, { timeout: 20000 });
+         |                            ^
+      40 |
+      41 |         // Now try going back to /login manually
+      42 |         await page.goto('/login/');
+        at D:\MediaHive App\e2e\playwright\auth-invariants.spec.ts:39:28
+
+    Error Context: test-results\auth-invariants-Auth-Invar-a5676-rect---Logout---Persistence-webkit\error-context.md
+
+  6 failed
+    [chromium] ΓÇ║ e2e\playwright\auth-invariants.spec.ts:16:9 ΓÇ║ Auth Invariants ΓÇ║ Unauthenticated user visiting /home redirects to /login 
+    [chromium] ΓÇ║ e2e\playwright\auth-invariants.spec.ts:28:9 ΓÇ║ Auth Invariants ΓÇ║ Full Auth Cycle: Login -> Redirect -> Logout -> Persistence 
+    [firefox] ΓÇ║ e2e\playwright\auth-invariants.spec.ts:16:9 ΓÇ║ Auth Invariants ΓÇ║ Unauthenticated user visiting /home redirects to /login 
+    [firefox] ΓÇ║ e2e\playwright\auth-invariants.spec.ts:28:9 ΓÇ║ Auth Invariants ΓÇ║ Full Auth Cycle: Login -> Redirect -> Logout -> Persistence 
+    [webkit] ΓÇ║ e2e\playwright\auth-invariants.spec.ts:16:9 ΓÇ║ Auth Invariants ΓÇ║ Unauthenticated user visiting /home redirects to /login 
+    [webkit] ΓÇ║ e2e\playwright\auth-invariants.spec.ts:28:9 ΓÇ║ Auth Invariants ΓÇ║ Full Auth Cycle: Login -> Redirect -> Logout -> Persistence 

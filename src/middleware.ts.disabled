@@ -1,9 +1,0 @@
-/**
- * NOTE: Middleware is not supported in 'output: export' (Static Export) mode.
- * Disabling for Capacitor/Mobile build.
- */
-/*
-import { NextRequest, NextResponse } from 'next/server';
-... the rest of the file ...
-*/
-export { };

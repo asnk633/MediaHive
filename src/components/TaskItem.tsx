@@ -46,9 +46,9 @@ export default function TaskItem({ task, className = "", onEdit, onDelete }: Pro
       data-priority={task.priority ?? "unknown"}
       data-review-status={task.reviewStatus ?? "unknown"}
       data-assignee={assigneeName}
-      aria-label={`task-${task.id}`}
+      aria-label={`Task: ${task.title}. Status: ${task.status ?? "Pending"}. Priority: ${task.priority ?? "Normal"}.`}
     >
-      <div className="absolute left-0 top-0 h-full w-1 bg-primary/50" />
+      <div className="absolute left-0 top-0 h-full w-1 bg-primary/50" aria-hidden="true" />
 
       <div className="pr-10">
         <h3 className="font-semibold text-text-primary line-clamp-1 group-hover:text-primary transition-colors">{task.title}</h3>

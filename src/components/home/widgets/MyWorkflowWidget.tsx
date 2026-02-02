@@ -2,6 +2,7 @@ import React from 'react';
 import { Task } from '@/types/task';
 import { Video, Edit3, Eye, UploadCloud, Layers } from 'lucide-react';
 import { useRouter } from 'next/navigation';
+import { nativeNavigate } from '@/lib/utils';
 
 interface MyWorkflowWidgetProps {
     tasks: Task[];
@@ -41,7 +42,7 @@ export const MyWorkflowWidget = ({ tasks, userId }: MyWorkflowWidgetProps) => {
 
     const StageCard = ({ label, subtitle, count, icon: Icon, colorClass, stageKey }: any) => (
         <button
-            onClick={() => router.push(`/tasks?status=in_progress`)} // Could be smarter with deep links later
+            onClick={() => nativeNavigate('/tasks?status=in_progress', router, 'MyWorkflow (Stage)')} // Could be smarter with deep links later
             disabled={count === 0}
             className={`
                 flex flex-col items-center justify-center p-4 rounded-xl border transition-all duration-300 w-full relative group

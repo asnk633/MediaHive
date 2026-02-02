@@ -26,6 +26,15 @@ export default function ImageCropper({ imageUrl, onCropComplete, onCancel }: Ima
         }
     }, [scale, rotation, position, imageUrl]);
 
+    // Close on Escape (Task 79)
+    useEffect(() => {
+        const handleKeyDown = (e: KeyboardEvent) => {
+            if (e.key === 'Escape') onCancel();
+        };
+        window.addEventListener('keydown', handleKeyDown);
+        return () => window.removeEventListener('keydown', handleKeyDown);
+    }, [onCancel]);
+
     const drawImage = () => {
         const canvas = canvasRef.current;
         const img = imageRef.current;

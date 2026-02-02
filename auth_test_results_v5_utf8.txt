@@ -1,0 +1,125 @@
+﻿
+Running 2 tests using 1 worker
+
+[BROWSER][info] %cDownload the React DevTools for a better development experience: https://react.dev/link/react-devtools font-weight:bold
+[BROWSER][log] [STATIC CHECK] app/(shell)/home/layout.tsx
+[BROWSER][log] [HMR] connected
+[BROWSER][log] [BOOT] Diagnostics initialized
+[BROWSER][warning] [API] Invariant Warning: NEXT_PUBLIC_API_URL is ignored on web. Using same-origin relative /api instead. Please remove NEXT_PUBLIC_API_URL from your web environment.
+[BROWSER][log] [BOOT] isNativePlatform=false
+[BROWSER][log] [BOOT] Capacitor present=true
+[BROWSER][log] [BOOT] protocol=http:
+[BROWSER][log] [BOOT] API BASE=RELATIVE
+[BROWSER][log] [BOOT][STATE] {loading: true, authStatus: unauthenticated, claimsReady: false, pathname: /home/}
+[BROWSER][log] [BOOT] Already on valid route: /home/
+[BROWSER][log] [BOOT][STEP] Auth Initialization Started at 2026-01-29T09:12:06.754Z
+[BROWSER][log] [FIREBASE] getFirebaseAuth called
+[BROWSER][log] [FIREBASE] App initialized with Project ID: thaiba-media-prod
+[BROWSER][log] [FIREBASE] Confirmed correct project ID: thaiba-media-prod
+[BROWSER][log] [FIREBASE] Using centralized Firebase app with Project ID: thaiba-media-prod
+[BROWSER][log] [CRASH-LOOP] Disabled in development mode.
+[BROWSER][log] [Offline Sync] Initializing offline sync
+[BROWSER][log] [PWA] Initialized
+[BROWSER][log] [CRASH-LOOP] Disabled in development mode.
+[BROWSER][log] [Offline Sync] Initializing offline sync
+[BROWSER][log] [PWA] Initialized
+[BROWSER][log] [FIREBASE] Persistence set to LOCAL (browserLocalPersistence)
+[BROWSER][log] [NETWORK] Client environment, online status: true (this.isOnline: true , navigator.onLine: true )
+[BROWSER][log] [FIREBASE] Initializing Firestore with network status: true
+[BROWSER][log] [FIREBASE] Services initialized successfully
+[BROWSER][log] [BOOT][STEP] Firebase Auth Instance Ready in 30ms
+[BROWSER][log] [BOOT][STEP] Auth State Changed: Unauthenticated
+[BROWSER][log] [ProtectedRoute] Unauthenticated - redirecting to /login
+[BROWSER][log] [ProtectedRoute] Unauthenticated - redirecting to /login
+[BROWSER][log] [BOOT][STATE] {loading: false, authStatus: unauthenticated, claimsReady: false, pathname: /home/}
+[BROWSER][log] [BOOT] Unauthenticated - redirecting to /login
+[BROWSER][log] [NAV SOURCE] BootGate
+[BROWSER][log] [NAV] Native hard-nav to: /login/
+[BROWSER][log] [Offline Sync] Visibility changed to hidden
+[BROWSER][info] %cDownload the React DevTools for a better development experience: https://react.dev/link/react-devtools font-weight:bold
+[BROWSER][log] [HMR] connected
+[BROWSER][log] [BOOT] Diagnostics initialized
+[BROWSER][warning] [API] Invariant Warning: NEXT_PUBLIC_API_URL is ignored on web. Using same-origin relative /api instead. Please remove NEXT_PUBLIC_API_URL from your web environment.
+[BROWSER][log] [BOOT] isNativePlatform=false
+[BROWSER][log] [BOOT] Capacitor present=true
+[BROWSER][log] [BOOT] protocol=http:
+[BROWSER][log] [BOOT] API BASE=RELATIVE
+[BROWSER][log] [BOOT][STATE] {loading: true, authStatus: unauthenticated, claimsReady: false, pathname: /login/}
+[BROWSER][log] [BOOT] Already on valid route: /login/
+[BROWSER][log] [BOOT][STEP] Auth Initialization Started at 2026-01-29T09:12:06.924Z
+[BROWSER][log] [FIREBASE] getFirebaseAuth called
+[BROWSER][log] [FIREBASE] App initialized with Project ID: thaiba-media-prod
+[BROWSER][log] [FIREBASE] Confirmed correct project ID: thaiba-media-prod
+[BROWSER][log] [FIREBASE] Using centralized Firebase app with Project ID: thaiba-media-prod
+[BROWSER][log] [FIREBASE] Persistence set to LOCAL (browserLocalPersistence)
+[BROWSER][log] [NETWORK] Client environment, online status: true (this.isOnline: true , navigator.onLine: true )
+[BROWSER][log] [FIREBASE] Initializing Firestore with network status: true
+[BROWSER][log] [FIREBASE] Services initialized successfully
+[BROWSER][log] [BOOT][STEP] Firebase Auth Instance Ready in 40ms
+[BROWSER][log] [BOOT][STEP] Auth State Changed: Unauthenticated
+[BROWSER][log] [BOOT][STATE] {loading: false, authStatus: unauthenticated, claimsReady: false, pathname: /login/}
+[BROWSER][log] [BOOT] Already on valid route: /login/
+  Γ£ô  1 [chromium] ΓÇ║ e2e\playwright\auth-invariants.spec.ts:20:9 ΓÇ║ Auth Invariants ΓÇ║ Unauthenticated user visiting /home redirects to /login (562ms)
+[BROWSER][info] %cDownload the React DevTools for a better development experience: https://react.dev/link/react-devtools font-weight:bold
+[BROWSER][log] [HMR] connected
+[BROWSER][log] [BOOT] Diagnostics initialized
+[BROWSER][warning] [API] Invariant Warning: NEXT_PUBLIC_API_URL is ignored on web. Using same-origin relative /api instead. Please remove NEXT_PUBLIC_API_URL from your web environment.
+[BROWSER][log] [BOOT] isNativePlatform=false
+[BROWSER][log] [BOOT] Capacitor present=true
+[BROWSER][log] [BOOT] protocol=http:
+[BROWSER][log] [BOOT] API BASE=RELATIVE
+[BROWSER][log] [BOOT][STATE] {loading: true, authStatus: unauthenticated, claimsReady: false, pathname: /login/}
+[BROWSER][log] [BOOT] Already on valid route: /login/
+[BROWSER][log] [BOOT][STEP] Auth Initialization Started at 2026-01-29T09:12:07.292Z
+[BROWSER][log] [FIREBASE] getFirebaseAuth called
+[BROWSER][log] [FIREBASE] App initialized with Project ID: thaiba-media-prod
+[BROWSER][log] [FIREBASE] Confirmed correct project ID: thaiba-media-prod
+[BROWSER][log] [FIREBASE] Using centralized Firebase app with Project ID: thaiba-media-prod
+[BROWSER][log] [FIREBASE] Persistence set to LOCAL (browserLocalPersistence)
+[BROWSER][log] [NETWORK] Client environment, online status: true (this.isOnline: true , navigator.onLine: true )
+[BROWSER][log] [FIREBASE] Initializing Firestore with network status: true
+[BROWSER][log] [FIREBASE] Services initialized successfully
+[BROWSER][log] [BOOT][STEP] Firebase Auth Instance Ready in 62ms
+[BROWSER][log] [BOOT][STEP] Auth State Changed: Unauthenticated
+[BROWSER][log] [BOOT][STATE] {loading: false, authStatus: unauthenticated, claimsReady: false, pathname: /login/}
+[BROWSER][log] [BOOT] Already on valid route: /login/
+[BROWSER][log] [LOGIN] Attempting login for: media@thaibagarden.com
+[BROWSER][log] [FIREBASE] getFirebaseAuth called
+[BROWSER][error] Failed to load resource: the server responded with a status of 400 ()
+[BROWSER][error] [LOGIN] Error: FirebaseError: Firebase: Error (auth/invalid-credential).
+    at createErrorInternal (http://localhost:3000/_next/static/chunks/node_modules_%40firebase_auth_dist_esm_41d6d1e7._.js:646:41)
+    at _fail (http://localhost:3000/_next/static/chunks/node_modules_%40firebase_auth_dist_esm_41d6d1e7._.js:610:11)
+    at _performFetchWithErrorHandling (http://localhost:3000/_next/static/chunks/node_modules_%40firebase_auth_dist_esm_41d6d1e7._.js:1076:17)
+    at async _performSignInRequest (http://localhost:3000/_next/static/chunks/node_modules_%40firebase_auth_dist_esm_41d6d1e7._.js:1092:28)
+    at async _signInWithCredential (http://localhost:3000/_next/static/chunks/node_modules_%40firebase_auth_dist_esm_41d6d1e7._.js:5575:22)
+    at async handleLogin (http://localhost:3000/_next/static/chunks/_3fd56707._.js:210:28)
+  Γ£ÿ  2 [chromium] ΓÇ║ e2e\playwright\auth-invariants.spec.ts:32:9 ΓÇ║ Auth Invariants ΓÇ║ Full Auth Cycle: Login -> Redirect -> Logout -> Persistence (20.5s)
+
+
+  1) [chromium] ΓÇ║ e2e\playwright\auth-invariants.spec.ts:32:9 ΓÇ║ Auth Invariants ΓÇ║ Full Auth Cycle: Login -> Redirect -> Logout -> Persistence 
+
+    Error: [2mexpect([22m[31mpage[39m[2m).[22mtoHaveURL[2m([22m[32mexpected[39m[2m)[22m failed
+
+    Expected pattern: [32m/\/home\/?/[39m
+    Received string:  [31m"http://localhost:3000/login/"[39m
+    Timeout: 20000ms
+
+    Call log:
+    [2m  - Expect "toHaveURL" with timeout 20000ms[22m
+    [2m    24 ├ù unexpected value "http://localhost:3000/login/"[22m
+
+
+      41 |         // 3. Authenticated: Visit /login should redirect to /home
+      42 |         // The app might already be navigating to /home, so we wait for /home first
+    > 43 |         await expect(page).toHaveURL(/\/home\/?/, { timeout: 20000 });
+         |                            ^
+      44 |
+      45 |         // Now try going back to /login manually
+      46 |         await page.goto('/login/');
+        at D:\MediaHive App\e2e\playwright\auth-invariants.spec.ts:43:28
+
+    Error Context: test-results\auth-invariants-Auth-Invar-a5676-rect---Logout---Persistence-chromium\error-context.md
+
+  1 failed
+    [chromium] ΓÇ║ e2e\playwright\auth-invariants.spec.ts:32:9 ΓÇ║ Auth Invariants ΓÇ║ Full Auth Cycle: Login -> Redirect -> Logout -> Persistence 
+  1 passed (22.0s)

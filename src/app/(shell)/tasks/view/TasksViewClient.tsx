@@ -1,7 +1,9 @@
-'use client';
+"use client";
 
-import { useState, useEffect, useMemo, Suspense } from 'react'
-import { useRouter, useSearchParams } from 'next/navigation'
+
+import { useState, useEffect, useMemo } from 'react'
+import { useRouter } from 'next/navigation'
+import { nativeNavigate } from '@/lib/utils'
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from "@/components/ui/dialog"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
@@ -49,7 +51,8 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card"
 
 import { TaskService } from '@/services/tasks'
-import { useAuth } from '@/contexts/AuthContext'
+import { AuditTrailService } from '@/services/auditTrailService'
+import { useAuth } from '@/contexts/AuthContextProvider'
 import { toast } from "sonner"
 import { EditTaskDialog } from '@/components/tasks/EditTaskDialog'
 import { AttachmentSection } from '@/components/tasks/AttachmentSection'
@@ -69,16 +72,12 @@ interface Comment {
 }
 
 export default function TasksViewClient() {
-    return (
-        <Suspense fallback={<div className="p-8 text-white">Loading task...</div>}>
-            <TaskViewContent />
-        </Suspense>
-    )
+    return <TaskViewContent />;
 }
 
 function TaskViewContent() {
     const router = useRouter()
-    const searchParams = useSearchParams()
+    const searchParams = typeof window !== 'undefined' ? new URLSearchParams(window.location.search) : new URLSearchParams()
     const taskId = searchParams.get('id')
     const { user } = useAuth()
 
@@ -142,7 +141,7 @@ function TaskViewContent() {
         try {
             await TaskService.updateTask(task.id, updates);
             setTask({ ...task, ...updates });
-            toast.success("Task updated");
+            toast.success("Updated");
             return true;
         } catch (e) {
             console.error(e);
@@ -151,14 +150,33 @@ function TaskViewContent() {
         }
     };
 
+
+
     const handleDeleteTask = async () => {
         if (!task) return;
-        if (!confirm("Are you sure you want to delete this task? This cannot be undone.")) return;
+
+        const reason = (typeof window !== 'undefined') ? prompt("Please provide a reason for deletion (Required for Statutory Compliance):") : null;
+        if (!reason) {
+            toast.error("Deletion cancelled: Reason is required for audit trails.");
+            return;
+        }
+
+        if (typeof window !== 'undefined' && !confirm("Are you sure you want to delete this task? This action will be permanently logged.")) return;
 
         try {
             await TaskService.deleteTask(task.id);
-            toast.success("Task deleted");
-            router.push('/tasks');
+
+            // PUBLIC SECTOR PASS: Immutable Audit Logging
+            await AuditTrailService.logAction({
+                action: 'DELETE_TASK',
+                entityId: task.id,
+                entityType: 'task',
+                reason: reason,
+                metadata: { title: task.title }
+            });
+
+            toast.success("Task deleted and logged successfully");
+            nativeNavigate('/tasks', router, 'TasksView (Delete)');
         } catch (e) {
             console.error(e);
             toast.error("Failed to delete task");
@@ -212,10 +230,9 @@ function TaskViewContent() {
 
     if (loading) return (
         <div className="flex h-[calc(100vh-theme(spacing.16))] items-center justify-center">
-            <div className="flex flex-col items-center gap-4">
-                <div className="h-8 w-8 animate-spin rounded-full border-4 border-blue-500 border-t-transparent" />
-                <p className="text-muted-foreground animate-pulse">Loading task details...</p>
-            </div>
+            <p className="text-slate-500 font-medium animate-pulse tracking-wide italic">
+                Retrieving task details...
+            </p>
         </div>
     );
 
@@ -226,7 +243,7 @@ function TaskViewContent() {
                 <h3 className="text-lg font-semibold text-white">Task Not Found</h3>
                 <p className="text-muted-foreground">{error || "The task you requested does not exist or you lack permission."}</p>
             </div>
-            <Button variant="outline" onClick={() => router.push('/tasks')}>
+            <Button variant="outline" onClick={() => nativeNavigate('/tasks', router, 'TasksView (NotFound Back)')}>
                 <ArrowLeft className="mr-2 h-4 w-4" /> Back to Tasks
             </Button>
         </div>
@@ -448,15 +465,6 @@ function TaskViewContent() {
                     </div>
                 </div>
             </ScrollArea>
-
-            {isEditOpen && (
-                <EditTaskDialog
-                    open={isEditOpen}
-                    onOpenChange={setIsEditOpen}
-                    task={task}
-                    onUpdate={handleUpdateTask}
-                />
-            )}
         </div>
     )
 }

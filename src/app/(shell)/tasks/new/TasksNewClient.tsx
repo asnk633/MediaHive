@@ -1,26 +1,30 @@
 'use client';
 
 import React, { useState, useEffect } from 'react';
-import { useRouter, useSearchParams } from 'next/navigation';
+import { useRouter } from 'next/navigation';
 import { ArrowLeft, Calendar as CalendarIcon, User, Briefcase, Flag, Building } from 'lucide-react';
-import { useAuth } from '@/contexts/AuthContext';
+import { useAuth } from '@/contexts/AuthContextProvider';
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { Calendar } from "@/components/ui/calendar";
 import { Button } from "@/components/ui/button";
-import { cn } from "@/lib/utils";
+import { cn, nativeNavigate } from "@/lib/utils";
 import { format } from "date-fns";
 
 import { TaskService } from '@/services/tasks';
 import { UserService } from '@/services/userService';
 import { StructureService } from '@/services/structureService';
 import { apiClient } from '@/lib/apiClient';
+import { PageLayout } from "@/components/ui/layout/PageLayout";
+import { toast } from 'sonner';
+import { COPY } from '@/lib/copy';
 
 export default function TasksNewClient() {
     const router = useRouter();
-    const searchParams = useSearchParams();
+    const searchParams = typeof window !== 'undefined' ? new URLSearchParams(window.location.search) : new URLSearchParams();
     const campaignId = searchParams.get('campaignId');
     const { user } = useAuth();
     const [loading, setLoading] = useState(false);
+    const [error, setError] = useState<string | null>(null);
     const [teamMembers, setTeamMembers] = useState<{ uid: string; name: string }[]>([]);
     const [campaignName, setCampaignName] = useState<string>('');
 
@@ -46,13 +50,32 @@ export default function TasksNewClient() {
     const [files, setFiles] = useState<File[]>([]);
     const [uploadProgress, setUploadProgress] = useState<string>('');
 
-    // Create As Logic
+    // Create As Logic - Persist in Session (Batch Entry optimization)
     const canCreateOnBehalf = user.role === 'admin' || user.role === 'team';
-    const [createAs, setCreateAs] = useState<'myself' | 'onBehalfOf'>('myself');
+    const [createAs, setCreateAs] = useState<'myself' | 'onBehalfOf'>(() => {
+        if (typeof window !== 'undefined') {
+            const saved = sessionStorage.getItem('task-create-as-pref');
+            return (saved === 'myself' || saved === 'onBehalfOf') ? saved : 'myself';
+        }
+        return 'myself';
+    });
 
     // Unified state for department or institution
     const [selectedOrgId, setSelectedOrgId] = useState<string>(''); // Format: dept_{id} or inst_{id}
-    const [onBehalfOfId, setOnBehalfOfId] = useState<string>('');
+    const [onBehalfOfId, setOnBehalfOfId] = useState<string>(() => {
+        if (typeof window !== 'undefined') {
+            return sessionStorage.getItem('task-on-behalf-id-pref') || '';
+        }
+        return '';
+    });
+
+    // Save persistence
+    useEffect(() => {
+        if (typeof window !== 'undefined') {
+            sessionStorage.setItem('task-create-as-pref', createAs);
+            if (onBehalfOfId) sessionStorage.setItem('task-on-behalf-id-pref', onBehalfOfId);
+        }
+    }, [createAs, onBehalfOfId]);
 
     // Fetch Organizations
     useEffect(() => {
@@ -72,6 +95,36 @@ export default function TasksNewClient() {
     }, []);
 
     // Auto-fill from user defaults
+    // Auto-Save Logic (Task 81)
+    useEffect(() => {
+        // Restore
+        const saved = localStorage.getItem('mediahive_draft_task');
+        if (saved && !title && !description) {
+            try {
+                const parsed = JSON.parse(saved);
+                if (parsed.title) setTitle(parsed.title);
+                if (parsed.description) setDescription(parsed.description);
+                if (parsed.dueDate) setDueDate(parsed.dueDate);
+            } catch (e) {
+                console.error('Failed to restore draft', e);
+            }
+        }
+    }, []);
+
+    useEffect(() => {
+        // Save (Debounced 1s)
+        const timeoutId = setTimeout(() => {
+            if (title || description) {
+                localStorage.setItem('mediahive_draft_task', JSON.stringify({
+                    title,
+                    description,
+                    dueDate
+                }));
+            }
+        }, 1000);
+        return () => clearTimeout(timeoutId);
+    }, [title, description, dueDate]);
+
     // Auto-fill from user defaults
     // We use a separate effect for this to ensure it runs when either User defaults exist OR when lists are loaded.
     // We explicitly check length inside to avoid adding the arrays themselves to the dependency list if they are causing strict mode issues,
@@ -85,6 +138,20 @@ export default function TasksNewClient() {
         const userDeptId = user.departmentId || user.defaultDepartment;
         const userInstId = user.institutionId || user.defaultInstitution;
 
+        // 1. Auto-select if ONLY one option exists (Friction Removal)
+        const totalOptions = departmentsList.length + institutionsList.length;
+        if (totalOptions === 1) {
+            if (departmentsList.length === 1) {
+                setSelectedOrgId(`dept_${departmentsList[0].id}`);
+                return;
+            }
+            if (institutionsList.length === 1) {
+                setSelectedOrgId(`inst_${institutionsList[0].id}`);
+                return;
+            }
+        }
+
+        // 2. User Defaults
         if (userDeptId) {
             const dept = departmentsList.find(d => d.id === userDeptId || d.name === userDeptId);
             if (dept) {
@@ -127,8 +194,12 @@ export default function TasksNewClient() {
 
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
+        await submitTask();
+    };
+
+    const submitTask = async () => {
         if (!title || !dueDate || !selectedOrgId) {
-            alert('Please fill all required fields');
+            toast.error(COPY.errors.taskMissing);
             return;
         }
         setLoading(true);
@@ -254,178 +325,315 @@ export default function TasksNewClient() {
                 }
             }
 
-            router.push('/tasks');
+            toast.success(COPY.toasts.taskCreated);
+            localStorage.removeItem('mediahive_draft_task'); // Cleanup (Task 81)
+
+            const returnTo = searchParams.get('returnTo');
+            if (returnTo === 'home') {
+                nativeNavigate('/home', router, 'TasksNew (Success to Home)');
+            } else {
+                nativeNavigate('/tasks', router, 'TasksNew (Success)');
+            }
         } catch (error: any) {
             console.error(error);
-            alert('Failed to create task: ' + (error.message || JSON.stringify(error)));
+            setError(COPY.errors.generic);
         } finally {
             setLoading(false);
         }
     };
 
+    const handleRetry = async () => {
+        setError(null);
+        await submitTask();
+    };
+
+    // Power User: Cmd/Ctrl + Enter to Submit
+    useEffect(() => {
+        const handleKeyDown = (e: KeyboardEvent) => {
+            if ((e.metaKey || e.ctrlKey) && e.key === 'Enter') {
+                e.preventDefault();
+                submitTask();
+            }
+        };
+        window.addEventListener('keydown', handleKeyDown);
+        return () => window.removeEventListener('keydown', handleKeyDown);
+    }, []);
+
+    // Escape to Cancel (Task 79)
+    useEffect(() => {
+        const handleEscape = (e: KeyboardEvent) => {
+            if (e.key === 'Escape') {
+                const returnTo = searchParams.get('returnTo');
+                if (returnTo === 'home') {
+                    nativeNavigate('/home', router, 'TasksNew (Esc to Home)');
+                } else {
+                    nativeNavigate('/tasks', router, 'TasksNew (Esc)');
+                }
+            }
+        };
+        window.addEventListener('keydown', handleEscape);
+        return () => window.removeEventListener('keydown', handleEscape);
+    }, [router, searchParams]);
+
+    // Date Shortcuts (Task 75)
+    useEffect(() => {
+        const handleDateShortcut = (e: KeyboardEvent) => {
+            if (e.altKey && (e.key === 'ArrowRight' || e.key === 'ArrowLeft')) {
+                e.preventDefault(); // Prevent browser nav (Alt+Left is Back)
+
+                const current = dueDate ? new Date(dueDate) : new Date();
+                // If invalid date, start today
+                if (isNaN(current.getTime())) {
+                    setDueDate(new Date());
+                    return;
+                }
+
+                // Add/Sub day
+                const change = e.key === 'ArrowRight' ? 1 : -1;
+                current.setDate(current.getDate() + change);
+
+                setDueDate(current);
+
+                // Quiet Feedback
+                toast.dismiss(); // Prevent stacking
+                toast(`Due: ${format(current, 'EEE, MMM d')}`, {
+                    duration: 2000,
+                    icon: '📅'
+                });
+            }
+        };
+        window.addEventListener('keydown', handleDateShortcut);
+        return () => window.removeEventListener('keydown', handleDateShortcut);
+    }, [dueDate]);
+
     return (
-        <div className="min-h-screen flex items-center justify-center py-20 px-4 sm:px-6 relative">
-            {/* Centered Card */}
-            <div className="w-full max-w-xl relative z-10">
-                <div className="glass-card rounded-3xl p-6 sm:p-8 shadow-2xl ring-1 ring-white/5">
-                    {/* Header */}
-                    <div className="flex items-center justify-between mb-8 pb-4 border-b border-white/5">
-                        <button
-                            onClick={() => router.back()}
-                            className="text-red-400/80 font-medium hover:text-red-300 transition-colors text-sm hover:bg-white/5 px-3 py-1.5 rounded-full"
-                        >
-                            Cancel
-                        </button>
-                        <h1 className="text-lg font-bold text-white tracking-wide">New Task</h1>
-                        {/* Spacer for balance */}
-                        <div className="w-[50px]"></div>
-                    </div>
-
-                    {campaignName && (
-                        <div className="mb-6 p-3 bg-blue-500/10 border border-blue-500/20 rounded-xl flex items-center gap-3 animate-in fade-in slide-in-from-top-2">
-                            <div className="w-8 h-8 rounded-full bg-blue-500/20 flex items-center justify-center text-blue-400">
-                                <Building size={16} />
-                            </div>
-                            <div>
-                                <p className="text-xs text-blue-300 font-semibold uppercase tracking-wider">Attached to Campaign</p>
-                                <p className="text-sm text-white font-bold">{campaignName}</p>
-                            </div>
+        <PageLayout mode="plain">
+            <div className="flex flex-col items-center">
+                {/* Centered Card */}
+                <div className="w-full max-w-xl">
+                    <div className="glass-card rounded-3xl p-6 sm:p-8 shadow-2xl ring-1 ring-white/5">
+                        {/* Header */}
+                        <div className="flex items-center justify-between mb-8 pb-4 border-b border-white/5">
+                            <button
+                                onClick={() => {
+                                    const returnTo = searchParams.get('returnTo');
+                                    if (returnTo === 'home') {
+                                        nativeNavigate('/home', router, 'TasksNew (Cancel to Home)');
+                                    } else {
+                                        nativeNavigate('/tasks', router, 'TasksNew (Cancel)');
+                                    }
+                                }}
+                                className="text-red-400/80 font-medium hover:text-red-300 transition-colors text-sm hover:bg-white/5 px-3 py-1.5 rounded-full"
+                            >
+                                {COPY.actions.cancel}
+                            </button>
+                            <h1 className="text-lg font-bold text-white tracking-wide">New Task</h1>
+                            {/* Spacer for balance */}
+                            <div className="w-[50px]"></div>
                         </div>
-                    )}
 
-                    {/* Form */}
-                    <form onSubmit={handleSubmit} className="space-y-6">
-
-                        {/* Create As Toggle - Admin/Team Only */}
-                        {canCreateOnBehalf && (
-                            <div className="flex bg-white/5 p-1 rounded-xl w-full mb-4">
-                                <button
-                                    type="button"
-                                    onClick={() => setCreateAs('myself')}
-                                    className={`flex-1 py-2 rounded-lg text-sm font-medium transition-all ${createAs === 'myself' ? 'bg-blue-600 text-white shadow-lg' : 'text-gray-400 hover:text-white'}`}
-                                >
-                                    As Myself
-                                </button>
-                                <button
-                                    type="button"
-                                    onClick={() => setCreateAs('onBehalfOf')}
-                                    className={`flex-1 py-2 rounded-lg text-sm font-medium transition-all ${createAs === 'onBehalfOf' ? 'bg-blue-600 text-white shadow-lg' : 'text-gray-400 hover:text-white'}`}
-                                >
-                                    On Behalf Of
-                                </button>
+                        {campaignName && (
+                            <div className="mb-6 p-3 bg-blue-500/10 border border-blue-500/20 rounded-xl flex items-center gap-3 animate-in fade-in slide-in-from-top-2">
+                                <div className="w-8 h-8 rounded-full bg-blue-500/20 flex items-center justify-center text-blue-400">
+                                    <Building size={16} />
+                                </div>
+                                <div>
+                                    <p className="text-xs text-blue-300 font-semibold uppercase tracking-wider">Attached to Campaign</p>
+                                    <p className="text-sm text-white font-bold">{campaignName}</p>
+                                </div>
                             </div>
                         )}
 
-                        {/* Title & Desc Group */}
-                        <div className="space-y-5">
-                            <div className="space-y-2">
-                                <label className="block text-sm font-medium text-white/70 mb-2">Task Title</label>
-                                <input
-                                    type="text"
-                                    value={title}
-                                    onChange={e => setTitle(e.target.value)}
-                                    placeholder="Task title..."
-                                    className="w-full bg-black/20 backdrop-blur-sm p-4 rounded-2xl border border-white/5 shadow-inner focus:bg-black/40 focus:ring-2 focus:ring-blue-500/30 focus:border-blue-500/50 outline-none transition-all placeholder:text-gray-700 font-medium text-white text-lg"
-                                />
+                        {/* Form */}
+                        <form onSubmit={handleSubmit} className="space-y-6">
+                            {/* ... (keep existing form content) ... */}
+                            {/* I will truncate this for the tool call but I should be careful */}
+                            {/* Actually I'll use use multi_replace if form is large */}
+                            {/* Wait, the form content is large. I'll just replace the wrapper. */}
+
+                            {/* Create As Toggle - Admin/Team Only */}
+                            {canCreateOnBehalf && (
+                                <div className="flex bg-white/5 p-1 rounded-xl w-full mb-4">
+                                    <button
+                                        type="button"
+                                        onClick={() => setCreateAs('myself')}
+                                        className={`flex-1 py-2 rounded-lg text-sm font-medium transition-all ${createAs === 'myself' ? 'bg-blue-600 text-white shadow-lg' : 'text-gray-400 hover:text-white'}`}
+                                    >
+                                        As Myself
+                                    </button>
+                                    <button
+                                        type="button"
+                                        onClick={() => setCreateAs('onBehalfOf')}
+                                        className={`flex-1 py-2 rounded-lg text-sm font-medium transition-all ${createAs === 'onBehalfOf' ? 'bg-blue-600 text-white shadow-lg' : 'text-gray-400 hover:text-white'}`}
+                                    >
+                                        On Behalf Of
+                                    </button>
+                                </div>
+                            )}
+
+                            {/* Title & Desc Group */}
+                            <div className="space-y-5">
+                                <div className="space-y-2">
+                                    <label className="block text-sm font-medium text-white/70 mb-2">Task Title</label>
+                                    <input
+                                        type="text"
+                                        value={title}
+                                        onChange={e => setTitle(e.target.value)}
+                                        placeholder={COPY.placeholders.taskTitle}
+                                        className="w-full bg-black/20 backdrop-blur-sm p-4 rounded-2xl border border-white/5 shadow-inner focus:bg-black/40 focus:ring-2 focus:ring-blue-500/30 focus:border-blue-500/50 outline-none transition-all placeholder:text-gray-700 font-medium text-white text-lg"
+                                    />
+                                </div>
+
+                                <div className="space-y-2">
+                                    <label className="block text-sm font-medium text-white/70 mb-2">{COPY.labels.description}</label>
+                                    <textarea
+                                        value={description}
+                                        onChange={e => setDescription(e.target.value)}
+                                        placeholder={COPY.placeholders.taskDescription}
+                                        rows={4}
+                                        className="w-full bg-black/20 backdrop-blur-sm p-4 rounded-2xl border border-white/5 shadow-inner focus:bg-black/40 focus:ring-2 focus:ring-blue-500/30 focus:border-blue-500/50 outline-none transition-all placeholder:text-gray-700 resize-none text-white/90 leading-relaxed"
+                                        tabIndex={2}
+                                    />
+                                </div>
                             </div>
 
-                            <div className="space-y-2">
-                                <label className="block text-sm font-medium text-white/70 mb-2">Description</label>
-                                <textarea
-                                    value={description}
-                                    onChange={e => setDescription(e.target.value)}
-                                    placeholder="Add details..."
-                                    rows={4}
-                                    className="w-full bg-black/20 backdrop-blur-sm p-4 rounded-2xl border border-white/5 shadow-inner focus:bg-black/40 focus:ring-2 focus:ring-blue-500/30 focus:border-blue-500/50 outline-none transition-all placeholder:text-gray-700 resize-none text-white/90 leading-relaxed"
-                                />
-                            </div>
-                        </div>
-
-                        {/* Date & Department/Institution Grid */}
-                        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 pt-2">
-                            <div className="space-y-2">
-                                <label className="block text-sm font-medium text-white/70 mb-2">
-                                    Due Date
-                                </label>
-                                <Popover>
-                                    <PopoverTrigger asChild>
-                                        <Button
-                                            variant={"outline"}
-                                            className={cn(
-                                                "w-full bg-white/5 hover:bg-white/10 pl-10 pr-4 py-3 h-auto rounded-xl border border-[#ffffff1a] focus:border-blue-500/50 hover:text-white text-left font-normal justify-start relative text-sm text-white",
-                                                !dueDate && "text-white/40"
-                                            )}
-                                        >
-                                            <div className="absolute left-3 top-1/2 -translate-y-1/2 flex items-center pointer-events-none text-gray-500">
-                                                <CalendarIcon size={14} />
-                                            </div>
-                                            {dueDate ? format(dueDate, "dd/MM/yyyy") : <span>Pick a date</span>}
-                                        </Button>
-                                    </PopoverTrigger>
-                                    <PopoverContent className="w-auto p-0 bg-[#10111a] border-[#ffffff1a] text-white z-[200]" align="start">
-                                        <Calendar
-                                            mode="single"
-                                            selected={dueDate}
-                                            onSelect={setDueDate}
-                                            initialFocus
-                                            fromDate={new Date()}
-                                            className="bg-[#10111a] text-white"
-                                            classNames={{
-                                                day_selected: "bg-blue-600 text-white rounded-full", // Fallback
-                                                day_today: "bg-white/10 text-white rounded-full",
-                                                day: "text-white hover:bg-white/10 rounded-full w-9 h-9 p-0 font-normal aria-selected:opacity-100",
-                                                head_cell: "text-white/50 w-9 font-normal text-[0.8rem]",
-                                                caption_label: "text-white",
-                                                nav_button: "text-white hover:bg-white/10 rounded-full",
-                                            }}
-                                        />
-                                    </PopoverContent>
-                                </Popover>
-                            </div>
-
-                            {/* Unified Department or Institution Dropdown (Myself Mode) */}
-                            {createAs === 'myself' && (
+                            {/* Date & Department/Institution Grid */}
+                            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 pt-2">
                                 <div className="space-y-2">
                                     <label className="block text-sm font-medium text-white/70 mb-2">
-                                        Requested By <span className="text-white/40 text-xs">(Department / Unit / Office)</span>
+                                        Due Date
                                     </label>
+                                    <Popover>
+                                        <PopoverTrigger asChild>
+                                            <Button
+                                                variant={"outline"}
+                                                className={cn(
+                                                    "w-full bg-white/5 hover:bg-white/10 pl-10 pr-4 py-3 h-auto rounded-xl border border-[#ffffff1a] focus:border-blue-500/50 hover:text-white text-left font-normal justify-start relative text-sm text-white",
+                                                    !dueDate && "text-white/40"
+                                                )}
+                                            >
+                                                <div className="absolute left-3 top-1/2 -translate-y-1/2 flex items-center pointer-events-none text-gray-500">
+                                                    <CalendarIcon size={14} />
+                                                </div>
+                                                {dueDate ? format(dueDate, "dd/MM/yyyy") : <span>{COPY.validation.pickDate}</span>}
+                                            </Button>
+                                        </PopoverTrigger>
+                                        <PopoverContent className="w-auto p-0 bg-[#10111a] border-[#ffffff1a] text-white z-[200]" align="start">
+                                            <Calendar
+                                                mode="single"
+                                                selected={dueDate}
+                                                onSelect={setDueDate}
+                                                initialFocus
+                                                fromDate={new Date()}
+                                                className="bg-[#10111a] text-white"
+                                                classNames={{
+                                                    day_selected: "bg-blue-600 text-white rounded-full", // Fallback
+                                                    day_today: "bg-white/10 text-white rounded-full",
+                                                    day: "text-white hover:bg-white/10 rounded-full w-9 h-9 p-0 font-normal aria-selected:opacity-100",
+                                                    head_cell: "text-white/50 w-9 font-normal text-[0.8rem]",
+                                                    caption_label: "text-white",
+                                                    nav_button: "text-white hover:bg-white/10 rounded-full",
+                                                }}
+                                            />
+                                        </PopoverContent>
+                                    </Popover>
+                                </div>
 
-                                    {isGuest ? (
-                                        /* Read-Only View for Guests */
-                                        <div className="w-full bg-white/5 pl-4 pr-4 py-3 rounded-xl border border-[#ffffff1a] text-sm text-white flex items-center gap-3">
-                                            <Briefcase size={14} className="text-gray-400" />
-                                            <span>
-                                                {(() => {
-                                                    if (!selectedOrgId) return <span className="text-gray-500 italic">No Department Assigned (Contact Admin)</span>;
-                                                    if (selectedOrgId.startsWith('dept_')) {
-                                                        const id = selectedOrgId.split('_')[1];
-                                                        return departmentsList.find(d => d.id === id)?.name || "Unknown Department";
-                                                    }
-                                                    if (selectedOrgId.startsWith('inst_')) {
-                                                        const id = selectedOrgId.split('_')[1];
-                                                        return institutionsList.find(i => i.id === id)?.name || "Unknown Institution";
-                                                    }
-                                                    return "Unknown Unit";
-                                                })()}
-                                            </span>
-                                            {selectedOrgId && <span className="ml-auto text-xs text-green-400/70 italic">Auto-set</span>}
-                                        </div>
-                                    ) : (
-                                        /* Interactive Dropdown for others */
+                                {/* Unified Department or Institution Dropdown (Myself Mode) */}
+                                {createAs === 'myself' && (
+                                    <div className="space-y-2">
+                                        <label className="block text-sm font-medium text-white/70 mb-2">
+                                            Requested By <span className="text-white/40 text-xs">(Department / Unit / Office)</span>
+                                        </label>
+
+                                        {isGuest || (departmentsList.length + institutionsList.length === 1) ? (
+                                            /* Read-Only View for Guests or Single-Option Users */
+                                            <div className="w-full bg-white/5 pl-4 pr-4 py-3 rounded-xl border border-[#ffffff1a] text-sm text-white flex items-center gap-3">
+                                                <Briefcase size={14} className="text-gray-400" />
+                                                <span>
+                                                    {(() => {
+                                                        if (!selectedOrgId) return <span className="text-gray-500 italic">No Department Assigned (Processing...)</span>;
+                                                        if (selectedOrgId.startsWith('dept_')) {
+                                                            const id = selectedOrgId.split('_')[1];
+                                                            return departmentsList.find(d => d.id === id)?.name || "Unknown Department";
+                                                        }
+                                                        if (selectedOrgId.startsWith('inst_')) {
+                                                            const id = selectedOrgId.split('_')[1];
+                                                            return institutionsList.find(i => i.id === id)?.name || "Unknown Institution";
+                                                        }
+                                                        return "Unknown Unit";
+                                                    })()}
+                                                </span>
+                                                {/* Show different badge based on why it's locked */}
+                                                {isGuest && selectedOrgId && <span className="ml-auto text-xs text-green-400/70 italic">Auto-set</span>}
+                                                {!isGuest && (departmentsList.length + institutionsList.length === 1) && <span className="ml-auto text-xs text-blue-400/70 italic">Verified</span>}
+                                            </div>
+                                        ) : (
+                                            /* Interactive Dropdown for others */
+                                            <div className="relative">
+                                                <div className="absolute inset-y-0 left-3 flex items-center pointer-events-none text-gray-500">
+                                                    <Briefcase size={14} />
+                                                </div>
+                                                <select
+                                                    value={selectedOrgId}
+                                                    onChange={(e) => setSelectedOrgId(e.target.value)}
+                                                    className="w-full bg-white/5 hover:bg-white/10 pl-10 pr-8 py-3 rounded-xl border border-[#ffffff1a] focus:border-blue-500/50 outline-none text-sm text-white appearance-none [&>optgroup]:bg-[#13161c] [&>option]:bg-[#13161c] cursor-pointer transition-colors"
+                                                >
+                                                    <option value="" className="bg-[#13161c]">Select Requesting Unit...</option>
+
+                                                    <optgroup label="OFFICES / UNITS" className="bg-[#13161c] text-gray-500 font-bold">
+                                                        {departmentsList.map(dept => (
+                                                            <option key={dept.id} value={`dept_${dept.id}`} className="bg-[#13161c] text-gray-300 font-normal">
+                                                                {dept.name}
+                                                            </option>
+                                                        ))}
+                                                    </optgroup>
+
+                                                    <optgroup label="INSTITUTIONS" className="bg-[#13161c] text-gray-500 font-bold">
+                                                        {institutionsList.map(inst => (
+                                                            <option key={inst.id} value={`inst_${inst.id}`} className="bg-[#13161c] text-gray-300 font-normal">
+                                                                {inst.name}
+                                                            </option>
+                                                        ))}
+                                                    </optgroup>
+                                                </select>
+                                                <div className="absolute inset-y-0 right-3 flex items-center pointer-events-none text-gray-500">
+                                                    <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M19 9l-7 7-7-7" /></svg>
+                                                </div>
+                                            </div>
+                                        )}
+                                    </div>
+                                )}
+
+                                {/* Identity Selector (On Behalf Of Mode) - Replaces Department */}
+                                {canCreateOnBehalf && createAs === 'onBehalfOf' && (
+                                    <div className="space-y-2 animate-in fade-in zoom-in-95 duration-200">
+                                        <label className="block text-sm font-medium text-blue-400 mb-2">
+                                            Publishing On Behalf Of <span className="text-white/40 text-xs">(Identity)</span>
+                                        </label>
                                         <div className="relative">
-                                            <div className="absolute inset-y-0 left-3 flex items-center pointer-events-none text-gray-500">
-                                                <Briefcase size={14} />
+                                            <div className="absolute inset-y-0 left-3 flex items-center pointer-events-none text-blue-500/50">
+                                                <Flag size={14} />
                                             </div>
                                             <select
-                                                value={selectedOrgId}
-                                                onChange={(e) => setSelectedOrgId(e.target.value)}
-                                                className="w-full bg-white/5 hover:bg-white/10 pl-10 pr-8 py-3 rounded-xl border border-[#ffffff1a] focus:border-blue-500/50 outline-none text-sm text-white appearance-none [&>optgroup]:bg-[#13161c] [&>option]:bg-[#13161c] cursor-pointer transition-colors"
+                                                value={onBehalfOfId}
+                                                onChange={(e) => {
+                                                    const val = e.target.value;
+                                                    setOnBehalfOfId(val);
+                                                    // Auto-sync selectedOrg with the chosen Identity name
+                                                    if (val) {
+                                                        setSelectedOrgId(val);
+                                                    } else {
+                                                        setSelectedOrgId('');
+                                                    }
+                                                }}
+                                                className="w-full bg-blue-500/10 hover:bg-blue-500/20 pl-10 pr-8 py-3 rounded-xl border border-blue-500/30 focus:border-blue-500 outline-none text-sm text-blue-100 appearance-none [&>optgroup]:bg-[#13161c] [&>option]:bg-[#13161c] cursor-pointer transition-colors"
                                             >
-                                                <option value="" className="bg-[#13161c]">Select Requesting Unit...</option>
+                                                <option value="" className="bg-[#13161c]">Select Identity...</option>
 
                                                 <optgroup label="OFFICES / UNITS" className="bg-[#13161c] text-gray-500 font-bold">
                                                     {departmentsList.map(dept => (
-                                                        <option key={dept.id} value={`dept_${dept.id}`} className="bg-[#13161c] text-gray-300 font-normal">
+                                                        <option key={`dept_${dept.id}`} value={`dept_${dept.id}`} className="bg-[#13161c] text-gray-300 font-normal">
                                                             {dept.name}
                                                         </option>
                                                     ))}
@@ -433,219 +641,187 @@ export default function TasksNewClient() {
 
                                                 <optgroup label="INSTITUTIONS" className="bg-[#13161c] text-gray-500 font-bold">
                                                     {institutionsList.map(inst => (
-                                                        <option key={inst.id} value={`inst_${inst.id}`} className="bg-[#13161c] text-gray-300 font-normal">
+                                                        <option key={`inst_${inst.id}`} value={`inst_${inst.id}`} className="bg-[#13161c] text-gray-300 font-normal">
                                                             {inst.name}
                                                         </option>
                                                     ))}
                                                 </optgroup>
                                             </select>
-                                            <div className="absolute inset-y-0 right-3 flex items-center pointer-events-none text-gray-500">
+                                            <div className="absolute inset-y-0 right-3 flex items-center pointer-events-none text-blue-500/50">
                                                 <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M19 9l-7 7-7-7" /></svg>
                                             </div>
                                         </div>
-                                    )}
-                                </div>
-                            )}
+                                    </div>
+                                )}
+                            </div>
 
-                            {/* Identity Selector (On Behalf Of Mode) - Replaces Department */}
-                            {canCreateOnBehalf && createAs === 'onBehalfOf' && (
-                                <div className="space-y-2 animate-in fade-in zoom-in-95 duration-200">
-                                    <label className="block text-sm font-medium text-blue-400 mb-2">
-                                        Publishing On Behalf Of <span className="text-white/40 text-xs">(Identity)</span>
+                            {/* Priority - Admin Only */}
+                            {isAdmin && (
+                                <div className="space-y-3 pt-4 border-t border-white/5">
+                                    <label className="block text-sm font-medium text-white/70 mb-2">
+                                        Priority
                                     </label>
-                                    <div className="relative">
-                                        <div className="absolute inset-y-0 left-3 flex items-center pointer-events-none text-blue-500/50">
-                                            <Flag size={14} />
-                                        </div>
-                                        <select
-                                            value={onBehalfOfId}
-                                            onChange={(e) => {
-                                                const val = e.target.value;
-                                                setOnBehalfOfId(val);
-                                                // Auto-sync selectedOrg with the chosen Identity name
-                                                if (val) {
-                                                    setSelectedOrgId(val);
-                                                } else {
-                                                    setSelectedOrgId('');
-                                                }
-                                            }}
-                                            className="w-full bg-blue-500/10 hover:bg-blue-500/20 pl-10 pr-8 py-3 rounded-xl border border-blue-500/30 focus:border-blue-500 outline-none text-sm text-blue-100 appearance-none [&>optgroup]:bg-[#13161c] [&>option]:bg-[#13161c] cursor-pointer transition-colors"
-                                        >
-                                            <option value="" className="bg-[#13161c]">Select Identity...</option>
-
-                                            <optgroup label="OFFICES / UNITS" className="bg-[#13161c] text-gray-500 font-bold">
-                                                {departmentsList.map(dept => (
-                                                    <option key={`dept_${dept.id}`} value={`dept_${dept.id}`} className="bg-[#13161c] text-gray-300 font-normal">
-                                                        {dept.name}
-                                                    </option>
-                                                ))}
-                                            </optgroup>
-
-                                            <optgroup label="INSTITUTIONS" className="bg-[#13161c] text-gray-500 font-bold">
-                                                {institutionsList.map(inst => (
-                                                    <option key={`inst_${inst.id}`} value={`inst_${inst.id}`} className="bg-[#13161c] text-gray-300 font-normal">
-                                                        {inst.name}
-                                                    </option>
-                                                ))}
-                                            </optgroup>
-                                        </select>
-                                        <div className="absolute inset-y-0 right-3 flex items-center pointer-events-none text-blue-500/50">
-                                            <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M19 9l-7 7-7-7" /></svg>
-                                        </div>
+                                    <div className="grid grid-cols-3 gap-2">
+                                        {(['low', 'medium', 'high'] as const).map((p) => (
+                                            <button
+                                                key={p}
+                                                type="button"
+                                                onClick={() => setPriority(p)}
+                                                className={`relative overflow-hidden py-3 rounded-xl text-sm font-medium transition-all duration-300 ${priority === p
+                                                    ? p === 'high' ? 'bg-gradient-to-br from-red-500/20 to-red-600/10 border border-red-500/30 text-red-300 shadow-[0_0_15px_rgba(239,68,68,0.2)]' :
+                                                        p === 'medium' ? 'bg-gradient-to-br from-orange-500/20 to-orange-600/10 border border-orange-500/30 text-orange-300 shadow-[0_0_15px_rgba(249,115,22,0.2)]' :
+                                                            'bg-gradient-to-br from-blue-500/20 to-blue-600/10 border border-blue-500/30 text-blue-300 shadow-[0_0_15px_rgba(59,130,246,0.2)]'
+                                                    : 'bg-white/5 border border-white/5 text-gray-500 hover:bg-white/10 hover:text-gray-400'
+                                                    }`}
+                                            >
+                                                {p.charAt(0).toUpperCase() + p.slice(1)}
+                                            </button>
+                                        ))}
                                     </div>
                                 </div>
                             )}
-                        </div>
 
-                        {/* Priority - Admin Only */}
-                        {isAdmin && (
+                            {/* Assigned To - Admin Only */}
+                            {isAdmin && (
+                                <div className="space-y-3 pt-2">
+                                    <label className="block text-sm font-medium text-white/70 mb-2">
+                                        Assign To Team Members
+                                    </label>
+                                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
+
+                                        {teamMembers.map(m => (
+                                            <label
+                                                key={m.uid}
+                                                className={`group flex items-center p-3 rounded-xl border cursor-pointer transition-all duration-300 ${assignedToIds.includes(m.uid)
+                                                    ? 'bg-gradient-to-r from-blue-500/20 to-indigo-500/10 border-blue-500/30 shadow-[0_0_10px_rgba(59,130,246,0.1)]'
+                                                    : 'bg-white/5 border-white/5 hover:bg-white/10'
+                                                    }`}
+                                            >
+                                                <div className={`w-5 h-5 rounded-full flex items-center justify-center border transition-colors ${assignedToIds.includes(m.uid) ? 'border-blue-400 bg-blue-500' : 'border-gray-600 bg-transparent group-hover:border-gray-500'
+                                                    }`}>
+                                                    {assignedToIds.includes(m.uid) && <div className="w-1.5 h-1.5 bg-white rounded-full" />}
+                                                </div>
+                                                <input
+                                                    type="checkbox"
+                                                    className="hidden"
+                                                    checked={assignedToIds.includes(m.uid)}
+                                                    onChange={(e) => {
+                                                        if (e.target.checked) {
+                                                            setAssignedToIds([...assignedToIds, m.uid]);
+                                                        } else {
+                                                            setAssignedToIds(assignedToIds.filter(id => id !== m.uid));
+                                                        }
+                                                    }}
+                                                />
+                                                <span className={`ml-3 text-sm font-medium transition-colors ${assignedToIds.includes(m.uid) ? 'text-blue-100' : 'text-gray-400 group-hover:text-gray-300'}`}>
+                                                    {m.name}
+                                                </span>
+                                            </label>
+                                        ))}
+                                    </div>
+                                </div>
+                            )}
+
+                            {/* Attachments Section */}
                             <div className="space-y-3 pt-4 border-t border-white/5">
                                 <label className="block text-sm font-medium text-white/70 mb-2">
-                                    Priority
+                                    Attachments <span className="text-white/40 text-xs">(Optional)</span>
                                 </label>
-                                <div className="grid grid-cols-3 gap-2">
-                                    {(['low', 'medium', 'high'] as const).map((p) => (
-                                        <button
-                                            key={p}
-                                            type="button"
-                                            onClick={() => setPriority(p)}
-                                            className={`relative overflow-hidden py-3 rounded-xl text-sm font-medium transition-all duration-300 ${priority === p
-                                                ? p === 'high' ? 'bg-gradient-to-br from-red-500/20 to-red-600/10 border border-red-500/30 text-red-300 shadow-[0_0_15px_rgba(239,68,68,0.2)]' :
-                                                    p === 'medium' ? 'bg-gradient-to-br from-orange-500/20 to-orange-600/10 border border-orange-500/30 text-orange-300 shadow-[0_0_15px_rgba(249,115,22,0.2)]' :
-                                                        'bg-gradient-to-br from-blue-500/20 to-blue-600/10 border border-blue-500/30 text-blue-300 shadow-[0_0_15px_rgba(59,130,246,0.2)]'
-                                                : 'bg-white/5 border border-white/5 text-gray-500 hover:bg-white/10 hover:text-gray-400'
-                                                }`}
-                                        >
-                                            {p.charAt(0).toUpperCase() + p.slice(1)}
-                                        </button>
-                                    ))}
-                                </div>
-                            </div>
-                        )}
-
-                        {/* Assigned To - Admin Only */}
-                        {isAdmin && (
-                            <div className="space-y-3 pt-2">
-                                <label className="block text-sm font-medium text-white/70 mb-2">
-                                    Assign To Team Members
-                                </label>
-                                <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
-
-                                    {teamMembers.map(m => (
-                                        <label
-                                            key={m.uid}
-                                            className={`group flex items-center p-3 rounded-xl border cursor-pointer transition-all duration-300 ${assignedToIds.includes(m.uid)
-                                                ? 'bg-gradient-to-r from-blue-500/20 to-indigo-500/10 border-blue-500/30 shadow-[0_0_10px_rgba(59,130,246,0.1)]'
-                                                : 'bg-white/5 border-white/5 hover:bg-white/10'
-                                                }`}
-                                        >
-                                            <div className={`w-5 h-5 rounded-full flex items-center justify-center border transition-colors ${assignedToIds.includes(m.uid) ? 'border-blue-400 bg-blue-500' : 'border-gray-600 bg-transparent group-hover:border-gray-500'
-                                                }`}>
-                                                {assignedToIds.includes(m.uid) && <div className="w-1.5 h-1.5 bg-white rounded-full" />}
-                                            </div>
-                                            <input
-                                                type="checkbox"
-                                                className="hidden"
-                                                checked={assignedToIds.includes(m.uid)}
-                                                onChange={(e) => {
-                                                    if (e.target.checked) {
-                                                        setAssignedToIds([...assignedToIds, m.uid]);
-                                                    } else {
-                                                        setAssignedToIds(assignedToIds.filter(id => id !== m.uid));
-                                                    }
-                                                }}
-                                            />
-                                            <span className={`ml-3 text-sm font-medium transition-colors ${assignedToIds.includes(m.uid) ? 'text-blue-100' : 'text-gray-400 group-hover:text-gray-300'}`}>
-                                                {m.name}
-                                            </span>
-                                        </label>
-                                    ))}
-                                </div>
-                            </div>
-                        )}
-
-                        {/* Attachments Section */}
-                        <div className="space-y-3 pt-4 border-t border-white/5">
-                            <label className="block text-sm font-medium text-white/70 mb-2">
-                                Attachments <span className="text-white/40 text-xs">(Optional)</span>
-                            </label>
-                            <div className="bg-white/5 rounded-2xl border border-dashed border-white/10 p-6 text-center hover:bg-white/10 transition-colors relative group">
-                                <input
-                                    type="file"
-                                    multiple
-                                    className="absolute inset-0 w-full h-full opacity-0 cursor-pointer z-10"
-                                    onChange={(e) => {
-                                        if (e.target.files) {
-                                            setFiles(prev => [...prev, ...Array.from(e.target.files!)]);
-                                        }
-                                    }}
-                                />
-                                <div className="flex flex-col items-center gap-2 pointer-events-none">
-                                    <div className="w-10 h-10 rounded-full bg-blue-500/10 flex items-center justify-center text-blue-400 group-hover:scale-110 transition-transform">
-                                        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" /><polyline points="17 8 12 3 7 8" /><line x1="12" x2="12" y1="3" y2="15" /></svg>
-                                    </div>
-                                    <p className="text-sm text-gray-400 group-hover:text-gray-300">
-                                        Click or drag files here
-                                    </p>
-                                </div>
-                            </div>
-                            {/* File List */}
-                            {files.length > 0 && (
-                                <div className="space-y-2 mt-2">
-                                    {files.map((file, i) => (
-                                        <div key={i} className="flex items-center justify-between p-2 bg-white/5 rounded-lg border border-white/5">
-                                            <span className="text-xs text-gray-300 truncate max-w-[200px]">{file.name}</span>
-                                            <button
-                                                type="button"
-                                                onClick={() => setFiles(files.filter((_, idx) => idx !== i))}
-                                                className="text-gray-500 hover:text-red-400 p-1"
-                                            >
-                                                <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M18 6 6 18" /><path d="m6 6 12 12" /></svg>
-                                            </button>
+                                <div className="bg-white/5 rounded-2xl border border-dashed border-white/10 p-6 text-center hover:bg-white/10 transition-colors relative group">
+                                    <input
+                                        type="file"
+                                        multiple
+                                        className="absolute inset-0 w-full h-full opacity-0 cursor-pointer z-10"
+                                        onChange={(e) => {
+                                            if (e.target.files) {
+                                                setFiles(prev => [...prev, ...Array.from(e.target.files!)]);
+                                            }
+                                        }}
+                                    />
+                                    <div className="flex flex-col items-center gap-2 pointer-events-none">
+                                        <div className="w-10 h-10 rounded-full bg-blue-500/10 flex items-center justify-center text-blue-400 group-hover:scale-110 transition-transform">
+                                            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" /><polyline points="17 8 12 3 7 8" /><line x1="12" x2="12" y1="3" y2="15" /></svg>
                                         </div>
-                                    ))}
+                                        <p className="text-sm text-gray-400 group-hover:text-gray-300">
+                                            Click or drag files here
+                                        </p>
+                                    </div>
                                 </div>
-                            )}
-                        </div>
+                                {/* File List */}
+                                {files.length > 0 && (
+                                    <div className="space-y-2 mt-2">
+                                        {files.map((file, i) => (
+                                            <div key={i} className="flex items-center justify-between p-2 bg-white/5 rounded-lg border border-white/5">
+                                                <span className="text-xs text-gray-300 truncate max-w-[200px]">{file.name}</span>
+                                                <button
+                                                    type="button"
+                                                    onClick={() => setFiles(files.filter((_, idx) => idx !== i))}
+                                                    className="text-gray-500 hover:text-red-400 p-1"
+                                                >
+                                                    <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M18 6 6 18" /><path d="m6 6 12 12" /></svg>
+                                                </button>
+                                            </div>
+                                        ))}
+                                    </div>
+                                )}
+                            </div>
 
-                        {/* Read Only Info */}
-                        <div className="pt-6 mt-2 border-t border-white/5 flex items-center justify-between opacity-60">
-                            <div className="flex items-center gap-3">
-                                <div className="w-8 h-8 rounded-full bg-white/5 flex items-center justify-center text-xs font-bold text-gray-500">
-                                    {(user.name || 'U').charAt(0)}
-                                </div>
-                                <div className="text-xs text-gray-500">
-                                    Assigning as <span className="text-gray-300">
-                                        {createAs === 'onBehalfOf' ? (
-                                            onBehalfOfId ? ( // Lookup name
-                                                departmentsList.find(d => `dept_${d.id}` === onBehalfOfId)?.name ||
-                                                institutionsList.find(i => `inst_${i.id}` === onBehalfOfId)?.name || 'Unknown'
-                                            ) : '...'
-                                        ) : (user.name || 'Unknown')}
-                                    </span>
+                            {/* Read Only Info */}
+                            <div className="pt-6 mt-2 border-t border-white/5 flex items-center justify-between opacity-60">
+                                <div className="flex items-center gap-3">
+                                    <div className="w-8 h-8 rounded-full bg-white/5 flex items-center justify-center text-xs font-bold text-gray-500">
+                                        {(user.name || 'U').charAt(0)}
+                                    </div>
+                                    <div className="text-xs text-gray-500">
+                                        Assigning as <span className="text-gray-300">
+                                            {createAs === 'onBehalfOf' ? (
+                                                onBehalfOfId ? ( // Lookup name
+                                                    departmentsList.find(d => `dept_${d.id}` === onBehalfOfId)?.name ||
+                                                    institutionsList.find(i => `inst_${i.id}` === onBehalfOfId)?.name || 'Unknown'
+                                                ) : '...'
+                                            ) : (user.name || 'Unknown')}
+                                        </span>
+                                    </div>
                                 </div>
                             </div>
-                        </div>
 
-                        {/* Submit Button */}
-                        <button
-                            type="submit"
-                            disabled={loading}
-                            className="w-full bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-500 hover:to-indigo-500 text-white font-bold text-lg py-4 rounded-2xl shadow-lg shadow-blue-900/20 hover:shadow-blue-900/40 hover-sheen active:scale-[0.98] transition-all disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
-                        >
-                            {loading ? (
-                                <>
-                                    <div className="animate-spin rounded-full h-5 w-5 border-b-2 border-white" />
-                                    {uploadProgress ? `Uploading (${uploadProgress})...` : 'Saving...'}
-                                </>
-                            ) : (
-                                'Create Task'
+                            {/* Phase 28 Inline Recovery */}
+                            {error && (
+                                <div className="flex items-center justify-center gap-3 py-2 animate-in fade-in slide-in-from-bottom-2">
+                                    <span className="text-sm text-red-400 font-medium">{error}</span>
+                                    <div className="w-1 h-1 bg-white/10 rounded-full" />
+                                    <button
+                                        type="button"
+                                        onClick={handleRetry}
+                                        className="text-xs font-bold text-white/50 uppercase tracking-widest hover:text-white transition-colors"
+                                    >
+                                        Edit & Retry
+                                    </button>
+                                </div>
                             )}
-                        </button>
 
-                    </form>
+                            {/* Submit Button */}
+                            <button
+                                type="submit"
+                                disabled={loading}
+                                tabIndex={3}
+                                className="w-full bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-500 hover:to-indigo-500 text-white font-bold text-lg py-4 rounded-2xl shadow-lg shadow-blue-900/20 hover:shadow-blue-900/40 hover-sheen active:scale-[0.98] transition-all disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
+                            >
+                                {loading ? (
+                                    <>
+                                        <div className="animate-spin rounded-full h-5 w-5 border-2 border-white/30 border-t-white" />
+                                        <span>Creating...</span>
+                                        {uploadProgress && <span className="text-xs font-normal opacity-70 ml-1">({uploadProgress})</span>}
+                                    </>
+                                ) : (
+                                    'Create Task'
+                                )}
+                            </button>
+
+                        </form>
+                    </div>
                 </div>
-            </div >
-        </div >
+            </div>
+        </PageLayout>
     );
 }

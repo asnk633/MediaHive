@@ -1,10 +1,7 @@
-import { Suspense } from 'react';
+'use client';
+
 import InventoryRequestsClient from './InventoryRequestsClient';
 
 export default function MyRequestsPage() {
-    return (
-        <Suspense fallback={null}>
-            <InventoryRequestsClient />
-        </Suspense>
-    );
+    return <InventoryRequestsClient />;
 }

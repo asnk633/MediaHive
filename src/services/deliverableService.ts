@@ -75,7 +75,7 @@ export const DeliverableService = {
                 fileType: file.type,
                 fileSize: file.size,
                 downloadUrl: uploadResult.viewLink, // Using Drive View Link
-                driveFileId: uploadResult.fileId || uploadResult.driveFileId,
+                driveFileId: uploadResult.fileId,
                 uploadedBy: {
                     ...uploader,
                     role: uploader.role || 'viewer' // Default to viewer if role is missing to satisfy interface

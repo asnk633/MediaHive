@@ -4,7 +4,7 @@ import { Event } from '@/types/event';
 import { SystemEventService } from '@/services/systemEventService';
 import { UserService } from '@/services/userService';
 import { StructureService } from '@/services/structureService';
-import { useAuth } from '@/contexts/AuthContext';
+import { useAuth } from '@/contexts/AuthContextProvider';
 import { apiClient } from '@/lib/apiClient';
 import {
     X, Calendar as CalendarIcon, Clock, MapPin, AlignLeft,

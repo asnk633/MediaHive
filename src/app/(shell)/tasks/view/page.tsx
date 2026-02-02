@@ -1,10 +1,7 @@
-import { Suspense } from 'react';
+'use client';
+
 import TasksViewClient from './TasksViewClient';
 
 export default function TasksViewPage() {
-    return (
-        <Suspense fallback={<div className="min-h-screen bg-[var(--bg-card)]" />}>
-            <TasksViewClient />
-        </Suspense>
-    );
+    return <TasksViewClient />;
 }

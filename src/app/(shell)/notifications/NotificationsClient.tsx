@@ -13,7 +13,7 @@ export default function NotificationsClient() {
                 description="Stay updated with your latest tasks, events, and system alerts."
             />
 
-            <div className="flex-1 overflow-y-auto px-4 sm:px-6 pb-20">
+            <div>
                 <NotificationInbox />
             </div>
         </PageLayout>

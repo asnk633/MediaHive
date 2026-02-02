@@ -1,5 +1,6 @@
 // Network monitoring utility for Firebase connectivity issues
 import { apiClient } from '@/lib/apiClient';
+import { getApiBaseUrl } from '@/lib/api-utils';
 
 export class NetworkMonitor {
   private static instance: NetworkMonitor; // Keep the static instance for singleton pattern
@@ -15,8 +16,9 @@ export class NetworkMonitor {
       window.addEventListener('offline', this.handleOffline);
 
       this.checkInterval = setInterval(() => {
+        // PRODUCTION PASS: Reduce frequency to 5 mins unless strictly needed
         this.checkConnectivity();
-      }, 30000);
+      }, 300000);
     }
   }
 
@@ -78,7 +80,8 @@ export class NetworkMonitor {
     if (typeof window === 'undefined') return;
 
     try {
-      const response = await fetch('/api/health', {
+      const baseUrl = getApiBaseUrl();
+      const response = await fetch(`${baseUrl}/api/health`, {
         method: 'HEAD',
         cache: 'no-cache'
       });

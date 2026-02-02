@@ -1,10 +1,7 @@
-import { Suspense } from 'react';
+'use client';
+
 import ClientBoundary from './ClientBoundary';
 
 export default function NotificationsNewPage() {
-    return (
-        <Suspense fallback={null}>
-            <ClientBoundary />
-        </Suspense>
-    );
+    return <ClientBoundary />;
 }

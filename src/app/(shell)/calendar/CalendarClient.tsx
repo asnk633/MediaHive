@@ -8,8 +8,8 @@ import { Calendar as CalendarIcon, CheckCircle2, Clock, Plus, Filter, LayoutList
 import { EventCard } from "@/components/event/EventCard";
 import { EventModal } from "@/components/event/EventModal";
 import { Button } from "@/components/ui/button";
-import { cn } from "@/lib/utils";
-import { useSearchParams, useRouter } from "next/navigation";
+import { cn, nativeNavigate } from "@/lib/utils";
+import { useRouter } from "next/navigation";
 import { DayPicker } from "react-day-picker";
 import "react-day-picker/style.css";
 
@@ -20,13 +20,27 @@ type CalendarItem =
 export type CalendarView = 'timeline' | 'month' | 'week';
 
 export default function CalendarClient() {
-    const { events, tasks } = useClientData();
-    const searchParams = useSearchParams();
+    const { events, tasks, loading } = useClientData();
+    const searchParams = typeof window !== 'undefined' ? new URLSearchParams(window.location.search) : new URLSearchParams();
     const router = useRouter();
     const [isEventModalOpen, setIsEventModalOpen] = useState(false);
     const [selectedDate, setSelectedDate] = useState<Date | undefined>(undefined);
     const [filter, setFilter] = useState<'all' | 'events' | 'tasks'>('all');
-    const [view, setView] = useState<CalendarView>('timeline');
+    // Load preference or default to timeline
+    const [view, setView] = useState<CalendarView>(() => {
+        if (typeof window !== 'undefined') {
+            const saved = localStorage.getItem('calendar-view-pref');
+            return (saved === 'month' || saved === 'week' || saved === 'timeline') ? saved : 'timeline';
+        }
+        return 'timeline';
+    });
+
+    // Save on change
+    useEffect(() => {
+        if (typeof window !== 'undefined') {
+            localStorage.setItem('calendar-view-pref', view);
+        }
+    }, [view]);
 
     useEffect(() => {
         if (searchParams.get('modal') === 'new-event') {
@@ -39,7 +53,7 @@ export default function CalendarClient() {
         setSelectedDate(undefined);
         const params = new URLSearchParams(searchParams.toString());
         params.delete('modal');
-        router.replace(`/calendar?${params.toString()}`, { scroll: false });
+        nativeNavigate(`/calendar?${params.toString()}`, router, 'Calendar (Modal Close)');
     };
 
     const groupedItems = useMemo(() => {
@@ -139,13 +153,19 @@ export default function CalendarClient() {
                                     className="flex flex-col items-center justify-center py-20 text-center text-[var(--muted)] relative z-10"
                                 >
                                     <div className="h-20 w-20 rounded-full bg-[var(--panel)] flex items-center justify-center mb-6 border border-[var(--glass-border)]">
-                                        <CalendarIcon className="h-10 w-10 opacity-20 text-[var(--icon-muted)]" />
+                                        <CalendarIcon className={cn("h-10 w-10 opacity-20 text-[var(--icon-muted)]", loading && "animate-pulse")} />
                                     </div>
-                                    <h3 className="text-lg font-medium text-[var(--text)] mb-2">No upcoming items</h3>
-                                    <p className="max-w-xs mx-auto mb-6">You're all caught up! Create an event or task to get started.</p>
-                                    <Button onClick={() => setIsEventModalOpen(true)} variant="outline" className="border-[var(--accent)]/50 text-[var(--accent)] hover:bg-[var(--accent)]/10 transition-all duration-200 ease-in-out">
-                                        Schedule Event
-                                    </Button>
+                                    <h3 className="text-lg font-medium text-[var(--text)] mb-2">
+                                        {loading ? "Syncing your schedule..." : "No upcoming items"}
+                                    </h3>
+                                    <p className="max-w-xs mx-auto mb-6">
+                                        {loading ? "Fetching your latest events and tasks..." : "You're all caught up! Create an event or task to get started."}
+                                    </p>
+                                    {!loading && (
+                                        <Button onClick={() => setIsEventModalOpen(true)} variant="outline" className="border-[var(--accent)]/50 text-[var(--accent)] hover:bg-[var(--accent)]/10 transition-all duration-200 ease-in-out">
+                                            Schedule Event
+                                        </Button>
+                                    )}
                                 </motion.div>
                             ) : (
                                 groupedItems.map((group, groupIdx) => (

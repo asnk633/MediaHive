@@ -10,7 +10,7 @@ import {
 } from 'lucide-react';
 import { format } from 'date-fns';
 import { EventMediaTab } from '@/components/media/EventMediaTab';
-import { useAuth } from '@/contexts/AuthContext';
+import { useAuth } from '@/contexts/AuthContextProvider';
 import { useDevWiring } from '@/hooks/useDevWiring';
 import {
     AlertDialog,

@@ -9,7 +9,7 @@ import { Badge } from '@/components/ui/badge';
 import { Skeleton } from '@/components/ui/skeleton';
 import { InventoryItem, InventoryApiResponse } from '@/types/inventory';
 import { apiClient, apiPost } from '@/lib/apiClient';
-import { useAuth } from '@/contexts/AuthContext';
+import { useAuth } from '@/contexts/AuthContextProvider';
 import { Plus, AlertCircle, RefreshCw, Archive } from 'lucide-react';
 import { formatDistanceToNow } from 'date-fns';
 import {

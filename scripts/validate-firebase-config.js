@@ -34,7 +34,7 @@ if (missingEnvVars.length > 0) {
 
 // Check if the project ID is the correct staging project
 const projectId = process.env.NEXT_PUBLIC_FIREBASE_PROJECT_ID;
-const expectedProjectId = 'thaiba-media-staging';
+const expectedProjectId = 'thaiba-media-prod';
 
 if (projectId !== expectedProjectId) {
   console.error(`[FIREBASE VALIDATION] CRITICAL ERROR: Expected project ID '${expectedProjectId}', but got '${projectId}'`);

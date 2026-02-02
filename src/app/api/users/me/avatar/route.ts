@@ -4,6 +4,9 @@ import { getDriveClient, ensureFolderPath, makeFilePublic, DRIVE_CONFIG, sanitiz
 import { adminDb } from '@/lib/firebase/server';
 import { verifyUser } from '@/lib/server-utils';
 
+
+export const dynamic = 'force-dynamic';
+
 export async function POST(req: NextRequest) {
     try {
         console.log('[Avatar/Route] Starting upload request');

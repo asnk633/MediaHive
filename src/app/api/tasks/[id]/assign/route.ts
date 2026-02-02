@@ -5,6 +5,9 @@ import { ServerNotification } from '@/lib/server-notification';
 import { FieldValue } from 'firebase-admin/firestore';
 
 // POST /api/tasks/[id]/assign
+
+export const dynamic = 'force-dynamic';
+
 export async function POST(
   req: NextRequest,
   props: { params: Promise<{ id: string }> }

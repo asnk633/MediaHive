@@ -23,6 +23,9 @@ async function ensureDirectories() {
 }
 
 // POST /api/face/match - Match a face (authenticated users)
+
+export const dynamic = 'force-dynamic';
+
 export async function POST(request: NextRequest) {
   // Check if feature is enabled
   if (!config.FEATURE_FACE_RECOGNITION) {

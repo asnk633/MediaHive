@@ -2,6 +2,9 @@ import { NextRequest, NextResponse } from 'next/server';
 import { verifyUser } from '@/lib/server-utils';
 import { DriveScannerService } from '@/lib/drive-scanner';
 
+
+export const dynamic = 'force-dynamic';
+
 export async function GET(req: NextRequest) {
     try {
         const user = await verifyUser(req);

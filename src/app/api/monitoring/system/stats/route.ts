@@ -7,6 +7,9 @@ import { authorizeByPermission } from '@/app/api/_lib/rbac';
 // In a real implementation, you would get actual system stats
 // For now, we'll return mock data
 
+
+export const dynamic = 'force-dynamic';
+
 export async function GET(req: NextRequest) {
   try {
     // Authorize user with RBAC

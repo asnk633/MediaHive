@@ -3,6 +3,8 @@ import { verifyUser } from '@/lib/server-utils';
 import { StructurePolicyService } from '@/lib/structure-policies.server';
 import { DEFAULT_GLOBAL_POLICY_RULES, AutomationRulePolicy } from '@/types/structure-policy';
 
+export const dynamic = 'force-dynamic';
+
 export async function GET(request: NextRequest) {
     try {
         const user = await verifyUser(request);

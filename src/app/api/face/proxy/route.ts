@@ -6,6 +6,9 @@ import { config } from '@/lib/config';
 import axios from 'axios';
 
 // Proxy all requests to the Python face recognition service
+
+export const dynamic = 'force-dynamic';
+
 export async function POST(request: NextRequest) {
   // Check if feature is enabled
   if (!config.FEATURE_FACE_RECOGNITION) {

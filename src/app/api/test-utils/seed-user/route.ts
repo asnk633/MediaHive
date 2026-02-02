@@ -7,6 +7,9 @@ import { eq } from 'drizzle-orm';
 // Only allow this endpoint in development/test environments
 const isDev = process.env.NODE_ENV === 'development' || process.env.NODE_ENV === 'test';
 
+
+export const dynamic = 'force-dynamic';
+
 export async function POST(request: NextRequest) {
   // Only allow in dev/test environments
   if (!isDev) {

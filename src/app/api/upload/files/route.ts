@@ -9,6 +9,9 @@ function isBase64DataUrl(s: string | null | undefined) {
   return /^data:[\w/+.-]+;base64,/.test(s);
 }
 
+
+export const dynamic = 'force-dynamic';
+
 export async function POST(request: NextRequest) {
   try {
     const formData = await request.formData();

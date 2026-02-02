@@ -2,6 +2,9 @@ import { NextRequest } from 'next/server';
 import { adminDb } from '@/lib/firebase/server';
 import { requireAdminWithVerifiedEmail } from '@/lib/emailVerificationGuard';
 
+
+export const dynamic = 'force-dynamic';
+
 export async function PUT(
     request: NextRequest,
     { params }: { params: Promise<{ id: string }> }

@@ -4,6 +4,9 @@ import { adminDb } from '@/lib/firebase/server';
 import { verifyUser } from '@/lib/server-utils';
 import { logSystemActivity } from '@/lib/server/activity-logger';
 
+
+export const dynamic = 'force-dynamic';
+
 export async function PATCH(request: NextRequest, { params }: { params: Promise<{ id: string }> }) {
     try {
         const user = await verifyUser(request);

@@ -8,6 +8,9 @@ import { tenants } from '@/db/schema';
 import { eq, and } from 'drizzle-orm';
 
 // GET /api/tenants/[id] - Get a specific tenant
+
+export const dynamic = 'force-dynamic';
+
 export async function GET(
   req: NextRequest,
   context: { params: Promise<{ id: string }> }

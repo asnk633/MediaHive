@@ -3,6 +3,9 @@ import { verifyUser } from '@/lib/server-utils';
 import { InstitutionPolicyService } from '@/lib/institution-policies.server';
 import { InstitutionPolicy } from '@/types/institution-policy';
 
+
+export const dynamic = 'force-dynamic';
+
 export async function GET(request: NextRequest, { params }: { params: Promise<{ id: string }> }) {
     try {
         const { id } = await params;

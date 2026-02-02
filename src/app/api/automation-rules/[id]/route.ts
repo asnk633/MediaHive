@@ -8,6 +8,9 @@ import { automationRules } from '@/db/schema';
 import { eq, and } from 'drizzle-orm';
 
 // GET /api/automation-rules/[id] - Get a specific automation rule
+
+export const dynamic = 'force-dynamic';
+
 export async function GET(
   req: NextRequest,
   context: { params: Promise<{ id: string }> }

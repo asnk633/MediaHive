@@ -1,6 +1,9 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { initializeDriveStructure } from '@/lib/drive-init';
 
+
+export const dynamic = 'force-dynamic';
+
 export async function POST(req: NextRequest) {
     try {
         // Optional: Add Admin Role Check logic here using session/token if required.

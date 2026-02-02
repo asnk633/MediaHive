@@ -8,6 +8,9 @@ import { eq, desc } from 'drizzle-orm';
  * GET /api/admin/interventions/[userId]
  * Fetch intervention history for a user
  */
+
+export const dynamic = 'force-dynamic';
+
 export async function GET(
     request: NextRequest,
     { params }: { params: Promise<{ userId: string }> }

@@ -3,6 +3,9 @@ import { verifyUser } from '@/lib/server-utils';
 import { adminDb } from '@/lib/firebase/server';
 import { AttachmentLog } from '@/types/task';
 
+
+export const dynamic = 'force-dynamic';
+
 export async function GET(req: NextRequest, props: { params: Promise<{ id: string }> }) {
   try {
     const params = await props.params;

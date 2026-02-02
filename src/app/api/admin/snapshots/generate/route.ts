@@ -7,6 +7,9 @@ import { generateDailySnapshots } from '@/lib/snapshot.server';
  * Manually trigger snapshot generation
  * Admin-only endpoint for testing and manual backfill
  */
+
+export const dynamic = 'force-dynamic';
+
 export async function POST(request: NextRequest) {
     try {
         // Require admin permission

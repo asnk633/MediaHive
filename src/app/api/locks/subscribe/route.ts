@@ -5,6 +5,9 @@ import { NextRequest } from 'next/server';
 import { authorizeByPermission } from '@/app/api/_lib/rbac';
 import { registerSSEConnection, unregisterSSEConnection } from '../../_lib/realtime';
 
+
+export const dynamic = 'force-dynamic';
+
 export async function GET(req: NextRequest) {
   // Authorize user with RBAC
   const user = await authorizeByPermission(req, 'read:tasks');

@@ -3,6 +3,9 @@ import { adminDb } from '@/lib/firebase/server';
 import { FieldValue } from 'firebase-admin/firestore';
 import { verifyUser } from '@/lib/server-utils';
 
+
+export const dynamic = 'force-dynamic';
+
 export async function POST(request: NextRequest) {
     try {
         const user = await verifyUser(request);

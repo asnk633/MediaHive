@@ -6,6 +6,9 @@ import { verifyIdempotency } from '@/lib/idempotency';
 import { ServerNotification } from '@/lib/server-notification';
 import { logSystemActivity } from '@/lib/server/activity-logger';
 
+
+export const dynamic = 'force-dynamic';
+
 export async function GET(request: NextRequest) {
   try {
     // Verify authentication

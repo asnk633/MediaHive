@@ -2,6 +2,9 @@ import { NextRequest, NextResponse } from 'next/server';
 import { adminAuth, adminDb } from '@/lib/firebase/server';
 import { Timestamp } from 'firebase-admin/firestore';
 
+
+export const dynamic = 'force-dynamic';
+
 export async function POST(req: NextRequest) {
     try {
         const authHeader = req.headers.get('authorization');

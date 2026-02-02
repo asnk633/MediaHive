@@ -11,6 +11,9 @@ import { eq, and, gte, lte, count, sql, desc } from 'drizzle-orm';
 
 // GET /api/audit-log - Get audit logs
 // GET /api/audit-log?stats=true - Get audit log statistics
+
+export const dynamic = 'force-dynamic';
+
 export async function GET(req: NextRequest) {
   try {
     // Authorize user with RBAC - only admin can access audit logs

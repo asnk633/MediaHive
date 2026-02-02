@@ -6,6 +6,9 @@ import { logSystemActivity } from '@/lib/server/activity-logger';
 import { getDriveClient } from '@/lib/drive';
 import { FieldValue } from 'firebase-admin/firestore';
 
+
+export const dynamic = 'force-dynamic';
+
 export async function GET(req: NextRequest) {
     try {
         const user = await verifyUser(req);

@@ -3,6 +3,9 @@ import { adminAuth } from "@/lib/firebase/server";
 import { cookies } from "next/headers";
 import { logSystemActivity } from "@/lib/server/activity-logger";
 
+
+export const dynamic = 'force-dynamic';
+
 export async function POST(request: NextRequest) {
     let idToken = "";
     try {

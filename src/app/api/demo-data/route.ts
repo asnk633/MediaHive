@@ -8,6 +8,9 @@ import { isFeatureEnabled } from '@/app/featureFlags';
  * Generate or delete demo data for the workspace
  * Body: { action: 'generate' | 'delete' }
  */
+
+export const dynamic = 'force-dynamic';
+
 export async function POST(req: NextRequest) {
   try {
     // Check if onboarding layer feature is enabled

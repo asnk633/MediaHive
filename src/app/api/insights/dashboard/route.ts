@@ -33,6 +33,9 @@ function getDateRange(period: string) {
   return { startDate: startDate.toISOString(), endDate: now.toISOString() };
 }
 
+
+export const dynamic = 'force-dynamic';
+
 export async function GET(req: NextRequest) {
   try {
     // Authorize user with RBAC

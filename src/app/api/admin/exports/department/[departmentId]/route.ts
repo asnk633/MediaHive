@@ -10,6 +10,9 @@ import { convertToCSV, logExportAction } from '@/utils/exportHelpers';
  * Export department health history
  * Params: period (opt), from (opt), to (opt), format (csv|json)
  */
+
+export const dynamic = 'force-dynamic';
+
 export async function GET(
     request: NextRequest,
     { params }: { params: Promise<{ departmentId: string }> }

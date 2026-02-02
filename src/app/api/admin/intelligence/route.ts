@@ -34,6 +34,9 @@ interface UnderperformingUser {
     insight: string; // "Worked 4.1h - 3 tasks overdue"
 }
 
+
+export const dynamic = 'force-dynamic';
+
 export async function GET(request: NextRequest) {
     console.log('[API] Intelligence: Start');
     console.log('[API] Intelligence: DATABASE_URL:', process.env.DATABASE_URL);

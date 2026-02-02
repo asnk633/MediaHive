@@ -8,6 +8,9 @@ import { automationRules } from '@/db/schema';
 import { eq, and } from 'drizzle-orm';
 
 // GET /api/automation-rules - Get all automation rules for tenant
+
+export const dynamic = 'force-dynamic';
+
 export async function GET(req: NextRequest) {
   try {
     // Authorize user with RBAC - only admin can manage automation rules

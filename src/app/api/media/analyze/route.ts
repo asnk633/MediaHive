@@ -57,6 +57,9 @@ async function cleanupOldFiles() {
 }
 
 // POST /api/media/analyze - Analyze media quality
+
+export const dynamic = 'force-dynamic';
+
 export async function POST(request: NextRequest) {
   // Check if feature is enabled
   if (!config.FEATURE_MEDIA_ANALYZER) {

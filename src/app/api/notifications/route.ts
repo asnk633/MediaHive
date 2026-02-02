@@ -3,6 +3,9 @@ import { adminDb } from '@/lib/firebase/server';
 // import { requireAdminWithVerifiedEmail } from '@/lib/emailVerificationGuard'; // causing build issues
 import { verifyUser } from '@/lib/server-utils';
 
+
+export const dynamic = 'force-dynamic';
+
 export async function GET(request: NextRequest) {
   try {
     // Verify the user is authenticated and has access to their own notifications

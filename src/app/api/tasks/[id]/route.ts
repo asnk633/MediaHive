@@ -4,6 +4,9 @@ import { ServerNotification } from '@/lib/server-notification';
 import { logSystemActivity } from '@/lib/server/activity-logger';
 
 // Dynamic route
+
+export const dynamic = 'force-dynamic';
+
 export async function GET(
   request: Request,
   { params }: { params: Promise<{ id: string }> }

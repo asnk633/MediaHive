@@ -34,6 +34,9 @@ interface PerformanceHistoryResponse {
  * Fetch historical performance snapshots for a specific user
  * Read-only, snapshot data only, no live computation
  */
+
+export const dynamic = 'force-dynamic';
+
 export async function GET(
     request: NextRequest,
     { params }: { params: Promise<{ userId: string }> }

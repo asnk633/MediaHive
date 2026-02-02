@@ -3,6 +3,9 @@ import { adminDb } from '@/lib/firebase/server';
 import { requireAdminWithVerifiedEmail } from '@/lib/emailVerificationGuard';
 import { verifyUser } from '@/lib/server-utils';
 
+
+export const dynamic = 'force-dynamic';
+
 export async function GET(request: NextRequest) {
   try {
     // GUARDRAIL: Role-based filtering or specific ID is required to avoid full user base scans.

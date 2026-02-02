@@ -8,6 +8,9 @@ import { users } from '@/db/schema';
 import { eq } from 'drizzle-orm';
 
 // GET /api/notification-settings - Get user's notification settings
+
+export const dynamic = 'force-dynamic';
+
 export async function GET(req: NextRequest) {
   try {
     const user = await getUserFromRequest(req);

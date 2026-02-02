@@ -9,6 +9,9 @@ import { verifyRefreshToken, createSession, setSessionCookies } from '../../_lib
 import { AuthUser } from '../../_lib/auth';
 import { rateLimitMiddleware } from '../../_lib/rate-limiter';
 
+
+export const dynamic = 'force-dynamic';
+
 export async function POST(request: NextRequest) {
   try {
     // Apply rate limiting for refresh token requests

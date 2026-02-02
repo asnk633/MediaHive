@@ -4,6 +4,9 @@ import { getFirestore, FieldValue } from 'firebase-admin/firestore';
 import { adminDb } from '@/lib/firebase/server';
 import { requireAdminWithVerifiedEmail } from '@/lib/emailVerificationGuard';
 
+
+export const dynamic = 'force-dynamic';
+
 export async function POST(request: NextRequest) {
   try {
     // Use the admin guard which checks both admin status and email verification

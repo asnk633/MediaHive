@@ -2,6 +2,9 @@ import { NextRequest, NextResponse } from 'next/server';
 import { verifyUser } from '@/lib/server-utils';
 import { RolePolicyService } from '@/lib/role-policies.server';
 
+
+export const dynamic = 'force-dynamic';
+
 export async function GET(request: NextRequest) {
     try {
         const user = await verifyUser(request);

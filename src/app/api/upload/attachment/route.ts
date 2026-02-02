@@ -10,6 +10,9 @@ import path from 'path';
  * Upload file attachment for tasks
  * Multipart form data: file, taskId
  */
+
+export const dynamic = 'force-dynamic';
+
 export async function POST(req: NextRequest) {
   try {
     const user = await getUserFromRequest(req);

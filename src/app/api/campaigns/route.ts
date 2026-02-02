@@ -1,6 +1,9 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { getFirebaseServices, verifyUser } from '@/lib/server-utils';
 
+
+export const dynamic = 'force-dynamic';
+
 export async function GET(req: NextRequest) {
     try {
         const { firestore } = await getFirebaseServices();

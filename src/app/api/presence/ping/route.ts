@@ -7,6 +7,9 @@ import { presence } from '@/db/schema';
 import { authorizeByPermission } from '@/app/api/_lib/rbac';
 import { broadcastEvent } from '../../_lib/realtime';
 
+
+export const dynamic = 'force-dynamic';
+
 export async function POST(req: NextRequest) {
   try {
     // Authorize user with RBAC - all authenticated users can update their presence

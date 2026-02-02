@@ -8,6 +8,9 @@ import { tenants } from '@/db/schema';
 import { eq, and } from 'drizzle-orm';
 
 // GET /api/tenants - Get all tenants (admin only)
+
+export const dynamic = 'force-dynamic';
+
 export async function GET(req: NextRequest) {
   try {
     // Authorize user with RBAC - only global admin can manage tenants

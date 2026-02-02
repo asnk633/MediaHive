@@ -7,6 +7,9 @@ import { addRequestLog, getRequestLogs, clearRequestLogs } from '@/lib/request-l
 // Ensure this endpoint is only available in development
 const isDevEnvironment = process.env.NODE_ENV === 'development' || process.env.NEXT_PUBLIC_E2E === '1';
 
+
+export const dynamic = 'force-dynamic';
+
 export async function GET(req: NextRequest) {
   // Only available in dev environment
   if (!isDevEnvironment) {

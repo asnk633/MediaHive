@@ -39,6 +39,9 @@ const DEFAULT_RULES: NotificationRule[] = [
     }
 ];
 
+
+export const dynamic = 'force-dynamic';
+
 export async function GET(request: NextRequest) {
     try {
         const user = await verifyUser(request);

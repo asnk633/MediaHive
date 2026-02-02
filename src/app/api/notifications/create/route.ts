@@ -1,6 +1,9 @@
 import { NextResponse, NextRequest } from 'next/server';
 import { getFirebaseServices, verifyUser } from '@/lib/server-utils';
 
+
+export const dynamic = 'force-dynamic';
+
 export async function POST(req: NextRequest) {
     try {
         const { firestore } = await getFirebaseServices();

@@ -23,6 +23,9 @@ const createInterventionSchema = z.object({
  * POST /api/admin/interventions
  * Create a new intervention note
  */
+
+export const dynamic = 'force-dynamic';
+
 export async function POST(request: NextRequest) {
     try {
         // 1. Authorization

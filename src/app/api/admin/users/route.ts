@@ -5,6 +5,9 @@ import { adminDb } from '@/lib/firebase/server';
 import { requireAdminWithVerifiedEmail } from '@/lib/emailVerificationGuard';
 import { logAuditAction } from '@/lib/audit';
 
+
+export const dynamic = 'force-dynamic';
+
 export async function GET(request: NextRequest) {
   try {
     // Use the admin guard which checks both admin status and email verification

@@ -8,6 +8,9 @@ import { tasks } from '@/db/schema';
 import { eq, and } from 'drizzle-orm';
 import { authorizeByPermission } from '@/app/api/_lib/rbac';
 
+
+export const dynamic = 'force-dynamic';
+
 export async function GET(req: NextRequest) {
   try {
     // Authorize user with RBAC - all roles can read kanban data

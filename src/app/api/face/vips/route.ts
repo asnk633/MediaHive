@@ -8,6 +8,9 @@ import { listVIPs, deleteVIP } from '@/lib/faceRecognition';
 import { authorizeByPermission } from '@/app/api/_lib/rbac';
 
 // GET /api/face/vips - List enrolled VIPs (admin-only)
+
+export const dynamic = 'force-dynamic';
+
 export async function GET(request: NextRequest) {
   // Check if feature is enabled
   if (!config.FEATURE_FACE_RECOGNITION) {

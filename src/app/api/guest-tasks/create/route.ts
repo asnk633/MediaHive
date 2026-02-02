@@ -12,6 +12,9 @@ const createGuestTaskSchema = z.object({
     // assignedBy is no longer needed in body as we get it from auth
 });
 
+
+export const dynamic = 'force-dynamic';
+
 export async function POST(req: NextRequest) {
     try {
         // Authorize user - Guest needs create:tasks permission

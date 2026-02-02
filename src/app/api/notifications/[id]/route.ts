@@ -1,6 +1,9 @@
 import { NextResponse } from 'next/server';
 import { getFirebaseServices, verifyUser } from '@/lib/server-utils';
 
+
+export const dynamic = 'force-dynamic';
+
 export async function PATCH(req: Request, props: { params: Promise<{ id: string }> }) {
     try {
         const { firestore } = await getFirebaseServices();

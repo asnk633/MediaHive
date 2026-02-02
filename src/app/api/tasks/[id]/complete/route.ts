@@ -3,6 +3,9 @@ import { getFirebaseServices, verifyUser } from '@/lib/server-utils';
 import { ServerNotification } from '@/lib/server-notification';
 import { TaskAutomationServiceServer } from '@/lib/task-automation.server';
 
+
+export const dynamic = 'force-dynamic';
+
 export async function POST(
   request: Request,
   { params }: { params: Promise<{ id: string }> }

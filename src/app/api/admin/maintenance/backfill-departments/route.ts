@@ -3,6 +3,9 @@ import { adminDb } from '@/lib/firebase/server';
 import { verifyUser } from '@/lib/server-utils';
 import { logSystemActivity } from '@/lib/server/activity-logger';
 
+
+export const dynamic = 'force-dynamic';
+
 export async function POST(request: NextRequest) {
     // 1. Authorization
     const user = await verifyUser(request);

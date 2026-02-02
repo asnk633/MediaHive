@@ -8,6 +8,9 @@ import { getUserFromRequest } from '../../../_lib/auth';
  * POST /api/notifications/[id]/read
  * Mark notification as read
  */
+
+export const dynamic = 'force-dynamic';
+
 export async function POST(
   req: NextRequest,
   context: { params: Promise<{ id: string }> }

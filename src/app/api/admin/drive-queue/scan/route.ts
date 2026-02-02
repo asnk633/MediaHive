@@ -3,6 +3,9 @@ import { verifyUser } from '@/lib/server-utils';
 import { DriveScannerService } from '@/lib/drive-scanner';
 import { logSystemActivity } from '@/lib/server/activity-logger';
 
+
+export const dynamic = 'force-dynamic';
+
 export async function POST(req: NextRequest) {
     try {
         const user = await verifyUser(req);

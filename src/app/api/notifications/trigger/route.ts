@@ -3,6 +3,9 @@ import { getFirebaseServices, verifyUser } from '@/lib/server-utils';
 import { ServerNotification } from '@/lib/server-notification';
 import { logNotificationSent } from '@/app/api/_lib/audit';
 
+
+export const dynamic = 'force-dynamic';
+
 export async function POST(req: Request) {
     try {
         console.log('[API/Notifications] Request received');

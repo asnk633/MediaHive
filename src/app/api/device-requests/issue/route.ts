@@ -3,6 +3,9 @@ import { adminDb } from '@/lib/firebase/server';
 import { verifyUser } from '@/lib/server-utils';
 import { ServerNotification } from '@/lib/server-notification';
 
+
+export const dynamic = 'force-dynamic';
+
 export async function POST(request: NextRequest) {
     try {
         const user = await verifyUser(request);

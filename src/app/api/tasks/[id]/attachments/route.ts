@@ -7,6 +7,9 @@ import { Task, TaskFile, TaskFileSection, AttachmentLog } from '@/types/task';
 import { Readable } from 'stream';
 import { randomUUID } from 'crypto';
 
+
+export const dynamic = 'force-dynamic';
+
 export async function POST(req: NextRequest, props: { params: Promise<{ id: string }> }) {
     try {
         const params = await props.params;

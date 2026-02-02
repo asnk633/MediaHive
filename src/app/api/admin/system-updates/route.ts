@@ -4,6 +4,9 @@ import { verifyUser } from '@/lib/server-utils';
 import { logSystemActivity } from '@/lib/server/activity-logger';
 import { ServerNotification } from '@/lib/server-notification';
 
+
+export const dynamic = 'force-dynamic';
+
 export async function GET(request: NextRequest) {
     try {
         const user = await verifyUser(request);

@@ -10,6 +10,9 @@ import { verifyUser } from '@/lib/server-utils';
  * - Users can fetch their own profile
  * - Admins can fetch any user's profile
  */
+
+export const dynamic = 'force-dynamic';
+
 export async function GET(
     request: NextRequest,
     { params }: { params: Promise<{ id: string }> }

@@ -7,6 +7,9 @@ import { logSystemActivity } from '@/app/api/_lib/audit';
 
 const COLLECTION = 'automation_rules';
 
+
+export const dynamic = 'force-dynamic';
+
 export async function GET(req: NextRequest) {
     const user = await verifyUser(req);
     if (!user || user.role !== 'admin') {

@@ -3,6 +3,9 @@ import { getFirebaseServices, verifyUser } from '@/lib/server-utils';
 import { EventTaskService } from '@/lib/event-task.server';
 import { logEventUpdated, logEventDeleted } from '@/app/api/_lib/audit';
 
+
+export const dynamic = 'force-dynamic';
+
 export async function GET(request: NextRequest, props: { params: Promise<{ id: string }> }) {
   try {
     const params = await props.params;

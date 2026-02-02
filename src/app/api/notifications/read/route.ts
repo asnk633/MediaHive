@@ -7,6 +7,9 @@ import { notifications } from '@/db/schema';
 import { eq, inArray, and } from 'drizzle-orm';
 import { authorizeByPermission } from '@/app/api/_lib/rbac';
 
+
+export const dynamic = 'force-dynamic';
+
 export async function POST(req: NextRequest) {
   try {
     // Authorize user with RBAC - all authenticated users can mark their notifications as read

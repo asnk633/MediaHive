@@ -5,6 +5,9 @@ import { NextRequest, NextResponse } from 'next/server';
 import { authorizeByPermission } from '@/app/api/_lib/rbac';
 import { aiService } from '@/server/ai/service';
 
+
+export const dynamic = 'force-dynamic';
+
 export async function POST(req: NextRequest) {
   try {
     // Authorize user with RBAC

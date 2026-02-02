@@ -1,6 +1,9 @@
 import { NextResponse } from 'next/server';
 import { initFirebase, getFirebaseAuth, getFirebaseDb } from '@/firebase/client';
 
+
+export const dynamic = 'force-dynamic';
+
 export async function GET() {
   try {
     // Initialize Firebase and get instances

@@ -35,6 +35,9 @@ const WalEventSchema = z.object({
 
 type WalEvent = z.infer<typeof WalEventSchema>;
 
+
+export const dynamic = 'force-dynamic';
+
 export async function POST(request: NextRequest) {
   try {
     const body = await request.json();

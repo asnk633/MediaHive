@@ -5,6 +5,9 @@ import { db } from "@/db";
 import { files } from "@/db/schema";
 import { eq } from "drizzle-orm";
 
+
+export const dynamic = 'force-dynamic';
+
 export async function GET(request: NextRequest, { params }: { params: Promise<{ id: string }> }) {
   try {
     const { id: idString } = await params;

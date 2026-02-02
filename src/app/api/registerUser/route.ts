@@ -3,6 +3,9 @@ import { getAuth } from 'firebase-admin/auth';
 import { getFirestore, FieldValue } from 'firebase-admin/firestore';
 import { adminDb } from '@/lib/firebase/server';
 
+
+export const dynamic = 'force-dynamic';
+
 export async function POST(request: NextRequest) {
   try {
     const { idToken, fullName, email, institutionId: reqInstitutionId, departmentId: reqDepartmentId } = await request.json();

@@ -21,6 +21,9 @@ import {
 } from '@/db/schema';
 import { eq, and, gt, lt, desc, asc, count } from 'drizzle-orm';
 
+
+export const dynamic = 'force-dynamic';
+
 export async function GET(request: NextRequest) {
   try {
     // Get basic replication status

@@ -13,6 +13,9 @@ import { logAuditEvent } from '@/app/api/_lib/audit';
  *   value: any // depends on operation
  * }
  */
+
+export const dynamic = 'force-dynamic';
+
 export async function POST(req: NextRequest) {
   try {
     // Check if workflow power tools feature is enabled

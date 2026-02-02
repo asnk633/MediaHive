@@ -8,6 +8,9 @@ import { notifications } from '@/db/schema';
 import { eq } from 'drizzle-orm';
 import { authorizeByPermission } from '@/app/api/_lib/rbac';
 
+
+export const dynamic = 'force-dynamic';
+
 export async function GET(req: NextRequest) {
   try {
     // Authorize user with RBAC - all authenticated users can list their notifications

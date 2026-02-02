@@ -7,6 +7,9 @@ import { editLocks, tasks } from '@/db/schema';
 import { eq, gt, and } from 'drizzle-orm';
 import { authorizeByPermission } from '@/app/api/_lib/rbac';
 
+
+export const dynamic = 'force-dynamic';
+
 export async function POST(req: NextRequest) {
   try {
     // Authorize user with RBAC

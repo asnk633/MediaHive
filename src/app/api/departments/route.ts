@@ -3,6 +3,9 @@ import { adminDb } from '@/lib/firebase/server';
 import { requireAdminWithVerifiedEmail } from '@/lib/emailVerificationGuard';
 import { Department } from '@/types/structure';
 
+
+export const dynamic = 'force-dynamic';
+
 export async function GET(request: NextRequest) {
   try {
     // Public access allowed for registration

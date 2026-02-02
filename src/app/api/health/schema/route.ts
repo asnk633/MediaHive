@@ -15,6 +15,9 @@ type HealthResult = {
 
 const REQUIRED_TABLES = ["users", "tenants", "events", "notifications"];
 
+
+export const dynamic = 'force-dynamic';
+
 export async function GET(_req: NextRequest) {
   try {
     // Try a lightweight connectivity check

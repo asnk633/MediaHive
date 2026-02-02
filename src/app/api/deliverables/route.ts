@@ -8,6 +8,9 @@ import { logSystemActivity } from "@/lib/server/activity-logger";
 
 const db = adminDb;
 
+
+export const dynamic = 'force-dynamic';
+
 export async function POST(req: NextRequest) {
     try {
         const contentType = req.headers.get("content-type") || "";

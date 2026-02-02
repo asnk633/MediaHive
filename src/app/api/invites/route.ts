@@ -3,6 +3,9 @@ import { verifyUser } from '@/lib/server-utils';
 import { InviteServiceServer } from '@/lib/invites.server';
 import { isFeatureEnabled } from '@/app/featureFlags';
 
+
+export const dynamic = 'force-dynamic';
+
 export async function POST(request: NextRequest) {
   try {
     // Check if feature is enabled

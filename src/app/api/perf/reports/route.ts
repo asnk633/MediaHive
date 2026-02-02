@@ -9,6 +9,9 @@ import path from 'path';
 const isDev = process.env.NODE_ENV !== 'production';
 const perfDashboardEnabled = process.env.PERF_DASHBOARD_ENABLED === 'true';
 
+
+export const dynamic = 'force-dynamic';
+
 export async function GET(request: NextRequest) {
   // Only allow in development or when explicitly enabled
   if (!isDev && !perfDashboardEnabled) {

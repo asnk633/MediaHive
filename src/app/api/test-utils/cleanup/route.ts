@@ -6,6 +6,9 @@ import { like } from 'drizzle-orm';
 import { getUserFromRequest, isAdmin } from '@/app/api/_lib/auth';
 
 // This endpoint is only available in development/test environments
+
+export const dynamic = 'force-dynamic';
+
 export async function POST(request: NextRequest) {
   // Only allow this endpoint in development or test environments
   if (process.env.NODE_ENV !== 'development' && process.env.NODE_ENV !== 'test') {

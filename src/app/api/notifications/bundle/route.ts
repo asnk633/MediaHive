@@ -8,6 +8,9 @@ import { db } from '@/db';
 import { notifications } from '@/db/schema';
 import { eq, and, gte, isNull } from 'drizzle-orm';
 
+
+export const dynamic = 'force-dynamic';
+
 export async function POST(req: NextRequest) {
   try {
     // Authorize user with RBAC - users with send:notifications permission can bundle notifications

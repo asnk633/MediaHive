@@ -9,6 +9,9 @@ import { ServerNotification } from '@/lib/server-notification';
  * Approve or decline event (admin only)
  * Body: { action: 'approve' | 'decline' }
  */
+
+export const dynamic = 'force-dynamic';
+
 export async function POST(
   req: NextRequest,
   context: { params: Promise<{ id: string }> }

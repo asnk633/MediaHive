@@ -7,6 +7,9 @@ import { deleteVIP } from '@/lib/faceRecognition';
 import { authorizeByPermission } from '@/app/api/_lib/rbac';
 
 // DELETE /api/face/vips/:id - Delete a VIP (admin-only)
+
+export const dynamic = 'force-dynamic';
+
 export async function DELETE(
   request: NextRequest,
   context: { params: Promise<{ id: string }> }

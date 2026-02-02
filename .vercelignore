@@ -6,7 +6,7 @@ src/server_disabled/
 
 
 # Ignore heavy admin APIs not needed for core app
-src/app/api/admin/
+# src/app/api/admin/
 src/app/api/cron/
 
 

@@ -5,7 +5,7 @@
   "packageManager": "pnpm@9.15.0",
   "scripts": {
     "dev": "node ./scripts/dev.js",
-    "build": "node ./scripts/validate-mobile-api-url.js && next build",
+    "build": "next build",
     "build:web-for-capacitor": "node ./scripts/check-envs.js && node ./scripts/validate-firebase-config.js && next build",
     "build:mobile": "cross-env IS_MOBILE=true node ./scripts/validate-mobile-api-url.js && node ./scripts/setup-mobile-env.js && node ./scripts/toggle-middleware.js disable && next build && node ./scripts/toggle-middleware.js enable && node ./scripts/harden-android.js && npx cap copy android && node ./scripts/post-copy-harden.js && node ./scripts/validate-assets.js",
     "cap:sync": "npx cap sync android",

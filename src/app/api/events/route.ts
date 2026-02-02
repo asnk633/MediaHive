@@ -1,17 +1,15 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { db } from '@/db';
-import { events } from '@/db/schema';
-import { eq, like, and, or, gte, lte, desc } from 'drizzle-orm';
-import { authorize } from '@/app/api/_lib/rbac';
+export const dynamic = 'force-dynamic';
+import { getFirebaseServices, verifyUser } from '@/lib/server-utils';
 import { hasRole } from '@/lib/permissions';
-import { validateSchema, createEventSchema, updateEventSchema } from '@/lib/validation';
-import { z } from 'zod';
-import { sanitizeHtmlContent, sanitizeTextContent } from '@/lib/sanitizer';
+import { logEventCreated, logEventUpdated, logEventDeleted } from '@/app/api/_lib/audit';
+import { EventTaskService } from '@/lib/event-task.server';
 
 // --- GET Request Handler ---
 export async function GET(request: NextRequest) {
   try {
-    const user = await authorize(request, 'read:events');
+    const { firestore } = await getFirebaseServices();
+    const user = await verifyUser(request);
     if (!user) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
@@ -21,82 +19,71 @@ export async function GET(request: NextRequest) {
 
     // Single event fetch
     if (id) {
-      // Validate ID parameter
-      const idSchema = z.number().int().positive();
-      try {
-        idSchema.parse(parseInt(id));
-      } catch {
-        return NextResponse.json(
-          { error: 'Valid ID is required', code: 'INVALID_ID' },
-          { status: 400 }
-        );
-      }
+      const eventDoc = await firestore.collection('events').doc(id).get();
 
-      const event = await db
-        .select()
-        .from(events)
-        .where(eq(events.id, parseInt(id)))
-        .limit(1);
-
-      if (event.length === 0) {
+      if (!eventDoc.exists) {
         return NextResponse.json(
-          { error: 'Event not found', code: 'EVENT_NOT_FOUND' },
+          { error: 'Event not found' },
           { status: 404 }
         );
       }
 
-      return NextResponse.json(event[0], { status: 200 });
+      const eventData = { id: eventDoc.id, ...eventDoc.data() };
+      return NextResponse.json(eventData, { status: 200 });
     }
 
-    // List events with filtering, search, and pagination
-    const limit = Math.min(parseInt(searchParams.get('limit') ?? '50'), 100);
-    const offset = parseInt(searchParams.get('offset') ?? '0');
-    const search = searchParams.get('search');
-    const from = searchParams.get('from');
-    const to = searchParams.get('to');
+    // List events with filtering
+    let query: FirebaseFirestore.Query = firestore.collection('events');
 
-    const conditions = [eq(events.institutionId, user.institutionId)];
+    // Filter by tenant/institution
+    if (user.institutionId) {
+      query = query.where('institutionId', '==', user.institutionId);
+    }
 
     // Non-admin users only see approved events
-    if (!hasRole(user, ['admin'])) {
-      conditions.push(eq(events.approvalStatus, 'approved'));
+    if (user.role !== 'admin') {
+      query = query.where('status', '==', 'approved');
+      // --- OPTIMIZED EVENT FETCH ---
+      // GUARDRAIL: DATE RANGE OR LIMIT IS MANDATORY. DO NOT REMOVE SAFETY LIMITS.
+      // Index Required: institutionId + date, status + date.
     }
 
-    // Search filter (title only to avoid nullable description issues)
-    if (search) {
-      conditions.push(like(events.title, `%${search}%`));
+    // 1. Date Range Filtering (Critical Optimization)
+    // Allows fetching only a specific month/week
+    const startDate = searchParams.get('startDate');
+    const endDate = searchParams.get('endDate');
+
+    if (startDate && endDate) {
+      // Query specific range
+      // Note: 'date' field format compliance (ISO String vs Timestamp) is assumed to match input
+      query = query.where('date', '>=', startDate).where('date', '<=', endDate);
+
+      // Month view usually wants Ascending order (1st to 30th)
+      query = query.orderBy('date', 'asc');
+
+      // Safety limit, but high enough for a busy month
+      query = query.limit(1000);
+    } else {
+      // Fallback: Recent events (Blind fetch reduced)
+      // If no range specified, we default to "Future events" or "Recent created"?
+      // Original behavior: orderBy date desc.
+      query = query.orderBy('date', 'desc');
+
+      // REDUCED LIMIT: 500 -> 50
+      // Pagination should be used if more are needed.
+      const limitParam = parseInt(searchParams.get('limit') || '50', 10);
+      const safeLimit = Math.min(Math.max(limitParam, 1), 100);
+      query = query.limit(safeLimit);
     }
 
-    // Date range filters
-    if (from) {
-      conditions.push(gte(events.startTime, from));
-    }
+    const snapshot = await query.get();
+    const events = snapshot.docs.map((doc: any) => ({
+      id: doc.id,
+      ...doc.data()
+    }));
 
-    if (to) {
-      conditions.push(lte(events.endTime, to));
-    }
-
-    let query = db.select().from(events);
-
-    if (conditions.length > 0) {
-      // Avoid complex generic mismatch from drizzle select types by casting.
-      query = (query.where(and(...conditions)) as unknown) as any;
-    }
-
-    const results = await query
-      .orderBy(desc(events.startTime))
-      .limit(limit)
-      .offset(offset);
-
-    return NextResponse.json(results, { status: 200 });
+    return NextResponse.json(events, { status: 200 });
   } catch (error: any) {
-    if (error.name === 'ValidationError') {
-      return NextResponse.json(
-        { error: 'Validation failed', details: error.fieldErrors },
-        { status: 400 }
-      );
-    }
-
     console.error('GET error:', error);
     return NextResponse.json(
       { error: 'Internal server error: ' + (error as Error).message },
@@ -108,48 +95,92 @@ export async function GET(request: NextRequest) {
 // --- POST Request Handler ---
 export async function POST(request: NextRequest) {
   try {
-    const user = await authorize(request, 'create:events');
+    const { firestore } = await getFirebaseServices();
+    const user = await verifyUser(request);
     if (!user) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
 
-    // Only team and admin can create events (enforced by permission check above, but double check role if needed)
-    // The permission 'create:events' is assigned to admin and team in permissions.ts
-
-    const body = await request.json();
-    const validatedBody = validateSchema(createEventSchema, body);
-    const { title, description, startTime, endTime } = validatedBody;
-
-    const now = new Date().toISOString();
-
-    // Admin events are auto-approved, team events need approval
-    const approvalStatus = hasRole(user, ['admin']) ? 'approved' : 'pending';
-
-    const newEvents = await db
-      .insert(events)
-      .values({
-        title: sanitizeTextContent(title.trim()),
-        description: description ? sanitizeHtmlContent(description.trim()) : null,
-        startTime,
-        endTime,
-        approvalStatus,
-        createdById: user.id,
-        institutionId: user.institutionId,
-        tenantId: user.tenantId,
-        createdAt: now,
-        updatedAt: now,
-      })
-      .returning();
-
-    return NextResponse.json({ data: newEvents[0] }, { status: 201 });
-  } catch (error: any) {
-    if (error.name === 'ValidationError') {
-      return NextResponse.json(
-        { error: 'Validation failed', details: error.fieldErrors },
-        { status: 400 }
-      );
+    // Check if user has permission to create events
+    if (user.role !== 'admin' && user.role !== 'team') {
+      return NextResponse.json({ error: 'Forbidden' }, { status: 403 });
     }
 
+    const body = await request.json();
+
+    // Validate required fields
+    if (!body.title || typeof body.title !== 'string') {
+      return NextResponse.json({ error: 'Title is required and must be a string' }, { status: 400 });
+    }
+
+    if (body.description !== undefined && typeof body.description !== 'string') {
+      return NextResponse.json({ error: 'Description must be a string' }, { status: 400 });
+    }
+
+    if (!body.date) {
+      return NextResponse.json({ error: 'Date is required' }, { status: 400 });
+    }
+
+    // Admin events are auto-approved, others need approval
+    const initialStatus = user.role === 'admin' ? 'approved' : 'pending';
+
+    // Explicitly handle "On Behalf Of" data
+    let onBehalfOf = body.onBehalfOf || null;
+    let organizer = body.organizer || null;
+
+    // Default createdBy is the authenticated user
+    const createdBy = {
+      uid: user.uid,
+      name: user.name || user.email?.split('@')[0] || 'Unknown User',
+      role: user.role
+    };
+
+    // Ensure institutionId is preserved from body or user context
+    const institutionId = body.institutionId || user.institutionId || '1';
+    const departmentId = body.departmentId || user.departmentId || null;
+
+    let meta: any = {};
+
+    // Prepare event data
+    const eventData: any = {
+      ...body,
+      status: initialStatus,
+      createdBy,
+      onBehalfOf, // Explicitly store this object
+      organizer,  // Explicitly store this object
+      meta: { ...(body.meta || {}), ...meta },
+      institutionId,
+      departmentId,
+      createdAt: new Date().toISOString(),
+      updatedAt: new Date().toISOString()
+    };
+
+    // Ensure mediaCoverage is an array
+    if (eventData.mediaCoverage && !Array.isArray(eventData.mediaCoverage)) {
+      eventData.mediaCoverage = [eventData.mediaCoverage];
+    } else if (!eventData.mediaCoverage) {
+      eventData.mediaCoverage = [];
+    }
+
+    const docRef = await firestore.collection('events').add(eventData);
+    const eventId = docRef.id;
+
+    // --- Task Creation Logic (Idempotent) ---
+    // --- Task Creation Logic (Idempotent) ---
+    await EventTaskService.createTaskForEvent(eventData, eventId, user);
+
+    // Log audit event
+    await logEventCreated(
+      user.uid,
+      user.tenantId || 1,
+      docRef.id,
+      { title: body.title, status: initialStatus }
+    );
+
+    // Return the created event
+    const createdEvent = { id: docRef.id, ...eventData };
+    return NextResponse.json({ data: createdEvent }, { status: 201 });
+  } catch (error: any) {
     console.error('POST error:', error);
     return NextResponse.json(
       { error: 'Internal server error: ' + (error as Error).message },
@@ -158,95 +189,19 @@ export async function POST(request: NextRequest) {
   }
 }
 
-// --- PUT Request Handler ---
-export async function PUT(request: NextRequest) {
-  try {
-    const user = await authorize(request, 'edit:events');
-    if (!user) {
-      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
-    }
-
-    const searchParams = request.nextUrl.searchParams;
-    const id = searchParams.get('id');
-
-    if (!id || isNaN(parseInt(id))) {
-      return NextResponse.json({ error: 'Valid ID is required' }, { status: 400 });
-    }
-
-    const body = await request.json();
-    const validatedBody = validateSchema(updateEventSchema, body);
-
-    // Check if event exists
-    const [existingEvent] = await db
-      .select()
-      .from(events)
-      .where(eq(events.id, parseInt(id)));
-
-    if (!existingEvent) {
-      return NextResponse.json({ error: 'Event not found' }, { status: 404 });
-    }
-
-    // Only creator or admin can update
-    if (existingEvent.createdById !== user.id && !hasRole(user, ['admin'])) {
-      return NextResponse.json({ error: 'Forbidden' }, { status: 403 });
-    }
-
-    const updates: any = { updatedAt: new Date().toISOString() };
-
-    // Prepare updates from validated body
-    if (validatedBody.title !== undefined) {
-      updates.title = sanitizeTextContent(validatedBody.title.trim());
-    }
-
-    if (validatedBody.description !== undefined) {
-      updates.description = validatedBody.description ? sanitizeHtmlContent(validatedBody.description.trim()) : null;
-    }
-
-    if (validatedBody.startTime !== undefined) {
-      updates.startTime = validatedBody.startTime;
-    }
-
-    if (validatedBody.endTime !== undefined) {
-      updates.endTime = validatedBody.endTime;
-    }
-
-    if (validatedBody.approvalStatus !== undefined) {
-      updates.approvalStatus = validatedBody.approvalStatus;
-    }
-
-    if (Object.keys(updates).length === 1) { // Only updatedAt
-      return NextResponse.json({ error: 'No fields to update' }, { status: 400 });
-    }
-
-    const updatedEvents = await db
-      .update(events)
-      .set(updates)
-      .where(eq(events.id, parseInt(id)))
-      .returning();
-
-    return NextResponse.json({ data: updatedEvents[0] }, { status: 200 });
-  } catch (error: any) {
-    if (error.name === 'ValidationError') {
-      return NextResponse.json(
-        { error: 'Validation failed', details: error.fieldErrors },
-        { status: 400 }
-      );
-    }
-
-    console.error('PUT error:', error);
-    return NextResponse.json(
-      { error: 'Internal server error' },
-      { status: 500 }
-    );
-  }
-}
 
 // --- DELETE Request Handler ---
 export async function DELETE(request: NextRequest) {
   try {
-    const user = await authorize(request, 'delete:events');
+    const { firestore } = await getFirebaseServices();
+    const user = await verifyUser(request);
     if (!user) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+    }
+
+    // Check if user has permission to delete events
+    if (user.role !== 'admin' && user.role !== 'team') {
+      return NextResponse.json({ error: 'Forbidden' }, { status: 403 });
     }
 
     const searchParams = request.nextUrl.searchParams;
@@ -256,43 +211,42 @@ export async function DELETE(request: NextRequest) {
       return NextResponse.json({ error: 'ID is required' }, { status: 400 });
     }
 
-    // Validate ID parameter
-    const idSchema = z.number().int().positive();
-    try {
-      idSchema.parse(parseInt(id));
-    } catch {
-      return NextResponse.json({ error: 'Valid ID is required' }, { status: 400 });
-    }
-
     // Check if event exists
-    const [existingEvent] = await db
-      .select()
-      .from(events)
-      .where(eq(events.id, parseInt(id)));
-
-    if (!existingEvent) {
+    const eventDoc = await firestore.collection('events').doc(id).get();
+    if (!eventDoc.exists) {
       return NextResponse.json({ error: 'Event not found' }, { status: 404 });
     }
 
+    const existingEvent = eventDoc.data()!;
+
     // Only creator or admin can delete
-    if (existingEvent.createdById !== user.id && !hasRole(user, ['admin'])) {
+    if (existingEvent.createdBy.uid !== user.uid && user.role !== 'admin') {
       return NextResponse.json({ error: 'Forbidden' }, { status: 403 });
     }
+    console.log('User authorized to delete event:', id);
 
-    await db.delete(events).where(eq(events.id, parseInt(id)));
+    await firestore.collection('events').doc(id).delete();
+    console.log('Event deleted from Firestore:', id);
 
-    return new NextResponse(null, { status: 204 });
-  } catch (error: any) {
-    if (error.name === 'ValidationError') {
-      return NextResponse.json(
-        { error: 'Validation failed', details: error.fieldErrors },
-        { status: 400 }
+    // Log audit event
+    try {
+      await logEventDeleted(
+        user.uid,
+        user.tenantId || 1,
+        id
       );
+      console.log('Audit log successful for DELETE event:', id);
+    } catch (auditError) {
+      console.error('Audit logging failed for DELETE event:', auditError);
+      // Continue execution even if audit fails
     }
 
+    console.log('DELETE request successful for event:', id);
+    return new NextResponse(null, { status: 204 });
+  } catch (error: any) {
     console.error('DELETE error:', error);
     return NextResponse.json(
-      { error: 'Internal server error' },
+      { error: `Internal server error: ${error.message}`, details: JSON.stringify(error) },
       { status: 500 }
     );
   }

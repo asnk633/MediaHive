@@ -1,9 +1,10 @@
+
 // src/app/api/_lib/auth.ts
 // RBAC helpers for API routes
 
 import { NextRequest } from 'next/server';
 import { TaskStatus } from '@/types';
-import { loggingMiddleware } from '../middleware/logging';
+import { loggingMiddleware } from '../api-utils/logging';
 import { getUserFromRequest as getSessionUser } from './session';
 import { AuthUser, UserRole } from './types';
 

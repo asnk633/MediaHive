@@ -121,7 +121,7 @@
     "jose": "^5.0.0",
     "jotai": "^2.12.1",
     "libsql": "^0.5.22",
-    "lucide-react": "^0.555.0",
+    "lucide-react": "^0.562.0",
     "mini-svg-data-uri": "^1.4.4",
     "module-alias": "^2.2.3",
     "motion": "^12.23.22",

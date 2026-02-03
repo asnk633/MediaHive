@@ -116,7 +116,7 @@
     "flubber": "^0.4.2",
     "framer-motion": "^12.23.22",
     "get-port": "^7.1.0",
-    "googleapis": "^168.0.0",
+    "googleapis": "^170.0.0",
     "input-otp": "^1.4.1",
     "jose": "^5.0.0",
     "jotai": "^2.12.1",

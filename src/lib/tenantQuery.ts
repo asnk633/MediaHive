@@ -1,4 +1,3 @@
-import { PostgrestFilterBuilder } from '@supabase/postgrest-js';
 import { eq, SQL } from 'drizzle-orm';
 
 /**

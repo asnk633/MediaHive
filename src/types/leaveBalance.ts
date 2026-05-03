@@ -3,6 +3,7 @@ import { TimestampLike } from '@/types/timestamp';
 export type LeaveType = 'casual' | 'sick' | 'planned' | 'emergency' | 'other';
 
 export interface LeaveBalance {
+    id: string | number;
     uid: string;
     year: number;
     balances: {

@@ -99,15 +99,24 @@ export async function PUT(
             return NextResponse.json({ error: 'Failed to initialize Supabase' }, { status: 500 });
         }
 
-        const { data: campaign, error } = await withTenant(
-            supabase
-                .from('campaigns')
-                .update(updateData),
+        const expectedVersion = updates.version;
+        let query = withTenant(
+            supabase.from('campaigns').update(updateData),
             tenantId
-        )
-            .eq('id', id)
-            .select()
-            .single();
+        ).eq('id', id);
+
+        if (expectedVersion !== undefined) {
+            query = query.eq('version', expectedVersion);
+        }
+
+        const { data: campaign, error } = await query.select().maybeSingle();
+
+        if (!error && !campaign) {
+            return NextResponse.json({ 
+                error: 'Conflict: Campaign was updated by another user or version mismatch',
+                code: 'VERSION_CONFLICT'
+            }, { status: 409 });
+        }
 
         if (error) {
             console.error('[PUT /api/campaigns/[id]] Supabase error:', error);

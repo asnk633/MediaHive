@@ -29,24 +29,38 @@ export async function POST(req: NextRequest) {
         }
 
         // 3. Log the trigger
-        await AuditService.logAction({
-            action: 'DRIVE_SCAN_TRIGGERED',
-            entityType: 'drive_queue',
-            entityId: 'incoming',
-            summary: `Drive scan triggered by admin: ${user.email}`,
-            classification: 'OPERATIONAL',
-            metadata: { actor_email: user.email }
-        });
+        await AuditService.logAction(
+            'DRIVE_SCAN_TRIGGERED',
+            { 
+                entityType: 'drive_queue',
+                entityId: 'incoming',
+                summary: `Drive scan triggered by admin: ${user.email}`,
+                actor_email: user.email 
+            },
+            'OPERATIONAL'
+        );
 
         // 4. Execute Scan
+        const body = await req.json().catch(() => ({}));
+        const reconcile = body.reconcile === true;
+
         const result = await MonitoringService.trace(
             'drive.scan_incoming_folder',
             () => DriveScannerService.scanIncomingFolder()
         );
+
+        let reconcileResult = { orphansRemoved: 0 };
+        if (reconcile) {
+            reconcileResult = await MonitoringService.trace(
+                'drive.reconcile_storage',
+                () => DriveScannerService.reconcileDriveStorage()
+            );
+        }
         
         return NextResponse.json({
-            message: `Scan complete. Found ${result.count} new items.`,
+            message: `Scan complete. Found ${result.count} new items.${reconcile ? ` Cleaned up ${reconcileResult.orphansRemoved} orphans.` : ''}`,
             count: result.count,
+            orphansRemoved: reconcileResult.orphansRemoved,
             logs: result.logs
         });
 

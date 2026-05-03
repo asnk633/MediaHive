@@ -71,6 +71,7 @@ export interface InventoryAsset {
         uid: string;
         name: string;
     };
+    version?: number;
 }
 
 // New Consumable/Stock Inventory Interface (Phase 1)
@@ -107,6 +108,7 @@ export interface InventoryItem {
     updatedAt: string; // ISO String from API
     createdBy: string; // uid
     purchaseDate?: string; // Optional ISO String
+    version?: number;
 }
 
 export interface InventoryApiResponse {

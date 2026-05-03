@@ -115,7 +115,7 @@ export const LeaveRequestService = {
                 },
                 'CREATE_LEAVE_REQUEST'
             );
-            return success;
+            return !success.error;
         } catch (error) {
             MonitoringService.error('[LeaveRequestService] Failed to submit request', error, { request });
             return false;

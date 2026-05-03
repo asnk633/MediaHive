@@ -635,7 +635,7 @@ class SyncEngine {
           .filter('start_time', 'lt', end_time)
           .filter('end_time', 'gt', start_time);
 
-        const overlapBooked = (overlaps || []).reduce((sum, b) => sum + (b.units_requested || 0), 0);
+        const overlapBooked = (overlaps || []).reduce((sum: number, b: any) => sum + (b.units_requested || 0), 0);
         const available = Math.max(0, total - overlapBooked);
 
         if (units_requested > available) {
@@ -661,7 +661,21 @@ class SyncEngine {
         return; 
       }
     } else if (action === 'update') {
-      result = await supabase.from(table).update(mutation.payload).eq('id', mutation.payload.id);
+      let query = supabase.from(table).update(mutation.payload).eq('id', mutation.payload.id);
+      
+      // Strict OCC: If we have a baseVersion, enforce it in the WHERE clause for atomic protection
+      if (mutation.baseVersion) {
+        query = query.eq('version', mutation.baseVersion);
+      }
+      
+      // We use .select('id') to verify if any row was actually updated
+      result = await query.select('id');
+      
+      // If result is successful but returns no rows, it means the version (or ID) mismatch occurred
+      if (!result.error && result.data?.length === 0) {
+        console.warn(`[SyncEngine] ⚔️ Strict OCC Conflict for ${table}/${mutation.payload.id}. Version mismatch.`);
+        throw new ConflictError(`Version mismatch on ${table}. Data was updated by someone else.`, mutation.payload, table, []);
+      }
     } else if (action === 'delete') {
       if (mutation.type === 'UNASSIGN_USER') {
         result = await supabase.from(table)
@@ -674,7 +688,17 @@ class SyncEngine {
     }
 
     if (result && result.error) {
-      throw result.error;
+      const err = result.error;
+      // Map Postgres Integrity/Custom Errors to ConflictError for UI handling
+      if (err.code === 'P0001') {
+        // Custom Raise Exception (Inventory Availability)
+        throw new ConflictError(err.message, {}, table, ['units_requested']);
+      }
+      if (err.code === '23514') {
+        // Check Constraint Violation (e.g., negative quantity)
+        throw new ConflictError(`Integrity Violation: ${err.message}`, {}, table);
+      }
+      throw err;
     }
   }
   // Expose metrics mutator for UI

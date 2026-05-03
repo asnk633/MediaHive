@@ -136,7 +136,7 @@ export class ProductionService {
 
       // 2. Perform bulk soft-delete of tasks
       if (tasks && tasks.length > 0) {
-        const taskUpdates = tasks.map(t => ({
+        const taskUpdates = tasks.map((t: any) => ({
           id: t.id,
           fields: { deleted: true, deleted_at: new Date().toISOString() }
         }));

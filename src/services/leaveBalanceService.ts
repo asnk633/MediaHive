@@ -81,7 +81,7 @@ export const LeaveBalanceService = {
         try {
             await CanonicalDataService.patchFields(
                 TABLES.LEAVE_BALANCES,
-                balance.id,
+                String(balance.id),
                 { balances: newBalances, updated_at: new Date().toISOString() },
                 'UPDATE_LEAVE_BALANCE'
             );
@@ -106,7 +106,7 @@ export const LeaveBalanceService = {
         try {
             await CanonicalDataService.patchFields(
                 TABLES.LEAVE_BALANCES,
-                balance.id,
+                String(balance.id),
                 { balances: newBalances, updated_at: new Date().toISOString() },
                 'UPDATE_LEAVE_BALANCE'
             );

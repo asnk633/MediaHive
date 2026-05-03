@@ -19,10 +19,13 @@ export async function GET(req: NextRequest) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
 
-    // Fetch all tenants
+    // Fetch only the user's own tenant (unless they are a super-admin)
+    const userTenantId = typeof user.tenant_id === 'string' ? parseInt(user.tenant_id, 10) : user.tenant_id;
+    
     const allTenants = await db
       .select()
       .from(tenants)
+      .where(eq(tenants.id, userTenantId as any))
       .orderBy(tenants.name);
 
     return NextResponse.json(

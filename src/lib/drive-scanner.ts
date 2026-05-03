@@ -148,18 +148,18 @@ export class DriveScannerService {
                     continue;
                 }
 
-                await AuditService.logAction({
-                    action: 'DRIVE_FILE_DETECTED',
-                    entityType: 'drive_queue_item',
-                    entityId: file.id,
-                    summary: `Drive File Detected: ${file.name}`,
-                    classification: 'OPERATIONAL',
-                    metadata: {
+                await AuditService.logAction(
+                    'DRIVE_FILE_DETECTED',
+                    {
+                        entityType: 'drive_queue_item',
+                        entityId: file.id,
+                        summary: `Drive File Detected: ${file.name}`,
                         drive_id: file.id,
                         size: file.size,
                         mime_type: file.mimeType
-                    }
-                });
+                    },
+                    'OPERATIONAL'
+                );
 
                 addedCount++;
             }
@@ -172,6 +172,57 @@ export class DriveScannerService {
             MonitoringService.error('[DriveScanner] Scan failed', error);
             return { count: 0, logs };
         }
+    }
+    /**
+     * Audits existing DB records against Drive state and cleans up orphans.
+     */
+    static async reconcileDriveStorage(): Promise<{ orphansRemoved: number }> {
+        const drive = await getDriveClient();
+        const supabase = getSupabaseAdmin();
+        let orphansRemoved = 0;
+
+        // 1. Audit 'files' table
+        const { data: dbFiles } = await supabase.from('files').select('id, drive_file_id, name');
+        for (const file of (dbFiles || [])) {
+            if (!file.drive_file_id) continue;
+            try {
+                await drive.files.get({ fileId: file.drive_file_id, supportsAllDrives: true });
+            } catch (e: any) {
+                if (e.code === 404) {
+                    MonitoringService.warn(`[DriveScanner] Orphan detected in DB: ${file.name}. Removing...`);
+                    await supabase.from('files').delete().eq('id', file.id);
+                    orphansRemoved++;
+                }
+            }
+        }
+
+        // 2. Audit 'drive_queue' table
+        const { data: queueFiles } = await supabase.from(QUEUE_TABLE).select('id, drive_file_id, name');
+        for (const file of (queueFiles || [])) {
+            try {
+                await drive.files.get({ fileId: file.drive_file_id, supportsAllDrives: true });
+            } catch (e: any) {
+                if (e.code === 404) {
+                    MonitoringService.warn(`[DriveScanner] Orphan detected in Queue: ${file.name}. Removing...`);
+                    await supabase.from(QUEUE_TABLE).delete().eq('id', file.id);
+                    orphansRemoved++;
+                }
+            }
+        }
+
+        if (orphansRemoved > 0) {
+            await AuditService.logAction(
+                'DRIVE_RECONCILIATION_COMPLETE',
+                {
+                    entityType: 'storage',
+                    entityId: 'global',
+                    summary: `Storage reconciliation complete. Cleaned up ${orphansRemoved} orphan records.`
+                },
+                'OPERATIONAL'
+            );
+        }
+
+        return { orphansRemoved };
     }
 }
 

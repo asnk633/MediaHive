@@ -129,10 +129,8 @@ export const TaskService = {
         return data;
     },
 
-    async updateTask(id: string, updates: Partial<Task>) {
-        // We capture baseUpdatedAt from the updates if provided, or from the current record if we can
-        const baseUpdatedAt = (updates as any).updated_at;
-        const success = await CanonicalDataService.patchFields('tasks', id, updates, 'task', baseUpdatedAt);
+    async updateTask(id: string, updates: Partial<Task>, baseUpdatedAt?: string, baseVersion?: number) {
+        const success = await CanonicalDataService.patchFields('tasks', id, updates, 'task', baseUpdatedAt, baseVersion);
         if (!success) throw new Error('Failed to enqueue task update');
         return { id, ...updates };
     },

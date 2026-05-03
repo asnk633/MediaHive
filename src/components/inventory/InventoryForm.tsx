@@ -231,7 +231,7 @@ export default function InventoryForm({ initialData, mode }: InventoryFormProps)
                 await inventoryService.update(
                     initialData.id, 
                     basePayload as any,
-                    initialData.updatedAt,
+                    initialData.updated_at as any,
                     initialData.version
                 );
                 toast.success("Item updated successfully.");

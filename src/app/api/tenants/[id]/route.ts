@@ -32,17 +32,25 @@ export async function GET(
       );
     }
 
-    // Fetch tenant
+    // 1. Fetch tenant
     const [tenant] = await db
       .select()
       .from(tenants)
-      .where(eq(tenants.id, tenantId));
+      .where(eq(tenants.id, tenantId as any));
 
     if (!tenant) {
       return NextResponse.json(
         { error: 'Tenant not found' },
         { status: 404 }
       );
+    }
+
+    // 2. Strict Tenant Isolation: Only allow a tenant's own admin to view their details
+    // (This prevents cross-tenant ID guessing attacks)
+    const userTenantId = typeof user.tenant_id === 'string' ? parseInt(user.tenant_id, 10) : user.tenant_id;
+    if (userTenantId !== tenant.id) {
+      console.warn(`[SECURITY] Cross-tenant access attempt by user ${user.uid} (Tenant: ${userTenantId}) on Tenant: ${tenant.id}`);
+      return NextResponse.json({ error: 'Forbidden' }, { status: 403 });
     }
 
     return NextResponse.json(
@@ -98,7 +106,7 @@ export async function PUT(
       .from(tenants)
       .where(and(
         eq(tenants.domain, domain),
-        eq(tenants.id, tenantId)
+        eq(tenants.id, tenantId as any)
       ));
 
     if (existingTenant && existingTenant.id !== tenantId) {
@@ -106,6 +114,13 @@ export async function PUT(
         { error: 'A tenant with this domain already exists' },
         { status: 400 }
       );
+    }
+
+    // Strict Tenant Isolation: Only allow a tenant's own admin to update their details
+    const userTenantId = typeof user.tenant_id === 'string' ? parseInt(user.tenant_id, 10) : user.tenant_id;
+    if (userTenantId !== tenantId) {
+      console.warn(`[SECURITY] Unauthorized update attempt by user ${user.uid} on Tenant: ${tenantId}`);
+      return NextResponse.json({ error: 'Forbidden' }, { status: 403 });
     }
 
     // Update tenant
@@ -117,7 +132,7 @@ export async function PUT(
         settings: typeof settings === 'object' ? JSON.stringify(settings) : settings,
         updated_at: new Date().toISOString(),
       })
-      .where(eq(tenants.id, tenantId))
+      .where(eq(tenants.id, tenantId as any))
       .returning();
 
     if (!tenant) {
@@ -155,6 +170,13 @@ export async function DELETE(
     const { id } = await context.params;
     const tenantId = parseInt(id, 10);
 
+    // Strict Tenant Isolation
+    const userTenantId = typeof user.tenant_id === 'string' ? parseInt(user.tenant_id, 10) : user.tenant_id;
+    if (userTenantId !== tenantId) {
+      console.warn(`[SECURITY] Unauthorized delete attempt by user ${user.uid} on Tenant: ${tenantId}`);
+      return NextResponse.json({ error: 'Forbidden' }, { status: 403 });
+    }
+
     if (!tenantId || isNaN(tenantId)) {
       return NextResponse.json(
         { error: 'Invalid tenant ID' },
@@ -165,7 +187,7 @@ export async function DELETE(
     // Delete tenant
     const result = await db
       .delete(tenants)
-      .where(eq(tenants.id, tenantId));
+      .where(eq(tenants.id, tenantId as any));
 
     return new NextResponse(null, { status: 204 });
   } catch (error) {

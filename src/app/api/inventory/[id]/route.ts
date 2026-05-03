@@ -91,13 +91,27 @@ export async function PATCH(
             purchase_date: body.purchaseDate !== undefined ? body.purchaseDate : current.purchase_date
         };
 
-        const { data: updated, error: updateError } = await db
+        const expectedVersion = body.version;
+        let query = db
             .from(COLLECTION)
             .update(updates)
             .eq('tenant_id', tenantId)
-            .eq('id', id)
+            .eq('id', id);
+
+        if (expectedVersion !== undefined) {
+            query = query.eq('version', expectedVersion);
+        }
+
+        const { data: updated, error: updateError } = await query
             .select()
-            .single();
+            .maybeSingle();
+
+        if (!updateError && !updated) {
+            return NextResponse.json({ 
+                error: 'Conflict: Item was updated by another user or version mismatch',
+                code: 'VERSION_CONFLICT'
+            }, { status: 409 });
+        }
 
         if (updateError) return handleApiError('INV_UPDATE', updateError);
 

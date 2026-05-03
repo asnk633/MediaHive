@@ -1,6 +1,11 @@
 import { NextResponse } from 'next/server';
 
-export async function GET() {
+import { verifyAdmin } from '@/lib/verifyUser';
+
+export async function GET(req: Request) {
+    const { authorized, response } = await verifyAdmin(req);
+    if (!authorized) return response;
+
     return NextResponse.json({
         status: 'ok',
         timestamp: new Date().toISOString(),

@@ -6,12 +6,7 @@ export const OnboardingService = {
      */
     validateToken: async (token: string) => {
         try {
-            const { data, error } = await supabase
-                .from('invites')
-                .select('*')
-                .eq('token', token)
-                .eq('status', 'pending')
-                .single();
+            const { data, error } = await supabase.rpc('rpc_validate_invite', { p_token: token }).single();
 
             if (error || !data) {
                 console.error('[OnboardingService] Token validation failed:', error);

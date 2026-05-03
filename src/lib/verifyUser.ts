@@ -4,6 +4,7 @@ import { getSupabaseServerClient } from './supabaseServerClient';
 import { cookies } from 'next/headers';
 import { TABLES } from './dbTables';
 import { selfHealUser } from './selfHealUser';
+import { NextResponse } from 'next/server';
 
 export interface AuthenticatedUser {
     uid: string;
@@ -179,4 +180,26 @@ export async function authorizeByPermission(request: Request, permission: Permis
     if (!user) return { authorized: false, user: null };
     const authorized = hasPermission(user.role as Role, permission);
     return { authorized, user };
+}
+/**
+ * verifyAdmin - Helper for admin-only API routes.
+ */
+export async function verifyAdmin(req: Request) {
+    const user = await verifyUser(req);
+    if (!user) {
+        return { 
+            authorized: false, 
+            response: NextResponse.json({ error: 'Authentication required' }, { status: 401 }) 
+        };
+    }
+
+    const isAdmin = user.role === 'admin' || user.role === 'owner';
+    if (!isAdmin) {
+        return { 
+            authorized: false, 
+            response: NextResponse.json({ error: 'Forbidden: Admin access required' }, { status: 403 }) 
+        };
+    }
+
+    return { authorized: true, user };
 }

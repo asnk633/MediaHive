@@ -20,7 +20,7 @@ export const LeaveRequestForm: React.FC<LeaveRequestFormProps> = ({ onSuccess, o
     const [startDate, setStartDate] = useState('');
     const [endDate, setEndDate] = useState('');
     const [reason, setReason] = useState('');
-    const [overlap, setOverlap] = useState<any[]>([]);
+    const [overlap, setOverlap] = useState<boolean>(false);
 
     // Calculate total days
     const totalDays = startDate && endDate
@@ -185,11 +185,11 @@ export const LeaveRequestForm: React.FC<LeaveRequestFormProps> = ({ onSuccess, o
             )}
 
             {/* Overlap Warning */}
-            {overlap.length > 0 && (
+            {overlap && (
                 <div className="p-3 bg-amber-500/10 border border-amber-500/20 rounded-xl">
                     <p className="text-xs font-bold text-amber-400 uppercase tracking-wider mb-1">⚠️ Overlapping Request</p>
                     <p className="text-sm text-amber-200">
-                        You have {overlap.length} existing request(s) during this period
+                        You have an existing request during this period
                     </p>
                 </div>
             )}

@@ -2,7 +2,7 @@ import { NextRequest, NextResponse } from 'next/server';
 import { verifyUser } from '@/lib/server/server-utils';
 import { db } from '@/db';
 import { attendance } from '@/db/schema';
-import { eq, and, gte, lte, desc } from 'drizzle-orm';
+import { eq, and, gte, lte, desc, sql } from 'drizzle-orm';
 import { withTenantDrizzle, validateTenant } from '@/lib/tenantQuery';
 
 // --- GET Request Handler (Fetch single or list) ---

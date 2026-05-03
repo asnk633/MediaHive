@@ -57,13 +57,24 @@ export async function PATCH(
             payload = updates;
         }
 
-        const { error } = await withTenant(
-            supabase
-                .from(TABLE)
-                .update(payload),
+        const expectedVersion = body.version;
+        let query = withTenant(
+            supabase.from(TABLE).update(payload),
             tenantId
-        )
-            .eq('id', id);
+        ).eq('id', id);
+
+        if (expectedVersion !== undefined) {
+            query = query.eq('version', expectedVersion);
+        }
+
+        const { data, error } = await query.select().maybeSingle();
+
+        if (!error && !data) {
+            return NextResponse.json({ 
+                error: 'Conflict: Request was updated by another user or version mismatch',
+                code: 'VERSION_CONFLICT'
+            }, { status: 409 });
+        }
 
         if (error) throw error;
         return NextResponse.json({ success: true });

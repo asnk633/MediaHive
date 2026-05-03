@@ -1,4 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react';
+import { createPortal } from 'react-dom';
 import { Bell, Layers } from 'lucide-react';
 import { Capacitor } from '@capacitor/core';
 import { NotificationService } from '@/services/notificationService';
@@ -10,6 +11,7 @@ import { groupNotifications, GroupedNotification } from '@/lib/notification-grou
 import { formatDistanceToNow } from 'date-fns';
 import { apiClient } from '@/lib/apiClient';
 import { nativeNavigate } from '@/lib/utils';
+import { computeBadgeCount } from '@/lib/notificationSelectors';
 
 export const NotificationBell = () => {
     const { user, authStatus } = useAuth();
@@ -18,6 +20,9 @@ export const NotificationBell = () => {
     const [notifications, setNotifications] = useState<AppNotification[]>([]);
     const [unreadCount, setUnreadCount] = useState(0);
     const dropdownRef = useRef<HTMLDivElement>(null);
+    const buttonRef = useRef<HTMLButtonElement>(null);
+    const [dropdownPosition, setDropdownPosition] = useState({ top: 0, left: 0 });
+    const [isMobile, setIsMobile] = useState(false);
 
     // Poll for notifications
     useEffect(() => {
@@ -30,11 +35,10 @@ export const NotificationBell = () => {
             try {
                 const data = await NotificationService.getUserNotifications({ signal: controller.signal });
                 setNotifications(data);
-                const count = data.filter(n => !n.isRead).length;
-                setUnreadCount(count);
+                // Phase 14: Use new badge count logic (High + Medium unread only)
+                setUnreadCount(computeBadgeCount(data));
             } catch (error: any) {
                 if (error.name === 'AbortError') return;
-                // Silently ignore 403/429 failures and 401 Unauthorized in polling to avoid console spam
                 const msg = error.message?.toLowerCase() || '';
                 if (msg.includes('429') || msg.includes('403') || msg.includes('401') || msg.includes('unauthorized')) {
                     return;
@@ -55,18 +59,90 @@ export const NotificationBell = () => {
             if (pollInterval) clearInterval(pollInterval);
             controller.abort();
         };
-    }, [user?.uid, authStatus]);
+    }, [user?.id, authStatus]);
+
+    // Calculate dropdown position when opening
+    useEffect(() => {
+        if (isOpen && buttonRef.current) {
+            const rect = buttonRef.current.getBoundingClientRect();
+            const dropdownWidth = 360; // match dropdown width
+            const margin = 12;
+
+            // Detect mobile
+            const mobile = window.innerWidth < 768;
+            setIsMobile(mobile);
+
+            let left = rect.left;
+
+            // Prevent overflow on right side
+            if (left + dropdownWidth > window.innerWidth - margin) {
+                left = window.innerWidth - dropdownWidth - margin;
+            }
+
+            // Prevent overflow on left side
+            if (left < margin) {
+                left = margin;
+            }
+
+            setDropdownPosition({
+                top: rect.bottom + 8,
+                left
+            });
+        }
+    }, [isOpen]);
+
+    // Reposition on window resize
+    useEffect(() => {
+        const handleResize = () => {
+            if (isOpen && buttonRef.current) {
+                const rect = buttonRef.current.getBoundingClientRect();
+                const dropdownWidth = 360;
+                const margin = 12;
+
+                // Detect mobile
+                const mobile = window.innerWidth < 768;
+                setIsMobile(mobile);
+
+                let left = rect.left;
+
+                // Prevent overflow on right side
+                if (left + dropdownWidth > window.innerWidth - margin) {
+                    left = window.innerWidth - dropdownWidth - margin;
+                }
+
+                // Prevent overflow on left side
+                if (left < margin) {
+                    left = margin;
+                }
+
+                setDropdownPosition({
+                    top: rect.bottom + 8,
+                    left
+                });
+            }
+        };
+
+        window.addEventListener('resize', handleResize);
+        window.addEventListener('scroll', handleResize, true); // Capture phase for all scroll containers
+        return () => {
+            window.removeEventListener('resize', handleResize);
+            window.removeEventListener('scroll', handleResize, true);
+        };
+    }, [isOpen]);
 
     // Close on click outside
     useEffect(() => {
         const handleClickOutside = (event: MouseEvent) => {
-            if (dropdownRef.current && !dropdownRef.current.contains(event.target as Node)) {
+            if (dropdownRef.current && !dropdownRef.current.contains(event.target as Node) &&
+                buttonRef.current && !buttonRef.current.contains(event.target as Node)) {
                 setIsOpen(false);
             }
         };
-        document.addEventListener('mousedown', handleClickOutside);
-        return () => document.removeEventListener('mousedown', handleClickOutside);
-    }, []);
+        if (isOpen) {
+            document.addEventListener('mousedown', handleClickOutside);
+            return () => document.removeEventListener('mousedown', handleClickOutside);
+        }
+    }, [isOpen]);
 
     const handleNotificationClick = async (notification: AppNotification | GroupedNotification) => {
         if ('isGroup' in notification) {
@@ -75,68 +151,54 @@ export const NotificationBell = () => {
 
             // Mark all valid items as read optimistically
             const itemIds = new Set(items.map(i => i.id));
-            setNotifications(prev => prev.map(n =>
-                itemIds.has(n.id) ? { ...n, isRead: true } : n
-            ));
+            const updatedNotifications = notifications.map(n =>
+                itemIds.has(n.id) ? { ...n, read: true } : n
+            );
+            setNotifications(updatedNotifications);
+            setUnreadCount(computeBadgeCount(updatedNotifications));
 
-            // Reduce unread count
-            setUnreadCount(prev => Math.max(0, prev - items.filter(i => !i.isRead).length));
-
-            // Server update (batch if possible, but for now specific loop or modify API)
-            // Ideally we'd have a bulk mark-read. Since we don't, we loop.
-            // Constraint: "No new API endpoints"? Ideally yes.
-            // But we have `markAllAsRead`. Maybe `markAsRead(ids[])`?
-            // Existing `api/notifications/[id]` handles single.
-            // We'll iterate fetch calls (simplest, robust) or use `markAllAsRead` if acceptable.
-            // Parallel fetch is fine for a few items (usually < 10 in a group).
-            items.filter(i => !i.isRead).forEach(async n => {
+            // API calls
+            items.filter(i => !i.read).forEach(async n => {
                 try {
-                    await apiClient(`/api/notifications/${n.id}`, {
-                        method: 'PATCH',
-                        body: JSON.stringify({ action: 'markRead' })
-                    });
+                    await NotificationService.markAsRead(n.id);
                 } catch (error) {
                     console.error('Failed to mark notification as read:', error);
                 }
             });
 
-            // Navigation: Use the latest item's actionUrl or construct from entity
-            // Group assumes same entity.
+            // Navigation
             const target = items[0];
-            if (target.actionUrl) {
+            if (target.action_url && typeof target.action_url === 'string') {
                 setIsOpen(false);
-                let url = target.actionUrl;
+                let url = target.action_url;
                 if (url.includes('/tasks/view/') && !url.includes('?id=')) {
                     url = url.replace('/tasks/view/', '/tasks/view?id=');
                 }
                 nativeNavigate(url, router, 'NotificationBell (Group URL Click)');
-            } else if (target.entityType === 'task') {
+            } else if (target.entity_type === 'task') {
                 setIsOpen(false);
-                nativeNavigate(`/tasks/view?id=${target.entityId}`, router, 'NotificationBell (Group Task Click)');
-            } else if (target.entityType === 'event') {
+                nativeNavigate(`/tasks/view?id=${target.entity_id}`, router, 'NotificationBell (Group Task Click)');
+            } else if (target.entity_type === 'event') {
                 setIsOpen(false);
                 nativeNavigate('/events', router, 'NotificationBell (Group Event Click)');
             }
 
         } else {
             // Single Notification
-            if (!notification.isRead) {
-                // Optimistic update
-                setNotifications(prev => prev.map(n =>
-                    n.id === notification.id ? { ...n, isRead: true } : n
-                ));
-                setUnreadCount(prev => Math.max(0, prev - 1));
+            if (!notification.read) {
+                const updatedNotifications = notifications.map(n =>
+                    n.id === notification.id ? { ...n, read: true } : n
+                );
+                setNotifications(updatedNotifications);
+                setUnreadCount(computeBadgeCount(updatedNotifications));
 
                 // API call
-                await apiClient(`/api/notifications/${notification.id}`, {
-                    method: 'PATCH',
-                    body: JSON.stringify({ action: 'markRead' })
-                });
+                await NotificationService.markAsRead(notification.id);
             }
 
-            if (notification.actionUrl) {
+            if (notification.action_url && typeof notification.action_url === 'string') {
                 setIsOpen(false);
-                let url = notification.actionUrl;
+                let url = notification.action_url;
                 if (url.includes('/tasks/view/') && !url.includes('?id=')) {
                     url = url.replace('/tasks/view/', '/tasks/view?id=');
                 }
@@ -147,7 +209,8 @@ export const NotificationBell = () => {
 
     const handleMarkAllRead = async () => {
         if (!user) return;
-        setNotifications(prev => prev.map(n => ({ ...n, isRead: true })));
+        const allRead = notifications.map(n => ({ ...n, read: true }));
+        setNotifications(allRead);
         setUnreadCount(0);
         await NotificationService.markAllAsRead();
     };
@@ -156,10 +219,11 @@ export const NotificationBell = () => {
     const displayList = groupNotifications(notifications);
 
     return (
-        <div className="relative" ref={dropdownRef}>
+        <>
             <button
+                ref={buttonRef}
                 onClick={() => setIsOpen(!isOpen)}
-                title="Notifications coming soon"
+                title="Notifications"
                 className="relative p-2 rounded-full hover:bg-[var(--bg-hover)] transition-colors text-[var(--text-secondary)]"
             >
                 <Bell size={20} />
@@ -170,99 +234,118 @@ export const NotificationBell = () => {
                 )}
             </button>
 
-            {isOpen && (
-                <div className="absolute right-0 mt-2 w-80 md:w-96 bg-slate-950/80 backdrop-blur-xl border border-white/10 rounded-2xl shadow-2xl z-50 overflow-hidden text-left ring-1 ring-white/5 animate-in fade-in zoom-in-95 duration-200">
-                    <div className="p-4 border-b border-border flex justify-between items-center bg-muted/5">
-                        <h3 className="font-bold text-popover-foreground text-sm tracking-wide uppercase">Notifications</h3>
-                        {unreadCount > 0 && (
-                            <button
-                                onClick={handleMarkAllRead}
-                                className="text-xs text-primary hover:text-primary/80 font-semibold transition-colors"
-                            >
-                                Mark all as read
-                            </button>
-                        )}
-                    </div>
+            {isOpen && typeof window !== 'undefined' && createPortal(
+                <>
+                    {/* Backdrop */}
+                    <div
+                        className="fixed inset-0 z-[9998]"
+                        onClick={() => setIsOpen(false)}
+                        aria-hidden="true"
+                    />
+                    {/* Dropdown */}
+                    <div
+                        ref={dropdownRef}
+                        className="fixed z-[9999] w-[360px] max-md:left-3 max-md:right-3 max-md:w-auto bg-slate-950/80 backdrop-blur-xl border border-white/10 rounded-2xl shadow-2xl overflow-hidden text-left ring-1 ring-white/5 animate-in fade-in zoom-in-95 duration-200"
+                        style={{
+                            top: `${dropdownPosition.top}px`,
+                            // Only apply left on desktop; mobile uses Tailwind classes
+                            ...(isMobile ? {} : { left: `${dropdownPosition.left}px` }),
+                            maxHeight: '70vh'
+                        }}
+                    >
 
-                    <div className="max-h-[60vh] overflow-y-auto scrollbar-thin scrollbar-thumb-muted/10 scrollbar-track-transparent">
-                        {displayList.length > 0 ? (
-                            displayList.map(item => {
-                                if ('isGroup' in item) {
-                                    // Render Group
-                                    const latest = item.items[0];
-                                    let entityName = latest.metadata?.entityTitle || latest.metadata?.taskTitle || latest.metadata?.eventTitle;
+                        <div className="p-4 border-b border-border flex justify-between items-center bg-muted/5">
+                            <h3 className="font-bold text-popover-foreground text-sm tracking-wide uppercase">Notifications</h3>
+                            {unreadCount > 0 && (
+                                <button
+                                    onClick={handleMarkAllRead}
+                                    className="text-xs text-primary hover:text-primary/80 font-semibold transition-colors"
+                                >
+                                    Mark all as read
+                                </button>
+                            )}
+                        </div>
 
-                                    if (!entityName) return (
-                                        <NotificationItem
-                                            key={item.id}
-                                            notification={latest}
-                                            onClick={() => handleNotificationClick(latest)}
-                                        />
-                                    );
+                        <div className="max-h-[60vh] overflow-y-auto scrollbar-thin scrollbar-thumb-muted/10 scrollbar-track-transparent">
+                            {displayList.length > 0 ? (
+                                displayList.map(item => {
+                                    if ('isGroup' in item) {
+                                        const latest = item.items[0];
+                                        let entityName = latest.metadata?.entityTitle || latest.metadata?.taskTitle || latest.metadata?.eventTitle;
 
-                                    return (
-                                        <div
-                                            key={item.id}
-                                            onClick={() => handleNotificationClick(item)}
-                                            className="flex items-start gap-4 p-4 cursor-pointer transition-colors border-b border-border hover:bg-muted/5 group"
-                                        >
-                                            <div className="mt-1 flex-shrink-0">
-                                                <div className="w-10 h-10 bg-primary/10 rounded-xl flex items-center justify-center border border-primary/20 group-hover:border-primary/40 transition-colors">
-                                                    <Layers size={20} className="text-primary" />
-                                                </div>
-                                            </div>
-                                            <div className="flex-1 min-w-0">
-                                                <p className="text-sm font-medium text-muted-foreground group-hover:text-foreground transition-colors">
-                                                    {item.count} updates on <span className="font-bold text-foreground">'{entityName}'</span>
-                                                </p>
-                                                <p className="text-xs text-muted-foreground/70 mt-1">
-                                                    Click to view all
-                                                </p>
-                                                <p className="text-[10px] text-muted-foreground/60 mt-2 font-medium uppercase tracking-wider">
-                                                    {typeof item.latestCreatedAt === 'string'
-                                                        ? formatDistanceToNow(new Date(item.latestCreatedAt), { addSuffix: true })
-                                                        : item.latestCreatedAt?.seconds
-                                                            ? formatDistanceToNow(new Date(item.latestCreatedAt.seconds * 1000), { addSuffix: true })
-                                                            : 'Just now'
-                                                    }
-                                                </p>
-                                            </div>
-                                            <div className="w-2 h-2 rounded-full bg-primary mt-2 flex-shrink-0 shadow-[0_0_8px_rgba(59,130,246,0.6)]" />
-                                        </div>
-                                    );
-                                } else {
-                                    // Single Item
-                                    return (
-                                        <div key={item.id} className="border-b border-border last:border-0 hover:bg-muted/5 transition-colors">
+                                        if (!entityName) return (
                                             <NotificationItem
-                                                notification={item}
-                                                onClick={handleNotificationClick}
+                                                key={item.id}
+                                                notification={latest}
+                                                onRead={() => handleNotificationClick(latest)}
+                                                onArchive={() => { }}
                                             />
-                                        </div>
-                                    );
-                                }
-                            })
-                        ) : (
-                            <div className="flex flex-col items-center justify-center h-64 text-muted-foreground">
-                                <div className="p-4 bg-muted/10 rounded-full mb-4">
-                                    <Layers size={32} className="opacity-40" />
+                                        );
+
+                                        return (
+                                            <div
+                                                key={item.id}
+                                                onClick={() => handleNotificationClick(item)}
+                                                className="flex items-start gap-4 p-4 cursor-pointer transition-colors border-b border-border hover:bg-muted/5 group"
+                                            >
+                                                <div className="mt-1 flex-shrink-0">
+                                                    <div className="w-10 h-10 bg-primary/10 rounded-xl flex items-center justify-center border border-primary/20 group-hover:border-primary/40 transition-colors">
+                                                        <Layers size={20} className="text-primary" />
+                                                    </div>
+                                                </div>
+                                                <div className="flex-1 min-w-0">
+                                                    <p className="text-sm font-medium text-muted-foreground group-hover:text-foreground transition-colors">
+                                                        {item.count} updates on <span className="font-bold text-foreground">'{entityName}'</span>
+                                                    </p>
+                                                    <p className="text-xs text-muted-foreground/70 mt-1">
+                                                        Click to view all
+                                                    </p>
+                                                    <p className="text-[10px] text-muted-foreground/60 mt-2 font-medium uppercase tracking-wider">
+                                                        {typeof item.latestCreatedAt === 'string'
+                                                            ? formatDistanceToNow(new Date(item.latestCreatedAt), { addSuffix: true })
+                                                            : item.latestCreatedAt?.seconds
+                                                                ? formatDistanceToNow(new Date(item.latestCreatedAt.seconds * 1000), { addSuffix: true })
+                                                                : 'Just now'
+                                                        }
+                                                    </p>
+                                                </div>
+                                                <div className="w-2 h-2 rounded-full bg-primary mt-2 flex-shrink-0 shadow-[0_0_8px_rgba(59,130,246,0.6)]" />
+                                            </div>
+                                        );
+                                    } else {
+                                        return (
+                                            <div key={item.id} className="border-b border-border last:border-0 hover:bg-muted/5 transition-colors">
+                                                <NotificationItem
+                                                    notification={item as any}
+                                                    onRead={() => handleNotificationClick(item)}
+                                                    onArchive={() => { }}
+                                                />
+                                            </div>
+                                        );
+                                    }
+                                })
+                            ) : (
+                                <div className="flex flex-col items-center justify-center h-64 text-muted-foreground">
+                                    <div className="p-4 bg-muted/10 rounded-full mb-4">
+                                        <Layers size={32} className="opacity-40" />
+                                    </div>
+                                    <p className="text-sm font-medium">No notifications yet</p>
                                 </div>
-                                <p className="text-sm font-medium">No notifications yet</p>
-                                <p className="text-[10px] text-muted-foreground/50 mt-1 uppercase tracking-widest">Notification system coming soon</p>
-                            </div>
-                        )}
+                            )}
+                        </div>
+                        <div className="p-3 border-t border-border bg-popover text-center flex flex-col gap-2">
+                            <button
+                                onClick={() => { setIsOpen(false); nativeNavigate('/notifications', router, 'NotificationBell (View Full Inbox)'); }}
+                                className="text-xs font-bold text-primary hover:text-primary/80 uppercase tracking-wider transition-colors"
+                            >
+                                View Full Inbox
+                            </button>
+                            <small className="text-[10px] text-muted-foreground font-medium uppercase tracking-widest">Notifications are stored for 30 days</small>
+                        </div>
                     </div>
-                    <div className="p-3 border-t border-border bg-popover text-center flex flex-col gap-2">
-                        <button
-                            onClick={() => { setIsOpen(false); nativeNavigate('/notifications', router, 'NotificationBell (View Full Inbox)'); }}
-                            className="text-xs font-bold text-primary hover:text-primary/80 uppercase tracking-wider transition-colors"
-                        >
-                            View Full Inbox
-                        </button>
-                        <small className="text-[10px] text-muted-foreground font-medium uppercase tracking-widest">Notifications are stored for 30 days</small>
-                    </div>
-                </div>
+                </>,
+                document.body
             )}
-        </div>
+        </>
     );
 };

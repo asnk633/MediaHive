@@ -40,7 +40,7 @@ export const TaskRatingComponent = ({ task, onRatingSubmitted }: TaskRatingProps
                 <div className="flex items-center justify-between mb-2">
                     <h4 className="text-sm font-bold text-white uppercase tracking-wider">Feedback</h4>
                     <span className="text-xs text-white/40">
-                        by {existingRating.ratedBy.name}
+                        by {existingRating.rated_by.name}
                     </span>
                 </div>
                 <div className="flex items-center gap-1 mb-2">

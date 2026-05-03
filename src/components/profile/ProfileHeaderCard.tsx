@@ -12,7 +12,7 @@ interface ProfileHeaderCardProps {
 
 export function ProfileHeaderCard({ user, onAvatarClick }: ProfileHeaderCardProps) {
     const role = user?.role;
-    const isSuperAdmin = user?.email === 'media@thaibagarden.com' || user?.isSuperAdmin;
+    const is_super_admin = user?.email === 'media@thaibagarden.com' || user?.is_super_admin;
 
     return (
         <div className="w-full bg-card border border-border rounded-2xl p-6 flex items-center gap-6">
@@ -22,7 +22,7 @@ export function ProfileHeaderCard({ user, onAvatarClick }: ProfileHeaderCardProp
                     className="h-14 w-14 rounded-full shadow-lg overflow-hidden flex items-center justify-center cursor-pointer hover:scale-105 transition-transform duration-300 ring-2 ring-border group-hover:ring-primary/30"
                 >
                     <SafeAvatar
-                        src={user?.avatarUrl || null}
+                        src={user?.avatar_url || null}
                         alt={user?.name || "Profile"}
                         size={56}
                         className="w-full h-full bg-cover"
@@ -44,10 +44,10 @@ export function ProfileHeaderCard({ user, onAvatarClick }: ProfileHeaderCardProp
                         "px-3 py-0.5 rounded-full text-[10px] font-medium uppercase tracking-wider",
                         getRoleBadgeColors(role)
                     )}>
-                        {isSuperAdmin ? "SUPER ADMIN" : (role || "Guest")}
+                        {is_super_admin ? "SUPER ADMIN" : (role || "Guest")}
                     </span>
-                    {user?.officialName && (
-                        <span className="text-sm text-muted-foreground border-l border-border pl-2">{user.officialName}</span>
+                    {user?.official_name && (
+                        <span className="text-sm text-muted-foreground border-l border-border pl-2">{user.official_name}</span>
                     )}
                 </div>
             </div>

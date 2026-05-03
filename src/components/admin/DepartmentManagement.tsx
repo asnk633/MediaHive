@@ -18,7 +18,7 @@ import {
 type Department = {
     id: number;
     name: string;
-    createdAt: string;
+    created_at: string;
 };
 
 export const DepartmentManagement = () => {
@@ -242,7 +242,7 @@ export const DepartmentManagement = () => {
                                         <div>
                                             <h3 className="text-white font-semibold text-lg">{dept.name}</h3>
                                             <p className="text-sm text-[var(--color-text-secondary)]">
-                                                Created: {new Date(dept.createdAt).toLocaleDateString('en-GB')}
+                                                Created: {new Date(dept.created_at).toLocaleDateString('en-GB')}
                                             </p>
                                         </div>
                                     </div>

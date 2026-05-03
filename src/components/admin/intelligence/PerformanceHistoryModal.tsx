@@ -27,7 +27,7 @@ interface AdminIntervention {
     riskLevelAtTime: 'Low' | 'Medium' | 'High';
     note: string;
     actionType: string;
-    createdAt: string;
+    created_at: string;
     adminName: string;
     adminAvatar: string | null;
 }
@@ -35,7 +35,7 @@ interface AdminIntervention {
 interface PerformanceHistoryModalProps {
     userId: number;
     userName: string;
-    avatarUrl: string | null;
+    avatar_url: string | null;
     isOpen: boolean;
     onClose: () => void;
 }
@@ -43,7 +43,7 @@ interface PerformanceHistoryModalProps {
 export function PerformanceHistoryModal({
     userId,
     userName,
-    avatarUrl,
+    avatar_url,
     isOpen,
     onClose
 }: PerformanceHistoryModalProps) {
@@ -137,7 +137,7 @@ export function PerformanceHistoryModal({
                     <div className="flex items-center gap-4">
                         <div className="w-12 h-12 rounded-full overflow-hidden bg-white/10 ring-2 ring-white/10">
                             <SafeAvatar
-                                src={avatarUrl}
+                                src={avatar_url}
                                 alt={userName}
                                 size={48}
                                 className="w-full h-full"
@@ -324,7 +324,7 @@ export function PerformanceHistoryModal({
                                                     <div className="flex items-center justify-between mb-3 border-b border-white/5 pb-3">
                                                         <span className="text-sm font-bold text-white">{item.actionType}</span>
                                                         <span className="text-[10px] font-medium text-white/40">
-                                                            {new Date(item.createdAt).toLocaleDateString()}
+                                                            {new Date(item.created_at).toLocaleDateString()}
                                                         </span>
                                                     </div>
                                                     <p className="text-sm text-white/70 leading-relaxed">{item.note}</p>

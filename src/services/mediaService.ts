@@ -1,4 +1,3 @@
-import { getFirebaseAuth } from '@/firebase/client';
 import { apiClient } from '@/lib/apiClient';
 import { DriveFile } from '@/types/file';
 import { ExtendedDriveFile } from '@/types/mediaComment';
@@ -25,12 +24,12 @@ export const MediaService = {
 
   /**
    * Get files associated with a specific event
-   * @param eventId - The ID of the event
+   * @param event_id - The ID of the event
    * @returns Array of files associated with the event
    */
-  getFilesForEvent: async (eventId: string): Promise<ExtendedDriveFile[]> => {
+  getFilesForEvent: async (event_id: string): Promise<ExtendedDriveFile[]> => {
     try {
-      const response = await apiClient(`/api/files?eventId=${eventId}`, {
+      const response = await apiClient(`/api/files?event_id=${event_id}`, {
         method: 'GET'
       });
       

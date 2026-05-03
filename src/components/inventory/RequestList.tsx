@@ -30,15 +30,15 @@ export default function RequestList() {
         setLoading(true);
         try {
             let data: InventoryRequest[] = [];
-            if (!user.institutionId) {
-                console.error("User missing institutionId");
+            if (!user.institution_id) {
+                console.error("User missing institution_id");
                 return;
             }
 
             if (isAdmin) {
-                data = await inventoryRequestService.getAll(user.institutionId);
+                data = await inventoryRequestService.getAll(user.institution_id);
             } else {
-                data = await inventoryRequestService.getMyRequests(user.uid, user.institutionId);
+                data = await inventoryRequestService.getMyRequests(user.uid, user.institution_id);
             }
             setRequests(data);
         } catch (error) {
@@ -127,7 +127,7 @@ export default function RequestList() {
                     <div className="space-y-1">
                         <div className="flex items-center gap-2">
                             <StatusBadge status={req.status} />
-                            <span className="text-xs text-slate-500">{format(new Date(req.createdAt || Date.now()), 'MMM d, h:mm a')}</span>
+                            <span className="text-xs text-slate-500">{format(new Date(req.created_at || Date.now()), 'MMM d, h:mm a')}</span>
                         </div>
                         <h4 className="font-semibold text-white">{req.itemName}</h4>
                         <p className="text-sm text-slate-400">"{req.purpose}"</p>

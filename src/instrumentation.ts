@@ -1,14 +1,12 @@
 /**
  * Next.js Instrumentation Hook
  * Runs once when the server starts
- * Used to initialize the daily snapshot cron job
  */
 
 export async function register() {
     if (process.env.NEXT_RUNTIME === 'nodejs') {
-        // Only run on server-side
-        const { initializeDailySnapshotJob } = await import('./jobs/dailySnapshots');
-        initializeDailySnapshotJob();
-        console.log('[Instrumentation] Daily snapshot cron job initialized');
+        // Core server-only initializations would go here.
+        // Legacy snapshot cron jobs have been purged.
+        console.log('[Instrumentation] Server-side runtime initialized');
     }
 }

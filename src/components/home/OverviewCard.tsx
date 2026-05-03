@@ -76,13 +76,13 @@ export function OverviewCard({
                     )}
                 </div>
                 <p className={cn("text-[11px] font-bold uppercase tracking-widest transition-colors pl-0.5",
-                    isPrimary ? "text-secondary" : "text-muted group-hover:text-secondary")}>
+                    isPrimary ? "text-secondary" : "text-secondary group-hover:text-primary")}>
                     {label}
                 </p>
                 <div className={cn("mt-4 pt-4 flex items-center justify-between transition-colors",
                     "border-t border-soft/50")}>
                     <p className={cn("text-xs font-medium transition-colors",
-                        "text-muted group-hover:text-secondary")}>
+                        "text-secondary group-hover:text-primary")}>
                         {subLabel}
                     </p>
                     <div className={cn("text-[10px] px-2 py-1 rounded-full border transition-all",

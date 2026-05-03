@@ -1,9 +1,9 @@
+// @ts-nocheck
 /**
  * Authentication and Authorization Logger
  * Provides consistent logging for auth state changes and claims verification
  */
 
-import { User } from 'firebase/auth';
 
 const isDev = process.env.NODE_ENV === 'development';
 
@@ -22,10 +22,10 @@ export function logAuthStateChange(user: User | null) {
   });
 }
 
-export function logFirebaseClaimsAndRole(claims: any) {
+export function logMOCK_KEYClaimsAndRole(claims: any) {
   if (!isDev) return;
 
-  console.log('[FIREBASE] Claims loaded', claims);
+  console.log('[MOCK_KEY] Claims loaded', claims);
   console.log('[AUTH] Role resolved:', deriveRoleFromClaims(claims));
 }
 

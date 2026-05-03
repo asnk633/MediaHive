@@ -53,7 +53,7 @@ export default function InventoryTable() {
             case 'ok': return <Badge className="bg-emerald-500/10 text-emerald-500 border-emerald-500/20 hover:bg-emerald-500/20">In Stock</Badge>;
             case 'low': return <Badge className="bg-yellow-500/10 text-yellow-500 border-yellow-500/20 hover:bg-yellow-500/20">Low Stock</Badge>;
             case 'out': return <Badge className="bg-red-500/10 text-red-500 border-red-500/20 hover:bg-red-500/20">Out of Stock</Badge>;
-            default: return <Badge variant="outline">{status}</Badge>;
+            default: return <Badge variant="neutral">{status}</Badge>;
         }
     };
 
@@ -109,7 +109,7 @@ export default function InventoryTable() {
                                     </TableCell>
                                     <TableCell>{getStatusBadge(item.status)}</TableCell>
                                     <TableCell className="text-xs text-muted">
-                                        {formatDistanceToNow(new Date(item.updatedAt), { addSuffix: true })}
+                                        {formatDistanceToNow(new Date(item.updated_at), { addSuffix: true })}
                                     </TableCell>
                                     <TableCell className="text-right">
                                         {user?.role === 'admin' && (

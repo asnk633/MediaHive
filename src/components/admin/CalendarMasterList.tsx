@@ -98,7 +98,7 @@ export function CalendarMasterList() {
         fetchEvents(); // Refresh after edit
     };
 
-    const toggleNotification = async (eventId: string, offset: string, currentState: boolean | undefined) => {
+    const toggleNotification = async (event_id: string, offset: string, currentState: boolean | undefined) => {
         // currentState: true = enabled, false = disabled, undefined = default (assume enabled if global rule exists)
         // We want to store explicit override.
         // New state should be !currentState (if defined) or false (if undefined/default-on)??
@@ -110,7 +110,7 @@ export function CalendarMasterList() {
         const newState = !effectiveState;
 
         try {
-            await apiClient(`/api/system-events/${eventId}`, {
+            await apiClient(`/api/system-events/${event_id}`, {
                 method: 'PATCH',
                 body: JSON.stringify({
                     [`notificationPreferences.${offset}`]: newState
@@ -119,7 +119,7 @@ export function CalendarMasterList() {
 
             // Optimistic Update
             setEvents(prev => prev.map(e => {
-                if (e.id === eventId) {
+                if (e.id === event_id) {
                     return {
                         ...e,
                         notificationPreferences: {
@@ -158,15 +158,15 @@ export function CalendarMasterList() {
             title: sysEvent.title,
             description: sysEvent.description || '',
             date: sysEvent.date!,
-            startTime: sysEvent.date!, // Approximate, system events are usually all day or specific
-            endTime: sysEvent.date!,
+            start_time: sysEvent.date!, // Approximate, system events are usually all day or specific
+            end_time: sysEvent.date!,
             location: '',
             type: sysEvent.type as any,
             status: 'approved',
-            isSystemEvent: true,
-            isMediaOffDay: sysEvent.isMediaOffDay,
-            createdBy: { uid: sysEvent.createdBy.uid, name: sysEvent.createdBy.name, role: 'admin' },
-            createdAt: sysEvent.createdAt,
+            is_system_event: true,
+            is_media_off_day: sysEvent.is_media_off_day,
+            created_by: { uid: sysEvent.created_by.uid, name: sysEvent.created_by.name, role: 'admin' },
+            created_at: sysEvent.created_at,
             department: 'Management'
         };
         setEditingEvent(mapped);
@@ -268,7 +268,7 @@ export function CalendarMasterList() {
 
                                             {/* Media Off Day */}
                                             <td className="p-4 text-center">
-                                                {event.isMediaOffDay ? (
+                                                {event.is_media_off_day ? (
                                                     <span className="inline-flex items-center gap-1 text-[10px] font-bold text-red-400 bg-red-500/10 px-2 py-1 rounded-full">
                                                         <XCircle size={12} /> OFF
                                                     </span>

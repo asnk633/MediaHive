@@ -12,8 +12,8 @@ async function testFix() {
       description: 'Test Description',
       status: 'pending',
       priority: 'high',
-      createdAt: new Date().toISOString(),
-      updatedAt: new Date().toISOString(),
+      created_at: new Date().toISOString(),
+      updated_at: new Date().toISOString(),
       version: 1
     }, {
       id: 1,

@@ -75,8 +75,8 @@ export async function POST(request: NextRequest) {
             riskLevelAtTime: riskLevel,
             note,
             actionType,
-            createdBy: currentUser.id,
-            createdAt: new Date().toISOString()
+            created_by: currentUser.id,
+            created_at: new Date().toISOString()
         });
 
         return NextResponse.json({ success: true }, { status: 201 });

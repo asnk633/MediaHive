@@ -1,14 +1,10 @@
-'use client';
+import NotificationCenterClient from './NotificationCenterClient';
 
-import React from 'react';
+export const metadata = {
+  title: 'Notifications | MediaHive',
+  description: 'Manage your notifications and alerts.',
+};
 
-export default function Page() {
-  return (
-    <div className="min-h-screen flex items-center justify-center bg-slate-950 p-6">
-      <div className="text-center space-y-4">
-        <h1 className="text-xl font-bold text-white">Mobile Optimization in Progress</h1>
-        <p className="text-slate-400">Notifications are currently available on desktop only.</p>
-      </div>
-    </div>
-  );
+export default function NotificationPage() {
+  return <NotificationCenterClient />;
 }

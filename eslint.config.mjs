@@ -57,6 +57,26 @@ const eslintConfig = [
       ],
     },
   },
+  {
+    files: ['src/components/home/widgets/**/*.{ts,tsx}'],
+    rules: {
+      'no-restricted-syntax': [
+        'error',
+        {
+          selector: "CallExpression[callee.property.name='filter'][callee.object.name='tasks']",
+          message: 'WIDGET VIOLATION: Do not filter raw "tasks" in widgets. Use dashboardMetrics.* or compute in dashboardMetrics.ts.',
+        },
+        {
+          selector: "CallExpression[callee.property.name='filter'][callee.object.name='events']",
+          message: 'WIDGET VIOLATION: Do not filter raw "events" in widgets. Use dashboardMetrics.* or compute in dashboardMetrics.ts.',
+        },
+        {
+          selector: "CallExpression[callee.property.name='reduce']",
+          message: 'WIDGET VIOLATION: Do not use .reduce() in widgets to compute metrics. Use dashboardMetrics.ts.',
+        }
+      ]
+    }
+  },
 ]
 
 export default eslintConfig

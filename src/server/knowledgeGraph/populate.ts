@@ -23,7 +23,7 @@ export async function populateKnowledgeGraph() {
         properties: {
           id: institution.id,
           name: institution.name,
-          createdAt: institution.createdAt,
+          created_at: institution.created_at,
         },
         relationships: []
       });
@@ -41,8 +41,8 @@ export async function populateKnowledgeGraph() {
           email: user.email,
           fullName: user.fullName,
           role: user.role,
-          institutionId: user.institutionId,
-          createdAt: user.createdAt,
+          institution_id: user.institution_id,
+          created_at: user.created_at,
         },
         relationships: []
       });
@@ -63,9 +63,9 @@ export async function populateKnowledgeGraph() {
           priority: task.priority,
           assignedToId: task.assignedToId,
           createdById: task.createdById,
-          institutionId: task.institutionId,
-          dueDate: task.dueDate,
-          createdAt: task.createdAt,
+          institution_id: task.institution_id,
+          due_date: task.due_date,
+          created_at: task.created_at,
         },
         relationships: []
       });
@@ -84,10 +84,10 @@ export async function populateKnowledgeGraph() {
           description: event.description,
           startTime: event.startTime,
           endTime: event.endTime,
-          approvalStatus: event.approvalStatus,
+          approval_status: event.approval_status,
           createdById: event.createdById,
-          institutionId: event.institutionId,
-          createdAt: event.createdAt,
+          institution_id: event.institution_id,
+          created_at: event.created_at,
         },
         relationships: []
       });
@@ -109,8 +109,8 @@ export async function populateKnowledgeGraph() {
           folder: file.folder,
           visibility: file.visibility,
           uploadedById: file.uploadedById,
-          institutionId: file.institutionId,
-          createdAt: file.createdAt,
+          institution_id: file.institution_id,
+          created_at: file.created_at,
         },
         relationships: []
       });

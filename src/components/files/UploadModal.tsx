@@ -18,11 +18,11 @@ interface UploadModalProps {
     open: boolean;
     onClose: () => void;
     onSuccess: () => void;
-    eventId?: string;
+    event_id?: string;
     taskId?: string;
 }
 
-export function UploadModal({ open, onClose, onSuccess, eventId, taskId }: UploadModalProps) {
+export function UploadModal({ open, onClose, onSuccess, event_id, taskId }: UploadModalProps) {
     const { user, loading } = useAuth();
     const [uploading, setUploading] = useState(false);
     const { register, handleSubmit, reset, setValue, watch } = useForm();
@@ -76,7 +76,7 @@ export function UploadModal({ open, onClose, onSuccess, eventId, taskId }: Uploa
             const metadata = {
                 name: data.name || file.name,
                 type: 'other', // derive from file?
-                uploadedBy: user?.uid,
+                uploaded_by: user?.uid,
                 uploadedByRole: user?.role,
                 uploadedByName: user?.name,
                 visibility: {
@@ -89,7 +89,7 @@ export function UploadModal({ open, onClose, onSuccess, eventId, taskId }: Uploa
                 folder: data.folder,
                 subfolder: data.subfolder,
                 // Linkage
-                eventId: eventId,
+                event_id: event_id,
                 taskId: taskId,
                 // DIRECT DOWNLOADS UPLOAD - ALWAYS FINAL & PUBLIC
                 uploadContext: 'downloads_direct',

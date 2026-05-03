@@ -17,7 +17,7 @@ interface ActivityItem {
     user: {
         uid: string;
         name: string;
-        avatarUrl?: string;
+        avatar_url?: string;
     };
 }
 
@@ -127,7 +127,7 @@ export const ActivityFeedWidget = () => {
                         <div key={item.id} className="p-4 flex gap-4 hover:bg-muted/5 transition-colors group">
                             <div className="mt-1">
                                 <SafeAvatar
-                                    src={item.user.avatarUrl}
+                                    src={item.user.avatar_url}
                                     alt={item.user.name}
                                     name={item.user.name}
                                     className="w-8 h-8 rounded-lg border border-soft shadow-sm"

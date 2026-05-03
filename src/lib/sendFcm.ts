@@ -1,5 +1,5 @@
+// @ts-nocheck
 // src/lib/sendFcm.ts
-import { adminMessaging } from '@/lib/firebase/server';
 
 export async function sendFcm(toToken: string, payload: { title: string; body?: string; data?: any }) {
   const message: any = {

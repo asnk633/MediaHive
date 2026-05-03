@@ -35,12 +35,12 @@ export interface LeaveRequest {
 
     // Metadata
     calendarEventId?: string; // For Phase 2 calendar integration
-    updatedAt: TimestampLike;
+    updated_at: TimestampLike;
     archivedAt?: TimestampLike;
 }
 
 // Form data type (for submission)
-export type LeaveRequestFormData = Omit<LeaveRequest, 'id' | 'status' | 'requestedAt' | 'updatedAt' | 'totalDays'> & {
+export type LeaveRequestFormData = Omit<LeaveRequest, 'id' | 'status' | 'requestedAt' | 'updated_at' | 'totalDays'> & {
     totalDays?: number; // Optional during form fill, calculated before submit
 };
 

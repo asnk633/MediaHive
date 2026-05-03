@@ -28,15 +28,10 @@ export const SettingsLayout: React.FC<SettingsLayoutProps> = ({
 
 
     return (
-        <div className="flex flex-col lg:flex-row gap-8 min-h-[600px]">
+        <div className="flex flex-col lg:flex-row gap-8 min-h-[600px] mt-2">
             {/* Sidebar */}
-            <aside className="w-full lg:w-64 shrink-0 space-y-2">
-                <div className="mb-6 px-2">
-                    <h2 className="text-xl font-bold text-white">Settings</h2>
-                    <p className="text-sm text-slate-400">Manage your preferences.</p>
-                </div>
-
-                <nav className="space-y-1">
+            <aside className="w-full lg:w-64 shrink-0 space-y-1">
+                <nav className="flex flex-row lg:flex-col gap-1 overflow-x-auto no-scrollbar pb-2 lg:pb-0">
                     {menuItems.map((item) => (
                         <Button
                             key={item.id}

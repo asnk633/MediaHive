@@ -14,10 +14,10 @@ export interface DriveFile {
     driveFileId: string;
     viewLink: string;
     downloadLink: string;
-    uploadedBy: string; // uid
+    uploaded_by: string; // uid
     uploadedByRole: string; // 'admin' | 'team'
     uploadedByName?: string; // Cache for display
-    createdAt: any; // Timestamp
+    created_at: any; // Timestamp
     visibility: FileVisibility;
     department?: string;
 
@@ -29,6 +29,6 @@ export interface DriveFile {
     proofingStatus?: 'pending' | 'approved' | 'rejected' | 'changes_requested';
     isActiveVersion?: boolean;
     version?: number;
-    isDemoData?: boolean;
+    is_demo_data?: boolean;
     originalName?: string; // For SystemHealthPanel display
 }

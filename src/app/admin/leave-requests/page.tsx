@@ -44,7 +44,7 @@ export default function AdminLeaveRequestsPage() {
             await LeaveRequestService.approveRequest({
                 requestId,
                 adminUid: user.uid,
-                adminName: user.officialName || user.name || 'Admin'
+                adminName: user.official_name || user.name || 'Admin'
             });
             toast.success('Leave request approved');
         } catch (error: any) {
@@ -64,7 +64,7 @@ export default function AdminLeaveRequestsPage() {
             await LeaveRequestService.rejectRequest({
                 requestId: rejectingRequest.id,
                 adminUid: user.uid,
-                adminName: user.officialName || user.name || 'Admin',
+                adminName: user.official_name || user.name || 'Admin',
                 reason
             });
             toast.success('Leave request rejected');

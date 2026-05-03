@@ -1,6 +1,6 @@
 import { NextRequest } from 'next/server';
 import { verifyUser } from '@/lib/server-utils';
-import { InviteServiceServer } from '@/lib/invites.server';
+// import { InviteServiceServer } from '@/lib/invites.server';
 import { isFeatureEnabled } from '@/app/featureFlags';
 
 
@@ -19,7 +19,7 @@ export async function POST(request: NextRequest) {
       return Response.json({ error: 'Access denied. Admin role required.' }, { status: 403 });
     }
 
-    const { email, role, institutionId, departmentId, name } = await request.json();
+    const { email, role, institution_id, department_id, name } = await request.json();
 
     // Validate input
     if (!email || !role) {
@@ -30,16 +30,16 @@ export async function POST(request: NextRequest) {
       return Response.json({ error: 'Invalid role. Must be admin, team, or guest' }, { status: 400 });
     }
 
-    // Use provided institutionId if admin, otherwise fallback to admin's institution
-    // BUT we must allow clearing it if departmentId is provided.
+    // Use provided institution_id if admin, otherwise fallback to admin's institution
+    // BUT we must allow clearing it if department_id is provided.
     // If Admin provides neither, fallback to Admin's institution (if any).
 
     // Logic:
-    // If body has institutionId/departmentId, use them (trusting Admin).
+    // If body has institution_id/department_id, use them (trusting Admin).
     // If not, Default to Admin's institution.
 
-    const finalInstitutionId = institutionId !== undefined ? institutionId : (user.institutionId || 'default');
-    const finalDepartmentId = departmentId || null;
+    const finalInstitutionId = institution_id !== undefined ? institution_id : (user.institution_id || 'default');
+    const finalDepartmentId = department_id || null;
 
     // Enforce XOR (Optional but good)
     if (finalInstitutionId && finalDepartmentId) {
@@ -49,14 +49,14 @@ export async function POST(request: NextRequest) {
     }
 
     // Create the invite
-    const inviteId = await InviteServiceServer.createInvite(email, role, user.uid, finalInstitutionId, finalDepartmentId, name);
+    // const inviteId = await InviteServiceServer.createInvite(email, role, user.uid, finalInstitutionId, finalDepartmentId, name);
+    const inviteId = "obsolete";
 
     // In a real implementation, you would send an email here
     // For now, we'll just return the invite ID for testing
     return Response.json({
-      success: true,
-      inviteId,
-      message: `Invite created successfully for ${email}. In a real implementation, an email would be sent.`
+      success: false,
+      error: "Invite API is obsolete due to fbase removal"
     });
   } catch (error: any) {
     console.error('Error creating invite:', error);
@@ -78,14 +78,16 @@ export async function GET(request: NextRequest) {
     }
 
     // Get invites based on admin scope
-    let invites = [];
-    if (user.institutionId) {
-      invites = await InviteServiceServer.getInstitutionInvites(user.institutionId);
+    let invites: any[] = [];
+    /*
+    if (user.institution_id) {
+      invites = await InviteServiceServer.getInstitutionInvites(user.institution_id);
     } else {
       // Global Admin sees all (or global) invites
       // For now, let's fetch ALL to be safe and ensure visibility of Dept-only invites
       invites = await InviteServiceServer.getAllInvites();
     }
+    */
 
     return Response.json({ success: true, invites });
   } catch (error: any) {
@@ -116,9 +118,9 @@ export async function DELETE(request: NextRequest) {
     }
 
     // Delete the invite
-    await InviteServiceServer.deleteInvite(inviteId);
+    // await InviteServiceServer.deleteInvite(inviteId);
 
-    return Response.json({ success: true, message: 'Invite deleted successfully' });
+    return Response.json({ success: false, error: 'Obsolete' });
   } catch (error: any) {
     console.error('Error deleting invite:', error);
     return Response.json({ error: error.message || 'Failed to delete invite' }, { status: 500 });

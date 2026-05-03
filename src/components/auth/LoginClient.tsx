@@ -7,17 +7,15 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Card, CardContent } from '@/components/ui/card';
 import { useAuth } from '@/contexts/AuthContextProvider';
-import { getFirebaseAuth } from '@/firebase/client';
-import { signInWithEmailAndPassword } from 'firebase/auth';
+import { supabase } from '@/lib/supabaseClient';
 import { Lock, Mail, AlertCircle, Loader2 } from 'lucide-react';
-import { withTimeout } from '@/lib/utils';
 
 export default function LoginClient() {
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
     const [error, setError] = useState<string | null>(null);
     const [loading, setLoading] = useState(false);
-    const { authStatus } = useAuth();
+    const { login } = useAuth();
 
     const handleLogin = async (e: React.FormEvent) => {
         e.preventDefault();
@@ -31,18 +29,19 @@ export default function LoginClient() {
                 return;
             }
             console.log('[LOGIN] Attempting login for:', email);
-            const auth = await getFirebaseAuth();
-            const result = await withTimeout(signInWithEmailAndPassword(auth, email, password), 10000, 'Firebase Auth SignIn');
-            console.log('[LOGIN] Firebase sign-in successful:', result.user.uid);
-            // AuthContext will handle the state change and redirect/render
+
+            await login(email, password);
+
+            console.log('[LOGIN] Supabase sign-in successful');
+            // AuthContext will handle the state change and redirect/render via onAuthStateChange
         } catch (err: any) {
             console.error('[LOGIN] Error:', err);
-            if (err.code === 'auth/invalid-credential') {
+            if (err.message && err.message.toLowerCase().includes('invalid login credentials')) {
                 setError('Invalid email or password');
-            } else if (err.code === 'auth/network-request-failed') {
+            } else if (err.message && err.message.toLowerCase().includes('network')) {
                 setError('Network error. Please check your connection.');
             } else {
-                setError('Failed to sign in. Please try again.');
+                setError(err.message || 'Failed to sign in. Please try again.');
             }
         } finally {
             setLoading(false);
@@ -119,7 +118,7 @@ export default function LoginClient() {
 
                             <Button
                                 type="submit"
-                                disabled={loading || authStatus === 'authenticating'}
+                                disabled={loading}
                                 className="w-full h-11 bg-primary hover:bg-primary/90 text-primary-foreground font-bold rounded-sm shadow-soft transition-all active:scale-[0.98] disabled:opacity-50"
                             >
                                 {loading ? (
@@ -141,3 +140,4 @@ export default function LoginClient() {
         </div>
     );
 }
+

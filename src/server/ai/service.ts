@@ -95,7 +95,7 @@ export class AIService {
         .where(and(
           eq(tasks.tenantId, tenantId),
           eq(tasks.status, 'done'),
-          gte(tasks.updatedAt, oneWeekAgo.toISOString())
+          gte(tasks.updated_at, oneWeekAgo.toISOString())
         ));
       
       // Get events scheduled this week
@@ -113,7 +113,7 @@ export class AIService {
         .select()
         .from(users)
         .where(eq(users.id, userId))
-        .innerJoin(institutions, eq(users.institutionId, institutions.id));
+        .innerJoin(institutions, eq(users.institution_id, institutions.id));
       
       const institutionName = userInstitution?.institutions?.name || 'your institution';
       

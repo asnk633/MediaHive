@@ -15,9 +15,9 @@ export const TasksFromMeWidget = ({ tasks, userId, title = "Tasks from Me" }: Ta
 
     // Filter: Created by me (or assigned by me legacy)
     const myTasks = tasks.filter(task => {
-        const creatorUid = typeof task.createdBy === 'string' ? task.createdBy : task.createdBy?.uid;
+        const creatorUid = typeof task.created_by === 'string' ? task.created_by : task.created_by?.uid;
         if (creatorUid && creatorUid === userId) return true;
-        if (task.assignedBy?.uid === userId) return true;
+        if (task.assigned_by?.uid === userId) return true;
         return false;
     }).slice(0, 5); // Limit to 5
 
@@ -37,11 +37,11 @@ export const TasksFromMeWidget = ({ tasks, userId, title = "Tasks from Me" }: Ta
 
     const getTaskHint = (task: Task) => {
         if (task.status === 'review') return "Waiting for review";
-        if (task.status === 'in_progress' && Array.isArray(task.assignedTo) && task.assignedTo.length > 0) {
-            const assigneeName = typeof task.assignedTo[0] === 'string' ? 'team' : task.assignedTo[0].name.split(' ')[0];
+        if (task.status === 'in_progress' && Array.isArray(task.assigned_to) && task.assigned_to.length > 0) {
+            const assigneeName = typeof task.assigned_to[0] === 'string' ? 'team' : task.assigned_to[0].name.split(' ')[0];
             return `In progress by ${assigneeName}`;
         }
-        if (task.status === 'todo' && (!task.assignedTo || task.assignedTo.length === 0)) return "Pending assignment";
+        if (task.status === 'todo' && (!task.assigned_to || task.assigned_to.length === 0)) return "Pending assignment";
         return null;
     };
 
@@ -87,9 +87,9 @@ export const TasksFromMeWidget = ({ tasks, userId, title = "Tasks from Me" }: Ta
                                     <p className="text-xs text-blue-300/60 mt-0.5 truncate">{getTaskHint(task)}</p>
                                 )}
                                 <div className="mt-1.5 flex items-center gap-2">
-                                    {task.assignedTo && Array.isArray(task.assignedTo) && task.assignedTo.length > 0 ? (
+                                    {task.assigned_to && Array.isArray(task.assigned_to) && task.assigned_to.length > 0 ? (
                                         <div className="flex -space-x-1.5 overflow-hidden">
-                                            {task.assignedTo.slice(0, 3).map((u, i) => {
+                                            {task.assigned_to.slice(0, 3).map((u, i) => {
                                                 const name = typeof u === 'string' ? "User" : (u.name || "User");
                                                 const initial = name.charAt(0).toUpperCase();
                                                 return (
@@ -98,9 +98,9 @@ export const TasksFromMeWidget = ({ tasks, userId, title = "Tasks from Me" }: Ta
                                                     </div>
                                                 );
                                             })}
-                                            {task.assignedTo.length > 3 && (
+                                            {task.assigned_to.length > 3 && (
                                                 <div className="h-5 w-5 rounded-full bg-slate-800 border border-[#1a1a1a] flex items-center justify-center text-[8px] text-gray-400">
-                                                    +{task.assignedTo.length - 3}
+                                                    +{task.assigned_to.length - 3}
                                                 </div>
                                             )}
                                         </div>

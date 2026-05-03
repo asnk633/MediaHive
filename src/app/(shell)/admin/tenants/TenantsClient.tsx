@@ -8,8 +8,8 @@ interface Tenant {
     name: string;
     domain: string;
     settings?: any;
-    createdAt: string;
-    updatedAt: string;
+    created_at: string;
+    updated_at: string;
 }
 
 export default function TenantsClient() {
@@ -225,7 +225,7 @@ export default function TenantsClient() {
                                     <div className="text-sm leading-5 text-gray-900">{tenant.domain}</div>
                                 </td>
                                 <td className="px-6 py-4 whitespace-no-wrap border-b border-gray-200 text-sm leading-5 text-gray-500">
-                                    {new Date(tenant.createdAt).toLocaleDateString()}
+                                    {new Date(tenant.created_at).toLocaleDateString()}
                                 </td>
                                 <td className="px-6 py-4 whitespace-no-wrap border-b border-gray-200 text-sm leading-5 font-medium">
                                     <button

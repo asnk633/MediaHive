@@ -5,7 +5,7 @@
 import React, { useState, useEffect } from 'react';
 import { useAuth } from '@/contexts/AuthContextProvider';
 import { useRouter } from 'next/navigation';
-import { getFirebaseAuth } from '@/firebase/client';
+import { supabase } from '@/lib/supabaseClient';
 import { nativeNavigate } from '@/lib/utils';
 import { LeaveAnalytics } from '@/components/leave/LeaveAnalytics';
 import { Loader2, Download, Calendar } from 'lucide-react';
@@ -27,16 +27,15 @@ export default function LeaveAnalyticsPage() {
         // Check if user is admin
         const checkAdmin = async () => {
             try {
-                const auth = await getFirebaseAuth();
-                if (!auth.currentUser) {
+                const { data: { session } } = await supabase.auth.getSession();
+                if (!session?.user) {
                     nativeNavigate('/', router, 'LeaveAnalytics (No Auth)');
                     return;
                 }
 
-                const token = await auth.currentUser.getIdToken();
                 const response = await apiClient('/api/user/role', {
                     method: 'GET',
-                    headers: { 'Authorization': `Bearer ${token}` }
+                    headers: { 'Authorization': `Bearer ${session.access_token}` }
                 });
 
                 if (!response.success) {
@@ -65,10 +64,9 @@ export default function LeaveAnalyticsPage() {
 
         setLoading(true);
         try {
-            const auth = await getFirebaseAuth();
-            if (!auth.currentUser) throw new Error("Not authenticated");
+            const { data: { session } } = await supabase.auth.getSession();
+            if (!session?.user) throw new Error("Not authenticated");
 
-            const token = await auth.currentUser.getIdToken();
             const params = new URLSearchParams();
             if (startDate) params.append('startDate', startDate);
             if (endDate) params.append('endDate', endDate);
@@ -76,7 +74,7 @@ export default function LeaveAnalyticsPage() {
 
             const response = await apiClient(`/api/leave/analytics?${params.toString()}`, {
                 method: 'GET',
-                headers: { 'Authorization': `Bearer ${token}` }
+                headers: { 'Authorization': `Bearer ${session.access_token}` }
             });
 
             if (!response.success) {
@@ -96,16 +94,15 @@ export default function LeaveAnalyticsPage() {
         if (!user) return;
 
         try {
-            const auth = await getFirebaseAuth();
-            if (!auth.currentUser) throw new Error("Not authenticated");
+            const { data: { session } } = await supabase.auth.getSession();
+            if (!session?.user) throw new Error("Not authenticated");
 
-            const token = await auth.currentUser.getIdToken();
             const params = new URLSearchParams();
             if (startDate) params.append('startDate', startDate);
             if (endDate) params.append('endDate', endDate);
             if (department) params.append('department', department);
 
-            window.location.href = `/api/leave/export?${params.toString()}&token=${token}`;
+            window.location.href = `/api/leave/export?${params.toString()}&token=${session.access_token}`;
             toast.success('Export started');
         } catch (error) {
             console.error('Error exporting:', error);

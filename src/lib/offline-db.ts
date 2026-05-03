@@ -31,7 +31,7 @@ export async function openDB(): Promise<IDBDatabase> {
         const tasksStore = db.createObjectStore(STORES.TASKS, { keyPath: 'id' });
         tasksStore.createIndex('status', 'status', { unique: false });
         tasksStore.createIndex('assignedToId', 'assignedToId', { unique: false });
-        tasksStore.createIndex('createdAt', 'createdAt', { unique: false });
+        tasksStore.createIndex('created_at', 'created_at', { unique: false });
       }
 
       // Create tasks queue store for offline mutations
@@ -52,7 +52,7 @@ export async function openDB(): Promise<IDBDatabase> {
       // Create events queue store for offline mutations
       if (!db.objectStoreNames.contains(STORES.EVENTS_QUEUE)) {
         const eventsQueueStore = db.createObjectStore(STORES.EVENTS_QUEUE, { keyPath: 'id', autoIncrement: true });
-        eventsQueueStore.createIndex('eventId', 'eventId', { unique: false });
+        eventsQueueStore.createIndex('event_id', 'event_id', { unique: false });
         eventsQueueStore.createIndex('operation', 'operation', { unique: false });
         eventsQueueStore.createIndex('timestamp', 'timestamp', { unique: false });
       }
@@ -85,9 +85,9 @@ export interface OfflineTask {
   status: string;
   priority: string;
   assignedToId?: number;
-  dueDate?: string;
-  createdAt: string;
-  updatedAt: string;
+  due_date?: string;
+  created_at: string;
+  updated_at: string;
   version: number;
   lastSyncedAt?: string;
 }

@@ -5,11 +5,11 @@ export interface AutomationRulePolicy {
 }
 
 export interface InstitutionPolicy {
-    institutionId: string;
+    institution_id: string;
     rules: {
         [eventType: string]: AutomationRulePolicy;
     };
-    updatedAt?: any; // Timestamp
+    updated_at?: any; // Timestamp
 }
 
 export const SUPPORTED_AUTOMATION_EVENTS = [
@@ -21,7 +21,7 @@ export const SUPPORTED_AUTOMATION_EVENTS = [
 ];
 
 export const DEFAULT_GLOBAL_POLICY: InstitutionPolicy = {
-    institutionId: 'global',
+    institution_id: 'global',
     rules: {
         'task_status_suggestion': { enabled: true },
         'task_ready_signal': { enabled: true },

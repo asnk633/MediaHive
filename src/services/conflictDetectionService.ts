@@ -1,4 +1,3 @@
-import { getFirebaseAuth } from '@/firebase/client';
 import { apiClient } from '@/lib/apiClient';
 import {
     Conflict,
@@ -8,6 +7,7 @@ import {
     OffDayConflict
 } from '@/types/conflict';
 import { SystemEventService } from './systemEventService';
+import { supabase } from '@/lib/supabaseClient';
 
 /**
  * Conflict Detection Service
@@ -23,10 +23,10 @@ export const ConflictDetectionService = {
         date: Date
     ): Promise<LeaveConflict[]> => {
         try {
-            const response = await apiClient(`/api/leave/conflicts?userId=${userId}&date=${date.toISOString()}`, {
+            const response = await apiClient(`/api/leave/conflicts?date=${date.toISOString()}`, {
                 method: 'GET'
             });
-            
+
             return response.conflicts || [];
         } catch (error) {
             console.error('Error checking leave conflicts:', error);
@@ -42,7 +42,7 @@ export const ConflictDetectionService = {
             const response = await apiClient(`/api/system-events/off-day?date=${date.toISOString()}`, {
                 method: 'GET'
             });
-            
+
             return response.conflict || null;
         } catch (error) {
             console.error('Error checking media off-day:', error);
@@ -59,11 +59,22 @@ export const ConflictDetectionService = {
         endDate: Date
     ): Promise<TaskConflict[]> => {
         try {
-            const response = await apiClient(`/api/tasks/conflicts?userId=${userId}&startDate=${startDate.toISOString()}&endDate=${endDate.toISOString()}`, {
-                method: 'GET'
-            });
-            
-            return response.conflicts || [];
+            // Find tasks containing user in assigned_to JSONB array where due_date falls in range
+            const { data, error } = await supabase.from('tasks')
+                .select('id, title, due_date, status')
+                .contains('assigned_to', `[{"uid": "${userId}"}]`)
+                .gte('due_date', startDate.toISOString())
+                .lte('due_date', endDate.toISOString())
+                .neq('status', 'done');
+
+            if (error) throw error;
+
+            return (data || []).map(task => ({
+                taskId: task.id,
+                taskTitle: task.title,
+                due_date: new Date(task.due_date),
+                status: task.status
+            }));
         } catch (error) {
             console.error('Error checking task conflicts:', error);
             return [];
@@ -75,14 +86,14 @@ export const ConflictDetectionService = {
      */
     checkTaskAssignmentConflicts: async (
         assigneeId: string,
-        dueDate: Date
+        due_date: Date
     ): Promise<ConflictResult> => {
         const conflicts: Conflict[] = [];
 
         // Check 1: User on leave
         const leaveConflicts = await ConflictDetectionService.checkUserLeaveConflict(
             assigneeId,
-            dueDate
+            due_date
         );
 
         leaveConflicts.forEach(leave => {
@@ -103,7 +114,7 @@ export const ConflictDetectionService = {
         });
 
         // Check 2: Media off-day
-        const offDayConflict = await ConflictDetectionService.checkMediaOffDayConflict(dueDate);
+        const offDayConflict = await ConflictDetectionService.checkMediaOffDayConflict(due_date);
 
         if (offDayConflict) {
             const message = offDayConflict.reason === 'sunday'
@@ -152,7 +163,7 @@ export const ConflictDetectionService = {
                     tasks: [{
                         id: task.taskId,
                         title: task.taskTitle,
-                        dueDate: task.dueDate,
+                        due_date: task.due_date,
                         status: task.status
                     }]
                 }

@@ -22,14 +22,12 @@ export default function NotificationPreviewModal({ open, onClose, data }: Notifi
         title: data.title || 'No Title',
         message: data.body || 'No Content',
         type: 'announcement', // Default or make dynamic if form supports it
-        createdAt: { seconds: Date.now() / 1000 } as any, // Mock timestamp
-        isRead: false,
-        // Add other required fields for AppNotification
-        userId: 'preview-user',
+        created_at: { seconds: Date.now() / 1000 } as any, // Mock timestamp
+        read: false,
+        user_id: 'preview-user',
         priority: 'medium',
-        isArchived: false,
-        entityType: 'announcement',
-        entityId: 'preview-entity-id'
+        entity_type: 'announcement',
+        entity_id: 'preview-entity-id'
     };
 
     return (
@@ -50,8 +48,9 @@ export default function NotificationPreviewModal({ open, onClose, data }: Notifi
                 <p className="text-sm text-gray-400 mb-2 uppercase tracking-wider font-bold">Preview</p>
                 <div className="pointer-events-none">
                     <NotificationItem
-                        notification={mockNotification}
-                        onClick={() => { }}
+                        notification={mockNotification as any}
+                        onRead={() => { }}
+                        onArchive={() => { }}
                     />
                 </div>
             </div>

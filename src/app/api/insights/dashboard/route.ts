@@ -58,16 +58,16 @@ export async function GET(req: NextRequest) {
     // 1. Task Workload by Institution
     const taskWorkloadQuery = db
       .select({
-        institutionId: institutions.id,
+        institution_id: institutions.id,
         institutionName: institutions.name,
         taskCount: count(tasks.id)
       })
       .from(tasks)
-      .innerJoin(institutions, eq(tasks.institutionId, institutions.id))
+      .innerJoin(institutions, eq(tasks.institution_id, institutions.id))
       .where(and(
         tenantCondition ? eq(tasks.tenantId, parseInt(tenantId)) : undefined,
-        gte(tasks.createdAt, startDate),
-        lte(tasks.createdAt, endDate)
+        gte(tasks.created_at, startDate),
+        lte(tasks.created_at, endDate)
       ))
       .groupBy(institutions.id, institutions.name);
 
@@ -81,21 +81,21 @@ export async function GET(req: NextRequest) {
     // 2. TAT Metrics (Turnaround Time)
     const tatQuery = db
       .select({
-        createdAt: tasks.createdAt,
-        updatedAt: tasks.updatedAt
+        created_at: tasks.created_at,
+        updated_at: tasks.updated_at
       })
       .from(tasks)
       .where(and(
         tenantCondition ? eq(tasks.tenantId, parseInt(tenantId)) : undefined,
         eq(tasks.status, 'done'),
-        gte(tasks.createdAt, startDate),
-        lte(tasks.createdAt, endDate)
+        gte(tasks.created_at, startDate),
+        lte(tasks.created_at, endDate)
       ));
 
     const tatResult = await tatQuery;
     const tatDurations = tatResult.map((task: any) => {
-      const created = new Date(task.createdAt);
-      const updated = new Date(task.updatedAt);
+      const created = new Date(task.created_at);
+      const updated = new Date(task.updated_at);
       return (updated.getTime() - created.getTime()) / (1000 * 60 * 60 * 24); // in days
     });
 
@@ -163,13 +163,13 @@ export async function GET(req: NextRequest) {
     // 5. Media Output (files uploaded)
     const mediaQuery = db
       .select({
-        createdAt: files.createdAt
+        created_at: files.created_at
       })
       .from(files)
       .where(and(
         tenantCondition ? eq(files.tenantId, parseInt(tenantId)) : undefined,
-        gte(files.createdAt, startDate),
-        lte(files.createdAt, endDate)
+        gte(files.created_at, startDate),
+        lte(files.created_at, endDate)
       ));
 
     const mediaResult = await mediaQuery;
@@ -183,7 +183,7 @@ export async function GET(req: NextRequest) {
       const monthName = monthDate.toLocaleString('default', { month: 'short' });
       
       const monthCount = mediaResult.filter((file: any) => {
-        const fileDate = new Date(file.createdAt);
+        const fileDate = new Date(file.created_at);
         return fileDate.getMonth() === monthDate.getMonth() && 
                fileDate.getFullYear() === monthDate.getFullYear();
       }).length;
@@ -235,8 +235,8 @@ export async function GET(req: NextRequest) {
       .where(and(
         tenantCondition ? eq(tasks.tenantId, parseInt(tenantId)) : undefined,
         eq(tasks.priority, 'urgent'),
-        gte(tasks.createdAt, startDate),
-        lte(tasks.createdAt, endDate)
+        gte(tasks.created_at, startDate),
+        lte(tasks.created_at, endDate)
       ));
 
     const urgentTasksResult = await urgentTasksQuery;
@@ -259,7 +259,7 @@ export async function GET(req: NextRequest) {
       .where(and(
         tenantCondition ? eq(tasks.tenantId, parseInt(tenantId)) : undefined,
         eq(tasks.status, 'todo'),
-        lte(tasks.dueDate, new Date().toISOString())
+        lte(tasks.due_date, new Date().toISOString())
       ));
 
     const delayedTasksResult = await delayedTasksQuery;

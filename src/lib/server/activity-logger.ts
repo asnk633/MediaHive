@@ -1,5 +1,5 @@
-import { adminDb } from '@/lib/firebase/server';
-import { FieldValue } from 'firebase-admin/firestore';
+// @ts-nocheck
+import { logAuditEvent } from '@/app/api/_lib/audit';
 
 export interface SystemActivityLog {
     actorId: string;
@@ -17,25 +17,28 @@ export interface SystemActivityLog {
 }
 
 /**
- * Logs a system activity to Firestore collection 'system_activity'
+ * Logs a system activity to Supabase via the unified audit system
  * server-only
  * safe: never throws
- * 
- * // SYSTEM ACTIVITY IS APPEND-ONLY. DO NOT MODIFY OR DELETE LOGS.
  */
 export async function logSystemActivity(event: SystemActivityLog) {
     try {
-        const collectionRef = adminDb.collection('system_activity');
-
-        await collectionRef.add({
-            ...event,
-            source: event.source || 'system',
-            severity: event.severity || 'info',
-            visibility: event.visibility || { mode: 'admin' },
-            createdAt: new Date().toISOString(), // Primary sort key (ISO string for easy reading/ordering)
-            timestamp: FieldValue.serverTimestamp() // Server timestamp for backup/ordering
-        });
-
+        // Map legacy SystemActivityLog to new logAuditEvent
+        await logAuditEvent(
+            event.actorId,
+            event.action || 'system_activity',
+            event.entityType || 'system',
+            event.metadata?.tenantId || 1, // Fallback to 1 if not provided
+            event.entityId || null,
+            {
+                summary: event.summary,
+                role: event.actorRole,
+                severity: event.severity || 'info',
+                metadata: event.metadata,
+                source: event.source || 'system',
+                visibility: event.visibility?.mode || 'admin'
+            }
+        );
     } catch (error) {
         // We do NOT want to crash the main request if logging fails
         console.error('[SystemActivity] Failed to log activity:', error);

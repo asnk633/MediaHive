@@ -1,23 +1,26 @@
-// "use client" ensures this runs only on the client side
 "use client";
 
-import "@/lib/client-fetch-wrapper"; // side‑effect import for fetch wrapper
-import React, { createContext, useCallback, useContext, useEffect, useState } from "react";
+import React, {
+  createContext,
+  useCallback,
+  useContext,
+  useEffect,
+  useState,
+} from "react";
+
+import { supabase } from "@/lib/supabaseClient";
 import { useToast } from "@/components/ToastProvider";
-import { apiFromUiStatus, uiFromApiStatus, type UiStatus } from "./utils/uiMaps";
 import { useAuth } from "@/contexts/AuthContextProvider";
-import { formatDistanceToNow } from "date-fns";
-import { apiClient } from "@/lib/apiClient";
+import { apiFromUiStatus, uiFromApiStatus, type UiStatus } from "./utils/uiMaps";
 
 // ---------- Types ----------
 export type TaskLite = {
   id: string;
   title: string;
-  dueAt?: string | null;
+  due_date?: string | null;
   status?: UiStatus;
   priority?: "low" | "medium" | "high" | "urgent";
-  assignedTo?: string | null;
-  reviewStatus?: "pending_review" | "approved" | "rejected";
+  assigned_to?: string | null;
 };
 
 export type NotificationLite = {
@@ -31,324 +34,198 @@ export type NotificationLite = {
 export type EventLite = {
   id: string;
   title: string;
-  startAt: string;
-  endAt?: string | null;
-  visibility?: "all" | "team" | "branch" | "custom";
+  start_time: string;
+  end_time?: string | null;
   location?: string | null;
   description?: string | null;
-  isSystemEvent?: boolean;
 };
 
 type Store = {
   tasks: TaskLite[];
-  notifications: NotificationLite[];
-  events: EventLite[];
   loading: boolean;
+  error: string | null;
+  refresh: () => Promise<void>;
   createTask: (input: {
     title: string;
     description?: string;
-    dueAt?: string | null;
+    due_date?: string | null;
     priority?: TaskLite["priority"];
   }) => Promise<void>;
   updateTask: (
     id: string,
-    delta: Partial<Pick<TaskLite, "title" | "dueAt" | "status" | "priority" | "assignedTo" | "reviewStatus">>
+    delta: Partial<Pick<TaskLite, "title" | "due_date" | "status" | "priority" | "assigned_to">>
   ) => Promise<boolean>;
   deleteTask: (id: string) => Promise<boolean>;
-  createNotification: (input: { title: string; body: string; audience?: string }) => Promise<void>;
-  createEvent: (input: {
-    title: string;
-    description?: string;
-    startAt: string;
-    endAt?: string | null;
-    location?: string;
-  }) => Promise<void>;
-  error: string | null;
-  refresh: () => Promise<void>;
 };
 
 const Ctx = createContext<Store | null>(null);
+
 export function useClientData() {
   const v = useContext(Ctx);
   if (!v) throw new Error("useClientData must be used within provider");
   return v;
 }
 
-// ---------- Helper functions ----------
-function mapApiTask(x: any): TaskLite {
-  const status = uiFromApiStatus(x.status);
-  return {
-    id: x.id,
-    title: x.title,
-    dueAt: x.dueAt ?? null,
-    status,
-    priority: x.priority ?? "medium",
-    assignedTo: x.assignedTo ?? null,
-    reviewStatus: x.reviewStatus ?? "approved",
-  };
-}
-
-function mapApiEvent(x: any): EventLite {
-  return {
-    id: x.id,
-    title: x.title,
-    startAt: x.startAt,
-    endAt: x.endAt ?? null,
-    visibility: x.visibility ?? "team",
-    location: x.location ?? null,
-    description: x.description ?? null,
-    isSystemEvent: x.isSystemEvent,
-  };
-}
-
-/**
- * Returns authentication headers for dev environment.
- * - Prefers a JWT stored under `authToken`.
- * - Falls back to the seeded user (`localStorage.user`).
- */
-function getDevAuthHeaders(): Record<string, string> {
-  const headers: Record<string, string> = {};
-  if (typeof window !== "undefined") {
-    const token = localStorage.getItem("authToken");
-    if (token) {
-      headers["Authorization"] = `Bearer ${token}`;
-    } else {
-      try {
-        const user = JSON.parse(localStorage.getItem("user") || "{}");
-        if (user.id) headers["x-user-id"] = String(user.id);
-        if (user.institutionId) headers["x-institution-id"] = String(user.institutionId);
-      } catch { }
-    }
-  }
-  return headers;
-}
-
+// ---------- Provider ----------
 export function ClientDataProvider({ children }: { children: React.ReactNode }) {
-  // ----- Dev seed -----
-  useEffect(() => {
-    if (process.env.NODE_ENV !== "production") {
-      const existing = localStorage.getItem("user");
-      if (!existing) {
-        const devUser = {
-          id: 1,
-          email: "admin@thaiba.com",
-          fullName: "Admin User",
-          role: "admin",
-          institutionId: "1",
-        };
-        localStorage.setItem("user", JSON.stringify(devUser));
-      }
-    }
-  }, []);
-
   const { user } = useAuth();
-  const getDevAuthHeaders = (): Record<string, string> => {
-    if (typeof window !== 'undefined' && window.location.hostname === 'localhost') {
-      return { 'x-dev-auth': 'true' };
-    }
-    return {};
-  };
-
   const toast = useToast();
 
   const [tasks, setTasks] = useState<TaskLite[]>([]);
-  const [notifications, setNotifications] = useState<NotificationLite[]>([]);
-  const [events, setEvents] = useState<EventLite[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
+  // ---------- Load Tasks ----------
   const loadAllData = useCallback(async () => {
     if (!user) return;
+
     setLoading(true);
     setError(null);
+
     try {
-      const [tsk, evt, ntf] = await Promise.all([
-        apiClient("/api/tasks?institutionId=1", { headers: getDevAuthHeaders() }),
-        apiClient("/api/events?institutionId=1", { headers: getDevAuthHeaders() }),
-        apiClient("/api/notifications?institutionId=1", { headers: getDevAuthHeaders() })
-      ]);
-      if (tsk?.tasks) setTasks(tsk.tasks.map(mapApiTask));
-      if (evt?.events) setEvents(evt.events.map(mapApiEvent));
-      if (ntf?.notifications) setNotifications(ntf.notifications);
-    } catch (e) {
-      console.error("Context data load error:", e);
-      setError("Sync didn’t work");
+      const { data, error } = await supabase
+        .from("tasks")
+        .select("id, title, due_date, status, priority, assigned_to")
+        .eq("deleted", false)
+        .order("created_at", { ascending: false });
+
+      if (error) {
+        console.error("TASK LOAD ERROR:", error);
+        throw error;
+      }
+
+      setTasks(
+        (data || []).map((row) => ({
+          ...row,
+          status: uiFromApiStatus(row.status),
+        }))
+      );
+
+    } catch (err: any) {
+      console.error("LOAD FAILURE:", err.message);
+      setError(err.message);
     } finally {
       setLoading(false);
     }
   }, [user]);
 
-  // ----- Initial data load -----
   useEffect(() => {
     loadAllData();
   }, [loadAllData]);
 
-  // ----- CRUD helpers -----
+  // ---------- Create Task ----------
   const createTask = useCallback(
-    async (input: { title: string; description?: string; dueAt?: string | null; priority?: TaskLite["priority"] }) => {
-      if (!user) {
-        toast?.show("Not authenticated", "error");
-        return;
+    async (input: {
+      title: string;
+      description?: string;
+      due_date?: string | null;
+      priority?: TaskLite["priority"];
+    }) => {
+      const { data, error } = await supabase
+        .from("tasks")
+        .insert({
+          title: input.title,
+          description: input.description ?? "",
+          due_date: input.due_date ?? null,
+          priority: input.priority ?? "medium",
+          status: "todo",
+          created_by: { uid: user?.uid, name: user?.name || 'Unknown', role: user?.role || 'guest' },
+          institution_id: user?.institution_id
+        })
+        .select()
+        .single();
+
+      if (error) {
+        toast.show("Couldn't create task", "error");
+        throw error;
       }
 
-      const tempId = `tsk_temp_${Math.random().toString(36).slice(2, 8)}`;
-      const isGuest = user.role === "guest";
-      const optimistic: TaskLite = {
-        id: tempId,
-        title: input.title,
-        dueAt: input.dueAt ?? null,
-        status: "Pending",
-        priority: input.priority ?? "medium",
-        assignedTo: !isGuest ? (user.name || null) : null,
-        reviewStatus: isGuest ? "pending_review" : "approved",
-      };
-      setTasks(prev => [optimistic, ...prev]);
-      try {
-        const endpoint = isGuest ? "/api/guest-tasks/create" : "/api/tasks";
-        const body = isGuest
-          ? { title: input.title, dueDate: input.dueAt, assignedBy: Number(user.uid) }
-          : {
-            title: input.title,
-            description: input.description ?? "",
-            dueAt: input.dueAt ?? null,
-            priority: input.priority ?? "medium",
-            assignedTo: optimistic.assignedTo,
-            reviewStatus: optimistic.reviewStatus,
-            institutionId: "1",
-          };
-        const json = await apiClient(endpoint, {
-          method: "POST",
-          headers: { "Content-Type": "application/json", ...getDevAuthHeaders() },
-          body: JSON.stringify(body),
-        });
-        const real = json?.data;
-        if (real?.id) setTasks(prev => [{ ...mapApiTask(real) }, ...prev.filter(t => t.id !== tempId)]);
-        toast.show(isGuest ? "Task submitted for review" : "Task created", "success");
-      } catch (e) {
-        setTasks(prev => prev.filter(t => t.id !== tempId));
-        toast.show("Couldn't create task", "error");
-        throw e;
-      }
+      setTasks((prev) => [
+        {
+          ...data,
+          status: uiFromApiStatus(data.status),
+        },
+        ...prev,
+      ]);
+
+      toast.show("Task created", "success");
     },
     [toast, user]
   );
 
+  // ---------- Update Task ----------
   const updateTask = useCallback(
-    async (id: string, delta: Partial<Pick<TaskLite, "title" | "dueAt" | "status" | "priority" | "assignedTo" | "reviewStatus">>) => {
-      const prev = tasks;
-      const idx = prev.findIndex(t => t.id === id);
-      if (idx >= 0) setTasks(p => {
-        const c = [...p];
-        c[idx] = { ...c[idx], ...delta };
-        return c;
-      });
-      try {
-        const payload: any = {};
-        if (delta.title !== undefined) payload.title = delta.title;
-        if (delta.dueAt !== undefined) payload.dueAt = delta.dueAt;
-        if (delta.priority !== undefined) payload.priority = delta.priority;
-        if (delta.assignedTo !== undefined) payload.assignedTo = delta.assignedTo;
-        if (delta.reviewStatus !== undefined) payload.reviewStatus = delta.reviewStatus;
-        if (delta.status !== undefined) payload.status = apiFromUiStatus(delta.status as any);
-        const json = await apiClient(`/api/tasks/${id}`, {
-          method: "PATCH",
-          headers: { "Content-Type": "application/json", ...getDevAuthHeaders() },
-          body: JSON.stringify(payload),
-        });
-        const server = json?.data;
-        if (server?.id) setTasks(cur => cur.map(t => (t.id === id ? mapApiTask(server) : t)));
-        toast.show("Saved", "success");
-        return true;
-      } catch (e) {
-        setTasks(prev);
-        toast.show("Couldn't save changes", "error");
+    async (
+      id: string,
+      delta: Partial<Pick<TaskLite, "title" | "due_date" | "status" | "priority" | "assigned_to">>
+    ) => {
+      const payload: any = { ...delta };
+
+      if (delta.status !== undefined)
+        payload.status = apiFromUiStatus(delta.status);
+
+      const { data, error } = await supabase
+        .from("tasks")
+        .update(payload)
+        .eq("id", id)
+        .select()
+        .single();
+
+      if (error) {
+        toast.show("Couldn't update task", "error");
         return false;
       }
+
+      setTasks((prev) =>
+        prev.map((t) =>
+          t.id === id
+            ? {
+              ...data,
+              status: uiFromApiStatus(data.status),
+            }
+            : t
+        )
+      );
+
+      toast.show("Saved", "success");
+      return true;
     },
-    [tasks, toast]
+    [toast]
   );
 
-  const deleteTask = useCallback(async (id: string) => {
-    const prev = tasks;
-    setTasks(cur => cur.filter(t => t.id !== id));
-    try {
-      await apiClient(`/api/tasks/${id}?institutionId=1`, {
-        method: "DELETE",
-        headers: { ...getDevAuthHeaders() },
-      });
+  // ---------- Soft Delete ----------
+  const deleteTask = useCallback(
+    async (id: string) => {
+      const { error } = await supabase
+        .from("tasks")
+        .update({
+          deleted: true,
+          deleted_at: new Date().toISOString(),
+        })
+        .eq("id", id);
+
+      if (error) {
+        toast.show("Delete failed", "error");
+        return false;
+      }
+
+      setTasks((prev) => prev.filter((t) => t.id !== id));
       toast.show("Task deleted", "success");
       return true;
-    } catch (e) {
-      setTasks(prev);
-      toast.show("Delete failed", "error");
-      return false;
-    }
-  }, [tasks, toast]);
-
-  const createNotification = useCallback(async (input: { title: string; body: string; audience?: string }) => {
-    const tempId = `ntf_temp_${Math.random().toString(36).slice(2, 8)}`;
-    const optimistic: NotificationLite = { id: tempId, title: input.title, body: input.body, read: false };
-    setNotifications(prev => [optimistic, ...prev]);
-    try {
-      const json = await apiClient("/api/notifications", {
-        method: "POST",
-        headers: { "Content-Type": "application/json", ...getDevAuthHeaders() },
-        body: JSON.stringify({ title: input.title, body: input.body, audience: input.audience ?? "team", institutionId: "1" }),
-      });
-      const real = json?.data;
-      if (real?.id)
-        setNotifications(prev => [{ id: real.id, title: real.title, body: real.body, read: !!real.read }, ...prev.filter(n => n.id !== tempId)]);
-      toast.show("Notification sent", "success");
-    } catch (e) {
-      setNotifications(prev => prev.filter(n => n.id !== tempId));
-      toast.show("Couldn't send notification", "error");
-      throw e;
-    }
-  }, [toast]);
-
-  const createEvent = useCallback(async (input: { title: string; description?: string; startAt: string; endAt?: string | null; location?: string }) => {
-    const tempId = `evt_temp_${Math.random().toString(36).slice(2, 8)}`;
-    const optimistic: EventLite = { id: tempId, title: input.title, startAt: input.startAt, endAt: input.endAt ?? null, visibility: "team" };
-    setEvents(prev => [optimistic, ...prev]);
-    try {
-      const json = await apiClient("/api/events", {
-        method: "POST",
-        headers: { "Content-Type": "application/json", ...getDevAuthHeaders() },
-        body: JSON.stringify({
-          title: input.title,
-          description: input.description ?? "",
-          date: input.startAt, // API requires 'date'
-          startAt: input.startAt,
-          endAt: input.endAt ?? null,
-          location: input.location ?? "",
-          institutionId: "1",
-        }),
-      });
-      const real = json?.data;
-      if (real?.id)
-        setEvents(prev => [{ id: real.id, title: real.title, startAt: real.startAt, endAt: real.endAt ?? null, visibility: real.visibility ?? "team" }, ...prev.filter(e => e.id !== tempId)]);
-      toast.show("Event created", "success");
-    } catch (e) {
-      setEvents(prev => prev.filter(e => e.id !== tempId));
-      toast.show("Couldn't create event", "error");
-      throw e;
-    }
-  }, [toast]);
+    },
+    [toast]
+  );
 
   return (
     <Ctx.Provider
       value={{
         tasks,
-        notifications,
-        events,
         loading,
+        error,
+        refresh: loadAllData,
         createTask,
         updateTask,
         deleteTask,
-        createNotification,
-        createEvent,
-        error,
-        refresh: loadAllData,
       }}
     >
       {children}

@@ -33,8 +33,8 @@ async function main() {
       const [tenantResult] = await db.insert(tenants).values({
         name: "Thaiba Garden",
         domain: "thaiba.local",
-        createdAt: now(),
-        updatedAt: now(),
+        created_at: now(),
+        updated_at: now(),
       }).returning({ id: tenants.id });
       tenantId = tenantResult.id;
     } else {
@@ -43,17 +43,17 @@ async function main() {
 
     // 2) Check if institution already exists, if not insert it
     console.log(" - checking/inserting institution...");
-    let institutionId: number;
+    let institution_id: number;
     const existingInstitution = await db.select({id: institutions.id}).from(institutions).where(eq(institutions.name, "Thaiba Garden")).limit(1);
     if (existingInstitution.length === 0) {
       const [institutionResult] = await db.insert(institutions).values({
         name: "Thaiba Garden",
         tenantId: tenantId,
-        createdAt: now(),
+        created_at: now(),
       }).returning({ id: institutions.id });
-      institutionId = institutionResult.id;
+      institution_id = institutionResult.id;
     } else {
-      institutionId = existingInstitution[0].id;
+      institution_id = existingInstitution[0].id;
     }
 
     // 3) Check if departments already exist, if not insert them
@@ -84,7 +84,7 @@ async function main() {
         await db.insert(departments).values({
           name: deptName,
           tenantId: tenantId,
-          createdAt: now(),
+          created_at: now(),
         });
       }
       console.log(`  - inserted ${departmentNames.length} departments`);
@@ -131,7 +131,7 @@ async function main() {
         await db.insert(institutions).values({
           name: instName,
           tenantId: tenantId,
-          createdAt: now(),
+          created_at: now(),
         });
       }
       console.log(`  - inserted ${institutionNames.length} institutions`);
@@ -161,34 +161,34 @@ async function main() {
           email: "admin@thaiba.com",
           passwordHash: adminPasswordHash,
           fullName: "Admin User",
-          avatarUrl: null,
+          avatar_url: null,
           role: "admin",
-          institutionId,
+          institution_id,
           tenantId: tenantId,
-          createdAt: now(),
-          updatedAt: now(),
+          created_at: now(),
+          updated_at: now(),
         },
         {
           email: "john.doe@thaiba.com",
           passwordHash: teamPasswordHash,
           fullName: "John Doe",
-          avatarUrl: null,
+          avatar_url: null,
           role: "team",
-          institutionId,
+          institution_id,
           tenantId: tenantId,
-          createdAt: now(),
-          updatedAt: now(),
+          created_at: now(),
+          updated_at: now(),
         },
         {
           email: "guest@thaiba.com",
           passwordHash: guestPasswordHash,
           fullName: "Guest User",
-          avatarUrl: null,
+          avatar_url: null,
           role: "guest",
-          institutionId,
+          institution_id,
           tenantId: tenantId,
-          createdAt: now(),
-          updatedAt: now(),
+          created_at: now(),
+          updated_at: now(),
         },
       ]).returning({ id: users.id, email: users.email });
 
@@ -222,20 +222,20 @@ async function main() {
       // Add sample user-department associations
       if (allDepartments.length >= 3) {
         await db.insert(userDepartments).values([
-          { userId: adminId, departmentId: allDepartments[0].id, createdAt: now() },
-          { userId: adminId, departmentId: allDepartments[1].id, createdAt: now() },
-          { userId: johnId, departmentId: allDepartments[1].id, createdAt: now() },
-          { userId: johnId, departmentId: allDepartments[2].id, createdAt: now() },
+          { userId: adminId, department_id: allDepartments[0].id, created_at: now() },
+          { userId: adminId, department_id: allDepartments[1].id, created_at: now() },
+          { userId: johnId, department_id: allDepartments[1].id, created_at: now() },
+          { userId: johnId, department_id: allDepartments[2].id, created_at: now() },
         ]);
       }
       
       // Add sample user-institution associations
       if (allInstitutions.length >= 3) {
         await db.insert(userInstitutions).values([
-          { userId: adminId, institutionId: allInstitutions[0].id, createdAt: now() },
-          { userId: adminId, institutionId: allInstitutions[1].id, createdAt: now() },
-          { userId: johnId, institutionId: allInstitutions[1].id, createdAt: now() },
-          { userId: johnId, institutionId: allInstitutions[2].id, createdAt: now() },
+          { userId: adminId, institution_id: allInstitutions[0].id, created_at: now() },
+          { userId: adminId, institution_id: allInstitutions[1].id, created_at: now() },
+          { userId: johnId, institution_id: allInstitutions[1].id, created_at: now() },
+          { userId: johnId, institution_id: allInstitutions[2].id, created_at: now() },
         ]);
       }
       
@@ -256,15 +256,15 @@ async function main() {
           priority: "high",
           assignedToId: maybe(johnId),
           createdById: adminId,
-          institutionId,
+          institution_id,
           tenantId: tenantId,
-          dueDate: null,
+          due_date: null,
           reviewStatus: null,
           lastUpdatedBy: null,
           isArchived: 0,
           version: 1,
-          createdAt: now(),
-          updatedAt: now(),
+          created_at: now(),
+          updated_at: now(),
         },
         {
           title: "Prepare Playwright tests",
@@ -273,15 +273,15 @@ async function main() {
           priority: "medium",
           assignedToId: maybe(johnId),
           createdById: adminId,
-          institutionId,
+          institution_id,
           tenantId: tenantId,
-          dueDate: null,
+          due_date: null,
           reviewStatus: null,
           lastUpdatedBy: null,
           isArchived: 0,
           version: 1,
-          createdAt: now(),
-          updatedAt: now(),
+          created_at: now(),
+          updated_at: now(),
         },
       ] as any);
     }
@@ -295,12 +295,12 @@ async function main() {
         description: "Initial kickoff meeting for the Orchids feature work.",
         startTime: now(),
         endTime: new Date(Date.now() + 60 * 60 * 1000).toISOString(), // +1 hour
-        approvalStatus: "pending",
+        approval_status: "pending",
         createdById: adminId,
-        institutionId,
+        institution_id,
         tenantId: tenantId,
-        createdAt: now(),
-        updatedAt: now(),
+        created_at: now(),
+        updated_at: now(),
       });
     }
 
@@ -319,8 +319,8 @@ async function main() {
         category: null,
         ttl: null,
         readReceipt: false,
-        createdAt: now(),
-        updatedAt: now(),
+        created_at: now(),
+        updated_at: now(),
       } as any);
     }
 
@@ -332,9 +332,9 @@ async function main() {
         userId: johnId,
         checkIn: now(),
         checkOut: null,
-        institutionId,
+        institution_id,
         tenantId: tenantId,
-        createdAt: now(),
+        created_at: now(),
       });
     }
 
@@ -350,9 +350,9 @@ async function main() {
         folder: "docs",
         visibility: "all",
         uploadedById: adminId,
-        institutionId,
+        institution_id,
         tenantId: tenantId,
-        createdAt: now(),
+        created_at: now(),
       });
     }
 

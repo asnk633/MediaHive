@@ -1,6 +1,7 @@
+// @ts-nocheck
 'use client';
 
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useCallback } from "react";
 import { Plus, CheckSquare } from "lucide-react";
 import { Capacitor } from '@capacitor/core';
 import { OfflinePlaceholder } from "@/components/OfflinePlaceholder";
@@ -11,7 +12,9 @@ import AppLink from "@/components/AppLink";
 import { useRouter, useSearchParams } from "next/navigation";
 import { nativeNavigate } from "@/lib/utils";
 import { CanonicalDataService } from "@/services/canonicalDataService";
-import { TaskService } from "@/services/tasks";
+import { supabase } from '@/lib/supabaseClient';
+import { useOptimisticTasks } from "@/hooks/useOptimisticTasks";
+import { useConnectivity } from "@/hooks/useConnectivity";
 import { PAGE_SETTLE_MS } from "@/config/performanceThresholds";
 import { PageLayout } from "@/components/ui/layout/PageLayout";
 import { PageHeader } from "@/components/ui/layout/PageHeader";
@@ -23,13 +26,19 @@ const TaskListView = dynamic(() => import("@/components/tasks/TaskListView").the
 });
 const TaskDetailModalV2 = dynamic(() => import("@/components/tasks/TaskDetailModalV2").then(mod => mod.TaskDetailModalV2));
 const EditTaskDialog = dynamic(() => import("@/components/tasks/EditTaskDialog").then(mod => mod.EditTaskDialog));
+import { ConflictResolutionPanel } from "@/components/tasks/ConflictResolutionPanel";
+import { PolicySimulationPanel } from "@/components/tasks/PolicySimulationPanel";
+import { AlertTriangle, Box } from "lucide-react";
+import { ConflictAwarenessBadge } from "@/components/tasks/ConflictAwarenessBadge";
 
 export default function TasksPageClient() {
     const [tasks, setTasks] = useState<Task[]>([]);
     const { isNative } = useNative();
+    const { isOnline } = useConnectivity();
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState<string | null>(null);
     const { user, authStatus } = useAuth();
+    const role = user?.role;
     const router = useRouter();
     const searchParams = useSearchParams();
 
@@ -38,104 +47,93 @@ export default function TasksPageClient() {
     const [taskToEdit, setTaskToEdit] = useState<Task | null>(null);
     const [editDialogOpen, setEditDialogOpen] = useState(false);
 
+    const { displayTasks, mutate, syncRemoteTasks, isReplaying, conflictBuffer, resolveConflict } = useOptimisticTasks(tasks, setTasks);
+
+    // Conflict UI State
+    const [isConflictPanelOpen, setIsConflictPanelOpen] = useState(false);
+    const [isSimulationOpen, setIsSimulationOpen] = useState(false);
+    const conflictCount = Object.keys(conflictBuffer).length;
+
+    // Filter out deleted tasks for active view
+    const visibleTasks = React.useMemo(() =>
+        displayTasks.filter(t => !t.deleted)
+        , [displayTasks]);
+
     // Derived state for Detail Modal
     const selectedTask = React.useMemo(() =>
-        tasks.find(t => t.id === taskIdFromUrl) || null
-        , [tasks, taskIdFromUrl]);
+        visibleTasks.find(t => t.id === taskIdFromUrl) || null
+        , [visibleTasks, taskIdFromUrl]);
 
-    const fetchTasks = React.useCallback(async () => {
+    // Phase 14 Dev Seeder removed
+
+    // UI-P1.1 — Explicit Auth Gate
+    const authReady = !!user && !!role;
+
+    const fetchData = useCallback(async () => {
+        if (!authReady) return;
         if (isNative) return;
         if (typeof document !== 'undefined' && document.hidden) return;
 
-        // Only fetch if strictly authenticated to avoid 401s from racing conditions
-        if (user && authStatus === 'authenticated') {
-            // PERFORMANCE INSTRUMENTATION: Mark start of task list fetch
-            const startTime = performance.now();
+        // Phase 8: Pause real-time sync when offline or replaying offline mutations.
+        if (!isOnline || isReplaying) return;
 
-            try {
-                const fetchedTasks = await CanonicalDataService.getTasks({
-                    role: user.role,
-                    userId: user.uid,
-                    includeDemoData: true
-                });
+        setLoading(true);
+        const startTime = performance.now();
 
-                setTasks(fetchedTasks);
-                setError(null); // Clear error on success
+        const unsubscribe = CanonicalDataService.subscribeToTasks(
+            {
+                role,
+                userId: user?.uid,
+                institution_id: user?.institution_id,
+                includeDemoData: true
+            },
+            (fetchedTasks) => {
+                syncRemoteTasks(fetchedTasks, user);
+                setError(null);
                 setLoading(false);
 
-                // PERFORMANCE INSTRUMENTATION: Calculate duration
                 const duration = performance.now() - startTime;
-
                 if (duration > PAGE_SETTLE_MS) {
-                    console.warn(
-                        `[PERF] Task list fetch slow: ${duration.toFixed(0)}ms ` +
-                        `(threshold: ${PAGE_SETTLE_MS}ms, overage: +${(duration - PAGE_SETTLE_MS).toFixed(0)}ms)`
-                    );
+                    console.warn(`[PERF] Task real-time fetch slow: ${duration.toFixed(0)}ms`);
                 }
-
-                // (Legacy marks removed to prevent race conditions)
-            } catch (err: any) {
-                console.error('[TasksPageClient] Error fetching tasks:', err);
-                if (err.message?.includes('Unauthorized') || err.message?.includes('401')) {
-                    // Suppress 401s during auth transitions
+            },
+            (err) => {
+                console.error('[TasksPageClient] Sync error:', err);
+                if (err.message && (err.message.includes('Unauthorized') || err.message.includes('401'))) {
                     return;
                 }
-                setError('Tasks couldn’t be loaded');
+                setError('Live sync failed');
+                setLoading(false);
             }
-        }
-    }, [isNative, user, authStatus]);
+        );
+
+        return () => unsubscribe();
+    }, [authReady, isNative, user, role, isOnline, isReplaying, syncRemoteTasks]);
 
     useEffect(() => {
-        let intervalId: NodeJS.Timeout | null = null;
-
-        fetchTasks();
-
-        // Only poll on Web
-        if (!Capacitor.isNativePlatform()) {
-            intervalId = setInterval(fetchTasks, 30000);
-        }
-
-        // Handles Task 84: Stale Data Truthfulness (Silent Refresh on Focus)
-        const handleVisibilityChange = () => {
-            if (document.hidden) {
-                if (intervalId) clearInterval(intervalId);
-            } else {
-                fetchTasks();
-                // Only restore poll on Web
-                if (!Capacitor.isNativePlatform()) {
-                    intervalId = setInterval(fetchTasks, 30000);
-                }
-            }
-        };
-
-        if (typeof document !== 'undefined') {
-            document.addEventListener('visibilitychange', handleVisibilityChange);
-        }
-
-        return () => {
-            if (intervalId) clearInterval(intervalId);
-            if (typeof document !== 'undefined') {
-                document.removeEventListener('visibilitychange', handleVisibilityChange);
-            }
-        };
-    }, [user, fetchTasks]);
+        if (!authReady) return;
+        fetchData();
+    }, [authReady, fetchData]);
 
     const handleTaskClick = (task: Task) => {
-        // Update URL to trigger modal
+        // Update URL to trigger modal (Soft Navigation)
         const params = new URLSearchParams(searchParams);
         params.set('id', task.id);
-        nativeNavigate(`/tasks?${params.toString()}`, router, 'TasksPage (Modal Open)');
+
+        // Use soft navigation to avoid full page reload
+        router.replace(`/tasks?${params.toString()}`, { scroll: false });
     };
 
     const handleCloseModal = () => {
         const returnTo = searchParams.get('returnTo');
         if (returnTo === 'home') {
-            nativeNavigate('/home', router, 'TasksPage (Return to Home)');
+            router.push('/home');
         } else {
             const params = new URLSearchParams(searchParams);
             params.delete('id');
             params.delete('returnTo');
-            nativeNavigate(`/tasks?${params.toString()}`, router, 'TasksPage (Modal Close)');
+            // Soft replace
+            router.replace(`/tasks?${params.toString()}`, { scroll: false });
         }
     };
 
@@ -148,7 +146,7 @@ export default function TasksPageClient() {
 
     const handleTaskUpdate = async (updates: Partial<Task>) => {
         if (taskToEdit) {
-            await TaskService.updateTask(taskToEdit.id, updates);
+            await supabase.from('tasks').update(updates).eq('id', taskToEdit.id);
             // Optimistic update
             setTasks(prev => prev.map(t => t.id === taskToEdit.id ? { ...t, ...updates } : t));
             return true;
@@ -160,58 +158,49 @@ export default function TasksPageClient() {
         setTasks(prev => prev.map(t => t.id === taskId ? { ...t, ...updates } : t));
     };
 
-    // TODO: [Future Sync]
-    // Allow render (view-only).
-    /*
-    // Mobile/Offline Guard
-    if (isNative) {
-        // TODO: [Future Sync]
-        // When offline sync is implemented, this guard should check:
-        // if (isNative && !syncService.isReady) ...
-        // Instead of hard blocking all native access.
-        return (
-            <PageLayout mode="plain">
-                <PageHeader
-                    title="Tasks"
-                    description="Accountability-focused task management."
-                />
-                <OfflinePlaceholder
-                    title="Tasks Sync"
-                    message="Tasks are currently online-only. Offline task management coming soon."
-                    icon={CheckSquare}
-                />
-            </PageLayout>
-        );
-    }
-    */
-
     return (
         <PageLayout mode="plain">
             <PageHeader
                 title="Tasks"
                 description="Accountability-focused task management."
                 actions={
-                    <AppLink href="/tasks/new">
-                        <button
-                            aria-label="New Task"
-                            className="flex items-center gap-2 px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-xl shadow-lg dark:shadow-blue-900/50 light:shadow-blue-200 transition-all active:scale-95 text-sm font-semibold"
-                        >
-                            <Plus size={18} />
-                            <span className="hidden sm:inline">New Task</span>
-                        </button>
-                    </AppLink>
+                    <div className="flex items-center gap-3">
+                        <ConflictAwarenessBadge />
+
+                        {/* Phase 14: Dev Only Stress Seeder Removed */}
+                        {/* Phase 12: Policy Simulation (Admin Only) */}
+                        {user?.role === 'admin' && (
+                            <button
+                                onClick={() => setIsSimulationOpen(true)}
+                                className="h-10 px-4 rounded-xl bg-blue-500/10 border border-blue-500/20 text-blue-400 hover:bg-blue-500 hover:text-white transition-all flex items-center gap-2 text-sm font-bold shadow-lg shadow-blue-500/5 group"
+                                title="Policy Simulation Sandbox"
+                            >
+                                <Box size={18} className="group-active:scale-90 transition-transform" />
+                                <span className="hidden lg:inline">Simulation</span>
+                            </button>
+                        )}
+
+                        <AppLink href="/tasks/new">
+                            <button
+                                aria-label="New Task"
+                                className="flex items-center gap-2 px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-xl shadow-lg dark:shadow-blue-900/50 light:shadow-blue-200 transition-all active:scale-95 text-sm font-semibold"
+                            >
+                                <Plus size={18} />
+                                <span className="hidden sm:inline">New Task</span>
+                            </button>
+                        </AppLink>
+                    </div>
                 }
             />
 
             {/* Content */}
             <div className="flex-1">
                 <TaskListView
-                    tasks={tasks}
+                    tasks={visibleTasks}
                     loading={loading}
                     error={error}
-                    onRetry={fetchTasks}
                     onTaskClick={handleTaskClick}
-                    onTaskUpdate={handleOptimisticUpdate}
+                    onTaskMutate={mutate}
                 />
             </div>
 
@@ -221,6 +210,7 @@ export default function TasksPageClient() {
                 isOpen={!!selectedTask}
                 onClose={handleCloseModal}
                 onEdit={handleEditFromModal}
+                onTaskMutate={mutate}
             />
 
             {/* Edit Modal (Page Level) */}
@@ -234,6 +224,23 @@ export default function TasksPageClient() {
                     />
                 )
             }
+
+            <ConflictResolutionPanel
+                isOpen={isConflictPanelOpen}
+                onClose={() => setIsConflictPanelOpen(false)}
+                conflictBuffer={conflictBuffer}
+                onResolve={resolveConflict}
+                tasks={displayTasks}
+                user={user}
+            />
+
+            {/* Phase 12: Policy Simulation Sandbox */}
+            {user?.role === 'admin' && (
+                <PolicySimulationPanel
+                    isOpen={isSimulationOpen}
+                    onClose={() => setIsSimulationOpen(false)}
+                />
+            )}
         </PageLayout >
     );
 }

@@ -1,6 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { adminDb } from '@/lib/firebase/server';
-import { verifyUser } from '@/lib/server-utils';
+import { verifyUser, getSupabaseFromRequest } from '@/lib/server-utils';
 
 export const dynamic = 'force-dynamic';
 
@@ -15,67 +14,37 @@ export async function GET(request: NextRequest) {
             return NextResponse.json({ error: 'Forbidden' }, { status: 403 });
         }
 
-        const db = adminDb;
+        const supabase = getSupabaseFromRequest(request);
+        if (!supabase) return NextResponse.json({ error: 'Internal Error' }, { status: 500 });
+
+        const instId = user.institution_id;
+
         const headers = {
             'Cache-Control': 'public, s-maxage=300, stale-while-revalidate=60',
         };
 
-        // Scoping
-        const instId = user.institutionId;
-
-        let tasksQ = db.collection('tasks');
-        let eventsQ = db.collection('system-events'); // Note: system-events might be global, but usually scoped
-        let inventoryQ = db.collection('inventory');
-
-        if (instId) {
-            tasksQ = tasksQ.where('institutionId', '==', instId) as any;
-            // Events sometimes global, but if we have institution field:
-            eventsQ = eventsQ.where('institutionId', '==', instId) as any; // Might need loose check if field missing
-            inventoryQ = inventoryQ.where('institutionId', '==', instId) as any;
-        }
-
-        // Parallel aggregation queries
+        // Parallel aggregation queries using Supabase count
         const [
-            tasksCount,
-            inventoryCount,
-            lowStockCount,
-            outOfStockCount
+            { count: totalTasks },
+            { count: totalEvents },
+            { count: totalInventory },
+            { count: lowStock },
+            { count: outOfStock }
         ] = await Promise.all([
-            tasksQ.count().get(),
-            inventoryQ.count().get(),
-            instId ? db.collection('inventory').where('institutionId', '==', instId).where('status', '==', 'low').count().get()
-                : db.collection('inventory').where('status', '==', 'low').count().get(),
-            instId ? db.collection('inventory').where('institutionId', '==', instId).where('status', '==', 'out').count().get()
-                : db.collection('inventory').where('status', '==', 'out').count().get(),
+            supabase.from('tasks').select('*', { count: 'exact', head: true }).match(instId ? { institution_id: instId } : {}),
+            supabase.from('system_events').select('*', { count: 'exact', head: true }).match(instId ? { institution_id: instId } : {}),
+            supabase.from('inventory').select('*', { count: 'exact', head: true }).match(instId ? { institution_id: instId } : {}),
+            supabase.from('inventory').select('*', { count: 'exact', head: true }).match({ ...(instId ? { institution_id: instId } : {}), status: 'low' }),
+            supabase.from('inventory').select('*', { count: 'exact', head: true }).match({ ...(instId ? { institution_id: instId } : {}), status: 'out' })
         ]);
-
-        // Events might fail if 'system-events' doesn't have institutionId index, so we handle gracefully or assuming global for now 
-        // if user provided constraint implies it.
-        // Actually system events are usually rare. Let's just count them. If we strictly need scoping:
-        // const eventsSnapshot = instId ? await db.collection('system-events').where('institutionId', '==', instId).count().get() : ...
-        // SAFE FALLBACK: Count all if unsure, or Count scoped if robust.
-        // Let's assume Global for system-events for Admin View, or try scoped.
-        // Given Phase 1 requirement: "Align Institution Scoping... system_events"
-        // We MUST scope it.
-
-        let eventsCountVal = 0;
-        try {
-            const eventsQFinal = instId ? db.collection('system-events').where('institutionId', '==', instId) : db.collection('system-events');
-            const eventsSnap = await eventsQFinal.count().get();
-            eventsCountVal = eventsSnap.data().count;
-        } catch (e) {
-            console.warn('Events count failed (likely index):', e);
-            // Fallback to 0 or non-scoped? Safer to return 0 than crash.
-        }
-
 
         return NextResponse.json({
             overview: {
-                totalTasks: tasksCount.data().count,
-                totalEvents: eventsCountVal,
-                totalInventory: inventoryCount.data().count,
-                lowStock: lowStockCount.data().count,
-                outOfStock: outOfStockCount.data().count,
+                totalTasks: totalTasks || 0,
+                totalEvents: totalEvents || 0,
+                totalInventory: totalInventory || 0,
+                lowStock: lowStock || 0,
+                outOfStock: outOfStock || 0,
                 generatedAt: new Date().toISOString()
             }
         }, { headers });

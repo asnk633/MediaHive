@@ -60,8 +60,8 @@ export default function InventoryView() {
                 });
 
             // 2. Fetch Issues (Optional - Context Aware)
-            const issuesPromise = (user?.institutionId)
-                ? inventoryIssueService.getActiveIssues(user.institutionId)
+            const issuesPromise = (user?.institution_id)
+                ? inventoryIssueService.getActiveIssues(user.institution_id)
                     .catch(err => {
                         console.warn('Failed to fetch active issues (likely permission restricted):', err);
                         return [];
@@ -70,7 +70,7 @@ export default function InventoryView() {
 
             // 3. Fetch My Requests (Optional - Guest/Standard Only)
             const requestsPromise = (user && user.role !== 'admin' && user.role !== 'team')
-                ? inventoryRequestService.getMyRequests(user.uid, user.institutionId || '')
+                ? inventoryRequestService.getMyRequests(user.uid, user.institution_id || '')
                     .catch(err => {
                         console.warn('Failed to fetch my requests:', err);
                         return [];
@@ -202,7 +202,7 @@ export default function InventoryView() {
                                             Location: item.locationStr || '',
                                             Serial: item.serialNumber || '',
                                             Notes: item.notes || '',
-                                            LastUpdated: item.updatedAt ? new Date(item.updatedAt).toLocaleDateString() : ''
+                                            LastUpdated: item.updated_at ? new Date(item.updated_at).toLocaleDateString() : ''
                                         }));
                                         import('@/utils/export').then(mod => mod.downloadCSV(exportData, `inventory_${new Date().toISOString().split('T')[0]}.csv`));
                                     }}
@@ -233,10 +233,10 @@ export default function InventoryView() {
                     {isGuideOpen ? <ChevronUp className="w-4 h-4" /> : <ChevronDown className="w-4 h-4" />}
                 </CollapsibleTrigger>
                 <CollapsibleContent>
-                    <div className="px-4 pb-4 pt-1 grid grid-cols-1 md:grid-cols-2 gap-x-8 gap-y-2 text-xs text-slate-400 border-t border-white/5 bg-black/20">
+                    <div className="px-4 pb-4 pt-1 grid grid-cols-1 md:grid-cols-2 gap-x-8 gap-y-2 text-xs text-secondary border-t border-white/5 bg-black/20">
                         {Object.entries(INVENTORY_GUIDE).map(([cat, desc]) => (
                             <div key={cat} className="py-1">
-                                <span className="text-slate-200 font-semibold">{cat}:</span> <span className="text-slate-500">{desc}</span>
+                                <span className="text-white font-semibold">{cat}:</span> <span className="text-secondary">{desc}</span>
                             </div>
                         ))}
                     </div>

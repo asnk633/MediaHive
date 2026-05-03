@@ -8,11 +8,11 @@ export interface RolePolicyRule {
 
 export interface RolePolicy {
     scopeType: RolePolicyScopeType;
-    scopeId: string; // 'global' or institutionId
+    scopeId: string; // 'global' or institution_id
     rules: {
         [eventType: string]: RolePolicyRule;
     };
-    updatedAt?: any;
+    updated_at?: any;
 }
 
 export const ESCALATION_EVENTS = [

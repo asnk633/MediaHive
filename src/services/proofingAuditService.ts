@@ -8,14 +8,14 @@ export const ProofingAuditService = {
    * @param mediaId - The ID of the media file
    * @param actionType - The type of action performed
    * @param details - Additional details about the action
-   * @param institutionId - The institution ID for tenant isolation
+   * @param institution_id - The institution ID for tenant isolation
    */
   logProofingAction: async (
     userId: string,
     mediaId: string,
     actionType: 'comment_added' | 'status_approved' | 'status_changes_requested' | 'status_updated',
     details: any,
-    institutionId: string
+    institution_id: string
   ): Promise<void> => {
     try {
       await apiClient('/api/audit/proofing', {
@@ -26,7 +26,7 @@ export const ProofingAuditService = {
           resourceType: 'media',
           resourceId: mediaId,
           details: JSON.stringify(details),
-          institutionId,
+          institution_id,
           timestamp: new Date().toISOString()
         })
       });

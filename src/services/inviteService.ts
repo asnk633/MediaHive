@@ -1,4 +1,3 @@
-import { getFirebaseAuth } from '@/firebase/client';
 import { apiClient } from '@/lib/apiClient';
 import { isFeatureEnabled } from '@/app/featureFlags';
 
@@ -8,10 +7,10 @@ export interface Invite {
   email: string;
   role: 'admin' | 'team' | 'guest';
   invitedBy: string; // userId of the admin who created the invite
-  institutionId: string; // tenant isolation
-  departmentId?: string | null;
+  institution_id: string; // tenant isolation
+  department_id?: string | null;
   name?: string | null; // Added name
-  createdAt: Date;
+  created_at: Date;
   expiresAt: Date;
   used: boolean;
   usedBy?: string; // userId of the user who used the invite
@@ -23,9 +22,9 @@ export const createInvite = async (
   email: string,
   role: 'admin' | 'team' | 'guest',
   invitedByUserId: string,
-  institutionId: string | null = null,
-  departmentId: string | null = null,
-  name: string | null = null // Added name
+  institution_id: string,
+  department_id?: string,
+  name: string | null = null
 ): Promise<string> => {
   // Check if feature is enabled
   if (!isFeatureEnabled('inviteAccessLayer')) {
@@ -43,8 +42,8 @@ export const createInvite = async (
       email,
       role,
       invitedByUserId,
-      institutionId,
-      departmentId,
+      institution_id,
+      department_id,
       name
     })
   });
@@ -80,13 +79,13 @@ export const useInvite = async (inviteId: string, userId: string): Promise<void>
 };
 
 // Get all invites for an institution
-export const getInstitutionInvites = async (institutionId: string): Promise<Invite[]> => {
+export const getInstitutionInvites = async (institution_id: string): Promise<Invite[]> => {
   // Check if feature is enabled
   if (!isFeatureEnabled('inviteAccessLayer')) {
     return [];
   }
 
-  const response = await apiClient(`/api/invites?institutionId=${institutionId}`, {
+  const response = await apiClient(`/api/invites?institution_id=${institution_id}`, {
     method: 'GET'
   });
 

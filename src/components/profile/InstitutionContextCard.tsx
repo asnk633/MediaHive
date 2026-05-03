@@ -20,13 +20,13 @@ export function InstitutionContextCard({ user }: InstitutionContextCardProps) {
                 const localData = localStorage.getItem("thaiba-tasks:user");
                 if (localData) {
                     const parsed = JSON.parse(localData);
-                    if (parsed.departmentId) localDeptId = parsed.departmentId;
+                    if (parsed.department_id) localDeptId = parsed.department_id;
                 }
             } catch (e) {
                 console.warn("Error reading local storage context:", e);
             }
 
-            const targetDeptId = user?.departmentId || localDeptId;
+            const targetDeptId = user?.department_id || localDeptId;
 
             try {
                 // Priority 1: Department (Unit/Office) - Strict Resolution
@@ -45,29 +45,29 @@ export function InstitutionContextCard({ user }: InstitutionContextCardProps) {
                 }
 
                 // Priority 2: Institution - Only if NO Unit assigned yet
-                if (!name && user?.institutionId) {
-                    const resolvedName = await StructureService.getInstitutionName(user.institutionId);
+                if (!name && user?.institution_id) {
+                    const resolvedName = await StructureService.getInstitutionName(user.institution_id);
 
                     // CRITICAL: Block HQ for Guests as per user request
                     if (resolvedName && !resolvedName.includes("Thaiba Garden HQ")) {
-                        if (resolvedName !== user.institutionId) {
+                        if (resolvedName !== user.institution_id) {
                             name = `${resolvedName} (Institution)`;
                         } else {
-                            name = `${user.institutionId} (Institution)`;
+                            name = `${user.institution_id} (Institution)`;
                         }
                     } else {
                         // If it resolved to HQ, treat as invalid for Guest. 
-                        // But we don't set error yet, we try the next fallback (officialName).
+                        // But we don't set error yet, we try the next fallback (official_name).
                         console.warn("Guest context resolved to HQ, ignoring Institution ID.");
                     }
                 }
 
                 // Priority 3: Official Name (Fallback for Guest Accounts without linked Structure IDs)
-                if (!name && user?.officialName) {
+                if (!name && user?.official_name) {
                     // Use the exact official name as the context
                     // We check if it looks like an Org name vs just a person name? 
                     // Usually safe to append context.
-                    name = `${user.officialName} (Office / Unit)`;
+                    name = `${user.official_name} (Office / Unit)`;
                 }
 
                 // If still !name, then it remains null -> Error State.
@@ -79,7 +79,7 @@ export function InstitutionContextCard({ user }: InstitutionContextCardProps) {
             setInstName(name);
         };
         fetchName();
-    }, [user?.departmentId, user?.institutionId]);
+    }, [user?.department_id, user?.institution_id]);
 
     if (!user || user.role !== 'guest') return null;
 

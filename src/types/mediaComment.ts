@@ -7,7 +7,7 @@ export interface MediaComment {
   authorName: string; // Display name of the commenter
   authorRole: string; // Role of the commenter ('admin' | 'team' | 'guest')
   content: string; // The comment text
-  createdAt: any; // Timestamp
+  created_at: any; // Timestamp
 }
 
 export type ProofingStatus = 'pending' | 'approved' | 'changes_requested' | 'rejected';
@@ -26,5 +26,5 @@ export interface ExtendedDriveFile extends DriveFile {
 
   // Task and event linking properties
   taskId?: string;
-  eventId?: string;
+  event_id?: string;
 }

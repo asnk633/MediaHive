@@ -5,7 +5,7 @@ import { Dialog, DialogContent, DialogTrigger } from "@/components/ui/dialog";
 import { cn } from "@/lib/utils";
 
 interface InventoryGalleryProps {
-    images: { url: string; fileId: string }[];
+    images: { url: string; file_id: string }[];
     name: string;
 }
 

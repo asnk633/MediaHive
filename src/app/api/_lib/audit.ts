@@ -77,20 +77,24 @@ export async function logTaskDeleted(userId: string, tenantId: number | string, 
   return logAuditEvent(userId, 'delete', 'task', tenantId, taskId, details, ipAddress, userAgent);
 }
 
-export async function logEventCreated(userId: string, tenantId: number | string, eventId: string, details?: any, ipAddress?: string | null, userAgent?: string | null) {
-  return logAuditEvent(userId, 'create', 'event', tenantId, eventId, details, ipAddress, userAgent);
+export async function logEventCreated(userId: string, tenantId: number | string, event_id: string, details?: any, ipAddress?: string | null, userAgent?: string | null) {
+  return logAuditEvent(userId, 'create', 'event', tenantId, event_id, details, ipAddress, userAgent);
 }
 
-export async function logEventUpdated(userId: string, tenantId: number | string, eventId: string, details?: any, ipAddress?: string | null, userAgent?: string | null) {
-  return logAuditEvent(userId, 'update', 'event', tenantId, eventId, details, ipAddress, userAgent);
+export async function logEventUpdated(userId: string, tenantId: number | string, event_id: string, details?: any, ipAddress?: string | null, userAgent?: string | null) {
+  return logAuditEvent(userId, 'update', 'event', tenantId, event_id, details, ipAddress, userAgent);
 }
 
-export async function logEventDeleted(userId: string, tenantId: number | string, eventId: string, details?: any, ipAddress?: string | null, userAgent?: string | null) {
-  return logAuditEvent(userId, 'delete', 'event', tenantId, eventId, details, ipAddress, userAgent);
+export async function logEventDeleted(userId: string, tenantId: number | string, event_id: string, details?: any, ipAddress?: string | null, userAgent?: string | null) {
+  return logAuditEvent(userId, 'delete', 'event', tenantId, event_id, details, ipAddress, userAgent);
 }
 
-export async function logFileUploaded(userId: string, tenantId: number | string, fileId: string, details?: any, ipAddress?: string | null, userAgent?: string | null) {
-  return logAuditEvent(userId, 'upload', 'file', tenantId, fileId, details, ipAddress, userAgent);
+export async function logFileUploaded(userId: string, tenantId: number | string, file_id: string, details?: any, ipAddress?: string | null, userAgent?: string | null) {
+  return logAuditEvent(userId, 'upload', 'file', tenantId, file_id, details, ipAddress, userAgent);
+}
+
+export async function logFileDeleted(userId: string, tenantId: number | string, file_id: string, details?: any, ipAddress?: string | null, userAgent?: string | null) {
+  return logAuditEvent(userId, 'delete', 'file', tenantId, file_id, details, ipAddress, userAgent);
 }
 
 export async function logNotificationSent(userId: string, tenantId: number | string, notificationId: string, details?: any, ipAddress?: string | null, userAgent?: string | null) {

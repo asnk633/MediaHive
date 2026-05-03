@@ -41,7 +41,7 @@ export default function InventoryAddClient() {
         remarks: "",
         imageUrl: "",
         driveFileId: "",
-        images: [] as { url: string, fileId: string }[]
+        images: [] as { url: string, file_id: string }[]
     });
 
     // Image Upload State
@@ -76,7 +76,7 @@ export default function InventoryAddClient() {
             const metadata: any = {
                 name: `INV_${Date.now()}_${originalFile.name}`,
                 type: 'image',
-                uploadedBy: user?.uid,
+                uploaded_by: user?.uid,
                 uploadedByName: user?.name || user?.email,
                 folder: 'Photos',
                 subfolder: 'Inventory Photos',
@@ -88,7 +88,7 @@ export default function InventoryAddClient() {
             if (result.success) {
                 const newImage = {
                     url: result.viewLink,
-                    fileId: result.fileId
+                    file_id: result.file_id
                 };
 
                 setFormData(prev => {
@@ -97,7 +97,7 @@ export default function InventoryAddClient() {
                     return {
                         ...prev,
                         imageUrl: prev.imageUrl || newImage.url, // Set main image if empty
-                        driveFileId: prev.driveFileId || newImage.fileId,
+                        driveFileId: prev.driveFileId || newImage.file_id,
                         images: updatedImages
                     };
                 });
@@ -122,16 +122,16 @@ export default function InventoryAddClient() {
                 ...prev,
                 images: newImages,
                 imageUrl: nextMain ? nextMain.url : "",
-                driveFileId: nextMain ? nextMain.fileId : ""
+                driveFileId: nextMain ? nextMain.file_id : ""
             };
         });
     };
 
-    const handleMainImageSet = (image: { url: string, fileId: string }) => {
+    const handleMainImageSet = (image: { url: string, file_id: string }) => {
         setFormData(prev => ({
             ...prev,
             imageUrl: image.url,
-            driveFileId: image.fileId
+            driveFileId: image.file_id
         }));
     };
 

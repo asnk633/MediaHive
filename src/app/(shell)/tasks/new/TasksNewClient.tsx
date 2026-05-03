@@ -10,7 +10,8 @@ import { Button } from "@/components/ui/button";
 import { cn, nativeNavigate } from "@/lib/utils";
 import { format } from "date-fns";
 
-import { TaskService } from '@/services/tasks';
+import { supabase } from '@/lib/supabaseClient';
+import { v4 as uuidv4 } from 'uuid';
 import { UserService } from '@/services/userService';
 import { StructureService } from '@/services/structureService';
 import { apiClient } from '@/lib/apiClient';
@@ -21,7 +22,7 @@ import { COPY } from '@/lib/copy';
 export default function TasksNewClient() {
     const router = useRouter();
     const searchParams = typeof window !== 'undefined' ? new URLSearchParams(window.location.search) : new URLSearchParams();
-    const campaignId = searchParams.get('campaignId');
+    const campaign_id = searchParams.get('campaign_id');
     const { user } = useAuth();
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState<string | null>(null);
@@ -29,12 +30,12 @@ export default function TasksNewClient() {
     const [campaignName, setCampaignName] = useState<string>('');
 
     useEffect(() => {
-        if (campaignId) {
-            apiClient<{ campaign: { name: string } }>(`/api/campaigns/${campaignId}`)
+        if (campaign_id) {
+            apiClient<{ campaign: { name: string } }>(`/api/campaigns/${campaign_id}`)
                 .then(res => setCampaignName(res.campaign.name))
                 .catch(err => console.error("Failed to fetch campaign name", err));
         }
-    }, [campaignId]);
+    }, [campaign_id]);
 
     // Organization Data
     const [departmentsList, setDepartmentsList] = useState<{ id: string; name: string }[]>([]);
@@ -44,7 +45,7 @@ export default function TasksNewClient() {
 
     const [title, setTitle] = useState('');
     const [description, setDescription] = useState('');
-    const [dueDate, setDueDate] = useState<Date | undefined>(undefined);
+    const [due_date, setDueDate] = useState<Date | undefined>(undefined);
     const [priority, setPriority] = useState<'low' | 'medium' | 'high'>('medium');
     const [assignedToIds, setAssignedToIds] = useState<string[]>([]);
     const [files, setFiles] = useState<File[]>([]);
@@ -52,10 +53,10 @@ export default function TasksNewClient() {
 
     // Create As Logic - Persist in Session (Batch Entry optimization)
     const canCreateOnBehalf = user.role === 'admin' || user.role === 'team';
-    const [createAs, setCreateAs] = useState<'myself' | 'onBehalfOf'>(() => {
+    const [createAs, setCreateAs] = useState<'myself' | 'on_behalf_of'>(() => {
         if (typeof window !== 'undefined') {
             const saved = sessionStorage.getItem('task-create-as-pref');
-            return (saved === 'myself' || saved === 'onBehalfOf') ? saved : 'myself';
+            return (saved === 'myself' || saved === 'on_behalf_of') ? saved : 'myself';
         }
         return 'myself';
     });
@@ -104,7 +105,7 @@ export default function TasksNewClient() {
                 const parsed = JSON.parse(saved);
                 if (parsed.title) setTitle(parsed.title);
                 if (parsed.description) setDescription(parsed.description);
-                if (parsed.dueDate) setDueDate(parsed.dueDate);
+                if (parsed.due_date) setDueDate(parsed.due_date);
             } catch (e) {
                 console.error('Failed to restore draft', e);
             }
@@ -118,12 +119,12 @@ export default function TasksNewClient() {
                 localStorage.setItem('mediahive_draft_task', JSON.stringify({
                     title,
                     description,
-                    dueDate
+                    due_date
                 }));
             }
         }, 1000);
         return () => clearTimeout(timeoutId);
-    }, [title, description, dueDate]);
+    }, [title, description, due_date]);
 
     // Auto-fill from user defaults
     // We use a separate effect for this to ensure it runs when either User defaults exist OR when lists are loaded.
@@ -135,8 +136,8 @@ export default function TasksNewClient() {
 
         // Helper to find dept/inst
         // Check Explicit IDs first (New standard), then explicit defaults, then name matches
-        const userDeptId = user.departmentId || user.defaultDepartment;
-        const userInstId = user.institutionId || user.defaultInstitution;
+        const userDeptId = user.department_id || user.department_id || user.department_id;
+        const userInstId = user.institution_id || user.institution_id || user.default_institution || user.institution_id;
 
         // 1. Auto-select if ONLY one option exists (Friction Removal)
         const totalOptions = departmentsList.length + institutionsList.length;
@@ -168,7 +169,7 @@ export default function TasksNewClient() {
             }
         }
         // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [user.departmentId, user.institutionId, user.defaultDepartment, user.defaultInstitution, departmentsList.length, institutionsList.length]);
+    }, [user.department_id, user.institution_id, user.department_id, user.institution_id, departmentsList.length, institutionsList.length]);
 
     const isGuest = user?.role?.toLowerCase() === 'guest';
     const isAdmin = user?.role === 'admin';
@@ -198,7 +199,7 @@ export default function TasksNewClient() {
     };
 
     const submitTask = async () => {
-        if (!title || !dueDate || !selectedOrgId) {
+        if (!title || !due_date || !selectedOrgId) {
             toast.error(COPY.errors.taskMissing);
             return;
         }
@@ -233,7 +234,7 @@ export default function TasksNewClient() {
             // Prepare On Behalf Of Data
             let onBehalfOfData = undefined;
             // Only process if toggle is Active AND we have a selected ID
-            if (canCreateOnBehalf && createAs === 'onBehalfOf' && onBehalfOfId) {
+            if (canCreateOnBehalf && createAs === 'on_behalf_of' && onBehalfOfId) {
                 if (onBehalfOfId.startsWith('dept_')) {
                     const id = onBehalfOfId.split('_')[1];
                     const dept = departmentsList.find(d => d.id === id);
@@ -246,58 +247,81 @@ export default function TasksNewClient() {
             }
 
             // Resolve Structure IDs
-            let departmentId = null;
-            let institutionId = undefined;
+            let department_id = null;
+            let institution_id = undefined;
             let departmentName = '';
 
             if (selectedOrgId.startsWith('dept_')) {
                 const id = selectedOrgId.split('_')[1];
-                departmentId = id;
+                department_id = id;
                 const d = departmentsList.find(dep => dep.id === id);
                 departmentName = d ? d.name : '';
             } else if (selectedOrgId.startsWith('inst_')) {
                 const id = selectedOrgId.split('_')[1];
-                institutionId = id;
-                departmentId = null;
+                institution_id = id;
+                department_id = null;
             }
 
-            const { id: newTaskId } = await TaskService.addTask({
+            const newTaskData = {
                 title,
                 description,
-                status: isGuest ? 'pending' : 'todo', // Guest defaults to Pending
+                status: isGuest ? 'pending' : 'todo',
                 priority: isGuest ? 'low' : priority,
-                dueDate: dueDate ? dueDate.toISOString() : new Date().toISOString(), // Fallback to now if somehow empty
+                due_date: due_date ? due_date.toISOString() : new Date().toISOString(),
                 department: departmentName,
-                departmentId,
-                institutionId,
-                assignedBy: {
+                department_id: department_id,
+                institution_id: institution_id,
+                assigned_by: {
                     uid: user.uid,
-                    name: user.officialName || user.name || user.email || 'Unknown',
+                    name: user.official_name || user.name || user.email || 'Unknown',
                     role: user.role
                 },
-                createdBy: {
+                created_by: {
                     uid: user.uid,
-                    name: user.officialName || user.name || user.email || 'Unknown',
+                    name: user.official_name || user.name || user.email || 'Unknown',
                     role: user.role
                 },
-                assignedTo: finalAssignedTo.length > 0 ? finalAssignedTo : undefined,
-                campaignId: campaignId || undefined,
-                onBehalfOf: onBehalfOfData
-            } as any); // Cast because TaskService might be strict
+                assigned_to: finalAssignedTo.length > 0 ? finalAssignedTo : undefined,
+                campaign_id: campaign_id || undefined,
+                on_behalf_of: onBehalfOfData
+            };
 
-            // Upload Attachments
+            const { data: newTask, error: insertError } = await supabase.from('tasks').insert([newTaskData]).select('id').single();
+            if (insertError || !newTask) { throw new Error(insertError?.message || "Failed to create task"); }
+            const newTaskId = newTask.id;
+
+            // Upload Attachments natively
             if (files.length > 0) {
                 setUploadProgress(`0/${files.length}`);
                 let uploadedCount = 0;
+                let finalFiles = [];
                 for (const file of files) {
                     try {
-                        await TaskService.uploadAttachment(newTaskId, file, 'requester-inputs');
+                        const fileExt = file.name.split('.').pop();
+                        const fileName = `${uuidv4()}.${fileExt}`;
+                        const filePath = `${newTaskId}/${fileName}`;
+                        // Assuming bucket is named 'task_attachments'
+                        await supabase.storage.from('task_attachments').upload(filePath, file);
+                        const { data: publicUrlData } = supabase.storage.from('task_attachments').getPublicUrl(filePath);
+
+                        finalFiles.push({
+                            id: uuidv4(),
+                            name: file.name,
+                            mimeType: file.type,
+                            size: file.size,
+                            url: publicUrlData.publicUrl,
+                            uploaded_by: { uid: user.uid, name: user.name, role: user.role },
+                            uploaded_at: new Date().toISOString(),
+                            section: 'requester-inputs'
+                        });
                         uploadedCount++;
                         setUploadProgress(`${uploadedCount}/${files.length}`);
                     } catch (e) {
                         console.error(`Failed to upload ${file.name}`, e);
-                        // Don't halt the whole process, just log
                     }
+                }
+                if (finalFiles.length > 0) {
+                    await supabase.from('tasks').update({ files: finalFiles }).eq('id', newTaskId);
                 }
             }
 
@@ -309,14 +333,14 @@ export default function TasksNewClient() {
 
                     await Promise.all(admins.map(admin =>
                         NotificationService.createNotification({
-                            userId: admin.uid,
-                            sourceUserId: user.uid,
+                            user_id: admin.uid,
+                            created_by: user.uid,
                             type: 'task_assigned', // Using valid type
                             title: 'New Pending Task',
-                            message: `${user.officialName || user.name || user.email || 'Guest'} created "${title}"`,
-                            entityType: 'task',
-                            entityId: newTaskId,
-                            actionUrl: `/tasks/view?id=${newTaskId}`,
+                            message: `${user.official_name || user.name || user.email || 'Guest'} created "${title}"`,
+                            entity_type: 'task',
+                            entity_id: newTaskId,
+                            action_url: `/tasks/view?id=${newTaskId}`,
                             priority: 'medium'
                         })
                     ));
@@ -381,7 +405,7 @@ export default function TasksNewClient() {
             if (e.altKey && (e.key === 'ArrowRight' || e.key === 'ArrowLeft')) {
                 e.preventDefault(); // Prevent browser nav (Alt+Left is Back)
 
-                const current = dueDate ? new Date(dueDate) : new Date();
+                const current = due_date ? new Date(due_date) : new Date();
                 // If invalid date, start today
                 if (isNaN(current.getTime())) {
                     setDueDate(new Date());
@@ -404,7 +428,7 @@ export default function TasksNewClient() {
         };
         window.addEventListener('keydown', handleDateShortcut);
         return () => window.removeEventListener('keydown', handleDateShortcut);
-    }, [dueDate]);
+    }, [due_date]);
 
     return (
         <PageLayout mode="plain">
@@ -463,8 +487,8 @@ export default function TasksNewClient() {
                                     </button>
                                     <button
                                         type="button"
-                                        onClick={() => setCreateAs('onBehalfOf')}
-                                        className={`flex-1 py-2 rounded-lg text-sm font-medium transition-all ${createAs === 'onBehalfOf' ? 'bg-blue-600 text-white shadow-lg' : 'text-gray-400 hover:text-white'}`}
+                                        onClick={() => setCreateAs('on_behalf_of')}
+                                        className={`flex-1 py-2 rounded-lg text-sm font-medium transition-all ${createAs === 'on_behalf_of' ? 'bg-blue-600 text-white shadow-lg' : 'text-gray-400 hover:text-white'}`}
                                     >
                                         On Behalf Of
                                     </button>
@@ -509,19 +533,19 @@ export default function TasksNewClient() {
                                                 variant={"outline"}
                                                 className={cn(
                                                     "w-full bg-white/5 hover:bg-white/10 pl-10 pr-4 py-3 h-auto rounded-xl border border-[#ffffff1a] focus:border-blue-500/50 hover:text-white text-left font-normal justify-start relative text-sm text-white",
-                                                    !dueDate && "text-white/40"
+                                                    !due_date && "text-white/40"
                                                 )}
                                             >
                                                 <div className="absolute left-3 top-1/2 -translate-y-1/2 flex items-center pointer-events-none text-gray-500">
                                                     <CalendarIcon size={14} />
                                                 </div>
-                                                {dueDate ? format(dueDate, "dd/MM/yyyy") : <span>{COPY.validation.pickDate}</span>}
+                                                {due_date ? format(due_date, "dd/MM/yyyy") : <span>{COPY.validation.pickDate}</span>}
                                             </Button>
                                         </PopoverTrigger>
                                         <PopoverContent className="w-auto p-0 bg-[#10111a] border-[#ffffff1a] text-white z-[200]" align="start">
                                             <Calendar
                                                 mode="single"
-                                                selected={dueDate}
+                                                selected={due_date}
                                                 onSelect={setDueDate}
                                                 initialFocus
                                                 fromDate={new Date()}
@@ -606,7 +630,7 @@ export default function TasksNewClient() {
                                 )}
 
                                 {/* Identity Selector (On Behalf Of Mode) - Replaces Department */}
-                                {canCreateOnBehalf && createAs === 'onBehalfOf' && (
+                                {canCreateOnBehalf && createAs === 'on_behalf_of' && (
                                     <div className="space-y-2 animate-in fade-in zoom-in-95 duration-200">
                                         <label className="block text-sm font-medium text-blue-400 mb-2">
                                             Publishing On Behalf Of <span className="text-white/40 text-xs">(Identity)</span>
@@ -774,7 +798,7 @@ export default function TasksNewClient() {
                                     </div>
                                     <div className="text-xs text-gray-500">
                                         Assigning as <span className="text-gray-300">
-                                            {createAs === 'onBehalfOf' ? (
+                                            {createAs === 'on_behalf_of' ? (
                                                 onBehalfOfId ? ( // Lookup name
                                                     departmentsList.find(d => `dept_${d.id}` === onBehalfOfId)?.name ||
                                                     institutionsList.find(i => `inst_${i.id}` === onBehalfOfId)?.name || 'Unknown'

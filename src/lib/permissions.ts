@@ -1,5 +1,13 @@
 export type Role = 'admin' | 'team' | 'guest';
 
+export function resolveUserRole(user: any): Role {
+    if (!user) return 'guest';
+    const role = (user.role || '').toLowerCase();
+    if (role === 'admin') return 'admin';
+    if (role === 'team') return 'team';
+    return 'guest';
+}
+
 export type Permission =
     | 'read:tasks'
     | 'create:tasks'
@@ -58,14 +66,14 @@ export function canEditTask(user: any, task: any): boolean {
 
     // Team -> only if assigned to them
     if (role === 'team' || user.isTeam) {
-        if (!task.assignedTo) return false;
-        const assignees = Array.isArray(task.assignedTo) ? task.assignedTo : [task.assignedTo];
+        if (!task.assigned_to) return false;
+        const assignees = Array.isArray(task.assigned_to) ? task.assigned_to : [task.assigned_to];
         return assignees.some((a: any) => getUserId(a) === userId);
     }
 
     // Guest -> only if they created it
-    // Note: guest-created tasks usually map 'createdBy' to them
-    const creatorId = getUserId(task.createdBy);
+    // Note: guest-created tasks usually map 'created_by' to them
+    const creatorId = getUserId(task.created_by);
     return creatorId === userId;
 }
 
@@ -79,8 +87,8 @@ export function canChangeStatus(user: any, task: any): boolean {
 
     // Team -> yes (if assigned)
     if (role === 'team' || user.isTeam) {
-        if (!task.assignedTo) return false;
-        const assignees = Array.isArray(task.assignedTo) ? task.assignedTo : [task.assignedTo];
+        if (!task.assigned_to) return false;
+        const assignees = Array.isArray(task.assigned_to) ? task.assigned_to : [task.assigned_to];
         return assignees.some((a: any) => getUserId(a) === userId);
     }
 
@@ -96,12 +104,8 @@ export function canEditPriority(user: any, task: any): boolean {
     // Admin -> yes
     if (role === 'admin' || user.isAdmin) return true;
 
-    // Team -> yes (if assigned)
-    if (role === 'team' || user.isTeam) {
-        if (!task.assignedTo) return false;
-        const assignees = Array.isArray(task.assignedTo) ? task.assignedTo : [task.assignedTo];
-        return assignees.some((a: any) => getUserId(a) === userId);
-    }
+    // Team -> yes (Global Permission)
+    if (role === 'team' || user.isTeam) return true;
 
     // Guest -> never
     return false;
@@ -110,19 +114,12 @@ export function canEditPriority(user: any, task: any): boolean {
 export function canAssignTask(user: any, targetUserId?: string): boolean {
     if (!user) return false;
     const role = user.role?.toLowerCase() || 'guest';
-    const currentUserId = getUserId(user);
 
     // Admin -> always
     if (role === 'admin' || user.isAdmin) return true;
 
-    // Team -> only to self
-    if (role === 'team' || user.isTeam) {
-        // If targetUserId is provided, it must match currentUserId
-        if (targetUserId) return targetUserId === currentUserId;
-        // If simply asking "can I assign tasks?", the answer is "yes (but only to self)"
-        // But for UI checks without target, usually we want to know if they have assignment capabilities
-        return true;
-    }
+    // Team -> always (Global Permission)
+    if (role === 'team' || user.isTeam) return true;
 
     // Guest -> never
     return false;

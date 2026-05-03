@@ -63,7 +63,7 @@ export const SmartActivityFeed: React.FC = () => {
 
         if (filter === 'my_activity') {
             // Actions performed BY me
-            if (act.performedBy === user?.name) return true;
+            if (act.performed_by === user?.name) return true;
             // Actions ON things assigned to me (heuristic: check metadata or title)
             // Ideally backend provides 'targetUserId' but standard SystemActivity might not have it normalized.
             // We check if title contains "assigned to [My Name]"
@@ -163,7 +163,7 @@ export const SmartActivityFeed: React.FC = () => {
                                     <div className="flex-1 min-w-0">
                                         <div className="flex justify-between items-start gap-2">
                                             <p className="text-sm font-medium text-foreground leading-normal">
-                                                <span className="font-bold">{act.performedBy}</span> <span className="text-muted-foreground font-normal">{act.title.replace(act.performedBy, '').trim()}</span>
+                                                <span className="font-bold">{act.performed_by}</span> <span className="text-muted-foreground font-normal">{act.title.replace(act.performed_by, '').trim()}</span>
                                             </p>
                                             <span className="text-[10px] text-muted-foreground whitespace-nowrap bg-surface px-2 py-1 rounded-full border border-soft group-hover:border-primary/20 transition-colors">
                                                 {format(getDate(act.timestamp), 'h:mm a')}

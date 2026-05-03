@@ -18,16 +18,16 @@ export const GuestActivityFeed = ({ tasks }: GuestActivityFeedProps) => {
     // 2. No user names, no chatter.
     const activities = tasks
         .sort((a, b) => {
-            const dateA = a.updatedAt || a.createdAt;
-            const dateB = b.updatedAt || b.createdAt;
+            const dateA = a.updated_at || a.created_at;
+            const dateB = b.updated_at || b.created_at;
             const timeA = (dateA as any)?.seconds || new Date(dateA as any).getTime() / 1000;
             const timeB = (dateB as any)?.seconds || new Date(dateB as any).getTime() / 1000;
             return timeB - timeA;
         })
         .slice(0, 5) // Last 5 updates
         .map(task => {
-            const isNew = !task.updatedAt || (task.createdAt === task.updatedAt);
-            const dateVal = task.updatedAt || task.createdAt;
+            const isNew = !task.updated_at || (task.created_at === task.updated_at);
+            const dateVal = task.updated_at || task.created_at;
             const date = (dateVal as any)?.seconds ? new Date((dateVal as any)?.seconds * 1000) : new Date(dateVal as any);
 
             // Infer action

@@ -6,7 +6,7 @@ async function main() {
         {
             name: 'Thaiba Garden Media',
             tenantId: 1, // Add missing tenantId
-            createdAt: new Date().toISOString(),
+            created_at: new Date().toISOString(),
         }
     ];
 

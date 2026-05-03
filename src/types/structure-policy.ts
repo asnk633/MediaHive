@@ -8,11 +8,11 @@ export interface AutomationRulePolicy {
 
 export interface StructurePolicy {
     scopeType: PolicyScopeType;
-    scopeId: string; // 'global', institutionId, or departmentId
+    scopeId: string; // 'global', institution_id, or department_id
     rules: {
         [eventType: string]: AutomationRulePolicy;
     };
-    updatedAt?: any;
+    updated_at?: any;
     // For UI inheritance display
     inheritedFrom?: PolicyScopeType;
 }

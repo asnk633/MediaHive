@@ -49,9 +49,9 @@ export const COPY = {
     },
     labels: {
         description: "Description",
-        createdBy: "Created By",
-        assignedTo: "Assigned To",
-        dueDate: "Due Date",
+        created_by: "Created By",
+        assigned_to: "Assigned To",
+        due_date: "Due Date",
         priority: "Priority",
         status: "Status",
     },

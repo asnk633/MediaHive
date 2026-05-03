@@ -10,7 +10,8 @@ import { Badge } from '@/components/ui/badge';
 import { format } from 'date-fns';
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { Switch } from '@/components/ui/switch';
-import { TaskService } from '@/services/tasks';
+import { supabase } from '@/lib/supabaseClient';
+import { v4 as uuidv4 } from 'uuid';
 import { cn } from '@/lib/utils';
 import { AttachmentActivityLog } from './AttachmentActivityLog';
 
@@ -25,7 +26,7 @@ export const AttachmentSection: React.FC<AttachmentSectionProps> = ({ task, onUp
 
     // Final Upload Confirmation State
     const [pendingFinalFile, setPendingFinalFile] = React.useState<File | null>(null);
-    const [showInDownloads, setShowInDownloads] = React.useState(false);
+    const [show_in_downloads, setShowInDownloads] = React.useState(false);
 
     const inputs = (task.files || []).filter(f => f.section === 'requester-inputs');
     const working = (task.files || []).filter(f => f.section === 'team-working-files');
@@ -33,7 +34,7 @@ export const AttachmentSection: React.FC<AttachmentSectionProps> = ({ task, onUp
     const final = (task.files || []).filter(f => f.section === 'team-final-exports');
 
     // Permission Logic
-    const isCreator = user?.uid === (typeof task.createdBy === 'string' ? task.createdBy : task.createdBy?.uid);
+    const isCreator = user?.uid === (typeof task.created_by === 'string' ? task.created_by : task.created_by?.uid);
     const isTeam = user?.role === 'team' || user?.role === 'admin';
     const isAdmin = user?.role === 'admin';
 
@@ -47,20 +48,35 @@ export const AttachmentSection: React.FC<AttachmentSectionProps> = ({ task, onUp
         formData.append('file', file);
         formData.append('section', section);
         if (explicitShowInDownloads !== undefined) {
-            formData.append('showInDownloads', String(explicitShowInDownloads));
+            formData.append('show_in_downloads', String(explicitShowInDownloads));
         }
 
         try {
             setUploading(true);
-            const res = await apiClient(`/api/tasks/${task.id}/attachments`, {
-                method: 'POST',
-                body: formData,
-            });
+            const fileExt = file.name.split('.').pop();
+            const fileName = `${uuidv4()}.${fileExt}`;
+            const filePath = `${task.id}/${fileName}`;
 
-            if (res.file) {
-                toast.success('File uploaded successfully');
-                onUpdate();
-            }
+            await supabase.storage.from('task_attachments').upload(filePath, file);
+            const { data: publicUrlData } = supabase.storage.from('task_attachments').getPublicUrl(filePath);
+
+            const newFile = {
+                id: uuidv4(),
+                name: file.name,
+                mimeType: file.type,
+                size: file.size,
+                url: publicUrlData.publicUrl,
+                uploaded_by: { uid: user.uid, name: user.name, role: user.role },
+                uploaded_at: new Date().toISOString(),
+                section: section,
+                show_in_downloads: explicitShowInDownloads || false
+            };
+
+            const updatedFiles = [...(task.files || []), newFile];
+            await supabase.from('tasks').update({ files: updatedFiles }).eq('id', task.id);
+
+            toast.success('File uploaded successfully');
+            onUpdate();
         } catch (error) {
             console.error('Upload failed', error);
             toast.error('Failed to upload file');
@@ -71,17 +87,17 @@ export const AttachmentSection: React.FC<AttachmentSectionProps> = ({ task, onUp
 
     const confirmFinalUpload = () => {
         if (pendingFinalFile) {
-            handleUpload(pendingFinalFile, 'team-final-exports', showInDownloads);
+            handleUpload(pendingFinalFile, 'team-final-exports', show_in_downloads);
             setPendingFinalFile(null);
         }
     };
 
-    const handleDelete = async (fileId: string) => {
+    const handleDelete = async (file_id: string) => {
         if (!confirm('Are you sure you want to delete this file?')) return;
         try {
-            await apiClient(`/api/tasks/${task.id}/attachments?fileId=${fileId}`, {
-                method: 'DELETE'
-            });
+            const updatedFiles = (task.files || []).filter((f: any) => f.id !== file_id);
+            await supabase.from('tasks').update({ files: updatedFiles }).eq('id', task.id);
+
             toast.success('File deleted');
             onUpdate();
         } catch (error) {
@@ -90,12 +106,13 @@ export const AttachmentSection: React.FC<AttachmentSectionProps> = ({ task, onUp
         }
     };
 
-    const handleVisibilityToggle = async (fileId: string, currentVal: boolean) => {
+    const handleVisibilityToggle = async (file_id: string, currentVal: boolean) => {
         const newVal = !currentVal;
         try {
-            // Optimistic update handled by UI re-render on success, maybe add local loading state if needed
-            // For now simple await
-            await TaskService.toggleAttachmentVisibility(task.id, fileId, newVal);
+            const updatedFiles = (task.files || []).map((f: any) =>
+                f.id === file_id ? { ...f, show_in_downloads: newVal } : f
+            );
+            await supabase.from('tasks').update({ files: updatedFiles }).eq('id', task.id);
             toast.success(newVal ? 'File is now Public' : 'File is now Private');
             onUpdate();
         } catch (e) {
@@ -119,32 +136,32 @@ export const AttachmentSection: React.FC<AttachmentSectionProps> = ({ task, onUp
                         <div className="min-w-0">
                             <div className="flex items-center gap-2">
                                 <a href={file.url} target="_blank" rel="noreferrer" className="text-sm font-medium text-white truncate hover:underline hover:text-blue-300 block max-w-[150px] sm:max-w-xs">{file.name}</a>
-                                {file.showInDownloads ? (
-                                    <Badge variant="secondary" className="text-[9px] h-4 bg-green-500/20 text-green-300 border-0 px-1 hidden sm:inline-flex gap-1 items-center">
+                                {file.show_in_downloads ? (
+                                    <Badge variant="neutral" className="text-[9px] h-4 bg-green-500/20 text-green-300 border-0 px-1 hidden sm:inline-flex gap-1 items-center">
                                         <Eye size={8} /> Public
                                     </Badge>
                                 ) : (
-                                    <Badge variant="secondary" className="text-[9px] h-4 bg-white/5 text-white/30 border-0 px-1 hidden sm:inline-flex gap-1 items-center">
+                                    <Badge variant="neutral" className="text-[9px] h-4 bg-white/5 text-white/30 border-0 px-1 hidden sm:inline-flex gap-1 items-center">
                                         <Lock size={8} /> Private
                                     </Badge>
                                 )}
                             </div>
                             <div className="text-xs text-white/40 flex items-center gap-2">
-                                <span>{file.uploadedBy?.name || 'Unknown'}</span>
+                                <span>{file.uploaded_by?.name || 'Unknown'}</span>
                                 <span>•</span>
-                                <span>{format(new Date(file.uploadedAt), 'MMM dd')}</span>
+                                <span>{format(new Date(file.uploaded_at), 'MMM dd')}</span>
                             </div>
                         </div>
                     </div>
                     <div className="flex items-center gap-2">
                         {showToggle && canUploadTeam && (
                             <div className="flex items-center gap-2 mr-2 border-r border-white/10 pr-2">
-                                <span className={`text-[10px] font-medium uppercase ${file.showInDownloads ? 'text-green-400' : 'text-white/30'}`}>
-                                    {file.showInDownloads ? 'Public' : 'Private'}
+                                <span className={`text-[10px] font-medium uppercase ${file.show_in_downloads ? 'text-green-400' : 'text-white/30'}`}>
+                                    {file.show_in_downloads ? 'Public' : 'Private'}
                                 </span>
                                 <Switch
-                                    checked={file.showInDownloads}
-                                    onCheckedChange={() => handleVisibilityToggle(file.id, !!file.showInDownloads)}
+                                    checked={file.show_in_downloads}
+                                    onCheckedChange={() => handleVisibilityToggle(file.id, !!file.show_in_downloads)}
                                     className="scale-75"
                                 />
                             </div>
@@ -298,7 +315,7 @@ export const AttachmentSection: React.FC<AttachmentSectionProps> = ({ task, onUp
                         <label className="flex items-center gap-3 p-4 border border-white/10 rounded-xl bg-white/5 cursor-pointer hover:bg-white/10 transition-colors">
                             <input
                                 type="checkbox"
-                                checked={showInDownloads}
+                                checked={show_in_downloads}
                                 onChange={(e) => setShowInDownloads(e.target.checked)}
                                 className="w-5 h-5 rounded border-gray-500 text-green-600 focus:ring-green-500 focus:ring-offset-gray-900"
                             />

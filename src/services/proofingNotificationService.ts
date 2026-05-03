@@ -8,7 +8,7 @@ export const ProofingNotificationService = {
    * @param mediaName - The name of the media file
    * @param uploaderId - The UID of the media uploader
    * @param status - The new proofing status
-   * @param updatedBy - The UID of the user who updated the status
+   * @param updated_by - The UID of the user who updated the status
    * @param updatedByName - The display name of the user who updated the status
    */
   notifyProofingStatusChange: async (
@@ -16,7 +16,7 @@ export const ProofingNotificationService = {
     mediaName: string,
     uploaderId: string,
     status: ProofingStatus,
-    updatedBy: string,
+    updated_by: string,
     updatedByName: string
   ): Promise<void> => {
     try {
@@ -28,7 +28,7 @@ export const ProofingNotificationService = {
           mediaName,
           uploaderId,
           status,
-          updatedBy,
+          updated_by,
           updatedByName
         })
       });

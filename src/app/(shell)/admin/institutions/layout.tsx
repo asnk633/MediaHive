@@ -1,4 +1,4 @@
-﻿import { ReactNode } from "react";
+import { ReactNode } from "react";
 
 console.log('[STATIC CHECK] app/(shell)/admin/institutions/layout.tsx');
 

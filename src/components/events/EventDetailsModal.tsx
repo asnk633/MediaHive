@@ -31,7 +31,7 @@ interface EventDetailsModalProps {
     isOpen: boolean;
     onClose: () => void;
     onEdit: () => void;
-    onDelete?: (eventId: string) => void;
+    onDelete?: (event_id: string) => void;
 }
 
 export const EventDetailsModal: React.FC<EventDetailsModalProps> = ({ event, isOpen, onClose, onEdit, onDelete }) => {
@@ -49,11 +49,11 @@ export const EventDetailsModal: React.FC<EventDetailsModalProps> = ({ event, isO
     };
 
     const eventDate = getDateObject(event?.date) || new Date();
-    // Fallback to eventDate for startTime if explicit startTime is missing (common for ISO string events)
-    const startTime = getDateObject(event?.startTime) || eventDate;
+    // Fallback to eventDate for start_time if explicit start_time is missing (common for ISO string events)
+    const startTime = getDateObject(event?.start_time) || eventDate;
 
     // Safe check for event existence in logic vars
-    const canDelete = !!event && (user?.role === 'admin' || (!event.isSystemEvent && user?.uid && event.createdBy?.uid === user.uid));
+    const canDelete = !!event && (user?.role === 'admin' || (!event.is_system_event && user?.uid && event.created_by?.uid === user.uid));
 
     const confirmDelete = async (e: React.MouseEvent) => {
         e.preventDefault();
@@ -78,7 +78,7 @@ export const EventDetailsModal: React.FC<EventDetailsModalProps> = ({ event, isO
 
         // 4. Perform actual deletion in background
         try {
-            if (event.isSystemEvent) {
+            if (event.is_system_event) {
                 // Strip suffix if present (recurring events have _YYYY-MM-DD)
                 const realId = event.id.replace(/_\d{4}-\d{2}-\d{2}$/, '');
                 await SystemEventService.deleteSystemEvent(realId);
@@ -141,12 +141,12 @@ export const EventDetailsModal: React.FC<EventDetailsModalProps> = ({ event, isO
                     <div className="flex flex-col md:flex-row md:items-end justify-between gap-4">
                         <div className="flex-1">
                             <div className="flex items-center gap-3 mb-2">
-                                <span className={`px-3 py-1 rounded-full text-[10px] font-bold uppercase tracking-wider ${event.isSystemEvent ? 'bg-amber-500/10 text-amber-500' :
+                                <span className={`px-3 py-1 rounded-full text-[10px] font-bold uppercase tracking-wider ${event.is_system_event ? 'bg-amber-500/10 text-amber-500' :
                                     event.type === 'meeting' ? 'bg-blue-500/10 text-blue-500' :
                                         event.type === 'workshop' ? 'bg-purple-500/10 text-purple-500' :
                                             'bg-emerald-500/10 text-emerald-500'
                                     }`}>
-                                    {event.isSystemEvent ? 'System Event' : event.type}
+                                    {event.is_system_event ? 'System Event' : event.type}
                                 </span>
                                 {event.status === 'pending' && (
                                     <span className="px-3 py-1 rounded-full text-[10px] font-bold uppercase tracking-wider bg-amber-500/10 text-amber-500">
@@ -159,7 +159,7 @@ export const EventDetailsModal: React.FC<EventDetailsModalProps> = ({ event, isO
                             </h2>
                         </div>
                         <div className="flex gap-2">
-                            {(!event.isSystemEvent || user?.role === 'admin') && (
+                            {(!event.is_system_event || user?.role === 'admin') && (
                                 <button
                                     onClick={onEdit}
                                     disabled={isDeleting || isDeleteOpen}
@@ -187,13 +187,13 @@ export const EventDetailsModal: React.FC<EventDetailsModalProps> = ({ event, isO
                             </section>
 
                             {/* Media Coverage */}
-                            {event.mediaCoverage && event.mediaCoverage.length > 0 && (
+                            {event.media_coverage && event.media_coverage.length > 0 && (
                                 <section className="bg-glass rounded-2xl p-6 shadow-sm">
                                     <h3 className="text-sm font-bold text-blue-400 flex items-center gap-2 mb-4">
                                         <Video size={18} /> Media Coverage Requested
                                     </h3>
                                     <div className="flex flex-wrap gap-3">
-                                        {event.mediaCoverage.map((item, i) => (
+                                        {event.media_coverage.map((item, i) => (
                                             <div key={i} className="flex items-center gap-3 text-muted text-sm py-2 px-3 bg-surface rounded-lg whitespace-nowrap">
                                                 <CheckCircle2 size={16} className="text-emerald-500 shrink-0" />
                                                 {item}
@@ -202,11 +202,10 @@ export const EventDetailsModal: React.FC<EventDetailsModalProps> = ({ event, isO
                                     </div>
                                 </section>
                             )}
-
                             {/* Media Gallery */}
                             <section>
                                 <h3 className="text-xs font-bold text-muted uppercase tracking-widest mb-4">Media Gallery</h3>
-                                <EventMediaTab eventId={event.id} files={[]} />
+                                <EventMediaTab event_id={event.id} files={[]} />
                             </section>
                         </div>
 
@@ -255,7 +254,7 @@ export const EventDetailsModal: React.FC<EventDetailsModalProps> = ({ event, isO
                                         <p className="text-[10px] uppercase font-bold text-muted tracking-wider">Office / Unit</p>
                                         <p className="text-sm font-semibold text-foreground break-words">
                                             {/* Priority: On Behalf Of Name -> Department Field -> General */}
-                                            {event.onBehalfOf?.name || event.department || 'General'}
+                                            {event.on_behalf_of?.name || event.department || 'General'}
                                         </p>
                                     </div>
                                 </div>
@@ -263,13 +262,13 @@ export const EventDetailsModal: React.FC<EventDetailsModalProps> = ({ event, isO
 
                             <div className="bg-glass rounded-2xl p-5 shadow-sm">
                                 <h3 className="text-[10px] uppercase font-bold text-muted tracking-wider mb-4 flex items-center gap-2">
-                                    <User size={12} /> {event.createdBy?.role === 'guest' ? 'Created By' : 'Organizer'}
+                                    <User size={12} /> {event.created_by?.role === 'guest' ? 'Created By' : 'Organizer'}
                                 </h3>
                                 <div className="flex items-center gap-3">
                                     <div className="w-10 h-10 rounded-full bg-gradient-to-br from-blue-600 to-indigo-600 flex items-center justify-center text-white font-bold shadow-lg">
                                         {/* Avatar Initials logic */}
                                         {(() => {
-                                            const entity = event.organizer || event.createdBy;
+                                            const entity = event.organizer || event.created_by;
                                             return entity?.name ? entity.name.charAt(0) : (event.department?.charAt(0) || 'O');
                                         })()}
                                     </div>
@@ -277,16 +276,16 @@ export const EventDetailsModal: React.FC<EventDetailsModalProps> = ({ event, isO
                                         <p className="text-sm font-bold text-foreground break-words">
                                             {/* Organizer Name Logic */}
                                             {(() => {
-                                                const entity = event.organizer || event.createdBy;
+                                                const entity = event.organizer || event.created_by;
                                                 return entity?.name || event.department || 'Unknown';
                                             })()}
                                         </p>
                                         <p className="text-[10px] text-muted capitalize">
                                             {/* Organizer Role/Context Logic */}
                                             {(() => {
-                                                const entity = event.organizer || event.createdBy;
+                                                const entity = event.organizer || event.created_by;
                                                 if (entity?.role === 'guest') return 'Guest User';
-                                                if (event.onBehalfOf?.name) return `On Behalf of ${event.onBehalfOf.name}`;
+                                                if (event.on_behalf_of?.name) return `On Behalf of ${event.on_behalf_of.name}`;
                                                 return 'Event Organizer';
                                             })()}
                                         </p>

@@ -39,7 +39,7 @@ export function InventoryRequestDialog({ item, open, onOpenChange }: InventoryRe
                 requestedBy: user.uid,
                 requestedByRole: 'guest',
                 purpose,
-                institutionId: user.defaultInstitution || '', // Fallback or strict? Rules check this.
+                institution_id: user.institution_id || '', // Fallback or strict? Rules check this.
             });
             toast.success("Request submitted successfully");
             onOpenChange(false);

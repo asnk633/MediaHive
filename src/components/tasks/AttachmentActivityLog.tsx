@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { AttachmentLog } from '@/types/task';
-import { TaskService } from '@/services/tasks';
+import { supabase } from '@/lib/supabaseClient';
 import { Activity, UploadCloud, Trash2, Eye, EyeOff, Loader2, Clock } from 'lucide-react';
 import { format } from 'date-fns';
 import { cn } from '@/lib/utils';
@@ -22,8 +22,9 @@ export const AttachmentActivityLog: React.FC<AttachmentActivityLogProps> = ({ ta
     const fetchLogs = async () => {
         setLoading(true);
         try {
-            const res = await TaskService.fetchAttachmentActivity(taskId);
-            setLogs(res.logs || []);
+            // Deprecated: fetchAttachmentActivity was using /api/tasks which is removed.
+            // Placeholder until a native Supabase activity table is hooked up.
+            setLogs([]);
             setHasLoaded(true);
         } catch (error) {
             console.error('Failed to fetch logs', error);
@@ -95,14 +96,14 @@ export const AttachmentActivityLog: React.FC<AttachmentActivityLogProps> = ({ ta
                         </div>
                         <div className="min-w-0">
                             <div className="flex flex-wrap items-baseline gap-1">
-                                <span className="text-white font-medium">{log.performedBy.name}</span>
+                                <span className="text-white font-medium">{log.performed_by.name}</span>
                                 <span className="text-slate-500">
                                     {log.action === 'upload' && 'uploaded'}
                                     {log.action === 'delete' && 'deleted'}
                                     {log.action === 'visibility_public' && 'made public'}
                                     {log.action === 'visibility_private' && 'made private'}
                                 </span>
-                                <span className="font-medium text-blue-200/80 whitespace-pre-wrap break-all">{log.fileName}</span>
+                                <span className="font-medium text-blue-200/80 whitespace-pre-wrap break-all">{log.file_name}</span>
                             </div>
                             <div className="text-[10px] text-slate-600 mt-1 flex items-center gap-2">
                                 <Clock size={10} />

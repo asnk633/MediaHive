@@ -38,8 +38,8 @@ export async function POST(request: NextRequest) {
       const base64 = buffer.toString("base64");
       const dataUrl = `data:${file.type};base64,${base64}`;
 
-      await db.update(users).set({ avatarUrl: dataUrl }).where(eq(users.id, userId));
-      return NextResponse.json({ avatarUrl: dataUrl, message: "Avatar stored as base64 (dev)" }, { status: 200 });
+      await db.update(users).set({ avatar_url: dataUrl }).where(eq(users.id, userId));
+      return NextResponse.json({ avatar_url: dataUrl, message: "Avatar stored as base64 (dev)" }, { status: 200 });
     }
 
     // Upload to Supabase Storage
@@ -61,9 +61,9 @@ export async function POST(request: NextRequest) {
     const publicUrl = publicData.publicUrl;
 
     // Persist to DB
-    await db.update(users).set({ avatarUrl: publicUrl }).where(eq(users.id, userId));
+    await db.update(users).set({ avatar_url: publicUrl }).where(eq(users.id, userId));
 
-    return NextResponse.json({ avatarUrl: publicUrl, message: "Avatar uploaded" }, { status: 200 });
+    return NextResponse.json({ avatar_url: publicUrl, message: "Avatar uploaded" }, { status: 200 });
   } catch (err) {
     console.error("avatar upload error:", err);
     return NextResponse.json({ error: "Internal server error" }, { status: 500 });

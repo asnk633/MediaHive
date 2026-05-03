@@ -1,4 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
+import { verifyUser } from '@/lib/server-utils';
 import { getDb } from '@/db';
 import { userDepartments, users, departments } from '@/db/schema';
 import { eq, and } from 'drizzle-orm';
@@ -10,27 +11,24 @@ export const revalidate_disabled = 0;
 export async function GET(request: NextRequest) {
   try {
     const db = await getDb();
-    const { searchParams } = new URL(request.url);
-    const userId = searchParams.get('userId');
-
-    if (!userId || isNaN(parseInt(userId))) {
-      return NextResponse.json(
-        { error: 'Valid userId is required', code: 'INVALID_USER_ID' },
-        { status: 400 }
-      );
+    const user = await verifyUser(request);
+    if (!user) {
+      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
+    const { searchParams } = new URL(request.url);
+    const userId = user.uid;
 
     // Get all departments for this user
     const userDepts = await db
       .select({
         id: userDepartments.id,
-        departmentId: userDepartments.departmentId,
-        createdAt: userDepartments.createdAt,
+        department_id: userDepartments.department_id,
+        created_at: userDepartments.created_at,
         departmentName: departments.name
       })
       .from(userDepartments)
-      .innerJoin(departments, eq(userDepartments.departmentId, departments.id))
-      .where(eq(userDepartments.userId, parseInt(userId)));
+      .innerJoin(departments, eq(userDepartments.department_id, departments.id))
+      .where(eq(userDepartments.userId, userId));
 
     return NextResponse.json(userDepts, { status: 200 });
   } catch (error) {
@@ -46,30 +44,17 @@ export async function POST(request: NextRequest) {
   try {
     const db = await getDb();
     const body = await request.json();
-    const { userId, departmentId } = body;
-
-    // Validate required fields
-    if (!userId || isNaN(parseInt(userId))) {
-      return NextResponse.json(
-        { error: 'Valid userId is required', code: 'INVALID_USER_ID' },
-        { status: 400 }
-      );
+    const user = await verifyUser(request);
+    if (!user) {
+      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
-
-    if (!departmentId || isNaN(parseInt(departmentId))) {
-      return NextResponse.json(
-        { error: 'Valid departmentId is required', code: 'INVALID_DEPARTMENT_ID' },
-        { status: 400 }
-      );
-    }
-
     // Check if the user-department relationship already exists
     const existing = await db
       .select()
       .from(userDepartments)
       .where(and(
-        eq(userDepartments.userId, parseInt(userId)),
-        eq(userDepartments.departmentId, parseInt(departmentId))
+        eq(userDepartments.userId, userId),
+        eq(userDepartments.department_id, parseInt(department_id))
       ))
       .limit(1);
 
@@ -84,9 +69,9 @@ export async function POST(request: NextRequest) {
     const newUserDept = await db
       .insert(userDepartments)
       .values({
-        userId: parseInt(userId),
-        departmentId: parseInt(departmentId),
-        createdAt: new Date().toISOString(),
+        userId: userId,
+        department_id: parseInt(department_id),
+        created_at: new Date().toISOString(),
       })
       .returning();
 
@@ -103,21 +88,17 @@ export async function POST(request: NextRequest) {
 export async function DELETE(request: NextRequest) {
   try {
     const db = await getDb();
-    const { searchParams } = new URL(request.url);
-    const userId = searchParams.get('userId');
-    const departmentId = searchParams.get('departmentId');
-
-    // Validate IDs
-    if (!userId || isNaN(parseInt(userId))) {
-      return NextResponse.json(
-        { error: 'Valid userId is required', code: 'INVALID_USER_ID' },
-        { status: 400 }
-      );
+    const user = await verifyUser(request);
+    if (!user) {
+      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
+    const { searchParams } = new URL(request.url);
+    const department_id = searchParams.get('department_id');
+    const userId = user.uid;
 
-    if (!departmentId || isNaN(parseInt(departmentId))) {
+    if (!department_id || isNaN(parseInt(department_id))) {
       return NextResponse.json(
-        { error: 'Valid departmentId is required', code: 'INVALID_DEPARTMENT_ID' },
+        { error: 'Valid department_id is required', code: 'INVALID_DEPARTMENT_ID' },
         { status: 400 }
       );
     }
@@ -127,8 +108,8 @@ export async function DELETE(request: NextRequest) {
       .select()
       .from(userDepartments)
       .where(and(
-        eq(userDepartments.userId, parseInt(userId)),
-        eq(userDepartments.departmentId, parseInt(departmentId))
+        eq(userDepartments.userId, userId),
+        eq(userDepartments.department_id, parseInt(department_id))
       ))
       .limit(1);
 
@@ -143,8 +124,8 @@ export async function DELETE(request: NextRequest) {
     const deleted = await db
       .delete(userDepartments)
       .where(and(
-        eq(userDepartments.userId, parseInt(userId)),
-        eq(userDepartments.departmentId, parseInt(departmentId))
+        eq(userDepartments.userId, userId),
+        eq(userDepartments.department_id, parseInt(department_id))
       ))
       .returning();
 

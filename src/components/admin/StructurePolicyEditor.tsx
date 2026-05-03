@@ -15,7 +15,7 @@ import { toast } from 'sonner';
 interface StructurePolicyEditorProps {
     scopeType: PolicyScopeType;
     scopeId: string;
-    parentScopeId?: string; // If unit, need institutionId for inheritance check
+    parentScopeId?: string; // If unit, need institution_id for inheritance check
 }
 
 export const StructurePolicyEditor: React.FC<StructurePolicyEditorProps> = ({ scopeType, scopeId, parentScopeId }) => {
@@ -139,7 +139,7 @@ export const StructurePolicyEditor: React.FC<StructurePolicyEditorProps> = ({ sc
                                     <Label className="text-base font-semibold text-slate-200">
                                         {eventType}
                                     </Label>
-                                    <Badge variant="outline" className={`text-[10px] ${isExplicit ? 'border-indigo-500 text-indigo-400' : 'border-slate-700 text-slate-500'}`}>
+                                    <Badge variant="neutral" className={`text-[10px] ${isExplicit ? 'border-indigo-500 text-indigo-400' : 'border-slate-700 text-slate-500'}`}>
                                         {source}
                                     </Badge>
                                 </div>

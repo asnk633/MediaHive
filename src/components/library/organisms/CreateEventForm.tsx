@@ -43,7 +43,7 @@ export const CreateEventForm = ({ initialDate, onSuccess, onCancel, isModal = fa
     const [institutionsList, setInstitutionsList] = useState<{ id: string; name: string }[]>([]);
 
     // Form State
-    const [isSystemEvent, setIsSystemEvent] = useState(forceSystemEvent);
+    const [is_system_event, setIsSystemEvent] = useState(forceSystemEvent);
     const [title, setTitle] = useState('');
     const [date, setDate] = useState('');
     const [time, setTime] = useState('');
@@ -51,7 +51,7 @@ export const CreateEventForm = ({ initialDate, onSuccess, onCancel, isModal = fa
     const [description, setDescription] = useState('');
     const [department, setDepartment] = useState('Operations');
     const [createdById, setCreatedById] = useState('');
-    const [teamMembers, setTeamMembers] = useState<{ uid: string; name: string; departmentId?: string; institutionId?: string; defaultDepartment?: string }[]>([]);
+    const [teamMembers, setTeamMembers] = useState<{ uid: string; name: string; department_id?: string; institution_id?: string }[]>([]);
 
     // Create On Behalf Of State
     const [createOnBehalfOf, setCreateOnBehalfOf] = useState(false);
@@ -63,7 +63,7 @@ export const CreateEventForm = ({ initialDate, onSuccess, onCancel, isModal = fa
     const [recurrenceEndDate, setRecurrenceEndDate] = useState<string>('');
 
     // New State for Media Coverage
-    const [mediaCoverage, setMediaCoverage] = useState<string[]>([]);
+    const [media_coverage, setMediaCoverage] = useState<string[]>([]);
 
     // Popover State (to fix overlay bug)
     const [datePopoverOpen, setDatePopoverOpen] = useState(false);
@@ -98,9 +98,8 @@ export const CreateEventForm = ({ initialDate, onSuccess, onCancel, isModal = fa
                         return {
                             uid: m.uid,
                             name: m.name,
-                            departmentId: userDoc?.departmentId,
-                            institutionId: userDoc?.institutionId,
-                            defaultDepartment: userDoc?.defaultDepartment,
+                            department_id: userDoc?.department_id,
+                            institution_id: userDoc?.institution_id,
                         };
                     } catch (e) {
                         // Fallback if user details can't be fetched
@@ -145,8 +144,8 @@ export const CreateEventForm = ({ initialDate, onSuccess, onCancel, isModal = fa
         setTitle('');
         setLocation('');
         setDescription('');
-        if (user?.defaultDepartment && (departmentsList.some(d => d.name === user.defaultDepartment) || institutionsList.some(i => i.name === user.defaultDepartment))) {
-            setDepartment(user.defaultDepartment);
+        if (user?.department_id && (departmentsList.some(d => d.name === user.department_id) || institutionsList.some(i => i.name === user.department_id))) {
+            setDepartment(user.department_id);
         } else if (departmentsList.length > 0) {
             setDepartment(departmentsList[0].name);
         } else {
@@ -164,7 +163,7 @@ export const CreateEventForm = ({ initialDate, onSuccess, onCancel, isModal = fa
         try {
             const dateTime = new Date(`${date}T${time || '09:00'}`);
 
-            if (isSystemEvent && user?.role === 'admin') {
+            if (is_system_event && user?.role === 'admin') {
                 const recurrencePayload: any = {
                     frequency: recurrenceFreq,
                     interval: 1,
@@ -198,7 +197,7 @@ export const CreateEventForm = ({ initialDate, onSuccess, onCancel, isModal = fa
 
             let deptId = '';
             let deptType = 'department';
-            let targetInstitutionId = user?.institutionId || '1';
+            let targetInstitutionId = user?.institution_id;
             let targetDepartmentId: string | null = null;
             let resolvedInstitutionName = '';
 
@@ -217,8 +216,8 @@ export const CreateEventForm = ({ initialDate, onSuccess, onCancel, isModal = fa
                 }
             }
 
-            // Construct explicit onBehalfOf object (The Entity)
-            const onBehalfOf = {
+            // Construct explicit on_behalf_of object (The Entity)
+            const on_behalf_of = {
                 id: deptId || 'unknown',
                 name: targetEntityName,
                 type: deptType
@@ -238,12 +237,12 @@ export const CreateEventForm = ({ initialDate, onSuccess, onCancel, isModal = fa
                 // In Standard mode, the User is the Organizer
                 organizer = {
                     uid: user?.uid || 'anon',
-                    name: user?.officialName || user?.name || 'Guest',
+                    name: user?.official_name || user?.name || 'Guest',
                     role: user?.role || 'guest'
                 };
             }
 
-            // Legacy support: We still send createdBy for backward compat, but API prioritizes user session
+            // Legacy support: We still send created_by for backward compat, but API prioritizes user session
             const legacyCreatedBy = {
                 uid: user?.uid,
                 name: user?.name,
@@ -257,15 +256,15 @@ export const CreateEventForm = ({ initialDate, onSuccess, onCancel, isModal = fa
                 description,
                 department: targetEntityName, // Legacy string (updated to selected entity)
                 type: 'other',
-                createdBy: legacyCreatedBy, // Correct system metadata
-                onBehalfOf, // Explicit Entity
+                created_by: legacyCreatedBy, // Correct system metadata
+                on_behalf_of, // Explicit Entity
                 organizer,  // Explicit Person or Entity
-                institutionId: targetInstitutionId,
-                departmentId: targetDepartmentId,
-                mediaCoverage,
+                institution_id: targetInstitutionId,
+                department_id: targetDepartmentId,
+                media_coverage,
             };
 
-            // Clean up payload if onBehalfOf is active to avoid ambiguity if backend cares
+            // Clean up payload if on_behalf_of is active to avoid ambiguity if backend cares
             if (createOnBehalfOf) {
                 // We ensure 'department' field in payload matches the entity, which we did above.
             }
@@ -316,10 +315,10 @@ export const CreateEventForm = ({ initialDate, onSuccess, onCancel, isModal = fa
                             </div>
                             <button
                                 type="button"
-                                onClick={() => setIsSystemEvent(!isSystemEvent)}
+                                onClick={() => setIsSystemEvent(!is_system_event)}
                                 className={`
                                     relative inline-flex h-7 w-12 shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors duration-200 ease-in-out focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-2 focus:ring-offset-background
-                                    ${isSystemEvent ? 'bg-primary' : 'bg-muted'}
+                                    ${is_system_event ? 'bg-primary' : 'bg-muted'}
                                 `}
                             >
                                 <span className="sr-only">Use setting</span>
@@ -327,14 +326,14 @@ export const CreateEventForm = ({ initialDate, onSuccess, onCancel, isModal = fa
                                     aria-hidden="true"
                                     className={`
                                         pointer-events-none inline-block h-6 w-6 transform rounded-full bg-background shadow ring-0 transition duration-200 ease-in-out
-                                        ${isSystemEvent ? 'translate-x-5' : 'translate-x-0'}
+                                        ${is_system_event ? 'translate-x-5' : 'translate-x-0'}
                                     `}
                                 />
                             </button>
                         </div>
 
                         {/* Recurrence Options */}
-                        {isSystemEvent && (
+                        {is_system_event && (
                             <div className="pt-4 border-t border-soft grid grid-cols-1 md:grid-cols-2 gap-4">
                                 <div className="space-y-2">
                                     <label className={labelClasses}>Frequency</label>
@@ -405,7 +404,7 @@ export const CreateEventForm = ({ initialDate, onSuccess, onCancel, isModal = fa
 
             {/* Created By Section - Role-Based Behavior */}
             {
-                !isSystemEvent && (
+                !is_system_event && (
                     <>
                         {/* Admin Only: Create On Behalf Of Toggle */}
                         {user?.role === 'admin' && (
@@ -432,7 +431,7 @@ export const CreateEventForm = ({ initialDate, onSuccess, onCancel, isModal = fa
                                                 // Reset when toggling off
                                                 setOnBehalfOfEntityName('');
                                                 // Restore default department if needed
-                                                if (user?.defaultDepartment) setDepartment(user.defaultDepartment);
+                                                if (user?.department_id) setDepartment(user.department_id);
                                             } else {
                                                 // Initialize with current department if valid
                                                 setOnBehalfOfEntityName(department);
@@ -499,7 +498,7 @@ export const CreateEventForm = ({ initialDate, onSuccess, onCancel, isModal = fa
                                 <div className={inputContainerClasses}>
                                     <Lock size={16} className="absolute left-4 top-1/2 -translate-y-1/2 text-muted z-10" />
                                     <div className={`w-full border rounded-2xl py-4 pl-12 pr-4 flex items-center ${lockedFieldClasses}`}>
-                                        <span>{user?.officialName || user?.name || 'Current User'}</span>
+                                        <span>{user?.official_name || user?.name || 'Current User'}</span>
                                     </div>
                                 </div>
                                 <p className="text-xs text-muted mt-1.5">
@@ -548,7 +547,7 @@ export const CreateEventForm = ({ initialDate, onSuccess, onCancel, isModal = fa
                         </Popover>
                     </div>
                 </div>
-                {!isSystemEvent && (
+                {!is_system_event && (
                     <div className="space-y-2">
                         <label className={labelClasses}>Start Time</label>
                         <div className={inputContainerClasses}>
@@ -600,7 +599,7 @@ export const CreateEventForm = ({ initialDate, onSuccess, onCancel, isModal = fa
 
 
             {
-                !isSystemEvent && !createOnBehalfOf && (
+                !is_system_event && !createOnBehalfOf && (
                     <>
                         {/* Department / Unit */}
                         <div className="space-y-2">
@@ -647,7 +646,7 @@ export const CreateEventForm = ({ initialDate, onSuccess, onCancel, isModal = fa
             }
 
             {
-                !isSystemEvent && (
+                !is_system_event && (
                     <>
                         {/* Media Coverage - Cards Style */}
                         <div className="pt-2">
@@ -657,7 +656,7 @@ export const CreateEventForm = ({ initialDate, onSuccess, onCancel, isModal = fa
                             </label>
                             <div className="grid grid-cols-2 sm:grid-cols-3 gap-3">
                                 {mediaOptions.map((option) => {
-                                    const isSelected = mediaCoverage.includes(option);
+                                    const isSelected = media_coverage.includes(option);
                                     return (
                                         <label
                                             key={option}

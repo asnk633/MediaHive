@@ -69,12 +69,12 @@ export function IssueItemDialog({ item, request, open, onOpenChange, users = [] 
                 issuedToRole, // UI input
                 issuedBy: user.uid,
                 issuedFor: {
-                    institutionId: user.defaultInstitution,
+                    institution_id: user.institution_id,
                     projectNote: projectNote
                 },
                 conditionOut,
                 expectedReturnAt: expectedReturnAt.toISOString(),
-                institutionId: user.defaultInstitution || ''
+                institution_id: user.institution_id || ''
             });
 
             // FIX 1: Link Request if exists

@@ -85,7 +85,7 @@ export const createUserSchema = z.object({
   password: passwordSchema,
   fullName: nameSchema,
   role: z.enum(['admin', 'team', 'guest']),
-  institutionId: idSchema,
+  institution_id: idSchema,
   tenantId: idSchema,
 });
 
@@ -93,7 +93,7 @@ export const updateUserSchema = z.object({
   email: emailSchema.optional(),
   fullName: nameSchema.optional(),
   role: z.enum(['admin', 'team', 'guest']).optional(),
-  institutionId: idSchema.optional(),
+  institution_id: idSchema.optional(),
   tenantId: idSchema.optional(),
 });
 
@@ -103,7 +103,7 @@ export const createTaskSchema = z.object({
   status: z.enum(['todo', 'in_progress', 'review', 'done']).default('todo'),
   priority: z.enum(['low', 'medium', 'high', 'urgent']).default('medium'),
   assignedToId: optionalIdSchema,
-  dueDate: dateStringSchema.optional(),
+  due_date: dateStringSchema.optional(),
 });
 
 export const updateTaskSchema = z.object({
@@ -112,7 +112,7 @@ export const updateTaskSchema = z.object({
   status: z.enum(['todo', 'in_progress', 'review', 'done']).optional(),
   priority: z.enum(['low', 'medium', 'high', 'urgent']).optional(),
   assignedToId: optionalIdSchema,
-  dueDate: dateStringSchema.optional(),
+  due_date: dateStringSchema.optional(),
 });
 
 export const createEventSchema = z.object({
@@ -127,7 +127,7 @@ export const updateEventSchema = z.object({
   description: z.string().max(1000, 'Description must be at most 1000 characters').optional(),
   startTime: dateTimeStringSchema.optional(),
   endTime: dateTimeStringSchema.optional(),
-  approvalStatus: z.enum(['pending', 'approved', 'declined']).optional(),
+  approval_status: z.enum(['pending', 'approved', 'declined']).optional(),
 });
 
 export const createNotificationSchema = z.object({

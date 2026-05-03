@@ -12,8 +12,8 @@ async function main() {
             category: 'task_assigned',
             ttl: null,
             readReceipt: 0,
-            createdAt: new Date().toISOString(),
-            updatedAt: new Date().toISOString(),
+            created_at: new Date().toISOString(),
+            updated_at: new Date().toISOString(),
         },
         {
             userId: 4,
@@ -24,8 +24,8 @@ async function main() {
             category: 'task_due',
             ttl: null,
             readReceipt: 0,
-            createdAt: new Date().toISOString(),
-            updatedAt: new Date().toISOString(),
+            created_at: new Date().toISOString(),
+            updated_at: new Date().toISOString(),
         },
         {
             userId: 5,
@@ -36,8 +36,8 @@ async function main() {
             category: 'task_urgent',
             ttl: null,
             readReceipt: 1,
-            createdAt: new Date().toISOString(),
-            updatedAt: new Date().toISOString(),
+            created_at: new Date().toISOString(),
+            updated_at: new Date().toISOString(),
         },
         {
             userId: 1,
@@ -48,8 +48,8 @@ async function main() {
             category: 'guest_task_created',
             ttl: null,
             readReceipt: 0,
-            createdAt: new Date().toISOString(),
-            updatedAt: new Date().toISOString(),
+            created_at: new Date().toISOString(),
+            updated_at: new Date().toISOString(),
         },
         {
             userId: 2,
@@ -60,8 +60,8 @@ async function main() {
             category: 'task_completed',
             ttl: null,
             readReceipt: 1,
-            createdAt: new Date().toISOString(),
-            updatedAt: new Date().toISOString(),
+            created_at: new Date().toISOString(),
+            updated_at: new Date().toISOString(),
         },
     ];
 

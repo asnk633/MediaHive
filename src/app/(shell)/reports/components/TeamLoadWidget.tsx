@@ -34,7 +34,7 @@ export const TeamLoadWidget = ({ tasks }: TeamLoadWidgetProps) => {
         if (task.status === 'done') return;
 
         const stage = task.smartMetadata?.inferredStage || 'general';
-        const assignees = task.assignedTo || [];
+        const assignees = task.assigned_to || [];
 
         if (assignees.length === 0) {
             // Unassigned bucket? Optional. Let's skip for "Team Load" specific

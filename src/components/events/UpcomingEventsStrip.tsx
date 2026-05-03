@@ -66,7 +66,7 @@ export function UpcomingEventsStrip({ events, onEventClick }: UpcomingEventsStri
             <div className="flex gap-3 overflow-x-auto pb-4 scrollbar-hide snap-x">
                 {upcomingEvents.map(event => {
                     const eventDate = getDate(event.date);
-                    const isSystem = event.isSystemEvent;
+                    const isSystem = event.is_system_event;
 
                     // Logic to see if date is today
                     const isToday = new Date().toDateString() === eventDate.toDateString();

@@ -1,12 +1,11 @@
-import { NextResponse } from 'next/server';
-import { verifyUser } from '@/lib/server-utils';
-import { adminDb } from '@/lib/firebase/server';
+import { NextRequest, NextResponse } from 'next/server';
+import { verifyUser, getSupabaseFromRequest } from '@/lib/server-utils';
 import { logSystemActivity } from '@/lib/server/activity-logger';
 
 
 export const dynamic = 'force-dynamic';
 
-export async function POST(request: Request) {
+export async function POST(request: NextRequest) {
     try {
         const user = await verifyUser(request);
         if (!user || user.role !== 'admin') {
@@ -23,9 +22,15 @@ export async function POST(request: Request) {
             );
         }
 
-        await adminDb.collection('users').doc(targetUid).update({
-            role: newRole
-        });
+        const supabase = getSupabaseFromRequest(request);
+        if (!supabase) return NextResponse.json({ error: 'Internal Error' }, { status: 500 });
+
+        const { error } = await supabase
+            .from('profiles')
+            .update({ role: newRole })
+            .eq('id', targetUid);
+
+        if (error) throw error;
 
         console.log(`[API] Admin ${user.uid} changed role for ${targetUid} to ${newRole}`);
 
@@ -49,10 +54,10 @@ export async function POST(request: Request) {
             message: `Role updated to ${newRole}`
         });
 
-    } catch (error) {
+    } catch (error: any) {
         console.error('Error in change-role API:', error);
         return NextResponse.json(
-            { error: 'Internal Server Error' },
+            { error: error.message || 'Internal Server Error' },
             { status: 500 }
         );
     }

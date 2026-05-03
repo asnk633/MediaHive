@@ -30,8 +30,8 @@ export interface DeviceRequest {
     adminNotes?: string;
 
     // Timestamps
-    createdAt: TimestampLike;
-    updatedAt: TimestampLike;
+    created_at: TimestampLike;
+    updated_at: TimestampLike;
     issuedAt?: TimestampLike;
     returnedAt?: TimestampLike;
 }

@@ -56,7 +56,7 @@ export const DeliverableUploadModal: React.FC<DeliverableUploadModalProps> = ({
                 uid: user.uid,
                 name: user.name || 'Unknown',
                 role: user.role,
-                avatarUrl: user.avatarUrl
+                avatar_url: user.avatar_url
 
             }, customName, isFinal); // Pass isFinal flag
             onUploadComplete();

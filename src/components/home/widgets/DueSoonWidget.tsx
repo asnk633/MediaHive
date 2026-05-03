@@ -17,9 +17,9 @@ export const DueSoonWidget = ({ tasks, userRole }: DueSoonWidgetProps) => {
     // Filter tasks due in the next 24 hours
     // Also filter out done tasks
     const dueSoonTasks = tasks.filter(task => {
-        if (task.status === 'done' || !task.dueDate) return false;
+        if (task.status === 'done' || !task.due_date) return false;
 
-        const date = normalizeDate(task.dueDate);
+        const date = normalizeDate(task.due_date);
         if (!date) return false;
 
         const now = new Date();
@@ -57,7 +57,7 @@ export const DueSoonWidget = ({ tasks, userRole }: DueSoonWidgetProps) => {
                             </span>
                             <span className="text-xs font-medium text-accent-primary">
                                 {(() => {
-                                    const d = normalizeDate(task.dueDate);
+                                    const d = normalizeDate(task.due_date);
                                     return d ? format(d, 'HH:mm') : '';
                                 })()}
                             </span>

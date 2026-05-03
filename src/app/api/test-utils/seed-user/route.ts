@@ -46,7 +46,7 @@ export async function POST(request: NextRequest) {
 
     // Get default tenant and institution
     let tenantId = 1;
-    let institutionId = 1;
+    let institution_id = 1;
 
     // Check if default tenant exists
     const tenantsList = await db
@@ -62,8 +62,8 @@ export async function POST(request: NextRequest) {
         .values({
           name: "Default Tenant",
           domain: "default.local",
-          createdAt: new Date().toISOString(),
-          updatedAt: new Date().toISOString(),
+          created_at: new Date().toISOString(),
+          updated_at: new Date().toISOString(),
         })
         .returning({ id: tenants.id });
       tenantId = newTenant.id;
@@ -83,10 +83,10 @@ export async function POST(request: NextRequest) {
         .values({
           name: "Default Institution",
           tenantId: tenantId,
-          createdAt: new Date().toISOString(),
+          created_at: new Date().toISOString(),
         })
         .returning({ id: institutions.id });
-      institutionId = newInstitution.id;
+      institution_id = newInstitution.id;
     }
 
     // Hash password
@@ -100,10 +100,10 @@ export async function POST(request: NextRequest) {
         passwordHash,
         fullName: `${role.charAt(0).toUpperCase() + role.slice(1)} User`,
         role,
-        institutionId,
+        institution_id,
         tenantId,
-        createdAt: new Date().toISOString(),
-        updatedAt: new Date().toISOString(),
+        created_at: new Date().toISOString(),
+        updated_at: new Date().toISOString(),
       })
       .returning();
 

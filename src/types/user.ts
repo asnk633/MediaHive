@@ -5,23 +5,24 @@ export interface User {
     email: string;
     name: string;
     role: 'admin' | 'team' | 'guest';
+    is_super_admin?: boolean;
     photoURL?: string;
 
-    // Affiliation (One must be set, strictly XOR in logic)
-    institutionId?: string;
-    departmentId?: string;
+    // Affiliation
+    institution_id?: string;
+    department_id?: string;
 
-    isActive?: boolean; // Defaults to true if undefined
+    isActive?: boolean;
 
-    /** @deprecated Use institutionId */
-    defaultInstitution?: string;
-    /** @deprecated Use departmentId */
-    defaultDepartment?: string;
+    created_at?: string;
+    official_name?: string;
+    avatar_url?: string;
+    avatar_updated_at?: TimestampLike;
+    avatar_drive_id?: string;
 
-    createdAt?: string;
-    officialName?: string;
-    avatarUrl?: string;
-    avatarUpdatedAt?: TimestampLike;
+    // UI Fallbacks/Helpers
+    default_institution?: string;
+    default_department?: string;
 }
 
 export type UserRole = User['role'];

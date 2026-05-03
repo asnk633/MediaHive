@@ -29,11 +29,11 @@ interface AdminConfidencePanelProps {
   events?: Event[];
   mediaFiles?: MediaFile[];
   users?: User[];
-  institutionId?: string;
+  institution_id?: string;
   onTaskClick?: (task: Task) => void;
 }
 
-const AdminConfidencePanel: React.FC<AdminConfidencePanelProps> = ({ tasks, events, mediaFiles, users, institutionId, onTaskClick }) => {
+const AdminConfidencePanel: React.FC<AdminConfidencePanelProps> = ({ tasks, events, mediaFiles, users, institution_id, onTaskClick }) => {
   const { user } = useAuth();
   const isAdmin = user?.role === 'admin';
 
@@ -46,21 +46,21 @@ const AdminConfidencePanel: React.FC<AdminConfidencePanelProps> = ({ tasks, even
   }
 
   // Calculate metrics
-  const tasksBlockedOnMedia = tasks.filter(t => t.status !== 'done' && !t.mediaUploaded).length;
+  const tasksBlockedOnMedia = tasks.filter(t => t.status !== 'done' && !t.media_uploaded).length;
   const tasksReadyForCompletion = tasks.filter(t =>
     t.status !== 'done' &&
-    t.mediaUploaded &&
-    t.mediaApproved
+    t.media_uploaded &&
+    t.media_approved
   ).length;
   const recentlyApprovedMedia = tasks.filter(t =>
-    t.mediaApproved &&
-    t.mediaApprovedDate &&
-    new Date(t.mediaApprovedDate.seconds * 1000) > new Date(Date.now() - 24 * 60 * 60 * 1000) // Last 24 hours
+    t.media_approved &&
+    t.media_approved_date &&
+    new Date(t.media_approved_date.seconds * 1000) > new Date(Date.now() - 24 * 60 * 60 * 1000) // Last 24 hours
   ).length;
   const staleTasks = tasks.filter(t => {
     // Tasks that have been in progress for more than 7 days without updates
-    const createdDate = t.createdAt ? new Date(t.createdAt.seconds * 1000) : new Date();
-    const dueDate = t.dueDate ? new Date(t.dueDate.seconds * 1000) : null;
+    const createdDate = t.created_at ? new Date(t.created_at.seconds * 1000) : new Date();
+    const due_date = t.due_date ? new Date(t.due_date.seconds * 1000) : null;
     const now = new Date();
 
     // Calculate if the task is older than 7 days
@@ -71,15 +71,15 @@ const AdminConfidencePanel: React.FC<AdminConfidencePanelProps> = ({ tasks, even
   }).length;
 
   // Get sample tasks for each category
-  const blockedTasks = tasks.filter(t => t.status !== 'done' && !t.mediaUploaded).slice(0, 3);
-  const readyTasks = tasks.filter(t => t.status !== 'done' && t.mediaUploaded && t.mediaApproved).slice(0, 3);
+  const blockedTasks = tasks.filter(t => t.status !== 'done' && !t.media_uploaded).slice(0, 3);
+  const readyTasks = tasks.filter(t => t.status !== 'done' && t.media_uploaded && t.media_approved).slice(0, 3);
   const approvedTasks = tasks.filter(t =>
-    t.mediaApproved &&
-    t.mediaApprovedDate &&
-    new Date(t.mediaApprovedDate.seconds * 1000) > new Date(Date.now() - 24 * 60 * 60 * 1000)
+    t.media_approved &&
+    t.media_approved_date &&
+    new Date(t.media_approved_date.seconds * 1000) > new Date(Date.now() - 24 * 60 * 60 * 1000)
   ).slice(0, 3);
   const staleTaskSamples = tasks.filter(t => {
-    const createdDate = t.createdAt ? new Date(t.createdAt.seconds * 1000) : new Date();
+    const createdDate = t.created_at ? new Date(t.created_at.seconds * 1000) : new Date();
     const now = new Date();
     const timeDiff = now.getTime() - createdDate.getTime();
     const daysDiff = timeDiff / (1000 * 3600 * 24);
@@ -153,7 +153,7 @@ const AdminConfidencePanel: React.FC<AdminConfidencePanelProps> = ({ tasks, even
                     {task.title}
                   </Button>
                   <div className="text-xs text-gray-400 mt-1">
-                    Media: {task.mediaUploaded ? 'Uploaded' : 'Missing'}
+                    Media: {task.media_uploaded ? 'Uploaded' : 'Missing'}
                   </div>
                 </div>
               ))
@@ -189,7 +189,7 @@ const AdminConfidencePanel: React.FC<AdminConfidencePanelProps> = ({ tasks, even
                     {task.title}
                   </Button>
                   <div className="text-xs text-gray-400 mt-1">
-                    Approved: {task.mediaApprovedDate ? new Date(task.mediaApprovedDate.seconds * 1000).toLocaleDateString() : 'N/A'}
+                    Approved: {task.media_approved_date ? new Date(task.media_approved_date.seconds * 1000).toLocaleDateString() : 'N/A'}
                   </div>
                 </div>
               ))
@@ -225,7 +225,7 @@ const AdminConfidencePanel: React.FC<AdminConfidencePanelProps> = ({ tasks, even
                     {task.title}
                   </Button>
                   <div className="text-xs text-gray-400 mt-1">
-                    Days open: {Math.floor((Date.now() - new Date(task.createdAt?.seconds * 1000 || Date.now()).getTime()) / (1000 * 3600 * 24))}
+                    Days open: {Math.floor((Date.now() - new Date(task.created_at?.seconds * 1000 || Date.now()).getTime()) / (1000 * 3600 * 24))}
                   </div>
                 </div>
               ))
@@ -252,13 +252,13 @@ const AdminConfidencePanel: React.FC<AdminConfidencePanelProps> = ({ tasks, even
       />
 
       {/* Invite User Panel - Admin Only */}
-      {institutionId && (
-        <InviteUserPanel institutionId={institutionId} />
+      {institution_id && (
+        <InviteUserPanel institution_id={institution_id} />
       )}
 
       {/* User Management Panel - Admin Only */}
-      {institutionId && (
-        <UserManagementPanel institutionId={institutionId} />
+      {institution_id && (
+        <UserManagementPanel institution_id={institution_id} />
       )}
     </div>
   );

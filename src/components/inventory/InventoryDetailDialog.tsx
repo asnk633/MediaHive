@@ -37,7 +37,7 @@ export const InventoryDetailDialog: React.FC<InventoryDetailDialogProps> = ({
     // consolidate images: verify if images array exists, else fallback to single imageUrl, else empty
     const images = item.images && item.images.length > 0
         ? item.images
-        : (item.imageUrl ? [{ url: item.imageUrl, fileId: item.driveFileId || '' }] : []);
+        : (item.imageUrl ? [{ url: item.imageUrl, file_id: item.driveFileId || '' }] : []);
 
     const hasMultipleImages = images.length > 1;
 

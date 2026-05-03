@@ -4,7 +4,7 @@ import { z } from 'zod';
 export const taskFormSchema = z.object({
   title: z.string().min(3, 'Title must be at least 3 characters').max(150, 'Title must be at most 150 characters'),
   description: z.string().max(2000, 'Description must be at most 2000 characters').optional().nullable(),
-  dueDate: z.string().optional().nullable(),
+  due_date: z.string().optional().nullable(),
   dueTime: z.string().optional().nullable(),
   priority: z.enum(['Urgent', 'High', 'Medium', 'Low']),
   assignedToId: z.number().int().positive().optional().nullable(),

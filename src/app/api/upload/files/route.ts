@@ -17,7 +17,7 @@ export async function POST(request: NextRequest) {
     const formData = await request.formData();
     const file = formData.get("file") as File | null;
     const uploadedByIdRaw = formData.get("uploadedById") as string | null;
-    const institutionIdRaw = formData.get("institutionId") as string | null;
+    const institutionIdRaw = formData.get("institution_id") as string | null;
     const folder = (formData.get("folder") as string | null) || null;
     const visibility = (formData.get("visibility") as string | null) || "all";
 
@@ -25,12 +25,8 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ error: "Missing required fields" }, { status: 400 });
     }
 
-    const uploadedById = parseInt(uploadedByIdRaw, 10);
-    const institutionId = parseInt(institutionIdRaw, 10);
-
-    if (Number.isNaN(uploadedById) || Number.isNaN(institutionId)) {
-      return NextResponse.json({ error: "Invalid IDs" }, { status: 400 });
-    }
+    const uploadedById = uploadedByIdRaw;
+    const institution_id = institutionIdRaw;
 
     // --- Dev/Local Fallback: Store small files as Base64 ---
     // If Supabase not configured, fallback to base64 (dev) for small files
@@ -52,8 +48,8 @@ export async function POST(request: NextRequest) {
         folder,
         visibility,
         uploadedById,
-        institutionId,
-        createdAt: new Date().toISOString(),
+        institution_id,
+        created_at: new Date().toISOString(),
       } as any).returning();
 
       return NextResponse.json(inserted[0], { status: 201 });
@@ -62,7 +58,7 @@ export async function POST(request: NextRequest) {
     // --- Production/Supabase Upload ---
     const arrayBuffer = await file.arrayBuffer();
     const fileBuf = Buffer.from(arrayBuffer);
-    const pathKey = `files/${institutionId}/${Date.now()}_${file.name}`;
+    const pathKey = `files/${institution_id}/${Date.now()}_${file.name}`;
 
     const { data, error: uploadError } = await supabase.storage.from("files").upload(pathKey, fileBuf, {
       contentType: file.type,
@@ -83,9 +79,9 @@ export async function POST(request: NextRequest) {
       folder,
       visibility,
       uploadedById,
-      institutionId,
+      institution_id,
       storagePath: data.path,
-      createdAt: new Date().toISOString(),
+      created_at: new Date().toISOString(),
     } as any).returning();
 
     return NextResponse.json(inserted[0], { status: 201 });

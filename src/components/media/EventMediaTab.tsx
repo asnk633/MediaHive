@@ -5,11 +5,11 @@ import { MediaGalleryGrid } from './MediaGalleryGrid';
 import { LazyMediaLightbox } from './LazyMediaLightbox';
 
 interface EventMediaTabProps {
-  eventId: string;
+  event_id: string;
   files: DriveFile[];
 }
 
-export function EventMediaTab({ eventId, files }: EventMediaTabProps) {
+export function EventMediaTab({ event_id, files }: EventMediaTabProps) {
   const [selectedFile, setSelectedFile] = useState<ExtendedDriveFile | null>(null);
   
   const handleFileSelect = (file: DriveFile) => {

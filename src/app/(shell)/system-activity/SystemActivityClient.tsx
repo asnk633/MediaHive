@@ -65,7 +65,7 @@ export default function SystemActivityClient() {
                                 <div className="flex-1 min-w-0">
                                     <h4 className="text-sm font-medium text-white truncate">{act.title}</h4>
                                     <div className="flex items-center gap-2 mt-0.5 text-xs text-blue-200/50">
-                                        <span className="font-semibold text-blue-200/70">{act.performedBy}</span>
+                                        <span className="font-semibold text-blue-200/70">{act.performed_by}</span>
                                         <span>•</span>
                                         <span className="uppercase tracking-wider opacity-70">{act.performedByRole}</span>
                                     </div>

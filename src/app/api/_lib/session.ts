@@ -7,6 +7,7 @@ import { jwtVerify, SignJWT } from 'jose';
 import { AuthUser } from './types';
 
 // Environment variables
+// NOTE: The fallback secret is only for development and must NEVER be used in production
 const JWT_SECRET = process.env.APP_SECRET || 'fallback_secret_key_for_development';
 const SESSION_MAX_AGE = parseInt(process.env.SESSION_MAX_AGE || '604800'); // 7 days default
 const REFRESH_TOKEN_MAX_AGE = parseInt(process.env.REFRESH_TOKEN_MAX_AGE || '2592000'); // 30 days default
@@ -103,7 +104,6 @@ export function setSessionCookies(
 export function clearSessionCookies(response: NextResponse): void {
   response.cookies.delete('access_token');
   response.cookies.delete('refresh_token');
-  response.cookies.delete('session_token'); // For backward compatibility
 }
 
 /**
@@ -131,17 +131,7 @@ export async function getUserFromRequest(req: NextRequest): Promise<AuthUser | n
     }
   }
   
-  // Fall back to legacy session token for backward compatibility
-  const sessionToken = req.cookies.get('session_token')?.value;
-  if (sessionToken) {
-    try {
-      const user = JSON.parse(decodeURIComponent(sessionToken)) as AuthUser;
-      return user;
-    } catch {
-      // Invalid session token
-      return null;
-    }
-  }
+
   
   return null;
 }

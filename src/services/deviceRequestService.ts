@@ -1,5 +1,4 @@
 
-import { getFirebaseAuth } from '@/firebase/client';
 import { apiClient } from '@/lib/apiClient';
 import { DeviceRequest, DeviceLog } from '@/types/deviceRequest';
 import { InventoryAsset, InventoryCondition } from '@/types/inventory';
@@ -15,7 +14,7 @@ export const deviceRequestService = {
 
     // Get requests for a specific user
     getUserRequests: async (uid: string): Promise<DeviceRequest[]> => {
-        const response = await apiClient(`/api/device-requests?userId=${uid}`, {
+        const response = await apiClient('/api/device-requests', {
             method: 'GET'
         });
 
@@ -41,7 +40,7 @@ export const deviceRequestService = {
 
     // --- WRITE ---
 
-    createRequest: async (data: Omit<DeviceRequest, 'id' | 'status' | 'createdAt' | 'updatedAt'>): Promise<string> => {
+    createRequest: async (data: Omit<DeviceRequest, 'id' | 'status' | 'created_at' | 'updated_at'>): Promise<string> => {
         const response = await apiClient('/api/device-requests', {
             method: 'POST',
             body: JSON.stringify({

@@ -21,7 +21,7 @@ export function PageHeader({ title, description, actions, className, size = 'def
                 </h1>
                 {description && (
                     <p className={cn(
-                        "text-muted-foreground font-medium uppercase tracking-[0.2em] opacity-40 leading-relaxed max-w-2xl",
+                        "text-secondary font-medium uppercase tracking-[0.2em] leading-relaxed max-w-2xl",
                         size === 'large' ? "text-[11px]" : "text-[10px]"
                     )}>
                         {description}

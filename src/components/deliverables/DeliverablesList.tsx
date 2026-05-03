@@ -65,7 +65,7 @@ export const DeliverablesList: React.FC<DeliverablesListProps> = ({ taskId, refr
                             {/* Preview Thumbnail */}
                             <SafeDeliverablePreview
                                 url={item.downloadUrl}
-                                fileName={item.fileName}
+                                file_name={item.file_name}
                                 fileType={item.fileType}
                                 className="w-24 h-24 shrink-0"
                             />
@@ -73,8 +73,8 @@ export const DeliverablesList: React.FC<DeliverablesListProps> = ({ taskId, refr
                             {/* Details */}
                             <div className="flex-1 min-w-0 flex flex-col justify-between">
                                 <div>
-                                    <h4 className="text-sm font-bold text-gray-200 truncate" title={item.fileName}>
-                                        {item.fileName}
+                                    <h4 className="text-sm font-bold text-gray-200 truncate" title={item.file_name}>
+                                        {item.file_name}
                                     </h4>
                                     <div className="flex items-center gap-2 mt-1">
                                         <span className="text-xs font-mono text-gray-500 bg-black/20 px-1.5 rounded">
@@ -89,16 +89,16 @@ export const DeliverablesList: React.FC<DeliverablesListProps> = ({ taskId, refr
                                 <div className="flex items-center justify-between mt-3">
                                     <div className="flex items-center gap-2">
                                         <SafeAvatar
-                                            src={item.uploadedBy.avatarUrl}
-                                            alt={item.uploadedBy.name}
+                                            src={item.uploaded_by.avatar_url}
+                                            alt={item.uploaded_by.name}
                                             size={20}
                                         />
                                         <div className="flex flex-col">
-                                            <span className="text-xs text-gray-300 font-medium">{item.uploadedBy.name}</span>
+                                            <span className="text-xs text-gray-300 font-medium">{item.uploaded_by.name}</span>
                                             <span className="text-[10px] text-gray-500 flex items-center gap-1">
                                                 <Clock size={8} />
                                                 {formatDistanceToNow(
-                                                    (item.createdAt as any).toDate ? (item.createdAt as any).toDate() : item.createdAt,
+                                                    (item.created_at as any).toDate ? (item.created_at as any).toDate() : item.created_at,
                                                     { addSuffix: true }
                                                 )}
                                             </span>

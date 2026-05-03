@@ -6,7 +6,7 @@ export interface SystemEvent {
     title: string;
     description?: string;
     type: 'holiday' | 'company' | 'deadline' | 'other';
-    isMediaOffDay?: boolean;
+    is_media_off_day?: boolean;
 
     // Recurrence logic
     isRecurring: boolean;
@@ -24,7 +24,7 @@ export interface SystemEvent {
     // Single instance date (if not recurring)
     date?: TimestampLike;
 
-    createdBy: {
+    created_by: {
         uid: string;
         name: string;
     };
@@ -39,5 +39,5 @@ export interface SystemEvent {
         endDate?: TimestampLike;
         [key: string]: any;
     };
-    createdAt: TimestampLike;
+    created_at: TimestampLike;
 }

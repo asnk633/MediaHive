@@ -6,10 +6,10 @@ export interface GroupedNotification {
     items: AppNotification[];
     count: number;
     type: NotificationType;
-    entityType: string;
-    entityId: string;
+    entity_type: string;
+    entity_id: string;
     latestCreatedAt: any; // Timestamp or Date or string
-    isRead: boolean; // Computed from items (rule says all unread)
+    read: boolean; // Computed from items (rule says all unread)
 }
 
 const EXCLUDED_TYPES: NotificationType[] = [
@@ -22,10 +22,10 @@ const EXCLUDED_TYPES: NotificationType[] = [
 const GROUP_WINDOW_MS = 30 * 60 * 1000; // 30 minutes
 
 const getTime = (n: AppNotification): number => {
-    if (!n.createdAt) return 0;
-    if (typeof n.createdAt === 'string') return new Date(n.createdAt).getTime();
-    if ('seconds' in (n.createdAt as any)) return (n.createdAt as any).seconds * 1000;
-    return new Date(n.createdAt as any).getTime();
+    if (!n.created_at) return 0;
+    if (typeof n.created_at === 'string') return new Date(n.created_at).getTime();
+    if ('seconds' in (n.created_at as any)) return (n.created_at as any).seconds * 1000;
+    return new Date(n.created_at as any).getTime();
 };
 
 export const groupNotifications = (notifications: AppNotification[]): (AppNotification | GroupedNotification)[] => {
@@ -37,7 +37,7 @@ export const groupNotifications = (notifications: AppNotification[]): (AppNotifi
 
     // Helper: is eligible for grouping?
     const isGroupable = (n: AppNotification) => {
-        return !n.isRead && !EXCLUDED_TYPES.includes(n.type);
+        return !n.read && !EXCLUDED_TYPES.includes(n.type);
     };
 
     let i = 0;
@@ -62,8 +62,8 @@ export const groupNotifications = (notifications: AppNotification[]): (AppNotifi
 
             // Must match identity
             const matchesIdentity =
-                candidate.entityType === current.entityType &&
-                candidate.entityId === current.entityId &&
+                candidate.entity_type === current.entity_type &&
+                candidate.entity_id === current.entity_id &&
                 candidate.type === current.type;
 
             // Must match state (unread) and exclusions
@@ -134,8 +134,8 @@ export const groupNotifications = (notifications: AppNotification[]): (AppNotifi
             if (handledIds.has(candidate.id)) continue;
 
             if (
-                candidate.entityType === current.entityType &&
-                candidate.entityId === current.entityId &&
+                candidate.entity_type === current.entity_type &&
+                candidate.entity_id === current.entity_id &&
                 candidate.type === current.type &&
                 isGroupable(candidate)
             ) {
@@ -155,15 +155,15 @@ export const groupNotifications = (notifications: AppNotification[]): (AppNotifi
             // Create Group
             matches.forEach(m => handledIds.add(m.id));
             finalOutput.push({
-                id: `group_${current.entityId}_${current.type}_${current.id}`,
+                id: `group_${current.entity_id}_${current.type}_${current.id}`,
                 isGroup: true,
                 items: matches,
                 count: matches.length,
                 type: current.type,
-                entityType: current.entityType,
-                entityId: current.entityId,
-                latestCreatedAt: current.createdAt, // Since sorted desc
-                isRead: false
+                entity_type: current.entity_type,
+                entity_id: current.entity_id,
+                latestCreatedAt: current.created_at, // Since sorted desc
+                read: false
             });
         } else {
             // Single item (no matches found)

@@ -1,4 +1,5 @@
 import { apiClient } from '@/lib/apiClient';
+import { supabase } from '@/lib/supabaseClient';
 import { Task } from '@/types/task';
 import { TaskRating, UserPerformanceStats } from '@/types/taskRating';
 
@@ -27,14 +28,14 @@ export const TaskRatingService = {
 
         // User must be admin OR task creator
         const isAdmin = currentUser.role === 'admin';
-        const isCreator = task.createdBy?.uid === currentUser.uid;
+        const isCreator = task.created_by?.uid === currentUser.uid;
 
         if (!isAdmin && !isCreator) {
             return false;
         }
 
         // User cannot be an assignee (can't rate own work)
-        const isAssignee = task.assignedTo?.some(
+        const isAssignee = task.assigned_to?.some(
             assignee => assignee.uid === currentUser.uid
         );
 
@@ -66,11 +67,9 @@ export const TaskRatingService = {
 
         try {
             // Get task document to verify permissions and get assignee info
-            const task = await apiClient(`/api/tasks/${taskId}`, {
-                method: 'GET'
-            });
+            const { data: task, error: taskError } = await supabase.from('tasks').select('*').eq('id', taskId).single();
 
-            if (!task) {
+            if (taskError || !task) {
                 throw new Error('Task not found');
             }
 
@@ -93,18 +92,17 @@ export const TaskRatingService = {
             };
 
             // Update task with rating
-            await apiClient(`/api/tasks/${taskId}`, {
-                method: 'PATCH',
-                body: JSON.stringify({
-                    rating: rating as any,
-                    updatedAt: new Date().toISOString() // Send as ISO string
-                })
-            });
+            const { error: updateError } = await supabase.from('tasks').update({
+                rating: rating as any,
+                updated_at: new Date().toISOString()
+            }).eq('id', taskId);
+
+            if (updateError) throw updateError;
 
             // Update user performance stats (client-side aggregation)
-            if (task.assignedTo && task.assignedTo.length > 0) {
+            if (task.assigned_to && task.assigned_to.length > 0) {
                 await TaskRatingService.updatePerformanceStats(
-                    task.assignedTo[0].uid,
+                    task.assigned_to[0].uid,
                     stars
                 );
             }
@@ -120,9 +118,8 @@ export const TaskRatingService = {
      */
     getTaskRating: async (taskId: string): Promise<TaskRating | null> => {
         try {
-            const task = await apiClient(`/api/tasks/${taskId}`, {
-                method: 'GET'
-            });
+            const { data: task, error } = await supabase.from('tasks').select('rating').eq('id', taskId).single();
+            if (error) return null;
 
             return task?.rating || null;
         } catch (error) {
@@ -140,7 +137,7 @@ export const TaskRatingService = {
     ): Promise<void> => {
         try {
             const year = new Date().getFullYear();
-            
+
             const stats = await apiClient(`/api/user-performance-stats/${userId}/${year}`, {
                 method: 'GET'
             });
@@ -200,7 +197,7 @@ export const TaskRatingService = {
     getUserStats: async (userId: string, year?: number): Promise<UserPerformanceStats | null> => {
         try {
             const targetYear = year || new Date().getFullYear();
-            
+
             const stats = await apiClient(`/api/user-performance-stats/${userId}/${targetYear}`, {
                 method: 'GET'
             });

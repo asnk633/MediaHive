@@ -58,16 +58,16 @@ export interface InventoryAsset {
     imageUrl?: string;
     images?: {
         url: string;
-        fileId: string;
+        file_id: string;
     }[];
     driveFileId?: string;
     serialNumber?: string;
     remarks?: string;
 
     // Audit Fields
-    createdAt: TimestampLike;
-    updatedAt: TimestampLike;
-    createdBy: {
+    created_at: TimestampLike;
+    updated_at: TimestampLike;
+    created_by: {
         uid: string;
         name: string;
     };
@@ -89,7 +89,7 @@ export interface InventoryItem {
     imageUrl?: string;
     images?: {
         url: string;
-        fileId: string;
+        file_id: string;
     }[]; // Multi-image support
     driveFileId?: string;
     condition?: InventoryCondition;
@@ -103,9 +103,9 @@ export interface InventoryItem {
     notes?: string;
 
     // Audit Fields
-    createdAt: string; // ISO String from API
-    updatedAt: string; // ISO String from API
-    createdBy: string; // uid
+    created_at: string; // ISO String from API
+    updated_at: string; // ISO String from API
+    created_by: string; // uid
     purchaseDate?: string; // Optional ISO String
 }
 
@@ -127,11 +127,11 @@ export interface InventoryRequest {
     requestedBy: string; // uid
     requestedByRole: 'guest' | 'team' | 'admin';
     purpose: string;
-    institutionId: string;
+    institution_id: string;
     status: 'pending' | 'approved' | 'rejected' | 'issued';
 
     // Audit
-    createdAt: any;
+    created_at: any;
     approvedAt?: any;
     approvedBy?: string;
     rejectionReason?: string;
@@ -147,7 +147,7 @@ export interface InventoryIssue {
     issuedBy: string; // uid
 
     issuedFor: {
-        institutionId?: string;
+        institution_id?: string;
         projectNote?: string;
     };
 
@@ -161,7 +161,7 @@ export interface InventoryIssue {
     issuedAt: any;
     expectedReturnAt: string; // ISO
     returnedAt?: any;
-    institutionId: string;
+    institution_id: string;
 
     // Notification State
     reminded24h?: boolean;

@@ -11,7 +11,7 @@ export const CampaignService = {
         const campaignData = {
             ...data,
             ownerId: user.uid,
-            createdBy: {
+            created_by: {
                 uid: user.uid,
                 role: user.role as any,
                 name: user.name
@@ -24,7 +24,7 @@ export const CampaignService = {
             method: 'POST',
             body: JSON.stringify(campaignData)
         });
-        
+
         return response.id;
     },
 
@@ -34,12 +34,8 @@ export const CampaignService = {
      * Team: Campaigns they are members of (or we could show all for Team too, depending on open/closed culture. Assuming "All" or "Member" based on reqs. "Team: campaigns they are members of" per prompt)
      * Guest: Only their own campaigns (ownerId or member)
      */
-    async getUserCampaigns(user: { uid: string, role: string }): Promise<Campaign[]> {
-        const queryParams = new URLSearchParams();
-        queryParams.append('role', user.role);
-        queryParams.append('userId', user.uid);
-
-        const response = await apiClient(`/api/campaigns?${queryParams.toString()}`);
+    async getUserCampaigns(): Promise<Campaign[]> {
+        const response = await apiClient('/api/campaigns');
         return response.campaigns || [];
     },
 
@@ -66,7 +62,7 @@ export const CampaignService = {
         if (!['admin', 'team'].includes(user.role)) {
             throw new Error("Unauthorized: Only Admin/Team can delete campaigns");
         }
-        
+
         await apiClient(`/api/campaigns/${id}`, {
             method: 'DELETE'
         });
@@ -75,15 +71,15 @@ export const CampaignService = {
     /**
      * Get tasks linked to a campaign
      */
-    async getCampaignTasks(campaignId: string): Promise<Task[]> {
-        const response = await apiClient(`/api/campaigns/${campaignId}/tasks`);
+    async getCampaignTasks(campaign_id: string): Promise<Task[]> {
+        const response = await apiClient(`/api/campaigns/${campaign_id}/tasks`);
         return response.tasks || [];
     },
 
-    async linkTaskToCampaign(taskId: string, campaignId: string) {
+    async linkTaskToCampaign(taskId: string, campaign_id: string) {
         await apiClient('/api/campaigns/link-task', {
             method: 'POST',
-            body: JSON.stringify({ taskId, campaignId })
+            body: JSON.stringify({ taskId, campaign_id })
         });
     },
 

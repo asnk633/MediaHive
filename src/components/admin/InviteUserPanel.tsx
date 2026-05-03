@@ -6,16 +6,16 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { Alert, AlertDescription } from '@/components/ui/alert';
+
 import { AlertCircle, UserPlus, Send, Trash2, Copy, Check } from 'lucide-react';
 import { toast } from 'sonner';
 import { apiClient } from '@/lib/apiClient';
 
 interface InviteUserPanelProps {
-  institutionId: string;
+  institution_id: string;
 }
 
-export const InviteUserPanel: React.FC<InviteUserPanelProps> = ({ institutionId }) => {
+export const InviteUserPanel: React.FC<InviteUserPanelProps> = ({ institution_id }) => {
   const [isFeatureEnabledFlag, setIsFeatureEnabledFlag] = useState(false);
   const [email, setEmail] = useState('');
   const [role, setRole] = useState<'admin' | 'team' | 'guest'>('team');
@@ -42,7 +42,7 @@ export const InviteUserPanel: React.FC<InviteUserPanelProps> = ({ institutionId 
       const data = await apiClient('/api/invites', {
         method: 'GET'
       });
-      
+
       if (data.success) {
         setInvites(data.invites);
       } else {
@@ -58,7 +58,7 @@ export const InviteUserPanel: React.FC<InviteUserPanelProps> = ({ institutionId 
 
   const handleCreateInvite = async (e: React.FormEvent) => {
     e.preventDefault();
-    
+
     if (!email) {
       toast.error('Please enter an email address');
       return;
@@ -154,8 +154,8 @@ export const InviteUserPanel: React.FC<InviteUserPanelProps> = ({ institutionId 
               </Select>
             </div>
             <div>
-              <Button 
-                type="submit" 
+              <Button
+                type="submit"
                 className="w-full bg-blue-600 hover:bg-blue-500 text-white"
                 disabled={isLoading}
               >
@@ -180,7 +180,7 @@ export const InviteUserPanel: React.FC<InviteUserPanelProps> = ({ institutionId 
 
         <div className="border-t border-[#ffffff1a] pt-6">
           <h3 className="text-lg font-medium text-white mb-4">Pending Invites</h3>
-          
+
           {loadingInvites ? (
             <div className="flex items-center justify-center h-20">
               <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-500"></div>
@@ -192,25 +192,24 @@ export const InviteUserPanel: React.FC<InviteUserPanelProps> = ({ institutionId 
           ) : (
             <div className="space-y-3">
               {invites.map((invite) => (
-                <div 
-                  key={invite.id} 
+                <div
+                  key={invite.id}
                   className="flex items-center justify-between p-4 bg-gray-800/30 rounded-lg border border-gray-700"
                 >
                   <div className="flex-1">
                     <div className="flex items-center gap-2">
                       <span className="font-medium text-white">{invite.email}</span>
-                      <span className={`px-2 py-1 rounded-full text-xs ${
-                        invite.role === 'admin' 
-                          ? 'bg-red-500/20 text-red-300' 
-                          : invite.role === 'team' 
-                            ? 'bg-blue-500/20 text-blue-300' 
+                      <span className={`px-2 py-1 rounded-full text-xs ${invite.role === 'admin'
+                          ? 'bg-red-500/20 text-red-300'
+                          : invite.role === 'team'
+                            ? 'bg-blue-500/20 text-blue-300'
                             : 'bg-green-500/20 text-green-300'
-                      }`}>
+                        }`}>
                         {invite.role}
                       </span>
                     </div>
                     <div className="text-xs text-gray-400 mt-1">
-                      Created: {new Date(invite.createdAt).toLocaleString()} | 
+                      Created: {new Date(invite.created_at).toLocaleString()} |
                       Expires: {new Date(invite.expiresAt).toLocaleString()}
                     </div>
                   </div>

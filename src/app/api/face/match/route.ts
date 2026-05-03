@@ -69,9 +69,9 @@ export async function POST(request: NextRequest) {
     }
     
     // Save file temporarily
-    const fileId = uuidv4();
+    const file_id = uuidv4();
     const fileExtension = file.name.split('.').pop() || '';
-    const tempFileName = `${fileId}.${fileExtension}`;
+    const tempFileName = `${file_id}.${fileExtension}`;
     const tempFilePath = path.join(UPLOADS_DIR, tempFileName);
     
     const fileBuffer = Buffer.from(await file.arrayBuffer());

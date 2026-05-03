@@ -1,8 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { getDb } from '@/db';
-import { tasks } from '@/db/schema';
-import { eq, and, desc, gte, lte, count, sql } from 'drizzle-orm';
-import { verifyUser } from '@/lib/server-utils';
+import { verifyUser, getSupabaseFromRequest } from '@/lib/server-utils';
 
 // Force dynamic to ensure we get fresh data
 export const dynamic = 'force-dynamic';
@@ -14,81 +11,28 @@ export async function GET(request: NextRequest) {
             return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
         }
 
-        const db = await getDb();
-        const userId = user.uid; // Assuming string UID from verifyUser (Firebase)
+        const supabase = getSupabaseFromRequest(request);
+        if (!supabase) return NextResponse.json({ error: 'Internal Error' }, { status: 500 });
 
-        // 1. Fetch Tasks
-        // We need: Pending (Active), Completed, Overdue
-        // We also want recent activity
+        const userId = user.uid;
 
-        const allUserTasks = await db.select().from(tasks)
-            .where(
-                and(
-                    eq(tasks.assignedToId, typeof userId === 'number' ? userId : parseInt(userId as string) || 0), // Handle potential type mismatch if userId is int in DB
-                    eq(tasks.isArchived, false)
-                )
-            );
+        // Fetch tasks assigned to the current user strictly from Supabase
+        const { data: taskList, error } = await supabase
+            .from('tasks')
+            .select('*')
+            .eq('assigned_to_id', userId)
+            .eq('is_archived', false)
+            .order('created_at', { ascending: false });
 
-        // Note: verifyUser returns Firebase UID (string), but DB uses int IDs for users typically?
-        // Let's double check how verifyUser maps. 
-        // verifyUser returns {...decodedToken, ...userData}. 
-        // If users table has int ID, we need that. 
-        // verifyUser fetches from Firestore 'users' collection usually. 
-        // BUT `tasks` table in Drizzle might be using SQL int IDs. 
-        // Let's check schema.ts to be safe. 
-        // schema.ts -> tasks.assignedToId is integer?
-
-        // For now, assuming verifyUser gives us the SQL ID if it's stored in Firebase User doc or we need to lookup using email/uid.
-        // Actually, verifyUser implementation in `src/lib/server-utils.ts` fetches from Firestore `users` collection.
-        // Does Firestore user doc have the SQL `id`? 
-        // In `route.ts` (Intelligence), it maps `allUsers` from SQL.
-
-        // Let's assume we need to find the SQL user ID first if `user.id` isn't it.
-        // User object from verifyUser has `uid` (Firebase). 
-        // If the Postgres `users` table is synced, we should query Postgres `users` by `firebaseUid` if it exists, or `email`.
-        // Let's check `users` schema in a separate view if needed, but for now I will try to use `user.id` if it exists on the verifyUser object (it mixes in Firestore data).
-
-        // Let's try to query by Email if ID is uncertain, or assume `user.id` is the SQL ID if the AuthContext/VerifyUser provides it.
-        // Checking `verifyUser` implementation:
-        // `const userDoc = await adminDb.collection('users').doc(decoded.uid).get();`
-        // `...userData` is spread. If Firestore has `id` field (SQL ID), we are good.
-
-        // Providing a safe fallback lookup just in case:
-        // Debug Logging
-        console.log('[API] Personal Reports: User verified', { uid: user.uid, email: user.email, id: user.id });
-
-        let sqlUserId = user.id;
-        if (!sqlUserId) {
-            console.log('[API] Personal Reports: user.id missing, looking up by email', user.email);
-            const userRecord = await db.query.users.findFirst({
-                where: (users: any, { eq }: any) => eq(users.email, user.email)
-            });
-            if (userRecord) {
-                sqlUserId = userRecord.id;
-                console.log('[API] Personal Reports: Found user by email', sqlUserId);
-            } else {
-                console.log('[API] Personal Reports: User not found by email');
-            }
-        }
-
-        if (!sqlUserId) {
-            console.warn('[API] Personal Reports: SQL User ID not found for ' + user.email + '. Returning empty stats.');
-            // Return empty stats instead of erroring
+        if (error) {
+            console.error('[API] Personal Reports Fetch Error:', error);
+            // Return empty stats instead of erroring for a smoother UI experience
             return NextResponse.json({
                 stats: { pending: 0, dueSoon: 0, overdue: 0, completionRate: 0, totalAssigned: 0 },
                 chartData: [],
                 recentActivity: []
             });
         }
-
-        const taskList = await db.select().from(tasks)
-            .where(
-                and(
-                    eq(tasks.assignedToId, sqlUserId),
-                    eq(tasks.isArchived, false)
-                )
-            )
-            .orderBy(desc(tasks.createdAt));
 
         const now = new Date();
         const twoDaysFromNow = new Date();
@@ -108,20 +52,19 @@ export async function GET(request: NextRequest) {
             last7DaysMap.set(d.toISOString().split('T')[0], 0);
         }
 
-        taskList.forEach((t: any) => {
-            if (t.status === 'done') {
+        (taskList || []).forEach((t: any) => {
+            const status = String(t.status || '').toLowerCase();
+            if (status === 'done' || status === 'completed') {
                 completed++;
                 // Check if completed in last 7 days for chart
-                if (t.updatedAt) {
-                    const doneDate = new Date(t.updatedAt).toISOString().split('T')[0];
-                    if (last7DaysMap.has(doneDate)) {
-                        last7DaysMap.set(doneDate, (last7DaysMap.get(doneDate) || 0) + 1);
-                    }
+                const doneDate = new Date(t.updated_at || t.created_at).toISOString().split('T')[0];
+                if (last7DaysMap.has(doneDate)) {
+                    last7DaysMap.set(doneDate, (last7DaysMap.get(doneDate) || 0) + 1);
                 }
             } else {
-                pending++; // status != done
-                if (t.dueDate) {
-                    const dueDate = new Date(t.dueDate);
+                pending++;
+                if (t.due_date) {
+                    const dueDate = new Date(t.due_date);
                     if (dueDate < now) {
                         overdue++;
                     } else if (dueDate <= twoDaysFromNow) {
@@ -140,13 +83,16 @@ export async function GET(request: NextRequest) {
             .reverse();
 
         // Recent Activity (Last 5 completed)
-        const recentActivity = taskList
-            .filter((t: any) => t.status === 'done')
+        const recentActivity = (taskList || [])
+            .filter((t: any) => {
+                const status = String(t.status || '').toLowerCase();
+                return status === 'done' || status === 'completed';
+            })
             .slice(0, 5)
             .map((t: any) => ({
                 id: t.id,
                 title: t.title,
-                completedAt: t.updatedAt
+                completed_at: t.updated_at || t.created_at
             }));
 
         return NextResponse.json({
@@ -163,6 +109,6 @@ export async function GET(request: NextRequest) {
 
     } catch (error: any) {
         console.error('[API] Personal Reports Error:', error);
-        return NextResponse.json({ error: 'Internal User Error' }, { status: 500 });
+        return NextResponse.json({ error: 'Internal Server Error' }, { status: 500 });
     }
 }

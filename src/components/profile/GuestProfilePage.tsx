@@ -23,7 +23,7 @@ export function GuestProfilePage() {
                 // Fetch tasks where this user is the CREATOR (or assigned, though guests usually create)
                 // Fetch tasks where this user is the CREATOR
                 const data = await CanonicalDataService.getTasks({
-                    createdBy: user.uid,
+                    created_by: user.uid,
                 });
                 setTasks(data);
             } catch (err) {
@@ -44,8 +44,8 @@ export function GuestProfilePage() {
     // Recent Activity: Last 5 updated tasks
     const recentActivity = [...tasks]
         .sort((a, b) => {
-            const dateA = a.updatedAt?.seconds ? new Date(a.updatedAt.seconds * 1000) : new Date(0);
-            const dateB = b.updatedAt?.seconds ? new Date(b.updatedAt.seconds * 1000) : new Date(0);
+            const dateA = a.updated_at?.seconds ? new Date(a.updated_at.seconds * 1000) : new Date(0);
+            const dateB = b.updated_at?.seconds ? new Date(b.updated_at.seconds * 1000) : new Date(0);
             return dateB.getTime() - dateA.getTime();
         })
         .slice(0, 5);
@@ -57,7 +57,7 @@ export function GuestProfilePage() {
                     <div className="relative">
                         <div className="w-32 h-32 rounded-full p-1 bg-gradient-to-br from-blue-500 to-violet-500">
                             <SafeAvatar
-                                src={user.avatarUrl}
+                                src={user.avatar_url}
                                 alt={user.name || 'User'}
                                 className="w-full h-full border-4 border-[#0f172a] rounded-full"
                                 size={128}
@@ -74,7 +74,7 @@ export function GuestProfilePage() {
                                 Guest Account
                             </span>
                             <span className="px-3 py-1 rounded-full bg-white/10 text-sm text-gray-300 border border-white/5">
-                                {user.defaultDepartment || 'General'}
+                                {user.department_id || 'General'}
                             </span>
                         </div>
                     </div>
@@ -136,7 +136,7 @@ export function GuestProfilePage() {
                                     <div>
                                         <p className="text-white font-medium group-hover:text-blue-300 transition-colors">{task.title}</p>
                                         <p className="text-gray-500 text-xs mt-1">
-                                            Updated {task.updatedAt?.seconds ? format(new Date(task.updatedAt.seconds * 1000), 'MMM d, h:mm a') : 'Recently'}
+                                            Updated {task.updated_at?.seconds ? format(new Date(task.updated_at.seconds * 1000), 'MMM d, h:mm a') : 'Recently'}
                                         </p>
                                     </div>
                                 </div>

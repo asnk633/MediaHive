@@ -19,9 +19,9 @@ export function AccountSnapshot({ user }: AccountSnapshotProps) {
 
     // Determine Account Type
     const getAccountType = (user: AuthUser | null) => {
-        if (user?.isSuperAdmin) return 'Root Administrator';
+        if (user?.is_super_admin) return 'Root Administrator';
         if (user?.role === 'guest') return 'Office / Unit Account';
-        if (user?.institutionId) return 'Institution Account';
+        if (user?.institution_id) return 'Institution Account';
         return 'Standard Account';
     };
 

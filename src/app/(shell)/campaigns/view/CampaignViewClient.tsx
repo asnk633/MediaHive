@@ -83,7 +83,7 @@ function CampaignDashboardContent() {
 
                 <div className="flex items-center gap-3">
                     <button
-                        onClick={() => nativeNavigate(`/tasks/new?campaignId=${campaign.id}`, router, 'CampaignView (New Task)')}
+                        onClick={() => nativeNavigate(`/tasks/new?campaign_id=${campaign.id}`, router, 'CampaignView (New Task)')}
                         className="px-4 py-2 bg-blue-600 hover:bg-blue-500 text-white rounded-xl text-xs md:text-sm font-bold shadow-lg shadow-blue-900/20 transition-all hover:scale-105 flex items-center gap-2"
                     >
                         <Layers size={16} />
@@ -181,7 +181,7 @@ function CampaignDashboardContent() {
                         <h3 className="text-white font-semibold text-lg">No tasks yet</h3>
                         <p className="text-sm mt-1">Start adding tasks to this campaign to track progress.</p>
                         <button
-                            onClick={() => nativeNavigate(`/tasks/new?campaignId=${campaign.id}`, router, 'CampaignView (Empty New Task)')}
+                            onClick={() => nativeNavigate(`/tasks/new?campaign_id=${campaign.id}`, router, 'CampaignView (Empty New Task)')}
                             className="mt-4 px-6 py-2 bg-blue-600 hover:bg-blue-500 text-white rounded-xl text-sm font-semibold transition-colors"
                         >
                             Add First Task

@@ -1,4 +1,4 @@
-// Network monitoring utility for Firebase connectivity issues
+// Network monitoring utility for MOCK_KEY connectivity issues
 import { apiClient } from '@/lib/apiClient';
 import { getApiBaseUrl } from '@/lib/api-utils';
 
@@ -103,8 +103,8 @@ export class NetworkMonitor {
     }
   }
 
-  // Test network connectivity to Firebase (kept original method name and logic)
-  async testFirebaseConnectivity(): Promise<boolean> {
+  // Test network connectivity to MOCK_KEY (kept original method name and logic)
+  async testMOCK_KEYConnectivity(): Promise<boolean> {
     if (typeof window === 'undefined' || !this.getIsOnline()) {
       return false;
     }

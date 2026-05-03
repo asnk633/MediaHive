@@ -9,15 +9,15 @@ exports.tenants = (0, sqlite_core_1.sqliteTable)('tenants', {
     logo: (0, sqlite_core_1.text)('logo'),
     domain: (0, sqlite_core_1.text)('domain').notNull().unique(),
     settings: (0, sqlite_core_1.text)('settings', { mode: 'json' }),
-    createdAt: (0, sqlite_core_1.text)('created_at').notNull(),
-    updatedAt: (0, sqlite_core_1.text)('updated_at').notNull(),
+    created_at: (0, sqlite_core_1.text)('created_at').notNull(),
+    updated_at: (0, sqlite_core_1.text)('updated_at').notNull(),
 });
 // Institutions table
 exports.institutions = (0, sqlite_core_1.sqliteTable)('institutions', {
     id: (0, sqlite_core_1.integer)('id').primaryKey({ autoIncrement: true }),
     name: (0, sqlite_core_1.text)('name').notNull(),
     tenantId: (0, sqlite_core_1.integer)('tenant_id').notNull().references(function () { return exports.tenants.id; }),
-    createdAt: (0, sqlite_core_1.text)('created_at').notNull(),
+    created_at: (0, sqlite_core_1.text)('created_at').notNull(),
 });
 // Users table
 exports.users = (0, sqlite_core_1.sqliteTable)('users', {
@@ -25,12 +25,12 @@ exports.users = (0, sqlite_core_1.sqliteTable)('users', {
     email: (0, sqlite_core_1.text)('email').notNull().unique(),
     passwordHash: (0, sqlite_core_1.text)('password_hash').notNull(),
     fullName: (0, sqlite_core_1.text)('full_name').notNull(),
-    avatarUrl: (0, sqlite_core_1.text)('avatar_url'),
+    avatar_url: (0, sqlite_core_1.text)('avatar_url'),
     role: (0, sqlite_core_1.text)('role').notNull(), // 'admin', 'team', 'guest'
-    institutionId: (0, sqlite_core_1.integer)('institution_id').notNull().references(function () { return exports.institutions.id; }),
+    institution_id: (0, sqlite_core_1.integer)('institution_id').notNull().references(function () { return exports.institutions.id; }),
     tenantId: (0, sqlite_core_1.integer)('tenant_id').notNull().references(function () { return exports.tenants.id; }),
-    createdAt: (0, sqlite_core_1.text)('created_at').notNull(),
-    updatedAt: (0, sqlite_core_1.text)('updated_at').notNull(),
+    created_at: (0, sqlite_core_1.text)('created_at').notNull(),
+    updated_at: (0, sqlite_core_1.text)('updated_at').notNull(),
 });
 // Tasks table
 exports.tasks = (0, sqlite_core_1.sqliteTable)('tasks', {
@@ -41,15 +41,15 @@ exports.tasks = (0, sqlite_core_1.sqliteTable)('tasks', {
     priority: (0, sqlite_core_1.text)('priority').notNull(), // 'low', 'medium', 'high', 'urgent'
     assignedToId: (0, sqlite_core_1.integer)('assigned_to_id').references(function () { return exports.users.id; }),
     createdById: (0, sqlite_core_1.integer)('created_by_id').notNull().references(function () { return exports.users.id; }),
-    institutionId: (0, sqlite_core_1.integer)('institution_id').notNull().references(function () { return exports.institutions.id; }),
+    institution_id: (0, sqlite_core_1.integer)('institution_id').notNull().references(function () { return exports.institutions.id; }),
     tenantId: (0, sqlite_core_1.integer)('tenant_id').notNull().references(function () { return exports.tenants.id; }),
-    dueDate: (0, sqlite_core_1.text)('due_date'),
+    due_date: (0, sqlite_core_1.text)('due_date'),
     reviewStatus: (0, sqlite_core_1.text)('reviewStatus'), // Add reviewStatus column for task review workflow
     lastUpdatedBy: (0, sqlite_core_1.integer)('last_updated_by').references(function () { return exports.users.id; }), // Track who last updated the task
     isArchived: (0, sqlite_core_1.integer)('is_archived', { mode: 'boolean' }).default(false), // Archive flag
     version: (0, sqlite_core_1.integer)('version').notNull().default(1), // Optimistic concurrency control
-    createdAt: (0, sqlite_core_1.text)('created_at').notNull(),
-    updatedAt: (0, sqlite_core_1.text)('updated_at').notNull(),
+    created_at: (0, sqlite_core_1.text)('created_at').notNull(),
+    updated_at: (0, sqlite_core_1.text)('updated_at').notNull(),
 });
 // Events table
 exports.events = (0, sqlite_core_1.sqliteTable)('events', {
@@ -58,12 +58,12 @@ exports.events = (0, sqlite_core_1.sqliteTable)('events', {
     description: (0, sqlite_core_1.text)('description'),
     startTime: (0, sqlite_core_1.text)('start_time').notNull(),
     endTime: (0, sqlite_core_1.text)('end_time').notNull(),
-    approvalStatus: (0, sqlite_core_1.text)('approval_status').notNull().default('pending'), // 'pending', 'approved', 'declined'
+    approval_status: (0, sqlite_core_1.text)('approval_status').notNull().default('pending'), // 'pending', 'approved', 'declined'
     createdById: (0, sqlite_core_1.integer)('created_by_id').notNull().references(function () { return exports.users.id; }),
-    institutionId: (0, sqlite_core_1.integer)('institution_id').notNull().references(function () { return exports.institutions.id; }),
+    institution_id: (0, sqlite_core_1.integer)('institution_id').notNull().references(function () { return exports.institutions.id; }),
     tenantId: (0, sqlite_core_1.integer)('tenant_id').notNull().references(function () { return exports.tenants.id; }),
-    createdAt: (0, sqlite_core_1.text)('created_at').notNull(),
-    updatedAt: (0, sqlite_core_1.text)('updated_at').notNull(),
+    created_at: (0, sqlite_core_1.text)('created_at').notNull(),
+    updated_at: (0, sqlite_core_1.text)('updated_at').notNull(),
 });
 // Notifications table
 exports.notifications = (0, sqlite_core_1.sqliteTable)('notifications', {
@@ -76,8 +76,8 @@ exports.notifications = (0, sqlite_core_1.sqliteTable)('notifications', {
     category: (0, sqlite_core_1.text)('category'), // Notification categories for smart bundling
     ttl: (0, sqlite_core_1.integer)('ttl'), // Time to live in seconds
     readReceipt: (0, sqlite_core_1.integer)('read_receipt', { mode: 'boolean' }).default(false), // Read receipt flag
-    createdAt: (0, sqlite_core_1.text)('created_at').notNull(),
-    updatedAt: (0, sqlite_core_1.text)('updated_at'),
+    created_at: (0, sqlite_core_1.text)('created_at').notNull(),
+    updated_at: (0, sqlite_core_1.text)('updated_at'),
 });
 // Attendance table
 exports.attendance = (0, sqlite_core_1.sqliteTable)('attendance', {
@@ -85,9 +85,9 @@ exports.attendance = (0, sqlite_core_1.sqliteTable)('attendance', {
     userId: (0, sqlite_core_1.integer)('user_id').notNull().references(function () { return exports.users.id; }),
     checkIn: (0, sqlite_core_1.text)('check_in').notNull(),
     checkOut: (0, sqlite_core_1.text)('check_out'),
-    institutionId: (0, sqlite_core_1.integer)('institution_id').notNull().references(function () { return exports.institutions.id; }),
+    institution_id: (0, sqlite_core_1.integer)('institution_id').notNull().references(function () { return exports.institutions.id; }),
     tenantId: (0, sqlite_core_1.integer)('tenant_id').notNull().references(function () { return exports.tenants.id; }),
-    createdAt: (0, sqlite_core_1.text)('created_at').notNull(),
+    created_at: (0, sqlite_core_1.text)('created_at').notNull(),
 });
 // Task comments table
 exports.taskComments = (0, sqlite_core_1.sqliteTable)('task_comments', {
@@ -95,19 +95,19 @@ exports.taskComments = (0, sqlite_core_1.sqliteTable)('task_comments', {
     taskId: (0, sqlite_core_1.integer)('task_id').notNull().references(function () { return exports.tasks.id; }, { onDelete: 'cascade' }),
     userId: (0, sqlite_core_1.integer)('user_id').notNull().references(function () { return exports.users.id; }),
     comment: (0, sqlite_core_1.text)('comment').notNull(),
-    createdAt: (0, sqlite_core_1.text)('created_at').notNull(),
+    created_at: (0, sqlite_core_1.text)('created_at').notNull(),
 });
 // Attachments table (for tasks)
 exports.attachments = (0, sqlite_core_1.sqliteTable)('attachments', {
     id: (0, sqlite_core_1.integer)('id').primaryKey({ autoIncrement: true }),
     taskId: (0, sqlite_core_1.integer)('task_id').notNull().references(function () { return exports.tasks.id; }, { onDelete: 'cascade' }),
-    fileName: (0, sqlite_core_1.text)('file_name').notNull(),
+    file_name: (0, sqlite_core_1.text)('file_name').notNull(),
     fileUrl: (0, sqlite_core_1.text)('file_url').notNull(),
     fileType: (0, sqlite_core_1.text)('file_type').notNull(),
     fileSize: (0, sqlite_core_1.integer)('file_size').notNull(),
     uploadedById: (0, sqlite_core_1.integer)('uploaded_by_id').notNull().references(function () { return exports.users.id; }),
     tenantId: (0, sqlite_core_1.integer)('tenant_id').notNull().references(function () { return exports.tenants.id; }),
-    createdAt: (0, sqlite_core_1.text)('created_at').notNull(),
+    created_at: (0, sqlite_core_1.text)('created_at').notNull(),
 });
 // Files table (general file hub)
 exports.files = (0, sqlite_core_1.sqliteTable)('files', {
@@ -119,9 +119,9 @@ exports.files = (0, sqlite_core_1.sqliteTable)('files', {
     folder: (0, sqlite_core_1.text)('folder'),
     visibility: (0, sqlite_core_1.text)('visibility').notNull(), // 'all', 'team', 'guest'
     uploadedById: (0, sqlite_core_1.integer)('uploaded_by_id').notNull().references(function () { return exports.users.id; }),
-    institutionId: (0, sqlite_core_1.integer)('institution_id').notNull().references(function () { return exports.institutions.id; }),
+    institution_id: (0, sqlite_core_1.integer)('institution_id').notNull().references(function () { return exports.institutions.id; }),
     tenantId: (0, sqlite_core_1.integer)('tenant_id').notNull().references(function () { return exports.tenants.id; }),
-    createdAt: (0, sqlite_core_1.text)('created_at').notNull(),
+    created_at: (0, sqlite_core_1.text)('created_at').notNull(),
 });
 // Presence table for tracking user online status
 exports.presence = (0, sqlite_core_1.sqliteTable)('presence', {
@@ -136,7 +136,7 @@ exports.editLocks = (0, sqlite_core_1.sqliteTable)('edit_locks', {
     userId: (0, sqlite_core_1.integer)('user_id').notNull().references(function () { return exports.users.id; }),
     acquiredAt: (0, sqlite_core_1.text)('acquired_at').notNull(),
     expiresAt: (0, sqlite_core_1.text)('expires_at').notNull(),
-    createdAt: (0, sqlite_core_1.text)('created_at').notNull(),
+    created_at: (0, sqlite_core_1.text)('created_at').notNull(),
 });
 // Task activity table for timeline
 exports.taskActivity = (0, sqlite_core_1.sqliteTable)('task_activity', {
@@ -147,7 +147,7 @@ exports.taskActivity = (0, sqlite_core_1.sqliteTable)('task_activity', {
     oldValue: (0, sqlite_core_1.text)('old_value'),
     newValue: (0, sqlite_core_1.text)('new_value'),
     metadata: (0, sqlite_core_1.text)('metadata', { mode: 'json' }),
-    createdAt: (0, sqlite_core_1.text)('created_at').notNull(),
+    created_at: (0, sqlite_core_1.text)('created_at').notNull(),
 });
 // Automation rules table for no-code workflow builder
 exports.automationRules = (0, sqlite_core_1.sqliteTable)('automation_rules', {
@@ -160,9 +160,9 @@ exports.automationRules = (0, sqlite_core_1.sqliteTable)('automation_rules', {
     actions: (0, sqlite_core_1.text)('actions', { mode: 'json' }), // Array of actions to perform
     enabled: (0, sqlite_core_1.integer)('enabled', { mode: 'boolean' }).notNull().default(true),
     tenantId: (0, sqlite_core_1.integer)('tenant_id').notNull().references(function () { return exports.tenants.id; }),
-    createdBy: (0, sqlite_core_1.integer)('created_by').notNull().references(function () { return exports.users.id; }),
-    createdAt: (0, sqlite_core_1.text)('created_at').notNull(),
-    updatedAt: (0, sqlite_core_1.text)('updated_at').notNull(),
+    created_by: (0, sqlite_core_1.integer)('created_by').notNull().references(function () { return exports.users.id; }),
+    created_at: (0, sqlite_core_1.text)('created_at').notNull(),
+    updated_at: (0, sqlite_core_1.text)('updated_at').notNull(),
 });
 // Audit log table for compliance
 exports.auditLog = (0, sqlite_core_1.sqliteTable)('audit_log', {
@@ -185,8 +185,8 @@ exports.mediaReports = (0, sqlite_core_1.sqliteTable)('media_reports', {
     type: (0, sqlite_core_1.text)('type'), // 'image', 'video', 'audio'
     score: (0, sqlite_core_1.integer)('score'), // Quality score from 0-100
     reportJson: (0, sqlite_core_1.text)('report_json', { mode: 'json' }), // Full JSON report with detailed metrics
-    createdAt: (0, sqlite_core_1.text)('created_at').notNull(),
-    updatedAt: (0, sqlite_core_1.text)('updated_at').notNull(),
+    created_at: (0, sqlite_core_1.text)('created_at').notNull(),
+    updated_at: (0, sqlite_core_1.text)('updated_at').notNull(),
 });
 // VIP embeddings table for face recognition
 exports.vipEmbeddings = (0, sqlite_core_1.sqliteTable)('vip_embeddings', {
@@ -194,6 +194,6 @@ exports.vipEmbeddings = (0, sqlite_core_1.sqliteTable)('vip_embeddings', {
     label: (0, sqlite_core_1.text)('label').notNull(), // VIP name/label
     userId: (0, sqlite_core_1.integer)('user_id').references(function () { return exports.users.id; }), // Optional association with user
     embedding: (0, sqlite_core_1.text)('embedding', { mode: 'json' }).notNull(), // JSON array of embedding vector (encrypted)
-    createdBy: (0, sqlite_core_1.integer)('created_by').references(function () { return exports.users.id; }), // Admin who created the embedding
-    createdAt: (0, sqlite_core_1.text)('created_at').notNull(),
+    created_by: (0, sqlite_core_1.integer)('created_by').references(function () { return exports.users.id; }), // Admin who created the embedding
+    created_at: (0, sqlite_core_1.text)('created_at').notNull(),
 });

@@ -4,17 +4,17 @@
 
 import React, { useEffect, useState } from 'react';
 
-export default function FirebaseDebugPage() {
+export default function MOCK_KEYDebugPage() {
     const [debugState, setDebugState] = useState<any>(null);
 
     useEffect(() => {
         // Poll for changes
         const interval = setInterval(() => {
             setDebugState({
-                ready: (window as any).__FIREBASE_READY__ || false,
-                debug: (window as any).__FIREBASE_INIT_DEBUG__ || null,
-                fallback: (window as any).__FIREBASE_PERSISTENCE_FALLBACK__ || false,
-                initError: (window as any).__FIREBASE_INIT_ERROR__ || null,
+                ready: (window as any).__MOCK_KEY_READY__ || false,
+                debug: (window as any).__MOCK_KEY_INIT_DEBUG__ || null,
+                fallback: (window as any).__MOCK_KEY_PERSISTENCE_FALLBACK__ || false,
+                initError: (window as any).__MOCK_KEY_INIT_ERROR__ || null,
             });
         }, 1000);
 
@@ -25,7 +25,7 @@ export default function FirebaseDebugPage() {
 
     return (
         <div style={{ padding: 24, color: '#fff', background: '#111', minHeight: '100vh', fontFamily: 'monospace' }}>
-            <h2 className="text-xl font-bold mb-4">Firebase Runtime Debug</h2>
+            <h2 className="text-xl font-bold mb-4">MOCK_KEY Runtime Debug</h2>
 
             <div className="mb-4">
                 <strong>Status: </strong>

@@ -14,6 +14,8 @@ import { ProofingAuditService } from '@/services/proofingAuditService';
 import { MediaVersioningService } from '@/services/mediaVersioningService';
 import { VersioningAuditService } from '@/services/versioningAuditService';
 import { isFeatureEnabled } from '@/app/featureFlags';
+import { getDriveImageUrl } from '@/lib/driveUtils';
+import Image from 'next/image';
 
 interface MediaLightboxProps {
   file: ExtendedDriveFile;
@@ -101,18 +103,18 @@ export function MediaLightbox({ file, files, loading = false, onClose, onNavigat
     }
   };
 
-  const getFileIcon = (mimeType: string) => {
-    if (mimeType.startsWith('image/')) {
+  const getFileIcon = (mimeType: string = '') => {
+    if (mimeType?.startsWith('image/')) {
       return ImageIcon;
-    } else if (mimeType.startsWith('video/')) {
+    } else if (mimeType?.startsWith('video/')) {
       return Video;
     } else {
       return FileText;
     }
   };
 
-  const isImage = file.mimeType.startsWith('image/');
-  const isVideo = file.mimeType.startsWith('video/');
+  const isImage = file.mimeType?.startsWith('image/') || false;
+  const isVideo = file.mimeType?.startsWith('video/') || false;
 
 
 
@@ -219,7 +221,7 @@ export function MediaLightbox({ file, files, loading = false, onClose, onNavigat
       await ProofingNotificationService.notifyProofingStatusChange(
         file.id,
         file.name,
-        file.uploadedBy,
+        file.uploaded_by,
         newStatus,
         user.uid,
         user.name || 'Anonymous'
@@ -311,25 +313,25 @@ export function MediaLightbox({ file, files, loading = false, onClose, onNavigat
             </div>
           ) : isImage ? (
             <div className="w-full h-full flex items-center justify-center p-4">
-              <div className="bg-gray-200 border-2 border-dashed rounded-xl w-full h-full max-h-[70vh] flex items-center justify-center text-gray-500">
-                <ImageIcon size={48} />
+              <div className="relative w-full h-full max-h-[70vh] aspect-video">
+                <Image
+                  src={getDriveImageUrl(file.viewLink)}
+                  alt={file.name}
+                  fill
+                  className="object-contain"
+                  priority
+                />
               </div>
             </div>
           ) : isVideo ? (
             <div className="w-full h-full flex items-center justify-center p-4">
-              <div className="relative w-full max-h-[70vh]">
-                <div className="bg-gray-900 border-2 border-dashed rounded-xl w-full h-0 pb-[56.25%] flex items-center justify-center text-gray-600">
-                  <Video size={48} className="text-gray-600" />
-                </div>
-                <div className="absolute inset-0 flex items-center justify-center">
-                  <button className="bg-white/20 hover:bg-white/30 rounded-full p-4 transition-colors">
-                    <div className="bg-indigo-500 rounded-full p-3">
-                      <svg className="w-8 h-8 text-white ml-1" fill="currentColor" viewBox="0 0 20 20">
-                        <path d="M8 5v10l8-5-8-5z" />
-                      </svg>
-                    </div>
-                  </button>
-                </div>
+              <div className="relative w-full max-h-[70vh] aspect-video bg-black rounded-xl overflow-hidden border border-white/10 shadow-2xl">
+                <video
+                  src={file.viewLink?.replace('/view', '/preview')}
+                  controls
+                  className="w-full h-full"
+                  poster={getDriveImageUrl(file.viewLink)}
+                />
               </div>
             </div>
           ) : (
@@ -436,13 +438,13 @@ export function MediaLightbox({ file, files, loading = false, onClose, onNavigat
                       <div className="flex justify-between">
                         <span className="text-[var(--text-secondary)]">Uploaded by</span>
                         <span className="text-[var(--text-primary)]">
-                          {file.uploadedByName || file.uploadedBy}
+                          {file.uploadedByName || file.uploaded_by}
                         </span>
                       </div>
                       <div className="flex justify-between">
                         <span className="text-[var(--text-secondary)]">Uploaded</span>
-                        <span className="text-[var(--text-primary)]" title={formatDate(file.createdAt)}>
-                          {getRelativeTime(file.createdAt)}
+                        <span className="text-[var(--text-primary)]" title={formatDate(file.created_at)}>
+                          {getRelativeTime(file.created_at)}
                         </span>
                       </div>
                     </div>
@@ -611,8 +613,8 @@ export function MediaLightbox({ file, files, loading = false, onClose, onNavigat
                                 <span className="font-medium text-[var(--text-primary)] text-sm">
                                   {comment.authorName}
                                 </span>
-                                <span className="text-xs text-[var(--text-secondary)]" title={formatDate(comment.createdAt)}>
-                                  {getRelativeTime(comment.createdAt)}
+                                <span className="text-xs text-[var(--text-secondary)]" title={formatDate(comment.created_at)}>
+                                  {getRelativeTime(comment.created_at)}
                                 </span>
                               </div>
                               <p className="text-[var(--text-primary)] text-sm">
@@ -625,7 +627,7 @@ export function MediaLightbox({ file, files, loading = false, onClose, onNavigat
                                   </span>
                                 )}
                                 <span className="text-xs text-[var(--text-secondary)]">
-                                  {getRelativeTime(comment.createdAt)}
+                                  {getRelativeTime(comment.created_at)}
                                 </span>
                               </div>
                             </div>

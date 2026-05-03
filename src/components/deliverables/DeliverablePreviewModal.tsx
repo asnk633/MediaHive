@@ -46,8 +46,8 @@ export const DeliverablePreviewModal: React.FC<DeliverablePreviewModalProps> = (
 
     if (!isOpen || !deliverable) return null;
 
-    const isImage = /\.(jpg|jpeg|png|gif|webp)$/i.test(deliverable.fileName);
-    const isVideo = /\.(mp4|mov|webm)$/i.test(deliverable.fileName);
+    const isImage = /\.(jpg|jpeg|png|gif|webp)$/i.test(deliverable.file_name);
+    const isVideo = /\.(mp4|mov|webm)$/i.test(deliverable.file_name);
     // Drive preview link works for mostly everything including PDFs and Videos
     const previewUrl = `https://drive.google.com/file/d/${deliverable.driveFileId}/preview`;
     const viewUrl = `https://drive.google.com/file/d/${deliverable.driveFileId}/view`;
@@ -86,7 +86,7 @@ export const DeliverablePreviewModal: React.FC<DeliverablePreviewModalProps> = (
                                 </div>
                                 <div className="min-w-0">
                                     <h3 className="text-lg font-semibold text-white truncate pr-4">
-                                        {deliverable.fileName}
+                                        {deliverable.file_name}
                                     </h3>
                                     <p className="text-xs text-blue-300 font-medium">
                                         Version {deliverable.version}
@@ -135,13 +135,13 @@ export const DeliverablePreviewModal: React.FC<DeliverablePreviewModalProps> = (
                             <div className="flex items-center gap-4 text-sm text-gray-400">
                                 <div className="flex items-center gap-2">
                                     <span className="w-6 h-6 rounded-full bg-white/10 flex items-center justify-center text-[10px] font-bold">
-                                        {deliverable.uploadedBy.name?.charAt(0) || 'U'}
+                                        {deliverable.uploaded_by.name?.charAt(0) || 'U'}
                                     </span>
-                                    <span>Uploaded by <span className="text-white">{deliverable.uploadedBy.name}</span></span>
+                                    <span>Uploaded by <span className="text-white">{deliverable.uploaded_by.name}</span></span>
                                 </div>
                                 <span className="w-1 h-1 rounded-full bg-white/20" />
                                 <span>
-                                    {deliverable.createdAt ? format(new Date((typeof deliverable.createdAt === 'object' && 'seconds' in deliverable.createdAt) ? (deliverable.createdAt as any).seconds * 1000 : deliverable.createdAt), 'MMM d, yyyy h:mm a') : ''}
+                                    {deliverable.created_at ? format(new Date((typeof deliverable.created_at === 'object' && 'seconds' in deliverable.created_at) ? (deliverable.created_at as any).seconds * 1000 : deliverable.created_at), 'MMM d, yyyy h:mm a') : ''}
                                 </span>
                             </div>
 

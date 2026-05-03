@@ -1,4 +1,3 @@
-import { getFirebaseAuth } from '@/firebase/client';
 import { Task } from '@/types/task';
 import { startOfDay, endOfDay, addDays, subDays } from 'date-fns';
 
@@ -34,7 +33,11 @@ export interface TaskStats {
 }
 
 export interface EventStats {
+    total: number;
     upcoming: number;
+    thisMonth: number;
+    holidays: number;
+    meetings: number;
     completed: number;
     next7Days: number;
     next30Days: number;
@@ -66,7 +69,7 @@ export class ReportService {
 
         // Map DashboardFilters to TaskFilters
         const tasks = await CanonicalDataService.getTasks({
-            institutionId: filters.institution,
+            institution_id: filters.institution,
             // department: filters.department // TaskFilters doesn't support department directly yet, might need client-side filter
         });
 
@@ -75,7 +78,7 @@ export class ReportService {
 
         tasks.forEach(task => {
             // Apply date filters client-side if needed
-            const dateVal = task.createdAt || task.updatedAt;
+            const dateVal = task.created_at || task.updated_at;
             const taskDate = (dateVal as any)?.seconds ? new Date((dateVal as any).seconds * 1000) : new Date(dateVal as any);
 
             if (filters.startDate && taskDate < filters.startDate) return;
@@ -89,8 +92,8 @@ export class ReportService {
                 case 'done': stats.done++; stats.completed++; break;
                 case 'pending': stats.pending++; break;
             }
-            if (task.status !== 'done' && task.dueDate) {
-                const due = (task.dueDate as any).seconds ? new Date((task.dueDate as any).seconds * 1000) : new Date(task.dueDate);
+            if (task.status !== 'done' && task.due_date) {
+                const due = (task.due_date as any).seconds ? new Date((task.due_date as any).seconds * 1000) : new Date(task.due_date);
                 if (due < now) stats.overdue++;
             }
         });
@@ -128,9 +131,9 @@ export class ReportService {
         const workloadMap = new Map<string, WorkloadStat>();
 
         tasks.forEach(task => {
-            if (!task.assignedTo) return;
-            // assignedTo is just ID? Or object? Type says string|object usually. 
-            // In Task type it might be different. assuming assignedTo is ID or we skip for now.
+            if (!task.assigned_to) return;
+            // assigned_to is just ID? Or object? Type says string|object usually. 
+            // In Task type it might be different. assuming assigned_to is ID or we skip for now.
             // If we cant easily map user details, we return empty to stop 404.
             return;
         });

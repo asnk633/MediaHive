@@ -19,6 +19,7 @@ interface ApiOptions extends RequestInit {
   skipDedup?: boolean;
   silent?: boolean;
   signal?: AbortSignal | null | undefined;
+  timeout?: number;
 }
 
 // Helper: Sleep for specified milliseconds
@@ -113,35 +114,194 @@ function show429Toast() {
 
 // Main API client function
 export const apiClient = async <T = any>(endpoint: string, options: ApiOptions = {}): Promise<T> => {
-  // --- LOCAL DEV GUARD ---
+  // --- LOCAL DEV GUARD (Static in-memory mocks) ---
   if (process.env.NEXT_PUBLIC_DEV_NO_API === 'true') {
-    // 🔍 Only log non-silent requests or important ones to keep the console clean but informative
     if (!options.silent) {
       console.log(`[DEV] API call skipped (BACKEND DISABLED) -> ${endpoint}`);
     }
 
-    // Mock responses to prevent UI breakage
+    // Static mock responses — in-memory only, no persistence
     if (endpoint.includes('/notifications')) {
-      return { notifications: [], unreadCount: 0 } as any;
+      return {
+        notifications: [
+          {
+            id: 'mock-notif-1',
+            title: 'Welcome to MediaHive',
+            message: 'You are running in local bypass mode.',
+            type: 'system',
+            created_at: new Date().toISOString(),
+            read: false,
+          },
+          {
+            id: 'mock-notif-2',
+            title: 'Task Assigned',
+            message: 'A new sample task has been assigned to you.',
+            type: 'task_assigned',
+            created_at: new Date().toISOString(),
+            read: false,
+          },
+        ],
+        unreadCount: 2,
+      } as any;
     }
+
+    if (endpoint.includes('/trash/restore')) {
+      return { restored: 1 } as any;
+    }
+
+    if (endpoint.includes('/trash')) {
+      if (options.method === 'DELETE') {
+        return { purged: 1 } as any;
+      }
+      // Static trash items (seed only, no persistence)
+      const now = new Date();
+      const mockTrashedTasks = [
+        {
+          id: 'mock-trash-1',
+          title: 'Old Campaign Draft',
+          description: 'Stale campaign from Q3.',
+          status: 'todo',
+          priority: 'low',
+          deleted: true,
+          deletedAt: new Date(now.getTime() - 86400000).toISOString(),
+          due_date: new Date(now.getTime() - 259200000).toISOString(),
+          assigned_to: [{ uid: 'dev-mock-admin', name: 'Local Admin' }],
+          created_by: { uid: 'dev-mock-admin', name: 'Local Admin', role: 'admin' },
+          created_at: { seconds: Math.floor(now.getTime() / 1000) - 604800, nanoseconds: 0 },
+          institution_id: '1',
+        },
+        {
+          id: 'mock-trash-2',
+          title: 'Duplicate Media Log',
+          description: 'Auto-generated duplicate, safe to delete.',
+          status: 'done',
+          priority: 'low',
+          deleted: true,
+          deletedAt: new Date(now.getTime() - 172800000).toISOString(),
+          due_date: new Date(now.getTime() - 432000000).toISOString(),
+          assigned_to: [{ uid: 'dev-mock-admin', name: 'Local Admin' }],
+          created_by: { uid: 'dev-mock-admin', name: 'Local Admin', role: 'admin' },
+          created_at: { seconds: Math.floor(now.getTime() / 1000) - 1209600, nanoseconds: 0 },
+          institution_id: '1',
+        },
+      ];
+      return { tasks: mockTrashedTasks, total: mockTrashedTasks.length } as any;
+    }
+
+    // All task mutations (bulk, single update) return success — state is managed by useOptimisticTasks
+    if (endpoint.includes('/tasks/bulk') || (endpoint.includes('/tasks') && (options.method === 'PUT' || options.method === 'PATCH' || options.method === 'DELETE'))) {
+      return { success: true, results: [], errors: [], message: 'Mock operation complete' } as any;
+    }
+
     if (endpoint.includes('/tasks')) {
-      return { data: [] } as any;
+      const now = new Date();
+      const mockTasks = [
+        {
+          id: 'mock-task-1',
+          title: 'Immediate Production Review',
+          description: 'Review final edits for the upcoming product launch.',
+          status: 'in_progress',
+          priority: 'urgent',
+          due_date: now.toISOString(),
+          assigned_to: [{ uid: 'dev-mock-admin', name: 'Local Admin' }],
+          created_by: { uid: 'dev-mock-admin', name: 'Local Admin', role: 'admin' },
+          created_at: { seconds: Math.floor(now.getTime() / 1000) - 86400, nanoseconds: 0 },
+          institution_id: '1',
+        },
+        {
+          id: 'mock-task-2',
+          title: 'Capture Campus Event',
+          description: 'Photography for the annual garden symposium.',
+          status: 'todo',
+          priority: 'medium',
+          due_date: new Date(now.getTime() + 172800000).toISOString(),
+          assigned_to: [{ uid: 'dev-mock-admin', name: 'Local Admin' }],
+          created_by: { uid: 'dev-mock-admin', name: 'Local Admin', role: 'admin' },
+          created_at: { seconds: Math.floor(now.getTime() / 1000) - 43200, nanoseconds: 0 },
+          institution_id: '1',
+        },
+        {
+          id: 'mock-task-3',
+          title: 'Archived Footage Cleanup',
+          description: 'Organize files from last season.',
+          status: 'done',
+          priority: 'low',
+          due_date: new Date(now.getTime() - 172800000).toISOString(),
+          assigned_to: [{ uid: 'dev-mock-admin', name: 'Local Admin' }],
+          created_by: { uid: 'dev-mock-admin', name: 'Local Admin', role: 'admin' },
+          created_at: { seconds: Math.floor(now.getTime() / 1000) - 259200, nanoseconds: 0 },
+          completed_at: { seconds: Math.floor(now.getTime() / 1000) - 86400, nanoseconds: 0 },
+          institution_id: '1',
+        },
+      ];
+      return { tasks: mockTasks, total: mockTasks.length } as any;
     }
+
+    if (endpoint.includes('/events')) {
+      const now = new Date();
+      const mockEvents = [
+        {
+          id: 'mock-event-1',
+          title: 'Strategic Planning Session',
+          description: 'Quarterly review of media assets.',
+          date: new Date(now.getTime() + 86400000).toISOString(),
+          startAt: new Date(now.getTime() + 86400000).toISOString(),
+          location: 'Conference Room A',
+          type: 'meeting',
+          institution_id: '1',
+        },
+        {
+          id: 'mock-event-2',
+          title: 'Garden Tour Live Stream',
+          description: 'Social media broadcast.',
+          date: new Date(now.getTime() + 432000000).toISOString(),
+          startAt: new Date(now.getTime() + 432000000).toISOString(),
+          location: 'Outdoor Garden',
+          type: 'production',
+          institution_id: '1',
+        },
+      ];
+      return { events: mockEvents, total: mockEvents.length } as any;
+    }
+
+    if (endpoint.includes('/campaigns')) {
+      return {
+        campaigns: [
+          {
+            id: 'mock-campaign-1',
+            title: 'Spring Season Launch',
+            status: 'active',
+            phase: 'production',
+            description: 'Primary marketing campaign for Spring.',
+            institution_id: '1',
+            created_at: new Date().toISOString(),
+          },
+        ],
+      } as any;
+    }
+
     if (endpoint.includes('/users/me')) {
       return {
-        data: {
+        user: {
           uid: 'dev-mock-admin',
           email: 'admin@local.dev',
           name: 'Local Admin',
           role: 'admin',
-          isAdmin: true
-        }
+          isAdmin: true,
+          institution_id: '1',
+        },
       } as any;
     }
 
-    // Generic success for other endpoints (trigger, etc.)
+    if (endpoint.includes('/inventory/stats')) {
+      return { total: 156, inUse: 42, unavailable: 12, utilization: 27 } as any;
+    }
+
+    // Generic success for any other endpoint
     return { success: true, data: {} } as any;
   }
+
+
 
   // ✅ ENFORCED INVARIANT: Mobile = absolute only, Web = relative allowed
   const envBaseUrl = getApiBaseUrl();
@@ -203,25 +363,22 @@ export const apiClient = async <T = any>(endpoint: string, options: ApiOptions =
       delete headers['Content-Type'];
     }
 
-    // Automatically attach Firebase ID token if user is signed in
+    // Automatically attach Supabase session token if user is signed in
     // BUT: respect explicitly passed Authorization headers (e.g., from AuthContext)
     const headersRecord = options.headers as Record<string, string> | undefined;
     if (!headersRecord?.['Authorization']) {
       try {
-        // Use the centralized helper to ensure we get the SAME Auth instance as the UI (AuthContext)
-        // This is critical for Capacitor/WebView where persistence is manually configured.
-        const { getFirebaseAuth } = await import('@/firebase/client');
-        const auth = await getFirebaseAuth();
+        const { supabase } = await import('@/lib/supabaseClient');
+        const { data: { session } } = await supabase.auth.getSession();
 
-        if (auth.currentUser) {
-          const token = await auth.currentUser.getIdToken();
-          headers['Authorization'] = `Bearer ${token}`;
+        if (session?.access_token) {
+          headers['Authorization'] = `Bearer ${session.access_token}`;
           if (isDev) {
-            console.log(`[API Client] 🔑 Token attached for ${endpoint} (User: ${auth.currentUser.uid})`);
+            console.log(`[API Client] 🔑 Token attached for ${endpoint} (User: ${session.user?.id})`);
           }
         } else {
           if (isDev) {
-            console.warn(`[API Client] ⚠️ No currentUser found for ${endpoint} - Request might fail 401`);
+            console.warn(`[API Client] ⚠️ No session found for ${endpoint} - Request might fail 401`);
           }
         }
       } catch (error) {
@@ -243,7 +400,10 @@ export const apiClient = async <T = any>(endpoint: string, options: ApiOptions =
 
     const apiStart = Date.now();
     const controller = new AbortController();
-    const timeoutId = setTimeout(() => controller.abort(), 60000); // 60s KILL SWITCH
+    // Dev: 12s — generous for local API, but won't silently block for 2 minutes.
+    // Prod: 30s hard kill-switch (file uploads / reports use their own signals).
+    const TIMEOUT_MS = options.timeout ?? (isDev ? 12_000 : 30_000);
+    const timeoutId = setTimeout(() => controller.abort(), TIMEOUT_MS);
 
     try {
       // [API OUTGOING] log every request

@@ -47,7 +47,7 @@ function EditInventoryContent() {
         remarks: "",
         imageUrl: "",
         driveFileId: "",
-        images: [] as { url: string, fileId: string }[]
+        images: [] as { url: string, file_id: string }[]
     });
 
     // Image Upload State
@@ -81,7 +81,7 @@ function EditInventoryContent() {
                     remarks: item.remarks || "",
                     imageUrl: item.imageUrl || "",
                     driveFileId: item.driveFileId || "",
-                    images: item.images || (item.imageUrl ? [{ url: item.imageUrl, fileId: item.driveFileId || "" }] : [])
+                    images: item.images || (item.imageUrl ? [{ url: item.imageUrl, file_id: item.driveFileId || "" }] : [])
                 });
             } catch (error) {
                 console.error("Failed to fetch item:", error);
@@ -120,7 +120,7 @@ function EditInventoryContent() {
             const metadata: any = {
                 name: `INV_${Date.now()}_${originalFile.name}`,
                 type: 'image',
-                uploadedBy: user?.uid,
+                uploaded_by: user?.uid,
                 uploadedByName: user?.name || user?.email,
                 folder: 'Photos',
                 subfolder: 'Inventory Photos',
@@ -132,7 +132,7 @@ function EditInventoryContent() {
             if (result.success) {
                 const newImage = {
                     url: result.viewLink,
-                    fileId: result.fileId
+                    file_id: result.file_id
                 };
 
                 setFormData(prev => {
@@ -140,7 +140,7 @@ function EditInventoryContent() {
                     return {
                         ...prev,
                         imageUrl: prev.imageUrl || newImage.url,
-                        driveFileId: prev.driveFileId || newImage.fileId,
+                        driveFileId: prev.driveFileId || newImage.file_id,
                         images: updatedImages
                     };
                 });
@@ -163,16 +163,16 @@ function EditInventoryContent() {
                 ...prev,
                 images: newImages,
                 imageUrl: nextMain ? nextMain.url : "",
-                driveFileId: nextMain ? nextMain.fileId : ""
+                driveFileId: nextMain ? nextMain.file_id : ""
             };
         });
     };
 
-    const handleMainImageSet = (image: { url: string, fileId: string }) => {
+    const handleMainImageSet = (image: { url: string, file_id: string }) => {
         setFormData(prev => ({
             ...prev,
             imageUrl: image.url,
-            driveFileId: image.fileId
+            driveFileId: image.file_id
         }));
     };
 

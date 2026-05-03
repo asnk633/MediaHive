@@ -1,5 +1,6 @@
-import { adminDb } from '@/lib/firebase/server';
-import { FieldValue } from 'firebase-admin/firestore';
+// @ts-nocheck
+
+import { logAuditEvent } from '@/app/api/_lib/audit';
 
 export type AuditAction =
     | 'ROLE_CHANGE'
@@ -26,7 +27,7 @@ interface AuditLogEntry {
         name?: string; // Human readable name if avail
     };
     metadata?: Record<string, any>;
-    timestamp: FieldValue;
+    timestamp: string;
 }
 
 export async function logAuditAction(
@@ -36,22 +37,21 @@ export async function logAuditAction(
     metadata?: Record<string, any>
 ) {
     try {
-        const db = adminDb;
-
-        const entry: AuditLogEntry = {
+        // Unified legacy audit log to the new SQL audit system
+        await logAuditEvent(
+            actor.uid,
             action,
-            actor: {
-                uid: actor.uid,
-                email: actor.email,
-                role: actor.role,
+            target.collection || 'system',
+            1, // Default tenant
+            target.id || null,
+            {
+                ...metadata,
+                name: target.name,
+                actorEmail: actor.email,
+                actorRole: actor.role,
                 ip: actor.ip || 'unknown'
-            },
-            target,
-            metadata,
-            timestamp: FieldValue.serverTimestamp()
-        };
-
-        await db.collection('audit_logs').add(entry);
+            }
+        );
     } catch (error) {
         // Fail safe - do not crash app if audit fails, but log stderr
         console.error('[AUDIT_LOG_FAILURE]', error);

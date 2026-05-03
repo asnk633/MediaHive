@@ -3,6 +3,7 @@
 import React, { useState, useEffect } from 'react';
 import { useAuth } from '@/contexts/AuthContextProvider';
 import { apiClient } from '@/lib/apiClient';
+import { supabase } from '@/lib/supabaseClient';
 import { SafeAvatar } from '@/components/ui/SafeAvatar';
 import { MessageSquare, Send } from 'lucide-react';
 import { formatDistanceToNow } from 'date-fns';
@@ -35,13 +36,24 @@ export function TaskComments({ taskId, activity, onCommentAdded }: TaskCommentsP
         e.preventDefault();
         if (!newComment.trim() || !user) return;
 
-        setSubmitting(true);
         try {
-            await apiClient(`/api/tasks/${taskId}/comments`, {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ content: newComment }),
-            });
+            const newCommentObj = {
+                id: Date.now().toString(),
+                type: 'comment',
+                userId: user.uid,
+                userName: user.name || 'User',
+                content: newComment,
+                timestamp: new Date().toISOString()
+            };
+
+            const { data: taskData } = await supabase.from('tasks').select('activity').eq('id', taskId).single();
+            const currentActivity = taskData?.activity || [];
+
+            const { error } = await supabase.from('tasks').update({
+                activity: [...currentActivity, newCommentObj]
+            }).eq('id', taskId);
+
+            if (error) throw error;
 
             setNewComment('');
             onCommentAdded();

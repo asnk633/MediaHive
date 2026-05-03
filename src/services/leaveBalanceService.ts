@@ -36,7 +36,7 @@ export const LeaveBalanceService = {
                 emergency: { taken: 0, total: DEFAULT_LEAVE_ALLOWANCES.emergency },
                 other: { taken: 0, total: DEFAULT_LEAVE_ALLOWANCES.other }
             },
-            updatedAt: new Date().toISOString() // Send as ISO string
+            updated_at: new Date().toISOString() // Send as ISO string
         };
         
         await apiClient('/api/leave-balances', {
@@ -58,7 +58,7 @@ export const LeaveBalanceService = {
             body: JSON.stringify({
                 type,
                 days,
-                updatedAt: new Date().toISOString() // Send as ISO string
+                updated_at: new Date().toISOString() // Send as ISO string
             })
         });
     },
@@ -74,7 +74,7 @@ export const LeaveBalanceService = {
             body: JSON.stringify({
                 type,
                 days,
-                updatedAt: new Date().toISOString() // Send as ISO string
+                updated_at: new Date().toISOString() // Send as ISO string
             })
         });
     },

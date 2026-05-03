@@ -84,7 +84,7 @@ async function calculateLiveMetrics(period: string) {
     const teamMembers = await db.select().from(users).where(eq(users.role, 'team'));
     if (teamMembers.length === 0) return null;
 
-    const recentTasks = await db.select().from(tasks).where(gte(tasks.createdAt, startIso));
+    const recentTasks = await db.select().from(tasks).where(gte(tasks.created_at, startIso));
     const allActiveTasks = await db.select().from(tasks).where(eq(tasks.isArchived, false));
     const attendanceLogs = await db.select().from(attendance).where(gte(attendance.checkIn, startIso));
 
@@ -99,8 +99,8 @@ async function calculateLiveMetrics(period: string) {
         const tcr = assigned.length > 0 ? (completed.length / assigned.length) : 1;
 
         const onTimeCompleted = completed.filter((t: any) => {
-            if (!t.dueDate) return true;
-            return new Date(t.updatedAt) <= new Date(t.dueDate);
+            if (!t.due_date) return true;
+            return new Date(t.updated_at) <= new Date(t.due_date);
         });
         const otr = completed.length > 0 ? (onTimeCompleted.length / completed.length) : 1;
 
@@ -130,7 +130,7 @@ async function calculateLiveMetrics(period: string) {
         return {
             tcr, otr, ads, ips, status,
             // OLR calculation for DHS
-            olr: active.length > 0 ? (active.filter((t: any) => t.dueDate && new Date(t.dueDate) < new Date()).length / active.length) : 0
+            olr: active.length > 0 ? (active.filter((t: any) => t.due_date && new Date(t.due_date) < new Date()).length / active.length) : 0
         };
     });
 

@@ -40,8 +40,8 @@ export const RecentActivity: React.FC<RecentActivityProps> = ({ data }) => {
                                     <div className="min-w-0">
                                         <p className="text-sm font-semibold text-gray-200 truncate max-w-[150px] md:max-w-xs group-hover:text-white transition-colors">{file.name}</p>
                                         <p className="text-[10px] text-gray-500 mt-0.5">
-                                            {file.createdAt
-                                                ? formatDistanceToNow(file.createdAt.seconds ? new Date(file.createdAt.seconds * 1000) : new Date(file.createdAt), { addSuffix: true })
+                                            {file.created_at
+                                                ? formatDistanceToNow(file.created_at.seconds ? new Date(file.created_at.seconds * 1000) : new Date(file.created_at), { addSuffix: true })
                                                 : 'Unknown date'}
                                         </p>
                                     </div>

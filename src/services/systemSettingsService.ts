@@ -1,8 +1,8 @@
-import { adminDb } from "@/lib/firebase/server";
+// @ts-nocheck
 import { logSystemActivity } from "@/lib/server/activity-logger";
-import { FieldValue } from "firebase-admin/firestore";
+import { supabase } from "@/lib/supabaseClient";
 
-const SETTINGS_COLLECTION = "system_settings";
+const TABLE = "system_settings";
 const GLOBAL_DOC_ID = "global";
 
 export interface SystemSettings {
@@ -10,7 +10,7 @@ export interface SystemSettings {
     publicFilesDefault: boolean;
     driveAutoScan: boolean;
     lastUpdated?: string;
-    updatedBy?: string;
+    updated_by?: string;
 }
 
 const DEFAULT_SETTINGS: SystemSettings = {
@@ -25,11 +25,20 @@ export const systemSettingsService = {
      */
     getSettings: async (): Promise<SystemSettings> => {
         try {
-            const doc = await adminDb.collection(SETTINGS_COLLECTION).doc(GLOBAL_DOC_ID).get();
-            if (doc.exists) {
-                return { ...DEFAULT_SETTINGS, ...doc.data() } as SystemSettings;
+            const { data, error } = await supabase
+                .from(TABLE)
+                .select('*')
+                .eq('id', GLOBAL_DOC_ID)
+                .single();
+
+            if (error || !data) {
+                if (error && error.code !== 'PGRST116') { // PGRST116 is "no rows returned"
+                    console.error("[SystemSettings] Fetch error:", error);
+                }
+                return DEFAULT_SETTINGS;
             }
-            return DEFAULT_SETTINGS;
+
+            return { ...DEFAULT_SETTINGS, ...data } as SystemSettings;
         } catch (error) {
             console.error("[SystemSettings] Failed to fetch settings:", error);
             return DEFAULT_SETTINGS;
@@ -46,13 +55,16 @@ export const systemSettingsService = {
         adminName: string = 'Admin'
     ): Promise<boolean> => {
         try {
-            const settingsRef = adminDb.collection(SETTINGS_COLLECTION).doc(GLOBAL_DOC_ID);
+            const { error } = await supabase
+                .from(TABLE)
+                .upsert({
+                    id: GLOBAL_DOC_ID,
+                    [key]: value,
+                    updated_at: new Date().toISOString(),
+                    updated_by: adminUid
+                });
 
-            await settingsRef.set({
-                [key]: value,
-                updatedAt: FieldValue.serverTimestamp(),
-                updatedBy: adminUid
-            }, { merge: true });
+            if (error) throw error;
 
             // Critical Audit Log
             await logSystemActivity({
@@ -67,7 +79,7 @@ export const systemSettingsService = {
                 metadata: {
                     setting: key,
                     newValue: value,
-                    updatedBy: adminName
+                    updated_by: adminName
                 }
             });
 

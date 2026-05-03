@@ -9,6 +9,9 @@ export function useGlobalHotkeys(handlers: {
 }) {
     useEffect(() => {
         const handle = (e: KeyboardEvent) => {
+            // Defensive check: ensure e.key exists
+            if (!e.key) return;
+
             const key = e.key.toLowerCase();
 
             // Ignore typing in inputs

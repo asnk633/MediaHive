@@ -12,22 +12,22 @@ export const ActivityFeed = ({ tasks }: ActivityFeedProps) => {
     // Derive generic activity from tasks
     const activities = tasks
         .sort((a, b) => {
-            const dateA = a.updatedAt || a.createdAt;
-            const dateB = b.updatedAt || b.createdAt;
+            const dateA = a.updated_at || a.created_at;
+            const dateB = b.updated_at || b.created_at;
             const timeA = (dateA as any)?.seconds || new Date(dateA as any).getTime() / 1000;
             const timeB = (dateB as any)?.seconds || new Date(dateB as any).getTime() / 1000;
             return timeB - timeA;
         })
         .filter(task => {
-            const dateVal = task.updatedAt || task.createdAt;
+            const dateVal = task.updated_at || task.created_at;
             const date = (dateVal as any)?.seconds ? new Date((dateVal as any)?.seconds * 1000) : new Date(dateVal as any);
             const fortyEightHoursAgo = new Date(Date.now() - 48 * 60 * 60 * 1000);
             return date >= fortyEightHoursAgo;
         })
         .slice(0, 5) // Last 5 activities
         .map(task => {
-            const isNew = !task.updatedAt || (task.createdAt === task.updatedAt);
-            const dateVal = task.updatedAt || task.createdAt;
+            const isNew = !task.updated_at || (task.created_at === task.updated_at);
+            const dateVal = task.updated_at || task.created_at;
             const date = (dateVal as any)?.seconds ? new Date((dateVal as any)?.seconds * 1000) : new Date(dateVal as any);
 
             // Determine user name and role
@@ -35,11 +35,11 @@ export const ActivityFeed = ({ tasks }: ActivityFeedProps) => {
             let userRole = 'system';
 
             if (isNew) {
-                userName = task.createdBy?.name || 'Unknown';
-                userRole = task.createdBy?.role || 'system';
+                userName = task.created_by?.name || 'Unknown';
+                userRole = task.created_by?.role || 'system';
             } else {
-                userName = task.updatedBy?.name || task.createdBy?.name || 'Unknown';
-                userRole = task.updatedBy?.role || task.createdBy?.role || 'system';
+                userName = task.updated_by?.name || task.created_by?.name || 'Unknown';
+                userRole = task.updated_by?.role || task.created_by?.role || 'system';
             }
 
             return {

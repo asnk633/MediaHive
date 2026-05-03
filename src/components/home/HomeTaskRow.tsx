@@ -18,15 +18,11 @@ interface HomeTaskRowProps {
 
 export function HomeTaskRow({ task, timeContext, isFirst, isActive, onClick, onComplete }: HomeTaskRowProps) {
     const { density } = useDensityStore();
-    const isOverdue = task.dueDate && (task.dueDate as any).seconds
-        ? new Date((task.dueDate as any).seconds * 1000) < new Date()
-        : task.dueDate ? new Date(task.dueDate) < new Date() : false;
+    const isOverdue = task.due_date ? new Date(task.due_date) < new Date() : false;
 
-    const isToday = task.dueDate && (task.dueDate as any).seconds
-        ? new Date((task.dueDate as any).seconds * 1000).toDateString() === new Date().toDateString()
-        : task.dueDate ? new Date(task.dueDate).toDateString() === new Date().toDateString() : false;
+    const isToday = task.due_date ? new Date(task.due_date).toDateString() === new Date().toDateString() : false;
 
-    const isTomorrow = task.dueDate && !isToday && !isOverdue;
+    const isTomorrow = task.due_date && !isToday && !isOverdue;
 
     const isInProgress = task.status === 'in_progress';
     const isPendingReview = task.status === 'review';

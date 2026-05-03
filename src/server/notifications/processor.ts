@@ -1,122 +1,106 @@
-// src/server/notifications/processor.ts
-// Notification processor for smart features
+import { getSupabaseAdmin } from "@/lib/server-utils";
 
-import { db } from '@/db';
-import { notifications, users } from '@/db/schema';
-import { eq, and, lte, isNull } from 'drizzle-orm';
+/**
+ * Notification Processor (Supabase-Native)
+ * Processes scheduled and pending notifications using direct Supabase queries.
+ */
 
 // Check if current time is within quiet hours for a user
-async function isWithinQuietHours(userId: number): Promise<boolean> {
-  // In a real implementation, you would fetch the user's quiet hours settings
-  // For now, we'll return false (no quiet hours)
+async function isWithinQuietHours(userId: string): Promise<boolean> {
+  // Logic placeholder for user-specific quiet hours settings in Supabase
   return false;
 }
 
 // Check if notification should be delivered based on user settings
-async function shouldDeliverNotification(userId: number, category: string): Promise<boolean> {
-  // In a real implementation, you would check the user's notification settings
-  // For now, we'll allow all notifications
+async function shouldDeliverNotification(userId: string, category: string): Promise<boolean> {
+  // Logic placeholder for user-specific notification category settings in Supabase
   return true;
 }
 
 // Process scheduled notifications
 export async function processScheduledNotifications() {
-  console.log('Processing scheduled notifications...');
-  
+  console.log('[NOTIFICATION_PROCESSOR] Scanning for pending notifications...');
+  const supabase = getSupabaseAdmin();
+
   try {
-    // Get all pending notifications that are due to be sent
     const now = new Date().toISOString();
-    const pendingNotifications = await db
-      .select()
-      .from(notifications)
-      .where(and(
-        isNull(notifications.readAt),
-        lte(notifications.createdAt, now)
-      ));
     
+    // 1. Fetch pending notifications that are due
+    const { data: pendingNotifications, error: fetchError } = await supabase
+      .from('notifications')
+      .select('*')
+      .is('read_at', null)
+      .lte('created_at', now);
+
+    if (fetchError) throw fetchError;
+    if (!pendingNotifications || pendingNotifications.length === 0) return;
+
     for (const notification of pendingNotifications) {
-      // Check if notification is within TTL
+      // 2. Check TTL (Time To Live)
       if (notification.ttl) {
-        const createdAt = new Date(notification.createdAt);
-        const expiresAt = new Date(createdAt.getTime() + notification.ttl * 1000);
-        if (expiresAt < new Date()) {
-          // Notification has expired, mark as read
-          await db
-            .update(notifications)
-            .set({ 
-              readAt: new Date().toISOString(),
-              readReceipt: true,
-              updatedAt: new Date().toISOString()
+        const createdTime = new Date(notification.created_at).getTime();
+        const expiresAt = createdTime + (notification.ttl * 1000);
+        
+        if (expiresAt < Date.now()) {
+          // Expired: Mark as read/archived silently
+          await supabase
+            .from('notifications')
+            .update({ 
+                read_at: new Date().toISOString(),
+                updated_at: new Date().toISOString() 
             })
-            .where(eq(notifications.id, notification.id));
+            .eq('id', notification.id);
           continue;
         }
       }
-      
-      // Check if user has quiet hours enabled
-      const quietHoursActive = await isWithinQuietHours(notification.userId);
-      if (quietHoursActive) {
-        // Skip non-urgent notifications during quiet hours
-        // In a real implementation, you would check if the notification is marked as urgent
-        console.log(`Skipping notification ${notification.id} due to quiet hours`);
-        continue;
-      }
-      
-      // Check if user has enabled this notification category
-      const shouldDeliver = await shouldDeliverNotification(notification.userId, notification.category || 'general');
-      if (!shouldDeliver) {
-        console.log(`Skipping notification ${notification.id} due to user preferences`);
-        continue;
-      }
-      
-      // Send notification through appropriate channels
+
+      // 3. User Preferences Checks
+      const quietHoursActive = await isWithinQuietHours(notification.user_id);
+      if (quietHoursActive) continue;
+
+      const shouldDeliver = await shouldDeliverNotification(notification.user_id, notification.category || 'general');
+      if (!shouldDeliver) continue;
+
+      // 4. Dispatch Notification
       await sendNotification(notification);
     }
-    
-    console.log(`Processed ${pendingNotifications.length} notifications`);
+
+    console.log(`[NOTIFICATION_PROCESSOR] Processed ${pendingNotifications.length} items.`);
   } catch (error) {
-    console.error('Failed to process scheduled notifications:', error);
+    console.error('[NOTIFICATION_PROCESSOR_ERROR]', error);
   }
 }
 
-// Send notification through appropriate channels
-async function sendNotification(notification: typeof notifications.$inferSelect) {
-  // Get user details
-  const [user] = await db
-    .select()
-    .from(users)
-    .where(eq(users.id, notification.userId));
+// Send notification through active channels
+async function sendNotification(notification: any) {
+  const supabase = getSupabaseAdmin();
   
-  if (!user) {
-    console.error(`User not found for notification ${notification.id}`);
+  // Get user profile for destination (email/push token)
+  const { data: profile, error } = await supabase
+    .from('profiles')
+    .select('id, email, full_name')
+    .eq('id', notification.user_id)
+    .single();
+
+  if (error || !profile) {
+    console.error(`[NOTIFICATION_DISPATCH] User profile not found: ${notification.user_id}`);
     return;
   }
-  
-  // In a real implementation, you would send notifications through:
-  // 1. Push notifications (using Firebase, APNs, etc.)
-  // 2. Email notifications (using SMTP or email service)
-  // 3. SMS notifications (using SMS service)
-  
-  console.log(`Sending notification ${notification.id} to user ${user.id} (${user.email})`);
-  
-  // For now, we'll just log the notification
-  console.log('Notification details:', {
-    title: notification.title,
-    body: notification.body,
-    category: notification.category,
-    channel: notification.channel
-  });
+
+  console.log(`[NOTIFICATION_DISPATCH] Sending '${notification.title}' to ${profile.email}`);
+
+  // Dispatch logic (FCM, SendGrid, etc.) would go here.
 }
 
-// Start notification processing background job
+// Initialize the background processor
 export function startNotificationProcessor() {
-  console.log('Starting notification processor...');
-  
-  // Process notifications every minute
+  console.log('[NOTIFICATION_PROCESSOR] Starting background service...');
+
+  // Process every 60 seconds
   setInterval(async () => {
     await processScheduledNotifications();
-  }, 60 * 1000); // 1 minute
-  
-  // Process immediately on startup
+  }, 60 * 1000);
+
+  // Initial run
   processScheduledNotifications();
 }

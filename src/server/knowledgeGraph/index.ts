@@ -205,10 +205,10 @@ export class KnowledgeGraph {
           }
           
           // Connect tasks to their institutions
-          if (node.properties.institutionId) {
+          if (node.properties.institution_id) {
             this.addRelationship({
               from: node.id,
-              to: `institution-${node.properties.institutionId}`,
+              to: `institution-${node.properties.institution_id}`,
               type: 'belongs_to'
             });
           }
@@ -225,10 +225,10 @@ export class KnowledgeGraph {
           }
           
           // Connect events to their institutions
-          if (node.properties.institutionId) {
+          if (node.properties.institution_id) {
             this.addRelationship({
               from: node.id,
-              to: `institution-${node.properties.institutionId}`,
+              to: `institution-${node.properties.institution_id}`,
               type: 'belongs_to'
             });
           }
@@ -236,10 +236,10 @@ export class KnowledgeGraph {
           
         case 'user':
           // Connect users to their institutions
-          if (node.properties.institutionId) {
+          if (node.properties.institution_id) {
             this.addRelationship({
               from: node.id,
-              to: `institution-${node.properties.institutionId}`,
+              to: `institution-${node.properties.institution_id}`,
               type: 'works_at'
             });
           }
@@ -256,10 +256,10 @@ export class KnowledgeGraph {
           }
           
           // Connect assets to their institutions
-          if (node.properties.institutionId) {
+          if (node.properties.institution_id) {
             this.addRelationship({
               from: node.id,
-              to: `institution-${node.properties.institutionId}`,
+              to: `institution-${node.properties.institution_id}`,
               type: 'belongs_to'
             });
           }

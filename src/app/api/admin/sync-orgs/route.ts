@@ -30,7 +30,7 @@ export async function POST(request: NextRequest) {
                 await db.insert(institutions).values({
                     name: instName,
                     tenantId: 1,
-                    createdAt: new Date().toISOString()
+                    created_at: new Date().toISOString()
                 });
                 results.institutionsAdded++;
             }
@@ -45,7 +45,7 @@ export async function POST(request: NextRequest) {
                 await db.insert(departments).values({
                     name: deptName,
                     tenantId: 1,
-                    createdAt: new Date().toISOString()
+                    created_at: new Date().toISOString()
                 });
                 results.departmentsAdded++;
             }

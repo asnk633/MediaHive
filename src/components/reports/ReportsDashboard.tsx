@@ -284,7 +284,7 @@ export default function ReportsDashboard() {
                                                 </div>
                                                 <p className="text-sm text-slate-400">{item.description}</p>
                                                 {item.type === 'task' && item.meta?.status && (
-                                                    <Badge variant="outline" className="text-[10px] border-[#ffffff1a] text-slate-400 mt-1">
+                                                    <Badge variant="neutral" className="text-[10px] border-[#ffffff1a] text-slate-400 mt-1">
                                                         {item.meta.status}
                                                     </Badge>
                                                 )}

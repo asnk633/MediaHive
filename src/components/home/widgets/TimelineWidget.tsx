@@ -20,8 +20,8 @@ export const TimelineWidget = ({ tasks, events }: TimelineWidgetProps) => {
 
     // Process Tasks
     tasks.forEach(task => {
-        if (!task.dueDate || task.status === 'done') return;
-        const date = (task.dueDate as any).seconds ? new Date((task.dueDate as any).seconds * 1000) : new Date(task.dueDate);
+        if (!task.due_date || task.status === 'done') return;
+        const date = (task.due_date as any).seconds ? new Date((task.due_date as any).seconds * 1000) : new Date(task.due_date);
 
         if (isToday(date)) {
             const item = { type: 'task', data: task, date };

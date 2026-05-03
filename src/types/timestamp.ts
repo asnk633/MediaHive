@@ -1,4 +1,5 @@
 export type TimestampLike =
   | string
   | number
-  | { seconds: number; nanoseconds: number };
+  | { seconds: number; nanoseconds: number }
+  | Date;

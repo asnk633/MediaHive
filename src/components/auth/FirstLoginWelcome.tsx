@@ -132,7 +132,7 @@ export const FirstLoginWelcome: React.FC<FirstLoginWelcomeProps> = ({ userRole, 
           </CardTitle>
           <div className="mt-2">
             <Badge
-              variant="outline"
+              variant="neutral"
               className={
                 userRole === 'admin'
                   ? 'border-red-500/30 text-red-300'

@@ -50,12 +50,12 @@ export const SystemHealthPanel: React.FC<SystemHealthPanelProps> = ({
 
       // Also check for demo data
       const demoDataCount = {
-        tasks: tasks.filter(t => t.isDemoData).length,
-        events: events.filter(e => e.isDemoData).length,
-        media: mediaFiles.filter(m => m.isDemoData).length,
-        totalDemoItems: tasks.filter(t => t.isDemoData).length +
-          events.filter(e => e.isDemoData).length +
-          mediaFiles.filter(m => m.isDemoData).length
+        tasks: tasks.filter(t => t.is_demo_data).length,
+        events: events.filter(e => e.is_demo_data).length,
+        media: mediaFiles.filter(m => m.is_demo_data).length,
+        totalDemoItems: tasks.filter(t => t.is_demo_data).length +
+          events.filter(e => e.is_demo_data).length +
+          mediaFiles.filter(m => m.is_demo_data).length
       };
 
       setHealthData({
@@ -173,8 +173,8 @@ export const SystemHealthPanel: React.FC<SystemHealthPanelProps> = ({
                 onClick={async () => {
                   if (window.confirm('Are you sure you want to delete all demo data? This action cannot be undone.')) {
                     try {
-                      const institutionId = (user as any)?.institutionId || '1';
-                      await DemoDataService.deleteDemoData(institutionId);
+                      const institution_id = (user as any)?.institution_id;
+                      await DemoDataService.deleteDemoData(institution_id);
                       alert('Demo data deleted successfully. Please refresh the page.');
                     } catch (error) {
                       console.error('Error deleting demo data:', error);

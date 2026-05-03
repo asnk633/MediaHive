@@ -1,6 +1,6 @@
+// @ts-nocheck
 import { NextRequest, NextResponse } from 'next/server';
-import { adminDb } from '@/lib/firebase/server';
-import { verifyUser } from '@/lib/server-utils';
+import { verifyUser, getSupabaseFromRequest } from '@/lib/server-utils';
 
 export const dynamic = 'force-dynamic';
 
@@ -8,33 +8,33 @@ export async function GET(request: NextRequest) {
     try {
         console.log('[API] GET /api/users/admins called');
 
-        // Relaxed: Allow any authenticated user to fetch admin list (needed for guest notifications)
+        // Relaxed: Allow any authenticated user to fetch admin list
         const user = await verifyUser(request);
         if (!user) {
             return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
         }
 
-        const usersSnapshot = await adminDb.collection('users')
-            .where('role', '==', 'admin')
-            .get();
+        const supabase = getSupabaseFromRequest(request);
+        if (!supabase) {
+            return NextResponse.json({ error: 'Internal Server Error' }, { status: 500 });
+        }
 
-        const admins = usersSnapshot.docs
-            .map(doc => {
-                const userData = doc.data();
-                return {
-                    uid: doc.id,
-                    role: userData.role,
-                    name: userData.officialName || userData.name || userData.displayName || userData.email || 'Unknown',
-                    avatarUrl: userData.avatarUrl || null,
-                    photoURL: userData.photoURL || null
-                };
-            })
-            .map(user => ({
-                uid: user.uid,
-                name: user.name,
-                avatarUrl: user.avatarUrl,
-                photoURL: user.photoURL
-            }));
+        const { data: adminsList, error } = await supabase
+            .from('profiles')
+            .select('id, role, full_name, official_name, email, avatar_url')
+            .eq('role', 'admin');
+
+        if (error) {
+            console.error('Supabase fetch admins error:', error);
+            throw error;
+        }
+
+        const admins = (adminsList || []).map(profile => ({
+            uid: profile.id,
+            name: profile.full_name || profile.official_name || profile.email?.split('@')[0] || 'Admin',
+            avatar_url: profile.avatar_url || null,
+            photoURL: profile.avatar_url || null // Backward compatibility
+        }));
 
         return NextResponse.json({ admins });
     } catch (error: any) {

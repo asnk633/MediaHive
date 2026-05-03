@@ -1,28 +1,30 @@
 import React from 'react';
 import { ExtendedDriveFile } from '@/types/mediaComment';
 import { FileText, Image as ImageIcon, Video, Play, Calendar, Users } from 'lucide-react';
+import Image from 'next/image';
+import { getDriveImageUrl } from '@/lib/driveUtils';
 
 interface MediaCardProps {
   file: ExtendedDriveFile;
   onClick: () => void;
 }
 export function MediaCard({ file, onClick }: MediaCardProps) {
-  const getFileIcon = (mimeType: string) => {
-    if (mimeType.startsWith('image/')) {
+  const getFileIcon = (mimeType: string = '') => {
+    if (mimeType?.startsWith('image/')) {
       return ImageIcon;
-    } else if (mimeType.startsWith('video/')) {
+    } else if (mimeType?.startsWith('video/')) {
       return Video;
     } else {
       return FileText;
     }
   };
 
-  const isImage = file.mimeType.startsWith('image/');
-  const isVideo = file.mimeType.startsWith('video/');
-  
+  const isImage = file.mimeType?.startsWith('image/') || false;
+  const isVideo = file.mimeType?.startsWith('video/') || false;
+
   // Get file extension for display
-  const getFileExtension = (fileName: string) => {
-    return fileName.split('.').pop()?.toUpperCase() || '';
+  const getFileExtension = (file_name: string) => {
+    return file_name.split('.').pop()?.toUpperCase() || '';
   };
 
   // Format date for display
@@ -43,7 +45,7 @@ export function MediaCard({ file, onClick }: MediaCardProps) {
   const FileIcon = getFileIcon(file.mimeType);
 
   return (
-    <div 
+    <div
       className="group relative aspect-video rounded-xl overflow-hidden bg-[var(--bg-panel)] border border-[var(--border-subtle)] hover:border-indigo-500 transition-all cursor-pointer shadow-sm hover:shadow-md"
       onClick={onClick}
     >
@@ -51,10 +53,15 @@ export function MediaCard({ file, onClick }: MediaCardProps) {
       <div className="w-full h-full flex items-center justify-center bg-[var(--bg-surface)] relative">
         {isImage ? (
           // For images, show a thumbnail preview
-          <div className="w-full h-full bg-gray-200 flex items-center justify-center">
-            <div className="bg-gray-300 border-2 border-dashed rounded-xl w-full h-full flex items-center justify-center text-gray-500">
-              <ImageIcon size={24} />
-            </div>
+          <div className="w-full h-full relative">
+            <Image
+              src={getDriveImageUrl(file.viewLink)}
+              alt={file.name}
+              fill
+              sizes="(max-width: 640px) 100vw, 25vw"
+              className="object-cover transition-transform duration-500 group-hover:scale-110"
+            />
+            <div className="absolute inset-0 bg-black/5 group-hover:bg-transparent transition-colors" />
           </div>
         ) : isVideo ? (
           // For videos, show a poster frame with play icon
@@ -92,14 +99,14 @@ export function MediaCard({ file, onClick }: MediaCardProps) {
             <div className="p-1 rounded bg-black/30">
               <ContextIcon size={14} className="text-white" />
             </div>
-            
+
             {/* Version badge */}
             {file.versionNumber && (
               <div className="px-1.5 py-0.5 rounded bg-indigo-500 text-white text-xs font-medium">
                 V{file.versionNumber}
               </div>
             )}
-            
+
             {/* Video duration badge (if applicable) */}
             {isVideo && (
               <div className="px-1.5 py-0.5 rounded bg-black/50 text-white text-xs font-medium">
@@ -109,7 +116,7 @@ export function MediaCard({ file, onClick }: MediaCardProps) {
           </div>
         </div>
         <div className="text-white/80 text-xs mt-1">
-          {formatDate(file.createdAt)}
+          {formatDate(file.created_at)}
         </div>
       </div>
       {/* Always visible file name at bottom */}

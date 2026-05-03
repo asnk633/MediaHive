@@ -24,7 +24,7 @@ interface DashboardData {
         totalAssigned: number;
     };
     chartData: { date: string; count: number }[];
-    recentActivity: { id: number; title: string; completedAt: string }[];
+    recentActivity: { id: number; title: string; completed_at: string }[];
 }
 
 export function PersonalDashboard() {
@@ -170,7 +170,7 @@ export function PersonalDashboard() {
                                                 {task.title}
                                             </p>
                                             <p className="text-xs text-white/40 mt-1">
-                                                Completed {format(new Date(task.completedAt), 'MMM d, h:mm a')}
+                                                Completed {format(new Date(task.completed_at), 'MMM d, h:mm a')}
                                             </p>
                                         </div>
                                     </div>

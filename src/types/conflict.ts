@@ -33,14 +33,14 @@ export interface ConflictDetails {
     offDayInfo?: {
         reason: 'sunday' | 'holiday';
         eventName?: string;
-        eventId?: string;
+        event_id?: string;
     };
 
     // For pending_tasks
     tasks?: Array<{
         id: string;
         title: string;
-        dueDate: Date;
+        due_date: Date;
         status: string;
     }>;
 
@@ -67,12 +67,12 @@ export interface LeaveConflict {
 export interface TaskConflict {
     taskId: string;
     taskTitle: string;
-    dueDate: Date;
+    due_date: Date;
     status: string;
 }
 
 export interface OffDayConflict {
     reason: 'sunday' | 'holiday';
     eventName?: string;
-    eventId?: string;
+    event_id?: string;
 }

@@ -34,7 +34,7 @@ export const inventoryService = {
     },
 
     // CREATE: (Admin only)
-    create: async (data: Omit<InventoryItem, 'id' | 'createdAt' | 'updatedAt' | 'createdBy'>, user: AuthUser): Promise<string> => {
+    create: async (data: Omit<InventoryItem, 'id' | 'created_at' | 'updated_at' | 'created_by'>, user: AuthUser): Promise<string> => {
         const newItem = await apiPost('/api/inventory', data);
 
         // Activity logging handled server-side

@@ -1,47 +1,83 @@
 import { NextResponse, NextRequest } from 'next/server';
-import { verifyUser } from '@/lib/server-utils';
-import { adminDb } from '@/lib/firebase/server';
-
+import { verifyUser, getSupabaseFromRequest } from '@/lib/server-utils';
 
 export const dynamic = 'force-dynamic';
 
 export async function GET(req: NextRequest) {
-  console.log('[API] /api/users/me Hit');
-
   try {
-    const decoded = await verifyUser(req);
+    // 1. Authoritative identity check (Allow missing profile for auto-creation)
+    const decoded = await verifyUser(req, { strict: false });
     if (!decoded) {
-      console.log('[API] /api/users/me Unauthorized (verifyUser returned null)');
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
 
-    const { uid } = decoded;
-    console.log(`[API] /api/users/me Authorized for ${uid}`);
+    const { uid, email } = decoded;
+    const supabase = getSupabaseFromRequest(req);
 
-    const db = adminDb;
-    const userRef = db.collection('users').doc(uid);
-    const snap = await userRef.get();
-
-    if (!snap.exists) {
-      console.log(`[API] /api/users/me Creating new user record for ${uid}`);
-      await userRef.set({
-        uid: uid,
-        email: decoded.email,
-        createdAt: new Date(),
-        role: 'guest'
-      });
-
-      // Return immediately
-      return NextResponse.json({
-        user: {
-          uid,
-          email: decoded.email,
-          role: 'guest'
-        }
-      });
+    if (!supabase) {
+      return NextResponse.json({ error: 'Failed to initialize Supabase' }, { status: 500 });
     }
 
-    return NextResponse.json({ user: { uid, ...snap.data() } });
+    // 2. Fetch profile strictly from DB using the authenticated client
+    const { data: profile, error: profileError } = await supabase
+      .from('profiles')
+      .select('*')
+      .eq('id', uid)
+      .single();
+
+    let userData = profile;
+
+    // 3. Auto-creation logic if profile is missing
+    if (profileError || !profile) {
+      console.log(`[API] Profile missing for ${uid}, attempting auto-creation...`);
+      // Default to HQ institution if not found
+      const { data: instData } = await supabase
+        .from('institutions')
+        .select('id')
+        .eq('name', 'Thaiba Garden')
+        .single();
+
+      const newProfile = {
+        id: uid,
+        email: email || null,
+        role: 'guest', // Default for new users
+        institution_id: instData?.id || null,
+        created_at: new Date().toISOString()
+      };
+
+      const { data: created, error: createError } = await supabase
+        .from('profiles')
+        .insert(newProfile)
+        .select()
+        .single();
+
+      if (createError) {
+        console.error('[API] Failed to auto-create profile:', createError.message);
+        // If creation fails, we return the decoded identity as a fallback
+        return NextResponse.json({
+          user: {
+            uid,
+            email,
+            role: 'guest',
+            name: email?.split('@')[0] || 'User'
+          }
+        });
+      } else {
+        userData = created;
+      }
+    }
+
+    // 4. Return unified user object
+    return NextResponse.json({
+      user: {
+        uid,
+        email: email || userData.email,
+        ...userData,
+        // Ensure UI-friendly name exists
+        name: userData.full_name || userData.official_name || email?.split('@')[0] || 'User'
+      }
+    });
+
   } catch (error: any) {
     console.error('[API] /api/users/me Error:', error);
     return NextResponse.json({ error: 'Internal Server Error' }, { status: 500 });
@@ -54,28 +90,36 @@ export async function PATCH(req: NextRequest) {
     return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
   }
 
+  const supabase = getSupabaseFromRequest(req);
+  if (!supabase) {
+    return NextResponse.json({ error: 'Failed to initialize Supabase' }, { status: 500 });
+  }
+
   try {
     const body = await req.json();
-    const db = adminDb;
 
     // Whitelist allowed fields
-    const { avatarUrl, avatarUpdatedAt, ...otherFields } = body;
+    const { avatar_url, avatar_updated_at, avatar_drive_id } = body;
     const updates: any = {};
-    if (avatarUrl !== undefined) updates.avatarUrl = avatarUrl;
-    if (avatarUpdatedAt !== undefined) updates.avatarUpdatedAt = avatarUpdatedAt;
+    if (avatar_url !== undefined) updates.avatar_url = avatar_url;
+    if (avatar_updated_at !== undefined) updates.avatar_updated_at = avatar_updated_at;
+    if (avatar_drive_id !== undefined) updates.avatar_drive_id = avatar_drive_id;
 
     if (Object.keys(updates).length === 0) {
       return NextResponse.json({ message: 'No valid updates provided' }, { status: 400 });
     }
 
-    await db.collection('users').doc(decoded.uid).update(updates);
+    const { error } = await supabase
+      .from('profiles')
+      .update(updates)
+      .eq('id', decoded.uid);
+
+    if (error) throw error;
 
     return NextResponse.json({ success: true });
-  } catch (error) {
-    console.error('Error updating user profile:', error);
-    return NextResponse.json(
-      { error: 'Internal server error' },
-      { status: 500 }
-    );
+
+  } catch (error: any) {
+    console.error('[API] /api/users/me PATCH Error:', error.message || error);
+    return NextResponse.json({ error: 'Internal server error' }, { status: 500 });
   }
 }

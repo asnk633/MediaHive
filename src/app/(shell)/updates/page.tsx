@@ -3,13 +3,14 @@
 
 
 import AppLink from "@/components/AppLink";
-import { useClientData } from "@/app/(shell)/ClientDataContext";
+// Notifications temporarily disabled
 import { Search, Bell, Info, AlertTriangle, CheckCircle2 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { useState } from "react";
 
 export default function UpdatesPage() {
-  const { notifications } = useClientData();
+  // Notifications temporarily disabled — empty until re-enabled
+  const notifications: { id: string; title: string; body: string; read?: boolean; time?: string }[] = [];
   const [filter, setFilter] = useState('All');
 
   const filteredNotifications = notifications.filter(n => {

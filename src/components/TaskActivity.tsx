@@ -7,6 +7,7 @@ import React, { useState, useEffect } from 'react';
 import { usePermission } from '@/hooks/usePermission';
 import { useAuth } from '@/contexts/AuthContextProvider';
 import { apiClient } from '@/lib/apiClient';
+import { supabase } from '@/lib/supabaseClient';
 
 interface Activity {
   id: number;
@@ -16,7 +17,7 @@ interface Activity {
   oldValue: string | null;
   newValue: string | null;
   metadata: any;
-  createdAt: string;
+  created_at: string;
 }
 
 interface TaskActivityProps {
@@ -38,10 +39,9 @@ export function TaskActivity({ taskId }: TaskActivityProps) {
 
     const fetchActivities = async () => {
       try {
-        const data = await apiClient(`/api/tasks/${taskId}/activity`, {
-          headers: { 'x-user-id': user?.uid ? String(user.uid) : '1' }
-        });
-        setActivities(data.activities);
+        const { data: taskData, error } = await supabase.from('tasks').select('activity').eq('id', taskId).single();
+        if (error) throw error;
+        setActivities(taskData?.activity || []);
       } catch (error) {
         console.error('Failed to fetch task activities:', error);
       } finally {
@@ -96,7 +96,7 @@ export function TaskActivity({ taskId }: TaskActivityProps) {
             <div className="activity-header">
               <span className="activity-action">{formatAction(activity)}</span>
               <span className="activity-time">
-                {new Date(activity.createdAt).toLocaleString()}
+                {new Date(activity.created_at).toLocaleString()}
               </span>
             </div>
             {activity.metadata && (

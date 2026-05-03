@@ -31,7 +31,7 @@ const WatchdogUI = ({ onRetry }: { onRetry: () => void }) => (
 );
 
 export default function BootGate({ children }: { children: React.ReactNode }) {
-    const { user, loading, claimsReady, authStatus } = useAuth();
+    const { user, loading } = useAuth();
     const router = useRouter();
     const pathname = usePathname();
     const [showWatchdog, setShowWatchdog] = useState(false);
@@ -40,118 +40,77 @@ export default function BootGate({ children }: { children: React.ReactNode }) {
     // Startup log - Enhanced Native Check
     useEffect(() => {
         if (typeof window !== 'undefined') {
-            // 🔍 IMPROVED NATIVE DETECTION: Use Capacitor.isNativePlatform() instead of protocol
             const isNative = (window as any).Capacitor?.isNativePlatform?.() || Capacitor.isNativePlatform();
-            const envApiUrl = process.env.NEXT_PUBLIC_API_URL;
             const resolvedBaseUrl = getApiBaseUrl();
-
-            // [BOOT] logs
-            console.log('[BOOT] isNativePlatform=' + isNative);
-            console.log('[BOOT] Capacitor present=' + !!((window as any).Capacitor));
-            console.log('[BOOT] protocol=' + window.location.protocol);
-            console.log('[BOOT] API BASE=' + (resolvedBaseUrl || 'RELATIVE'));
 
             // HARD CHECK: Validate API base URL on mobile
             if (isNative) {
-                if (!resolvedBaseUrl || resolvedBaseUrl === '' || resolvedBaseUrl === 'RELATIVE') {
+                if (!resolvedBaseUrl || resolvedBaseUrl === '' || resolvedBaseUrl === 'RELATIVE' || resolvedBaseUrl.startsWith('/') || resolvedBaseUrl.includes('localhost')) {
                     const errorMsg = '[API][FATAL] MOBILE BUILD USING RELATIVE API — BLOCKED';
                     console.error(errorMsg);
-                    console.log('[BOOT] isNativePlatform=true');
-                    console.log('[BOOT] Capacitor present=true');
-                    console.log('[BOOT] API BASE=' + (resolvedBaseUrl || 'RELATIVE'));
                     throw new Error(errorMsg);
                 }
-                if (resolvedBaseUrl.startsWith('/') || resolvedBaseUrl.includes('localhost')) {
-                    const errorMsg = '[API][FATAL] MOBILE BUILD USING RELATIVE API — BLOCKED';
-                    console.error(errorMsg);
-                    console.log('[BOOT] isNativePlatform=true');
-                    console.log('[BOOT] Capacitor present=true');
-                    console.log('[BOOT] API BASE=' + (resolvedBaseUrl || 'RELATIVE'));
-                    throw new Error(errorMsg);
-                }
-                console.log('[BOOT] ✅ API base validated:', resolvedBaseUrl);
             }
         }
     }, []);
 
     // Consolidated Boot Ready State
-    const bootReady = authStatus === 'authenticated' && claimsReady && !loading;
+    const bootReady = !!user && !loading;
 
     // 0. State Logging for Debugging
     useEffect(() => {
         console.log('[BOOT][STATE]', {
             loading,
-            authStatus,
-            claimsReady,
+            hasUser: !!user,
             pathname
         });
-    }, [loading, authStatus, claimsReady, pathname]);
+    }, [loading, user, pathname]);
 
     // 1. Watchdog Timer Logic
     useEffect(() => {
-        // If we are already ready, clear everything
-        if (bootReady) {
+        if (bootReady || !loading) {
             if (watchdogTimer.current) {
-                console.log('[BOOT] watchdog cleared');
                 clearTimeout(watchdogTimer.current);
             }
             setShowWatchdog(false);
             return;
         }
 
-        // Only start watchdog if we are strictly AUTHENTICATING
-        if (authStatus === 'authenticating') {
-            console.log('[BOOT] Gate Open - Waiting for Auth...');
+        if (loading) {
             watchdogTimer.current = setTimeout(() => {
-                // Double check if we are still not ready
-                // Actually, the effect cleanup should handle this, 
-                // but checking inside timeout is safer against race conditions
-                if (authStatus === 'authenticating') {
+                if (loading) {
                     console.error('[BOOT] Watchdog Fired - Login Taking Too Long');
                     setShowWatchdog(true);
                 }
-            }, 15000); // 15s timeout
+            }, 15000);
         }
 
         return () => {
             if (watchdogTimer.current) clearTimeout(watchdogTimer.current);
         };
-    }, [bootReady, authStatus]);
+    }, [bootReady, loading]);
 
     // 2. Navigation Logic
     useEffect(() => {
         const normalizedPath = pathname.endsWith('/') && pathname.length > 1 ? pathname.slice(0, -1) : pathname;
-        if (
-            authStatus === 'authenticated' &&
-            claimsReady &&
-            !loading &&
-            (normalizedPath === '' || normalizedPath === '/' || normalizedPath === '/login')
-        ) {
-            console.log('[BOOT] Navigating -> /home');
-            nativeNavigate('/home', router, 'BootGate');
-        } else if (
-            authStatus === 'unauthenticated' &&
-            !loading &&
-            normalizedPath !== '/login' &&
-            normalizedPath !== '' &&
-            normalizedPath !== '/'
-        ) {
-            console.log('[BOOT] Unauthenticated - redirecting to /login');
-            nativeNavigate('/login', router, 'BootGate');
-        } else {
-            console.log(`[BOOT] Already on valid route: ${pathname}`);
-        }
 
-    }, [bootReady, pathname, router, authStatus, claimsReady, loading]);
+        if (!loading) {
+            if (user && (normalizedPath === '' || normalizedPath === '/' || normalizedPath === '/login')) {
+                console.log('[BOOT] Navigating -> /home');
+                nativeNavigate('/home', router, 'BootGate');
+            } else if (!user && normalizedPath !== '/login' && normalizedPath !== '' && normalizedPath !== '/') {
+                console.log('[BOOT] Unauthenticated - redirecting to /login');
+                nativeNavigate('/login', router, 'BootGate');
+            }
+        }
+    }, [user, loading, pathname, router]);
 
     // 3. Render Logic
     if (showWatchdog && !bootReady) {
         return <WatchdogUI onRetry={() => window.location.reload()} />;
     }
 
-    // If strictly authenticating and at root, block UI to prevent flash.
-    // Unauthenticated state should fall through to children (LoginInline).
-    if (authStatus === 'authenticating' && pathname === '/') {
+    if (loading && pathname === '/') {
         return (
             <div className="fixed inset-0 bg-night-sky flex items-center justify-center z-[9000]">
                 <AppLoader />

@@ -71,7 +71,7 @@ export async function POST(req: NextRequest) {
         userId: user.id,
         acquiredAt,
         expiresAt,
-        createdAt: now
+        created_at: now
       })
       .onConflictDoUpdate({
         target: [editLocks.taskId],

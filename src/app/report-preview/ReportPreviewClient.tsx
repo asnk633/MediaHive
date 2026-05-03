@@ -5,6 +5,7 @@ import { useRouter } from "next/navigation";
 import { Task } from "@/types/task";
 import { format } from "date-fns";
 import { apiClient } from "@/lib/apiClient";
+import { supabase } from "@/lib/supabaseClient";
 import { generateTaskCSV, downloadCSV } from "@/lib/reportUtils";
 import { Loader2, Download, Printer, ArrowLeft } from "lucide-react";
 
@@ -31,19 +32,22 @@ export default function ReportPreviewClient() {
                 const start = new Date(year, month, 1);
                 const end = new Date(year, month + 1, 0, 23, 59, 59);
 
-                // Fetch tasks from API route instead of direct Firestore
-                const fetchedTasks = await apiClient(`/api/tasks?start=${start.toISOString()}&end=${end.toISOString()}`, {
-                    method: 'GET',
-                });
+                // Fetch tasks natively from Supabase
+                const { data: fetchedTasks, error } = await supabase.from('tasks')
+                    .select('*')
+                    .gte('created_at', start.toISOString())
+                    .lte('created_at', end.toISOString());
 
-                fetchedTasks.sort((a: Task, b: Task) => (b.createdAt?.seconds || 0) - (a.createdAt?.seconds || 0));
+                if (error) throw error;
+
+                fetchedTasks.sort((a: Task, b: Task) => (b.created_at?.seconds || 0) - (a.created_at?.seconds || 0));
 
                 setTasks(fetchedTasks);
 
                 const total = fetchedTasks.length;
                 const completed = fetchedTasks.filter((t: Task) => t.status === 'done').length;
                 const now = new Date();
-                const overdue = fetchedTasks.filter((t: Task) => t.status !== 'done' && t.dueDate && (t.dueDate.seconds * 1000) < now.getTime()).length;
+                const overdue = fetchedTasks.filter((t: Task) => t.status !== 'done' && t.due_date && (t.due_date.seconds * 1000) < now.getTime()).length;
 
                 setStats({
                     total,
@@ -54,8 +58,8 @@ export default function ReportPreviewClient() {
 
                 const load: any = {};
                 fetchedTasks.forEach((t: Task) => {
-                    if (t.assignedTo) {
-                        t.assignedTo.forEach((assignee: any) => {
+                    if (t.assigned_to) {
+                        t.assigned_to.forEach((assignee: any) => {
                             const uid = typeof assignee === 'string' ? assignee : assignee.uid;
                             const name = typeof assignee === 'string' ? 'Unknown' : assignee.name;
 
@@ -198,18 +202,18 @@ export default function ReportPreviewClient() {
                                         <td className="p-2 font-medium text-[#1a1f2e]">{task.title}</td>
                                         <td className="p-2 capitalize text-gray-700">{task.priority}</td>
                                         <td className="p-2 capitalize text-gray-700">{task.status?.replace('_', ' ')}</td>
-                                        <td className="p-2 text-gray-700">{task.assignedBy?.name || '-'}</td>
+                                        <td className="p-2 text-gray-700">{task.assigned_by?.name || '-'}</td>
                                         <td className="p-2 text-gray-700">
-                                            {task.assignedTo?.map((a: any) => typeof a === 'string' ? 'User' : a.name).join(', ') || '-'}
+                                            {task.assigned_to?.map((a: any) => typeof a === 'string' ? 'User' : a.name).join(', ') || '-'}
                                         </td>
                                         <td className="p-2 text-gray-700">
-                                            {task.createdAt?.seconds ? format(new Date(task.createdAt.seconds * 1000), 'MMM d') : '-'}
+                                            {task.created_at?.seconds ? format(new Date(task.created_at.seconds * 1000), 'MMM d') : '-'}
                                         </td>
                                         <td className="p-2 text-gray-700">
-                                            {task.dueDate?.seconds ? format(new Date(task.dueDate.seconds * 1000), 'MMM d') : '-'}
+                                            {task.due_date?.seconds ? format(new Date(task.due_date.seconds * 1000), 'MMM d') : '-'}
                                         </td>
                                         <td className="p-2 text-gray-700">
-                                            {task.completedAt?.seconds ? format(new Date(task.completedAt.seconds * 1000), 'MMM d') : '-'}
+                                            {task.completed_at?.seconds ? format(new Date(task.completed_at.seconds * 1000), 'MMM d') : '-'}
                                         </td>
                                     </tr>
                                 )) : (

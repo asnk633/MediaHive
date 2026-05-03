@@ -14,17 +14,17 @@ export function generateTaskCSV(tasks: Task[]): string {
     ];
 
     const rows = tasks.map(task => {
-        const assignees = task.assignedTo?.map((a: any) => typeof a === 'string' ? a : a.name).join(", ") || "Unassigned";
+        const assignees = task.assigned_to?.map((a: any) => typeof a === 'string' ? a : a.name).join(", ") || "Unassigned";
 
         return [
             task.title ? `"${task.title.replace(/"/g, '""')}"` : "",
             task.priority || "",
             task.status || "",
-            task.assignedBy?.name || "Unknown",
+            task.assigned_by?.name || "Unknown",
             `"${assignees.replace(/"/g, '""')}"`,
-            task.createdAt?.seconds ? format(new Date(task.createdAt.seconds * 1000), "yyyy-MM-dd") : "",
-            task.dueDate?.seconds ? format(new Date(task.dueDate.seconds * 1000), "yyyy-MM-dd") : "",
-            task.completedAt?.seconds ? format(new Date(task.completedAt.seconds * 1000), "yyyy-MM-dd") : ""
+            task.created_at?.seconds ? format(new Date(task.created_at.seconds * 1000), "yyyy-MM-dd") : "",
+            task.due_date?.seconds ? format(new Date(task.due_date.seconds * 1000), "yyyy-MM-dd") : "",
+            task.completed_at?.seconds ? format(new Date(task.completed_at.seconds * 1000), "yyyy-MM-dd") : ""
         ];
     });
 

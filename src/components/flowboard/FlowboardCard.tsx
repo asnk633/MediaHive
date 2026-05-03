@@ -69,9 +69,9 @@ export const FlowboardCard: React.FC<FlowboardCardProps> = ({ task, smartData, o
             <div className="flex items-center justify-between mt-auto pt-2 border-t border-white/5">
                 {/* Assignee */}
                 <div className="flex items-center gap-2">
-                    {task.assignedTo && task.assignedTo.length > 0 ? (
+                    {task.assigned_to && task.assigned_to.length > 0 ? (
                         <div className="flex -space-x-1.5 overflow-hidden">
-                            {task.assignedTo.slice(0, 3).map((assignee) => (
+                            {task.assigned_to.slice(0, 3).map((assignee) => (
                                 <div key={assignee.uid}
                                     className="w-5 h-5 rounded-full bg-blue-900 ring-2 ring-[#13161c] flex items-center justify-center text-[8px] font-bold text-blue-200"
                                     title={assignee.name}
@@ -79,9 +79,9 @@ export const FlowboardCard: React.FC<FlowboardCardProps> = ({ task, smartData, o
                                     {assignee.name?.[0]?.toUpperCase() || 'U'}
                                 </div>
                             ))}
-                            {task.assignedTo.length > 3 && (
+                            {task.assigned_to.length > 3 && (
                                 <div className="w-5 h-5 rounded-full bg-gray-700 ring-2 ring-[#13161c] flex items-center justify-center text-[8px] font-bold text-gray-300">
-                                    +{task.assignedTo.length - 3}
+                                    +{task.assigned_to.length - 3}
                                 </div>
                             )}
                         </div>
@@ -101,14 +101,14 @@ export const FlowboardCard: React.FC<FlowboardCardProps> = ({ task, smartData, o
                         </span>
                     )}
 
-                    {task.dueDate && (
+                    {task.due_date && (
                         <span className={`flex items-center gap-1 ${smartData.urgencyScore > 80 ? 'text-red-400' : 'text-gray-500'}`}>
                             <Calendar size={10} />
                             {(() => {
                                 try {
-                                    const date = (task.dueDate as any).seconds
-                                        ? new Date((task.dueDate as any).seconds * 1000)
-                                        : new Date(task.dueDate);
+                                    const date = (task.due_date as any).seconds
+                                        ? new Date((task.due_date as any).seconds * 1000)
+                                        : new Date(task.due_date);
                                     return formatDistanceToNow(date, { addSuffix: true }).replace('about ', '');
                                 } catch { return ''; }
                             })()}

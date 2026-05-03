@@ -1,7 +1,7 @@
 'use client';
 import React, { createContext, useContext, useState, useEffect } from 'react';
 import { useAuth } from './AuthContextProvider';
-import { apiClient } from '@/lib/apiClient';
+import { supabase } from '@/lib/supabaseClient';
 import { Task } from '@/types/task';
 
 type TaskContextValue = {
@@ -35,22 +35,34 @@ export const TaskProvider: React.FC<{ children: React.ReactNode }> = ({ children
             if (isCancelled) return;
 
             try {
-                const data = await apiClient('/api/tasks', {
-                    method: 'GET'
-                });
+                try {
+                    // Determine user institution for filtering
+                    // Use a proper filter to only show tasks relevant to user
+                    let query = supabase.from('tasks').select('*');
 
-                // Sort tasks by createdAt in descending order manually
-                const sortedTasks = (data.tasks || []).sort((a: Task, b: Task) => {
-                    const dateA = a.createdAt ? new Date(a.createdAt).getTime() : 0;
-                    const dateB = b.createdAt ? new Date(b.createdAt).getTime() : 0;
-                    return dateB - dateA;
-                });
+                    if (user.institution_id) {
+                        query = query.eq('institution_id', user.institution_id);
+                    }
 
-                setTasks(sortedTasks);
-                setNetworkError(false);
+                    const { data, error } = await query;
+
+                    if (error) throw error;
+
+                    // Sort tasks by created_at in descending order
+                    const sortedTasks = (data || []).sort((a: Task, b: Task) => {
+                        const dateA = a.created_at ? new Date(a.created_at).getTime() : 0;
+                        const dateB = b.created_at ? new Date(b.created_at).getTime() : 0;
+                        return dateB - dateA;
+                    });
+
+                    setTasks(sortedTasks);
+                    setNetworkError(false);
+                } catch (error) {
+                    console.warn('Task polling failed:', error);
+                    setNetworkError(true);
+                }
             } catch (error) {
-                console.warn('Task polling failed:', error);
-                setNetworkError(true);
+                console.error('Critical task fetch error', error);
             }
 
             if (!isCancelled) {
@@ -75,15 +87,15 @@ export const TaskProvider: React.FC<{ children: React.ReactNode }> = ({ children
         if (!user) return;
 
         try {
-            await apiClient('/api/tasks', {
-                method: 'POST',
-                body: JSON.stringify({
-                    ...data,
-                    status: 'pending',
-                    createdBy: user.uid,
-                    createdAt: new Date().toISOString(),
-                })
-            });
+            const newTask = {
+                ...data,
+                status: 'pending',
+                created_by: user.uid,
+                institution_id: user.institution_id || null
+            };
+
+            const { error } = await supabase.from('tasks').insert(newTask);
+            if (error) throw error;
         } catch (error: any) {
             console.error('Error creating task:', error);
             // Handle network-specific errors
@@ -97,10 +109,8 @@ export const TaskProvider: React.FC<{ children: React.ReactNode }> = ({ children
 
     const updateTask = async (id: string, data: Partial<Task>) => {
         try {
-            await apiClient(`/api/tasks`, {
-                method: 'PUT',
-                body: JSON.stringify({ id, ...data })
-            });
+            const { error } = await supabase.from('tasks').update(data).eq('id', id);
+            if (error) throw error;
         } catch (error: any) {
             console.error('Error updating task:', error);
             // Handle network-specific errors

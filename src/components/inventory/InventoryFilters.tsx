@@ -28,7 +28,7 @@ export const InventoryFilters: React.FC<InventoryFiltersProps> = ({
         <div className="flex flex-col md:flex-row gap-4 mb-6 w-full">
             {/* Search - Full width on mobile, Grow on desktop */}
             <div className="relative flex-1">
-                <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-500" size={18} />
+                <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400" size={18} />
                 <Input
                     placeholder="Search assets by name or serial..."
                     className="pl-10 bg-slate-900/50 border-[#ffffff1a] focus:border-blue-500/50 text-white h-11 rounded-xl w-full transition-all hover:bg-white/[0.02]"
@@ -44,7 +44,7 @@ export const InventoryFilters: React.FC<InventoryFiltersProps> = ({
                     <Select value={sortBy} onValueChange={(v) => onSortChange(v as SortOption)}>
                         <SelectTrigger className="h-11 bg-slate-900/50 border-[#ffffff1a] text-slate-200 rounded-xl focus:ring-blue-500/20 hover:bg-white/[0.02] transition-colors">
                             <div className="flex items-center gap-2 truncate">
-                                <ArrowUpDown className="w-4 h-4 text-slate-500" />
+                                <ArrowUpDown className="w-4 h-4 text-slate-400" />
                                 <span className="truncate">
                                     {sortBy === 'name_asc' && "Name (A-Z)"}
                                     {sortBy === 'name_desc' && "Name (Z-A)"}
@@ -78,7 +78,7 @@ export const InventoryFilters: React.FC<InventoryFiltersProps> = ({
                     >
                         <SelectTrigger className="h-11 bg-slate-900/50 border-[#ffffff1a] text-slate-200 rounded-xl focus:ring-blue-500/20 hover:bg-white/[0.02] transition-colors">
                             <div className="flex items-center gap-2 truncate">
-                                <Filter className="w-4 h-4 text-slate-500" />
+                                <Filter className="w-4 h-4 text-slate-400" />
                                 <span className="truncate">
                                     {category || "All Categories"}
                                 </span>

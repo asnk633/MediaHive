@@ -123,33 +123,33 @@ export function sanitizeForDrive(name: string): string {
  * Makes a file publicly readable by anyone with the link.
  * This is crucial for avoiding access request prompts.
  */
-export async function makeFilePublic(drive: any, fileId: string): Promise<boolean> {
+export async function makeFilePublic(drive: any, file_id: string): Promise<boolean> {
     try {
         // Idempotency: Check if already public
         const listRes = await drive.permissions.list({
-            fileId,
+            file_id,
             fields: 'permissions(id, type, role)',
             supportsAllDrives: true,
         });
 
         const existingPerm = listRes.data.permissions?.find((p: any) => p.type === 'anyone' && p.role === 'reader');
         if (existingPerm) {
-            console.log(`[Drive] File ${fileId} is already public.`);
+            console.log(`[Drive] File ${file_id} is already public.`);
             return true;
         }
 
         await drive.permissions.create({
-            fileId,
+            file_id,
             requestBody: {
                 role: 'reader',
                 type: 'anyone',
             },
             supportsAllDrives: true,
         });
-        console.log(`[Drive] File ${fileId} is now public (anyone with link).`);
+        console.log(`[Drive] File ${file_id} is now public (anyone with link).`);
         return true;
     } catch (error: any) {
-        console.error(`[Drive] Failed to make file ${fileId} public:`, error);
+        console.error(`[Drive] Failed to make file ${file_id} public:`, error);
         // We don't throw here to avoid failing the whole upload, but we log it.
         return false;
     }
@@ -159,11 +159,11 @@ export async function makeFilePublic(drive: any, fileId: string): Promise<boolea
  * Removes 'anyone' reader permissions, making the file effectively private
  * (or restricted to inherited folder permissions).
  */
-export async function makeFilePrivate(drive: any, fileId: string): Promise<boolean> {
+export async function makeFilePrivate(drive: any, file_id: string): Promise<boolean> {
     try {
         // List permissions to find the 'anyone' permission
         const res = await drive.permissions.list({
-            fileId,
+            file_id,
             fields: 'permissions(id, type, role)',
             supportsAllDrives: true,
         });
@@ -172,16 +172,16 @@ export async function makeFilePrivate(drive: any, fileId: string): Promise<boole
 
         if (sensitivePerm && sensitivePerm.id) {
             await drive.permissions.delete({
-                fileId,
+                file_id,
                 permissionId: sensitivePerm.id,
                 supportsAllDrives: true,
             });
-            console.log(`[Drive] File ${fileId} is now PRIVATE (removed 'anyone' link).`);
+            console.log(`[Drive] File ${file_id} is now PRIVATE (removed 'anyone' link).`);
             return true;
         }
         return true; // Already private
     } catch (error: any) {
-        console.error(`[Drive] Failed to make file ${fileId} private:`, error);
+        console.error(`[Drive] Failed to make file ${file_id} private:`, error);
         return false;
     }
 }

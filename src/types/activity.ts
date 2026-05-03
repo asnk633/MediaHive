@@ -4,7 +4,7 @@ export interface SystemActivity {
     entityType: 'task' | 'file' | 'inventory' | 'user' | 'system' | 'drive_queue_item';
     entityId: string;
     title: string;          // Human readable summary
-    performedBy: string;    // User Name
+    performed_by: string;    // User Name
     performedByRole: string;
     timestamp: any;         // Firestore Timestamp or ISO string
     metadata?: any;         // Optional extra data (before/after, filename, etc.)

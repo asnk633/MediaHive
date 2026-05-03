@@ -10,6 +10,7 @@ import {
 import { usePathname, useRouter } from 'next/navigation';
 import { useAuth } from "@/contexts/AuthContextProvider";
 import { nativeNavigate } from "@/lib/utils";
+import { getDriveImageUrl } from "@/lib/driveUtils";
 import { Button } from "@/components/ui/button";
 import { NotificationBell } from "@/components/notifications/NotificationBell";
 import {
@@ -65,8 +66,8 @@ export default function TopBar({ title = "MediaHive" }: { title?: string }) {
               className="h-9 w-9 p-0 rounded-full hover:bg-surface group transition-all"
             >
               <div className="w-8 h-8 rounded-full overflow-hidden bg-surface border border-border-soft flex items-center justify-center">
-                {user?.avatarUrl ? (
-                  <img src={user.avatarUrl} alt="Avatar" className="w-full h-full object-cover" />
+                {(user?.avatar_url || user?.photoURL) ? (
+                  <img src={getDriveImageUrl(user.avatar_url || user.photoURL, user.avatar_drive_id)} alt="Avatar" className="w-full h-full object-cover" />
                 ) : (
                   <span className="text-xs font-medium text-text-muted">
                     {user?.email?.[0]?.toUpperCase() || 'U'}

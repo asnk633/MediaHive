@@ -86,7 +86,7 @@ function resolveName(user: any): string {
     // 2. Explicit display names
     if (user.displayName?.trim()) return user.displayName;
     if (user.name?.trim() && !user.name.includes('@')) return user.name;
-    if (user.officialName?.trim()) return user.officialName;
+    if (user.official_name?.trim()) return user.official_name;
 
     // 3. Individual name fields
     if (user.firstName?.trim()) return user.firstName;

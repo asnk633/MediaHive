@@ -22,7 +22,7 @@ const TaskConfidenceViewComponent: React.FC<TaskConfidenceViewProps> = ({ tasks,
     useEffect(() => {
         const fetchAdminData = async () => {
             if (user?.role === 'admin') {
-                const data = await CanonicalDataService.getAdminConfidenceData((user as any)?.institutionId);
+                const data = await CanonicalDataService.getAdminConfidenceData((user as any)?.institution_id);
                 setAdminData(data);
             }
         };
@@ -53,7 +53,7 @@ const TaskConfidenceViewComponent: React.FC<TaskConfidenceViewProps> = ({ tasks,
                 events={adminData.events}
                 mediaFiles={adminData.mediaFiles}
                 users={adminData.users}
-                institutionId={(user as any)?.institutionId}
+                institution_id={(user as any)?.institution_id}
                 onTaskClick={onTaskClick}
             />
         </div>

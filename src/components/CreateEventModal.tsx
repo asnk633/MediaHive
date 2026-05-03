@@ -1,13 +1,14 @@
 "use client";
 
 import { useState } from "react";
-import { useClientData } from "@/app/(shell)/ClientDataContext";
+// Events temporarily disabled
 import ModalBase from "@/components/ModalBase";
 
 type Role = "admin" | "team" | "guest";
 
 export default function CreateEventModal({ open, role, onClose }: { open: boolean; role: Role; onClose: () => void; }) {
-  const { createEvent } = useClientData();
+  // Events temporarily disabled — no-op stub
+  const createEvent = async (_: any) => { console.warn("Events disabled"); };
   const [title, setTitle] = useState("");
   const [desc, setDesc] = useState("");
   const [start, setStart] = useState("");
@@ -16,12 +17,12 @@ export default function CreateEventModal({ open, role, onClose }: { open: boolea
 
   const hint =
     role === "guest" ? "Admin will review and assign resources after submission."
-    : role === "team" ? "Ensure both date/time fields are filled."
-    : "Set visibility and attendees before creating.";
+      : role === "team" ? "Ensure both date/time fields are filled."
+        : "Set visibility and attendees before creating.";
 
   const submit = async () => {
     if (!title.trim() || !start) return;
-    try { await createEvent({ title: title.trim(), description: desc.trim(), startAt: start, endAt: end || null, location: loc.trim() }); onClose(); setTitle(""); setDesc(""); setStart(""); setEnd(""); setLoc(""); } catch {}
+    try { await createEvent({ title: title.trim(), description: desc.trim(), startAt: start, endAt: end || null, location: loc.trim() }); onClose(); setTitle(""); setDesc(""); setStart(""); setEnd(""); setLoc(""); } catch { }
   };
 
   return (

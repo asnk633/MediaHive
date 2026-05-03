@@ -1,9 +1,8 @@
-src/components/requests/RequestManager.tsx(146,15): error TS1005: 'try' expected.
-src/components/requests/RequestManager.tsx(149,10): error TS1472: 'catch' or 'finally' expected.
-src/components/requests/RequestManager.tsx(473,1): error TS1005: '}' expected.
-src/config/loadingStateRules.ts(155,55): error TS1005: '>' expected.
-src/config/loadingStateRules.ts(156,53): error TS1005: '>' expected.
-src/config/loadingStateRules.ts(157,49): error TS1005: '>' expected.
-src/config/loadingStateRules.ts(157,54): error TS1005: ';' expected.
-src/config/loadingStateRules.ts(157,70): error TS1161: Unterminated regular expression literal.
-src/config/loadingStateRules.ts(158,22): error TS1005: '>' expected.
+﻿src/app/api/admin/intelligence/route.ts(72,41): error TS2304: Cannot find name 'readPerformanceSnapshots'.
+src/app/api/admin/intelligence/route.ts(73,40): error TS2304: Cannot find name 'readDepartmentHealthSnapshot'.
+src/app/api/admin/intelligence/route.ts(81,25): error TS7006: Parameter 's' implicitly has an 'any' type.
+src/app/api/admin/intelligence/route.ts(82,22): error TS7006: Parameter 's' implicitly has an 'any' type.
+src/app/api/admin/intelligence/route.ts(113,24): error TS7006: Parameter 'a' implicitly has an 'any' type.
+src/app/api/admin/intelligence/route.ts(113,27): error TS7006: Parameter 'b' implicitly has an 'any' type.
+src/app/api/admin/intelligence/route.ts(132,56): error TS7006: Parameter 's' implicitly has an 'any' type.
+src/app/api/invites/route.ts(3,37): error TS2307: Cannot find module '@/lib/invites.server' or its corresponding type declarations.

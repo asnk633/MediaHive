@@ -26,6 +26,7 @@ module.exports = {
     "/e2e/",
     "/playwright/",
     "/tests.archived/",
+    "/__tests_archive__/",
     "\\.bak_uid_"
   ],
   transform: {

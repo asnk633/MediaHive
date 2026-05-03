@@ -3,14 +3,14 @@ import { FileText, Image as ImageIcon, Film, Download, ExternalLink } from 'luci
 
 interface SafeDeliverablePreviewProps {
     url: string;
-    fileName: string;
+    file_name: string;
     fileType: string;
     className?: string;
 }
 
 export const SafeDeliverablePreview: React.FC<SafeDeliverablePreviewProps> = ({
     url,
-    fileName,
+    file_name,
     fileType,
     className = ''
 }) => {
@@ -23,7 +23,7 @@ export const SafeDeliverablePreview: React.FC<SafeDeliverablePreviewProps> = ({
             <div className={`relative group rounded-lg overflow-hidden bg-black/20 border border-[#ffffff1a] ${className}`}>
                 <img
                     src={url}
-                    alt={fileName}
+                    alt={file_name}
                     className="w-full h-full object-cover"
                     onError={() => setImageError(true)}
                     loading="lazy"
@@ -71,8 +71,8 @@ export const SafeDeliverablePreview: React.FC<SafeDeliverablePreviewProps> = ({
             <div className="p-3 bg-white/5 rounded-full mb-2">
                 <FileText size={24} className="text-blue-400" />
             </div>
-            <span className="text-xs text-center text-gray-400 font-medium truncate w-full px-2" title={fileName}>
-                {fileName}
+            <span className="text-xs text-center text-gray-400 font-medium truncate w-full px-2" title={file_name}>
+                {file_name}
             </span>
             <a
                 href={url}

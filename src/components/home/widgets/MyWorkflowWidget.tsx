@@ -17,8 +17,8 @@ export const MyWorkflowWidget = ({ tasks, userId }: MyWorkflowWidgetProps) => {
         if (task.status === 'done') return false;
 
         // Handle array of assignees
-        if (Array.isArray(task.assignedTo)) {
-            return task.assignedTo.some(u =>
+        if (Array.isArray(task.assigned_to)) {
+            return task.assigned_to.some(u =>
                 (typeof u === 'string' ? u : u.uid) === userId
             );
         }

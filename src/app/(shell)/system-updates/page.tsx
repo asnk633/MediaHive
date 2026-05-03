@@ -13,7 +13,7 @@ interface SystemUpdate {
     title: string;
     body: string;
     severity: 'info' | 'important' | 'critical';
-    createdAt: any;
+    created_at: any;
 }
 
 export default function SystemUpdatesFeedPage() {
@@ -71,7 +71,7 @@ export default function SystemUpdatesFeedPage() {
                                                     {update.severity}
                                                 </span>
                                                 <span className="text-xs text-slate-500">
-                                                    {update.createdAt ? formatDistanceToNow(new Date(update.createdAt), { addSuffix: true }) : ''}
+                                                    {update.created_at ? formatDistanceToNow(new Date(update.created_at), { addSuffix: true }) : ''}
                                                 </span>
                                             </div>
                                             <h3 className="text-lg font-semibold text-slate-200 group-hover:text-indigo-400 transition-colors">

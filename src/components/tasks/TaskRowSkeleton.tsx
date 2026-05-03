@@ -5,7 +5,7 @@ import { cn } from "@/lib/utils";
 export function TaskRowSkeleton({ density = 'comfortable' }: { density?: 'comfortable' | 'compact' }) {
     return (
         <div className={cn(
-            "grid grid-cols-[auto_1fr_auto] md:grid-cols-[40px_3fr_2fr_1.4fr_1.2fr_0.9fr_1fr] gap-2 px-6 items-center border-l-4 border-l-transparent bg-elevated/50",
+            "grid grid-cols-[auto_1fr_auto] md:grid-cols-[40px_3fr_1.5fr_0.8fr_1.5fr_1.2fr_1.2fr_1.2fr] gap-2 px-6 items-center border-l-4 border-l-transparent bg-elevated/50",
             density === 'compact' ? "py-2" : "py-4"
         )}>
             {/* Expander */}
@@ -31,25 +31,30 @@ export function TaskRowSkeleton({ density = 'comfortable' }: { density?: 'comfor
                 <Skeleton className="h-3 w-[80%]" />
             </div>
 
+            {/* Priority */}
+            <div className="hidden md:block">
+                <Skeleton className="h-4 w-16 rounded" />
+            </div>
+
             {/* Assignee */}
             <div className="hidden md:flex items-center gap-2">
                 <Skeleton className="w-6 h-6 rounded-full" />
                 <Skeleton className="h-3 w-20" />
             </div>
 
+            {/* Due Date */}
+            <div className="hidden md:flex justify-end">
+                <Skeleton className="h-3 w-12" />
+            </div>
+
+            {/* Completed Date */}
+            <div className="hidden md:flex justify-end">
+                <Skeleton className="h-3 w-12" />
+            </div>
+
             {/* Status */}
             <div className="hidden md:block">
                 <Skeleton className="h-5 w-24 rounded" />
-            </div>
-
-            {/* Priority */}
-            <div className="hidden md:block">
-                <Skeleton className="h-4 w-16 rounded" />
-            </div>
-
-            {/* Due Date */}
-            <div className="flex justify-end">
-                <Skeleton className="h-3 w-12" />
             </div>
         </div>
     );

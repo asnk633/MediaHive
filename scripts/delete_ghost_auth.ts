@@ -1,3 +1,4 @@
+// @ts-nocheck
 
 require('dotenv').config({ path: '.env.local' });
 import admin from 'firebase-admin';

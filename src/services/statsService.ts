@@ -1,4 +1,3 @@
-import { getFirebaseAuth } from '@/firebase/client';
 import { apiClient } from '@/lib/apiClient';
 import { Task } from '@/types/task';
 
@@ -46,7 +45,7 @@ export async function getTaskStats(): Promise<TaskStats> {
  * @returns Promise<TaskStats> - Object containing counts for each task status
  */
 export async function getUserTaskStats(userId: string): Promise<TaskStats> {
-  return CanonicalDataService.getTaskStats({ userId });
+  return CanonicalDataService.getTaskStats({ user_id: userId });
 }
 
 /**

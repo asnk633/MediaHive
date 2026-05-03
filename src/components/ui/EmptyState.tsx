@@ -1,40 +1,54 @@
-import { LucideIcon } from "lucide-react";
-import { cn } from "@/lib/utils";
+import React from 'react';
+import { LucideIcon } from 'lucide-react';
+import { cn } from '@/lib/utils';
 
 interface EmptyStateProps {
-    icon?: LucideIcon;
+    icon: LucideIcon;
     title: string;
-    description: string;
-    actionLabel?: string;
-    onAction?: () => void;
+    description?: string;
+    action?: React.ReactNode;
     className?: string;
+    compact?: boolean;
 }
 
 export default function EmptyState({
     icon: Icon,
     title,
     description,
-    actionLabel,
-    onAction,
-    className
+    action,
+    className,
+    compact = false
 }: EmptyStateProps) {
     return (
-        <div className={cn("flex flex-col items-center justify-center py-16 px-4 text-center", className)}>
-            {Icon && (
-                <div className="w-20 h-20 rounded-full bg-[rgba(255,255,255,0.03)] border border-[var(--border-subtle)] flex items-center justify-center mb-6">
-                    <Icon className="w-8 h-8 text-[var(--text-muted)] opacity-80" />
-                </div>
+        <div className={cn(
+            "flex flex-col items-center justify-center text-center animate-in fade-in duration-500",
+            compact ? "py-6" : "py-12 px-6",
+            className
+        )}>
+            <div className={cn(
+                "rounded-full bg-white/[0.02] border border-white/5 flex items-center justify-center mb-4 transition-transform hover:scale-105 duration-300",
+                compact ? "w-12 h-12" : "w-16 h-16"
+            )}>
+                <Icon className={cn("text-white/20", compact ? "w-6 h-6" : "w-8 h-8")} />
+            </div>
+            <h3 className={cn(
+                "font-bold text-white/60 tracking-tight",
+                compact ? "text-base" : "text-lg"
+            )}>
+                {title}
+            </h3>
+            {description && (
+                <p className={cn(
+                    "text-white/30 font-medium max-w-[280px] mx-auto mt-1 leading-relaxed",
+                    compact ? "text-[11px]" : "text-sm"
+                )}>
+                    {description}
+                </p>
             )}
-            <h3 className="text-xl font-bold text-[var(--text-primary)] mb-2 font-display">{title}</h3>
-            <p className="text-[var(--text-secondary)] max-w-xs mx-auto mb-8 text-sm">{description}</p>
-
-            {actionLabel && onAction && (
-                <button
-                    onClick={onAction}
-                    className="px-6 py-2.5 rounded-full bg-gradient-to-r from-[var(--primary-start)] to-[var(--primary-end)] text-white font-medium text-sm shadow-[var(--shadow-fab)] hover:opacity-90 transition-opacity"
-                >
-                    {actionLabel}
-                </button>
+            {action && (
+                <div className="mt-6">
+                    {action}
+                </div>
             )}
         </div>
     );

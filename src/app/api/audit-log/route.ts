@@ -127,9 +127,11 @@ export async function GET(req: NextRequest) {
       );
     } else {
       // Regular audit log request
+      // Parse Query
+      const role = null; // Dangerous role query param removed
       const page = parseInt(searchParams.get('page') || '1', 10);
       const limit = parseInt(searchParams.get('limit') || '50', 10);
-      const userId = searchParams.get('userId');
+      const userId = user.uid; // derived from auth
       const action = searchParams.get('action');
       const resourceType = searchParams.get('resourceType');
       const startDate = searchParams.get('startDate');
@@ -146,7 +148,7 @@ export async function GET(req: NextRequest) {
       const conditions = [];
 
       if (userId) {
-        conditions.push(eq(auditLog.userId, parseInt(userId, 10)));
+        conditions.push(eq(auditLog.userId, userId));
       }
 
       // Add tenant isolation

@@ -1,23 +1,15 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useAuth } from "@/contexts/AuthContextProvider";
 
+/**
+ * @deprecated Use `useAuth().user?.name` instead for authoritative identity.
+ * This hook is preserved for backward compatibility but now derives from the 
+ * central AuthContext instead of stale localStorage.
+ */
 export function useCurrentUserName() {
-    const [name, setName] = useState<string>("Alex");
+    const { user, loading } = useAuth();
 
-    useEffect(() => {
-        if (typeof window === "undefined") return;
-        try {
-            const raw = localStorage.getItem("thaiba-tasks:user");
-            if (!raw) return;
-            const user = JSON.parse(raw);
-            if (user?.name) {
-                setName(user.name);
-            }
-        } catch (err) {
-            console.warn("Failed to read user from localStorage", err);
-        }
-    }, []);
-
-    return name;
+    if (loading) return "...";
+    return user?.name || "User";
 }

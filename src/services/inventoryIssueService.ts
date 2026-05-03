@@ -1,9 +1,8 @@
-import { db } from "@/firebase/client";
-import { collection, doc, getDocs, getDoc, addDoc, updateDoc, query, where, orderBy, serverTimestamp } from "firebase/firestore";
 import { InventoryIssue, InventoryCondition } from "@/types/inventory";
 import { NotificationService } from "@/services/notificationService";
+import { supabase } from "@/lib/supabaseClient";
 
-const COLLECTION = "inventory_issues";
+const TABLE = "inventory_issues";
 
 export const inventoryIssueService = {
     // Issue Item (Admin/Team)
@@ -11,89 +10,124 @@ export const inventoryIssueService = {
         const payload = {
             ...data,
             status: 'issued',
-            issuedAt: serverTimestamp(),
+            issued_at: new Date().toISOString(),
         };
-        const docRef = await addDoc(collection(db, COLLECTION), payload);
+
+        const { data: created, error } = await supabase
+            .from(TABLE)
+            .insert([payload])
+            .select('id')
+            .single();
+
+        if (error) {
+            console.error("[InventoryIssueService] Create error:", error);
+            throw error;
+        }
 
         // Notify User (Async, don't block)
         NotificationService.createNotification({
-            userId: data.issuedToUserId,
+            user_id: data.issuedToUserId,
             type: 'inventory_issued',
             title: 'Equipment Issued',
             message: `You have been issued "${data.itemName}". Due: ${new Date(data.expectedReturnAt).toLocaleDateString()}.`,
-            entityType: 'device_request', // Using device_request as closest match
-            entityId: docRef.id,
+            entity_type: 'device_request', // Using device_request as closest match
+            entity_id: created.id,
             priority: 'medium',
-            actionUrl: '/inventory'
+            action_url: '/inventory'
         }).catch(err => console.error("Failed to send issue notification", err));
 
-        return docRef.id;
+        return created.id;
     },
 
     // Get Active Issues (For Availability Check)
-    getActiveIssues: async (institutionId?: string) => {
+    getActiveIssues: async (institution_id?: string) => {
         // We only care about items currently 'issued'
-        let q = query(collection(db, COLLECTION), where("status", "==", "issued"));
+        let query = supabase
+            .from(TABLE)
+            .select('*')
+            .eq("status", "issued");
 
         // Scope by institution if provided (Active Users/Admins should always provide this)
-        if (institutionId) {
-            q = query(q, where("institutionId", "==", institutionId));
+        if (institution_id) {
+            query = query.eq("institution_id", institution_id);
         }
 
-        const snap = await getDocs(q);
-        return snap.docs.map(d => ({ id: d.id, ...d.data() } as InventoryIssue));
+        const { data, error } = await query;
+        if (error) {
+            console.error("[InventoryIssueService] getActiveIssues error:", error);
+            return [];
+        }
+
+        return data as InventoryIssue[];
     },
 
     // Get All Issues (History)
-    getAll: async (institutionId?: string) => {
-        let q = query(collection(db, COLLECTION), orderBy("issuedAt", "desc"));
+    getAll: async (institution_id?: string) => {
+        let query = supabase
+            .from(TABLE)
+            .select('*')
+            .order("issued_at", { ascending: false });
 
         // Scope by institution
-        if (institutionId) {
-            // Note: Compound index might be needed: institutionId ASC, issuedAt DESC
-            q = query(collection(db, COLLECTION), where("institutionId", "==", institutionId), orderBy("issuedAt", "desc"));
+        if (institution_id) {
+            query = query.eq("institution_id", institution_id);
         }
 
-        const snap = await getDocs(q);
-        return snap.docs.map(d => ({ id: d.id, ...d.data() } as InventoryIssue));
+        const { data, error } = await query;
+        if (error) {
+            console.error("[InventoryIssueService] getAll error:", error);
+            return [];
+        }
+
+        return data as InventoryIssue[];
     },
 
     // Return Item (Admin/Team)
     returnItem: async (id: string, conditionIn: InventoryCondition, returnedAt: Date, remarks?: string) => {
-        const ref = doc(db, COLLECTION, id);
-
         // 1. Fetch details for notification
-        let issueData: any = null;
-        try {
-            const snap = await getDoc(ref);
-            if (snap.exists()) issueData = snap.data();
-        } catch (e) {
-            console.warn("Could not fetch issue for notification", e);
+        const { data: issueData, error: fetchError } = await supabase
+            .from(TABLE)
+            .select('*')
+            .eq('id', id)
+            .single();
+
+        if (fetchError) {
+            console.warn("Could not fetch issue for notification", fetchError);
         }
 
         // 2. Update
         const payload: any = {
             status: 'returned',
-            conditionIn,
-            returnedAt: returnedAt
+            condition_in: conditionIn,
+            returned_at: returnedAt.toISOString()
         };
         if (remarks) {
-            payload.returnRemarks = remarks;
+            payload.return_remarks = remarks;
         }
-        await updateDoc(ref, payload);
+
+        const { error: updateError } = await supabase
+            .from(TABLE)
+            .update(payload)
+            .eq('id', id);
+
+        if (updateError) {
+            console.error("[InventoryIssueService] returnItem error:", updateError);
+            throw updateError;
+        }
 
         // 3. Notify
         if (issueData) {
             NotificationService.createNotification({
-                userId: issueData.issuedToUserId,
+                user_id: issueData.issuedToUserId || issueData.issued_to_user_id,
                 type: 'inventory_returned',
                 title: 'Item Returned',
-                message: `Return confirmed for "${issueData.itemName}".`,
-                entityType: 'device_request',
-                entityId: id,
+                message: `Return confirmed for "${issueData.itemName || issueData.item_name}".`,
+                entity_type: 'device_request',
+                entity_id: id,
                 priority: 'low',
-                actionUrl: '/inventory'
+                action_url: '/inventory'
             }).catch(err => console.error("Failed to send return notification", err));
         }
     }
 };
+

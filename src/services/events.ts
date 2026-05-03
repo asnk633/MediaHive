@@ -1,6 +1,5 @@
 import type { Event } from '@/types/event';
 import type { Task } from '@/types/task';
-import { TaskService } from './tasks';
 import { SystemEventService } from './systemEventService';
 
 import { TimestampLike } from '@/types/timestamp';
@@ -11,6 +10,7 @@ const LOCAL_STORAGE_KEY = 'mediahive_offline_events';
 
 // In-Memory fallback
 let memoryEvents: Event[] = [];
+import { supabase } from '@/lib/supabaseClient';
 
 // API helper function
 const apiRequest = async (endpoint: string, options: RequestInit = {}) => {
@@ -37,7 +37,7 @@ const loadFromLocal = (): Event[] => {
                 return parsed.map((t: any) => ({
                     ...t,
                     date: t.date?.seconds ? t.date : { seconds: new Date(t.date).getTime() / 1000, nanoseconds: 0 },
-                    createdAt: t.createdAt?.seconds ? t.createdAt : { seconds: Date.now() / 1000, nanoseconds: 0 }
+                    created_at: t.created_at?.seconds ? t.created_at : { seconds: Date.now() / 1000, nanoseconds: 0 }
                 }));
             } catch (e) { console.error(e); }
         }
@@ -64,16 +64,16 @@ export const EventService = {
                 const userEvents = rawEvents.map((event: any) => ({
                     id: event.id,
                     ...event,
-                    startTime: event.startTime,
-                    endTime: event.endTime,
+                    startTime: event.start_time,
+                    endTime: event.end_time,
                     // Normalize date to Timestamp schema to satisfy UI components
                     date: typeof event.date === 'string'
                         ? { seconds: Math.floor(new Date(event.date).getTime() / 1000), nanoseconds: 0 }
                         : event.date,
-                    // Normalize createdAt to Timestamp schema
-                    createdAt: typeof event.createdAt === 'string'
-                        ? { seconds: Math.floor(new Date(event.createdAt).getTime() / 1000), nanoseconds: 0 }
-                        : event.createdAt,
+                    // Normalize created_at to Timestamp schema
+                    created_at: typeof event.created_at === 'string'
+                        ? { seconds: Math.floor(new Date(event.created_at).getTime() / 1000), nanoseconds: 0 }
+                        : event.created_at,
                 }));
 
                 // Combine with system events
@@ -91,9 +91,9 @@ export const EventService = {
                     ...systemEvents.map(se => ({
                         ...se,
                         // Add UI specific flags or map types if strictly needed
-                        isSystemEvent: true, // Custom flag to be handled in UI
-                        startTime: se.date, // Map date to startTime for calendar if needed
-                        endTime: se.date,
+                        is_system_event: true, // Custom flag to be handled in UI
+                        start_time: se.date, // Map date to start_time for calendar if needed
+                        end_time: se.date,
                     }))
                 ];
 
@@ -139,16 +139,16 @@ export const EventService = {
         };
     },
 
-    addEvent: async (event: Omit<Event, 'id' | 'createdAt'>) => {
+    addEvent: async (event: Omit<Event, 'id' | 'created_at'>) => {
         try {
             const response = await apiRequest('', {
                 method: 'POST',
                 body: JSON.stringify(event),
             });
 
-            const { id: eventId } = response.data;
+            const { id: event_id } = response.data;
 
-            if (event.mediaCoverage && event.mediaCoverage.length > 0) {
+            if (event.media_coverage && event.media_coverage.length > 0) {
                 // Ensure date is string for Task API
                 let dateStr: string;
                 if (event.date && typeof (event.date as any).toDate === 'function') {
@@ -165,16 +165,16 @@ export const EventService = {
                     status: 'todo' as const,
                     priority: 'medium' as const, // Default for media requests
                     department: event.department || 'General',
-                    dueDate: dateStr as any, // Task type likely expects string or Date, ensuring string ISO
-                    assignedTo: [],
-                    assignedBy: { uid: event.createdBy.uid, name: event.createdBy.name, role: event.createdBy.role || 'user' },
-                    createdBy: { uid: event.createdBy.uid, name: event.createdBy.name, role: event.createdBy.role || 'user' },
-                    eventId,
+                    due_date: dateStr as any, // Task type likely expects string or Date, ensuring string ISO
+                    assigned_to: [],
+                    assigned_by: { uid: event.created_by.uid, name: event.created_by.name, role: event.created_by.role || 'user' },
+                    created_by: { uid: event.created_by.uid, name: event.created_by.name, role: event.created_by.role || 'user' },
+                    event_id,
                     files: [],
-                    ratedAt: null
+                    rated_at: null
                 };
 
-                await TaskService.addTask(mediaTask);
+                await supabase.from('tasks').insert([mediaTask]);
             }
 
             return response.data;
@@ -185,7 +185,7 @@ export const EventService = {
                 id: 'local_' + Date.now(),
                 ...event,
                 status: 'pending',
-                createdAt: new Date().toISOString(),
+                created_at: new Date().toISOString(),
                 date: event.date
             };
             saveToLocal([newEvent, ...current]);
@@ -193,9 +193,9 @@ export const EventService = {
         }
     },
 
-    approveEvent: async (eventId: string, approverUid: string) => {
+    approveEvent: async (event_id: string, approverUid: string) => {
         try {
-            const response = await apiRequest(`/${encodeURIComponent(eventId)}/approve`, {
+            const response = await apiRequest(`/${encodeURIComponent(event_id)}/approve`, {
                 method: 'POST',
                 body: JSON.stringify({ action: 'approve' }),
             });
@@ -219,10 +219,10 @@ export const EventService = {
             return {
                 id: event.id,
                 ...event,
-                startTime: event.startTime,
-                endTime: event.endTime,
+                start_time: event.start_time,
+                end_time: event.end_time,
                 date: event.date,
-                createdAt: event.createdAt,
+                created_at: event.created_at,
             } as unknown as Event;
         } catch (e) {
             console.error("Error fetching event", e);

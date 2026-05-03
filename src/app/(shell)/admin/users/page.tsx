@@ -93,8 +93,8 @@ export default function UsersPage() {
                     data.email,
                     data.role as 'admin' | 'team' | 'guest',
                     currentUser.uid,
-                    data.institutionId || null,
-                    data.departmentId || null,
+                    data.institution_id || '', // Ensure it's a string
+                    data.department_id || undefined, // undefined is better than null for optional string
                     data.name || null // Pass name to invite
                 );
 
@@ -110,12 +110,12 @@ export default function UsersPage() {
 
     // Helper to get affiliation name
     const getAffiliation = (user: User) => {
-        if (user.departmentId) {
-            const dept = departments.find(d => d.id === user.departmentId);
+        if (user.department_id) {
+            const dept = departments.find(d => d.id === user.department_id);
             return { type: 'Office / Unit', name: dept ? dept.name : 'Unknown Office / Unit', icon: Users };
         }
-        if (user.institutionId) {
-            const inst = institutions.find(i => i.id === user.institutionId);
+        if (user.institution_id) {
+            const inst = institutions.find(i => i.id === user.institution_id);
             return { type: 'Institution', name: inst ? inst.name : 'Unknown Institution', icon: Building };
         }
         return { type: 'None', name: 'No Affiliation', icon: UserIcon };
@@ -129,10 +129,10 @@ export default function UsersPage() {
             name: i.name || i.email.split('@')[0], // Use invite name if available
             email: i.email,
             role: i.role,
-            institutionId: i.institutionId,
-            departmentId: i.departmentId,
+            institution_id: i.institution_id,
+            department_id: i.department_id,
             photoURL: null,
-            avatarUrl: null,
+            avatar_url: null,
             status: 'invited',
             type: 'invite' as const
         }))
@@ -215,7 +215,7 @@ export default function UsersPage() {
                                 <div key={user.uid} className="p-4 rounded-xl bg-white/5 border border-white/5 flex flex-col sm:flex-row sm:items-center justify-between gap-4 hover:border-white/10 transition-colors">
                                     <div className="flex items-center gap-4">
                                         <Avatar className="h-10 w-10 border border-white/10">
-                                            <AvatarImage src={user.avatarUrl || user.photoURL} />
+                                            <AvatarImage src={user.avatar_url || user.photoURL} />
                                             <AvatarFallback className="bg-slate-800 text-slate-400">{(user.name || user.email || '?').charAt(0).toUpperCase()}</AvatarFallback>
                                         </Avatar>
                                         <div>

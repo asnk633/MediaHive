@@ -6,7 +6,7 @@ export const ActivityService = {
      * Log a new system activity (Fire & Forget)
      * We don't await this in critical paths to avoid blocking UI
      */
-    logActivity: async (action: Omit<SystemActivity, 'id' | 'timestamp' | 'performedBy' | 'performedByRole'>) => {
+    logActivity: async (action: Omit<SystemActivity, 'id' | 'timestamp' | 'performed_by' | 'performedByRole'>) => {
         try {
             await apiClient('/api/activities', {
                 method: 'POST',

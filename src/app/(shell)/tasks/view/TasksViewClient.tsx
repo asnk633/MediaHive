@@ -50,7 +50,7 @@ import { Separator } from "@/components/ui/separator"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card"
 
-import { TaskService } from '@/services/tasks'
+import { supabase } from '@/lib/supabaseClient'
 import { AuditTrailService } from '@/services/auditTrailService'
 import { useAuth } from '@/contexts/AuthContextProvider'
 import { toast } from "sonner"
@@ -68,7 +68,7 @@ interface Comment {
     userName: string;
     userAvatar?: string;
     content: string;
-    createdAt: string; // ISO
+    created_at: string; // ISO
 }
 
 export default function TasksViewClient() {
@@ -108,11 +108,11 @@ function TaskViewContent() {
         if (!taskId) return;
         setLoading(true);
         try {
-            const data = await TaskService.getTask(taskId);
+            const { data } = await supabase.from('tasks').select('*').eq('id', taskId).single();
             if (data) {
                 setTask(data);
-                if (data.campaignId) {
-                    loadCampaignName(data.campaignId);
+                if (data.campaign_id) {
+                    loadCampaignName(data.campaign_id);
                 }
             } else {
                 setError("Task not found");
@@ -125,9 +125,9 @@ function TaskViewContent() {
         }
     };
 
-    const loadCampaignName = async (campaignId: string) => {
+    const loadCampaignName = async (campaign_id: string) => {
         try {
-            const campaign = await CampaignService.getCampaign(campaignId);
+            const campaign = await CampaignService.getCampaign(campaign_id);
             if (campaign) {
                 setCampaignName(campaign.name);
             }
@@ -139,7 +139,7 @@ function TaskViewContent() {
     const handleUpdateTask = async (updates: any) => {
         if (!task) return false;
         try {
-            await TaskService.updateTask(task.id, updates);
+            await supabase.from('tasks').update(updates).eq('id', task.id);
             setTask({ ...task, ...updates });
             toast.success("Updated");
             return true;
@@ -164,7 +164,7 @@ function TaskViewContent() {
         if (typeof window !== 'undefined' && !confirm("Are you sure you want to delete this task? This action will be permanently logged.")) return;
 
         try {
-            await TaskService.deleteTask(task.id);
+            await supabase.from('tasks').delete().eq('id', task.id);
 
             // PUBLIC SECTOR PASS: Immutable Audit Logging
             await AuditTrailService.logAction({
@@ -194,7 +194,7 @@ function TaskViewContent() {
             userId: user?.uid || 'guest',
             userName: user?.name || 'Guest',
             content: newComment,
-            createdAt: new Date().toISOString()
+            created_at: new Date().toISOString()
         };
         setComments([mockComment, ...comments]);
         setNewComment("");
@@ -250,7 +250,7 @@ function TaskViewContent() {
     );
 
     const isAdmin = user?.role === 'admin';
-    const isOwner = user?.uid === (typeof task.createdBy === 'string' ? task.createdBy : task.createdBy?.uid);
+    const isOwner = user?.uid === (typeof task.created_by === 'string' ? task.created_by : task.created_by?.uid);
     const canEdit = isAdmin || isOwner || user?.role === 'team';
 
     return (
@@ -355,20 +355,20 @@ function TaskViewContent() {
                             </DropdownMenuContent>
                         </DropdownMenu>
 
-                        <Badge variant="outline" className={cn("rounded-full px-3 py-1 border-0 capitalize font-medium", getPriorityColor(task.priority))}>
+                        <Badge variant="neutral" className={cn("rounded-full px-3 py-1 border-0 capitalize font-medium", getPriorityColor(task.priority))}>
                             {task.priority || 'Normal'}
                         </Badge>
-                        {task.dueDate && (
+                        {task.due_date && (
                             <div className="flex items-center gap-2 text-sm text-gray-400 ml-auto sm:ml-0">
                                 <Clock className="h-4 w-4 text-gray-500" />
-                                <span>Due {formatDisplayDate(task.dueDate)}</span>
+                                <span>Due {formatDisplayDate(task.due_date)}</span>
                             </div>
                         )}
                         <div className="ml-auto hidden sm:flex items-center gap-3">
                             <div className="flex -space-x-2">
-                                {task.assignedTo && task.assignedTo.length > 0 ? (
-                                    task.assignedTo.map((u: any, i: number) => (
-                                        <Badge key={i} variant="secondary" className="rounded-full h-8 w-8 p-0 flex items-center justify-center border-2 border-[#10111a] bg-gray-800 text-xs">
+                                {task.assigned_to && task.assigned_to.length > 0 ? (
+                                    task.assigned_to.map((u: any, i: number) => (
+                                        <Badge key={i} variant="neutral" className="rounded-full h-8 w-8 p-0 flex items-center justify-center border-2 border-[#10111a] bg-gray-800 text-xs">
                                             {getInitials(u.name || u.email)}
                                         </Badge>
                                     ))
@@ -422,12 +422,12 @@ function TaskViewContent() {
                                 <CardContent className="space-y-4 text-sm">
                                     <div className="flex justify-between">
                                         <span className="text-gray-500">Created By</span>
-                                        <span className="text-gray-200">{resolveUserName(task.createdBy)}</span>
+                                        <span className="text-gray-200">{resolveUserName(task.created_by)}</span>
                                     </div>
                                     <div className="flex justify-between">
                                         <span className="text-gray-500">Created On</span>
                                         <span className="text-gray-200">
-                                            {task.createdAt?.seconds ? formatDisplayDate(task.createdAt) : 'Unknown'}
+                                            {task.created_at?.seconds ? formatDisplayDate(task.created_at) : 'Unknown'}
                                         </span>
                                     </div>
                                     <div className="flex justify-between">

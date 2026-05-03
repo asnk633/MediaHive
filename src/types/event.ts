@@ -6,23 +6,25 @@ export interface Event {
     title: string;
     description?: string;
     date: TimestampLike; // This is the START date
-    startTime?: TimestampLike;
-    endTime?: TimestampLike;
+    start_at?: TimestampLike; // Replaces date in Supabase
+    start_time?: TimestampLike;
+    end_at?: TimestampLike;
+    end_time?: TimestampLike;
     location?: string;
     type: 'meeting' | 'workshop' | 'deadline' | 'other';
     department?: string;
-    createdBy: {
+    created_by: {
         uid: string;
         name: string;
         role?: string;
     };
-    createdAt: TimestampLike;
-    mediaCoverage?: string[];
+    created_at: TimestampLike;
+    media_coverage?: string[];
     status?: 'pending' | 'approved' | 'rejected';
-    isDemoData?: boolean;
-    isSystemEvent?: boolean;
-    isMediaOffDay?: boolean;
-    onBehalfOf?: {
+    is_demo_data?: boolean;
+    is_system_event?: boolean;
+    is_media_off_day?: boolean;
+    on_behalf_of?: {
         id: string;
         name: string;
         type: 'department' | 'institution';
@@ -32,6 +34,6 @@ export interface Event {
         name: string;
         role: string;
     };
-    institutionId?: string;
-    departmentId?: string;
+    institution_id?: string;
+    department_id?: string;
 }

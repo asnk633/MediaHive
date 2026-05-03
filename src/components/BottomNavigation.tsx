@@ -2,7 +2,7 @@
 import React from 'react';
 import AppLink from "@/components/AppLink";
 import { usePathname } from "next/navigation";
-import { Home, CheckSquare, Calendar, User, Download, BarChart3, Package } from "lucide-react";
+import { Home, CheckSquare, Calendar, User, Download, BarChart3, Package, ShieldCheck } from "lucide-react";
 import { motion } from "framer-motion";
 import { useAuth } from '@/contexts/AuthContextProvider';
 import FAB from "@/client/components/FAB";
@@ -42,7 +42,9 @@ export default function BottomNavigation() {
     // Role-based Switch: Reports for Team/Admin, Profile for Guests
     isGuest
       ? { key: 'profile', label: 'Profile', href: '/profile', icon: User }
-      : { key: 'reports', label: 'Reports', href: '/reports', icon: BarChart3 },
+      : user?.role === 'admin'
+        ? { key: 'governance', label: 'Gov', href: '/governance', icon: ShieldCheck }
+        : { key: 'reports', label: 'Reports', href: '/reports', icon: BarChart3 },
   ];
 
   return (

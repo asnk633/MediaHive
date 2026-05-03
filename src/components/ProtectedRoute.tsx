@@ -13,8 +13,8 @@ export default function ProtectedRoute({ children, requireAdmin = false }: Prote
 
     if (loading) {
         return (
-            <div className="flex items-center justify-center min-h-screen bg-night-sky">
-                <AppLoader />
+            <div className="flex items-center justify-center min-h-[400px]">
+                {/* No full screen loader here, just a silent space for content to arrive */}
             </div>
         );
     }

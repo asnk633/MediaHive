@@ -13,7 +13,7 @@ export default function UnitPoliciesContent() {
     const searchParams = typeof window !== 'undefined' ? new URLSearchParams(window.location.search) : new URLSearchParams();
     const id = searchParams.get('id');
     const router = useRouter();
-    const [institutionId, setInstitutionId] = useState<string | undefined>(undefined);
+    const [institution_id, setInstitutionId] = useState<string | undefined>(undefined);
 
     // Fetch Dept Info to get Parent Institution
     useEffect(() => {
@@ -55,7 +55,7 @@ export default function UnitPoliciesContent() {
             <StructurePolicyEditor
                 scopeType="unit"
                 scopeId={id}
-                parentScopeId={institutionId}
+                parentScopeId={institution_id}
             />
         </div>
     );

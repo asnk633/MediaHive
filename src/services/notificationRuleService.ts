@@ -1,7 +1,6 @@
 
 import { NotificationRule } from '@/types/notificationRules';
 import { SystemEvent } from '@/types/systemEvent';
-import { getFirebaseAuth } from '@/firebase/client';
 import { apiClient } from '@/lib/apiClient';
 
 const RULES_COLLECTION = 'notification_rules';
@@ -75,7 +74,7 @@ export const NotificationRuleService = {
         });
     },
 
-    isMediaOffDay: (date: Date, systemEvents: SystemEvent[]): { isOff: boolean; reason?: string } => {
+    is_media_off_day: (date: Date, systemEvents: SystemEvent[]): { isOff: boolean; reason?: string } => {
         // 1. Check for Sunday (Core default rule)
         if (date.getDay() === 0) {
             return { isOff: true, reason: 'Sunday' };
@@ -90,7 +89,7 @@ export const NotificationRuleService = {
             if (!event.date) return false;
             const eventDate = (event.date as any).toDate ? (event.date as any).toDate() : new Date(event.date as any);
             eventDate.setHours(0, 0, 0, 0);
-            return eventDate.getTime() === checkDate.getTime() && event.isMediaOffDay;
+            return eventDate.getTime() === checkDate.getTime() && event.is_media_off_day;
         });
 
         if (matchingEvent) {

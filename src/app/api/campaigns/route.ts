@@ -1,70 +1,97 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { getFirebaseServices, verifyUser } from '@/lib/server-utils';
-
+import { verifyUser, getSupabaseFromRequest } from '@/lib/server-utils';
 
 export const dynamic = 'force-dynamic';
 
+/**
+ * GET /api/campaigns
+ * Fetch campaigns scoped by institution_id
+ */
 export async function GET(req: NextRequest) {
     try {
-        const { firestore } = await getFirebaseServices();
         const user = await verifyUser(req);
-
         if (!user) {
             return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
         }
 
-        const url = new URL(req.url);
-        // The service sends role/userId but we trust verifyUser token more. 
-        // We can ignore query params and use token data for security.
-
-        let query: FirebaseFirestore.Query = firestore.collection('campaigns');
-
-        // Admin & Team see all active campaigns
-        // Guests see only where they are members or owner
-        if (user.role !== 'admin' && user.role !== 'team') {
-            query = query.where('members', 'array-contains', user.uid);
+        const supabase = getSupabaseFromRequest(req);
+        if (!supabase) {
+            return NextResponse.json({ error: 'Failed to initialize Supabase' }, { status: 500 });
         }
 
-        const snapshot = await query.get();
-        const campaigns = snapshot.docs.map(doc => ({
-            id: doc.id,
-            ...doc.data()
-        }));
+        const { data: campaigns, error } = await supabase
+            .from('campaigns')
+            .select('*')
+            .eq('institution_id', user.institution_id)
+            .order('created_at', { ascending: false });
 
-        return NextResponse.json({ campaigns });
+        if (error) {
+            console.error('[GET /api/campaigns] Supabase error:', error);
+            return NextResponse.json({ error: error.message }, { status: 500 });
+        }
+
+        return NextResponse.json({ campaigns: campaigns || [] });
     } catch (error: any) {
-        console.error('[GET /api/campaigns]', error);
-        return NextResponse.json({ error: error.message }, { status: 500 });
+        console.error('[GET /api/campaigns] Unexpected error:', error);
+        return NextResponse.json({ error: 'Internal Server Error' }, { status: 500 });
     }
 }
 
+/**
+ * POST /api/campaigns
+ * Create a new campaign scoped to the user's institution
+ */
 export async function POST(req: NextRequest) {
     try {
-        const { firestore } = await getFirebaseServices();
         const user = await verifyUser(req);
-
         if (!user) {
             return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+        }
+
+        // Check if user is admin or team (guests might be restricted depending on policy)
+        // For now, allowing guests to create if that's the requirement, but usually it's Admin/Team.
+        // The prompt says "Read-only for guest" in context of RLS, so let's enforce it here too.
+        if (user.role === 'guest') {
+            return NextResponse.json({ error: 'Guests cannot create campaigns' }, { status: 403 });
         }
 
         const body = await req.json();
 
-        // Enforce basic metadata overrides for safety
+        // Prepare data for Supabase (snake_case columns expected)
         const campaignData = {
-            ...body,
-            createdAt: new Date().toISOString(),
-            createdBy: {
-                uid: user.uid,
-                role: user.role,
-                name: user.name
-            }
+            name: body.name,
+            description: body.description,
+            start_date: body.startDate || body.start_date,
+            end_date: body.endDate || body.end_date,
+            phase: body.phase || 'planning',
+            drive_folder_id: body.driveFolderId,
+            owner_id: user.uid,
+            institution_id: user.institution_id,
+            tenant_id: (user as any).tenantId || 1,
+            members: body.members || [user.uid],
+            created_at: new Date().toISOString(),
+            updated_at: new Date().toISOString()
         };
 
-        const docRef = await firestore.collection('campaigns').add(campaignData);
+        const supabase = getSupabaseFromRequest(req);
+        if (!supabase) {
+            return NextResponse.json({ error: 'Failed to initialize Supabase' }, { status: 500 });
+        }
 
-        return NextResponse.json({ id: docRef.id, message: 'Campaign created' }, { status: 201 });
+        const { data, error } = await supabase
+            .from('campaigns')
+            .insert(campaignData)
+            .select()
+            .single();
+
+        if (error) {
+            console.error('[POST /api/campaigns] Supabase error:', error);
+            return NextResponse.json({ error: error.message }, { status: 500 });
+        }
+
+        return NextResponse.json({ data, id: data.id }, { status: 201 });
     } catch (error: any) {
-        console.error('[POST /api/campaigns]', error);
-        return NextResponse.json({ error: error.message }, { status: 500 });
+        console.error('[POST /api/campaigns] Unexpected error:', error);
+        return NextResponse.json({ error: 'Internal Server Error' }, { status: 500 });
     }
 }

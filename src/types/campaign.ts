@@ -14,7 +14,7 @@ export interface Campaign {
     driveFolderId?: string; // Google Drive folder ID for this campaign
 
     ownerId: string; // UID of the creator/owner
-    createdBy: {
+    created_by: {
         uid: string;
         role: CampaignRole;
         name: string;
@@ -22,6 +22,6 @@ export interface Campaign {
 
     members: string[]; // Array of UIDs who can access/edit (Admin/Team usually have implicit access, but this helps filtering)
 
-    createdAt: TimestampLike;
-    updatedAt: TimestampLike;
+    created_at: TimestampLike;
+    updated_at: TimestampLike;
 }

@@ -17,8 +17,8 @@ export interface FaceEmbedding {
   label: string; // VIP name/label
   userId?: number; // Optional association with user
   embedding: number[]; // 128-d vector
-  createdBy?: number; // Admin who created the embedding
-  createdAt?: string;
+  created_by?: number; // Admin who created the embedding
+  created_at?: string;
 }
 
 export interface FaceMatch {
@@ -38,14 +38,14 @@ export interface FaceRecognitionResult {
  * @param imagePath Path to the VIP image
  * @param label VIP name/label
  * @param userId Optional user ID association
- * @param createdBy Admin user ID
+ * @param created_by Admin user ID
  * @returns Stored embedding ID
  */
 export async function enrollVIP(
   imagePath: string,
   label: string,
   userId: number | undefined,
-  createdBy: number
+  created_by: number
 ): Promise<number> {
   try {
     // Compute face embedding
@@ -61,8 +61,8 @@ export async function enrollVIP(
         label,
         userId,
         embedding: encryptedEmbedding,
-        createdBy,
-        createdAt: new Date().toISOString(),
+        created_by,
+        created_at: new Date().toISOString(),
       })
       .returning({ id: vipEmbeddings.id });
     
@@ -143,14 +143,14 @@ export async function matchFace(imagePath: string): Promise<FaceRecognitionResul
  * Lists all enrolled VIPs
  * @returns List of enrolled VIPs
  */
-export async function listVIPs(): Promise<{ id: number; label: string; userId?: number; createdAt: string }[]> {
+export async function listVIPs(): Promise<{ id: number; label: string; userId?: number; created_at: string }[]> {
   try {
     const results = await db
       .select({
         id: vipEmbeddings.id,
         label: vipEmbeddings.label,
         userId: vipEmbeddings.userId,
-        createdAt: vipEmbeddings.createdAt,
+        created_at: vipEmbeddings.created_at,
       })
       .from(vipEmbeddings);
     
@@ -159,7 +159,7 @@ export async function listVIPs(): Promise<{ id: number; label: string; userId?: 
       id: result.id,
       label: result.label,
       userId: result.userId !== null ? result.userId : undefined,
-      createdAt: result.createdAt,
+      created_at: result.created_at,
     }));
   } catch (error: unknown) {
     console.error('VIP listing error:', error);

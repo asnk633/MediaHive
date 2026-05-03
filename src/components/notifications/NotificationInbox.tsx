@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef, useCallback } from 'react';
 import { AppNotification } from '@/types/notification';
 import { NotificationService } from '@/services/notificationService';
 import { NotificationItem } from './NotificationItem';
@@ -8,8 +8,10 @@ import { useAuth } from '@/contexts/AuthContextProvider';
 import { useRouter } from 'next/navigation';
 import { apiClient } from '@/lib/apiClient';
 import { nativeNavigate } from '@/lib/utils';
-import { Loader2, CheckCheck, Filter } from 'lucide-react';
+import { Loader2, CheckCheck } from 'lucide-react';
 import { toast } from 'sonner';
+import { useBulkSelection } from '@/hooks/useBulkSelection';
+import { DataList } from '@/components/ui/DataList';
 
 type FilterType = 'all' | 'unread' | 'mentions';
 
@@ -27,9 +29,9 @@ export const NotificationInbox: React.FC = () => {
             // Limit to 100 for the inbox view for performance
             const data = await NotificationService.getUserNotifications({ limit: 100 });
             setNotifications(data);
-            setUnreadCount(data.filter(n => !n.isRead).length);
+            setUnreadCount(data.filter(n => !n.read).length);
             setLoading(false);
-        } catch (error: any) {
+        } catch (error: unknown) {
             console.error('Failed to fetch notifications:', error);
             setLoading(false);
         }
@@ -49,7 +51,7 @@ export const NotificationInbox: React.FC = () => {
 
         // Optimistic update
         const prevNotifications = [...notifications];
-        setNotifications(prev => prev.map(n => ({ ...n, isRead: true })));
+        setNotifications(prev => prev.map(n => ({ ...n, read: true })));
         setUnreadCount(0);
         toast.success("Marked all as read");
 
@@ -57,35 +59,31 @@ export const NotificationInbox: React.FC = () => {
             await NotificationService.markAllAsRead();
         } catch (error) {
             console.error("Failed to mark all read", error);
-            // Revert only if necessary, but failing to mark read on server is low critical
             toast.error("Failed to sync read status");
             setNotifications(prevNotifications); // Revert on error
-            setUnreadCount(prevNotifications.filter(n => !n.isRead).length);
+            setUnreadCount(prevNotifications.filter(n => !n.read).length);
         }
     };
 
     const handleNotificationClick = async (notification: AppNotification) => {
         // Mark read logic
-        if (!notification.isRead) {
+        if (!notification.read) {
             // Optimistic
             setNotifications(prev => prev.map(n =>
-                n.id === notification.id ? { ...n, isRead: true } : n
+                n.id === notification.id ? { ...n, read: true } : n,
             ));
             setUnreadCount(prev => Math.max(0, prev - 1));
 
             try {
-                await apiClient(`/api/notifications/${notification.id}`, {
-                    method: 'PATCH',
-                    body: JSON.stringify({ action: 'markRead' })
-                });
+                await NotificationService.markAsRead(notification.id);
             } catch (e) {
                 console.error(e);
             }
         }
 
         // Navigate
-        if (notification.actionUrl) {
-            let url = notification.actionUrl;
+        if (notification.action_url) {
+            let url = notification.action_url;
             if (url.includes('/tasks/view/') && !url.includes('?id=')) {
                 url = url.replace('/tasks/view/', '/tasks/view?id=');
             }
@@ -94,10 +92,41 @@ export const NotificationInbox: React.FC = () => {
     };
 
     const filteredNotifications = notifications.filter(n => {
-        if (filter === 'unread') return !n.isRead;
+        if (filter === 'unread') return !n.read;
         if (filter === 'mentions') return n.type === 'task_assigned' || n.title.toLowerCase().includes('mention');
         return true;
     });
+
+    // --- Bulk Selection ---
+    const allIds = React.useMemo(
+        () => filteredNotifications.map(n => n.id),
+        [filteredNotifications],
+    );
+
+    const sel = useBulkSelection<string>({ allIds });
+
+    // Shift+click: track last clicked index via ref (no re-render)
+    const lastSelectedIndexRef = useRef<number | null>(null);
+
+    const handleSelectToggle = useCallback(
+        (id: string, index: number, e: React.MouseEvent) => {
+            if (e.shiftKey && lastSelectedIndexRef.current !== null) {
+                sel.selectRange(lastSelectedIndexRef.current, index);
+            } else {
+                sel.toggle(id);
+                lastSelectedIndexRef.current = index;
+            }
+        },
+        [sel],
+    );
+
+    // Reset last-index when filter changes (selection also resets via allIds change)
+    useEffect(() => {
+        lastSelectedIndexRef.current = null;
+        sel.clear();
+        // sel.clear is stable; disabling exhaustive-deps is intentional here
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [filter]);
 
     if (loading) {
         return (
@@ -129,28 +158,48 @@ export const NotificationInbox: React.FC = () => {
                     ))}
                 </div>
 
-                <button
-                    onClick={handleMarkAllRead}
-                    disabled={unreadCount === 0}
-                    className="flex items-center gap-2 px-4 py-2 text-xs font-bold uppercase tracking-wider text-primary hover:bg-primary/10 rounded-xl transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
-                >
-                    <CheckCheck size={16} />
-                    Mark all read
-                </button>
+                <div className="flex items-center gap-3">
+                    {/* Selection count badge */}
+                    {sel.selectedIds.size > 0 && (
+                        <span className="text-xs font-semibold text-white/50 tabular-nums">
+                            {sel.selectedIds.size} selected
+                        </span>
+                    )}
+
+                    <button
+                        onClick={handleMarkAllRead}
+                        disabled={unreadCount === 0}
+                        className="flex items-center gap-2 px-4 py-2 text-xs font-bold uppercase tracking-wider text-primary hover:bg-primary/10 rounded-xl transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                    >
+                        <CheckCheck size={16} />
+                        Mark all read
+                    </button>
+                </div>
             </div>
 
             {/* List */}
             <div className="bg-white/5 rounded-2xl border border-white/10 overflow-hidden shadow-sm">
                 {filteredNotifications.length > 0 ? (
-                    <div className="divide-y divide-border">
-                        {filteredNotifications.map(notification => (
+                    <DataList
+                        selectable
+                        isAllSelected={sel.isAllSelected}
+                        isIndeterminate={sel.isIndeterminate}
+                        onSelectAll={sel.selectAll}
+                        onClearAll={sel.clear}
+                        selectionLabel="Select all notifications"
+                    >
+                        {filteredNotifications.map((notification, index) => (
                             <NotificationItem
                                 key={notification.id}
                                 notification={notification}
-                                onClick={handleNotificationClick}
+                                onRead={() => handleNotificationClick(notification)}
+                                onArchive={() => { }}
+                                selectable
+                                selected={sel.isSelected(notification.id)}
+                                onSelectToggle={(e) => handleSelectToggle(notification.id, index, e)}
                             />
                         ))}
-                    </div>
+                    </DataList>
                 ) : (
                     <div className="py-20 flex flex-col items-center justify-center text-center opacity-60">
                         <div className="w-16 h-16 bg-surface rounded-full flex items-center justify-center mb-4">

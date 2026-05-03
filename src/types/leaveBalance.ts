@@ -12,7 +12,7 @@ export interface LeaveBalance {
         emergency: { taken: number; total: number };
         other: { taken: number; total: number };
     };
-    updatedAt: TimestampLike;
+    updated_at: TimestampLike;
 }
 
 // Default allowances per leave type

@@ -78,7 +78,7 @@ export const ConflictWarningBanner: React.FC<ConflictWarningBannerProps> = ({
                                         <div className="mt-1 space-y-1">
                                             {conflict.details.tasks.map((task, taskIndex) => (
                                                 <p key={taskIndex} className="text-xs text-white/60">
-                                                    • "{task.title}" - Due {format(task.dueDate, 'MMM d, yyyy')}
+                                                    • "{task.title}" - Due {format(task.due_date, 'MMM d, yyyy')}
                                                 </p>
                                             ))}
                                         </div>

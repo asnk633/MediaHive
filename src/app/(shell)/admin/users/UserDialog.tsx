@@ -40,13 +40,13 @@ export function UserDialog({ open, onOpenChange, user, onSave, institutions, dep
             if (user) {
                 setRole(user.role);
                 // Determine affiliation
-                if (user.institutionId) {
+                if (user.institution_id) {
                     setAffiliationType('institution');
-                    setSelectedInstitution(user.institutionId);
+                    setSelectedInstitution(user.institution_id);
                     setSelectedDepartment('');
-                } else if (user.departmentId) {
+                } else if (user.department_id) {
                     setAffiliationType('department');
-                    setSelectedDepartment(user.departmentId);
+                    setSelectedDepartment(user.department_id);
                     setSelectedInstitution('');
                 } else {
                     // Default fallback or floating user
@@ -82,9 +82,9 @@ export function UserDialog({ open, onOpenChange, user, onSave, institutions, dep
             }
 
             if (user) {
-                // For existing users, update 'officialName' to override others
+                // For existing users, update 'official_name' to override others
                 // Also update 'name' as fallback
-                payload.officialName = nameValue;
+                payload.official_name = nameValue;
                 payload.name = nameValue;
             } else {
                 // For invites, pass 'name'
@@ -122,16 +122,16 @@ export function UserDialog({ open, onOpenChange, user, onSave, institutions, dep
                     setLoading(false);
                     return;
                 }
-                payload.institutionId = selectedInstitution;
-                payload.departmentId = null; // Clear other
+                payload.institution_id = selectedInstitution;
+                payload.department_id = null; // Clear other
             } else {
                 if (!selectedDepartment) {
                     toast.error("Please select an office / unit");
                     setLoading(false);
                     return;
                 }
-                payload.departmentId = selectedDepartment;
-                payload.institutionId = null; // Clear other
+                payload.department_id = selectedDepartment;
+                payload.institution_id = null; // Clear other
             }
 
             await onSave(payload);
@@ -163,7 +163,7 @@ export function UserDialog({ open, onOpenChange, user, onSave, institutions, dep
                             placeholder="John Doe"
                             className="bg-slate-800 border-white/10 text-white"
                             id="user-name"
-                            defaultValue={user?.officialName || user?.name || ''}
+                            defaultValue={user?.official_name || user?.name || ''}
                         />
                     </div>
 

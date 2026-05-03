@@ -6,7 +6,7 @@ import { Button } from '@/components/ui/button';
 import { Switch } from '@/components/ui/switch';
 import { toast } from 'sonner';
 import { useAuth } from '@/contexts/AuthContextProvider';
-import { TaskService } from '@/services/tasks';
+import { supabase } from '@/lib/supabaseClient';
 
 import { AuditTrailService } from '@/services/auditTrailService';
 import { STATUTORY_RETENTION_POLICIES } from '@/services/retentionService';
@@ -33,7 +33,7 @@ export function PrivacyCenter() {
         setIsExporting(true);
         try {
             // PUBLIC SECTOR PASS: Comprehensive FOIA-ready Export
-            const tasks = await TaskService.getTasks();
+            const { data: tasks } = await supabase.from('tasks').select('*').eq('created_by->uid', user?.uid);
 
             // Fetch audit trails for these records (Mock/Partial for demo)
             const auditLogs = await AuditTrailService.exportEntityHistory('current_user', 'user');

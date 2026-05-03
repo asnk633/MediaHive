@@ -20,7 +20,9 @@ type CalendarItem =
 export type CalendarView = 'timeline' | 'month' | 'week';
 
 export default function CalendarClient() {
-    const { events, tasks, loading } = useClientData();
+    const { tasks, loading } = useClientData();
+    // Events temporarily disabled — empty until re-enabled
+    const events: EventLite[] = [];
     const searchParams = typeof window !== 'undefined' ? new URLSearchParams(window.location.search) : new URLSearchParams();
     const router = useRouter();
     const [isEventModalOpen, setIsEventModalOpen] = useState(false);
@@ -61,16 +63,16 @@ export default function CalendarClient() {
 
         if (filter === 'all' || filter === 'events') {
             events.forEach(e => {
-                if (e.startAt) {
-                    items.push({ type: "event", data: e, date: parseISO(e.startAt) });
+                if (e.start_time) {
+                    items.push({ type: "event", data: e, date: parseISO(e.start_time) });
                 }
             });
         }
 
         if (filter === 'all' || filter === 'tasks') {
             tasks.forEach(t => {
-                if (t.dueAt) {
-                    items.push({ type: "task", data: t, date: parseISO(t.dueAt) });
+                if (t.due_date) {
+                    items.push({ type: "task", data: t, date: parseISO(t.due_date) });
                 }
             });
         }

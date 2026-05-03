@@ -13,7 +13,7 @@ import { cn } from "@/lib/utils";
 import { Loader2, Edit3, Calendar as CalendarIcon, Layers, Users } from "lucide-react";
 import { toast } from "sonner";
 import { format } from "date-fns";
-import { TaskService } from "@/services/tasks";
+import { supabase } from "@/lib/supabaseClient";
 import { CampaignService } from "@/services/campaignService";
 import { Campaign } from "@/types/campaign";
 import { useAuth } from "@/contexts/AuthContextProvider";
@@ -31,11 +31,11 @@ interface EditTaskDialogProps {
         title: string;
         description?: string;
         priority: "low" | "medium" | "high" | "urgent";
-        dueDate?: any;
+        due_date?: any;
         status: string;
-        campaignId?: string;
-        createdBy?: any;
-        assignedTo?: { uid: string; name: string }[];
+        campaign_id?: string;
+        created_by?: any;
+        assigned_to?: { uid: string; name: string }[];
     };
     onUpdate: (updates: any) => Promise<boolean>;
 }
@@ -47,8 +47,8 @@ export function EditTaskDialog({ open, onOpenChange, task, onUpdate }: EditTaskD
     const [title, setTitle] = useState(task.title);
     const [description, setDescription] = useState(task.description || "");
     const [priority, setPriority] = useState<"low" | "medium" | "high" | "urgent">(task.priority);
-    const [dueDate, setDueDate] = useState<Date | undefined>(undefined);
-    const [campaignId, setCampaignId] = useState<string>(task.campaignId || "none");
+    const [due_date, setDueDate] = useState<Date | undefined>(undefined);
+    const [campaign_id, setCampaignId] = useState<string>(task.campaign_id || "none");
     const [campaigns, setCampaigns] = useState<Campaign[]>([]);
     const [assignedToIds, setAssignedToIds] = useState<string[]>([]);
     const [teamMembers, setTeamMembers] = useState<{ uid: string; name: string }[]>([]);
@@ -65,16 +65,13 @@ export function EditTaskDialog({ open, onOpenChange, task, onUpdate }: EditTaskD
             setTitle(task.title);
             setDescription(task.description || "");
             setPriority(task.priority);
-            setCampaignId(task.campaignId || "none");
-            setAssignedToIds(task.assignedTo?.map(m => m.uid) || []);
+            setCampaignId(task.campaign_id || "none");
+            setAssignedToIds(task.assigned_to?.map(m => m.uid) || []);
 
             // Handle Date
-            if (task.dueDate) {
+            if (task.due_date) {
                 try {
-                    const dateObj = task.dueDate.seconds
-                        ? new Date(task.dueDate.seconds * 1000)
-                        : (typeof task.dueDate === 'string' ? new Date(task.dueDate) : null);
-
+                    const dateObj = new Date(task.due_date);
                     if (dateObj && !isNaN(dateObj.getTime())) {
                         setDueDate(dateObj);
                     } else {
@@ -98,9 +95,9 @@ export function EditTaskDialog({ open, onOpenChange, task, onUpdate }: EditTaskD
 
             // HYDRATE: Fetch fresh task data to ensure 'files' and other dynamic fields are up to date
             // This fixes the issue where List View might pass a stale or partial object without files
-            TaskService.getTask(task.id).then(fresh => {
+            supabase.from('tasks').select('*').eq('id', task.id).single().then(({ data: fresh }) => {
                 if (fresh) {
-                    setFullTask(fresh);
+                    setFullTask(fresh as any);
                 }
             });
         }
@@ -136,16 +133,20 @@ export function EditTaskDialog({ open, onOpenChange, task, onUpdate }: EditTaskD
             return;
         }
 
+        // Two-step Confirmation
+        const confirmed = window.confirm("Are you sure you want to update this task?");
+        if (!confirmed) return;
+
         setIsSubmitting(true);
         try {
             const updates: any = {
                 title,
                 description,
                 priority,
-                campaignId: campaignId === "none" ? null : campaignId,
+                campaign_id: campaign_id === "none" ? null : campaign_id,
             };
 
-            // Calculate final assignedTo objects
+            // Calculate final assigned_to objects
             if (isAdmin) {
                 // Map IDs back to objects
                 const finalAssignedTo = assignedToIds.map(id => {
@@ -153,16 +154,14 @@ export function EditTaskDialog({ open, onOpenChange, task, onUpdate }: EditTaskD
                     if (member) return { uid: member.uid, name: member.name };
                     return null;
                 }).filter(Boolean);
-                updates.assignedTo = finalAssignedTo;
+                updates.assigned_to = finalAssignedTo;
             }
 
-            if (dueDate) {
-                updates.dueDate = dueDate.toISOString();
+            if (due_date) {
+                updates.due_date = due_date.toISOString();
             } else {
                 // Optionally allow clearing date? 
-                // If user clears the date input, we might want to unset it.
-                // For now, let's assume clearing means removing the due date if supported by backend.
-                // updates.dueDate = null; 
+                // updates.due_date = null; 
             }
 
             const success = await onUpdate(updates);
@@ -172,7 +171,7 @@ export function EditTaskDialog({ open, onOpenChange, task, onUpdate }: EditTaskD
             }
         } catch (err: any) {
             console.error("Update failed", err);
-            const isApproval = (task as any).approvalStatus === 'pending';
+            const isApproval = (task as any).approval_status === 'pending';
             setError(isApproval ? "Approval didn’t go through" : "Task couldn’t be updated");
         } finally {
             setIsSubmitting(false);
@@ -184,21 +183,21 @@ export function EditTaskDialog({ open, onOpenChange, task, onUpdate }: EditTaskD
     const labelClasses = "uppercase text-[10px] font-bold tracking-widest text-white/50 mb-1.5 block";
 
     const isAdmin = user?.role?.toLowerCase() === 'admin';
-    const isSuperAdmin = (user as any)?.isSuperAdmin || user?.email === 'media@thaibagarden.com';
+    const is_super_admin = (user as any)?.is_super_admin || user?.email === 'media@thaibagarden.com';
     const isTeam = user?.role === 'team';
     const isGuest = user?.role === 'guest';
 
-    const taskCreatorId = (task as any).createdBy?.uid || (task as any).createdBy;
+    const taskCreatorId = (task as any).created_by?.uid || (task as any).created_by;
     const isCreator = user?.uid === taskCreatorId;
 
-    const assignedArray = Array.isArray(task.assignedTo) ? task.assignedTo : [];
+    const assignedArray = Array.isArray(task.assigned_to) ? task.assigned_to : [];
     const isAssignee = assignedArray.some((u: any) => (typeof u === 'string' ? u : u.uid) === user?.uid);
 
     // --- STRICT PERMISSION UI RULES (Matching Backend) ---
-    const canEditContent = isAdmin || isSuperAdmin || isTeam || isCreator;
+    const canEditContent = isAdmin || is_super_admin || isTeam || isCreator;
 
     // Priority: ADMIN ONLY
-    const canEditPriority = isAdmin || isSuperAdmin;
+    const canEditPriority = isAdmin || is_super_admin;
 
     // Assignee: ADMIN ONLY
     // (Handled directly in JSX by conditional rendering)
@@ -207,9 +206,9 @@ export function EditTaskDialog({ open, onOpenChange, task, onUpdate }: EditTaskD
     // - Admin: Always
     // - Team/Guest: Only if Assginee
     // Note: Guest Creator CANNOT change status unless assigned (strict workflow)
-    const canEditStatus = isAdmin || isSuperAdmin || isAssignee;
+    const canEditStatus = isAdmin || is_super_admin || isAssignee;
 
-    const canEditMeta = isAdmin || isSuperAdmin; // For Due Date etc.
+    const canEditMeta = isAdmin || is_super_admin; // For Due Date etc.
 
     const canSave = canEditContent || canEditPriority || canEditStatus;
 
@@ -273,7 +272,7 @@ export function EditTaskDialog({ open, onOpenChange, task, onUpdate }: EditTaskD
                             <Select
                                 value={priority?.toLowerCase() || 'low'}
                                 onValueChange={(v: any) => setPriority(v)}
-                                disabled={!isAdmin && !isSuperAdmin && !canEditMeta}
+                                disabled={!isAdmin && !is_super_admin && !canEditMeta}
                             >
                                 <SelectTrigger className="bg-[#0a0c10] border-[#ffffff1a] text-white focus:ring-blue-500/10 h-11 rounded-xl disabled:opacity-50 disabled:cursor-not-allowed">
                                     <SelectValue />
@@ -345,20 +344,20 @@ export function EditTaskDialog({ open, onOpenChange, task, onUpdate }: EditTaskD
                                 <PopoverTrigger asChild>
                                     <Button
                                         variant={"outline"}
-                                        disabled={!isAdmin && !isSuperAdmin && !canEditMeta}
+                                        disabled={!isAdmin && !is_super_admin && !canEditMeta}
                                         className={cn(
                                             "w-full justify-start text-left font-normal bg-[#0a0c10] border-[#ffffff1a] text-white hover:bg-white/5 hover:text-white h-11 rounded-xl disabled:opacity-50 disabled:cursor-not-allowed",
-                                            !dueDate && "text-muted-foreground"
+                                            !due_date && "text-muted-foreground"
                                         )}
                                     >
                                         <CalendarIcon className="mr-2 h-4 w-4" />
-                                        {dueDate ? format(dueDate, "dd/MM/yyyy") : <span>Pick a date</span>}
+                                        {due_date ? format(due_date, "dd/MM/yyyy") : <span>Pick a date</span>}
                                     </Button>
                                 </PopoverTrigger>
                                 <PopoverContent className="w-auto p-0 bg-[#10111a] border-[#ffffff1a] text-white z-[200]" align="start">
                                     <Calendar
                                         mode="single"
-                                        selected={dueDate}
+                                        selected={due_date}
                                         onSelect={setDueDate}
                                         initialFocus
                                         className="bg-[#10111a] text-white"
@@ -378,7 +377,7 @@ export function EditTaskDialog({ open, onOpenChange, task, onUpdate }: EditTaskD
 
                     <div className="space-y-1">
                         <Label className={labelClasses}>Campaign</Label>
-                        <Select value={campaignId} onValueChange={setCampaignId} disabled={!canEditContent}>
+                        <Select value={campaign_id} onValueChange={setCampaignId} disabled={!canEditContent}>
                             <SelectTrigger className="bg-[#0a0c10] border-[#ffffff1a] text-white focus:ring-blue-500/10 h-11 rounded-xl w-full disabled:opacity-50 disabled:cursor-not-allowed">
                                 <div className="flex items-center gap-2 truncate">
                                     <Layers size={14} className="text-white/50" />
@@ -412,7 +411,7 @@ export function EditTaskDialog({ open, onOpenChange, task, onUpdate }: EditTaskD
                                 task={fullTask}
                                 onUpdate={() => {
                                     // Refresh local data only
-                                    TaskService.getTask(task.id).then(t => t && setFullTask(t));
+                                    supabase.from('tasks').select('*').eq('id', task.id).single().then(({ data: t }) => t && setFullTask(t as any));
                                 }}
                             />
                         </div>

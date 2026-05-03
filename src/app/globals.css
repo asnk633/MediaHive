@@ -45,10 +45,10 @@
 
     /* Text Colors (Muted via opacity/color, not size) */
     --text-primary: #ffffff;
-    --text-secondary: #a1a1aa;
-    /* Zinc-400 */
-    --text-muted: #71717a;
-    /* Zinc-500 */
+    --text-secondary: #d4d4d8;
+    /* Zinc-300 (Higher contrast than Zinc-400) */
+    --text-muted: #a1a1aa;
+    /* Zinc-400 (Higher contrast than Zinc-500) */
 
     /* Accent (Indigo - Control only) */
     --accent-primary: #6366f1;

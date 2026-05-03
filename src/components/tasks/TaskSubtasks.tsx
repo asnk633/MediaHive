@@ -3,6 +3,7 @@
 import React, { useState, useEffect } from 'react';
 import { useAuth } from '@/contexts/AuthContextProvider';
 import { apiClient } from '@/lib/apiClient';
+import { supabase } from '@/lib/supabaseClient';
 import { CheckCircle2, Circle, Plus, Trash2 } from 'lucide-react';
 import { toast } from 'sonner';
 
@@ -11,8 +12,8 @@ interface Subtask {
     title: string;
     completed: boolean;
     createdById: string;
-    createdAt: { seconds: number; nanoseconds: number } | string;
-    completedAt?: { seconds: number; nanoseconds: number } | string | null;
+    created_at: { seconds: number; nanoseconds: number } | string;
+    completed_at?: { seconds: number; nanoseconds: number } | string | null;
 }
 
 interface TaskSubtasksProps {
@@ -36,11 +37,22 @@ export function TaskSubtasks({ taskId, subtasks, onUpdate }: TaskSubtasksProps) 
 
         setAdding(true);
         try {
-            await apiClient(`/api/tasks/${taskId}/subtasks`, {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ title: newSubtaskTitle }),
-            });
+            const newSubtask = {
+                id: Date.now().toString(),
+                title: newSubtaskTitle,
+                completed: false,
+                createdById: user?.uid || 'unknown',
+                created_at: new Date().toISOString()
+            };
+
+            const { data: taskData } = await supabase.from('tasks').select('subtasks').eq('id', taskId).single();
+            const currentSubtasks = taskData?.subtasks || [];
+
+            const { error } = await supabase.from('tasks').update({
+                subtasks: [...currentSubtasks, newSubtask]
+            }).eq('id', taskId);
+
+            if (error) throw error;
 
             setNewSubtaskTitle('');
             setShowInput(false);
@@ -56,11 +68,18 @@ export function TaskSubtasks({ taskId, subtasks, onUpdate }: TaskSubtasksProps) 
 
     const handleToggleComplete = async (subtaskId: string, currentStatus: boolean) => {
         try {
-            await apiClient(`/api/tasks/${taskId}/subtasks`, {
-                method: 'PATCH',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ subtaskId, completed: !currentStatus }),
-            });
+            const { data: taskData } = await supabase.from('tasks').select('subtasks').eq('id', taskId).single();
+            const currentSubtasks = taskData?.subtasks || [];
+
+            const updatedSubtasks = currentSubtasks.map((st: any) =>
+                st.id === subtaskId ? { ...st, completed: !currentStatus, completed_at: !currentStatus ? new Date().toISOString() : null } : st
+            );
+
+            const { error } = await supabase.from('tasks').update({
+                subtasks: updatedSubtasks
+            }).eq('id', taskId);
+
+            if (error) throw error;
 
             onUpdate();
         } catch (error) {
@@ -73,9 +92,15 @@ export function TaskSubtasks({ taskId, subtasks, onUpdate }: TaskSubtasksProps) 
         if (!confirm('Delete this subtask?')) return;
 
         try {
-            await apiClient(`/api/tasks/${taskId}/subtasks?subtaskId=${subtaskId}`, {
-                method: 'DELETE',
-            });
+            const { data: taskData } = await supabase.from('tasks').select('subtasks').eq('id', taskId).single();
+            const currentSubtasks = taskData?.subtasks || [];
+            const remainingSubtasks = currentSubtasks.filter((st: any) => st.id !== subtaskId);
+
+            const { error } = await supabase.from('tasks').update({
+                subtasks: remainingSubtasks
+            }).eq('id', taskId);
+
+            if (error) throw error;
 
             onUpdate();
             toast.success('Subtask deleted');
@@ -136,8 +161,8 @@ export function TaskSubtasks({ taskId, subtasks, onUpdate }: TaskSubtasksProps) 
                         </button>
                         <span
                             className={`flex-1 text-sm ${subtask.completed
-                                    ? 'text-muted-foreground line-through'
-                                    : 'text-foreground'
+                                ? 'text-muted-foreground line-through'
+                                : 'text-foreground'
                                 }`}
                         >
                             {subtask.title}

@@ -121,7 +121,7 @@ export default function SystemHealthPage() {
                             <li className="flex gap-3">
                                 <div className="w-2 h-2 rounded-full bg-green-500 mt-1.5 shrink-0" />
                                 <div>
-                                    <strong className="text-foreground">Database:</strong> Verifies connectivity to Firestore via the Firebase Admin SDK.
+                                    <strong className="text-foreground">Database:</strong> Verifies connectivity to Firestore via the MOCK_KEY Admin SDK.
                                 </div>
                             </li>
                         </ul>

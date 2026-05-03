@@ -8,7 +8,7 @@ import { nativeNavigate } from '@/lib/utils';
 import { HomeTaskRow } from '@/components/home/HomeTaskRow';
 import { format, isSameDay, differenceInDays } from 'date-fns';
 import { useItemNavigation } from '@/hooks/useItemNavigation';
-import { TaskService } from '@/services/tasks'; // For completion action
+import { supabase } from '@/lib/supabaseClient';
 
 interface MyFocusWidgetProps {
     tasks: Task[];
@@ -17,9 +17,15 @@ interface MyFocusWidgetProps {
     onRetry?: () => void;
     todayOnly?: boolean;
     maxItems?: number;
+    onTaskMutate?: (
+        taskIds: string[],
+        updates: Partial<Task>,
+        apiCall: () => Promise<any>,
+        options?: { errorMessage?: string; successMessage?: string; serializableOp?: any; }
+    ) => Promise<void>;
 }
 
-export const MyFocusWidget = ({ tasks, userId, error, onRetry, todayOnly, maxItems }: MyFocusWidgetProps) => {
+export const MyFocusWidget = ({ tasks, userId, error, onRetry, todayOnly, maxItems, onTaskMutate }: MyFocusWidgetProps) => {
     const router = useRouter();
     const [isExpanded, setIsExpanded] = useState(false);
     const now = new Date();
@@ -27,22 +33,22 @@ export const MyFocusWidget = ({ tasks, userId, error, onRetry, todayOnly, maxIte
 
     // 29.2.4 — SORTING & FILTERING
     const filteredTasks = tasks.filter(task => {
-        if (task.status === 'done' && !isSameDay(task.completedAt ? (task.completedAt as any).seconds ? new Date((task.completedAt as any).seconds * 1000) : new Date(task.completedAt) : now, now)) {
+        if (task.status === 'done' && !isSameDay(task.completed_at ? new Date(task.completed_at) : now, now)) {
             return false; // Only show tasks completed TODAY if done
         }
 
-        const isAssigned = Array.isArray(task.assignedTo) &&
-            task.assignedTo.some(a => (typeof a === 'string' ? a === userId : a.uid === userId));
+        const isAssigned = Array.isArray(task.assigned_to) &&
+            task.assigned_to.some(a => (typeof a === 'string' ? a === userId : a.uid === userId));
         if (!isAssigned) return false;
 
         if (todayOnly) {
-            if (!task.dueDate) return false;
-            const dueDate = (task.dueDate as any).seconds ? new Date((task.dueDate as any).seconds * 1000) : new Date(task.dueDate);
-            const isToday = isSameDay(dueDate, now);
-            const isOverdue = dueDate < now;
+            if (!task.due_date) return false;
+            const due_date = new Date(task.due_date);
+            const isTodayToday = isSameDay(due_date, now);
+            const isOverdue = due_date < now;
 
             // Suppress tomorrow if today has items
-            if (!isToday && !isOverdue) return false;
+            if (!isTodayToday && !isOverdue) return false;
 
             return true;
         }
@@ -51,7 +57,7 @@ export const MyFocusWidget = ({ tasks, userId, error, onRetry, todayOnly, maxIte
     });
 
     const sortedTasks = [...filteredTasks].sort((a, b) => {
-        const getDue = (t: Task) => t.dueDate ? (t.dueDate as any).seconds ? (t.dueDate as any).seconds * 1000 : new Date(t.dueDate).getTime() : 0;
+        const getDue = (t: Task) => t.due_date ? new Date(t.due_date).getTime() : 0;
         const aDue = getDue(a);
         const bDue = getDue(b);
         const aOverdue = aDue < now.getTime() && a.status !== 'done';
@@ -75,14 +81,23 @@ export const MyFocusWidget = ({ tasks, userId, error, onRetry, todayOnly, maxIte
         onSelect: (t) => nativeNavigate(`/tasks?id=${t.id}&returnTo=home`, router, 'MyFocus:Row'),
         onComplete: async (t) => {
             // Quick complete from Home
-            await TaskService.updateTask(t.id, { status: 'done' });
+            if (onTaskMutate) {
+                await onTaskMutate(
+                    [t.id],
+                    { status: 'done', completed_at: new Date().toISOString() as any },
+                    async () => { await supabase.from('tasks').update({ status: 'done' }).eq('id', t.id); },
+                    { serializableOp: { type: 'updateTask', args: [t.id, { status: 'done' }] } }
+                );
+            } else {
+                await supabase.from('tasks').update({ status: 'done', completed_at: new Date().toISOString() }).eq('id', t.id);
+            }
         }
     });
 
     const getTimeContext = (date: any): string => {
         if (!date) return "";
         try {
-            const dateObj = date.seconds ? new Date(date.seconds * 1000) : new Date(date);
+            const dateObj = new Date(date);
             const now = new Date();
 
             if (isSameDay(dateObj, now)) {
@@ -153,12 +168,21 @@ export const MyFocusWidget = ({ tasks, userId, error, onRetry, todayOnly, maxIte
                     <HomeTaskRow
                         key={task.id}
                         task={task}
-                        timeContext={getTimeContext(task.dueDate)}
+                        timeContext={getTimeContext(task.due_date)}
                         isFirst={index === 0}
                         isActive={activeId === task.id}
                         onClick={() => nativeNavigate(`/tasks?id=${task.id}&returnTo=home`, router, 'MyFocus:Row')}
                         onComplete={async () => {
-                            await TaskService.updateTask(task.id, { status: 'done' });
+                            if (onTaskMutate) {
+                                await onTaskMutate(
+                                    [task.id],
+                                    { status: 'done', completed_at: new Date().toISOString() as any },
+                                    async () => { await supabase.from('tasks').update({ status: 'done' }).eq('id', task.id); },
+                                    { serializableOp: { type: 'updateTask', args: [task.id, { status: 'done' }] } }
+                                );
+                            } else {
+                                await supabase.from('tasks').update({ status: 'done', completed_at: new Date().toISOString() }).eq('id', task.id);
+                            }
                         }}
                     />
                 ))}

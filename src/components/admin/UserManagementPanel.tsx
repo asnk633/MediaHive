@@ -6,7 +6,7 @@ import { Button } from '@/components/ui/button';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
-import { Alert, AlertDescription } from '@/components/ui/alert';
+
 import { AlertCircle, User, UserX, UserCheck, Users, RotateCcw } from 'lucide-react';
 import { toast } from 'sonner';
 import { apiClient } from '@/lib/apiClient';
@@ -15,10 +15,10 @@ import { useAuth } from '@/contexts/AuthContextProvider';
 import { updateUserStatus, getUsersByStatus, reassignTasks, reassignEvents, reassignMedia, getOrphanedItems } from '@/services/userLifecycleService';
 
 interface UserManagementPanelProps {
-  institutionId: string;
+  institution_id: string;
 }
 
-export const UserManagementPanel: React.FC<UserManagementPanelProps> = ({ institutionId }) => {
+export const UserManagementPanel: React.FC<UserManagementPanelProps> = ({ institution_id }) => {
   const [isFeatureEnabledFlag, setIsFeatureEnabledFlag] = useState(false);
   const [users, setUsers] = useState<any[]>([]);
   const [loadingUsers, setLoadingUsers] = useState(true);
@@ -65,7 +65,7 @@ export const UserManagementPanel: React.FC<UserManagementPanelProps> = ({ instit
     try {
       if (currentUser.role === 'admin') {
         // Admins fetch full list with management capabilities
-        const allUsers = await getUsersByStatus(institutionId);
+        const allUsers = await getUsersByStatus(institution_id);
         setUsers(allUsers);
       } else {
         // Team members fetch safe read-only list
@@ -114,10 +114,10 @@ export const UserManagementPanel: React.FC<UserManagementPanelProps> = ({ instit
   const handleEditUser = (user: any) => {
     setEditingUser({
       ...user,
-      officialName: user.officialName || user.name || '',
+      official_name: user.official_name || user.name || '',
       role: user.role || 'team',
-      defaultDepartment: user.defaultDepartment || '',
-      defaultInstitution: user.defaultInstitution || ''
+      department_id: user.department_id || '',
+      institution_id: user.institution_id || ''
     });
   };
 
@@ -125,11 +125,11 @@ export const UserManagementPanel: React.FC<UserManagementPanelProps> = ({ instit
     if (!editingUser) return;
     try {
       await UserService.updateUser(editingUser.uid, {
-        name: editingUser.officialName, // Mapping officialName back to name/officialName
-        officialName: editingUser.officialName,
+        name: editingUser.official_name, // Mapping official_name back to name/official_name
+        official_name: editingUser.official_name,
         role: editingUser.role,
-        defaultDepartment: editingUser.defaultDepartment,
-        defaultInstitution: editingUser.defaultInstitution
+        department_id: editingUser.department_id,
+        institution_id: editingUser.institution_id
       });
       toast.success("User updated successfully");
       setEditingUser(null);
@@ -193,9 +193,9 @@ export const UserManagementPanel: React.FC<UserManagementPanelProps> = ({ instit
               >
                 <div className="flex items-center gap-3">
                   {/* Avatar or Initials */}
-                  {user.photoURL || user.avatarUrl ? (
+                  {user.photoURL || user.avatar_url ? (
                     <img
-                      src={user.photoURL || user.avatarUrl}
+                      src={user.photoURL || user.avatar_url}
                       alt={user.name}
                       className="w-10 h-10 rounded-full object-cover border border-[#ffffff1a]"
                     />
@@ -210,7 +210,7 @@ export const UserManagementPanel: React.FC<UserManagementPanelProps> = ({ instit
                     <div className="text-sm text-gray-400">{user.email}</div>
                     <div className="flex items-center gap-2 mt-1">
                       <Badge
-                        variant="outline"
+                        variant="neutral"
                         className={`${user.role === 'admin'
                           ? 'border-red-500/30 text-red-300'
                           : user.role === 'team'
@@ -221,9 +221,9 @@ export const UserManagementPanel: React.FC<UserManagementPanelProps> = ({ instit
                         {user.role}
                       </Badge>
                       {/* Show Office / Unit / Institution if available */}
-                      {user.defaultDepartment && (
-                        <Badge variant="secondary" className="bg-white/5 text-white/60">
-                          {departments.find(d => d.id === parseInt(user.defaultDepartment) || d.name === user.defaultDepartment)?.name || user.defaultDepartment}
+                      {user.department_id && (
+                        <Badge variant="neutral" className="bg-white/5 text-white/60">
+                          {departments.find(d => d.id === parseInt(user.department_id) || d.name === user.department_id)?.name || user.department_id}
                         </Badge>
                       )}
                     </div>
@@ -290,8 +290,8 @@ export const UserManagementPanel: React.FC<UserManagementPanelProps> = ({ instit
               <div className="space-y-2">
                 <label className="text-xs text-gray-400">Full Name</label>
                 <input
-                  value={editingUser.officialName}
-                  onChange={e => setEditingUser({ ...editingUser, officialName: e.target.value })}
+                  value={editingUser.official_name}
+                  onChange={e => setEditingUser({ ...editingUser, official_name: e.target.value })}
                   className="w-full bg-black/20 border border-[#ffffff1a] rounded-md p-2 text-white"
                 />
               </div>
@@ -312,7 +312,7 @@ export const UserManagementPanel: React.FC<UserManagementPanelProps> = ({ instit
 
               <div className="space-y-2">
                 <label className="text-xs text-gray-400">Office / Unit</label>
-                <Select value={editingUser.defaultDepartment?.toString()} onValueChange={v => setEditingUser({ ...editingUser, defaultDepartment: v })}>
+                <Select value={editingUser.department_id?.toString()} onValueChange={v => setEditingUser({ ...editingUser, department_id: v })}>
                   <SelectTrigger className="bg-black/20 border-[#ffffff1a] text-white">
                     <SelectValue placeholder="Select Office / Unit" />
                   </SelectTrigger>
@@ -326,7 +326,7 @@ export const UserManagementPanel: React.FC<UserManagementPanelProps> = ({ instit
 
               <div className="space-y-2">
                 <label className="text-xs text-gray-400">Institution</label>
-                <Select value={editingUser.defaultInstitution?.toString()} onValueChange={v => setEditingUser({ ...editingUser, defaultInstitution: v })}>
+                <Select value={editingUser.institution_id?.toString()} onValueChange={v => setEditingUser({ ...editingUser, institution_id: v })}>
                   <SelectTrigger className="bg-black/20 border-[#ffffff1a] text-white">
                     <SelectValue placeholder="Select Institution" />
                   </SelectTrigger>

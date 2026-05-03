@@ -1,4 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
+import { verifyUser } from '@/lib/server-utils';
 import { db } from '@/db';
 import { attendance } from '@/db/schema';
 import { eq, and, gte, lte, desc } from 'drizzle-orm';
@@ -37,24 +38,31 @@ export async function GET(request: NextRequest) {
       return NextResponse.json(record[0], { status: 200 });
     }
 
+    const user = await verifyUser(request);
+    if (!user) {
+      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+    }
+
     // List with pagination and filtering
     const limit = Math.min(parseInt(searchParams.get('limit') ?? '10'), 100);
     const offset = parseInt(searchParams.get('offset') ?? '0');
-    const userId = searchParams.get('userId');
+
+    // userId is derived from the authenticated session, NEVER from searchParams
+    const userId = user.uid;
     const startDate = searchParams.get('startDate'); // ISO date string
     const endDate = searchParams.get('endDate'); // ISO date string
 
     const filters = [];
-    if (userId && !isNaN(parseInt(userId))) {
-      filters.push(eq(attendance.userId, parseInt(userId)));
-    }
+    // userId is always enforced
+    filters.push(eq(attendance.userId, userId));
+
     if (startDate) {
       // Filter records created on or after startDate
-      filters.push(gte(attendance.createdAt, startDate));
+      filters.push(gte(attendance.created_at, startDate));
     }
     if (endDate) {
       // Filter records created on or before endDate
-      filters.push(lte(attendance.createdAt, endDate));
+      filters.push(lte(attendance.created_at, endDate));
     }
 
     const records = await db
@@ -63,7 +71,7 @@ export async function GET(request: NextRequest) {
       .where(and(...filters))
       .limit(limit)
       .offset(offset)
-      .orderBy(desc(attendance.createdAt)); // Order by newest first
+      .orderBy(desc(attendance.created_at)); // Order by newest first
 
     return NextResponse.json(records, { status: 200 });
   } catch (error) {
@@ -78,12 +86,21 @@ export async function GET(request: NextRequest) {
 // --- POST Request Handler (Create a new record) ---
 export async function POST(request: NextRequest) {
   try {
-    const payload = await request.json();
-    const { userId, checkIn, checkOut, institutionId } = payload;
+    const user = await verifyUser(request);
+    if (!user) {
+      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+    }
 
-    if (!userId || !checkIn || !institutionId) {
+    const payload = await request.json();
+    const { checkIn, checkOut } = payload;
+
+    // derived from auth
+    const userId = user.uid;
+    const institution_id = user.institution_id;
+
+    if (!checkIn) {
       return NextResponse.json(
-        { error: 'Missing required fields: userId, checkIn, institutionId', code: 'MISSING_FIELDS' },
+        { error: 'Missing required fields: checkIn', code: 'MISSING_FIELDS' },
         { status: 400 }
       );
     }
@@ -94,9 +111,9 @@ export async function POST(request: NextRequest) {
         userId,
         checkIn,
         checkOut: checkOut || null,
-        institutionId,
+        institution_id,
         tenantId: 1, // Default tenant ID for now
-        createdAt: new Date().toISOString(),
+        created_at: new Date().toISOString(),
       } as any)
       .returning();
 
@@ -132,11 +149,19 @@ export async function PUT(request: NextRequest) {
       );
     }
 
-    // Check if record exists
+    const user = await verifyUser(request);
+    if (!user) {
+      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+    }
+
+    // Check if record exists and belongs to the user
     const existing = await db
       .select()
       .from(attendance)
-      .where(eq(attendance.id, parseInt(id)))
+      .where(and(
+        eq(attendance.id, parseInt(id)),
+        eq(attendance.userId, user.uid)
+      ))
       .limit(1);
 
     if (existing.length === 0) {
@@ -151,16 +176,16 @@ export async function PUT(request: NextRequest) {
       .update(attendance)
       .set({
         ...(payload as any),
-        updatedAt: new Date().toISOString(),
+        updated_at: new Date().toISOString(),
       } as any)
       .where(eq(attendance.id, parseInt(id)));
 
     // updated row isn't returned by .set() here with our current db helper,
     // so construct the updated object locally and return it instead.
-    const updatedObj = { 
-        ...(existing[0] as any), // Start with existing data
-        ...(payload as any), // Apply the updates
-        updatedAt: new Date().toISOString() 
+    const updatedObj = {
+      ...(existing[0] as any), // Start with existing data
+      ...(payload as any), // Apply the updates
+      updated_at: new Date().toISOString()
     };
 
     return NextResponse.json(updatedObj, { status: 200 });
@@ -186,11 +211,19 @@ export async function DELETE(request: NextRequest) {
       );
     }
 
-    // Check if record exists
+    const user = await verifyUser(request);
+    if (!user) {
+      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+    }
+
+    // Check if record exists and belongs to the user
     const existing = await db
       .select()
       .from(attendance)
-      .where(eq(attendance.id, parseInt(id)))
+      .where(and(
+        eq(attendance.id, parseInt(id)),
+        eq(attendance.userId, user.uid)
+      ))
       .limit(1);
 
     if (existing.length === 0) {

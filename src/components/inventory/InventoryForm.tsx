@@ -66,7 +66,7 @@ export default function InventoryForm({ initialData, mode }: InventoryFormProps)
         remarks: "",
         imageUrl: "",
         driveFileId: "",
-        images: [] as { url: string, fileId: string }[]
+        images: [] as { url: string, file_id: string }[]
     });
 
     useEffect(() => {
@@ -84,7 +84,7 @@ export default function InventoryForm({ initialData, mode }: InventoryFormProps)
                 remarks: initialData.remarks || "",
                 imageUrl: initialData.imageUrl || "",
                 driveFileId: initialData.driveFileId || "",
-                images: initialData.images || (initialData.imageUrl ? [{ url: initialData.imageUrl, fileId: initialData.driveFileId || '' }] : [])
+                images: initialData.images || (initialData.imageUrl ? [{ url: initialData.imageUrl, file_id: initialData.driveFileId || '' }] : [])
             });
         }
     }, [initialData]);
@@ -142,7 +142,7 @@ export default function InventoryForm({ initialData, mode }: InventoryFormProps)
             const metadata: any = {
                 name: `INV_${Date.now()}_${originalFile.name}`,
                 type: 'image',
-                uploadedBy: user?.uid,
+                uploaded_by: user?.uid,
                 uploadedByName: user?.name || user?.email,
                 folder: 'Photos',
                 subfolder: 'Inventory Photos',
@@ -154,7 +154,7 @@ export default function InventoryForm({ initialData, mode }: InventoryFormProps)
             if (result.success) {
                 const newImage = {
                     url: result.viewLink,
-                    fileId: result.fileId
+                    file_id: result.file_id
                 };
 
                 setFormData(prev => {
@@ -174,7 +174,7 @@ export default function InventoryForm({ initialData, mode }: InventoryFormProps)
                         ...prev,
                         images: currentImages,
                         imageUrl: isCover ? newImage.url : (currentImages[0]?.url || ""),
-                        driveFileId: isCover ? newImage.fileId : (currentImages[0]?.fileId || "")
+                        driveFileId: isCover ? newImage.file_id : (currentImages[0]?.file_id || "")
                     }
                 });
                 toast.success("Image uploaded successfully");
@@ -196,7 +196,7 @@ export default function InventoryForm({ initialData, mode }: InventoryFormProps)
                 ...prev,
                 images: newImages,
                 imageUrl: newCover ? newCover.url : "",
-                driveFileId: newCover ? newCover.fileId : ""
+                driveFileId: newCover ? newCover.file_id : ""
             };
         });
     };

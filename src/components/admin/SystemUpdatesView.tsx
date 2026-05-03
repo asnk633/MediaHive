@@ -18,8 +18,8 @@ interface SystemUpdate {
     title: string;
     body: string;
     severity: 'info' | 'important' | 'critical';
-    createdAt: any;
-    createdBy?: { name: string };
+    created_at: any;
+    created_by?: { name: string };
 }
 
 export const SystemUpdatesView = () => {
@@ -184,13 +184,13 @@ export const SystemUpdatesView = () => {
                                                     <h3 className="font-semibold text-slate-200">{update.title}</h3>
                                                 </div>
                                                 <span className="text-xs text-slate-500">
-                                                    {update.createdAt ? formatDistanceToNow(new Date(update.createdAt), { addSuffix: true }) : 'Unknown'}
+                                                    {update.created_at ? formatDistanceToNow(new Date(update.created_at), { addSuffix: true }) : 'Unknown'}
                                                 </span>
                                             </div>
                                             <p className="text-sm text-slate-400 whitespace-pre-wrap pl-1">{update.body}</p>
                                             <div className="flex justify-end items-center gap-2 mt-2">
                                                 <span className="text-[10px] text-slate-600">
-                                                    By {update.createdBy?.name || 'Admin'}
+                                                    By {update.created_by?.name || 'Admin'}
                                                 </span>
                                             </div>
                                         </div>

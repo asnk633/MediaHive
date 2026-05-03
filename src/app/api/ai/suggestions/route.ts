@@ -29,28 +29,28 @@ export async function POST(req: NextRequest) {
     }
 
     let suggestions = [];
-    
+
     // Generate suggestions based on type
     switch (type) {
       case 'task':
-        suggestions = await aiService.generateTaskSuggestions(query, user.id, user.tenantId);
+        suggestions = await aiService.generateTaskSuggestions(query, user.uid as any, user.tenantId as any);
         break;
-        
+
       case 'event':
-        suggestions = await aiService.generateEventSuggestions(query, user.id, user.tenantId);
+        suggestions = await aiService.generateEventSuggestions(query, user.uid as any, user.tenantId as any);
         break;
-        
+
       case 'summary':
-        const summary = await aiService.summarizeWeeklyActivity(user.id, user.tenantId);
+        const summary = await aiService.summarizeWeeklyActivity(user.uid as any, user.tenantId as any);
         suggestions = [{
           type: 'summary',
           title: 'Weekly Activity Summary',
           description: summary
         }];
         break;
-        
+
       case 'team':
-        const teamSuggestion = await aiService.suggestTeamAllocation(user.id, user.tenantId, query);
+        const teamSuggestion = await aiService.suggestTeamAllocation(user.uid as any, user.tenantId as any, query);
         suggestions = [{
           type: 'team',
           title: 'Team Allocation Suggestion',
@@ -59,16 +59,16 @@ export async function POST(req: NextRequest) {
           availability: teamSuggestion.availability
         }];
         break;
-        
+
       case 'recommendation':
-        suggestions = await aiService.generateRecommendations(user.id, user.tenantId, query);
+        suggestions = await aiService.generateRecommendations(user.uid as any, user.tenantId as any, query);
         break;
-        
+
       default:
         // Generate all types of suggestions
-        const taskSuggestions = await aiService.generateTaskSuggestions(query, user.id, user.tenantId);
-        const eventSuggestions = await aiService.generateEventSuggestions(query, user.id, user.tenantId);
-        const teamSuggestionDefault = await aiService.suggestTeamAllocation(user.id, user.tenantId, query);
+        const taskSuggestions = await aiService.generateTaskSuggestions(query, user.uid as any, user.tenantId as any);
+        const eventSuggestions = await aiService.generateEventSuggestions(query, user.uid as any, user.tenantId as any);
+        const teamSuggestionDefault = await aiService.suggestTeamAllocation(user.uid as any, user.tenantId as any, query);
         suggestions = [
           ...taskSuggestions.map((s: any) => ({ ...s, type: 'task' })),
           ...eventSuggestions.map((s: any) => ({ ...s, type: 'event' })),

@@ -43,48 +43,42 @@ export const NotificationPanel = () => {
             // Mark all valid items as read optimistically
             const itemIds = new Set(items.map(i => i.id));
             setNotifications(prev => prev.map(n =>
-                itemIds.has(n.id) ? { ...n, isRead: true } : n
+                itemIds.has(n.id) ? { ...n, read: true } : n
             ));
 
             // Server update
-            items.filter(i => !i.isRead).forEach(n => {
-                apiClient(`/api/notifications/${n.id}`, {
-                    method: 'PATCH',
-                    body: JSON.stringify({ action: 'markRead' })
-                });
+            items.filter(i => !i.read).forEach(n => {
+                NotificationService.markAsRead(n.id);
             });
 
             // Navigation
             const target = items[0];
-            if (target.actionUrl) {
-                let url = target.actionUrl;
+            if (target.action_url && typeof target.action_url === 'string') {
+                let url = target.action_url;
                 if (url.includes('/tasks/view/') && !url.includes('?id=')) {
                     url = url.replace('/tasks/view/', '/tasks/view?id=');
                 }
                 nativeNavigate(url, router, 'NotificationPanel (Group Click)');
-            } else if (target.entityType === 'task') {
-                nativeNavigate(`/tasks/view?id=${target.entityId}`, router, 'NotificationPanel (Group Task)');
-            } else if (target.entityType === 'event') {
+            } else if (target.entity_type === 'task') {
+                nativeNavigate(`/tasks/view?id=${target.entity_id}`, router, 'NotificationPanel (Group Task)');
+            } else if (target.entity_type === 'event') {
                 nativeNavigate('/events', router, 'NotificationPanel (Group Event)');
             }
 
         } else {
             // Single Notification
-            if (!notification.isRead) {
+            if (!notification.read) {
                 // Optimistic update
                 setNotifications(prev => prev.map(n =>
-                    n.id === notification.id ? { ...n, isRead: true } : n
+                    n.id === notification.id ? { ...n, read: true } : n
                 ));
 
                 // API call
-                await apiClient(`/api/notifications/${notification.id}`, {
-                    method: 'PATCH',
-                    body: JSON.stringify({ action: 'markRead' })
-                });
+                await NotificationService.markAsRead(notification.id);
             }
 
-            if (notification.actionUrl) {
-                let url = notification.actionUrl;
+            if (notification.action_url && typeof notification.action_url === 'string') {
+                let url = notification.action_url;
                 if (url.includes('/tasks/view/') && !url.includes('?id=')) {
                     url = url.replace('/tasks/view/', '/tasks/view?id=');
                 }
@@ -95,7 +89,7 @@ export const NotificationPanel = () => {
 
     const handleMarkAllRead = async () => {
         if (!user) return;
-        setNotifications(prev => prev.map(n => ({ ...n, isRead: true })));
+        setNotifications(prev => prev.map(n => ({ ...n, read: true })));
         await NotificationService.markAllAsRead();
     };
 
@@ -106,12 +100,12 @@ export const NotificationPanel = () => {
         <div className="bg-[#0f172a] border border-white/20 rounded-2xl shadow-2xl text-left w-full max-w-sm sm:max-w-md md:max-w-xl mx-auto overflow-hidden ring-1 ring-black/50">
             <div className="p-4 border-b border-[#ffffff1a] flex justify-between items-center bg-white/5">
                 <h3 className="font-bold text-white text-sm tracking-wide uppercase">Notifications</h3>
-                {notifications.some(n => !n.isRead) && (
+                {notifications.some(n => !n.read) && (
                     <button
                         onClick={handleMarkAllRead}
                         className="text-xs text-blue-400 hover:text-blue-300 font-semibold transition-colors"
                     >
-                        Mark all reads
+                        Mark all as read
                     </button>
                 )}
             </div>
@@ -145,8 +139,8 @@ export const NotificationPanel = () => {
                                         <p className="text-[10px] text-gray-600 mt-2 font-medium uppercase tracking-wider">
                                             {typeof item.latestCreatedAt === 'string'
                                                 ? formatDistanceToNow(new Date(item.latestCreatedAt), { addSuffix: true })
-                                                : item.latestCreatedAt?.seconds
-                                                    ? formatDistanceToNow(new Date(item.latestCreatedAt.seconds * 1000), { addSuffix: true })
+                                                : (item.latestCreatedAt as any)?.seconds
+                                                    ? formatDistanceToNow(new Date((item.latestCreatedAt as any).seconds * 1000), { addSuffix: true })
                                                     : 'Just now'
                                             }
                                         </p>
@@ -157,10 +151,15 @@ export const NotificationPanel = () => {
                         } else {
                             // Single Item - We reuse NotificationItem but ensuring it looks good in a full panel
                             return (
-                                <div key={item.id} className="border-b border-white/5 last:border-0 hover:bg-white/5 transition-colors">
+                                <div
+                                    key={item.id}
+                                    className="border-b border-white/5 last:border-0 hover:bg-white/5 transition-colors cursor-pointer"
+                                    onClick={() => handleNotificationClick(item)}
+                                >
                                     <NotificationItem
                                         notification={item}
-                                        onClick={handleNotificationClick}
+                                        onRead={(id) => handleNotificationClick({ ...item, id } as any)} // Hack or correct? handleNotificationClick marks read.
+                                        onArchive={(id) => console.log('Archive not impl in panel yet', id)}
                                     />
                                 </div>
                             );

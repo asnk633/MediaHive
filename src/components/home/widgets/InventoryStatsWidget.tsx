@@ -46,28 +46,28 @@ export const InventoryStatsWidget = () => {
         <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-8">
             <OverviewCard
                 icon={Box}
-                count={stats.total.toString()}
+                count={(stats.total ?? 0).toString()}
                 label="Assets"
                 subLabel="Total Inventory"
                 onClick={() => nativeNavigate('/inventory', router, 'InventoryStats (Assets)')}
             />
             <OverviewCard
                 icon={Layers}
-                count={stats.inUse.toString()}
+                count={(stats.inUse ?? 0).toString()}
                 label="Active"
                 subLabel="Currently In Use"
                 onClick={() => nativeNavigate('/inventory', router, 'InventoryStats (Active)')}
             />
             <OverviewCard
                 icon={AlertTriangle}
-                count={stats.value.toString()} // Using 'Unavailable' count here
+                count={(stats.value ?? 0).toString()} // Using 'Unavailable' count here
                 label="Alerts"
                 subLabel="Broken / Lost / Out"
                 onClick={() => nativeNavigate('/inventory', router, 'InventoryStats (Alerts)')}
             />
             <OverviewCard
                 icon={TrendingUp}
-                count={`${Math.round((stats.inUse / (stats.total || 1)) * 100)}%`}
+                count={`${Math.round(((stats.inUse ?? 0) / (stats.total || 1)) * 100)}%`}
                 label="Utilization"
                 subLabel="Asset Usage Rate"
                 onClick={() => nativeNavigate('/inventory', router, 'InventoryStats (Utilization)')}

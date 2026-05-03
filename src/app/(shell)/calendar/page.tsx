@@ -1,7 +1,5 @@
-"use client";
-
-import CalendarClient from './CalendarClient';
+import { redirect } from 'next/navigation';
 
 export default function CalendarPage() {
-  return <CalendarClient />;
+  redirect('/events');
 }

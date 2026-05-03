@@ -1,4 +1,3 @@
-import { getFirebaseAuth } from '@/firebase/client';
 import { apiClient } from '@/lib/apiClient';
 
 export const VersioningAuditService = {
@@ -7,13 +6,13 @@ export const VersioningAuditService = {
    * @param userId - The UID of the user performing the action
    * @param actionType - The type of action performed
    * @param details - Additional details about the action
-   * @param institutionId - The institution ID for tenant isolation
+   * @param institution_id - The institution ID for tenant isolation
    */
   logVersioningAction: async (
     userId: string,
     actionType: 'version_uploaded' | 'version_deactivated' | 'version_activated',
     details: any,
-    institutionId: string
+    institution_id: string
   ): Promise<void> => {
     try {
       await apiClient('/api/audit/versioning', {
@@ -23,7 +22,7 @@ export const VersioningAuditService = {
           actionType,
           resourceType: 'media_version',
           details,
-          institutionId
+          institution_id
         })
       });
     } catch (error) {
@@ -38,7 +37,7 @@ export const VersioningAuditService = {
    * @param newVersionNumber - The version number of the newly uploaded version
    * @param mediaId - The ID of the newly uploaded media file
    * @param versionGroupId - The version group ID shared by all versions
-   * @param institutionId - The institution ID for tenant isolation
+   * @param institution_id - The institution ID for tenant isolation
    */
   logVersionUpload: async (
     userId: string,
@@ -46,7 +45,7 @@ export const VersioningAuditService = {
     newVersionNumber: number,
     mediaId: string,
     versionGroupId: string,
-    institutionId: string
+    institution_id: string
   ): Promise<void> => {
     try {
       await apiClient('/api/audit/versioning', {
@@ -61,7 +60,7 @@ export const VersioningAuditService = {
             mediaId,
             versionGroupId
           },
-          institutionId
+          institution_id
         })
       });
     } catch (error) {
@@ -76,7 +75,7 @@ export const VersioningAuditService = {
    * @param versionNumber - The version number being activated/deactivated
    * @param mediaId - The ID of the media file
    * @param versionGroupId - The version group ID shared by all versions
-   * @param institutionId - The institution ID for tenant isolation
+   * @param institution_id - The institution ID for tenant isolation
    */
   logVersionStatusChange: async (
     userId: string,
@@ -84,7 +83,7 @@ export const VersioningAuditService = {
     versionNumber: number,
     mediaId: string,
     versionGroupId: string,
-    institutionId: string
+    institution_id: string
   ): Promise<void> => {
     try {
       await apiClient('/api/audit/versioning', {
@@ -98,7 +97,7 @@ export const VersioningAuditService = {
             mediaId,
             versionGroupId
           },
-          institutionId
+          institution_id
         })
       });
     } catch (error) {

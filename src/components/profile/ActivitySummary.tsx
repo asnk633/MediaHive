@@ -1,8 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { AuthUser } from '@/contexts/AuthContextProvider';
 import { CheckCircle2, Clock, Pin } from 'lucide-react';
-import { db } from '@/firebase/client';
-import { collection, query, where, getCountFromServer } from 'firebase/firestore';
+import { createClientComponentClient } from '@supabase/auth-helpers-nextjs';
 
 interface ActivitySummaryProps {
     user: AuthUser | null;
@@ -11,41 +10,41 @@ interface ActivitySummaryProps {
 export function ActivitySummary({ user }: ActivitySummaryProps) {
     const [stats, setStats] = useState({ requested: 0, completed: 0 });
     const [loading, setLoading] = useState(true);
+    const supabase = createClientComponentClient();
 
-    // Fetch basic stats (Tasks Requested vs Completed)
-    // We do this client side for simplicity.
     useEffect(() => {
         const fetchStats = async () => {
             if (!user) return;
 
             try {
                 // 1. Tasks Requested by User
-                const tasksRef = collection(db, 'tasks');
-                const qRequested = query(tasksRef, where('createdBy.uid', '==', user.uid));
-                const snapRequested = await getCountFromServer(qRequested);
+                const { count: requestedCount, error: reqError } = await supabase
+                    .from('tasks')
+                    .select('*', { count: 'exact', head: true })
+                    .eq('created_by_id', user.id);
 
-                // 2. Tasks Completed (Requested by user AND status done)
-                const qCompleted = query(
-                    tasksRef,
-                    where('createdBy.uid', '==', user.uid),
-                    where('status', '==', 'done')
-                );
-                const snapCompleted = await getCountFromServer(qCompleted);
+                // 2. Tasks Completed
+                const { count: completedCount, error: compError } = await supabase
+                    .from('tasks')
+                    .select('*', { count: 'exact', head: true })
+                    .eq('created_by_id', user.id)
+                    .eq('status', 'done');
 
-                setStats({
-                    requested: snapRequested.data().count,
-                    completed: snapCompleted.data().count
-                });
+                if (!reqError && !compError) {
+                    setStats({
+                        requested: requestedCount || 0,
+                        completed: completedCount || 0
+                    });
+                }
             } catch (error) {
                 console.warn("Failed to fetch profile stats", error);
-                // Allow fail silently, show 0
             } finally {
                 setLoading(false);
             }
         };
 
         fetchStats();
-    }, [user]);
+    }, [user, supabase]);
 
     return (
         <div className="grid grid-cols-1 md:grid-cols-3 gap-4">

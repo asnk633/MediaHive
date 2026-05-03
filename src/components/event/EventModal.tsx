@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 import { X, Calendar as CalendarIcon, Clock, MapPin, AlignLeft, Building2, Repeat, Send } from "lucide-react";
-import { useClientData } from "@/app/(shell)/ClientDataContext";
+// Events temporarily disabled — createEvent is a no-op stub
 import { useAuth } from '@/contexts/AuthContextProvider';
 import { SystemEventService } from "@/services/systemEventService";
 import { motion, AnimatePresence } from 'framer-motion';
@@ -13,12 +13,13 @@ interface EventModalProps {
 }
 
 export function EventModal({ isOpen, onClose, defaultDate, eventToEdit }: EventModalProps) {
-    const { createEvent } = useClientData();
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
+    const createEvent = async (_: any) => { console.warn("Events disabled"); };
     const { user } = useAuth();
     const [loading, setLoading] = useState(false);
 
     // System Event State
-    const [isSystemEvent, setIsSystemEvent] = useState(false);
+    const [is_system_event, setIsSystemEvent] = useState(false);
     const [recurrence, setRecurrence] = useState<{ frequency: 'yearly', month: number, day: number }>({
         frequency: 'yearly',
         month: new Date().getMonth(),
@@ -68,7 +69,7 @@ export function EventModal({ isOpen, onClose, defaultDate, eventToEdit }: EventM
     // Populate form if editing
     useEffect(() => {
         if (eventToEdit) {
-            const isSystem = !!eventToEdit.isSystemEvent;
+            const isSystem = !!eventToEdit.is_system_event;
             setIsSystemEvent(isSystem);
 
             // Parse date
@@ -123,7 +124,7 @@ export function EventModal({ isOpen, onClose, defaultDate, eventToEdit }: EventM
         e.preventDefault();
         setLoading(true);
         try {
-            if (isSystemEvent && user?.role === 'admin') {
+            if (is_system_event && user?.role === 'admin') {
                 const dateObj = new Date(formData.date);
 
                 const payload = {
@@ -188,7 +189,7 @@ export function EventModal({ isOpen, onClose, defaultDate, eventToEdit }: EventM
                         {/* Header */}
                         <div className="px-6 py-4 border-b border-[#ffffff1a] flex justify-between items-center bg-white/5">
                             <h3 className="text-xl font-bold text-white flex items-center gap-2">
-                                {eventToEdit ? (isSystemEvent ? 'Edit System Event' : 'Edit Event') : (isSystemEvent ? 'New System Event' : (user?.role === 'guest' ? 'Request Event' : 'New Event'))}
+                                {eventToEdit ? (is_system_event ? 'Edit System Event' : 'Edit Event') : (is_system_event ? 'New System Event' : (user?.role === 'guest' ? 'Request Event' : 'New Event'))}
                             </h3>
                             <button onClick={onClose} className="p-2 hover:bg-white/10 rounded-full transition-colors text-white/70 hover:text-white">
                                 <X size={20} />
@@ -207,10 +208,10 @@ export function EventModal({ isOpen, onClose, defaultDate, eventToEdit }: EventM
                                         </div>
                                         <button
                                             type="button"
-                                            onClick={() => setIsSystemEvent(!isSystemEvent)}
-                                            className={`relative inline-flex h-6 w-11 items-center rounded-full transition-colors ${isSystemEvent ? 'bg-blue-600' : 'bg-white/20'}`}
+                                            onClick={() => setIsSystemEvent(!is_system_event)}
+                                            className={`relative inline-flex h-6 w-11 items-center rounded-full transition-colors ${is_system_event ? 'bg-blue-600' : 'bg-white/20'}`}
                                         >
-                                            <span className={`inline-block h-4 w-4 transform rounded-full bg-white transition-transform ${isSystemEvent ? 'translate-x-6' : 'translate-x-1'}`} />
+                                            <span className={`inline-block h-4 w-4 transform rounded-full bg-white transition-transform ${is_system_event ? 'translate-x-6' : 'translate-x-1'}`} />
                                         </button>
                                     </div>
                                 )}
@@ -221,13 +222,13 @@ export function EventModal({ isOpen, onClose, defaultDate, eventToEdit }: EventM
                                 {/* Title */}
                                 <div>
                                     <label className="block text-sm font-medium text-white/70 mb-2">
-                                        Event Title {isSystemEvent && <span className="text-white/40">(System-wide)</span>}
+                                        Event Title {is_system_event && <span className="text-white/40">(System-wide)</span>}
                                     </label>
                                     <div className="relative group">
                                         <AlignLeft size={18} className="absolute left-4 top-1/2 -translate-y-1/2 text-white/30 group-focus-within:text-blue-400 transition-colors pointer-events-none" />
                                         <input
                                             className="w-full bg-white/5 border border-[#ffffff1a] rounded-xl pl-12 pr-4 py-3 text-white placeholder-white/30 focus:ring-2 focus:ring-blue-500/50 outline-none transition-all"
-                                            placeholder={isSystemEvent ? "e.g. 77th Republic Day of India" : "e.g. Team Meeting"}
+                                            placeholder={is_system_event ? "e.g. 77th Republic Day of India" : "e.g. Team Meeting"}
                                             value={formData.title}
                                             onChange={e => setFormData({ ...formData, title: e.target.value })}
                                             required
@@ -251,7 +252,7 @@ export function EventModal({ isOpen, onClose, defaultDate, eventToEdit }: EventM
                                         </div>
                                     </div>
 
-                                    {!isSystemEvent && (
+                                    {!is_system_event && (
                                         <div>
                                             <label className="block text-sm font-medium text-white/70 mb-2">Start Time</label>
                                             <div className="relative group">
@@ -269,7 +270,7 @@ export function EventModal({ isOpen, onClose, defaultDate, eventToEdit }: EventM
                                 </div>
 
                                 {/* Recurrence Notice */}
-                                {isSystemEvent && (
+                                {is_system_event && (
                                     <div className="flex items-center gap-2 text-xs text-blue-200 bg-blue-600/10 p-3 rounded-xl border border-blue-500/20">
                                         <Repeat className="w-4 h-4" />
                                         <span>Will repeat yearly on this date</span>
@@ -277,7 +278,7 @@ export function EventModal({ isOpen, onClose, defaultDate, eventToEdit }: EventM
                                 )}
 
                                 {/* Location */}
-                                {!isSystemEvent && (
+                                {!is_system_event && (
                                     <div>
                                         <label className="block text-sm font-medium text-white/70 mb-2">
                                             Location <span className="text-white/40 text-xs">(Optional)</span>

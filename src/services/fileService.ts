@@ -19,7 +19,7 @@ export const FileService = {
         formData.append('file', file);
 
         // Use apiClient to ensure proper base URL handling for Android
-        const response = await apiClient<{ success: boolean; fileId: string; viewLink: string; downloadLink: string }>('/api/files/upload', {
+        const response = await apiClient<{ success: boolean; file_id: string; viewLink: string; downloadLink: string }>('/api/files/upload', {
             method: 'POST',
             body: formData,
             headers: {

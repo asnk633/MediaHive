@@ -112,7 +112,7 @@ export const RolePolicyEditor: React.FC<RolePolicyEditorProps> = ({ scopeType, s
                                     <Label className="text-base font-semibold text-slate-200">
                                         {eventType}
                                     </Label>
-                                    <Badge variant="outline" className={`text-[10px] ${isExplicit ? 'border-indigo-500 text-indigo-400' : 'border-slate-700 text-slate-500'}`}>
+                                    <Badge variant="neutral" className={`text-[10px] ${isExplicit ? 'border-indigo-500 text-indigo-400' : 'border-slate-700 text-slate-500'}`}>
                                         {source}
                                     </Badge>
                                 </div>

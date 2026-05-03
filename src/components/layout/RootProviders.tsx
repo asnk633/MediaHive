@@ -52,7 +52,22 @@ export default function RootProviders({ children }: { children: ReactNode }) {
     };
 
     console.log = (...args) => { addToBuffer('LOG', args); originalLog.apply(console, args); };
-    console.error = (...args) => { addToBuffer('ERROR', args); originalError.apply(console, args); };
+    console.error = (...args) => {
+      // Suppress benign MOCK_KEY offline errors that trigger Next.js error overlays
+      const isBenignMOCK_KEYOfflineError = args.some(arg =>
+        typeof arg === 'string' &&
+        arg.includes('Could not reach Cloud Firestore backend') &&
+        arg.includes('offline mode')
+      );
+      if (isBenignMOCK_KEYOfflineError) {
+        addToBuffer('WARN', ['[Suppressed MOCK_KEY Offline Error]', ...args]);
+        originalWarn.apply(console, ['[MOCK_KEY]', 'Operating in offline mode.']);
+        return;
+      }
+
+      addToBuffer('ERROR', args);
+      originalError.apply(console, args);
+    };
     console.warn = (...args) => { addToBuffer('WARN', args); originalWarn.apply(console, args); };
 
     // 4. Telemetry Helper (Must use originalLog/Error to avoid infinite recursion)
@@ -104,7 +119,7 @@ export default function RootProviders({ children }: { children: ReactNode }) {
 
   return (
     <ThemeProvider>
-      <AuthProvider disableBackend={process.env.NEXT_PUBLIC_DEV_NO_API === 'true' && (typeof window !== 'undefined' ? localStorage.getItem('force_real_api') !== 'true' : true)}>
+      <AuthProvider>
         <MissingApiBanner />
         <Diagnostics />
         <BootGate>

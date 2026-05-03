@@ -66,7 +66,7 @@ export function ConflictResolutionModal({
           <div className="bg-[var(--panel-strong)] p-4 rounded mb-4 border border-[var(--glass-border)]">
             <h3 className="font-semibold mb-2">Task: {conflict.localVersion.title}</h3>
             <p className="text-sm text-[var(--muted)]">
-              Last modified locally: {formatDate(conflict.localVersion.updatedAt)}
+              Last modified locally: {formatDate(conflict.localVersion.updated_at)}
             </p>
           </div>
         </div>

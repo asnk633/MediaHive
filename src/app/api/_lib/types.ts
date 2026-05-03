@@ -8,7 +8,7 @@ export interface AuthUser {
   email: string;
   fullName: string;
   role: UserRole;
-  institutionId: number;
+  institution_id: number;
   tenantId: number; // Add tenantId for multi-tenant support
 }
 

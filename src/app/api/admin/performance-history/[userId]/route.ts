@@ -21,7 +21,7 @@ interface PerformanceHistoryItem {
 interface PerformanceHistoryResponse {
     userId: number;
     userName: string;
-    avatarUrl: string | null;
+    avatar_url: string | null;
     trend: TrendClassification;
     delta: number;
     benchmark: UserBenchmark;
@@ -66,7 +66,7 @@ export async function GET(
             .select({
                 id: users.id,
                 fullName: users.fullName,
-                avatarUrl: users.avatarUrl
+                avatar_url: users.avatar_url
             })
             .from(users)
             .where(eq(users.id, userId))
@@ -147,7 +147,7 @@ export async function GET(
         const response: PerformanceHistoryResponse = {
             userId: user.id,
             userName: user.fullName,
-            avatarUrl: user.avatarUrl,
+            avatar_url: user.avatar_url,
             trend: trendResult.trend,
             delta: trendResult.delta,
             benchmark,

@@ -16,7 +16,7 @@ export const ClientNotification = {
       userId,
       isRead: false,
       isArchived: false,
-      createdAt: new Date().toISOString(),
+      created_at: new Date().toISOString(),
       priority: 'medium', // default
       ...data
     };

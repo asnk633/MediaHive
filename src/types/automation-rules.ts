@@ -21,8 +21,8 @@ export interface AutomationRule {
     priority: number;
     enabled: boolean;
     locked: boolean; // Immutable/Finalized
-    createdAt?: any;
-    updatedAt?: any;
+    created_at?: any;
+    updated_at?: any;
 }
 
 export interface RuleEvaluationResult {

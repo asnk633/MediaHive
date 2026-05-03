@@ -76,13 +76,13 @@ export async function POST(req: NextRequest) {
       .insert(attachments)
       .values({
         taskId: parseInt(taskId),
-        fileName: file.name,
+        file_name: file.name,
         fileUrl,
         fileType: file.type || 'application/octet-stream',
         fileSize: file.size,
         uploadedById: user.id,
         tenantId: user.tenantId,
-        createdAt: now,
+        created_at: now,
       })
       .returning();
 

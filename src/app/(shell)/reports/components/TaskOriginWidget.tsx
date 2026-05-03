@@ -28,9 +28,9 @@ export const TaskOriginWidget = ({ tasks }: TaskOriginWidgetProps) => {
 
         if (provenance.includes('system')) {
             originMap.system++;
-        } else if (task.createdBy?.role === 'admin') {
+        } else if (task.created_by?.role === 'admin') {
             originMap.admin++;
-        } else if (task.createdBy?.role === 'team' || task.createdBy?.role === 'editor' || task.createdBy?.role === 'viewer') {
+        } else if (task.created_by?.role === 'team' || task.created_by?.role === 'editor' || task.created_by?.role === 'viewer') {
             originMap.team++;
         } else {
             // Check if user string matches known patterns or just bucket as 'Team' generally if not system or admin?

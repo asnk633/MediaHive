@@ -20,6 +20,7 @@ export type NotificationType =
     | 'stale_task_escalation' // Phase 2A - Escalated stale task notification
     | 'event_updated'       // Phase 2A
     | 'task_created'        // Phase 3 Fix
+    | 'task_reopened'       // Phase 13 Smart Notifications
     | 'approval_request'    // Guest Approval Workflow
     | 'media_proofing'      // Media Proofing Automation
     | 'task_status_suggestion'  // Task State Automation
@@ -38,30 +39,31 @@ export type NotificationPriority = 'high' | 'medium' | 'low';
 
 export interface AppNotification {
     id: string;
-    userId: string;           // Target user to notify
-    sourceUserId?: string;    // User who triggered the action
+    user_id: string;           // Target user to notify
+    created_by?: string;       // User who triggered the action
+    institution_id?: string;   // Contextual institution
     type: NotificationType;
     title: string;
     message: string;
-    entityType: NotificationEntityType;
-    entityId: string;
-    actionUrl?: string;       // Navigation intent
+    entity_type: NotificationEntityType;
+    entity_id: string;
+    action_url?: string;       // Navigation intent
     priority: NotificationPriority;
-    isRead: boolean;
-    isArchived: boolean;      // Soft-delete status
-    createdAt: TimestampLike; // Configurable for client/server
+    read: boolean;             // isRead -> read
+    created_at: TimestampLike; // Configurable for client/server
     metadata?: Record<string, any>; // Flexible payload for extra data
 }
 
 export interface CreateNotificationParams {
-    userId: string;
-    sourceUserId?: string;
+    user_id: string;
+    created_by?: string;
+    institution_id?: string;
     type: NotificationType;
     title: string;
     message: string;
-    entityType: NotificationEntityType;
-    entityId: string;
-    actionUrl?: string;
+    entity_type: NotificationEntityType;
+    entity_id: string;
+    action_url?: string;
     priority?: NotificationPriority;
     metadata?: Record<string, any>;
 }

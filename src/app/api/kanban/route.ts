@@ -26,7 +26,7 @@ export async function GET(req: NextRequest) {
     const status = searchParams.get('status') || null;
 
     // Build the base query conditions
-    const conditions = [eq(tasks.institutionId, user.institutionId)];
+    const conditions = [eq(tasks.institution_id, user.institution_id)];
     
     // Add status condition if provided
     if (status) {
@@ -38,7 +38,7 @@ export async function GET(req: NextRequest) {
       .select()
       .from(tasks)
       .where(and(...conditions))
-      .orderBy(tasks.createdAt)
+      .orderBy(tasks.created_at)
       .limit(limit)
       .offset(offset);
 

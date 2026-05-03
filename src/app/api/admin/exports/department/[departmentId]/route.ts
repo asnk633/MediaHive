@@ -6,7 +6,7 @@ import { authorizeByPermission } from '@/lib/auth-server';
 import { convertToCSV, logExportAction } from '@/utils/exportHelpers';
 
 /**
- * GET /api/admin/exports/department/:departmentId
+ * GET /api/admin/exports/department/:department_id
  * Export department health history
  * Params: period (opt), from (opt), to (opt), format (csv|json)
  */
@@ -26,8 +26,8 @@ export async function GET(
         const currentAdmin = authResult.user;
 
         const { departmentId: deptIdParam } = await params;
-        const departmentId = parseInt(deptIdParam);
-        if (isNaN(departmentId)) return NextResponse.json({ error: 'Invalid department ID' }, { status: 400 });
+        const department_id = parseInt(deptIdParam);
+        if (isNaN(department_id)) return NextResponse.json({ error: 'Invalid department ID' }, { status: 400 });
 
         const { searchParams } = new URL(request.url);
         const format = searchParams.get('format') || 'json';
@@ -37,10 +37,10 @@ export async function GET(
 
         // 2. Fetch Snapshots
         // Note: departmentHealthSnapshots table currently tracks tenant-wide health or implicitly default department.
-        // We filter by period/date. If schema had departmentId, we'd add it here.
+        // We filter by period/date. If schema had department_id, we'd add it here.
 
         const db = await getDb();
-        let conditions = []; // eq(departmentHealthSnapshots.departmentId, departmentId) if it existed
+        let conditions = []; // eq(departmentHealthSnapshots.department_id, department_id) if it existed
 
         // Tenant check
         conditions.push(eq(departmentHealthSnapshots.tenantId, Number(currentAdmin.tenantId || 1)));
@@ -72,7 +72,7 @@ export async function GET(
         }));
 
         // 3. Audit Logging
-        await logExportAction(db, currentAdmin as any, 'department_health', String(departmentId), format, { period, from: fromDate, to: toDate });
+        await logExportAction(db, currentAdmin as any, 'department_health', String(department_id), format, { period, from: fromDate, to: toDate });
 
         // 4. Return Response
         if (format === 'csv') {
@@ -92,7 +92,7 @@ export async function GET(
             return new NextResponse(csvContent, {
                 headers: {
                     'Content-Type': 'text/csv',
-                    'Content-Disposition': `attachment; filename="department_export_${departmentId}_${Date.now()}.csv"`
+                    'Content-Disposition': `attachment; filename="department_export_${department_id}_${Date.now()}.csv"`
                 }
             });
         }

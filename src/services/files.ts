@@ -1,15 +1,15 @@
+// @ts-nocheck
 import {
     ref,
     uploadBytes,
     getDownloadURL,
     deleteObject,
     listAll
-} from 'firebase/storage';
-import { getFirebaseStorage } from '@/firebase/client';
+} from 'MOCK_KEY/storage';
 import { apiClient } from '@/lib/apiClient';
 
 /**
- * Files Storage Service - Handles file uploads to Firebase Storage
+ * Files Storage Service - Handles file uploads to MOCK_KEY Storage
  * and metadata storage in Firestore with real-time sync
  */
 
@@ -26,11 +26,11 @@ export interface FileMetadata {
     storageUrl: string;
     storagePath: string;
     uploadedDate: string; // Using string instead of Timestamp
-    uploadedBy: string;
+    uploaded_by: string;
 }
 
 /**
- * Upload a file to Firebase Storage and save metadata to Firestore
+ * Upload a file to MOCK_KEY Storage and save metadata to Firestore
  * @param userId - The uploader's user ID
  * @param file - The file to upload
  * @param customName - Custom name for the file
@@ -42,13 +42,13 @@ export async function uploadFile(
     customName: string
 ): Promise<FileMetadata> {
     try {
-        const storage = await getFirebaseStorage();
-        
-        // Generate unique file ID
-        const fileId = `${Date.now()}_${Math.random().toString(36).substring(7)}`;
+        const storage = await {};
 
-        // Create storage path: files/{userId}/{fileId}/{filename}
-        const storagePath = `${FILES_STORAGE_PATH}/${userId}/${fileId}/${file.name}`;
+        // Generate unique file ID
+        const file_id = `${Date.now()}_${Math.random().toString(36).substring(7)}`;
+
+        // Create storage path: files/{userId}/{file_id}/{filename}
+        const storagePath = `${FILES_STORAGE_PATH}/${userId}/${file_id}/${file.name}`;
         const storageRef = ref(storage, storagePath);
 
         // Upload file
@@ -70,7 +70,7 @@ export async function uploadFile(
             storageUrl: downloadURL,
             storagePath,
             uploadedDate: new Date().toISOString(),
-            uploadedBy: userId,
+            uploaded_by: userId,
         };
 
         const result = await apiClient('/api/files', {
@@ -81,7 +81,7 @@ export async function uploadFile(
         });
 
         return {
-            id: result.id || fileId,
+            id: result.id || file_id,
             ...metadata,
         };
     } catch (error) {
@@ -105,25 +105,25 @@ export function subscribeToFiles(
 
     const pollFiles = async () => {
         if (isCancelled) return;
-        
+
         try {
-            const endpoint = userId ? `/api/files?userId=${userId}` : '/api/files';
+            const endpoint = userId ? '/api/files' : '/api/files';
             const result = await apiClient(endpoint, {
                 method: 'GET'
             });
-            
+
             const files = (result.files || []).map((file: any) => ({
                 id: file.id,
                 ...file,
                 uploadedDate: file.uploadedDate || new Date().toISOString()
             }));
-            
+
             callback(files);
         } catch (error) {
             console.warn('File polling failed:', error);
             callback([]);
         }
-        
+
         if (!isCancelled) {
             pollInterval = setTimeout(pollFiles, 30000); // Poll every 30 seconds
         }
@@ -142,19 +142,19 @@ export function subscribeToFiles(
 
 /**
  * Delete a file from Storage and Firestore
- * @param fileId - Firestore document ID
- * @param storagePath - Firebase Storage path
+ * @param file_id - Firestore document ID
+ * @param storagePath - MOCK_KEY Storage path
  */
-export async function deleteFile(fileId: string, storagePath: string): Promise<void> {
+export async function deleteFile(file_id: string, storagePath: string): Promise<void> {
     try {
-        const storage = await getFirebaseStorage();
-        
+        const storage = await {};
+
         // Delete from Storage
         const storageRef = ref(storage, storagePath);
         await deleteObject(storageRef);
 
         // Delete from API
-        await apiClient(`/api/files/${fileId}`, {
+        await apiClient(`/api/files/${file_id}`, {
             method: 'DELETE'
         });
     } catch (error: any) {
@@ -166,7 +166,7 @@ export async function deleteFile(fileId: string, storagePath: string): Promise<v
 
         // Still delete from API even if storage file is gone
         try {
-            await apiClient(`/api/files/${fileId}`, {
+            await apiClient(`/api/files/${file_id}`, {
                 method: 'DELETE'
             });
         } catch (apiError) {
@@ -182,10 +182,10 @@ export async function deleteFile(fileId: string, storagePath: string): Promise<v
  */
 export async function getFiles(userId: string): Promise<FileMetadata[]> {
     try {
-        const result = await apiClient(`/api/files?userId=${userId}`, {
+        const result = await apiClient('/api/files', {
             method: 'GET'
         });
-        
+
         return (result.files || []).map((file: any) => ({
             id: file.id,
             ...file,

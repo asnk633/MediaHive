@@ -49,7 +49,7 @@ var now = function () { return new Date().toISOString(); };
 var maybe = function (v) { return v; };
 function main() {
     return __awaiter(this, void 0, void 0, function () {
-        var tenantId, existingTenant, tenantResult, institutionId, existingInstitution, adminId, johnId, existingAdmin, existingJohn, adminPasswordHash, teamPasswordHash, existingTask1, existingTask2, existingEvent, existingNotification, existingAttendance, existingFile, err_1;
+        var tenantId, existingTenant, tenantResult, institution_id, existingInstitution, adminId, johnId, existingAdmin, existingJohn, adminPasswordHash, teamPasswordHash, existingTask1, existingTask2, existingEvent, existingNotification, existingAttendance, existingFile, err_1;
         return __generator(this, function (_a) {
             switch (_a.label) {
                 case 0:
@@ -65,8 +65,8 @@ function main() {
                     return [4 /*yield*/, index_js_1.db.insert(schema_js_1.tenants).values({
                             name: "Thaiba Garden",
                             domain: "thaiba.local",
-                            createdAt: now(),
-                            updatedAt: now(),
+                            created_at: now(),
+                            updated_at: now(),
                         })];
                 case 2:
                     tenantResult = _a.sent();
@@ -75,7 +75,7 @@ function main() {
                 case 3:
                     // 2) Check if institution already exists, if not insert it
                     console.log(" - checking/inserting institution...");
-                    institutionId = 1;
+                    institution_id = 1;
                     return [4 /*yield*/, index_js_1.db.select({ id: schema_js_1.institutions.id }).from(schema_js_1.institutions).where((0, drizzle_orm_1.eq)(schema_js_1.institutions.id, 1)).limit(1)];
                 case 4:
                     existingInstitution = _a.sent();
@@ -83,7 +83,7 @@ function main() {
                     return [4 /*yield*/, index_js_1.db.insert(schema_js_1.institutions).values({
                             name: "Thaiba Garden",
                             tenantId: tenantId,
-                            createdAt: now(),
+                            created_at: now(),
                         })];
                 case 5:
                     _a.sent();
@@ -107,23 +107,23 @@ function main() {
                                 email: "admin@thaiba.com",
                                 passwordHash: adminPasswordHash,
                                 fullName: "Admin User",
-                                avatarUrl: null,
+                                avatar_url: null,
                                 role: "admin",
-                                institutionId: institutionId,
+                                institution_id: institution_id,
                                 tenantId: tenantId,
-                                createdAt: now(),
-                                updatedAt: now(),
+                                created_at: now(),
+                                updated_at: now(),
                             },
                             {
                                 email: "john.doe@thaiba.com",
                                 passwordHash: teamPasswordHash,
                                 fullName: "John Doe",
-                                avatarUrl: null,
+                                avatar_url: null,
                                 role: "team",
-                                institutionId: institutionId,
+                                institution_id: institution_id,
                                 tenantId: tenantId,
-                                createdAt: now(),
-                                updatedAt: now(),
+                                created_at: now(),
+                                updated_at: now(),
                             },
                         ])];
                 case 9:
@@ -156,15 +156,15 @@ function main() {
                                 priority: "high",
                                 assignedToId: maybe(johnId),
                                 createdById: adminId,
-                                institutionId: institutionId,
+                                institution_id: institution_id,
                                 tenantId: tenantId,
-                                dueDate: null,
+                                due_date: null,
                                 reviewStatus: null,
                                 lastUpdatedBy: null,
                                 isArchived: 0,
                                 version: 1,
-                                createdAt: now(),
-                                updatedAt: now(),
+                                created_at: now(),
+                                updated_at: now(),
                             },
                             {
                                 title: "Prepare Playwright tests",
@@ -173,15 +173,15 @@ function main() {
                                 priority: "medium",
                                 assignedToId: maybe(johnId),
                                 createdById: adminId,
-                                institutionId: institutionId,
+                                institution_id: institution_id,
                                 tenantId: tenantId,
-                                dueDate: null,
+                                due_date: null,
                                 reviewStatus: null,
                                 lastUpdatedBy: null,
                                 isArchived: 0,
                                 version: 1,
-                                createdAt: now(),
-                                updatedAt: now(),
+                                created_at: now(),
+                                updated_at: now(),
                             },
                         ])];
                 case 14:
@@ -199,12 +199,12 @@ function main() {
                             description: "Initial kickoff meeting for the Orchids feature work.",
                             startTime: now(),
                             endTime: new Date(Date.now() + 60 * 60 * 1000).toISOString(), // +1 hour
-                            approvalStatus: "pending",
+                            approval_status: "pending",
                             createdById: adminId,
-                            institutionId: institutionId,
+                            institution_id: institution_id,
                             tenantId: tenantId,
-                            createdAt: now(),
-                            updatedAt: now(),
+                            created_at: now(),
+                            updated_at: now(),
                         })];
                 case 17:
                     _a.sent();
@@ -224,8 +224,8 @@ function main() {
                             body: "Seed complete — welcome to Thaiba Garden Media Manager.",
                             read: 0, // boolean mode stored as integer per schema
                             metadata: JSON.stringify({ seed: true }),
-                            createdAt: now(),
-                            updatedAt: now(),
+                            created_at: now(),
+                            updated_at: now(),
                         })];
                 case 20:
                     // Cast to any to bypass strict typing mismatch in seed insertion.
@@ -242,9 +242,9 @@ function main() {
                             userId: johnId,
                             checkIn: now(),
                             checkOut: null,
-                            institutionId: institutionId,
+                            institution_id: institution_id,
                             tenantId: tenantId,
-                            createdAt: now(),
+                            created_at: now(),
                         })];
                 case 23:
                     _a.sent();
@@ -264,9 +264,9 @@ function main() {
                             folder: "docs",
                             visibility: "all",
                             uploadedById: adminId,
-                            institutionId: institutionId,
+                            institution_id: institution_id,
                             tenantId: tenantId,
-                            createdAt: now(),
+                            created_at: now(),
                         })];
                 case 26:
                     _a.sent();

@@ -8,40 +8,39 @@ interface FirestoreAccessGuardProps {
   fallback?: ReactNode;
 }
 
-const FirestoreAccessGuard = ({ 
-  children, 
-  fallback = <div>Loading secure content...</div> 
+const FirestoreAccessGuard = ({
+  children,
+  fallback = <div className="flex items-center justify-center p-8 text-muted animate-pulse font-mono text-xs">INITIALIZING SECURE SESSION...</div>
 }: FirestoreAccessGuardProps) => {
-  const { claimsReady, authStatus, user } = useAuth();
+  const { authStatus, user } = useAuth();
 
   // Log when access is attempted
-  console.log('[FIRESTORE ACCESS GUARD] authStatus:', authStatus, 'claimsReady:', claimsReady);
+  console.log('[ACCESS GUARD] authStatus:', authStatus, 'role:', user?.role);
 
-  // Check if user is authenticated and claims are ready
+  // Check if user is authenticated
   if (authStatus === 'unauthenticated') {
-    console.log('[FIRESTORE] Access blocked: User not authenticated');
-    return <div>Access denied: User not authenticated</div>;
+    console.log('[ACCESS GUARD] Access blocked: User not authenticated');
+    return <div className="p-8 text-center text-destructive">Access denied: Professional session required</div>;
   }
 
-  if (authStatus === 'authenticating' || !claimsReady) {
-    console.log('[FIRESTORE] Access blocked: Claims not ready');
+  if (authStatus === 'loading') {
     return fallback;
   }
 
   // Additional check: ensure user has valid role claims
-  if (user && !user.isAdmin && !user.isTeam && !user.isSuperAdmin) {
-    console.error('FATAL: Authenticated user has no valid role claims - invalid authorization state:', user.uid);
-    return <div>FATAL ERROR: Invalid authorization state - contact administrator</div>;
+  const hasAccess = user && (user.role === 'admin' || user.role === 'team' || user.is_super_admin);
+
+  if (!hasAccess) {
+    if (authStatus === 'guest') {
+      return <div className="p-8 text-center text-muted">Awaiting administrative approval for profile access.</div>;
+    }
+    console.error('FATAL: Authenticated user has no valid role - unknown state:', user?.uid);
+    return <div className="p-8 text-center text-destructive font-bold">FATAL ERROR: Invalid authorization state</div>;
   }
 
   // Log successful access
   if (user) {
-    console.log('[FIRESTORE] Access granted for user:', user.uid);
-    console.log('[AUTH] Role resolved:', {
-      isSuperAdmin: user.isSuperAdmin,
-      isAdmin: user.isAdmin,
-      isTeam: user.isTeam
-    });
+    console.log('[ACCESS GUARD] Access granted for user:', user.uid, 'Role:', user.role);
   }
 
   return <>{children}</>;

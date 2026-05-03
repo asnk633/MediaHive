@@ -60,9 +60,9 @@ export const EventEditModal: React.FC<EventEditModalProps> = ({ event, isOpen, o
         description: '',
         department: '',
         type: 'other' as Event['type'],
-        mediaCoverage: [] as string[],
+        media_coverage: [] as string[],
         createdById: '',
-        isMediaOffDay: false
+        is_media_off_day: false
     });
 
     const mediaOptions = [
@@ -115,7 +115,7 @@ export const EventEditModal: React.FC<EventEditModalProps> = ({ event, isOpen, o
     useEffect(() => {
         if (event) {
             const eventDate = getDateObject(event.date) || new Date();
-            const startTimeCandidate = getDateObject(event.startTime) || eventDate;
+            const startTimeCandidate = getDateObject(event.start_time) || eventDate;
             const eventTime = startTimeCandidate || new Date();
 
             setFormData({
@@ -126,13 +126,13 @@ export const EventEditModal: React.FC<EventEditModalProps> = ({ event, isOpen, o
                 description: event.description || '',
                 department: event.department || '', // Existing logic uses Name
                 type: event.type || 'other',
-                mediaCoverage: event.mediaCoverage || [],
-                createdById: event.createdBy?.uid || '',
-                isMediaOffDay: event.isMediaOffDay || false
+                media_coverage: event.media_coverage || [],
+                createdById: event.created_by?.uid || '',
+                is_media_off_day: event.is_media_off_day || false
             });
 
             // Initialize Recurrence logic
-            if (event.isSystemEvent) {
+            if (event.is_system_event) {
                 const sysEvent = event as any;
                 setIsRecurring(sysEvent.isRecurring || false);
                 if (sysEvent.recurrence) {
@@ -146,9 +146,9 @@ export const EventEditModal: React.FC<EventEditModalProps> = ({ event, isOpen, o
     const toggleMediaOption = (option: string) => {
         setFormData(prev => ({
             ...prev,
-            mediaCoverage: prev.mediaCoverage.includes(option)
-                ? prev.mediaCoverage.filter(o => o !== option)
-                : [...prev.mediaCoverage, option]
+            media_coverage: prev.media_coverage.includes(option)
+                ? prev.media_coverage.filter(o => o !== option)
+                : [...prev.media_coverage, option]
         }));
     };
 
@@ -158,15 +158,15 @@ export const EventEditModal: React.FC<EventEditModalProps> = ({ event, isOpen, o
         try {
             const dateTime = new Date(`${formData.date}T${formData.time}`);
 
-            let finalCreatedBy = { ...event.createdBy };
-            if (isAdmin && formData.createdById !== event.createdBy.uid) {
+            let finalCreatedBy = { ...event.created_by };
+            if (isAdmin && formData.createdById !== event.created_by.uid) {
                 const selected = teamMembers.find(m => m.uid === formData.createdById);
                 if (selected) {
                     finalCreatedBy = { uid: selected.uid, name: selected.name, role: 'team' };
                 }
             }
 
-            if (event.isSystemEvent && isAdmin) {
+            if (event.is_system_event && isAdmin) {
                 // Logic for System Events
                 const recurrencePayload: any = isRecurring ? {
                     frequency: recurrenceFreq,
@@ -187,18 +187,18 @@ export const EventEditModal: React.FC<EventEditModalProps> = ({ event, isOpen, o
                     date: dateTime.toISOString(),
                     isRecurring: isRecurring,
                     recurrence: recurrencePayload,
-                    isMediaOffDay: formData.isMediaOffDay
+                    is_media_off_day: formData.is_media_off_day
                 };
 
                 const realId = event.id.replace(/_\d{4}-\d{2}-\d{2}$/, '');
                 await SystemEventService.updateSystemEvent(realId, payload);
-            } else if (!event.isSystemEvent) {
+            } else if (!event.is_system_event) {
                 // Logic for User Events
                 // Resolve Department/Institution ID
                 let deptId = '';
                 let deptType: 'department' | 'institution' = 'department';
-                let targetInstitutionId = event.institutionId;
-                let targetDepartmentId = event.departmentId;
+                let targetInstitutionId = event.institution_id;
+                let targetDepartmentId = event.department_id;
 
                 const foundDept = departmentsList.find(d => d.name === formData.department);
                 if (foundDept) {
@@ -211,11 +211,11 @@ export const EventEditModal: React.FC<EventEditModalProps> = ({ event, isOpen, o
                         deptId = foundInst.id;
                         deptType = 'institution';
                         targetInstitutionId = foundInst.id;
-                        targetDepartmentId = undefined; // Clear departmentId if it's an institution
+                        targetDepartmentId = undefined; // Clear department_id if it's an institution
                     }
                 }
 
-                const onBehalfOf = {
+                const on_behalf_of = {
                     id: deptId || 'unknown',
                     name: formData.department,
                     type: deptType
@@ -224,16 +224,16 @@ export const EventEditModal: React.FC<EventEditModalProps> = ({ event, isOpen, o
                 const payload = {
                     title: formData.title,
                     date: dateTime.toISOString(),
-                    startTime: dateTime.toISOString(),
+                    start_time: dateTime.toISOString(),
                     location: formData.location,
                     description: formData.description,
                     department: formData.department,
                     type: formData.type,
-                    createdBy: finalCreatedBy,
-                    mediaCoverage: formData.mediaCoverage,
-                    onBehalfOf,
-                    institutionId: targetInstitutionId,
-                    departmentId: targetDepartmentId
+                    created_by: finalCreatedBy,
+                    media_coverage: formData.media_coverage,
+                    on_behalf_of,
+                    institution_id: targetInstitutionId,
+                    department_id: targetDepartmentId
                 };
 
                 // Using PUT since we updated the route handler to PUT. 
@@ -393,7 +393,7 @@ export const EventEditModal: React.FC<EventEditModalProps> = ({ event, isOpen, o
                             <label className="block text-xs font-bold text-muted uppercase tracking-widest mb-4 px-1">Media Coverage Requested</label>
                             <div className="grid grid-cols-2 sm:grid-cols-3 gap-3">
                                 {mediaOptions.map((option) => {
-                                    const isSelected = formData.mediaCoverage.includes(option);
+                                    const isSelected = formData.media_coverage.includes(option);
                                     return (
                                         <label
                                             key={option}
@@ -438,7 +438,7 @@ export const EventEditModal: React.FC<EventEditModalProps> = ({ event, isOpen, o
                             />
                         </div>
 
-                        {event.isSystemEvent && isAdmin && (
+                        {event.is_system_event && isAdmin && (
                             <div className="space-y-4">
                                 <div className="bg-glass rounded-xl p-4 shadow-sm">
                                     <div className="flex items-center justify-between mb-4">
@@ -504,15 +504,15 @@ export const EventEditModal: React.FC<EventEditModalProps> = ({ event, isOpen, o
                                     <label className="flex items-center gap-3 cursor-pointer">
                                         <div className={`
                                         w-5 h-5 rounded border flex items-center justify-center transition-colors
-                                        ${formData.isMediaOffDay ? 'bg-red-500 border-red-500' : 'border-soft bg-transparent'}
+                                        ${formData.is_media_off_day ? 'bg-red-500 border-red-500' : 'border-soft bg-transparent'}
                                     `}>
-                                            {formData.isMediaOffDay && <Check size={14} className="text-white" />}
+                                            {formData.is_media_off_day && <Check size={14} className="text-white" />}
                                         </div>
                                         <input
                                             type="checkbox"
                                             className="hidden"
-                                            checked={formData.isMediaOffDay}
-                                            onChange={e => setFormData({ ...formData, isMediaOffDay: e.target.checked })}
+                                            checked={formData.is_media_off_day}
+                                            onChange={e => setFormData({ ...formData, is_media_off_day: e.target.checked })}
                                         />
                                         <div className="flex flex-col">
                                             <span className="text-sm font-bold text-red-200">Media Off Day</span>

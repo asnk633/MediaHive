@@ -96,9 +96,9 @@ export async function POST(request: NextRequest) {
     }
     
     // Save file temporarily
-    const fileId = uuidv4();
+    const file_id = uuidv4();
     const fileExtension = file.name.split('.').pop() || '';
-    const tempFileName = `${fileId}.${fileExtension}`;
+    const tempFileName = `${file_id}.${fileExtension}`;
     const tempFilePath = path.join(UPLOADS_DIR, tempFileName);
     
     const fileBuffer = Buffer.from(await file.arrayBuffer());
@@ -116,8 +116,8 @@ export async function POST(request: NextRequest) {
         type: qualityReport.type,
         score: qualityReport.score,
         reportJson: JSON.stringify(qualityReport),
-        createdAt: new Date().toISOString(),
-        updatedAt: new Date().toISOString(),
+        created_at: new Date().toISOString(),
+        updated_at: new Date().toISOString(),
       })
       .returning();
     

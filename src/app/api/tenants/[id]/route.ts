@@ -115,7 +115,7 @@ export async function PUT(
         name,
         domain,
         settings: typeof settings === 'object' ? JSON.stringify(settings) : settings,
-        updatedAt: new Date().toISOString(),
+        updated_at: new Date().toISOString(),
       })
       .where(eq(tenants.id, tenantId))
       .returning();

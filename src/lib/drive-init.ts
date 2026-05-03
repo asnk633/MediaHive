@@ -1,193 +1,139 @@
 import { getDriveClient, ensureFolderPath, DRIVE_CONFIG, sanitizeForDrive } from './drive';
 import 'server-only';
-import { adminDb } from '@/lib/firebase/server';
+import { getSupabaseAdmin } from '@/lib/server-utils';
 
-const CACHE_DOC_PATH = 'config/drive';
+const CONFIG_TABLE = 'app_config';
+const DRIVE_CONFIG_KEY = 'drive_structure';
 
 interface DriveFolderConfig {
-    rootFolderId: string;
-    campaignsFolderId: string;
-    standaloneTasksFolderId: string;
-    lastUpdated: number;
+    root_folder_id: string;
+    campaigns_folder_id: string;
+    standalone_tasks_folder_id: string;
+    last_updated: string;
 }
 
 export async function initializeDriveStructure(): Promise<DriveFolderConfig> {
-    const db = adminDb;
     const drive = await getDriveClient();
+    const supabase = getSupabaseAdmin();
 
-    // 1. Check Cache
-    const docRef = db.doc(CACHE_DOC_PATH);
-    const docSnap = await docRef.get();
+    try {
+        const { data: configRow } = await supabase
+            .from(CONFIG_TABLE)
+            .select('value')
+            .eq('key', DRIVE_CONFIG_KEY)
+            .maybeSingle();
 
-    if (docSnap.exists) {
-        const data = docSnap.data() as DriveFolderConfig;
-        // Optional: Verify if folders actually exist?
-        // For performance, we trust the cache unless explicitly running a "repair" mode.
-        // But for robust init, let's just return if we have the IDs.
-        if (data.rootFolderId && data.campaignsFolderId && data.standaloneTasksFolderId) {
-            console.log("Drive structure cached:", data);
-            return data;
+        if (configRow?.value) {
+            const data = configRow.value as DriveFolderConfig;
+            if (data.root_folder_id && data.campaigns_folder_id && data.standalone_tasks_folder_id) {
+                return data;
+            }
         }
+    } catch (e) {
+        console.warn('Drive config cache inaccessible.');
     }
 
-    console.log("Initializing Drive folder structure...");
-
-    // 2. Ensure Root "MediaHive"
-    // We search/create inside the configured parent folder (DRIVE_CONFIG.folderId)
-    // If DRIVE_CONFIG.folderId is set, "MediaHive" is a subfolder of THAT.
-    // If DRIVE_CONFIG.folderId is NOT set (e.g. root of My Drive), we assume root.
-    // However, existing setup suggests DRIVE_CONFIG.folderId IS the effective root for the app?
-    // User request says: "MediaHive/ -> Campaigns/, Standalone Tasks/"
-
-    // Let's assume we create "MediaHive" inside the configured Shared Drive/Folder ID.
-    // Reusing ensureFolderPath logic.
-
     const rootParentId = DRIVE_CONFIG.folderId || 'root';
-
     const mediaHiveId = await ensureFolderPath(drive, rootParentId, ['MediaHive']);
-
-    // 3. Ensure Subfolders
-    // We want MediaHive/Campaigns and MediaHive/Standalone Tasks
     const campaignsId = await ensureFolderPath(drive, mediaHiveId, ['Campaigns']);
     const standaloneTasksId = await ensureFolderPath(drive, mediaHiveId, ['Standalone Tasks']);
 
-    // 4. Update Cache
     const config: DriveFolderConfig = {
-        rootFolderId: mediaHiveId,
-        campaignsFolderId: campaignsId,
-        standaloneTasksFolderId: standaloneTasksId,
-        lastUpdated: Date.now()
+        root_folder_id: mediaHiveId,
+        campaigns_folder_id: campaignsId,
+        standalone_tasks_folder_id: standaloneTasksId,
+        last_updated: new Date().toISOString()
     };
 
-    await docRef.set(config);
-    console.log("Drive structure initialized and cached:", config);
+    try {
+        await supabase
+            .from(CONFIG_TABLE)
+            .upsert({
+                key: DRIVE_CONFIG_KEY,
+                value: config,
+                updated_at: new Date().toISOString()
+            }, { onConflict: 'key' });
+    } catch (e) {
+        // Cache write is optional
+    }
 
     return config;
 }
 
-/**
- * Ensures a Drive folder exists for the given Campaign.
- * Uses lazy creation: Checks Firestore first, if missing, creates in Drive and updates Firestore.
- */
-
-export async function ensureCampaignFolder(campaignId: string, campaignName: string): Promise<string> {
-    const db = adminDb;
+export async function ensureCampaignFolder(campaign_id: string, campaignName: string): Promise<string> {
     const drive = await getDriveClient();
+    const supabase = getSupabaseAdmin();
 
-    // 1. Check Campaign Doc for existing ID
-    const campaignRef = db.collection('campaigns').doc(campaignId);
-    const campaignSnap = await campaignRef.get();
+    const { data: campaign } = await supabase
+        .from('campaigns')
+        .select('drive_folder_id')
+        .eq('id', campaign_id)
+        .maybeSingle();
 
-    if (!campaignSnap.exists) {
-        throw new Error(`Campaign ${campaignId} not found`);
+    if (campaign?.drive_folder_id) {
+        return campaign.drive_folder_id;
     }
 
-    const campaignData = campaignSnap.data();
-    if (campaignData?.driveFolderId) {
-        return campaignData.driveFolderId;
-    }
+    const config = await initializeDriveStructure();
+    const campaignsRootId = config.campaigns_folder_id;
 
-    // 2. Not found, create it.
-    // Need parent folder ID (MediaHive/Campaigns)
-    let campaignsRootId: string;
-
-    // Try to get from cache
-    const cacheRef = db.doc(CACHE_DOC_PATH);
-    const cacheSnap = await cacheRef.get();
-
-    if (cacheSnap.exists && cacheSnap.data()?.campaignsFolderId) {
-        campaignsRootId = cacheSnap.data()?.campaignsFolderId;
-    } else {
-        // Fallback: Init structure if missing
-        const config = await initializeDriveStructure();
-        campaignsRootId = config.campaignsFolderId;
-    }
-
-    // 3. Create Campaign Folder
-    // Use sanitized name or just raw name? ensureFolderPath handles basic existence check.
-    // We want a folder named options.campaignName inside campaignsRootId.
     const safeName = sanitizeForDrive(campaignName);
     const folderId = await ensureFolderPath(drive, campaignsRootId, [safeName]);
 
-    // 4. Update Campaign Doc
-    await campaignRef.update({ driveFolderId: folderId });
-    console.log(`Created Drive folder for Campaign ${campaignId}: ${folderId}`);
+    await supabase
+        .from('campaigns')
+        .update({ drive_folder_id: folderId })
+        .eq('id', campaign_id);
 
     return folderId;
 }
 
 export async function getStandaloneTasksFolderId(): Promise<string> {
-    const db = adminDb;
-
-    const cacheRef = db.doc(CACHE_DOC_PATH);
-    const cacheSnap = await cacheRef.get();
-
-    if (cacheSnap.exists && cacheSnap.data()?.standaloneTasksFolderId) {
-        return cacheSnap.data()?.standaloneTasksFolderId;
-    }
-
     const config = await initializeDriveStructure();
-    return config.standaloneTasksFolderId;
+    return config.standalone_tasks_folder_id;
 }
 
-/**
- * Ensures a dedicated Drive folder exists for a Task.
- * Logic:
- * - Checks Task Doc for existing driveFolderId.
- * - If missing:
- *   - If Campaign Task: Ensure Campaign Folder -> Create Task Folder inside.
- *   - If Standalone: Get Standalone Root -> Create Task Folder inside.
- * - Updates Task Doc.
- */
-export async function ensureTaskFolder(taskId: string, taskTitle: string, campaignId?: string): Promise<string> {
-    const db = adminDb;
+export async function ensureTaskFolder(taskId: string, taskTitle: string, campaign_id?: string): Promise<string> {
     const drive = await getDriveClient();
+    const supabase = getSupabaseAdmin();
 
-    // 1. Check Task Doc
-    const taskRef = db.collection('tasks').doc(taskId);
-    const taskSnap = await taskRef.get();
+    const { data: task } = await supabase
+        .from('tasks')
+        .select('drive_folder_id, campaign_id')
+        .eq('id', taskId)
+        .maybeSingle();
 
-    if (!taskSnap.exists) {
-        throw new Error(`Task ${taskId} not found`);
+    if (task?.drive_folder_id) {
+        return task.drive_folder_id;
     }
 
-    const taskData = taskSnap.data();
-    if (taskData?.driveFolderId) {
-        return taskData.driveFolderId;
-    }
-
-    // 2. Determine Parent Folder
     let parentFolderId: string;
-
-    // Prefer argument, fallback to task data
-    const effectiveCampaignId = campaignId || taskData?.campaignId;
+    const effectiveCampaignId = campaign_id || task?.campaign_id;
 
     if (effectiveCampaignId) {
-        // Need Campaign Name to ensure folder
-        const campaignSnap = await db.collection('campaigns').doc(effectiveCampaignId).get();
-        // If campaign doesn't exist (deleted?), fallback to Standalone or create "Untitled Campaign" folder? 
-        // Safer to fallback to Standalone if campaign missing to prevent error loop.
-        if (campaignSnap.exists) {
-            const campaignName = campaignSnap.data()?.name || "Untitled Campaign";
-            parentFolderId = await ensureCampaignFolder(effectiveCampaignId, campaignName);
+        const { data: campaign } = await supabase
+            .from('campaigns')
+            .select('name')
+            .eq('id', effectiveCampaignId)
+            .maybeSingle();
+
+        if (campaign) {
+            parentFolderId = await ensureCampaignFolder(effectiveCampaignId, campaign.name || "Untitled Campaign");
         } else {
-            console.warn(`Campaign ${effectiveCampaignId} not found for Task ${taskId}, falling back to Standalone.`);
             parentFolderId = await getStandaloneTasksFolderId();
         }
     } else {
         parentFolderId = await getStandaloneTasksFolderId();
     }
 
-    // 3. Create Task Folder
-    // Sanitize name
     const safeTitle = sanitizeForDrive(taskTitle || "Untitled Task");
-    const folderName = safeTitle; // We can append ID if needed, but per requirements "Task Title"
+    const folderId = await ensureFolderPath(drive, parentFolderId, [safeTitle]);
 
-    const folderId = await ensureFolderPath(drive, parentFolderId, [folderName]);
-
-    // 4. Update Task Doc
-    await taskRef.update({ driveFolderId: folderId });
-    console.log(`Created Drive folder for Task ${taskId}: ${folderId}`);
+    await supabase
+        .from('tasks')
+        .update({ drive_folder_id: folderId })
+        .eq('id', taskId);
 
     return folderId;
 }
+

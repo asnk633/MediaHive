@@ -1,21 +1,22 @@
 'use client';
 
-import React, { useState, useEffect } from 'react';
-import { isOnline, addNetworkListener } from '@/lib/network';
+import React from 'react';
+import { useConnectivity } from '@/hooks/useConnectivity';
+import { WifiOff } from 'lucide-react';
 
 export function OfflineBanner() {
-  const [online, setOnline] = useState(true);
+  const { isOnline } = useConnectivity();
 
-  useEffect(() => {
-    setOnline(isOnline());
-    return addNetworkListener(setOnline);
-  }, []);
-
-  if (online) return null;
+  if (isOnline) return null;
 
   return (
-    <div className="fixed top-0 left-0 right-0 z-50 bg-amber-500 text-white text-center py-2 px-4 text-sm font-medium shadow-md">
-      You appear offline — some features may be limited
+    <div className="fixed bottom-6 right-6 z-[100] animate-in slide-in-from-bottom-5 fade-in duration-300">
+      <div className="flex items-center gap-2 px-3 py-2 bg-neutral-900 border border-neutral-800 rounded-full shadow-2xl backdrop-blur-md">
+        <div className="w-6 h-6 rounded-full bg-amber-500/10 flex items-center justify-center">
+          <WifiOff size={12} className="text-amber-500" />
+        </div>
+        <span className="text-xs font-medium text-neutral-300 pr-1">Working Offline</span>
+      </div>
     </div>
   );
 }

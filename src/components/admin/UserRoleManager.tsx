@@ -1,7 +1,6 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import { getAuth, onAuthStateChanged } from 'firebase/auth';
 import { apiClient } from '@/lib/apiClient';
 import { updateRole } from '@/services/roleService';
 

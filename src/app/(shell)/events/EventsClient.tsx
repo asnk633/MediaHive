@@ -1,25 +1,28 @@
 'use client';
 
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useMemo } from 'react';
 import { useAuth } from '@/contexts/AuthContextProvider';
+import { useClientData } from '@/app/(shell)/ClientDataContext';
 import { Event } from '@/types/event';
 import { EventService } from '@/services/events';
 import { CalendarView } from '@/components/events/CalendarView';
 import { EventListView } from '@/components/events/EventListView';
+import { TimelineView } from '@/components/events/TimelineView';
 import { EventDetailsModal } from '@/components/events/EventDetailsModal';
 import { PageLayout } from '@/components/ui/layout/PageLayout';
 import { PageHeader } from '@/components/ui/layout/PageHeader';
 import { Button } from '@/components/ui/button';
-import { Plus, Calendar, List } from 'lucide-react';
+import { Plus, Calendar as CalendarIcon, List, LayoutList, GripVertical } from 'lucide-react';
 import { useRouter } from 'next/navigation';
-import { nativeNavigate } from '@/lib/utils';
+import { nativeNavigate, cn } from '@/lib/utils'; // Added cn import
 
 export default function EventsClient() {
     const router = useRouter();
     const { user } = useAuth();
+    const { tasks } = useClientData(); // Get tasks for Timeline
     const [events, setEvents] = useState<Event[]>([]);
     const [loading, setLoading] = useState(true);
-    const [viewMode, setViewMode] = useState<'calendar' | 'list'>('calendar');
+    const [viewMode, setViewMode] = useState<'month' | 'timeline' | 'list'>('month');
     const [selectedEvent, setSelectedEvent] = useState<Event | null>(null);
     const [currentDate, setCurrentDate] = useState(new Date());
 
@@ -37,6 +40,28 @@ export default function EventsClient() {
 
     const canCreate = user?.role === 'admin' || user?.role === 'team';
 
+    // Map Event[] to EventLite[] for TimelineView
+    const timelineEvents = useMemo(() => {
+        return events.map(e => {
+            let dateObj: Date;
+            if ((e.date as any).seconds) {
+                dateObj = new Date((e.date as any).seconds * 1000);
+            } else {
+                dateObj = new Date(e.date as any);
+            }
+
+            return {
+                id: e.id,
+                title: e.title,
+                start_time: !isNaN(dateObj.getTime()) ? dateObj.toISOString() : new Date().toISOString(),
+                end_time: null,
+                location: e.location,
+                description: e.description,
+                is_system_event: e.is_system_event
+            };
+        });
+    }, [events]);
+
     return (
         <PageLayout mode="plain">
             <PageHeader
@@ -44,31 +69,50 @@ export default function EventsClient() {
                 description="View and manage institutional events"
                 actions={
                     <div className="flex items-center gap-3">
-                        <div className="flex bg-[var(--bg-surface)] border border-[var(--border-subtle)] rounded-xl p-1">
+                        <div className="flex bg-white/[0.03] border border-white/10 rounded-xl p-1 backdrop-blur-md">
                             <button
-                                onClick={() => setViewMode('calendar')}
-                                className={`flex items-center gap-2 px-3 py-1.5 rounded-lg text-sm font-medium transition-colors ${viewMode === 'calendar'
-                                    ? 'bg-primary text-primary-foreground'
-                                    : 'text-[var(--text-secondary)] hover:text-[var(--text-primary)]'
-                                    }`}
+                                onClick={() => setViewMode('month')}
+                                className={cn(
+                                    "flex items-center gap-2 px-3 py-1.5 rounded-lg text-xs font-bold uppercase tracking-wide transition-all",
+                                    viewMode === 'month'
+                                        ? "bg-blue-500/10 text-blue-400 shadow-sm border border-blue-500/20"
+                                        : "text-white/60 hover:text-white/90"
+                                )}
                             >
-                                <Calendar size={16} />
-                                Calendar
+                                <CalendarIcon size={14} />
+                                Month
+                            </button>
+                            <button
+                                onClick={() => setViewMode('timeline')}
+                                className={cn(
+                                    "flex items-center gap-2 px-3 py-1.5 rounded-lg text-xs font-bold uppercase tracking-wide transition-all",
+                                    viewMode === 'timeline'
+                                        ? "bg-blue-500/10 text-blue-400 shadow-sm border border-blue-500/20"
+                                        : "text-white/60 hover:text-white/90"
+                                )}
+                            >
+                                <LayoutList size={14} />
+                                Timeline
                             </button>
                             <button
                                 onClick={() => setViewMode('list')}
-                                className={`flex items-center gap-2 px-3 py-1.5 rounded-lg text-sm font-medium transition-colors ${viewMode === 'list'
-                                    ? 'bg-primary text-primary-foreground'
-                                    : 'text-[var(--text-secondary)] hover:text-[var(--text-primary)]'
-                                    }`}
+                                className={cn(
+                                    "flex items-center gap-2 px-3 py-1.5 rounded-lg text-xs font-bold uppercase tracking-wide transition-all",
+                                    viewMode === 'list'
+                                        ? "bg-blue-500/10 text-blue-400 shadow-sm border border-blue-500/20"
+                                        : "text-white/60 hover:text-white/90"
+                                )}
                             >
-                                <List size={16} />
+                                <List size={14} />
                                 List
                             </button>
                         </div>
                         {canCreate && (
-                            <Button onClick={() => nativeNavigate('/events/new', router, 'Events (New)')}>
-                                <Plus size={16} />
+                            <Button
+                                onClick={() => nativeNavigate('/events/new', router, 'Events (New)')}
+                                className="bg-blue-600 hover:bg-blue-500 text-white border-none shadow-lg hover:shadow-blue-500/20"
+                            >
+                                <Plus size={16} className="mr-2" />
                                 New Event
                             </Button>
                         )}
@@ -78,25 +122,41 @@ export default function EventsClient() {
 
             {loading ? (
                 <div className="flex items-center justify-center h-64">
-                    <div className="text-[var(--text-secondary)]">Loading events...</div>
+                    <div className="text-white/30 animate-pulse font-mono text-xs">SYNCING EVENTS...</div>
                 </div>
             ) : (
-                <>
-                    {viewMode === 'calendar' ? (
+                <div className="mt-6">
+                    {viewMode === 'month' && (
                         <CalendarView
                             events={events}
                             currentDate={currentDate}
                             onDateChange={setCurrentDate}
-                            onDateClick={(date) => console.log('Date clicked:', date)}
+                            onDateClick={(date) => {
+                                setCurrentDate(date);
+                                // Optional: switch to timeline/list on day click? Or just select date.
+                                // For now, just setting current date.
+                            }}
                             onEventClick={setSelectedEvent}
                         />
-                    ) : (
+                    )}
+
+                    {viewMode === 'timeline' && (
+                        <TimelineView
+                            events={timelineEvents}
+                            tasks={tasks}
+                            loading={loading}
+                            onCreateEvent={() => nativeNavigate('/events/new', router, 'Events (New)')}
+                            filter="all" // Default to showing all. Could add filter toggle if needed.
+                        />
+                    )}
+
+                    {viewMode === 'list' && (
                         <EventListView
                             events={events}
                             onEventClick={setSelectedEvent}
                         />
                     )}
-                </>
+                </div>
             )}
 
             {selectedEvent && (

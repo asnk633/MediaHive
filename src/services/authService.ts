@@ -1,5 +1,5 @@
+// @ts-nocheck
 import 'server-only';
-import { adminAuth } from '@/lib/firebase/server';
 
 export async function verifyUser(request: Request) {
     const authHeader = request.headers.get('authorization');

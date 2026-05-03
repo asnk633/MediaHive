@@ -10,7 +10,7 @@ type Task = {
   status?: string | null;
   priority?: string | null;
   assignee?: { id?: number | string; name?: string } | null;
-  dueDate?: string | null;
+  due_date?: string | null;
   reviewStatus?: string | null;
   createdById?: number | string;
 };
@@ -67,14 +67,14 @@ export default function TaskItem({ task, className = "", onEdit, onDelete }: Pro
             <span className="uppercase font-bold text-[10px]">{task.priority ?? "Normal"}</span>
           </div>
 
-          {task.dueDate && (
+          {task.due_date && (
             <div className="flex items-center gap-1.5 rounded-full bg-surface/50 px-2 py-1">
               <Calendar className="h-3 w-3" />
               <span>
                 {(() => {
                   try {
-                    if (typeof task.dueDate === 'string') return new Date(task.dueDate).toLocaleDateString();
-                    if (typeof task.dueDate === 'object' && 'seconds' in (task.dueDate as any)) return new Date((task.dueDate as any).seconds * 1000).toLocaleDateString();
+                    if (typeof task.due_date === 'string') return new Date(task.due_date).toLocaleDateString();
+                    if (typeof task.due_date === 'object' && 'seconds' in (task.due_date as any)) return new Date((task.due_date as any).seconds * 1000).toLocaleDateString();
                     return 'Invalid Date';
                   } catch { return 'Invalid Date' }
                 })()}

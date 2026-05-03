@@ -1,54 +1,65 @@
-
 import { SystemEvent } from '@/types/systemEvent';
-import { getFirebaseAuth } from '@/firebase/client';
-import { apiClient } from '@/lib/apiClient';
+import { supabase } from '@/lib/supabaseClient';
 import { TimestampLike } from '@/types/timestamp';
 
 const COLLECTION = 'system_events';
 
 export const SystemEventService = {
     subscribeToSystemEvents: (callback: (events: SystemEvent[]) => void) => {
-        // Polling implementation similar to events.ts
-        let isCancelled = false;
+        // Use Supabase Realtime for system events
+        const channel = supabase
+            .channel('system_events_all')
+            .on(
+                'postgres_changes',
+                {
+                    event: '*',
+                    schema: 'public',
+                    table: COLLECTION
+                },
+                async () => {
+                    try {
+                        const events = await SystemEventService.getAllSystemEvents();
+                        callback(events);
+                    } catch (e) {
+                        console.error("Failed to update system events after realtime event", e);
+                    }
+                }
+            )
+            .subscribe();
 
-        const poll = async () => {
-            if (isCancelled) return;
-            try {
-                const events = await SystemEventService.getAllSystemEvents();
-                callback(events);
-            } catch (e) {
-                console.error("Failed to poll system events", e);
-            }
-            if (!isCancelled) setTimeout(poll, 60000); // Poll slower for system events
+        // Initial fetch
+        SystemEventService.getAllSystemEvents().then(callback);
+
+        return () => {
+            supabase.removeChannel(channel);
         };
-
-        poll();
-
-        return () => { isCancelled = true; };
     },
 
     getAllSystemEvents: async (): Promise<SystemEvent[]> => {
         try {
-            const data: any = await apiClient('/api/system-events', { method: 'GET' });
-            // Handle both array response and { events: [...] } wrapper
-            if (Array.isArray(data)) return data;
-            if (data && Array.isArray(data.events)) return data.events;
-            // Fallback for unexpected shapes
-            console.warn('[SystemEventService] Unexpected API response format:', data);
-            return [];
+            const { data, error } = await supabase
+                .from(COLLECTION)
+                .select('*')
+                .eq('status', 'active');
+
+            if (error) throw error;
+            return (data || []) as unknown as SystemEvent[];
         } catch (error) {
             console.error('Failed to fetch system events:', error);
             return [];
         }
     },
 
-    addSystemEvent: async (event: Omit<SystemEvent, 'id' | 'createdAt' | 'createdBy'>) => {
+    addSystemEvent: async (event: Omit<SystemEvent, 'id' | 'created_at' | 'created_by'>) => {
         try {
-            const response = await apiClient('/api/system-events', {
-                method: 'POST',
-                body: JSON.stringify(event)
-            });
-            return response.data;
+            const { data, error } = await supabase
+                .from(COLLECTION)
+                .insert([event])
+                .select()
+                .single();
+
+            if (error) throw error;
+            return data;
         } catch (error) {
             console.error('Failed to add system event:', error);
             throw error;
@@ -57,11 +68,15 @@ export const SystemEventService = {
 
     updateSystemEvent: async (id: string, updates: Partial<SystemEvent>) => {
         try {
-            const response = await apiClient(`/api/system-events?id=${encodeURIComponent(id)}`, {
-                method: 'PUT',
-                body: JSON.stringify(updates)
-            });
-            return response.data;
+            const { data, error } = await supabase
+                .from(COLLECTION)
+                .update(updates)
+                .eq('id', id)
+                .select()
+                .single();
+
+            if (error) throw error;
+            return data;
         } catch (error) {
             console.error('Failed to update system event:', error);
             throw error;
@@ -70,9 +85,12 @@ export const SystemEventService = {
 
     deleteSystemEvent: async (id: string) => {
         try {
-            await apiClient(`/api/system-events?id=${encodeURIComponent(id)}`, {
-                method: 'DELETE'
-            });
+            const { error } = await supabase
+                .from(COLLECTION)
+                .delete()
+                .eq('id', id);
+
+            if (error) throw error;
         } catch (error) {
             console.error('Failed to delete system event:', error);
             throw error;
@@ -94,11 +112,6 @@ export const SystemEventService = {
             if (event.isRecurring && event.recurrence) {
                 const { frequency, interval = 1, endDate, month, day, weekday } = event.recurrence;
 
-                // Determine start date for generation (e.g. from event creation or current view start)
-                // We should theoretically start from event.date (creation date) strictly, 
-                // but to optimize, we can start near the viewYear if possible.
-                // However, for correct interval calculation (e.g. every 2 weeks), we need the anchor date.
-
                 let cursor: Date;
                 if (!event.date) {
                     cursor = new Date(viewYear, 0, 1);
@@ -108,37 +121,26 @@ export const SystemEventService = {
                     cursor = new Date(event.date.seconds * 1000);
                 }
 
-                // Normalize cursor to start of day for calculation, but keep reference time
                 const refDate = new Date(cursor);
                 cursor.setHours(0, 0, 0, 0);
 
-                const endLimit = endDate ? new Date(endDate) : new Date(viewYear + 5, 11, 31); // Default max 5 years ahead if no end date
+                const endLimit = endDate ? new Date(endDate) : new Date(viewYear + 5, 11, 31);
                 endLimit.setHours(23, 59, 59, 999);
 
-                // Optimization: If cursor is way before viewYear, fast forward (tricky for intervals, but mandatory for 'weekly' performance)
-                // For Yearly/Monthly with interval 1, it's easy. 
-                // For now, valid efficient implementation:
-
                 while (cursor <= endLimit && cursor <= endOfYear) {
-                    // Check if cursor is within the view year
                     if (cursor.getFullYear() === viewYear) {
                         const instanceDate = new Date(cursor);
-                        // Restore time from original event
                         instanceDate.setHours(refDate.getHours(), refDate.getMinutes(), refDate.getSeconds());
 
                         expanded.push({
                             ...event,
-                            id: `${event.id}_${instanceDate.toISOString().split('T')[0]}`, // Unique ID by date
+                            id: `${event.id}_${instanceDate.toISOString().split('T')[0]}`,
                             date: instanceDate.toISOString() as TimestampLike,
                         });
                     } else if (cursor.getFullYear() > viewYear) {
-                        // Optimization: if we passed the view year, break (unless checking previous years? no, sorted loop)
-                        // Wait, if we start from 2024 and view is 2025. We iterate until we hit 2025.
-                        // If we pass 2025, we stop.
                         if (cursor > endOfYear) break;
                     }
 
-                    // Advance cursor
                     switch (frequency) {
                         case 'daily':
                             cursor.setDate(cursor.getDate() + interval);
@@ -147,25 +149,9 @@ export const SystemEventService = {
                             cursor.setDate(cursor.getDate() + (7 * interval));
                             break;
                         case 'monthly':
-                            // Add months. Handle end of month overflow (e.g. Jan 31 -> Feb 28)
-                            // But usually we want "4th of month".
-                            // If explicit day is set:
                             cursor.setMonth(cursor.getMonth() + interval);
                             if (day) {
-                                // Reset to specific day if month logic shifted it (e.g. Feb has fewer days)
-                                // Standard behavior: Jan 31 + 1 month = Feb 28.
-                                // If we forcibly set old 'day', check validity?
-                                // Let's rely on JS Date behavior: setMonth adds days if overflow.
-                                // But usually users expect "Day X of month".
-                                // Retain original day preference
-                                const expectedDay = day;
-                                if (cursor.getDate() !== expectedDay) {
-                                    // We landed on overflow (e.g. March 2nd because Feb was short)
-                                    // Set to last day of previous month? Or skip?
-                                    // Simplest: Set to 1st, then set Date to expectedDay (clamping to max)
-                                    cursor.setDate(0); // Go to last day of prev month? No.
-                                    // Let's just trust implicit flow for now to keep it simpler.
-                                }
+                                // Simplified: if day is specified, we try to stick to it if possible (Date handles overflow)
                             }
                             break;
                         case 'yearly':
@@ -188,10 +174,6 @@ export const SystemEventService = {
         return expanded;
     },
 
-    /**
-     * Create a system event for an approved leave request
-     * Returns the created event ID
-     */
     createLeaveEvent: async (data: {
         userName: string;
         leaveType: string;
@@ -200,14 +182,44 @@ export const SystemEventService = {
         userId: string;
         leaveRequestId: string;
     }): Promise<string> => {
-        console.warn('SystemEventService.createLeaveEvent called but feature is disabled (API missing).');
-        return 'stub-id';
+        try {
+            const { data: created, error } = await supabase
+                .from(COLLECTION)
+                .insert([{
+                    title: `Leave: ${data.userName}`,
+                    description: `Type: ${data.leaveType}`,
+                    type: 'other',
+                    date: data.startDate.toISOString(),
+                    isRecurring: false,
+                    status: 'active',
+                    metadata: {
+                        source: 'leave_request',
+                        leaveRequestId: data.leaveRequestId,
+                        userId: data.userId,
+                        endDate: data.endDate.toISOString()
+                    },
+                    created_at: new Date().toISOString()
+                }])
+                .select()
+                .single();
+
+            if (error) throw error;
+            return created.id;
+        } catch (error) {
+            console.error('Failed to create leave event:', error);
+            return 'stub-id';
+        }
     },
 
-    /**
-     * Delete a leave-generated system event
-     */
-    deleteLeaveEvent: async (eventId: string): Promise<void> => {
-        console.warn('SystemEventService.deleteLeaveEvent called but feature is disabled (API missing).');
+    deleteLeaveEvent: async (event_id: string): Promise<void> => {
+        try {
+            const { error } = await supabase
+                .from(COLLECTION)
+                .delete()
+                .eq('id', event_id);
+            if (error) throw error;
+        } catch (error) {
+            console.error('Failed to delete leave event:', error);
+        }
     }
 };

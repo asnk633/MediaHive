@@ -11,9 +11,9 @@ async function main() {
             folder: 'branding',
             visibility: 'all',
             uploadedById: 1,
-            institutionId: 1,
+            institution_id: 1,
             tenantId: 1, // Add missing tenantId
-            createdAt: new Date().toISOString(),
+            created_at: new Date().toISOString(),
         },
         {
             name: 'Brand_Guidelines.pdf',
@@ -23,9 +23,9 @@ async function main() {
             folder: 'branding',
             visibility: 'all',
             uploadedById: 2,
-            institutionId: 1,
+            institution_id: 1,
             tenantId: 1, // Add missing tenantId
-            createdAt: new Date().toISOString(),
+            created_at: new Date().toISOString(),
         },
         {
             name: 'Office_Photo.jpg',
@@ -35,9 +35,9 @@ async function main() {
             folder: 'general',
             visibility: 'all',
             uploadedById: 1,
-            institutionId: 1,
+            institution_id: 1,
             tenantId: 1, // Add missing tenantId
-            createdAt: new Date().toISOString(),
+            created_at: new Date().toISOString(),
         },
         {
             name: 'Q1_Analytics_Report.xlsx',
@@ -47,9 +47,9 @@ async function main() {
             folder: 'reports',
             visibility: 'team',
             uploadedById: 2,
-            institutionId: 1,
+            institution_id: 1,
             tenantId: 1, // Add missing tenantId
-            createdAt: new Date().toISOString(),
+            created_at: new Date().toISOString(),
         },
         {
             name: 'Client_Contract_Draft.docx',
@@ -59,9 +59,9 @@ async function main() {
             folder: 'contracts',
             visibility: 'team',
             uploadedById: 1,
-            institutionId: 1,
+            institution_id: 1,
             tenantId: 1, // Add missing tenantId
-            createdAt: new Date().toISOString(),
+            created_at: new Date().toISOString(),
         },
         {
             name: 'Team_Meeting_Notes.txt',
@@ -71,9 +71,9 @@ async function main() {
             folder: 'meetings',
             visibility: 'team',
             uploadedById: 3,
-            institutionId: 1,
+            institution_id: 1,
             tenantId: 1, // Add missing tenantId
-            createdAt: new Date().toISOString(),
+            created_at: new Date().toISOString(),
         },
         {
             name: 'Product_Catalog_2024.pdf',
@@ -83,9 +83,9 @@ async function main() {
             folder: 'public',
             visibility: 'guest',
             uploadedById: 1,
-            institutionId: 1,
+            institution_id: 1,
             tenantId: 1, // Add missing tenantId
-            createdAt: new Date().toISOString(),
+            created_at: new Date().toISOString(),
         },
         {
             name: 'Social_Media_Template.psd',
@@ -95,9 +95,9 @@ async function main() {
             folder: 'templates',
             visibility: 'guest',
             uploadedById: 4,
-            institutionId: 1,
+            institution_id: 1,
             tenantId: 1, // Add missing tenantId
-            createdAt: new Date().toISOString(),
+            created_at: new Date().toISOString(),
         },
     ];
 

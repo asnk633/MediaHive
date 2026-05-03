@@ -1,5 +1,5 @@
 import { NextResponse } from 'next/server';
-import { adminAuth, adminDb } from '@/lib/firebase/server';
+import { createClient } from '@supabase/supabase-js';
 
 export const dynamic = 'force-dynamic';
 
@@ -16,25 +16,25 @@ export async function GET() {
 
     try {
         const start = performance.now();
+        const supabase = createClient(
+            process.env.NEXT_PUBLIC_SUPABASE_URL!,
+            process.env.SUPABASE_SERVICE_ROLE_KEY!
+        );
+
         let dbStatus = 'healthy';
         let authStatus = 'healthy';
 
-        // 1. Check Firestore
-        try {
-            await adminDb.collection('system').doc('healthcheck').get();
-        } catch (e) {
-            console.error('Firestore Health Check Failed', e);
+        // 1. Check Supabase DB
+        const { error: dbError } = await supabase.from('profiles').select('id').limit(1);
+        if (dbError) {
+            console.error('Supabase DB Health Check Failed', dbError);
             dbStatus = 'unhealthy';
         }
 
-        // 2. Check Auth
-        try {
-            await adminAuth.listUsers(1);
-            const testUid = 'health-check-probe';
-            await adminAuth.createCustomToken(testUid);
-            console.log('[HEALTH] Auth Cycle Valid. Project:', adminAuth.app.options.projectId);
-        } catch (e) {
-            console.error('Auth Health Check Failed', e);
+        // 2. Check Supabase Auth
+        const { error: authError } = await supabase.auth.admin.listUsers({ perPage: 1 });
+        if (authError) {
+            console.error('Supabase Auth Health Check Failed', authError);
             authStatus = 'unhealthy';
         }
 
@@ -48,8 +48,7 @@ export async function GET() {
 
         return NextResponse.json({
             ...health,
-            latency: `${serviceLatency}ms`,
-            projectId: adminAuth.app.options.projectId
+            latency: `${serviceLatency}ms`
         }, { status });
 
     } catch (error: any) {

@@ -14,8 +14,8 @@ interface SystemUpdate {
     title: string;
     body: string;
     severity: 'info' | 'important' | 'critical';
-    createdAt: any;
-    createdBy?: { name: string };
+    created_at: any;
+    created_by?: { name: string };
 }
 
 export default function SystemUpdateDetailPage() {
@@ -68,7 +68,7 @@ function SystemUpdateContent() {
                     </span>
                     <div className="flex items-center gap-2 text-sm text-slate-500">
                         <Calendar size={14} />
-                        {update.createdAt ? format(new Date(update.createdAt), 'PPP p') : ''}
+                        {update.created_at ? format(new Date(update.created_at), 'PPP p') : ''}
                     </div>
                 </div>
 
@@ -78,7 +78,7 @@ function SystemUpdateContent() {
 
                 <div className="flex items-center gap-2 text-sm text-slate-500 pb-6 border-b border-slate-800">
                     <User size={14} />
-                    Posted by {update.createdBy?.name || 'System Admin'}
+                    Posted by {update.created_by?.name || 'System Admin'}
                 </div>
 
                 <div className="prose prose-invert max-w-none prose-p:text-slate-300 prose-headings:text-slate-100">

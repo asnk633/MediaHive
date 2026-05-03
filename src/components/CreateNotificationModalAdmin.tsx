@@ -1,17 +1,18 @@
 "use client";
 
 import { useState } from "react";
-import { useClientData } from "@/app/(shell)/ClientDataContext";
+// Notifications temporarily disabled
 import ModalBase from "@/components/ModalBase";
 
 export default function CreateNotificationModalAdmin({ open, onClose }: { open: boolean; onClose: () => void; }) {
-  const { createNotification } = useClientData();
+  // Notifications temporarily disabled — no-op stub
+  const createNotification = async (_: any) => { console.warn("Notifications disabled"); };
   const [title, setTitle] = useState("Team Meeting Reminder");
   const [body, setBody] = useState("Just a quick reminder about the all-hands team meeting tomorrow at 10 AM…");
 
   const submit = async () => {
     if (!title.trim() || !body.trim()) return;
-    try { await createNotification({ title: title.trim(), body: body.trim(), audience: "team" }); onClose(); } catch {}
+    try { await createNotification({ title: title.trim(), body: body.trim(), audience: "team" }); onClose(); } catch { }
   };
 
   return (

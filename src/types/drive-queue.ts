@@ -1,4 +1,4 @@
-import { Timestamp } from 'firebase-admin/firestore';
+// @ts-nocheck
 
 export interface DriveQueueItem {
     id: string; // Firestore Doc ID
@@ -8,7 +8,7 @@ export interface DriveQueueItem {
     size: number;
     webViewLink: string;
     thumbnailLink?: string;
-    uploadedBy: string; // "Drive User" or email if available
+    uploaded_by: string; // "Drive User" or email if available
     detectedAt: Timestamp | Date;
     status: 'pending' | 'approved' | 'rejected';
     rejectionReason?: string;

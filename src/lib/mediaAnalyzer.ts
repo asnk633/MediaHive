@@ -25,7 +25,7 @@ export interface QualityReport {
   };
   sampleFrames?: string[]; // For videos: small data URIs or URLs to saved thumbnails
   filename: string;
-  createdAt: string;
+  created_at: string;
 }
 
 /**
@@ -107,7 +107,7 @@ async function analyzeImageQuality(imagePath: string): Promise<QualityReport> {
         suggestions
       },
       filename: path.basename(imagePath),
-      createdAt: new Date().toISOString()
+      created_at: new Date().toISOString()
     };
   } catch (error: unknown) {
     console.error('Image analysis error:', error);
@@ -230,7 +230,7 @@ async function analyzeVideoQuality(videoPath: string): Promise<QualityReport> {
       },
       sampleFrames,
       filename: path.basename(videoPath),
-      createdAt: new Date().toISOString()
+      created_at: new Date().toISOString()
     };
   } catch (error: unknown) {
     console.error('Video analysis error:', error);
@@ -279,7 +279,7 @@ async function analyzeAudioQuality(audioPath: string): Promise<QualityReport> {
         suggestions
       },
       filename: path.basename(audioPath),
-      createdAt: new Date().toISOString()
+      created_at: new Date().toISOString()
     };
   } catch (error: unknown) {
     console.error('Audio analysis error:', error);

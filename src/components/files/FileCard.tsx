@@ -36,7 +36,7 @@ export function FileCard({ file, canEdit, onDelete }: FileCardProps) {
                 <h3 className="font-semibold text-white truncate text-[15px] tracking-tight" title={file.name}>{file.name}</h3>
                 <div className="flex flex-col gap-0.5 mt-1.5">
                     <p className="text-xs text-gray-400 font-medium">
-                        {format(file.createdAt?.seconds ? new Date(file.createdAt.seconds * 1000) : new Date(), 'MMM d, yyyy')}
+                        {format(file.created_at?.seconds ? new Date(file.created_at.seconds * 1000) : new Date(), 'MMM d, yyyy')}
                     </p>
                     <p className="text-[10px] text-gray-500 opacity-60 uppercase tracking-wider font-bold">
                         {file.uploadedByName || 'Unknown'}

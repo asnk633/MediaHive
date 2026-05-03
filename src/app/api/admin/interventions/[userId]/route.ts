@@ -38,12 +38,12 @@ export async function GET(
             riskLevelAtTime: adminInterventionNotes.riskLevelAtTime,
             note: adminInterventionNotes.note,
             actionType: adminInterventionNotes.actionType,
-            createdAt: adminInterventionNotes.createdAt,
+            created_at: adminInterventionNotes.created_at,
             adminName: users.fullName,
-            adminAvatar: users.avatarUrl
+            adminAvatar: users.avatar_url
         })
             .from(adminInterventionNotes)
-            .leftJoin(users, eq(adminInterventionNotes.createdBy, users.id))
+            .leftJoin(users, eq(adminInterventionNotes.created_by, users.id))
             .where(eq(adminInterventionNotes.userId, userId))
             .orderBy(desc(adminInterventionNotes.period));
 

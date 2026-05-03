@@ -9,8 +9,14 @@ import { cn } from "@/lib/utils";
 import {
     MoreVertical, Calendar, User as UserIcon, CheckCircle2, Clock,
     AlertCircle, Circle, Filter, Edit3, Layers, UserPlus,
-    ChevronRight, ChevronDown, Globe, GripVertical
+    ChevronRight, ChevronDown, Globe, GripVertical,
+    Activity, Flag, Zap, LifeBuoy, ShieldCheck, RotateCcw, Trash2
 } from 'lucide-react';
+import {
+    getAdminSeverity,
+    getSeverityColor,
+    getSeverityGlow
+} from '@/lib/adminSeverity';
 import {
     Tooltip,
     TooltipContent,
@@ -19,7 +25,13 @@ import {
 } from "@/components/ui/tooltip";
 import { ResolvedStructureName } from "@/components/admin/structure/ResolvedStructureName";
 import { motion, AnimatePresence } from 'framer-motion';
-import { canChangeStatus } from '@/lib/permissions';
+import { canChangeStatus, resolveUserRole } from '@/lib/permissions';
+import {
+    DropdownMenu,
+    DropdownMenuContent,
+    DropdownMenuItem,
+    DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
 
 // --- Reused Sub-components (Ideally these should be exported from TaskListView or a separate file, but inline for now to ensure compatibility) ---
 
@@ -72,28 +84,39 @@ const safeDate = (date: any): Date | null => {
 interface SortableTaskRowProps {
     task: Task;
     activeId: string | null;
-    selectedTaskIds: string[];
+    /** Derived from useBulkSelection — O(1) lookup already done in parent */
+    isSelected: boolean;
     expandedTasks: Set<string>;
     density: string;
     currentUser: any;
     canManage: boolean;
+    mode?: 'default' | 'trash';
     // Handlers
     toggleExpand: (id: string) => void;
     onTaskClick: (task: Task) => void;
-    toggleSelection: (id: string) => void;
+    onToggleSelection: (id: string, shiftHeld: boolean) => void;
+    onStatusChange?: (status: Task['status']) => void;
+    onRestore?: (id: string) => void;
+    onPermanentDelete?: (id: string) => void;
+    onSoftDelete?: (id: string) => void;
 }
 
 export const SortableTaskRow = memo(({
     task,
     activeId,
-    selectedTaskIds,
+    isSelected,
     expandedTasks,
     density,
     currentUser,
     canManage,
+    mode = 'default',
     toggleExpand,
     onTaskClick,
-    toggleSelection
+    onToggleSelection,
+    onStatusChange,
+    onRestore,
+    onPermanentDelete,
+    onSoftDelete
 }: SortableTaskRowProps) => {
 
     const {
@@ -105,6 +128,8 @@ export const SortableTaskRow = memo(({
         isDragging
     } = useSortable({ id: task.id });
 
+    const userRole = resolveUserRole(currentUser);
+
     const style = {
         transform: CSS.Transform.toString(transform),
         transition,
@@ -112,11 +137,16 @@ export const SortableTaskRow = memo(({
         opacity: isDragging ? 0.3 : 1
     };
 
-    const dueDate = safeDate(task.dueDate);
-    const overdue = dueDate && isPast(dueDate) && !isToday(dueDate) && task.status !== 'done';
-    const today = dueDate && isToday(dueDate) && task.status !== 'done';
-    const isSelected = selectedTaskIds.includes(task.id);
+    const due_date = safeDate(task.due_date);
+    const overdue = due_date && isPast(due_date) && !isToday(due_date) && task.status !== 'done';
+    const today = due_date && isToday(due_date) && task.status !== 'done';
     const expanded = expandedTasks.has(task.id);
+
+    // Phase 8: Multi-user real-time awareness indicators
+    const isRecentlyUpdatedByOther = task.updated_by &&
+        task.updated_by.uid !== currentUser?.uid &&
+        task.updated_at &&
+        (Date.now() - new Date(task.updated_at).getTime() < 60000); // 60s window
 
     return (
         <div
@@ -132,13 +162,29 @@ export const SortableTaskRow = memo(({
                 data-active={activeId === task.id}
                 onClick={() => onTaskClick?.(task)}
                 className={cn(
-                    "grid grid-cols-[auto_1fr_auto] md:grid-cols-[40px_3fr_2fr_1.4fr_1.2fr_0.9fr_1fr] gap-2 px-6 items-center bg-elevated hover:bg-white/[0.02] border-l-4 transition-all cursor-pointer focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-blue-500/50",
+                    "grid grid-cols-[auto_1fr_auto] md:grid-cols-[40px_3fr_1.5fr_0.8fr_1.5fr_1.2fr_1.2fr_1.2fr] gap-2 px-6 items-center border-l-[3px] transition-all duration-300 cursor-pointer focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-blue-500/50 hover:-translate-y-[2px] mb-1 rounded-sm overflow-hidden",
                     density === 'compact' ? "py-2" : "py-4",
+                    isSelected
+                        ? "bg-blue-500/[0.06] ring-1 ring-inset ring-blue-500/20"
+                        : "bg-white/[0.01] hover:bg-white/[0.02]",
                     activeId === task.id && "bg-blue-500/[0.08] ring-1 ring-inset ring-blue-500/30 z-10",
-                    overdue ? "border-l-red-500 bg-red-500/[0.04]" :
-                        today ? "border-l-blue-500 bg-blue-500/[0.03]" :
-                            "border-l-transparent",
-                    isDragging && "bg-blue-500/10 border-blue-500 ring-2 ring-blue-500/40"
+                    (() => {
+                        // Use Intelligence Flags for Accent
+                        if (task.isOverdue) return "border-l-red-500 bg-red-500/[0.02]";
+                        if (task.isDueToday) return "border-l-amber-500 bg-amber-500/[0.02]";
+                        if (task.isUpcoming) return "border-l-blue-400"; // Soft accent
+
+                        // Fallback logic for tasks without flags (e.g. legacy/static)
+                        if (overdue) return "border-l-red-500";
+                        if (today) return "border-l-blue-500";
+
+                        const prio = task.priority === 'urgent' ? 6 : task.priority === 'high' ? 4 : task.priority === 'medium' ? 2 : 0;
+                        const severity = getAdminSeverity(prio);
+                        return getSeverityColor(severity).replace('bg-', 'border-l-');
+                    })(),
+                    isDragging && "bg-blue-500/10 border-blue-500 ring-2 ring-blue-500/40",
+                    (task as any).isOptimistic && !(task as any).isPendingSync && "opacity-70 transition-opacity duration-300",
+                    (task as any).isPendingSync && "border-dashed border-white/20 opacity-80"
                 )}
             >
                 {/* Expander / Drag Handle */}
@@ -165,38 +211,86 @@ export const SortableTaskRow = memo(({
                 {/* Title */}
                 <div className="min-w-0 pr-4">
                     <div className="flex items-center gap-2">
-                        {canManage && (
-                            <div onClick={e => { e.stopPropagation(); toggleSelection(task.id); }} className={cn("w-4 h-4 rounded border flex items-center justify-center mr-2", isSelected ? "bg-blue-500 border-blue-500" : "border-white/20")}>
-                                {isSelected && <CheckCircle2 size={10} className="text-white" />}
-                            </div>
-                        )}
-                        <h3 className={cn("text-sm font-medium text-foreground truncate", task.status === 'done' && "line-through text-muted/50")}>{task.title}</h3>
+                        {/* Checkbox — visible to all roles; guests can select for visual reference */}
+                        <div
+                            role="checkbox"
+                            aria-checked={isSelected}
+                            aria-label={`Select task: ${task.title}`}
+                            tabIndex={0}
+                            onClick={(e) => { e.stopPropagation(); onToggleSelection(task.id, e.shiftKey); }}
+                            onKeyDown={(e) => { if (e.key === ' ' || e.key === 'Enter') { e.preventDefault(); e.stopPropagation(); onToggleSelection(task.id, false); } }}
+                            className={cn(
+                                "w-4 h-4 rounded border flex items-center justify-center mr-2 shrink-0 transition-all cursor-pointer",
+                                isSelected ? "bg-blue-500 border-blue-500" : "border-white/20 hover:border-white/40"
+                            )}
+                        >
+                            {isSelected && <CheckCircle2 size={10} className="text-white" />}
+                        </div>
+                        <div className="flex flex-col flex-1 min-w-0">
+                            <span className={cn("text-base font-semibold truncate transition-colors duration-200 cursor-text", task.status === 'done' ? "text-white/40 line-through" : "text-white group-hover:text-blue-200")}>
+                                {task.title}
+                                {(task as any).isPendingSync && (
+                                    <span className="ml-2 inline-flex items-center text-[10px] uppercase font-bold text-amber-500/70 border border-amber-500/20 rounded px-1.5 py-0.5" title="Pending Sync">
+                                        Offline
+                                    </span>
+                                )}
+                                {(task as any).hasExternalChangePending && (
+                                    <span className="ml-2 inline-flex items-center text-[10px] uppercase font-bold text-blue-400 bg-blue-500/10 border border-blue-500/20 rounded px-1.5 py-0.5 animate-pulse" title="Someone else updated this task remotely while you are editing it.">
+                                        Remote Update Pending
+                                    </span>
+                                )}
+                                {(task as any).hasUnresolvedConflicts && (
+                                    <span className="ml-2 inline-flex items-center text-[10px] uppercase font-bold text-amber-500 bg-amber-500/10 border border-amber-500/20 rounded px-1.5 py-0.5" title="This task has unresolved conflicts.">
+                                        <AlertCircle size={10} className="mr-1" />
+                                        Needs Review
+                                    </span>
+                                )}
+                            </span>
+                            {isRecentlyUpdatedByOther && !(task as any).hasExternalChangePending && (
+                                <span className="text-[10px] text-white/40 italic flex items-center gap-1 mt-0.5">
+                                    <Activity size={10} className="text-blue-400 animate-pulse" />
+                                    Updated by {task.updated_by?.name?.split(' ')[0]} · just now
+                                </span>
+                            )}
+                        </div>
                     </div>
                     <div className="md:hidden flex items-center gap-2 mt-1 text-[10px] text-muted">
                         <StatusPill status={task.status} className="scale-75 origin-left" />
-                        {overdue && <span className="text-red-500 font-bold">Overdue</span>}
+                        {task.isOverdue && <span className="text-red-500 font-bold flex items-center gap-1"><AlertCircle size={10} /> Overdue</span>}
+                        {task.isDueToday && <span className="text-amber-500 font-bold flex items-center gap-1"><Clock size={10} /> Due Today</span>}
+                        {task.isUpcoming && <span className="text-blue-400 font-medium flex items-center gap-1"><Calendar size={10} /> Upcoming</span>}
                     </div>
                 </div>
 
-                {/* Desktop Columns */}
-                <div className="hidden md:block text-sm text-muted">
-                    <ResolvedStructureName id={task.departmentId || task.institutionId} type={task.departmentId ? 'department' : 'institution'} fallback={task.department} />
+                {/* Desktop Columns - Reordered per Request: Priority -> Assigned -> Due -> Completed -> Status */}
+
+                {/* Requested By */}
+                <div className="hidden md:flex items-center text-white/45 text-xs truncate font-medium">
+                    <ResolvedStructureName
+                        id={task.department_id || task.institution_id}
+                        type={task.department_id ? 'department' : 'institution'}
+                        fallback={task.department_id || '-'}
+                    />
                 </div>
-                <div className="hidden md:flex items-center gap-2">
-                    {(task.assignedTo as any[])?.length > 0 ? <SafeAvatar size={24} src={(task.assignedTo as any)[0].avatarUrl} alt={(task.assignedTo as any)[0].name || 'Assignee'} name={(task.assignedTo as any)[0].name} /> : <span className="text-xs italic text-muted/50">Unassigned</span>}
-                </div>
-                <div className="hidden md:block" onClick={e => e.stopPropagation()}>
-                    {canChangeStatus(currentUser, task) ? (
-                        <StatusPill status={task.status || 'todo'} />
-                    ) : <StatusPill status={task.status} className="opacity-50 cursor-default" />}
-                </div>
+
+                {/* Priority */}
                 <div className="hidden md:block"><PriorityBadge priority={task.priority} /></div>
 
+                {/* Assigned */}
+                <div className="hidden md:flex items-center gap-2">
+                    {(task.assigned_to as any[])?.length > 0 ? <SafeAvatar size={24} src={(task.assigned_to as any)[0].avatar_url} alt={(task.assigned_to as any)[0].name || 'Assignee'} name={(task.assigned_to as any)[0].name} /> : <span className="text-xs italic text-white/30">Unassigned</span>}
+                </div>
+
                 {/* Due Date */}
-                <div className="text-right">
-                    <div className={cn("text-xs font-mono flex items-center justify-end gap-1.5", overdue ? "text-red-500 font-bold" : today ? "text-blue-400 font-bold" : "text-muted")}>
-                        {today ? "Today" : dueDate ? format(dueDate, 'MMM d') : '-'}
-                        {dueDate && (
+                <div className="hidden md:block text-right">
+                    <div className={cn("text-xs font-mono flex items-center justify-end gap-1.5",
+                        task.isOverdue ? "text-red-500 font-bold" :
+                            task.isDueToday ? "text-amber-500 font-bold" :
+                                task.isUpcoming ? "text-blue-400 font-medium" :
+                                    "text-white/40"
+                    )}>
+                        {task.isDueToday ? "Today" : due_date ? format(due_date, 'MMM d') : '-'}
+                        {due_date && (
                             <TooltipProvider delayDuration={0}>
                                 <Tooltip>
                                     <TooltipTrigger>
@@ -208,6 +302,97 @@ export const SortableTaskRow = memo(({
                         )}
                     </div>
                 </div>
+
+                {/* Completed Date (Role-Wide) */}
+                <div className="hidden md:block text-right">
+                    <div className="text-xs text-white/40 hover:text-white/70 transition-colors">
+                        {task.status === 'done' && task.completed_at ? (
+                            <TooltipProvider delayDuration={0}>
+                                <Tooltip>
+                                    <TooltipTrigger className="cursor-default">
+                                        {(() => {
+                                            const date = new Date(task.completed_at);
+                                            return date ? format(date, 'd MMM yyyy') : '-';
+                                        })()}
+                                    </TooltipTrigger>
+                                    <TooltipContent>
+                                        <p>Marked completed on {new Date(task.completed_at) ? format(new Date(task.completed_at)!, 'd MMM yyyy') : 'Unknown'}</p>
+                                    </TooltipContent>
+                                </Tooltip>
+                            </TooltipProvider>
+                        ) : (
+                            <span className="text-white/10 select-none">—</span>
+                        )}
+                        <span className="text-white/40 truncate max-w-[120px]">
+                            {task.department_id || 'General'}
+                        </span>
+                    </div>
+                </div>
+
+                {/* Status or Trash Actions */}
+                <div className="hidden md:block" onClick={e => e.stopPropagation()}>
+                    {mode === 'trash' ? (
+                        <div className="flex items-center gap-1.5">
+                            {/* Admin/Team can restore. Guest cannot. */}
+                            {(userRole === 'admin' || userRole === 'team') ? (
+                                <button
+                                    onClick={() => onRestore?.(task.id)}
+                                    title="Restore"
+                                    className="p-1.5 rounded-lg text-emerald-400 hover:bg-emerald-500/10 transition-colors"
+                                >
+                                    <RotateCcw size={14} />
+                                </button>
+                            ) : null}
+
+                            {/* ONLY Admin can permanent delete. */}
+                            {userRole === 'admin' && (
+                                <button
+                                    onClick={() => onPermanentDelete?.(task.id)}
+                                    title="Delete Forever"
+                                    className="p-1.5 rounded-lg text-red-400 hover:bg-red-500/10 transition-colors"
+                                >
+                                    <Trash2 size={14} />
+                                </button>
+                            )}
+                        </div>
+                    ) : (
+                        canChangeStatus(currentUser, task) && onStatusChange ? (
+                            <DropdownMenu>
+                                <DropdownMenuTrigger className="outline-none">
+                                    <StatusPill status={task.status || 'todo'} />
+                                </DropdownMenuTrigger>
+                                <DropdownMenuContent align="end" className="w-[140px]">
+                                    <DropdownMenuItem onClick={() => onStatusChange('todo')}>
+                                        <Circle size={14} className="mr-2" /> To Do
+                                    </DropdownMenuItem>
+                                    <DropdownMenuItem onClick={() => onStatusChange('in_progress')}>
+                                        <Clock size={14} className="mr-2" /> Working
+                                    </DropdownMenuItem>
+                                    <DropdownMenuItem onClick={() => onStatusChange('review')}>
+                                        <AlertCircle size={14} className="mr-2" /> On Hold
+                                    </DropdownMenuItem>
+                                    <DropdownMenuItem onClick={() => onStatusChange('done')}>
+                                        <CheckCircle2 size={14} className="mr-2 text-emerald-500" /> Completed
+                                    </DropdownMenuItem>
+                                </DropdownMenuContent>
+                            </DropdownMenu>
+                        ) : <StatusPill status={task.status} className="opacity-70 cursor-default" />
+                    )}
+
+                    {/* Phase 14: Single-row Soft Delete (Move to Trash) in Normal View */}
+                    {mode === 'default' && (
+                        (userRole === 'admin' || userRole === 'team' || (userRole === 'guest' && task.created_by === currentUser?.uid)) ? (
+                            <button
+                                onClick={(e) => { e.stopPropagation(); onSoftDelete?.(task.id); }}
+                                title="Move to Trash"
+                                className="ml-2 p-1.5 rounded-lg text-white/20 hover:text-red-400 hover:bg-red-500/10 transition-all opacity-0 group-hover:opacity-100"
+                            >
+                                <Trash2 size={14} />
+                            </button>
+                        ) : null
+                    )}
+                </div>
+
             </div>
 
             {/* Expanded Detail Panel */}

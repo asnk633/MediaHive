@@ -37,7 +37,7 @@ async function initializeDatabase() {
 }
 
 // Export a proxy that initializes on first access
-export const db = new Proxy({} as any, {
+export const db = new Proxy({} as Record<string, any>, {
   get(target, prop) {
     if (!_db || !_db[prop]) {
       throw new Error('Database not initialized. Call initializeDatabase() first or use getDb()');

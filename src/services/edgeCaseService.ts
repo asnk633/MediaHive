@@ -20,10 +20,10 @@ export const EdgeCaseService = {
   findOrphanedTasks: (tasks: Task[], events: Event[]): Task[] => {
     return tasks.filter(task => {
       // Check if the task's event reference exists
-      const hasValidEvent = events.some(event => event.id === task.eventId);
+      const hasValidEvent = events.some(event => event.id === task.event_id);
 
       // For tasks that should be linked to events, consider them orphaned if no valid event exists
-      return task.eventId && !hasValidEvent;
+      return task.event_id && !hasValidEvent;
     });
   },
 
@@ -37,7 +37,7 @@ export const EdgeCaseService = {
   findOrphanedMedia: (mediaFiles: MediaFile[], tasks: Task[], events: Event[]): MediaFile[] => {
     return mediaFiles.filter(media => {
       // Media files are typically linked to events via event media galleries
-      // Since DriveFile doesn't have explicit taskId or eventId, we'll consider them
+      // Since DriveFile doesn't have explicit taskId or event_id, we'll consider them
       // orphaned if they're not associated with any specific event in the system
       // For now, we'll consider all media files as potentially orphaned
       // since there's no direct linking mechanism in the DriveFile type
@@ -64,16 +64,16 @@ export const EdgeCaseService = {
 
     // Collect all referenced user IDs from tasks
     tasks.forEach(task => {
-      if (task.assignedTo && Array.isArray(task.assignedTo)) {
-        task.assignedTo.forEach(user => referencedUserIds.add(user.uid));
+      if (task.assigned_to && Array.isArray(task.assigned_to)) {
+        task.assigned_to.forEach(user => referencedUserIds.add(user.uid));
       }
-      if (task.createdBy) referencedUserIds.add(task.createdBy.uid);
-      if (task.updatedBy) referencedUserIds.add(task.updatedBy.uid);
+      if (task.created_by) referencedUserIds.add(task.created_by.uid);
+      if (task.updated_by) referencedUserIds.add(task.updated_by.uid);
     });
 
     // Collect all referenced user IDs from events
     events.forEach(event => {
-      if (event.createdBy) referencedUserIds.add(event.createdBy.uid);
+      if (event.created_by) referencedUserIds.add(event.created_by.uid);
     });
 
     // Find user IDs that are referenced but don't exist in the user list
@@ -103,20 +103,20 @@ export const EdgeCaseService = {
     // Validate task references
     tasks.forEach(task => {
       // Check event reference
-      if (task.eventId) {
-        const hasValidEvent = events.some(event => event.id === task.eventId);
+      if (task.event_id) {
+        const hasValidEvent = events.some(event => event.id === task.event_id);
         if (!hasValidEvent) {
           invalidReferences.push({
             type: 'task',
             id: task.id,
-            issue: `Task ${task.id} references non-existent event ${task.eventId}`
+            issue: `Task ${task.id} references non-existent event ${task.event_id}`
           });
         }
       }
 
       // Check assigned user
-      if (task.assignedTo && Array.isArray(task.assignedTo)) {
-        task.assignedTo.forEach(assignedUser => {
+      if (task.assigned_to && Array.isArray(task.assigned_to)) {
+        task.assigned_to.forEach(assignedUser => {
           const hasValidUser = allUsers.some(user => user.uid === assignedUser.uid);
           if (!hasValidUser) {
             invalidReferences.push({
@@ -129,25 +129,25 @@ export const EdgeCaseService = {
       }
 
       // Check created by user
-      if (task.createdBy) {
-        const hasValidUser = allUsers.some(user => user.uid === task.createdBy.uid);
+      if (task.created_by) {
+        const hasValidUser = allUsers.some(user => user.uid === task.created_by.uid);
         if (!hasValidUser) {
           invalidReferences.push({
             type: 'task',
             id: task.id,
-            issue: `Task ${task.id} created by non-existent user ${task.createdBy.uid}`
+            issue: `Task ${task.id} created by non-existent user ${task.created_by.uid}`
           });
         }
       }
 
       // Check updated by user
-      if (task.updatedBy) {
-        const hasValidUser = allUsers.some(user => user.uid === task.updatedBy!.uid);
+      if (task.updated_by) {
+        const hasValidUser = allUsers.some(user => user.uid === task.updated_by!.uid);
         if (!hasValidUser) {
           invalidReferences.push({
             type: 'task',
             id: task.id,
-            issue: `Task ${task.id} updated by non-existent user ${task.updatedBy.uid}`
+            issue: `Task ${task.id} updated by non-existent user ${task.updated_by.uid}`
           });
         }
       }
@@ -156,20 +156,20 @@ export const EdgeCaseService = {
     // Validate event references
     events.forEach(event => {
       // Check created by user
-      if (event.createdBy) {
-        const hasValidUser = allUsers.some(user => user.uid === event.createdBy.uid);
+      if (event.created_by) {
+        const hasValidUser = allUsers.some(user => user.uid === event.created_by.uid);
         if (!hasValidUser) {
           invalidReferences.push({
             type: 'event',
             id: event.id,
-            issue: `Event ${event.id} created by non-existent user ${event.createdBy.uid}`
+            issue: `Event ${event.id} created by non-existent user ${event.created_by.uid}`
           });
         }
       }
     });
 
     // Validate media references
-    // Since DriveFile type doesn't include taskId or eventId properties,
+    // Since DriveFile type doesn't include taskId or event_id properties,
     // we cannot validate media references to tasks or events
     // This section is left as a placeholder for when the DriveFile type is updated
 

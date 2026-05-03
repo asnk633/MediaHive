@@ -1,12 +1,10 @@
-import { adminDb } from '@/lib/firebase/server';
 import { getDriveClient, ensureFolderPath } from '@/lib/drive';
 import { DriveQueueItem } from '@/types/drive-queue';
-import { FieldValue } from 'firebase-admin/firestore';
 import { logSystemActivity } from '@/lib/server/activity-logger';
+import { getSupabaseAdmin } from '@/lib/server-utils';
 
 const INCOMING_FOLDER_NAME = 'MediaHive/Incoming';
-const QUEUE_COLLECTION = 'drive_queue';
-const PROCESSED_FILES_COLLECTION = 'drive_processed_history'; // Optional: to track historical IDs to prevent re-add
+const QUEUE_TABLE = 'drive_queue';
 
 export class DriveScannerService {
 
@@ -19,7 +17,6 @@ export class DriveScannerService {
         if (!rootId) throw new Error('GOOGLE_DRIVE_FOLDER_ID is not set');
 
         console.log(`[DriveScanner] Resolving folder '${INCOMING_FOLDER_NAME}' from root '${rootId}'...`);
-        // ensureFolderPath handles nested paths nicely
         const resolvedId = await ensureFolderPath(drive, rootId, INCOMING_FOLDER_NAME.split('/'));
         console.log(`[DriveScanner] Resolved Incoming Folder ID: ${resolvedId}`);
         return resolvedId;
@@ -34,7 +31,7 @@ export class DriveScannerService {
             const drive = await getDriveClient();
 
             const res = await drive.files.get({
-                fileId: folderId,
+                file_id: folderId,
                 fields: 'id, name, webViewLink',
                 supportsAllDrives: true
             });
@@ -46,7 +43,6 @@ export class DriveScannerService {
             };
         } catch (e) {
             console.error('Failed to get incoming folder info:', e);
-            // Fallback - Do not throw, return a safe partial object
             return { id: '', name: 'Start Scan to Retry', webViewLink: null };
         }
     }
@@ -65,7 +61,7 @@ export class DriveScannerService {
         try {
             const folderId = await this.ensureIncomingFolder();
             const drive = await getDriveClient();
-            const db = adminDb;
+            const supabase = getSupabaseAdmin();
 
             log(`[DriveScanner] Starting scan of folder: ${folderId}`);
 
@@ -73,15 +69,13 @@ export class DriveScannerService {
             let driveId: string | undefined;
             try {
                 const folderMeta = await drive.files.get({
-                    fileId: folderId,
+                    file_id: folderId,
                     fields: 'driveId',
                     supportsAllDrives: true
                 });
                 driveId = folderMeta.data.driveId || undefined;
                 if (driveId) {
                     log(`[DriveScanner] Folder is in Shared Drive: ${driveId}`);
-                } else {
-                    log(`[DriveScanner] Folder is in My Drive (User: ${process.env.GOOGLE_SERVICE_ACCOUNT_EMAIL})`);
                 }
             } catch (e: any) {
                 log(`[DriveScanner] Warning: Could not determine Drive ID: ${e.message}`);
@@ -96,83 +90,65 @@ export class DriveScannerService {
                 includeItemsFromAllDrives: true
             };
 
-            // If Shared Drive, we must use specific corpora params as per user request
             if (driveId) {
                 listParams.corpora = 'drive';
                 listParams.driveId = driveId;
-            } else {
-                // Determine corpus strategy for standard drive? 
-                // 'allDrives' is safest if no driveId, but 'user' is default.
-                // User instruction: "If this is a Shared Drive, also include: corpora: 'drive', driveId: ..."
-                // Otherwise keeping standard params.
             }
 
-            log(`[DriveScanner] Executing list with params: supportsAllDrives=true, includeItemsFromAllDrives=true${driveId ? `, corpora='drive', driveId='${driveId}'` : ''}`);
+            log(`[DriveScanner] Executing list...`);
 
             const res = await drive.files.list(listParams);
-
             const files = res.data.files || [];
             log(`[DriveScanner] Raw files found in folder: ${files.length}`);
-            if (files.length > 0) {
-                log(`[DriveScanner] Files: ${files.map(f => f.name).join(', ')}`);
-            }
 
             if (files.length === 0) return { count: 0, logs };
 
             let addedCount = 0;
 
-            // 2. Process each file
             for (const file of files) {
                 if (!file.id || !file.name) continue;
 
-                // Check if file is strictly "new" to our system
-                // We check:
-                // A. Is it already in 'files' collection? (Already imported)
-                // B. Is it already in 'drive_queue'? (Pending/Rejected)
+                // Absolute Purge: Remove check for non-existent 'files' table.
+                // Check only 'drive_queue' for pending/rejected items.
+                const { data: existingQueue, error: queueError } = await supabase
+                    .from(QUEUE_TABLE)
+                    .select('id')
+                    .eq('drive_file_id', file.id)
+                    .limit(1);
 
-                // Optimization: These checks can be parallelized or batched if volume is high, 
-                // but for now sequential is safer for consistency.
-
-                // A. Check 'files' collection (Downloads)
-                const filesQuery = await db.collection('files').where('driveFileId', '==', file.id).limit(1).get();
-                if (!filesQuery.empty) {
-                    log(`[DriveScanner] Skipping ${file.name} (Already in Downloads)`);
+                if (queueError) {
+                    log(`[DriveScanner] Warning: Queue check failed for ${file.name}: ${queueError.message}`);
                     continue;
                 }
 
-                // B. Check 'drive_queue' collection
-                const queueQuery = await db.collection(QUEUE_COLLECTION).where('driveFileId', '==', file.id).limit(1).get();
-                if (!queueQuery.empty) {
-                    log(`[DriveScanner] Skipping ${file.name} (Already in Queue/Rejected)`);
+                if (existingQueue && existingQueue.length > 0) {
+                    log(`[DriveScanner] Skipping ${file.name} (Already in Queue)`);
                     continue;
                 }
 
                 log(`[DriveScanner] Detected NEW file: ${file.name} (${file.id})`);
 
-                // C. Add to Queue
-                const newQueueItem: Omit<DriveQueueItem, 'id'> = {
-                    driveFileId: file.id,
+                const newItem = {
+                    drive_file_id: file.id,
                     name: file.name,
-                    mimeType: file.mimeType || 'application/octet-stream',
+                    mime_type: file.mimeType || 'application/octet-stream',
                     size: parseInt(file.size || '0'),
-                    webViewLink: file.webViewLink || '',
-                    thumbnailLink: file.thumbnailLink || '',
-                    uploadedBy: file.owners?.[0]?.displayName || 'Drive User',
-                    detectedAt: new Date(file.createdTime || Date.now()), // Local Date object for Firestore
+                    web_view_link: file.webViewLink || '',
+                    thumbnail_link: file.thumbnailLink || '',
+                    uploaded_by: file.owners?.[0]?.displayName || 'Drive User',
+                    detected_at: new Date().toISOString(),
                     status: 'pending'
                 };
 
-                // Add serialized timestamps for Firestore if needed, but Admin SDK handles Date objects well.
-                // Using FieldValue.serverTimestamp() for detectedAt might be better for sorting "Just Now", 
-                // but preserving Drive's createdTime is more accurate for the file itself. 
-                // Let's use Firestore Timestamp for compatibility.
+                const { error: insertError } = await supabase
+                    .from(QUEUE_TABLE)
+                    .insert([newItem]);
 
-                await db.collection(QUEUE_COLLECTION).add({
-                    ...newQueueItem,
-                    detectedAt: FieldValue.serverTimestamp() // Mark detection time as NOW
-                });
+                if (insertError) {
+                    log(`[DriveScanner] Error inserting ${file.name}: ${insertError.message}`);
+                    continue;
+                }
 
-                // Log activity
                 await logSystemActivity({
                     actorId: 'system',
                     actorRole: 'system',
@@ -184,7 +160,7 @@ export class DriveScannerService {
                     severity: 'info',
                     visibility: { mode: 'admin' },
                     metadata: {
-                        driveId: file.id,
+                        drive_id: file.id,
                         size: file.size
                     }
                 });
@@ -192,7 +168,7 @@ export class DriveScannerService {
                 addedCount++;
             }
 
-            log(`[DriveScanner] Scan complete. Added ${addedCount} new files to queue.`);
+            log(`[DriveScanner] Scan complete. Added ${addedCount} new files.`);
             return { count: addedCount, logs };
 
         } catch (error: any) {
@@ -201,3 +177,4 @@ export class DriveScannerService {
         }
     }
 }
+

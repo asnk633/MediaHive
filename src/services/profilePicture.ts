@@ -8,7 +8,7 @@ import { apiClient } from '@/lib/apiClient';
 const PROFILE_PICTURES_PATH = 'profile-pictures'; // Still kept if useful for other refs, or remove. Actually unused now.
 
 /**
- * Upload a profile picture to Firebase Storage
+ * Upload a profile picture to MOCK_KEY Storage
  * @param userId - The user's unique ID
  * @param imageBlob - The cropped image as a Blob
  * @returns Download URL for the uploaded image
@@ -31,7 +31,7 @@ export async function uploadProfilePicture(userId: string, imageBlob: Blob): Pro
         }
 
         const data = await response.json();
-        const downloadURL = data.avatarUrl;
+        const downloadURL = data.avatar_url;
 
         // Cache the URL in localStorage for faster loads
         if (typeof window !== 'undefined') {
@@ -65,7 +65,7 @@ export async function getProfilePictureUrl(userId: string): Promise<string | nul
             method: 'GET'
         });
 
-        const downloadURL = userData?.avatarUrl || null;
+        const downloadURL = userData?.avatar_url || null;
 
         // Cache for future use
         if (typeof window !== 'undefined' && downloadURL) {
@@ -89,8 +89,8 @@ export async function deleteProfilePicture(userId: string): Promise<void> {
         await apiClient(`/api/users/me`, {
             method: 'PATCH',
             body: JSON.stringify({
-                avatarUrl: null,
-                avatarUpdatedAt: new Date().toISOString()
+                avatar_url: null,
+                avatar_updated_at: new Date().toISOString()
             })
         });
 

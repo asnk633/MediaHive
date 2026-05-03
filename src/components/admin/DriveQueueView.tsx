@@ -459,7 +459,7 @@ export function DriveQueueView() {
                                         <span>•</span>
                                         <span>{(item.size / 1024 / 1024).toFixed(2)} MB</span>
                                         <span>•</span>
-                                        <span>{item.uploadedBy === 'Drive User' ? 'Uploaded via Drive' : item.uploadedBy}</span>
+                                        <span>{item.uploaded_by === 'Drive User' ? 'Uploaded via Drive' : item.uploaded_by}</span>
                                         <span>•</span>
                                         <span>
                                             {(() => {

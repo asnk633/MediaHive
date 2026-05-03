@@ -7,6 +7,7 @@ import { Card } from '@/components/ui/card';
 import { Box, Layers, AlertCircle, Calendar } from 'lucide-react';
 import { format } from 'date-fns';
 import { Carousel, CarouselContent, CarouselItem, CarouselNext, CarouselPrevious } from '@/components/ui/carousel';
+import { getDriveImageUrl } from '@/lib/driveUtils';
 
 interface InventoryCardProps {
     item: InventoryItem;
@@ -36,8 +37,8 @@ export const InventoryCard = React.memo<InventoryCardProps>(({ item, activeIssue
 
     // Consolidate images for display
     const images = item.images && item.images.length > 0
-        ? item.images
-        : (item.imageUrl ? [{ url: item.imageUrl, fileId: item.driveFileId || '' }] : []);
+        ? item.images.map(img => ({ ...img, url: getDriveImageUrl(img.url, img.file_id) }))
+        : (item.imageUrl ? [{ url: getDriveImageUrl(item.imageUrl, item.driveFileId), file_id: item.driveFileId || '' }] : []);
 
     return (
         <Card
@@ -134,40 +135,40 @@ export const InventoryCard = React.memo<InventoryCardProps>(({ item, activeIssue
                     {activeIssue ? (
                         <>
                             <div className="space-y-1 col-span-2">
-                                <span className="text-slate-500 text-xs uppercase tracking-wider flex items-center gap-1">
+                                <span className="text-slate-400 text-xs uppercase tracking-wider flex items-center gap-1">
                                     <Calendar size={10} /> Issued Until
                                 </span>
                                 <div className={`font-medium ${isOverdue ? 'text-red-400 font-bold' : 'text-slate-200'}`}>
                                     {format(new Date(activeIssue.expectedReturnAt), 'MMM d, yyyy')}
                                 </div>
-                                <div className="text-xs text-slate-500 truncate">
-                                    To: <span className="text-slate-400">{activeIssue.issuedToUserId}</span>
+                                <div className="text-xs text-slate-400 truncate">
+                                    To: <span className="text-slate-300">{activeIssue.issuedToUserId}</span>
                                 </div>
                             </div>
                         </>
                     ) : (
                         <>
                             <div className="space-y-1">
-                                <span className="text-slate-500 text-xs uppercase tracking-wider">Unit</span>
+                                <span className="text-slate-400 text-xs uppercase tracking-wider">Unit</span>
                                 <div className="text-slate-200 font-medium">
                                     {item.quantity}
                                 </div>
                             </div>
                             <div className="space-y-1">
-                                <span className="text-slate-500 text-xs uppercase tracking-wider">Condition</span>
+                                <span className="text-slate-400 text-xs uppercase tracking-wider">Condition</span>
                                 <div className="text-slate-200 font-medium capitalize">{item.condition?.replace('_', ' ') || 'N/A'}</div>
                             </div>
 
                             {/* Price & Date Row */}
                             <div className="col-span-2 grid grid-cols-2 gap-2 pt-2 mt-2 border-t border-white/5">
                                 <div className="space-y-1">
-                                    <span className="text-slate-500 text-[10px] uppercase tracking-wider">Purchased</span>
+                                    <span className="text-slate-400 text-[10px] uppercase tracking-wider">Purchased</span>
                                     <div className="text-slate-300 text-xs">
                                         {item.purchaseDate ? format(new Date(item.purchaseDate), 'MMM d, yyyy') : '-'}
                                     </div>
                                 </div>
                                 <div className="space-y-1">
-                                    <span className="text-slate-500 text-[10px] uppercase tracking-wider">Purchased Price</span>
+                                    <span className="text-slate-400 text-[10px] uppercase tracking-wider">Purchased Price</span>
                                     <div className="text-slate-300 text-xs">
                                         {item.purchasePrice ? `₹${item.purchasePrice.toLocaleString()}` : '-'}
                                     </div>

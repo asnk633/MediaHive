@@ -10,7 +10,7 @@ const mockAdminUser: AuthUser = {
   email: 'admin@example.com',
   fullName: 'Admin User',
   role: 'admin',
-  institutionId: 1,
+  institution_id: 1,
   tenantId: 1
 };
 
@@ -19,7 +19,7 @@ const mockTeamUser: AuthUser = {
   email: 'team@example.com',
   fullName: 'Team User',
   role: 'team',
-  institutionId: 1,
+  institution_id: 1,
   tenantId: 1
 };
 
@@ -28,7 +28,7 @@ const mockGuestUser: AuthUser = {
   email: 'guest@example.com',
   fullName: 'Guest User',
   role: 'guest',
-  institutionId: 1,
+  institution_id: 1,
   tenantId: 1
 };
 

@@ -118,7 +118,7 @@ export function CalendarView({ currentDate, onDateChange, events, onDateClick, o
                                 onClick={() => onDateClick(day)}
                                 className={`
                                 group relative p-2 cursor-pointer transition-all duration-300 border-none outline-none
-                                ${isCurrentMonth ? 'text-foreground hover:bg-glass hover:backdrop-blur-md hover:shadow-sm z-0 hover:z-10' : 'text-muted/30 bg-black/5 dark:bg-black/20'}
+                                ${isCurrentMonth ? 'text-foreground hover:bg-glass hover:backdrop-blur-md hover:shadow-sm z-0 hover:z-10' : 'text-white/30 bg-black/5 dark:bg-black/20'}
                                 ${isSelected ? 'bg-glass shadow-md z-10 ring-1 ring-primary/20' : ''}
                                 ${isToday ? 'font-bold' : ''}
                                 rounded-lg
@@ -168,13 +168,13 @@ export function CalendarView({ currentDate, onDateChange, events, onDateClick, o
                                                 transition={{ duration: 0.2 }}
                                                 className={`
                                             text-[10px] px-2 py-1.5 rounded-lg truncate w-full block mb-1.5 shadow-sm backdrop-blur-sm cursor-pointer
-                                            ${(ev as any).isSystemEvent
+                                            ${(ev as any).is_system_event
                                                         ? 'bg-secondary/80 text-secondary-foreground border-l-2 border-secondary'
                                                         : 'bg-glass text-foreground hover:bg-surface/80 hover:shadow-md transition-all border-none relative overflow-hidden group'}
                                         `}
                                             >
-                                                {!(ev as any).isSystemEvent && <div className="absolute left-0 top-0 bottom-0 w-1 bg-primary/50 group-hover:bg-primary transition-colors" />}
-                                                {(ev as any).isSystemEvent && <span className="mr-1">🏢</span>}
+                                                {!(ev as any).is_system_event && <div className="absolute left-0 top-0 bottom-0 w-1 bg-primary/50 group-hover:bg-primary transition-colors" />}
+                                                {(ev as any).is_system_event && <span className="mr-1">🏢</span>}
                                                 {ev.title}
                                             </motion.div>
                                         ))}

@@ -44,15 +44,15 @@ export function useDashboardMetrics(tasks: Task[], user: AuthUser | null): Dashb
 
         tasks.forEach(task => {
             const status = task.status?.toLowerCase();
-            const approvalStatus = task.approvalStatus?.toLowerCase();
+            const approval_status = task.approval_status?.toLowerCase();
 
-            // 1. Tasks Due Today: dueDate is today AND status !== completed
-            if (isToday(task.dueDate) && status !== 'completed') {
+            // 1. Tasks Due Today: due_date is today AND status !== completed
+            if (isToday(task.due_date) && status !== 'completed') {
                 metrics.todo++;
             }
 
-            // 2. Completed Today: status === completed AND completedAt is today
-            if (status === 'completed' && isToday(task.completedAt)) {
+            // 2. Completed Today: status === completed AND completed_at is today
+            if (status === 'completed' && isToday(task.completed_at)) {
                 metrics.completed++;
             }
 
@@ -61,13 +61,13 @@ export function useDashboardMetrics(tasks: Task[], user: AuthUser | null): Dashb
                 metrics.inProgress++;
             }
 
-            // 4. Pending Review: approvalStatus === pending_review
-            if (approvalStatus === 'pending_review' || approvalStatus === 'pending review') {
+            // 4. Pending Review: approval_status === pending_review
+            if (approval_status === 'pending_review' || approval_status === 'pending review') {
                 metrics.review++;
             }
 
-            // 5. Pending Approval (Admin only): approvalStatus === pending_approval
-            if (user?.isAdmin && (approvalStatus === 'pending_approval' || approvalStatus === 'pending approval')) {
+            // 5. Pending Approval (Admin only): approval_status === pending_approval
+            if (user?.role === 'admin' && (approval_status === 'pending_approval' || approval_status === 'pending approval')) {
                 metrics.pendingApproval++;
             }
         });

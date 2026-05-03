@@ -1,6 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { adminDb } from '@/lib/firebase/server';
-import { verifyUser } from '@/lib/server-utils';
+import { verifyUser, getSupabaseFromRequest } from '@/lib/server-utils';
 import { logSystemActivity } from '@/lib/server/activity-logger';
 
 export const dynamic = 'force-dynamic';
@@ -28,22 +27,18 @@ export async function GET(
             return NextResponse.json({ error: 'ID is required' }, { status: 400 });
         }
 
-        const db = adminDb;
-        const docRef = db.collection(COLLECTION).doc(id);
-        const doc = await docRef.get();
+        const supabase = getSupabaseFromRequest(request);
+        if (!supabase) return NextResponse.json({ error: 'Internal Error' }, { status: 500 });
 
-        if (!doc.exists) {
+        const { data: item, error } = await supabase
+            .from(COLLECTION)
+            .select('*')
+            .eq('id', id)
+            .single();
+
+        if (error || !item) {
             return NextResponse.json({ error: 'Item not found' }, { status: 404 });
         }
-
-        const data = doc.data();
-        const item = {
-            id: doc.id,
-            ...data,
-            createdAt: data?.createdAt?.toDate?.()?.toISOString() || data?.createdAt,
-            updatedAt: data?.updatedAt?.toDate?.()?.toISOString() || data?.updatedAt,
-            purchaseDate: data?.purchaseDate?.toDate?.()?.toISOString() || data?.purchaseDate,
-        };
 
         return NextResponse.json(item);
     } catch (error: any) {
@@ -68,41 +63,52 @@ export async function PATCH(
         }
 
         const body = await request.json();
-        const db = adminDb;
-        const docRef = db.collection(COLLECTION).doc(id);
+        const supabase = getSupabaseFromRequest(request);
+        if (!supabase) return NextResponse.json({ error: 'Internal Error' }, { status: 500 });
 
-        // Transaction to ensure atomicity when recalculating status
-        const updatedItem = await db.runTransaction(async (t) => {
-            const doc = await t.get(docRef);
-            if (!doc.exists) {
-                throw new Error('Item not found');
-            }
+        // Fetch current to calculate status
+        const { data: current, error: fetchError } = await supabase
+            .from(COLLECTION)
+            .select('*')
+            .eq('id', id)
+            .single();
 
-            const currentData = doc.data()!;
+        if (fetchError || !current) {
+            return NextResponse.json({ error: 'Item not found' }, { status: 404 });
+        }
 
-            // Merge new values with old to calculate status
-            const newQuantity = body.quantity !== undefined ? Number(body.quantity) : currentData.quantity;
-            const newThreshold = body.threshold !== undefined ? Number(body.threshold) : currentData.threshold;
+        const newQuantity = body.quantity !== undefined ? Number(body.quantity) : current.quantity;
+        const newThreshold = body.threshold !== undefined ? Number(body.threshold) : current.threshold;
 
-            const updates: any = {
-                ...body,
-                updatedAt: new Date(),
-                status: calculateStatus(newQuantity, newThreshold)
-            };
+        const updates: any = {
+            name: body.name !== undefined ? body.name : current.name,
+            category: body.category !== undefined ? body.category : current.category,
+            quantity: newQuantity,
+            threshold: newThreshold,
+            unit: body.unit !== undefined ? body.unit : current.unit,
+            status: calculateStatus(newQuantity, newThreshold),
+            updated_at: new Date().toISOString(),
+            image_url: body.imageUrl !== undefined ? body.imageUrl : current.image_url,
+            images: body.images !== undefined ? body.images : current.images,
+            drive_file_id: body.driveFileId !== undefined ? body.driveFileId : current.drive_file_id,
+            condition: body.condition !== undefined ? body.condition : current.condition,
+            serial_number: body.serialNumber !== undefined ? body.serialNumber : current.serial_number,
+            remarks: body.remarks !== undefined ? body.remarks : current.remarks,
+            purchase_price: body.purchasePrice !== undefined ? Number(body.purchasePrice) : current.purchase_price,
+            asset_status: body.assetStatus !== undefined ? body.assetStatus : current.asset_status,
+            location_str: body.locationStr !== undefined ? body.locationStr : current.location_str,
+            notes: body.notes !== undefined ? body.notes : current.notes,
+            purchase_date: body.purchaseDate !== undefined ? body.purchaseDate : current.purchase_date
+        };
 
-            // Protect immutable fields
-            delete updates.id;
-            delete updates.createdAt;
-            delete updates.createdBy;
+        const { data: updated, error: updateError } = await supabase
+            .from(COLLECTION)
+            .update(updates)
+            .eq('id', id)
+            .select()
+            .single();
 
-            if (updates.purchaseDate) {
-                updates.purchaseDate = new Date(updates.purchaseDate);
-            }
-
-            t.update(docRef, updates);
-
-            return { id, ...currentData, ...updates };
-        });
+        if (updateError) throw updateError;
 
         await logSystemActivity({
             actorId: user.uid,
@@ -110,26 +116,18 @@ export async function PATCH(
             action: 'inventory_item_update',
             entityType: 'inventory_item',
             entityId: id,
-            summary: `Updated item: ${updatedItem?.name || 'Unknown Item'}`,
+            summary: `Updated item: ${updated.name}`,
             source: 'system',
             severity: 'info',
             visibility: { mode: 'admin' },
             metadata: { updates: Object.keys(body) }
         });
 
-        // Serialize dates before returning
-        return NextResponse.json({
-            success: true,
-            item: {
-                ...updatedItem,
-                updatedAt: updatedItem.updatedAt.toISOString(),
-                createdAt: updatedItem.createdAt?.toDate ? updatedItem.createdAt.toDate().toISOString() : updatedItem.createdAt
-            }
-        });
+        return NextResponse.json({ success: true, item: updated });
 
     } catch (error: any) {
         console.error('Error updating inventory item:', error);
-        return NextResponse.json({ error: error.message || 'Failed to update item' }, { status: error.message === 'Item not found' ? 404 : 500 });
+        return NextResponse.json({ error: error.message || 'Failed to update item' }, { status: 500 });
     }
 }
 
@@ -148,8 +146,15 @@ export async function DELETE(
             return NextResponse.json({ error: 'ID is required' }, { status: 400 });
         }
 
-        const db = adminDb;
-        await db.collection(COLLECTION).doc(id).delete();
+        const supabase = getSupabaseFromRequest(request);
+        if (!supabase) return NextResponse.json({ error: 'Internal Error' }, { status: 500 });
+
+        const { error } = await supabase
+            .from(COLLECTION)
+            .delete()
+            .eq('id', id);
+
+        if (error) throw error;
 
         await logSystemActivity({
             actorId: user.uid,

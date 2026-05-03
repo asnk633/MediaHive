@@ -1,8 +1,9 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { verifyUser } from '@/lib/server-utils';
+import { verifyUser } from '@/lib/server/server-utils';
 import { db } from '@/db';
 import { attendance } from '@/db/schema';
 import { eq, and, gte, lte, desc } from 'drizzle-orm';
+import { withTenantDrizzle, validateTenant } from '@/lib/tenantQuery';
 
 // --- GET Request Handler (Fetch single or list) ---
 
@@ -10,7 +11,19 @@ export const dynamic = 'force-dynamic';
 
 export async function GET(request: NextRequest) {
   try {
-    const searchParams = request.nextUrl.searchParams;
+    const user = await verifyUser(request);
+    if (!user) {
+      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+    }
+
+    // Tenant Security Guard
+    const tenantId = user.tenant_id;
+    if (!tenantId || tenantId === 'null' || tenantId === 'undefined') {
+      console.error(`[GET /api/attendance] ❌ Missing tenant context for user: ${user.uid}`);
+      return NextResponse.json({ error: 'Missing tenant context' }, { status: 403 });
+    }
+
+    const { searchParams } = new URL(request.url);
     const id = searchParams.get('id');
 
     // Single record fetch
@@ -25,7 +38,10 @@ export async function GET(request: NextRequest) {
       const record = await db
         .select()
         .from(attendance)
-        .where(eq(attendance.id, parseInt(id)))
+        .where(and(
+          eq(attendance.id, parseInt(id)),
+          withTenantDrizzle(attendance, tenantId)
+        ))
         .limit(1);
 
       if (record.length === 0) {
@@ -38,11 +54,6 @@ export async function GET(request: NextRequest) {
       return NextResponse.json(record[0], { status: 200 });
     }
 
-    const user = await verifyUser(request);
-    if (!user) {
-      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
-    }
-
     // List with pagination and filtering
     const limit = Math.min(parseInt(searchParams.get('limit') ?? '10'), 100);
     const offset = parseInt(searchParams.get('offset') ?? '0');
@@ -53,8 +64,11 @@ export async function GET(request: NextRequest) {
     const endDate = searchParams.get('endDate'); // ISO date string
 
     const filters = [];
+
     // userId is always enforced
-    filters.push(eq(attendance.userId, userId));
+    filters.push(eq(attendance.userId, userId as any));
+    // tenant_id is always enforced
+    filters.push(withTenantDrizzle(attendance, tenantId));
 
     if (startDate) {
       // Filter records created on or after startDate
@@ -105,6 +119,8 @@ export async function POST(request: NextRequest) {
       );
     }
 
+    const normalizedTenantId = typeof user.tenant_id === 'string' && !isNaN(Number(user.tenant_id)) ? Number(user.tenant_id) : user.tenant_id;
+
     const inserted = await db
       .insert(attendance)
       .values({
@@ -112,7 +128,7 @@ export async function POST(request: NextRequest) {
         checkIn,
         checkOut: checkOut || null,
         institution_id,
-        tenantId: 1, // Default tenant ID for now
+        tenantId: normalizedTenantId,
         created_at: new Date().toISOString(),
       } as any)
       .returning();
@@ -160,7 +176,8 @@ export async function PUT(request: NextRequest) {
       .from(attendance)
       .where(and(
         eq(attendance.id, parseInt(id)),
-        eq(attendance.userId, user.uid)
+        eq(attendance.userId, user.uid as any),
+        withTenantDrizzle(attendance, user.tenant_id)
       ))
       .limit(1);
 
@@ -171,14 +188,22 @@ export async function PUT(request: NextRequest) {
       );
     }
 
-    // Perform the update
+    const tenantId = user.tenant_id;
+    if (!tenantId || tenantId === 'null' || tenantId === 'undefined') {
+      return NextResponse.json({ error: 'Missing tenant context' }, { status: 403 });
+    }
+
+    // Perform the update with tenant scoping
     await db
       .update(attendance)
       .set({
         ...(payload as any),
         updated_at: new Date().toISOString(),
       } as any)
-      .where(eq(attendance.id, parseInt(id)));
+      .where(and(
+        eq(attendance.id, parseInt(id)),
+        withTenantDrizzle(attendance, tenantId)
+      ));
 
     // updated row isn't returned by .set() here with our current db helper,
     // so construct the updated object locally and return it instead.
@@ -222,7 +247,8 @@ export async function DELETE(request: NextRequest) {
       .from(attendance)
       .where(and(
         eq(attendance.id, parseInt(id)),
-        eq(attendance.userId, user.uid)
+        eq(attendance.userId, user.uid as any),
+        withTenantDrizzle(attendance, user.tenant_id)
       ))
       .limit(1);
 
@@ -233,9 +259,17 @@ export async function DELETE(request: NextRequest) {
       );
     }
 
+    const tenantId = user.tenant_id; // Assuming tenant_id is available on the user object
+    if (!tenantId || tenantId === 'null' || tenantId === 'undefined') {
+      return NextResponse.json({ error: 'Missing tenant context' }, { status: 403 });
+    }
+
     const deleted = await db
       .delete(attendance)
-      .where(eq(attendance.id, parseInt(id)))
+      .where(and(
+        eq(attendance.id, parseInt(id)),
+        withTenantDrizzle(attendance, tenantId)
+      ))
       .returning();
 
     return NextResponse.json(

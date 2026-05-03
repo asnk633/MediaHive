@@ -1,6 +1,6 @@
 
 import { NotificationRule } from '@/types/notificationRules';
-import { SystemEvent } from '@/types/systemEvent';
+import { SystemEvent } from '@/features/events/types/systemEvent';
 import { apiClient } from '@/lib/apiClient';
 
 const RULES_COLLECTION = 'notification_rules';

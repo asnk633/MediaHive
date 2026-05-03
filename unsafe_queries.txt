@@ -1,0 +1,332 @@
+d:\MediaHive App\src\app\(shell)\ClientDataContext.tsx:91 - .from("tasks")
+Context: .from("tasks")         .select("id, title, due_date, status, priority, assigned_to")         .eq("deleted", false)         .order("created_at", { ascending: false });        if (error) {         conso...
+VerifyUser in file: False
+
+d:\MediaHive App\src\app\(shell)\ClientDataContext.tsx:129 - .from("tasks")
+Context: .from("tasks")         .insert({           title: input.title,           description: input.description ?? "",           due_date: input.due_date ?? null,           priority: input.priority ?? "medium...
+VerifyUser in file: False
+
+d:\MediaHive App\src\app\(shell)\ClientDataContext.tsx:172 - .from("tasks")
+Context: .from("tasks")         .update(payload)         .eq("id", id)         .select()         .single();        if (error) {         toast.show("Couldn't update task", "error");         return false;       ...
+VerifyUser in file: False
+
+d:\MediaHive App\src\app\(shell)\ClientDataContext.tsx:204 - .from("tasks")
+Context: .from("tasks")         .update({           deleted: true,           deleted_at: new Date().toISOString(),         })         .eq("id", id);        if (error) {         toast.show("Delete failed", "err...
+VerifyUser in file: False
+
+d:\MediaHive App\src\app\(shell)\reports\activity\ReportsActivityClient.tsx:44 - .from('tasks')
+Context: .from('tasks').select('*');             if (error) throw error;             setTasks(data);         } catch (error) {             console.error("Failed to fetch tasks:", error);             setTasks([...
+VerifyUser in file: False
+
+d:\MediaHive App\src\app\(shell)\tasks\TasksPageClient.tsx:149 - .from('tasks')
+Context: .from('tasks').update(updates).eq('id', taskToEdit.id);             // Optimistic update             setTasks(prev => prev.map(t => t.id === taskToEdit.id ? { ...t, ...updates } : t));             ret...
+VerifyUser in file: False
+
+d:\MediaHive App\src\app\(shell)\tasks\new\TasksNewClient.tsx:289 - .from('tasks')
+Context: .from('tasks').insert([newTaskData]).select('id').single();             if (insertError || !newTask) { throw new Error(insertError?.message || "Failed to create task"); }             const newTaskId =...
+VerifyUser in file: False
+
+d:\MediaHive App\src\app\(shell)\tasks\new\TasksNewClient.tsx:324 - .from('tasks')
+Context: .from('tasks').update({ files: finalFiles }).eq('id', newTaskId);                 }             }              // Notify Admins if Guest created it             if (isGuest) {                 try {    ...
+VerifyUser in file: False
+
+d:\MediaHive App\src\app\(shell)\tasks\view\TasksViewClient.tsx:111 - .from('tasks')
+Context: .from('tasks').select('*').eq('id', taskId).single();             if (data) {                 setTask(data);                 if (data.campaign_id) {                     loadCampaignName(data.campaign_...
+VerifyUser in file: False
+
+d:\MediaHive App\src\app\(shell)\tasks\view\TasksViewClient.tsx:142 - .from('tasks')
+Context: .from('tasks').update(updates).eq('id', task.id);             setTask({ ...task, ...updates });             toast.success("Updated");             return true;         } catch (e) {             console...
+VerifyUser in file: False
+
+d:\MediaHive App\src\app\(shell)\tasks\view\TasksViewClient.tsx:167 - .from('tasks')
+Context: .from('tasks').delete().eq('id', task.id);              // PUBLIC SECTOR PASS: Immutable Audit Logging             await AuditTrailService.logAction({                 action: 'DELETE_TASK',           ...
+VerifyUser in file: False
+
+d:\MediaHive App\src\app\api\campaigns\route.ts:39 - .from('campaigns')
+Context: .from('campaigns')                 .select('*'),             tenantId         )             .order('created_at', { ascending: false });          if (error) {             console.error('[GET /api/campa...
+VerifyUser in file: True
+
+d:\MediaHive App\src\app\api\campaigns\route.ts:106 - .from('campaigns')
+Context: .from('campaigns')             .insert(campaignData)             .select()             .single();          if (error) {             console.error('[POST /api/campaigns] Supabase error:', error);      ...
+VerifyUser in file: True
+
+d:\MediaHive App\src\app\api\campaigns\[id]\route.ts:36 - .from('campaigns')
+Context: .from('campaigns')                 .select('*'),             tenantId         )             .eq('id', id)             .single();          if (error || !campaign) {             return NextResponse.json...
+VerifyUser in file: True
+
+d:\MediaHive App\src\app\api\campaigns\[id]\route.ts:158 - .from('campaigns')
+Context: .from('campaigns')                 .delete(),             tenantId         )             .eq('id', id);          if (error) {             console.error('[DELETE /api/campaigns/[id]] Supabase error:', ...
+VerifyUser in file: True
+
+d:\MediaHive App\src\app\api\departments\route.ts:214 - .from('departments')
+Context: .from('departments')                 .delete(),             tenantId         )             .eq('id', id);          if (error) throw error;          await logSystemActivity({             actorId: user....
+VerifyUser in file: True
+
+d:\MediaHive App\src\app\api\departments\[id]\route.ts:116 - .from('departments')
+Context: .from('departments')                 .delete(),             tenantId         )             .eq('id', id);          if (error) throw error;          // 3. Log activity         await logSystemActivity({...
+VerifyUser in file: True
+
+d:\MediaHive App\src\app\api\events\route.ts:34 - .from('events')
+Context: .from('events')           .select('*'),         tenantId       )         .eq('id', id)         .single();        if (error || !event) {         return NextResponse.json(           { error: 'Event not ...
+VerifyUser in file: True
+
+d:\MediaHive App\src\app\api\events\route.ts:227 - .from('events')
+Context: .from('events')         .select('*'),       tenantId     )       .eq('id', id)       .single();      if (fetchError || !existingEvent) {       return NextResponse.json({ error: 'Event not found or acc...
+VerifyUser in file: True
+
+d:\MediaHive App\src\app\api\events\route.ts:246 - .from('events')
+Context: .from('events')         .delete(),       tenantId     )       .eq('id', id);      if (deleteError) {       throw deleteError;     }      // Log audit event     try {       await logEventDeleted(      ...
+VerifyUser in file: True
+
+d:\MediaHive App\src\app\api\events\[id]\route.ts:19 - .from('events')
+Context: .from('events')       .select('*')       .eq('id', id)       .single();      if (error || !event) {       return NextResponse.json({ error: 'Event not found' }, { status: 404 });     }      return Nex...
+VerifyUser in file: True
+
+d:\MediaHive App\src\app\api\events\[id]\route.ts:50 - .from('events')
+Context: .from('events')       .select('*')       .eq('id', id)       .single();      if (fetchError || !existingEvent) {       return NextResponse.json({ error: 'Event not found' }, { status: 404 });     }   ...
+VerifyUser in file: True
+
+d:\MediaHive App\src\app\api\events\[id]\route.ts:114 - .from('events')
+Context: .from('events')       .select('*')       .eq('id', id)       .single();      if (fetchError || !existingEvent) {       return NextResponse.json({ error: 'Event not found' }, { status: 404 });     }   ...
+VerifyUser in file: True
+
+d:\MediaHive App\src\app\api\events\[id]\route.ts:128 - .from('events')
+Context: .from('events')       .delete()       .eq('id', id);      if (deleteError) {       throw deleteError;     }      // Log audit event     try {       await logEventDeleted(         user.uid,         use...
+VerifyUser in file: True
+
+d:\MediaHive App\src\app\api\events\[id]\approve\route.ts:38 - .from('events')
+Context: .from('events')       .select('*')       .eq('id', id)       .single();      if (eventError || !eventData) {       return NextResponse.json({ error: 'Event not found' }, { status: 404 });     }      c...
+VerifyUser in file: True
+
+d:\MediaHive App\src\app\api\events\[id]\approve\route.ts:84 - .from('tasks')
+Context: .from('tasks')           .select('id')           .eq('event_id', id)           .eq('autoGenerated', true);          // Only create tasks if none exist yet         if (!taskCheckError && (!existingTask...
+VerifyUser in file: True
+
+d:\MediaHive App\src\app\api\files\upload\route.ts:90 - .from('tasks')
+Context: .from('tasks')                                 .select('*'),                             tenantId                         )                             .eq('id', metadata.taskId)                      ...
+VerifyUser in file: True
+
+d:\MediaHive App\src\app\api\institutions\route.ts:73 - .from('institutions')
+Context: .from('institutions')     .insert(newInstitution)     .select()     .single();    if (error) throw error;    return NextResponse.json(data);  } catch (error: any) {   console.error('Error creating ins...
+VerifyUser in file: True
+
+d:\MediaHive App\src\app\api\institutions\[id]\route.ts:28 - .from('institutions')
+Context: .from('institutions')             .select('*')             .eq('id', id)             .single();          if (fetchError || !oldData) {             return NextResponse.json({ error: 'Institution not fo...
+VerifyUser in file: True
+
+d:\MediaHive App\src\app\api\institutions\[id]\route.ts:50 - .from('institutions')
+Context: .from('institutions')             .update(updates)             .eq('id', id)             .select()             .single();          if (updateError) throw updateError;          // Audit Logging        ...
+VerifyUser in file: True
+
+d:\MediaHive App\src\app\api\inventory\stats\route.ts:19 - .from('inventory')
+Context: .from('inventory').select('*', { count: 'exact', head: true }),             supabase.from('inventory').select('*', { count: 'exact', head: true }).eq('status', 'in_use'),             supabase.from('in...
+VerifyUser in file: True
+
+d:\MediaHive App\src\app\api\inventory\stats\route.ts:20 - .from('inventory')
+Context: .from('inventory').select('*', { count: 'exact', head: true }).eq('status', 'in_use'),             supabase.from('inventory').select('*', { count: 'exact', head: true }).in('status', ['broken', 'lost'...
+VerifyUser in file: True
+
+d:\MediaHive App\src\app\api\inventory\stats\route.ts:21 - .from('inventory')
+Context: .from('inventory').select('*', { count: 'exact', head: true }).in('status', ['broken', 'lost', 'out'])         ]);          const total = totalRes.count || 0;         const inUse = inUseRes.count || 0...
+VerifyUser in file: True
+
+d:\MediaHive App\src\app\api\reports\overview\route.ts:34 - .from('tasks')
+Context: .from('tasks').select('*', { count: 'exact', head: true }).match(instId ? { institution_id: instId } : {}),             supabase.from('system_events').select('*', { count: 'exact', head: true }).match...
+VerifyUser in file: True
+
+d:\MediaHive App\src\app\api\reports\overview\route.ts:36 - .from('inventory')
+Context: .from('inventory').select('*', { count: 'exact', head: true }).match(instId ? { institution_id: instId } : {}),             supabase.from('inventory').select('*', { count: 'exact', head: true }).match...
+VerifyUser in file: True
+
+d:\MediaHive App\src\app\api\reports\overview\route.ts:37 - .from('inventory')
+Context: .from('inventory').select('*', { count: 'exact', head: true }).match({ ...(instId ? { institution_id: instId } : {}), status: 'low' }),             supabase.from('inventory').select('*', { count: 'exa...
+VerifyUser in file: True
+
+d:\MediaHive App\src\app\api\reports\overview\route.ts:38 - .from('inventory')
+Context: .from('inventory').select('*', { count: 'exact', head: true }).match({ ...(instId ? { institution_id: instId } : {}), status: 'out' })         ]);          return NextResponse.json({             overv...
+VerifyUser in file: True
+
+d:\MediaHive App\src\app\api\reports\personal\route.ts:21 - .from('tasks')
+Context: .from('tasks')             .select('*')             .eq('assigned_to_id', userId)             .eq('is_archived', false)             .order('created_at', { ascending: false });          if (error) {   ...
+VerifyUser in file: True
+
+d:\MediaHive App\src\app\api\tasks\route.ts:33 - .from('tasks')
+Context: .from('tasks')                 .select('*'),             tenantId         )             .eq('deleted', false)             .order('created_at', { ascending: false });          if (error) throw error;  ...
+VerifyUser in file: True
+
+d:\MediaHive App\src\app\api\tasks\route.ts:83 - .from('tasks')
+Context: .from('tasks')             .insert(taskData)             .select()             .single();          if (error) throw error;          return apiResponse(data, 201);     } catch (error: any) {         co...
+VerifyUser in file: True
+
+d:\MediaHive App\src\app\api\tasks\[id]\route.ts:35 - .from('tasks')
+Context: .from('tasks')                 .select('*'),             tenantId         )             .eq('id', id)             .single();          if (error || !data) return apiError('Task not found', 404);       ...
+VerifyUser in file: True
+
+d:\MediaHive App\src\app\api\users\me\route.ts:35 - .from('institutions')
+Context: .from('institutions')         .select('id')         .eq('name', 'Thaiba Garden')         .single();        const newProfile = {         id: uid,         email: email || null,         role: 'guest', //...
+VerifyUser in file: True
+
+d:\MediaHive App\src\app\report-preview\ReportPreviewClient.tsx:36 - .from('tasks')
+Context: .from('tasks')                     .select('*')                     .gte('created_at', start.toISOString())                     .lte('created_at', end.toISOString());                  if (error) throw...
+VerifyUser in file: False
+
+d:\MediaHive App\src\components\PrivacyCenter.tsx:36 - .from('tasks')
+Context: .from('tasks').select('*').eq('created_by->uid', user?.uid);              // Fetch audit trails for these records (Mock/Partial for demo)             const auditLogs = await AuditTrailService.exportEn...
+VerifyUser in file: False
+
+d:\MediaHive App\src\components\TaskActivity.tsx:42 - .from('tasks')
+Context: .from('tasks').select('activity').eq('id', taskId).single();         if (error) throw error;         setActivities(taskData?.activity || []);       } catch (error) {         console.error('Failed to f...
+VerifyUser in file: False
+
+d:\MediaHive App\src\components\home\widgets\MyFocusWidget.tsx:88 - .from('tasks')
+Context: .from('tasks').update({ status: 'done' }).eq('id', t.id); },                     { serializableOp: { type: 'updateTask', args: [t.id, { status: 'done' }] } }                 );             } else {   ...
+VerifyUser in file: False
+
+d:\MediaHive App\src\components\home\widgets\MyFocusWidget.tsx:92 - .from('tasks')
+Context: .from('tasks').update({ status: 'done', completed_at: new Date().toISOString() }).eq('id', t.id);             }         }     });      const getTimeContext = (date: any): string => {         if (!date...
+VerifyUser in file: False
+
+d:\MediaHive App\src\components\home\widgets\MyFocusWidget.tsx:180 - .from('tasks')
+Context: .from('tasks').update({ status: 'done' }).eq('id', task.id); },                                     { serializableOp: { type: 'updateTask', args: [task.id, { status: 'done' }] } }                     ...
+VerifyUser in file: False
+
+d:\MediaHive App\src\components\home\widgets\MyFocusWidget.tsx:184 - .from('tasks')
+Context: .from('tasks').update({ status: 'done', completed_at: new Date().toISOString() }).eq('id', task.id);                             }                         }}                     />                 ))}...
+VerifyUser in file: False
+
+d:\MediaHive App\src\components\profile\ActivitySummary.tsx:21 - .from('tasks')
+Context: .from('tasks')                     .select('*', { count: 'exact', head: true })                     .eq('created_by_id', user.uid);                  // 2. Tasks Completed                 const { count...
+VerifyUser in file: False
+
+d:\MediaHive App\src\components\profile\ActivitySummary.tsx:27 - .from('tasks')
+Context: .from('tasks')                     .select('*', { count: 'exact', head: true })                     .eq('created_by_id', user.uid)                     .eq('status', 'done');                  if (!reqE...
+VerifyUser in file: False
+
+d:\MediaHive App\src\components\tasks\AttachmentSection.tsx:76 - .from('tasks')
+Context: .from('tasks').update({ files: updatedFiles }).eq('id', task.id);              toast.success('File uploaded successfully');             onUpdate();         } catch (error) {             console.error(...
+VerifyUser in file: False
+
+d:\MediaHive App\src\components\tasks\AttachmentSection.tsx:99 - .from('tasks')
+Context: .from('tasks').update({ files: updatedFiles }).eq('id', task.id);              toast.success('File deleted');             onUpdate();         } catch (error) {             console.error('Delete failed...
+VerifyUser in file: False
+
+d:\MediaHive App\src\components\tasks\AttachmentSection.tsx:115 - .from('tasks')
+Context: .from('tasks').update({ files: updatedFiles }).eq('id', task.id);             toast.success(newVal ? 'File is now Public' : 'File is now Private');             onUpdate();         } catch (e) {       ...
+VerifyUser in file: False
+
+d:\MediaHive App\src\components\tasks\EditTaskDialog.tsx:98 - .from('tasks')
+Context: .from('tasks').select('*').eq('id', task.id).single().then(({ data: fresh }) => {                 if (fresh) {                     setFullTask(fresh as any);                 }             });         ...
+VerifyUser in file: False
+
+d:\MediaHive App\src\components\tasks\EditTaskDialog.tsx:414 - .from('tasks')
+Context: .from('tasks').select('*').eq('id', task.id).single().then(({ data: t }) => t && setFullTask(t as any));                                 }}                             />                         </div...
+VerifyUser in file: False
+
+d:\MediaHive App\src\components\tasks\TaskComments.tsx:49 - .from('tasks')
+Context: .from('tasks').select('activity').eq('id', taskId).single();             const currentActivity = taskData?.activity || [];              const { error } = await supabase.from('tasks').update({         ...
+VerifyUser in file: False
+
+d:\MediaHive App\src\components\tasks\TaskComments.tsx:52 - .from('tasks')
+Context: .from('tasks').update({                 activity: [...currentActivity, newCommentObj]             }).eq('id', taskId);              if (error) throw error;              setNewComment('');             ...
+VerifyUser in file: False
+
+d:\MediaHive App\src\components\tasks\TaskDetailModalV2.tsx:95 - .from('tasks')
+Context: .from('tasks').delete().eq('id', task.id);                         ActivityHistory.push(task.id, {                             action: 'deleted',                             label: buildActivityLabel(...
+VerifyUser in file: False
+
+d:\MediaHive App\src\components\tasks\TaskDetailModalV2.tsx:132 - .from('tasks')
+Context: .from('tasks').update(snap).eq('id', task.id);                                         ActivityHistory.push(task.id, {                                             action: 'restored',                  ...
+VerifyUser in file: False
+
+d:\MediaHive App\src\components\tasks\TaskDetailModalV2.tsx:153 - .from('tasks')
+Context: .from('tasks').delete().eq('id', task.id);                  // Log activity                 ActivityHistory.push(task.id, { action: 'deleted', label: buildActivityLabel('deleted'), actorUid: user?.uid...
+VerifyUser in file: False
+
+d:\MediaHive App\src\components\tasks\TaskDetailModalV2.tsx:170 - .from('tasks')
+Context: .from('tasks').update(snap).eq('id', task.id);                                 toast.success('Task restored');                             } catch {                                 toast.error('Undo f...
+VerifyUser in file: False
+
+d:\MediaHive App\src\components\tasks\TaskDetailModalV2.tsx:606 - .from('tasks')
+Context: .from('tasks').select('*').eq('id', task.id).single().then(({ data }) => data && setFullTask(data as any));                                     }}                                 />                   ...
+VerifyUser in file: False
+
+d:\MediaHive App\src\components\tasks\TaskDetailModalV2.tsx:618 - .from('tasks')
+Context: .from('tasks').select('*').eq('id', task.id).single().then(({ data }) => data && setFullTask(data as any));                                         }}                                     />           ...
+VerifyUser in file: False
+
+d:\MediaHive App\src\components\tasks\TaskDetailModalV2.tsx:630 - .from('tasks')
+Context: .from('tasks').select('*').eq('id', task.id).single().then(({ data }) => data && setFullTask(data as any));                                     }}                                 />                   ...
+VerifyUser in file: False
+
+d:\MediaHive App\src\components\tasks\TaskListView.tsx:490 - .from('tasks')
+Context: .from('tasks').update({ deleted: true }).eq('id', taskId);                         ActivityHistory.push(taskId, {                             action: 'deleted',                             label: buil...
+VerifyUser in file: False
+
+d:\MediaHive App\src\components\tasks\TaskListView.tsx:553 - .from('tasks')
+Context: .from('tasks').update(updates).eq('id', taskId),             { serializableOp: { type: 'updateTask', args: [taskId, updates] } }         );     }, [onTaskMutate]);      const handlePriorityUpdate = us...
+VerifyUser in file: False
+
+d:\MediaHive App\src\components\tasks\TaskListView.tsx:562 - .from('tasks')
+Context: .from('tasks').update({ priority: newPriority as any }).eq('id', taskId),             { serializableOp: { type: 'updateTask', args: [taskId, { priority: newPriority as any }] } }         );     }, [on...
+VerifyUser in file: False
+
+d:\MediaHive App\src\components\tasks\TaskSubtasks.tsx:48 - .from('tasks')
+Context: .from('tasks').select('subtasks').eq('id', taskId).single();             const currentSubtasks = taskData?.subtasks || [];              const { error } = await supabase.from('tasks').update({         ...
+VerifyUser in file: False
+
+d:\MediaHive App\src\components\tasks\TaskSubtasks.tsx:51 - .from('tasks')
+Context: .from('tasks').update({                 subtasks: [...currentSubtasks, newSubtask]             }).eq('id', taskId);              if (error) throw error;              setNewSubtaskTitle('');           ...
+VerifyUser in file: False
+
+d:\MediaHive App\src\components\tasks\TaskSubtasks.tsx:71 - .from('tasks')
+Context: .from('tasks').select('subtasks').eq('id', taskId).single();             const currentSubtasks = taskData?.subtasks || [];              const updatedSubtasks = currentSubtasks.map((st: any) =>        ...
+VerifyUser in file: False
+
+d:\MediaHive App\src\components\tasks\TaskSubtasks.tsx:78 - .from('tasks')
+Context: .from('tasks').update({                 subtasks: updatedSubtasks             }).eq('id', taskId);              if (error) throw error;              onUpdate();         } catch (error) {             c...
+VerifyUser in file: False
+
+d:\MediaHive App\src\components\tasks\TaskSubtasks.tsx:95 - .from('tasks')
+Context: .from('tasks').select('subtasks').eq('id', taskId).single();             const currentSubtasks = taskData?.subtasks || [];             const remainingSubtasks = currentSubtasks.filter((st: any) => st....
+VerifyUser in file: False
+
+d:\MediaHive App\src\components\tasks\TaskSubtasks.tsx:99 - .from('tasks')
+Context: .from('tasks').update({                 subtasks: remainingSubtasks             }).eq('id', taskId);              if (error) throw error;              onUpdate();             toast.success('Subtask de...
+VerifyUser in file: False
+
+d:\MediaHive App\src\contexts\TaskContext.tsx:41 - .from('tasks')
+Context: .from('tasks').select('*');                      if (user.institution_id) {                         query = query.eq('institution_id', user.institution_id);                     }                      ...
+VerifyUser in file: False
+
+d:\MediaHive App\src\contexts\TaskContext.tsx:97 - .from('tasks')
+Context: .from('tasks').insert(newTask);             if (error) throw error;         } catch (error: any) {             console.error('Error creating task:', error);             // Handle network-specific erro...
+VerifyUser in file: False
+
+d:\MediaHive App\src\contexts\TaskContext.tsx:112 - .from('tasks')
+Context: .from('tasks').update(data).eq('id', id);             if (error) throw error;         } catch (error: any) {             console.error('Error updating task:', error);             // Handle network-spe...
+VerifyUser in file: False
+
+d:\MediaHive App\src\lib\drive-init.ts:68 - .from('campaigns')
+Context: .from('campaigns')         .select('drive_folder_id')         .eq('id', campaign_id)         .maybeSingle();      if (campaign?.drive_folder_id) {         return campaign.drive_folder_id;     }      c...
+VerifyUser in file: False
+
+d:\MediaHive App\src\lib\drive-init.ts:84 - .from('campaigns')
+Context: .from('campaigns')         .update({ drive_folder_id: folderId })         .eq('id', campaign_id);      return folderId; }  export async function getStandaloneTasksFolderId(): Promise<string> {     con...
+VerifyUser in file: False
+
+d:\MediaHive App\src\lib\drive-init.ts:101 - .from('tasks')
+Context: .from('tasks')         .select('drive_folder_id, campaign_id')         .eq('id', taskId)         .maybeSingle();      if (task?.drive_folder_id) {         return task.drive_folder_id;     }      let p...
+VerifyUser in file: False
+
+d:\MediaHive App\src\lib\drive-init.ts:115 - .from('campaigns')
+Context: .from('campaigns')             .select('name')             .eq('id', effectiveCampaignId)             .maybeSingle();          if (campaign) {             parentFolderId = await ensureCampaignFolder(e...
+VerifyUser in file: False
+
+d:\MediaHive App\src\lib\drive-init.ts:133 - .from('tasks')
+Context: .from('tasks')         .update({ drive_folder_id: folderId })         .eq('id', taskId);      return folderId; }  ...
+VerifyUser in file: False
+
+d:\MediaHive App\src\lib\prefetch\tasks.ts:26 - .from('tasks')
+Context: .from('tasks').select('*');      // Explicitly casting string parameters where needed since filtering could be complex     query = query.eq('institution_id', institution_id.toString());     // Note: A...
+VerifyUser in file: False
+

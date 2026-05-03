@@ -27,7 +27,7 @@ export const DeliverableUploadModal: React.FC<DeliverableUploadModalProps> = ({
     const [customName, setCustomName] = useState('');
     const [isFinal, setIsFinal] = useState(false); // Controls uploadContext
 
-    const canMarkFinal = user?.role === 'admin' || user?.role === 'team';
+    const canMarkFinal = user?.role === 'admin' || user?.role === 'manager' || user?.role === 'member';
 
     const onDrop = (acceptedFiles: File[]) => {
         if (acceptedFiles && acceptedFiles[0]) {

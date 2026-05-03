@@ -1,7 +1,17 @@
-import { apiClient } from '@/lib/apiClient';
-import { Task } from '@/types/task';
-import { Event } from '@/types/event';
-import { TASK_FETCH_LIMIT, EVENT_FETCH_LIMIT, COMPLETED_TASK_RETENTION_DAYS } from '@/config/systemLimits';
+import { TABLES } from '@/lib/dbTables';
+import { safeQuery } from '@/lib/safeQuery';
+import { supabase } from '@/lib/supabaseClient';
+import { MediaTask as Task } from '@/services/tasks/taskContract';
+import { EventItem as Event } from '@/services/events/eventContract';
+import { SYSTEM_LIMITS, COMPLETED_TASK_RETENTION_DAYS, TASK_FETCH_LIMIT, EVENT_FETCH_LIMIT } from '@/domain/system/systemLimits';
+import { TaskSchema, EventSchema, UserSchema } from '@/domain/schemas';
+import { tenantContext } from '@/lib/auth/tenantContext';
+import { synergySyncManager } from '@/system/realtimeSync';
+import { toast } from 'sonner';
+
+import { healthManager } from '@/lib/health/healthState';
+import { offlineDB, db } from '@/lib/offline/db';
+import { MonitoringService } from '@/services/monitoringService';
 
 // Helper to check for network/auth errors to avoid console noise
 const isNetworkError = (error: any) => {
@@ -18,19 +28,19 @@ const isNetworkError = (error: any) => {
 
 export interface TaskFilters {
   role?: string;
-  user_id?: string;
-  institution_id?: string;
+  userId?: string;
+  institutionId?: string;
   status?: string[];
   includeDemoData?: boolean;
-  assigned_to?: string;
-  created_by?: string;
+  assignedTo?: string;
+  createdBy?: string;
   signal?: AbortSignal;
 }
 
 export interface EventFilters {
   role?: string;
   user_id?: string;
-  institution_id?: string;
+  institutionId?: string;
   status?: string[];
   created_by?: string;
   signal?: AbortSignal;
@@ -61,63 +71,262 @@ export interface EventStats {
   next7Days: number;
   next30Days: number;
 }
-// ... TaskStats interface ... (unchanged)
+
+export interface OperationalSummary {
+  events: Event[];
+  tasks: Task[];
+  crew: any[];
+  equipment: any[];
+}
 
 /**
  * CanonicalDataService
  */
 export class CanonicalDataService {
   /**
+   * Patch multiple fields on an entity atomically
+   * Supports real-time collaboration and offline queuing
+   */
+  static async patchFields(
+    table: string, 
+    id: string, 
+    fields: Record<string, any>, 
+    entityType?: string, // e.g., 'event' or 'task'
+    baseUpdatedAt?: string,
+    baseVersion?: number
+  ): Promise<boolean> {
+    if (healthManager.shouldPauseActivities()) return false;
+
+    const { tenantId, userId } = await tenantContext();
+    const payload: any = { ...fields, updated_at: new Date().toISOString(), updated_by: userId };
+
+    // 1. Special Handling: Task Assignments (Relational Migration)
+    // If we are updating a task's assigned_to, we diff against local state and enqueue relational mutations
+    const assignmentField = fields.assigned_to || fields.assignedTo;
+    if ((entityType === 'task' || table === TABLES.TASKS) && assignmentField) {
+      try {
+        const currentTask = await db.tasks.get(id);
+        // Normalize previous and new IDs
+        const previousIds = (currentTask?.assigned_to || currentTask?.assignedTo || [])
+          .map((u: any) => typeof u === 'string' ? u : u.uid);
+        const newIds = (assignmentField || [])
+          .map((u: any) => typeof u === 'string' ? u : u.uid);
+
+        const { syncEngine } = require('@/lib/offline/queueManager');
+
+        // Calculate diff
+        const toAssign = newIds.filter((uid: string) => !previousIds.includes(uid));
+        const toUnassign = previousIds.filter((uid: string) => !newIds.includes(uid));
+
+        for (const uid of toAssign) {
+          await syncEngine.enqueueMutation('ASSIGN_USER', { task_id: id, user_id: uid, tenant_id: tenantId });
+        }
+        for (const uid of toUnassign) {
+          await syncEngine.enqueueMutation('UNASSIGN_USER', { task_id: id, user_id: uid, tenant_id: tenantId });
+        }
+
+        // We KEEP assigned_to in the payload so the legacy trigger sync_task_assignments_trigger 
+        // doesn't fight with our manual relational insertions.
+        // Actually, deleting it is safer if we trust the trigger on task_assignments (sync_legacy_assigned_to_trigger)
+        // to update the legacy column.
+        delete payload.assigned_to;
+        delete payload.assignedTo;
+      } catch (e) {
+        console.error('[CanonicalDataService] Failed to diff task assignments:', e);
+      }
+    }
+
+    // 2. Broadcast to real-time peers (optimistic)
+    if (entityType) {
+      const { collabManager } = require('@/lib/collaboration/collabManager');
+      collabManager.broadcastUpdate(entityType, id, fields);
+    }
+
+    // 3. Persist via True Offline Sync Engine
+    const { syncEngine } = require('@/lib/offline/queueManager');
+    const mutationType = `UPDATE_${(entityType || table).toUpperCase()}`;
+    await syncEngine.enqueueMutation(mutationType, { id, ...payload, tenant_id: tenantId }, baseUpdatedAt, baseVersion);
+
+    return true;
+  }
+
+  /**
+   * Create a new record with offline-first support
+   */
+  static async createRecord(
+    table: string, 
+    data: any, 
+    entityType?: string // e.g., 'event' or 'task'
+  ): Promise<{ data: any; error: any }> {
+    if (healthManager.shouldPauseActivities()) return { data: null, error: new Error('System maintenance in progress') };
+
+    const { tenantId, userId } = await tenantContext();
+    const payload = { ...data, tenant_id: tenantId, created_at: new Date().toISOString(), created_by: userId };
+
+    const { syncEngine } = require('@/lib/offline/queueManager');
+
+    // Special Handling: Task Assignments (Relational Migration)
+    // Prevent legacy JSONB writes even on creation
+    const assignmentField = payload.assigned_to || payload.assignedTo;
+    if ((entityType === 'task' || table === TABLES.TASKS) && assignmentField) {
+      // 1. Generate Task ID upfront
+      const taskId = crypto.randomUUID();
+      payload.id = taskId;
+
+      // 2. Extract assignments
+      const uids = (assignmentField || []).map((u: any) => typeof u === 'string' ? u : u.uid);
+      
+      // 3. Enqueue relational assignments first
+      for (const uid of uids) {
+        await syncEngine.enqueueMutation('ASSIGN_USER', { task_id: taskId, user_id: uid, tenant_id: tenantId });
+      }
+
+      // 4. Cleanup legacy fields from creation payload
+      delete payload.assigned_to;
+      delete payload.assignedTo;
+    }
+
+    // 5. Broadcast to real-time peers (optimistic)
+    if (entityType) {
+      const { collabManager } = require('@/lib/collaboration/collabManager');
+      collabManager.broadcastUpdate(entityType, payload.id || 'new', payload);
+    }
+
+    // 6. Persist via True Offline Sync Engine
+    const mutationType = `CREATE_${(entityType || table).toUpperCase()}`;
+    const finalId = await syncEngine.enqueueMutation(mutationType, payload);
+
+    return { data: { ...payload, id: finalId }, error: null };
+  }
+
+  /**
+   * Create multiple records atomically
+   */
+  static async bulkCreateRecords(
+    table: string,
+    records: any[],
+    entityType?: string
+  ): Promise<boolean> {
+    if (healthManager.shouldPauseActivities()) return false;
+
+    const { tenantId } = await tenantContext();
+    const payload = records.map(r => ({
+      ...r,
+      tenant_id: tenantId,
+      created_at: new Date().toISOString()
+    }));
+
+    const { syncEngine } = require('@/lib/offline/queueManager');
+    const mutationType = `BULK_CREATE_${(entityType || table).toUpperCase()}`;
+    await syncEngine.enqueueMutation(mutationType, { records: payload, tenant_id: tenantId });
+
+    return true;
+  }
+
+  /**
+   * Update multiple records atomically
+   */
+  static async bulkUpdateFields(
+    table: string,
+    updates: { id: string; fields: Record<string, any> }[],
+    entityType?: string
+  ): Promise<boolean> {
+    if (healthManager.shouldPauseActivities()) return false;
+
+    const { tenantId, userId } = await tenantContext();
+    const payload = updates.map(u => ({
+      id: u.id,
+      ...u.fields,
+      tenant_id: tenantId,
+      updated_at: new Date().toISOString(),
+      updated_by: userId
+    }));
+
+    const { syncEngine } = require('@/lib/offline/queueManager');
+    const mutationType = `BULK_UPDATE_${(entityType || table).toUpperCase()}`;
+    await syncEngine.enqueueMutation(mutationType, { updates: payload, tenant_id: tenantId });
+
+    return true;
+  }
+
+  /**
    * Get tasks with consistent filtering based on user role and filters
    */
   static async getTasks(filters: TaskFilters = {}): Promise<Task[]> {
+    if (healthManager.shouldPauseActivities()) {
+      console.warn('[CanonicalDataService] System pulse DEAD. Attempting cached tasks fallback.');
+      if (typeof window !== 'undefined') {
+        try {
+          const cached = await db.tasks.toArray();
+          if (cached.length > 0) {
+            toast('Offline - Showing last known data', { id: 'stale-tasks-toast', icon: '📡' });
+            return cached;
+          }
+        } catch (e) {}
+      }
+      return [];
+    }
+
     try {
-      const { supabase } = await import('@/lib/supabaseClient');
+      const { tenantId } = await tenantContext();
       const fetchStart = Date.now();
-      console.log(`[BOOT][STEP] Fetching tasks directly from Supabase for role: ${filters.role || 'unknown'}`);
+      console.log(`[BOOT][STEP] Fetching tasks from Supabase for role: ${filters.role || 'unknown'}`);
 
-      let query = supabase.from('tasks').select('*');
+      let query = supabase
+        .from(TABLES.TASKS)
+        .select(`
+          *, 
+          version, 
+          updated_by,
+          task_assignments(
+            user_id,
+            role,
+            profiles:${TABLES.USERS}(id, full_name, avatar_url)
+          )
+        `)
+        .eq('tenant_id', tenantId)
+        .eq('deleted', false);
 
-      if (filters.institution_id) {
-        query = query.eq('institution_id', filters.institution_id);
+      if (filters.institutionId) {
+        query = query.eq('institution_id', filters.institutionId);
       }
       if (filters.status && filters.status.length > 0) {
         query = query.in('status', filters.status);
       }
-      if (filters.created_by) {
-        // Querying JSONB column 'created_by'
-        query = query.eq('created_by->>uid', filters.created_by);
+      if (filters.createdBy) {
+      query = query.eq('created_by', filters.createdBy);
+      }
+      if (filters.assignedTo) {
+        // Use the new join table for filtering
+        query = query.filter('task_assignments.user_id', 'eq', filters.assignedTo);
       }
 
-      // Order and limit
-      query = query.order('created_at', { ascending: false }).limit(TASK_FETCH_LIMIT + 1);
+      const { data: tasks, error } = await safeQuery(() => query
+        .order('created_at', { ascending: false })
+        .limit(TASK_FETCH_LIMIT + 1)
+      ) as { data: any[]; error: any };
 
-      if (filters.signal) {
-        query = query.abortSignal(filters.signal);
-      }
+      if (error) throw error;
 
-      const { data: rawTasks, error } = await query;
-
-      if (error) {
-        if (error.name === 'AbortError' || error.message?.includes('AbortError')) {
-          console.log('[CanonicalDataService] Task fetch aborted');
-          return [];
-        }
-        console.error('Supabase tasks fetch error:', error.message);
-        throw error;
-      }
       console.log(`[BOOT][DONE] Tasks fetched in ${Date.now() - fetchStart}ms`);
 
-      const tasks = rawTasks || [];
-      const isCapped = tasks.length > TASK_FETCH_LIMIT;
-      if (isCapped) tasks.pop();
+      const isCapped = ((tasks as any[])?.length || 0) > TASK_FETCH_LIMIT;
+      const finalTasks = isCapped ? (tasks as any[]).slice(0, TASK_FETCH_LIMIT) : (tasks || []);
 
       const now = new Date();
       const sevenDaysAgo = new Date(now.getTime() - COMPLETED_TASK_RETENTION_DAYS * 24 * 60 * 60 * 1000);
 
-      const processedTasks = tasks
+      const { mapTask } = await import('@/services/tasks/taskService');
+
+      const processedTasks = finalTasks
         .filter((task: any) => {
-          if (task.deleted || task.is_archived) return false;
+          // DTO Validation
+          const parsed = TaskSchema.safeParse(task);
+          if (!parsed.success) {
+            console.warn("[CanonicalDataService] DTO validation failed for task:", parsed.error);
+          }
+
+          if (task.is_archived) return false;
 
           if (task.status === 'done') {
             const dateStr = task.updated_at || task.created_at;
@@ -126,12 +335,10 @@ export class CanonicalDataService {
           }
           return true;
         })
-        .map((task: any) => ({
-          ...task
-        }));
+        .map(mapTask);
 
       (processedTasks as any).__meta = {
-        total: tasks.length,
+        total: finalTasks.length,
         isCapped,
         limit: TASK_FETCH_LIMIT
       };
@@ -140,29 +347,39 @@ export class CanonicalDataService {
         console.warn(`[DEGRADATION] Tasks capped at ${TASK_FETCH_LIMIT}. Showing partial results.`);
       }
 
+      if (typeof window !== 'undefined') {
+        try {
+          // Clear old tasks from this tenant/institution if needed, or just bulkPut
+          // Since we might have multiple institutions, we might want to be selective.
+          // For now, bulkPut is safe as IDs are unique.
+          await db.tasks.bulkPut(processedTasks);
+        } catch (e) { /* ignore IndexedDB errors */ }
+      }
+
       return processedTasks as Task[];
     } catch (error: any) {
+      if (typeof window !== 'undefined' && isNetworkError(error)) {
+        try {
+          const cached = await db.tasks.toArray();
+          if (cached.length > 0) {
+            toast('Offline - Showing last known data', { id: 'stale-tasks-toast', icon: '📡' });
+            return cached;
+          }
+        } catch (e) {}
+      }
+      
       if (!isNetworkError(error)) {
-        console.error('Error fetching tasks:', error);
+        console.error('Error fetching tasks:', JSON.stringify(error, null, 2));
       }
       return [];
     }
   }
 
-  // ... (getTaskStats unchanged) ...
   static async getTaskStats(filters: TaskFilters = {}, options: { disableFallback?: boolean } = {}): Promise<TaskStats> {
-    const API_TASK_STATS_ENABLED = false;
-    if (!API_TASK_STATS_ENABLED) {
-      if (options.disableFallback) return this.getEmptyStats();
-      // Only pass signal down to avoid aborting stats mid-computation if parent component unmounts
-      const tasks = await this.getTasks(filters);
-      return this.calculateStatsFromTasks(tasks);
-    }
-    // ... rest of API logic omitted for brevity as it's disabled ...
-    return this.getEmptyStats();
+    const tasks = await this.getTasks(filters);
+    return this.calculateStatsFromTasks(tasks);
   }
 
-  // ... (getEmptyStats unchanged) ...
   private static getEmptyStats(): TaskStats {
     return { todo: 0, inProgress: 0, onHold: 0, review: 0, done: 0, pending: 0, total: 0, working: 0, completed: 0, overdue: 0, dueToday: 0, next7Days: 0 };
   }
@@ -187,8 +404,8 @@ export class CanonicalDataService {
         case 'pending': stats.pending++; break;
       }
 
-      if (task.status !== 'done' && task.due_date) {
-        const due = new Date(task.due_date);
+      if (task.status !== 'done' && task.dueDate) {
+        const due = new Date(task.dueDate);
 
         if (due < now) stats.overdue++;
         if (due >= todayStart && due <= todayEnd) stats.dueToday++;
@@ -198,51 +415,68 @@ export class CanonicalDataService {
     return stats;
   }
 
+  /**
+   * Get events with consistent filtering
+   */
   static async getEvents(filters: EventFilters = {}): Promise<Event[]> {
+    if (healthManager.shouldPauseActivities()) {
+      console.warn('[CanonicalDataService] System pulse DEAD. Attempting cached events fallback.');
+      if (typeof window !== 'undefined') {
+        try {
+          const cached = await offlineDB.getCache('mediahive_cache_events');
+          if (cached) {
+            toast('Offline - Showing last known data', { id: 'stale-events-toast', icon: '📡' });
+            return cached;
+          }
+        } catch (e) {}
+      }
+      return [];
+    }
+
     try {
-      const { supabase } = await import('@/lib/supabaseClient');
+      const { tenantId } = await tenantContext();
       const fetchStart = Date.now();
-      console.log(`[BOOT][STEP] Fetching events directly from Supabase for role: ${filters.role || 'unknown'}`);
+      console.log(`[BOOT][STEP] Fetching events from Supabase for role: ${filters.role || 'unknown'}`);
+      let query = supabase
+        .from(TABLES.EVENTS)
+        .select('*, version, updated_by')
+        .eq('tenant_id', tenantId);
 
-      let query = supabase.from('events').select('*');
-
-      if (filters.institution_id) {
-        query = query.eq('institution_id', filters.institution_id);
+      if (filters.institutionId) {
+        query = query.eq('institution_id', filters.institutionId);
       }
       if (filters.status && filters.status.length > 0) {
         query = query.in('status', filters.status);
       }
       if (filters.created_by) {
-        query = query.eq('created_by->>uid', filters.created_by);
+        query = query.eq('created_by', filters.created_by);
       }
 
-      // Order and limit
-      query = query.order('start_at', { ascending: false }).limit(EVENT_FETCH_LIMIT + 1);
+      const { data: rawEvents, error } = await safeQuery(() => query
+        .order('start_at', { ascending: false })
+        .limit(EVENT_FETCH_LIMIT + 1)
+      ) as { data: any[]; error: any };
 
-      if (filters.signal) {
-        query = query.abortSignal(filters.signal);
-      }
+      if (error) throw error;
 
-      const { data: rawEvents, error } = await query;
-
-      if (error) {
-        if (error.name === 'AbortError' || error.message?.includes('AbortError')) {
-          console.log('[CanonicalDataService] Event fetch aborted');
-          return [];
-        }
-        console.error('Supabase events fetch error:', error.message);
-        throw error;
-      }
       console.log(`[BOOT][DONE] Events fetched in ${Date.now() - fetchStart}ms`);
 
-      const userEvents = rawEvents || [];
-      const isCapped = userEvents.length > EVENT_FETCH_LIMIT;
-      if (isCapped) userEvents.pop();
+      const isCapped = ((rawEvents as any[])?.length || 0) > EVENT_FETCH_LIMIT;
+      const finalEvents = isCapped ? (rawEvents as any[]).slice(0, EVENT_FETCH_LIMIT) : (rawEvents || []);
 
+      const { mapEvent } = await import('@/services/events/eventService');
+      const mappedUserEvents = finalEvents.map((item: any) => {
+        // DTO Validation
+        const parsed = EventSchema.safeParse(item);
+        if (!parsed.success) {
+          console.warn("[CanonicalDataService] DTO validation failed for event:", parsed.error);
+        }
+        return mapEvent(item);
+      });
+
+      // Always merge system events (they are static, safe to import anywhere)
       try {
-        if (typeof window !== 'undefined') return userEvents;
-
-        const { SystemEventService } = await import('@/services/systemEventService');
+        const { SystemEventService } = await import('@/features/events/services/systemEventService');
         const currentYear = new Date().getFullYear();
         const allSystemEvents = await SystemEventService.getAllSystemEvents();
         const systemEvents = SystemEventService.expandEventsForView(allSystemEvents, currentYear);
@@ -250,22 +484,40 @@ export class CanonicalDataService {
         const formattedSystemEvents = systemEvents.map(se => ({
           ...se,
           is_system_event: true,
-          start_time: se.date, // system events might still use date, keep as is
-          end_time: se.date,
+          startTime: se.date,
+          endTime: se.date,
         })) as any[];
 
-        const allEvents = [...userEvents, ...formattedSystemEvents];
-        (allEvents as any).__meta = { total: userEvents.length, isCapped, limit: EVENT_FETCH_LIMIT };
+        const allEvents = [...mappedUserEvents, ...formattedSystemEvents];
+        (allEvents as any).__meta = { total: finalEvents.length, isCapped, limit: EVENT_FETCH_LIMIT };
+
+        if (typeof window !== 'undefined') {
+          try {
+            await db.events.bulkPut(allEvents);
+          } catch (e) {}
+        }
+
         return allEvents as Event[];
       } catch (err) {
-        return userEvents as Event[];
+        // System events failed — return user events only with meta
+        (mappedUserEvents as any).__meta = { total: finalEvents.length, isCapped, limit: EVENT_FETCH_LIMIT };
+        return mappedUserEvents as Event[];
       }
     } catch (error: any) {
+      if (typeof window !== 'undefined' && isNetworkError(error)) {
+        try {
+          const cached = await offlineDB.getCache('mediahive_cache_events');
+          if (cached) {
+            toast('Offline - Showing last known data', { id: 'stale-events-toast', icon: '📡' });
+            return cached;
+          }
+        } catch (e) {}
+      }
+      console.error('Error fetching events:', JSON.stringify(error, null, 2));
       return [];
     }
   }
 
-  // ... (getEventStats unchanged in logic, but relies on Event properties) ...
   static async getEventStats(filters: EventFilters = {}): Promise<EventStats> {
     const events = await this.getEvents(filters);
     const now = new Date();
@@ -277,13 +529,11 @@ export class CanonicalDataService {
     let thisMonthCount = 0; let holidays = 0; let meetings = 0;
 
     events.forEach(event => {
-      if (!event.start_at) return;
-      const eventDate = new Date(event.start_at as any);
+      if (!event.startTime) return;
+      const eventDate = new Date(event.startTime as any);
 
-      // status field on event type: pending | approved | rejected
-      if (event.status === 'approved') completed++; // Assuming approved events are 'completed' for stats?
-      if ((event.type as any) === 'holiday') holidays++; // Logic depends on actual holiday type mapping
-      // meetings: event.type can be 'meeting'
+      if ((event as any).status === 'approved') completed++;
+      if ((event as any).type === 'holiday') holidays++;
       if (event.type === 'meeting') meetings++;
       if (eventDate.getMonth() === thisMonth) thisMonthCount++;
 
@@ -306,22 +556,15 @@ export class CanonicalDataService {
     };
   }
 
-  /**
-   * Get filtered events with consistent time-based logic for list views
-   */
   static async getFilteredEventsForList(filters: EventFilters = {}): Promise<Event[]> {
     try {
       const events = await this.getEvents(filters);
-
-      // Apply time-based filtering for list views (to match stats logic)
       const now = new Date();
 
-      // For list views, we typically want to show upcoming events
       const filteredEvents = events.filter(event => {
-        if (!event.start_at) return false;
-
-        const eventDate = event.start_at ? new Date(event.start_at as any) : new Date();
-        return eventDate >= now; // Only show upcoming events in list view
+        if (!event.startTime) return false;
+        const eventDate = new Date(event.startTime as any);
+        return eventDate >= now;
       });
 
       return filteredEvents;
@@ -333,25 +576,18 @@ export class CanonicalDataService {
     }
   }
 
-  /**
-   * Get all related data for admin confidence panel
-   */
   static async getAdminConfidenceData(institution_id?: string) {
     try {
-      // Get all tasks, events, media files, and users for the admin panel
       const [tasks, events, mediaFiles, users] = await Promise.all([
-        this.getTasks({ institution_id: institution_id }),
-        this.getEvents({ institution_id: institution_id }),
+        this.getTasks({ institutionId: institution_id }),
+        this.getEvents({ institutionId: institution_id }),
         this.getMediaFiles(institution_id),
         this.getUsers(institution_id)
       ]);
 
       return { tasks, events, mediaFiles, users };
-      return { tasks, events, mediaFiles, users };
     } catch (error: any) {
-      if (error.message?.includes('Forbidden') || error.message?.includes('403')) {
-        // Expected for non-admins, return partial data or empty
-        // console.warn('Admin confidence data suppressed due to permissions');
+      if (error.message?.includes('Forbidden') || (error.status === 403)) {
         return { tasks: [], events: [], mediaFiles: [], users: [] };
       }
       if (!isNetworkError(error)) {
@@ -361,53 +597,341 @@ export class CanonicalDataService {
     }
   }
 
-  /**
-   * Get media files for admin confidence panel
-   */
   static async getMediaFiles(institution_id?: string) {
-    // Gate API call behind dev mode flag
-    if (process.env.NEXT_PUBLIC_DEV_NO_API === 'true') {
-      return [];
-    }
     return [];
   }
 
-  /**
-   * Get users for admin confidence panel
-   */
   static async getUsers(institution_id?: string) {
     try {
-      const queryParams = new URLSearchParams();
-      if (institution_id) queryParams.append('institution_id', institution_id);
+      const { tenantId } = await tenantContext();
 
-      const data = await apiClient(`/api/users?${queryParams.toString()}`, {
-        method: 'GET',
-        silent: true
+      let query = supabase.from(TABLES.USERS).select('*').eq('tenant_id', tenantId);
+      if (institution_id) {
+        query = query.eq('institution_id', institution_id);
+      }
+
+      const { data, error } = await safeQuery(() => query) as { data: any[]; error: any };
+      if (error) throw error;
+
+      // DTO Validation
+      return (data || []).map((item: any) => {
+        const parsed = UserSchema.safeParse(item);
+        if (!parsed.success) {
+          console.warn("[CanonicalDataService] DTO validation failed for user profile:", parsed.error);
+        }
+        return item;
       });
-
-      return data.users || [];
     } catch (error: any) {
-      if (error.message?.includes('Forbidden') || error.message?.includes('403')) {
-        // console.warn('User list suppressed due to permissions');
+      if (error.status === 403 || error.message?.includes('Forbidden')) {
         return [];
       }
-      if (!isNetworkError(error) && !error.message?.includes('Unauthorized')) {
+      if (!isNetworkError(error) && error.status !== 401) {
         console.error('Error fetching users:', error);
       }
       return [];
     }
   }
 
+  static async getTaskHistory(taskId: string): Promise<any[]> {
+    try {
+      const { tenantId } = await tenantContext();
+      
+      const { data, error } = await safeQuery(() => supabase
+        .from(TABLES.AUDIT_LOG)
+        .select('*')
+        .eq('tenant_id', tenantId)
+        .eq('resource_type', 'task')
+        .eq('resource_id', taskId)
+        .order('created_at', { ascending: false })
+      ) as { data: any[]; error: any };
+
+      if (error) throw error;
+      return data || [];
+    } catch (error: any) {
+      // Create a clean serializable error object to avoid "{}" in console
+      const errorDetails = {
+        message: error?.message || 'Unknown error',
+        details: error?.details || null,
+        hint: error?.hint || null,
+        code: error?.code || null,
+        status: error?.status || null,
+        name: error?.name || 'Error'
+      };
+      
+      console.error('[SERVICE] ❌ Failed to fetch task history:', errorDetails);
+      return [];
+    }
+  }
+
   /**
-   * Stub for legacy real-time subscription.
-   * Real-time sync disabled pending Supabase migration.
+   * Get operational summary for today
    */
+  static async getTodayOperationalSummary(institutionId?: string): Promise<OperationalSummary> {
+    try {
+      const { tenantId } = await tenantContext();
+      const today = new Date();
+      const startOfDay = new Date(today.getFullYear(), today.getMonth(), today.getDate()).toISOString();
+      const endOfDay = new Date(today.getFullYear(), today.getMonth(), today.getDate(), 23, 59, 59, 999).toISOString();
+
+      const [eventsRes, tasksRes] = await Promise.all([
+        safeQuery(() => {
+          let query = supabase
+            .from(TABLES.EVENTS)
+            .select(`
+              *,
+              crew:event_crew(
+                *,
+                profile:${TABLES.USERS}(id, full_name, avatar_url)
+              ),
+              equipment:event_equipment(
+                *,
+                inventory:${TABLES.INVENTORY}(id, name)
+              )
+            `)
+            .eq('tenant_id', tenantId)
+            .gte('start_at', startOfDay)
+            .lte('start_at', endOfDay);
+
+          if (institutionId) {
+            query = query.eq('institution_id', institutionId);
+          }
+          
+          return query.order('start_at', { ascending: true });
+        }),
+        safeQuery(() => {
+          let query = supabase
+            .from(TABLES.TASKS)
+            .select('*')
+            .eq('tenant_id', tenantId)
+            .eq('deleted', false)
+            .or(`due_date.gte.${startOfDay},status.neq.done`);
+
+          if (institutionId) {
+            query = query.eq('institution_id', institutionId);
+          }
+
+          return query.order('due_date', { ascending: true });
+        })
+      ]);
+
+      if (eventsRes.error) throw eventsRes.error;
+      if (tasksRes.error) throw tasksRes.error;
+
+      const events = ((eventsRes.data as any[]) || []).map((item: any) => {
+        const parsed = EventSchema.safeParse(item);
+        if (!parsed.success) {
+          console.warn("[CanonicalDataService] DTO validation failed for event in operational summary:", parsed.error);
+        }
+        return item;
+      });
+      const { mapTask } = await import('@/services/tasks/taskService');
+      const tasks = ((tasksRes.data as any[]) || []).map((item: any) => {
+        const parsed = TaskSchema.safeParse(item);
+        if (!parsed.success) {
+          console.warn("[CanonicalDataService] DTO validation failed for task in operational summary:", parsed.error);
+        }
+        return mapTask(item);
+      });
+
+      // Flatten crew and equipment for easy access
+      const crew = events.flatMap((e: any) => (e.crew || []).map((c: any) => ({ ...c, event_title: e.title, start_at: e.start_at })));
+      const equipment = events.flatMap((e: any) => (e.equipment || []).map((eq: any) => ({ ...eq, event_title: e.title, start_at: e.start_at })));
+
+      return {
+        events,
+        tasks,
+        crew,
+        equipment
+      };
+    } catch (error) {
+      console.error('[CanonicalDataService] Error fetching operational summary:', error);
+      return { events: [], tasks: [], crew: [], equipment: [] };
+    }
+  }
+
+  /**
+   * Get the nearest upcoming production (event) after now
+   */
+  static async getNextProductionSummary(institutionId?: string): Promise<{ 
+    event: any, 
+    crewCount: number, 
+    equipmentCount: number, 
+    totalTasks: number, 
+    completedTasks: number 
+  } | null> {
+    try {
+      const { tenantId } = await tenantContext();
+      const now = new Date().toISOString();
+
+      // 1. Find the single nearest upcoming event
+      const { data: eventArray, error: eventError } = await safeQuery(() => {
+        let query = supabase
+          .from(TABLES.EVENTS)
+          .select(`
+            *,
+            crew:event_crew(count),
+            equipment:event_equipment(count)
+          `)
+          .eq('tenant_id', tenantId)
+          .gt('start_at', now);
+
+        if (institutionId) {
+          query = query.eq('institution_id', institutionId);
+        }
+
+        return query.order('start_at', { ascending: true })
+          .limit(1);
+      });
+
+      if (eventError || !eventArray || (eventArray as any).length === 0) return null;
+
+      const event = (eventArray as any)[0];
+
+      // DTO Validation
+      const parsed = EventSchema.safeParse(event);
+      if (!parsed.success) {
+        console.warn("[CanonicalDataService] DTO validation failed for next production event:", parsed.error);
+      }
+
+      // 2. Count linked tasks
+      const { data: tasks, error: tasksError } = await safeQuery(() => supabase
+        .from(TABLES.TASKS)
+        .select('status')
+        .eq('tenant_id', tenantId)
+        .eq('event_id', event.id)
+        .eq('deleted', false)
+      );
+
+      const totalTasks = Array.isArray(tasks) ? tasks.length : 0;
+      const completedTasks = Array.isArray(tasks) ? tasks.filter((t: any) => t.status === 'done').length : 0;
+
+      return {
+        event,
+        crewCount: event.crew?.[0]?.count || 0,
+        equipmentCount: event.equipment?.[0]?.count || 0,
+        totalTasks,
+        completedTasks
+      };
+    } catch (error) {
+      console.error('[CanonicalDataService] Error fetching next production:', error);
+      return null;
+    }
+  }
+
+  /**
+   * Search across multiple entities
+   */
+  static async globalSearch(query: string, institutionId?: string): Promise<{
+    tasks: Task[],
+    events: Event[],
+    users: any[],
+    inventory: any[]
+  }> {
+    if (!query || query.length < 2) {
+      return { tasks: [], events: [], users: [], inventory: [] };
+    }
+
+    try {
+      const { tenantId } = await tenantContext();
+      const searchTerm = `%${query}%`;
+
+      const [tasksRes, eventsRes, usersRes, inventoryRes] = await Promise.all([
+        safeQuery(() => {
+          let q = supabase
+            .from(TABLES.TASKS)
+            .select('*')
+            .eq('tenant_id', tenantId)
+            .eq('deleted', false)
+            .ilike('title', searchTerm);
+          if (institutionId) q = q.eq('institution_id', institutionId);
+          return q.limit(5);
+        }),
+        safeQuery(() => {
+          let q = supabase
+            .from(TABLES.EVENTS)
+            .select('*')
+            .eq('tenant_id', tenantId)
+            .ilike('title', searchTerm);
+          if (institutionId) q = q.eq('institution_id', institutionId);
+          return q.limit(5);
+        }),
+        safeQuery(() => {
+          let q = supabase
+            .from(TABLES.USERS)
+            .select('*')
+            .eq('tenant_id', tenantId)
+            .ilike('full_name', searchTerm);
+          // Users are tenant-wide but often institutions have their own users. 
+          // We apply the filter if provided.
+          if (institutionId) q = q.eq('institution_id', institutionId);
+          return q.limit(5);
+        }),
+        safeQuery(() => {
+          let q = supabase
+            .from(TABLES.INVENTORY)
+            .select('*')
+            .eq('tenant_id', tenantId)
+            .ilike('name', searchTerm);
+          if (institutionId) q = q.eq('institution_id', institutionId);
+          return q.limit(5);
+        })
+      ]);
+
+      const { mapTask } = await import('@/services/tasks/taskService');
+      const { mapEvent } = await import('@/services/events/eventService');
+
+      return {
+        tasks: ((tasksRes.data as any[]) || []).map(mapTask),
+        events: ((eventsRes.data as any[]) || []).map(mapEvent),
+        users: (usersRes.data as any[]) || [],
+        inventory: (inventoryRes.data as any[]) || []
+      };
+    } catch (error) {
+      console.error('[CanonicalDataService] Global search error:', error);
+      return { tasks: [], events: [], users: [], inventory: [] };
+    }
+  }
+
   static subscribeToTasks(
     filters: TaskFilters,
     onNext: (tasks: Task[]) => void,
     onError?: (error: Error) => void
   ): () => void {
-    console.warn('[CanonicalDataService] Real-time sync disabled');
-    return () => { };
+    if (typeof window === 'undefined') return () => { };
+
+    let isCancelled = false;
+    const subscriptionId = `tasks-changes-${filters.institutionId || 'all'}`;
+
+    const setupSubscription = async () => {
+      try {
+        const { tenantId } = await tenantContext();
+
+        const initialTasks = await this.getTasks(filters);
+        if (!isCancelled) onNext(initialTasks);
+
+        await synergySyncManager.subscribe(
+          subscriptionId,
+          {
+            table: 'tasks',
+            filter: `tenant_id=eq.${tenantId}${filters.institutionId ? `&institution_id=eq.${filters.institutionId}` : ''}`
+          },
+          async (payload: any) => {
+            console.log(`[Realtime][Tasks] ${payload.eventType} change detected`);
+            const updatedTasks = await this.getTasks(filters);
+            if (!isCancelled) onNext(updatedTasks);
+          }
+        );
+      } catch (err: any) {
+        console.error('[Realtime][Tasks] Setup error:', err);
+        if (onError && !isCancelled) onError(err);
+      }
+    };
+
+    setupSubscription();
+
+    return () => {
+      isCancelled = true;
+      synergySyncManager.unsubscribe(subscriptionId);
+    };
   }
 }

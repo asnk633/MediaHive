@@ -1,33 +1,19 @@
-// @ts-nocheck
-import { NextRequest, NextResponse } from 'next/server';
-import { verifyUser, getSupabaseFromRequest } from '@/lib/server-utils';
+import { NextResponse } from 'next/server';
+import { withTenant, handleApiError } from '@/lib/db/withTenant';
 
 export const dynamic = 'force-dynamic';
 
-export async function GET(request: NextRequest) {
+export async function GET() {
     try {
-        console.log('[API] GET /api/users/admins called');
+        const { db, tenantId } = await withTenant();
 
-        // Relaxed: Allow any authenticated user to fetch admin list
-        const user = await verifyUser(request);
-        if (!user) {
-            return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
-        }
-
-        const supabase = getSupabaseFromRequest(request);
-        if (!supabase) {
-            return NextResponse.json({ error: 'Internal Server Error' }, { status: 500 });
-        }
-
-        const { data: adminsList, error } = await supabase
+        const { data: adminsList, error } = await db
             .from('profiles')
             .select('id, role, full_name, official_name, email, avatar_url')
+            .eq('tenant_id', tenantId)
             .eq('role', 'admin');
 
-        if (error) {
-            console.error('Supabase fetch admins error:', error);
-            throw error;
-        }
+        if (error) return handleApiError('ADMINS_FETCH', error);
 
         const admins = (adminsList || []).map(profile => ({
             uid: profile.id,
@@ -36,9 +22,9 @@ export async function GET(request: NextRequest) {
             photoURL: profile.avatar_url || null // Backward compatibility
         }));
 
+        console.log(`[DB] query executed: fetched ${admins.length} admins`);
         return NextResponse.json({ admins });
     } catch (error: any) {
-        console.error('Error fetching admins:', error);
-        return NextResponse.json({ error: error.message || 'Failed to fetch admins' }, { status: 500 });
+        return handleApiError('ADMINS_GET_ROUTE', error);
     }
 }

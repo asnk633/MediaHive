@@ -2,7 +2,8 @@
 import React, { createContext, useContext, useState, useEffect } from 'react';
 import { useAuth } from './AuthContextProvider';
 import { supabase } from '@/lib/supabaseClient';
-import { Task } from '@/types/task';
+import { withTenant } from '@/lib/tenantQuery';
+import { Task } from '@/features/tasks/types/task';
 
 type TaskContextValue = {
     tasks: Task[];
@@ -36,9 +37,18 @@ export const TaskProvider: React.FC<{ children: React.ReactNode }> = ({ children
 
             try {
                 try {
+                    const tenantId = user.tenant_id ? String(user.tenant_id) : undefined;
+                    if (!tenantId) {
+                        setLoading(false);
+                        return;
+                    }
+
                     // Determine user institution for filtering
                     // Use a proper filter to only show tasks relevant to user
-                    let query = supabase.from('tasks').select('*');
+                    let query = withTenant(
+                        supabase.from('tasks').select('*'),
+                        tenantId
+                    );
 
                     if (user.institution_id) {
                         query = query.eq('institution_id', user.institution_id);
@@ -91,7 +101,8 @@ export const TaskProvider: React.FC<{ children: React.ReactNode }> = ({ children
                 ...data,
                 status: 'pending',
                 created_by: user.uid,
-                institution_id: user.institution_id || null
+                institution_id: user.institution_id || null,
+                tenant_id: user.tenant_id ? String(user.tenant_id) : undefined
             };
 
             const { error } = await supabase.from('tasks').insert(newTask);
@@ -109,7 +120,16 @@ export const TaskProvider: React.FC<{ children: React.ReactNode }> = ({ children
 
     const updateTask = async (id: string, data: Partial<Task>) => {
         try {
-            const { error } = await supabase.from('tasks').update(data).eq('id', id);
+            const tenantId = user?.tenant_id ? String(user.tenant_id) : undefined;
+            if (!tenantId) {
+                console.warn("[TaskContext] updateTask blocked: No tenant context");
+                return;
+            }
+
+            const { error } = await withTenant(
+                supabase.from('tasks').update(data),
+                tenantId
+            ).eq('id', id);
             if (error) throw error;
         } catch (error: any) {
             console.error('Error updating task:', error);

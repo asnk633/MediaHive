@@ -1,21 +1,24 @@
 // @ts-nocheck
 import React, { useState, useMemo, useCallback, useEffect, useRef } from 'react';
 import { useVirtualizer } from '@tanstack/react-virtual';
-import { useSearchParams } from 'next/navigation';
+import { useSearchParams, useRouter } from 'next/navigation';
 import { useItemNavigation } from '@/hooks/useItemNavigation';
 import { useBulkSelection } from '@/hooks/useBulkSelection';
 import { TaskListSkeleton } from './TaskListSkeleton';
-import { Task } from '@/types/task';
+import { MediaTask as Task } from '@/services/tasks/taskContract';
 import { format, isToday, isPast } from 'date-fns';
 import { supabase } from '@/lib/supabaseClient';
 import { useAuth } from '@/contexts/AuthContextProvider';
+import { withTenant } from '@/lib/tenantQuery';
 import { UserService } from '@/services/userService';
+import { TaskService } from '@/features/tasks/services/taskService';
 import { BulkActionBar } from './BulkActionBar';
 import { EditTaskDialog } from './EditTaskDialog';
 import { TrashService } from '@/services/trashService';
 import { PermanentDeleteDialog } from '@/components/trash/PermanentDeleteDialog';
 import { ActivityHistory, buildActivityLabel } from '@/lib/activityHistory';
 import { toast } from 'sonner';
+import { debounce } from 'lodash';
 import {
     CheckCircle2, Clock,
     AlertCircle, Circle, Filter,
@@ -39,10 +42,7 @@ import { SortableTaskRow } from './SortableTaskRow';
 import { useDensityStore } from '@/stores/useDensityStore';
 import { COPY } from '@/lib/copy';
 import { DataIntegritySignal } from '@/components/ui/DataIntegritySignal';
-import {
-    resolveUserRole,
-    canManageAllTasks
-} from '@/lib/permissions';
+import { usePermissions } from '@/hooks/usePermissions';
 import {
     Select,
     SelectContent,
@@ -143,24 +143,66 @@ StatusPill.displayName = "StatusPill";
 const TaskListViewComponent: React.FC<TaskListViewProps> = ({ tasks, loading = false, error = null, onRetry, onTaskClick, onTaskMutate, mode = 'default', onRefresh }) => {
     console.log(`[TRASH_DEBUG] TaskListView Render. Mode: ${mode}, Tasks: ${tasks.length}`);
     const { user } = useAuth();
-    const canManage = canManageAllTasks(user);
+    const { role: userRole, canManageAllTasks: canManage } = usePermissions();
     const { density, toggleDensity } = useDensityStore();
 
     // Filters & Views
     const searchParams = useSearchParams();
+    const router = useRouter();
     const urlFilter = searchParams.get('filter');
-    const viewParam = searchParams.get('view');
+    const urlStatus = searchParams.get('status') || 'all';
+    const urlPriority = searchParams.get('priority') || 'all';
 
-    // A4: Default to 'today' for calm focused view, unless specific filter requested
     const [view, setView] = useState<'today' | 'all' | 'mine' | 'overdue' | 'due_today' | 'upcoming'>('today');
 
     useEffect(() => {
-        if (urlFilter && ['overdue', 'due_today', 'upcoming'].includes(urlFilter)) {
+        if (urlFilter && ['overdue', 'due_today', 'upcoming', 'mine', 'all'].includes(urlFilter)) {
             setView(urlFilter as any);
         }
     }, [urlFilter]);
-    const [filterStatus, setFilterStatus] = useState<string>('all');
-    const [filterPriority, setFilterPriority] = useState<string>('all');
+
+    const [filterStatus, setFilterStatus] = useState<string>(urlStatus);
+    const [filterPriority, setFilterPriority] = useState<string>(urlPriority);
+
+    // Synchronize local state with URL for back/forward navigation
+    useEffect(() => {
+        setFilterStatus(urlStatus);
+    }, [urlStatus]);
+
+    useEffect(() => {
+        setFilterPriority(urlPriority);
+    }, [urlPriority]);
+
+    const debouncedUpdateUrl = useMemo(() => 
+        debounce((updates: Record<string, string>) => {
+            const params = new URLSearchParams(searchParams.toString());
+            let changed = false;
+            Object.entries(updates).forEach(([key, value]) => {
+                if (params.get(key) !== value) {
+                    if (value === 'all') params.delete(key);
+                    else params.set(key, value);
+                    changed = true;
+                }
+            });
+            
+            if (changed) {
+                router.replace(`${window.location.pathname}?${params.toString()}`, { scroll: false });
+            }
+        }, 200), [searchParams, router]);
+
+    const updateUrl = useCallback((updates: Record<string, string>) => {
+        debouncedUpdateUrl(updates);
+    }, [debouncedUpdateUrl]);
+
+    const handleStatusChange = (status: string) => {
+        setFilterStatus(status);
+        updateUrl({ status });
+    };
+
+    const handlePriorityChange = (priority: string) => {
+        setFilterPriority(priority);
+        updateUrl({ priority });
+    };
 
     const [taskToEdit, setTaskToEdit] = useState<Task | null>(null);
     const [editDialogOpen, setEditDialogOpen] = useState(false);
@@ -233,8 +275,8 @@ const TaskListViewComponent: React.FC<TaskListViewProps> = ({ tasks, loading = f
 
             // Filter: "Mine" View (Applies to everything)
             if (view === 'mine' && user) {
-                const isAssigned = t.assigned_to && Array.isArray(t.assigned_to) && t.assigned_to.some(a => (typeof a === 'string' ? a : a.uid) === user.uid);
-                const isCreatedBy = (typeof t.created_by === 'string' ? t.created_by : t.created_by?.uid) === user.uid;
+                const isAssigned = t.assignedTo && Array.isArray(t.assignedTo) && t.assignedTo.some(a => a.uid === user.uid);
+                const isCreatedBy = t.createdBy?.uid === user.uid;
                 if (!isAssigned && !isCreatedBy) return;
             }
 
@@ -247,20 +289,18 @@ const TaskListViewComponent: React.FC<TaskListViewProps> = ({ tasks, loading = f
                 if (view === 'today') {
                     // Legacy 'today' view can be handled as due_today equivalent or kept standard
                     // For now, keeping standard behaviour but checking filters
-                    if (t.isDueToday) {
-                        // Keep it
-                    } else {
-                        // If standard view 'today' is selected manually
-                        const due = safeDate(t.due_date);
-                        if (!due) return;
-                        if (!(isToday(due) || isPast(due))) return;
-                    }
+                    const due = safeDate(t.dueDate);
+                    if (!due) return;
+                    if (!(isToday(due) || isPast(due))) return;
                 } else if (view === 'overdue') {
-                    if (!t.isOverdue) return;
+                    const due = safeDate(t.dueDate);
+                    if (!due || !isPast(due) || isToday(due)) return;
                 } else if (view === 'due_today') {
-                    if (!t.isDueToday) return;
+                    const due = safeDate(t.dueDate);
+                    if (!due || !isToday(due)) return;
                 } else if (view === 'upcoming') {
-                    if (!t.isUpcoming) return;
+                    const due = safeDate(t.dueDate);
+                    if (!due || due <= new Date()) return;
                 }
 
                 activeTasks.push(t);
@@ -269,8 +309,8 @@ const TaskListViewComponent: React.FC<TaskListViewProps> = ({ tasks, loading = f
 
         // 2. Sort Active Tasks (Due Date ASC, then Priority)
         activeTasks.sort((a, b) => {
-            const dateA = safeDate(a.due_date);
-            const dateB = safeDate(b.due_date);
+            const dateA = safeDate(a.dueDate);
+            const dateB = safeDate(b.dueDate);
 
             // Compare Dates
             if (dateA && dateB) {
@@ -293,8 +333,8 @@ const TaskListViewComponent: React.FC<TaskListViewProps> = ({ tasks, loading = f
 
         // 3. Sort Completed Tasks (Most Recent First)
         completedTasks.sort((a, b) => {
-            const cA = safeDate(a.completed_at) || safeDate(a.updated_at) || safeDate(a.created_at);
-            const cB = safeDate(b.completed_at) || safeDate(b.updated_at) || safeDate(b.created_at);
+            const cA = safeDate(a.completedAt) || safeDate(a.updatedAt) || safeDate(a.createdAt);
+            const cB = safeDate(b.completedAt) || safeDate(b.updatedAt) || safeDate(b.createdAt);
             if (!cA) return 1; if (!cB) return -1;
             return cB.getTime() - cA.getTime();
         });
@@ -345,10 +385,9 @@ const TaskListViewComponent: React.FC<TaskListViewProps> = ({ tasks, loading = f
 
 
     const handleRestore = useCallback(async (ids: string[]) => {
-        const userRole = resolveUserRole(user);
         console.log(`[TRASH_DEBUG] handleRestore triggered. Actual Role: ${userRole}, IDs:`, ids);
 
-        const allowed = userRole === 'admin' || userRole === 'team';
+        const allowed = userRole === 'admin' || (userRole === 'manager' || userRole === 'member');
         console.log(`[TRASH_DEBUG] Restore Guard Check: ${allowed ? 'PASS' : 'FAIL'} (Role: ${userRole})`);
 
         if (!allowed) {
@@ -396,11 +435,10 @@ const TaskListViewComponent: React.FC<TaskListViewProps> = ({ tasks, loading = f
         } finally {
             setOpLoading(false);
         }
-    }, [user, clear, onRefresh, onTaskMutate]);
+    }, [user, userRole, clear, onRefresh, onTaskMutate]);
 
 
     const handlePermanentDelete = useCallback(async () => {
-        const userRole = resolveUserRole(user);
         const finalTargets = taskToDelete ? [taskToDelete] : permTargets;
         console.log(`[TRASH_DEBUG] handlePermanentDelete triggered.`);
         console.log(`[TRASH_DEBUG] Actual Role:`, userRole);
@@ -458,10 +496,9 @@ const TaskListViewComponent: React.FC<TaskListViewProps> = ({ tasks, loading = f
         } finally {
             setOpLoading(false);
         }
-    }, [user, permTargets, taskToDelete, clear, onRefresh, onTaskMutate]);
+    }, [user, userRole, permTargets, taskToDelete, clear, onRefresh, onTaskMutate]);
 
     const handleSoftDelete = useCallback(async (taskId: string) => {
-        const userRole = resolveUserRole(user);
         const task = tasks.find(t => t.id === taskId);
         console.log(`[TRASH_DEBUG] handleSoftDelete triggered. taskId: ${taskId}, Role: ${userRole}`);
 
@@ -471,7 +508,7 @@ const TaskListViewComponent: React.FC<TaskListViewProps> = ({ tasks, loading = f
         }
 
         const isCreator = (typeof task.created_by === 'string' ? task.created_by : task.created_by?.uid) === user?.uid;
-        const allowed = userRole === 'admin' || userRole === 'team' || (userRole === 'guest' && isCreator);
+        const allowed = userRole === 'admin' || (userRole === 'manager' || userRole === 'member') || (userRole === 'guest' && isCreator);
         console.log(`[TRASH_DEBUG] Soft Delete Guard Check: ${allowed ? 'PASS' : 'FAIL'} (isCreator: ${isCreator})`);
 
         if (!allowed) {
@@ -489,7 +526,15 @@ const TaskListViewComponent: React.FC<TaskListViewProps> = ({ tasks, loading = f
                     { deleted: true },
                     async () => {
                         console.log('[TRASH_DEBUG] Calling TaskService.updateTask (soft delete)...');
-                        await supabase.from('tasks').update({ deleted: true }).eq('id', taskId);
+                        const tenantId = user?.tenant_id;
+                        if (!tenantId) {
+                            console.error("[TRASH_DEBUG] Soft Delete blocked: No tenant context");
+                            throw new Error("No tenant context");
+                        }
+                        await withTenant(
+                            supabase.from('tasks').update({ deleted: true }),
+                            tenantId
+                        ).eq('id', taskId);
                         ActivityHistory.push(taskId, {
                             action: 'deleted',
                             label: buildActivityLabel('deleted', undefined, 1),
@@ -511,7 +556,7 @@ const TaskListViewComponent: React.FC<TaskListViewProps> = ({ tasks, loading = f
         } finally {
             setOpLoading(false);
         }
-    }, [user, tasks, onTaskMutate, onRefresh]);
+    }, [user, userRole, tasks, onTaskMutate, onRefresh]);
 
 
     const sensors = useSensors(
@@ -552,7 +597,7 @@ const TaskListViewComponent: React.FC<TaskListViewProps> = ({ tasks, loading = f
         onTaskMutate?.(
             [taskId],
             updates,
-            () => supabase.from('tasks').update(updates).eq('id', taskId),
+            () => TaskService.updateTask(taskId, updates),
             { serializableOp: { type: 'updateTask', args: [taskId, updates] } }
         );
     }, [onTaskMutate]);
@@ -561,7 +606,7 @@ const TaskListViewComponent: React.FC<TaskListViewProps> = ({ tasks, loading = f
         onTaskMutate?.(
             [taskId],
             { priority: newPriority as any },
-            () => supabase.from('tasks').update({ priority: newPriority as any }).eq('id', taskId),
+            () => TaskService.updateTask(taskId, { priority: newPriority as any }),
             { serializableOp: { type: 'updateTask', args: [taskId, { priority: newPriority as any }] } }
         );
     }, [onTaskMutate]);
@@ -569,19 +614,19 @@ const TaskListViewComponent: React.FC<TaskListViewProps> = ({ tasks, loading = f
     const handleAssigneeToggle = useCallback(async (taskId: string, member: { uid: string, name: string }) => {
         const task = tasks.find(t => t.id === taskId);
         if (task) {
-            const currentAssignees = task.assigned_to || [];
-            const exists = Array.isArray(currentAssignees) && currentAssignees.some(a => (typeof a === 'string' ? a : a.uid) === member.uid);
+            const currentAssignees = task.assignedTo || [];
+            const exists = Array.isArray(currentAssignees) && currentAssignees.some(a => a.uid === member.uid);
             let newAssignees;
             if (exists) {
-                newAssignees = currentAssignees.filter(a => (typeof a === 'string' ? a : a.uid) !== member.uid);
+                newAssignees = currentAssignees.filter(a => a.uid !== member.uid);
             } else {
                 newAssignees = [...currentAssignees, member];
             }
             onTaskMutate?.(
                 [taskId],
-                { assigned_to: newAssignees },
-                () => Promise.resolve(), // Backend toggle removed in Phase 3A
-                { serializableOp: { type: 'assignUsers', args: [taskId, member] } } // Needs custom map in replay if toggle
+                { assignedTo: newAssignees },
+                () => TaskService.updateTask(taskId, { assignedTo: newAssignees }),
+                { serializableOp: { type: 'assignUsers', args: [taskId, { assignedTo: newAssignees }] } }
             );
         }
     }, [tasks, onTaskMutate]);
@@ -702,7 +747,7 @@ const TaskListViewComponent: React.FC<TaskListViewProps> = ({ tasks, loading = f
                             <div className="w-px h-4 bg-white/10 mx-1" />
 
                             <Filter className="w-4 h-4 text-white/85" />
-                            <Select value={filterStatus} onValueChange={setFilterStatus}>
+                            <Select value={filterStatus} onValueChange={handleStatusChange}>
                                 <SelectTrigger aria-label="Filter status" className={cn(
                                     "w-[130px] border-none bg-transparent hover:bg-white/5 h-8 text-xs transition-colors rounded-lg",
                                     filterStatus !== 'all' ? "text-white/85 font-medium" : "text-white/60"
@@ -717,7 +762,7 @@ const TaskListViewComponent: React.FC<TaskListViewProps> = ({ tasks, loading = f
                                     <SelectItem value="done">Completed</SelectItem>
                                 </SelectContent>
                             </Select>
-                            <Select value={filterPriority} onValueChange={setFilterPriority}>
+                            <Select value={filterPriority} onValueChange={handlePriorityChange}>
                                 <SelectTrigger aria-label="Filter priority" className={cn(
                                     "w-[130px] border-none bg-transparent hover:bg-white/5 h-8 text-xs transition-colors rounded-lg",
                                     filterPriority !== 'all' ? "text-white/85 font-medium" : "text-white/60"
@@ -747,19 +792,19 @@ const TaskListViewComponent: React.FC<TaskListViewProps> = ({ tasks, loading = f
                                 return (
                                     <>
                                         {overdueCount > 0 && (
-                                            <button onClick={() => setView('overdue')} className="group flex items-center gap-1.5 px-3 py-1 bg-red-500/5 hover:bg-red-500/10 border border-red-500/20 rounded-full transition-all">
+                                            <button onClick={() => updateUrl({ filter: 'overdue' })} className="group flex items-center gap-1.5 px-3 py-1 bg-red-500/5 hover:bg-red-500/10 border border-red-500/20 rounded-full transition-all">
                                                 <div className="w-1.5 h-1.5 rounded-full bg-red-500 shadow-[0_0_6px_rgba(239,68,68,0.6)] animate-pulse" />
                                                 <span className="text-[10px] font-bold text-red-400 uppercase tracking-wide group-hover:text-red-300">Overdue {overdueCount}</span>
                                             </button>
                                         )}
                                         {reviewCount > 0 && (
-                                            <button onClick={() => setFilterStatus('review')} className="group flex items-center gap-1.5 px-3 py-1 bg-amber-500/5 hover:bg-amber-500/10 border border-amber-500/20 rounded-full transition-all">
+                                            <button onClick={() => handleStatusChange('review')} className="group flex items-center gap-1.5 px-3 py-1 bg-amber-500/5 hover:bg-amber-500/10 border border-amber-500/20 rounded-full transition-all">
                                                 <div className="w-1.5 h-1.5 rounded-full bg-amber-500" />
                                                 <span className="text-[10px] font-bold text-amber-500 uppercase tracking-wide group-hover:text-amber-400">On Hold {reviewCount}</span>
                                             </button>
                                         )}
                                         {progressCount > 0 && (
-                                            <button onClick={() => setFilterStatus('in_progress')} className="group flex items-center gap-1.5 px-3 py-1 bg-blue-500/5 hover:bg-blue-500/10 border border-blue-500/20 rounded-full transition-all">
+                                            <button onClick={() => handleStatusChange('in_progress')} className="group flex items-center gap-1.5 px-3 py-1 bg-blue-500/5 hover:bg-blue-500/10 border border-blue-500/20 rounded-full transition-all">
                                                 <div className="w-1.5 h-1.5 rounded-full bg-blue-500" />
                                                 <span className="text-[10px] font-bold text-blue-400 uppercase tracking-wide group-hover:text-blue-300">In Progress {progressCount}</span>
                                             </button>

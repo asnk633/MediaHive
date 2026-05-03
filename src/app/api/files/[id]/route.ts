@@ -1,6 +1,6 @@
 // @ts-nocheck
 import { NextRequest, NextResponse } from 'next/server';
-import { verifyUser } from '@/lib/server-utils';
+import { verifyUser } from '@/lib/server/server-utils';
 import { getDriveClient } from '@/lib/drive';
 import { logFileDeleted } from '@/app/api/_lib/audit';
 import { supabase } from '@/lib/supabaseClient';

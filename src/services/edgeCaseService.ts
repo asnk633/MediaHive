@@ -1,7 +1,9 @@
-import { Task } from '@/types/task';
-import { Event } from '@/types/event';
+import { MediaTask as Task } from '@/services/tasks/taskContract';
+import { Event } from '@/features/events/types/event';
 import { DriveFile as MediaFile } from '@/types/file';
 import { User } from '@/types/user';
+import { TaskSchema } from '@/domain/schemas/task';
+import { EventSchema } from '@/domain/schemas/event';
 
 export interface EdgeCaseResult {
   orphanedTasks: Task[];
@@ -18,12 +20,27 @@ export const EdgeCaseService = {
    * @returns Array of orphaned tasks
    */
   findOrphanedTasks: (tasks: Task[], events: Event[]): Task[] => {
+    // Validate inputs
+    tasks.forEach(task => {
+        const parsed = TaskSchema.safeParse(task);
+        if (!parsed.success) {
+            console.warn("[EdgeCaseService] Task validation failed:", parsed.error);
+        }
+    });
+    events.forEach(event => {
+        const parsed = EventSchema.safeParse(event);
+        if (!parsed.success) {
+            console.warn("[EdgeCaseService] Event validation failed:", parsed.error);
+        }
+    });
+
     return tasks.filter(task => {
       // Check if the task's event reference exists
-      const hasValidEvent = events.some(event => event.id === task.event_id);
+      const event_id = (task as any).event_id;
+      const hasValidEvent = events.some(event => event.id === event_id);
 
       // For tasks that should be linked to events, consider them orphaned if no valid event exists
-      return task.event_id && !hasValidEvent;
+      return event_id && !hasValidEvent;
     });
   },
 
@@ -41,11 +58,11 @@ export const EdgeCaseService = {
       // orphaned if they're not associated with any specific event in the system
       // For now, we'll consider all media files as potentially orphaned
       // since there's no direct linking mechanism in the DriveFile type
-      
+
       // In a real implementation, you would check if the media is referenced
       // somewhere in your system, but based on the DriveFile type, there's no
       // direct reference to tasks or events
-      
+
       // For this implementation, return an empty array as we can't determine
       // orphaned status without explicit references in the DriveFile type
       return false;
@@ -103,13 +120,14 @@ export const EdgeCaseService = {
     // Validate task references
     tasks.forEach(task => {
       // Check event reference
-      if (task.event_id) {
-        const hasValidEvent = events.some(event => event.id === task.event_id);
+      const event_id = (task as any).event_id;
+      if (event_id) {
+        const hasValidEvent = events.some(event => event.id === event_id);
         if (!hasValidEvent) {
           invalidReferences.push({
             type: 'task',
             id: task.id,
-            issue: `Task ${task.id} references non-existent event ${task.event_id}`
+            issue: `Task ${task.id} references non-existent event ${event_id}`
           });
         }
       }

@@ -95,10 +95,25 @@ export default function BootGate({ children }: { children: React.ReactNode }) {
         const normalizedPath = pathname.endsWith('/') && pathname.length > 1 ? pathname.slice(0, -1) : pathname;
 
         if (!loading) {
-            if (user && (normalizedPath === '' || normalizedPath === '/' || normalizedPath === '/login')) {
-                console.log('[BOOT] Navigating -> /home');
-                nativeNavigate('/home', router, 'BootGate');
-            } else if (!user && normalizedPath !== '/login' && normalizedPath !== '' && normalizedPath !== '/') {
+            const onboardingDone = typeof window !== 'undefined' ? localStorage.getItem('mediahive_onboarding_complete') === 'true' : true;
+
+            if (user) {
+                if (normalizedPath === '/welcome') {
+                    if (onboardingDone) {
+                        console.log('[BOOT] Onboarding done -> /home');
+                        nativeNavigate('/home', router, 'BootGate');
+                    }
+                    return;
+                }
+
+                if (!onboardingDone) {
+                    console.log('[BOOT] Onboarding pending -> /welcome');
+                    nativeNavigate('/welcome', router, 'BootGate');
+                } else if (normalizedPath === '' || normalizedPath === '/' || normalizedPath === '/login') {
+                    console.log('[BOOT] Navigating -> /home');
+                    nativeNavigate('/home', router, 'BootGate');
+                }
+            } else if (normalizedPath !== '/login' && normalizedPath !== '' && normalizedPath !== '/' && normalizedPath !== '/welcome') {
                 console.log('[BOOT] Unauthenticated - redirecting to /login');
                 nativeNavigate('/login', router, 'BootGate');
             }

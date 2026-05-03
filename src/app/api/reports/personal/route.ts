@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { verifyUser, getSupabaseFromRequest } from '@/lib/server-utils';
+import { verifyUser, getSupabaseFromRequest } from '@/lib/server/server-utils';
 
 // Force dynamic to ensure we get fresh data
 export const dynamic = 'force-dynamic';
@@ -11,7 +11,7 @@ export async function GET(request: NextRequest) {
             return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
         }
 
-        const supabase = getSupabaseFromRequest(request);
+        const supabase = await getSupabaseFromRequest(request);
         if (!supabase) return NextResponse.json({ error: 'Internal Error' }, { status: 500 });
 
         const userId = user.uid;

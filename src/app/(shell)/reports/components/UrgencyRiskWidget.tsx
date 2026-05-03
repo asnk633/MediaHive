@@ -1,5 +1,5 @@
 import React from 'react';
-import { Task } from '@/types/task';
+import { Task } from '@/features/tasks/types/task';
 import { AlertTriangle, Clock, AlertCircle } from 'lucide-react';
 
 interface UrgencyRiskWidgetProps {

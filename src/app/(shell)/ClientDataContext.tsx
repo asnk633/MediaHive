@@ -11,6 +11,7 @@ import React, {
 import { supabase } from "@/lib/supabaseClient";
 import { useToast } from "@/components/ToastProvider";
 import { useAuth } from "@/contexts/AuthContextProvider";
+import { withTenant } from "@/lib/tenantQuery";
 import { apiFromUiStatus, uiFromApiStatus, type UiStatus } from "./utils/uiMaps";
 
 // ---------- Types ----------
@@ -18,9 +19,11 @@ export type TaskLite = {
   id: string;
   title: string;
   due_date?: string | null;
+  dueDate?: string | null; // Alias
   status?: UiStatus;
   priority?: "low" | "medium" | "high" | "urgent";
   assigned_to?: string | null;
+  event_id?: string | null;
 };
 
 export type NotificationLite = {
@@ -35,9 +38,12 @@ export type EventLite = {
   id: string;
   title: string;
   start_time: string;
+  start_at?: string; // Alias
   end_time?: string | null;
+  end_at?: string; // Alias
   location?: string | null;
   description?: string | null;
+  is_system_event?: boolean;
 };
 
 type Store = {
@@ -77,15 +83,23 @@ export function ClientDataProvider({ children }: { children: React.ReactNode }) 
 
   // ---------- Load Tasks ----------
   const loadAllData = useCallback(async () => {
-    if (!user) return;
+    if (!user || !user.tenant_id) {
+      if (!user) setLoading(false);
+      return;
+    }
 
     setLoading(true);
     setError(null);
-
     try {
-      const { data, error } = await supabase
-        .from("tasks")
-        .select("id, title, due_date, status, priority, assigned_to")
+      const { data, error } = await withTenant(
+        supabase
+          .from("tasks")
+          .select(`
+            id, title, due_date, status, priority, event_id,
+            task_assignments(user_id, role, profiles(id, full_name, avatar_url))
+          `),
+        String(user.tenant_id)
+      )
         .eq("deleted", false)
         .order("created_at", { ascending: false });
 
@@ -95,9 +109,15 @@ export function ClientDataProvider({ children }: { children: React.ReactNode }) 
       }
 
       setTasks(
-        (data || []).map((row) => ({
+        ((data as any[]) || []).map((row: any) => ({
           ...row,
           status: uiFromApiStatus(row.status),
+          assignedTo: (row.task_assignments ?? []).map((ta: any) => ({
+            userId: ta.user_id,
+            name: ta.profiles?.full_name ?? 'Unknown',
+            avatarUrl: ta.profiles?.avatar_url ?? null,
+            role: ta.role ?? 'assignee',
+          })),
         }))
       );
 
@@ -130,7 +150,8 @@ export function ClientDataProvider({ children }: { children: React.ReactNode }) 
           priority: input.priority ?? "medium",
           status: "todo",
           created_by: { uid: user?.uid, name: user?.name || 'Unknown', role: user?.role || 'guest' },
-          institution_id: user?.institution_id
+          institution_id: user?.institution_id ? String(user.institution_id) : null,
+          tenant_id: user?.tenant_id ? String(user.tenant_id) : null
         })
         .select()
         .single();
@@ -164,9 +185,18 @@ export function ClientDataProvider({ children }: { children: React.ReactNode }) 
       if (delta.status !== undefined)
         payload.status = apiFromUiStatus(delta.status);
 
-      const { data, error } = await supabase
-        .from("tasks")
-        .update(payload)
+      const tenantId = user?.tenant_id;
+      if (!tenantId) {
+        console.warn("[ClientDataContext] updateTask blocked: No tenant context");
+        return false;
+      }
+
+      const { data, error } = await withTenant(
+        supabase
+          .from("tasks")
+          .update(payload),
+        String(tenantId)
+      )
         .eq("id", id)
         .select()
         .single();
@@ -196,12 +226,21 @@ export function ClientDataProvider({ children }: { children: React.ReactNode }) 
   // ---------- Soft Delete ----------
   const deleteTask = useCallback(
     async (id: string) => {
-      const { error } = await supabase
-        .from("tasks")
-        .update({
-          deleted: true,
-          deleted_at: new Date().toISOString(),
-        })
+      const tenantId = user?.tenant_id;
+      if (!tenantId) {
+        console.warn("[ClientDataContext] deleteTask blocked: No tenant context");
+        return false;
+      }
+
+      const { error } = await withTenant(
+        supabase
+          .from("tasks")
+          .update({
+            deleted: true,
+            deleted_at: new Date().toISOString(),
+          }),
+        String(tenantId)
+      )
         .eq("id", id);
 
       if (error) {

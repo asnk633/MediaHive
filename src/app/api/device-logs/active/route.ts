@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { verifyUser, getSupabaseFromRequest } from '@/lib/server-utils';
+import { verifyUser, getSupabaseFromRequest } from '@/lib/server/server-utils';
 
 export const dynamic = 'force-dynamic';
 
@@ -17,7 +17,7 @@ export async function GET(request: NextRequest) {
             return NextResponse.json({ error: 'Request ID required' }, { status: 400 });
         }
 
-        const supabase = getSupabaseFromRequest(request);
+        const supabase = await getSupabaseFromRequest(request);
         if (!supabase) return NextResponse.json({ error: 'Internal Error' }, { status: 500 });
 
         // Query logs for this request, most recent first

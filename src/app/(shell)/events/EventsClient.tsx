@@ -2,115 +2,117 @@
 
 import React, { useState, useEffect, useMemo } from 'react';
 import { useAuth } from '@/contexts/AuthContextProvider';
+import { useWorkspace } from '@/system/workspace/WorkspaceProvider';
 import { useClientData } from '@/app/(shell)/ClientDataContext';
-import { Event } from '@/types/event';
-import { EventService } from '@/services/events';
+import { Event } from '@/features/events/types/event'; // Keep Event import as it's used
+import { MediaTask as Task } from '@/services/tasks/taskContract'; // Added MediaTask as Task
+import { EventService } from '@/features/events/services/eventService';
 import { CalendarView } from '@/components/events/CalendarView';
 import { EventListView } from '@/components/events/EventListView';
 import { TimelineView } from '@/components/events/TimelineView';
+import { WeekTimelineView } from '@/components/events/WeekTimelineView';
 import { EventDetailsModal } from '@/components/events/EventDetailsModal';
 import { PageLayout } from '@/components/ui/layout/PageLayout';
 import { PageHeader } from '@/components/ui/layout/PageHeader';
 import { Button } from '@/components/ui/button';
-import { Plus, Calendar as CalendarIcon, List, LayoutList, GripVertical } from 'lucide-react';
+import { Calendar as CalendarIcon, CalendarDays, GitBranch, List, Plus } from 'lucide-react';
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
 import { useRouter } from 'next/navigation';
 import { nativeNavigate, cn } from '@/lib/utils'; // Added cn import
+
+import { usePermissions } from '@/hooks/usePermissions';
 
 export default function EventsClient() {
     const router = useRouter();
     const { user } = useAuth();
+    const { currentWorkspaceId } = useWorkspace();
     const { tasks } = useClientData(); // Get tasks for Timeline
     const [events, setEvents] = useState<Event[]>([]);
     const [loading, setLoading] = useState(true);
-    const [viewMode, setViewMode] = useState<'month' | 'timeline' | 'list'>('month');
+    const [viewMode, setViewMode] = useState<'month' | 'week' | 'timeline' | 'list'>('month');
     const [selectedEvent, setSelectedEvent] = useState<Event | null>(null);
     const [currentDate, setCurrentDate] = useState(new Date());
+    const { role } = usePermissions();
 
     useEffect(() => {
         if (!user) return;
-
+        setEvents([]); // Clear events on workspace change
         setLoading(true);
         const unsubscribe = EventService.subscribeToEvents((data) => {
             setEvents(data);
             setLoading(false);
-        });
+        }, currentWorkspaceId || undefined);
 
         return () => unsubscribe();
-    }, [user]);
+    }, [user, currentWorkspaceId]);
 
-    const canCreate = user?.role === 'admin' || user?.role === 'team';
+    const canCreate = ['admin', 'manager', 'member', 'team'].includes(role);
 
     // Map Event[] to EventLite[] for TimelineView
     const timelineEvents = useMemo(() => {
-        return events.map(e => {
-            let dateObj: Date;
-            if ((e.date as any).seconds) {
-                dateObj = new Date((e.date as any).seconds * 1000);
-            } else {
-                dateObj = new Date(e.date as any);
-            }
-
-            return {
-                id: e.id,
-                title: e.title,
-                start_time: !isNaN(dateObj.getTime()) ? dateObj.toISOString() : new Date().toISOString(),
-                end_time: null,
-                location: e.location,
-                description: e.description,
-                is_system_event: e.is_system_event
-            };
-        });
+        return events.map(e => ({
+            id: e.id,
+            title: e.title,
+            start_at: e.start_at,
+            start_time: e.start_at,
+            end_at: e.end_at,
+            end_time: e.end_at,
+            is_all_day: e.is_all_day,
+            location: e.location,
+            description: e.description,
+            is_system_event: e.is_system_event
+        }));
     }, [events]);
 
     return (
-        <PageLayout mode="plain">
+        <PageLayout mode="plain" className="events-bg min-h-screen">
             <PageHeader
-                title="Events"
+                title={<span className="page-title-events">Events</span>}
                 description="View and manage institutional events"
                 actions={
                     <div className="flex items-center gap-3">
-                        <div className="flex bg-white/[0.03] border border-white/10 rounded-xl p-1 backdrop-blur-md">
-                            <button
-                                onClick={() => setViewMode('month')}
-                                className={cn(
-                                    "flex items-center gap-2 px-3 py-1.5 rounded-lg text-xs font-bold uppercase tracking-wide transition-all",
-                                    viewMode === 'month'
-                                        ? "bg-blue-500/10 text-blue-400 shadow-sm border border-blue-500/20"
-                                        : "text-white/60 hover:text-white/90"
-                                )}
-                            >
-                                <CalendarIcon size={14} />
-                                Month
-                            </button>
-                            <button
-                                onClick={() => setViewMode('timeline')}
-                                className={cn(
-                                    "flex items-center gap-2 px-3 py-1.5 rounded-lg text-xs font-bold uppercase tracking-wide transition-all",
-                                    viewMode === 'timeline'
-                                        ? "bg-blue-500/10 text-blue-400 shadow-sm border border-blue-500/20"
-                                        : "text-white/60 hover:text-white/90"
-                                )}
-                            >
-                                <LayoutList size={14} />
-                                Timeline
-                            </button>
-                            <button
-                                onClick={() => setViewMode('list')}
-                                className={cn(
-                                    "flex items-center gap-2 px-3 py-1.5 rounded-lg text-xs font-bold uppercase tracking-wide transition-all",
-                                    viewMode === 'list'
-                                        ? "bg-blue-500/10 text-blue-400 shadow-sm border border-blue-500/20"
-                                        : "text-white/60 hover:text-white/90"
-                                )}
-                            >
-                                <List size={14} />
-                                List
-                            </button>
-                        </div>
+                        <TooltipProvider>
+                            <div className="flex bg-white/[0.04] border border-white/10 rounded-2xl p-1.5 backdrop-blur-md shadow-2xl">
+                                {(['month', 'week', 'timeline', 'list'] as const).map((mode) => {
+                                    const { icon: Icon, label, tooltip } = {
+                                        month: { icon: CalendarIcon, label: 'Month', tooltip: 'Monthly overview' },
+                                        week: { icon: CalendarDays, label: 'Week', tooltip: 'Weekly schedule' },
+                                        timeline: { icon: GitBranch, label: 'Timeline', tooltip: 'Chronological events' },
+                                        list: { icon: List, label: 'List', tooltip: 'Event list' }
+                                    }[mode];
+
+                                    return (
+                                        <Tooltip key={mode}>
+                                            <TooltipTrigger asChild>
+                                                <button
+                                                    onClick={() => setViewMode(mode)}
+                                                    className={cn(
+                                                        "nav-button-events px-4 py-2 text-[10px] font-black uppercase tracking-[0.2em] rounded-xl transition-all duration-150 flex items-center",
+                                                        viewMode === mode ? "nav-button-events-active" : "text-white/40 hover:text-white/70"
+                                                    )}
+                                                >
+                                                    <Icon 
+                                                        size={16} 
+                                                        className={cn(
+                                                            "mr-[6px] transition-all duration-150",
+                                                            viewMode === mode ? "opacity-100 text-[#3b82f6]" : "opacity-60"
+                                                        )} 
+                                                    />
+                                                    {label}
+                                                </button>
+                                            </TooltipTrigger>
+                                            <TooltipContent side="bottom" sideOffset={8}>
+                                                {tooltip}
+                                            </TooltipContent>
+                                        </Tooltip>
+                                    );
+                                })}
+                            </div>
+                        </TooltipProvider>
                         {canCreate && (
                             <Button
                                 onClick={() => nativeNavigate('/events/new', router, 'Events (New)')}
-                                className="bg-blue-600 hover:bg-blue-500 text-white border-none shadow-lg hover:shadow-blue-500/20"
+                                className="bg-blue-600 hover:bg-blue-500 text-white border-none shadow-lg hover:shadow-blue-500/20 px-6 h-[46px] rounded-xl font-bold"
                             >
                                 <Plus size={16} className="mr-2" />
                                 New Event
@@ -132,11 +134,42 @@ export default function EventsClient() {
                             currentDate={currentDate}
                             onDateChange={setCurrentDate}
                             onDateClick={(date) => {
-                                setCurrentDate(date);
-                                // Optional: switch to timeline/list on day click? Or just select date.
-                                // For now, just setting current date.
+                                const isoDate = date.toISOString();
+                                nativeNavigate(`/events/new?start_at=${isoDate}`, router, `CalendarCell:${isoDate}`);
+                            }}
+                            onDateRangeSelect={(start, end) => {
+                                const startIso = start.toISOString();
+                                const endIso = end.toISOString();
+                                nativeNavigate(`/events/new?start_at=${startIso}&end_at=${endIso}`, router, `CalendarRange:${startIso}-${endIso}`);
                             }}
                             onEventClick={setSelectedEvent}
+                        />
+                    )}
+
+                    {viewMode === 'week' && (
+                        <WeekTimelineView
+                            events={events}
+                            currentDate={currentDate}
+                            onDateChange={setCurrentDate}
+                            onEventClick={setSelectedEvent}
+                            onEventUpdate={async (id, updates) => {
+                                try {
+                                    await EventService.updateEvent(id, updates, user?.uid || '');
+                                    // Subscription will handle the update in state
+                                } catch (error) {
+                                    console.error("Failed to update event via week timeline", error);
+                                }
+                            }}
+                            onCreateEvent={(date, startTime, endTime) => {
+                                // For week view, we might have specific times. Map them to start_at.
+                                const isoDate = date.toISOString();
+                                nativeNavigate(`/events/new?start_at=${isoDate}`, router, 'WeekTimeline:NewEvent');
+                            }}
+                            onRangeSelect={(start, end) => {
+                                const startIso = start.toISOString();
+                                const endIso = end.toISOString();
+                                nativeNavigate(`/events/new?start_at=${startIso}&end_at=${endIso}`, router, `WeekTimeline:RangeSelect`);
+                            }}
                         />
                     )}
 

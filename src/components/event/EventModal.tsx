@@ -2,8 +2,10 @@ import { useState, useEffect } from "react";
 import { X, Calendar as CalendarIcon, Clock, MapPin, AlignLeft, Building2, Repeat, Send } from "lucide-react";
 // Events temporarily disabled — createEvent is a no-op stub
 import { useAuth } from '@/contexts/AuthContextProvider';
-import { SystemEventService } from "@/services/systemEventService";
+import { SystemEventService } from '@/features/events/services/systemEventService';
 import { motion, AnimatePresence } from 'framer-motion';
+import { DateSelector } from "@/components/ui/selectors/DateSelector";
+import { TimeSelector } from "@/components/ui/selectors/TimeSelector";
 
 interface EventModalProps {
     isOpen: boolean;
@@ -165,7 +167,7 @@ export function EventModal({ isOpen, onClose, defaultDate, eventToEdit }: EventM
         }
     };
 
-    const canCreate = user?.role === 'admin' || user?.role === 'team' || user?.role === 'guest';
+    const canCreate = user?.role === 'admin' || user?.role === 'manager' || user?.role === 'member' || user?.role === 'guest';
     const isAdmin = user?.role === 'admin';
 
     return (
@@ -225,7 +227,7 @@ export function EventModal({ isOpen, onClose, defaultDate, eventToEdit }: EventM
                                         Event Title {is_system_event && <span className="text-white/40">(System-wide)</span>}
                                     </label>
                                     <div className="relative group">
-                                        <AlignLeft size={18} className="absolute left-4 top-1/2 -translate-y-1/2 text-white/30 group-focus-within:text-blue-400 transition-colors pointer-events-none" />
+                                        <AlignLeft size={18} className="absolute left-4 top-1/2 -translate-y-1/2 text-white/50 group-focus-within:text-blue-400 transition-colors pointer-events-none" />
                                         <input
                                             className="w-full bg-white/5 border border-[#ffffff1a] rounded-xl pl-12 pr-4 py-3 text-white placeholder-white/30 focus:ring-2 focus:ring-blue-500/50 outline-none transition-all"
                                             placeholder={is_system_event ? "e.g. 77th Republic Day of India" : "e.g. Team Meeting"}
@@ -236,38 +238,28 @@ export function EventModal({ isOpen, onClose, defaultDate, eventToEdit }: EventM
                                     </div>
                                 </div>
 
-                                {/* Date & Time */}
-                                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                                    <div>
-                                        <label className="block text-sm font-medium text-white/70 mb-2">Event Date</label>
-                                        <div className="relative group">
-                                            <CalendarIcon size={18} className="absolute left-4 top-1/2 -translate-y-1/2 text-white/30 group-focus-within:text-blue-400 transition-colors pointer-events-none" />
-                                            <input
-                                                type="date"
-                                                value={formData.date}
-                                                onChange={e => setFormData({ ...formData, date: e.target.value })}
-                                                required
-                                                className="w-full bg-white/5 border border-[#ffffff1a] rounded-xl pl-12 pr-4 py-3 text-white focus:ring-2 focus:ring-blue-500/50 outline-none [color-scheme:dark] [&::-webkit-calendar-picker-indicator]:cursor-pointer [&::-webkit-calendar-picker-indicator]:opacity-100"
-                                            />
-                                        </div>
+                                {/* Date & Time */}                                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                                    <div className="space-y-0.5">
+                                        <DateSelector 
+                                            label="Event Date"
+                                            date={new Date(formData.date)}
+                                            onChange={(date) => {
+                                                if (!date) return;
+                                                setFormData({ ...formData, date: date.toISOString().split('T')[0] });
+                                            }}
+                                        />
                                     </div>
-
                                     {!is_system_event && (
-                                        <div>
-                                            <label className="block text-sm font-medium text-white/70 mb-2">Start Time</label>
-                                            <div className="relative group">
-                                                <Clock size={18} className="absolute left-4 top-1/2 -translate-y-1/2 text-white/30 group-focus-within:text-blue-400 transition-colors pointer-events-none" />
-                                                <input
-                                                    type="time"
-                                                    value={formData.startTime}
-                                                    onChange={e => setFormData({ ...formData, startTime: e.target.value })}
-                                                    required
-                                                    className="w-full bg-white/5 border border-[#ffffff1a] rounded-xl pl-12 pr-4 py-3 text-white focus:ring-2 focus:ring-blue-500/50 outline-none [color-scheme:dark] [&::-webkit-calendar-picker-indicator]:cursor-pointer [&::-webkit-calendar-picker-indicator]:opacity-100"
-                                                />
-                                            </div>
+                                        <div className="space-y-0.5">
+                                            <TimeSelector 
+                                                label="Start Time"
+                                                value={formData.startTime}
+                                                onChange={(time) => setFormData({ ...formData, startTime: time })}
+                                            />
                                         </div>
                                     )}
                                 </div>
+
 
                                 {/* Recurrence Notice */}
                                 {is_system_event && (
@@ -284,7 +276,7 @@ export function EventModal({ isOpen, onClose, defaultDate, eventToEdit }: EventM
                                             Location <span className="text-white/40 text-xs">(Optional)</span>
                                         </label>
                                         <div className="relative group">
-                                            <MapPin size={18} className="absolute left-4 top-1/2 -translate-y-1/2 text-white/30 group-focus-within:text-blue-400 transition-colors pointer-events-none" />
+                                            <MapPin size={18} className="absolute left-4 top-1/2 -translate-y-1/2 text-white/50 group-focus-within:text-blue-400 transition-colors pointer-events-none" />
                                             <input
                                                 value={formData.location}
                                                 onChange={e => setFormData({ ...formData, location: e.target.value })}

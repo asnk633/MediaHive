@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { X, Calendar as CalendarIcon, Info } from 'lucide-react';
 import { useAuth } from '@/contexts/AuthContextProvider';
-import { CampaignService } from '@/services/campaignService';
+import { CampaignService } from '@/features/campaigns/services/campaignService';
 import { toast } from 'sonner';
 import { format } from 'date-fns';
 import { cn } from '@/lib/utils';
@@ -30,7 +30,7 @@ export const CampaignCreateModal: React.FC<CampaignCreateModalProps> = ({ isOpen
 
     if (!isOpen || !user) return null;
 
-    const isGuest = user.role !== 'admin' && user.role !== 'team';
+    const isGuest = user.role === 'guest';
 
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();

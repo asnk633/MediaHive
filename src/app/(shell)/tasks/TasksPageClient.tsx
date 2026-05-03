@@ -2,27 +2,28 @@
 'use client';
 
 import React, { useEffect, useState, useCallback } from "react";
-import { Plus, CheckSquare } from "lucide-react";
+import { Plus, CheckSquare, Building2 } from "lucide-react";
 import { Capacitor } from '@capacitor/core';
 import { OfflinePlaceholder } from "@/components/OfflinePlaceholder";
 import { useNative } from "@/hooks/useNative";
-import { Task } from "@/types/task";
+import { MediaTask as Task } from "@/services/tasks/taskContract";
 import { useAuth } from "@/contexts/AuthContextProvider";
+import { useWorkspace } from "@/system/workspace/WorkspaceProvider";
 import AppLink from "@/components/AppLink";
 import { useRouter, useSearchParams } from "next/navigation";
 import { nativeNavigate } from "@/lib/utils";
 import { CanonicalDataService } from "@/services/canonicalDataService";
 import { supabase } from '@/lib/supabaseClient';
-import { useOptimisticTasks } from "@/hooks/useOptimisticTasks";
+import { useOptimisticTasks } from "@/features/tasks/hooks/useOptimisticTasks";
 import { useConnectivity } from "@/hooks/useConnectivity";
-import { PAGE_SETTLE_MS } from "@/config/performanceThresholds";
+import { PERFORMANCE_THRESHOLDS } from '@/domain/system/performanceThresholds';
 import { PageLayout } from "@/components/ui/layout/PageLayout";
 import { PageHeader } from "@/components/ui/layout/PageHeader";
 import dynamic from 'next/dynamic';
 
 // Dynamic imports for heavy components
 const TaskListView = dynamic(() => import("@/components/tasks/TaskListView").then(mod => mod.TaskListView), {
-    loading: () => <div className="p-6 space-y-4"><div className="h-12 w-full bg-white/5 animate-pulse rounded" /></div>
+    loading: () => <div className="p-6 space-y-4 min-h-[400px]"><div className="h-12 w-full bg-white/5 animate-pulse rounded-xl" /><div className="h-64 w-full bg-white/5 animate-pulse rounded-xl" /></div>
 });
 const TaskDetailModalV2 = dynamic(() => import("@/components/tasks/TaskDetailModalV2").then(mod => mod.TaskDetailModalV2));
 const EditTaskDialog = dynamic(() => import("@/components/tasks/EditTaskDialog").then(mod => mod.EditTaskDialog));
@@ -30,6 +31,7 @@ import { ConflictResolutionPanel } from "@/components/tasks/ConflictResolutionPa
 import { PolicySimulationPanel } from "@/components/tasks/PolicySimulationPanel";
 import { AlertTriangle, Box } from "lucide-react";
 import { ConflictAwarenessBadge } from "@/components/tasks/ConflictAwarenessBadge";
+import { TaskSummaryWidget } from "@/features/tasks/components/TaskSummaryWidget";
 
 export default function TasksPageClient() {
     const [tasks, setTasks] = useState<Task[]>([]);
@@ -38,6 +40,7 @@ export default function TasksPageClient() {
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState<string | null>(null);
     const { user, authStatus } = useAuth();
+    const { currentWorkspaceId } = useWorkspace();
     const role = user?.role;
     const router = useRouter();
     const searchParams = useSearchParams();
@@ -84,7 +87,7 @@ export default function TasksPageClient() {
             {
                 role,
                 userId: user?.uid,
-                institution_id: user?.institution_id,
+                institutionId: currentWorkspaceId,
                 includeDemoData: true
             },
             (fetchedTasks) => {
@@ -93,7 +96,7 @@ export default function TasksPageClient() {
                 setLoading(false);
 
                 const duration = performance.now() - startTime;
-                if (duration > PAGE_SETTLE_MS) {
+                if (duration > PERFORMANCE_THRESHOLDS.PAGE_SETTLE_MS) {
                     console.warn(`[PERF] Task real-time fetch slow: ${duration.toFixed(0)}ms`);
                 }
             },
@@ -108,12 +111,13 @@ export default function TasksPageClient() {
         );
 
         return () => unsubscribe();
-    }, [authReady, isNative, user, role, isOnline, isReplaying, syncRemoteTasks]);
+    }, [authReady, isNative, user, role, isOnline, isReplaying, syncRemoteTasks, currentWorkspaceId]);
 
     useEffect(() => {
         if (!authReady) return;
+        setTasks([]); // Clear tasks immediately on workspace change to avoid data bleed
         fetchData();
-    }, [authReady, fetchData]);
+    }, [authReady, fetchData, currentWorkspaceId]);
 
     const handleTaskClick = (task: Task) => {
         // Update URL to trigger modal (Soft Navigation)
@@ -146,10 +150,24 @@ export default function TasksPageClient() {
 
     const handleTaskUpdate = async (updates: Partial<Task>) => {
         if (taskToEdit) {
-            await supabase.from('tasks').update(updates).eq('id', taskToEdit.id);
-            // Optimistic update
-            setTasks(prev => prev.map(t => t.id === taskToEdit.id ? { ...t, ...updates } : t));
-            return true;
+            try {
+                const success = await CanonicalDataService.patchFields(
+                    'tasks', 
+                    taskToEdit.id, 
+                    updates, 
+                    'task',
+                    taskToEdit.updatedAt,
+                    taskToEdit.version
+                );
+                
+                if (success) {
+                    // Optimistic update
+                    setTasks(prev => prev.map(t => t.id === taskToEdit.id ? { ...t, ...updates } : t));
+                    return true;
+                }
+            } catch (err) {
+                console.error('[TasksPageClient] Failed to patch task:', err);
+            }
         }
         return false;
     };
@@ -195,6 +213,7 @@ export default function TasksPageClient() {
 
             {/* Content */}
             <div className="flex-1">
+                <TaskSummaryWidget tasks={visibleTasks} />
                 <TaskListView
                     tasks={visibleTasks}
                     loading={loading}

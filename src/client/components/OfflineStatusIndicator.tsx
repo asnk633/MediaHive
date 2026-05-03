@@ -53,13 +53,6 @@ export function OfflineStatusIndicator() {
                 <span className="text-sm">
                   {pendingSyncCount} pending sync
                 </span>
-                <button
-                  onClick={processSyncQueue}
-                  disabled={isProcessing}
-                  className="px-2 py-1 bg-white bg-opacity-20 hover:bg-opacity-30 rounded text-sm disabled:opacity-50"
-                >
-                  {isProcessing ? 'Syncing...' : 'Sync Now'}
-                </button>
               </div>
             )}
           </div>

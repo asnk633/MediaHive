@@ -1,6 +1,6 @@
 import React from 'react';
-import { Task } from '@/types/task';
-import { Event } from '@/types/event';
+import { Task } from '@/features/tasks/types/task';
+import { Event } from '@/features/events/types/event';
 import { format, isToday, isTomorrow, addDays, isWithinInterval, startOfDay, endOfDay } from 'date-fns';
 import { Calendar, CheckSquare, Clock } from 'lucide-react';
 import { useRouter } from 'next/navigation';

@@ -11,7 +11,7 @@ import { useAuth } from '@/contexts/AuthContextProvider';
 import { nativeNavigate } from '@/lib/utils';
 
 interface FirstLoginWelcomeProps {
-  userRole: 'admin' | 'team' | 'guest';
+  userRole: 'admin' | 'manager' | 'member' | 'guest';
   userId: string;
 }
 
@@ -54,10 +54,10 @@ export const FirstLoginWelcome: React.FC<FirstLoginWelcomeProps> = ({ userRole, 
     // Redirect based on role
     if (userRole === 'admin') {
       nativeNavigate('/admin', router);
-    } else if (userRole === 'team') {
+    } else if ((userRole === 'manager' || userRole === 'member')) {
       nativeNavigate('/tasks', router);
     } else { // guest
-      nativeNavigate('/tasks/assigned', router);
+      nativeNavigate('/tasks', router);
     }
   };
 
@@ -86,7 +86,8 @@ export const FirstLoginWelcome: React.FC<FirstLoginWelcomeProps> = ({ userRole, 
             'Monitor system health and manage all aspects of the platform'
           ]
         };
-      case 'team':
+      case 'manager':
+      case 'member':
         return {
           title: 'Welcome to the Team!',
           icon: <User className="w-8 h-8 text-blue-400" />,
@@ -136,7 +137,7 @@ export const FirstLoginWelcome: React.FC<FirstLoginWelcomeProps> = ({ userRole, 
               className={
                 userRole === 'admin'
                   ? 'border-red-500/30 text-red-300'
-                  : userRole === 'team'
+                  : (userRole === 'manager' || userRole === 'member')
                     ? 'border-blue-500/30 text-blue-300'
                     : 'border-green-500/30 text-green-300'
               }
@@ -180,7 +181,7 @@ export const FirstLoginWelcome: React.FC<FirstLoginWelcomeProps> = ({ userRole, 
                 <span>Manage users via Admin panel</span>
               </div>
             )}
-            {userRole === 'team' && (
+            {(userRole === 'manager' || userRole === 'member') && (
               <div className="flex items-center justify-center gap-1">
                 <ListTodo className="w-3 h-3" />
                 <span>View your tasks in the Tasks section</span>

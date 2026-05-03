@@ -1,16 +1,11 @@
-import { apiClient } from '@/lib/apiClient';
+import { supabase } from '@/lib/supabaseClient';
 import { User } from '@/types/user';
+import { UserSchema } from '@/domain/schemas/user';
+import { tenantContext } from '@/lib/auth/tenantContext';
+import { TABLES } from '@/lib/dbTables';
+import { safeQuery } from '@/lib/safeQuery';
 
 export type { User };
-
-// API helper function
-const apiRequest = async (endpoint: string, options: RequestInit = {}) => {
-    const url = `/api/users${endpoint}`;
-    return apiClient(url, options);
-};
-
-
-const USERS_COLLECTION = 'users';
 
 // Helper to check for network/auth errors to avoid console noise
 const isNetworkError = (error: any) => {
@@ -27,22 +22,48 @@ const isNetworkError = (error: any) => {
 export const UserService = {
     getAllUsers: async (): Promise<User[]> => {
         try {
-            const response = await apiRequest('', {
-                method: 'GET'
+            const { tenantId } = await tenantContext();
+
+            const { data, error } = await safeQuery(() => supabase
+                .from(TABLES.USERS)
+                .select('*')
+                .eq('tenant_id', tenantId)
+                .order('created_at', { ascending: false })
+            );
+
+            if (error) throw error;
+            
+            // Map id to uid for standard identification
+            const items = Array.isArray(data) ? data : (data ? [data] : []);
+            const rawData = items.map((item: any) => ({
+                ...item,
+                uid: item.id,
+                name: item.full_name || item.name
+            }));
+            
+            // DTO Validation
+            const validatedData = (rawData || []).map((item: any) => {
+                const parsed = UserSchema.safeParse(item);
+                if (!parsed.success) {
+                    console.error("[UserService] DTO validation failed for user record:", parsed.error);
+                    // Return raw if parse fails but log it - or we could filter it out
+                    return item as unknown as User;
+                }
+                return parsed.data as User;
             });
-            return response.users || [];
+
+            return validatedData;
         } catch (error: any) {
             // Mock data for Dev Mode 403/401 (Admin Check Failure)
             if (process.env.NODE_ENV === 'development' && (error?.status === 403 || error?.status === 401)) {
                 console.warn("[UserService] Dev Mode: Returning Mock Users due to 403/401", error);
                 return [
-                    { uid: 'mock_1', name: 'Admin User', email: 'admin@thaiba.com', role: 'admin', institution_id: 'inst_1', created_at: new Date().toISOString(), isActive: true },
-                    { uid: 'mock_2', name: 'Team Lead', email: 'team@thaiba.com', role: 'team', department_id: 'dept_1', created_at: new Date().toISOString(), isActive: true },
-                    { uid: 'mock_3', name: 'Guest User', email: 'guest@thaiba.com', role: 'guest', created_at: new Date().toISOString(), isActive: true }
+                    { uid: 'mock_1', id: 'mock_1', name: 'Admin User', email: 'admin@thaiba.com', role: 'admin', institution_id: 'inst_1', created_at: new Date().toISOString(), isActive: true },
+                    { uid: 'mock_2', id: 'mock_2', name: 'Team Lead', email: 'team@thaiba.com', role: 'manager', department_id: 'dept_1', created_at: new Date().toISOString(), isActive: true },
+                    { uid: 'mock_3', id: 'mock_3', name: 'Guest User', email: 'guest@thaiba.com', role: 'guest', created_at: new Date().toISOString(), isActive: true }
                 ];
             }
 
-            // Silently handle 403/404/Network errors to keep console clean
             if (isNetworkError(error) || error.message?.includes('Forbidden') || error.message?.includes('Not Found')) {
                 console.warn(`[UserService] Failed to fetch users: ${error.message}`);
                 return [];
@@ -54,12 +75,20 @@ export const UserService = {
 
     updateUser: async (uid: string, data: Partial<User>) => {
         try {
-            console.log(`[UserService] Updating user ${uid} with:`, data);
-            await apiRequest('', {
-                method: 'PUT',
-                body: JSON.stringify({ uid, ...data })
-            });
-            console.log(`[UserService] ✅ Successfully updated user ${uid} via API`);
+            const { tenantId } = await tenantContext();
+
+            const { error } = await safeQuery(() => supabase
+                .from(TABLES.USERS)
+                .update({
+                    ...data,
+                    updated_at: new Date().toISOString()
+                })
+                .eq('id', uid)
+                .eq('tenant_id', tenantId)
+            );
+
+            if (error) throw error;
+            console.log(`[UserService] ✅ Successfully updated user ${uid} via Supabase`);
         } catch (error) {
             if (!isNetworkError(error)) {
                 console.error(`[UserService] ❌ Failed to update user ${uid}:`, error);
@@ -70,20 +99,60 @@ export const UserService = {
 
     getTeamMembers: async (): Promise<{ uid: string; name: string; avatar_url?: string; photoURL?: string }[]> => {
         try {
-            // Using the existing API route /api/users/team
-            const response = await apiRequest('/team', { method: 'GET' });
-            return response.teamMembers || [];
+            const { tenantId } = await tenantContext();
+
+            const { data, error } = await safeQuery(() => supabase
+                .from(TABLES.USERS)
+                .select('id, full_name, avatar_url')
+                .eq('tenant_id', tenantId)
+            );
+
+            if (error) throw error;
+
+            const users = Array.isArray(data) ? data : (data ? [data] : []);
+            return users.map((p: any) => {
+                // Partial validation for subset of fields
+                const parsed = UserSchema.partial().safeParse(p);
+                if (!parsed.success) {
+                    console.warn("[UserService] Partial DTO validation failed for team member:", parsed.error);
+                }
+                return {
+                    uid: p.id,
+                    name: p.full_name || 'Unknown User',
+                    avatar_url: p.avatar_url,
+                    photoURL: p.avatar_url
+                };
+            });
         } catch (error) {
-            console.error("Failed to fetch team members:", error);
+            console.error("Failed to fetch team members:", JSON.stringify(error, null, 2));
             return [];
         }
     },
 
     getAdmins: async (): Promise<{ uid: string; name: string }[]> => {
         try {
-            // Using the existing API route /api/users/admins
-            const response = await apiRequest('/admins', { method: 'GET' });
-            return response.admins || [];
+            const { tenantId } = await tenantContext();
+
+            const { data, error } = await safeQuery(() => supabase
+                .from(TABLES.USERS)
+                .select('id, name')
+                .eq('tenant_id', tenantId)
+                .eq('role', 'admin')
+            );
+
+            if (error) throw error;
+
+            const users = Array.isArray(data) ? data : (data ? [data] : []);
+            return users.map((p: any) => {
+                const parsed = UserSchema.partial().safeParse(p);
+                if (!parsed.success) {
+                    console.warn("[UserService] Partial DTO validation failed for admin:", parsed.error);
+                }
+                return {
+                    uid: p.id,
+                    name: p.name
+                };
+            });
         } catch (error) {
             console.error("Failed to fetch admins:", error);
             return [];

@@ -18,7 +18,7 @@ import { toast } from "sonner";
 import { FileService } from "@/services/fileService";
 import { ImageCropper } from "@/components/ui/ImageCropper";
 import { INVENTORY_CATEGORIES, INVENTORY_GUIDE, InventoryCondition, InventoryAssetStatus } from "@/types/inventory";
-import { inventoryService } from "@/services/inventoryService";
+import { inventoryService } from '@/services/inventory/inventoryService';
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { CalendarIcon } from "lucide-react";
 
@@ -36,7 +36,9 @@ export default function InventoryAddClient() {
         status: "available" as InventoryAssetStatus,
         purchaseDate: new Date(),
         purchasePrice: "",
-        unit: "1",
+        quantity: "1",
+        threshold: "0",
+        unit: "unit",
         serialNumber: "",
         remarks: "",
         imageUrl: "",
@@ -143,26 +145,25 @@ export default function InventoryAddClient() {
         if (!formData.category) return toast.error("Category is required");
         if (!formData.condition) return toast.error("Condition is required");
         if (!formData.status) return toast.error("Status is required");
-        if (formData.images.length === 0) return toast.error("At least one image is required");
 
         try {
             setLoading(true);
             const payload = {
                 name: formData.name,
                 category: formData.category,
-                quantity: 1, // Default for individual asset
-                unit: formData.unit,
-                threshold: 0,
-                status: 'ok', // Default system status
-                assetStatus: formData.status, // User selected status
+                quantity: Number(formData.quantity) || 1,
+                unit: formData.unit || 'unit',
+                threshold: Number(formData.threshold) || 0,
+                status: 'available',
+                assetStatus: formData.status,
                 condition: formData.condition,
                 serialNumber: formData.serialNumber,
                 remarks: formData.remarks,
                 purchaseDate: formData.purchaseDate.toISOString(),
                 purchasePrice: Number(formData.purchasePrice) || 0,
-                imageUrl: formData.imageUrl, // Main usage for lists
+                imageUrl: formData.imageUrl || '',
                 driveFileId: formData.driveFileId,
-                images: formData.images, // Persist full gallery
+                images: formData.images,
             };
 
             // @ts-ignore - Assuming create method exists and matches
@@ -427,6 +428,32 @@ export default function InventoryAddClient() {
                                     placeholder="0.00"
                                 />
                             </div>
+                        </div>
+
+                        {/* Quantity */}
+                        <div className="space-y-2">
+                            <Label className="text-muted">Quantity <span className="text-destructive">*</span></Label>
+                            <Input
+                                type="number"
+                                min={1}
+                                value={formData.quantity}
+                                onChange={e => setFormData(prev => ({ ...prev, quantity: e.target.value }))}
+                                placeholder="1"
+                                className={inputClasses}
+                            />
+                        </div>
+
+                        {/* Threshold */}
+                        <div className="space-y-2">
+                            <Label className="text-muted">Low Stock Threshold</Label>
+                            <Input
+                                type="number"
+                                min={0}
+                                value={formData.threshold}
+                                onChange={e => setFormData(prev => ({ ...prev, threshold: e.target.value }))}
+                                placeholder="0"
+                                className={inputClasses}
+                            />
                         </div>
 
                         {/* Unit */}

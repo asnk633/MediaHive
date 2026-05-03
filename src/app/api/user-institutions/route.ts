@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { verifyUser } from '@/lib/server-utils';
+import { verifyUser } from '@/lib/server/server-utils';
 import { getDb } from '@/db';
 import { userInstitutions, users, institutions } from '@/db/schema';
 import { eq, and } from 'drizzle-orm';
@@ -30,7 +30,7 @@ export async function GET(request: NextRequest) {
       })
       .from(userInstitutions)
       .innerJoin(institutions, eq(userInstitutions.institution_id, institutions.id))
-      .where(eq(userInstitutions.userId, userId));
+      .where(eq(userInstitutions.userId, Number(userId)));
 
     return NextResponse.json(userInsts, { status: 200 });
   } catch (error) {
@@ -66,8 +66,8 @@ export async function POST(request: NextRequest) {
       .select()
       .from(userInstitutions)
       .where(and(
-        eq(userInstitutions.userId, userId),
-        eq(userInstitutions.institution_id, institution_id)
+        eq(userInstitutions.userId, Number(userId)),
+        eq(userInstitutions.institution_id, Number(institution_id))
       ))
       .limit(1);
 
@@ -81,8 +81,8 @@ export async function POST(request: NextRequest) {
     const newUserInst = await db
       .insert(userInstitutions)
       .values({
-        userId: userId,
-        institution_id: institution_id,
+        userId: Number(userId),
+        institution_id: Number(institution_id),
         created_at: new Date().toISOString(),
       })
       .returning();
@@ -121,7 +121,7 @@ export async function DELETE(request: NextRequest) {
       .select()
       .from(userInstitutions)
       .where(and(
-        eq(userInstitutions.userId, userId),
+        eq(userInstitutions.userId, Number(userId)),
         eq(userInstitutions.institution_id, Number(institution_id))
       ))
       .limit(1);
@@ -136,7 +136,7 @@ export async function DELETE(request: NextRequest) {
     const deleted = await db
       .delete(userInstitutions)
       .where(and(
-        eq(userInstitutions.userId, userId),
+        eq(userInstitutions.userId, Number(userId)),
         eq(userInstitutions.institution_id, Number(institution_id))
       ))
       .returning();

@@ -7,6 +7,7 @@ export interface SystemActivityLog {
     action: string;             // machine-readable e.g. "task_created"
     entityType: string;         // "task" | "file" | "drive_scan" | "permission"
     entityId: string;
+    tenantId?: string | number; // Tenant ID for scoping
     summary: string;            // human readable
     metadata?: Record<string, any>;
     source?: string;            // "system" (default), "user", "automation"
@@ -28,7 +29,7 @@ export async function logSystemActivity(event: SystemActivityLog) {
             event.actorId,
             event.action || 'system_activity',
             event.entityType || 'system',
-            event.metadata?.tenantId || 1, // Fallback to 1 if not provided
+            event.tenantId || event.metadata?.tenantId || 1, // Prioritize explicit tenantId
             event.entityId || null,
             {
                 summary: event.summary,

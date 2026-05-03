@@ -1,5 +1,5 @@
 import React from 'react';
-import { Task } from '@/types/task';
+import { Task } from '@/features/tasks/types/task';
 import { formatDistanceToNow } from 'date-fns';
 import { Activity, PlusCircle, CheckCircle2, Edit3, Clock } from 'lucide-react';
 import { cn } from '@/lib/utils';
@@ -77,7 +77,7 @@ export const ActivityFeed = ({ tasks }: ActivityFeedProps) => {
                             <div className="flex flex-wrap items-center gap-2 mb-0.5">
                                 <span className={cn("text-[10px] font-bold uppercase px-1.5 py-0.5 rounded border tracking-wide",
                                     act.role === 'admin' ? "bg-red-500/10 text-red-400 border-red-500/20" :
-                                        act.role === 'team' ? "bg-blue-500/10 text-blue-400 border-blue-500/20" :
+                                        (act.role === 'manager' || act.role === 'member') ? "bg-blue-500/10 text-blue-400 border-blue-500/20" :
                                             "bg-gray-500/10 text-gray-400 border-gray-500/20"
                                 )}>{act.role}</span>
                                 <span className="font-semibold text-white text-sm">{act.user || 'User'}</span>

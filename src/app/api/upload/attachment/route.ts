@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { db } from '@/db';
 import { attachments } from '@/db/schema';
-import { getUserFromRequest } from '../../_lib/auth';
+import { verifyUser } from '@/lib/verifyUser';
 import { writeFile } from 'fs/promises';
 import path from 'path';
 
@@ -15,9 +15,16 @@ export const dynamic = 'force-dynamic';
 
 export async function POST(req: NextRequest) {
   try {
-    const user = await getUserFromRequest(req);
+    const user = await verifyUser(req);
     if (!user) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+    }
+
+    // Tenant Security Guard
+    const tenantId = user.tenant_id;
+    if (!tenantId || tenantId === 'null' || tenantId === 'undefined') {
+      console.error(`[POST /api/upload/attachment] ❌ Missing tenant context for user: ${user.uid}`);
+      return NextResponse.json({ error: 'Missing tenant context' }, { status: 403 });
     }
 
     const formData = await req.formData();
@@ -80,8 +87,8 @@ export async function POST(req: NextRequest) {
         fileUrl,
         fileType: file.type || 'application/octet-stream',
         fileSize: file.size,
-        uploadedById: user.id,
-        tenantId: user.tenantId,
+        uploadedById: user.uid,
+        tenantId: typeof tenantId === 'string' && !isNaN(Number(tenantId)) ? Number(tenantId) : tenantId as any,
         created_at: now,
       })
       .returning();
@@ -102,9 +109,16 @@ export async function POST(req: NextRequest) {
  */
 export async function GET(req: NextRequest) {
   try {
-    const user = await getUserFromRequest(req);
+    const user = await verifyUser(req);
     if (!user) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+    }
+
+    // Tenant Security Guard
+    const tenantId = user.tenant_id;
+    if (!tenantId || tenantId === 'null' || tenantId === 'undefined') {
+      console.error(`[GET /api/upload/attachment] ❌ Missing tenant context for user: ${user.uid}`);
+      return NextResponse.json({ error: 'Missing tenant context' }, { status: 403 });
     }
 
     const { searchParams } = new URL(req.url);
@@ -114,11 +128,16 @@ export async function GET(req: NextRequest) {
       return NextResponse.json({ error: 'Valid task ID required' }, { status: 400 });
     }
 
-    const { eq } = await import('drizzle-orm');
+    const { eq, and } = await import('drizzle-orm');
     const taskAttachments = await db
       .select()
       .from(attachments)
-      .where(eq(attachments.taskId, parseInt(taskId)));
+      .where(
+        and(
+          eq(attachments.taskId, parseInt(taskId)),
+          eq(attachments.tenantId, typeof tenantId === 'string' && !isNaN(Number(tenantId)) ? Number(tenantId) : tenantId as any)
+        )
+      );
 
     return NextResponse.json({ data: taskAttachments }, { status: 200 });
   } catch (error) {

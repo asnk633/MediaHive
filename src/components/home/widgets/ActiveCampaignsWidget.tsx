@@ -3,8 +3,8 @@ import { Skeleton } from '@/components/ui/skeleton';
 import { useRouter } from 'next/navigation';
 import { cn, nativeNavigate } from '@/lib/utils';
 import { useAuth } from '@/contexts/AuthContextProvider';
-import { CampaignService } from '@/services/campaignService';
-import { Campaign } from '@/types/campaign';
+import { CampaignService } from '@/features/campaigns/services/campaignService';
+import { Campaign } from '@/features/campaigns/types/campaign';
 import { ArrowRight, FolderPlus } from 'lucide-react';
 import { DataIntegritySignal } from '@/components/ui/DataIntegritySignal';
 
@@ -34,7 +34,7 @@ export const ActiveCampaignsWidget = () => {
                 // Artificial delay for interaction feel (optional, but good for testing skeleton)
                 // await new Promise(r => setTimeout(r, 600)); 
 
-                const data = await CampaignService.getUserCampaigns({
+                const data = await CampaignService.getCampaigns({
                     uid: user.uid,
                     role: user.role || 'guest'
                 });
@@ -86,7 +86,7 @@ export const ActiveCampaignsWidget = () => {
                 <h3 className="text-sm font-bold text-white/40 uppercase tracking-widest mb-1 group-hover:text-white/60 transition-colors">
                     No active campaigns right now
                 </h3>
-                <p className="text-[10px] text-white/20 mb-6 max-w-[240px] leading-relaxed group-hover:text-white/30 transition-colors">
+                <p className="text-[10px] text-white/20 mb-6 max-w-[240px] leading-relaxed group-hover:text-white/50 transition-colors">
                     Check back shortly or create a new campaign to get started.
                 </p>
 

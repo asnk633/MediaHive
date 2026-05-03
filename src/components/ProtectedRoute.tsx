@@ -24,7 +24,7 @@ export default function ProtectedRoute({ children, requireAdmin = false }: Prote
             const currentPath = window.location.pathname;
             if (currentPath !== '/login' && currentPath !== '/login/') {
                 console.log('[ProtectedRoute] Unauthenticated - redirecting to /login');
-                window.location.href = '/login/';
+                window.location.href = '/login';
             }
         }
         return null;

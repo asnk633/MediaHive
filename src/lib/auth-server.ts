@@ -1,4 +1,4 @@
-import { verifyUser } from '@/lib/server-utils';
+import { verifyUser } from '@/lib/server/server-utils';
 import { hasPermission, Permission, Role } from '@/lib/permissions';
 
 export async function authorizeByPermission(permission: Permission) {

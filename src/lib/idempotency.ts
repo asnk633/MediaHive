@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { getSupabaseAdmin } from '@/lib/server-utils';
+import { getSupabaseAdmin } from '@/lib/server/server-utils';
 
 /**
  * Checks for idempotency key in headers and enforces uniqueness.

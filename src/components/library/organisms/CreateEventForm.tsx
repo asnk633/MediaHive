@@ -1,7 +1,7 @@
-import React, { useState, useEffect } from 'react';
-import { Calendar as CalendarIcon, Clock, MapPin, AlignLeft, User, Briefcase, Camera, Check, Repeat, Lock, Shield } from 'lucide-react';
+import React, { useState, useEffect, useRef } from 'react';
+import { Calendar as CalendarIcon, Clock, MapPin, AlignLeft, User, Briefcase, Camera, Check, Repeat, Lock, Shield, AlertTriangle } from 'lucide-react';
 import { cn } from '@/lib/utils';
-import { format } from 'date-fns';
+import { format, isBefore, startOfDay } from 'date-fns';
 import { Button } from '@/components/ui/button';
 import { Calendar } from '@/components/ui/calendar';
 import { Switch } from '@/components/ui/switch';
@@ -15,43 +15,57 @@ import {
     SelectValue,
 } from "@/components/ui/select";
 import {
+    Command,
+    CommandEmpty,
+    CommandGroup,
+    CommandInput,
+    CommandItem,
+    CommandList,
+} from "@/components/ui/command";
+import {
     Popover,
     PopoverContent,
     PopoverTrigger,
 } from '@/components/ui/popover';
 import { apiClient } from '@/lib/apiClient';
 import { StructureService } from '@/services/structureService';
-import { SystemEventService } from '@/services/systemEventService';
+import { EventService } from '@/features/events/services/eventService';
+import { SystemEventService } from '@/features/events/services/systemEventService';
 import { UserService } from '@/services/userService';
+import { inventoryService } from '@/services/inventory/inventoryService';
 import { useAuth } from '@/contexts/AuthContextProvider';
 import { TimePicker } from '@/components/ui/time-picker';
 
 interface CreateEventFormProps {
     initialDate?: Date;
+    initialEndDate?: Date;
     onSuccess: () => void;
     onCancel?: () => void;
     isModal?: boolean;
     forceSystemEvent?: boolean;
 }
 
-export const CreateEventForm = ({ initialDate, onSuccess, onCancel, isModal = false, forceSystemEvent = false }: CreateEventFormProps) => {
+export const CreateEventForm = ({ initialDate, initialEndDate, onSuccess, onCancel, isModal = false, forceSystemEvent = false }: CreateEventFormProps) => {
     const { user } = useAuth();
     const [loading, setLoading] = useState(false);
 
     // Organization Data
-    const [departmentsList, setDepartmentsList] = useState<{ id: string; name: string }[]>([]);
-    const [institutionsList, setInstitutionsList] = useState<{ id: string; name: string }[]>([]);
+    const [departmentsList, setDepartmentsList] = useState<{ id: string | number; name: string }[]>([]);
+    const [institutionsList, setInstitutionsList] = useState<{ id: string | number; name: string }[]>([]);
 
     // Form State
     const [is_system_event, setIsSystemEvent] = useState(forceSystemEvent);
     const [title, setTitle] = useState('');
     const [date, setDate] = useState('');
+    const [endDate, setEndDate] = useState('');
     const [time, setTime] = useState('');
+    const [endTime, setEndTime] = useState('');
     const [location, setLocation] = useState('');
     const [description, setDescription] = useState('');
+    const [isAllDay, setIsAllDay] = useState(false);
     const [department, setDepartment] = useState('Operations');
     const [createdById, setCreatedById] = useState('');
-    const [teamMembers, setTeamMembers] = useState<{ uid: string; name: string; department_id?: string; institution_id?: string }[]>([]);
+    const [teamMembers, setTeamMembers] = useState<{ uid: string; name: string; department_id?: string | number; institution_id?: string | number }[]>([]);
 
     // Create On Behalf Of State
     const [createOnBehalfOf, setCreateOnBehalfOf] = useState(false);
@@ -65,8 +79,17 @@ export const CreateEventForm = ({ initialDate, onSuccess, onCancel, isModal = fa
     // New State for Media Coverage
     const [media_coverage, setMediaCoverage] = useState<string[]>([]);
 
+    // Crew & Equipment State
+    const [assignedCrew, setAssignedCrew] = useState<{ user_id: string; name: string; role: string }[]>([]);
+    const [reservedEquipment, setReservedEquipment] = useState<{ inventory_id: string; name: string; reserved_from: string; reserved_to: string }[]>([]);
+    const [equipmentConflicts, setEquipmentConflicts] = useState<Record<string, any[]>>({});
+    const [inventoryList, setInventoryList] = useState<{ id: string; name: string }[]>([]);
+    const [autoGenerateTasks, setAutoGenerateTasks] = useState(true);
+    const [isCheckingConflicts, setIsCheckingConflicts] = useState(false);
+
     // Popover State (to fix overlay bug)
     const [datePopoverOpen, setDatePopoverOpen] = useState(false);
+    const [endDatePopoverOpen, setEndDatePopoverOpen] = useState(false);
     const [recurrenceEndPopoverOpen, setRecurrenceEndPopoverOpen] = useState(false);
 
     // Media Options
@@ -116,54 +139,91 @@ export const CreateEventForm = ({ initialDate, onSuccess, onCancel, isModal = fa
         fetchTeamMembers();
     }, [user?.uid]);
 
-    // Fetch Organizations
+    // Fetch Inventory for selection
     useEffect(() => {
-        const fetchOrgs = async () => {
+        const fetchInventory = async () => {
             try {
-                const [deptData, instData] = await Promise.all([
-                    StructureService.getDepartments(),
-                    StructureService.getInstitutions()
-                ]);
-                setDepartmentsList(deptData.departments);
-                setInstitutionsList(instData.institutions);
+                const items = await inventoryService.getEquipment();
+                setInventoryList(items.map(i => ({ id: String(i.id), name: i.name })));
             } catch (e) {
-                console.error("Failed to fetch organizations", e);
+                console.error("Failed to fetch inventory", e);
             }
         };
-        fetchOrgs();
+        fetchInventory();
     }, []);
 
-    // Initialize State
+    const hasInitialized = useRef(false);
+
+    // Conflict Detection Logic
+    const checkConflicts = async (newRes?: typeof reservedEquipment) => {
+        setIsCheckingConflicts(true);
+        const conflicts: Record<string, any[]> = {};
+        const itemsToCheck = newRes || reservedEquipment;
+        
+        for (const item of itemsToCheck) {
+            const results = await EventService.checkEquipmentConflicts(
+                item.inventory_id,
+                item.reserved_from,
+                item.reserved_to
+            );
+            if (results.length > 0) {
+                conflicts[item.inventory_id] = results;
+            }
+        }
+        setEquipmentConflicts(conflicts);
+        setIsCheckingConflicts(false);
+    };
+
     useEffect(() => {
-        if (initialDate) {
-            setDate(format(initialDate, 'yyyy-MM-dd'));
-        } else {
-            setDate('');
+        if (reservedEquipment.length > 0) {
+            checkConflicts();
         }
-        setTime('10:00');
-        setTitle('');
-        setLocation('');
-        setDescription('');
-        if (user?.department_id && (departmentsList.some(d => d.name === user.department_id) || institutionsList.some(i => i.name === user.department_id))) {
-            setDepartment(user.department_id);
-        } else if (departmentsList.length > 0) {
-            setDepartment(departmentsList[0].name);
-        } else {
-            setDepartment('Operations');
+    }, [date, time, endDate, endTime]);
+
+    // Handle Department Initialization (When org lists load)
+    useEffect(() => {
+        const hasLists = departmentsList.length > 0 || institutionsList.length > 0;
+        if (!hasLists || !user) return;
+
+        // Only auto-set department if it's still at default or empty
+        if (department === 'Operations' || !department) {
+            if (user.department_id && (
+                departmentsList.some(d => String(d.name) === String(user.department_id) || String(d.id) === String(user.department_id)) || 
+                institutionsList.some(i => String(i.name) === String(user.department_id) || String(i.id) === String(user.department_id))
+            )) {
+                setDepartment(String(user.department_id));
+            } else if (departmentsList.length > 0) {
+                setDepartment(departmentsList[0].name);
+            }
         }
-        setMediaCoverage([]);
-        setCreatedById(user?.uid || '');
-    }, [initialDate, user, departmentsList, institutionsList]);
+    }, [departmentsList, institutionsList, user]);
 
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
-        if (!title || !date) return; // Time not required for system event if we default it
+        if (!title || !date) return;
 
         setLoading(true);
         try {
-            const dateTime = new Date(`${date}T${time || '09:00'}`);
+            let startAtISO: string;
+            let endAtISO: string;
+
+            if (isAllDay) {
+                // All Day: Midnight to 23:59:59
+                startAtISO = `${date}T00:00:00.000Z`;
+                endAtISO = `${endDate || date}T23:59:59.999Z`;
+            } else {
+                // Timed Event
+                const startDateTime = new Date(`${date}T${time || '09:00'}`);
+                const endDateTime = endDate 
+                    ? new Date(`${endDate}T${endTime || time || '10:00'}`) 
+                    : new Date(startDateTime.getTime() + 60 * 60 * 1000); // Default 1 hour
+                
+                startAtISO = startDateTime.toISOString();
+                endAtISO = endDateTime.toISOString();
+            }
 
             if (is_system_event && user?.role === 'admin') {
+                const dateTime = new Date(startAtISO);
                 const recurrencePayload: any = {
                     frequency: recurrenceFreq,
                     interval: 1,
@@ -183,13 +243,15 @@ export const CreateEventForm = ({ initialDate, onSuccess, onCancel, isModal = fa
                     type: 'company',
                     isRecurring: true,
                     recurrence: recurrencePayload,
-                    date: dateTime.toISOString() // Store start date
+                    start_at: startAtISO,
+                    end_at: endAtISO,
+                    is_all_day: isAllDay
                 });
                 onSuccess();
                 return;
             }
 
-            if (!time) return;
+            if (!isAllDay && !time) return; // If not all-day, time is required
 
             // Resolve Department/Institution ID from name
             // If "On Behalf Of" is active, use onBehalfOfEntityName, otherwise use standard department state.
@@ -203,13 +265,13 @@ export const CreateEventForm = ({ initialDate, onSuccess, onCancel, isModal = fa
 
             const foundDept = departmentsList.find(d => d.name === targetEntityName);
             if (foundDept) {
-                deptId = foundDept.id;
+                deptId = String(foundDept.id);
                 deptType = 'department';
-                targetDepartmentId = foundDept.id;
+                targetDepartmentId = String(foundDept.id);
             } else {
                 const foundInst = institutionsList.find(i => i.name === targetEntityName);
                 if (foundInst) {
-                    deptId = foundInst.id;
+                    deptId = String(foundInst.id);
                     deptType = 'institution';
                     targetInstitutionId = foundInst.id;
                     targetDepartmentId = null;
@@ -251,56 +313,49 @@ export const CreateEventForm = ({ initialDate, onSuccess, onCancel, isModal = fa
 
             const payload: any = {
                 title,
-                date: dateTime.toISOString(), // Send as ISO string
-                location,
                 description,
-                department: targetEntityName, // Legacy string (updated to selected entity)
-                type: 'other',
-                created_by: legacyCreatedBy, // Correct system metadata
-                on_behalf_of, // Explicit Entity
-                organizer,  // Explicit Person or Entity
+                start_at: startAtISO,
+                end_at: endAtISO,
+                is_all_day: isAllDay,
+                location,
+                media_coverage,
                 institution_id: targetInstitutionId,
                 department_id: targetDepartmentId,
-                media_coverage,
+                on_behalf_of,
+                organizer,
             };
 
-            // Clean up payload if on_behalf_of is active to avoid ambiguity if backend cares
-            if (createOnBehalfOf) {
-                // We ensure 'department' field in payload matches the entity, which we did above.
-            }
-
-            await apiClient('/api/events', {
-                method: 'POST',
-                body: JSON.stringify(payload)
-            });
+            await EventService.addEvent(payload, assignedCrew, reservedEquipment, autoGenerateTasks);
             onSuccess();
         } catch (error) {
             console.error("Failed to create event:", error);
             alert("Failed to create event. Working offline?");
+        } finally {
+            setLoading(false);
         }
     };
 
     // Modern Input Style (Semantic)
     const inputContainerClasses = "relative group";
-    const iconClasses = "absolute left-4 top-1/2 -translate-y-1/2 text-muted group-focus-within:text-primary transition-colors duration-200 z-10 pointer-events-none";
+    const iconClasses = "absolute left-4 top-1/2 -translate-y-1/2 text-white/40 group-focus-within:text-primary transition-colors duration-200 z-10 pointer-events-none";
     const inputClasses = `
         w-full 
         bg-background 
         text-foreground 
-        placeholder:text-muted
+        placeholder:text-white/40
         border border-soft 
         rounded-2xl 
         py-4 pl-12 pr-4 
         outline-none 
         transition-all duration-200
         focus:border-primary/50 focus:ring-4 focus:ring-primary/10
-        hover:border-muted
+        hover:border-white/20
     `;
-    const labelClasses = "block text-sm font-medium text-muted mb-2";
+    const labelClasses = "block text-sm font-medium text-white/70 mb-2";
 
     // Field State Styles (for role-based clarity)
-    const lockedFieldClasses = "bg-muted/5 border-soft text-muted cursor-not-allowed";
-    const derivedFieldClasses = "bg-muted/5 border-soft text-muted cursor-not-allowed";
+    const lockedFieldClasses = "bg-muted/5 border-soft text-white/60 cursor-not-allowed";
+    const derivedFieldClasses = "bg-muted/5 border-soft text-white/60 cursor-not-allowed";
 
     return (
         <form className="space-y-8" onSubmit={handleSubmit}>
@@ -311,7 +366,7 @@ export const CreateEventForm = ({ initialDate, onSuccess, onCancel, isModal = fa
                         <div className="flex items-center justify-between">
                             <div className="flex-1">
                                 <label className="text-sm font-bold text-foreground block">System Event</label>
-                                <span className="text-xs text-muted block mt-1">Recurring event for everyone</span>
+                                <span className="text-xs text-white/50 block mt-1">Recurring event for everyone</span>
                             </div>
                             <button
                                 type="button"
@@ -338,7 +393,7 @@ export const CreateEventForm = ({ initialDate, onSuccess, onCancel, isModal = fa
                                 <div className="space-y-2">
                                     <label className={labelClasses}>Frequency</label>
                                     <div className="relative">
-                                        <Repeat size={16} className="absolute left-3 top-1/2 -translate-y-1/2 text-muted" />
+                                        <Repeat size={16} className="absolute left-3 top-1/2 -translate-y-1/2 text-white/40" />
                                         <Select value={recurrenceFreq} onValueChange={(val: any) => setRecurrenceFreq(val)}>
                                             <SelectTrigger className="w-full bg-background border-soft text-foreground pl-9 h-11">
                                                 <SelectValue />
@@ -352,14 +407,14 @@ export const CreateEventForm = ({ initialDate, onSuccess, onCancel, isModal = fa
                                     </div>
                                 </div>
                                 <div className="space-y-2">
-                                    <label className={labelClasses}>Repeat Until <span className="text-muted text-xs">(Optional)</span></label>
+                                    <label className={labelClasses}>Repeat Until <span className="text-white/40 text-xs">(Optional)</span></label>
                                     <Popover open={recurrenceEndPopoverOpen} onOpenChange={setRecurrenceEndPopoverOpen}>
                                         <PopoverTrigger asChild>
                                             <Button
                                                 variant={"outline"}
                                                 className={cn(
                                                     "w-full bg-background border-soft text-foreground justify-start text-left font-normal h-11",
-                                                    !recurrenceEndDate && "text-muted"
+                                                    !recurrenceEndDate && "text-white/40"
                                                 )}
                                             >
                                                 <CalendarIcon className="mr-2 h-4 w-4 opacity-50" />
@@ -399,6 +454,20 @@ export const CreateEventForm = ({ initialDate, onSuccess, onCancel, isModal = fa
                         />
                     </div>
                 </div>
+
+                <div className="flex items-center justify-between p-4 rounded-2xl bg-white/5 border border-white/10 mt-4">
+                    <div className="flex items-center gap-3">
+                        <Clock size={20} className="text-white/40" />
+                        <div>
+                            <p className="text-sm font-bold text-foreground">All Day Event</p>
+                            <p className="text-xs text-white/40">Event spans the entire calendar day</p>
+                        </div>
+                    </div>
+                    <Switch 
+                        checked={isAllDay} 
+                        onCheckedChange={setIsAllDay}
+                    />
+                </div>
             </div>
 
 
@@ -418,7 +487,7 @@ export const CreateEventForm = ({ initialDate, onSuccess, onCancel, isModal = fa
                                 <div className="flex items-center justify-between">
                                     <div className="flex-1">
                                         <label className="text-sm font-bold text-foreground block">Create On Behalf Of</label>
-                                        <span className="text-xs text-muted block mt-1">
+                                        <span className="text-xs text-white/50 block mt-1">
                                             {createOnBehalfOf ? "Event owned by an Office / Institution" : "Event owned by you (the user)"}
                                         </span>
                                     </div>
@@ -431,7 +500,7 @@ export const CreateEventForm = ({ initialDate, onSuccess, onCancel, isModal = fa
                                                 // Reset when toggling off
                                                 setOnBehalfOfEntityName('');
                                                 // Restore default department if needed
-                                                if (user?.department_id) setDepartment(user.department_id);
+                                                if (user?.department_id) setDepartment(String(user.department_id));
                                             } else {
                                                 // Initialize with current department if valid
                                                 setOnBehalfOfEntityName(department);
@@ -465,13 +534,13 @@ export const CreateEventForm = ({ initialDate, onSuccess, onCancel, isModal = fa
                                                 </SelectTrigger>
                                                 <SelectContent className="bg-surface border-soft text-foreground max-h-80 z-[200]">
                                                     <SelectGroup>
-                                                        <SelectLabel className="text-muted text-xs font-bold uppercase tracking-wider px-2 py-1.5">Offices / Units</SelectLabel>
+                                                        <SelectLabel className="text-white/50 text-xs font-bold uppercase tracking-wider px-2 py-1.5">Offices / Units</SelectLabel>
                                                         {departmentsList.map(dept => (
                                                             <SelectItem key={dept.id} value={dept.name}>{dept.name}</SelectItem>
                                                         ))}
                                                     </SelectGroup>
                                                     <SelectGroup>
-                                                        <SelectLabel className="text-muted text-xs font-bold uppercase tracking-wider px-2 py-1.5 mt-2">Institutions</SelectLabel>
+                                                        <SelectLabel className="text-white/50 text-xs font-bold uppercase tracking-wider px-2 py-1.5 mt-2">Institutions</SelectLabel>
                                                         {institutionsList.map(inst => (
                                                             <SelectItem key={inst.id} value={inst.name}>{inst.name}</SelectItem>
                                                         ))}
@@ -501,7 +570,7 @@ export const CreateEventForm = ({ initialDate, onSuccess, onCancel, isModal = fa
                                         <span>{user?.official_name || user?.name || 'Current User'}</span>
                                     </div>
                                 </div>
-                                <p className="text-xs text-muted mt-1.5">
+                                <p className="text-xs text-white/50 mt-1.5">
                                     {user?.role === 'admin' ? 'Your account' : 'Auto-filled from your profile'}
                                 </p>
                             </div>
@@ -512,9 +581,9 @@ export const CreateEventForm = ({ initialDate, onSuccess, onCancel, isModal = fa
 
 
             {/* Date & Time Grid */}
-            <div className="grid grid-cols-2 gap-4">
+            <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
                 <div className="space-y-2">
-                    <label className={labelClasses}>Event Date</label>
+                    <label className={labelClasses}>Start Date</label>
                     <div className={inputContainerClasses}>
                         <Popover open={datePopoverOpen} onOpenChange={setDatePopoverOpen}>
                             <PopoverTrigger asChild>
@@ -523,12 +592,12 @@ export const CreateEventForm = ({ initialDate, onSuccess, onCancel, isModal = fa
                                     className={cn(
                                         inputClasses,
                                         "flex items-center justify-start gap-3 pl-4 h-14 font-medium",
-                                        !date && "text-muted font-normal"
+                                        !date && "text-white/40 font-normal"
                                     )}
                                 >
                                     <CalendarIcon size={20} className="text-muted shrink-0" />
                                     <span className="truncate">
-                                        {date ? format(new Date(date), "MMM dd, yyyy") : "Pick a date"}
+                                        {date ? format(new Date(date), "MMM dd, yyyy") : "Pick start date"}
                                     </span>
                                 </Button>
                             </PopoverTrigger>
@@ -547,7 +616,8 @@ export const CreateEventForm = ({ initialDate, onSuccess, onCancel, isModal = fa
                         </Popover>
                     </div>
                 </div>
-                {!is_system_event && (
+
+                {!is_system_event && !isAllDay && (
                     <div className="space-y-2">
                         <label className={labelClasses}>Start Time</label>
                         <div className={inputContainerClasses}>
@@ -558,7 +628,7 @@ export const CreateEventForm = ({ initialDate, onSuccess, onCancel, isModal = fa
                                         className={cn(
                                             inputClasses,
                                             "flex items-center justify-start gap-3 pl-4 h-14 font-medium",
-                                            !time && "text-muted font-normal"
+                                            !time && "text-white/40 font-normal"
                                         )}
                                     >
                                         <Clock size={20} className="text-muted shrink-0" />
@@ -568,7 +638,7 @@ export const CreateEventForm = ({ initialDate, onSuccess, onCancel, isModal = fa
                                                 const date = new Date();
                                                 date.setHours(parseInt(h), parseInt(m));
                                                 return format(date, 'h:mm a');
-                                            })() : "Pick a time"}
+                                            })() : "Pick start time"}
                                         </span>
                                     </Button>
                                 </PopoverTrigger>
@@ -579,11 +649,80 @@ export const CreateEventForm = ({ initialDate, onSuccess, onCancel, isModal = fa
                         </div>
                     </div>
                 )}
+
+                <div className="space-y-2">
+                    <label className={labelClasses}>End Date</label>
+                    <div className={inputContainerClasses}>
+                        <Popover open={endDatePopoverOpen} onOpenChange={setEndDatePopoverOpen}>
+                            <PopoverTrigger asChild>
+                                <Button
+                                    variant={"outline"}
+                                    className={cn(
+                                        inputClasses,
+                                        "flex items-center justify-start gap-3 pl-4 h-14 font-medium",
+                                        !endDate && "text-white/40 font-normal"
+                                    )}
+                                >
+                                    <CalendarIcon size={20} className="text-muted shrink-0" />
+                                    <span className="truncate">
+                                        {endDate ? format(new Date(endDate), "MMM dd, yyyy") : "Pick end date"}
+                                    </span>
+                                </Button>
+                            </PopoverTrigger>
+                            <PopoverContent className="w-auto p-0 border-soft bg-surface text-foreground z-[200]" align="start">
+                                <Calendar
+                                    mode="single"
+                                    selected={endDate ? new Date(endDate) : undefined}
+                                    onSelect={(d) => {
+                                        setEndDate(d ? format(d, 'yyyy-MM-dd') : '');
+                                        setEndDatePopoverOpen(false);
+                                    }}
+                                    initialFocus
+                                    disabled={(d) => date ? isBefore(startOfDay(d), startOfDay(new Date(date))) : false}
+                                    className="bg-surface text-foreground rounded-xl border border-soft"
+                                />
+                            </PopoverContent>
+                        </Popover>
+                    </div>
+                </div>
+
+                {!is_system_event && !isAllDay && (
+                    <div className="space-y-2">
+                        <label className={labelClasses}>End Time</label>
+                        <div className={inputContainerClasses}>
+                            <Popover>
+                                <PopoverTrigger asChild>
+                                    <Button
+                                        variant={"outline"}
+                                        className={cn(
+                                            inputClasses,
+                                            "flex items-center justify-start gap-3 pl-4 h-14 font-medium",
+                                            !endTime && "text-white/40 font-normal"
+                                        )}
+                                    >
+                                        <Clock size={20} className="text-muted shrink-0" />
+                                        <span className="truncate">
+                                            {endTime ? (() => {
+                                                const [h, m] = endTime.split(':');
+                                                const date = new Date();
+                                                date.setHours(parseInt(h), parseInt(m));
+                                                return format(date, 'h:mm a');
+                                            })() : "Pick end time"}
+                                        </span>
+                                    </Button>
+                                </PopoverTrigger>
+                                <PopoverContent className="w-auto p-0 border-none bg-transparent z-[200]" align="start">
+                                    <TimePicker value={endTime} onChange={setEndTime} />
+                                </PopoverContent>
+                            </Popover>
+                        </div>
+                    </div>
+                )}
             </div>
 
             {/* Location */}
             <div className="space-y-2">
-                <label className={labelClasses}>Location <span className="text-muted text-xs">(Optional)</span></label>
+                <label className={labelClasses}>Location <span className="text-white/40 text-xs">(Optional)</span></label>
                 <div className={inputContainerClasses}>
                     <MapPin size={20} className={iconClasses} />
                     <input
@@ -614,13 +753,13 @@ export const CreateEventForm = ({ initialDate, onSuccess, onCancel, isModal = fa
                                         </SelectTrigger>
                                         <SelectContent className="bg-surface border-soft text-foreground max-h-80 z-[200]">
                                             <SelectGroup>
-                                                <SelectLabel className="text-muted text-xs font-bold uppercase tracking-wider px-2 py-1.5">Offices / Units</SelectLabel>
+                                                <SelectLabel className="text-white/50 text-xs font-bold uppercase tracking-wider px-2 py-1.5">Offices / Units</SelectLabel>
                                                 {departmentsList.map(dept => (
                                                     <SelectItem key={dept.id} value={dept.name}>{dept.name}</SelectItem>
                                                 ))}
                                             </SelectGroup>
                                             <SelectGroup>
-                                                <SelectLabel className="text-muted text-xs font-bold uppercase tracking-wider px-2 py-1.5 mt-2">Institutions</SelectLabel>
+                                                <SelectLabel className="text-white/50 text-xs font-bold uppercase tracking-wider px-2 py-1.5 mt-2">Institutions</SelectLabel>
                                                 {institutionsList.map(inst => (
                                                     <SelectItem key={inst.id} value={inst.name}>{inst.name}</SelectItem>
                                                 ))}
@@ -637,7 +776,7 @@ export const CreateEventForm = ({ initialDate, onSuccess, onCancel, isModal = fa
                                             <span>{department}</span>
                                         </div>
                                     </div>
-                                    <p className="text-xs text-muted mt-1.5">Derived from your department</p>
+                                    <p className="text-xs text-white/50 mt-1.5">Derived from your department</p>
                                 </>
                             )}
                         </div>
@@ -645,8 +784,6 @@ export const CreateEventForm = ({ initialDate, onSuccess, onCancel, isModal = fa
                 )
             }
 
-            {
-                !is_system_event && (
                     <>
                         {/* Media Coverage - Cards Style */}
                         <div className="pt-2">
@@ -670,12 +807,12 @@ export const CreateEventForm = ({ initialDate, onSuccess, onCancel, isModal = fa
                                             <div className="flex items-center justify-between w-full mb-3">
                                                 <div className={`
                                                     w-5 h-5 rounded-md border flex items-center justify-center transition-all duration-300
-                                                    ${isSelected ? 'bg-primary border-primary scale-110' : 'border-muted bg-muted/10'}
+                                                    ${isSelected ? 'bg-primary border-primary scale-110' : 'border-white/20 bg-white/5'}
                                                 `}>
                                                     {isSelected && <Check size={12} className="text-primary-foreground stroke-[3]" />}
                                                 </div>
                                             </div>
-                                            <span className={`text-xs font-bold transition-colors ${isSelected ? 'text-primary' : 'text-muted group-hover:text-foreground'}`}>
+                                            <span className={`text-xs font-bold transition-colors ${isSelected ? 'text-primary' : 'text-white/60 group-hover:text-foreground'}`}>
                                                 {option}
                                             </span>
                                             <input
@@ -690,24 +827,187 @@ export const CreateEventForm = ({ initialDate, onSuccess, onCancel, isModal = fa
                                 })}
                             </div>
                         </div>
-                    </>
-                )
-            }
 
-            {/* Description */}
-            <div className="space-y-2">
-                <label className={labelClasses}>Description <span className="text-muted text-xs">(Optional)</span></label>
-                <div className={inputContainerClasses}>
-                    <AlignLeft size={20} className={`${iconClasses} top-6 -translate-y-0`} />
-                    <textarea
-                        value={description}
-                        onChange={e => setDescription(e.target.value)}
-                        rows={4}
-                        placeholder="Add description or notes..."
-                        className={`${inputClasses} pt-4 pl-12 resize-none min-h-[120px]`}
-                    />
+                        {/* Auto-generate Tasks Toggle */}
+                        <div className="p-5 rounded-2xl border border-soft bg-surface mt-6">
+                            <div className="flex items-center justify-between">
+                                <div className="flex-1">
+                                    <label className="text-sm font-bold text-foreground block">Auto-generate Actionable Tasks</label>
+                                    <span className="text-xs text-white/50 block mt-1">
+                                        Creates Preparation, Execution, and Post Production tasks automatically.
+                                    </span>
+                                </div>
+                                <button
+                                    type="button"
+                                    onClick={() => setAutoGenerateTasks(!autoGenerateTasks)}
+                                    className={`
+                                        relative inline-flex h-7 w-12 shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors duration-200 ease-in-out focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-2 focus:ring-offset-background
+                                        ${autoGenerateTasks ? 'bg-primary' : 'bg-muted'}
+                                    `}
+                                >
+                                    <span className="sr-only">Auto-generate tasks</span>
+                                    <span
+                                        aria-hidden="true"
+                                        className={`
+                                            pointer-events-none inline-block h-6 w-6 transform rounded-full bg-background shadow ring-0 transition duration-200 ease-in-out
+                                            ${autoGenerateTasks ? 'translate-x-5' : 'translate-x-0'}
+                                        `}
+                                    />
+                                </button>
+                            </div>
+                        </div>
+                    </>
+
+            {/* Crew Section */}
+            <div className="space-y-4">
+                <label className={`${labelClasses} flex items-center gap-2`}>
+                    <User size={14} className="text-blue-400" />
+                    Crew Assignment
+                </label>
+                <div className="space-y-3">
+                    <div className="flex gap-2">
+                        <div className="flex-1 relative group">
+                            <Popover>
+                                <PopoverTrigger asChild>
+                                    <Button variant="outline" className="w-full h-12 bg-background border-soft justify-start text-white/50">
+                                        + Add Team Member
+                                    </Button>
+                                </PopoverTrigger>
+                                <PopoverContent className="w-[300px] p-0 bg-surface border-soft z-[205]">
+                                    <Command className="bg-transparent">
+                                        <CommandInput placeholder="Search team members..." className="text-white" />
+                                        <CommandList>
+                                            <CommandEmpty>No team member found.</CommandEmpty>
+                                            <CommandGroup>
+                                                {teamMembers.map((member) => (
+                                                    <CommandItem
+                                                        key={member.uid}
+                                                        onSelect={() => {
+                                                            if (!assignedCrew.find(c => c.user_id === member.uid)) {
+                                                                setAssignedCrew([...assignedCrew, { user_id: member.uid, name: member.name, role: '' }]);
+                                                            }
+                                                        }}
+                                                        className="text-white hover:bg-white/10"
+                                                    >
+                                                        {member.name}
+                                                    </CommandItem>
+                                                ))}
+                                            </CommandGroup>
+                                        </CommandList>
+                                    </Command>
+                                </PopoverContent>
+                            </Popover>
+                        </div>
+                    </div>
+                    <div className="space-y-2">
+                        {assignedCrew.map((crew, index) => (
+                            <div key={crew.user_id} className="flex gap-2 items-center p-3 rounded-xl bg-surface border border-soft group">
+                                <div className="flex-1">
+                                    <div className="text-sm font-medium text-white">{crew.name}</div>
+                                    <input 
+                                        placeholder="Role (e.g. Camera Op)" 
+                                        className="text-xs bg-transparent border-none outline-none text-white/40 focus:text-primary p-0 h-auto"
+                                        value={crew.role}
+                                        onChange={(e) => {
+                                            const newCrew = [...assignedCrew];
+                                            newCrew[index].role = e.target.value;
+                                            setAssignedCrew(newCrew);
+                                        }}
+                                    />
+                                </div>
+                                <button 
+                                    type="button"
+                                    onClick={() => setAssignedCrew(prev => prev.filter(c => c.user_id !== crew.user_id))}
+                                    className="text-white/20 hover:text-red-400 opacity-0 group-hover:opacity-100 transition-all"
+                                >
+                                    Remove
+                                </button>
+                            </div>
+                        ))}
+                    </div>
                 </div>
             </div>
+
+            {/* Equipment Section */}
+            <div className="space-y-4">
+                <label className={`${labelClasses} flex items-center gap-2`}>
+                    <Camera size={14} className="text-blue-400" />
+                    Equipment Reservation
+                </label>
+                <div className="space-y-3">
+                    <div className="flex gap-2">
+                        <div className="flex-1 relative group">
+                            <Popover>
+                                <PopoverTrigger asChild>
+                                    <Button variant="outline" className="w-full h-12 bg-background border-soft justify-start text-white/50">
+                                        + Reserve Equipment
+                                    </Button>
+                                </PopoverTrigger>
+                                <PopoverContent className="w-[300px] p-0 bg-surface border-soft z-[205]">
+                                    <Command className="bg-transparent">
+                                        <CommandInput placeholder="Search inventory..." className="text-white" />
+                                        <CommandList>
+                                            <CommandEmpty>No equipment found.</CommandEmpty>
+                                            <CommandGroup>
+                                                {inventoryList.map((item) => (
+                                                    <CommandItem
+                                                        key={item.id}
+                                                        onSelect={() => {
+                                                            if (!reservedEquipment.find(e => e.inventory_id === item.id)) {
+                                                                const startIso = new Date(`${date}T${time || '09:00'}`).toISOString();
+                                                                const endIso = endDate ? new Date(`${endDate}T${endTime || time || '10:00'}`).toISOString() : new Date(`${date}T23:59:59`).toISOString();
+                                                                const newEntry = { inventory_id: item.id, name: item.name, reserved_from: startIso, reserved_to: endIso };
+                                                                setReservedEquipment([...reservedEquipment, newEntry]);
+                                                                checkConflicts([...reservedEquipment, newEntry]);
+                                                            }
+                                                        }}
+                                                        className="text-white hover:bg-white/10"
+                                                    >
+                                                        {item.name}
+                                                    </CommandItem>
+                                                ))}
+                                            </CommandGroup>
+                                        </CommandList>
+                                    </Command>
+                                </PopoverContent>
+                            </Popover>
+                        </div>
+                    </div>
+                    <div className="space-y-2">
+                        {reservedEquipment.map((equip) => {
+                            const conflicts = equipmentConflicts[equip.inventory_id] || [];
+                            const hasConflict = conflicts.length > 0;
+                            return (
+                                <div key={equip.inventory_id} className={cn(
+                                    "flex flex-col gap-2 p-3 rounded-xl bg-surface border group",
+                                    hasConflict ? "border-red-500/50 bg-red-500/5" : "border-soft"
+                                )}>
+                                    <div className="flex justify-between items-center w-full">
+                                        <div className="text-sm font-medium text-white">{equip.name}</div>
+                                        <button 
+                                            type="button"
+                                            onClick={() => setReservedEquipment(prev => prev.filter(e => e.inventory_id !== equip.inventory_id))}
+                                            className="text-white/20 hover:text-red-400 opacity-0 group-hover:opacity-100 transition-all text-xs"
+                                        >
+                                            Remove
+                                        </button>
+                                    </div>
+                                    {hasConflict && (
+                                        <div className="flex items-center gap-2 text-[10px] text-red-400 font-bold bg-red-400/10 px-2 py-1 rounded">
+                                            <AlertTriangle size={10} />
+                                            Conflict: Reserved by "{conflicts[0].event?.title}"
+                                            {user?.role === 'admin' && " (Override allowed)"}
+                                        </div>
+                                    )}
+                                </div>
+                            );
+                        })}
+                        {isCheckingConflicts && <div className="text-[10px] text-white/50 italic">Checking availability...</div>}
+                    </div>
+                </div>
+            </div>
+
+            {/* Media Coverage */}
 
             {/* Actions */}
             <div className={`flex gap-4 ${isModal ? 'pt-2' : 'pt-6 mt-6 border-t border-soft'}`}>
@@ -715,7 +1015,7 @@ export const CreateEventForm = ({ initialDate, onSuccess, onCancel, isModal = fa
                     <button
                         type="button"
                         onClick={onCancel}
-                        className="flex-1 py-4 text-sm font-bold text-muted bg-surface hover:bg-muted/10 rounded-2xl transition-colors hover:text-foreground border border-soft"
+                        className="flex-1 py-4 text-sm font-bold text-white/60 bg-surface hover:bg-white/5 rounded-2xl transition-colors hover:text-foreground border border-soft"
                     >
                         Cancel
                     </button>

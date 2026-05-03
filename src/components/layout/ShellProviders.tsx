@@ -39,9 +39,17 @@ export default function ShellProviders({ children }: { children: React.ReactNode
                         style={{ height: 'var(--viewport-height)' }}
                     >
                         {/* Ambient Mesh Layer - Soft atmospheric glow */}
-                        <div className="absolute inset-0 pointer-events-none">
-                            <div className="absolute -top-40 left-1/3 w-[700px] h-[700px] bg-blue-600/10 blur-[140px] rounded-full" />
-                            <div className="absolute top-1/2 right-[-200px] w-[600px] h-[600px] bg-indigo-500/10 blur-[140px] rounded-full" />
+                        <div className="absolute inset-0 pointer-events-none overflow-hidden">
+                            {/* Ambient Top Light - Premium SaaS Depth */}
+                            <div 
+                                className="absolute inset-x-0 -top-[200px] h-[600px] z-0 opacity-50"
+                                style={{
+                                    background: `radial-gradient(1200px 600px at 50% 0%, rgba(99, 102, 241, 0.15), transparent 60%)`
+                                }}
+                            />
+
+                            <div className="absolute -top-40 left-1/3 w-[700px] h-[700px] bg-blue-600/10 blur-[140px] rounded-full animate-drift" />
+                            <div className="absolute top-1/2 right-[-200px] w-[600px] h-[600px] bg-indigo-500/10 blur-[140px] rounded-full animate-drift" style={{ animationDelay: '-15s' }} />
                         </div>
                         {/* Desktop Sidebar */}
                         <DesktopSideNav />
@@ -60,7 +68,7 @@ export default function ShellProviders({ children }: { children: React.ReactNode
 
                             {/* Main Content Area - THE single scroll container */}
                             <main
-                                className="flex-1 overflow-y-auto overflow-x-hidden relative z-10 pt-[calc(var(--header-height)+1rem)] lg:pt-8 pb-6 print:pt-0 print:pb-0 print:overflow-visible print:h-auto scroll-smooth transition-all duration-200"
+                                className="flex-1 overflow-y-auto overflow-x-hidden relative z-10 pt-[calc(var(--header-height)+1rem)] lg:pt-8 pb-6 print:pt-0 print:pb-0 print:overflow-visible print:h-auto scroll-smooth transition-all duration-200 page-enter"
                                 id="main-scroll-container"
                                 style={{
                                     paddingBottom: 'calc(var(--bottom-nav-height) + 2rem)'
@@ -83,11 +91,7 @@ export default function ShellProviders({ children }: { children: React.ReactNode
                     <AwarenessIndicator />
                     <HydrationDetector />
 
-                    <div className="print:hidden lg:hidden">
-                        {process.env.IS_MOBILE !== 'true' || (typeof window !== 'undefined' && !window.location.pathname.startsWith('/reports/activity')) ? (
-                            <BottomNav />
-                        ) : null}
-                    </div>
+                    <BottomNav />
                 </ClientDataProvider>
             </ToastProvider>
         </CrashLoopBreaker>

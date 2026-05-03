@@ -1,8 +1,9 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { getDb } from '@/db';
 import { adminInterventionNotes, users } from '@/db/schema';
-import { authorizeByPermission } from '@/lib/auth-server';
-import { eq, desc } from 'drizzle-orm';
+import { verifyUser } from '@/lib/verifyUser';
+import { withTenantDrizzle, validateTenant } from '@/lib/tenantQuery';
+import { eq, desc, and } from 'drizzle-orm';
 
 /**
  * GET /api/admin/interventions/[userId]
@@ -17,9 +18,16 @@ export async function GET(
 ) {
     try {
         // 1. Authorization
-        const authResult = await authorizeByPermission('read:reports');
-        if (!authResult.authorized) {
+        const user = await verifyUser(request);
+        if (!user || user.role !== 'admin') {
             return NextResponse.json({ error: 'Unauthorized' }, { status: 403 });
+        }
+
+        // Tenant Security guard
+        const tenantId = user.tenant_id;
+        if (!tenantId || tenantId === 'null' || tenantId === 'undefined') {
+            console.error(`[GET /api/admin/interventions] ❌ Missing tenant context for user: ${user.uid}`);
+            return NextResponse.json({ error: 'Missing tenant context' }, { status: 403 });
         }
 
         const { userId: userIdParam } = await params;
@@ -43,8 +51,14 @@ export async function GET(
             adminAvatar: users.avatar_url
         })
             .from(adminInterventionNotes)
-            .leftJoin(users, eq(adminInterventionNotes.created_by, users.id))
-            .where(eq(adminInterventionNotes.userId, userId))
+            .leftJoin(users, and(
+                eq(adminInterventionNotes.created_by, users.id),
+                withTenantDrizzle(users, tenantId)
+            ))
+            .where(and(
+                eq(adminInterventionNotes.userId, userId),
+                withTenantDrizzle(adminInterventionNotes, tenantId)
+            ))
             .orderBy(desc(adminInterventionNotes.period));
 
         return NextResponse.json({ interventions });

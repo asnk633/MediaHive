@@ -34,40 +34,40 @@ export async function POST(request: NextRequest) {
       { status: 404 }
     );
   }
-  
+
   try {
     // Authorize user with RBAC - only admins can enroll VIPs
     const user = await authorizeByPermission(request, 'manage:users');
-    
+
     if (!user) {
       return NextResponse.json(
         { error: 'Forbidden: Only admins can enroll VIPs' },
         { status: 403 }
       );
     }
-    
+
     // Ensure directories exist
     await ensureDirectories();
-    
+
     // Parse multipart form data
     const formData = await request.formData();
     const file = formData.get('file') as File | null;
     const label = formData.get('label') as string | null;
-    
+
     if (!file) {
       return NextResponse.json(
         { error: 'No file provided' },
         { status: 400 }
       );
     }
-    
+
     if (!label) {
       return NextResponse.json(
         { error: 'No label provided' },
         { status: 400 }
       );
     }
-    
+
     // Validate file size
     if (file.size > config.MAX_UPLOAD_SIZE) {
       return NextResponse.json(
@@ -75,32 +75,38 @@ export async function POST(request: NextRequest) {
         { status: 400 }
       );
     }
-    
+
     // Save file temporarily
     const file_id = uuidv4();
     const fileExtension = file.name.split('.').pop() || '';
     const tempFileName = `${file_id}.${fileExtension}`;
     const tempFilePath = path.join(UPLOADS_DIR, tempFileName);
-    
+
     const fileBuffer = Buffer.from(await file.arrayBuffer());
     await fs.writeFile(tempFilePath, fileBuffer);
-    
+
+    // Tenant Security Guard
+    const tenantId = user.tenant_id;
+    if (!tenantId || tenantId === 'null' || tenantId === 'undefined') {
+      return NextResponse.json({ error: 'Missing tenant context' }, { status: 403 });
+    }
+
     // Enroll VIP
-    const vipId = await enrollVIP(tempFilePath, label, undefined, user.id);
-    
+    const vipId = await enrollVIP(tempFilePath, label, undefined, user.id, tenantId);
+
     // Clean up temporary file
     try {
       await fs.unlink(tempFilePath);
     } catch (cleanupError) {
       console.warn('Temporary file cleanup error:', cleanupError);
     }
-    
+
     return NextResponse.json(
-      { 
-        success: true, 
+      {
+        success: true,
         message: 'VIP enrolled successfully',
         id: vipId
-      }, 
+      },
       { status: 200 }
     );
   } catch (error: unknown) {

@@ -1,6 +1,6 @@
 import { getDriveClient, ensureFolderPath, DRIVE_CONFIG, sanitizeForDrive } from './drive';
 import 'server-only';
-import { getSupabaseAdmin } from '@/lib/server-utils';
+import { getSupabaseAdmin } from '@/lib/server/server-utils';
 
 const CONFIG_TABLE = 'app_config';
 const DRIVE_CONFIG_KEY = 'drive_structure';

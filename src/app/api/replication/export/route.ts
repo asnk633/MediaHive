@@ -1,10 +1,10 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { db } from '@/db';
-import { 
-  tasks, 
-  events, 
-  users, 
-  institutions, 
+import {
+  tasks,
+  events,
+  users,
+  institutions,
   tenants,
   taskComments,
   attachments,
@@ -21,6 +21,8 @@ import {
 } from '@/db/schema';
 import { eq, and, gt, lt, desc, asc } from 'drizzle-orm';
 import { z } from 'zod';
+import { verifyUser } from '@/lib/verifyUser';
+import { withTenantDrizzle, validateTenant } from '@/lib/tenantQuery';
 
 // Schema for WAL events
 const WalEventSchema = z.object({
@@ -67,11 +69,24 @@ export const dynamic = 'force-dynamic';
 
 export async function GET(request: NextRequest) {
   try {
+    // Authenticate and get tenant context
+    const user = await verifyUser(request);
+    if (!user) {
+      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+    }
+
+    // Tenant Security Guard
+    const tenantId = user.tenant_id;
+    if (!tenantId || tenantId === 'null' || tenantId === 'undefined') {
+      console.error(`[GET /api/replication/export] ❌ Missing tenant context for user: ${user.uid}`);
+      return NextResponse.json({ error: 'Missing tenant context' }, { status: 403 });
+    }
+
     const { searchParams } = new URL(request.url);
     const since = searchParams.get('since'); // ISO timestamp
     const table = searchParams.get('table'); // Specific table to export
     const limit = parseInt(searchParams.get('limit') || '1000');
-    
+
     // Validate table parameter
     if (table && !REPLICABLE_TABLES.includes(table)) {
       return NextResponse.json(
@@ -79,24 +94,29 @@ export async function GET(request: NextRequest) {
         { status: 400 }
       );
     }
-    
-    // Build events array
+
+    // Build events array - strictly filtered by tenantId
     const events: WalEvent[] = [];
-    
-    // For simplicity in this implementation, we'll generate synthetic events
-    // In a real implementation, you'd track actual database changes
-    
-    // Get recent audit logs as our WAL events
-    const conditions = since 
-      ? [gt(auditLog.timestamp, since)]
-      : [];
-      
+
+    // Build query conditions
+    const conditions = [
+      withTenantDrizzle(auditLog, tenantId)
+    ];
+
+    if (since) {
+      conditions.push(gt(auditLog.createdAt, since));
+    }
+
+    if (table) {
+      conditions.push(eq(auditLog.resourceType, table));
+    }
+
     const auditEvents = await db.select()
       .from(auditLog)
       .where(and(...conditions))
-      .orderBy(desc(auditLog.timestamp))
+      .orderBy(desc(auditLog.createdAt))
       .limit(limit);
-    
+
     // Convert audit logs to WAL events
     for (const audit of auditEvents) {
       const walEvent: WalEvent = {
@@ -107,10 +127,10 @@ export async function GET(request: NextRequest) {
         primaryKey: { id: audit.resourceId?.toString() || '' },
         data: audit.details ? JSON.parse(JSON.stringify(audit.details)) : undefined
       };
-      
+
       events.push(walEvent);
     }
-    
+
     return NextResponse.json(events);
   } catch (error) {
     console.error('Replication export error:', error);
@@ -123,8 +143,21 @@ export async function GET(request: NextRequest) {
 
 export async function POST(request: NextRequest) {
   try {
+    // Authenticate and get tenant context
+    const user = await verifyUser(request);
+    if (!user) {
+      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+    }
+
+    // Tenant Security Guard
+    const tenantId = user.tenant_id;
+    if (!tenantId || tenantId === 'null' || tenantId === 'undefined') {
+      console.error(`[POST /api/replication/export] ❌ Missing tenant context for user: ${user.uid}`);
+      return NextResponse.json({ error: 'Missing tenant context' }, { status: 403 });
+    }
+
     const body = await request.json();
-    
+
     // Handle different ingestion types
     if (request.headers.get('content-type') === 'application/json') {
       // Single event ingestion
@@ -135,15 +168,15 @@ export async function POST(request: NextRequest) {
           { status: 400 }
         );
       }
-      
+
       const event = result.data;
       await processWalEvent(event);
-      
+
       return NextResponse.json({ success: true });
     } else {
       // Batch ingestion
       const events = Array.isArray(body) ? body : [body];
-      
+
       for (const event of events) {
         const result = WalEventSchema.safeParse(event);
         if (!result.success) {
@@ -152,10 +185,10 @@ export async function POST(request: NextRequest) {
             { status: 400 }
           );
         }
-        
+
         await processWalEvent(result.data);
       }
-      
+
       return NextResponse.json({ success: true, processed: events.length });
     }
   } catch (error) {
@@ -171,18 +204,18 @@ export async function POST(request: NextRequest) {
 async function processWalEvent(event: WalEvent) {
   // In a real implementation, you would apply the event to the database
   // This is a simplified version that just logs the event
-  
+
   console.log(`Processing WAL event: ${event.operation} on ${event.table}`, {
     id: event.id,
     primaryKey: event.primaryKey,
     data: event.data
   });
-  
+
   // Here you would implement the actual database operations:
   // - INSERT: db.insert(schema[event.table]).values(event.data)
   // - UPDATE: db.update(schema[event.table]).set(event.data).where(primaryKeyCondition)
   // - DELETE: db.delete(schema[event.table]).where(primaryKeyCondition)
-  
+
   // For now, we'll just simulate the processing
   await new Promise(resolve => setTimeout(resolve, 10)); // Simulate processing time
 }

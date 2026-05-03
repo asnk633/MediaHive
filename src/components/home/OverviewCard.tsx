@@ -32,7 +32,7 @@ export function OverviewCard({
         <div
             onClick={onClick}
             className={cn(
-                "relative flex flex-col p-6 rounded-xl transition-all duration-300 cursor-pointer overflow-hidden group hover:-translate-y-1 animate-in fade-in zoom-in-95 duration-500",
+                "relative flex flex-col p-6 rounded-[18px] transition-all duration-300 cursor-pointer overflow-hidden group hover:-translate-y-1 animate-in fade-in zoom-in-95 duration-500",
                 // Base Style (Inventory Match - Modified for Borderless)
                 "bg-surface backdrop-blur-sm shadow-sm",
                 // Hover

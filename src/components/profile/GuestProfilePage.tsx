@@ -5,7 +5,7 @@ import { useRouter } from 'next/navigation';
 import { nativeNavigate } from '@/lib/utils';
 import { ClipboardList, CheckCircle, Clock } from 'lucide-react';
 import { CanonicalDataService } from '@/services/canonicalDataService';
-import { Task } from '@/types/task';
+import { MediaTask as Task } from '@/services/tasks/taskContract';
 import { format } from 'date-fns';
 
 export function GuestProfilePage() {
@@ -20,10 +20,9 @@ export function GuestProfilePage() {
         const loadData = async () => {
             setLoading(true);
             try {
-                // Fetch tasks where this user is the CREATOR (or assigned, though guests usually create)
                 // Fetch tasks where this user is the CREATOR
                 const data = await CanonicalDataService.getTasks({
-                    created_by: user.uid,
+                    createdBy: user.uid,
                 });
                 setTasks(data);
             } catch (err) {
@@ -38,16 +37,19 @@ export function GuestProfilePage() {
 
     if (!user) return null;
 
+    const parseDate = (ts: any) => {
+        if (!ts) return new Date(0);
+        if (typeof ts === 'string') return new Date(ts);
+        if (ts.seconds) return new Date(ts.seconds * 1000);
+        return new Date(0);
+    };
+
     const activeCount = tasks.filter(t => t.status !== 'done').length;
     const completedCount = tasks.filter(t => t.status === 'done').length;
 
     // Recent Activity: Last 5 updated tasks
     const recentActivity = [...tasks]
-        .sort((a, b) => {
-            const dateA = a.updated_at?.seconds ? new Date(a.updated_at.seconds * 1000) : new Date(0);
-            const dateB = b.updated_at?.seconds ? new Date(b.updated_at.seconds * 1000) : new Date(0);
-            return dateB.getTime() - dateA.getTime();
-        })
+        .sort((a, b) => parseDate(b.updatedAt).getTime() - parseDate(a.updatedAt).getTime())
         .slice(0, 5);
 
     return (

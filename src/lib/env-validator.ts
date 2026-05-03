@@ -105,9 +105,7 @@ export function getEnvVar(name: string, type: EnvVarType = 'string', defaultValu
 export function initEnv(): void {
   const envConfig: EnvVarConfig[] = [
     // Database
-    { name: 'DATABASE_URL', type: 'string', required: false, description: 'Database connection URL' },
-    { name: 'TURSO_CONNECTION_URL', type: 'url', required: false, description: 'Turso database connection URL' },
-    { name: 'TURSO_AUTH_TOKEN', type: 'string', required: false, description: 'Turso database authentication token' },
+    { name: 'DATABASE_URL', type: 'string', required: true, description: 'PostgreSQL connection URL for Supabase' },
 
     // Supabase
     { name: 'SUPABASE_URL', type: 'url', required: false, description: 'Supabase project URL' },

@@ -4,27 +4,29 @@ import React, { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import { ArrowLeft, Calendar as CalendarIcon, User, Briefcase, Flag, Building } from 'lucide-react';
 import { useAuth } from '@/contexts/AuthContextProvider';
-import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
-import { Calendar } from "@/components/ui/calendar";
-import { Button } from "@/components/ui/button";
-import { cn, nativeNavigate } from "@/lib/utils";
 import { format } from "date-fns";
+import { DateSelector } from '@/components/ui/selectors/DateSelector';
+import { DropdownSelector } from '@/components/ui/selectors/DropdownSelector';
+import { useFormState } from '@/hooks/useFormState';
+import { useFormSubmit } from '@/hooks/useFormSubmit';
+import { DraftIndicator } from '@/components/ui/DraftIndicator';
 
 import { supabase } from '@/lib/supabaseClient';
 import { v4 as uuidv4 } from 'uuid';
 import { UserService } from '@/services/userService';
 import { StructureService } from '@/services/structureService';
 import { apiClient } from '@/lib/apiClient';
+import { CanonicalDataService } from '@/services/canonicalDataService';
 import { PageLayout } from "@/components/ui/layout/PageLayout";
 import { toast } from 'sonner';
 import { COPY } from '@/lib/copy';
+import { tenantContext } from '@/lib/auth/tenantContext';
 
 export default function TasksNewClient() {
     const router = useRouter();
     const searchParams = typeof window !== 'undefined' ? new URLSearchParams(window.location.search) : new URLSearchParams();
     const campaign_id = searchParams.get('campaign_id');
     const { user } = useAuth();
-    const [loading, setLoading] = useState(false);
     const [error, setError] = useState<string | null>(null);
     const [teamMembers, setTeamMembers] = useState<{ uid: string; name: string }[]>([]);
     const [campaignName, setCampaignName] = useState<string>('');
@@ -38,37 +40,44 @@ export default function TasksNewClient() {
     }, [campaign_id]);
 
     // Organization Data
-    const [departmentsList, setDepartmentsList] = useState<{ id: string; name: string }[]>([]);
-    const [institutionsList, setInstitutionsList] = useState<{ id: string; name: string }[]>([]);
+    const [departmentsList, setDepartmentsList] = useState<{ id: string | number; name: string }[]>([]);
+    const [institutionsList, setInstitutionsList] = useState<{ id: string | number; name: string }[]>([]);
 
     if (!user) return null;
 
-    const [title, setTitle] = useState('');
-    const [description, setDescription] = useState('');
-    const [due_date, setDueDate] = useState<Date | undefined>(undefined);
-    const [priority, setPriority] = useState<'low' | 'medium' | 'high'>('medium');
-    const [assignedToIds, setAssignedToIds] = useState<string[]>([]);
+    const canCreateOnBehalf = user.role === 'admin' || user.role === 'manager';
+
+    const { state: formData, setState: setFormData, clearDraft, isDraftSaved } = useFormState({
+        key: 'draft:task:new',
+        initialState: {
+            title: '',
+            description: '',
+            due_date: undefined as string | undefined,
+            priority: 'medium' as 'low' | 'medium' | 'high',
+            assignedToIds: [] as string[],
+            selectedOrgId: '',
+            createAs: 'myself' as 'myself' | 'on_behalf_of',
+            onBehalfOfId: ''
+        }
+    });
+
+    const { title, description, priority, assignedToIds, selectedOrgId, createAs, onBehalfOfId } = formData;
+    const due_date = formData.due_date ? new Date(formData.due_date) : undefined;
+
+    const setTitle = (val: string) => setFormData(prev => ({ ...prev, title: val }));
+    const setDescription = (val: string) => setFormData(prev => ({ ...prev, description: val }));
+    const setDueDate = (val: Date | undefined) => setFormData(prev => ({ ...prev, due_date: val ? val.toISOString() : undefined }));
+    const setPriority = (val: 'low' | 'medium' | 'high') => setFormData(prev => ({ ...prev, priority: val }));
+    const setAssignedToIds = (val: string[] | ((prev: string[]) => string[])) => setFormData(prev => ({ 
+        ...prev, 
+        assignedToIds: typeof val === 'function' ? val(prev.assignedToIds) : val 
+    }));
+    const setCreateAs = (val: 'myself' | 'on_behalf_of') => setFormData(prev => ({ ...prev, createAs: val }));
+    const setSelectedOrgId = (val: string) => setFormData(prev => ({ ...prev, selectedOrgId: val }));
+    const setOnBehalfOfId = (val: string) => setFormData(prev => ({ ...prev, onBehalfOfId: val }));
+
     const [files, setFiles] = useState<File[]>([]);
     const [uploadProgress, setUploadProgress] = useState<string>('');
-
-    // Create As Logic - Persist in Session (Batch Entry optimization)
-    const canCreateOnBehalf = user.role === 'admin' || user.role === 'team';
-    const [createAs, setCreateAs] = useState<'myself' | 'on_behalf_of'>(() => {
-        if (typeof window !== 'undefined') {
-            const saved = sessionStorage.getItem('task-create-as-pref');
-            return (saved === 'myself' || saved === 'on_behalf_of') ? saved : 'myself';
-        }
-        return 'myself';
-    });
-
-    // Unified state for department or institution
-    const [selectedOrgId, setSelectedOrgId] = useState<string>(''); // Format: dept_{id} or inst_{id}
-    const [onBehalfOfId, setOnBehalfOfId] = useState<string>(() => {
-        if (typeof window !== 'undefined') {
-            return sessionStorage.getItem('task-on-behalf-id-pref') || '';
-        }
-        return '';
-    });
 
     // Save persistence
     useEffect(() => {
@@ -94,37 +103,6 @@ export default function TasksNewClient() {
         };
         fetchOrgs();
     }, []);
-
-    // Auto-fill from user defaults
-    // Auto-Save Logic (Task 81)
-    useEffect(() => {
-        // Restore
-        const saved = localStorage.getItem('mediahive_draft_task');
-        if (saved && !title && !description) {
-            try {
-                const parsed = JSON.parse(saved);
-                if (parsed.title) setTitle(parsed.title);
-                if (parsed.description) setDescription(parsed.description);
-                if (parsed.due_date) setDueDate(parsed.due_date);
-            } catch (e) {
-                console.error('Failed to restore draft', e);
-            }
-        }
-    }, []);
-
-    useEffect(() => {
-        // Save (Debounced 1s)
-        const timeoutId = setTimeout(() => {
-            if (title || description) {
-                localStorage.setItem('mediahive_draft_task', JSON.stringify({
-                    title,
-                    description,
-                    due_date
-                }));
-            }
-        }, 1000);
-        return () => clearTimeout(timeoutId);
-    }, [title, description, due_date]);
 
     // Auto-fill from user defaults
     // We use a separate effect for this to ensure it runs when either User defaults exist OR when lists are loaded.
@@ -154,7 +132,7 @@ export default function TasksNewClient() {
 
         // 2. User Defaults
         if (userDeptId) {
-            const dept = departmentsList.find(d => d.id === userDeptId || d.name === userDeptId);
+            const dept = departmentsList.find(d => String(d.id) === String(userDeptId) || d.name === String(userDeptId));
             if (dept) {
                 setSelectedOrgId(`dept_${dept.id}`);
                 return;
@@ -162,7 +140,7 @@ export default function TasksNewClient() {
         }
 
         if (userInstId) {
-            const inst = institutionsList.find(i => i.id === userInstId || i.name === userInstId);
+            const inst = institutionsList.find(i => String(i.id) === String(userInstId) || i.name === String(userInstId));
             if (inst) {
                 setSelectedOrgId(`inst_${inst.id}`);
                 return;
@@ -173,7 +151,7 @@ export default function TasksNewClient() {
 
     const isGuest = user?.role?.toLowerCase() === 'guest';
     const isAdmin = user?.role === 'admin';
-    const isTeam = user?.role === 'team';
+    const isTeam = user?.role === 'manager' || user?.role === 'member';
 
     // Fetch real team members from Firestore
     useEffect(() => {
@@ -193,19 +171,12 @@ export default function TasksNewClient() {
     // ...
 
 
-    const handleSubmit = async (e: React.FormEvent) => {
-        e.preventDefault();
-        await submitTask();
-    };
-
     const submitTask = async () => {
+        setError(null);
         if (!title || !due_date || !selectedOrgId) {
-            toast.error(COPY.errors.taskMissing);
-            return;
+            throw new Error(COPY.errors.taskMissing);
         }
-        setLoading(true);
-
-        try {
+            const { tenantId } = await tenantContext();
             let finalAssignedTo: { uid: string; name: string }[] = [];
 
             if (isAdmin) {
@@ -237,24 +208,24 @@ export default function TasksNewClient() {
             if (canCreateOnBehalf && createAs === 'on_behalf_of' && onBehalfOfId) {
                 if (onBehalfOfId.startsWith('dept_')) {
                     const id = onBehalfOfId.split('_')[1];
-                    const dept = departmentsList.find(d => d.id === id);
+                    const dept = departmentsList.find(d => String(d.id) === id);
                     if (dept) onBehalfOfData = { id: dept.id, name: dept.name, type: 'department' };
                 } else if (onBehalfOfId.startsWith('inst_')) {
                     const id = onBehalfOfId.split('_')[1];
-                    const inst = institutionsList.find(i => i.id === id);
+                    const inst = institutionsList.find(i => String(i.id) === id);
                     if (inst) onBehalfOfData = { id: inst.id, name: inst.name, type: 'institution' };
                 }
             }
 
             // Resolve Structure IDs
             let department_id = null;
-            let institution_id = undefined;
+            let institution_id = user.institution_id;
             let departmentName = '';
 
             if (selectedOrgId.startsWith('dept_')) {
                 const id = selectedOrgId.split('_')[1];
                 department_id = id;
-                const d = departmentsList.find(dep => dep.id === id);
+                const d = departmentsList.find(dep => String(dep.id) === id);
                 departmentName = d ? d.name : '';
             } else if (selectedOrgId.startsWith('inst_')) {
                 const id = selectedOrgId.split('_')[1];
@@ -267,28 +238,30 @@ export default function TasksNewClient() {
                 description,
                 status: isGuest ? 'pending' : 'todo',
                 priority: isGuest ? 'low' : priority,
-                due_date: due_date ? due_date.toISOString() : new Date().toISOString(),
+                due_date: due_date ? (typeof due_date === 'string' ? new Date(due_date).toISOString() : (due_date as Date).toISOString()) : new Date().toISOString(),
                 department: departmentName,
                 department_id: department_id,
                 institution_id: institution_id,
-                assigned_by: {
-                    uid: user.uid,
-                    name: user.official_name || user.name || user.email || 'Unknown',
-                    role: user.role
-                },
-                created_by: {
-                    uid: user.uid,
-                    name: user.official_name || user.name || user.email || 'Unknown',
-                    role: user.role
-                },
+                assigned_by: user.uid,
+                created_by: user.uid,
                 assigned_to: finalAssignedTo.length > 0 ? finalAssignedTo : undefined,
                 campaign_id: campaign_id || undefined,
                 on_behalf_of: onBehalfOfData
             };
 
-            const { data: newTask, error: insertError } = await supabase.from('tasks').insert([newTaskData]).select('id').single();
-            if (insertError || !newTask) { throw new Error(insertError?.message || "Failed to create task"); }
-            const newTaskId = newTask.id;
+            const { data: newTask, error: insertError } = await CanonicalDataService.createRecord('tasks', newTaskData, 'task');
+            if (insertError) { 
+                // In offline mode, createRecord might return data: null and error: null if enqueued
+                // But we should check if it was actually enqueued. safeQuery returns { data: fallbackData, error: null }
+                // if it's offline.
+                if (!navigator.onLine) {
+                    toast.info("Working offline. Task queued for sync.");
+                } else {
+                    throw new Error(insertError.message || "Failed to create task");
+                }
+            }
+            
+            const newTaskId = newTask?.id || uuidv4(); // Fallback ID for offline attachments if needed
 
             // Upload Attachments natively
             if (files.length > 0) {
@@ -328,11 +301,11 @@ export default function TasksNewClient() {
             // Notify Admins if Guest created it
             if (isGuest) {
                 try {
-                    const { NotificationService } = await import('@/services/notificationService');
+                    const { pushNotification } = await import('@/services/alertService');
                     const admins = await UserService.getAdmins();
 
                     await Promise.all(admins.map(admin =>
-                        NotificationService.createNotification({
+                        pushNotification({
                             user_id: admin.uid,
                             created_by: user.uid,
                             type: 'task_assigned', // Using valid type
@@ -348,27 +321,29 @@ export default function TasksNewClient() {
                     console.error("Failed to notify admins", e);
                 }
             }
+    };
 
+    const { isSubmitting, handleSubmit: handleProtectedSubmit } = useFormSubmit({
+        onSubmit: submitTask,
+        onSuccess: () => {
+            clearDraft();
             toast.success(COPY.toasts.taskCreated);
-            localStorage.removeItem('mediahive_draft_task'); // Cleanup (Task 81)
-
             const returnTo = searchParams.get('returnTo');
-            if (returnTo === 'home') {
-                nativeNavigate('/home', router, 'TasksNew (Success to Home)');
-            } else {
-                nativeNavigate('/tasks', router, 'TasksNew (Success)');
-            }
-        } catch (error: any) {
-            console.error(error);
-            setError(COPY.errors.generic);
-        } finally {
-            setLoading(false);
+            if (returnTo === 'home') router.push('/home');
+            else router.push('/tasks');
+        },
+        onError: (err) => {
+            setError(err.message || COPY.errors.generic);
         }
+    });
+
+    const handleSubmit = async (e: React.FormEvent) => {
+        e.preventDefault();
+        await handleProtectedSubmit(undefined);
     };
 
     const handleRetry = async () => {
-        setError(null);
-        await submitTask();
+        await handleProtectedSubmit(undefined);
     };
 
     // Power User: Cmd/Ctrl + Enter to Submit
@@ -376,7 +351,7 @@ export default function TasksNewClient() {
         const handleKeyDown = (e: KeyboardEvent) => {
             if ((e.metaKey || e.ctrlKey) && e.key === 'Enter') {
                 e.preventDefault();
-                submitTask();
+                handleProtectedSubmit(undefined);
             }
         };
         window.addEventListener('keydown', handleKeyDown);
@@ -389,9 +364,9 @@ export default function TasksNewClient() {
             if (e.key === 'Escape') {
                 const returnTo = searchParams.get('returnTo');
                 if (returnTo === 'home') {
-                    nativeNavigate('/home', router, 'TasksNew (Esc to Home)');
+                    router.push('/home');
                 } else {
-                    nativeNavigate('/tasks', router, 'TasksNew (Esc)');
+                    router.push('/tasks');
                 }
             }
         };
@@ -442,9 +417,9 @@ export default function TasksNewClient() {
                                 onClick={() => {
                                     const returnTo = searchParams.get('returnTo');
                                     if (returnTo === 'home') {
-                                        nativeNavigate('/home', router, 'TasksNew (Cancel to Home)');
+                                        router.push('/home');
                                     } else {
-                                        nativeNavigate('/tasks', router, 'TasksNew (Cancel)');
+                                        router.push('/tasks');
                                     }
                                 }}
                                 className="text-red-400/80 font-medium hover:text-red-300 transition-colors text-sm hover:bg-white/5 px-3 py-1.5 rounded-full"
@@ -452,8 +427,7 @@ export default function TasksNewClient() {
                                 {COPY.actions.cancel}
                             </button>
                             <h1 className="text-lg font-bold text-white tracking-wide">New Task</h1>
-                            {/* Spacer for balance */}
-                            <div className="w-[50px]"></div>
+                            <DraftIndicator isSaved={isDraftSaved} className="w-[80px] justify-end" />
                         </div>
 
                         {campaignName && (
@@ -523,158 +497,78 @@ export default function TasksNewClient() {
 
                             {/* Date & Department/Institution Grid */}
                             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 pt-2">
-                                <div className="space-y-2">
-                                    <label className="block text-sm font-medium text-white/70 mb-2">
-                                        Due Date
-                                    </label>
-                                    <Popover>
-                                        <PopoverTrigger asChild>
-                                            <Button
-                                                variant={"outline"}
-                                                className={cn(
-                                                    "w-full bg-white/5 hover:bg-white/10 pl-10 pr-4 py-3 h-auto rounded-xl border border-[#ffffff1a] focus:border-blue-500/50 hover:text-white text-left font-normal justify-start relative text-sm text-white",
-                                                    !due_date && "text-white/40"
-                                                )}
-                                            >
-                                                <div className="absolute left-3 top-1/2 -translate-y-1/2 flex items-center pointer-events-none text-gray-500">
-                                                    <CalendarIcon size={14} />
-                                                </div>
-                                                {due_date ? format(due_date, "dd/MM/yyyy") : <span>{COPY.validation.pickDate}</span>}
-                                            </Button>
-                                        </PopoverTrigger>
-                                        <PopoverContent className="w-auto p-0 bg-[#10111a] border-[#ffffff1a] text-white z-[200]" align="start">
-                                            <Calendar
-                                                mode="single"
-                                                selected={due_date}
-                                                onSelect={setDueDate}
-                                                initialFocus
-                                                fromDate={new Date()}
-                                                className="bg-[#10111a] text-white"
-                                                classNames={{
-                                                    day_selected: "bg-blue-600 text-white rounded-full", // Fallback
-                                                    day_today: "bg-white/10 text-white rounded-full",
-                                                    day: "text-white hover:bg-white/10 rounded-full w-9 h-9 p-0 font-normal aria-selected:opacity-100",
-                                                    head_cell: "text-white/50 w-9 font-normal text-[0.8rem]",
-                                                    caption_label: "text-white",
-                                                    nav_button: "text-white hover:bg-white/10 rounded-full",
-                                                }}
-                                            />
-                                        </PopoverContent>
-                                    </Popover>
+                                <div className="space-y-0.5">
+                                    <DateSelector 
+                                        label="Due Date"
+                                        date={due_date}
+                                        onChange={setDueDate}
+                                    />
                                 </div>
 
                                 {/* Unified Department or Institution Dropdown (Myself Mode) */}
                                 {createAs === 'myself' && (
-                                    <div className="space-y-2">
-                                        <label className="block text-sm font-medium text-white/70 mb-2">
-                                            Requested By <span className="text-white/40 text-xs">(Department / Unit / Office)</span>
-                                        </label>
-
+                                    <div className="space-y-0.5">
                                         {isGuest || (departmentsList.length + institutionsList.length === 1) ? (
                                             /* Read-Only View for Guests or Single-Option Users */
-                                            <div className="w-full bg-white/5 pl-4 pr-4 py-3 rounded-xl border border-[#ffffff1a] text-sm text-white flex items-center gap-3">
-                                                <Briefcase size={14} className="text-gray-400" />
-                                                <span>
-                                                    {(() => {
-                                                        if (!selectedOrgId) return <span className="text-gray-500 italic">No Department Assigned (Processing...)</span>;
-                                                        if (selectedOrgId.startsWith('dept_')) {
-                                                            const id = selectedOrgId.split('_')[1];
-                                                            return departmentsList.find(d => d.id === id)?.name || "Unknown Department";
-                                                        }
-                                                        if (selectedOrgId.startsWith('inst_')) {
-                                                            const id = selectedOrgId.split('_')[1];
-                                                            return institutionsList.find(i => i.id === id)?.name || "Unknown Institution";
-                                                        }
-                                                        return "Unknown Unit";
-                                                    })()}
-                                                </span>
-                                                {/* Show different badge based on why it's locked */}
-                                                {isGuest && selectedOrgId && <span className="ml-auto text-xs text-green-400/70 italic">Auto-set</span>}
-                                                {!isGuest && (departmentsList.length + institutionsList.length === 1) && <span className="ml-auto text-xs text-blue-400/70 italic">Verified</span>}
+                                            <div className="space-y-2">
+                                                <label className="block text-sm font-medium text-white/70">
+                                                    Requested By <span className="text-white/40 text-xs">(Department / Unit / Office)</span>
+                                                </label>
+                                                <div className="w-full bg-white/5 pl-4 pr-4 py-3 rounded-xl border border-[#ffffff1a] text-sm text-white flex items-center gap-3">
+                                                    <Briefcase size={14} className="text-gray-400" />
+                                                    <span>
+                                                        {(() => {
+                                                            if (!selectedOrgId) return <span className="text-gray-500 italic">No Department Assigned (Processing...)</span>;
+                                                            if (selectedOrgId.startsWith('dept_')) {
+                                                                const id = selectedOrgId.split('_')[1];
+                                                                return departmentsList.find(d => String(d.id) === id)?.name || "Unknown Department";
+                                                            }
+                                                            if (selectedOrgId.startsWith('inst_')) {
+                                                                const id = selectedOrgId.split('_')[1];
+                                                                return institutionsList.find(i => String(i.id) === id)?.name || "Unknown Institution";
+                                                            }
+                                                            return "Unknown Unit";
+                                                        })()}
+                                                    </span>
+                                                    {/* Show different badge based on why it's locked */}
+                                                    {isGuest && selectedOrgId && <span className="ml-auto text-xs text-green-400/70 italic">Auto-set</span>}
+                                                    {!isGuest && (departmentsList.length + institutionsList.length === 1) && <span className="ml-auto text-xs text-blue-400/70 italic">Verified</span>}
+                                                </div>
                                             </div>
                                         ) : (
                                             /* Interactive Dropdown for others */
-                                            <div className="relative">
-                                                <div className="absolute inset-y-0 left-3 flex items-center pointer-events-none text-gray-500">
-                                                    <Briefcase size={14} />
-                                                </div>
-                                                <select
-                                                    value={selectedOrgId}
-                                                    onChange={(e) => setSelectedOrgId(e.target.value)}
-                                                    className="w-full bg-white/5 hover:bg-white/10 pl-10 pr-8 py-3 rounded-xl border border-[#ffffff1a] focus:border-blue-500/50 outline-none text-sm text-white appearance-none [&>optgroup]:bg-[#13161c] [&>option]:bg-[#13161c] cursor-pointer transition-colors"
-                                                >
-                                                    <option value="" className="bg-[#13161c]">Select Requesting Unit...</option>
-
-                                                    <optgroup label="OFFICES / UNITS" className="bg-[#13161c] text-gray-500 font-bold">
-                                                        {departmentsList.map(dept => (
-                                                            <option key={dept.id} value={`dept_${dept.id}`} className="bg-[#13161c] text-gray-300 font-normal">
-                                                                {dept.name}
-                                                            </option>
-                                                        ))}
-                                                    </optgroup>
-
-                                                    <optgroup label="INSTITUTIONS" className="bg-[#13161c] text-gray-500 font-bold">
-                                                        {institutionsList.map(inst => (
-                                                            <option key={inst.id} value={`inst_${inst.id}`} className="bg-[#13161c] text-gray-300 font-normal">
-                                                                {inst.name}
-                                                            </option>
-                                                        ))}
-                                                    </optgroup>
-                                                </select>
-                                                <div className="absolute inset-y-0 right-3 flex items-center pointer-events-none text-gray-500">
-                                                    <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M19 9l-7 7-7-7" /></svg>
-                                                </div>
-                                            </div>
+                                            <DropdownSelector 
+                                                label="Requested By (Department / Unit / Office)"
+                                                value={selectedOrgId}
+                                                onChange={setSelectedOrgId}
+                                                options={[
+                                                    ...departmentsList.map(dept => ({ id: `dept_${dept.id}`, label: dept.name, icon: <Briefcase size={14} /> })),
+                                                    ...institutionsList.map(inst => ({ id: `inst_${inst.id}`, label: inst.name, icon: <Building size={14} /> }))
+                                                ]}
+                                            />
                                         )}
                                     </div>
                                 )}
 
                                 {/* Identity Selector (On Behalf Of Mode) - Replaces Department */}
                                 {canCreateOnBehalf && createAs === 'on_behalf_of' && (
-                                    <div className="space-y-2 animate-in fade-in zoom-in-95 duration-200">
-                                        <label className="block text-sm font-medium text-blue-400 mb-2">
-                                            Publishing On Behalf Of <span className="text-white/40 text-xs">(Identity)</span>
-                                        </label>
-                                        <div className="relative">
-                                            <div className="absolute inset-y-0 left-3 flex items-center pointer-events-none text-blue-500/50">
-                                                <Flag size={14} />
-                                            </div>
-                                            <select
-                                                value={onBehalfOfId}
-                                                onChange={(e) => {
-                                                    const val = e.target.value;
-                                                    setOnBehalfOfId(val);
-                                                    // Auto-sync selectedOrg with the chosen Identity name
-                                                    if (val) {
-                                                        setSelectedOrgId(val);
-                                                    } else {
-                                                        setSelectedOrgId('');
-                                                    }
-                                                }}
-                                                className="w-full bg-blue-500/10 hover:bg-blue-500/20 pl-10 pr-8 py-3 rounded-xl border border-blue-500/30 focus:border-blue-500 outline-none text-sm text-blue-100 appearance-none [&>optgroup]:bg-[#13161c] [&>option]:bg-[#13161c] cursor-pointer transition-colors"
-                                            >
-                                                <option value="" className="bg-[#13161c]">Select Identity...</option>
-
-                                                <optgroup label="OFFICES / UNITS" className="bg-[#13161c] text-gray-500 font-bold">
-                                                    {departmentsList.map(dept => (
-                                                        <option key={`dept_${dept.id}`} value={`dept_${dept.id}`} className="bg-[#13161c] text-gray-300 font-normal">
-                                                            {dept.name}
-                                                        </option>
-                                                    ))}
-                                                </optgroup>
-
-                                                <optgroup label="INSTITUTIONS" className="bg-[#13161c] text-gray-500 font-bold">
-                                                    {institutionsList.map(inst => (
-                                                        <option key={`inst_${inst.id}`} value={`inst_${inst.id}`} className="bg-[#13161c] text-gray-300 font-normal">
-                                                            {inst.name}
-                                                        </option>
-                                                    ))}
-                                                </optgroup>
-                                            </select>
-                                            <div className="absolute inset-y-0 right-3 flex items-center pointer-events-none text-blue-500/50">
-                                                <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M19 9l-7 7-7-7" /></svg>
-                                            </div>
-                                        </div>
+                                    <div className="space-y-0.5 animate-in fade-in zoom-in-95 duration-200">
+                                        <DropdownSelector 
+                                            label="Publishing On Behalf Of (Identity)"
+                                            value={onBehalfOfId}
+                                            onChange={(val) => {
+                                                setOnBehalfOfId(val);
+                                                if (val) {
+                                                    setSelectedOrgId(val);
+                                                } else {
+                                                    setSelectedOrgId('');
+                                                }
+                                            }}
+                                            options={[
+                                                ...departmentsList.map(dept => ({ id: `dept_${dept.id}`, label: dept.name, icon: <Flag size={14} /> })),
+                                                ...institutionsList.map(inst => ({ id: `inst_${inst.id}`, label: inst.name, icon: <Flag size={14} /> }))
+                                            ]}
+                                        />
                                     </div>
                                 )}
                             </div>
@@ -827,11 +721,11 @@ export default function TasksNewClient() {
                             {/* Submit Button */}
                             <button
                                 type="submit"
-                                disabled={loading}
+                                disabled={isSubmitting}
                                 tabIndex={3}
                                 className="w-full bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-500 hover:to-indigo-500 text-white font-bold text-lg py-4 rounded-2xl shadow-lg shadow-blue-900/20 hover:shadow-blue-900/40 hover-sheen active:scale-[0.98] transition-all disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
                             >
-                                {loading ? (
+                                {isSubmitting ? (
                                     <>
                                         <div className="animate-spin rounded-full h-5 w-5 border-2 border-white/30 border-t-white" />
                                         <span>Creating...</span>

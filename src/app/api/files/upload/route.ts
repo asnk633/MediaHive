@@ -2,9 +2,10 @@
 
 import { getDriveClient, ensureFolderPath, makeFilePublic } from '@/lib/drive';
 import { Readable } from 'stream';
-import { verifyUser } from '@/lib/server-utils';
+import { verifyUser } from '@/lib/server/server-utils';
 import { logFileUploaded } from '@/app/api/_lib/audit';
-import { supabase } from '@/lib/supabaseClient';
+import { getSupabaseAdmin } from '@/lib/server/supabase-admin';
+import { withTenant } from '@/lib/tenantQuery';
 
 import { NextRequest, NextResponse } from 'next/server';
 
@@ -17,6 +18,13 @@ export async function POST(req: NextRequest) {
         const user = await verifyUser(req);
         if (!user) {
             return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+        }
+
+        // Tenant Security Guard
+        const tenantId = user.tenant_id;
+        if (!tenantId || tenantId === 'null' || tenantId === 'undefined') {
+            console.error(`[POST /api/files/upload] ❌ Missing tenant context for user: ${user.uid}`);
+            return NextResponse.json({ error: 'Missing tenant context' }, { status: 403 });
         }
 
         const contentType = req.headers.get('content-type') || '';
@@ -38,6 +46,7 @@ export async function POST(req: NextRequest) {
         }
 
         const drive = await getDriveClient();
+        const supabaseAdmin = getSupabaseAdmin();
 
         // Promise to handle the single file upload
         const uploadResult = new Promise<any>((resolve, reject) => {
@@ -73,12 +82,15 @@ export async function POST(req: NextRequest) {
                 try {
                     // 1. Permission Check (Supabase Native)
                     const userRole = (user.role || '').toLowerCase();
-                    const isAdminOrTeam = userRole === 'admin' || userRole === 'team';
+                    const isAdminOrTeam = userRole === 'admin' || (userRole === 'manager' || userRole === 'member');
 
                     if (!isAdminOrTeam && metadata.taskId) {
-                        const { data: task, error: taskError } = await supabase
-                            .from('tasks')
-                            .select('*')
+                        const { data: task, error: taskError } = await withTenant(
+                            supabaseAdmin
+                                .from('tasks')
+                                .select('*'),
+                            tenantId
+                        )
                             .eq('id', metadata.taskId)
                             .single();
 
@@ -157,7 +169,7 @@ export async function POST(req: NextRequest) {
                         institution_id: user.institution_id || null,
                         taskId: metadata.taskId || null,
                         event_id: metadata.event_id || null,
-                        tenantId: user.tenantId || 1
+                        tenant_id: tenantId
                     };
 
                     // Only include department and institution if they have values
@@ -168,9 +180,12 @@ export async function POST(req: NextRequest) {
                         fileDoc.institution = metadata.institution;
                     }
 
-                    const { data: createdFile, error: insertError } = await supabase
-                        .from('files')
-                        .insert([fileDoc])
+                    const { data: createdFile, error: insertError } = await withTenant(
+                        supabaseAdmin
+                            .from('files')
+                            .insert([fileDoc]),
+                        tenantId
+                    )
                         .select()
                         .single();
 
@@ -182,7 +197,7 @@ export async function POST(req: NextRequest) {
                     // 5. Audit Logging
                     await logFileUploaded(
                         user.uid,
-                        user.tenantId || 1,
+                        tenantId,
                         createdFile.id,
                         { name: fileDoc.name, type: fileDoc.type }
                     );

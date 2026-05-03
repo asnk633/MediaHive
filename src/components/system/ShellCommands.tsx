@@ -1,21 +1,21 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { useGlobalHotkeys } from "@/hooks/useGlobalHotkeys";
 import { CommandPalette } from "./CommandPalette";
 
 import { KeyboardShortcutsModal } from "./KeyboardShortcutsModal";
 
-// Events to trigger global actions that might be listening elsewhere
-// For now, we'll just log or route, but eventually we might need a GlobalStore for "New Task Modal" state
-// Since Phase 33-B introduced useDensityStore, maybe we should have a useUIStore?
-// For simpler actions like navigation, we can just use router.
-
 export function ShellCommands() {
+    const [mounted, setMounted] = useState(false);
     const [open, setOpen] = useState(false);
     const [showHelp, setShowHelp] = useState(false);
     const router = useRouter();
+
+    useEffect(() => {
+        setMounted(true);
+    }, []);
 
     useGlobalHotkeys({
         onCommand: () => setOpen(prev => !prev),
@@ -73,12 +73,13 @@ export function ShellCommands() {
         }
     ];
 
+    if (!mounted) return null;
+
     return (
         <>
             <CommandPalette
                 open={open}
                 onClose={() => setOpen(false)}
-                commands={commands}
             />
             <KeyboardShortcutsModal
                 open={showHelp}

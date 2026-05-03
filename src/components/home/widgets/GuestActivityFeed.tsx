@@ -1,5 +1,5 @@
 import React from 'react';
-import { Task } from '@/types/task';
+import { Task } from '@/features/tasks/types/task';
 import { formatDistanceToNow } from 'date-fns';
 import { Activity, PlusCircle, Edit3 } from 'lucide-react';
 import { cn, nativeNavigate } from '@/lib/utils';

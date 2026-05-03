@@ -78,7 +78,7 @@ export function canChangeTaskStatus(
   }
 
   // Team members can move tasks forward in the workflow
-  if (user.role === 'team') {
+  if (user.role === 'member' || user.role === 'manager') {
     const statusOrder: Record<TaskStatus, number> = {
       pending: -1,
       todo: 0,

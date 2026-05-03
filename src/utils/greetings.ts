@@ -65,7 +65,7 @@ function getRandomMessage(role: string): string {
     const normalizedRole = role.toLowerCase();
 
     if (normalizedRole === 'admin') messages = adminWelcomeMessages;
-    else if (normalizedRole === 'team') messages = teamWelcomeMessages;
+    else if ((normalizedRole === 'manager' || normalizedRole === 'member')) messages = teamWelcomeMessages;
     else messages = guestWelcomeMessages; // default to guest for any other role
 
     const randomIndex = Math.floor(Math.random() * messages.length);
@@ -86,7 +86,6 @@ function resolveName(user: any): string {
     // 2. Explicit display names
     if (user.displayName?.trim()) return user.displayName;
     if (user.name?.trim() && !user.name.includes('@')) return user.name;
-    if (user.official_name?.trim()) return user.official_name;
 
     // 3. Individual name fields
     if (user.firstName?.trim()) return user.firstName;

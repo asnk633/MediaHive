@@ -1,0 +1,7 @@
+﻿[dotenv@17.2.3] injecting env (19) from .env.local -- tip: ≡ƒöÉ prevent committing .env to code: https://dotenvx.com/precommit
+[36m≡ƒöì MediaHive Schema Validation Starting...[0m
+[32mΓ£à Table tasks is aligned.[0m
+[32mΓ£à Table events is aligned.[0m
+[32mΓ£à Table campaigns is aligned.[0m
+[32mΓ£à Table departments is aligned.[0m
+[32mΓ£à Table profiles is aligned.[0m

@@ -6,6 +6,7 @@ import React, { useState, useEffect } from 'react';
 import { InstitutionAssistant } from '@/components/AI/InstitutionAssistant';
 import { getProductionPipelineStats } from '@/services/statsService';
 import { apiClient } from '@/lib/apiClient';
+import { DropdownSelector } from '@/components/ui/selectors/DropdownSelector';
 
 interface DashboardData {
   taskWorkload: any[];
@@ -379,27 +380,33 @@ export default function InsightsPage() {
     <div className="insights-page p-6">
       <div className="flex justify-between items-center mb-6">
         <h1 className="text-2xl font-bold">Management Insights</h1>
-        <div className="flex space-x-2">
-          <select
-            value={selectedTenant}
-            onChange={(e) => setSelectedTenant(e.target.value)}
-            className="border rounded p-2"
-          >
-            <option value="all">All Campuses</option>
-            <option value="1">TG Antla</option>
-            <option value="2">TG Bangkok</option>
-            <option value="3">TG Chiang Mai</option>
-          </select>
-          <select
-            value={selectedPeriod}
-            onChange={(e) => setSelectedPeriod(e.target.value)}
-            className="border rounded p-2"
-          >
-            <option value="day">Today</option>
-            <option value="week">This Week</option>
-            <option value="month">This Month</option>
-            <option value="quarter">This Quarter</option>
-          </select>
+        <div className="flex items-end space-x-4">
+          <div className="space-y-0.5">
+            <DropdownSelector 
+              label="Campus"
+              value={selectedTenant}
+              onChange={setSelectedTenant}
+              options={[
+                { id: 'all', label: 'All Campuses' },
+                { id: '1', label: 'TG Antla' },
+                { id: '2', label: 'TG Bangkok' },
+                { id: '3', label: 'TG Chiang Mai' },
+              ]}
+            />
+          </div>
+          <div className="space-y-0.5">
+            <DropdownSelector 
+              label="Period"
+              value={selectedPeriod}
+              onChange={setSelectedPeriod}
+              options={[
+                { id: 'day', label: 'Today' },
+                { id: 'week', label: 'This Week' },
+                { id: 'month', label: 'This Month' },
+                { id: 'quarter', label: 'This Quarter' },
+              ]}
+            />
+          </div>
           <button
             onClick={() => exportData('pdf')}
             className="bg-red-500 hover:bg-red-700 text-white px-3 py-2 rounded"

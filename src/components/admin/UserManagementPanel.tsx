@@ -11,11 +11,12 @@ import { AlertCircle, User, UserX, UserCheck, Users, RotateCcw } from 'lucide-re
 import { toast } from 'sonner';
 import { apiClient } from '@/lib/apiClient';
 import { UserService } from '@/services/userService';
+import { StructureService } from '@/services/structureService';
 import { useAuth } from '@/contexts/AuthContextProvider';
 import { updateUserStatus, getUsersByStatus, reassignTasks, reassignEvents, reassignMedia, getOrphanedItems } from '@/services/userLifecycleService';
 
 interface UserManagementPanelProps {
-  institution_id: string;
+  institution_id: string | number;
 }
 
 export const UserManagementPanel: React.FC<UserManagementPanelProps> = ({ institution_id }) => {
@@ -46,14 +47,15 @@ export const UserManagementPanel: React.FC<UserManagementPanelProps> = ({ instit
     checkFeature();
   }, [currentUser]);
 
+
   const fetchMetaData = async () => {
     try {
       const [deptRes, instRes] = await Promise.all([
-        apiClient('/api/departments?limit=100', { method: 'GET' }),
-        apiClient('/api/institutions?limit=100', { method: 'GET' })
+        StructureService.getDepartments(),
+        StructureService.getInstitutions()
       ]);
-      setDepartments(deptRes || []);
-      setInstitutions(instRes || []);
+      setDepartments(deptRes.departments || []);
+      setInstitutions(instRes.institutions || []);
     } catch (error) {
       console.error('Failed to load metadata', error);
     }
@@ -64,15 +66,11 @@ export const UserManagementPanel: React.FC<UserManagementPanelProps> = ({ instit
     setLoadingUsers(true);
     try {
       if (currentUser.role === 'admin') {
-        // Admins fetch full list with management capabilities
         const allUsers = await getUsersByStatus(institution_id);
         setUsers(allUsers);
       } else {
-        // Team members fetch safe read-only list
-        const res = await apiClient('/api/users/team');
-        // Map team endpoint format to component format if needed, or if it matches mostly, direct set.
-        // Route returns { teamMembers: [...] }
-        setUsers(res.teamMembers || []);
+        const teamUsers = await UserService.getAllUsers();
+        setUsers(teamUsers);
       }
     } catch (error) {
       console.error('Error fetching users:', error);
@@ -213,7 +211,7 @@ export const UserManagementPanel: React.FC<UserManagementPanelProps> = ({ instit
                         variant="neutral"
                         className={`${user.role === 'admin'
                           ? 'border-red-500/30 text-red-300'
-                          : user.role === 'team'
+                          : (user.role === 'manager' || user.role === 'member')
                             ? 'border-blue-500/30 text-blue-300'
                             : 'border-green-500/30 text-green-300'
                           }`}
@@ -221,11 +219,9 @@ export const UserManagementPanel: React.FC<UserManagementPanelProps> = ({ instit
                         {user.role}
                       </Badge>
                       {/* Show Office / Unit / Institution if available */}
-                      {user.department_id && (
-                        <Badge variant="neutral" className="bg-white/5 text-white/60">
-                          {departments.find(d => d.id === parseInt(user.department_id) || d.name === user.department_id)?.name || user.department_id}
-                        </Badge>
-                      )}
+                      <Badge variant="neutral" className="bg-white/5 text-white/60">
+                        {departments.find(d => Number(d.id) === Number(user.department_id) || d.name === user.department_id)?.name || user.department_id}
+                      </Badge>
                     </div>
                   </div>
                 </div>

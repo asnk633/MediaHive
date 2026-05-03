@@ -99,7 +99,7 @@ export const LeaveApprovalCard: React.FC<LeaveApprovalCardProps> = ({
                     <span className="text-sm">
                         {format(getSafeDate(request.startDate), 'MMM dd, yyyy')} - {format(getSafeDate(request.endDate), 'MMM dd, yyyy')}
                     </span>
-                    <span className="text-white/30">•</span>
+                    <span className="text-white/50">•</span>
                     <span className="text-sm font-medium text-white/80">
                         {request.totalDays} day{request.totalDays > 1 ? 's' : ''}
                     </span>

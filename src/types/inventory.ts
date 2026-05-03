@@ -77,7 +77,7 @@ export interface InventoryAsset {
 export type InventoryStatus = 'ok' | 'low' | 'out';
 
 export interface InventoryItem {
-    id: string;
+    id: string | number;
     name: string;
     category: string;
     quantity: number;
@@ -103,9 +103,9 @@ export interface InventoryItem {
     notes?: string;
 
     // Audit Fields
-    created_at: string; // ISO String from API
-    updated_at: string; // ISO String from API
-    created_by: string; // uid
+    createdAt: string; // ISO String from API
+    updatedAt: string; // ISO String from API
+    createdBy: string; // uid
     purchaseDate?: string; // Optional ISO String
 }
 
@@ -121,17 +121,17 @@ export interface InventoryApiResponse {
 
 // Phase 6: Requests & Issuance
 export interface InventoryRequest {
-    id: string;
-    itemId: string;
+    id: string | number;
+    itemId: string | number;
     itemName: string;
     requestedBy: string; // uid
     requestedByRole: 'guest' | 'team' | 'admin';
     purpose: string;
-    institution_id: string;
+    institutionId: string | number;
     status: 'pending' | 'approved' | 'rejected' | 'issued';
 
     // Audit
-    created_at: any;
+    createdAt: any;
     approvedAt?: any;
     approvedBy?: string;
     rejectionReason?: string;
@@ -139,15 +139,15 @@ export interface InventoryRequest {
 }
 
 export interface InventoryIssue {
-    id: string;
-    itemId: string;
+    id: string | number;
+    itemId: string | number;
     itemName: string;
     issuedToUserId: string;
     issuedToRole: 'guest' | 'team';
     issuedBy: string; // uid
 
     issuedFor: {
-        institution_id?: string;
+        institution_id?: string | number;
         projectNote?: string;
     };
 
@@ -161,7 +161,7 @@ export interface InventoryIssue {
     issuedAt: any;
     expectedReturnAt: string; // ISO
     returnedAt?: any;
-    institution_id: string;
+    institutionId: string | number;
 
     // Notification State
     reminded24h?: boolean;

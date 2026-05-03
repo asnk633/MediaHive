@@ -3,8 +3,9 @@
 import React, { useState, useEffect } from "react";
 import { DeviceRequest } from "@/types/deviceRequest";
 import { deviceRequestService } from "@/services/deviceRequestService";
-import { inventoryService } from "@/services/inventoryService";
-import { InventoryItem, InventoryCondition } from "@/types/inventory";
+import { inventoryService } from '@/services/inventory/inventoryService';
+import { InventoryCondition } from "@/types/inventory";
+import { EquipmentItem } from "@/services/inventory/inventoryContract";
 import { useAuth } from "@/contexts/AuthContextProvider";
 import { Button } from "@/components/ui/button";
 import { toast } from "sonner";
@@ -286,7 +287,7 @@ function RequestCard({ request, isAdmin, onRefresh }: { request: DeviceRequest, 
 }
 
 function IssueDialog({ request, onIssue, open, onOpenChange, isActionLoading }: { request: DeviceRequest, onIssue: (itemId: string) => void, open: boolean, onOpenChange: (open: boolean) => void, isActionLoading: boolean }) {
-    const [items, setItems] = useState<InventoryItem[]>([]);
+    const [items, setItems] = useState<EquipmentItem[]>([]);
     const [selectedId, setSelectedId] = useState("");
     const isDirectIssue = !!request.assignedItemId;
 
@@ -303,7 +304,7 @@ function IssueDialog({ request, onIssue, open, onOpenChange, isActionLoading }: 
                 setItems(avail);
                 if (request.description) {
                     const match = avail.find(i => i.name.toLowerCase() === request.description?.toLowerCase());
-                    if (match) setSelectedId(match.id);
+                    if (match) setSelectedId(String(match.id));
                 }
             } catch (e) {
                 console.error(e);
@@ -352,7 +353,7 @@ function IssueDialog({ request, onIssue, open, onOpenChange, isActionLoading }: 
                                 </SelectTrigger>
                                 <SelectContent>
                                     {displayItems.map(item => (
-                                        <SelectItem key={item.id} value={item.id}>
+                                        <SelectItem key={item.id} value={String(item.id)}>
                                             {item.name} ({(item as any).serialNumber || 'No Serial'})
                                         </SelectItem>
                                     ))}

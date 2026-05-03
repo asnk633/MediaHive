@@ -1,7 +1,7 @@
 import React, { useMemo } from 'react';
 import { format, addDays, isAfter, isBefore, startOfDay, endOfDay } from 'date-fns';
 import { Clock, Repeat, ArrowRight, CalendarDays, PartyPopper } from 'lucide-react';
-import { Event } from '@/types/event';
+import { Event } from '@/features/events/types/event';
 import { useRouter } from 'next/navigation';
 import { nativeNavigate } from '@/lib/utils';
 

@@ -1,7 +1,9 @@
 import React, { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { X, Calendar, Package, FileText, Send } from 'lucide-react';
-import { inventoryService } from '@/services/inventoryService';
+import { inventoryService } from '@/services/inventory/inventoryService';
+import { DateSelector } from "@/components/ui/selectors/DateSelector";
+import { DropdownSelector } from "@/components/ui/selectors/DropdownSelector";
+import { Camera, Eye, Music, Lightbulb, Zap, Monitor, Sofa, Heart, MoreHorizontal, Package, X, FileText, Send } from "lucide-react";
 
 interface InventoryRequestModalProps {
     isOpen: boolean;
@@ -70,15 +72,23 @@ export function InventoryRequestModal({ isOpen, onClose }: InventoryRequestModal
 
                             {/* Category & Description */}
                             <div className="grid grid-cols-2 gap-4">
-                                <div className="space-y-2">
-                                    <label className="text-sm font-medium text-gray-400 block">Category</label>
-                                    <select
+                                <div className="space-y-0.5">
+                                    <DropdownSelector 
+                                        label="Category"
                                         value={formData.itemCategory}
-                                        onChange={e => setFormData({ ...formData, itemCategory: e.target.value })}
-                                        className="w-full bg-slate-800/50 border border-slate-700 rounded-lg px-3 py-2 text-white outline-none focus:border-blue-500"
-                                    >
-                                        {categories.map(c => <option key={c} value={c}>{c}</option>)}
-                                    </select>
+                                        onChange={val => setFormData({ ...formData, itemCategory: val })}
+                                        options={[
+                                            { id: 'Camera', label: 'Camera', icon: <Camera size={14} /> },
+                                            { id: 'Lens', label: 'Lens', icon: <Eye size={14} /> },
+                                            { id: 'Audio', label: 'Audio', icon: <Music size={14} /> },
+                                            { id: 'Lights', label: 'Lights', icon: <Lightbulb size={14} /> },
+                                            { id: 'Cables', label: 'Cables', icon: <Zap size={14} /> },
+                                            { id: 'IT', label: 'IT', icon: <Monitor size={14} /> },
+                                            { id: 'Furniture', label: 'Furniture', icon: <Sofa size={14} /> },
+                                            { id: 'decoration', label: 'decoration', icon: <Heart size={14} /> },
+                                            { id: 'Other', label: 'Other', icon: <MoreHorizontal size={14} /> },
+                                        ]}
+                                    />
                                 </div>
                                 <div className="space-y-2">
                                     <label className="text-sm font-medium text-gray-400 block">Item Name / Details</label>
@@ -95,28 +105,19 @@ export function InventoryRequestModal({ isOpen, onClose }: InventoryRequestModal
 
                             {/* Dates */}
                             <div className="grid grid-cols-2 gap-4">
-                                <div className="space-y-2">
-                                    <label className="text-sm font-medium text-gray-400 block flex items-center gap-2">
-                                        <Calendar size={14} /> Start Date
-                                    </label>
-                                    <input
-                                        type="date"
-                                        required
-                                        value={formData.startDate}
-                                        onChange={e => setFormData({ ...formData, startDate: e.target.value })}
-                                        className="w-full bg-slate-800/50 border border-slate-700 rounded-lg px-3 py-2 text-white outline-none focus:border-blue-500"
+                                <div className="space-y-0.5">
+                                    <DateSelector 
+                                        label="Start Date"
+                                        date={formData.startDate ? new Date(formData.startDate) : undefined}
+                                        onChange={date => setFormData({ ...formData, startDate: date ? date.toISOString().split('T')[0] : '' })}
                                     />
                                 </div>
-                                <div className="space-y-2">
-                                    <label className="text-sm font-medium text-gray-400 block flex items-center gap-2">
-                                        <Calendar size={14} /> End Date
-                                    </label>
-                                    <input
-                                        type="date"
-                                        required
-                                        value={formData.endDate}
-                                        onChange={e => setFormData({ ...formData, endDate: e.target.value })}
-                                        className="w-full bg-slate-800/50 border border-slate-700 rounded-lg px-3 py-2 text-white outline-none focus:border-blue-500"
+                                <div className="space-y-0.5">
+                                    <DateSelector 
+                                        label="End Date"
+                                        date={formData.endDate ? new Date(formData.endDate) : undefined}
+                                        onChange={date => setFormData({ ...formData, endDate: date ? date.toISOString().split('T')[0] : '' })}
+                                        disabledBefore={formData.startDate ? new Date(formData.startDate) : undefined}
                                     />
                                 </div>
                             </div>

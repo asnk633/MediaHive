@@ -7,8 +7,8 @@ export interface Invite {
   email: string;
   role: 'admin' | 'team' | 'guest';
   invitedBy: string; // userId of the admin who created the invite
-  institution_id: string; // tenant isolation
-  department_id?: string | null;
+  institution_id: string | number; // tenant isolation
+  department_id?: string | number | null;
   name?: string | null; // Added name
   created_at: Date;
   expiresAt: Date;
@@ -22,8 +22,8 @@ export const createInvite = async (
   email: string,
   role: 'admin' | 'team' | 'guest',
   invitedByUserId: string,
-  institution_id: string,
-  department_id?: string,
+  institution_id: string | number,
+  department_id?: string | number,
   name: string | null = null
 ): Promise<string> => {
   // Check if feature is enabled
@@ -79,7 +79,7 @@ export const useInvite = async (inviteId: string, userId: string): Promise<void>
 };
 
 // Get all invites for an institution
-export const getInstitutionInvites = async (institution_id: string): Promise<Invite[]> => {
+export const getInstitutionInvites = async (institution_id: string | number): Promise<Invite[]> => {
   // Check if feature is enabled
   if (!isFeatureEnabled('inviteAccessLayer')) {
     return [];

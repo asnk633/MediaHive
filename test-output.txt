@@ -1,0 +1,33 @@
+jest-haste-map: duplicate manual mock found: authContext
+  The following files share their name; please delete one of them:
+    * <rootDir>\__tests_archive__\__mocks__\authContext.ts
+    * <rootDir>\src\__tests__\__mocks__\authContext.ts
+
+FAIL src/__tests__/unit/verify-notification-fix.test.ts
+  ● Test suite failed to run
+
+    Cannot find module 'server-only' from 'src/lib/server-utils.ts'
+
+    Require stack:
+      src/lib/server-utils.ts
+      src/__tests__/unit/verify-notification-fix.test.ts
+
+    [0m [90m 29 |[39m     [36mreturn[39m [36mnull[39m[33m;[39m
+     [90m 30 |[39m }[33m;[39m
+    [31m[1m>[22m[39m[90m 31 |[39m
+     [90m    |[39m [31m[1m^[22m[39m
+     [90m 32 |[39m [90m// Define a consistent return type for the user[39m
+     [90m 33 |[39m [36mexport[39m [36minterface[39m [33mAuthenticatedUser[39m {
+     [90m 34 |[39m     uid[33m:[39m string[33m;[39m[0m
+
+      at Resolver._throwModNotFoundError (node_modules/jest-resolve/build/index.js:863:11)
+      at Object.<anonymous> (src/lib/server-utils.ts:31:1)
+      at requireActual (src/__tests__/unit/verify-notification-fix.test.ts:22:27)
+      at Object.<anonymous> (src/app/api/tasks/[id]/route.ts:26:22)
+      at Object.<anonymous> (src/__tests__/unit/verify-notification-fix.test.ts:28:16)
+
+Test Suites: 1 failed, 1 total
+Tests:       0 total
+Snapshots:   0 total
+Time:        0.378 s
+Ran all test suites matching src/__tests__/unit/verify-notification-fix.test.ts.

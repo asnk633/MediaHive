@@ -32,8 +32,8 @@ export function UserDialog({ open, onOpenChange, user, onSave, institutions, dep
     // Affiliation State
     // XOR: affiliationType = 'institution' | 'department'
     const [affiliationType, setAffiliationType] = useState<'institution' | 'department'>('institution');
-    const [selectedInstitution, setSelectedInstitution] = useState<string>('');
-    const [selectedDepartment, setSelectedDepartment] = useState<string>('');
+    const [selectedInstitution, setSelectedInstitution] = useState<string | number>('');
+    const [selectedDepartment, setSelectedDepartment] = useState<string | number>('');
 
     useEffect(() => {
         if (open) {
@@ -210,13 +210,13 @@ export function UserDialog({ open, onOpenChange, user, onSave, institutions, dep
                             <div className="mt-4 p-4 bg-slate-800/50 rounded-xl border border-white/5">
                                 <TabsContent value="institution" className="mt-0">
                                     <Label className="text-xs text-white/50 mb-2 block">Select Institution</Label>
-                                    <Select value={selectedInstitution} onValueChange={setSelectedInstitution}>
+                                    <Select value={String(selectedInstitution)} onValueChange={setSelectedInstitution}>
                                         <SelectTrigger className="bg-white/5 border-white/10 text-white">
                                             <SelectValue placeholder="Choose Institution..." />
                                         </SelectTrigger>
                                         <SelectContent className="bg-slate-950/90 backdrop-blur-xl border-white/10">
                                             {institutions.map(inst => (
-                                                <SelectItem key={inst.id} value={inst.id}>
+                                                <SelectItem key={inst.id} value={String(inst.id)}>
                                                     {inst.name}
                                                 </SelectItem>
                                             ))}
@@ -226,13 +226,13 @@ export function UserDialog({ open, onOpenChange, user, onSave, institutions, dep
 
                                 <TabsContent value="department" className="mt-0">
                                     <Label className="text-xs text-white/50 mb-2 block">Select Global Office / Unit</Label>
-                                    <Select value={selectedDepartment} onValueChange={setSelectedDepartment}>
+                                    <Select value={String(selectedDepartment)} onValueChange={setSelectedDepartment}>
                                         <SelectTrigger className="bg-white/5 border-white/10 text-white">
                                             <SelectValue placeholder="Choose Office / Unit..." />
                                         </SelectTrigger>
                                         <SelectContent className="bg-slate-950/90 backdrop-blur-xl border-white/10">
                                             {departments.map(dept => (
-                                                <SelectItem key={dept.id} value={dept.id}>
+                                                <SelectItem key={dept.id} value={String(dept.id)}>
                                                     {dept.name}
                                                 </SelectItem>
                                             ))}

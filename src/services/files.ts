@@ -7,6 +7,7 @@ import {
     listAll
 } from 'MOCK_KEY/storage';
 import { apiClient } from '@/lib/apiClient';
+import { FileSchema } from '@/domain/schemas/file';
 
 /**
  * Files Storage Service - Handles file uploads to MOCK_KEY Storage
@@ -80,6 +81,12 @@ export async function uploadFile(
             })
         });
 
+        // DTO Validation
+        const parsed = FileSchema.safeParse(result);
+        if (!parsed.success) {
+            console.warn("[FilesService] DTO validation failed for upload result:", parsed.error);
+        }
+
         return {
             id: result.id || file_id,
             ...metadata,
@@ -112,11 +119,18 @@ export function subscribeToFiles(
                 method: 'GET'
             });
 
-            const files = (result.files || []).map((file: any) => ({
-                id: file.id,
-                ...file,
-                uploadedDate: file.uploadedDate || new Date().toISOString()
-            }));
+            const files = (result.files || []).map((file: any) => {
+                // DTO Validation
+                const parsed = FileSchema.safeParse(file);
+                if (!parsed.success) {
+                    console.warn("[FilesService] DTO validation failed for file:", parsed.error);
+                }
+                return {
+                    id: file.id,
+                    ...file,
+                    uploadedDate: file.uploadedDate || new Date().toISOString()
+                };
+            });
 
             callback(files);
         } catch (error) {
@@ -186,11 +200,18 @@ export async function getFiles(userId: string): Promise<FileMetadata[]> {
             method: 'GET'
         });
 
-        return (result.files || []).map((file: any) => ({
-            id: file.id,
-            ...file,
-            uploadedDate: file.uploadedDate || new Date().toISOString()
-        }));
+        return (result.files || []).map((file: any) => {
+            // DTO Validation
+            const parsed = FileSchema.safeParse(file);
+            if (!parsed.success) {
+                console.warn("[FilesService] DTO validation failed for file:", parsed.error);
+            }
+            return {
+                id: file.id,
+                ...file,
+                uploadedDate: file.uploadedDate || new Date().toISOString()
+            };
+        });
     } catch (error) {
         console.error('Error fetching files:', error);
         return [];

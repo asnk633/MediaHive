@@ -1,7 +1,8 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { getDb } from '@/db';
 import { adminInterventionNotes, users } from '@/db/schema';
-import { authorizeByPermission } from '@/lib/auth-server';
+import { verifyUser } from '@/lib/verifyUser';
+import { withTenantDrizzle, validateTenant } from '@/lib/tenantQuery';
 import { eq, and } from 'drizzle-orm';
 import { z } from 'zod';
 
@@ -29,12 +30,19 @@ export const dynamic = 'force-dynamic';
 export async function POST(request: NextRequest) {
     try {
         // 1. Authorization
-        const authResult = await authorizeByPermission('write:intervention');
-        if (!authResult.authorized || !authResult.user) {
+        const user = await verifyUser(request);
+        if (!user || user.role !== 'admin') {
             return NextResponse.json({ error: 'Unauthorized' }, { status: 403 });
         }
 
-        const currentUser = authResult.user;
+        // Tenant Security guard
+        const tenantId = user.tenant_id;
+        if (!tenantId || tenantId === 'null' || tenantId === 'undefined') {
+            console.error(`[POST /api/admin/interventions] ❌ Missing tenant context for user: ${user.uid}`);
+            return NextResponse.json({ error: 'Missing tenant context' }, { status: 403 });
+        }
+
+        const currentUser = user;
 
         // 2. Validation
         const body = await request.json();
@@ -56,7 +64,8 @@ export async function POST(request: NextRequest) {
             .where(
                 and(
                     eq(adminInterventionNotes.userId, userId),
-                    eq(adminInterventionNotes.period, period)
+                    eq(adminInterventionNotes.period, period),
+                    withTenantDrizzle(adminInterventionNotes, tenantId)
                 )
             )
             .limit(1);
@@ -75,7 +84,8 @@ export async function POST(request: NextRequest) {
             riskLevelAtTime: riskLevel,
             note,
             actionType,
-            created_by: currentUser.id,
+            tenantId: typeof tenantId === 'string' && !isNaN(Number(tenantId)) ? Number(tenantId) : tenantId as any,
+            created_by: currentUser.uid,
             created_at: new Date().toISOString()
         });
 

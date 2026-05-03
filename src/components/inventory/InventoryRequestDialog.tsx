@@ -7,13 +7,14 @@ import { Label } from "@/components/ui/label";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { InventoryItem } from "@/types/inventory";
-import { inventoryRequestService } from "@/services/inventoryRequestService";
+import { EquipmentItem } from "@/services/inventory/inventoryContract";
+import { inventoryRequestService } from '@/services/inventory/inventoryRequestService';
 import { useAuth } from "@/contexts/AuthContextProvider";
 import { toast } from "sonner";
 import { Loader2 } from "lucide-react";
 
 interface InventoryRequestDialogProps {
-    item: InventoryItem | null;
+    item: EquipmentItem | null;
     open: boolean;
     onOpenChange: (open: boolean) => void;
 }

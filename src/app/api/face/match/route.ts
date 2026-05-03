@@ -34,32 +34,32 @@ export async function POST(request: NextRequest) {
       { status: 404 }
     );
   }
-  
+
   try {
     // Authorize user with RBAC - authenticated users can match faces
     const user = await authorizeByPermission(request, 'read:tasks');
-    
+
     if (!user) {
       return NextResponse.json(
         { error: 'Unauthorized' },
         { status: 401 }
       );
     }
-    
+
     // Ensure directories exist
     await ensureDirectories();
-    
+
     // Parse multipart form data
     const formData = await request.formData();
     const file = formData.get('file') as File | null;
-    
+
     if (!file) {
       return NextResponse.json(
         { error: 'No file provided' },
         { status: 400 }
       );
     }
-    
+
     // Validate file size
     if (file.size > config.MAX_UPLOAD_SIZE) {
       return NextResponse.json(
@@ -67,26 +67,32 @@ export async function POST(request: NextRequest) {
         { status: 400 }
       );
     }
-    
+
     // Save file temporarily
     const file_id = uuidv4();
     const fileExtension = file.name.split('.').pop() || '';
     const tempFileName = `${file_id}.${fileExtension}`;
     const tempFilePath = path.join(UPLOADS_DIR, tempFileName);
-    
+
     const fileBuffer = Buffer.from(await file.arrayBuffer());
     await fs.writeFile(tempFilePath, fileBuffer);
-    
+
+    // Tenant Security Guard
+    const tenantId = user.tenant_id;
+    if (!tenantId || tenantId === 'null' || tenantId === 'undefined') {
+      return NextResponse.json({ error: 'Missing tenant context' }, { status: 403 });
+    }
+
     // Match face
-    const result = await matchFace(tempFilePath);
-    
+    const result = await matchFace(tempFilePath, tenantId);
+
     // Clean up temporary file
     try {
       await fs.unlink(tempFilePath);
     } catch (cleanupError) {
       console.warn('Temporary file cleanup error:', cleanupError);
     }
-    
+
     return NextResponse.json(result, { status: 200 });
   } catch (error: unknown) {
     console.error('Face matching error:', error);

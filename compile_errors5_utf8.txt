@@ -1,0 +1,525 @@
+﻿scripts/check-email-verification.ts(1,24): error TS2307: Cannot find module 'firebase-admin' or its corresponding type declarations.
+scripts/cleanup_sabith.ts(3,19): error TS2307: Cannot find module 'firebase-admin' or its corresponding type declarations.
+scripts/delete_ghost_auth.ts(3,19): error TS2307: Cannot find module 'firebase-admin' or its corresponding type declarations.
+scripts/demote-guest.ts(3,19): error TS2307: Cannot find module 'firebase-admin' or its corresponding type declarations.
+scripts/fix_sabith.ts(3,19): error TS2307: Cannot find module 'firebase-admin' or its corresponding type declarations.
+scripts/list_firestore_users.ts(3,19): error TS2307: Cannot find module 'firebase-admin' or its corresponding type declarations.
+scripts/list_firestore_users.ts(28,26): error TS7006: Parameter 'doc' implicitly has an 'any' type.
+scripts/list_users_roles.ts(3,19): error TS2307: Cannot find module 'firebase-admin' or its corresponding type declarations.
+scripts/reset-guest.ts(3,19): error TS2307: Cannot find module 'firebase-admin' or its corresponding type declarations.
+scripts/verify-custom-claims.ts(1,24): error TS2307: Cannot find module 'firebase-admin' or its corresponding type declarations.
+src/app/(shell)/home/HomeClient.tsx(130,50): error TS2339: Property 'subscribeToTasks' does not exist on type 'typeof CanonicalDataService'.
+src/app/(shell)/home/HomeClient.tsx(132,14): error TS7006: Parameter 'updatedTasks' implicitly has an 'any' type.
+src/app/(shell)/home/HomeClient.tsx(137,14): error TS7006: Parameter 'err' implicitly has an 'any' type.
+src/app/(shell)/profile/ProfileClient.tsx(79,19): error TS2304: Cannot find name 'signOut'.
+src/app/(shell)/profile/ProfileClient.tsx(79,27): error TS2304: Cannot find name 'auth'.
+src/app/(shell)/tasks/TasksPageClient.tsx(92,50): error TS2339: Property 'subscribeToTasks' does not exist on type 'typeof CanonicalDataService'.
+src/app/(shell)/tasks/TasksPageClient.tsx(99,14): error TS7006: Parameter 'fetchedTasks' implicitly has an 'any' type.
+src/app/(shell)/tasks/TasksPageClient.tsx(109,14): error TS7006: Parameter 'err' implicitly has an 'any' type.
+src/app/(shell)/tasks/trash/TrashPageClient.tsx(6,30): error TS2307: Cannot find module '@/services/trashService' or its corresponding type declarations.
+src/app/api/_lib/rbac.ts(2,23): error TS2307: Cannot find module '@/({} as any)' or its corresponding type declarations.
+src/app/api/_lib/rbac.ts(3,23): error TS2307: Cannot find module '@/({} as any)/schema' or its corresponding type declarations.
+src/app/api/_lib/rbac.ts(11,4): error TS2304: Cannot find name 'mockDbIgnore'.
+src/app/api/activities/route.ts(18,32): error TS2304: Cannot find name 'adminDb'.
+src/app/api/activities/route.ts(24,46): error TS7006: Parameter 'doc' implicitly has an 'any' type.
+src/app/api/activity-feed/route.ts(15,32): error TS2304: Cannot find name 'adminDb'.
+src/app/api/activity-feed/route.ts(20,40): error TS7006: Parameter 'doc' implicitly has an 'any' type.
+src/app/api/activity-feed/route.ts(30,43): error TS2304: Cannot find name 'adminDb'.
+src/app/api/activity-feed/route.ts(33,30): error TS7006: Parameter 'doc' implicitly has an 'any' type.
+src/app/api/admin/audit-logs/route.ts(32,6): error TS2304: Cannot find name 'mockDbIgnore'.
+src/app/api/admin/audit-logs/route.ts(32,22): error TS2304: Cannot find name 'adminDb'.
+src/app/api/admin/audit-logs/route.ts(48,18): error TS2304: Cannot find name 'FieldValue'.
+src/app/api/admin/audit-logs/route.ts(59,18): error TS2304: Cannot find name 'FieldValue'.
+src/app/api/admin/audit-logs/route.ts(96,6): error TS2304: Cannot find name 'mockDbIgnore'.
+src/app/api/admin/audit-logs/route.ts(96,22): error TS2304: Cannot find name 'adminDb'.
+src/app/api/admin/audit-logs/route.ts(116,36): error TS7006: Parameter 'doc' implicitly has an 'any' type.
+src/app/api/admin/audit/route.ts(7,23): error TS2307: Cannot find module '@/({} as any)' or its corresponding type declarations.
+src/app/api/admin/audit/route.ts(8,33): error TS2307: Cannot find module '@/({} as any)/schema' or its corresponding type declarations.
+src/app/api/admin/audit/route.ts(29,6): error TS2304: Cannot find name 'mockDbIgnore'.
+src/app/api/admin/audit/route.ts(102,35): error TS7006: Parameter 'u' implicitly has an 'any' type.
+src/app/api/admin/automation-rules/route.ts(19,28): error TS2304: Cannot find name 'adminDb'.
+src/app/api/admin/automation-rules/route.ts(20,43): error TS7006: Parameter 'd' implicitly has an 'any' type.
+src/app/api/admin/automation-rules/route.ts(56,36): error TS2304: Cannot find name 'adminDb'.
+src/app/api/admin/automation-rules/route.ts(64,52): error TS7006: Parameter 'd' implicitly has an 'any' type.
+src/app/api/admin/automation-rules/route.ts(86,15): error TS2304: Cannot find name 'adminDb'.
+src/app/api/admin/automation-rules/route.ts(111,24): error TS2304: Cannot find name 'adminDb'.
+src/app/api/admin/automation-rules/route.ts(148,24): error TS2304: Cannot find name 'adminDb'.
+src/app/api/admin/automation-rules/route.ts(164,36): error TS2304: Cannot find name 'adminDb'.
+src/app/api/admin/automation-rules/route.ts(171,23): error TS2304: Cannot find name 'adminDb'.
+src/app/api/admin/automation-rules/route.ts(172,35): error TS7006: Parameter 'd' implicitly has an 'any' type.
+src/app/api/admin/change-role/route.ts(25,15): error TS2304: Cannot find name 'adminDb'.
+src/app/api/admin/drive-queue/route.ts(18,32): error TS2304: Cannot find name 'adminDb'.
+src/app/api/admin/drive-queue/route.ts(23,41): error TS7006: Parameter 'doc' implicitly has an 'any' type.
+src/app/api/admin/drive-queue/route.ts(56,20): error TS2304: Cannot find name 'adminDb'.
+src/app/api/admin/drive-queue/route.ts(154,24): error TS2304: Cannot find name 'FieldValue'.
+src/app/api/admin/drive-queue/route.ts(167,15): error TS2304: Cannot find name 'adminDb'.
+src/app/api/admin/drive-queue/route.ts(172,26): error TS2304: Cannot find name 'FieldValue'.
+src/app/api/admin/drive-queue/route.ts(181,26): error TS2304: Cannot find name 'FieldValue'.
+src/app/api/admin/fix-drive-permissions/route.ts(9,28): error TS2304: Cannot find name 'verifyUser'.
+src/app/api/admin/fix-drive-permissions/route.ts(15,37): error TS2304: Cannot find name 'getMOCK_KEYServices'.
+src/app/api/admin/fix-drive-permissions/route.ts(56,34): error TS7006: Parameter 'r' implicitly has an 'any' type.
+src/app/api/admin/inventory/sync/route.ts(14,10): error TS2304: Cannot find name 'mockDbIgnore'.
+src/app/api/admin/inventory/sync/route.ts(14,26): error TS2304: Cannot find name 'adminDb'.
+src/app/api/admin/maintenance/backfill-departments/route.ts(25,36): error TS2304: Cannot find name 'adminDb'.
+src/app/api/admin/maintenance/backfill-departments/route.ts(26,36): error TS2304: Cannot find name 'adminDb'.
+src/app/api/admin/maintenance/backfill-departments/route.ts(31,30): error TS7006: Parameter 'doc' implicitly has an 'any' type.
+src/app/api/admin/maintenance/backfill-departments/route.ts(43,30): error TS7006: Parameter 'doc' implicitly has an 'any' type.
+src/app/api/admin/maintenance/backfill-departments/route.ts(59,37): error TS2304: Cannot find name 'adminDb'.
+src/app/api/admin/roles/route.ts(29,6): error TS2304: Cannot find name 'mockDbIgnore'.
+src/app/api/admin/roles/route.ts(29,22): error TS2304: Cannot find name 'adminDb'.
+src/app/api/admin/roles/route.ts(38,18): error TS2304: Cannot find name 'FieldValue'.
+src/app/api/admin/roles/route.ts(49,18): error TS2304: Cannot find name 'FieldValue'.
+src/app/api/admin/roles/route.ts(75,6): error TS2304: Cannot find name 'mockDbIgnore'.
+src/app/api/admin/roles/route.ts(75,22): error TS2304: Cannot find name 'adminDb'.
+src/app/api/admin/roles/route.ts(79,42): error TS7006: Parameter 'doc' implicitly has an 'any' type.
+src/app/api/admin/roles/route.ts(85,37): error TS7006: Parameter 'user' implicitly has an 'any' type.
+src/app/api/admin/system-updates/route.ts(16,32): error TS2304: Cannot find name 'adminDb'.
+src/app/api/admin/system-updates/route.ts(21,43): error TS7006: Parameter 'doc' implicitly has an 'any' type.
+src/app/api/admin/system-updates/route.ts(67,30): error TS2304: Cannot find name 'adminDb'.
+src/app/api/admin/users/route.ts(13,6): error TS2304: Cannot find name 'mockDbIgnore'.
+src/app/api/admin/users/route.ts(13,22): error TS2304: Cannot find name 'adminDb'.
+src/app/api/admin/users/route.ts(17,42): error TS7006: Parameter 'doc' implicitly has an 'any' type.
+src/app/api/admin/users/route.ts(46,6): error TS2304: Cannot find name 'mockDbIgnore'.
+src/app/api/admin/users/route.ts(46,22): error TS2304: Cannot find name 'adminDb'.
+src/app/api/admin/users/route.ts(54,18): error TS2304: Cannot find name 'FieldValue'.
+src/app/api/audit/flowboard/route.ts(10,32): error TS2304: Cannot find name 'adminDb'.
+src/app/api/audit/flowboard/route.ts(11,49): error TS7006: Parameter 'doc' implicitly has an 'any' type.
+src/app/api/audit/time-signals-v2/route.ts(9,32): error TS2304: Cannot find name 'adminDb'.
+src/app/api/audit/time-signals-v2/route.ts(10,49): error TS7006: Parameter 'doc' implicitly has an 'any' type.
+src/app/api/audit/time-signals-v2/route.ts(21,23): error TS2304: Cannot find name 'adminDb'.
+src/app/api/audit/time-signals-v2/route.ts(43,39): error TS2304: Cannot find name 'adminDb'.
+src/app/api/audit/time-signals-v2/route.ts(51,62): error TS7006: Parameter 'doc' implicitly has an 'any' type.
+src/app/api/audit/time-signals-v2/route.ts(52,43): error TS7006: Parameter 'a' implicitly has an 'any' type.
+src/app/api/audit/time-signals-v2/route.ts(52,46): error TS7006: Parameter 'b' implicitly has an 'any' type.
+src/app/api/audit/time-signals-v2/route.ts(76,29): error TS2304: Cannot find name 'adminDb'.
+src/app/api/audit/time-signals/route.ts(9,32): error TS2304: Cannot find name 'adminDb'.
+src/app/api/audit/time-signals/route.ts(10,49): error TS7006: Parameter 'doc' implicitly has an 'any' type.
+src/app/api/audit/time-signals/route.ts(21,23): error TS2304: Cannot find name 'adminDb'.
+src/app/api/audit/time-signals/route.ts(44,39): error TS2304: Cannot find name 'adminDb'.
+src/app/api/audit/time-signals/route.ts(52,62): error TS7006: Parameter 'doc' implicitly has an 'any' type.
+src/app/api/audit/time-signals/route.ts(53,43): error TS7006: Parameter 'a' implicitly has an 'any' type.
+src/app/api/audit/time-signals/route.ts(53,46): error TS7006: Parameter 'b' implicitly has an 'any' type.
+src/app/api/audit/time-signals/route.ts(77,29): error TS2304: Cannot find name 'adminDb'.
+src/app/api/auth/login/route.ts(19,36): error TS2304: Cannot find name 'adminAuth'.
+src/app/api/auth/login/route.ts(24,37): error TS2304: Cannot find name 'adminAuth'.
+src/app/api/campaigns/route.ts(8,37): error TS2304: Cannot find name 'getMOCK_KEYServices'.
+src/app/api/campaigns/route.ts(9,28): error TS2304: Cannot find name 'verifyUser'.
+src/app/api/campaigns/route.ts(19,20): error TS2503: Cannot find namespace 'MOCK_KEYFirestore'.
+src/app/api/campaigns/route.ts(28,45): error TS7006: Parameter 'doc' implicitly has an 'any' type.
+src/app/api/campaigns/route.ts(42,37): error TS2304: Cannot find name 'getMOCK_KEYServices'.
+src/app/api/campaigns/route.ts(43,28): error TS2304: Cannot find name 'verifyUser'.
+src/app/api/cron/cleanup-events/route.ts(7,10): error TS2304: Cannot find name 'mockDbIgnore'.
+src/app/api/cron/cleanup-events/route.ts(7,26): error TS2304: Cannot find name 'adminDb'.
+src/app/api/cron/cleanup-events/route.ts(37,31): error TS7006: Parameter 'doc' implicitly has an 'any' type.
+src/app/api/deliverables/route.ts(7,2): error TS2304: Cannot find name 'mockDbIgnore'.
+src/app/api/deliverables/route.ts(7,18): error TS2304: Cannot find name 'adminDb'.
+src/app/api/deliverables/route.ts(53,28): error TS2304: Cannot find name 'FieldValue'.
+src/app/api/deliverables/route.ts(76,28): error TS2304: Cannot find name 'FieldValue'.
+src/app/api/deliverables/route.ts(79,49): error TS2304: Cannot find name 'FieldValue'.
+src/app/api/deliverables/route.ts(125,56): error TS7006: Parameter 'doc' implicitly has an 'any' type.
+src/app/api/deliverables/route.ts(175,24): error TS2304: Cannot find name 'FieldValue'.
+src/app/api/deliverables/route.ts(182,24): error TS2304: Cannot find name 'FieldValue'.
+src/app/api/deliverables/route.ts(186,45): error TS2304: Cannot find name 'FieldValue'.
+src/app/api/deliverables/route.ts(212,18): error TS7006: Parameter 'doc' implicitly has an 'any' type.
+src/app/api/deliverables/route.ts(221,20): error TS7006: Parameter 'a' implicitly has an 'any' type.
+src/app/api/deliverables/route.ts(221,23): error TS7006: Parameter 'b' implicitly has an 'any' type.
+src/app/api/demo-data/route.ts(20,33): error TS2304: Cannot find name 'getMOCK_KEYServices'.
+src/app/api/demo-data/route.ts(21,24): error TS2304: Cannot find name 'verifyUser'.
+src/app/api/demo-data/route.ts(60,33): error TS2304: Cannot find name 'getMOCK_KEYServices'.
+src/app/api/demo-data/route.ts(230,33): error TS2304: Cannot find name 'getMOCK_KEYServices'.
+src/app/api/demo-data/route.ts(296,33): error TS2304: Cannot find name 'getMOCK_KEYServices'.
+src/app/api/demo-data/route.ts(297,24): error TS2304: Cannot find name 'verifyUser'.
+src/app/api/departments/route.ts(16,6): error TS2304: Cannot find name 'mockDbIgnore'.
+src/app/api/departments/route.ts(16,22): error TS2304: Cannot find name 'adminDb'.
+src/app/api/departments/route.ts(20,12): error TS7006: Parameter 'doc' implicitly has an 'any' type.
+src/app/api/departments/route.ts(24,15): error TS7006: Parameter 'dept' implicitly has an 'any' type.
+src/app/api/departments/route.ts(43,6): error TS2304: Cannot find name 'mockDbIgnore'.
+src/app/api/departments/route.ts(43,22): error TS2304: Cannot find name 'adminDb'.
+src/app/api/device-logs/active/route.ts(21,10): error TS2304: Cannot find name 'mockDbIgnore'.
+src/app/api/device-logs/active/route.ts(21,26): error TS2304: Cannot find name 'adminDb'.
+src/app/api/device-logs/active/route.ts(33,40): error TS7006: Parameter 'doc' implicitly has an 'any' type.
+src/app/api/device-requests/issue/route.ts(16,10): error TS2304: Cannot find name 'mockDbIgnore'.
+src/app/api/device-requests/issue/route.ts(16,26): error TS2304: Cannot find name 'adminDb'.
+src/app/api/device-requests/issue/route.ts(19,64): error TS7006: Parameter 't' implicitly has an 'any' type.
+src/app/api/device-requests/return-with-log/route.ts(15,10): error TS2304: Cannot find name 'mockDbIgnore'.
+src/app/api/device-requests/return-with-log/route.ts(15,26): error TS2304: Cannot find name 'adminDb'.
+src/app/api/device-requests/return-with-log/route.ts(17,49): error TS7006: Parameter 't' implicitly has an 'any' type.
+src/app/api/device-requests/return-with-log/route.ts(35,36): error TS2304: Cannot find name 'FieldValue'.
+src/app/api/device-requests/return/route.ts(15,10): error TS2304: Cannot find name 'mockDbIgnore'.
+src/app/api/device-requests/return/route.ts(15,26): error TS2304: Cannot find name 'adminDb'.
+src/app/api/device-requests/return/route.ts(19,49): error TS7006: Parameter 't' implicitly has an 'any' type.
+src/app/api/device-requests/return/route.ts(38,36): error TS2304: Cannot find name 'FieldValue'.
+src/app/api/device-requests/route.ts(14,20): error TS2503: Cannot find namespace 'MOCK_KEYFirestore'.
+src/app/api/device-requests/route.ts(27,41): error TS7006: Parameter 'doc' implicitly has an 'any' type.
+src/app/api/device-requests/route.ts(85,10): error TS2304: Cannot find name 'mockDbIgnore'.
+src/app/api/events/route.ts(10,33): error TS2304: Cannot find name 'getMOCK_KEYServices'.
+src/app/api/events/route.ts(11,24): error TS2304: Cannot find name 'verifyUser'.
+src/app/api/events/route.ts(35,16): error TS2503: Cannot find namespace 'MOCK_KEYFirestore'.
+src/app/api/events/route.ts(97,33): error TS2304: Cannot find name 'getMOCK_KEYServices'.
+src/app/api/events/route.ts(98,24): error TS2304: Cannot find name 'verifyUser'.
+src/app/api/events/route.ts(195,33): error TS2304: Cannot find name 'getMOCK_KEYServices'.
+src/app/api/events/route.ts(196,24): error TS2304: Cannot find name 'verifyUser'.
+src/app/api/files/migrate/route.ts(19,10): error TS2304: Cannot find name 'mockDbIgnore'.
+src/app/api/files/migrate/route.ts(19,26): error TS2304: Cannot find name 'adminDb'.
+src/app/api/files/migrate/route.ts(66,41): error TS2304: Cannot find name 'Timestamp'.
+src/app/api/files/route.ts(22,26): error TS2304: Cannot find name 'adminDb'.
+src/app/api/files/route.ts(26,26): error TS2304: Cannot find name 'adminDb'.
+src/app/api/files/route.ts(28,26): error TS2304: Cannot find name 'adminDb'.
+src/app/api/files/route.ts(40,54): error TS7006: Parameter 'doc' implicitly has an 'any' type.
+src/app/api/files/route.ts(64,21): error TS7006: Parameter 'file' implicitly has an 'any' type.
+src/app/api/files/upload/route.ts(114,55): error TS2304: Cannot find name 'adminDb'.
+src/app/api/files/upload/route.ts(128,59): error TS2304: Cannot find name 'adminDb'.
+src/app/api/files/upload/route.ts(194,22): error TS2304: Cannot find name 'mockDbIgnore'.
+src/app/api/files/upload/route.ts(194,38): error TS2304: Cannot find name 'adminDb'.
+src/app/api/files/upload/route.ts(204,36): error TS2304: Cannot find name 'FieldValue'.
+src/app/api/health/firebase-admin/route.ts(8,10): error TS2304: Cannot find name 'mockDbIgnore'.
+src/app/api/health/route.ts(23,19): error TS2304: Cannot find name 'adminDb'.
+src/app/api/health/route.ts(31,19): error TS2304: Cannot find name 'adminAuth'.
+src/app/api/health/route.ts(33,19): error TS2304: Cannot find name 'adminAuth'.
+src/app/api/health/route.ts(34,64): error TS2304: Cannot find name 'adminAuth'.
+src/app/api/health/route.ts(51,24): error TS2304: Cannot find name 'adminAuth'.
+src/app/api/institutions/route.ts(16,6): error TS2304: Cannot find name 'mockDbIgnore'.
+src/app/api/institutions/route.ts(16,22): error TS2304: Cannot find name 'adminDb'.
+src/app/api/institutions/route.ts(20,12): error TS7006: Parameter 'doc' implicitly has an 'any' type.
+src/app/api/institutions/route.ts(24,15): error TS7006: Parameter 'inst' implicitly has an 'any' type.
+src/app/api/institutions/route.ts(43,6): error TS2304: Cannot find name 'mockDbIgnore'.
+src/app/api/institutions/route.ts(43,22): error TS2304: Cannot find name 'adminDb'.
+src/app/api/inventory/route.ts(27,10): error TS2304: Cannot find name 'mockDbIgnore'.
+src/app/api/inventory/route.ts(27,26): error TS2304: Cannot find name 'adminDb'.
+src/app/api/inventory/route.ts(38,41): error TS7006: Parameter 'doc' implicitly has an 'any' type.
+src/app/api/inventory/route.ts(92,10): error TS2304: Cannot find name 'mockDbIgnore'.
+src/app/api/inventory/route.ts(92,26): error TS2304: Cannot find name 'adminDb'.
+src/app/api/inventory/stats/route.ts(13,10): error TS2304: Cannot find name 'mockDbIgnore'.
+src/app/api/inventory/stats/route.ts(13,26): error TS2304: Cannot find name 'adminDb'.
+src/app/api/leave/analytics/route.ts(14,22): error TS2304: Cannot find name 'adminAuth'.
+src/app/api/leave/analytics/route.ts(19,31): error TS2304: Cannot find name 'adminDb'.
+src/app/api/leave/analytics/route.ts(30,10): error TS2304: Cannot find name 'mockDbIgnore'.
+src/app/api/leave/analytics/route.ts(30,26): error TS2304: Cannot find name 'adminDb'.
+src/app/api/leave/analytics/route.ts(39,42): error TS7006: Parameter 'doc' implicitly has an 'any' type.
+src/app/api/leave/approve/route.ts(14,22): error TS2304: Cannot find name 'adminAuth'.
+src/app/api/leave/approve/route.ts(19,31): error TS2304: Cannot find name 'adminDb'.
+src/app/api/leave/approve/route.ts(31,10): error TS2304: Cannot find name 'mockDbIgnore'.
+src/app/api/leave/approve/route.ts(31,26): error TS2304: Cannot find name 'adminDb'.
+src/app/api/leave/approve/route.ts(45,21): error TS2304: Cannot find name 'Timestamp'.
+src/app/api/leave/bulk-approve/route.ts(14,22): error TS2304: Cannot find name 'adminAuth'.
+src/app/api/leave/bulk-approve/route.ts(19,31): error TS2304: Cannot find name 'adminDb'.
+src/app/api/leave/bulk-approve/route.ts(31,10): error TS2304: Cannot find name 'mockDbIgnore'.
+src/app/api/leave/bulk-approve/route.ts(31,26): error TS2304: Cannot find name 'adminDb'.
+src/app/api/leave/bulk-approve/route.ts(32,21): error TS2304: Cannot find name 'Timestamp'.
+src/app/api/leave/cancel/route.ts(14,22): error TS2304: Cannot find name 'adminAuth'.
+src/app/api/leave/cancel/route.ts(25,10): error TS2304: Cannot find name 'mockDbIgnore'.
+src/app/api/leave/cancel/route.ts(25,26): error TS2304: Cannot find name 'adminDb'.
+src/app/api/leave/cancel/route.ts(48,24): error TS2304: Cannot find name 'Timestamp'.
+src/app/api/leave/export/route.ts(15,22): error TS2304: Cannot find name 'adminAuth'.
+src/app/api/leave/export/route.ts(20,31): error TS2304: Cannot find name 'adminDb'.
+src/app/api/leave/export/route.ts(32,10): error TS2304: Cannot find name 'mockDbIgnore'.
+src/app/api/leave/export/route.ts(32,26): error TS2304: Cannot find name 'adminDb'.
+src/app/api/leave/export/route.ts(44,42): error TS7006: Parameter 'doc' implicitly has an 'any' type.
+src/app/api/leave/reject/route.ts(14,22): error TS2304: Cannot find name 'adminAuth'.
+src/app/api/leave/reject/route.ts(19,31): error TS2304: Cannot find name 'adminDb'.
+src/app/api/leave/reject/route.ts(35,10): error TS2304: Cannot find name 'mockDbIgnore'.
+src/app/api/leave/reject/route.ts(35,26): error TS2304: Cannot find name 'adminDb'.
+src/app/api/leave/reject/route.ts(49,21): error TS2304: Cannot find name 'Timestamp'.
+src/app/api/leave/route.ts(15,22): error TS2304: Cannot find name 'adminAuth'.
+src/app/api/leave/route.ts(19,10): error TS2304: Cannot find name 'mockDbIgnore'.
+src/app/api/leave/route.ts(19,26): error TS2304: Cannot find name 'adminDb'.
+src/app/api/leave/route.ts(25,44): error TS7006: Parameter 'doc' implicitly has an 'any' type.
+src/app/api/leave/route.ts(46,22): error TS2304: Cannot find name 'adminAuth'.
+src/app/api/leave/route.ts(51,31): error TS2304: Cannot find name 'adminDb'.
+src/app/api/leave/route.ts(80,10): error TS2304: Cannot find name 'mockDbIgnore'.
+src/app/api/leave/route.ts(80,26): error TS2304: Cannot find name 'adminDb'.
+src/app/api/leave/route.ts(81,21): error TS2304: Cannot find name 'Timestamp'.
+src/app/api/leave/route.ts(85,24): error TS2304: Cannot find name 'Timestamp'.
+src/app/api/leave/route.ts(86,22): error TS2304: Cannot find name 'Timestamp'.
+src/app/api/leave/route.ts(104,51): error TS7006: Parameter 'doc' implicitly has an 'any' type.
+src/app/api/leave/route.ts(107,56): error TS7006: Parameter 'adminUid' implicitly has an 'any' type.
+src/app/api/notification-rules/route.ts(51,10): error TS2304: Cannot find name 'mockDbIgnore'.
+src/app/api/notification-rules/route.ts(51,26): error TS2304: Cannot find name 'adminDb'.
+src/app/api/notification-rules/route.ts(67,41): error TS7006: Parameter 'doc' implicitly has an 'any' type.
+src/app/api/notifications/create/route.ts(8,37): error TS2304: Cannot find name 'getMOCK_KEYServices'.
+src/app/api/notifications/create/route.ts(9,28): error TS2304: Cannot find name 'verifyUser'.
+src/app/api/notifications/route.ts(22,6): error TS2304: Cannot find name 'mockDbIgnore'.
+src/app/api/notifications/route.ts(22,22): error TS2304: Cannot find name 'adminDb'.
+src/app/api/notifications/route.ts(33,58): error TS7006: Parameter 'doc' implicitly has an 'any' type.
+src/app/api/notifications/route.ts(68,6): error TS2304: Cannot find name 'mockDbIgnore'.
+src/app/api/notifications/route.ts(68,22): error TS2304: Cannot find name 'adminDb'.
+src/app/api/notifications/route.ts(112,6): error TS2304: Cannot find name 'mockDbIgnore'.
+src/app/api/notifications/route.ts(112,22): error TS2304: Cannot find name 'adminDb'.
+src/app/api/notifications/trigger/route.ts(11,37): error TS2304: Cannot find name 'getMOCK_KEYServices'.
+src/app/api/notifications/trigger/route.ts(14,28): error TS2304: Cannot find name 'verifyUser'.
+src/app/api/notifications/unread/route.ts(16,10): error TS2304: Cannot find name 'mockDbIgnore'.
+src/app/api/notifications/unread/route.ts(16,26): error TS2304: Cannot find name 'adminDb'.
+src/app/api/registerUser/route.ts(18,32): error TS2304: Cannot find name 'getAuth'.
+src/app/api/registerUser/route.ts(21,6): error TS2304: Cannot find name 'mockDbIgnore'.
+src/app/api/registerUser/route.ts(21,22): error TS2304: Cannot find name 'adminDb'.
+src/app/api/registerUser/route.ts(66,17): error TS2304: Cannot find name 'FieldValue'.
+src/app/api/registerUser/route.ts(93,18): error TS2304: Cannot find name 'FieldValue'.
+src/app/api/registerUser/route.ts(94,18): error TS2304: Cannot find name 'FieldValue'.
+src/app/api/reports/activity/route.ts(14,10): error TS2304: Cannot find name 'mockDbIgnore'.
+src/app/api/reports/activity/route.ts(37,20): error TS2503: Cannot find namespace 'MOCK_KEYFirestore'.
+src/app/api/reports/activity/route.ts(65,40): error TS7006: Parameter 'doc' implicitly has an 'any' type.
+src/app/api/reports/overview/route.ts(17,10): error TS2304: Cannot find name 'mockDbIgnore'.
+src/app/api/reports/overview/route.ts(17,26): error TS2304: Cannot find name 'adminDb'.
+src/app/api/reports/personal/route.ts(2,23): error TS2307: Cannot find module '@/({} as any)' or its corresponding type declarations.
+src/app/api/reports/personal/route.ts(3,23): error TS2307: Cannot find module '@/({} as any)/schema' or its corresponding type declarations.
+src/app/api/reports/personal/route.ts(17,10): error TS2304: Cannot find name 'mockDbIgnore'.
+src/app/api/system-events/route.ts(11,37): error TS2304: Cannot find name 'getMOCK_KEYServices'.
+src/app/api/system-events/route.ts(12,28): error TS2304: Cannot find name 'verifyUser'.
+src/app/api/system-events/route.ts(24,42): error TS7006: Parameter 'doc' implicitly has an 'any' type.
+src/app/api/system-events/route.ts(41,37): error TS2304: Cannot find name 'getMOCK_KEYServices'.
+src/app/api/system-events/route.ts(42,28): error TS2304: Cannot find name 'verifyUser'.
+src/app/api/system-events/route.ts(125,37): error TS2304: Cannot find name 'getMOCK_KEYServices'.
+src/app/api/system-events/route.ts(126,28): error TS2304: Cannot find name 'verifyUser'.
+src/app/api/system-events/route.ts(181,37): error TS2304: Cannot find name 'getMOCK_KEYServices'.
+src/app/api/system-events/route.ts(182,28): error TS2304: Cannot find name 'verifyUser'.
+src/app/api/system-updates/route.ts(14,32): error TS2304: Cannot find name 'adminDb'.
+src/app/api/system-updates/route.ts(20,43): error TS7006: Parameter 'doc' implicitly has an 'any' type.
+src/app/api/tasks/[id]/history/route.ts(3,30): error TS2307: Cannot find module '@/services/auditService' or its corresponding type declarations.
+src/app/api/tasks/assign/route.ts(15,33): error TS2304: Cannot find name 'getMOCK_KEYServices'.
+src/app/api/tasks/assign/route.ts(16,24): error TS2304: Cannot find name 'verifyUser'.
+src/app/api/tasks/bulk/route.ts(25,33): error TS2304: Cannot find name 'getMOCK_KEYServices'.
+src/app/api/tasks/bulk/route.ts(26,24): error TS2304: Cannot find name 'verifyUser'.
+src/app/api/tasks/route.ts(6,30): error TS2307: Cannot find module '@/services/auditService' or its corresponding type declarations.
+src/app/api/tasks/route.ts(15,24): error TS2304: Cannot find name 'verifyUser'.
+src/app/api/tasks/route.ts(21,6): error TS2304: Cannot find name 'mockDbIgnore'.
+src/app/api/tasks/route.ts(21,22): error TS2304: Cannot find name 'adminDb'.
+src/app/api/tasks/route.ts(143,24): error TS2304: Cannot find name 'verifyUser'.
+src/app/api/tasks/route.ts(154,6): error TS2304: Cannot find name 'mockDbIgnore'.
+src/app/api/tasks/route.ts(154,22): error TS2304: Cannot find name 'adminDb'.
+src/app/api/tasks/route.ts(308,24): error TS2304: Cannot find name 'verifyUser'.
+src/app/api/tasks/route.ts(323,6): error TS2304: Cannot find name 'mockDbIgnore'.
+src/app/api/tasks/route.ts(323,22): error TS2304: Cannot find name 'adminDb'.
+src/app/api/tasks/route.ts(585,24): error TS2304: Cannot find name 'verifyUser'.
+src/app/api/tasks/route.ts(597,6): error TS2304: Cannot find name 'mockDbIgnore'.
+src/app/api/tasks/route.ts(597,22): error TS2304: Cannot find name 'adminDb'.
+src/app/api/tasks/stats/route.ts(18,10): error TS2304: Cannot find name 'mockDbIgnore'.
+src/app/api/tasks/stats/route.ts(19,20): error TS2503: Cannot find namespace 'MOCK_KEYFirestore'.
+src/app/api/tasks/stats/route.ts(47,26): error TS7006: Parameter 'doc' implicitly has an 'any' type.
+src/app/api/trash/restore/route.ts(34,10): error TS2304: Cannot find name 'mockDbIgnore'.
+src/app/api/trash/restore/route.ts(34,26): error TS2304: Cannot find name 'adminDb'.
+src/app/api/trash/restore/route.ts(57,30): error TS2304: Cannot find name 'FieldValue'.
+src/app/api/trash/restore/route.ts(58,32): error TS2304: Cannot find name 'FieldValue'.
+src/app/api/trash/restore/route.ts(59,32): error TS2304: Cannot find name 'FieldValue'.
+src/app/api/trash/route.ts(24,10): error TS2304: Cannot find name 'mockDbIgnore'.
+src/app/api/trash/route.ts(24,26): error TS2304: Cannot find name 'adminDb'.
+src/app/api/trash/route.ts(118,10): error TS2304: Cannot find name 'mockDbIgnore'.
+src/app/api/trash/route.ts(118,26): error TS2304: Cannot find name 'adminDb'.
+src/app/api/user/preferences/notifications/route.ts(14,27): error TS2304: Cannot find name 'adminDb'.
+src/app/api/user/preferences/notifications/route.ts(54,15): error TS2304: Cannot find name 'adminDb'.
+src/app/api/users/admins/route.ts(16,37): error TS2304: Cannot find name 'adminDb'.
+src/app/api/users/admins/route.ts(21,18): error TS7006: Parameter 'doc' implicitly has an 'any' type.
+src/app/api/users/admins/route.ts(31,18): error TS7006: Parameter 'user' implicitly has an 'any' type.
+src/app/api/users/me/avatar/route.ts(83,15): error TS2304: Cannot find name 'adminDb'.
+src/app/api/users/me/route.ts(24,13): error TS2304: Cannot find name 'adminDb'.
+src/app/api/users/me/route.ts(65,11): error TS2304: Cannot find name 'adminDb'.
+src/app/api/users/route.ts(16,6): error TS2304: Cannot find name 'mockDbIgnore'.
+src/app/api/users/route.ts(45,16): error TS2503: Cannot find namespace 'MOCK_KEYFirestore'.
+src/app/api/users/route.ts(67,42): error TS7006: Parameter 'doc' implicitly has an 'any' type.
+src/app/api/users/route.ts(95,6): error TS2304: Cannot find name 'mockDbIgnore'.
+src/app/api/users/route.ts(169,6): error TS2304: Cannot find name 'mockDbIgnore'.
+src/app/api/users/team/route.ts(9,10): error TS2304: Cannot find name 'mockDbIgnore'.
+src/app/api/users/team/route.ts(9,26): error TS2304: Cannot find name 'adminDb'.
+src/app/api/users/team/route.ts(29,18): error TS7006: Parameter 'doc' implicitly has an 'any' type.
+src/app/api/users/team/route.ts(42,21): error TS7006: Parameter 'user' implicitly has an 'any' type.
+src/app/api/users/team/route.ts(43,18): error TS7006: Parameter 'user' implicitly has an 'any' type.
+src/components/auth/EmailVerificationGate.tsx(29,20): error TS2304: Cannot find name 'getAuth'.
+src/components/auth/EmailVerificationGate.tsx(30,40): error TS2339: Property 'currentUser' does not exist on type '{ uid: string; }'.
+src/components/auth/EmailVerificationGate.tsx(52,20): error TS2304: Cannot find name 'getAuth'.
+src/components/auth/EmailVerificationGate.tsx(53,43): error TS2339: Property 'currentUser' does not exist on type '{ uid: string; }'.
+src/components/auth/EmailVerificationGate.tsx(56,15): error TS2304: Cannot find name 'sendEmailVerification'.
+src/components/auth/EmailVerificationGate.tsx(71,20): error TS2304: Cannot find name 'getAuth'.
+src/components/auth/EmailVerificationGate.tsx(72,13): error TS2304: Cannot find name 'reload'.
+src/components/auth/EmailVerificationGate.tsx(72,36): error TS2339: Property 'currentUser' does not exist on type '{ uid: string; }'.
+src/components/auth/EmailVerificationGate.tsx(81,35): error TS2304: Cannot find name 'getAuth'.
+src/components/auth/EmailVerificationGate.tsx(115,36): error TS2304: Cannot find name 'getAuth'.
+src/components/event/EventCard.tsx(17,23): error TS2339: Property 'isSystemEvent' does not exist on type 'EventLite'.
+src/components/event/EventCard.tsx(21,74): error TS2339: Property 'isSystemEvent' does not exist on type 'EventLite'.
+src/components/event/EventCard.tsx(29,27): error TS2339: Property 'isSystemEvent' does not exist on type 'EventLite'.
+src/components/event/EventCard.tsx(33,28): error TS2339: Property 'isSystemEvent' does not exist on type 'EventLite'.
+src/components/event/EventCard.tsx(55,34): error TS2339: Property 'visibility' does not exist on type 'EventLite'.
+src/components/event/EventCard.tsx(55,76): error TS2339: Property 'visibility' does not exist on type 'EventLite'.
+src/components/events/EventListView.tsx(228,25): error TS2353: Object literal may only specify known properties, and 'approverId' does not exist in type 'ArrayBuffer | ReadableStream<any> | Blob | ArrayBufferView<ArrayBuffer> | FormData | URLSearchParams'.
+src/components/notifications/NotificationItem.tsx(30,30): error TS2304: Cannot find name 'Timestamp'.
+src/components/notifications/NotificationItem.tsx(30,61): error TS2339: Property 'toDate' does not exist on type 'TimestampLike'.
+  Property 'toDate' does not exist on type 'string'.
+src/components/profile/ActivitySummary.tsx(21,34): error TS2304: Cannot find name 'collection'.
+src/components/profile/ActivitySummary.tsx(22,36): error TS2304: Cannot find name 'query'.
+src/components/profile/ActivitySummary.tsx(22,52): error TS2304: Cannot find name 'where'.
+src/components/profile/ActivitySummary.tsx(23,45): error TS2304: Cannot find name 'getCountFromServer'.
+src/components/profile/ActivitySummary.tsx(26,36): error TS2304: Cannot find name 'query'.
+src/components/profile/ActivitySummary.tsx(28,21): error TS2304: Cannot find name 'where'.
+src/components/profile/ActivitySummary.tsx(29,21): error TS2304: Cannot find name 'where'.
+src/components/profile/ActivitySummary.tsx(31,45): error TS2304: Cannot find name 'getCountFromServer'.
+src/components/tasks/BulkOperationsToolbar.tsx(107,9): error TS2345: Argument of type '"delete" | "assign" | "changePriority" | "changeStatus" | "extendDeadline" | "flagBlocked"' is not assignable to parameter of type '"delete" | "assign" | "changePriority" | "changeStatus"'.
+  Type '"extendDeadline"' is not assignable to type '"delete" | "assign" | "changePriority" | "changeStatus"'.
+src/components/tasks/TaskDetailModalV2.tsx(237,38): error TS2339: Property 'getTaskHistory' does not exist on type 'typeof CanonicalDataService'.
+src/components/tasks/TaskDetailModalV2.tsx(238,27): error TS7006: Parameter 'logs' implicitly has an 'any' type.
+src/components/tasks/TaskDetailModalV2.tsx(239,28): error TS7006: Parameter 'err' implicitly has an 'any' type.
+src/components/tasks/TaskListView.tsx(14,30): error TS2307: Cannot find module '@/services/trashService' or its corresponding type declarations.
+src/hooks/useOptimisticTasks.ts(7,30): error TS2307: Cannot find module '@/services/trashService' or its corresponding type declarations.
+src/lib/audit.ts(27,16): error TS2304: Cannot find name 'FieldValue'.
+src/lib/audit.ts(37,10): error TS2304: Cannot find name 'mockDbIgnore'.
+src/lib/audit.ts(37,26): error TS2304: Cannot find name 'adminDb'.
+src/lib/audit.ts(49,24): error TS2304: Cannot find name 'FieldValue'.
+src/lib/automation-rules.server.ts(24,32): error TS2304: Cannot find name 'adminDb'.
+src/lib/automation-rules.server.ts(34,44): error TS7006: Parameter 'd' implicitly has an 'any' type.
+src/lib/drive-init.ts(14,6): error TS2304: Cannot find name 'mockDbIgnore'.
+src/lib/drive-init.ts(14,22): error TS2304: Cannot find name 'adminDb'.
+src/lib/drive-init.ts(73,6): error TS2304: Cannot find name 'mockDbIgnore'.
+src/lib/drive-init.ts(73,22): error TS2304: Cannot find name 'adminDb'.
+src/lib/drive-init.ts(119,6): error TS2304: Cannot find name 'mockDbIgnore'.
+src/lib/drive-init.ts(119,22): error TS2304: Cannot find name 'adminDb'.
+src/lib/drive-init.ts(142,6): error TS2304: Cannot find name 'mockDbIgnore'.
+src/lib/drive-init.ts(142,22): error TS2304: Cannot find name 'adminDb'.
+src/lib/drive-scanner.ts(66,14): error TS2304: Cannot find name 'mockDbIgnore'.
+src/lib/drive-scanner.ts(66,30): error TS2304: Cannot find name 'adminDb'.
+src/lib/drive-scanner.ts(170,33): error TS2304: Cannot find name 'FieldValue'.
+src/lib/event-task.server.ts(16,37): error TS2304: Cannot find name 'adminDb'.
+src/lib/event-task.server.ts(55,24): error TS2304: Cannot find name 'FieldValue'.
+src/lib/event-task.server.ts(56,24): error TS2304: Cannot find name 'FieldValue'.
+src/lib/event-task.server.ts(59,15): error TS2304: Cannot find name 'adminDb'.
+src/lib/event-task.server.ts(69,45): error TS2304: Cannot find name 'adminDb'.
+src/lib/event-task.server.ts(84,36): error TS2304: Cannot find name 'FieldValue'.
+src/lib/event-task.server.ts(105,32): error TS2304: Cannot find name 'FieldValue'.
+src/lib/event-task.server.ts(133,28): error TS2304: Cannot find name 'FieldValue'.
+src/lib/event-task.server.ts(134,28): error TS2304: Cannot find name 'FieldValue'.
+src/lib/event-task.server.ts(137,19): error TS2304: Cannot find name 'adminDb'.
+src/lib/fileService.server.ts(11,30): error TS2304: Cannot find name 'adminDb'.
+src/lib/fileService.server.ts(14,30): error TS2304: Cannot find name 'adminDb'.
+src/lib/fileService.server.ts(16,30): error TS2304: Cannot find name 'adminDb'.
+src/lib/fileService.server.ts(22,38): error TS7006: Parameter 'doc' implicitly has an 'any' type.
+src/lib/idempotency.ts(13,6): error TS2304: Cannot find name 'mockDbIgnore'.
+src/lib/idempotency.ts(13,22): error TS2304: Cannot find name 'adminDb'.
+src/lib/idempotency.ts(38,24): error TS2304: Cannot find name 'FieldValue'.
+src/lib/institution-policies.server.ts(14,35): error TS2304: Cannot find name 'adminDb'.
+src/lib/institution-policies.server.ts(20,38): error TS2304: Cannot find name 'adminDb'.
+src/lib/institution-policies.server.ts(73,15): error TS2304: Cannot find name 'adminDb'.
+src/lib/invites.server.ts(15,27): error TS2304: Cannot find name 'adminDb'.
+src/lib/invites.server.ts(27,24): error TS2304: Cannot find name 'FieldValue'.
+src/lib/invites.server.ts(28,24): error TS2304: Cannot find name 'Timestamp'.
+src/lib/invites.server.ts(36,32): error TS2304: Cannot find name 'adminDb'.
+src/lib/invites.server.ts(41,34): error TS7006: Parameter 'doc' implicitly has an 'any' type.
+src/lib/invites.server.ts(54,32): error TS2304: Cannot find name 'adminDb'.
+src/lib/invites.server.ts(59,34): error TS7006: Parameter 'doc' implicitly has an 'any' type.
+src/lib/invites.server.ts(71,15): error TS2304: Cannot find name 'adminDb'.
+src/lib/notificationRules.server.ts(46,36): error TS2304: Cannot find name 'adminDb'.
+src/lib/notificationRules.server.ts(50,38): error TS7006: Parameter 'doc' implicitly has an 'any' type.
+src/lib/notificationSelectors.ts(32,33): error TS2304: Cannot find name 'Timestamp'.
+src/lib/notificationSelectors.ts(78,42): error TS2304: Cannot find name 'Timestamp'.
+src/lib/notificationSelectors.ts(78,66): error TS2339: Property 'toDate' does not exist on type 'TimestampLike'.
+  Property 'toDate' does not exist on type 'string'.
+src/lib/role-policies.server.ts(21,31): error TS2304: Cannot find name 'adminDb'.
+src/lib/role-policies.server.ts(48,15): error TS2304: Cannot find name 'adminDb'.
+src/lib/sendFcm.ts(13,10): error TS2304: Cannot find name 'adminMessaging'.
+src/lib/server-notification.ts(8,2): error TS2304: Cannot find name 'mockDbIgnore'.
+src/lib/server-notification.ts(8,18): error TS2304: Cannot find name 'adminDb'.
+src/lib/server-notification.ts(21,38): error TS7006: Parameter 'doc' implicitly has an 'any' type.
+src/lib/server-notification.ts(72,29): error TS2304: Cannot find name 'Timestamp'.
+src/lib/server-notification.ts(84,21): error TS2304: Cannot find name 'Timestamp'.
+src/lib/server-notification.ts(106,23): error TS7022: 'snapshot' implicitly has type 'any' because it does not have a type annotation and is referenced directly or indirectly in its own initializer.
+src/lib/server-notification.ts(124,49): error TS2304: Cannot find name 'Timestamp'.
+src/lib/server-notification.ts(154,45): error TS2304: Cannot find name 'Timestamp'.
+src/lib/server-notification.ts(177,48): error TS2304: Cannot find name 'Timestamp'.
+src/lib/server-notification.ts(187,41): error TS2304: Cannot find name 'Timestamp'.
+src/lib/server-notification.ts(197,41): error TS2304: Cannot find name 'Timestamp'.
+src/lib/server-notification.ts(261,24): error TS2304: Cannot find name 'Timestamp'.
+src/lib/server-notification.ts(299,28): error TS2304: Cannot find name 'Timestamp'.
+src/lib/server-notification.ts(535,21): error TS2304: Cannot find name 'Timestamp'.
+src/lib/server-notification.ts(555,23): error TS7022: 'snapshot' implicitly has type 'any' because it does not have a type annotation and is referenced directly or indirectly in its own initializer.
+src/lib/server-notification.ts(575,49): error TS2304: Cannot find name 'Timestamp'.
+src/lib/server-notification.ts(605,45): error TS2304: Cannot find name 'Timestamp'.
+src/lib/server-notification.ts(628,48): error TS2304: Cannot find name 'Timestamp'.
+src/lib/server-notification.ts(648,44): error TS2304: Cannot find name 'Timestamp'.
+src/lib/server-notification.ts(657,41): error TS2304: Cannot find name 'Timestamp'.
+src/lib/server-notification.ts(667,41): error TS2304: Cannot find name 'Timestamp'.
+src/lib/server-notification.ts(735,51): error TS2304: Cannot find name 'Timestamp'.
+src/lib/server-notification.ts(842,21): error TS2304: Cannot find name 'Timestamp'.
+src/lib/server-notification.ts(991,55): error TS7006: Parameter 'doc' implicitly has an 'any' type.
+src/lib/server-notification.ts(1022,36): error TS2304: Cannot find name 'Timestamp'.
+src/lib/server-utils.ts(31,12): error TS2503: Cannot find namespace 'MOCK_KEYFirestore'.
+src/lib/server-utils.ts(44,23): error TS2503: Cannot find namespace 'MOCK_KEYFirestore'.
+src/lib/server-utils.ts(45,22): error TS2503: Cannot find namespace 'MOCK_KEYFirestore'.
+src/lib/server/activity-logger.ts(26,31): error TS2304: Cannot find name 'adminDb'.
+src/lib/server/activity-logger.ts(34,24): error TS2304: Cannot find name 'FieldValue'.
+src/lib/structure-policies.server.ts(40,31): error TS2304: Cannot find name 'adminDb'.
+src/lib/structure-policies.server.ts(68,15): error TS2304: Cannot find name 'adminDb'.
+src/lib/task-automation.server.ts(16,29): error TS2304: Cannot find name 'adminDb'.
+src/lib/task-automation.server.ts(43,38): error TS2304: Cannot find name 'adminDb'.
+src/lib/task-automation.server.ts(52,19): error TS2304: Cannot find name 'adminDb'.
+src/lib/task-automation.server.ts(59,28): error TS2304: Cannot find name 'FieldValue'.
+src/lib/task-automation.server.ts(83,31): error TS2304: Cannot find name 'adminDb'.
+src/lib/task-automation.server.ts(85,33): error TS2304: Cannot find name 'adminDb'.
+src/lib/task-automation.server.ts(92,36): error TS2304: Cannot find name 'FieldValue'.
+src/lib/task-automation.server.ts(114,36): error TS2304: Cannot find name 'adminDb'.
+src/lib/task-automation.server.ts(131,36): error TS2304: Cannot find name 'adminDb'.
+src/lib/task-automation.server.ts(134,39): error TS7006: Parameter 'doc' implicitly has an 'any' type.
+src/lib/task-automation.server.ts(154,29): error TS2304: Cannot find name 'adminDb'.
+src/lib/task-automation.server.ts(181,28): error TS2304: Cannot find name 'FieldValue'.
+src/lib/task-automation.server.ts(192,28): error TS2304: Cannot find name 'FieldValue'.
+src/lib/task-automation.server.ts(208,31): error TS2304: Cannot find name 'adminDb'.
+src/lib/task-automation.server.ts(210,33): error TS2304: Cannot find name 'adminDb'.
+src/lib/task-automation.server.ts(217,36): error TS2304: Cannot find name 'FieldValue'.
+src/server/notifications/processor.ts(5,38): error TS2307: Cannot find module '@/({} as any)/schema' or its corresponding type declarations.
+src/services/authService.ts(11,18): error TS2304: Cannot find name 'adminAuth'.
+src/services/files.ts(7,8): error TS2307: Cannot find module 'MOCK_KEY/storage' or its corresponding type declarations.
+src/services/inventoryIssueService.ts(12,23): error TS2304: Cannot find name 'serverTimestamp'.
+src/services/inventoryIssueService.ts(14,30): error TS2304: Cannot find name 'addDoc'.
+src/services/inventoryIssueService.ts(14,37): error TS2304: Cannot find name 'collection'.
+src/services/inventoryIssueService.ts(34,17): error TS2304: Cannot find name 'query'.
+src/services/inventoryIssueService.ts(34,23): error TS2304: Cannot find name 'collection'.
+src/services/inventoryIssueService.ts(34,60): error TS2304: Cannot find name 'where'.
+src/services/inventoryIssueService.ts(38,17): error TS2304: Cannot find name 'query'.
+src/services/inventoryIssueService.ts(38,26): error TS2304: Cannot find name 'where'.
+src/services/inventoryIssueService.ts(41,28): error TS2304: Cannot find name 'getDocs'.
+src/services/inventoryIssueService.ts(42,30): error TS7006: Parameter 'd' implicitly has an 'any' type.
+src/services/inventoryIssueService.ts(47,17): error TS2304: Cannot find name 'query'.
+src/services/inventoryIssueService.ts(47,23): error TS2304: Cannot find name 'collection'.
+src/services/inventoryIssueService.ts(47,60): error TS2304: Cannot find name 'orderBy'.
+src/services/inventoryIssueService.ts(52,17): error TS2304: Cannot find name 'query'.
+src/services/inventoryIssueService.ts(52,23): error TS2304: Cannot find name 'collection'.
+src/services/inventoryIssueService.ts(52,60): error TS2304: Cannot find name 'where'.
+src/services/inventoryIssueService.ts(52,105): error TS2304: Cannot find name 'orderBy'.
+src/services/inventoryIssueService.ts(55,28): error TS2304: Cannot find name 'getDocs'.
+src/services/inventoryIssueService.ts(56,30): error TS7006: Parameter 'd' implicitly has an 'any' type.
+src/services/inventoryIssueService.ts(61,21): error TS2304: Cannot find name 'doc'.
+src/services/inventoryIssueService.ts(66,32): error TS2304: Cannot find name 'getDoc'.
+src/services/inventoryIssueService.ts(81,15): error TS2304: Cannot find name 'updateDoc'.
+src/services/inventoryRequestService.ts(11,24): error TS2304: Cannot find name 'serverTimestamp'.
+src/services/inventoryRequestService.ts(13,30): error TS2304: Cannot find name 'addDoc'.
+src/services/inventoryRequestService.ts(13,37): error TS2304: Cannot find name 'collection'.
+src/services/inventoryRequestService.ts(19,19): error TS2304: Cannot find name 'query'.
+src/services/inventoryRequestService.ts(20,13): error TS2304: Cannot find name 'collection'.
+src/services/inventoryRequestService.ts(21,13): error TS2304: Cannot find name 'where'.
+src/services/inventoryRequestService.ts(22,13): error TS2304: Cannot find name 'orderBy'.
+src/services/inventoryRequestService.ts(24,28): error TS2304: Cannot find name 'getDocs'.
+src/services/inventoryRequestService.ts(25,30): error TS7006: Parameter 'd' implicitly has an 'any' type.
+src/services/inventoryRequestService.ts(30,19): error TS2304: Cannot find name 'query'.
+src/services/inventoryRequestService.ts(31,13): error TS2304: Cannot find name 'collection'.
+src/services/inventoryRequestService.ts(32,13): error TS2304: Cannot find name 'where'.
+src/services/inventoryRequestService.ts(33,13): error TS2304: Cannot find name 'where'.
+src/services/inventoryRequestService.ts(34,13): error TS2304: Cannot find name 'orderBy'.
+src/services/inventoryRequestService.ts(36,28): error TS2304: Cannot find name 'getDocs'.
+src/services/inventoryRequestService.ts(37,30): error TS7006: Parameter 'd' implicitly has an 'any' type.
+src/services/inventoryRequestService.ts(42,21): error TS2304: Cannot find name 'doc'.
+src/services/inventoryRequestService.ts(43,15): error TS2304: Cannot find name 'updateDoc'.
+src/services/inventoryRequestService.ts(46,25): error TS2304: Cannot find name 'serverTimestamp'.
+src/services/inventoryRequestService.ts(52,21): error TS2304: Cannot find name 'doc'.
+src/services/inventoryRequestService.ts(53,15): error TS2304: Cannot find name 'updateDoc'.
+src/services/inventoryRequestService.ts(61,21): error TS2304: Cannot find name 'doc'.
+src/services/inventoryRequestService.ts(62,15): error TS2304: Cannot find name 'updateDoc'.
+src/services/leaveRequestService.ts(118,30): error TS2339: Property 'currentUser' does not exist on type '{ uid: string; }'.
+src/services/leaveRequestService.ts(133,30): error TS2339: Property 'currentUser' does not exist on type '{ uid: string; }'.
+src/services/leaveRequestService.ts(146,30): error TS2339: Property 'currentUser' does not exist on type '{ uid: string; }'.
+src/services/leaveRequestService.ts(159,30): error TS2339: Property 'currentUser' does not exist on type '{ uid: string; }'.
+src/services/mediaCommentService.ts(23,28): error TS2339: Property 'currentUser' does not exist on type '{ uid: string; }'.
+src/services/systemEventService.ts(107,50): error TS2339: Property 'seconds' does not exist on type 'Date | { seconds: number; nanoseconds: number; }'.
+  Property 'seconds' does not exist on type 'Date'.
+src/services/systemEventService.ts(179,46): error TS2339: Property 'seconds' does not exist on type 'Date | { seconds: number; nanoseconds: number; }'.
+  Property 'seconds' does not exist on type 'Date'.
+src/services/systemSettingsService.ts(26,31): error TS2304: Cannot find name 'adminDb'.
+src/services/systemSettingsService.ts(47,33): error TS2304: Cannot find name 'adminDb'.
+src/services/systemSettingsService.ts(51,28): error TS2304: Cannot find name 'FieldValue'.
+src/types/drive-queue.ts(11,17): error TS2304: Cannot find name 'Timestamp'.
+src/types/drive-queue.ts(14,19): error TS2304: Cannot find name 'Timestamp'.
+src/utils/auth-logger.ts(9,42): error TS2304: Cannot find name 'User'.
+src/utils/auth-logger.ts(31,42): error TS2304: Cannot find name 'User'.

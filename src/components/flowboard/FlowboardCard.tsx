@@ -1,5 +1,5 @@
 import React, { useMemo } from 'react';
-import { Task, SmartMetadata } from '@/types/task';
+import { Task, SmartMetadata } from '@/features/tasks/types/task';
 import { formatDistanceToNow } from 'date-fns';
 import { Calendar, User as UserIcon, AlertTriangle, Clock, Ban } from 'lucide-react';
 
@@ -17,21 +17,17 @@ export const FlowboardCard: React.FC<FlowboardCardProps> = ({ task, smartData, o
             case 'done': return 'bg-green-500/20 text-green-400 border-green-500/30';
             case 'in_progress': return 'bg-blue-500/20 text-blue-400 border-blue-500/30';
             case 'review': return 'bg-purple-500/20 text-purple-400 border-purple-500/30';
-            case 'todo': return 'bg-white/10 text-gray-400 border-[#ffffff1a]';
+            case 'todo': return 'bg-white/10 text-gray-400 border-white/10';
             default: return 'bg-gray-500/10 text-gray-500 border-gray-500/20';
         }
     }, [task.status]);
 
     return (
         <div
-            onClick={(e) => {
-                e.preventDefault();
-                e.stopPropagation();
-                onClick(task);
-            }}
+            onClick={() => onClick(task)}
             className={`
                 group relative p-3 rounded-xl border border-white/5 bg-[#1A1F2E]/80 backdrop-blur-sm 
-                hover:bg-white/10 hover:border-[#ffffff1a] transition-all cursor-pointer shadow-sm hover:shadow-md relative z-10
+                hover:bg-white/10 hover:border-white/10 transition-all cursor-pointer shadow-sm hover:shadow-md
                 ${smartData.needsAttention ? 'ring-1 ring-red-500/50 shadow-[0_0_15px_-3px_rgba(239,68,68,0.2)]' : ''}
                 ${smartData.isBlocked ? 'ring-1 ring-amber-500/50 shadow-[0_0_15px_-3px_rgba(245,158,11,0.2)]' : ''}
                 ${smartData.inferredStage === 'publish' && task.status === 'done' ? 'opacity-60 grayscale-[0.5]' : ''}
@@ -69,9 +65,9 @@ export const FlowboardCard: React.FC<FlowboardCardProps> = ({ task, smartData, o
             <div className="flex items-center justify-between mt-auto pt-2 border-t border-white/5">
                 {/* Assignee */}
                 <div className="flex items-center gap-2">
-                    {task.assigned_to && task.assigned_to.length > 0 ? (
+                    {task.assignedTo && task.assignedTo.length > 0 ? (
                         <div className="flex -space-x-1.5 overflow-hidden">
-                            {task.assigned_to.slice(0, 3).map((assignee) => (
+                            {task.assignedTo.slice(0, 3).map((assignee) => (
                                 <div key={assignee.uid}
                                     className="w-5 h-5 rounded-full bg-blue-900 ring-2 ring-[#13161c] flex items-center justify-center text-[8px] font-bold text-blue-200"
                                     title={assignee.name}
@@ -79,9 +75,9 @@ export const FlowboardCard: React.FC<FlowboardCardProps> = ({ task, smartData, o
                                     {assignee.name?.[0]?.toUpperCase() || 'U'}
                                 </div>
                             ))}
-                            {task.assigned_to.length > 3 && (
+                            {task.assignedTo.length > 3 && (
                                 <div className="w-5 h-5 rounded-full bg-gray-700 ring-2 ring-[#13161c] flex items-center justify-center text-[8px] font-bold text-gray-300">
-                                    +{task.assigned_to.length - 3}
+                                    +{task.assignedTo.length - 3}
                                 </div>
                             )}
                         </div>
@@ -101,14 +97,14 @@ export const FlowboardCard: React.FC<FlowboardCardProps> = ({ task, smartData, o
                         </span>
                     )}
 
-                    {task.due_date && (
+                    {task.dueDate && (
                         <span className={`flex items-center gap-1 ${smartData.urgencyScore > 80 ? 'text-red-400' : 'text-gray-500'}`}>
                             <Calendar size={10} />
                             {(() => {
                                 try {
-                                    const date = (task.due_date as any).seconds
-                                        ? new Date((task.due_date as any).seconds * 1000)
-                                        : new Date(task.due_date);
+                                    const date = (task.dueDate as any).seconds
+                                        ? new Date((task.dueDate as any).seconds * 1000)
+                                        : new Date(task.dueDate);
                                     return formatDistanceToNow(date, { addSuffix: true }).replace('about ', '');
                                 } catch { return ''; }
                             })()}

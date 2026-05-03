@@ -1,0 +1,7 @@
+[dotenv@17.2.3] injecting env (19) from .env.local -- tip: 👥 sync secrets across teammates & machines: https://dotenvx.com/ops
+[36m🔍 MediaHive Schema Validation Starting...[0m
+[32m✅ Table tasks is aligned.[0m
+[32m✅ Table events is aligned.[0m
+[32m✅ Table campaigns is aligned.[0m
+[32m✅ Table departments is aligned.[0m
+[32m✅ Table profiles is aligned.[0m

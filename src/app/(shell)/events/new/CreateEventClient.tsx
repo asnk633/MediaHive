@@ -1,7 +1,7 @@
 'use client';
 
 import React from 'react';
-import { useRouter } from 'next/navigation';
+import { useRouter, useSearchParams } from 'next/navigation';
 import { CreateEventForm } from '@/components/library/organisms/CreateEventForm';
 import { Button } from '@/components/ui/button';
 import { ChevronLeft } from 'lucide-react';
@@ -10,7 +10,25 @@ import { nativeNavigate } from '@/lib/utils';
 
 export default function CreateEventClient() {
     const router = useRouter();
+    const searchParams = useSearchParams();
     const { user } = useAuth();
+
+    const { initialDate, initialEndDate } = React.useMemo(() => {
+        let dateParam = searchParams.get('date');
+        let endDateParam = searchParams.get('end_date');
+
+        const parseDate = (param: string | null) => {
+            if (!param) return undefined;
+            if (param.endsWith('/')) param = param.slice(0, -1);
+            const parsed = new Date(param);
+            return isNaN(parsed.getTime()) ? undefined : parsed;
+        };
+
+        return {
+            initialDate: parseDate(dateParam),
+            initialEndDate: parseDate(endDateParam)
+        };
+    }, [searchParams]);
 
     return (
         <div className="min-h-screen bg-night-sky text-white p-4 lg:p-8 flex justify-center">
@@ -28,13 +46,17 @@ export default function CreateEventClient() {
                     </Button>
                     <div>
                         <h1 className="text-2xl font-bold tracking-tight">Create New Event</h1>
-                        <p className="text-gray-400 text-sm">Schedule a new event or leave request</p>
+                        <p className="text-white/60 text-sm">Schedule a new event or leave request</p>
                     </div>
                 </div>
 
                 {/* Form Container */}
                 <div className="bg-[#10111a] border border-white/5 rounded-2xl p-6 lg:p-8 shadow-xl backdrop-blur-sm">
-                    <CreateEventForm onSuccess={() => nativeNavigate('/events', router, 'CreateEvent (Success)')} />
+                    <CreateEventForm 
+                        initialDate={initialDate}
+                        initialEndDate={initialEndDate}
+                        onSuccess={() => nativeNavigate('/events', router, 'CreateEvent (Success)')} 
+                    />
                 </div>
 
             </div>

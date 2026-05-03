@@ -1,8 +1,9 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { getDb } from '@/db';
 import { performanceSnapshots, users } from '@/db/schema';
-import { eq } from 'drizzle-orm';
-import { authorizeByPermission } from '@/lib/auth-server';
+import { eq, and } from 'drizzle-orm';
+import { verifyUser } from '@/lib/verifyUser';
+import { withTenantDrizzle, validateTenant } from '@/lib/tenantQuery';
 import { analyzeTrend, extractIpsScores, type TrendClassification } from '@/utils/trendAnalysis';
 import { analyzeUserBenchmark, type UserBenchmark } from '@/utils/benchmarkAnalysis';
 import { analyzeEarlyWarning, type EarlyWarningResult } from '@/utils/earlyWarningAnalysis';
@@ -43,9 +44,16 @@ export async function GET(
 ) {
     try {
         // Authorization check
-        const authResult = await authorizeByPermission('read:reports');
-        if (!authResult.authorized) {
+        const user = await verifyUser(request);
+        if (!user || user.role !== 'admin') {
             return NextResponse.json({ error: 'Unauthorized' }, { status: 403 });
+        }
+
+        // Tenant Security guard
+        const tenantId = user.tenant_id;
+        if (!tenantId || tenantId === 'null' || tenantId === 'undefined') {
+            console.error(`[GET /api/admin/performance-history] ❌ Missing tenant context for user: ${user.uid}`);
+            return NextResponse.json({ error: 'Missing tenant context' }, { status: 403 });
         }
 
         // Await params in Next.js 15+
@@ -69,21 +77,27 @@ export async function GET(
                 avatar_url: users.avatar_url
             })
             .from(users)
-            .where(eq(users.id, userId))
+            .where(and(
+                eq(users.id, userId),
+                withTenantDrizzle(users, tenantId)
+            ))
             .limit(1);
 
         if (userResult.length === 0) {
             return NextResponse.json({ error: 'User not found' }, { status: 404 });
         }
 
-        const user = userResult[0];
+        const dbUser = userResult[0];
 
         // Fetch performance snapshots for this user
         // Order by period ASC to show oldest to newest
         const snapshots = await db
             .select()
             .from(performanceSnapshots)
-            .where(eq(performanceSnapshots.userId, userId))
+            .where(and(
+                eq(performanceSnapshots.userId, userId),
+                withTenantDrizzle(performanceSnapshots, tenantId)
+            ))
             .orderBy(performanceSnapshots.period)
             .limit(months);
 
@@ -120,7 +134,10 @@ export async function GET(
             const teamSnapshots = await db
                 .select()
                 .from(performanceSnapshots)
-                .where(eq(performanceSnapshots.period, latestPeriod));
+                .where(and(
+                    eq(performanceSnapshots.period, latestPeriod),
+                    withTenantDrizzle(performanceSnapshots, tenantId)
+                ));
 
             // Extract all team IPS scores
             const teamIpsScores = teamSnapshots.map((s: any) =>
@@ -145,9 +162,9 @@ export async function GET(
         const earlyWarning = analyzeEarlyWarning(history, benchmark, trendResult.trend);
 
         const response: PerformanceHistoryResponse = {
-            userId: user.id,
-            userName: user.fullName,
-            avatar_url: user.avatar_url,
+            userId: dbUser.id,
+            userName: dbUser.fullName,
+            avatar_url: dbUser.avatar_url,
             trend: trendResult.trend,
             delta: trendResult.delta,
             benchmark,

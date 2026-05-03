@@ -4,9 +4,9 @@ import React, { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { nativeNavigate } from '@/lib/utils';
 import { useAuth } from '@/contexts/AuthContextProvider';
-import { CampaignService } from '@/services/campaignService';
-import { Campaign } from '@/types/campaign';
-import { Task } from '@/types/task';
+import { CampaignService } from '@/features/campaigns/services/campaignService';
+import { Campaign } from '@/features/campaigns/types/campaign';
+import { MediaTask as Task } from '@/services/tasks/taskContract';
 import { ArrowLeft, Calendar, Layers, Clock, CheckCircle, AlertCircle } from 'lucide-react';
 import { format } from 'date-fns';
 import { toast } from 'sonner';
@@ -53,7 +53,7 @@ function CampaignDashboardContent() {
     if (loading) return <div className="p-8 text-center text-white">Loading Campaign...</div>;
     if (!campaign) return null;
 
-    const isGuest = user?.role !== 'admin' && user?.role !== 'team';
+    const isGuest = user?.role !== 'admin' && user?.role !== 'manager' && user?.role !== 'member';
 
     // Simple status colors
     const getPhaseColor = (p: string) => {

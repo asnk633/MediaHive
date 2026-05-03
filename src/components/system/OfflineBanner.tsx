@@ -1,12 +1,18 @@
 "use client";
 
+import { useState, useEffect } from "react";
 import { useNetworkStatus } from "@/hooks/useNetworkStatus";
 import { cn } from "@/lib/utils";
 
 export function OfflineBanner() {
     const state = useNetworkStatus();
+    const [mounted, setMounted] = useState(false);
 
-    if (state === "online") return null;
+    useEffect(() => {
+        setMounted(true);
+    }, []);
+
+    if (!mounted || state === "online") return null;
 
     const copy =
         state === "offline"

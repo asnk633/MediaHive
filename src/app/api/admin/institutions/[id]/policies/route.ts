@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { verifyUser } from '@/lib/server-utils';
+import { verifyUser } from '@/lib/server/server-utils';
 // import { InstitutionPolicyService } from '@/lib/institution-policies.server';
 import { InstitutionPolicy } from '@/types/institution-policy';
 

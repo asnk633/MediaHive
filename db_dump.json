@@ -1,0 +1,40 @@
+{
+  "auth": [
+    {
+      "id": "9a2e8ac0-0831-4d7c-8d9a-baad3ffb01f0",
+      "email": "admin@thaiba.com"
+    },
+    {
+      "id": "f89daade-879e-40a9-b655-e3f404e82fd4",
+      "email": "media@thaibagarden.com"
+    }
+  ],
+  "profiles": [
+    {
+      "id": "f89daade-879e-40a9-b655-e3f404e82fd4",
+      "created_at": "2026-02-28T13:15:44.830857+00:00",
+      "institution_id": "0f8a1ca7-eb0a-4444-b8df-97888b47f751",
+      "role": "admin",
+      "full_name": "Super Admin",
+      "email": "media@thaibagarden.com",
+      "official_name": null,
+      "avatar_url": null,
+      "department_id": null,
+      "status": "active",
+      "notification_settings": {}
+    },
+    {
+      "id": "9a2e8ac0-0831-4d7c-8d9a-baad3ffb01f0",
+      "created_at": "2026-03-07T15:20:39.725955+00:00",
+      "institution_id": null,
+      "role": "guest",
+      "full_name": null,
+      "email": null,
+      "official_name": null,
+      "avatar_url": null,
+      "department_id": null,
+      "status": "active",
+      "notification_settings": {}
+    }
+  ]
+}

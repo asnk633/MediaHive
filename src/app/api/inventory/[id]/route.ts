@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { verifyUser, getSupabaseFromRequest } from '@/lib/server-utils';
+import { withTenant, handleApiError } from '@/lib/db/withTenant';
 import { logSystemActivity } from '@/lib/server/activity-logger';
 
 export const dynamic = 'force-dynamic';
@@ -17,33 +17,25 @@ export async function GET(
     { params }: { params: Promise<{ id: string }> }
 ) {
     try {
-        const user = await verifyUser(request);
-        if (!user) {
-            return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
-        }
-
         const { id } = await params;
-        if (!id) {
-            return NextResponse.json({ error: 'ID is required' }, { status: 400 });
-        }
+        if (!id) return NextResponse.json({ error: 'ID is required' }, { status: 400 });
 
-        const supabase = getSupabaseFromRequest(request);
-        if (!supabase) return NextResponse.json({ error: 'Internal Error' }, { status: 500 });
+        const { db, tenantId } = await withTenant();
 
-        const { data: item, error } = await supabase
+        const { data: item, error } = await db
             .from(COLLECTION)
             .select('*')
+            .eq('tenant_id', tenantId)
             .eq('id', id)
             .single();
 
-        if (error || !item) {
-            return NextResponse.json({ error: 'Item not found' }, { status: 404 });
-        }
+        if (error) return handleApiError('INV_FETCH_SINGLE', error);
+        if (!item) return NextResponse.json({ error: 'Item not found' }, { status: 404 });
 
+        console.log(`[DB] query executed: fetched inventory item ${id}`);
         return NextResponse.json(item);
     } catch (error: any) {
-        console.error('Error fetching inventory item:', error);
-        return NextResponse.json({ error: error.message || 'Failed to fetch item' }, { status: 500 });
+        return handleApiError('INV_GET_ID_ROUTE', error);
     }
 }
 
@@ -52,30 +44,28 @@ export async function PATCH(
     { params }: { params: Promise<{ id: string }> }
 ) {
     try {
-        const user = await verifyUser(request);
-        if (!user || user.role !== 'admin') {
+        const { id } = await params;
+        if (!id) return NextResponse.json({ error: 'ID is required' }, { status: 400 });
+
+        const { db, tenantId, user } = await withTenant();
+
+        // Role check
+        const role = (user.app_metadata?.role || user.user_metadata?.role) as string;
+        if (role !== 'admin') {
             return NextResponse.json({ error: 'Forbidden' }, { status: 403 });
         }
 
-        const { id } = await params;
-        if (!id) {
-            return NextResponse.json({ error: 'ID is required' }, { status: 400 });
-        }
-
         const body = await request.json();
-        const supabase = getSupabaseFromRequest(request);
-        if (!supabase) return NextResponse.json({ error: 'Internal Error' }, { status: 500 });
 
-        // Fetch current to calculate status
-        const { data: current, error: fetchError } = await supabase
+        // Fetch current to calculate status and verify tenant
+        const { data: current, error: fetchError } = await db
             .from(COLLECTION)
             .select('*')
+            .eq('tenant_id', tenantId)
             .eq('id', id)
             .single();
 
-        if (fetchError || !current) {
-            return NextResponse.json({ error: 'Item not found' }, { status: 404 });
-        }
+        if (fetchError || !current) return NextResponse.json({ error: 'Item not found' }, { status: 404 });
 
         const newQuantity = body.quantity !== undefined ? Number(body.quantity) : current.quantity;
         const newThreshold = body.threshold !== undefined ? Number(body.threshold) : current.threshold;
@@ -101,18 +91,19 @@ export async function PATCH(
             purchase_date: body.purchaseDate !== undefined ? body.purchaseDate : current.purchase_date
         };
 
-        const { data: updated, error: updateError } = await supabase
+        const { data: updated, error: updateError } = await db
             .from(COLLECTION)
             .update(updates)
+            .eq('tenant_id', tenantId)
             .eq('id', id)
             .select()
             .single();
 
-        if (updateError) throw updateError;
+        if (updateError) return handleApiError('INV_UPDATE', updateError);
 
         await logSystemActivity({
-            actorId: user.uid,
-            actorRole: user.role || 'viewer',
+            actorId: user.id,
+            actorRole: role,
             action: 'inventory_item_update',
             entityType: 'inventory_item',
             entityId: id,
@@ -123,11 +114,11 @@ export async function PATCH(
             metadata: { updates: Object.keys(body) }
         });
 
+        console.log(`[DB] query executed: updated inventory item ${id}`);
         return NextResponse.json({ success: true, item: updated });
 
     } catch (error: any) {
-        console.error('Error updating inventory item:', error);
-        return NextResponse.json({ error: error.message || 'Failed to update item' }, { status: 500 });
+        return handleApiError('INV_PATCH_ID_ROUTE', error);
     }
 }
 
@@ -136,29 +127,28 @@ export async function DELETE(
     { params }: { params: Promise<{ id: string }> }
 ) {
     try {
-        const user = await verifyUser(request);
-        if (!user || user.role !== 'admin') {
+        const { id } = await params;
+        if (!id) return NextResponse.json({ error: 'ID is required' }, { status: 400 });
+
+        const { db, tenantId, user } = await withTenant();
+
+        // Role check
+        const role = (user.app_metadata?.role || user.user_metadata?.role) as string;
+        if (role !== 'admin') {
             return NextResponse.json({ error: 'Forbidden' }, { status: 403 });
         }
 
-        const { id } = await params;
-        if (!id) {
-            return NextResponse.json({ error: 'ID is required' }, { status: 400 });
-        }
-
-        const supabase = getSupabaseFromRequest(request);
-        if (!supabase) return NextResponse.json({ error: 'Internal Error' }, { status: 500 });
-
-        const { error } = await supabase
+        const { error } = await db
             .from(COLLECTION)
             .delete()
+            .eq('tenant_id', tenantId)
             .eq('id', id);
 
-        if (error) throw error;
+        if (error) return handleApiError('INV_DELETE', error);
 
         await logSystemActivity({
-            actorId: user.uid,
-            actorRole: user.role || 'admin',
+            actorId: user.id,
+            actorRole: role,
             action: 'inventory_item_delete',
             entityType: 'inventory_item',
             entityId: id,
@@ -168,9 +158,9 @@ export async function DELETE(
             visibility: { mode: 'admin' }
         });
 
+        console.log(`[DB] query executed: deleted inventory item ${id}`);
         return NextResponse.json({ success: true, id });
     } catch (error: any) {
-        console.error('Error deleting inventory item:', error);
-        return NextResponse.json({ error: error.message || 'Failed to delete item' }, { status: 500 });
+        return handleApiError('INV_DELETE_ID_ROUTE', error);
     }
 }

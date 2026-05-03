@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { verifyUser } from '@/lib/server-utils';
+import { verifyUser } from '@/lib/server/server-utils';
 import { systemSettingsService } from '@/services/systemSettingsService';
 
 export const dynamic = 'force-dynamic';
@@ -11,7 +11,14 @@ export async function GET(request: NextRequest) {
             return NextResponse.json({ error: 'Forbidden' }, { status: 403 });
         }
 
-        const settings = await systemSettingsService.getSettings();
+        // Tenant Security Guard
+        const tenantId = user.tenant_id;
+        if (!tenantId || tenantId === 'null' || tenantId === 'undefined') {
+            console.error(`[GET /api/admin/settings] ❌ Missing tenant context for user: ${user.uid}`);
+            return NextResponse.json({ error: 'Missing tenant context' }, { status: 403 });
+        }
+
+        const settings = await systemSettingsService.getSettings(tenantId);
         return NextResponse.json({ settings });
 
     } catch (error: any) {
@@ -27,6 +34,13 @@ export async function POST(request: NextRequest) {
             return NextResponse.json({ error: 'Forbidden' }, { status: 403 });
         }
 
+        // Tenant Security Guard
+        const tenantId = user.tenant_id;
+        if (!tenantId || tenantId === 'null' || tenantId === 'undefined') {
+            console.error(`[POST /api/admin/settings] ❌ Missing tenant context for user: ${user.uid}`);
+            return NextResponse.json({ error: 'Missing tenant context' }, { status: 403 });
+        }
+
         const body = await request.json();
         const { key, value } = body;
 
@@ -40,7 +54,7 @@ export async function POST(request: NextRequest) {
             return NextResponse.json({ error: 'Invalid setting key' }, { status: 400 });
         }
 
-        await systemSettingsService.updateSetting(key, value, user.uid, user.name || 'Admin');
+        await systemSettingsService.updateSetting(key, value, user.uid, tenantId, user.name || 'Admin');
 
         return NextResponse.json({ success: true, message: 'Setting updated' });
 

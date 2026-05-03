@@ -1,4 +1,4 @@
-import { Task } from '@/types/task';
+import { Task } from '@/features/tasks/types/task';
 import { DriveFile } from '@/types/file';
 import { apiClient } from '@/lib/apiClient';
 import { NextRequest, NextResponse } from 'next/server';

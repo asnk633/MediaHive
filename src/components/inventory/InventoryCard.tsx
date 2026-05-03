@@ -1,6 +1,6 @@
 import React from 'react';
 import Image from 'next/image';
-import { InventoryItem, InventoryIssue } from '@/types/inventory';
+import { EquipmentItem, InventoryIssueClean } from '@/services/inventory/inventoryContract';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
@@ -10,18 +10,29 @@ import { Carousel, CarouselContent, CarouselItem, CarouselNext, CarouselPrevious
 import { getDriveImageUrl } from '@/lib/driveUtils';
 
 interface InventoryCardProps {
-    item: InventoryItem;
-    activeIssue?: InventoryIssue;
+    item: EquipmentItem;
+    activeIssue?: InventoryIssueClean;
     hasPendingRequest?: boolean;
     role?: string;
-    onRequest?: (item: InventoryItem) => void;
-    onEdit?: (item: InventoryItem) => void;
-    onReturn?: (item: InventoryItem) => void;
-    onView?: (item: InventoryItem) => void;
+    onRequest?: (item: EquipmentItem) => void;
+    onEdit?: (item: EquipmentItem) => void;
+    onReturn?: (item: EquipmentItem) => void;
+    onBook?: (item: EquipmentItem) => void;
+    onView?: (item: EquipmentItem) => void;
 }
 
 // Optimization: Prevent re-renders on grid filtering
-export const InventoryCard = React.memo<InventoryCardProps>(({ item, activeIssue, hasPendingRequest, role, onRequest, onEdit, onReturn, onView }) => {
+export const InventoryCard = React.memo<InventoryCardProps>(({ 
+    item, 
+    activeIssue, 
+    hasPendingRequest, 
+    role, 
+    onRequest, 
+    onEdit, 
+    onReturn, 
+    onBook, 
+    onView 
+}) => {
     // Adaptive Status Logic
     const status = item.status;
     const isOk = status === 'ok' || status === 'available';
@@ -33,12 +44,12 @@ export const InventoryCard = React.memo<InventoryCardProps>(({ item, activeIssue
     const isOverdue = activeIssue && new Date() > new Date(activeIssue.expectedReturnAt) && activeIssue.status !== 'returned';
 
     // Permission Logic
-    const canManage = role === 'admin' || role === 'team';
+    const canManage = role === 'admin' || (role === 'manager' || role === 'member');
 
     // Consolidate images for display
-    const images = item.images && item.images.length > 0
-        ? item.images.map(img => ({ ...img, url: getDriveImageUrl(img.url, img.file_id) }))
-        : (item.imageUrl ? [{ url: getDriveImageUrl(item.imageUrl, item.driveFileId), file_id: item.driveFileId || '' }] : []);
+    const images = (item as any).images && (item as any).images.length > 0
+        ? (item as any).images.map((img: any) => ({ ...img, url: getDriveImageUrl(img.url, img.file_id) }))
+        : ((item as any).imageUrl ? [{ url: getDriveImageUrl((item as any).imageUrl, (item as any).driveFileId), file_id: (item as any).driveFileId || '' }] : []);
 
     return (
         <Card
@@ -70,7 +81,7 @@ export const InventoryCard = React.memo<InventoryCardProps>(({ item, activeIssue
                             opts={{ loop: true }}
                         >
                             <CarouselContent className="h-full ml-0">
-                                {images.map((img, idx) => (
+                                {images.map((img: any, idx: number) => (
                                     <CarouselItem key={idx} className="pl-0 h-full relative">
                                         <Image
                                             src={img.url}
@@ -95,7 +106,7 @@ export const InventoryCard = React.memo<InventoryCardProps>(({ item, activeIssue
 
                             {/* Pagination Dots Indicator */}
                             <div className="absolute bottom-2 left-0 right-0 flex justify-center gap-1">
-                                {images.map((_, i) => (
+                                {images.map((_: any, i: number) => (
                                     <div key={i} className="w-1 h-1 rounded-full bg-white/40 shadow-sm" />
                                 ))}
                             </div>
@@ -113,6 +124,7 @@ export const InventoryCard = React.memo<InventoryCardProps>(({ item, activeIssue
                     {isInUse && !isOverdue && <Badge className="bg-blue-500/10 text-blue-400 border-0 backdrop-blur-md">In Use</Badge>}
                     {hasPendingRequest && <Badge className="bg-yellow-500/10 text-yellow-400 border-0 backdrop-blur-md">Requested</Badge>}
                     {isOverdue && <Badge className="bg-red-500/10 text-red-400 border-red-500/50 animate-pulse backdrop-blur-md">Overdue</Badge>}
+                    {item.isRentable && <Badge className="bg-blue-500/10 text-blue-400 border-blue-500/20 backdrop-blur-md">Rentable</Badge>}
                 </div>
             </div>
 
@@ -213,6 +225,20 @@ export const InventoryCard = React.memo<InventoryCardProps>(({ item, activeIssue
                                 {hasPendingRequest ? 'Pending' : 'Request'}
                             </Button>
                         )
+                    )}
+
+                    {/* Book Action (For Assets/Equipment) */}
+                    {onBook && isOk && (
+                        <Button
+                            variant="outline"
+                            className="bg-blue-600 hover:bg-blue-500 text-white border-transparent"
+                            onClick={(e) => {
+                                e.stopPropagation();
+                                onBook(item);
+                            }}
+                        >
+                            Book
+                        </Button>
                     )}
                 </div>
             </div>

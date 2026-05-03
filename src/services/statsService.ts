@@ -1,5 +1,5 @@
 import { apiClient } from '@/lib/apiClient';
-import { Task } from '@/types/task';
+import { Task } from '@/features/tasks/types/task';
 
 export interface TaskStats {
   todo: number;
@@ -45,7 +45,7 @@ export async function getTaskStats(): Promise<TaskStats> {
  * @returns Promise<TaskStats> - Object containing counts for each task status
  */
 export async function getUserTaskStats(userId: string): Promise<TaskStats> {
-  return CanonicalDataService.getTaskStats({ user_id: userId });
+  return CanonicalDataService.getTaskStats({ userId: userId });
 }
 
 /**

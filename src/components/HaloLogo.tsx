@@ -1,0 +1,32 @@
+"use client";
+
+import React from 'react';
+import { cn } from "@/lib/utils";
+
+interface HaloLogoProps {
+    size?: number;
+    className?: string;
+}
+
+/**
+ * HaloLogo
+ * A premium circular logo emblem with an ambient halo glow and breathing animations.
+ */
+export const HaloLogo = ({ size = 110, className }: HaloLogoProps) => {
+    return (
+        <div className={cn("relative flex items-center justify-center", className)} style={{ width: size * 2, height: size * 2 }}>
+            {/* Halo Glow */}
+            <div className="logo-halo" style={{ width: size * 2, height: size * 2 }} />
+            
+            {/* Circular Glass Container */}
+            <div className="logo-container" style={{ width: size, height: size }}>
+                <img
+                    src="/logo-app.png"
+                    alt="Thaiba Logo"
+                    className="object-contain brightness-0 invert drop-shadow-xl z-10"
+                    style={{ width: size * 0.55, height: size * 0.55 }}
+                />
+            </div>
+        </div>
+    );
+};

@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { verifyUser } from '@/lib/server-utils';
+import { verifyUser } from '@/lib/server/server-utils';
 // import { StructurePolicyService } from '@/lib/structure-policies.server';
 import { DEFAULT_GLOBAL_POLICY_RULES, AutomationRulePolicy } from '@/types/structure-policy';
 

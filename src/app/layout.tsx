@@ -1,10 +1,14 @@
 'use client';
 import './globals.css';
 import { ReactNode } from 'react';
-import { DM_Sans } from 'next/font/google';
+import { cn } from '@/lib/utils';
+import { DM_Sans, Outfit, Inter } from 'next/font/google';
 import RootProviders from '@/components/layout/RootProviders';
 import { OfflineBanner } from '@/components/system/OfflineBanner';
 import { ShellCommands } from '@/components/system/ShellCommands';
+import QueryProvider from "@/providers/QueryProvider";
+
+import { AmbientCursorLight } from '@/components/ui/AmbientCursorLight';
 
 const dmSans = DM_Sans({
   subsets: ['latin'],
@@ -13,11 +17,25 @@ const dmSans = DM_Sans({
   display: 'swap',
 });
 
+const outfit = Outfit({
+  subsets: ['latin'],
+  weight: ['400', '500', '600', '700'],
+  variable: '--font-heading',
+  display: 'swap',
+});
+
+const inter = Inter({
+  subsets: ['latin'],
+  weight: ['400', '500', '600', '700'],
+  variable: '--font-sans',
+  display: 'swap',
+});
+
 export default function RootLayout({ children }: { children: ReactNode }) {
   const useNewUI = process.env.NEXT_PUBLIC_NEW_UI === "true";
 
   return (
-    <html lang="en" className={dmSans.variable} suppressHydrationWarning={true}>
+    <html lang="en" className={cn(dmSans.variable, outfit.variable, inter.variable)} suppressHydrationWarning={true}>
       <head>
         <script
           dangerouslySetInnerHTML={{
@@ -42,13 +60,16 @@ export default function RootLayout({ children }: { children: ReactNode }) {
         />
       </head>
       <body className="min-h-screen bg-transparent" suppressHydrationWarning={true}>
-        <RootProviders>
-          <OfflineBanner />
-          <ShellCommands />
-          <div id="app-canvas">
-            {children}
-          </div>
-        </RootProviders>
+        <AmbientCursorLight />
+        <QueryProvider>
+          <RootProviders>
+            <OfflineBanner />
+            <ShellCommands />
+            <div id="app-canvas">
+              {children}
+            </div>
+          </RootProviders>
+        </QueryProvider>
       </body>
     </html>
   );

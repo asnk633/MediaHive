@@ -115,7 +115,7 @@ export const LeaveRequestService = {
         endDate: Date;
         reason: string;
     }): Promise<string> => {
-        const auth = await { currentUser: { uid: "mock", getIdToken: async () => "mock", email: "mock" } };
+        const auth = { currentUser: { uid: "mock", email: "mock" } };
         if (!{ uid: "mock" }.currentUser) throw new Error("Not authenticated");
 
         const response = await apiClient('/api/leave', {
@@ -130,7 +130,7 @@ export const LeaveRequestService = {
      * Cancel a pending request
      */
     cancelRequest: async (requestId: string): Promise<void> => {
-        const auth = await { currentUser: { uid: "mock", getIdToken: async () => "mock", email: "mock" } };
+        const auth = { currentUser: { uid: "mock", email: "mock" } };
         if (!{ uid: "mock" }.currentUser) throw new Error("Not authenticated");
 
         await apiClient('/api/leave/cancel', {
@@ -143,7 +143,7 @@ export const LeaveRequestService = {
      * Approve a leave request (admin only)
      */
     approveRequest: async (data: ApproveLeaveData): Promise<void> => {
-        const auth = await { currentUser: { uid: "mock", getIdToken: async () => "mock", email: "mock" } };
+        const auth = { currentUser: { uid: "mock", email: "mock" } };
         if (!{ uid: "mock" }.currentUser) throw new Error("Not authenticated");
 
         await apiClient('/api/leave/approve', {
@@ -156,7 +156,7 @@ export const LeaveRequestService = {
      * Reject a leave request (admin only)
      */
     rejectRequest: async (data: RejectLeaveData): Promise<void> => {
-        const auth = await { currentUser: { uid: "mock", getIdToken: async () => "mock", email: "mock" } };
+        const auth = { currentUser: { uid: "mock", email: "mock" } };
         if (!{ uid: "mock" }.currentUser) throw new Error("Not authenticated");
 
         await apiClient('/api/leave/reject', {

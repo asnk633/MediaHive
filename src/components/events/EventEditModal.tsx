@@ -1,34 +1,23 @@
 import React, { useState, useEffect } from 'react';
 import { toast } from 'sonner';
-import { Event } from '@/types/event';
-import { SystemEventService } from '@/services/systemEventService';
+import { DateSelector } from '@/components/ui/selectors/DateSelector';
+import { TimeSelector } from '@/components/ui/selectors/TimeSelector';
+import { DropdownSelector } from '@/components/ui/selectors/DropdownSelector';
+import { Event } from '@/features/events/types/event';
+import { SystemEventService } from '@/features/events/services/systemEventService';
 import { UserService } from '@/services/userService';
+import { EventService } from '@/features/events/services/eventService';
 import { StructureService } from '@/services/structureService';
 import { useAuth } from '@/contexts/AuthContextProvider';
 import { apiClient } from '@/lib/apiClient';
 import {
     X, Calendar as CalendarIcon, Clock, MapPin, AlignLeft,
-    Briefcase, Camera, Send, AlertCircle, Check, Repeat
+    Briefcase, Camera, Send, AlertCircle, Check, Repeat, Building
 } from 'lucide-react';
 import { format } from 'date-fns';
 import { cn } from '@/lib/utils';
-import { Button } from '@/components/ui/button';
-import { Calendar } from '@/components/ui/calendar';
-import {
-    Popover,
-    PopoverContent,
-    PopoverTrigger,
-} from '@/components/ui/popover';
-import {
-    Select,
-    SelectContent,
-    SelectItem,
-    SelectTrigger,
-    SelectValue,
-} from "@/components/ui/select";
-import { Switch } from "@/components/ui/switch";
-import { TimePicker } from '@/components/ui/time-picker';
 import { Dialog, DialogContent, DialogTitle, DialogDescription } from '@/components/ui/dialog';
+import { Switch } from '@/components/ui/switch';
 
 interface EventEditModalProps {
     event: Event;
@@ -43,8 +32,8 @@ export const EventEditModal: React.FC<EventEditModalProps> = ({ event, isOpen, o
     const [teamMembers, setTeamMembers] = useState<{ uid: string; name: string }[]>([]);
 
     // Organization Data
-    const [departmentsList, setDepartmentsList] = useState<{ id: string; name: string }[]>([]);
-    const [institutionsList, setInstitutionsList] = useState<{ id: string; name: string }[]>([]);
+    const [departmentsList, setDepartmentsList] = useState<{ id: string | number; name: string }[]>([]);
+    const [institutionsList, setInstitutionsList] = useState<{ id: string | number; name: string }[]>([]);
 
     // Recurrence State
     const [isRecurring, setIsRecurring] = useState(false);
@@ -64,6 +53,12 @@ export const EventEditModal: React.FC<EventEditModalProps> = ({ event, isOpen, o
         createdById: '',
         is_media_off_day: false
     });
+
+    const categories = [
+        { id: 'film', label: 'Media Production', icon: <Camera size={14} /> },
+        { id: 'event', label: 'General Event', icon: <CalendarIcon size={14} /> },
+        { id: 'other', label: 'Other', icon: <AlertCircle size={14} /> },
+    ];
 
     const mediaOptions = [
         "Complete Videography",
@@ -115,7 +110,7 @@ export const EventEditModal: React.FC<EventEditModalProps> = ({ event, isOpen, o
     useEffect(() => {
         if (event) {
             const eventDate = getDateObject(event.date) || new Date();
-            const startTimeCandidate = getDateObject(event.start_time) || eventDate;
+            const startTimeCandidate = getDateObject(event.start_at) || eventDate;
             const eventTime = startTimeCandidate || new Date();
 
             setFormData({
@@ -193,12 +188,11 @@ export const EventEditModal: React.FC<EventEditModalProps> = ({ event, isOpen, o
                 const realId = event.id.replace(/_\d{4}-\d{2}-\d{2}$/, '');
                 await SystemEventService.updateSystemEvent(realId, payload);
             } else if (!event.is_system_event) {
-                // Logic for User Events
                 // Resolve Department/Institution ID
-                let deptId = '';
+                let deptId: string | number = '';
                 let deptType: 'department' | 'institution' = 'department';
-                let targetInstitutionId = event.institution_id;
-                let targetDepartmentId = event.department_id;
+                let targetInstitutionId: string | number | undefined = event.institution_id;
+                let targetDepartmentId: string | number | undefined = event.department_id;
 
                 const foundDept = departmentsList.find(d => d.name === formData.department);
                 if (foundDept) {
@@ -221,28 +215,22 @@ export const EventEditModal: React.FC<EventEditModalProps> = ({ event, isOpen, o
                     type: deptType
                 };
 
-                const payload = {
+                const payload: any = {
                     title: formData.title,
                     date: dateTime.toISOString(),
-                    start_time: dateTime.toISOString(),
+                    start_at: dateTime.toISOString(),
                     location: formData.location,
                     description: formData.description,
                     department: formData.department,
                     type: formData.type,
-                    created_by: finalCreatedBy,
+                    created_by_info: finalCreatedBy,
                     media_coverage: formData.media_coverage,
                     on_behalf_of,
                     institution_id: targetInstitutionId,
                     department_id: targetDepartmentId
                 };
 
-                // Using PUT since we updated the route handler to PUT. 
-                // Wait, if I change to PUT here, I must be sure the route accepts PUT.
-                // I implemented PUT. So this is correct.
-                await apiClient(`/api/events/${event.id}`, {
-                    method: 'PUT',
-                    body: JSON.stringify(payload)
-                });
+                await EventService.updateEvent(event.id, payload, user?.uid || '');
             }
 
             onClose();
@@ -292,63 +280,20 @@ export const EventEditModal: React.FC<EventEditModalProps> = ({ event, isOpen, o
                         </div>
 
                         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                            <div>
-                                <label className="block text-xs font-bold text-muted uppercase tracking-widest mb-2 px-1">Date</label>
-                                <Popover>
-                                    <PopoverTrigger asChild>
-                                        <Button
-                                            variant={"outline"}
-                                            className={cn(
-                                                "w-full bg-glass border-none hover:bg-surface text-left font-normal h-[50px] rounded-xl justify-start pl-4 shadow-sm",
-                                                !formData.date && "text-muted-foreground"
-                                            )}
-                                        >
-                                            <CalendarIcon size={18} className="text-muted mr-3.5" />
-                                            {formData.date ? format(new Date(formData.date), "MMM dd, yyyy") : <span>Pick a date</span>}
-                                        </Button>
-                                    </PopoverTrigger>
-                                    <PopoverContent className="w-auto p-0 z-[200]" align="start">
-                                        <Calendar
-                                            mode="single"
-                                            selected={formData.date ? new Date(formData.date) : undefined}
-                                            onSelect={(date) => setFormData({ ...formData, date: date ? format(date, 'yyyy-MM-dd') : '' })}
-                                            initialFocus
-                                        />
-                                    </PopoverContent>
-                                </Popover>
+                            <div className="space-y-0.5">
+                                <DateSelector 
+                                    label="Date"
+                                    date={formData.date ? new Date(formData.date) : undefined}
+                                    onChange={date => setFormData({ ...formData, date: date ? format(date, 'yyyy-MM-dd') : '' })}
+                                />
                             </div>
 
-                            <div>
-                                <label className="block text-xs font-bold text-muted uppercase tracking-widest mb-2 px-1">Time</label>
-                                <div className="relative group">
-                                    <Popover>
-                                        <PopoverTrigger asChild>
-                                            <Button
-                                                variant={"outline"}
-                                                className={cn(
-                                                    "w-full bg-glass border-none hover:bg-surface text-left font-normal h-[50px] rounded-xl justify-start pl-4 shadow-sm",
-                                                    !formData.time && "text-muted-foreground"
-                                                )}
-                                            >
-                                                <Clock size={18} className="text-muted mr-3.5" />
-                                                <span className="text-foreground">
-                                                    {formData.time ? (() => {
-                                                        const [h, m] = formData.time.split(':');
-                                                        const date = new Date();
-                                                        date.setHours(parseInt(h), parseInt(m));
-                                                        return format(date, 'h:mm a');
-                                                    })() : "Pick a time"}
-                                                </span>
-                                            </Button>
-                                        </PopoverTrigger>
-                                        <PopoverContent className="w-auto p-0 border-none bg-transparent shadow-none z-[200]" align="start">
-                                            <TimePicker
-                                                value={formData.time}
-                                                onChange={(val) => setFormData({ ...formData, time: val })}
-                                            />
-                                        </PopoverContent>
-                                    </Popover>
-                                </div>
+                            <div className="space-y-0.5">
+                                <TimeSelector 
+                                    label="Time"
+                                    value={formData.time}
+                                    onChange={val => setFormData({ ...formData, time: val })}
+                                />
                             </div>
                         </div>
 
@@ -365,28 +310,16 @@ export const EventEditModal: React.FC<EventEditModalProps> = ({ event, isOpen, o
                             </div>
                         </div>
 
-                        <div>
-                            <label className="block text-xs font-bold text-muted uppercase tracking-widest mb-2 px-1">Office / Unit / Institution</label>
-                            <div className="relative group">
-                                <Briefcase size={18} className="absolute left-4 top-1/2 -translate-y-1/2 text-muted group-focus-within:text-primary transition-colors" />
-                                <select
-                                    className="w-full bg-glass border-none rounded-xl pl-12 pr-4 py-3 text-foreground focus:ring-2 focus:ring-primary/50 outline-none appearance-none cursor-pointer shadow-sm"
-                                    value={formData.department}
-                                    onChange={e => setFormData({ ...formData, department: e.target.value })}
-                                >
-                                    <option value="" className="bg-surface text-muted">Select Organization</option>
-                                    <optgroup label="OFFICES / UNITS" className="bg-surface text-muted font-bold">
-                                        {departmentsList.map(dept => (
-                                            <option key={dept.id} value={dept.name} className="bg-surface text-foreground">{dept.name}</option>
-                                        ))}
-                                    </optgroup>
-                                    <optgroup label="INSTITUTIONS" className="bg-surface text-muted font-bold">
-                                        {institutionsList.map(inst => (
-                                            <option key={inst.id} value={inst.name} className="bg-surface text-foreground">{inst.name}</option>
-                                        ))}
-                                    </optgroup>
-                                </select>
-                            </div>
+                        <div className="space-y-0.5">
+                            <DropdownSelector 
+                                label="Office / Unit / Institution"
+                                value={formData.department}
+                                onChange={val => setFormData({ ...formData, department: val })}
+                                options={[
+                                    ...departmentsList.map(dept => ({ id: dept.name, label: dept.name, icon: <Briefcase size={14} /> })),
+                                    ...institutionsList.map(inst => ({ id: inst.name, label: inst.name, icon: <Building size={14} /> }))
+                                ]}
+                            />
                         </div>
 
                         <div>
@@ -454,47 +387,25 @@ export const EventEditModal: React.FC<EventEditModalProps> = ({ event, isOpen, o
 
                                     {isRecurring && (
                                         <div className="pt-4 border-t border-soft/50 grid grid-cols-1 md:grid-cols-2 gap-4">
-                                            <div className="space-y-2">
-                                                <label className="text-xs font-bold text-muted uppercase">Frequency</label>
-                                                <div className="relative">
-                                                    <Repeat size={16} className="absolute left-3 top-1/2 -translate-y-1/2 text-muted" />
-                                                    <Select value={recurrenceFreq} onValueChange={(val: any) => setRecurrenceFreq(val)}>
-                                                        <SelectTrigger className="w-full bg-surface border-none text-foreground pl-9 h-11">
-                                                            <SelectValue />
-                                                        </SelectTrigger>
-                                                        <SelectContent className="bg-surface border-soft text-foreground">
-                                                            <SelectItem value="weekly">Weekly</SelectItem>
-                                                            <SelectItem value="monthly">Monthly</SelectItem>
-                                                            <SelectItem value="yearly">Yearly</SelectItem>
-                                                        </SelectContent>
-                                                    </Select>
-                                                </div>
+                                            <div className="space-y-0.5">
+                                                <DropdownSelector 
+                                                    label="Frequency"
+                                                    value={recurrenceFreq}
+                                                    onChange={(val: any) => setRecurrenceFreq(val)}
+                                                    options={[
+                                                        { id: 'weekly', label: 'Weekly', icon: <Repeat size={14} /> },
+                                                        { id: 'monthly', label: 'Monthly', icon: <Repeat size={14} /> },
+                                                        { id: 'yearly', label: 'Yearly', icon: <Repeat size={14} /> },
+                                                    ]}
+                                                />
                                             </div>
-                                            <div className="space-y-2">
-                                                <label className="text-xs font-bold text-muted uppercase">Repeat Until</label>
-                                                <Popover>
-                                                    <PopoverTrigger asChild>
-                                                        <Button
-                                                            variant={"outline"}
-                                                            className={cn(
-                                                                "w-full bg-surface border-none text-foreground justify-start text-left font-normal h-11",
-                                                                !recurrenceEndDate && "text-muted"
-                                                            )}
-                                                        >
-                                                            <CalendarIcon className="mr-2 h-4 w-4 opacity-50" />
-                                                            {recurrenceEndDate ? format(new Date(recurrenceEndDate), "PPP") : <span>No End Date</span>}
-                                                        </Button>
-                                                    </PopoverTrigger>
-                                                    <PopoverContent className="w-auto p-0 bg-surface border-soft text-foreground" align="start">
-                                                        <Calendar
-                                                            mode="single"
-                                                            selected={recurrenceEndDate ? new Date(recurrenceEndDate) : undefined}
-                                                            onSelect={(d) => setRecurrenceEndDate(d ? d.toISOString() : '')}
-                                                            initialFocus
-                                                            disabled={(date) => date < new Date()}
-                                                        />
-                                                    </PopoverContent>
-                                                </Popover>
+                                            <div className="space-y-0.5">
+                                                <DateSelector 
+                                                    label="Repeat Until"
+                                                    date={recurrenceEndDate ? new Date(recurrenceEndDate) : undefined}
+                                                    onChange={d => setRecurrenceEndDate(d ? d.toISOString() : '')}
+                                                    disabledBefore={new Date()}
+                                                />
                                             </div>
                                         </div>
                                     )}

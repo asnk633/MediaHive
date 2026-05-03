@@ -1,9 +1,9 @@
 import React, { useState, useEffect } from 'react';
 import { Star, Send, Check } from 'lucide-react';
-import { Task } from '@/types/task';
+import { Task } from '@/features/tasks/types/task';
 import { useAuth } from '@/contexts/AuthContextProvider';
 import { toast } from 'sonner';
-import { TaskRatingService } from '@/services/taskRatingService';
+import { TaskRatingService } from '@/features/tasks/services/taskRatingService';
 
 interface TaskRatingProps {
     task: Task;
@@ -149,7 +149,7 @@ export const TaskRatingComponent = ({ task, onRatingSubmitted }: TaskRatingProps
                         onChange={(e) => setComment(e.target.value)}
                         placeholder="Add a comment (optional)..."
                         rows={2}
-                        className="w-full bg-black/20 border border-[#ffffff1a] rounded-lg p-3 text-sm text-white placeholder:text-white/30 focus:border-blue-500/50 outline-none resize-none"
+                        className="w-full bg-black/20 border border-[#ffffff1a] rounded-lg p-3 text-sm text-white placeholder:text-white/50 focus:border-blue-500/50 outline-none resize-none"
                     />
                     <div className="flex justify-end gap-2">
                         <button

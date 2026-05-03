@@ -1,0 +1,23 @@
+﻿
+--------------------------------------------------
+MediaHive Architecture Health Check
+--------------------------------------------------
+[DEBUG] Deps for src\hooks\useAuth.ts: [
+  '@/hooks/useAuth',
+  '@/contexts/AuthContextProvider',
+  '@/hooks/useAuth'
+]
+
+[Circular Dependency Violations]
+Γ¥î src\hooks\useAuth.ts
+   Issue: Cycle detected: src\app\(shell)\notifications\NotificationCenterClient.tsx -> src\hooks\useAuth.ts -> src\hooks\useAuth.ts
+
+Γ¥î src\components\AppChrome.tsx
+   Issue: Cycle detected: src\components\AppChrome.tsx -> src\hooks\useAuth.ts
+
+Γ¥î src\components\notifications\EscalationPanel.tsx
+   Issue: Cycle detected: src\components\notifications\EscalationPanel.tsx -> src\hooks\useAuth.ts
+
+--------------------------------------------------
+Scan completed in 0.20s with 3 issues.
+CRITICAL: Architecture violations detected. Please fix before proceeding.

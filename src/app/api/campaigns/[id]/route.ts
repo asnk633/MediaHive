@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { verifyUser, getSupabaseFromRequest } from '@/lib/server-utils';
+import { verifyUser, getSupabaseFromRequest } from '@/lib/server/server-utils';
+import { withTenant } from '@/lib/tenantQuery';
 
 export const dynamic = 'force-dynamic';
 
@@ -18,16 +19,25 @@ export async function GET(
             return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
         }
 
-        const supabase = getSupabaseFromRequest(req);
+        // Tenant Security Guard
+        const tenantId = user.tenant_id;
+        if (!tenantId || tenantId === 'null' || tenantId === 'undefined') {
+            console.error(`[GET /api/campaigns/[id]] ❌ Missing tenant context for user: ${user.uid}`);
+            return NextResponse.json({ error: 'Missing tenant context' }, { status: 403 });
+        }
+
+        const supabase = await getSupabaseFromRequest(req);
         if (!supabase) {
             return NextResponse.json({ error: 'Failed to initialize Supabase' }, { status: 500 });
         }
 
-        const { data: campaign, error } = await supabase
-            .from('campaigns')
-            .select('*')
+        const { data: campaign, error } = await withTenant(
+            supabase
+                .from('campaigns')
+                .select('*'),
+            tenantId
+        )
             .eq('id', id)
-            .eq('institution_id', user.institution_id)
             .single();
 
         if (error || !campaign) {
@@ -56,6 +66,13 @@ export async function PUT(
             return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
         }
 
+        // Tenant Security Guard
+        const tenantId = user.tenant_id;
+        if (!tenantId || tenantId === 'null' || tenantId === 'undefined') {
+            console.error(`[PUT /api/campaigns/[id]] ❌ Missing tenant context for user: ${user.uid}`);
+            return NextResponse.json({ error: 'Missing tenant context' }, { status: 403 });
+        }
+
         // Guests cannot update campaigns
         if (user.role === 'guest') {
             return NextResponse.json({ error: 'Guests cannot update campaigns' }, { status: 403 });
@@ -77,16 +94,18 @@ export async function PUT(
         if (updates.driveFolderId) updateData.drive_folder_id = updates.driveFolderId;
         if (updates.members) updateData.members = updates.members;
 
-        const supabase = getSupabaseFromRequest(req);
+        const supabase = await getSupabaseFromRequest(req);
         if (!supabase) {
             return NextResponse.json({ error: 'Failed to initialize Supabase' }, { status: 500 });
         }
 
-        const { data: campaign, error } = await supabase
-            .from('campaigns')
-            .update(updateData)
+        const { data: campaign, error } = await withTenant(
+            supabase
+                .from('campaigns')
+                .update(updateData),
+            tenantId
+        )
             .eq('id', id)
-            .eq('institution_id', user.institution_id)
             .select()
             .single();
 
@@ -117,21 +136,30 @@ export async function DELETE(
             return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
         }
 
+        // Tenant Security Guard
+        const tenantId = user.tenant_id;
+        if (!tenantId || tenantId === 'null' || tenantId === 'undefined') {
+            console.error(`[DELETE /api/campaigns/[id]] ❌ Missing tenant context for user: ${user.uid}`);
+            return NextResponse.json({ error: 'Missing tenant context' }, { status: 403 });
+        }
+
         // Admin/Team only for deletion
         if (!user.role || !['admin', 'team'].includes(user.role as string)) {
             return NextResponse.json({ error: 'Only admins or team members can delete campaigns' }, { status: 403 });
         }
 
-        const supabase = getSupabaseFromRequest(req);
+        const supabase = await getSupabaseFromRequest(req);
         if (!supabase) {
             return NextResponse.json({ error: 'Failed to initialize Supabase' }, { status: 500 });
         }
 
-        const { error } = await supabase
-            .from('campaigns')
-            .delete()
-            .eq('id', id)
-            .eq('institution_id', user.institution_id);
+        const { error } = await withTenant(
+            supabase
+                .from('campaigns')
+                .delete(),
+            tenantId
+        )
+            .eq('id', id);
 
         if (error) {
             console.error('[DELETE /api/campaigns/[id]] Supabase error:', error);

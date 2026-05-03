@@ -1,0 +1,101 @@
+﻿
+--------------------------------------------------
+MediaHive Architecture Health Check
+--------------------------------------------------
+
+[Domain Boundary Violations]
+Γ¥î src\features\dashboard\components\ActiveCampaignsWidget.tsx:6
+   Import: @/features/campaigns/services/campaignService
+   Issue: Feature "dashboard" imports runtime code from "campaigns". Use @/services/campaigns instead.
+
+Γ¥î src\features\dashboard\components\ActiveCampaignsWidget.tsx:10
+   Import: @/features/campaigns/hooks/useCampaigns
+   Issue: Feature "dashboard" imports runtime code from "campaigns". Use @/services/campaigns instead.
+
+Γ¥î src\features\dashboard\components\MyFocusWidget.tsx:3
+   Import: @/features/tasks/components/TaskItem
+   Issue: Feature "dashboard" imports runtime code from "tasks". Use @/services/tasks instead.
+
+Γ¥î src\features\dashboard\components\MyFocusWidget.tsx:8
+   Import: @/features/tasks/components/HomeTaskRow
+   Issue: Feature "dashboard" imports runtime code from "tasks". Use @/services/tasks instead.
+
+
+[DTO Mapping Violations]
+ΓÜá src\services\bulkOperationsService.ts
+   Issue: Service has mapping logic but appears to miss Zod validation (.safeParse).
+
+ΓÜá src\services\canonicalDataService.ts
+   Issue: Service has mapping logic but appears to miss Zod validation (.safeParse).
+
+ΓÜá src\services\conflictDetectionService.ts
+   Issue: Service has mapping logic but appears to miss Zod validation (.safeParse).
+
+ΓÜá src\services\deliverableService.ts
+   Issue: Service has mapping logic but appears to miss Zod validation (.safeParse).
+
+ΓÜá src\services\edgeCaseService.ts
+   Issue: Service has mapping logic but appears to miss Zod validation (.safeParse).
+
+ΓÜá src\services\files.ts
+   Issue: Service has mapping logic but appears to miss Zod validation (.safeParse).
+
+ΓÜá src\services\notificationService.ts
+   Issue: Service has mapping logic but appears to miss Zod validation (.safeParse).
+
+
+[Routes Violations]
+ΓÜá src\app\(shell)\admin\page.tsx:53
+   Issue: Reference to potentially dead route: "/admin/notification-policies"
+
+ΓÜá src\app\(shell)\admin\page.tsx:61
+   Issue: Reference to potentially dead route: "/admin/automation-rules"
+
+ΓÜá src\components\admin\AutomationRulesView.tsx:127
+   Issue: Reference to potentially dead route: "/admin/notification-policies"
+
+ΓÜá src\components\ProtectedRoute.tsx:27
+   Issue: Reference to potentially dead route: "/login/"
+
+ΓÜá src\components\ui\navigation.tsx:7
+   Issue: Reference to potentially dead route: "/bento"
+
+ΓÜá src\components\ui\navigation.tsx:8
+   Issue: Reference to potentially dead route: "/casestudies"
+
+ΓÜá src\components\ui\navigation.tsx:9
+   Issue: Reference to potentially dead route: "/contacts"
+
+ΓÜá src\components\ui\navigation.tsx:10
+   Issue: Reference to potentially dead route: "/ctas"
+
+ΓÜá src\components\ui\navigation.tsx:11
+   Issue: Reference to potentially dead route: "/faqs"
+
+ΓÜá src\components\ui\navigation.tsx:12
+   Issue: Reference to potentially dead route: "/feature"
+
+ΓÜá src\components\ui\navigation.tsx:13
+   Issue: Reference to potentially dead route: "/footers"
+
+ΓÜá src\components\ui\navigation.tsx:14
+   Issue: Reference to potentially dead route: "/hero"
+
+ΓÜá src\components\ui\navigation.tsx:15
+   Issue: Reference to potentially dead route: "/navbars"
+
+ΓÜá src\components\ui\navigation.tsx:16
+   Issue: Reference to potentially dead route: "/pricing"
+
+ΓÜá src\components\ui\navigation.tsx:17
+   Issue: Reference to potentially dead route: "/stats"
+
+ΓÜá src\components\ui\navigation.tsx:18
+   Issue: Reference to potentially dead route: "/team"
+
+ΓÜá src\components\ui\navigation.tsx:19
+   Issue: Reference to potentially dead route: "/testimonial"
+
+--------------------------------------------------
+Scan completed in 0.14s with 28 issues.
+CRITICAL: Architecture violations detected. Please fix before proceeding.

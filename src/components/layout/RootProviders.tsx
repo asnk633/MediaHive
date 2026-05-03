@@ -3,12 +3,17 @@
 import { ReactNode, useRef, useEffect } from 'react';
 import { AuthProvider } from "@/contexts/AuthContextProvider";
 import { ThemeProvider } from "@/contexts/ThemeContext";
-import WelcomeGate from '@/components/layout/WelcomeGate';
 import BootGate from '@/components/layout/BootGate';
 import Diagnostics from '@/components/Diagnostics';
 import { networkMonitor } from '@/utils/networkMonitor';
 import { toast } from 'sonner';
 import { MissingApiBanner } from '@/components/debug/MissingApiBanner';
+import { WorkspaceProvider } from "@/system/workspace/WorkspaceProvider";
+import { runSchemaCheck } from '@/lib/health/schemaCheck';
+import { ConflictResolutionModal } from '@/components/system/ConflictResolutionModal';
+import { SyncIndicator } from '@/components/system/SyncIndicator';
+import { SyncDevPanel } from '@/components/system/SyncDevPanel';
+
 
 // --- GLOBAL BUFFER FOR DIAGNOSTICS ---
 export const LOG_BUFFER: string[] = [];
@@ -108,6 +113,11 @@ export default function RootProviders({ children }: { children: ReactNode }) {
     };
     networkMonitor.addListener(handleNetworkChange);
 
+    // 7. DB Schema Drift Guard
+    runSchemaCheck().catch(err => {
+      originalError('[SchemaCheck] Unexpected error:', err);
+    });
+
     return () => {
       clearInterval(watchdogInterval);
       networkMonitor.removeListener(handleNetworkChange);
@@ -120,13 +130,16 @@ export default function RootProviders({ children }: { children: ReactNode }) {
   return (
     <ThemeProvider>
       <AuthProvider>
-        <MissingApiBanner />
-        <Diagnostics />
-        <BootGate>
-          <WelcomeGate>
+        <WorkspaceProvider>
+          <MissingApiBanner />
+          <Diagnostics />
+          <ConflictResolutionModal />
+          <SyncIndicator />
+          <SyncDevPanel />
+          <BootGate>
             {children}
-          </WelcomeGate>
-        </BootGate>
+          </BootGate>
+        </WorkspaceProvider>
       </AuthProvider>
     </ThemeProvider>
   );

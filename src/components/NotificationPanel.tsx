@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { Layers } from 'lucide-react';
-import { NotificationService } from '@/services/notificationService';
+import { AlertService } from '@/services/alertService';
 import { AppNotification } from '@/types/notification';
 import { NotificationItem } from '@/components/notifications/NotificationItem';
 import { useAuth } from '@/contexts/AuthContextProvider';
@@ -21,7 +21,7 @@ export const NotificationPanel = () => {
 
         const fetchNotifications = async () => {
             try {
-                const data = await NotificationService.getUserNotifications({ limit: 100 }); // Fetch more for panel
+                const data = await AlertService.getUserNotifications({ limit: 100 }); // Fetch more for panel
                 setNotifications(data);
             } catch (e) {
                 console.error(e);
@@ -48,7 +48,7 @@ export const NotificationPanel = () => {
 
             // Server update
             items.filter(i => !i.read).forEach(n => {
-                NotificationService.markAsRead(n.id);
+                AlertService.markAsRead(n.id);
             });
 
             // Navigation
@@ -74,7 +74,7 @@ export const NotificationPanel = () => {
                 ));
 
                 // API call
-                await NotificationService.markAsRead(notification.id);
+                await AlertService.markAsRead(notification.id);
             }
 
             if (notification.action_url && typeof notification.action_url === 'string') {
@@ -90,7 +90,7 @@ export const NotificationPanel = () => {
     const handleMarkAllRead = async () => {
         if (!user) return;
         setNotifications(prev => prev.map(n => ({ ...n, read: true })));
-        await NotificationService.markAllAsRead();
+        await AlertService.markAllAsRead();
     };
 
     // Calculate groups for display

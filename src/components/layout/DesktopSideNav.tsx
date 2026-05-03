@@ -9,8 +9,6 @@ import {
     Calendar,
     BarChart3,
     HardDrive,
-    FolderClosed,
-    Database,
     CloudDownload,
     Users,
     Settings,
@@ -19,8 +17,17 @@ import {
     LogOut,
     Trash2,
     ShieldCheck,
+    FlaskConical,
+    Bot,
+    Terminal,
+    Kanban,
+    Activity,
+    ShieldAlert,
 } from 'lucide-react';
 import { useAuth } from '@/contexts/AuthContextProvider';
+import { useWorkspace } from '@/system/workspace/WorkspaceProvider';
+import { canAccessFeature, UserRole } from '@/system/features/featureAccess';
+import { FeatureKey } from '@/system/features/featureRegistry';
 import { cn, nativeNavigate } from "@/lib/utils";
 import { getDriveImageUrl } from '@/lib/driveUtils';
 import { NotificationBell } from "@/components/notifications/NotificationBell";
@@ -32,12 +39,20 @@ import {
 } from "@/components/ui/dropdown-menu";
 
 
+import { WorkspaceSwitcher } from "@/components/layout/WorkspaceSwitcher";
+
+
+import { usePermissions } from '@/hooks/usePermissions';
+
 export default function DesktopSideNav() {
     const router = useRouter();
     const pathname = usePathname();
     const { user, signOut, loading: authLoading } = useAuth();
     const [isCollapsed, setIsCollapsed] = useState(false);
     const [mounted, setMounted] = useState(false);
+    const { role: currentRole } = usePermissions();
+
+    const { currentWorkspace } = useWorkspace();
 
     // Grouped Navigation Structure
     const navGroups = [
@@ -46,11 +61,11 @@ export default function DesktopSideNav() {
             label: 'Workspace',
             items: [
                 { id: 'home', label: 'Dashboard', icon: LayoutDashboard, path: '/home' },
-                { id: 'tasks', label: 'My Tasks', icon: CheckSquare, path: '/tasks' },
-                { id: 'calendar', label: 'Events', icon: Calendar, path: '/events' },
+                { id: 'tasks', label: 'My Tasks', icon: CheckSquare, path: '/tasks', feature: 'tasks' as FeatureKey },
+                { id: 'calendar', label: 'Events', icon: Calendar, path: '/events', feature: 'events' as FeatureKey },
                 { id: 'reports', label: 'Reports', icon: BarChart3, path: '/reports' },
                 // Phase 5D: Trash — hidden from Guests
-                ...(user?.role !== 'guest' ? [
+                ...(currentRole !== 'guest' ? [
                     { id: 'trash', label: 'Trash', icon: Trash2, path: '/tasks/trash' }
                 ] : []),
             ]
@@ -60,21 +75,64 @@ export default function DesktopSideNav() {
             label: 'Library',
             items: [
                 { id: 'downloads', label: 'Downloads', icon: CloudDownload, path: '/downloads' },
-                { id: 'inventory', label: 'Media Inventory', icon: HardDrive, path: '/inventory' },
+                { id: 'inventory', label: 'Media Inventory', icon: HardDrive, path: '/inventory', feature: 'inventory' as FeatureKey },
+            ]
+        },
+        {
+            id: 'labs',
+            label: 'Laboratory',
+            feature: 'labs' as FeatureKey,
+            items: [
+                { id: 'flowboard', label: 'Flowboard', icon: Kanban, path: '/labs/flowboard', feature: 'flowboard' as FeatureKey },
+                { id: 'ai-assistant', label: 'AI Assistant', icon: Bot, path: '/labs/ai-assistant', feature: 'aiAssistant' as FeatureKey },
+                { id: 'automation', label: 'Automation', icon: Terminal, path: '/labs/automation', feature: 'automationEngine' as FeatureKey },
+                { id: 'intelligence', label: 'Intelligence', icon: Activity, path: '/labs/intelligence', feature: 'intelligenceDashboard' as FeatureKey },
             ]
         },
         {
             id: 'admin',
             label: 'System',
             items: [
-                { id: 'users', label: 'Users', icon: Users, path: '/admin/users' },
+                // Global Admin: Control Panel
+                ...(user?.role === 'admin' ? [
+                    { id: 'admin-panel', label: 'Control Panel', icon: ShieldAlert, path: '/admin' }
+                ] : []),
+                // Institutional Manager/Admin: Users list
+                ...(['admin', 'manager'].includes(currentRole) ? [
+                    { id: 'users', label: 'User Directory', icon: Users, path: '/admin/users' }
+                ] : []),
                 { id: 'governance', label: 'Governance', icon: ShieldCheck, path: '/governance' },
                 { id: 'settings', label: 'Settings', icon: Settings, path: '/settings' },
             ],
         }
     ];
 
-    const filteredGroups = navGroups;
+    // Final Filter based on Feature Flags
+    const filteredGroups = navGroups
+        .filter(group => {
+            if ('feature' in group && (group as any).feature) {
+                return canAccessFeature(
+                    (group as any).feature as FeatureKey,
+                    (currentRole as UserRole) || 'guest',
+                    currentWorkspace ? { id: currentWorkspace.institution_id, features: currentWorkspace.features } : undefined
+                );
+            }
+            return true;
+        })
+        .map(group => ({
+            ...group,
+            items: group.items.filter(item => {
+                // If item has a feature key, check access
+                if ('feature' in item && item.feature) {
+                    return canAccessFeature(
+                        item.feature as FeatureKey,
+                        (currentRole as UserRole) || 'guest',
+                        currentWorkspace ? { id: currentWorkspace.institution_id, features: currentWorkspace.features } : undefined
+                    );
+                }
+                return true;
+            })
+        })).filter(group => group.items.length > 0);
 
     useEffect(() => {
         setMounted(true);
@@ -101,11 +159,11 @@ export default function DesktopSideNav() {
         if (authLoading || !mounted) {
             return (
                 <div className={cn("flex items-center", isCollapsed ? "justify-center" : "gap-3")}>
-                    <div className="w-8 h-8 rounded-full bg-white/5 animate-pulse shrink-0" />
+                    <div className="w-9 h-9 rounded-full bg-white/5 animate-pulse shrink-0" />
                     {!isCollapsed && (
                         <div className="flex flex-col gap-1">
-                            <div className="h-3 w-20 bg-white/10 animate-pulse rounded" />
-                            <div className="h-2 w-12 bg-white/5 animate-pulse rounded" />
+                            <div className="h-3 w-24 bg-white/10 animate-pulse rounded" />
+                            <div className="h-2 w-14 bg-white/5 animate-pulse rounded" />
                         </div>
                     )}
                 </div>
@@ -116,42 +174,45 @@ export default function DesktopSideNav() {
             <DropdownMenu>
                 <DropdownMenuTrigger asChild>
                     <button className={cn("flex items-center outline-none group", isCollapsed ? "justify-center" : "gap-3")}>
-                        <div className="w-8 h-8 rounded-full overflow-hidden bg-white/10 ring-1 ring-white/20 shrink-0 shadow-inner group-hover:ring-white/40 transition-all">
-                            {(user?.avatar_url || user?.photoURL) ? (
-                                <img src={getDriveImageUrl(user.avatar_url || user.photoURL, user.avatar_drive_id)} alt="Avatar" className="w-full h-full object-cover" />
-                            ) : (
-                                <span className="w-full h-full flex items-center justify-center text-xs font-medium text-white/50">
-                                    {user?.email?.[0]?.toUpperCase() || 'U'}
-                                </span>
-                            )}
+                        <div className="relative">
+                            <div className="w-9 h-9 rounded-xl overflow-hidden bg-white/10 ring-1 ring-white/20 shrink-0 shadow-lg group-hover:ring-indigo-500/50 transition-all duration-300">
+                                {(user?.avatar_url || user?.photoURL) ? (
+                                    <img src={getDriveImageUrl(user.avatar_url || user.photoURL, user.avatar_drive_id)} alt="Avatar" className="w-full h-full object-cover" />
+                                ) : (
+                                    <span className="w-full h-full flex items-center justify-center text-xs font-bold text-white/40 uppercase">
+                                        {user?.email?.[0] || 'U'}
+                                    </span>
+                                )}
+                            </div>
+                            <div className="absolute -bottom-0.5 -right-0.5 w-2.5 h-2.5 bg-emerald-500 border-2 border-[#09090b] rounded-full shadow-sm" />
                         </div>
                         {!isCollapsed && (
                             <div className="flex flex-col overflow-hidden text-left">
-                                <span className="text-sm font-medium text-white truncate group-hover:text-white/80 transition-colors">{user?.name}</span>
+                                <span className="text-sm font-bold text-white truncate group-hover:text-indigo-400 transition-colors tracking-tight">{user?.name || 'Authorized User'}</span>
                                 <div className="flex items-center gap-1.5">
-                                    <span className="text-[10px] text-white/40 truncate capitalize">{user?.role || 'Guest'}</span>
+                                    <span className="text-[10px] text-white/50 font-black uppercase tracking-widest">{currentRole || 'Guest'}</span>
                                 </div>
                             </div>
                         )}
                     </button>
                 </DropdownMenuTrigger>
-                <DropdownMenuContent align="start" sideOffset={8} className="w-56 glass-panel border-white/10 bg-[#0a0a0a]/95 text-white">
-                    <div className="px-2 py-1.5 text-xs text-white/50 font-medium">
-                        Currently signed in as
-                        <div className="text-white truncate font-bold mt-0.5">{user?.email}</div>
+                <DropdownMenuContent align="start" sideOffset={12} className="w-64 glass-liquid border-white/10 p-1.5 mt-0 animate-in fade-in zoom-in-95 duration-200">
+                    <div className="px-3 py-3">
+                        <div className="text-[10px] font-bold text-white/50 uppercase tracking-[0.15em] mb-1">Signed in as</div>
+                        <div className="text-sm font-bold text-white truncate">{user?.email}</div>
                     </div>
-                    <div className="h-px bg-white/10 my-1" />
+                    <div className="h-px bg-white/5 mx-1 my-1" />
 
-                    <DropdownMenuItem className="focus:bg-white/10 focus:text-white cursor-pointer" onClick={() => nativeNavigate('/settings', router, 'Profile')}>
-                        <Users size={14} className="mr-2" />
-                        Profile
+                    <DropdownMenuItem className="focus:bg-white/5 focus:text-white cursor-pointer px-3 py-2.5 rounded-lg" onClick={() => nativeNavigate('/settings', router, 'Profile')}>
+                        <Users size={16} className="mr-3 text-indigo-400" />
+                        <span className="text-sm font-medium">My Profile</span>
                     </DropdownMenuItem>
 
-                    <div className="h-px bg-white/10 my-1" />
+                    <div className="h-px bg-white/5 mx-1 my-1" />
 
-                    <DropdownMenuItem className="text-red-400 focus:bg-red-500/10 focus:text-red-300 cursor-pointer" onClick={() => user?.uid && signOut()}>
-                        <LogOut size={14} className="mr-2" />
-                        Sign Out
+                    <DropdownMenuItem className="text-rose-400 focus:bg-rose-500/10 focus:text-rose-300 cursor-pointer px-3 py-2.5 rounded-lg" onClick={() => user?.uid && signOut()}>
+                        <LogOut size={16} className="mr-3" />
+                        <span className="text-sm font-medium">Sign Out</span>
                     </DropdownMenuItem>
                 </DropdownMenuContent>
             </DropdownMenu>
@@ -161,34 +222,37 @@ export default function DesktopSideNav() {
     return (
         <motion.aside
             initial={false}
-            animate={{ width: isCollapsed ? '72px' : '240px' }}
-            transition={{ duration: 0.24, ease: [0.4, 0, 0.2, 1] }}
+            animate={{ width: isCollapsed ? '76px' : '260px' }}
+            transition={{ duration: 0.3, ease: [0.16, 1, 0.3, 1] }}
             style={{
-                left: "max(clamp(1rem, 2.5vw, 4rem), calc((100vw - var(--content-max-width)) / 2 - var(--current-sidebar-width) - 1.5rem))"
+                left: "max(1.5rem, calc((100vw - var(--content-max-width)) / 2 - var(--current-sidebar-width) - 1.5rem))"
             }}
             className={cn(
-                "fixed top-1/2 -translate-y-1/2 z-[60] hidden lg:flex flex-col select-none overflow-hidden h-fit max-h-[calc(100vh-4rem)] rounded-[24px]",
-                "glass-liquid"
+                "fixed top-1/2 -translate-y-1/2 z-[60] hidden lg:flex flex-col select-none overflow-hidden h-fit max-h-[calc(100vh-3rem)] rounded-[32px]",
+                "glass-liquid border-white/10 shadow-[0_32px_64px_-16px_rgba(0,0,0,0.6)]"
             )}
         >
             {/* 1. Brand Header */}
             <div className={cn(
-                "h-[var(--header-height)] flex items-center mb-2 transition-[padding] duration-200",
-                isCollapsed ? "justify-center px-0" : "px-6"
+                "h-[72px] flex items-center transition-[padding] duration-300",
+                isCollapsed ? "justify-center px-4" : "px-7"
             )}>
-                <img
-                    src="/mediahive-icon.png"
-                    alt="MH"
-                    className="w-8 h-8 rounded-sm shrink-0 shadow-lg"
-                />
+                <div className="relative group cursor-pointer" onClick={() => router.push('/home')}>
+                    <img
+                        src="/mediahive-icon.png"
+                        alt="MH"
+                        className="w-10 h-10 rounded-xl shrink-0 shadow-2xl transition-transform group-hover:scale-110"
+                    />
+                    <div className="absolute inset-0 bg-indigo-500/20 blur-xl opacity-0 group-hover:opacity-100 transition-opacity" />
+                </div>
 
                 <AnimatePresence>
                     {!isCollapsed && (
                         <motion.span
-                            initial={{ opacity: 0, x: -10, width: 0 }}
-                            animate={{ opacity: 1, x: 0, width: 'auto' }}
-                            exit={{ opacity: 0, x: -10, width: 0 }}
-                            className="text-lg font-bold text-white tracking-tight whitespace-nowrap overflow-hidden ml-3 drop-shadow-md"
+                            initial={{ opacity: 0, x: -10 }}
+                            animate={{ opacity: 1, x: 0 }}
+                            exit={{ opacity: 0, x: -10 }}
+                            className="text-xl font-black text-white tracking-tighter whitespace-nowrap overflow-hidden ml-4 text-premium-gradient"
                         >
                             MediaHive
                         </motion.span>
@@ -198,14 +262,17 @@ export default function DesktopSideNav() {
 
             {/* 2. Identity Cluster */}
             <div className={cn(
-                "flex flex-col gap-4 mb-6 transition-all duration-200 border-b border-white/5 pb-4",
-                isCollapsed ? "items-center px-0" : "px-6"
+                "flex flex-col gap-5 mb-8 transition-all duration-300 border-b border-white/5 pb-6",
+                isCollapsed ? "items-center px-4" : "px-7"
             )}>
+                {/* Workspace Switcher */}
+                <WorkspaceSwitcher />
+
                 {/* Notification Bell */}
-                <div className={cn("flex items-center", isCollapsed ? "justify-center" : "gap-3")}>
+                <div className={cn("flex items-center", isCollapsed ? "justify-center" : "gap-4")}>
                     <NotificationBell />
                     {!isCollapsed && (
-                        <span className="text-sm font-medium text-white/60">Notifications</span>
+                        <span className="text-xs font-bold text-white/40 uppercase tracking-widest">Team Updates</span>
                     )}
                 </div>
 
@@ -214,20 +281,20 @@ export default function DesktopSideNav() {
             </div>
 
             {/* 3. Navigation List */}
-            <div className="flex-1 overflow-y-auto no-scrollbar px-3 space-y-6">
+            <div className="flex-1 overflow-y-auto no-scrollbar px-4 space-y-7">
                 {filteredGroups.map((group) => (
-                    <div key={group.id} className="space-y-2">
+                    <div key={group.id} className="space-y-3">
                         {!isCollapsed && (
                             <motion.h3
                                 initial={false}
                                 animate={{ opacity: 1, x: 0 }}
                                 exit={{ opacity: 0, x: -10 }}
-                                className="px-3 text-xs font-semibold text-muted opacity-80 uppercase tracking-wide whitespace-nowrap overflow-hidden"
+                                className="px-4 text-[10px] font-black text-white/20 uppercase tracking-[0.2em] whitespace-nowrap overflow-hidden"
                             >
                                 {group.label}
                             </motion.h3>
                         )}
-                        <div className="space-y-1">
+                        <div className="space-y-1.5">
                             {group.items.map((item) => {
                                 const isActive = pathname === item.path || pathname.startsWith(item.path + '/');
                                 return (
@@ -235,22 +302,27 @@ export default function DesktopSideNav() {
                                         key={item.id}
                                         onClick={() => nativeNavigate(item.path, router, `Nav:${item.label}`)}
                                         className={cn(
-                                            "group relative w-full flex items-center gap-3 px-3 py-2 rounded-md transition-all duration-200 ease-out active:scale-95",
+                                            "group relative w-full flex items-center gap-3.5 p-3 rounded-2xl transition-all duration-300 ease-out active:scale-95 sidebar-item",
                                             isActive
-                                                ? "bg-white/[0.03] shadow-inner"
+                                                ? "bg-white/[0.05] shadow-[inset_0_1px_0_rgba(255,255,255,0.05)] premium-shadow"
                                                 : "hover:bg-white/[0.02]"
                                         )}
                                         title={isCollapsed ? item.label : undefined}
                                     >
-                                        <item.icon
-                                            size={20}
-                                            className={cn(
-                                                "transition-all duration-200",
-                                                isActive
-                                                    ? "text-[#60a5fa]"
-                                                    : "text-[#cbd5f5] opacity-55 group-hover:opacity-100 group-hover:text-[#60a5fa]"
+                                        <div className="relative">
+                                            <item.icon
+                                                size={18}
+                                                className={cn(
+                                                    "transition-all duration-300 shrink-0",
+                                                    isActive
+                                                        ? "text-indigo-400 drop-shadow-[0_0_12px_rgba(129,140,248,0.6)] scale-110"
+                                                        : "text-white/40 group-hover:text-white group-hover:scale-110"
+                                                )}
+                                            />
+                                            {isActive && (
+                                                <div className="absolute inset-0 bg-indigo-500/20 blur-md rounded-full -z-10" />
                                             )}
-                                        />
+                                        </div>
 
                                         <motion.span
                                             initial={false}
@@ -258,15 +330,21 @@ export default function DesktopSideNav() {
                                                 opacity: isCollapsed ? 0 : 1,
                                                 x: isCollapsed ? -10 : 0,
                                                 display: isCollapsed ? 'none' : 'block',
-                                                transition: {
-                                                    duration: isCollapsed ? 0.1 : 0.2,
-                                                    delay: isCollapsed ? 0 : 0.1
-                                                }
                                             }}
-                                            className="text-sm font-medium whitespace-nowrap overflow-hidden"
+                                            className={cn(
+                                                "text-sm font-semibold tracking-tight transition-colors duration-300",
+                                                isActive ? "text-white" : "text-white/40 group-hover:text-white"
+                                            )}
                                         >
                                             {item.label}
                                         </motion.span>
+
+                                        {isActive && (
+                                            <motion.div 
+                                                layoutId="active-pill"
+                                                className="absolute left-0 w-1 h-5 bg-indigo-500 rounded-r-full shadow-[0_0_15px_rgba(99,102,241,0.8)]"
+                                            />
+                                        )}
                                     </button>
                                 );
                             })}

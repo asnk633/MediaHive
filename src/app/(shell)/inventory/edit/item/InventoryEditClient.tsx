@@ -18,7 +18,7 @@ import { toast } from "sonner";
 import { FileService } from "@/services/fileService";
 import { ImageCropper } from "@/components/ui/ImageCropper";
 import { INVENTORY_CATEGORIES, INVENTORY_GUIDE, InventoryCondition, InventoryAssetStatus } from "@/types/inventory";
-import { inventoryService } from "@/services/inventoryService";
+import { inventoryService } from '@/services/inventory/inventoryService';
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { CalendarIcon } from "lucide-react";
 

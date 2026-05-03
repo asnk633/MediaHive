@@ -7,8 +7,9 @@ import { apiClient } from '@/lib/apiClient';
 import { PerformanceChart } from './PerformanceChart';
 import type { TrendClassification } from '@/utils/trendAnalysis';
 import type { UserBenchmark } from '@/utils/benchmarkAnalysis';
-import type { EarlyWarningResult } from '@/utils/earlyWarningAnalysis';
+import { EarlyWarningResult } from '@/utils/earlyWarningAnalysis';
 import { Dialog, DialogContent, DialogTitle } from "@/components/ui/dialog";
+import { DropdownSelector } from '@/components/ui/selectors/DropdownSelector';
 
 interface PerformanceHistoryItem {
     period: string;
@@ -270,21 +271,18 @@ export function PerformanceHistoryModal({
                                         </div>
                                         <div className="w-full md:w-1/3 space-y-4">
                                             <div>
-                                                <label className="block text-xs font-bold text-white/40 uppercase tracking-wider mb-2">Action Type</label>
-                                                <div className="relative">
-                                                    <select
-                                                        value={actionType}
-                                                        onChange={(e) => setActionType(e.target.value)}
-                                                        className="w-full bg-black/20 border border-[#ffffff1a] rounded-xl p-3 text-sm text-white focus:outline-none focus:ring-2 focus:ring-blue-500/50 appearance-none cursor-pointer hover:bg-white/5 transition-colors"
-                                                    >
-                                                        <option className="bg-[#1a2639]">Observation</option>
-                                                        <option className="bg-[#1a2639]">Counselled</option>
-                                                        <option className="bg-[#1a2639]">Warning Issued</option>
-                                                        <option className="bg-[#1a2639]">Support Planned</option>
-                                                        <option className="bg-[#1a2639]">No Action Needed</option>
-                                                    </select>
-                                                    {/* Custom Arrow could go here */}
-                                                </div>
+                                                <DropdownSelector 
+                                                    label="Action Type"
+                                                    value={actionType}
+                                                    onChange={setActionType}
+                                                    options={[
+                                                        { id: 'Observation', label: 'Observation' },
+                                                        { id: 'Counselled', label: 'Counselled' },
+                                                        { id: 'Warning Issued', label: 'Warning Issued' },
+                                                        { id: 'Support Planned', label: 'Support Planned' },
+                                                        { id: 'No Action Needed', label: 'No Action Needed' },
+                                                    ]}
+                                                />
                                             </div>
                                             <button
                                                 onClick={handleSaveIntervention}

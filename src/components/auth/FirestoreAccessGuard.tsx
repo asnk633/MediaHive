@@ -28,7 +28,7 @@ const FirestoreAccessGuard = ({
   }
 
   // Additional check: ensure user has valid role claims
-  const hasAccess = user && (user.role === 'admin' || user.role === 'team' || user.is_super_admin);
+  const hasAccess = user && (user.role === 'admin' || user.role === 'manager' || user.role === 'member' || user.is_super_admin);
 
   if (!hasAccess) {
     if (authStatus === 'guest') {

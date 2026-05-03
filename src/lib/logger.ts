@@ -1,38 +1,89 @@
-/**
- * Structured Logger
- * 
- * Provides consistent JSON logging for easier parsing by observability tools (Datadog, CloudWatch, etc).
- */
-
 export type LogLevel = 'info' | 'warn' | 'error' | 'debug';
 
-interface LogEntry {
-  level: LogLevel;
-  message: string;
+const SENSITIVE_FIELDS = ['password', 'token', 'key', 'secret', 'authorization'];
+
+export interface SystemEvent {
+  type: string;
+  endpoint?: string;
+  retryCount?: number;
   timestamp: string;
-  requestId?: string;
-  [key: string]: any;
+  metadata?: any;
+  level: LogLevel;
 }
 
-export const logger = {
-  log: (level: LogLevel, message: string, meta: Record<string, any> = {}) => {
-    const entry: LogEntry = {
-      level,
-      message,
-      timestamp: new Date().toISOString(),
-      ...meta,
+class SystemLogger {
+  private logs: SystemEvent[] = [];
+  private readonly MAX_LOGS = 200;
+  private readonly TELEMETRY_SAMPLE_RATE = 0.1; // 10% of logs
+
+  log(event: Omit<SystemEvent, 'timestamp'>) {
+    // 1. Redaction
+    const safeMetadata = this.redact(event.metadata);
+
+    const fullEvent: SystemEvent = {
+      ...event,
+      metadata: safeMetadata,
+      timestamp: new Date().toISOString()
     };
 
-    // In dev, pretty print mostly; in prod, JSON line.
-    if (process.env.NODE_ENV === 'development') {
-      console.log(`[${level.toUpperCase()}] ${message}`, meta);
-    } else {
-      console.log(JSON.stringify(entry));
+    // 2. Local Buffer Pruning
+    this.logs.unshift(fullEvent);
+    if (this.logs.length > this.MAX_LOGS) {
+      this.logs = this.logs.slice(0, this.MAX_LOGS);
     }
-  },
 
-  info: (message: string, meta?: Record<string, any>) => logger.log('info', message, meta),
-  warn: (message: string, meta?: Record<string, any>) => logger.log('warn', message, meta),
-  error: (message: string, meta?: Record<string, any>) => logger.log('error', message, meta),
-  debug: (message: string, meta?: Record<string, any>) => logger.log('debug', message, meta),
+    // 3. Telemetry (Sampled)
+    if (Math.random() < this.TELEMETRY_SAMPLE_RATE || event.level === 'error') {
+      this.sendToRemote(fullEvent);
+    }
+
+    // 4. Console output with structured formatting
+    const color = this.getColor(event.level);
+    console.log(
+      `%c[${fullEvent.timestamp}] [${event.level.toUpperCase()}] [${event.type}]`, 
+      `color: ${color}; font-weight: bold;`,
+      safeMetadata || ''
+    );
+  }
+
+  private redact(obj: any): any {
+    if (!obj || typeof obj !== 'object') return obj;
+    const result = { ...obj };
+    for (const key in result) {
+      if (SENSITIVE_FIELDS.some(f => key.toLowerCase().includes(f))) {
+        result[key] = '[REDACTED]';
+      } else if (typeof result[key] === 'object') {
+        result[key] = this.redact(result[key]);
+      }
+    }
+    return result;
+  }
+
+  private async sendToRemote(event: SystemEvent) {
+    // Mock: Send to Supabase 'system_logs' table
+    // supabase.from('system_logs').insert([event]);
+  }
+
+  private getColor(level: LogLevel): string {
+    switch (level) {
+      case 'error': return '#f87171';
+      case 'warn': return '#fbbf24';
+      case 'info': return '#60a5fa';
+      case 'debug': return '#94a3b8';
+      default: return 'white';
+    }
+  }
+
+  getLogs() {
+    return this.logs;
+  }
+}
+
+export const logger = new SystemLogger();
+
+/**
+ * Convenience helper for event logging
+ */
+export const logEvent = (type: string, metadata?: any, level: LogLevel = 'info') => {
+  logger.log({ type, metadata, level });
 };

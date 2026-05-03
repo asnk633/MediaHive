@@ -1,7 +1,7 @@
 import React, { memo } from 'react';
 import { useSortable } from '@dnd-kit/sortable';
 import { CSS } from '@dnd-kit/utilities';
-import { Task } from '@/types/task';
+import { MediaTask as Task } from '@/services/tasks/taskContract';
 import { DataIntegritySignal } from '@/components/ui/DataIntegritySignal';
 import { SafeAvatar } from "@/components/ui/SafeAvatar";
 import { format, isToday, isPast } from 'date-fns';
@@ -25,7 +25,7 @@ import {
 } from "@/components/ui/tooltip";
 import { ResolvedStructureName } from "@/components/admin/structure/ResolvedStructureName";
 import { motion, AnimatePresence } from 'framer-motion';
-import { canChangeStatus, resolveUserRole } from '@/lib/permissions';
+import { canChangeStatus } from '@/lib/permissions';
 import {
     DropdownMenu,
     DropdownMenuContent,
@@ -101,6 +101,8 @@ interface SortableTaskRowProps {
     onSoftDelete?: (id: string) => void;
 }
 
+import { usePermissions } from '@/hooks/usePermissions';
+
 export const SortableTaskRow = memo(({
     task,
     activeId,
@@ -128,7 +130,12 @@ export const SortableTaskRow = memo(({
         isDragging
     } = useSortable({ id: task.id });
 
-    const userRole = resolveUserRole(currentUser);
+    const { 
+        role: userRole, 
+        canChangeStatus: canUpdateStatus, 
+        canEditTask: canEdit,
+        canDeleteTask: canPermDelete
+    } = usePermissions();
 
     const style = {
         transform: CSS.Transform.toString(transform),
@@ -137,16 +144,23 @@ export const SortableTaskRow = memo(({
         opacity: isDragging ? 0.3 : 1
     };
 
-    const due_date = safeDate(task.due_date);
-    const overdue = due_date && isPast(due_date) && !isToday(due_date) && task.status !== 'done';
-    const today = due_date && isToday(due_date) && task.status !== 'done';
+    const dueDate = safeDate(task.dueDate);
+    const overdue = dueDate && isPast(dueDate) && !isToday(dueDate) && task.status !== 'done';
+    const today = dueDate && isToday(dueDate) && task.status !== 'done';
     const expanded = expandedTasks.has(task.id);
 
+    // Dynamic Permission Checks for this specific task
+    const allowedToUpdateStatus = canUpdateStatus(task);
+    const allowedToEdit = canEdit(task);
+    const isCreator = (typeof task.created_by === 'string' ? task.created_by : task.created_by?.uid) === currentUser?.uid;
+    const canRestoreTask = ['admin', 'manager', 'member', 'team'].includes(userRole);
+    const canSoftDelete = allowedToEdit || isCreator; // Match backend logic
+
     // Phase 8: Multi-user real-time awareness indicators
-    const isRecentlyUpdatedByOther = task.updated_by &&
-        task.updated_by.uid !== currentUser?.uid &&
-        task.updated_at &&
-        (Date.now() - new Date(task.updated_at).getTime() < 60000); // 60s window
+    const isRecentlyUpdatedByOther = task.updatedBy &&
+        task.updatedBy.uid !== currentUser?.uid &&
+        task.updatedAt &&
+        (Date.now() - new Date(task.updatedAt).getTime() < 60000); // 60s window
 
     return (
         <div
@@ -249,7 +263,7 @@ export const SortableTaskRow = memo(({
                             {isRecentlyUpdatedByOther && !(task as any).hasExternalChangePending && (
                                 <span className="text-[10px] text-white/40 italic flex items-center gap-1 mt-0.5">
                                     <Activity size={10} className="text-blue-400 animate-pulse" />
-                                    Updated by {task.updated_by?.name?.split(' ')[0]} · just now
+                                    Updated by {task.updatedBy?.name?.split(' ')[0]} · just now
                                 </span>
                             )}
                         </div>
@@ -267,9 +281,9 @@ export const SortableTaskRow = memo(({
                 {/* Requested By */}
                 <div className="hidden md:flex items-center text-white/45 text-xs truncate font-medium">
                     <ResolvedStructureName
-                        id={task.department_id || task.institution_id}
-                        type={task.department_id ? 'department' : 'institution'}
-                        fallback={task.department_id || '-'}
+                        id={task.departmentId || task.institutionId}
+                        type={task.departmentId ? 'department' : 'institution'}
+                        fallback={task.departmentId || '-'}
                     />
                 </div>
 
@@ -278,25 +292,34 @@ export const SortableTaskRow = memo(({
 
                 {/* Assigned */}
                 <div className="hidden md:flex items-center gap-2">
-                    {(task.assigned_to as any[])?.length > 0 ? <SafeAvatar size={24} src={(task.assigned_to as any)[0].avatar_url} alt={(task.assigned_to as any)[0].name || 'Assignee'} name={(task.assigned_to as any)[0].name} /> : <span className="text-xs italic text-white/30">Unassigned</span>}
+                    {task.assignedTo && task.assignedTo.length > 0 ? (
+                        <SafeAvatar
+                            size={24}
+                            src={task.assignedTo[0].avatarUrl}
+                            alt={task.assignedTo[0].name || 'Assignee'}
+                            name={task.assignedTo[0].name}
+                        />
+                    ) : (
+                        <span className="text-xs italic text-white/50">Unassigned</span>
+                    )}
                 </div>
 
                 {/* Due Date */}
                 <div className="hidden md:block text-right">
                     <div className={cn("text-xs font-mono flex items-center justify-end gap-1.5",
-                        task.isOverdue ? "text-red-500 font-bold" :
-                            task.isDueToday ? "text-amber-500 font-bold" :
-                                task.isUpcoming ? "text-blue-400 font-medium" :
+                        (task as any).isOverdue || overdue ? "text-red-500 font-bold" :
+                            (task as any).isDueToday || today ? "text-amber-500 font-bold" :
+                                (task as any).isUpcoming ? "text-blue-400 font-medium" :
                                     "text-white/40"
                     )}>
-                        {task.isDueToday ? "Today" : due_date ? format(due_date, 'MMM d') : '-'}
-                        {due_date && (
+                        {(task as any).isDueToday || today ? "Today" : dueDate ? format(dueDate, 'MMM d') : '-'}
+                        {(task as any).dueDate && (
                             <TooltipProvider delayDuration={0}>
                                 <Tooltip>
                                     <TooltipTrigger>
                                         <Globe size={10} className="opacity-40 hover:opacity-100 transition-opacity" />
                                     </TooltipTrigger>
-                                    <TooltipContent><p>Scheduled in Gulf Standard Time</p></TooltipContent>
+                                    <TooltipContent><p>Scheduled in Indian Standard Time</p></TooltipContent>
                                 </Tooltip>
                             </TooltipProvider>
                         )}
@@ -306,17 +329,17 @@ export const SortableTaskRow = memo(({
                 {/* Completed Date (Role-Wide) */}
                 <div className="hidden md:block text-right">
                     <div className="text-xs text-white/40 hover:text-white/70 transition-colors">
-                        {task.status === 'done' && task.completed_at ? (
+                        {task.status === 'done' && task.completedAt ? (
                             <TooltipProvider delayDuration={0}>
                                 <Tooltip>
                                     <TooltipTrigger className="cursor-default">
                                         {(() => {
-                                            const date = new Date(task.completed_at);
+                                            const date = new Date((task as any).completedAt);
                                             return date ? format(date, 'd MMM yyyy') : '-';
                                         })()}
                                     </TooltipTrigger>
                                     <TooltipContent>
-                                        <p>Marked completed on {new Date(task.completed_at) ? format(new Date(task.completed_at)!, 'd MMM yyyy') : 'Unknown'}</p>
+                                        <p>Marked completed on {new Date((task as any).completedAt) ? format(new Date((task as any).completedAt)!, 'd MMM yyyy') : 'Unknown'}</p>
                                     </TooltipContent>
                                 </Tooltip>
                             </TooltipProvider>
@@ -324,7 +347,7 @@ export const SortableTaskRow = memo(({
                             <span className="text-white/10 select-none">—</span>
                         )}
                         <span className="text-white/40 truncate max-w-[120px]">
-                            {task.department_id || 'General'}
+                            {task.departmentId || 'General'}
                         </span>
                     </div>
                 </div>
@@ -334,7 +357,7 @@ export const SortableTaskRow = memo(({
                     {mode === 'trash' ? (
                         <div className="flex items-center gap-1.5">
                             {/* Admin/Team can restore. Guest cannot. */}
-                            {(userRole === 'admin' || userRole === 'team') ? (
+                            {canRestoreTask ? (
                                 <button
                                     onClick={() => onRestore?.(task.id)}
                                     title="Restore"
@@ -345,7 +368,7 @@ export const SortableTaskRow = memo(({
                             ) : null}
 
                             {/* ONLY Admin can permanent delete. */}
-                            {userRole === 'admin' && (
+                            {canPermDelete && (
                                 <button
                                     onClick={() => onPermanentDelete?.(task.id)}
                                     title="Delete Forever"
@@ -356,7 +379,7 @@ export const SortableTaskRow = memo(({
                             )}
                         </div>
                     ) : (
-                        canChangeStatus(currentUser, task) && onStatusChange ? (
+                        allowedToUpdateStatus && onStatusChange ? (
                             <DropdownMenu>
                                 <DropdownMenuTrigger className="outline-none">
                                     <StatusPill status={task.status || 'todo'} />
@@ -381,7 +404,7 @@ export const SortableTaskRow = memo(({
 
                     {/* Phase 14: Single-row Soft Delete (Move to Trash) in Normal View */}
                     {mode === 'default' && (
-                        (userRole === 'admin' || userRole === 'team' || (userRole === 'guest' && task.created_by === currentUser?.uid)) ? (
+                        canSoftDelete ? (
                             <button
                                 onClick={(e) => { e.stopPropagation(); onSoftDelete?.(task.id); }}
                                 title="Move to Trash"

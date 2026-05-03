@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { AttachmentLog } from '@/types/task';
+import { AttachmentLog } from '@/features/tasks/types/task';
 import { supabase } from '@/lib/supabaseClient';
 import { Activity, UploadCloud, Trash2, Eye, EyeOff, Loader2, Clock } from 'lucide-react';
 import { format } from 'date-fns';
@@ -80,10 +80,10 @@ export const AttachmentActivityLog: React.FC<AttachmentActivityLogProps> = ({ ta
 
             <div className="space-y-3 max-h-60 overflow-y-auto pr-2 custom-scrollbar bg-[#0a0c10]/30 rounded-xl p-4 border border-white/5">
                 {loading && !hasLoaded && (
-                    <div className="text-center py-4 text-white/30 text-xs">Loading activity...</div>
+                    <div className="text-center py-4 text-white/50 text-xs">Loading activity...</div>
                 )}
                 {!loading && logs.length === 0 && (
-                    <div className="text-center py-4 text-white/30 text-xs">No activity recorded.</div>
+                    <div className="text-center py-4 text-white/50 text-xs">No activity recorded.</div>
                 )}
 
                 {logs.map(log => (

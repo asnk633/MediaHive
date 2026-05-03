@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { requireAdminWithVerifiedEmail } from '@/lib/emailVerificationGuard';
-import { verifyUser, getSupabaseFromRequest } from '@/lib/server-utils';
+import { verifyUser, getSupabaseFromRequest } from '@/lib/server/server-utils';
 
 export const dynamic = 'force-dynamic';
 
@@ -17,12 +17,20 @@ export async function GET(request: NextRequest) {
     // Auth Check: Admins only for listing users
     const adminUser = await requireAdminWithVerifiedEmail(request);
 
-    const supabase = getSupabaseFromRequest(request);
+    // Tenant Security Guard
+    const tenantId = adminUser.tenant_id;
+    if (!tenantId || tenantId === 'null' || tenantId === 'undefined') {
+      console.error(`[GET /api/users] ❌ Missing tenant context for user: ${adminUser.uid}`);
+      return NextResponse.json({ error: 'Missing tenant context' }, { status: 403 });
+    }
+
+    const supabase = await getSupabaseFromRequest(request);
     if (!supabase) return NextResponse.json({ error: 'Internal Error' }, { status: 500 });
 
     const { data: users, error } = await supabase
       .from('profiles')
-      .select('id, email, full_name, official_name, role, institution_id, department_id, status, created_at')
+      .select('id, email, full_name, official_name, role, institution_id, department_id, tenant_id, status, created_at')
+      .eq('tenant_id', tenantId)
       .limit(safeLimit)
       .order('created_at', { ascending: false });
 
@@ -50,7 +58,14 @@ export async function GET(request: NextRequest) {
 export async function PUT(request: NextRequest) {
   try {
     // 1. Verify Admin Access
-    await requireAdminWithVerifiedEmail(request);
+    const adminUser = await requireAdminWithVerifiedEmail(request);
+
+    // Tenant Security Guard
+    const tenantId = adminUser.tenant_id;
+    if (!tenantId || tenantId === 'null' || tenantId === 'undefined') {
+      console.error(`[PUT /api/users] ❌ Missing tenant context for user: ${adminUser.uid}`);
+      return NextResponse.json({ error: 'Missing tenant context' }, { status: 403 });
+    }
 
     const body = await request.json();
     const { uid, ...data } = body;
@@ -59,10 +74,22 @@ export async function PUT(request: NextRequest) {
       return NextResponse.json({ error: 'User ID is required' }, { status: 400 });
     }
 
-    const supabase = getSupabaseFromRequest(request);
+    const supabase = await getSupabaseFromRequest(request);
     if (!supabase) return NextResponse.json({ error: 'Internal Error' }, { status: 500 });
 
-    // 2. Logic: Handle HQ Auto-Assign for Departments
+    // 2. Security: Verify the target user belongs to the Admin's tenant
+    const { data: targetProfile, error: targetError } = await supabase
+      .from('profiles')
+      .select('tenant_id')
+      .eq('id', uid)
+      .single();
+
+    if (targetError || !targetProfile) return NextResponse.json({ error: 'User not found' }, { status: 404 });
+    if (targetProfile.tenant_id !== tenantId) {
+      return NextResponse.json({ error: 'Forbidden: Cannot edit users from another tenant' }, { status: 403 });
+    }
+
+    // 3. Logic: Handle HQ Auto-Assign for Departments
     let { institution_id, department_id } = data;
 
     if (department_id && !institution_id) {
@@ -70,7 +97,8 @@ export async function PUT(request: NextRequest) {
       const { data: hqData } = await supabase
         .from('institutions')
         .select('id')
-        .eq('name', 'Thaiba Garden HQ') // Standard HQ name
+        .eq('tenant_id', tenantId) // Scope to current tenant
+        .eq('name', 'Thaiba Garden HQ')
         .maybeSingle();
 
       if (hqData) {

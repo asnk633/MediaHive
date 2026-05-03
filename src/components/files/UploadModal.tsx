@@ -12,7 +12,9 @@ import { FileService } from '@/services/fileService';
 import { Loader2, UploadCloud } from 'lucide-react';
 import { useAuth } from '@/contexts/AuthContextProvider';
 import { Tabs, TabsList, TabsTrigger, TabsContent } from '@/components/ui/tabs';
+import { toast } from 'sonner';
 import { apiClient } from '@/lib/apiClient';
+import { StructureService } from '@/services/structureService';
 
 interface UploadModalProps {
     open: boolean;
@@ -39,8 +41,8 @@ export function UploadModal({ open, onClose, onSuccess, event_id, taskId }: Uplo
             const fetchOrgs = async () => {
                 try {
                     const [deptsRes, instsRes] = await Promise.all([
-                        apiClient<{ departments: { name: string }[] }>('/api/departments?limit=1000'),
-                        apiClient<{ institutions: { name: string }[] }>('/api/institutions?limit=1000')
+                        StructureService.getDepartments(),
+                        StructureService.getInstitutions()
                     ]);
 
                     const departments = deptsRes.departments || [];
@@ -60,13 +62,13 @@ export function UploadModal({ open, onClose, onSuccess, event_id, taskId }: Uplo
 
         // Check if auth is still loading
         if (loading) {
-            alert('Authentication is still loading. Please wait...');
+            toast.warning('Authentication is still loading. Please wait...');
             return;
         }
 
         // Check if user is authenticated before attempting upload
         if (!user) {
-            alert('You must be logged in to upload files.');
+            toast.error('You must be logged in to upload files.');
             return;
         }
 
@@ -97,19 +99,20 @@ export function UploadModal({ open, onClose, onSuccess, event_id, taskId }: Uplo
             };
 
             await FileService.uploadFile(file, metadata as any);
+            toast.success('File uploaded successfully');
             reset();
             onSuccess();
             onClose();
         } catch (error: any) {
             console.error('[UploadModal] Upload error:', error);
-            alert(`Upload failed: ${error.message || 'Unknown error'}`);
+            toast.error(`Upload failed: ${error.message || 'Check connection'}`);
         } finally {
             setUploading(false);
         }
     };
 
     // Styles matching CreateEventForm "Night Sky" theme
-    const inputClasses = "bg-[#0a0c10] border-[#ffffff1a] text-white placeholder:text-white/30 focus:border-blue-500/50 focus:ring-blue-500/10 transition-all rounded-xl h-11 file:text-white file:bg-white/10 file:border-0 file:rounded-lg file:mr-4 file:px-3 file:py-1 file:hover:bg-white/20 cursor-pointer";
+    const inputClasses = "bg-[#0a0c10] border-[#ffffff1a] text-white placeholder:text-white/50 focus:border-blue-500/50 focus:ring-blue-500/10 transition-all rounded-xl h-11 file:text-white file:bg-white/10 file:border-0 file:rounded-lg file:mr-4 file:px-3 file:py-1 file:hover:bg-white/20 cursor-pointer";
     const labelClasses = "uppercase text-[10px] font-bold tracking-widest text-white/50 mb-1.5 block";
     const selectTriggerClasses = "bg-[#0a0c10] border-[#ffffff1a] text-white focus:ring-blue-500/10 h-11 rounded-xl";
     const selectContentClasses = "bg-[#0a0c10] border-[#ffffff1a] text-white";
@@ -144,7 +147,7 @@ export function UploadModal({ open, onClose, onSuccess, event_id, taskId }: Uplo
                         />
                     </div>
 
-                    {(user?.role === 'admin' || user?.role === 'team') && (
+                    {(user?.role === 'admin' || user?.role === 'manager' || user?.role === 'member') && (
                         <div className="space-y-5 pt-4 border-t border-[#ffffff1a] animate-in slide-in-from-top-2">
                             <div className="space-y-3">
                                 <Label className={labelClasses}>Visibility Settings</Label>

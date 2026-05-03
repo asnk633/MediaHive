@@ -1,7 +1,7 @@
-// @ts-nocheck
 import { NextRequest, NextResponse } from 'next/server';
-import { verifyUser, getSupabaseFromRequest } from '@/lib/server-utils';
+import { verifyUser, getSupabaseFromRequest } from '@/lib/server/server-utils';
 import { logSystemActivity } from '@/lib/server/activity-logger';
+import { withTenant } from '@/lib/tenantQuery';
 
 export const dynamic = 'force-dynamic';
 
@@ -21,16 +21,26 @@ export async function GET(request: NextRequest) {
             return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
         }
 
-        const supabase = getSupabaseFromRequest(request);
+        // Tenant Security Guard
+        const tenantId = user.tenant_id;
+        if (!tenantId || tenantId === 'null' || tenantId === 'undefined') {
+            console.error(`[GET /api/inventory] ❌ Missing tenant context for user: ${user.uid}`);
+            return NextResponse.json({ error: 'Missing tenant context' }, { status: 403 });
+        }
+
+        const supabase = await getSupabaseFromRequest(request);
         if (!supabase) return NextResponse.json({ error: 'Internal Error' }, { status: 500 });
 
         const { searchParams } = new URL(request.url);
         const limit = parseInt(searchParams.get('limit') || '50');
         const offset = parseInt(searchParams.get('offset') || '0');
 
-        const { data: items, error, count } = await supabase
-            .from(COLLECTION)
-            .select('*', { count: 'exact' })
+        const { data: items, error, count } = await withTenant(
+            supabase
+                .from(COLLECTION)
+                .select('*', { count: 'exact' }),
+            tenantId
+        )
             .order('created_at', { ascending: false })
             .range(offset, offset + limit - 1);
 
@@ -58,6 +68,13 @@ export async function POST(request: NextRequest) {
             return NextResponse.json({ error: 'Forbidden' }, { status: 403 });
         }
 
+        // Tenant Security Guard
+        const tenantId = user.tenant_id;
+        if (!tenantId || tenantId === 'null' || tenantId === 'undefined') {
+            console.error(`[POST /api/inventory] ❌ Missing tenant context for user: ${user.uid}`);
+            return NextResponse.json({ error: 'Missing tenant context' }, { status: 403 });
+        }
+
         const data = await request.json();
 
         // Strict Validation
@@ -75,7 +92,7 @@ export async function POST(request: NextRequest) {
             return NextResponse.json({ error: 'Quantity and threshold must be numbers' }, { status: 400 });
         }
 
-        const supabase = getSupabaseFromRequest(request);
+        const supabase = await getSupabaseFromRequest(request);
         if (!supabase) return NextResponse.json({ error: 'Internal Error' }, { status: 500 });
 
         const newItem = {
@@ -98,7 +115,8 @@ export async function POST(request: NextRequest) {
             asset_status: data.assetStatus,
             location_str: data.locationStr || null,
             notes: data.notes || null,
-            purchase_date: data.purchaseDate
+            purchase_date: data.purchaseDate,
+            tenant_id: tenantId
         };
 
         const { data: created, error } = await supabase
@@ -115,6 +133,7 @@ export async function POST(request: NextRequest) {
             action: 'inventory_item_create',
             entityType: 'inventory_item',
             entityId: created.id,
+            tenantId: tenantId, // Enforce tenant scoping in logs
             summary: `Added item: ${data.name}`,
             source: 'system',
             severity: 'info',

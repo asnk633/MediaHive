@@ -1,5 +1,5 @@
 import React from 'react';
-import { Task } from '@/types/task';
+import { Task } from '@/features/tasks/types/task';
 import { Video, Edit3, Eye, UploadCloud, Layers } from 'lucide-react';
 import { useRouter } from 'next/navigation';
 import { nativeNavigate } from '@/lib/utils';

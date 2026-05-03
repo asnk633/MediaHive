@@ -154,7 +154,7 @@ export function MediaLightbox({ file, files, loading = false, onClose, onNavigat
 
   // Handle uploading a new version
   const handleUploadNewVersion = async (newFile: File) => {
-    if (!user || (user.role !== 'admin' && user.role !== 'team')) return;
+    if (!user || user.role === 'guest') return;
 
     setIsUploading(true);
     try {
@@ -284,7 +284,7 @@ export function MediaLightbox({ file, files, loading = false, onClose, onNavigat
   };
 
   // Check if user can perform proofing actions
-  const canPerformProofingActions = user && (user.role === 'admin' || user.role === 'team') && isFeatureEnabled('proofingLite');
+  const canPerformProofingActions = user && (user.role === 'admin' || user.role === 'manager' || user.role === 'member') && isFeatureEnabled('proofingLite');
 
   // Check if proofing features should be shown
   const showProofingFeatures = isFeatureEnabled('proofingLite');
@@ -509,7 +509,7 @@ export function MediaLightbox({ file, files, loading = false, onClose, onNavigat
                     </div>
                   )}
                   {/* Upload New Version */}
-                  {isFeatureEnabled('mediaVersioning') && user && (user.role === 'admin' || user.role === 'team') && (
+                  {isFeatureEnabled('mediaVersioning') && user && (user.role === 'admin' || user.role === 'manager' || user.role === 'member') && (
                     <div>
                       <h3 className="text-sm font-semibold text-[var(--text-primary)] mb-2">Version Management</h3>
                       <Button
@@ -638,7 +638,7 @@ export function MediaLightbox({ file, files, loading = false, onClose, onNavigat
                       </div>
 
                       {/* Add Comment Form */}
-                      {user && (user.role === 'admin' || user.role === 'team') && (
+                      {user && (user.role === 'admin' || user.role === 'manager' || user.role === 'member') && (
                         <form onSubmit={handleAddComment} className="mt-3 flex gap-2">
                           <input
                             type="text"

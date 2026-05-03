@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { AuthUser } from '@/contexts/AuthContextProvider';
 import { CheckCircle2, Clock, Pin } from 'lucide-react';
-import { createClientComponentClient } from '@supabase/auth-helpers-nextjs';
+import { supabase } from '@/lib/supabaseClient';
 
 interface ActivitySummaryProps {
     user: AuthUser | null;
@@ -10,7 +10,6 @@ interface ActivitySummaryProps {
 export function ActivitySummary({ user }: ActivitySummaryProps) {
     const [stats, setStats] = useState({ requested: 0, completed: 0 });
     const [loading, setLoading] = useState(true);
-    const supabase = createClientComponentClient();
 
     useEffect(() => {
         const fetchStats = async () => {
@@ -21,13 +20,13 @@ export function ActivitySummary({ user }: ActivitySummaryProps) {
                 const { count: requestedCount, error: reqError } = await supabase
                     .from('tasks')
                     .select('*', { count: 'exact', head: true })
-                    .eq('created_by_id', user.id);
+                    .eq('created_by_id', user.uid);
 
                 // 2. Tasks Completed
                 const { count: completedCount, error: compError } = await supabase
                     .from('tasks')
                     .select('*', { count: 'exact', head: true })
-                    .eq('created_by_id', user.id)
+                    .eq('created_by_id', user.uid)
                     .eq('status', 'done');
 
                 if (!reqError && !compError) {

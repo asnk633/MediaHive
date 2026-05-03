@@ -7,7 +7,9 @@ import { mediaReports } from '@/db/schema';
 import { eq } from 'drizzle-orm';
 import { config } from '@/lib/config';
 import { analyzeMediaQuality } from '@/lib/mediaAnalyzer';
-import { authorizeByPermission } from '@/app/api/_lib/rbac';
+import { withTenantDrizzle } from '@/lib/tenantQuery';
+import { verifyUser } from '@/lib/verifyUser';
+import { and } from 'drizzle-orm';
 import path from 'path';
 import fs from 'fs/promises';
 const { v4: uuidv4 } = require('uuid');
@@ -31,7 +33,7 @@ async function cleanupOldFiles() {
   try {
     const cutoffDate = new Date();
     cutoffDate.setDate(cutoffDate.getDate() - config.MEDIA_UPLOAD_RETENTION_DAYS);
-    
+
     // Clean up old uploads
     const uploadFiles = await fs.readdir(UPLOADS_DIR);
     for (const file of uploadFiles) {
@@ -41,7 +43,7 @@ async function cleanupOldFiles() {
         await fs.unlink(filePath);
       }
     }
-    
+
     // Clean up old reports
     const reportFiles = await fs.readdir(REPORTS_DIR);
     for (const file of reportFiles) {
@@ -68,25 +70,38 @@ export async function POST(request: NextRequest) {
       { status: 404 }
     );
   }
-  
+
   try {
     // Ensure directories exist
     await ensureDirectories();
-    
+
     // Clean up old files
     await cleanupOldFiles();
-    
+
+    // 1. Authorization
+    const user = await verifyUser(request);
+    if (!user) {
+      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+    }
+
+    // Tenant Security guard
+    const tenantId = user.tenant_id;
+    if (!tenantId || tenantId === 'null' || tenantId === 'undefined') {
+      console.error(`[POST /api/media/analyze] ❌ Missing tenant context for user: ${user.uid}`);
+      return NextResponse.json({ error: 'Missing tenant context' }, { status: 403 });
+    }
+
     // Parse multipart form data
     const formData = await request.formData();
     const file = formData.get('file') as File | null;
-    
+
     if (!file) {
       return NextResponse.json(
         { error: 'No file provided' },
         { status: 400 }
       );
     }
-    
+
     // Validate file size
     if (file.size > config.MAX_UPLOAD_SIZE) {
       return NextResponse.json(
@@ -94,25 +109,26 @@ export async function POST(request: NextRequest) {
         { status: 400 }
       );
     }
-    
+
     // Save file temporarily
     const file_id = uuidv4();
     const fileExtension = file.name.split('.').pop() || '';
     const tempFileName = `${file_id}.${fileExtension}`;
     const tempFilePath = path.join(UPLOADS_DIR, tempFileName);
-    
+
     const fileBuffer = Buffer.from(await file.arrayBuffer());
     await fs.writeFile(tempFilePath, fileBuffer);
-    
+
     // Analyze media quality
     const qualityReport = await analyzeMediaQuality(tempFilePath, file.type);
-    
+
     // Save report to database
     const [report] = await db
       .insert(mediaReports)
       .values({
         filename: file.name,
-        uploaderId: 1, // In a real implementation, this would come from the authenticated user
+        uploaderId: user.id,
+        tenantId: tenantId as any,
         type: qualityReport.type,
         score: qualityReport.score,
         reportJson: JSON.stringify(qualityReport),
@@ -120,14 +136,14 @@ export async function POST(request: NextRequest) {
         updated_at: new Date().toISOString(),
       })
       .returning();
-    
+
     // Clean up temporary file
     try {
       await fs.unlink(tempFilePath);
     } catch (cleanupError) {
       console.warn('Temporary file cleanup error:', cleanupError);
     }
-    
+
     return NextResponse.json(qualityReport, { status: 200 });
   } catch (error: unknown) {
     console.error('Media analysis error:', error);
@@ -149,7 +165,7 @@ export async function POST(request: NextRequest) {
 export async function GET(
   request: NextRequest,
   context: { params: Promise<{}> }
-) {  
+) {
   // Check if feature is enabled
   if (!config.FEATURE_MEDIA_ANALYZER) {
     return NextResponse.json(
@@ -157,35 +173,50 @@ export async function GET(
       { status: 404 }
     );
   }
-  
+
   try {
     const params = await context.params as { id: string };
     const id = parseInt(params.id, 10);
-    
+
     if (isNaN(id)) {
       return NextResponse.json(
         { error: 'Invalid report ID' },
         { status: 400 }
       );
     }
-    
-    // Fetch report from database
+
+    // 1. Authorization
+    const user = await verifyUser(request);
+    if (!user) {
+      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+    }
+
+    // Tenant Security guard
+    const tenantId = user.tenant_id;
+    if (!tenantId || tenantId === 'null' || tenantId === 'undefined') {
+      console.error(`[GET /api/media/analyze] ❌ Missing tenant context for user: ${user.uid}`);
+      return NextResponse.json({ error: 'Missing tenant context' }, { status: 403 });
+    }
+
     const reports = await db
       .select()
       .from(mediaReports)
-      .where(eq(mediaReports.id, id))
+      .where(and(
+        eq(mediaReports.id, id),
+        eq(mediaReports.tenantId, tenantId as any)
+      ))
       .limit(1);
-    
+
     if (reports.length === 0) {
       return NextResponse.json(
         { error: 'Report not found' },
         { status: 404 }
       );
     }
-    
+
     const report = reports[0];
     const qualityReport = JSON.parse(report.reportJson as string);
-    
+
     return NextResponse.json(qualityReport, { status: 200 });
   } catch (error: unknown) {
     console.error('Get report error:', error);

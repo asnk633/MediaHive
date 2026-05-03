@@ -11,18 +11,10 @@
  * src/contexts/AuthContext.tsx and I will adapt this wrapper accordingly.
  */
 
-import * as AuthModule from "@/contexts/AuthContextProvider";
+import { useAuth as useAuthHook } from "@/contexts/AuthContextProvider";
 
-// Prefer an actual named useAuth if present
-const useAuthHook = (AuthModule && ((AuthModule as any).useAuth ?? (AuthModule as any).default ?? null)) as any;
-
-// Defensive: if nothing is present, export a stub that returns { user: null }.
-// This avoids crash loops but will hide chrome (as intended) so app still runs.
-export const useAuth =
-  typeof useAuthHook === "function"
-    ? useAuthHook
-    : () => {
-        return { user: null };
-      };
+// Thin re-export so components can import from "@/hooks/useAuth".
+// Standardizing on the named export from the central AuthContext.
+export const useAuth = useAuthHook;
 
 export default useAuth;

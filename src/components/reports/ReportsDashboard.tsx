@@ -9,6 +9,8 @@ import { Skeleton } from '@/components/ui/skeleton';
 import { BarChart3, Calendar, FileText, TrendingUp, Users, List, LayoutDashboard, History, Activity, Download } from "lucide-react";
 import { Badge } from '@/components/ui/badge';
 import { formatDistanceToNow } from 'date-fns';
+import { DropdownSelector } from '@/components/ui/selectors/DropdownSelector';
+import { AlertCircle, Clock, CheckCircle } from 'lucide-react';
 
 interface ReportOverview {
     totalTasks: number;
@@ -31,6 +33,18 @@ interface ActivityItem {
 
 import { useRouter } from 'next/navigation';
 import { nativeNavigate } from '@/lib/utils';
+
+// Helper for safe date formatting
+function safeFormatDistanceToNow(dateStr: string | undefined | null) {
+    if (!dateStr) return 'some time ago';
+    try {
+        const date = new Date(dateStr);
+        if (isNaN(date.getTime())) return 'some time ago';
+        return formatDistanceToNow(date, { addSuffix: true });
+    } catch (e) {
+        return 'some time ago';
+    }
+}
 
 export default function ReportsDashboard() {
     const router = useRouter();
@@ -176,27 +190,33 @@ export default function ReportsDashboard() {
                         {/* Row 1: Primary Filters */}
                         <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-2">
                             <div className="flex flex-col md:flex-row space-y-2 md:space-y-0 md:space-x-2 w-full md:w-auto">
-                                <select
-                                    value={filterSeverity}
-                                    onChange={(e) => setFilterSeverity(e.target.value)}
-                                    className="bg-[#0f121a] border border-[#ffffff1a] text-white/70 text-sm rounded px-3 py-2 md:py-1 w-full md:w-auto focus:outline-none focus:border-blue-500"
-                                >
-                                    <option value="">All Severity</option>
-                                    <option value="info">Info</option>
-                                    <option value="warning">Warning</option>
-                                    <option value="critical">Critical</option>
-                                </select>
+                                <div className="space-y-0.5">
+                                    <DropdownSelector 
+                                        label="Severity"
+                                        value={filterSeverity}
+                                        onChange={setFilterSeverity}
+                                        options={[
+                                            { id: '', label: 'All Severity' },
+                                            { id: 'info', label: 'Info', icon: <AlertCircle size={14} className="text-blue-400" /> },
+                                            { id: 'warning', label: 'Warning', icon: <AlertCircle size={14} className="text-orange-400" /> },
+                                            { id: 'critical', label: 'Critical', icon: <AlertCircle size={14} className="text-red-400" /> },
+                                        ]}
+                                    />
+                                </div>
 
-                                <select
-                                    value={selectedPeriod}
-                                    onChange={(e) => setSelectedPeriod(e.target.value)}
-                                    className="bg-[#0f121a] border border-[#ffffff1a] text-white/70 text-sm rounded px-3 py-2 md:py-1 w-full md:w-auto focus:outline-none focus:border-blue-500"
-                                >
-                                    <option value="7d">Last 7 Days</option>
-                                    <option value="30d">Last 30 Days</option>
-                                    <option value="60d">Last 60 Days (Default)</option>
-                                    <option value="all">All Time</option>
-                                </select>
+                                <div className="space-y-0.5">
+                                    <DropdownSelector 
+                                        label="Period"
+                                        value={selectedPeriod}
+                                        onChange={setSelectedPeriod}
+                                        options={[
+                                            { id: '7d', label: 'Last 7 Days', icon: <Clock size={14} /> },
+                                            { id: '30d', label: 'Last 30 Days', icon: <Clock size={14} /> },
+                                            { id: '60d', label: 'Last 60 Days', icon: <Clock size={14} /> },
+                                            { id: 'all', label: 'All Time', icon: <Clock size={14} /> },
+                                        ]}
+                                    />
+                                </div>
                             </div>
 
                             <button
@@ -279,7 +299,7 @@ export default function ReportsDashboard() {
                                                 <div className="flex items-center justify-between">
                                                     <p className="font-medium text-white text-sm">{item.title}</p>
                                                     <span className="text-xs text-slate-500 whitespace-nowrap">
-                                                        {formatDistanceToNow(new Date(item.timestamp), { addSuffix: true })}
+                                                        {safeFormatDistanceToNow(item.timestamp)}
                                                     </span>
                                                 </div>
                                                 <p className="text-sm text-slate-400">{item.description}</p>

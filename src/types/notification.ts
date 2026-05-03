@@ -50,6 +50,7 @@ export interface AppNotification {
     action_url?: string;       // Navigation intent
     priority: NotificationPriority;
     read: boolean;             // isRead -> read
+    tenant_id: string;         // 🔒 Multi-tenant isolation
     created_at: TimestampLike; // Configurable for client/server
     metadata?: Record<string, any>; // Flexible payload for extra data
 }
@@ -65,5 +66,6 @@ export interface CreateNotificationParams {
     entity_id: string;
     action_url?: string;
     priority?: NotificationPriority;
+    tenant_id?: string;
     metadata?: Record<string, any>;
 }

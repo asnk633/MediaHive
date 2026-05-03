@@ -1,0 +1,121 @@
+﻿
+≡ƒöÄ MediaHive Architecture Guard scanning...
+
+ΓÜá∩╕Å  Architecture violations detected (23):
+
+Γ¥î Cross-Feature Violation
+   File: src\features\campaigns\services\campaignService.ts:2
+   Import: @/features/tasks/types/task
+   Issue: Feature "campaigns" is importing directly from "tasks". Use @/services instead.
+
+Γ¥î Cross-Feature Violation
+   File: src\features\dashboard\components\ActiveCampaignsWidget.tsx:6
+   Import: @/features/campaigns/services/campaignService
+   Issue: Feature "dashboard" is importing directly from "campaigns". Use @/services instead.
+
+Γ¥î Cross-Feature Violation
+   File: src\features\dashboard\components\ActiveCampaignsWidget.tsx:7
+   Import: @/features/campaigns/types/campaign
+   Issue: Feature "dashboard" is importing directly from "campaigns". Use @/services instead.
+
+Γ¥î Cross-Feature Violation
+   File: src\features\dashboard\components\ActiveCampaignsWidget.tsx:10
+   Import: @/features/campaigns/hooks/useCampaigns
+   Issue: Feature "dashboard" is importing directly from "campaigns". Use @/services instead.
+
+Γ¥î Cross-Feature Violation
+   File: src\features\dashboard\components\ActivityFeed.tsx:2
+   Import: @/features/tasks/types/task
+   Issue: Feature "dashboard" is importing directly from "tasks". Use @/services instead.
+
+Γ¥î Cross-Feature Violation
+   File: src\features\dashboard\components\AdminOversightWidget.tsx:4
+   Import: @/features/tasks/types/task
+   Issue: Feature "dashboard" is importing directly from "tasks". Use @/services instead.
+
+Γ¥î Cross-Feature Violation
+   File: src\features\dashboard\components\AdminOversightWidget.tsx:5
+   Import: @/features/events/types/event
+   Issue: Feature "dashboard" is importing directly from "events". Use @/services instead.
+
+Γ¥î Cross-Feature Violation
+   File: src\features\dashboard\components\DueSoonWidget.tsx:2
+   Import: @/features/tasks/types/task
+   Issue: Feature "dashboard" is importing directly from "tasks". Use @/services instead.
+
+Γ¥î Cross-Feature Violation
+   File: src\features\dashboard\components\EventsNext7DaysWidget.tsx:4
+   Import: @/features/events/types/event
+   Issue: Feature "dashboard" is importing directly from "events". Use @/services instead.
+
+Γ¥î Cross-Feature Violation
+   File: src\features\dashboard\components\GuestActivityFeed.tsx:2
+   Import: @/features/tasks/types/task
+   Issue: Feature "dashboard" is importing directly from "tasks". Use @/services instead.
+
+Γ¥î Cross-Feature Violation
+   File: src\features\dashboard\components\MyFocusWidget.tsx:2
+   Import: @/features/tasks/types/task
+   Issue: Feature "dashboard" is importing directly from "tasks". Use @/services instead.
+
+Γ¥î Cross-Feature Violation
+   File: src\features\dashboard\components\MyFocusWidget.tsx:3
+   Import: @/features/tasks/components/TaskItem
+   Issue: Feature "dashboard" is importing directly from "tasks". Use @/services instead.
+
+Γ¥î Cross-Feature Violation
+   File: src\features\dashboard\components\MyFocusWidget.tsx:8
+   Import: @/features/tasks/components/HomeTaskRow
+   Issue: Feature "dashboard" is importing directly from "tasks". Use @/services instead.
+
+Γ¥î Cross-Feature Violation
+   File: src\features\dashboard\components\MyFocusWidget.tsx:11
+   Import: @/features/tasks/services/taskService
+   Issue: Feature "dashboard" is importing directly from "tasks". Use @/services instead.
+
+Γ¥î Cross-Feature Violation
+   File: src\features\dashboard\components\MyWorkflowWidget.tsx:2
+   Import: @/features/tasks/types/task
+   Issue: Feature "dashboard" is importing directly from "tasks". Use @/services instead.
+
+Γ¥î Cross-Feature Violation
+   File: src\features\dashboard\components\TasksFromMeWidget.tsx:2
+   Import: @/features/tasks/types/task
+   Issue: Feature "dashboard" is importing directly from "tasks". Use @/services instead.
+
+Γ¥î Cross-Feature Violation
+   File: src\features\dashboard\components\TimelineWidget.tsx:2
+   Import: @/features/tasks/types/task
+   Issue: Feature "dashboard" is importing directly from "tasks". Use @/services instead.
+
+Γ¥î Cross-Feature Violation
+   File: src\features\dashboard\components\TimelineWidget.tsx:3
+   Import: @/features/events/types/event
+   Issue: Feature "dashboard" is importing directly from "events". Use @/services instead.
+
+Γ¥î Cross-Feature Violation
+   File: src\features\dashboard\hooks\useDashboardMetrics.ts:2
+   Import: @/features/tasks/types/task
+   Issue: Feature "dashboard" is importing directly from "tasks". Use @/services instead.
+
+Γ¥î Cross-Feature Violation
+   File: src\features\events\services\eventService.ts:2
+   Import: @/features/tasks/types/task
+   Issue: Feature "events" is importing directly from "tasks". Use @/services instead.
+
+Γ¥î Direct-API Violation
+   File: src\lib\audit.ts:3
+   Import: @/app/api/_lib/audit
+   Issue: UI components must use services instead of importing from @/app/api directly.
+
+Γ¥î Direct-API Violation
+   File: src\lib\server\activity-logger.ts:2
+   Import: @/app/api/_lib/audit
+   Issue: UI components must use services instead of importing from @/app/api directly.
+
+Γ¥î Direct-API Violation
+   File: src\server\knowledgeGraph\realtime.ts:4
+   Import: @/app/api/_lib/realtime
+   Issue: UI components must use services instead of importing from @/app/api directly.
+
+Scan completed in 0.09s with failures.

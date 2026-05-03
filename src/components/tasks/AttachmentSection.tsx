@@ -1,5 +1,5 @@
 import React from 'react';
-import { Task, TaskFile, TaskFileSection, AttachmentLog } from '@/types/task';
+import { Task, TaskFile, TaskFileSection, AttachmentLog } from '@/features/tasks/types/task';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Download, UploadCloud, FileIcon, Trash2, Lock, Eye, CheckCircle, EyeOff, Activity, Clock } from 'lucide-react';
@@ -14,6 +14,7 @@ import { supabase } from '@/lib/supabaseClient';
 import { v4 as uuidv4 } from 'uuid';
 import { cn } from '@/lib/utils';
 import { AttachmentActivityLog } from './AttachmentActivityLog';
+import { TaskService } from '@/features/tasks/services/taskService';
 
 interface AttachmentSectionProps {
     task: Task;
@@ -35,7 +36,7 @@ export const AttachmentSection: React.FC<AttachmentSectionProps> = ({ task, onUp
 
     // Permission Logic
     const isCreator = user?.uid === (typeof task.created_by === 'string' ? task.created_by : task.created_by?.uid);
-    const isTeam = user?.role === 'team' || user?.role === 'admin';
+    const isTeam = (user?.role === 'manager' || user?.role === 'member') || user?.role === 'admin';
     const isAdmin = user?.role === 'admin';
 
     const canUploadInputs = user && (isAdmin || isCreator);
@@ -73,7 +74,7 @@ export const AttachmentSection: React.FC<AttachmentSectionProps> = ({ task, onUp
             };
 
             const updatedFiles = [...(task.files || []), newFile];
-            await supabase.from('tasks').update({ files: updatedFiles }).eq('id', task.id);
+            await TaskService.updateTask(task.id, { files: updatedFiles });
 
             toast.success('File uploaded successfully');
             onUpdate();
@@ -96,7 +97,7 @@ export const AttachmentSection: React.FC<AttachmentSectionProps> = ({ task, onUp
         if (!confirm('Are you sure you want to delete this file?')) return;
         try {
             const updatedFiles = (task.files || []).filter((f: any) => f.id !== file_id);
-            await supabase.from('tasks').update({ files: updatedFiles }).eq('id', task.id);
+            await TaskService.updateTask(task.id, { files: updatedFiles });
 
             toast.success('File deleted');
             onUpdate();
@@ -112,7 +113,7 @@ export const AttachmentSection: React.FC<AttachmentSectionProps> = ({ task, onUp
             const updatedFiles = (task.files || []).map((f: any) =>
                 f.id === file_id ? { ...f, show_in_downloads: newVal } : f
             );
-            await supabase.from('tasks').update({ files: updatedFiles }).eq('id', task.id);
+            await TaskService.updateTask(task.id, { files: updatedFiles });
             toast.success(newVal ? 'File is now Public' : 'File is now Private');
             onUpdate();
         } catch (e) {
@@ -141,7 +142,7 @@ export const AttachmentSection: React.FC<AttachmentSectionProps> = ({ task, onUp
                                         <Eye size={8} /> Public
                                     </Badge>
                                 ) : (
-                                    <Badge variant="neutral" className="text-[9px] h-4 bg-white/5 text-white/30 border-0 px-1 hidden sm:inline-flex gap-1 items-center">
+                                    <Badge variant="neutral" className="text-[9px] h-4 bg-white/5 text-white/50 border-0 px-1 hidden sm:inline-flex gap-1 items-center">
                                         <Lock size={8} /> Private
                                     </Badge>
                                 )}
@@ -156,7 +157,7 @@ export const AttachmentSection: React.FC<AttachmentSectionProps> = ({ task, onUp
                     <div className="flex items-center gap-2">
                         {showToggle && canUploadTeam && (
                             <div className="flex items-center gap-2 mr-2 border-r border-white/10 pr-2">
-                                <span className={`text-[10px] font-medium uppercase ${file.show_in_downloads ? 'text-green-400' : 'text-white/30'}`}>
+                                <span className={`text-[10px] font-medium uppercase ${file.show_in_downloads ? 'text-green-400' : 'text-white/50'}`}>
                                     {file.show_in_downloads ? 'Public' : 'Private'}
                                 </span>
                                 <Switch

@@ -1,8 +1,10 @@
 "use client";
 
 import { useState, useEffect } from 'react';
-import { X, Download, FileText, Calendar, Users, Building, ShieldAlert } from 'lucide-react';
+import { X, Download, FileText, Calendar, Users, Building, ShieldAlert, User } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
+import { DateSelector } from '@/components/ui/selectors/DateSelector';
+import { DropdownSelector } from '@/components/ui/selectors/DropdownSelector';
 
 type ExportType = 'department' | 'attendance' | 'user';
 type ExportFormat = 'csv' | 'json';
@@ -177,50 +179,44 @@ export function ExportModal({ isOpen, onClose, availableUsers }: ExportModalProp
 
                                     {exportType === 'attendance' ? (
                                         <div className="grid grid-cols-2 gap-3">
-                                            <div>
-                                                <label className="text-xs text-gray-500 mb-1.5 block">From Date</label>
-                                                <input
-                                                    type="date"
-                                                    value={dateFrom}
-                                                    onChange={(e) => setDateFrom(e.target.value)}
-                                                    className="w-full bg-black/20 border border-[#ffffff1a] rounded-lg px-3 py-2 text-sm text-white focus:outline-none focus:border-indigo-500"
+                                            <div className="space-y-0.5">
+                                                <DateSelector 
+                                                    label="From Date"
+                                                    date={dateFrom ? new Date(dateFrom) : undefined}
+                                                    onChange={date => setDateFrom(date ? date.toISOString().split('T')[0] : '')}
                                                 />
                                             </div>
-                                            <div>
-                                                <label className="text-xs text-gray-500 mb-1.5 block">To Date</label>
-                                                <input
-                                                    type="date"
-                                                    value={dateTo}
-                                                    onChange={(e) => setDateTo(e.target.value)}
-                                                    className="w-full bg-black/20 border border-[#ffffff1a] rounded-lg px-3 py-2 text-sm text-white focus:outline-none focus:border-indigo-500"
+                                            <div className="space-y-0.5">
+                                                <DateSelector 
+                                                    label="To Date"
+                                                    date={dateTo ? new Date(dateTo) : undefined}
+                                                    onChange={date => setDateTo(date ? date.toISOString().split('T')[0] : '')}
+                                                    disabledBefore={dateFrom ? new Date(dateFrom) : undefined}
                                                 />
                                             </div>
                                         </div>
                                     ) : (
-                                        <div>
-                                            <label className="text-xs text-gray-500 mb-1.5 block">Period</label>
-                                            <input
-                                                type="month"
-                                                value={period}
-                                                onChange={(e) => setPeriod(e.target.value)}
-                                                className="w-full bg-black/20 border border-[#ffffff1a] rounded-lg px-3 py-2 text-sm text-white focus:outline-none focus:border-indigo-500"
+                                        <div className="space-y-0.5">
+                                            <DateSelector 
+                                                label="Period"
+                                                date={period ? new Date(period + "-01") : new Date()}
+                                                onChange={date => setPeriod(date ? date.toISOString().slice(0, 7) : '')}
                                             />
                                         </div>
                                     )}
 
                                     {exportType === 'user' && (
-                                        <div>
-                                            <label className="text-xs text-gray-500 mb-1.5 block">Team Member</label>
-                                            <select
-                                                value={selectedUserId}
-                                                onChange={(e) => setSelectedUserId(Number(e.target.value))}
-                                                className="w-full bg-black/20 border border-[#ffffff1a] rounded-lg px-3 py-2 text-sm text-white focus:outline-none focus:border-indigo-500"
-                                            >
-                                                <option value="">Select a user...</option>
-                                                {availableUsers.map(user => (
-                                                    <option key={user.id} value={user.id}>{user.name}</option>
-                                                ))}
-                                            </select>
+                                        <div className="space-y-0.5">
+                                            <DropdownSelector 
+                                                label="Team Member"
+                                                value={selectedUserId.toString()}
+                                                onChange={val => setSelectedUserId(Number(val))}
+                                                options={availableUsers.map(user => ({
+                                                    id: user.id.toString(),
+                                                    label: user.name,
+                                                    icon: <User size={14} />
+                                                }))}
+                                            />
                                         </div>
                                     )}
                                 </div>

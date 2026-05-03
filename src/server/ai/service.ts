@@ -157,9 +157,9 @@ export class AIService {
       
       // Find a user who is likely available
       const suggestedUser = tenantUsers.find(user => 
-        user.role === 'team' && 
+        (user.role === 'manager' || user.role === 'member') && 
         user.fullName.toLowerCase().includes('anvar')
-      ) || tenantUsers.find(user => user.role === 'team');
+      ) || tenantUsers.find(user => (user.role === 'manager' || user.role === 'member'));
       
       if (suggestedUser) {
         return {

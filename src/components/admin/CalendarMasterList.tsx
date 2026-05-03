@@ -3,13 +3,14 @@
 import React, { useState, useEffect, useMemo } from 'react';
 import { format } from 'date-fns';
 import { Search, Trash2, Edit2, Archive, CheckCircle2, XCircle, Bell, AlertTriangle } from 'lucide-react';
-import { SystemEventService } from '@/services/systemEventService';
-import { SystemEvent } from '@/types/systemEvent';
+import { SystemEventService } from '@/features/events/services/systemEventService';
+import { SystemEvent } from '@/features/events/types/systemEvent';
 import { toast } from 'sonner';
 import { CreateEventModal } from '@/components/library/organisms/CreateEventModal';
 import { EventEditModal } from '@/components/events/EventEditModal';
-import { Event } from '@/types/event'; // Need Event type compatibility for EditModal
+import { Event } from '@/features/events/types/event'; // Need Event type compatibility for EditModal
 import { apiClient } from '@/lib/apiClient';
+import { DropdownSelector } from '@/components/ui/selectors/DropdownSelector';
 
 export function CalendarMasterList() {
     const [events, setEvents] = useState<SystemEvent[]>([]);
@@ -158,8 +159,8 @@ export function CalendarMasterList() {
             title: sysEvent.title,
             description: sysEvent.description || '',
             date: sysEvent.date!,
-            start_time: sysEvent.date!, // Approximate, system events are usually all day or specific
-            end_time: sysEvent.date!,
+            start_at: getSafeDate(sysEvent.date).toISOString(),
+            end_at: getSafeDate(sysEvent.date).toISOString(),
             location: '',
             type: sysEvent.type as any,
             status: 'approved',
@@ -198,15 +199,18 @@ export function CalendarMasterList() {
                         Show Disabled
                     </label>
 
-                    <select
-                        value={selectedYear}
-                        onChange={(e) => setSelectedYear(Number(e.target.value))}
-                        className="bg-white/5 border border-[#ffffff1a] text-white text-sm rounded-lg px-3 py-2 outline-none"
-                    >
-                        <option value={2024}>2024</option>
-                        <option value={2025}>2025</option>
-                        <option value={2026}>2026</option>
-                    </select>
+                    <div className="space-y-0.5">
+                        <DropdownSelector 
+                            label="Year"
+                            value={selectedYear.toString()}
+                            onChange={val => setSelectedYear(Number(val))}
+                            options={[
+                                { id: '2024', label: '2024' },
+                                { id: '2025', label: '2025' },
+                                { id: '2026', label: '2026' }
+                            ]}
+                        />
+                    </div>
 
                     <button
                         onClick={() => setIsCreateOpen(true)}
@@ -343,7 +347,7 @@ export function CalendarMasterList() {
 
                             {filteredEvents.length === 0 && (
                                 <tr>
-                                    <td colSpan={6} className="p-8 text-center text-white/30 italic">
+                                    <td colSpan={6} className="p-8 text-center text-white/50 italic">
                                         No events found for {selectedYear}
                                     </td>
                                 </tr>

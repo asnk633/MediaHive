@@ -1,7 +1,7 @@
 import React from 'react';
 import { Search, ArrowUpDown, Filter } from 'lucide-react';
 import { Input } from '@/components/ui/input';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { DropdownSelector } from '@/components/ui/selectors/DropdownSelector';
 
 export type SortOption = 'name_asc' | 'name_desc' | 'category' | 'status' | 'date_newest' | 'date_oldest' | 'qty_low_high' | 'qty_high_low';
 
@@ -41,58 +41,32 @@ export const InventoryFilters: React.FC<InventoryFiltersProps> = ({
             <div className="flex gap-4 w-full md:w-auto">
                 {/* Sort Dropdown */}
                 <div className="flex-1 md:w-[180px]">
-                    <Select value={sortBy} onValueChange={(v) => onSortChange(v as SortOption)}>
-                        <SelectTrigger className="h-11 bg-slate-900/50 border-[#ffffff1a] text-slate-200 rounded-xl focus:ring-blue-500/20 hover:bg-white/[0.02] transition-colors">
-                            <div className="flex items-center gap-2 truncate">
-                                <ArrowUpDown className="w-4 h-4 text-slate-400" />
-                                <span className="truncate">
-                                    {sortBy === 'name_asc' && "Name (A-Z)"}
-                                    {sortBy === 'name_desc' && "Name (Z-A)"}
-                                    {sortBy === 'category' && "Category"}
-                                    {sortBy === 'status' && "Status"}
-                                    {sortBy === 'date_newest' && "Newest First"}
-                                    {sortBy === 'date_oldest' && "Oldest First"}
-                                    {sortBy === 'qty_low_high' && "Qty (Low-High)"}
-                                    {sortBy === 'qty_high_low' && "Qty (High-Low)"}
-                                </span>
-                            </div>
-                        </SelectTrigger>
-                        <SelectContent className="bg-slate-900 border-[#ffffff1a] rounded-xl">
-                            <SelectItem value="name_asc">Name (A-Z)</SelectItem>
-                            <SelectItem value="name_desc">Name (Z-A)</SelectItem>
-                            <SelectItem value="category">Category</SelectItem>
-                            <SelectItem value="status">Status</SelectItem>
-                            <SelectItem value="date_newest">Newest First</SelectItem>
-                            <SelectItem value="date_oldest">Oldest First</SelectItem>
-                            <SelectItem value="qty_low_high">Qty (Low-High)</SelectItem>
-                            <SelectItem value="qty_high_low">Qty (High-Low)</SelectItem>
-                        </SelectContent>
-                    </Select>
+                    <DropdownSelector 
+                        value={sortBy}
+                        onChange={(v) => onSortChange(v as SortOption)}
+                        options={[
+                            { id: 'name_asc', label: 'Name (A-Z)', icon: <ArrowUpDown className="w-4 h-4" /> },
+                            { id: 'name_desc', label: 'Name (Z-A)', icon: <ArrowUpDown className="w-4 h-4" /> },
+                            { id: 'category', label: 'Category', icon: <ArrowUpDown className="w-4 h-4" /> },
+                            { id: 'status', label: 'Status', icon: <ArrowUpDown className="w-4 h-4" /> },
+                            { id: 'date_newest', label: 'Newest First', icon: <ArrowUpDown className="w-4 h-4" /> },
+                            { id: 'date_oldest', label: 'Oldest First', icon: <ArrowUpDown className="w-4 h-4" /> },
+                            { id: 'qty_low_high', label: 'Qty (Low-High)', icon: <ArrowUpDown className="w-4 h-4" /> },
+                            { id: 'qty_high_low', label: 'Qty (High-Low)', icon: <ArrowUpDown className="w-4 h-4" /> },
+                        ]}
+                    />
                 </div>
 
                 {/* Category Dropdown */}
                 <div className="flex-1 md:w-[200px]">
-                    <Select
+                    <DropdownSelector 
                         value={category || "all"}
-                        onValueChange={(v) => onCategoryChange(v === "all" ? null : v)}
-                    >
-                        <SelectTrigger className="h-11 bg-slate-900/50 border-[#ffffff1a] text-slate-200 rounded-xl focus:ring-blue-500/20 hover:bg-white/[0.02] transition-colors">
-                            <div className="flex items-center gap-2 truncate">
-                                <Filter className="w-4 h-4 text-slate-400" />
-                                <span className="truncate">
-                                    {category || "All Categories"}
-                                </span>
-                            </div>
-                        </SelectTrigger>
-                        <SelectContent className="bg-slate-900 border-[#ffffff1a] rounded-xl max-h-[300px]">
-                            <SelectItem value="all">All Categories</SelectItem>
-                            {categories.map((cat) => (
-                                <SelectItem key={cat} value={cat}>
-                                    {cat}
-                                </SelectItem>
-                            ))}
-                        </SelectContent>
-                    </Select>
+                        onChange={(v) => onCategoryChange(v === "all" ? null : v)}
+                        options={[
+                            { id: 'all', label: 'All Categories', icon: <Filter className="w-4 h-4" /> },
+                            ...categories.map(cat => ({ id: cat, label: cat, icon: <Filter className="w-4 h-4" /> }))
+                        ]}
+                    />
                 </div>
             </div>
         </div>

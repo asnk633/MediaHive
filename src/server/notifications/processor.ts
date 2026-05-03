@@ -1,4 +1,4 @@
-import { getSupabaseAdmin } from "@/lib/server-utils";
+import { getSupabaseAdmin } from "@/lib/server/server-utils";
 
 /**
  * Notification Processor (Supabase-Native)

@@ -81,9 +81,9 @@ export const LeaveRejectionModal: React.FC<LeaveRejectionModalProps> = ({
                             onChange={(e) => setReason(e.target.value)}
                             rows={4}
                             placeholder="e.g., Insufficient notice, overlapping with critical project deadline..."
-                            className="w-full bg-[#0a0c10] text-white placeholder:text-white/30 border border-[#ffffff1a] rounded-xl py-3 px-4 outline-none transition-all focus:border-red-500/50 focus:ring-4 focus:ring-red-500/10 resize-none"
+                            className="w-full bg-[#0a0c10] text-white placeholder:text-white/50 border border-[#ffffff1a] rounded-xl py-3 px-4 outline-none transition-all focus:border-red-500/50 focus:ring-4 focus:ring-red-500/10 resize-none"
                         />
-                        <p className="text-xs text-white/30 mt-1">
+                        <p className="text-xs text-white/50 mt-1">
                             {reason.length}/10 characters minimum
                         </p>
                     </div>

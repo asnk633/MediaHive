@@ -3,6 +3,8 @@
 import { useState, useEffect } from 'react';
 import { apiClient } from '@/lib/apiClient';
 import { updateRole } from '@/services/roleService';
+import { DropdownSelector } from '@/components/ui/selectors/DropdownSelector';
+import { Shield, User as UserIcon, ShieldAlert } from 'lucide-react';
 
 interface User {
   uid: string;
@@ -106,23 +108,24 @@ const UserRoleManager = () => {
                 <td className="py-2 px-4 border-b">
                   <span className={`px-2 py-1 rounded text-xs ${
                     user.role === 'admin' ? 'bg-red-200 text-red-800' :
-                    user.role === 'team' ? 'bg-blue-200 text-blue-800' :
+                    (user.role === 'manager' || user.role === 'member') ? 'bg-blue-200 text-blue-800' :
                     'bg-gray-200 text-gray-800'
                   }`}>
                     {user.role}
                   </span>
                 </td>
-                <td className="py-2 px-4 border-b">
-                  <select
+                 <td className="py-2 px-4 border-b">
+                  <DropdownSelector 
+                    label=""
                     value={user.role}
-                    onChange={(e) => handleRoleChange(user.uid, e.target.value)}
+                    onChange={(val) => handleRoleChange(user.uid, val)}
                     disabled={updating[user.uid]}
-                    className="border rounded px-2 py-1 text-sm"
-                  >
-                    <option value="guest">guest</option>
-                    <option value="team">team</option>
-                    <option value="admin">admin</option>
-                  </select>
+                    options={[
+                      { id: 'guest', label: 'guest', icon: <UserIcon size={14} /> },
+                      { id: 'team', label: 'team', icon: <Shield size={14} /> },
+                      { id: 'admin', label: 'admin', icon: <ShieldAlert size={14} className="text-red-400" /> },
+                    ]}
+                  />
                   {updating[user.uid] && <span className="ml-2 text-xs">Updating...</span>}
                 </td>
               </tr>

@@ -1,8 +1,14 @@
 "use client";
 
+import { useState } from "react";
 import ModalBase from "@/components/ModalBase";
+import { DateSelector } from "@/components/ui/selectors/DateSelector";
+import { TimeSelector } from "@/components/ui/selectors/TimeSelector";
+import { format } from "date-fns";
 
 export default function EditEventModalAdmin({ open, onClose }: { open: boolean; onClose: () => void; }) {
+  const [start, setStart] = useState("2023-10-26T10:00");
+  const [end, setEnd] = useState("2023-10-26T11:30");
   if (!open) return null;
   return (
     <ModalBase open={open} onClose={onClose}>
@@ -22,15 +28,57 @@ export default function EditEventModalAdmin({ open, onClose }: { open: boolean; 
           </label>
         </section>
         <section className="rounded-lg bg-[#2c2c2c] p-4 shadow-lg">
-          <div className="flex flex-wrap items-end gap-4">
-            <label className="flex min-w-[150px] flex-1 flex-col">
-              <p className="pb-2 text-base font-bold">Start Date/Time*</p>
-              <input type="datetime-local" defaultValue="2023-10-26T10:00" className="h-12 rounded-lg bg-[#121212] px-4" />
-            </label>
-            <label className="flex min-w-[150px] flex-1 flex-col">
-              <p className="pb-2 text-base font-bold">End Date/Time*</p>
-              <input type="datetime-local" defaultValue="2023-10-26T11:30" className="h-12 rounded-lg bg-[#121212] px-4" />
-            </label>
+          <div className="grid grid-cols-2 gap-4">
+            <div className="space-y-4">
+              <DateSelector 
+                label="Start Date"
+                date={new Date(start)}
+                onChange={(date) => {
+                  if (!date) return;
+                  const newDate = new Date(date);
+                  const current = new Date(start);
+                  newDate.setHours(current.getHours());
+                  newDate.setMinutes(current.getMinutes());
+                  setStart(newDate.toISOString());
+                }}
+              />
+              <TimeSelector 
+                label="Start Time"
+                value={format(new Date(start), "HH:mm")}
+                onChange={(time) => {
+                  const [h, m] = time.split(':').map(Number);
+                  const newDate = new Date(start);
+                  newDate.setHours(h);
+                  newDate.setMinutes(m);
+                  setStart(newDate.toISOString());
+                }}
+              />
+            </div>
+            <div className="space-y-4">
+              <DateSelector 
+                label="End Date"
+                date={new Date(end)}
+                onChange={(date) => {
+                  if (!date) return;
+                  const newDate = new Date(date);
+                  const current = new Date(end);
+                  newDate.setHours(current.getHours());
+                  newDate.setMinutes(current.getMinutes());
+                  setEnd(newDate.toISOString());
+                }}
+              />
+              <TimeSelector 
+                label="End Time"
+                value={format(new Date(end), "HH:mm")}
+                onChange={(time) => {
+                  const [h, m] = time.split(':').map(Number);
+                  const newDate = new Date(end);
+                  newDate.setHours(h);
+                  newDate.setMinutes(m);
+                  setEnd(newDate.toISOString());
+                }}
+              />
+            </div>
           </div>
           <label className="mt-4 flex flex-col">
             <p className="pb-2 text-base font-bold">Location / Meeting Link</p>

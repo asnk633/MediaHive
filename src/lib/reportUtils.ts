@@ -1,4 +1,4 @@
-import { Task } from "@/types/task";
+import { Task } from "@/features/tasks/types/task";
 import { format } from "date-fns";
 // Manual CSV generator to avoid extra deps
 export function generateTaskCSV(tasks: Task[]): string {

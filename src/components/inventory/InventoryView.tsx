@@ -6,33 +6,44 @@ import { PageHeader } from "@/components/ui/layout/PageHeader";
 import { InventoryGrid } from './InventoryGrid';
 import { InventoryDetailDialog } from './InventoryDetailDialog';
 import { InventoryFilters, SortOption } from './InventoryFilters';
-import { InventoryItem, InventoryApiResponse, INVENTORY_CATEGORIES, INVENTORY_GUIDE, InventoryIssue } from '@/types/inventory';
-import { apiClient } from '@/lib/apiClient';
+import { EquipmentItem, InventoryIssueClean, InventoryRequestClean } from '@/services/inventory/inventoryContract';
+import { InventoryItem, INVENTORY_GUIDE, INVENTORY_CATEGORIES } from '@/types/inventory';
+import { inventoryService } from '@/services/inventory/inventoryService';
+import { inventoryIssueService } from '@/services/inventory/inventoryIssueService';
+import { inventoryRequestService } from '@/services/inventory/inventoryRequestService';
 import { useAuth } from '@/contexts/AuthContextProvider';
+import { useWorkspace } from '@/system/workspace/WorkspaceProvider';
 import { toast } from 'sonner';
 import { Button } from '@/components/ui/button';
-import { Plus, Clock, ChevronDown, ChevronUp, Info, FileDown } from 'lucide-react';
+import { Clock, FileDown, Plus, Info, ChevronUp, ChevronDown } from 'lucide-react';
+import { Collapsible, CollapsibleContent, CollapsibleTrigger } from '@/components/ui/collapsible';
 import { nativeNavigate } from '@/lib/utils';
-import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/components/ui/collapsible";
 import { InventoryRequestDialog } from './InventoryRequestDialog';
 import { IssueItemDialog } from './IssueItemDialog';
 import { ReturnItemDialog } from './ReturnItemDialog';
-import { inventoryIssueService } from '@/services/inventoryIssueService';
-import { inventoryRequestService } from '@/services/inventoryRequestService';
+import { EquipmentBookingDialog } from './EquipmentBookingDialog';
+import { EquipmentScheduleWidget } from './EquipmentScheduleWidget';
+
+import { usePermissions } from '@/hooks/usePermissions';
 
 export default function InventoryView() {
     const { user } = useAuth();
+    const { currentWorkspaceId } = useWorkspace();
     const router = useRouter();
-    const [items, setItems] = useState<InventoryItem[]>([]);
+    const [items, setItems] = useState<EquipmentItem[]>([]);
+    const [selectedItem, setSelectedItem] = useState<EquipmentItem | null>(null);
     const [loading, setLoading] = useState(true);
-    const [activeIssues, setActiveIssues] = useState<InventoryIssue[]>([]);
+    const [activeIssues, setActiveIssues] = useState<InventoryIssueClean[]>([]);
     const [myRequests, setMyRequests] = useState<Set<string>>(new Set()); // Set of Item IDs
+    const { role: currentRole } = usePermissions();
 
     // Dialog States
-    const [requestDialogItem, setRequestDialogItem] = useState<InventoryItem | null>(null);
-    const [issueDialogItem, setIssueDialogItem] = useState<InventoryItem | null>(null);
-    const [returnDialogIssue, setReturnDialogIssue] = useState<InventoryIssue | null>(null);
-    const [viewItem, setViewItem] = useState<InventoryItem | null>(null);
+    const [requestDialogItem, setRequestDialogItem] = useState<EquipmentItem | null>(null);
+    const [issueDialogItem, setIssueDialogItem] = useState<EquipmentItem | null>(null);
+    const [bookingDialogItem, setBookingDialogItem] = useState<EquipmentItem | null>(null);
+    const [returnDialogIssue, setReturnDialogIssue] = useState<InventoryIssueClean | null>(null);
+    const [viewItem, setViewItem] = useState<EquipmentItem | null>(null);
+    const [activeTab, setActiveTab] = useState<'items' | 'schedule'>('items');
 
     // Filter State
     const [search, setSearch] = useState('');
@@ -42,26 +53,19 @@ export default function InventoryView() {
     // Guide State
     const [isGuideOpen, setIsGuideOpen] = useState(false);
 
-    // Imports
-    // We need inventoryRequestService here. It was not imported in the original file I see?
-    // Let me check imports. It was NOT imported in InventoryView.tsx. I need to add import too.
-    // Wait, I can't see the top of the file in this tool call.
-    // I will use multi_replace to add import { inventoryRequestService } from '@/services/inventoryRequestService';
-
     const fetchData = async () => {
         setLoading(true);
         try {
             // 1. Fetch Items (Critical)
-            const itemsPromise = apiClient<InventoryApiResponse>(`/api/inventory?limit=300`)
-                .then(res => res.items || [])
+            const itemsPromise = inventoryService.getEquipment({ limit: 300, institutionId: currentWorkspaceId || undefined })
                 .catch(err => {
                     console.error("Failed to fetch inventory items", err);
                     return [];
                 });
 
             // 2. Fetch Issues (Optional - Context Aware)
-            const issuesPromise = (user?.institution_id)
-                ? inventoryIssueService.getActiveIssues(user.institution_id)
+            const issuesPromise = (user?.tenant_id)
+                ? inventoryIssueService.getActiveIssues()
                     .catch(err => {
                         console.warn('Failed to fetch active issues (likely permission restricted):', err);
                         return [];
@@ -69,8 +73,8 @@ export default function InventoryView() {
                 : Promise.resolve([]);
 
             // 3. Fetch My Requests (Optional - Guest/Standard Only)
-            const requestsPromise = (user && user.role !== 'admin' && user.role !== 'team')
-                ? inventoryRequestService.getMyRequests(user.uid, user.institution_id || '')
+            const requestsPromise = (user && !['admin', 'manager', 'team'].includes(currentRole))
+                ? inventoryRequestService.getMyRequests(user.uid, currentWorkspaceId || '')
                     .catch(err => {
                         console.warn('Failed to fetch my requests:', err);
                         return [];
@@ -104,7 +108,7 @@ export default function InventoryView() {
 
     useEffect(() => {
         if (user) fetchData();
-    }, [user]);
+    }, [user, currentWorkspaceId]);
 
     // Derived State
     const processedItems = useMemo(() => {
@@ -147,17 +151,17 @@ export default function InventoryView() {
         return result;
     }, [items, activeIssues, search, category, sortBy]);
 
-    const handleRequest = useCallback((item: InventoryItem) => {
-        if (user?.role === 'admin' || user?.role === 'team') {
-            // Admin/Team -> Issue directly (Shortcut)
+    const handleRequest = useCallback((item: EquipmentItem) => {
+        if (['admin', 'manager', 'team'].includes(currentRole)) {
+            // Admin/Manager/Team -> Issue directly (Shortcut)
             setIssueDialogItem(item);
         } else {
-            // Guest -> Request
+            // Member/Guest -> Request
             setRequestDialogItem(item);
         }
-    }, [user?.role]);
+    }, [currentRole]);
 
-    const handleReturn = useCallback((item: InventoryItem) => {
+    const handleReturn = useCallback((item: EquipmentItem) => {
         // Find active issue for this item
         const issue = activeIssues.find(i => i.itemId === item.id);
         if (issue) {
@@ -168,7 +172,7 @@ export default function InventoryView() {
         }
     }, [activeIssues]);
 
-    const handleEdit = useCallback((item: InventoryItem) => {
+    const handleEdit = useCallback((item: EquipmentItem) => {
         nativeNavigate(`/inventory/edit?id=${item.id}`, router, 'InventoryView (Edit)');
     }, [router]);
 
@@ -185,10 +189,10 @@ export default function InventoryView() {
                             className="text-slate-300 hover:text-white hover:bg-white/10"
                         >
                             <Clock className="w-4 h-4 mr-2" />
-                            {user?.role === 'admin' ? 'Requests' : 'My Requests'}
+                            {['admin', 'manager'].includes(currentRole) ? 'Requests' : 'My Requests'}
                         </Button>
-
-                        {user?.role === 'admin' && (
+                        
+                        {['admin', 'manager'].includes(currentRole) && (
                             <>
                                 <Button
                                     variant="ghost"
@@ -202,7 +206,7 @@ export default function InventoryView() {
                                             Location: item.locationStr || '',
                                             Serial: item.serialNumber || '',
                                             Notes: item.notes || '',
-                                            LastUpdated: item.updated_at ? new Date(item.updated_at).toLocaleDateString() : ''
+                                            LastUpdated: item.updatedAt ? new Date(item.updatedAt).toLocaleDateString() : ''
                                         }));
                                         import('@/utils/export').then(mod => mod.downloadCSV(exportData, `inventory_${new Date().toISOString().split('T')[0]}.csv`));
                                     }}
@@ -243,37 +247,83 @@ export default function InventoryView() {
                 </CollapsibleContent>
             </Collapsible>
 
-            {/* Filters Toolbar */}
-            <InventoryFilters
-                search={search}
-                onSearchChange={setSearch}
-                category={category}
-                onCategoryChange={setCategory}
-                sortBy={sortBy}
-                onSortChange={setSortBy}
-                categories={Object.values(INVENTORY_CATEGORIES)}
-            />
+            {/* Navigation Tabs */}
+            {['admin', 'manager', 'team'].includes(currentRole) && (
+                <div className="flex items-center gap-1 p-1 bg-white/5 border border-white/10 rounded-xl w-fit">
+                    <button
+                        onClick={() => setActiveTab('items')}
+                        className={`px-6 py-2 text-sm font-semibold rounded-lg transition-all ${
+                            activeTab === 'items' 
+                            ? 'bg-blue-600 text-white shadow-lg shadow-blue-900/40' 
+                            : 'text-slate-400 hover:text-white hover:bg-white/5'
+                        }`}
+                    >
+                        Equipment Items
+                    </button>
+                    <button
+                        onClick={() => setActiveTab('schedule')}
+                        className={`px-6 py-2 text-sm font-semibold rounded-lg transition-all ${
+                            activeTab === 'schedule' 
+                            ? 'bg-blue-600 text-white shadow-lg shadow-blue-900/40' 
+                            : 'text-slate-400 hover:text-white hover:bg-white/5'
+                        }`}
+                    >
+                        Booking Schedule
+                    </button>
+                </div>
+            )}
 
-            {/* Grid */}
-            <InventoryGrid
-                items={processedItems}
-                loading={loading}
-                activeIssues={activeIssues}
-                pendingRequestItemIds={myRequests}
-                role={user?.role}
-                onRequest={handleRequest}
-                onReturn={handleReturn}
-                onEdit={user?.role === 'admin' ? handleEdit : undefined}
-                onView={setViewItem}
-            />
+            {activeTab === 'items' ? (
+                <>
+                    {/* Filters Toolbar */}
+                    <InventoryFilters
+                        search={search}
+                        onSearchChange={setSearch}
+                        category={category}
+                        onCategoryChange={setCategory}
+                        sortBy={sortBy}
+                        onSortChange={setSortBy}
+                        categories={Object.values(INVENTORY_CATEGORIES)}
+                    />
+
+                    {/* Grid */}
+                    <InventoryGrid
+                        items={processedItems}
+                        loading={loading}
+                        activeIssues={activeIssues}
+                        pendingRequestItemIds={myRequests}
+                        role={currentRole}
+                        onRequest={handleRequest}
+                        onReturn={handleReturn}
+                        onBook={setBookingDialogItem}
+                        onEdit={['admin', 'manager'].includes(currentRole) ? handleEdit : undefined}
+                        onView={setViewItem}
+                    />
+                </>
+            ) : (
+                <div className="space-y-6 animate-in fade-in duration-500">
+                    <div className="bg-glass border-soft p-6 rounded-2xl">
+                        <EquipmentScheduleWidget />
+                    </div>
+                    
+                    {/* Secondary Info / Summary could go here */}
+                    <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                        <div className="bg-glass border-soft p-4 rounded-xl">
+                            <h4 className="text-[10px] uppercase font-bold text-slate-500 mb-1">Active Bookings</h4>
+                            <p className="text-2xl font-bold text-white">{activeIssues.length}</p>
+                        </div>
+                        {/* More summary cards... */}
+                    </div>
+                </div>
+            )}
 
             {/* Dialogs */}
             <InventoryDetailDialog
                 item={viewItem}
                 open={!!viewItem}
                 onOpenChange={(open) => !open && setViewItem(null)}
-                role={user?.role}
-                onEdit={user?.role === 'admin' ? (item) => {
+                role={currentRole}
+                onEdit={['admin', 'manager'].includes(currentRole) ? (item) => {
                     setViewItem(null); // Close view
                     handleEdit(item);
                 } : undefined}
@@ -281,11 +331,22 @@ export default function InventoryView() {
                     setViewItem(null);
                     handleRequest(item);
                 }}
+                onBook={(item) => {
+                    setViewItem(null);
+                    setBookingDialogItem(item);
+                }}
             />
             <InventoryRequestDialog
                 item={requestDialogItem}
                 open={!!requestDialogItem}
                 onOpenChange={(open) => !open && setRequestDialogItem(null)}
+            />
+
+            <EquipmentBookingDialog
+                item={bookingDialogItem}
+                open={!!bookingDialogItem}
+                onOpenChange={(open) => !open && setBookingDialogItem(null)}
+                onSuccess={() => fetchData()}
             />
 
             <IssueItemDialog

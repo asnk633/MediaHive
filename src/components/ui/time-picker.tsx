@@ -104,7 +104,7 @@ export function TimePicker({ value, onChange }: TimePickerProps) {
                                 "w-full justify-center font-bold text-lg h-16 rounded-xl transition-all",
                                 period === p
                                     ? "bg-blue-600 text-white shadow-lg shadow-blue-600/20 ring-1 ring-white/20"
-                                    : "text-white/30 hover:text-white hover:bg-white/10"
+                                    : "text-white/50 hover:text-white hover:bg-white/10"
                             )}
                         >
                             {p}

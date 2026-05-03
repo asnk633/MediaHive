@@ -159,7 +159,7 @@ export function PersonalDashboard() {
                     </CardHeader>
                     <CardContent className="pt-6">
                         {recentActivity.length === 0 ? (
-                            <p className="text-white/30 text-center py-8 text-sm">No recently completed tasks.</p>
+                            <p className="text-white/50 text-center py-8 text-sm">No recently completed tasks.</p>
                         ) : (
                             <div className="space-y-4">
                                 {recentActivity.map((task) => (

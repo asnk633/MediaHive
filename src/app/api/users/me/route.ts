@@ -1,35 +1,27 @@
 import { NextResponse, NextRequest } from 'next/server';
-import { verifyUser, getSupabaseFromRequest } from '@/lib/server-utils';
+import { withTenant, handleApiError } from '@/lib/db/withTenant';
+import { getSupabaseServerClient } from '@/lib/supabaseServerClient';
 
 export const dynamic = 'force-dynamic';
 
-export async function GET(req: NextRequest) {
+export async function GET() {
   try {
-    // 1. Authoritative identity check (Allow missing profile for auto-creation)
-    const decoded = await verifyUser(req, { strict: false });
-    if (!decoded) {
-      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
-    }
+    // We try withTenant first. If it fails, we might be a new user without a profile/tenant.
+    let context;
+    try {
+      context = await withTenant();
+    } catch (err: any) {
+      // Fallback for auto-creation: get raw session
+      const supabase = await getSupabaseServerClient();
+      const { data: { session } } = await supabase.auth.getSession();
 
-    const { uid, email } = decoded;
-    const supabase = getSupabaseFromRequest(req);
+      if (!session) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
 
-    if (!supabase) {
-      return NextResponse.json({ error: 'Failed to initialize Supabase' }, { status: 500 });
-    }
+      const uid = session.user.id;
+      const email = session.user.email;
 
-    // 2. Fetch profile strictly from DB using the authenticated client
-    const { data: profile, error: profileError } = await supabase
-      .from('profiles')
-      .select('*')
-      .eq('id', uid)
-      .single();
+      console.log(`[API] Profile context missing for ${uid}, attempting auto-creation...`);
 
-    let userData = profile;
-
-    // 3. Auto-creation logic if profile is missing
-    if (profileError || !profile) {
-      console.log(`[API] Profile missing for ${uid}, attempting auto-creation...`);
       // Default to HQ institution if not found
       const { data: instData } = await supabase
         .from('institutions')
@@ -40,7 +32,7 @@ export async function GET(req: NextRequest) {
       const newProfile = {
         id: uid,
         email: email || null,
-        role: 'guest', // Default for new users
+        role: 'guest',
         institution_id: instData?.id || null,
         created_at: new Date().toISOString()
       };
@@ -53,7 +45,6 @@ export async function GET(req: NextRequest) {
 
       if (createError) {
         console.error('[API] Failed to auto-create profile:', createError.message);
-        // If creation fails, we return the decoded identity as a fallback
         return NextResponse.json({
           user: {
             uid,
@@ -62,40 +53,46 @@ export async function GET(req: NextRequest) {
             name: email?.split('@')[0] || 'User'
           }
         });
-      } else {
-        userData = created;
       }
+
+      return NextResponse.json({
+        user: {
+          uid: created.id,
+          email: created.email,
+          ...created,
+          name: created.full_name || created.official_name || created.email?.split('@')[0] || 'User'
+        }
+      });
     }
 
-    // 4. Return unified user object
+    const { user, tenantId, db } = context;
+
+    // Fetch full profile to ensure consistency
+    const { data: profile, error } = await db
+      .from('profiles')
+      .select('*')
+      .eq('id', user.id)
+      .single();
+
+    if (error || !profile) return handleApiError('ME_FETCH', error || new Error('Profile not found'));
+
     return NextResponse.json({
       user: {
-        uid,
-        email: email || userData.email,
-        ...userData,
-        // Ensure UI-friendly name exists
-        name: userData.full_name || userData.official_name || email?.split('@')[0] || 'User'
+        uid: user.id,
+        email: user.email,
+        ...profile,
+        name: profile.full_name || profile.official_name || user.email?.split('@')[0] || 'User'
       }
     });
 
   } catch (error: any) {
-    console.error('[API] /api/users/me Error:', error);
-    return NextResponse.json({ error: 'Internal Server Error' }, { status: 500 });
+    return handleApiError('ME_ROUTE', error);
   }
 }
 
 export async function PATCH(req: NextRequest) {
-  const decoded = await verifyUser(req);
-  if (!decoded) {
-    return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
-  }
-
-  const supabase = getSupabaseFromRequest(req);
-  if (!supabase) {
-    return NextResponse.json({ error: 'Failed to initialize Supabase' }, { status: 500 });
-  }
-
   try {
+    const { db, tenantId, user } = await withTenant();
     const body = await req.json();
 
     // Whitelist allowed fields
@@ -109,17 +106,18 @@ export async function PATCH(req: NextRequest) {
       return NextResponse.json({ message: 'No valid updates provided' }, { status: 400 });
     }
 
-    const { error } = await supabase
+    const { error } = await db
       .from('profiles')
       .update(updates)
-      .eq('id', decoded.uid);
+      .eq('tenant_id', tenantId)
+      .eq('id', user.id);
 
-    if (error) throw error;
+    if (error) return handleApiError('ME_UPDATE', error);
 
+    console.log(`[DB] query executed: updated profile for user ${user.id}`);
     return NextResponse.json({ success: true });
 
   } catch (error: any) {
-    console.error('[API] /api/users/me PATCH Error:', error.message || error);
-    return NextResponse.json({ error: 'Internal server error' }, { status: 500 });
+    return handleApiError('ME_PATCH_ROUTE', error);
   }
 }

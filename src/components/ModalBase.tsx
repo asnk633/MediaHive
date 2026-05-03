@@ -7,7 +7,7 @@ export default function ModalBase({
   open,
   onClose,
   children,
-  panelClass = "fixed inset-x-0 bottom-0 z-[70] mx-auto max-w-xl rounded-t-2xl bg-[#1E1E1E] p-4",
+  panelClass = "fixed inset-x-0 bottom-0 z-[70] mx-auto max-w-xl rounded-t-2xl bg-[#1E1E1E] p-4 modal-enter",
   overlayClass = "fixed inset-0 z-[60] bg-black/50 backdrop-blur-sm",
 }: {
   open: boolean;

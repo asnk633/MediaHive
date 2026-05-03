@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { verifyUser, getSupabaseFromRequest } from '@/lib/server-utils';
+import { verifyUser, getSupabaseFromRequest } from '@/lib/server/server-utils';
+import { withTenant } from '@/lib/tenantQuery';
 
 export const dynamic = 'force-dynamic';
 
@@ -10,19 +11,35 @@ export const dynamic = 'force-dynamic';
 export async function GET(req: NextRequest) {
     try {
         const user = await verifyUser(req);
+        console.log(`[GET /api/campaigns] 👤 User:`, {
+            uid: user?.uid,
+            role: user?.role,
+            tenant_id: user?.tenant_id,
+            type: typeof user?.tenant_id
+        });
+
         if (!user) {
             return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
         }
 
-        const supabase = getSupabaseFromRequest(req);
+        // Tenant Security Guard
+        const tenantId = user.tenant_id;
+        if (!tenantId || tenantId === 'null' || tenantId === 'undefined') {
+            console.error(`[GET /api/campaigns] ❌ Missing tenant context for user: ${user.uid}`);
+            return NextResponse.json({ error: 'Missing tenant context' }, { status: 403 });
+        }
+
+        const supabase = await getSupabaseFromRequest(req);
         if (!supabase) {
             return NextResponse.json({ error: 'Failed to initialize Supabase' }, { status: 500 });
         }
 
-        const { data: campaigns, error } = await supabase
-            .from('campaigns')
-            .select('*')
-            .eq('institution_id', user.institution_id)
+        const { data: campaigns, error } = await withTenant(
+            supabase
+                .from('campaigns')
+                .select('*'),
+            tenantId
+        )
             .order('created_at', { ascending: false });
 
         if (error) {
@@ -48,6 +65,13 @@ export async function POST(req: NextRequest) {
             return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
         }
 
+        // Tenant Security Guard
+        const tenantId = user.tenant_id;
+        if (!tenantId || tenantId === 'null' || tenantId === 'undefined') {
+            console.error(`[POST /api/campaigns] ❌ Missing tenant context for user: ${user.uid}`);
+            return NextResponse.json({ error: 'Missing tenant context' }, { status: 403 });
+        }
+
         // Check if user is admin or team (guests might be restricted depending on policy)
         // For now, allowing guests to create if that's the requirement, but usually it's Admin/Team.
         // The prompt says "Read-only for guest" in context of RLS, so let's enforce it here too.
@@ -67,13 +91,13 @@ export async function POST(req: NextRequest) {
             drive_folder_id: body.driveFolderId,
             owner_id: user.uid,
             institution_id: user.institution_id,
-            tenant_id: (user as any).tenantId || 1,
+            tenant_id: tenantId,
             members: body.members || [user.uid],
             created_at: new Date().toISOString(),
             updated_at: new Date().toISOString()
         };
 
-        const supabase = getSupabaseFromRequest(req);
+        const supabase = await getSupabaseFromRequest(req);
         if (!supabase) {
             return NextResponse.json({ error: 'Failed to initialize Supabase' }, { status: 500 });
         }

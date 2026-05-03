@@ -1,7 +1,7 @@
 // src/lib/cache/query-cache.ts
 // Query caching utility with cross-tab synchronization
 
-import { setCache, getCache, deleteCache } from './indexeddb';
+import { offlineDB } from '@/lib/offline/db';
 
 // Broadcast channel for cross-tab communication
 const broadcastChannel = typeof BroadcastChannel !== 'undefined' ? new BroadcastChannel('query-cache') : null;
@@ -37,7 +37,7 @@ export async function setQueryCache<T>(
   };
   
   // Store in IndexedDB
-  await setCache(cacheKey, cacheEntry, ttl);
+  await offlineDB.setCache(cacheKey, cacheEntry, ttl);
   
   // Broadcast to other tabs
   if (broadcastChannel) {
@@ -55,7 +55,7 @@ export async function getQueryCache<T>(
   params?: Record<string, any>
 ): Promise<T | null> {
   const cacheKey = generateCacheKey(queryKey, params);
-  const cacheEntry = await getCache<CacheEntry<T>>(cacheKey);
+  const cacheEntry = await offlineDB.getCache<CacheEntry<T>>(cacheKey);
   
   if (!cacheEntry) {
     return null;
@@ -64,7 +64,7 @@ export async function getQueryCache<T>(
   // Check if entry has expired
   if (Date.now() - cacheEntry.timestamp > cacheEntry.ttl) {
     // Delete expired entry
-    await deleteCache(cacheKey);
+    await offlineDB.deleteCache(cacheKey);
     return null;
   }
   
@@ -79,7 +79,7 @@ export async function invalidateQueryCache(
   const cacheKey = generateCacheKey(queryKey, params);
   
   // Delete from IndexedDB
-  await deleteCache(cacheKey);
+  await offlineDB.deleteCache(cacheKey);
   
   // Broadcast to other tabs
   if (broadcastChannel) {
@@ -110,12 +110,12 @@ if (broadcastChannel) {
     switch (type) {
       case 'CACHE_SET':
         // Update local cache with broadcasted data
-        await setCache(key, data, data.ttl);
+        await offlineDB.setCache(key, data, data.ttl);
         break;
         
       case 'CACHE_INVALIDATE':
         // Delete local cache entry
-        await deleteCache(key);
+        await offlineDB.deleteCache(key);
         break;
         
       case 'CACHE_INVALIDATE_ALL':

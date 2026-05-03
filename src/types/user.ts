@@ -2,20 +2,25 @@ import { TimestampLike } from '@/types/timestamp';
 
 export interface User {
     uid: string;
+    id: string; // Alias for uid
     email: string;
     name: string;
-    role: 'admin' | 'team' | 'guest';
+    official_name?: string; // Legacy alias for name
+    fullName?: string; // Legacy alias for name
+    role: 'admin' | 'manager' | 'member' | 'guest';
+    institutionRoles?: Record<string, string>;
     is_super_admin?: boolean;
     photoURL?: string;
 
     // Affiliation
-    institution_id?: string;
-    department_id?: string;
+    tenant_id?: string | number;
+    institution_id?: string | number;
+    allowed_institutions?: string[];
+    department_id?: string | number;
 
     isActive?: boolean;
 
     created_at?: string;
-    official_name?: string;
     avatar_url?: string;
     avatar_updated_at?: TimestampLike;
     avatar_drive_id?: string;

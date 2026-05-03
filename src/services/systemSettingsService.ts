@@ -1,9 +1,8 @@
-// @ts-nocheck
 import { logSystemActivity } from "@/lib/server/activity-logger";
 import { supabase } from "@/lib/supabaseClient";
+import { withTenant } from "@/lib/tenantQuery";
 
 const TABLE = "system_settings";
-const GLOBAL_DOC_ID = "global";
 
 export interface SystemSettings {
     allowGuestTasks: boolean;
@@ -21,14 +20,20 @@ const DEFAULT_SETTINGS: SystemSettings = {
 
 export const systemSettingsService = {
     /**
-     * Get global system settings. Returns defaults if not initialized.
+     * Get system settings for a specific tenant. Returns defaults if not initialized.
      */
-    getSettings: async (): Promise<SystemSettings> => {
+    getSettings: async (tenantId: string | number): Promise<SystemSettings> => {
         try {
-            const { data, error } = await supabase
-                .from(TABLE)
-                .select('*')
-                .eq('id', GLOBAL_DOC_ID)
+            if (!tenantId) {
+                return DEFAULT_SETTINGS;
+            }
+
+            const { data, error } = await withTenant(
+                supabase
+                    .from(TABLE)
+                    .select('*'),
+                String(tenantId)
+            )
                 .single();
 
             if (error || !data) {
@@ -52,17 +57,25 @@ export const systemSettingsService = {
         key: keyof SystemSettings,
         value: any,
         adminUid: string,
+        tenantId: string | number,
         adminName: string = 'Admin'
     ): Promise<boolean> => {
         try {
-            const { error } = await supabase
-                .from(TABLE)
-                .upsert({
-                    id: GLOBAL_DOC_ID,
-                    [key]: value,
-                    updated_at: new Date().toISOString(),
-                    updated_by: adminUid
-                });
+            if (!tenantId) {
+                throw new Error("Tenant ID is required to update settings");
+            }
+
+            const { error } = await withTenant(
+                supabase
+                    .from(TABLE)
+                    .upsert({
+                        [key]: value,
+                        updated_at: new Date().toISOString(),
+                        updated_by: adminUid,
+                        tenant_id: tenantId
+                    }),
+                String(tenantId)
+            );
 
             if (error) throw error;
 
@@ -72,7 +85,7 @@ export const systemSettingsService = {
                 actorRole: 'admin',
                 action: 'security_rule_updated',
                 entityType: 'system_setting',
-                entityId: GLOBAL_DOC_ID,
+                entityId: 'global_settings',
                 summary: `Security Rule Updated: ${key} changed to ${value}`,
                 severity: 'critical',
                 source: 'admin_console',

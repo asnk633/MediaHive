@@ -1,18 +1,19 @@
 import React from 'react';
-import { InventoryItem, InventoryIssue } from '@/types/inventory';
+import { EquipmentItem, InventoryIssueClean } from '@/services/inventory/inventoryContract';
 import { InventoryCard } from './InventoryCard';
 import { FileQuestion } from 'lucide-react';
 
 interface InventoryGridProps {
-    items: InventoryItem[];
-    activeIssues?: InventoryIssue[];
-    pendingRequestItemIds?: Set<string>;
+    items: EquipmentItem[];
+    activeIssues?: InventoryIssueClean[];
+    pendingRequestItemIds?: Set<string | number>;
     loading?: boolean;
     role?: string;
-    onRequest?: (item: InventoryItem) => void;
-    onEdit?: (item: InventoryItem) => void;
-    onReturn?: (item: InventoryItem) => void;
-    onView?: (item: InventoryItem) => void;
+    onRequest?: (item: EquipmentItem) => void;
+    onEdit?: (item: EquipmentItem) => void;
+    onReturn?: (item: EquipmentItem) => void;
+    onBook?: (item: EquipmentItem) => void;
+    onView?: (item: EquipmentItem) => void;
 }
 
 export const InventoryGrid: React.FC<InventoryGridProps> = ({
@@ -24,11 +25,12 @@ export const InventoryGrid: React.FC<InventoryGridProps> = ({
     onRequest,
     onEdit,
     onReturn,
+    onBook,
     onView
 }) => {
     // Optimization: Create map for O(1) access
     const issueMap = React.useMemo(() => {
-        const map = new Map<string, InventoryIssue>();
+        const map = new Map<string | number, InventoryIssueClean>();
         activeIssues.forEach(issue => map.set(issue.itemId, issue));
         return map;
     }, [activeIssues]);
@@ -86,6 +88,7 @@ export const InventoryGrid: React.FC<InventoryGridProps> = ({
                     onRequest={onRequest}
                     onEdit={onEdit}
                     onReturn={onReturn}
+                    onBook={onBook}
                     onView={onView}
                 />
             ))}

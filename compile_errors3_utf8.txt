@@ -1,0 +1,17 @@
+﻿src/app/(shell)/admin/system-health/page.tsx(18,9): error TS1005: ',' expected.
+src/app/(shell)/admin/system-health/page.tsx(18,12): error TS1005: ',' expected.
+src/app/api/admin/health/route.ts(16,13): error TS1136: Property assignment expected.
+src/app/api/admin/health/route.ts(16,24): error TS1005: ',' expected.
+src/app/api/admin/health/route.ts(16,26): error TS1134: Variable declaration expected.
+src/app/api/admin/health/route.ts(17,18): error TS1005: ';' expected.
+src/app/api/admin/health/route.ts(18,19): error TS1005: ';' expected.
+src/app/api/admin/health/route.ts(19,21): error TS1005: ';' expected.
+src/app/api/admin/health/route.ts(20,20): error TS1005: ';' expected.
+src/app/api/admin/health/route.ts(21,24): error TS1005: ';' expected.
+src/app/api/admin/health/route.ts(22,10): error TS1472: 'catch' or 'finally' expected.
+src/app/api/admin/health/route.ts(78,7): error TS1005: 'try' expected.
+src/app/api/admin/health/route.ts(81,1): error TS1128: Declaration or statement expected.
+src/lib/server-utils.ts(83,25): error TS1005: ',' expected.
+src/server/notifications/processor.ts(4,10): error TS1003: Identifier expected.
+src/server/notifications/processor.ts(4,22): error TS1128: Declaration or statement expected.
+src/server/notifications/processor.ts(4,24): error TS1434: Unexpected keyword or identifier.

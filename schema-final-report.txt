@@ -1,0 +1,39 @@
+
+--- Inspecting Table: tasks ---
+Table tasks is empty, attempting targeted select for common columns...
+[FOUND] Column id in tasks
+[FOUND] Column institution_id in tasks
+[FOUND] Column department_id in tasks
+[MISSING] Column start_at in tasks
+[FOUND] Column created_by in tasks
+[MISSING] Column approval_status in tasks
+[FOUND] Column status in tasks
+[MISSING] Column tenant_id in tasks
+[FOUND] Column deleted in tasks
+
+--- Inspecting Table: events ---
+Table events is empty, attempting targeted select for common columns...
+[FOUND] Column id in events
+[FOUND] Column institution_id in events
+[MISSING] Column department_id in events
+[FOUND] Column start_at in events
+[FOUND] Column created_by in events
+[MISSING] Column approval_status in events
+[MISSING] Column status in events
+[MISSING] Column tenant_id in events
+[FOUND] Column deleted in events
+
+--- Inspecting Table: departments ---
+Table departments is empty, attempting targeted select for common columns...
+[FOUND] Column id in departments
+[MISSING] Column institution_id in departments
+[MISSING] Column department_id in departments
+[MISSING] Column start_at in departments
+[MISSING] Column created_by in departments
+[MISSING] Column approval_status in departments
+[MISSING] Column status in departments
+[FOUND] Column tenant_id in departments
+[MISSING] Column deleted in departments
+
+--- Inspecting Table: profiles ---
+Columns found in profiles: id, created_at, institution_id, role, full_name, email, official_name, avatar_url, department_id, status, notification_settings

@@ -84,7 +84,7 @@ export default function DownloadsClient() {
         return result;
     }, [files, search, category]);
 
-    const canUpload = user?.role === 'admin' || user?.role === 'team';
+    const canUpload = user?.role === 'admin' || user?.role === 'manager' || user?.role === 'member';
     const isAdmin = user?.role === 'admin';
 
     if (isChecking) return <div className="h-screen bg-[var(--bg-card)]" />;

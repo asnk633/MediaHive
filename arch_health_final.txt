@@ -1,0 +1,53 @@
+﻿
+--------------------------------------------------
+MediaHive Architecture Health Check
+--------------------------------------------------
+
+[Domain Boundary Violations]
+Γ¥î src\features\dashboard\components\ActiveCampaignsWidget.tsx:6
+   Import: @/features/campaigns/services/campaignService
+   Issue: Feature "dashboard" imports runtime code from "campaigns". Use @/services/campaigns instead.
+
+Γ¥î src\features\dashboard\components\ActiveCampaignsWidget.tsx:10
+   Import: @/features/campaigns/hooks/useCampaigns
+   Issue: Feature "dashboard" imports runtime code from "campaigns". Use @/services/campaigns instead.
+
+Γ¥î src\features\dashboard\components\MyFocusWidget.tsx:3
+   Import: @/features/tasks/components/TaskItem
+   Issue: Feature "dashboard" imports runtime code from "tasks". Use @/services/tasks instead.
+
+Γ¥î src\features\dashboard\components\MyFocusWidget.tsx:8
+   Import: @/features/tasks/components/HomeTaskRow
+   Issue: Feature "dashboard" imports runtime code from "tasks". Use @/services/tasks instead.
+
+
+[DTO Mapping Violations]
+ΓÜá src\services\bulkOperationsService.ts
+   Issue: Service has mapping logic but appears to miss Zod validation (.safeParse).
+
+ΓÜá src\services\canonicalDataService.ts
+   Issue: Service has mapping logic but appears to miss Zod validation (.safeParse).
+
+ΓÜá src\services\conflictDetectionService.ts
+   Issue: Service has mapping logic but appears to miss Zod validation (.safeParse).
+
+ΓÜá src\services\deliverableService.ts
+   Issue: Service has mapping logic but appears to miss Zod validation (.safeParse).
+
+ΓÜá src\services\edgeCaseService.ts
+   Issue: Service has mapping logic but appears to miss Zod validation (.safeParse).
+
+ΓÜá src\services\files.ts
+   Issue: Service has mapping logic but appears to miss Zod validation (.safeParse).
+
+ΓÜá src\services\notificationService.ts
+   Issue: Service has mapping logic but appears to miss Zod validation (.safeParse).
+
+
+[Routes Violations]
+ΓÜá src\components\ProtectedRoute.tsx:27
+   Issue: Reference to potentially dead route: "/login/"
+
+--------------------------------------------------
+Scan completed in 0.13s with 12 issues.
+CRITICAL: Architecture violations detected. Please fix before proceeding.

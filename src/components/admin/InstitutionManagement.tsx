@@ -2,7 +2,6 @@
 import React, { useEffect, useState } from 'react';
 import { motion } from 'framer-motion';
 import { Plus, Edit, Trash2, Building } from 'lucide-react';
-import { apiClient } from '@/lib/apiClient';
 import { toast } from 'sonner';
 import {
     AlertDialog,
@@ -14,27 +13,23 @@ import {
     AlertDialogHeader,
     AlertDialogTitle,
 } from "@/components/ui/alert-dialog";
-
-type Institution = {
-    id: number;
-    name: string;
-    created_at: string;
-};
+import { StructureService } from '@/services/structureService';
+import { Institution } from '@/types/structure';
 
 export const InstitutionManagement = () => {
     const [institutions, setInstitutions] = useState<Institution[]>([]);
     const [loading, setLoading] = useState(true);
-    const [saving, setSaving] = useState<number | null>(null);
+    const [saving, setSaving] = useState<string | number | null>(null);
 
     // Inline Edit/Create State
-    const [editingId, setEditingId] = useState<number | null>(null);
+    const [editingId, setEditingId] = useState<string | null>(null);
     const [editName, setEditName] = useState('');
 
     const [isCreating, setIsCreating] = useState(false);
     const [createName, setCreateName] = useState('');
 
     // Delete Confirmation State
-    const [deleteConfirmId, setDeleteConfirmId] = useState<number | null>(null);
+    const [deleteConfirmId, setDeleteConfirmId] = useState<string | null>(null);
 
     useEffect(() => {
         fetchInstitutions();
@@ -43,9 +38,8 @@ export const InstitutionManagement = () => {
     const fetchInstitutions = async () => {
         setLoading(true);
         try {
-            const data = await apiClient('/api/institutions?limit=1000', { method: 'GET' });
-            // Sort by ID descending to show newest first? Or name? Let's keep API order.
-            setInstitutions(data);
+            const { institutions } = await StructureService.getInstitutions(true); // show all
+            setInstitutions(institutions);
         } catch (e) {
             console.error("Failed to fetch institutions", e);
             toast.error("Failed to load institutions");
@@ -58,12 +52,9 @@ export const InstitutionManagement = () => {
         e.preventDefault();
         if (!createName.trim()) return;
 
-        setSaving(-1);
+        setSaving('creating');
         try {
-            await apiClient('/api/institutions', {
-                method: 'POST',
-                body: JSON.stringify({ name: createName })
-            });
+            await StructureService.createInstitution(createName);
             toast.success("Institution created");
             setCreateName('');
             setIsCreating(false);
@@ -75,15 +66,12 @@ export const InstitutionManagement = () => {
         }
     };
 
-    const handleUpdate = async (id: number) => {
+    const handleUpdate = async (id: string) => {
         if (!editName.trim()) return;
 
         setSaving(id);
         try {
-            await apiClient(`/api/institutions?id=${id}`, {
-                method: 'PUT',
-                body: JSON.stringify({ name: editName })
-            });
+            await StructureService.updateInstitution(String(id), { name: editName });
             toast.success("Institution updated");
             setEditingId(null);
             fetchInstitutions();
@@ -100,21 +88,20 @@ export const InstitutionManagement = () => {
         const id = deleteConfirmId;
         setSaving(id);
         try {
-            await apiClient(`/api/institutions?id=${id}`, {
-                method: 'DELETE'
-            });
-            toast.success("Institution deleted");
+            // Soft delete by archiving
+            await StructureService.updateInstitution(String(id), { status: 'archived' });
+            toast.success("Institution archived");
             fetchInstitutions();
         } catch (e) {
             console.error(e);
-            toast.error("Failed to delete institution");
+            toast.error("Failed to archive institution");
         } finally {
             setSaving(null);
             setDeleteConfirmId(null);
         }
     };
 
-    const handleDeleteClick = (id: number, e: React.MouseEvent) => {
+    const handleDeleteClick = (id: string, e: React.MouseEvent) => {
         e.stopPropagation();
         setDeleteConfirmId(id);
     };
@@ -243,7 +230,7 @@ export const InstitutionManagement = () => {
                                         <div>
                                             <h3 className="text-white font-semibold text-lg">{inst.name}</h3>
                                             <p className="text-sm text-[var(--color-text-secondary)]">
-                                                Created: {new Date(inst.created_at).toLocaleDateString('en-GB')}
+                                                Created: {inst.created_at ? new Date(inst.created_at).toLocaleDateString('en-GB') : 'N/A'}
                                             </p>
                                         </div>
                                     </div>

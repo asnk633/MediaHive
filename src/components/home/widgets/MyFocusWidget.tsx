@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Task } from '@/types/task';
+import { Task } from '@/features/tasks/types/task';
 import { TaskItem } from '@/components/home/TaskItem';
 import { formatDistanceToNow } from 'date-fns';
 import { AlertCircle, Clock, CheckSquare, ArrowUpRight } from 'lucide-react';
@@ -37,8 +37,8 @@ export const MyFocusWidget = ({ tasks, userId, error, onRetry, todayOnly, maxIte
             return false; // Only show tasks completed TODAY if done
         }
 
-        const isAssigned = Array.isArray(task.assigned_to) &&
-            task.assigned_to.some(a => (typeof a === 'string' ? a === userId : a.uid === userId));
+        const isAssigned = Array.isArray(task.assignedTo) &&
+            task.assignedTo.some(a => a.uid === userId);
         if (!isAssigned) return false;
 
         if (todayOnly) {

@@ -14,14 +14,21 @@ import { Loader2, Edit3, Calendar as CalendarIcon, Layers, Users } from "lucide-
 import { toast } from "sonner";
 import { format } from "date-fns";
 import { supabase } from "@/lib/supabaseClient";
-import { CampaignService } from "@/services/campaignService";
-import { Campaign } from "@/types/campaign";
+import { TaskService } from '@/features/tasks/services/taskService';
+import { CampaignService } from '@/features/campaigns/services/campaignService';
+import { Campaign } from '@/features/campaigns/types/campaign';
 import { useAuth } from "@/contexts/AuthContextProvider";
 import { UserService } from "@/services/userService";
 import { useRouter } from 'next/navigation';
 import { DeliverablesList } from '@/components/deliverables/DeliverablesList';
 import { DeliverableUploadModal } from '@/components/deliverables/DeliverableUploadModal';
 import { AttachmentSection } from '@/components/tasks/AttachmentSection';
+import { useCollaboration } from '@/lib/collaboration/useCollaboration';
+import { PresencePile } from '@/components/collaboration/PresencePile';
+import { TypingIndicator } from '@/components/collaboration/TypingIndicator';
+import { useFormState } from '@/hooks/useFormState';
+import { useFormSubmit } from '@/hooks/useFormSubmit';
+import { DraftIndicator } from '@/components/ui/DraftIndicator';
 
 interface EditTaskDialogProps {
     open: boolean;
@@ -36,6 +43,7 @@ interface EditTaskDialogProps {
         campaign_id?: string;
         created_by?: any;
         assigned_to?: { uid: string; name: string }[];
+        assignedTo?: { uid: string; name: string }[]; // Added legacy support
     };
     onUpdate: (updates: any) => Promise<boolean>;
 }
@@ -44,44 +52,68 @@ export function EditTaskDialog({ open, onOpenChange, task, onUpdate }: EditTaskD
     const { user } = useAuth();
     const router = useRouter();
     const [fullTask, setFullTask] = useState<any>(task);
-    const [title, setTitle] = useState(task.title);
-    const [description, setDescription] = useState(task.description || "");
-    const [priority, setPriority] = useState<"low" | "medium" | "high" | "urgent">(task.priority);
-    const [due_date, setDueDate] = useState<Date | undefined>(undefined);
-    const [campaign_id, setCampaignId] = useState<string>(task.campaign_id || "none");
-    const [campaigns, setCampaigns] = useState<Campaign[]>([]);
-    const [assignedToIds, setAssignedToIds] = useState<string[]>([]);
+    const { state: formData, setState: setFormData, clearDraft, isDraftSaved, isRestored } = useFormState({
+        key: `draft:task:${task.id}`,
+        initialState: {
+            title: task.title,
+            description: task.description || "",
+            priority: task.priority,
+            due_date: task.due_date ? new Date(task.due_date).toISOString() : undefined as string | undefined,
+            campaign_id: task.campaign_id || "none",
+            assignedToIds: ((task.assigned_to || task.assignedTo)?.map(m => (m as any).uid || (m as any).userId) || []) as string[]
+        }
+    });
+
+    const { title, description, priority, campaign_id, assignedToIds } = formData;
+    const due_date = formData.due_date ? new Date(formData.due_date) : undefined;
+
+    const setTitle = (val: string) => setFormData(prev => ({ ...prev, title: val }));
+    const setDescription = (val: string) => setFormData(prev => ({ ...prev, description: val }));
+    const setPriority = (val: "low" | "medium" | "high" | "urgent") => setFormData(prev => ({ ...prev, priority: val }));
+    const setDueDate = (val: Date | undefined) => setFormData(prev => ({ ...prev, due_date: val ? val.toISOString() : undefined }));
+    const setCampaignId = (val: string) => setFormData(prev => ({ ...prev, campaign_id: val }));
+    const setAssignedToIds = (val: string[] | ((prev: string[]) => string[])) => setFormData(prev => ({
+        ...prev,
+        assignedToIds: typeof val === 'function' ? val(prev.assignedToIds) : val
+    }));
+    
     const [teamMembers, setTeamMembers] = useState<{ uid: string; name: string }[]>([]);
-    const [isSubmitting, setIsSubmitting] = useState(false);
+    const [campaigns, setCampaigns] = useState<Campaign[]>([]);
     const [error, setError] = useState<string | null>(null);
 
     // Attachments State
     const [showUploadModal, setShowUploadModal] = useState(false);
     const [refreshTrigger, setRefreshTrigger] = useState(0);
 
+    const collab = useCollaboration('tasks', task?.id || '');
+
     useEffect(() => {
         if (open && user && task?.id) {
-            // Local state initialization from prop
-            setTitle(task.title);
-            setDescription(task.description || "");
-            setPriority(task.priority);
-            setCampaignId(task.campaign_id || "none");
-            setAssignedToIds(task.assigned_to?.map(m => m.uid) || []);
+            // Skip resetting local state from props if we just restored a draft
+            if (!isRestored) {
+                setTitle(task.title);
+                setDescription(task.description || "");
+                setPriority(task.priority);
+                setCampaignId(task.campaign_id || "none");
+                setAssignedToIds((task.assigned_to || task.assignedTo)?.map(m => (m as any).uid || (m as any).userId) || []);
+            }
 
             // Handle Date
-            if (task.due_date) {
-                try {
-                    const dateObj = new Date(task.due_date);
-                    if (dateObj && !isNaN(dateObj.getTime())) {
-                        setDueDate(dateObj);
-                    } else {
+            if (!isRestored) {
+                if (task.due_date) {
+                    try {
+                        const dateObj = new Date(task.due_date);
+                        if (dateObj && !isNaN(dateObj.getTime())) {
+                            setDueDate(dateObj);
+                        } else {
+                            setDueDate(undefined);
+                        }
+                    } catch (e) {
                         setDueDate(undefined);
                     }
-                } catch (e) {
+                } else {
                     setDueDate(undefined);
                 }
-            } else {
-                setDueDate(undefined);
             }
 
             // Campaigns & Team
@@ -95,18 +127,18 @@ export function EditTaskDialog({ open, onOpenChange, task, onUpdate }: EditTaskD
 
             // HYDRATE: Fetch fresh task data to ensure 'files' and other dynamic fields are up to date
             // This fixes the issue where List View might pass a stale or partial object without files
-            supabase.from('tasks').select('*').eq('id', task.id).single().then(({ data: fresh }) => {
+            TaskService.getTaskById(task.id).then((fresh) => {
                 if (fresh) {
                     setFullTask(fresh as any);
                 }
             });
         }
-    }, [open, task, user]);
+    }, [open, task, user, isRestored]);
 
     const loadCampaigns = async () => {
         if (!user) return;
         try {
-            const list = await CampaignService.getUserCampaigns({
+            const list = await CampaignService.getCampaigns({
                 uid: user.uid,
                 role: user.role || 'guest'
             });
@@ -126,65 +158,68 @@ export function EditTaskDialog({ open, onOpenChange, task, onUpdate }: EditTaskD
         }
     };
 
-    const handleSubmit = async (e: React.FormEvent) => {
-        e.preventDefault();
+    const submitUpdate = async () => {
+        setError(null);
         if (!title.trim()) {
-            toast.error("Title is required");
-            return;
+            throw new Error("Title is required");
         }
 
-        // Two-step Confirmation
-        const confirmed = window.confirm("Are you sure you want to update this task?");
-        if (!confirmed) return;
+        const updates: any = {
+            title,
+            description,
+            priority,
+            campaign_id: campaign_id === "none" ? null : campaign_id,
+        };
 
-        setIsSubmitting(true);
-        try {
-            const updates: any = {
-                title,
-                description,
-                priority,
-                campaign_id: campaign_id === "none" ? null : campaign_id,
-            };
+        // Calculate final assigned_to objects
+        if (isAdmin) {
+            // Map IDs back to objects
+            const finalAssignedTo = assignedToIds.map(id => {
+                const member = teamMembers.find(m => m.uid === id);
+                if (member) return { uid: member.uid, name: member.name };
+                return null;
+            }).filter(Boolean);
+            updates.assigned_to = finalAssignedTo;
+        }
 
-            // Calculate final assigned_to objects
-            if (isAdmin) {
-                // Map IDs back to objects
-                const finalAssignedTo = assignedToIds.map(id => {
-                    const member = teamMembers.find(m => m.uid === id);
-                    if (member) return { uid: member.uid, name: member.name };
-                    return null;
-                }).filter(Boolean);
-                updates.assigned_to = finalAssignedTo;
-            }
+        if (due_date) {
+            updates.due_date = due_date.toISOString();
+        }
 
-            if (due_date) {
-                updates.due_date = due_date.toISOString();
-            } else {
-                // Optionally allow clearing date? 
-                // updates.due_date = null; 
-            }
-
-            const success = await onUpdate(updates);
-            if (success) {
-                toast.success("Task updated successfully");
-                onOpenChange(false);
-            }
-        } catch (err: any) {
-            console.error("Update failed", err);
+        const success = await onUpdate(updates);
+        if (!success) {
             const isApproval = (task as any).approval_status === 'pending';
-            setError(isApproval ? "Approval didn’t go through" : "Task couldn’t be updated");
-        } finally {
-            setIsSubmitting(false);
+            throw new Error(isApproval ? "Approval didn’t go through" : "Task couldn’t be updated");
         }
     };
 
+    const { isSubmitting, handleSubmit: handleProtectedSubmit } = useFormSubmit({
+        onSubmit: submitUpdate,
+        onSuccess: () => {
+            toast.success("Task updated successfully");
+            clearDraft();
+            onOpenChange(false);
+        },
+        onError: (err) => {
+            setError(err.message);
+        }
+    });
+
+    const handleSubmit = async (e: React.FormEvent) => {
+        e.preventDefault();
+        // Two-step Confirmation
+        const confirmed = window.confirm("Are you sure you want to update this task?");
+        if (!confirmed) return;
+        await handleProtectedSubmit(undefined);
+    };
+
     // Styles matching Night Sky theme
-    const inputClasses = "bg-[#0a0c10] border-[#ffffff1a] text-white placeholder:text-white/30 focus:border-blue-500/50 focus:ring-blue-500/10 transition-all rounded-xl h-11 disabled:opacity-50 disabled:cursor-not-allowed";
+    const inputClasses = "bg-[#0a0c10] border-[#ffffff1a] text-white placeholder:text-white/50 focus:border-blue-500/50 focus:ring-blue-500/10 transition-all rounded-xl h-11 disabled:opacity-50 disabled:cursor-not-allowed";
     const labelClasses = "uppercase text-[10px] font-bold tracking-widest text-white/50 mb-1.5 block";
 
     const isAdmin = user?.role?.toLowerCase() === 'admin';
     const is_super_admin = (user as any)?.is_super_admin || user?.email === 'media@thaibagarden.com';
-    const isTeam = user?.role === 'team';
+    const isTeam = (user?.role === 'manager' || user?.role === 'member');
     const isGuest = user?.role === 'guest';
 
     const taskCreatorId = (task as any).created_by?.uid || (task as any).created_by;
@@ -219,11 +254,21 @@ export function EditTaskDialog({ open, onOpenChange, task, onUpdate }: EditTaskD
                 className="z-[150] sm:max-w-2xl bg-[#10111a] text-white border-[#ffffff1a] shadow-[0_0_50px_-12px_rgba(0,0,0,0.5)] p-6 rounded-[24px] backdrop-blur-3xl"
             >
                 <DialogHeader className="mb-4">
-                    <DialogTitle className="text-xl font-bold tracking-tight text-white flex items-center gap-3">
-                        <div className={cn("p-2.5 rounded-xl text-blue-500", canSave ? "bg-blue-600/10" : "bg-white/5 text-white/50")}>
-                            {canSave ? <Edit3 size={20} /> : <Layers size={20} />}
+                    <DialogTitle className="text-xl font-bold tracking-tight text-white flex items-center justify-between">
+                        <div className="flex items-center gap-3">
+                            <div className={cn("p-2.5 rounded-xl text-blue-500", canSave ? "bg-blue-600/10" : "bg-white/5 text-white/50")}>
+                                {canSave ? <Edit3 size={20} /> : <Layers size={20} />}
+                            </div>
+                            <div className="flex items-center gap-2">
+                                <span>{canSave ? "Edit Task" : "Task Details"}</span>
+                                <div className="flex items-center gap-1.5 px-2 py-0.5 rounded-full bg-emerald-500/10 border border-emerald-500/20">
+                                    <div className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse" />
+                                    <span className="text-[10px] font-bold text-emerald-500 uppercase tracking-wider">Live Sync</span>
+                                </div>
+                                <DraftIndicator isSaved={isDraftSaved} />
+                            </div>
                         </div>
-                        {canSave ? "Edit Task" : "Task Details"}
+                        <PresencePile users={collab.activeUsers} />
                     </DialogTitle>
                     <DialogDescription className="sr-only">
                         {canSave ? "Modify the details of the selected task." : "View the details of the selected task."}
@@ -243,10 +288,18 @@ export function EditTaskDialog({ open, onOpenChange, task, onUpdate }: EditTaskD
                     */}
 
                     <div className="space-y-1">
-                        <Label className={labelClasses}>Task Title</Label>
+                        <div className="flex items-center justify-between mb-1.5">
+                            <Label className={cn(labelClasses, "mb-0")}>Task Title</Label>
+                            <TypingIndicator fieldName="title" userContext={collab.editingUsers['title']} />
+                        </div>
                         <Input
                             value={title}
-                            onChange={(e) => setTitle(e.target.value)}
+                            onChange={(e) => {
+                                setTitle(e.target.value);
+                                collab.onTyping('title', true);
+                            }}
+                            onFocus={() => collab.onFieldFocus('title')}
+                            onBlur={() => collab.onFieldBlur('title')}
                             className={inputClasses}
                             placeholder="What needs to be done?"
                             disabled={!canEditContent}
@@ -254,12 +307,20 @@ export function EditTaskDialog({ open, onOpenChange, task, onUpdate }: EditTaskD
                     </div>
 
                     <div className="space-y-1">
-                        <Label className={labelClasses}>Description</Label>
+                        <div className="flex items-center justify-between mb-1.5">
+                            <Label className={cn(labelClasses, "mb-0")}>Description</Label>
+                            <TypingIndicator fieldName="description" userContext={collab.editingUsers['description']} />
+                        </div>
                         <Textarea
                             value={description}
-                            onChange={(e) => setDescription(e.target.value)}
+                            onChange={(e) => {
+                                setDescription(e.target.value);
+                                collab.onTyping('description', true);
+                            }}
+                            onFocus={() => collab.onFieldFocus('description')}
+                            onBlur={() => collab.onFieldBlur('description')}
                             className={cn(
-                                "bg-[#0a0c10] border-[#ffffff1a] text-white placeholder:text-white/30 focus:border-blue-500/50 focus:ring-blue-500/10 transition-all rounded-xl min-h-[120px] custom-scrollbar disabled:opacity-50 disabled:cursor-not-allowed resize-none"
+                                "bg-[#0a0c10] border-[#ffffff1a] text-white placeholder:text-white/50 focus:border-blue-500/50 focus:ring-blue-500/10 transition-all rounded-xl min-h-[120px] custom-scrollbar disabled:opacity-50 disabled:cursor-not-allowed resize-none"
                             )}
                             placeholder="Provide more context..."
                             disabled={!canEditContent}
@@ -411,7 +472,7 @@ export function EditTaskDialog({ open, onOpenChange, task, onUpdate }: EditTaskD
                                 task={fullTask}
                                 onUpdate={() => {
                                     // Refresh local data only
-                                    supabase.from('tasks').select('*').eq('id', task.id).single().then(({ data: t }) => t && setFullTask(t as any));
+                                    TaskService.getTaskById(task.id).then((t) => t && setFullTask(t as any));
                                 }}
                             />
                         </div>
@@ -424,8 +485,7 @@ export function EditTaskDialog({ open, onOpenChange, task, onUpdate }: EditTaskD
                             <button
                                 type="button"
                                 onClick={(e) => {
-                                    setError(null);
-                                    handleSubmit(e as any);
+                                    handleProtectedSubmit(undefined);
                                 }}
                                 className="text-xs font-bold text-white/50 hover:text-white uppercase tracking-widest transition-colors flex items-center gap-1.5"
                             >

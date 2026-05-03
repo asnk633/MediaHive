@@ -3,18 +3,19 @@
 
 import { getQueryCache, setQueryCache, invalidateQueryCache } from '@/lib/cache/query-cache';
 import { supabase } from '@/lib/supabaseClient';
+import { withTenant } from '@/lib/tenantQuery';
 
 // Prefetch tasks for a user
 export async function prefetchTasks(
-  userId: number,
-  institution_id: number,
+  userId: string,
+  tenantId: string,
   status?: string,
   priority?: string
 ): Promise<any[] | null> {
   try {
     // Generate cache key
     const cacheKey = 'tasks';
-    const params = { userId, institution_id, status, priority };
+    const params = { userId, tenantId, status, priority };
 
     // Check cache first
     const cachedTasks = await getQueryCache<any[]>(cacheKey, params);
@@ -23,10 +24,10 @@ export async function prefetchTasks(
     }
 
     // Fetch tasks from API
-    let query = supabase.from('tasks').select('*');
-
-    // Explicitly casting string parameters where needed since filtering could be complex
-    query = query.eq('institution_id', institution_id.toString());
+    let query = withTenant(
+      supabase.from('tasks').select('*'),
+      tenantId
+    );
     // Note: Assuming `userId` maps to assignee or creator. This was `/api/tasks?userId=...` in the backend. 
     // Usually we check `created_by` or `assigned_to`. For demo, let's just make sure it loads.
 
@@ -81,13 +82,13 @@ export async function prefetchNearestCampusTasks(
 
 // Invalidate task cache
 export async function invalidateTaskCache(
-  userId: number,
-  institution_id: number,
+  userId: string,
+  tenantId: string,
   status?: string,
   priority?: string
 ): Promise<void> {
   const cacheKey = 'tasks';
-  const params = { userId, institution_id, status, priority };
+  const params = { userId, tenantId, status, priority };
 
   await invalidateQueryCache(cacheKey, params);
 }

@@ -1,5 +1,5 @@
 import React from 'react';
-import { Task, SmartMetadata } from '@/types/task';
+import { Task, SmartMetadata } from '@/features/tasks/types/task';
 import { FlowboardCard } from './FlowboardCard';
 
 import { User as UserIcon } from 'lucide-react';
@@ -26,8 +26,8 @@ export const FlowboardLane: React.FC<FlowboardLaneProps> = ({
         emerald: 'border-emerald-500/30',
         orange: 'border-orange-500/30',
         fuchsia: 'border-fuchsia-500/30',
-        gray: 'border-[#ffffff1a]'
-    }[color] || 'border-[#ffffff1a]';
+        gray: 'border-white/10'
+    }[color] || 'border-white/10';
 
     const bgGradient = {
         blue: 'from-blue-500/5',
@@ -50,12 +50,12 @@ export const FlowboardLane: React.FC<FlowboardLaneProps> = ({
         .sort((a, b) => b.count - a.count);
 
     return (
-        <div className="flex flex-col h-full min-w-[280px] w-[280px] bg-white/5 border-r border-white/5 first:pl-0 last:border-r-0 relative">
+        <div className="flex flex-col h-full min-w-[280px] w-[280px] bg-[#0B0E14]/50 border-r border-white/5 first:pl-0 last:border-r-0 relative">
             {/* Top Glimmer */}
             <div className={`absolute top-0 inset-x-0 h-32 bg-gradient-to-b ${bgGradient} to-transparent pointer-events-none`} />
 
             {/* Header */}
-            <div className={`p-4 border-b border-white/5 shrink-0 sticky top-0 bg-transparent backdrop-blur-md z-10 space-y-3`}>
+            <div className={`p-4 border-b border-white/5 shrink-0 sticky top-0 bg-[#0B0E14]/95 backdrop-blur-md z-10 space-y-3`}>
                 <div className="flex items-center justify-between">
                     <div className="flex items-center gap-2">
                         <h3 className="text-sm font-bold text-gray-200 uppercase tracking-wider">{title}</h3>
@@ -74,7 +74,7 @@ export const FlowboardLane: React.FC<FlowboardLaneProps> = ({
                                     flex items-center gap-1 pl-0.5 pr-1.5 py-0.5 rounded-full text-[9px] font-bold border
                                     ${user.count > 3
                                         ? 'bg-red-500/10 text-red-400 border-red-500/20'
-                                        : 'bg-white/5 text-gray-400 border-[#ffffff1a]'}
+                                        : 'bg-white/5 text-gray-400 border-white/10'}
                                 `}
                             >
                                 <div className="w-3.5 h-3.5 rounded-full bg-white/10 flex items-center justify-center">
@@ -106,8 +106,8 @@ export const FlowboardLane: React.FC<FlowboardLaneProps> = ({
                         />
                     ))
                 )}
-                {/* Spacer for bottom scrolling to avoid BottomNav overlap */}
-                <div className="h-32" />
+                {/* Spacer for bottom scrolling */}
+                <div className="h-4" />
             </div>
         </div>
     );

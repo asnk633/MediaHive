@@ -12,21 +12,46 @@ export default function BottomNavigation() {
 
   const isActive = (href: string) => pathname === href || pathname?.startsWith(href + "/");
   const navRef = React.useRef<HTMLElement>(null);
-  const [width, setWidth] = React.useState(0);
+  const [mounted, setMounted] = React.useState(false);
+  const lastHeight = React.useRef<number | null>(null);
+
+  React.useEffect(() => {
+    setMounted(true);
+    
+    // Dynamic height observer to ensure pixel-perfect FAB anchoring
+    const updateHeight = () => {
+      if (navRef.current) {
+        const height = navRef.current.offsetHeight;
+        if (lastHeight.current !== height) {
+          lastHeight.current = height;
+          document.documentElement.style.setProperty('--bottom-nav-height', `${height}px`);
+        }
+      }
+    };
+
+    const currentNav = navRef.current;
+    const observer = new ResizeObserver(updateHeight);
+    if (currentNav) observer.observe(currentNav);
+    updateHeight(); // Initial measure
+
+    return () => observer.disconnect();
+  }, []);
 
   // Exclude specific paths where BottomNav causes layout issues
-  const excludedPaths = ['/events/new'];
-  if (excludedPaths.includes(pathname || '')) {
+  const excludedPaths = ['/events/new', '/reports/activity'];
+  if (excludedPaths.includes(pathname || '') || (pathname?.startsWith('/reports/activity'))) {
     return null;
   }
 
   // FAB Context-Aware Visibility Control
-  const allowedPages = ['/home', '/tasks', '/events', '/inventory', '/downloads', '/reports', '/admin', '/settings', '/profile', '/notifications'];
+  const allowedPages = ['/', '/home', '/tasks', '/events', '/inventory', '/downloads', '/reports', '/admin', '/settings', '/profile', '/notifications'];
   const isOnAllowedPage = allowedPages.some(page =>
     pathname === page || pathname?.startsWith(page + '/')
   );
-  const hasModalParam = typeof window !== 'undefined' && (window.location.search.includes('id=') || window.location.search.includes('action='));
-  const showFAB = isOnAllowedPage && !hasModalParam;
+  
+  // Only check window/search after mount
+  const hasModalParam = mounted && (window.location.search.includes('id=') || window.location.search.includes('action='));
+  const showFAB = mounted && isOnAllowedPage && !hasModalParam;
 
   const { user } = useAuth(); // Helper to access auth context
   // Assume guest if no role or specific guest role
@@ -50,25 +75,24 @@ export default function BottomNavigation() {
   return (
     <>
       <div
-        className="fixed left-1/2 -translate-x-1/2 z-30 pointer-events-none"
+        className="bottom-nav fixed left-0 right-0 bottom-0 top-auto z-40 pointer-events-none flex justify-center lg:hidden print:hidden"
         style={{
-          bottom: 'calc(1.5rem + var(--safe-bottom))',
-          width: 'min(36rem, calc(100vw - 2rem))', // slightly wider for desktop/tablet feel
-          height: '4.5rem', // slightly shorter/tighter
-          transform: 'translateX(-50%) translateY(calc(-1 * var(--keyboard-offset, 0px)))'
+          marginBottom: 'var(--safe-bottom, 1.5rem)',
+          transform: 'translateY(calc(-1 * var(--keyboard-offset, 0px)))'
         }}
       >
-        {/* FAB - Context-Aware Visibility */}
-        <div className="pointer-events-auto">
-          {showFAB && <FAB />}
-        </div>
+        {/* FAB - Context-Aware Visibility - Deterministic Anchoring */}
+        {showFAB && <FAB />}
 
         <motion.nav
           ref={navRef}
           initial={{ y: 50, opacity: 0 }}
           animate={{ y: 0, opacity: 1 }}
-          className="w-full h-full bg-[#18181B]/95 backdrop-blur-xl border border-[#242427] rounded-3xl px-1 shadow-strong dock-glow pointer-events-auto overflow-hidden relative"
+          className="bottom-nav w-[min(36rem,calc(100vw-2rem))] px-3 shadow-strong dock-glow pointer-events-auto overflow-hidden relative"
           style={{
+            height: 'auto', // Allow content + padding to define height
+            minHeight: 'var(--bottom-nav-height, 4.5rem)',
+            paddingBottom: 'env(safe-area-inset-bottom)',
             display: 'grid',
             gridTemplateColumns: 'repeat(3, 1fr) 72px repeat(3, 1fr)',
             alignItems: 'center',
@@ -97,7 +121,7 @@ export default function BottomNavigation() {
 
                 <Icon
                   size={22}
-                  className={`transition-all duration-300 ${active ? 'text-accent-primary drop-shadow-[0_0_8px_rgba(34,211,238,0.5)] translate-y-0' : 'text-zinc-500 group-hover:text-white'}`}
+                  className={`transition-all duration-300 ${active ? 'text-accent-primary drop-shadow-[0_0_8px_rgba(129,140,248,0.5)] translate-y-0 opacity-100' : 'text-white/40 group-hover:text-white/70 opacity-60'}`}
                 />
 
                 <span

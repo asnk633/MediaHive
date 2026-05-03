@@ -1,0 +1,22 @@
+
+--- Inspecting Table: campaigns ---
+Table campaigns is empty, attempting targeted select for common columns...
+[FOUND] Column id in campaigns
+[FOUND] Column institution_id in campaigns
+[FOUND] Column name in campaigns
+[MISSING] Column status in campaigns
+[FOUND] Column created_at in campaigns
+[FOUND] Column updated_at in campaigns
+[MISSING] Column tenant_id in campaigns
+[MISSING] Column owner_id in campaigns
+[MISSING] Column read in campaigns
+[MISSING] Column type in campaigns
+
+--- Inspecting Table: notifications ---
+Columns found in notifications: id, created_at, institution_id, created_by, title, body, read, user_id
+
+--- Inspecting Table: users ---
+Error selecting from users: Could not find the table 'public.users' in the schema cache
+
+--- Inspecting Table: audit_log ---
+Error selecting from audit_log: Could not find the table 'public.audit_log' in the schema cache

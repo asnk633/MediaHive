@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { verifyUser, getSupabaseFromRequest } from '@/lib/server-utils';
+import { verifyUser, getSupabaseFromRequest } from '@/lib/server/server-utils';
 import { logSystemActivity } from '@/lib/server/activity-logger';
+import { withTenant } from '@/lib/tenantQuery';
 
 
 export const dynamic = 'force-dynamic';
@@ -10,6 +11,13 @@ export async function POST(request: NextRequest) {
         const user = await verifyUser(request);
         if (!user || user.role !== 'admin') {
             return NextResponse.json({ error: 'Unauthorized' }, { status: 403 });
+        }
+
+        // Tenant Security Guard
+        const tenantId = user.tenant_id;
+        if (!tenantId || tenantId === 'null' || tenantId === 'undefined') {
+            console.error(`[POST /api/admin/change-role] ❌ Missing tenant context for user: ${user.uid}`);
+            return NextResponse.json({ error: 'Missing tenant context' }, { status: 403 });
         }
 
         const body = await request.json();
@@ -22,12 +30,15 @@ export async function POST(request: NextRequest) {
             );
         }
 
-        const supabase = getSupabaseFromRequest(request);
+        const supabase = await getSupabaseFromRequest(request);
         if (!supabase) return NextResponse.json({ error: 'Internal Error' }, { status: 500 });
 
-        const { error } = await supabase
-            .from('profiles')
-            .update({ role: newRole })
+        const { error } = await withTenant(
+            supabase
+                .from('profiles')
+                .update({ role: newRole }),
+            tenantId
+        )
             .eq('id', targetUid);
 
         if (error) throw error;

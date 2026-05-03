@@ -1,13 +1,25 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { requireAdminWithVerifiedEmail } from '@/lib/emailVerificationGuard';
-import { getSupabaseFromRequest } from '@/lib/server-utils';
+import { getSupabaseFromRequest, verifyUser } from '@/lib/server/server-utils';
 import { logAuditAction } from '@/lib/audit';
+import { withTenant } from '@/lib/tenantQuery';
 
 export const dynamic = 'force-dynamic';
 
 export async function POST(request: NextRequest) {
   try {
-    const decodedToken = await requireAdminWithVerifiedEmail(request);
+    const user = await verifyUser(request);
+    if (!user || user.role !== 'admin') {
+      return NextResponse.json({ error: 'Unauthorized' }, { status: 403 });
+    }
+
+    // Tenant Security Guard
+    const tenantId = user.tenant_id;
+    if (!tenantId || tenantId === 'null' || tenantId === 'undefined') {
+      console.error(`[POST /api/admin/roles] ❌ Missing tenant context for user: ${user.uid}`);
+      return NextResponse.json({ error: 'Missing tenant context' }, { status: 403 });
+    }
+
     const { targetUid, newRole } = await request.json();
 
     if (!targetUid || !newRole) {
@@ -19,15 +31,18 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ error: `Role must be one of: ${validRoles.join(', ')}` }, { status: 400 });
     }
 
-    const supabase = getSupabaseFromRequest(request);
+    const supabase = await getSupabaseFromRequest(request);
     if (!supabase) return NextResponse.json({ error: 'Internal Error' }, { status: 500 });
 
-    const { error } = await supabase
-      .from('profiles')
-      .update({
-        role: newRole,
-        updated_at: new Date().toISOString()
-      })
+    const { error } = await withTenant(
+      supabase
+        .from('profiles')
+        .update({
+          role: newRole,
+          updated_at: new Date().toISOString()
+        }),
+      tenantId
+    )
       .eq('id', targetUid);
 
     if (error) throw error;
@@ -35,9 +50,9 @@ export async function POST(request: NextRequest) {
     logAuditAction(
       'ROLE_CHANGE',
       {
-        uid: decodedToken.uid,
-        email: decodedToken.email,
-        role: decodedToken.role,
+        uid: user.uid,
+        email: user.email,
+        role: user.role,
         ip: request.headers.get('x-forwarded-for') || request.headers.get('x-real-ip') || 'unknown'
       },
       { id: targetUid, collection: 'profiles', name: 'User' },
@@ -53,18 +68,32 @@ export async function POST(request: NextRequest) {
 
 export async function GET(request: NextRequest) {
   try {
-    await requireAdminWithVerifiedEmail(request);
+    const token = await requireAdminWithVerifiedEmail(request);
+    const user = await verifyUser(request);
+    if (!user || user.role !== 'admin') {
+      return NextResponse.json({ error: 'Unauthorized' }, { status: 403 });
+    }
 
-    const supabase = getSupabaseFromRequest(request);
+    // Tenant Security Guard
+    const tenantId = user.tenant_id;
+    if (!tenantId || tenantId === 'null' || tenantId === 'undefined') {
+      console.error(`[GET /api/admin/roles] ❌ Missing tenant context for user: ${user.uid}`);
+      return NextResponse.json({ error: 'Missing tenant context' }, { status: 403 });
+    }
+
+    const supabase = await getSupabaseFromRequest(request);
     if (!supabase) return NextResponse.json({ error: 'Internal Error' }, { status: 500 });
 
-    const { data: users, error } = await supabase
-      .from('profiles')
-      .select('id, email, role, created_at, updated_at, full_name, official_name');
+    const { data: users, error } = await withTenant(
+      supabase
+        .from('profiles')
+        .select('id, email, role, created_at, updated_at, full_name, official_name'),
+      tenantId
+    );
 
     if (error) throw error;
 
-    const filteredUsers = (users || []).map(u => ({
+    const filteredUsers = (users || []).map((u: any) => ({
       id: u.id,
       email: u.email,
       role: u.role,

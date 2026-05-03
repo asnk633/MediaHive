@@ -109,7 +109,7 @@ export default function InventoryTable() {
                                     </TableCell>
                                     <TableCell>{getStatusBadge(item.status)}</TableCell>
                                     <TableCell className="text-xs text-muted">
-                                        {formatDistanceToNow(new Date(item.updated_at), { addSuffix: true })}
+                                        {formatDistanceToNow(new Date(item.updatedAt || item.createdAt || Date.now()), { addSuffix: true })}
                                     </TableCell>
                                     <TableCell className="text-right">
                                         {user?.role === 'admin' && (

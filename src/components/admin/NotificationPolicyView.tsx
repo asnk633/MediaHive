@@ -4,6 +4,7 @@ import React, { useState, useEffect } from 'react';
 import { AutomationRule, RuleAction } from '@/types/automation-rules';
 import { Loader2, Save, Bell, AlertTriangle, Clock, Play, ChevronDown, Check } from 'lucide-react';
 import { apiClient } from '@/lib/apiClient';
+import { DropdownSelector } from '@/components/ui/selectors/DropdownSelector';
 
 // Configuration Mapping
 const POLICY_CONFIG = [
@@ -202,19 +203,19 @@ export default function NotificationPolicyView() {
                             <div className="absolute inset-0 bg-indigo-500/20 blur-md rounded-xl group-hover:bg-indigo-500/30 transition-all duration-500" />
                             <div className="relative flex items-center gap-2 bg-surface/80 p-1.5 rounded-xl border border-soft backdrop-blur-xl shadow-lg">
                                 <div className="relative flex-1">
-                                    <select
-                                        className="w-full appearance-none bg-transparent text-sm font-semibold text-foreground pl-3.5 pr-8 py-2.5 outline-none cursor-pointer"
+                                    <DropdownSelector 
+                                        label="Scope Type"
                                         value={scopeType}
-                                        onChange={(e) => {
-                                            setScopeType(e.target.value as any);
-                                            setScopeId(e.target.value === 'global' ? 'global' : '');
+                                        onChange={(val) => {
+                                            setScopeType(val as any);
+                                            setScopeId(val === 'global' ? 'global' : '');
                                         }}
-                                    >
-                                        <option value="global" className="bg-surface">Global Policy</option>
-                                        <option value="institution" className="bg-surface">Institution Policy</option>
-                                        <option value="unit" className="bg-surface">Unit Policy</option>
-                                    </select>
-                                    <ChevronDown className="w-4 h-4 text-indigo-500 absolute right-3 top-1/2 -translate-y-1/2 pointer-events-none" />
+                                        options={[
+                                            { id: 'global', label: 'Global Policy' },
+                                            { id: 'institution', label: 'Institution Policy' },
+                                            { id: 'unit', label: 'Unit Policy' }
+                                        ]}
+                                    />
                                 </div>
 
                                 {scopeType !== 'global' && (

@@ -1,7 +1,7 @@
 import { getDriveClient, ensureFolderPath } from '@/lib/drive';
 import { DriveQueueItem } from '@/types/drive-queue';
 import { logSystemActivity } from '@/lib/server/activity-logger';
-import { getSupabaseAdmin } from '@/lib/server-utils';
+import { getSupabaseAdmin } from '@/lib/server/server-utils';
 
 const INCOMING_FOLDER_NAME = 'MediaHive/Incoming';
 const QUEUE_TABLE = 'drive_queue';
@@ -31,7 +31,7 @@ export class DriveScannerService {
             const drive = await getDriveClient();
 
             const res = await drive.files.get({
-                file_id: folderId,
+                fileId: folderId,
                 fields: 'id, name, webViewLink',
                 supportsAllDrives: true
             });
@@ -69,7 +69,7 @@ export class DriveScannerService {
             let driveId: string | undefined;
             try {
                 const folderMeta = await drive.files.get({
-                    file_id: folderId,
+                    fileId: folderId,
                     fields: 'driveId',
                     supportsAllDrives: true
                 });

@@ -1,0 +1,26 @@
+jest-haste-map: duplicate manual mock found: authContext
+  The following files share their name; please delete one of them:
+    * <rootDir>\__tests_archive__\__mocks__\authContext.ts
+    * <rootDir>\src\__tests__\__mocks__\authContext.ts
+
+FAIL src/__tests__/unit/verify-notification-fix.test.ts
+  ● Test suite failed to run
+
+    Cannot find module 'server-only' from 'src/__tests__/unit/verify-notification-fix.test.ts'
+
+    [0m [90m  7 |[39m
+     [90m  8 |[39m [90m// Mock server-only to prevent crash[39m
+    [31m[1m>[22m[39m[90m  9 |[39m jest[33m.[39mmock([32m'server-only'[39m[33m,[39m () [33m=>[39m { })[33m;[39m
+     [90m    |[39m      [31m[1m^[22m[39m
+     [90m 10 |[39m
+     [90m 11 |[39m [90m// Mock `cookies` to avoid crash[39m
+     [90m 12 |[39m jest[33m.[39mmock([32m'next/headers'[39m[33m,[39m () [33m=>[39m ({[0m
+
+      at Resolver._throwModNotFoundError (node_modules/jest-resolve/build/index.js:863:11)
+      at Object.mock (src/__tests__/unit/verify-notification-fix.test.ts:9:6)
+
+Test Suites: 1 failed, 1 total
+Tests:       0 total
+Snapshots:   0 total
+Time:        0.362 s
+Ran all test suites matching src/__tests__/unit/verify-notification-fix.test.ts.

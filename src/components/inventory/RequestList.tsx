@@ -2,22 +2,22 @@
 
 import React, { useState, useEffect } from "react";
 import { InventoryRequest } from "@/types/inventory";
-import { inventoryRequestService } from "@/services/inventoryRequestService";
+import { inventoryRequestService } from '@/services/inventory/inventoryRequestService';
 import { useAuth } from "@/contexts/AuthContextProvider";
 import { toast } from "sonner";
 import { format } from "date-fns";
 import { Check, X, Clock, Loader2, Package } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { IssueItemDialog } from "./IssueItemDialog";
-import { inventoryService } from "@/services/inventoryService";
-import { InventoryItem } from "@/types/inventory";
+import { inventoryService } from '@/services/inventory/inventoryService';
+import { EquipmentItem } from "@/services/inventory/inventoryContract";
 
 export default function RequestList() {
     const { user } = useAuth();
     const [requests, setRequests] = useState<InventoryRequest[]>([]);
     const [loading, setLoading] = useState(true);
     const [issuingRequest, setIssuingRequest] = useState<InventoryRequest | null>(null);
-    const [issuingItem, setIssuingItem] = useState<InventoryItem | null>(null);
+    const [issuingItem, setIssuingItem] = useState<EquipmentItem | null>(null);
 
     const isAdmin = user?.role === 'admin';
 
@@ -36,9 +36,9 @@ export default function RequestList() {
             }
 
             if (isAdmin) {
-                data = await inventoryRequestService.getAll(user.institution_id);
+                data = await inventoryRequestService.getAll(user.institution_id) as unknown as InventoryRequest[];
             } else {
-                data = await inventoryRequestService.getMyRequests(user.uid, user.institution_id);
+                data = await inventoryRequestService.getMyRequests(user.uid, user.institution_id) as unknown as InventoryRequest[];
             }
             setRequests(data);
         } catch (error) {
@@ -78,7 +78,7 @@ export default function RequestList() {
     const handleIssueClick = async (req: InventoryRequest) => {
         // Fetch the item details to pass to dialog
         try {
-            const item = await inventoryService.getById(req.itemId);
+            const item = await inventoryService.getById(String(req.itemId));
             if (!item) {
                 toast.error("Item not found (might be deleted)");
                 return;
@@ -127,7 +127,7 @@ export default function RequestList() {
                     <div className="space-y-1">
                         <div className="flex items-center gap-2">
                             <StatusBadge status={req.status} />
-                            <span className="text-xs text-slate-500">{format(new Date(req.created_at || Date.now()), 'MMM d, h:mm a')}</span>
+                            <span className="text-xs text-slate-500">{format(new Date(req.createdAt || Date.now()), 'MMM d, h:mm a')}</span>
                         </div>
                         <h4 className="font-semibold text-white">{req.itemName}</h4>
                         <p className="text-sm text-slate-400">"{req.purpose}"</p>

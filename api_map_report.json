@@ -1,0 +1,39 @@
+{
+  "(shell)\\admin\\users\\page.tsx": [
+    "Service: UserService.getAllUsers",
+    "Service: StructureService.getInstitutions",
+    "Service: StructureService.getDepartments",
+    "Service: UserService.updateUser"
+  ],
+  "(shell)\\system-updates\\page.tsx": [
+    "/api/system-updates"
+  ],
+  "admin\\insights\\page.tsx": [
+    "/api/insights/task-workload?tenantId=${tenantId}&period=${period}",
+    "/api/insights/tat-metrics?tenantId=${tenantId}&period=${period}",
+    "/api/insights/sla-compliance?tenantId=${tenantId}&period=${period}",
+    "/api/insights/event-frequency?tenantId=${tenantId}&period=${period}",
+    "/api/insights/media-output?tenantId=${tenantId}&period=${period}",
+    "/api/insights/team-activity?tenantId=${tenantId}&period=${period}",
+    "/api/insights/performance-anomalies?tenantId=${tenantId}&period=${period}",
+    "/api/insights/export?format=${format}&period=${selectedPeriod}&tenant=${selectedTenant}",
+    "/api/insights/email-summary"
+  ],
+  "admin\\leave-analytics\\page.tsx": [
+    "/api/user/role",
+    "/api/leave/analytics?${params.toString()}"
+  ],
+  "admin\\leave-requests\\page.tsx": [
+    "Service: LeaveRequestService.subscribeToPendingRequests",
+    "Service: LeaveRequestService.approveRequest",
+    "Service: LeaveRequestService.rejectRequest"
+  ],
+  "admin\\monitoring\\system\\page.tsx": [
+    "/api/monitoring/system/stats",
+    "/api/audit-log/stats?period=${selectedPeriod}&tenant=${selectedTenant}"
+  ],
+  "leave\\my-requests\\page.tsx": [
+    "Service: LeaveRequestService.subscribeToMyRequests",
+    "Service: LeaveRequestService.cancelRequest"
+  ]
+}

@@ -3,16 +3,22 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { Plus, CheckSquare, Calendar, CalendarCheck, X } from 'lucide-react';
 import { useRouter } from 'next/navigation';
 import { nativeNavigate } from '@/lib/utils';
+import { usePermissions } from '@/hooks/usePermissions';
 
 export const FAB = () => {
     const [isOpen, setIsOpen] = useState(false);
     const router = useRouter();
+    const { canCreateTask, role } = usePermissions();
 
     const actions = [
-        { label: "Request Leave", icon: CalendarCheck, color: "text-amber-400", delay: 0.15, onClick: () => nativeNavigate('/leave/request', router, 'FAB (Request Leave)') },
-        { label: "New Task", icon: CheckSquare, color: "text-green-400", delay: 0.1, onClick: () => nativeNavigate('/tasks/new', router, 'FAB (New Task)') },
-        { label: "New Event", icon: Calendar, color: "text-purple-400", delay: 0.05, onClick: () => nativeNavigate('/events/new', router, 'FAB (New Event)') },
+        { label: "Request Leave", icon: CalendarCheck, color: "text-amber-400", delay: 0.15, onClick: () => nativeNavigate('/leave/request', router, 'FAB (Request Leave)'), visible: true },
+        { label: "New Task", icon: CheckSquare, color: "text-green-400", delay: 0.1, onClick: () => nativeNavigate('/tasks/new', router, 'FAB (New Task)'), visible: canCreateTask },
+        { label: "New Event", icon: Calendar, color: "text-purple-400", delay: 0.05, onClick: () => nativeNavigate('/events/new', router, 'FAB (New Event)'), visible: ['admin', 'manager', 'member', 'team'].includes(role) },
     ];
+
+    const visibleActions = actions.filter(a => a.visible);
+
+    if (visibleActions.length === 0) return null;
 
     return (
         <>
@@ -41,7 +47,7 @@ export const FAB = () => {
                 <AnimatePresence>
                     {isOpen && (
                         <div className="absolute bottom-20 flex flex-col items-center gap-4 w-max">
-                            {actions.map((action) => (
+                            {visibleActions.map((action) => (
                                 <motion.div
                                     key={action.label}
                                     initial={{ opacity: 0, y: 20, scale: 0.8 }}

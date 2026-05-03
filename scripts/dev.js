@@ -1,7 +1,30 @@
 const { findAvailablePort } = require("./findAvailablePort");
-const { spawn } = require("child_process");
+const { spawn, execSync } = require("child_process");
 
 (async () => {
+  // ── Architecture Health Check ──────────────────────────────────────
+  try {
+    console.log("Running Architecture Health Check...");
+    execSync('npx tsx scripts/architectureHealth.ts', { stdio: 'inherit' });
+  } catch (e) {
+    console.warn('\n⚠️ Architecture health issues found. Please review the report above.');
+  }
+
+  // ── Route & Navigation Health Check ────────────────────────────────────────
+  try {
+    execSync('npx tsx scripts/healthCheck.ts', { stdio: 'inherit' });
+  } catch (e) {
+    // Non-fatal — warnings already printed by the script itself
+  }
+
+  // Run Schema Validation Check
+  try {
+    console.log("Checking database schema alignment...");
+    execSync('npx tsx scripts/checkSchema.ts', { stdio: 'inherit' });
+  } catch (e) {
+    console.warn('Schema validation warning (non-fatal):', e.message);
+  }
+
   // Ensure middleware is enabled (in case a build script left it disabled)
   try {
     const { execSync } = require('child_process');

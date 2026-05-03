@@ -1,7 +1,7 @@
 'use client';
 
 import React, { useEffect, useState } from 'react';
-import { Task } from '@/types/task';
+import { MediaTask as Task } from '@/services/tasks/taskContract';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import {
@@ -10,7 +10,6 @@ import {
   Clock,
   FileText,
   Eye,
-  Users,
   TrendingUp
 } from 'lucide-react';
 import { isFeatureEnabled } from '@/app/featureFlags';
@@ -20,7 +19,7 @@ import { UserManagementPanel } from '@/components/admin/UserManagementPanel';
 import { useAuth } from '@/contexts/AuthContextProvider';
 import { DemoDataButton } from '@/components/DemoDataButton';
 
-import { Event } from '@/types/event';
+import { Event } from '@/features/events/types/event';
 import { DriveFile as MediaFile } from '@/types/file';
 import { User } from '@/types/user';
 
@@ -37,6 +36,15 @@ const AdminConfidencePanel: React.FC<AdminConfidencePanelProps> = ({ tasks, even
   const { user } = useAuth();
   const isAdmin = user?.role === 'admin';
 
+  // Local helper for safe date parsing across ISO and legacy formats
+  const parseDate = (d: any): Date => {
+    if (!d) return new Date(0);
+    if (d instanceof Date) return d;
+    if (typeof d === 'string') return new Date(d);
+    if (d.seconds) return new Date(d.seconds * 1000);
+    return new Date(d);
+  };
+
   // Check if workflow power tools feature is enabled
   const isFeatureEnabledFlag = isFeatureEnabled('workflowPowerTools');
 
@@ -52,38 +60,32 @@ const AdminConfidencePanel: React.FC<AdminConfidencePanelProps> = ({ tasks, even
     t.media_uploaded &&
     t.media_approved
   ).length;
-  const recentlyApprovedMedia = tasks.filter(t =>
-    t.media_approved &&
-    t.media_approved_date &&
-    new Date(t.media_approved_date.seconds * 1000) > new Date(Date.now() - 24 * 60 * 60 * 1000) // Last 24 hours
-  ).length;
+
+  const recentlyApprovedMediaCount = tasks.filter(t => {
+    const approvedDate = parseDate(t.media_approved_date);
+    return t.media_approved && approvedDate > new Date(Date.now() - 24 * 60 * 60 * 1000); // Last 24 hours
+  }).length;
+
   const staleTasks = tasks.filter(t => {
     // Tasks that have been in progress for more than 7 days without updates
-    const createdDate = t.created_at ? new Date(t.created_at.seconds * 1000) : new Date();
-    const due_date = t.due_date ? new Date(t.due_date.seconds * 1000) : null;
+    const createdDate = parseDate(t.created_at);
     const now = new Date();
-
-    // Calculate if the task is older than 7 days
-    const timeDiff = now.getTime() - createdDate.getTime();
-    const daysDiff = timeDiff / (1000 * 3600 * 24);
-
+    const daysDiff = (now.getTime() - createdDate.getTime()) / (1000 * 3600 * 24);
     return daysDiff > 7 && t.status !== 'done';
   }).length;
 
   // Get sample tasks for each category
   const blockedTasks = tasks.filter(t => t.status !== 'done' && !t.media_uploaded).slice(0, 3);
   const readyTasks = tasks.filter(t => t.status !== 'done' && t.media_uploaded && t.media_approved).slice(0, 3);
-  const approvedTasks = tasks.filter(t =>
-    t.media_approved &&
-    t.media_approved_date &&
-    new Date(t.media_approved_date.seconds * 1000) > new Date(Date.now() - 24 * 60 * 60 * 1000)
-  ).slice(0, 3);
-  const staleTaskSamples = tasks.filter(t => {
-    const createdDate = t.created_at ? new Date(t.created_at.seconds * 1000) : new Date();
-    const now = new Date();
-    const timeDiff = now.getTime() - createdDate.getTime();
-    const daysDiff = timeDiff / (1000 * 3600 * 24);
+  const approvedTasks = tasks.filter(t => {
+    const approvedDate = parseDate(t.media_approved_date);
+    return t.media_approved && approvedDate > new Date(Date.now() - 24 * 60 * 60 * 1000);
+  }).slice(0, 3);
 
+  const staleTaskSamples = tasks.filter(t => {
+    const createdDate = parseDate(t.created_at);
+    const now = new Date();
+    const daysDiff = (now.getTime() - createdDate.getTime()) / (1000 * 3600 * 24);
     return daysDiff > 7 && t.status !== 'done';
   }).slice(0, 3);
 
@@ -175,7 +177,7 @@ const AdminConfidencePanel: React.FC<AdminConfidencePanelProps> = ({ tasks, even
           <div className="flex items-center gap-2 mb-3">
             <FileText className="w-5 h-5 text-blue-400" />
             <h4 className="font-medium text-white">Recently Approved</h4>
-            <Badge className="bg-blue-500/20 text-blue-300 ml-auto">{recentlyApprovedMedia}</Badge>
+            <Badge className="bg-blue-500/20 text-blue-300 ml-auto">{recentlyApprovedMediaCount}</Badge>
           </div>
           <div className="space-y-2">
             {approvedTasks.length > 0 ? (
@@ -189,7 +191,7 @@ const AdminConfidencePanel: React.FC<AdminConfidencePanelProps> = ({ tasks, even
                     {task.title}
                   </Button>
                   <div className="text-xs text-gray-400 mt-1">
-                    Approved: {task.media_approved_date ? new Date(task.media_approved_date.seconds * 1000).toLocaleDateString() : 'N/A'}
+                    Approved: {parseDate(task.media_approved_date).toLocaleDateString()}
                   </div>
                 </div>
               ))
@@ -225,7 +227,7 @@ const AdminConfidencePanel: React.FC<AdminConfidencePanelProps> = ({ tasks, even
                     {task.title}
                   </Button>
                   <div className="text-xs text-gray-400 mt-1">
-                    Days open: {Math.floor((Date.now() - new Date(task.created_at?.seconds * 1000 || Date.now()).getTime()) / (1000 * 3600 * 24))}
+                    Days open: {Math.floor((Date.now() - parseDate(task.created_at).getTime()) / (1000 * 3600 * 24))}
                   </div>
                 </div>
               ))

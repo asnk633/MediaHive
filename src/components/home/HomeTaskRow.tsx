@@ -1,7 +1,7 @@
 import React from "react";
 import { cn } from "@/lib/utils";
 import { Clock, Check, ChevronRight } from "lucide-react";
-import { Task } from "@/types/task";
+import { Task } from '@/features/tasks/types/task';
 import { useDensityStore } from "@/stores/useDensityStore";
 import { useSwipeAction } from "@/hooks/useSwipeAction";
 import { Haptics, ImpactStyle, NotificationType } from '@capacitor/haptics';

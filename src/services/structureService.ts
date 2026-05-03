@@ -1,19 +1,28 @@
-import { apiClient } from '@/lib/apiClient';
+import { supabase } from '@/lib/supabaseClient';
 import { Institution, Department, StructureStatus } from '@/types/structure';
-
-const apiRequest = async <T>(endpoint: string, options: RequestInit = {}) => {
-    return apiClient<T>(`/api${endpoint}`, options);
-};
+import { tenantContext } from '@/lib/auth/tenantContext';
 
 export const StructureService = {
     // Institutions
     getInstitutions: async (showArchived = false) => {
-        const query = showArchived ? '?archived=true' : '';
         try {
-            const data = await apiRequest<{ institutions: Institution[] }>(`/institutions${query}`);
-            // Sort alphabetical
+            const { tenantId } = await tenantContext();
+
+            let query = supabase
+                .from('institutions')
+                .select('*')
+                .eq('tenant_id', tenantId);
+
+            if (!showArchived) {
+                query = query.eq('status', 'active');
+            }
+
+            const { data, error } = await query.order('name', { ascending: true });
+
+            if (error) throw error;
+
             return {
-                institutions: (data.institutions || []).sort((a, b) => a.name.localeCompare(b.name))
+                institutions: (data || []) as Institution[]
             };
         } catch (error: any) {
             console.error("[StructureService] Failed to fetch institutions", error);
@@ -22,26 +31,62 @@ export const StructureService = {
     },
 
     createInstitution: async (name: string) => {
-        return apiRequest<Institution>('/institutions', {
-            method: 'POST',
-            body: JSON.stringify({ name })
-        });
+        const { tenantId } = await tenantContext();
+
+        const { data, error } = await supabase
+            .from('institutions')
+            .insert([{
+                name: name.trim(),
+                status: 'active',
+                tenant_id: tenantId,
+                created_at: new Date().toISOString(),
+                updated_at: new Date().toISOString()
+            }])
+            .select()
+            .single();
+
+        if (error) throw error;
+        return data as Institution;
     },
 
     updateInstitution: async (id: string, data: { name?: string; status?: StructureStatus }) => {
-        return apiRequest<Institution>(`/institutions/${id}`, {
-            method: 'PATCH',
-            body: JSON.stringify(data)
-        });
+        const { tenantId } = await tenantContext();
+
+        const { data: updated, error } = await supabase
+            .from('institutions')
+            .update({
+                ...data,
+                updated_at: new Date().toISOString()
+            })
+            .eq('id', id)
+            .eq('tenant_id', tenantId)
+            .select()
+            .single();
+
+        if (error) throw error;
+        return updated as Institution;
     },
 
     // Departments
     getDepartments: async (showArchived = false) => {
-        const query = showArchived ? '?archived=true' : '';
         try {
-            const data = await apiRequest<{ departments: Department[] }>(`/departments${query}`);
+            const { tenantId } = await tenantContext();
+
+            let query = supabase
+                .from('departments')
+                .select('*')
+                .eq('tenant_id', tenantId);
+
+            if (!showArchived) {
+                // Assuming status check for departments if applicable, or just fetch all
+            }
+
+            const { data, error } = await query.order('name', { ascending: true });
+
+            if (error) throw error;
+
             return {
-                departments: (data.departments || []).sort((a, b) => a.name.localeCompare(b.name))
+                departments: (data || []) as Department[]
             };
         } catch (error: any) {
             console.error("[StructureService] Failed to fetch departments", error);
@@ -50,37 +95,59 @@ export const StructureService = {
     },
 
     createDepartment: async (name: string) => {
-        return apiRequest<Department>('/departments', {
-            method: 'POST',
-            body: JSON.stringify({ name })
-        });
+        const { tenantId } = await tenantContext();
+
+        const { data, error } = await supabase
+            .from('departments')
+            .insert([{
+                name: name.trim(),
+                tenant_id: tenantId,
+                created_at: new Date().toISOString(),
+                updated_at: new Date().toISOString()
+            }])
+            .select()
+            .single();
+
+        if (error) throw error;
+        return data as Department;
     },
 
-    updateDepartment: async (id: string, data: { name?: string; status?: StructureStatus }) => {
-        return apiRequest<Department>(`/departments/${id}`, {
-            method: 'PATCH',
-            body: JSON.stringify(data)
-        });
+    updateDepartment: async (id: number, data: { name?: string; status?: StructureStatus }) => {
+        const { tenantId } = await tenantContext();
+
+        const { data: updated, error } = await supabase
+            .from('departments')
+            .update({
+                ...data,
+                updated_at: new Date().toISOString()
+            })
+            .eq('id', id)
+            .eq('tenant_id', tenantId)
+            .select()
+            .single();
+
+        if (error) throw error;
+        return updated as Department;
     },
 
     // Resolvers
-    getInstitutionName: async (id: string): Promise<string> => {
+    getInstitutionName: async (id: number | string): Promise<string> => {
         try {
             const { institutions } = await StructureService.getInstitutions();
-            const match = institutions.find(i => i.id === id);
-            return match ? match.name : id;
+            const match = institutions.find(i => String(i.id) === String(id));
+            return match ? match.name : String(id);
         } catch {
-            return id;
+            return String(id);
         }
     },
 
-    getDepartmentName: async (id: string): Promise<string> => {
+    getDepartmentName: async (id: number | string): Promise<string> => {
         try {
             const { departments } = await StructureService.getDepartments();
-            const match = departments.find(d => d.id === id);
-            return match ? match.name : id;
+            const match = departments.find(d => String(d.id) === String(id));
+            return match ? match.name : String(id);
         } catch {
-            return id;
+            return String(id);
         }
     }
 };

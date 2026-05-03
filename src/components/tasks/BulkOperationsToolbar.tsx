@@ -3,7 +3,7 @@
 
 import React, { useState } from 'react';
 import { cn } from '@/lib/utils';
-import { Task } from '@/types/task';
+import { Task } from '@/features/tasks/types/task';
 import { BulkOperationsService } from '@/services/bulkOperationsService';
 import { Button } from '@/components/ui/button';
 import {
@@ -19,6 +19,7 @@ import {
 import { toast } from 'sonner';
 
 import { UserService } from '@/services/userService';
+import { DropdownSelector } from '@/components/ui/selectors/DropdownSelector';
 import { isFeatureEnabled } from '@/app/featureFlags';
 
 interface BulkOperationsToolbarProps {
@@ -259,19 +260,18 @@ export const BulkOperationsToolbar: React.FC<BulkOperationsToolbarProps> = ({
 
             <div className="mb-8">
               {operation === 'assign' && (
-                <div className="space-y-2">
-                  <select
+                <div className="space-y-0.5">
+                  <DropdownSelector 
+                    label="Assign to Member"
                     value={value}
-                    onChange={(e) => setValue(e.target.value)}
-                    className="w-full bg-white/[0.03] border border-white/10 rounded-xl px-4 py-3 text-xs text-white focus:outline-none focus:ring-1 focus:ring-blue-500/50 appearance-none transition-all"
-                  >
-                    <option value="" className="bg-[#0B0E14]">Select Team Member</option>
-                    {teamMembers.map(member => (
-                      <option key={member.uid} value={member.uid} className="bg-[#0B0E14]">
-                        {member.name}
-                      </option>
-                    ))}
-                  </select>
+                    onChange={(val) => setValue(val)}
+                    placeholder="Select Team Member"
+                    options={teamMembers.map(member => ({
+                      id: member.uid,
+                      label: member.name,
+                      icon: <Users size={14} />
+                    }))}
+                  />
                 </div>
               )}
 
@@ -285,7 +285,7 @@ export const BulkOperationsToolbar: React.FC<BulkOperationsToolbarProps> = ({
                         "p-3 rounded-xl border text-[10px] font-bold uppercase tracking-widest transition-all",
                         value === p
                           ? 'bg-blue-500/10 border-blue-500/40 text-blue-400'
-                          : 'bg-white/[0.03] border-white/5 text-white/30 hover:bg-white/10'
+                          : 'bg-white/[0.03] border-white/5 text-white/50 hover:bg-white/10'
                       )}
                     >
                       {p}
@@ -311,7 +311,7 @@ export const BulkOperationsToolbar: React.FC<BulkOperationsToolbarProps> = ({
                           "p-3 rounded-xl border flex flex-col items-center gap-2 transition-all",
                           value === status.id
                             ? 'bg-blue-500/10 border-blue-500/40 text-blue-400'
-                            : 'bg-white/[0.03] border-white/5 text-white/30 hover:bg-white/10'
+                            : 'bg-white/[0.03] border-white/5 text-white/50 hover:bg-white/10'
                         )}
                       >
                         <Icon size={14} className="opacity-40" />
@@ -349,7 +349,7 @@ export const BulkOperationsToolbar: React.FC<BulkOperationsToolbarProps> = ({
             <div className="flex gap-2">
               <button
                 onClick={handleClose}
-                className="flex-1 py-3 bg-white/[0.03] border border-white/5 text-[10px] font-bold uppercase tracking-widest text-white/30 hover:text-white hover:bg-white/10 rounded-xl transition-all"
+                className="flex-1 py-3 bg-white/[0.03] border border-white/5 text-[10px] font-bold uppercase tracking-widest text-white/50 hover:text-white hover:bg-white/10 rounded-xl transition-all"
                 disabled={isLoading}
               >
                 Cancel

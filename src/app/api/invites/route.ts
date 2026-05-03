@@ -1,5 +1,5 @@
 import { NextRequest } from 'next/server';
-import { verifyUser } from '@/lib/server-utils';
+import { verifyUser } from '@/lib/server/server-utils';
 // import { InviteServiceServer } from '@/lib/invites.server';
 import { isFeatureEnabled } from '@/app/featureFlags';
 

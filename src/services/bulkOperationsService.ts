@@ -1,6 +1,8 @@
-import { Task } from '@/types/task';
+import { Task } from '@/features/tasks/types/task';
 import { isFeatureEnabled } from '@/app/featureFlags';
 import { apiPost } from '@/lib/apiClient';
+import { TaskSchema } from '@/domain/schemas/task';
+import { MonitoringService } from '@/services/monitoringService';
 
 export interface BulkOperationResult {
   success: boolean;
@@ -11,7 +13,7 @@ export interface BulkOperationResult {
 
 export const BulkOperationsService = {
   /**
-   * Perform bulk operation on tasks
+   * Perform bulk operation on tasks using the backend API
    * @param taskIds - Array of task IDs to operate on
    * @param operation - Type of operation to perform
    * @param value - Value for the operation
@@ -23,27 +25,102 @@ export const BulkOperationsService = {
     value: any
   ): Promise<BulkOperationResult> => {
     try {
-      // TODO: Replace with native Supabase bulk operations.
-      // This will require an RPC or a loop over supabase updates depending on limits.
-      console.log(`[Bulk Operations Placeholder] Performing ${operation} on ${taskIds.length} tasks`);
-      const result: BulkOperationResult = {
-        success: true,
-        message: `Successfully processed ${taskIds.length} tasks`,
-        results: taskIds.map(id => ({ taskId: id, updated: true })),
-        errors: []
-      };
+      console.log(`[BulkOperationsService] Performing ${operation} on ${taskIds.length} tasks`);
+      
+      const { CanonicalDataService } = await import('@/services/canonicalDataService');
+      const { ActivityHistory, buildActivityLabel } = await import('@/lib/activityHistory');
+      const { getCurrentUser } = await import('@/lib/auth/verifyUser');
 
-      return result;
-    } catch (error) {
+      const results: { taskId: string; updated: boolean }[] = [];
+      const errors: { taskId: string; error: string }[] = [];
+
+      const user = await getCurrentUser();
+      const actorName = user?.full_name || 'You';
+      const actorUid = user?.id || 'unknown';
+
+      // OPTIMIZATION: If simple column update, use bulkUpdateFields
+      if (operation === 'changeStatus' || operation === 'changePriority') {
+        const fields: Record<string, any> = {};
+        if (operation === 'changeStatus') {
+          fields.status = value;
+          if (value === 'done') fields.completed_at = new Date().toISOString();
+        } else {
+          fields.priority = value;
+        }
+
+        const success = await CanonicalDataService.bulkUpdateFields(
+          'tasks', 
+          taskIds.map(id => ({ id, fields })),
+          'task'
+        );
+
+        if (success) {
+          ActivityHistory.pushBulk(taskIds, {
+            action: operation === 'changeStatus' ? 'status_changed' : 'priority_changed',
+            label: buildActivityLabel(operation === 'changeStatus' ? 'status_changed' : 'priority_changed', value, taskIds.length),
+            actorUid,
+            actorName,
+          });
+
+          return {
+            success: true,
+            message: `Successfully queued ${taskIds.length} updates`,
+            results: taskIds.map(id => ({ taskId: id, updated: true })),
+            errors: []
+          };
+        }
+      }
+
+      // FALLBACK: Sequential for complex relational (assign) or destructive (delete)
+      for (const id of taskIds) {
+        try {
+          const updates: any = {};
+          if (operation === 'assign') {
+            updates.assigned_to = typeof value === 'string' ? [{ uid: value }] : value;
+          }
+          if (operation === 'delete') updates.deleted = true;
+
+          const success = await CanonicalDataService.patchFields('tasks', id, updates, 'task');
+          if (success) {
+            results.push({ taskId: id, updated: true });
+          } else {
+            errors.push({ taskId: id, error: 'Failed to enqueue' });
+          }
+        } catch (e: any) {
+          errors.push({ taskId: id, error: e.message });
+        }
+      }
+
+      // Log bulk activity for sequential ops
+      if (results.length > 0) {
+        const actionMap: Record<string, any> = { 'assign': 'assigned', 'delete': 'deleted' };
+        ActivityHistory.pushBulk(results.map(r => r.taskId), {
+          action: actionMap[operation] || 'status_changed',
+          label: buildActivityLabel(actionMap[operation] || 'status_changed', operation === 'assign' ? 'Member' : undefined, results.length),
+          actorUid,
+          actorName,
+        });
+      }
+
+      return {
+        success: errors.length === 0,
+        message: errors.length === 0 
+          ? `Successfully processed ${results.length} tasks` 
+          : `Processed with ${errors.length} errors`,
+        results,
+        errors
+      };
+    } catch (error: any) {
       console.error('Error performing bulk operation:', error);
+      MonitoringService.error(error, { taskIds, operation, value });
 
       // Provide more user-friendly error messages
-      let errorMessage = 'Failed to perform bulk operation';
+      let errorMessage = error.message || 'Failed to perform bulk operation';
       if (error instanceof TypeError && error.message.includes('fetch')) {
         errorMessage = 'Network error: Please check your connection and try again';
-      } else if (error instanceof Error && error.message.includes('403')) {
+      } else if (errorMessage.includes('403')) {
         errorMessage = 'Access denied: You do not have permission to perform this operation';
-      } else if (error instanceof Error && error.message.includes('401')) {
+      } else if (errorMessage.includes('401')) {
         errorMessage = 'Session expired: Please log in again';
       }
 
@@ -58,11 +135,6 @@ export const BulkOperationsService = {
 
   /**
    * Get summary of bulk operation for confirmation dialog
-   * @param taskIds - Array of task IDs
-   * @param operation - Type of operation
-   * @param value - Value for the operation
-   * @param tasks - Array of task objects for additional context
-   * @returns Summary string
    */
   getOperationSummary: (
     taskIds: string[],
@@ -92,19 +164,11 @@ export const BulkOperationsService = {
 
   /**
    * Validate bulk operation for safety limits
-   * @param taskIds - Array of task IDs to operate on
-   * @param operation - Type of operation to perform
-   * @returns Validation result
    */
   validateBulkOperation: (
     taskIds: string[],
     operation: 'assign' | 'changePriority' | 'changeStatus' | 'delete'
   ): { isValid: boolean; message: string } => {
-    // Check if safety limits feature is enabled
-    if (!isFeatureEnabled('safetyLimits')) {
-      return { isValid: true, message: '' };
-    }
-
     // Limit bulk operations to 50 tasks at a time
     if (taskIds.length > 50) {
       return {
@@ -117,19 +181,7 @@ export const BulkOperationsService = {
     if (operation === 'changeStatus' && taskIds.length > 20) {
       return {
         isValid: true,
-        message: `Warning: Changing status of ${taskIds.length} tasks. This action will trigger notifications for each task.`
-      };
-    }
-
-    // For deletion, add strict warning
-    if (operation === 'delete') {
-      const message = taskIds.length > 5
-        ? `WARNING: You are about to permanently DELETE ${taskIds.length} tasks. This action is irreversible.`
-        : `Are you sure you want to permanently delete these tasks?`;
-
-      return {
-        isValid: true,
-        message: message
+        message: `Warning: Changing status of ${taskIds.length} tasks.`
       };
     }
 

@@ -12,7 +12,7 @@ import { toast } from 'sonner';
 import { apiClient } from '@/lib/apiClient';
 
 interface InviteUserPanelProps {
-  institution_id: string;
+  institution_id: string | number;
 }
 
 export const InviteUserPanel: React.FC<InviteUserPanelProps> = ({ institution_id }) => {
@@ -200,10 +200,10 @@ export const InviteUserPanel: React.FC<InviteUserPanelProps> = ({ institution_id
                     <div className="flex items-center gap-2">
                       <span className="font-medium text-white">{invite.email}</span>
                       <span className={`px-2 py-1 rounded-full text-xs ${invite.role === 'admin'
-                          ? 'bg-red-500/20 text-red-300'
-                          : invite.role === 'team'
-                            ? 'bg-blue-500/20 text-blue-300'
-                            : 'bg-green-500/20 text-green-300'
+                        ? 'bg-red-500/20 text-red-300'
+                        : (invite.role === 'manager' || invite.role === 'member')
+                          ? 'bg-blue-500/20 text-blue-300'
+                          : 'bg-green-500/20 text-green-300'
                         }`}>
                         {invite.role}
                       </span>

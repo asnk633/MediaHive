@@ -1,23 +1,16 @@
-import { NextRequest, NextResponse } from 'next/server';
-import { verifyUser, getSupabaseFromRequest } from '@/lib/server-utils';
+import { NextResponse } from 'next/server';
+import { withTenant, handleApiError } from '@/lib/db/withTenant';
 
 export const dynamic = 'force-dynamic';
 
-export async function GET(request: NextRequest) {
+export async function GET() {
     try {
-        const user = await verifyUser(request);
-        if (!user) {
-            return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
-        }
+        const { db, tenantId, user } = await withTenant();
 
-        if (user.role !== 'admin' && user.role !== 'team') {
+        const role = (user.app_metadata?.role || user.user_metadata?.role) as string;
+        if (role !== 'admin' && role !== 'team') {
             return NextResponse.json({ error: 'Forbidden' }, { status: 403 });
         }
-
-        const supabase = getSupabaseFromRequest(request);
-        if (!supabase) return NextResponse.json({ error: 'Internal Error' }, { status: 500 });
-
-        const instId = user.institution_id;
 
         const headers = {
             'Cache-Control': 'public, s-maxage=300, stale-while-revalidate=60',
@@ -25,18 +18,26 @@ export async function GET(request: NextRequest) {
 
         // Parallel aggregation queries using Supabase count
         const [
-            { count: totalTasks },
-            { count: totalEvents },
-            { count: totalInventory },
-            { count: lowStock },
-            { count: outOfStock }
+            { count: totalTasks, error: e1 },
+            { count: totalEvents, error: e2 },
+            { count: totalInventory, error: e3 },
+            { count: lowStock, error: e4 },
+            { count: outOfStock, error: e5 }
         ] = await Promise.all([
-            supabase.from('tasks').select('*', { count: 'exact', head: true }).match(instId ? { institution_id: instId } : {}),
-            supabase.from('system_events').select('*', { count: 'exact', head: true }).match(instId ? { institution_id: instId } : {}),
-            supabase.from('inventory').select('*', { count: 'exact', head: true }).match(instId ? { institution_id: instId } : {}),
-            supabase.from('inventory').select('*', { count: 'exact', head: true }).match({ ...(instId ? { institution_id: instId } : {}), status: 'low' }),
-            supabase.from('inventory').select('*', { count: 'exact', head: true }).match({ ...(instId ? { institution_id: instId } : {}), status: 'out' })
+            db.from('tasks').select('*', { count: 'exact', head: true }).eq('tenant_id', tenantId),
+            db.from('events').select('*', { count: 'exact', head: true }).eq('tenant_id', tenantId),
+            db.from('inventory').select('*', { count: 'exact', head: true }).eq('tenant_id', tenantId),
+            db.from('inventory').select('*', { count: 'exact', head: true }).eq('tenant_id', tenantId).eq('status', 'low'),
+            db.from('inventory').select('*', { count: 'exact', head: true }).eq('tenant_id', tenantId).eq('status', 'out')
         ]);
+
+        if (e1) return handleApiError('REP_TASKS', e1);
+        if (e2) return handleApiError('REP_EVENTS', e2);
+        if (e3) return handleApiError('REP_INV', e3);
+        if (e4) return handleApiError('REP_LOW', e4);
+        if (e5) return handleApiError('REP_OUT', e5);
+
+        console.log(`[DB] query executed: fetched report overview for tenant ${tenantId}`);
 
         return NextResponse.json({
             overview: {
@@ -50,7 +51,6 @@ export async function GET(request: NextRequest) {
         }, { headers });
 
     } catch (error: any) {
-        console.error('Error fetching report overview:', error);
-        return NextResponse.json({ error: error.message || 'Failed to fetch overview' }, { status: 500 });
+        return handleApiError('REPORT_OVERVIEW_ROUTE', error);
     }
 }

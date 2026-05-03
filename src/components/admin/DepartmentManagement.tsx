@@ -2,7 +2,6 @@
 import React, { useEffect, useState } from 'react';
 import { motion } from 'framer-motion';
 import { Plus, Edit, Trash2, Briefcase } from 'lucide-react';
-import { apiClient } from '@/lib/apiClient';
 import { toast } from 'sonner';
 import {
     AlertDialog,
@@ -14,17 +13,13 @@ import {
     AlertDialogHeader,
     AlertDialogTitle,
 } from "@/components/ui/alert-dialog";
-
-type Department = {
-    id: number;
-    name: string;
-    created_at: string;
-};
+import { StructureService } from '@/services/structureService';
+import { Department } from '@/types/structure';
 
 export const DepartmentManagement = () => {
     const [departments, setDepartments] = useState<Department[]>([]);
     const [loading, setLoading] = useState(true);
-    const [saving, setSaving] = useState<number | null>(null);
+    const [saving, setSaving] = useState<string | number | null>(null);
 
     // Inline Edit/Create State
     const [editingId, setEditingId] = useState<number | null>(null);
@@ -43,8 +38,8 @@ export const DepartmentManagement = () => {
     const fetchDepartments = async () => {
         setLoading(true);
         try {
-            const data = await apiClient('/api/departments?limit=1000', { method: 'GET' });
-            setDepartments(data);
+            const { departments } = await StructureService.getDepartments(true);
+            setDepartments(departments);
         } catch (e) {
             console.error("Failed to fetch departments", e);
             toast.error("Failed to load departments");
@@ -57,12 +52,9 @@ export const DepartmentManagement = () => {
         e.preventDefault();
         if (!createName.trim()) return;
 
-        setSaving(-1);
+        setSaving('creating');
         try {
-            await apiClient('/api/departments', {
-                method: 'POST',
-                body: JSON.stringify({ name: createName })
-            });
+            await StructureService.createDepartment(createName);
             toast.success("Office / Unit created");
             setCreateName('');
             setIsCreating(false);
@@ -79,10 +71,7 @@ export const DepartmentManagement = () => {
 
         setSaving(id);
         try {
-            await apiClient(`/api/departments?id=${id}`, {
-                method: 'PUT',
-                body: JSON.stringify({ name: editName })
-            });
+            await StructureService.updateDepartment(id, { name: editName });
             toast.success("Office / Unit updated");
             setEditingId(null);
             fetchDepartments();
@@ -99,14 +88,13 @@ export const DepartmentManagement = () => {
         const id = deleteConfirmId;
         setSaving(id);
         try {
-            await apiClient(`/api/departments?id=${id}`, {
-                method: 'DELETE'
-            });
-            toast.success("Office / Unit deleted");
+            // Soft delete by archiving
+            await StructureService.updateDepartment(id, { status: 'archived' });
+            toast.success("Office / Unit archived");
             fetchDepartments();
         } catch (e) {
             console.error(e);
-            toast.error("Failed to delete office / unit");
+            toast.error("Failed to archive office / unit");
         } finally {
             setSaving(null);
             setDeleteConfirmId(null);
@@ -242,7 +230,7 @@ export const DepartmentManagement = () => {
                                         <div>
                                             <h3 className="text-white font-semibold text-lg">{dept.name}</h3>
                                             <p className="text-sm text-[var(--color-text-secondary)]">
-                                                Created: {new Date(dept.created_at).toLocaleDateString('en-GB')}
+                                                Created: {dept.created_at ? new Date(dept.created_at).toLocaleDateString('en-GB') : 'N/A'}
                                             </p>
                                         </div>
                                     </div>

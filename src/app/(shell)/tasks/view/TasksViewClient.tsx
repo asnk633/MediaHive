@@ -58,8 +58,9 @@ import { EditTaskDialog } from '@/components/tasks/EditTaskDialog'
 import { AttachmentSection } from '@/components/tasks/AttachmentSection'
 import { getRelativeTime, getInitials, formatDate as formatDisplayDate } from '@/lib/utils'
 
-import { Task } from '@/types/task';
-import { CampaignService } from '@/services/campaignService'
+import { Task } from '@/features/tasks/types/task';
+import { CampaignService } from '@/features/campaigns/services/campaignService'
+import { TaskService } from '@/features/tasks/services/taskService';
 
 // --- Mock Data / Interfaces ---
 interface Comment {
@@ -108,7 +109,7 @@ function TaskViewContent() {
         if (!taskId) return;
         setLoading(true);
         try {
-            const { data } = await supabase.from('tasks').select('*').eq('id', taskId).single();
+            const data = await TaskService.getTaskById(taskId);
             if (data) {
                 setTask(data);
                 if (data.campaign_id) {
@@ -139,7 +140,7 @@ function TaskViewContent() {
     const handleUpdateTask = async (updates: any) => {
         if (!task) return false;
         try {
-            await supabase.from('tasks').update(updates).eq('id', task.id);
+            await TaskService.updateTask(task.id, updates);
             setTask({ ...task, ...updates });
             toast.success("Updated");
             return true;
@@ -251,7 +252,7 @@ function TaskViewContent() {
 
     const isAdmin = user?.role === 'admin';
     const isOwner = user?.uid === (typeof task.created_by === 'string' ? task.created_by : task.created_by?.uid);
-    const canEdit = isAdmin || isOwner || user?.role === 'team';
+    const canEdit = isAdmin || isOwner || user?.role === 'manager' || user?.role === 'member';
 
     return (
         <div className="flex flex-col h-full bg-[#0a0c10] text-white">

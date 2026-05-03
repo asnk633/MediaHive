@@ -1,15 +1,5 @@
-// @ts-nocheck
 import { NextRequest, NextResponse } from 'next/server';
-import { verifyUser, getSupabaseFromRequest } from '@/lib/server-utils';
-
-/**
- * GET /api/users/[id]
- * Fetches a single user by their ID
- * 
- * Authorization:
- * - Users can fetch their own profile
- * - Admins can fetch any user's profile
- */
+import { withTenant, handleApiError } from '@/lib/db/withTenant';
 
 export const dynamic = 'force-dynamic';
 
@@ -20,37 +10,31 @@ export async function GET(
     try {
         const { id: userId } = await params;
 
-        if (userId === 'admins' || userId === 'team') {
+        if (userId === 'admins' || (userId === 'manager' || userId === 'member')) {
             return NextResponse.json({ error: 'Route conflict' }, { status: 404 });
         }
 
-        const user = await verifyUser(request);
-        if (!user) {
-            return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
-        }
+        const { db, tenantId, user } = await withTenant();
 
-        if (user.uid !== userId && user.role !== 'admin') {
+        // Basic permission check
+        const role = (user.app_metadata?.role || user.user_metadata?.role) as string;
+        if (user.id !== userId && role !== 'admin') {
             return NextResponse.json({ error: 'Forbidden' }, { status: 403 });
         }
 
-        const supabase = getSupabaseFromRequest(request);
-        if (!supabase) {
-            return NextResponse.json({ error: 'Internal Error' }, { status: 500 });
-        }
-
-        const { data: profile, error } = await supabase
+        const { data: profile, error } = await db
             .from('profiles')
             .select('*')
+            .eq('tenant_id', tenantId)
             .eq('id', userId)
             .single();
 
-        if (error || !profile) {
-            return NextResponse.json({ error: 'User not found' }, { status: 404 });
-        }
+        if (error) return handleApiError('USER_FETCH', error);
+        if (!profile) return NextResponse.json({ error: 'User not found' }, { status: 404 });
 
+        console.log(`[DB] query executed: fetched profile for user ${userId}`);
         return NextResponse.json({ user: { uid: profile.id, ...profile } });
     } catch (error: any) {
-        console.error(`[API] GET /api/users/${(await params).id} error:`, error);
-        return NextResponse.json({ error: error.message }, { status: 500 });
+        return handleApiError('USER_GET_ROUTE', error);
     }
 }

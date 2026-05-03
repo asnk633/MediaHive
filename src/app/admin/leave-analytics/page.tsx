@@ -11,6 +11,7 @@ import { LeaveAnalytics } from '@/components/leave/LeaveAnalytics';
 import { Loader2, Download, Calendar } from 'lucide-react';
 import { toast } from 'sonner';
 import { apiClient } from '@/lib/apiClient';
+import { DateSelector } from '@/components/ui/selectors/DateSelector';
 
 export default function LeaveAnalyticsPage() {
     const { user } = useAuth();
@@ -149,26 +150,19 @@ export default function LeaveAnalyticsPage() {
                         </h3>
                     </div>
                     <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
-                        <div>
-                            <label className="block text-xs font-bold text-white/50 uppercase tracking-wider mb-2">
-                                Start Date
-                            </label>
-                            <input
-                                type="date"
-                                value={startDate}
-                                onChange={(e) => setStartDate(e.target.value)}
-                                className="w-full bg-[#0a0c10] text-white border border-[#ffffff1a] rounded-xl py-2 px-3 outline-none focus:border-blue-500/50 [color-scheme:dark]"
+                        <div className="space-y-0.5">
+                            <DateSelector 
+                                label="Start Date"
+                                date={startDate ? new Date(startDate) : undefined}
+                                onChange={d => setStartDate(d ? d.toISOString().split('T')[0] : '')}
                             />
                         </div>
-                        <div>
-                            <label className="block text-xs font-bold text-white/50 uppercase tracking-wider mb-2">
-                                End Date
-                            </label>
-                            <input
-                                type="date"
-                                value={endDate}
-                                onChange={(e) => setEndDate(e.target.value)}
-                                className="w-full bg-[#0a0c10] text-white border border-[#ffffff1a] rounded-xl py-2 px-3 outline-none focus:border-blue-500/50 [color-scheme:dark]"
+                        <div className="space-y-0.5">
+                            <DateSelector 
+                                label="End Date"
+                                date={endDate ? new Date(endDate) : undefined}
+                                onChange={d => setEndDate(d ? d.toISOString().split('T')[0] : '')}
+                                disabledBefore={startDate ? new Date(startDate) : undefined}
                             />
                         </div>
                         <div>

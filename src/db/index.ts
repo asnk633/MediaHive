@@ -26,7 +26,27 @@ async function initializeDatabase() {
       // Local SQLite via better-sqlite3 (dynamic import to avoid build issues)
       const { drizzle: drizzleSqlite } = await import('drizzle-orm/better-sqlite3');
       const Database = (await import('better-sqlite3')).default;
-      const dbPath = (process.env.DATABASE_URL || 'file:./dev2.db').replace(/^file:/, '');
+      // Use LOCAL_DB_PATH if provided, otherwise default to dev3.db (switched from dev2 due to locks)
+      const path = await import('path');
+      const fs = await import('fs');
+      const rawDbUrl = process.env.LOCAL_DB_PATH || process.env.DATABASE_URL || `file:${path.join(process.cwd(), 'dev3.db')}`;
+
+      // If DATABASE_URL looks like Postgres, and we don't have a dedicated LOCAL_DB_PATH,
+      // fallback to the default dev3.db file.
+      const isPostgres = rawDbUrl.startsWith('postgresql://') || rawDbUrl.startsWith('postgres://');
+      const finalDbUrl = (isPostgres && !process.env.LOCAL_DB_PATH)
+        ? `file:${path.join(process.cwd(), 'dev3.db')}`
+        : rawDbUrl;
+
+      const dbPath = finalDbUrl.replace(/^file:/, '');
+      console.log(`[DB] Final resolved path: ${dbPath}`);
+
+      const dbDir = path.dirname(dbPath);
+      if (!fs.existsSync(dbDir) && !dbPath.includes('http')) {
+        console.log(`[DB] Creating directory: ${dbDir}`);
+        fs.mkdirSync(dbDir, { recursive: true });
+      }
+
       const sqlite = new Database(dbPath);
       _db = drizzleSqlite(sqlite, { schema });
     }
@@ -39,8 +59,13 @@ async function initializeDatabase() {
 // Export a proxy that initializes on first access
 export const db = new Proxy({} as Record<string, any>, {
   get(target, prop) {
-    if (!_db || !_db[prop]) {
-      throw new Error('Database not initialized. Call initializeDatabase() first or use getDb()');
+    if (!_db) {
+      // In a synchronous proxy getter, we can't await initializeDatabase()
+      // This is a known limitation of this specific architecture choice.
+      // However, we can return the property from the _db if it exists, 
+      // otherwise we throw a more helpful error.
+      // To fix this properly, we should ensure initializeDatabase is called at boot.
+      throw new Error('Database not initialized. Call getDb() or ensure initializeDatabase() is called at app start.');
     }
     return _db[prop];
   }

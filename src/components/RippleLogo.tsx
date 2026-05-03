@@ -1,11 +1,20 @@
 "use client";
 
 import { motion } from "framer-motion";
+import { cn } from "@/lib/utils";
 
-export const RippleLogo = () => {
+interface RippleLogoProps {
+    size?: number;
+    className?: string;
+}
+
+export const RippleLogo = ({ size = 200, className }: RippleLogoProps) => {
     return (
-        <div className="relative flex items-center justify-center w-[200px] h-[200px]">
-            {/* Soft Ripple Circles (reverting to previous framer logic but polished) */}
+        <div
+            className={cn("relative flex items-center justify-center", className)}
+            style={{ width: size, height: size }}
+        >
+            {/* Soft Ripple Circles */}
             {[1, 2, 3].map((i) => (
                 <motion.div
                     key={i}
@@ -24,12 +33,13 @@ export const RippleLogo = () => {
                 />
             ))}
 
-            {/* Main Center Circle + Logo (Glass removed, Logo enlarged) */}
+            {/* Main Center Circle + Logo */}
             <div className="relative z-10 flex items-center justify-center">
                 <img
                     src="/logo-app.png"
                     alt="Thaiba Logo"
-                    className="w-28 h-28 object-contain brightness-0 invert drop-shadow-xl"
+                    className="object-contain brightness-0 invert drop-shadow-xl"
+                    style={{ width: size * 0.56, height: size * 0.56 }} // Proportional to original 28/200
                 />
             </div>
         </div>

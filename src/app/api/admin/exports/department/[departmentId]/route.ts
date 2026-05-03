@@ -2,8 +2,9 @@ import { NextRequest, NextResponse } from 'next/server';
 import { getDb } from '@/db';
 import { departmentHealthSnapshots, auditLog } from '@/db/schema';
 import { eq, and, gte, lte, desc } from 'drizzle-orm';
-import { authorizeByPermission } from '@/lib/auth-server';
+import { authorizeByPermission, verifyUser } from '@/lib/server/server-utils';
 import { convertToCSV, logExportAction } from '@/utils/exportHelpers';
+import { withTenantDrizzle } from '@/lib/tenantQuery';
 
 /**
  * GET /api/admin/exports/department/:department_id
@@ -19,11 +20,18 @@ export async function GET(
 ) {
     try {
         // 1. Authorization
-        const authResult = await authorizeByPermission('read:reports');
-        if (!authResult.authorized || !authResult.user) {
+        const user = await verifyUser(request);
+        if (!user || user.role !== 'admin') {
             return NextResponse.json({ error: 'Unauthorized' }, { status: 403 });
         }
-        const currentAdmin = authResult.user;
+        const currentAdmin = user;
+
+        // Tenant Security Guard
+        const tenantId = user.tenant_id;
+        if (!tenantId || tenantId === 'null' || tenantId === 'undefined') {
+            console.error(`[GET /api/admin/exports/department] ❌ Missing tenant context for user: ${user.uid}`);
+            return NextResponse.json({ error: 'Missing tenant context' }, { status: 403 });
+        }
 
         const { departmentId: deptIdParam } = await params;
         const department_id = parseInt(deptIdParam);
@@ -36,14 +44,10 @@ export async function GET(
         const toDate = searchParams.get('to');
 
         // 2. Fetch Snapshots
-        // Note: departmentHealthSnapshots table currently tracks tenant-wide health or implicitly default department.
-        // We filter by period/date. If schema had department_id, we'd add it here.
-
         const db = await getDb();
-        let conditions = []; // eq(departmentHealthSnapshots.department_id, department_id) if it existed
-
-        // Tenant check
-        conditions.push(eq(departmentHealthSnapshots.tenantId, Number(currentAdmin.tenantId || 1)));
+        let conditions = [
+            withTenantDrizzle(departmentHealthSnapshots, tenantId)
+        ];
 
         if (period) {
             conditions.push(eq(departmentHealthSnapshots.period, period));

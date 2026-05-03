@@ -83,16 +83,16 @@ export default function SystemHealthPage() {
                         title="Database"
                         status={stats?.db || 'unknown'}
                         icon={<Database className="w-5 h-5" />}
-                        description="Firestore (Admin SDK)"
-                        detail={stats ? "Read/Write available" : "Checking..."}
+                        description="Supabase Postgres"
+                        detail={stats?.db === 'healthy' ? "Read/Write available" : "Connectivity lost"}
                         loading={loading}
                     />
                     <HealthCard
-                        title="Drive Integration"
-                        status={stats?.drive || 'unknown'}
-                        icon={<HardDrive className="w-5 h-5" />}
-                        description="Google Drive Sync"
-                        detail={stats?.lastScan ? `Last Scan: ${formatDistanceToNow(new Date(stats.lastScan))} ago` : "No recent scans"}
+                        title="Assignment Sync"
+                        status={(stats as any)?.sync || 'unknown'}
+                        icon={<RefreshCw className="w-5 h-5" />}
+                        description="JSONB ↔ Relational"
+                        detail={(stats as any)?.driftCount > 0 ? `${(stats as any).driftCount} tasks drifted` : "No drift detected"}
                         loading={loading}
                     />
                     <HealthCard
@@ -100,7 +100,7 @@ export default function SystemHealthPage() {
                         status={stats?.logger || 'unknown'}
                         icon={<FileText className="w-5 h-5" />}
                         description="Audit Trail System"
-                        detail={stats?.lastLog ? `Last Log: ${formatDistanceToNow(new Date(stats.lastLog))} ago` : "No recent logs"}
+                        detail={stats?.lastLog ? `Last Log: ${formatDistanceToNow(new Date(stats.lastLog))} ago` : "Operational"}
                         loading={loading}
                     />
                 </div>
@@ -129,7 +129,7 @@ export default function SystemHealthPage() {
                             <li className="flex gap-3">
                                 <div className="w-2 h-2 rounded-full bg-green-500 mt-1.5 shrink-0" />
                                 <div>
-                                    <strong className="text-foreground">Drive Integration:</strong> Monitors the `system_activity` log for recent `drive_scan` actions. If no scans occur for &gt;24h, this may show as degraded.
+                                    <strong className="text-foreground">Assignment Sync:</strong> Monitors drift between the `tasks.assigned_to` JSONB array and the `task_assignments` relational table. If counts don't match, the system flags it as degraded.
                                 </div>
                             </li>
                             <li className="flex gap-3">

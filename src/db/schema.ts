@@ -1,4 +1,5 @@
 import { sqliteTable, integer, text, real } from 'drizzle-orm/sqlite-core';
+import { sql } from 'drizzle-orm';
 
 // Tenants table for multi-tenant support
 export const tenants = sqliteTable('tenants', {
@@ -191,6 +192,7 @@ export const taskComments = sqliteTable('task_comments', {
   id: integer('id').primaryKey({ autoIncrement: true }),
   taskId: integer('task_id').notNull().references(() => tasks.id, { onDelete: 'cascade' }),
   userId: integer('user_id').notNull().references(() => users.id),
+  tenantId: integer('tenant_id').notNull().references(() => tenants.id),
   comment: text('comment').notNull(),
   created_at: text('created_at').notNull(),
 });
@@ -236,6 +238,7 @@ export const editLocks = sqliteTable('edit_locks', {
   id: integer('id').primaryKey({ autoIncrement: true }),
   taskId: integer('task_id').notNull().references(() => tasks.id),
   userId: integer('user_id').notNull().references(() => users.id),
+  tenantId: integer('tenant_id').notNull().references(() => tenants.id),
   acquiredAt: text('acquired_at').notNull(),
   expiresAt: text('expires_at').notNull(),
   created_at: text('created_at').notNull(),
@@ -246,6 +249,7 @@ export const taskActivity = sqliteTable('task_activity', {
   id: integer('id').primaryKey({ autoIncrement: true }),
   taskId: integer('task_id').notNull().references(() => tasks.id),
   userId: integer('user_id').notNull().references(() => users.id),
+  tenantId: integer('tenant_id').notNull().references(() => tenants.id),
   action: text('action').notNull(), // 'created', 'status_changed', 'review_changed', 'assigned', 'moved', 'commented'
   oldValue: text('old_value'),
   newValue: text('new_value'),
@@ -258,6 +262,7 @@ export const taskActivity = sqliteTable('task_activity', {
 export const subtasks = sqliteTable('subtasks', {
   id: integer('id').primaryKey({ autoIncrement: true }),
   parentTaskId: integer('parent_task_id').notNull().references(() => tasks.id, { onDelete: 'cascade' }),
+  tenantId: integer('tenant_id').notNull().references(() => tenants.id),
   title: text('title').notNull(),
   completed: integer('completed', { mode: 'boolean' }).default(false),
   createdById: integer('created_by_id').notNull().references(() => users.id),
@@ -271,11 +276,14 @@ export const automationRules = sqliteTable('automation_rules', {
   id: integer('id').primaryKey({ autoIncrement: true }),
   name: text('name').notNull(),
   description: text('description'),
+  ruleKey: text('rule_key'), // Added ruleKey
   triggerType: text('trigger_type').notNull(), // 'task_created', 'task_deadline', 'event_created', etc.
   triggerConfig: text('trigger_config', { mode: 'json' }), // Configuration for the trigger
   conditions: text('conditions', { mode: 'json' }), // Array of conditions
   actions: text('actions', { mode: 'json' }), // Array of actions to perform
   enabled: integer('enabled', { mode: 'boolean' }).notNull().default(true),
+  isSystem: integer('is_system', { mode: 'boolean' }).default(false), // Added isSystem
+  version: integer('version').default(1), // Added version
   tenantId: integer('tenant_id').notNull().references(() => tenants.id),
   created_by: integer('created_by').notNull().references(() => users.id),
   created_at: text('created_at').notNull(),
@@ -294,7 +302,7 @@ export const auditLog = sqliteTable('audit_log', {
   ipAddress: text('ip_address'), // Masked IP address
   userAgent: text('user_agent'),
   tenantId: integer('tenant_id').notNull().references(() => tenants.id),
-  timestamp: text('timestamp').notNull(),
+  createdAt: text('created_at').notNull(),
 });
 
 // Media reports table for AI Media Quality Analyzer
@@ -302,6 +310,7 @@ export const mediaReports = sqliteTable('media_reports', {
   id: integer('id').primaryKey({ autoIncrement: true }),
   filename: text('filename'),
   uploaderId: integer('uploader_id').references(() => users.id),
+  tenantId: integer('tenant_id').notNull().references(() => tenants.id),
   type: text('type'), // 'image', 'video', 'audio'
   score: integer('score'), // Quality score from 0-100
   reportJson: text('report_json', { mode: 'json' }), // Full JSON report with detailed metrics
@@ -314,6 +323,7 @@ export const vipEmbeddings = sqliteTable('vip_embeddings', {
   id: integer('id').primaryKey({ autoIncrement: true }),
   label: text('label').notNull(), // VIP name/label
   userId: integer('user_id').references(() => users.id), // Optional association with user
+  tenantId: integer('tenant_id').notNull().references(() => tenants.id),
   embedding: text('embedding', { mode: 'json' }).notNull(), // JSON array of embedding vector (encrypted)
   created_by: integer('created_by').references(() => users.id), // Admin who created the embedding
   created_at: text('created_at').notNull(),
@@ -323,10 +333,55 @@ export const vipEmbeddings = sqliteTable('vip_embeddings', {
 export const adminInterventionNotes = sqliteTable('admin_intervention_notes', {
   id: integer('id').primaryKey({ autoIncrement: true }),
   userId: integer('user_id').notNull(), // FK temporarily removed for safe migration
+  tenantId: integer('tenant_id').notNull().references(() => tenants.id),
   period: text('period').notNull(), // 'YYYY-MM'
   riskLevelAtTime: text('risk_level_at_time').notNull(), // 'Low' | 'Medium' | 'High'
   note: text('note').notNull(),
   actionType: text('action_type').notNull(), // 'Observation' | 'Counselled' | 'Warning Issued' | 'Support Planned' | 'No Action Needed'
   created_by: integer('created_by').notNull(), // FK temporarily removed for safe migration
   created_at: text('created_at').notNull(),
+});
+
+// Equipment Bookings table - Spec 3.2
+export const equipmentBookings = sqliteTable('equipment_bookings', {
+  id: integer('id').primaryKey({ autoIncrement: true }),
+  equipment_id: text('equipment_id').notNull(),
+  task_id: integer('task_id').references(() => tasks.id),
+  booked_by: text('booked_by').notNull(),
+  start_time: text('start_time').notNull(),
+  end_time: text('end_time').notNull(),
+  units_requested: integer('units_requested').default(1),
+  tenant_id: integer('tenant_id').notNull().references(() => tenants.id),
+  created_at: text('created_at').notNull().default(sql`CURRENT_TIMESTAMP`),
+});
+
+// Inventory table
+export const inventory = sqliteTable('inventory', {
+  id: integer('id').primaryKey({ autoIncrement: true }),
+  name: text('name').notNull(),
+  category: text('category').notNull(),
+  quantity: integer('quantity').notNull().default(1),
+  unit: text('unit').notNull().default('unit'),
+  status: text('status').notNull().default('available'),
+  isRentable: integer('is_rentable', { mode: 'boolean' }).default(false),
+  rentalRatePerDay: real('rental_rate_per_day').default(0),
+  serialNumber: text('serial_number'),
+  purchaseDate: text('purchase_date'),
+  purchasePrice: real('purchase_price'),
+  condition: text('condition'),
+  locationStr: text('location_str'),
+  notes: text('notes'),
+  remarks: text('remarks'),
+  imageUrl: text('image_url'),
+  driveFileId: text('drive_file_id'),
+  images: text('images', { mode: 'json' }),
+  brand: text('brand'),
+  model: text('model'),
+  assetStatus: text('asset_status'),
+  threshold: integer('threshold').default(0),
+  createdBy: integer('created_by').references(() => users.id),
+  institution_id: integer('institution_id').references(() => institutions.id),
+  tenantId: integer('tenant_id').notNull().references(() => tenants.id),
+  created_at: text('created_at').notNull().default(sql`CURRENT_TIMESTAMP`),
+  updated_at: text('updated_at').notNull().default(sql`CURRENT_TIMESTAMP`),
 });

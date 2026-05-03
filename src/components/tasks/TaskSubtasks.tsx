@@ -4,6 +4,7 @@ import React, { useState, useEffect } from 'react';
 import { useAuth } from '@/contexts/AuthContextProvider';
 import { apiClient } from '@/lib/apiClient';
 import { supabase } from '@/lib/supabaseClient';
+import { TaskService } from '@/features/tasks/services/taskService';
 import { CheckCircle2, Circle, Plus, Trash2 } from 'lucide-react';
 import { toast } from 'sonner';
 
@@ -11,7 +12,7 @@ interface Subtask {
     id: string;
     title: string;
     completed: boolean;
-    createdById: string;
+    created_by_id: string;
     created_at: { seconds: number; nanoseconds: number } | string;
     completed_at?: { seconds: number; nanoseconds: number } | string | null;
 }
@@ -41,18 +42,16 @@ export function TaskSubtasks({ taskId, subtasks, onUpdate }: TaskSubtasksProps) 
                 id: Date.now().toString(),
                 title: newSubtaskTitle,
                 completed: false,
-                createdById: user?.uid || 'unknown',
+                created_by_id: user?.uid || 'unknown',
                 created_at: new Date().toISOString()
             };
 
-            const { data: taskData } = await supabase.from('tasks').select('subtasks').eq('id', taskId).single();
+            const taskData = await TaskService.getTaskById(taskId);
             const currentSubtasks = taskData?.subtasks || [];
-
-            const { error } = await supabase.from('tasks').update({
+            
+            await TaskService.updateTask(taskId, {
                 subtasks: [...currentSubtasks, newSubtask]
-            }).eq('id', taskId);
-
-            if (error) throw error;
+            });
 
             setNewSubtaskTitle('');
             setShowInput(false);
@@ -68,18 +67,16 @@ export function TaskSubtasks({ taskId, subtasks, onUpdate }: TaskSubtasksProps) 
 
     const handleToggleComplete = async (subtaskId: string, currentStatus: boolean) => {
         try {
-            const { data: taskData } = await supabase.from('tasks').select('subtasks').eq('id', taskId).single();
+            const taskData = await TaskService.getTaskById(taskId);
             const currentSubtasks = taskData?.subtasks || [];
-
+ 
             const updatedSubtasks = currentSubtasks.map((st: any) =>
                 st.id === subtaskId ? { ...st, completed: !currentStatus, completed_at: !currentStatus ? new Date().toISOString() : null } : st
             );
-
-            const { error } = await supabase.from('tasks').update({
+ 
+            await TaskService.updateTask(taskId, {
                 subtasks: updatedSubtasks
-            }).eq('id', taskId);
-
-            if (error) throw error;
+            });
 
             onUpdate();
         } catch (error) {
@@ -92,15 +89,13 @@ export function TaskSubtasks({ taskId, subtasks, onUpdate }: TaskSubtasksProps) 
         if (!confirm('Delete this subtask?')) return;
 
         try {
-            const { data: taskData } = await supabase.from('tasks').select('subtasks').eq('id', taskId).single();
+            const taskData = await TaskService.getTaskById(taskId);
             const currentSubtasks = taskData?.subtasks || [];
             const remainingSubtasks = currentSubtasks.filter((st: any) => st.id !== subtaskId);
-
-            const { error } = await supabase.from('tasks').update({
+ 
+            await TaskService.updateTask(taskId, {
                 subtasks: remainingSubtasks
-            }).eq('id', taskId);
-
-            if (error) throw error;
+            });
 
             onUpdate();
             toast.success('Subtask deleted');
@@ -110,7 +105,7 @@ export function TaskSubtasks({ taskId, subtasks, onUpdate }: TaskSubtasksProps) 
         }
     };
 
-    const canEdit = user?.role === 'admin' || user?.role === 'team';
+    const canEdit = user?.role === 'admin' || (user?.role === 'manager' || user?.role === 'member');
 
     return (
         <div className="space-y-4">

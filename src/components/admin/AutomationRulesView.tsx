@@ -5,6 +5,7 @@ import { AutomationRule, RuleAction, ConditionOperator } from '@/types/automatio
 import { Loader2, Plus, Lock, Send, ShieldAlert, Archive, Copy, Play, Info, ChevronRight, Zap, AlertTriangle, ChevronDown } from 'lucide-react';
 import AppLink from '@/components/AppLink';
 import { apiClient } from '@/lib/apiClient';
+import { DropdownSelector } from '@/components/ui/selectors/DropdownSelector';
 
 interface RulesData {
     custom: AutomationRule[];
@@ -124,7 +125,7 @@ export default function AutomationRulesView() {
                         <div className="space-y-1 z-10">
                             <h4 className="text-base font-semibold text-amber-600 tracking-wide uppercase text-xs">Advanced Configuration</h4>
                             <p className="text-amber-900/80 dark:text-amber-100/70 leading-relaxed max-w-3xl">
-                                This interface exposes raw engine logic. For standard notification settings (reminders, due dates), use the <AppLink href="/admin/notification-policies" className="text-amber-600 hover:text-amber-700 underline underline-offset-4 decoration-amber-500/30 font-medium">Simplified Policy Editor</AppLink>. Changes here override global defaults and may affect system stability.
+                                This interface exposes raw engine logic. For standard notification settings (reminders, due dates), use the <AppLink href="/admin/system-health" className="text-amber-600 hover:text-amber-700 underline underline-offset-4 decoration-amber-500/30 font-medium">System Health Dashboard</AppLink>. Changes here override global defaults and may affect system stability.
                             </p>
                         </div>
                     </div>
@@ -411,38 +412,28 @@ function RuleEditor({ initialData, onClose, onSave }: any) {
                                 placeholder="e.g. task_overdue_custom"
                             />
                         </div>
-                        <div className="space-y-2">
-                            <label className="block text-xs font-medium text-muted uppercase tracking-wide">Event Trigger</label>
-                            <div className="relative">
-                                <select
-                                    className="w-full appearance-none bg-muted/5 border border-soft rounded-xl px-4 py-3 text-sm text-foreground focus:outline-none focus:border-indigo-500/50 transition-all cursor-pointer"
-                                    value={formData.eventType}
-                                    onChange={e => setFormData({ ...formData, eventType: e.target.value })}
-                                >
-                                    {['task_due_soon', 'task_overdue', 'task_stale_warning', 'task_stale_escalation', 'inventory_due_soon', 'inventory_overdue', 'inventory_escalated'].map(e => (
-                                        <option key={e} value={e} className="bg-surface">{e}</option>
-                                    ))}
-                                </select>
-                                <ChevronDown className="absolute right-4 top-1/2 -translate-y-1/2 w-4 h-4 text-muted pointer-events-none" />
-                            </div>
+                        <div className="space-y-0.5">
+                            <DropdownSelector 
+                                label="Event Trigger"
+                                value={formData.eventType || ''}
+                                onChange={val => setFormData({ ...formData, eventType: val })}
+                                options={['task_due_soon', 'task_overdue', 'task_stale_warning', 'task_stale_escalation', 'inventory_due_soon', 'inventory_overdue', 'inventory_escalated'].map(e => ({ id: e, label: e }))}
+                            />
                         </div>
                     </div>
 
                     <div className="grid grid-cols-3 gap-6">
-                        <div className="space-y-2">
-                            <label className="block text-xs font-medium text-muted uppercase tracking-wide">Scope Type</label>
-                            <div className="relative">
-                                <select
-                                    className="w-full appearance-none bg-muted/5 border border-soft rounded-xl px-4 py-3 text-sm text-foreground focus:outline-none focus:border-indigo-500/50 cursor-pointer"
-                                    value={formData.scopeType}
-                                    onChange={e => setFormData({ ...formData, scopeType: e.target.value as any })}
-                                >
-                                    <option value="global" className="bg-surface">Global</option>
-                                    <option value="institution" className="bg-surface">Institution</option>
-                                    <option value="unit" className="bg-surface">Unit</option>
-                                </select>
-                                <ChevronDown className="absolute right-4 top-1/2 -translate-y-1/2 w-4 h-4 text-muted pointer-events-none" />
-                            </div>
+                        <div className="space-y-0.5">
+                            <DropdownSelector 
+                                label="Scope Type"
+                                value={formData.scopeType || ''}
+                                onChange={val => setFormData({ ...formData, scopeType: val as any })}
+                                options={[
+                                    { id: 'global', label: 'Global' },
+                                    { id: 'institution', label: 'Institution' },
+                                    { id: 'unit', label: 'Unit' }
+                                ]}
+                            />
                         </div>
                         <div className="col-span-2 space-y-2">
                             <label className="block text-xs font-medium text-muted uppercase tracking-wide">Scope ID (Optional for Global)</label>
@@ -477,16 +468,13 @@ function RuleEditor({ initialData, onClose, onSave }: any) {
                                         value={c.field}
                                         onChange={e => updateCondition(i, 'field', e.target.value)}
                                     />
-                                    <div className="relative w-28">
-                                        <select
-                                            className="w-full appearance-none bg-muted/10 border border-soft rounded-lg px-3 py-2 text-sm text-foreground focus:border-indigo-500/50 outline-none cursor-pointer"
+                                    <div className="w-28 space-y-0.5">
+                                        <DropdownSelector 
+                                            label="Operator"
                                             value={c.operator}
-                                            onChange={e => updateCondition(i, 'operator', e.target.value)}
-                                        >
-                                            {['eq', 'neq', 'gt', 'gte', 'lt', 'lte', 'contains'].map(op => (
-                                                <option key={op} value={op} className="bg-surface">{op}</option>
-                                            ))}
-                                        </select>
+                                            onChange={val => updateCondition(i, 'operator', val)}
+                                            options={['eq', 'neq', 'gt', 'gte', 'lt', 'lte', 'contains'].map(op => ({ id: op, label: op }))}
+                                        />
                                     </div>
                                     <input
                                         placeholder="Value"
@@ -502,21 +490,18 @@ function RuleEditor({ initialData, onClose, onSave }: any) {
 
                     {/* Action */}
                     <div className="grid grid-cols-2 gap-6">
-                        <div className="space-y-2">
-                            <label className="block text-xs font-medium text-muted uppercase tracking-wide">Resulting Action</label>
-                            <div className="relative">
-                                <select
-                                    className="w-full appearance-none bg-muted/5 border border-soft rounded-xl px-4 py-3 text-sm text-foreground focus:outline-none focus:border-indigo-500/50 cursor-pointer"
-                                    value={formData.action}
-                                    onChange={e => setFormData({ ...formData, action: e.target.value as RuleAction })}
-                                >
-                                    <option value="notify" className="bg-surface">Notify User (Standard)</option>
-                                    <option value="escalate" className="bg-surface">Escalate (Admin/Manager)</option>
-                                    <option value="suppress" className="bg-surface">Suppress (Do Nothing)</option>
-                                    <option value="audit" className="bg-surface">Log Only (Silent)</option>
-                                </select>
-                                <ChevronDown className="absolute right-4 top-1/2 -translate-y-1/2 w-4 h-4 text-muted pointer-events-none" />
-                            </div>
+                        <div className="space-y-0.5">
+                            <DropdownSelector 
+                                label="Resulting Action"
+                                value={formData.action || ''}
+                                onChange={val => setFormData({ ...formData, action: val as RuleAction })}
+                                options={[
+                                    { id: 'notify', label: 'Notify User (Standard)' },
+                                    { id: 'escalate', label: 'Escalate (Admin/Manager)' },
+                                    { id: 'suppress', label: 'Suppress (Do Nothing)' },
+                                    { id: 'audit', label: 'Log Only (Silent)' }
+                                ]}
+                            />
                         </div>
                         <div className="space-y-2">
                             <label className="block text-xs font-medium text-muted uppercase tracking-wide">Priority Score</label>

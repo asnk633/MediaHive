@@ -21,7 +21,7 @@ export default function EmptyState({
 }: EmptyStateProps) {
     return (
         <div className={cn(
-            "flex flex-col items-center justify-center text-center animate-in fade-in duration-500",
+            "mh-empty-state flex flex-col items-center justify-center text-center animate-in fade-in duration-500",
             compact ? "py-6" : "py-12 px-6",
             className
         )}>
@@ -39,7 +39,7 @@ export default function EmptyState({
             </h3>
             {description && (
                 <p className={cn(
-                    "text-white/30 font-medium max-w-[280px] mx-auto mt-1 leading-relaxed",
+                    "text-white/50 font-medium max-w-[280px] mx-auto mt-1 leading-relaxed",
                     compact ? "text-[11px]" : "text-sm"
                 )}>
                     {description}

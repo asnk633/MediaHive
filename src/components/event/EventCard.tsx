@@ -11,50 +11,67 @@ interface EventCardProps {
 }
 
 export function EventCard({ event, onClick, className }: EventCardProps) {
+    const start = event.start_at || event.date;
+    const isPending = event.status === 'pending';
+
     return (
         <div
             onClick={onClick}
             className={cn(
-                event.is_system_event ? "border-amber-500/20 bg-amber-500/5 hover:bg-amber-500/10 hover:shadow-amber-500/5" : "border-white/5 bg-surface/40 hover:bg-surface/60 hover:shadow-accent/5",
+                "event-card-base relative group cursor-pointer overflow-hidden",
+                isPending && "border-amber-500/30 bg-amber-500/5",
                 className
             )}
         >
-            <div className={cn("absolute left-0 top-0 h-full w-1", event.is_system_event ? "bg-amber-500" : "bg-accent")} />
+            {/* Status Accent Bar */}
+            <div 
+                className={cn(
+                    "absolute left-0 top-0 h-full w-1 transition-all duration-300 group-hover:w-1.5", 
+                    event.is_system_event ? "bg-amber-500" : "bg-blue-500"
+                )} 
+            />
 
-            <div className="mb-2 flex items-start justify-between gap-2">
-                <h3 className="font-semibold text-text-primary line-clamp-1 group-hover:text-accent transition-colors">
-                    {event.title}
-                </h3>
-                <span className={cn(
-                    "shrink-0 rounded-full px-2 py-0.5 text-[10px] font-bold uppercase tracking-wider",
-                    event.is_system_event
-                        ? "bg-amber-500/10 text-amber-400 border border-amber-500/20"
-                        : "bg-accent/10 text-accent"
-                )}>
-                    {event.is_system_event ? "System Event" : "Event"}
-                </span>
-            </div>
-
-            <div className="flex flex-col gap-1.5 text-xs text-text-muted">
-                <div className="flex items-center gap-2">
-                    <Clock className="h-3.5 w-3.5 text-accent/70" />
-                    <span>
-                        {format(parseISO(event.startAt), "h:mm a")}
-                        {event.endAt && ` - ${format(parseISO(event.endAt), "h:mm a")}`}
-                    </span>
+            <div className="flex flex-col gap-1">
+                <div className="flex items-start justify-between gap-2">
+                    <h3 className="text-sm font-bold text-white tracking-wide truncate group-hover:text-blue-400 transition-colors">
+                        {event.title}
+                    </h3>
+                    {event.is_system_event && (
+                        <span className="shrink-0 bg-amber-500/10 text-amber-500 border border-amber-500/20 rounded-full px-2 py-0.5 text-[9px] font-bold uppercase tracking-wider">
+                            System
+                        </span>
+                    )}
                 </div>
 
-                {event.location && (
-                    <div className="flex items-center gap-2">
-                        <MapPin className="h-3.5 w-3.5 text-accent/70" />
-                        <span className="line-clamp-1">{event.location}</span>
+                <div className="flex items-center gap-3 text-[11px] text-white/50">
+                    <div className="flex items-center gap-1.5">
+                        <Clock className="h-3 w-3 text-blue-400/70" />
+                        <span>
+                            {event.is_all_day ? (
+                                "All Day"
+                            ) : (
+                                <>
+                                    {(() => {
+                                        if (!start) return "Time TBD";
+                                        try {
+                                            const d = typeof start === 'string' ? parseISO(start) : new Date(start);
+                                            return format(d, "h:mm a");
+                                        } catch (e) { return "Invalid"; }
+                                    })()}
+                                </>
+                            )}
+                        </span>
                     </div>
-                )}
 
-                <div className="flex items-center gap-2 mt-1">
-                    <Users className="h-3.5 w-3.5 text-accent/70" />
-                    <span>{event.visibility === 'all' ? 'Everyone' : event.visibility === 'team' ? 'Team' : 'Restricted'}</span>
+                    {event.location && (
+                        <div className="flex items-center gap-1.5 truncate">
+                            <MapPin className="h-3 w-3 text-blue-400/70" />
+                            <span className="truncate">{event.location}</span>
+                        </div>
+                    )}
                 </div>
+
+                {/* Optional description preview for List/Timeline if needed, but keeping it compact for Month/Week cell compatibility or specialized views */}
             </div>
         </div>
     );

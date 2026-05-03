@@ -1,7 +1,8 @@
 "use client";
 
 import React, { useState } from 'react';
-import { Calendar, Clock, AlignLeft, Loader2 } from 'lucide-react';
+import { Calendar, Clock, AlignLeft, Loader2, Umbrella } from 'lucide-react';
+import { DateSelector } from '@/components/ui/selectors/DateSelector';
 import { LeaveType, LEAVE_TYPE_LABELS, MINIMUM_NOTICE } from '@/types/leave';
 import { LeaveRequestService } from '@/services/leaveRequestService';
 import { LeaveBalanceDisplay } from '@/components/leave/LeaveBalanceDisplay';
@@ -97,7 +98,7 @@ export const LeaveRequestForm: React.FC<LeaveRequestFormProps> = ({ onSuccess, o
         w-full 
         bg-[#0a0c10] 
         text-white 
-        placeholder:text-white/30
+        placeholder:text-white/50
         border border-[#ffffff1a] 
         rounded-2xl 
         py-4 px-4 
@@ -149,33 +150,27 @@ export const LeaveRequestForm: React.FC<LeaveRequestFormProps> = ({ onSuccess, o
 
             {/* Date Range */}
             <div className="grid grid-cols-2 gap-4">
-                <div>
-                    <label className={labelClasses}>Start Date *</label>
-                    <div className="relative group">
-                        <Calendar size={20} className="absolute left-4 top-1/2 -translate-y-1/2 text-white/40 group-focus-within:text-blue-400 transition-colors" />
-                        <input
-                            type="date"
-                            required
-                            value={startDate}
-                            onChange={(e) => setStartDate(e.target.value)}
-                            min={format(new Date(), 'yyyy-MM-dd')}
-                            className={`${inputClasses} pl-12 [color-scheme:dark]`}
-                        />
-                    </div>
+                <div className="space-y-0.5">
+                    <DateSelector 
+                        label="Start Date"
+                        date={startDate ? new Date(startDate) : undefined}
+                        onChange={(date) => {
+                            if (!date) return;
+                            setStartDate(date.toISOString().split('T')[0]);
+                        }}
+                        disabledBefore={new Date()}
+                    />
                 </div>
-                <div>
-                    <label className={labelClasses}>End Date *</label>
-                    <div className="relative group">
-                        <Calendar size={20} className="absolute left-4 top-1/2 -translate-y-1/2 text-white/40 group-focus-within:text-blue-400 transition-colors" />
-                        <input
-                            type="date"
-                            required
-                            value={endDate}
-                            onChange={(e) => setEndDate(e.target.value)}
-                            min={startDate || format(new Date(), 'yyyy-MM-dd')}
-                            className={`${inputClasses} pl-12 [color-scheme:dark]`}
-                        />
-                    </div>
+                <div className="space-y-0.5">
+                    <DateSelector 
+                        label="End Date"
+                        date={endDate ? new Date(endDate) : undefined}
+                        onChange={(date) => {
+                            if (!date) return;
+                            setEndDate(date.toISOString().split('T')[0]);
+                        }}
+                        disabledBefore={startDate ? new Date(startDate) : new Date()}
+                    />
                 </div>
             </div>
 
@@ -213,7 +208,7 @@ export const LeaveRequestForm: React.FC<LeaveRequestFormProps> = ({ onSuccess, o
                         className={`${inputClasses} pl-12 resize-none`}
                     />
                 </div>
-                <p className="text-xs text-white/30 mt-1 ml-1">
+                <p className="text-xs text-white/50 mt-1 ml-1">
                     {reason.length}/10 characters minimum
                 </p>
             </div>

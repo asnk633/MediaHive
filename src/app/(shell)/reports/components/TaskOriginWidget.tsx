@@ -1,5 +1,5 @@
 import React from 'react';
-import { Task } from '@/types/task';
+import { Task } from '@/features/tasks/types/task';
 import {
     PieChart,
     Pie,
@@ -30,7 +30,7 @@ export const TaskOriginWidget = ({ tasks }: TaskOriginWidgetProps) => {
             originMap.system++;
         } else if (task.created_by?.role === 'admin') {
             originMap.admin++;
-        } else if (task.created_by?.role === 'team' || task.created_by?.role === 'editor' || task.created_by?.role === 'viewer') {
+        } else if ((task.created_by?.role === 'manager' || task.created_by?.role === 'member') || task.created_by?.role === 'editor' || task.created_by?.role === 'viewer') {
             originMap.team++;
         } else {
             // Check if user string matches known patterns or just bucket as 'Team' generally if not system or admin?

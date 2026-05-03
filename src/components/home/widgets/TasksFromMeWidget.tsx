@@ -1,5 +1,5 @@
 import React from 'react';
-import { Task } from '@/types/task';
+import { Task } from '@/features/tasks/types/task';
 import { format } from 'date-fns';
 import { useRouter } from 'next/navigation';
 import { nativeNavigate } from '@/lib/utils';

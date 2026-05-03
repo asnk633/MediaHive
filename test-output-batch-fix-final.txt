@@ -1,0 +1,353 @@
+jest-haste-map: duplicate manual mock found: authContext
+  The following files share their name; please delete one of them:
+    * <rootDir>\__tests_archive__\__mocks__\authContext.ts
+    * <rootDir>\src\__tests__\__mocks__\authContext.ts
+
+PASS src/__tests__/unit/verify-notification-fix.test.ts
+  ● Console
+
+    console.log
+      [FIREBASE ADMIN] 🔧 Using FIRESTORE EMULATOR (localhost:8080)
+
+      at Object.log (src/lib/firebase/server.ts:21:21)
+
+    console.log
+      [FIREBASE ADMIN] Server Instance Ready. Project ID: thaiba-media-staging
+
+      at Object.log (src/lib/firebase/server.ts:70:13)
+
+    console.log
+      [API Debug] Task Update Attempt: TaskId=jest-task-123, User=jest-verifier, Role=team
+
+      at log (src/app/api/tasks/[id]/route.ts:73:13)
+
+    console.log
+      [API Debug] Permissions: RolePerm=true, IsCreator=false, IsAssignee=true
+
+      at log (src/app/api/tasks/[id]/route.ts:74:13)
+
+    console.log
+      [API Debug] Assignees: ["jest-verifier"]
+
+      at log (src/app/api/tasks/[id]/route.ts:75:13)
+
+    console.error
+      AuditService: Failed to log action Error: Value for argument "data" is not a valid Firestore document. Cannot use "undefined" as a Firestore value (found in field "metadata"). If you want to ignore undefined values, enable `ignoreUndefinedProperties`.
+          at validateUserInput (D:\MediaHive App\node_modules\@google-cloud\firestore\build\src\serializer.js:383:19)
+          at validateUserInput (D:\MediaHive App\node_modules\@google-cloud\firestore\build\src\serializer.js:375:13)
+          at validateDocumentData (D:\MediaHive App\node_modules\@google-cloud\firestore\build\src\write-batch.js:609:40)
+          at D:\MediaHive App\node_modules\@google-cloud\firestore\build\src\reference\collection-reference.js:214:52
+          at D:\MediaHive App\node_modules\@google-cloud\firestore\build\src\telemetry\enabled-trace-util.js:110:30
+          at NoopContextManager.with (D:\MediaHive App\node_modules\@opentelemetry\api\src\context\NoopContextManager.ts:31:15)
+          at ContextAPI.with (D:\MediaHive App\node_modules\@opentelemetry\api\src\api\context.ts:77:42)
+          at NoopTracer.startActiveSpan (D:\MediaHive App\node_modules\@opentelemetry\api\src\trace\NoopTracer.ts:98:27)
+          at ProxyTracer.startActiveSpan (D:\MediaHive App\node_modules\@opentelemetry\api\src\trace\ProxyTracer.ts:51:20)
+          at EnabledTraceUtil.startActiveSpan (D:\MediaHive App\node_modules\@google-cloud\firestore\build\src\telemetry\enabled-trace-util.js:102:28)
+          at CollectionReference.add (D:\MediaHive App\node_modules\@google-cloud\firestore\build\src\reference\collection-reference.js:212:43)
+          at Function.add (D:\MediaHive App\src\services\auditService.ts:39:55)
+          at log (D:\MediaHive App\src\app\api\tasks\[id]\route.ts:265:28)
+          at Object.<anonymous> (D:\MediaHive App\src\__tests__\unit\verify-notification-fix.test.ts:90:21)
+
+    [0m [90m 13 |[39m             [36mreturn[39m[33m;[39m
+     [90m 14 |[39m         }
+    [31m[1m>[22m[39m[90m 15 |[39m         originalError[33m.[39mcall(console[33m,[39m [33m...[39margs)[33m;[39m
+     [90m    |[39m                       [31m[1m^[22m[39m
+     [90m 16 |[39m     }[33m;[39m
+     [90m 17 |[39m })[33m;[39m
+     [90m 18 |[39m[0m
+
+      at console.call [as error] (src/tests/jest-setup.js:15:23)
+      at Function.error [as log] (src/services/auditService.ts:41:21)
+      at log (src/app/api/tasks/[id]/route.ts:265:28)
+      at Object.<anonymous> (src/__tests__/unit/verify-notification-fix.test.ts:90:21)
+
+    console.log
+      Found 13 notifications.
+
+      at Object.log (src/__tests__/unit/verify-notification-fix.test.ts:100:17)
+
+    console.log
+      Notification found: {
+        userId: 'jest-admin',
+        isRead: false,
+        isArchived: false,
+        createdAt: Timestamp { _seconds: 1771145789, _nanoseconds: 623000000 },
+        priority: 'medium',
+        type: 'task_completed',
+        title: 'Task Completed',
+        message: 'Task "Jest Notification Test" has been marked as completed.',
+        entityType: 'task',
+        entityId: 'jest-task-123',
+        actionUrl: '/tasks/view/jest-task-123',
+        sourceUserId: 'jest-verifier'
+      }
+
+      at log (src/__tests__/unit/verify-notification-fix.test.ts:106:21)
+
+    console.log
+      Notification found: {
+        userId: 'jest-admin',
+        isRead: false,
+        isArchived: false,
+        createdAt: Timestamp { _seconds: 1771144184, _nanoseconds: 808000000 },
+        priority: 'medium',
+        type: 'task_completed',
+        title: 'Task Completed',
+        message: 'Task "Jest Notification Test" has been marked as completed.',
+        entityType: 'task',
+        entityId: 'jest-task-123',
+        actionUrl: '/tasks/view/jest-task-123',
+        sourceUserId: 'jest-verifier'
+      }
+
+      at log (src/__tests__/unit/verify-notification-fix.test.ts:106:21)
+
+    console.log
+      Notification found: {
+        userId: 'jest-admin',
+        isRead: false,
+        isArchived: false,
+        createdAt: Timestamp { _seconds: 1771144882, _nanoseconds: 30000000 },
+        priority: 'medium',
+        type: 'task_completed',
+        title: 'Task Completed',
+        message: 'Task "Jest Notification Test" has been marked as completed.',
+        entityType: 'task',
+        entityId: 'jest-task-123',
+        actionUrl: '/tasks/view/jest-task-123',
+        sourceUserId: 'jest-verifier'
+      }
+
+      at log (src/__tests__/unit/verify-notification-fix.test.ts:106:21)
+
+    console.log
+      Notification found: {
+        userId: 'jest-admin',
+        isRead: false,
+        isArchived: false,
+        createdAt: Timestamp { _seconds: 1771145842, _nanoseconds: 497000000 },
+        priority: 'medium',
+        type: 'task_completed',
+        title: 'Task Completed',
+        message: 'Task "Jest Notification Test" has been marked as completed.',
+        entityType: 'task',
+        entityId: 'jest-task-123',
+        actionUrl: '/tasks/view/jest-task-123',
+        sourceUserId: 'jest-verifier'
+      }
+
+      at log (src/__tests__/unit/verify-notification-fix.test.ts:106:21)
+
+    console.log
+      Notification found: {
+        userId: 'jest-admin',
+        isRead: false,
+        isArchived: false,
+        createdAt: Timestamp { _seconds: 1771144109, _nanoseconds: 163000000 },
+        priority: 'medium',
+        type: 'task_completed',
+        title: 'Task Completed',
+        message: 'Task "Jest Notification Test" has been marked as completed.',
+        entityType: 'task',
+        entityId: 'jest-task-123',
+        actionUrl: '/tasks/view/jest-task-123',
+        sourceUserId: 'jest-verifier'
+      }
+
+      at log (src/__tests__/unit/verify-notification-fix.test.ts:106:21)
+
+    console.log
+      Notification found: {
+        userId: 'jest-admin',
+        isRead: false,
+        isArchived: false,
+        createdAt: Timestamp { _seconds: 1771144575, _nanoseconds: 680000000 },
+        priority: 'medium',
+        type: 'task_completed',
+        title: 'Task Completed',
+        message: 'Task "Jest Notification Test" has been marked as completed.',
+        entityType: 'task',
+        entityId: 'jest-task-123',
+        actionUrl: '/tasks/view/jest-task-123',
+        sourceUserId: 'jest-verifier'
+      }
+
+      at log (src/__tests__/unit/verify-notification-fix.test.ts:106:21)
+
+    console.log
+      Notification found: {
+        userId: 'jest-admin',
+        isRead: false,
+        isArchived: false,
+        createdAt: Timestamp { _seconds: 1771144278, _nanoseconds: 616000000 },
+        priority: 'medium',
+        type: 'task_completed',
+        title: 'Task Completed',
+        message: 'Task "Jest Notification Test" has been marked as completed.',
+        entityType: 'task',
+        entityId: 'jest-task-123',
+        actionUrl: '/tasks/view/jest-task-123',
+        sourceUserId: 'jest-verifier'
+      }
+
+      at log (src/__tests__/unit/verify-notification-fix.test.ts:106:21)
+
+    console.log
+      Notification found: {
+        userId: 'jest-admin',
+        isRead: false,
+        isArchived: false,
+        createdAt: Timestamp { _seconds: 1771144238, _nanoseconds: 512000000 },
+        priority: 'medium',
+        type: 'task_completed',
+        title: 'Task Completed',
+        message: 'Task "Jest Notification Test" has been marked as completed.',
+        entityType: 'task',
+        entityId: 'jest-task-123',
+        actionUrl: '/tasks/view/jest-task-123',
+        sourceUserId: 'jest-verifier'
+      }
+
+      at log (src/__tests__/unit/verify-notification-fix.test.ts:106:21)
+
+    console.log
+      Notification found: {
+        userId: 'jest-admin',
+        isRead: false,
+        isArchived: false,
+        createdAt: Timestamp { _seconds: 1771145070, _nanoseconds: 469000000 },
+        priority: 'medium',
+        type: 'task_completed',
+        title: 'Task Completed',
+        message: 'Task "Jest Notification Test" has been marked as completed.',
+        entityType: 'task',
+        entityId: 'jest-task-123',
+        actionUrl: '/tasks/view/jest-task-123',
+        sourceUserId: 'jest-verifier'
+      }
+
+      at log (src/__tests__/unit/verify-notification-fix.test.ts:106:21)
+
+    console.log
+      Notification found: {
+        userId: 'jest-admin',
+        isRead: false,
+        isArchived: false,
+        createdAt: Timestamp { _seconds: 1771145234, _nanoseconds: 572000000 },
+        priority: 'medium',
+        type: 'task_completed',
+        title: 'Task Completed',
+        message: 'Task "Jest Notification Test" has been marked as completed.',
+        entityType: 'task',
+        entityId: 'jest-task-123',
+        actionUrl: '/tasks/view/jest-task-123',
+        sourceUserId: 'jest-verifier'
+      }
+
+      at log (src/__tests__/unit/verify-notification-fix.test.ts:106:21)
+
+    console.log
+      Notification found: {
+        userId: 'jest-admin',
+        isRead: false,
+        isArchived: false,
+        createdAt: Timestamp { _seconds: 1771145120, _nanoseconds: 80000000 },
+        priority: 'medium',
+        type: 'task_completed',
+        title: 'Task Completed',
+        message: 'Task "Jest Notification Test" has been marked as completed.',
+        entityType: 'task',
+        entityId: 'jest-task-123',
+        actionUrl: '/tasks/view/jest-task-123',
+        sourceUserId: 'jest-verifier'
+      }
+
+      at log (src/__tests__/unit/verify-notification-fix.test.ts:106:21)
+
+    console.log
+      Notification found: {
+        userId: 'jest-admin',
+        isRead: false,
+        isArchived: false,
+        createdAt: Timestamp { _seconds: 1771144999, _nanoseconds: 357000000 },
+        priority: 'medium',
+        type: 'task_completed',
+        title: 'Task Completed',
+        message: 'Task "Jest Notification Test" has been marked as completed.',
+        entityType: 'task',
+        entityId: 'jest-task-123',
+        actionUrl: '/tasks/view/jest-task-123',
+        sourceUserId: 'jest-verifier'
+      }
+
+      at log (src/__tests__/unit/verify-notification-fix.test.ts:106:21)
+
+    console.log
+      Notification found: {
+        userId: 'jest-admin',
+        isRead: false,
+        isArchived: false,
+        createdAt: Timestamp { _seconds: 1771144811, _nanoseconds: 683000000 },
+        priority: 'medium',
+        type: 'task_completed',
+        title: 'Task Completed',
+        message: 'Task "Jest Notification Test" has been marked as completed.',
+        entityType: 'task',
+        entityId: 'jest-task-123',
+        actionUrl: '/tasks/view/jest-task-123',
+        sourceUserId: 'jest-verifier'
+      }
+
+      at log (src/__tests__/unit/verify-notification-fix.test.ts:106:21)
+
+    console.log
+      [API Debug] Task Update Attempt: TaskId=jest-task-123, User=jest-admin, Role=admin
+
+      at log (src/app/api/tasks/[id]/route.ts:73:13)
+
+    console.log
+      [API Debug] Permissions: RolePerm=true, IsCreator=true, IsAssignee=false
+
+      at log (src/app/api/tasks/[id]/route.ts:74:13)
+
+    console.log
+      [API Debug] Assignees: ["jest-verifier"]
+
+      at log (src/app/api/tasks/[id]/route.ts:75:13)
+
+    console.error
+      AuditService: Failed to log action Error: Value for argument "data" is not a valid Firestore document. Cannot use "undefined" as a Firestore value (found in field "metadata"). If you want to ignore undefined values, enable `ignoreUndefinedProperties`.
+          at validateUserInput (D:\MediaHive App\node_modules\@google-cloud\firestore\build\src\serializer.js:383:19)
+          at validateUserInput (D:\MediaHive App\node_modules\@google-cloud\firestore\build\src\serializer.js:375:13)
+          at validateDocumentData (D:\MediaHive App\node_modules\@google-cloud\firestore\build\src\write-batch.js:609:40)
+          at D:\MediaHive App\node_modules\@google-cloud\firestore\build\src\reference\collection-reference.js:214:52
+          at D:\MediaHive App\node_modules\@google-cloud\firestore\build\src\telemetry\enabled-trace-util.js:110:30
+          at NoopContextManager.with (D:\MediaHive App\node_modules\@opentelemetry\api\src\context\NoopContextManager.ts:31:15)
+          at ContextAPI.with (D:\MediaHive App\node_modules\@opentelemetry\api\src\api\context.ts:77:42)
+          at NoopTracer.startActiveSpan (D:\MediaHive App\node_modules\@opentelemetry\api\src\trace\NoopTracer.ts:98:27)
+          at ProxyTracer.startActiveSpan (D:\MediaHive App\node_modules\@opentelemetry\api\src\trace\ProxyTracer.ts:51:20)
+          at EnabledTraceUtil.startActiveSpan (D:\MediaHive App\node_modules\@google-cloud\firestore\build\src\telemetry\enabled-trace-util.js:102:28)
+          at CollectionReference.add (D:\MediaHive App\node_modules\@google-cloud\firestore\build\src\reference\collection-reference.js:212:43)
+          at Function.add (D:\MediaHive App\src\services\auditService.ts:39:55)
+          at log (D:\MediaHive App\src\app\api\tasks\[id]\route.ts:265:28)
+          at Object.<anonymous> (D:\MediaHive App\src\__tests__\unit\verify-notification-fix.test.ts:130:21)
+
+    [0m [90m 13 |[39m             [36mreturn[39m[33m;[39m
+     [90m 14 |[39m         }
+    [31m[1m>[22m[39m[90m 15 |[39m         originalError[33m.[39mcall(console[33m,[39m [33m...[39margs)[33m;[39m
+     [90m    |[39m                       [31m[1m^[22m[39m
+     [90m 16 |[39m     }[33m;[39m
+     [90m 17 |[39m })[33m;[39m
+     [90m 18 |[39m[0m
+
+      at console.call [as error] (src/tests/jest-setup.js:15:23)
+      at Function.error [as log] (src/services/auditService.ts:41:21)
+      at log (src/app/api/tasks/[id]/route.ts:265:28)
+      at Object.<anonymous> (src/__tests__/unit/verify-notification-fix.test.ts:130:21)
+
+
+Test Suites: 1 passed, 1 total
+Tests:       5 passed, 5 total
+Snapshots:   0 total
+Time:        1.657 s, estimated 2 s
+Ran all test suites matching src/__tests__/unit/verify-notification-fix.test.ts.

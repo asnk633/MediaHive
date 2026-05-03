@@ -2,7 +2,7 @@
 
 import React, { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
-import { Task } from "@/types/task";
+import { Task } from '@/features/tasks/types/task';
 import { format } from "date-fns";
 import { apiClient } from "@/lib/apiClient";
 import { supabase } from "@/lib/supabaseClient";

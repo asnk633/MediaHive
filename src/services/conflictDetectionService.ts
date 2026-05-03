@@ -6,8 +6,9 @@ import {
     TaskConflict,
     OffDayConflict
 } from '@/types/conflict';
-import { SystemEventService } from './systemEventService';
-import { supabase } from '@/lib/supabaseClient';
+import { SystemEventService } from '@/features/events/services/systemEventService';
+import { TaskService } from '@/features/tasks/services/taskService';
+import { TaskSchema } from '@/domain/schemas/task';
 
 /**
  * Conflict Detection Service
@@ -59,17 +60,25 @@ export const ConflictDetectionService = {
         endDate: Date
     ): Promise<TaskConflict[]> => {
         try {
-            // Find tasks containing user in assigned_to JSONB array where due_date falls in range
-            const { data, error } = await supabase.from('tasks')
-                .select('id, title, due_date, status')
-                .contains('assigned_to', `[{"uid": "${userId}"}]`)
-                .gte('due_date', startDate.toISOString())
-                .lte('due_date', endDate.toISOString())
-                .neq('status', 'done');
+            const allTasks = await TaskService.getTasks();
 
-            if (error) throw error;
+            const conflictingTasks = allTasks.filter(task => {
+                // DTO Validation
+                const parsed = TaskSchema.safeParse(task);
+                if (!parsed.success) {
+                    console.warn("[ConflictDetectionService] DTO validation failed for task:", parsed.error);
+                }
 
-            return (data || []).map(task => ({
+                if (task.status === 'done' || !task.due_date) return false;
+
+                const due = new Date(task.due_date);
+                const isAssigned = task.assigned_to?.some(assignee => assignee.uid === userId);
+                const fallsInRange = due >= startDate && due <= endDate;
+
+                return isAssigned && fallsInRange;
+            });
+
+            return conflictingTasks.map(task => ({
                 taskId: task.id,
                 taskTitle: task.title,
                 due_date: new Date(task.due_date),

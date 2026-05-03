@@ -1,6 +1,6 @@
-// @ts-nocheck
 import { NextRequest, NextResponse } from 'next/server';
-import { verifyUser, getSupabaseFromRequest } from '@/lib/server-utils';
+import { verifyUser, getSupabaseFromRequest } from '@/lib/server/server-utils';
+import { withTenant } from '@/lib/tenantQuery';
 
 export const dynamic = 'force-dynamic';
 
@@ -11,15 +11,27 @@ export async function GET(request: NextRequest) {
             return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
         }
 
-        const supabase = getSupabaseFromRequest(request);
+        const tenantId = user.tenant_id;
+        if (!tenantId || tenantId === 'null' || tenantId === 'undefined') {
+            console.error(`[GET /api/inventory/stats] ❌ Missing tenant context for user: ${user.uid}`);
+            return NextResponse.json({ error: 'Missing tenant context' }, { status: 403 });
+        }
+
+        const supabase = await getSupabaseFromRequest(request);
         if (!supabase) return NextResponse.json({ error: 'Internal Error' }, { status: 500 });
+
+        console.log(`[INV_STATS] 📊 Fetching stats for tenant: ${tenantId}`);
 
         // Parallel Aggregation Queries (Efficient)
         const [totalRes, inUseRes, unavailableRes] = await Promise.all([
-            supabase.from('inventory').select('*', { count: 'exact', head: true }),
-            supabase.from('inventory').select('*', { count: 'exact', head: true }).eq('status', 'in_use'),
-            supabase.from('inventory').select('*', { count: 'exact', head: true }).in('status', ['broken', 'lost', 'out'])
+            withTenant(supabase.from('inventory').select('*', { count: 'exact', head: true }), tenantId),
+            withTenant(supabase.from('inventory').select('*', { count: 'exact', head: true }).eq('status', 'in_use'), tenantId),
+            withTenant(supabase.from('inventory').select('*', { count: 'exact', head: true }).in('status', ['broken', 'lost', 'out']), tenantId)
         ]);
+
+        if (totalRes.error) throw totalRes.error;
+        if (inUseRes.error) throw inUseRes.error;
+        if (unavailableRes.error) throw unavailableRes.error;
 
         const total = totalRes.count || 0;
         const inUse = inUseRes.count || 0;
@@ -33,7 +45,10 @@ export async function GET(request: NextRequest) {
         });
 
     } catch (error: any) {
-        console.error('Error fetching inventory stats:', error);
-        return NextResponse.json({ error: error.message || 'Failed to fetch inventory stats' }, { status: 500 });
+        console.error('[INV_STATS_ROUTE] Error:', error);
+        return NextResponse.json({ 
+            error: error.message || 'Internal Server Error',
+            context: 'INV_STATS_ROUTE'
+        }, { status: 500 });
     }
 }

@@ -1,20 +1,13 @@
 "use client";
-// src/hooks/useOffline.ts
-// Hook for managing offline functionality
-
 import { useState, useEffect } from 'react';
-import { 
-  getPendingSyncOperations, 
-  getUnresolvedConflicts,
-  ConflictItem
-} from '@/lib/offline-db';
-import { forceProcessSyncQueue } from '@/lib/offline-sync';
+import { useAtom } from 'jotai';
+import { syncPendingCountAtom, isSyncingAtom, syncEngine } from '@/lib/offline/queueManager';
 
 export function useOffline() {
   const [isOnline, setIsOnline] = useState(true);
-  const [pendingSyncCount, setPendingSyncCount] = useState(0);
-  const [conflicts, setConflicts] = useState<ConflictItem[]>([]);
-  const [isProcessing, setIsProcessing] = useState(false);
+  const [pendingSyncCount] = useAtom(syncPendingCountAtom);
+  const [isProcessing] = useAtom(isSyncingAtom);
+  const [conflicts, setConflicts] = useState([]); // Currently unused in True Mutation Queue
 
   // Check initial online status
   useEffect(() => {
@@ -33,61 +26,9 @@ export function useOffline() {
     };
   }, []);
 
-  // Check for pending sync operations
-  useEffect(() => {
-    const updatePendingCount = async () => {
-      try {
-        const pending = await getPendingSyncOperations();
-        setPendingSyncCount(pending.length);
-      } catch (error) {
-        console.error('Error getting pending sync count:', error);
-      }
-    };
-    
-    updatePendingCount();
-    
-    // Update periodically
-    const interval = setInterval(updatePendingCount, 5000);
-    return () => clearInterval(interval);
-  }, []);
-
-  // Check for conflicts
-  useEffect(() => {
-    const updateConflicts = async () => {
-      try {
-        const unresolvedConflicts = await getUnresolvedConflicts();
-        setConflicts(unresolvedConflicts);
-      } catch (error) {
-        console.error('Error getting conflicts:', error);
-      }
-    };
-    
-    updateConflicts();
-    
-    // Update periodically
-    const interval = setInterval(updateConflicts, 10000);
-    return () => clearInterval(interval);
-  }, []);
-
-  // Process sync queue manually
   const processSyncQueue = async () => {
     if (isProcessing) return;
-    
-    setIsProcessing(true);
-    try {
-      await forceProcessSyncQueue();
-      
-      // Update counts after processing
-      const pending = await getPendingSyncOperations();
-      setPendingSyncCount(pending.length);
-      
-      const unresolvedConflicts = await getUnresolvedConflicts();
-      setConflicts(unresolvedConflicts);
-    } catch (error) {
-      console.error('Error processing sync queue:', error);
-    } finally {
-      setIsProcessing(false);
-    }
+    await syncEngine.processQueue();
   };
 
   return {

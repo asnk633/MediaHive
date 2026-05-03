@@ -5,8 +5,8 @@ import { useRouter } from "next/navigation";
 import { nativeNavigate } from "@/lib/utils";
 import { DeviceRequest } from "@/types/deviceRequest";
 import { deviceRequestService } from "@/services/deviceRequestService";
-import { inventoryService } from "@/services/inventoryService";
-import { InventoryItem } from "@/types/inventory";
+import { inventoryService } from '@/services/inventory/inventoryService';
+import { EquipmentItem } from "@/services/inventory/inventoryContract";
 import { useAuth } from "@/contexts/AuthContextProvider";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -35,7 +35,7 @@ export default function DeviceRequestForm() {
     const [selectedUserId, setSelectedUserId] = useState<string>("");
 
     // Target Item (from Inventory)
-    const [targetItem, setTargetItem] = useState<InventoryItem | null>(null);
+    const [targetItem, setTargetItem] = useState<EquipmentItem | null>(null);
 
     // Refs for Date Pickers
     const startDateRef = React.useRef<HTMLInputElement>(null);
@@ -118,7 +118,7 @@ export default function DeviceRequestForm() {
                 description: formData.description,
                 startDate: new Date(formData.startDate).toISOString(),
                 endDate: new Date(formData.endDate).toISOString(),
-                assignedItemId: targetItem?.id, // Link specific item if selected
+                assignedItemId: targetItem ? String(targetItem.id) : undefined, // Link specific item if selected
             });
 
             toast.success("Request submitted successfully!");

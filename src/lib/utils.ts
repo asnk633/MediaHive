@@ -56,7 +56,11 @@ export function getInitials(name: string | null | undefined): string {
  */
 export function nativeNavigate(path: string, router?: any, source?: string) {
   if (typeof window !== 'undefined' && (window as any).Capacitor) {
-    const target = path.endsWith('/') ? path : path + '/';
+    // Split by query string to avoid appending / after the ? (which breaks parsing)
+    const [basePath, query] = path.split('?');
+    const stabilizedPath = basePath.endsWith('/') ? basePath : basePath + '/';
+    const target = query ? `${stabilizedPath}?${query}` : stabilizedPath;
+    
     console.log('[NAV SOURCE]', source || 'Unknown');
     console.log('[NAV] Native hard-nav to:', target);
     window.location.href = target;

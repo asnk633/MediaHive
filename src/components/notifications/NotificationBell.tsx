@@ -2,7 +2,7 @@ import React, { useState, useEffect, useRef } from 'react';
 import { createPortal } from 'react-dom';
 import { Bell, Layers } from 'lucide-react';
 import { Capacitor } from '@capacitor/core';
-import { NotificationService } from '@/services/notificationService';
+import { AlertService } from '@/services/alertService';
 import { AppNotification } from '@/types/notification';
 import { NotificationItem } from './NotificationItem';
 import { useAuth } from '@/contexts/AuthContextProvider';
@@ -10,7 +10,7 @@ import { useRouter } from 'next/navigation';
 import { groupNotifications, GroupedNotification } from '@/lib/notification-grouping';
 import { formatDistanceToNow } from 'date-fns';
 import { apiClient } from '@/lib/apiClient';
-import { nativeNavigate } from '@/lib/utils';
+import { nativeNavigate, cn } from '@/lib/utils';
 import { computeBadgeCount } from '@/lib/notificationSelectors';
 
 export const NotificationBell = () => {
@@ -23,6 +23,16 @@ export const NotificationBell = () => {
     const buttonRef = useRef<HTMLButtonElement>(null);
     const [dropdownPosition, setDropdownPosition] = useState({ top: 0, left: 0 });
     const [isMobile, setIsMobile] = useState(false);
+    const [isPulsing, setIsPulsing] = useState(false);
+
+    // Trigger pulse on unread count increase
+    useEffect(() => {
+        if (unreadCount > 0) {
+            setIsPulsing(true);
+            const timer = setTimeout(() => setIsPulsing(false), 200);
+            return () => clearTimeout(timer);
+        }
+    }, [unreadCount]);
 
     // Poll for notifications
     useEffect(() => {
@@ -33,7 +43,7 @@ export const NotificationBell = () => {
         // Initial load
         const fetchNotifications = async () => {
             try {
-                const data = await NotificationService.getUserNotifications({ signal: controller.signal });
+                const data = await AlertService.getUserNotifications({ signal: controller.signal });
                 setNotifications(data);
                 // Phase 14: Use new badge count logic (High + Medium unread only)
                 setUnreadCount(computeBadgeCount(data));
@@ -160,7 +170,7 @@ export const NotificationBell = () => {
             // API calls
             items.filter(i => !i.read).forEach(async n => {
                 try {
-                    await NotificationService.markAsRead(n.id);
+                    await AlertService.markAsRead(n.id);
                 } catch (error) {
                     console.error('Failed to mark notification as read:', error);
                 }
@@ -193,7 +203,7 @@ export const NotificationBell = () => {
                 setUnreadCount(computeBadgeCount(updatedNotifications));
 
                 // API call
-                await NotificationService.markAsRead(notification.id);
+                await AlertService.markAsRead(notification.id);
             }
 
             if (notification.action_url && typeof notification.action_url === 'string') {
@@ -212,7 +222,7 @@ export const NotificationBell = () => {
         const allRead = notifications.map(n => ({ ...n, read: true }));
         setNotifications(allRead);
         setUnreadCount(0);
-        await NotificationService.markAllAsRead();
+        await AlertService.markAllAsRead();
     };
 
     // Calculate groups for display
@@ -221,14 +231,18 @@ export const NotificationBell = () => {
     return (
         <>
             <button
+                id="notification-bell"
                 ref={buttonRef}
                 onClick={() => setIsOpen(!isOpen)}
                 title="Notifications"
-                className="relative p-2 rounded-full hover:bg-[var(--bg-hover)] transition-colors text-[var(--text-secondary)]"
+                className={cn(
+                    "relative p-2 rounded-full hover:bg-white/5 transition-all text-white/70 button-micro",
+                    isPulsing && "animate-bell"
+                )}
             >
-                <Bell size={20} />
+                <Bell size={20} className={cn("transition-colors", unreadCount > 0 ? "text-indigo-400" : "text-white/40")} />
                 {unreadCount > 0 && (
-                    <span className="absolute top-1 right-1 w-4 h-4 bg-red-500 text-white text-[10px] font-bold flex items-center justify-center rounded-full ring-2 ring-background">
+                    <span className="absolute top-1 right-1 w-4 h-4 bg-indigo-500 text-white text-[10px] font-bold flex items-center justify-center rounded-full ring-2 ring-slate-950 shadow-[0_0_10px_rgba(99,102,241,0.5)]">
                         {unreadCount > 9 ? '9+' : unreadCount}
                     </span>
                 )}

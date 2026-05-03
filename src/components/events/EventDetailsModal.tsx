@@ -1,17 +1,19 @@
-import React, { useState } from 'react';
-import { Event } from '@/types/event';
+import React, { useState, useEffect } from 'react';
+import { Event } from '@/features/events/types/event';
 import { MediaService } from '@/services/mediaService';
-import { EventService } from '@/services/events';
-import { SystemEventService } from '@/services/systemEventService';
+import { EventService } from '@/features/events/services/eventService';
+import { SystemEventService } from '@/features/events/services/systemEventService';
 import {
     X, Calendar, Clock, MapPin, Edit2,
     Share2, Trash2, Video, CheckCircle2,
-    Info, Briefcase, User
+    Info, Briefcase, User, Camera, Package
 } from 'lucide-react';
 import { format } from 'date-fns';
 import { EventMediaTab } from '@/components/media/EventMediaTab';
 import { useAuth } from '@/contexts/AuthContextProvider';
 import { useDevWiring } from '@/hooks/useDevWiring';
+import { supabase } from '@/lib/supabaseClient';
+import { cn } from '@/lib/utils';
 import {
     AlertDialog,
     AlertDialogAction,
@@ -34,10 +36,48 @@ interface EventDetailsModalProps {
     onDelete?: (event_id: string) => void;
 }
 
+const toJSDate = (ts: any): Date => {
+    if (!ts) return new Date();
+    if (ts instanceof Date) return ts;
+    if (typeof ts === 'string' || typeof ts === 'number') return new Date(ts);
+    if (ts.seconds !== undefined) return new Date(ts.seconds * 1000);
+    return new Date();
+};
+
+import { usePermissions } from '@/hooks/usePermissions';
+
 export const EventDetailsModal: React.FC<EventDetailsModalProps> = ({ event, isOpen, onClose, onEdit, onDelete }) => {
     const { user } = useAuth();
     const [isDeleting, setIsDeleting] = useState(false);
     const [isDeleteOpen, setIsDeleteOpen] = useState(false);
+    const [relatedTasks, setRelatedTasks] = useState<any[]>([]);
+    const [isLoadingTasks, setIsLoadingTasks] = useState(false);
+    const { canDeleteEvent, role } = usePermissions();
+
+    useEffect(() => {
+        const fetchRelatedTasks = async () => {
+            if (!event?.id) return;
+            setIsLoadingTasks(true);
+            try {
+                const { data, error } = await supabase
+                    .from('tasks')
+                    .select('*')
+                    .eq('event_id', event.id)
+                    .eq('deleted', false);
+                
+                if (error) throw error;
+                setRelatedTasks(data || []);
+            } catch (err) {
+                console.error("Error fetching related tasks:", err);
+            } finally {
+                setIsLoadingTasks(false);
+            }
+        };
+
+        if (isOpen && event) {
+            fetchRelatedTasks();
+        }
+    }, [isOpen, event?.id]);
 
     const getDateObject = (dateValue: any): Date | null => {
         if (!dateValue) return null;
@@ -48,12 +88,15 @@ export const EventDetailsModal: React.FC<EventDetailsModalProps> = ({ event, isO
         return isNaN(d.getTime()) ? null : d;
     };
 
-    const eventDate = getDateObject(event?.date) || new Date();
-    // Fallback to eventDate for start_time if explicit start_time is missing (common for ISO string events)
-    const startTime = getDateObject(event?.start_time) || eventDate;
+    const eventDate = getDateObject(event?.start_at) || new Date();
+    const startTime = getDateObject(event?.start_at);
+    const endTime = getDateObject(event?.end_at);
 
-    // Safe check for event existence in logic vars
-    const canDelete = !!event && (user?.role === 'admin' || (!event.is_system_event && user?.uid && event.created_by?.uid === user.uid));
+    // Dynamic Permission Checks
+    const isCreator = !!event && (typeof event.created_by === 'string' ? event.created_by : event.created_by?.uid) === user?.uid;
+    const canManageEvent = ['admin', 'manager', 'member', 'team'].includes(role);
+    const allowedToDelete = canDeleteEvent || isCreator;
+    const allowedToEdit = canManageEvent || isCreator;
 
     const confirmDelete = async (e: React.MouseEvent) => {
         e.preventDefault();
@@ -99,8 +142,8 @@ export const EventDetailsModal: React.FC<EventDetailsModalProps> = ({ event, isO
     };
 
     useDevWiring('EventDetailsModal', [
-        { name: 'Delete Event', handler: () => setIsDeleteOpen(true), visible: !!canDelete, destructive: true, permissionVerified: !!canDelete },
-        { name: 'Edit Event', handler: onEdit, visible: !!event },
+        { name: 'Delete Event', handler: () => setIsDeleteOpen(true), visible: !!allowedToDelete, destructive: true, permissionVerified: !!allowedToDelete },
+        { name: 'Edit Event', handler: onEdit, visible: !!allowedToEdit },
         { name: 'Close', handler: onClose, visible: true }
     ]);
 
@@ -159,7 +202,7 @@ export const EventDetailsModal: React.FC<EventDetailsModalProps> = ({ event, isO
                             </h2>
                         </div>
                         <div className="flex gap-2">
-                            {(!event.is_system_event || user?.role === 'admin') && (
+                            {allowedToEdit && (
                                 <button
                                     onClick={onEdit}
                                     disabled={isDeleting || isDeleteOpen}
@@ -188,13 +231,13 @@ export const EventDetailsModal: React.FC<EventDetailsModalProps> = ({ event, isO
 
                             {/* Media Coverage */}
                             {event.media_coverage && event.media_coverage.length > 0 && (
-                                <section className="bg-glass rounded-2xl p-6 shadow-sm">
+                                <section className="bg-blue-500/5 border border-blue-500/10 rounded-2xl p-6">
                                     <h3 className="text-sm font-bold text-blue-400 flex items-center gap-2 mb-4">
                                         <Video size={18} /> Media Coverage Requested
                                     </h3>
                                     <div className="flex flex-wrap gap-3">
                                         {event.media_coverage.map((item, i) => (
-                                            <div key={i} className="flex items-center gap-3 text-muted text-sm py-2 px-3 bg-surface rounded-lg whitespace-nowrap">
+                                            <div key={i} className="flex items-center gap-3 text-white/70 text-sm py-2 px-3 bg-surface rounded-lg whitespace-nowrap">
                                                 <CheckCircle2 size={16} className="text-emerald-500 shrink-0" />
                                                 {item}
                                             </div>
@@ -202,6 +245,94 @@ export const EventDetailsModal: React.FC<EventDetailsModalProps> = ({ event, isO
                                     </div>
                                 </section>
                             )}
+
+                            {/* Assigned Crew */}
+                            {event.crew && event.crew.length > 0 && (
+                                <section>
+                                    <h3 className="text-xs font-bold text-muted uppercase tracking-widest mb-4 flex items-center gap-2">
+                                        <User size={14} /> Assigned Crew
+                                    </h3>
+                                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                                        {event.crew.map((assignment, i) => (
+                                            <div key={i} className="flex items-center gap-3 p-3 bg-surface border border-soft rounded-xl">
+                                                <div className="w-8 h-8 rounded-full bg-blue-500/10 flex items-center justify-center text-blue-400 text-xs font-bold">
+                                                    {assignment.profile?.full_name?.charAt(0) || 'U'}
+                                                </div>
+                                                <div className="flex-1 min-w-0">
+                                                    <p className="text-sm font-medium text-white truncate">{assignment.profile?.full_name || 'Team Member'}</p>
+                                                    <p className="text-[10px] text-white/40 uppercase tracking-wider">{assignment.role || 'Production Crew'}</p>
+                                                </div>
+                                            </div>
+                                        ))}
+                                    </div>
+                                </section>
+                            )}
+
+                            {/* Reserved Equipment */}
+                            {event.equipment && event.equipment.length > 0 && (
+                                <section>
+                                    <h3 className="text-xs font-bold text-muted uppercase tracking-widest mb-4 flex items-center gap-2">
+                                        <Package size={14} /> Reserved Equipment
+                                    </h3>
+                                    <div className="grid grid-cols-1 gap-3">
+                                        {event.equipment.map((res, i) => (
+                                            <div key={i} className="flex items-center gap-4 p-4 bg-surface border border-soft rounded-xl">
+                                                <div className="w-10 h-10 rounded-lg bg-emerald-500/10 flex items-center justify-center text-emerald-400">
+                                                    <Camera size={20} />
+                                                </div>
+                                                <div className="flex-1">
+                                                    <p className="text-sm font-medium text-white">{res.inventory?.name || 'Equipment'}</p>
+                                                    <div className="flex gap-4 mt-1">
+                                                        <div className="flex items-center gap-1.5 text-[10px] text-white/40">
+                                                            <Clock size={10} />
+                                                            {format(toJSDate(res.reserved_from), 'HH:mm')} - {format(toJSDate(res.reserved_to), 'HH:mm')}
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                                <div className="px-2 py-1 rounded-md bg-emerald-500/10 text-emerald-400 text-[10px] font-bold uppercase">
+                                                    Reserved
+                                                </div>
+                                            </div>
+                                        ))}
+                                    </div>
+                                </section>
+                            )}
+                            {/* Related Tasks */}
+                            {relatedTasks.length > 0 && (
+                                <section>
+                                    <h3 className="text-xs font-bold text-muted uppercase tracking-widest mb-4 flex items-center gap-2">
+                                        <Briefcase size={14} /> Related Tasks
+                                    </h3>
+                                    <div className="space-y-3">
+                                        {relatedTasks.map((task, i) => (
+                                            <div key={i} className="flex items-center justify-between p-4 bg-surface border border-soft rounded-xl group hover:border-primary/50 transition-all">
+                                                <div className="flex-1 min-w-0">
+                                                    <p className="text-sm font-medium text-white truncate">{task.title}</p>
+                                                    <div className="flex items-center gap-2 mt-1">
+                                                        <span className={cn(
+                                                            "px-2 py-0.5 rounded text-[8px] font-bold uppercase",
+                                                            task.status === 'done' ? 'bg-emerald-500/10 text-emerald-500' :
+                                                            task.status === 'review' ? 'bg-amber-500/10 text-amber-500' :
+                                                            'bg-blue-500/10 text-blue-500'
+                                                        )}>
+                                                            {task.status}
+                                                        </span>
+                                                        {task.priority === 'high' || task.priority === 'urgent' && (
+                                                            <span className="text-[8px] font-bold text-red-400 uppercase">
+                                                                {task.priority}
+                                                            </span>
+                                                        )}
+                                                    </div>
+                                                </div>
+                                                <div className="text-[10px] text-white/20 group-hover:text-primary transition-colors">
+                                                    View Task →
+                                                </div>
+                                            </div>
+                                        ))}
+                                    </div>
+                                </section>
+                            )}
+
                             {/* Media Gallery */}
                             <section>
                                 <h3 className="text-xs font-bold text-muted uppercase tracking-widest mb-4">Media Gallery</h3>
@@ -230,6 +361,7 @@ export const EventDetailsModal: React.FC<EventDetailsModalProps> = ({ event, isO
                                         <p className="text-[10px] uppercase font-bold text-muted tracking-wider">Time</p>
                                         <p className="text-sm font-semibold text-foreground">
                                             {startTime ? format(startTime, 'h:mm a') : 'TBD'}
+                                            {endTime && ` - ${format(endTime, 'h:mm a')}`}
                                         </p>
                                     </div>
                                 </div>
@@ -305,7 +437,7 @@ export const EventDetailsModal: React.FC<EventDetailsModalProps> = ({ event, isO
                         <button className="p-2.5 text-muted hover:text-foreground hover:bg-surface transition-all rounded-xl border border-transparent hover:border-soft">
                             <Share2 size={18} />
                         </button>
-                        {canDelete && (
+                        {allowedToDelete && (
                             <AlertDialog open={isDeleteOpen} onOpenChange={setIsDeleteOpen}>
                                 <AlertDialogTrigger asChild>
                                     <button

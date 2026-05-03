@@ -1,14 +1,25 @@
 "use client";
 
-import { createContext, useContext, useEffect, useState, useCallback } from "react";
+import { createContext, useContext, useEffect, useState, useCallback, useRef } from "react";
 import { supabase } from "@/lib/supabaseClient";
-import type { User as BaseUser } from "@supabase/supabase-js";
+import { cancelAllRequests, apiClient } from "@/lib/apiClient";
 import { User } from "@/types/user";
+import { useQueryClient } from "@tanstack/react-query";
+import { OnboardingService } from "@/services/onboardingService";
+import { offlineDB } from "@/lib/offline/db";
+
+const TIMEOUT_MS = 30000;
+const timeout = (ms: number) => new Promise((_, reject) => setTimeout(() => reject(new Error(`TIMEOUT_${ms}`)), ms));
+
 
 type AuthContextType = {
     user: User | null;
     loading: boolean;
+    authReady: boolean;     // true once the initial session check is complete
     authStatus: 'loading' | 'authenticated' | 'unauthenticated' | 'guest';
+    authResolved: boolean;
+    recoveryMode: boolean;
+    setRecoveryMode: (mode: boolean) => void;
     login: (email: string, password: string) => Promise<void>;
     signup: (email: string, password: string) => Promise<void>;
     logout: () => Promise<void>;
@@ -21,121 +32,300 @@ export type AuthUser = User;
 
 const AuthContext = createContext<AuthContextType | null>(null);
 
+let sessionPromise: Promise<string | null> | null = null;
+let cachedSessionToken: string | null = null;
+
 export function AuthProvider({ children }: { children: React.ReactNode }) {
     const [user, setUser] = useState<User | null>(null);
     const [loading, setLoading] = useState(true);
-    const [authStatus, setAuthStatus] = useState<'loading' | 'authenticated' | 'unauthenticated' | 'guest'>('loading');
+    const [recoveryMode, setRecoveryMode] = useState(false);
+    const prefetchedRef = useRef(false);
+    const queryClient = useQueryClient();
 
-    const fetchProfile = useCallback(async (supabaseUser: BaseUser) => {
-        try {
-            // Get the session to get the access token
-            const { data: { session } } = await supabase.auth.getSession();
-            if (!session) {
-                setUser(null);
-                setAuthStatus('unauthenticated');
-                setLoading(false);
-                return;
-            }
+    // Derived states for backward compatibility with downstream components
+    const authResolved = !loading;
+    const authStatus = loading ? 'loading' : user ? (user.role === 'guest' ? 'guest' : 'authenticated') : 'unauthenticated';
 
-            // Call the authoritative /api/users/me endpoint
-            const response = await fetch('/api/users/me', {
-                headers: {
-                    'Authorization': `Bearer ${session.access_token}`
+    const sanitizeUrl = useCallback(() => {
+        if (typeof window === 'undefined') return;
+        const hash = window.location.hash;
+        if (hash.includes('access_token') || hash.includes('refresh_token') || hash.includes('type=recovery')) {
+            console.log('[Auth] Sanitizing URL hash fragments');
+            window.history.replaceState(null, "", window.location.pathname + window.location.search);
+        }
+    }, []);
+
+    useEffect(() => {
+        let mounted = true;
+
+        // 1. Global Hash Scrubber (App Load)
+        const scrubberTimeout = setTimeout(() => {
+            if (typeof window !== 'undefined' && window.location.hash) {
+                const h = window.location.hash;
+                if (h.includes('access_token') || h.includes('refresh_token') || h.includes('type=recovery')) {
+                    const isRecovery = h.includes('type=recovery');
+                    if (isRecovery && mounted) {
+                        setRecoveryMode(true);
+                    }
+                    sanitizeUrl();
                 }
-            });
+            }
+        }, 500);
 
-            if (!response.ok) {
-                console.warn("[Auth] Profile fetch failed via API:", response.status);
 
-                // If unauthorized, we clear the user
-                if (response.status === 401) {
+
+        // 2. Initial Session Check (Single-run pattern)
+        const init = async () => {
+
+            try {
+                console.log("[BOOT] Checking session...");
+
+                // Wrap session fetch in timeout
+                const sessionResult = await Promise.race([
+                    supabase.auth.getSession(),
+                    timeout(TIMEOUT_MS)
+                ]).catch(err => {
+                    console.warn("[BOOT] Session check timed out or failed:", err);
+                    return { data: { session: null } };
+                }) as any;
+
+                const session = sessionResult?.data?.session;
+
+                if (!mounted) return;
+
+                if (!session?.user) {
+                    console.log("[BOOT] No session found");
                     setUser(null);
-                    setAuthStatus('unauthenticated');
-                    setLoading(false);
                     return;
                 }
 
-                // If other API failure, we use the basic auth metadata but stay in 'loading' or switch to 'guest'
-                // rather than showing "Unknown User"
-                const fallbackUser: User = {
-                    uid: supabaseUser.id,
-                    email: supabaseUser.email || '',
-                    name: supabaseUser.user_metadata?.full_name || supabaseUser.email?.split('@')[0] || 'User',
-                    role: 'guest'
+                console.log("[BOOT] Session found for user:", session.user.id, "fetching profile...");
+                
+                let profileData = null;
+                let profileRetryCount = 0;
+                const maxProfileRetries = 2;
+
+                const getProfile = async (): Promise<any> => {
+                    try {
+                        const { data: profile, error: profileErr } = await Promise.race([
+                            supabase
+                                .from("profiles")
+                                .select("*")
+                                .eq("id", session.user.id)
+                                .maybeSingle(),
+                            timeout(TIMEOUT_MS)
+                        ]).catch(err => ({ data: null, error: err })) as any;
+
+                        if (profileErr) throw profileErr;
+                        return profile;
+                    } catch (err: any) {
+                        const isAbort = err?.name === 'AbortError' || err?.message?.includes('Lock broken') || err?.message?.includes('TIMEOUT');
+                        if (isAbort && profileRetryCount < maxProfileRetries && mounted) {
+                            profileRetryCount++;
+                            console.warn(`[BOOT] Profile fetch aborted/timed out (attempt ${profileRetryCount}), retrying...`);
+                            await new Promise(res => setTimeout(res, 500 * profileRetryCount));
+                            return getProfile();
+                        }
+                        console.error("[BOOT] Profile fetch error:", err?.message || err);
+                        return null;
+                    }
                 };
-                setUser(fallbackUser);
-                setAuthStatus('guest');
-                return;
-            }
 
-            const { user: apiUser } = await response.json();
+                const profile = await getProfile();
 
-            if (apiUser) {
-                const fullUser: User = {
-                    uid: apiUser.uid || apiUser.id || supabaseUser.id,
-                    email: apiUser.email || supabaseUser.email || '',
-                    name: apiUser.name || apiUser.full_name || apiUser.official_name || 'User',
-                    role: apiUser.role || 'guest',
-                    institution_id: apiUser.institution_id,
-                    department_id: apiUser.department_id,
-                    photoURL: apiUser.avatar_url || apiUser.photoURL,
-                    official_name: apiUser.official_name || apiUser.full_name,
-                    avatar_url: apiUser.avatar_url,
-                };
-                setUser(fullUser);
-                // Truth: only set authenticated if role is NOT guest
-                setAuthStatus(fullUser.role === 'guest' ? 'guest' : 'authenticated');
-            }
-        } catch (err) {
-            console.error("[Auth] Unexpected error fetching profile:", err);
-            // On unexpected error, we don't clear immediately to avoid flash, 
-            // but ensure we aren't stuck in loading forever
-            if (authStatus === 'loading') {
-                setAuthStatus('unauthenticated');
-            }
-        } finally {
-            setLoading(false);
-        }
-    }, [authStatus]);
+                if (!mounted) return;
 
-    const refreshUser = useCallback(async () => {
-        const { data: { session } } = await supabase.auth.getSession();
-        if (session?.user) {
-            await fetchProfile(session.user);
-        } else {
-            setUser(null);
-            setAuthStatus('unauthenticated');
-            setLoading(false);
-        }
-    }, [fetchProfile]);
-
-    useEffect(() => {
-        refreshUser();
-
-        const { data: listener } = supabase.auth.onAuthStateChange(
-            async (_event, session) => {
-                if (session?.user) {
-                    await fetchProfile(session.user);
+                if (profile) {
+                    console.log("[BOOT] Profile loaded");
+                    // Cache profile for offline use
+                    await offlineDB.saveProfile(profile);
+                    // Auto-link any pending invites for this existing user
+                    OnboardingService.autoLinkWorkspaces(session.user.id, session.user.email || '');
                 } else {
-                    setUser(null);
-                    setAuthStatus('unauthenticated');
+                    console.warn("[BOOT] No profile found, checking cache...");
+                    const cached = await offlineDB.getProfile(session.user.id);
+                    if (cached) profileData = cached;
+                }
+                
+                // Use profileData if profile is null but cache exists
+                const finalProfile = profile || profileData;
+
+                const uid = profile?.uid || profile?.id || session.user.id;
+                // Fetch institution roles
+                const { data: roles } = await supabase
+                    .from("user_institutions")
+                    .select("institution_id, role")
+                    .eq("user_id", session.user.id);
+                
+                const institutionRoles: Record<string, string> = {};
+                if (roles) {
+                    roles.forEach((r: any) => institutionRoles[r.institution_id] = r.role);
+                }
+
+                setUser({
+                    uid,
+                    id: uid,
+                    email: finalProfile?.email || session.user.email || '',
+                    name: finalProfile?.name || finalProfile?.full_name || 'User',
+                    role: finalProfile?.role || 'guest',
+                    institution_id: finalProfile?.institution_id,
+                    allowed_institutions: finalProfile?.allowed_institutions || [],
+                    institutionRoles,
+                    tenant_id: finalProfile?.tenantId || finalProfile?.tenant_id,
+                    department_id: finalProfile?.department_id,
+                    avatar_url: finalProfile?.avatar_url,
+                    photoURL: finalProfile?.avatar_url,
+                });
+
+            } catch (err: any) {
+                console.error("[BOOT] Auth initialization critical failure:", err);
+                if (mounted) setUser(null);
+            } finally {
+                if (mounted) {
+                    console.log("[BOOT] Auth ready");
                     setLoading(false);
                 }
+            }
+        };
+
+        init();
+
+        // 3. Singleton Auth Listener
+        const { data: listener } = supabase.auth.onAuthStateChange(
+            async (event: any, session: any) => {
+
+                console.log("[SUPABASE TRACE] onAuthStateChange event:", event)
+
+                if (event === "PASSWORD_RECOVERY") {
+                    if (mounted) setRecoveryMode(true);
+                    sanitizeUrl();
+                }
+
+                if (event === "SIGNED_IN") {
+                    sanitizeUrl();
+                }
+
+                if (!session?.user) {
+                    if (event === "SIGNED_OUT") {
+                        cancelAllRequests();
+                        sanitizeUrl();
+                    }
+                    if (mounted) {
+                        setUser(null);
+                        setRecoveryMode(false);
+                        setLoading(false);
+                    }
+                    return;
+                }
+
+                // If user changed or session refreshed, update profile
+                let retryCount = 0;
+                const maxRetries = 2;
+
+                const fetchProfileWithRetry = async () => {
+                    let profileData = null;
+                    try {
+                        console.log(`[AUTH LISTENER] Fetching profile (attempt ${retryCount + 1})...`);
+                        const { data: profile, error: profileErr } = await Promise.race([
+                            supabase
+                                .from("profiles")
+                                .select("*")
+                                .eq("id", session.user.id)
+                                .maybeSingle(),
+                            timeout(TIMEOUT_MS)
+                        ]).catch(err => ({ data: null, error: err })) as any;
+
+                        if (!mounted) return;
+
+                        if (profileErr) throw profileErr;
+
+                        if (profile) {
+                            console.log("[AUTH LISTENER] Profile loaded");
+                            await offlineDB.saveProfile(profile);
+                            // Auto-link any pending invites for this existing user
+                            OnboardingService.autoLinkWorkspaces(session.user.id, session.user.email || '');
+                        } else {
+                            const cached = await offlineDB.getProfile(session.user.id);
+                            if (cached) profileData = cached;
+                        }
+
+                        const finalProfile = profile || profileData;
+
+                        // Fetch institution roles
+                        const { data: roles } = await supabase
+                            .from("user_institutions")
+                            .select("institution_id, role")
+                            .eq("user_id", session.user.id);
+                        
+                        const institutionRoles: Record<string, string> = {};
+                        if (roles) {
+                            roles.forEach((r: any) => institutionRoles[r.institution_id] = r.role);
+                        }
+
+                        const uid = profile?.uid || profile?.id || session.user.id;
+                        setUser({
+                            uid,
+                            id: uid,
+                            email: finalProfile?.email || session.user.email || '',
+                            name: finalProfile?.name || finalProfile?.full_name || 'User',
+                            role: finalProfile?.role || 'guest',
+                            institution_id: finalProfile?.institution_id,
+                            allowed_institutions: finalProfile?.allowed_institutions || [],
+                            institutionRoles,
+                            tenant_id: finalProfile?.tenantId || finalProfile?.tenant_id,
+                            department_id: finalProfile?.department_id,
+                            avatar_url: finalProfile?.avatar_url,
+                            photoURL: finalProfile?.avatar_url,
+                        });
+                    } catch (err: any) {
+                        const isAbort = err?.name === 'AbortError' || err?.message?.includes('Lock broken') || err?.message?.includes('TIMEOUT');
+                        
+                        if (isAbort && retryCount < maxRetries && mounted) {
+                            retryCount++;
+                            console.warn(`[AUTH LISTENER] Profile fetch aborted/timed out, retrying in ${500 * retryCount}ms...`, err?.message || err);
+                            await new Promise(res => setTimeout(res, 500 * retryCount));
+                            return fetchProfileWithRetry();
+                        }
+
+                        console.error("[AUTH LISTENER] Profile fetch failed final:", err?.message || err);
+                        if (mounted) {
+                            setUser({
+                                uid: session.user.id,
+                                id: session.user.id,
+                                email: session.user.email || '',
+                                name: 'User',
+                                role: 'guest'
+                            });
+                        }
+                    } finally {
+                        if (mounted) setLoading(false);
+                    }
+                };
+
+                fetchProfileWithRetry();
             }
         );
 
         return () => {
+            mounted = false;
+            clearTimeout(scrubberTimeout);
             listener.subscription.unsubscribe();
         };
-    }, [fetchProfile, refreshUser]);
+    }, [sanitizeUrl]);
 
     const login = async (email: string, password: string) => {
+        setLoading(true);
+        console.log("[SUPABASE TRACE] signInWithPassword start")
         const { error } = await supabase.auth.signInWithPassword({
             email,
             password,
         });
+        console.log("[SUPABASE TRACE] signInWithPassword end")
 
-        if (error) throw error;
+        if (error) {
+            setLoading(false);
+            throw error;
+        }
     };
 
     const signup = async (email: string, password: string) => {
@@ -148,18 +338,167 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     };
 
     const logout = async () => {
-        await supabase.auth.signOut();
+        try {
+            setUser(null);
+            setLoading(false);
+            setRecoveryMode(false);
+
+            console.log("[SUPABASE TRACE] signOut start")
+            await supabase.auth.signOut();
+            console.log("[SUPABASE TRACE] signOut end")
+
+            // Clear React Query cache and remove from localStorage on logout
+            queryClient.clear();
+            if (typeof window !== 'undefined') {
+                localStorage.removeItem('REACT_QUERY_OFFLINE_CACHE');
+                localStorage.removeItem('mediahive_workspace');
+            }
+
+            cancelAllRequests();
+        } catch (err) {
+            console.error("[Auth] Logout failed:", err);
+            setUser(null);
+            setLoading(false);
+            setRecoveryMode(false);
+        }
     };
 
     const signOut = logout;
 
     const getIdToken = async () => {
+        if (cachedSessionToken) {
+            console.log("[AUTH TRACE] getIdToken using cached token");
+            return cachedSessionToken;
+        }
+        if (sessionPromise) {
+            console.log("[AUTH TRACE] getIdToken waiting for existing promise");
+            return sessionPromise;
+        }
+
+        console.log("[AUTH TRACE] getIdToken fetching new session...");
+        sessionPromise = (async () => {
+            try {
+                console.log("[SUPABASE TRACE] getSession (getIdToken singleton) start")
+                const { data: { session } } = await supabase.auth.getSession();
+                console.log("[SUPABASE TRACE] getSession (getIdToken singleton) end")
+                const token = session?.access_token || null;
+                console.log("[AUTH TRACE] getIdToken result:", token ? "Token acquired" : "No token found");
+                cachedSessionToken = token;
+                return token;
+            } catch (err) {
+                console.error("[Auth] getIdToken failed:", err);
+                return null;
+            } finally {
+                sessionPromise = null;
+            }
+        })();
+
+        return sessionPromise;
+    };
+
+    const prefetchDashboardData = async () => {
+        if (prefetchedRef.current) return;
+        prefetchedRef.current = true;
+
+        // Small delay to ensure session is active
+        setTimeout(() => {
+            console.log("[DATA TRACE] Dashboard data prefetch via React Query...");
+            // We don't prefetch tasks/events here anymore because legacy API routes are gone.
+            // Downstream hooks (useTasks, useEvents) now handle their own Supabase-direct fetching.
+        }, 1000);
+    };
+
+    useEffect(() => {
+        if (user && !loading) {
+            prefetchDashboardData();
+        } else if (!user) {
+            prefetchedRef.current = false; // Reset on logout
+        }
+    }, [user, loading]);
+
+    const refreshUser = async () => {
+        console.log("[SUPABASE TRACE] getSession (refreshUser) start")
         const { data: { session } } = await supabase.auth.getSession();
-        return session?.access_token || null;
+        console.log("[SUPABASE TRACE] getSession (refreshUser) end")
+        if (session?.user) {
+            let profileRetryCount = 0;
+            const maxProfileRetries = 2;
+
+            const getProfile = async (): Promise<any> => {
+                try {
+                    const { data: profile, error: profileErr } = await Promise.race([
+                        supabase
+                            .from("profiles")
+                            .select("*")
+                            .eq("id", session.user.id)
+                            .maybeSingle(),
+                        timeout(TIMEOUT_MS)
+                    ]).catch(err => ({ data: null, error: err })) as any;
+
+                    if (profileErr) throw profileErr;
+                    return profile;
+                } catch (err: any) {
+                    const isAbort = err?.name === 'AbortError' || err?.message?.includes('Lock broken') || err?.message?.includes('TIMEOUT');
+                    if (isAbort && profileRetryCount < maxProfileRetries) {
+                        profileRetryCount++;
+                        console.warn(`[REFRESH] Profile fetch aborted/timed out (attempt ${profileRetryCount}), retrying...`);
+                        await new Promise(res => setTimeout(res, 500 * profileRetryCount));
+                        return getProfile();
+                    }
+                    console.error("[REFRESH] Profile fetch error:", err?.message || err);
+                    return null;
+                }
+            };
+
+            const profile = await getProfile();
+
+            // Fetch institution roles
+            const { data: roles } = await supabase
+                .from("user_institutions")
+                .select("institution_id, role")
+                .eq("user_id", session.user.id);
+            
+            const institutionRoles: Record<string, string> = {};
+            if (roles) {
+                roles.forEach((r: any) => institutionRoles[r.institution_id] = r.role);
+            }
+
+            const uid = profile?.uid || profile?.id || session.user.id;
+            setUser({
+                uid,
+                id: uid,
+                email: profile?.email || session.user.email || '',
+                name: profile?.name || profile?.full_name || 'User',
+                role: profile?.role || 'guest',
+                institution_id: profile?.institution_id,
+                allowed_institutions: profile?.allowed_institutions || [],
+                institutionRoles,
+                tenant_id: profile?.tenantId || profile?.tenant_id,
+                department_id: profile?.department_id,
+                avatar_url: profile?.avatar_url,
+                photoURL: profile?.avatar_url,
+            });
+        } else {
+            setUser(null);
+        }
     };
 
     return (
-        <AuthContext.Provider value={{ user, loading, authStatus, login, signup, logout, signOut, getIdToken, refreshUser }}>
+        <AuthContext.Provider value={{
+            user,
+            loading,
+            authReady: !loading,
+            authStatus,
+            authResolved,
+            recoveryMode,
+            setRecoveryMode,
+            login,
+            signup,
+            logout,
+            signOut,
+            getIdToken,
+            refreshUser
+        }}>
             {children}
         </AuthContext.Provider>
     );

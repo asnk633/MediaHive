@@ -3,8 +3,8 @@
 import React, { useState, useEffect } from 'react';
 import { isFeatureEnabled } from '@/app/featureFlags';
 import { EdgeCaseService } from '@/services/edgeCaseService';
-import { Task } from '@/types/task';
-import { Event } from '@/types/event';
+import { MediaTask as Task } from '@/services/tasks/taskContract';
+import { Event } from '@/features/events/types/event';
 import { DriveFile as MediaFile } from '@/types/file';
 import { User } from '@/types/user';
 import { AlertTriangle, Info, CheckCircle, XCircle, Eye, EyeOff } from 'lucide-react';

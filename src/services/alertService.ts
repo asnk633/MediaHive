@@ -1,0 +1,232 @@
+import { AppNotification, CreateNotificationParams } from '@/types/notification';
+import { supabase } from '@/lib/supabaseClient';
+import { eventBus } from '@/system/events/eventSystem';
+import { tenantContext } from '@/lib/auth/tenantContext';
+import { tenantQuery, fromTable } from '@/lib/db/tenantQuery';
+import { NotificationSchema } from '@/domain/schemas/notification';
+import { TABLES } from '@/lib/dbTables';
+
+
+export class AlertService {
+  static init() {
+    console.log('[AlertService] Initializing event subscriptions');
+
+    eventBus.subscribe('task.completed', (data) => {
+      console.log('[AlertService] Task completed event received:', data);
+      this.createNotification({
+        user_id: data.userId,
+        type: 'task_completed',
+        title: 'Task Completed',
+        message: `Task #${data.taskId.slice(0, 8)} has been marked as done.`,
+        entity_type: 'task',
+        entity_id: data.taskId,
+        priority: 'low'
+      }).catch(console.error);
+    });
+
+    eventBus.subscribe('inventory.issued', (data) => {
+      this.createNotification({
+        user_id: data.userId,
+        type: 'inventory_issued',
+        title: 'Equipment Issued',
+        message: `You have been issued equipment for request #${data.issueId.slice(0, 8)}.`,
+        entity_type: 'device_request',
+        entity_id: data.issueId,
+        priority: 'medium'
+      }).catch(console.error);
+    });
+  }
+
+  /**
+   * Create a new notification.
+   * Prevents creation if sourceUserId equals userId (self-notification).
+   */
+  static async createNotification(params: CreateNotificationParams): Promise<string | null> {
+    try {
+      const { tenantId, userId } = await tenantContext();
+
+      // Prevent self-notifications
+      if (params.created_by && params.created_by === userId) {
+        console.log('Skipping self-notification for user:', userId);
+        return null;
+      }
+
+      const { data, error } = await fromTable(TABLES.NOTIFICATIONS)
+        .insert([{
+          ...params,
+          tenant_id: tenantId,
+          read: false,
+          created_at: new Date().toISOString()
+        }])
+        .select()
+        .single();
+
+      if (error) {
+        console.error('[AlertService] ❌ Notification creation error:', JSON.stringify(error, null, 2));
+        throw error;
+      }
+
+      return data?.id || null;
+    } catch (error) {
+      console.error('[AlertService] ❌ Error in createNotification:', JSON.stringify(error, null, 2));
+      throw error;
+    }
+  }
+
+  /**
+   * Create notifications for multiple users (batch)
+   */
+  static async createBatchNotifications(userIds: string[], params: Omit<CreateNotificationParams, 'user_id'>): Promise<void> {
+    try {
+      const { tenantId } = await tenantContext();
+
+      const notifications = userIds.map(userId => ({
+        ...params,
+        user_id: userId,
+        tenant_id: tenantId,
+        read: false,
+        created_at: new Date().toISOString()
+      }));
+
+      const { error } = await fromTable(TABLES.NOTIFICATIONS)
+        .insert(notifications);
+
+      if (error) throw error;
+    } catch (error) {
+      console.error('[AlertService] ❌ Error batch creating notifications:', error);
+      throw error;
+    }
+  }
+
+  /**
+   * Fetch active (non-archived) notifications for the current user
+   */
+  static async getUserNotifications(options: { limit?: number; signal?: AbortSignal } = {}): Promise<AppNotification[]> {
+    const { limit = 50, signal } = options;
+    try {
+      const { tenantId, userId } = await tenantContext();
+
+      const { data, error } = await tenantQuery(TABLES.NOTIFICATIONS, tenantId)
+        .eq('user_id', userId)
+        .order('created_at', { ascending: false })
+        .limit(limit)
+        .abortSignal(signal as any);
+
+      if (error) {
+        // ... (error handling already present)
+      }
+
+      // DTO Sanitization Layer
+      return ((data as any[]) || []).reduce((acc: AppNotification[], item: any) => {
+        const parsed = NotificationSchema.safeParse(item);
+        
+        if (!parsed.success) {
+          console.error("[AlertService] 🚨 DROPPING INVALID NOTIFICATION:", {
+            id: item.id,
+            errors: parsed.error.format(),
+            rawData: item
+          });
+          return acc; // Skip this item
+        }
+
+        acc.push(parsed.data as unknown as AppNotification);
+        return acc;
+      }, []);
+    } catch (error: any) {
+      if (error.name === 'AbortError') {
+        return [];
+      }
+      console.error('[AlertService] ❌ Error in getUserNotifications:', error);
+      return [];
+    }
+  }
+
+  /**
+   * Get unread count for the current user
+   */
+  static async getUnreadCount(): Promise<number> {
+    try {
+      const { tenantId, userId } = await tenantContext();
+
+      const { count, error } = await fromTable(TABLES.NOTIFICATIONS)
+        .select('*', { count: 'exact', head: true })
+        .eq('tenant_id', tenantId)
+        .eq('user_id', userId)
+        .eq('read', false);
+
+      if (error) throw error;
+      return count || 0;
+    } catch (error) {
+      console.error('[AlertService] ❌ Error getting unread count:', JSON.stringify(error, null, 2));
+      return 0;
+    }
+  }
+
+  /**
+   * Mark a notification as read
+   */
+  static async markAsRead(notificationId: string): Promise<void> {
+    try {
+      const { tenantId } = await tenantContext();
+
+      const { error } = await fromTable(TABLES.NOTIFICATIONS)
+        .update({ read: true })
+        .eq('tenant_id', tenantId)
+        .eq('id', notificationId);
+
+      if (error) throw error;
+    } catch (error) {
+      console.error('[AlertService] ❌ Error marking notification as read:', error);
+      throw error;
+    }
+  }
+
+  /**
+   * Mark all notifications as read for the current user
+   */
+  static async markAllAsRead(): Promise<void> {
+    try {
+      const { tenantId, userId } = await tenantContext();
+
+      const { error } = await fromTable(TABLES.NOTIFICATIONS)
+        .update({ read: true })
+        .eq('tenant_id', tenantId)
+        .eq('user_id', userId)
+        .eq('read', false);
+
+      if (error) throw error;
+    } catch (error) {
+      console.error('[AlertService] ❌ Error marking all as read:', error);
+      throw error;
+    }
+  }
+
+  /**
+   * Soft archive a notification
+   */
+  static async archiveNotification(notificationId: string): Promise<void> {
+    try {
+      const { tenantId } = await tenantContext();
+
+      const { error } = await fromTable(TABLES.NOTIFICATIONS)
+        .delete()
+        .eq('tenant_id', tenantId)
+        .eq('id', notificationId);
+
+      if (error) throw error;
+    } catch (error) {
+      console.error('[AlertService] ❌ Error deleting notification:', error);
+      throw error;
+    }
+  }
+}
+
+
+
+
+export const pushNotification = AlertService.createNotification;
+export const deleteNotification = AlertService.archiveNotification;
+
+if (typeof window !== 'undefined') {
+  AlertService.init();
+}

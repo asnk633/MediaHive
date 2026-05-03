@@ -27,7 +27,8 @@ export default function NotificationPreviewModal({ open, onClose, data }: Notifi
         user_id: 'preview-user',
         priority: 'medium',
         entity_type: 'announcement',
-        entity_id: 'preview-entity-id'
+        entity_id: 'preview-entity-id',
+        tenant_id: 'preview-tenant'
     };
 
     return (

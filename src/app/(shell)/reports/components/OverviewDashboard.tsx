@@ -3,6 +3,7 @@
 import React, { useEffect, useState } from 'react';
 import { ReportService, TaskStats, EventStats, FileStats, WorkloadStat, DashboardFilters } from '@/services/reportService';
 import { CanonicalDataService } from '@/services/canonicalDataService';
+import { StructureService } from '@/services/structureService';
 import { StatusChart } from '@/components/home/widgets/StatusChart';
 import { WorkloadTable } from './WorkloadTable';
 import { RecentActivity } from './RecentActivity';
@@ -22,6 +23,7 @@ import { nativeNavigate } from '@/lib/utils';
 import { Button } from '@/components/ui/button';
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
 import { Label } from '@/components/ui/label';
+import { DropdownSelector } from '@/components/ui/selectors/DropdownSelector';
 
 const StatCard = ({ label, value, icon: Icon, colorClass, subtext }: { label: string, value: number, icon: any, colorClass: string, subtext?: string }) => (
     <div className="bg-white/5 border border-white/5 rounded-xl p-4 flex flex-col gap-2">
@@ -76,11 +78,11 @@ export function OverviewDashboard() {
         const fetchOrgData = async () => {
             try {
                 const [deptData, instData] = await Promise.all([
-                    apiGet<{ id: string; name: string }[]>('/api/departments?limit=1000'),
-                    apiGet<{ id: string; name: string }[]>('/api/institutions?limit=1000')
+                    StructureService.getDepartments(),
+                    StructureService.getInstitutions()
                 ]);
-                setDepartmentsList(deptData.map(d => d.name));
-                setInstitutionsList(instData.map(i => i.name));
+                setDepartmentsList(deptData.departments.map(d => d.name));
+                setInstitutionsList(instData.institutions.map(i => i.name));
             } catch (error) {
                 console.error('Failed to fetch org data:', error);
             }
@@ -95,33 +97,30 @@ export function OverviewDashboard() {
                     <Filter size={18} /> Filters:
                 </div>
 
-                <select
-                    className="bg-black/20 border border-[#ffffff1a] rounded-xl px-4 py-2.5 text-sm text-white focus:outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500 cursor-pointer hover:bg-white/5 transition-colors"
-                    value={filters.department || ''}
-                    onChange={e => {
-                        const val = e.target.value;
-                        setFilters({ ...filters, department: val, institution: val ? '' : filters.institution });
-                    }}
-                >
-                    <option value="" className="bg-slate-900">All Offices / Units</option>
-                    {departmentsList.map((dept) => (
-                        <option key={dept} value={dept} className="bg-slate-950">{dept}</option>
-                    ))}
-                </select>
 
-                <select
-                    className="bg-black/20 border border-[#ffffff1a] rounded-xl px-4 py-2.5 text-sm text-white focus:outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500 cursor-pointer hover:bg-white/5 transition-colors"
-                    value={filters.institution || ''}
-                    onChange={e => {
-                        const val = e.target.value;
-                        setFilters({ ...filters, institution: val, department: val ? '' : filters.department });
-                    }}
-                >
-                    <option value="" className="bg-slate-900">All Institutions</option>
-                    {institutionsList.map((inst) => (
-                        <option key={inst} value={inst} className="bg-slate-950">{inst}</option>
-                    ))}
-                </select>
+                <div className="flex flex-col gap-2">
+                    <DropdownSelector 
+                        label="Offices / Units"
+                        value={filters.department || ''}
+                        onChange={val => setFilters({ ...filters, department: val, institution: val ? '' : filters.institution })}
+                        options={[
+                            { id: '', label: 'All Offices / Units' },
+                            ...departmentsList.map(dept => ({ id: dept, label: dept }))
+                        ]}
+                    />
+                </div>
+
+                <div className="flex flex-col gap-2">
+                    <DropdownSelector 
+                        label="Institutions"
+                        value={filters.institution || ''}
+                        onChange={val => setFilters({ ...filters, institution: val, department: val ? '' : filters.department })}
+                        options={[
+                            { id: '', label: 'All Institutions' },
+                            ...institutionsList.map(inst => ({ id: inst, label: inst }))
+                        ]}
+                    />
+                </div>
 
                 {/* Date would go here (Start/End pickers) - Omitting for simplicity/Time constraints unless strictly needed. "Filters: Date range". 
                     Date inputs are standard.
@@ -279,29 +278,21 @@ function ReportDownloadButton() {
                 </DialogHeader>
                 <div className="flex flex-col gap-4 py-4">
                     <div className="grid grid-cols-2 gap-4">
-                        <div className="space-y-2">
-                            <Label>Month</Label>
-                            <select
+                        <div className="space-y-0.5">
+                            <DropdownSelector 
+                                label="Month"
                                 value={month}
-                                onChange={(e) => setMonth(e.target.value)}
-                                className="w-full bg-black/20 border border-[#ffffff1a] rounded-md p-2 text-sm text-white"
-                            >
-                                {months.map((m, i) => (
-                                    <option key={i} value={i} className="bg-slate-950">{m}</option>
-                                ))}
-                            </select>
+                                onChange={setMonth}
+                                options={months.map((m, i) => ({ id: i.toString(), label: m }))}
+                            />
                         </div>
-                        <div className="space-y-2">
-                            <Label>Year</Label>
-                            <select
+                        <div className="space-y-0.5">
+                            <DropdownSelector 
+                                label="Year"
                                 value={year}
-                                onChange={(e) => setYear(e.target.value)}
-                                className="w-full bg-black/20 border border-[#ffffff1a] rounded-md p-2 text-sm text-white"
-                            >
-                                {years.map((y) => (
-                                    <option key={y} value={y} className="bg-slate-950">{y}</option>
-                                ))}
-                            </select>
+                                onChange={setYear}
+                                options={years.map(y => ({ id: y.toString(), label: y.toString() }))}
+                            />
                         </div>
                     </div>
                     <Button onClick={handleDownload} className="w-full bg-blue-600 hover:bg-blue-700">

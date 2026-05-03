@@ -1,6 +1,7 @@
-// @ts-nocheck
 import { NextRequest, NextResponse } from 'next/server';
-import { verifyUser, getSupabaseFromRequest } from '@/lib/server-utils';
+import { verifyUser, getSupabaseFromRequest } from '@/lib/server/server-utils';
+import { TABLES } from '@/lib/dbTables';
+import { safeQuery } from '@/lib/safeQuery';
 
 export const dynamic = 'force-dynamic';
 
@@ -11,8 +12,10 @@ export async function GET(req: NextRequest) {
             return NextResponse.json({ error: 'Forbidden: Admin access required' }, { status: 403 });
         }
 
-        const supabase = getSupabaseFromRequest(req);
+        const supabase = await getSupabaseFromRequest(req);
         if (!supabase) return NextResponse.json({ error: 'Internal Error' }, { status: 500 });
+
+        const { tenantId } = user; // Derive tenantId from verified user context
 
         const { searchParams } = new URL(req.url);
 
@@ -38,8 +41,9 @@ export async function GET(req: NextRequest) {
 
         // --- 2. BUILD QUERY ---
         let query = supabase
-            .from('audit_log')
-            .select('*');
+            .from(TABLES.AUDIT_LOG)
+            .select('*')
+            .eq('tenant_id', tenantId);
 
         // Apply filters
         // Note: Firestore requires composite indexes for multiple equality + range/sort.
@@ -55,13 +59,13 @@ export async function GET(req: NextRequest) {
         if (severity) query = query.eq('details->>severity', severity);
 
         // Date Range
-        if (fromDate) query = query.gte('timestamp', fromDate);
-        if (toDate) query = query.lte('timestamp', toDate);
+        if (fromDate) query = query.gte('created_at', fromDate);
+        if (toDate) query = query.lte('created_at', toDate);
 
         // Ordering & Limit
         // If sorting by created_at, we need an index if we have equality filters.
         // For now, let's assume index exists or handle potential error gracefully.
-        query = query.order('timestamp', { ascending: false });
+        query = query.order('created_at', { ascending: false });
 
         if (!exportFormat) {
             query = query.limit(limitParam);
@@ -82,7 +86,7 @@ export async function GET(req: NextRequest) {
                 type: log.resource_type || 'system',
                 title: details.summary || 'System Activity',
                 description: `Action: ${log.action} • Role: ${details.role || 'Unknown'}`,
-                timestamp: log.timestamp,
+                timestamp: log.created_at,
                 severity: details.severity || 'info'
             };
         });
@@ -101,7 +105,7 @@ export async function GET(req: NextRequest) {
             // Simple CSV construction
             const headers = ['Timestamp', 'Action', 'Severity', 'Actor', 'Summary', 'Resource Type', 'Resource ID'];
             const rows = feed.map((row: any) => [
-                row.timestamp,
+                row.created_at,
                 row.action,
                 row.severity,
                 row.user_id, // or lookup name if available (not here)

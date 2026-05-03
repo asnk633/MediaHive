@@ -6,9 +6,10 @@ import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
 import { Input } from "@/components/ui/input";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { InventoryItem, InventoryCondition, InventoryRequest } from "@/types/inventory";
-import { inventoryIssueService } from "@/services/inventoryIssueService";
-import { inventoryRequestService } from "@/services/inventoryRequestService";
+import { EquipmentItem, InventoryIssueClean, InventoryRequestClean } from "@/services/inventory/inventoryContract";
+import { InventoryCondition } from "@/types/inventory";
+import { inventoryIssueService } from '@/services/inventory/inventoryIssueService';
+import { inventoryRequestService } from '@/services/inventory/inventoryRequestService';
 import { useAuth } from "@/contexts/AuthContextProvider";
 import { toast } from "sonner";
 import { Loader2, CalendarIcon } from "lucide-react";
@@ -18,8 +19,8 @@ import { format } from "date-fns";
 import { cn } from "@/lib/utils";
 
 interface IssueItemDialogProps {
-    item: InventoryItem | null; // If issuing directly from Inventory List
-    request?: InventoryRequest | null; // If issuing from a Request
+    item: EquipmentItem | null; // If issuing directly from Inventory List
+    request?: InventoryRequestClean | null; // If issuing from a Request
     open: boolean;
     onOpenChange: (open: boolean) => void;
     users?: { uid: string, name: string, role: string }[]; // Simplified user list for selection
@@ -38,8 +39,8 @@ export function IssueItemDialog({ item, request, open, onOpenChange, users = [] 
 
     // Form State
     const [issuedToId, setIssuedToId] = useState(request?.requestedBy || "");
-    const [issuedToRole, setIssuedToRole] = useState<'guest' | 'team'>('guest'); // Default
-    const [conditionOut, setConditionOut] = useState<InventoryCondition>(item?.condition || 'good');
+    const [issuedToRole, setIssuedToRole] = useState<'guest' | 'manager' | 'member'>('guest'); // Default
+    const [conditionOut, setConditionOut] = useState<InventoryCondition>((item?.condition as InventoryCondition) || 'good');
     const [expectedReturnAt, setExpectedReturnAt] = useState<Date | undefined>(undefined);
     const [projectNote, setProjectNote] = useState(request?.purpose || "");
 
@@ -47,7 +48,7 @@ export function IssueItemDialog({ item, request, open, onOpenChange, users = [] 
         if (open) {
             setIssuedToId(request?.requestedBy || "");
             setProjectNote(request?.purpose || "");
-            setConditionOut(item?.condition || 'good');
+            setConditionOut((item?.condition as InventoryCondition) || 'good');
             setExpectedReturnAt(undefined);
 
             if (request) setIssuedToRole('guest'); // Requests are mostly guests
@@ -132,7 +133,7 @@ export function IssueItemDialog({ item, request, open, onOpenChange, users = [] 
                                 <input type="radio" name="role" checked={issuedToRole === 'guest'} onChange={() => setIssuedToRole('guest')} /> Guest
                             </label>
                             <label className="flex items-center gap-2 text-sm text-slate-400 cursor-pointer">
-                                <input type="radio" name="role" checked={issuedToRole === 'team'} onChange={() => setIssuedToRole('team')} /> Team
+                                <input type="radio" name="role" checked={(issuedToRole === 'manager' || issuedToRole === 'member')} onChange={() => setIssuedToRole('member')} /> Team
                             </label>
                         </div>
                     </div>

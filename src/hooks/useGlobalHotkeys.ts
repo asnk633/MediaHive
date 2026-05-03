@@ -14,14 +14,15 @@ export function useGlobalHotkeys(handlers: {
 
             const key = e.key.toLowerCase();
 
-            // Ignore typing in inputs
-            const tag = (e.target as HTMLElement)?.tagName;
-            if (tag === "INPUT" || tag === "TEXTAREA" || (e.target as HTMLElement)?.isContentEditable) return;
-
             if ((e.metaKey || e.ctrlKey) && key === "k") {
                 e.preventDefault();
                 handlers.onCommand?.();
+                return;
             }
+
+            // Ignore typing in inputs for simple single-key shortcuts
+            const tag = (e.target as HTMLElement)?.tagName;
+            if (tag === "INPUT" || tag === "TEXTAREA" || (e.target as HTMLElement)?.isContentEditable) return;
 
             if (key === "t") handlers.onToday?.();
             if (key === "n") handlers.onNewTask?.();

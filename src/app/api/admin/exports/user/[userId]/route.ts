@@ -2,7 +2,8 @@ import { NextRequest, NextResponse } from 'next/server';
 import { getDb } from '@/db';
 import { performanceSnapshots, users, adminInterventionNotes, auditLog } from '@/db/schema';
 import { eq, and, gte, lte, desc } from 'drizzle-orm';
-import { authorizeByPermission } from '@/lib/auth-server';
+import { verifyUser } from '@/lib/verifyUser';
+import { withTenantDrizzle, validateTenant } from '@/lib/tenantQuery';
 import { analyzeTrend, extractIpsScores } from '@/utils/trendAnalysis';
 import { analyzeUserBenchmark } from '@/utils/benchmarkAnalysis';
 import { analyzeEarlyWarning } from '@/utils/earlyWarningAnalysis';
@@ -22,11 +23,19 @@ export async function GET(
 ) {
     try {
         // 1. Authorization
-        const authResult = await authorizeByPermission('read:reports');
-        if (!authResult.authorized || !authResult.user) {
+        const user = await verifyUser(request);
+        if (!user || user.role !== 'admin') {
             return NextResponse.json({ error: 'Unauthorized' }, { status: 403 });
         }
-        const currentAdmin = authResult.user;
+
+        // Tenant Security guard
+        const tenantId = user.tenant_id;
+        if (!tenantId || tenantId === 'null' || tenantId === 'undefined') {
+            console.error(`[GET /api/admin/exports/user] ❌ Missing tenant context for user: ${user.uid}`);
+            return NextResponse.json({ error: 'Missing tenant context' }, { status: 403 });
+        }
+
+        const currentAdmin = user;
 
         const { userId: userIdParam } = await params;
         const userId = parseInt(userIdParam);
@@ -41,12 +50,18 @@ export async function GET(
         const db = await getDb();
 
         // 2. Fetch User Profile
-        const userResult = await db.select().from(users).where(eq(users.id, userId)).limit(1);
+        const userResult = await db.select().from(users).where(and(
+            eq(users.id, userId),
+            withTenantDrizzle(users, tenantId)
+        )).limit(1);
         if (userResult.length === 0) return NextResponse.json({ error: 'User not found' }, { status: 404 });
         const targetUser = userResult[0];
 
         // 3. Build Query for Snapshots
-        let conditions = [eq(performanceSnapshots.userId, userId)];
+        let conditions = [
+            eq(performanceSnapshots.userId, userId),
+            withTenantDrizzle(performanceSnapshots, tenantId)
+        ];
         if (period) {
             conditions.push(eq(performanceSnapshots.period, period));
         } else {
@@ -64,7 +79,10 @@ export async function GET(
         const interventions = await db
             .select()
             .from(adminInterventionNotes)
-            .where(eq(adminInterventionNotes.userId, userId)); // Filtering by period locally for easier mapping
+            .where(and(
+                eq(adminInterventionNotes.userId, userId),
+                withTenantDrizzle(adminInterventionNotes, tenantId)
+            )); // Filtering by period locally for easier mapping
 
         // 5. Compute Analysis & Merge Data
         // To compute Trend/EarlyWarning, we essentially need the full history context, 

@@ -1,7 +1,7 @@
 // @ts-nocheck
 import { NextRequest, NextResponse } from 'next/server';
 import { getDriveClient, ensureFolderPath, makeFilePublic, DRIVE_CONFIG, sanitizeForDrive } from '@/lib/drive';
-import { verifyUser } from '@/lib/server-utils';
+import { verifyUser } from '@/lib/server/server-utils';
 import { supabase } from '@/lib/supabaseClient';
 
 export const dynamic = 'force-dynamic';

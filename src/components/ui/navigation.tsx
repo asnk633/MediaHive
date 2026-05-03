@@ -2,22 +2,11 @@
 import AppLink from "@/components/AppLink";
 import { usePathname } from "next/navigation";
 
-const navItems = [
-  { href: "/", label: "Gallery" },
-  { href: "/bento", label: "Bentos" },
-  { href: "/casestudies", label: "Case Studies" },
-  { href: "/contacts", label: "Contact" },
-  { href: "/ctas", label: "CTAs" },
-  { href: "/faqs", label: "FAQs" },
-  { href: "/feature", label: "Features" },
-  { href: "/footers", label: "Footers" },
-  { href: "/hero", label: "Hero" },
-  { href: "/navbars", label: "Navbars" },
-  { href: "/pricing", label: "Pricing" },
-  { href: "/stats", label: "Stats" },
-  { href: "/team", label: "Team" },
-  { href: "/testimonial", label: "Testimonials" },
-];
+// MediaHive Note: This Navigation component is a legacy scaffold from the UI library.
+// It is not used in the main application shell.
+// Routes have been cleared to avoid dead-link warnings.
+const navItems: { href: string; label: string }[] = [];
+
 
 export function Navigation() {
   const pathname = usePathname();
@@ -40,8 +29,8 @@ export function Navigation() {
                 key={item.href}
                 href={item.href}
                 className={`px-3 py-2 rounded-md text-sm font-medium transition-colors whitespace-nowrap ${pathname === item.href
-                    ? "bg-gray-900 text-white"
-                    : "text-gray-700 hover:text-gray-900 hover:bg-gray-100"
+                  ? "bg-gray-900 text-white"
+                  : "text-gray-700 hover:text-gray-900 hover:bg-gray-100"
                   }`}
               >
                 {item.label}

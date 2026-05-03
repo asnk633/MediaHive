@@ -2,7 +2,7 @@
 
 import React, { useState, useEffect, useRef, useCallback } from 'react';
 import { AppNotification } from '@/types/notification';
-import { NotificationService } from '@/services/notificationService';
+import { AlertService } from '@/services/alertService';
 import { NotificationItem } from './NotificationItem';
 import { useAuth } from '@/contexts/AuthContextProvider';
 import { useRouter } from 'next/navigation';
@@ -27,7 +27,7 @@ export const NotificationInbox: React.FC = () => {
         if (!user) return;
         try {
             // Limit to 100 for the inbox view for performance
-            const data = await NotificationService.getUserNotifications({ limit: 100 });
+            const data = await AlertService.getUserNotifications({ limit: 100 });
             setNotifications(data);
             setUnreadCount(data.filter(n => !n.read).length);
             setLoading(false);
@@ -56,7 +56,7 @@ export const NotificationInbox: React.FC = () => {
         toast.success("Marked all as read");
 
         try {
-            await NotificationService.markAllAsRead();
+            await AlertService.markAllAsRead();
         } catch (error) {
             console.error("Failed to mark all read", error);
             toast.error("Failed to sync read status");
@@ -75,7 +75,7 @@ export const NotificationInbox: React.FC = () => {
             setUnreadCount(prev => Math.max(0, prev - 1));
 
             try {
-                await NotificationService.markAsRead(notification.id);
+                await AlertService.markAsRead(notification.id);
             } catch (e) {
                 console.error(e);
             }

@@ -18,7 +18,7 @@ const mockTeamUser: AuthUser = {
   id: 2,
   email: 'team@example.com',
   fullName: 'Team User',
-  role: 'team',
+  role: 'member',
   institution_id: 1,
   tenantId: 1
 };
@@ -37,10 +37,10 @@ console.log('Testing RBAC functions...');
 // Test hasRole function
 console.log('Testing hasRole function:');
 console.log('Admin has admin role:', hasRole(mockAdminUser, ['admin']));
-console.log('Team has team role:', hasRole(mockTeamUser, ['team']));
+console.log('Member has member role:', hasRole(mockTeamUser, ['member']));
 console.log('Guest has guest role:', hasRole(mockGuestUser, ['guest']));
-console.log('Admin has admin or team role:', hasRole(mockAdminUser, ['admin', 'team']));
-console.log('Team has admin role (should be false):', hasRole(mockTeamUser, ['admin']));
+console.log('Admin has admin or member role:', hasRole(mockAdminUser, ['admin', 'member']));
+console.log('Member has admin role (should be false):', hasRole(mockTeamUser, ['admin']));
 console.log('Null user has admin role (should be false):', hasRole(null, ['admin']));
 
 // Test hasPermission function

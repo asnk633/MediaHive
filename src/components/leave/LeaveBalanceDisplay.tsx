@@ -107,7 +107,7 @@ export const LeaveBalanceDisplay: React.FC<LeaveBalanceDisplayProps> = ({ compac
                                 <div className={`text-2xl font-bold ${isLow ? 'text-red-400' : 'text-white'}`}>
                                     {remaining}
                                 </div>
-                                <div className="text-xs text-white/30">/ {total} days</div>
+                                <div className="text-xs text-white/50">/ {total} days</div>
                             </div>
                         </div>
 

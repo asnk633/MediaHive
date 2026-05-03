@@ -356,7 +356,7 @@ export function DriveQueueView() {
             </div>
 
             {loading ? (
-                <div className="text-center py-12 text-white/30 animate-pulse">Loading queue...</div>
+                <div className="text-center py-12 text-white/50 animate-pulse">Loading queue...</div>
             ) : items.length === 0 ? (
                 <div className="space-y-4">
                     <div className="flex flex-col items-center justify-center py-20 text-center border border-dashed border-[#ffffff1a] rounded-xl bg-slate-900/20">

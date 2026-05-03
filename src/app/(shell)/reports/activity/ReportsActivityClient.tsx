@@ -15,7 +15,7 @@ import {
 } from 'lucide-react';
 import { apiClient } from '@/lib/apiClient';
 import { supabase } from '@/lib/supabaseClient';
-import { Task } from '@/types/task';
+import { Task } from '@/features/tasks/types/task';
 import { format, subMonths, isSameMonth } from 'date-fns';
 import { PageLayout } from '@/components/ui/layout/PageLayout';
 import { PageHeader } from '@/components/ui/layout/PageHeader';

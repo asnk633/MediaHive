@@ -1,0 +1,7 @@
+﻿
+--------------------------------------------------
+MediaHive Architecture Health Check
+--------------------------------------------------
+[DEBUG] Deps for src\hooks\useAuth.ts: [ '@/contexts/AuthContextProvider' ]
+--------------------------------------------------
+Γ£à Architecture integrity verified

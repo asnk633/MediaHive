@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { verifyUser } from '@/lib/server-utils';
+import { verifyUser } from '@/lib/server/server-utils';
 import { getDb } from '@/db';
 import { userDepartments, users, departments } from '@/db/schema';
 import { eq, and } from 'drizzle-orm';
@@ -28,7 +28,7 @@ export async function GET(request: NextRequest) {
       })
       .from(userDepartments)
       .innerJoin(departments, eq(userDepartments.department_id, departments.id))
-      .where(eq(userDepartments.userId, userId));
+      .where(eq(userDepartments.userId, Number(userId)));
 
     return NextResponse.json(userDepts, { status: 200 });
   } catch (error) {
@@ -48,12 +48,18 @@ export async function POST(request: NextRequest) {
     if (!user) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
+    const { userId, department_id } = body;
+
+    if (!userId || !department_id) {
+      return NextResponse.json({ error: 'userId and department_id are required' }, { status: 400 });
+    }
+
     // Check if the user-department relationship already exists
     const existing = await db
       .select()
       .from(userDepartments)
       .where(and(
-        eq(userDepartments.userId, userId),
+        eq(userDepartments.userId, Number(userId)),
         eq(userDepartments.department_id, parseInt(department_id))
       ))
       .limit(1);
@@ -69,7 +75,7 @@ export async function POST(request: NextRequest) {
     const newUserDept = await db
       .insert(userDepartments)
       .values({
-        userId: userId,
+        userId: Number(userId),
         department_id: parseInt(department_id),
         created_at: new Date().toISOString(),
       })
@@ -108,7 +114,7 @@ export async function DELETE(request: NextRequest) {
       .select()
       .from(userDepartments)
       .where(and(
-        eq(userDepartments.userId, userId),
+        eq(userDepartments.userId, Number(userId)),
         eq(userDepartments.department_id, parseInt(department_id))
       ))
       .limit(1);
@@ -124,7 +130,7 @@ export async function DELETE(request: NextRequest) {
     const deleted = await db
       .delete(userDepartments)
       .where(and(
-        eq(userDepartments.userId, userId),
+        eq(userDepartments.userId, Number(userId)),
         eq(userDepartments.department_id, parseInt(department_id))
       ))
       .returning();

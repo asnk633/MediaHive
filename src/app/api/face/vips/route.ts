@@ -19,21 +19,27 @@ export async function GET(request: NextRequest) {
       { status: 404 }
     );
   }
-  
+
   try {
     // Authorize user with RBAC - only admins can list VIPs
     const user = await authorizeByPermission(request, 'manage:users');
-    
+
     if (!user) {
       return NextResponse.json(
         { error: 'Forbidden: Only admins can list VIPs' },
         { status: 403 }
       );
     }
-    
+
+    // Tenant Security Guard
+    const tenantId = user.tenant_id;
+    if (!tenantId || tenantId === 'null' || tenantId === 'undefined') {
+      return NextResponse.json({ error: 'Missing tenant context' }, { status: 403 });
+    }
+
     // List VIPs
-    const vips = await listVIPs();
-    
+    const vips = await listVIPs(tenantId);
+
     return NextResponse.json(vips, { status: 200 });
   } catch (error: unknown) {
     console.error('VIP listing error:', error);

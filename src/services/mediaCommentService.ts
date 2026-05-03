@@ -20,9 +20,9 @@ export const MediaCommentService = {
     content: string
   ): Promise<string> => {
     try {
-      const auth = await { currentUser: { uid: "mock", getIdToken: async () => "mock", email: "mock" } };
+      const auth = { currentUser: { uid: "mock", email: "mock" } };
       if (!{ uid: "mock" }.currentUser) throw new Error('Not authenticated');
-      
+
       const response = await apiClient('/api/media-comments', {
         method: 'POST',
         body: JSON.stringify({
@@ -33,7 +33,7 @@ export const MediaCommentService = {
           content
         })
       });
-      
+
       return response.id;
     } catch (error) {
       console.error('Error adding media comment:', error);
@@ -51,7 +51,7 @@ export const MediaCommentService = {
       const data = await apiClient(`/api/media-comments?mediaId=${mediaId}`, {
         method: 'GET'
       });
-      
+
       return data.comments || [];
     } catch (error) {
       console.error('Error fetching media comments:', error);
@@ -74,23 +74,23 @@ export const MediaCommentService = {
 
     const pollComments = async () => {
       if (isCancelled) return;
-      
+
       try {
         const data = await apiClient(`/api/media-comments?mediaId=${mediaId}`, {
           method: 'GET'
         });
-        
+
         callback(data.comments || []);
       } catch (error) {
         console.warn('Media comments polling failed:', error);
         callback([]);
       }
-      
+
       if (!isCancelled) {
         pollInterval = setTimeout(pollComments, 15000); // Poll every 15 seconds
       }
     };
-    
+
     pollComments();
 
     return () => {

@@ -1,7 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
-import { Carousel, CarouselContent, CarouselItem, CarouselNext, CarouselPrevious } from '@/components/ui/carousel';
-import { InventoryItem } from '@/types/inventory';
+import { EquipmentItem } from '@/services/inventory/inventoryContract';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { format } from 'date-fns';
@@ -10,11 +9,12 @@ import Image from 'next/image';
 import { Separator } from '@/components/ui/separator';
 
 interface InventoryDetailDialogProps {
-    item: InventoryItem | null;
+    item: EquipmentItem | null;
     open: boolean;
     onOpenChange: (open: boolean) => void;
-    onEdit?: (item: InventoryItem) => void;
-    onRequest?: (item: InventoryItem) => void;
+    onEdit?: (item: EquipmentItem) => void;
+    onRequest?: (item: EquipmentItem) => void;
+    onBook?: (item: EquipmentItem) => void;
     role?: string;
 }
 
@@ -24,6 +24,7 @@ export const InventoryDetailDialog: React.FC<InventoryDetailDialogProps> = ({
     onOpenChange,
     onEdit,
     onRequest,
+    onBook,
     role
 }) => {
     const [currentIndex, setCurrentIndex] = useState(0);
@@ -35,9 +36,9 @@ export const InventoryDetailDialog: React.FC<InventoryDetailDialogProps> = ({
     if (!item) return null;
 
     // consolidate images: verify if images array exists, else fallback to single imageUrl, else empty
-    const images = item.images && item.images.length > 0
-        ? item.images
-        : (item.imageUrl ? [{ url: item.imageUrl, file_id: item.driveFileId || '' }] : []);
+    const images: any[] = (item as any).images && (item as any).images.length > 0
+        ? (item as any).images
+        : ((item as any).imageUrl ? [{ url: (item as any).imageUrl, file_id: (item as any).driveFileId || '' }] : []);
 
     const hasMultipleImages = images.length > 1;
 
@@ -162,12 +163,13 @@ export const InventoryDetailDialog: React.FC<InventoryDetailDialogProps> = ({
                             </div>
                         )}
 
-                        {item.remarks && (
-                            <div className="col-span-2 pt-2">
-                                <span className="block text-[11px] text-slate-500 mb-1">Notes</span>
-                                <p className="text-slate-300 leading-relaxed max-w-md">
-                                    {item.remarks}
-                                </p>
+                        {item.isRentable && (
+                            <div className="col-span-2 pt-4 mt-2 border-t border-white/5">
+                                <span className="text-[11px] text-blue-400 font-bold uppercase tracking-wider">Rental Information</span>
+                                <div className="flex items-center justify-between mt-1 text-slate-200">
+                                    <span>Rate per day</span>
+                                    <span className="font-bold">₹{(item.rentalRatePerDay || 0).toLocaleString()}</span>
+                                </div>
                             </div>
                         )}
                     </div>
@@ -186,9 +188,17 @@ export const InventoryDetailDialog: React.FC<InventoryDetailDialogProps> = ({
                         {onRequest && (
                             <Button
                                 onClick={() => onRequest(item)}
-                                className="h-9 px-5 bg-slate-200 hover:bg-white text-slate-900 text-xs font-medium rounded shadow-sm border border-transparent transition-colors"
+                                className="h-9 px-5 border border-white/10 bg-white/5 hover:bg-white/10 text-slate-200 text-xs font-medium rounded shadow-sm transition-colors"
                             >
                                 Request Item
+                            </Button>
+                        )}
+                        {onBook && (
+                            <Button
+                                onClick={() => onBook(item)}
+                                className="h-9 px-5 bg-blue-600 hover:bg-blue-500 text-white text-xs font-medium rounded shadow-sm border border-transparent transition-colors"
+                            >
+                                Book Now
                             </Button>
                         )}
                     </div>

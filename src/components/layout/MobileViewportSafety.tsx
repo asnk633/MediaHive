@@ -29,6 +29,7 @@ export function MobileViewportSafety() {
 
             document.documentElement.style.setProperty('--keyboard-offset', `${keyboardHeight}px`);
             document.documentElement.style.setProperty('--viewport-height', `${viewportHeight}px`);
+            document.documentElement.style.setProperty('--safe-bottom', 'env(safe-area-inset-bottom)');
 
             // Log for debugging (only in dev)
             if (process.env.NODE_ENV === 'development') {

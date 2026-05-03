@@ -1,0 +1,165 @@
+﻿
+--------------------------------------------------
+MediaHive Architecture Health Check
+--------------------------------------------------
+
+[Domain Boundary Violations]
+Γ¥î src\features\campaigns\services\campaignService.ts:2
+   Import: @/features/tasks/types/task
+   Issue: Feature "campaigns" is importing directly from "tasks". Use @/services instead.
+
+Γ¥î src\features\dashboard\components\ActiveCampaignsWidget.tsx:6
+   Import: @/features/campaigns/services/campaignService
+   Issue: Feature "dashboard" is importing directly from "campaigns". Use @/services instead.
+
+Γ¥î src\features\dashboard\components\ActiveCampaignsWidget.tsx:7
+   Import: @/features/campaigns/types/campaign
+   Issue: Feature "dashboard" is importing directly from "campaigns". Use @/services instead.
+
+Γ¥î src\features\dashboard\components\ActiveCampaignsWidget.tsx:10
+   Import: @/features/campaigns/hooks/useCampaigns
+   Issue: Feature "dashboard" is importing directly from "campaigns". Use @/services instead.
+
+Γ¥î src\features\dashboard\components\ActivityFeed.tsx:2
+   Import: @/features/tasks/types/task
+   Issue: Feature "dashboard" is importing directly from "tasks". Use @/services instead.
+
+Γ¥î src\features\dashboard\components\AdminOversightWidget.tsx:4
+   Import: @/features/tasks/types/task
+   Issue: Feature "dashboard" is importing directly from "tasks". Use @/services instead.
+
+Γ¥î src\features\dashboard\components\AdminOversightWidget.tsx:5
+   Import: @/features/events/types/event
+   Issue: Feature "dashboard" is importing directly from "events". Use @/services instead.
+
+Γ¥î src\features\dashboard\components\DueSoonWidget.tsx:2
+   Import: @/features/tasks/types/task
+   Issue: Feature "dashboard" is importing directly from "tasks". Use @/services instead.
+
+Γ¥î src\features\dashboard\components\EventsNext7DaysWidget.tsx:4
+   Import: @/features/events/types/event
+   Issue: Feature "dashboard" is importing directly from "events". Use @/services instead.
+
+Γ¥î src\features\dashboard\components\GuestActivityFeed.tsx:2
+   Import: @/features/tasks/types/task
+   Issue: Feature "dashboard" is importing directly from "tasks". Use @/services instead.
+
+Γ¥î src\features\dashboard\components\MyFocusWidget.tsx:2
+   Import: @/features/tasks/types/task
+   Issue: Feature "dashboard" is importing directly from "tasks". Use @/services instead.
+
+Γ¥î src\features\dashboard\components\MyFocusWidget.tsx:3
+   Import: @/features/tasks/components/TaskItem
+   Issue: Feature "dashboard" is importing directly from "tasks". Use @/services instead.
+
+Γ¥î src\features\dashboard\components\MyFocusWidget.tsx:8
+   Import: @/features/tasks/components/HomeTaskRow
+   Issue: Feature "dashboard" is importing directly from "tasks". Use @/services instead.
+
+Γ¥î src\features\dashboard\components\MyFocusWidget.tsx:11
+   Import: @/features/tasks/services/taskService
+   Issue: Feature "dashboard" is importing directly from "tasks". Use @/services instead.
+
+Γ¥î src\features\dashboard\components\MyWorkflowWidget.tsx:2
+   Import: @/features/tasks/types/task
+   Issue: Feature "dashboard" is importing directly from "tasks". Use @/services instead.
+
+Γ¥î src\features\dashboard\components\TasksFromMeWidget.tsx:2
+   Import: @/features/tasks/types/task
+   Issue: Feature "dashboard" is importing directly from "tasks". Use @/services instead.
+
+Γ¥î src\features\dashboard\components\TimelineWidget.tsx:2
+   Import: @/features/tasks/types/task
+   Issue: Feature "dashboard" is importing directly from "tasks". Use @/services instead.
+
+Γ¥î src\features\dashboard\components\TimelineWidget.tsx:3
+   Import: @/features/events/types/event
+   Issue: Feature "dashboard" is importing directly from "events". Use @/services instead.
+
+Γ¥î src\features\dashboard\hooks\useDashboardMetrics.ts:2
+   Import: @/features/tasks/types/task
+   Issue: Feature "dashboard" is importing directly from "tasks". Use @/services instead.
+
+Γ¥î src\features\events\services\eventService.ts:2
+   Import: @/features/tasks/types/task
+   Issue: Feature "events" is importing directly from "tasks". Use @/services instead.
+
+
+[DTO Mapping Violations]
+ΓÜá src\services\bulkOperationsService.ts
+   Issue: Service has mapping logic but appears to miss Zod validation (.safeParse).
+
+ΓÜá src\services\canonicalDataService.ts
+   Issue: Service has mapping logic but appears to miss Zod validation (.safeParse).
+
+ΓÜá src\services\conflictDetectionService.ts
+   Issue: Service has mapping logic but appears to miss Zod validation (.safeParse).
+
+ΓÜá src\services\deliverableService.ts
+   Issue: Service has mapping logic but appears to miss Zod validation (.safeParse).
+
+ΓÜá src\services\edgeCaseService.ts
+   Issue: Service has mapping logic but appears to miss Zod validation (.safeParse).
+
+ΓÜá src\services\files.ts
+   Issue: Service has mapping logic but appears to miss Zod validation (.safeParse).
+
+ΓÜá src\services\notificationService.ts
+   Issue: Service has mapping logic but appears to miss Zod validation (.safeParse).
+
+
+[Routes Violations]
+ΓÜá src\app\(shell)\admin\page.tsx:53
+   Issue: Reference to potentially dead route: "/admin/notification-policies"
+
+ΓÜá src\app\(shell)\admin\page.tsx:61
+   Issue: Reference to potentially dead route: "/admin/automation-rules"
+
+ΓÜá src\components\admin\AutomationRulesView.tsx:127
+   Issue: Reference to potentially dead route: "/admin/notification-policies"
+
+ΓÜá src\components\ProtectedRoute.tsx:27
+   Issue: Reference to potentially dead route: "/login/"
+
+ΓÜá src\components\ui\navigation.tsx:7
+   Issue: Reference to potentially dead route: "/bento"
+
+ΓÜá src\components\ui\navigation.tsx:8
+   Issue: Reference to potentially dead route: "/casestudies"
+
+ΓÜá src\components\ui\navigation.tsx:9
+   Issue: Reference to potentially dead route: "/contacts"
+
+ΓÜá src\components\ui\navigation.tsx:10
+   Issue: Reference to potentially dead route: "/ctas"
+
+ΓÜá src\components\ui\navigation.tsx:11
+   Issue: Reference to potentially dead route: "/faqs"
+
+ΓÜá src\components\ui\navigation.tsx:12
+   Issue: Reference to potentially dead route: "/feature"
+
+ΓÜá src\components\ui\navigation.tsx:13
+   Issue: Reference to potentially dead route: "/footers"
+
+ΓÜá src\components\ui\navigation.tsx:14
+   Issue: Reference to potentially dead route: "/hero"
+
+ΓÜá src\components\ui\navigation.tsx:15
+   Issue: Reference to potentially dead route: "/navbars"
+
+ΓÜá src\components\ui\navigation.tsx:16
+   Issue: Reference to potentially dead route: "/pricing"
+
+ΓÜá src\components\ui\navigation.tsx:17
+   Issue: Reference to potentially dead route: "/stats"
+
+ΓÜá src\components\ui\navigation.tsx:18
+   Issue: Reference to potentially dead route: "/team"
+
+ΓÜá src\components\ui\navigation.tsx:19
+   Issue: Reference to potentially dead route: "/testimonial"
+
+--------------------------------------------------
+Scan completed in 0.12s with 44 issues.
+CRITICAL: Architecture violations detected. Please fix before proceeding.

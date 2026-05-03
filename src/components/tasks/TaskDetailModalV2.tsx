@@ -4,7 +4,8 @@
 import React, { useState, useEffect } from 'react';
 import { createPortal } from 'react-dom';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Task } from '@/types/task';
+import { MediaTask as Task } from '@/services/tasks/taskContract';
+import { taskService } from '@/services/tasks/taskService';
 import { Clock, Calendar, CheckCircle2, User as UserIcon, AlertCircle, X, Edit2, UploadCloud, FileCheck, Circle, User, Activity } from 'lucide-react';
 import { format } from 'date-fns';
 import { useAuth } from '@/contexts/AuthContextProvider';
@@ -14,6 +15,7 @@ import { AttachmentSection } from '@/components/tasks/AttachmentSection';
 import { DeliverablesList } from '@/components/deliverables/DeliverablesList';
 import { DeliverableUploadModal } from '@/components/deliverables/DeliverableUploadModal';
 import { supabase } from '@/lib/supabaseClient';
+import { withTenant } from '@/lib/tenantQuery';
 import { toast } from 'sonner';
 import { useDevWiring } from '@/hooks/useDevWiring';
 import { TaskRatingComponent } from '@/components/tasks/TaskRatingComponent';
@@ -91,7 +93,10 @@ export const TaskDetailModalV2: React.FC<TaskDetailsModalProps> = ({ task, isOpe
                     [task.id],
                     { deleted: true } as any,
                     async () => {
-                        await supabase.from('tasks').delete().eq('id', task.id);
+                        await withTenant(
+                            supabase.from('tasks').delete(),
+                            user?.tenant_id
+                        ).eq('id', task.id);
                         ActivityHistory.push(task.id, {
                             action: 'deleted',
                             label: buildActivityLabel('deleted'),
@@ -128,7 +133,12 @@ export const TaskDetailModalV2: React.FC<TaskDetailsModalProps> = ({ task, isOpe
 
                                     try {
                                         const snap = entry.snapshot.get(task.id);
-                                        if (snap) await supabase.from('tasks').update(snap).eq('id', task.id);
+                                        if (snap) {
+                                            await withTenant(
+                                                supabase.from('tasks').update(snap),
+                                                user?.tenant_id
+                                            ).eq('id', task.id);
+                                        }
                                         ActivityHistory.push(task.id, {
                                             action: 'restored',
                                             label: buildActivityLabel('restored'),
@@ -149,7 +159,10 @@ export const TaskDetailModalV2: React.FC<TaskDetailsModalProps> = ({ task, isOpe
                     }
                 );
             } else {
-                await supabase.from('tasks').delete().eq('id', task.id);
+                await withTenant(
+                    supabase.from('tasks').delete(),
+                    user?.tenant_id
+                ).eq('id', task.id);
 
                 // Log activity
                 ActivityHistory.push(task.id, { action: 'deleted', label: buildActivityLabel('deleted'), actorUid: user?.uid ?? '', actorName: user?.name ?? 'Admin', scope: 1 });
@@ -166,7 +179,12 @@ export const TaskDetailModalV2: React.FC<TaskDetailsModalProps> = ({ task, isOpe
                             if (!entry) return;
                             try {
                                 const snap = entry.snapshot.get(task.id);
-                                if (snap) await supabase.from('tasks').update(snap).eq('id', task.id);
+                                if (snap) {
+                                    await withTenant(
+                                        supabase.from('tasks').update(snap),
+                                        user?.tenant_id
+                                    ).eq('id', task.id);
+                                }
                                 toast.success('Task restored');
                             } catch {
                                 toast.error('Undo failed — please refresh.');
@@ -196,13 +214,31 @@ export const TaskDetailModalV2: React.FC<TaskDetailsModalProps> = ({ task, isOpe
         if (typeof date === 'string') return new Date(date);
         return null;
     };
-    const isRecentlyUpdatedByOther = fullTask.updated_by &&
-        fullTask.updated_by.uid !== user?.uid &&
-        fullTask.updated_at &&
-        (Date.now() - new Date(fullTask.updated_at).getTime() < 60000); // 60s window
+    const isRecentlyUpdatedByOther = fullTask.updatedBy &&
+        fullTask.updatedBy.uid !== user?.uid &&
+        fullTask.updatedAt &&
+        (Date.now() - new Date(fullTask.updatedAt).getTime() < 60000); // 60s window
 
     const [historyLogs, setHistoryLogs] = useState<AuditLog[]>([]);
     const [isLoadingHistory, setIsLoadingHistory] = useState(false);
+    const [linkedEvent, setLinkedEvent] = useState<any>(null);
+
+    useEffect(() => {
+        const fetchLinkedEvent = async () => {
+            if (!task?.event_id) return;
+            const { data, error } = await supabase
+                .from('events')
+                .select('id, title')
+                .eq('id', task.event_id)
+                .single();
+            if (data) setLinkedEvent(data);
+        };
+        if (isOpen && task?.event_id) {
+            fetchLinkedEvent();
+        } else {
+            setLinkedEvent(null);
+        }
+    }, [isOpen, task?.event_id]);
 
     // Fetch team members & Fresh Task Data
     React.useEffect(() => {
@@ -217,7 +253,7 @@ export const TaskDetailModalV2: React.FC<TaskDetailsModalProps> = ({ task, isOpe
 
         if (isOpen) {
             // Only fetch team members for Admin or Team roles
-            if (user?.role === 'admin' || user?.role === 'team') {
+            if (user?.role === 'admin' || (user?.role === 'manager' || user?.role === 'member')) {
                 fetchTeam();
             }
             if (task?.id) {
@@ -227,8 +263,8 @@ export const TaskDetailModalV2: React.FC<TaskDetailsModalProps> = ({ task, isOpe
                 // Ensure we display latest task info immediately
                 setFullTask(task);
                 // Then hydrate with fresh data from server
-                supabase.from('tasks').select('*').eq('id', task.id).single().then(({ data }) => {
-                    if (data) setFullTask(data as any);
+                taskService.getTaskById(task.id).then((freshTask) => {
+                    if (freshTask) setFullTask(freshTask);
                 }).finally(() => {
                     setIsLoadingDetails(false);
                 });
@@ -247,8 +283,8 @@ export const TaskDetailModalV2: React.FC<TaskDetailsModalProps> = ({ task, isOpe
         if (!task) return;
         setError(null);
         try {
-            const wasAssigned = Array.isArray(task.assigned_to) && task.assigned_to.some((current: any) => {
-                const currentUid = typeof current === 'string' ? current : current.uid;
+            const wasAssigned = Array.isArray(task.assignedTo) && task.assignedTo.some((current: any) => {
+                const currentUid = current.userId;
                 return currentUid === member.uid;
             });
 
@@ -265,8 +301,8 @@ export const TaskDetailModalV2: React.FC<TaskDetailsModalProps> = ({ task, isOpe
             });
 
             if (!wasAssigned) {
-                const { NotificationService } = await import('@/services/notificationService');
-                await NotificationService.createNotification({
+                const { pushNotification } = await import('@/services/alertService');
+                await pushNotification({
                     user_id: member.uid,
                     created_by: user!.uid,
                     type: 'task_assigned',
@@ -289,7 +325,7 @@ export const TaskDetailModalV2: React.FC<TaskDetailsModalProps> = ({ task, isOpe
     useDevWiring('TaskDetailModalV2', [
         { name: 'Delete Task', handler: handleDelete, visible: !!canDelete, destructive: true, permissionVerified: !!canDelete },
         { name: 'Edit Task', handler: onEdit || (() => { }), visible: true },
-        { name: 'Deliverable Upload', handler: () => setShowDeliverableUpload(true), visible: (user?.role === 'admin' || user?.role === 'team') }
+        { name: 'Deliverable Upload', handler: () => setShowDeliverableUpload(true), visible: (user?.role === 'admin' || (user?.role === 'manager' || user?.role === 'member')) }
     ]);
 
     const [mounted, setMounted] = useState(false);
@@ -377,7 +413,7 @@ export const TaskDetailModalV2: React.FC<TaskDetailsModalProps> = ({ task, isOpe
                         >
                             {/* Action Buttons - Top Right, Minimal */}
                             <div className="absolute top-6 right-6 flex items-center gap-2 z-20">
-                                {(user?.role === 'admin' || user?.role === 'team' || user?.uid === task?.created_by?.uid) && (
+                                {(user?.role === 'admin' || (user?.role === 'manager' || user?.role === 'member') || user?.uid === task?.createdBy?.uid) && (
                                     <button
                                         onClick={onEdit}
                                         disabled={isDeleting}
@@ -408,24 +444,24 @@ export const TaskDetailModalV2: React.FC<TaskDetailsModalProps> = ({ task, isOpe
                                         <span className="text-foreground">{task.status.replace('_', ' ')}</span>
                                     </div>
                                     {/* Promoted Due Date - Answering 'Why it matters' */}
-                                    {task.due_date && task.status !== 'done' && (
+                                    {task.dueDate && task.status !== 'done' && (
                                         <div className="flex items-center gap-1.5 text-[10px] font-bold uppercase tracking-widest text-muted-foreground/80">
                                             <span className="w-1 h-1 rounded-full bg-border-strong" />
                                             <span>
                                                 Due {(() => {
-                                                    const date = new Date(task.due_date);
+                                                    const date = new Date(task.dueDate);
                                                     return !isNaN(date.getTime()) ? format(date, 'MMM d') : '';
                                                 })()}
                                             </span>
                                         </div>
                                     )}
                                     {/* Completed Date (Structural Requirement) */}
-                                    {task.status === 'done' && task.completed_at && (
+                                    {task.status === 'done' && task.completedAt && (
                                         <div className="flex items-center gap-1.5 text-[10px] font-bold uppercase tracking-widest text-emerald-500/80">
                                             <span className="w-1 h-1 rounded-full bg-emerald-500/50" />
                                             <span>
                                                 Completed on {(() => {
-                                                    const date = new Date(task.completed_at);
+                                                    const date = new Date(task.completedAt);
                                                     return !isNaN(date.getTime()) ? format(date, 'd MMMM yyyy, h:mm a') : 'Completed — date unavailable';
                                                 })()}
                                             </span>
@@ -513,6 +549,27 @@ export const TaskDetailModalV2: React.FC<TaskDetailsModalProps> = ({ task, isOpe
                                 </div>
                             </div>
 
+                            {/* Linked Event */}
+                            {linkedEvent && (
+                                <div className="mb-8 p-4 bg-primary/5 border border-primary/20 rounded-xl flex items-center justify-between group hover:bg-primary/10 transition-all">
+                                    <div className="flex items-center gap-3">
+                                        <div className="w-8 h-8 rounded-lg bg-primary/20 flex items-center justify-center text-primary">
+                                            <Calendar size={16} />
+                                        </div>
+                                        <div>
+                                            <p className="text-[10px] uppercase tracking-wider font-bold text-primary/60 mb-0.5">Part of Event</p>
+                                            <p className="text-sm font-medium text-white">{linkedEvent.title}</p>
+                                        </div>
+                                    </div>
+                                    <button 
+                                        onClick={() => router.push(`/events?id=${linkedEvent.id}`)}
+                                        className="text-[10px] font-bold text-primary uppercase tracking-widest opacity-0 group-hover:opacity-100 transition-all"
+                                    >
+                                        Open Event →
+                                    </button>
+                                </div>
+                            )}
+
                             {/* Info Card - Simple & Demoted */}
                             <div className="grid grid-cols-1 md:grid-cols-2 gap-6 p-6 bg-surface/20 rounded-xl border border-soft/50 mb-8">
                                 <div className="space-y-6">
@@ -524,9 +581,9 @@ export const TaskDetailModalV2: React.FC<TaskDetailsModalProps> = ({ task, isOpe
                                             <p className="text-[10px] uppercase tracking-wider font-bold text-muted-foreground/60 mb-1.5">Requested By</p>
                                             <p className="text-xs text-muted-foreground">
                                                 <ResolvedStructureName
-                                                    id={task.department_id || task.institution_id}
-                                                    type={task.department_id ? 'department' : 'institution'}
-                                                    fallback={(!task.department_id && !task.institution_id) ? (task.department || task.created_by?.name) : undefined}
+                                                    id={task.departmentId || task.institutionId}
+                                                    type={task.departmentId ? 'department' : 'institution'}
+                                                    fallback={(!task.departmentId && !task.institutionId) ? (task.department || task.createdBy?.name) : undefined}
                                                 />
                                             </p>
                                         </div>
@@ -547,7 +604,7 @@ export const TaskDetailModalV2: React.FC<TaskDetailsModalProps> = ({ task, isOpe
                                                     <div className="text-xs font-bold text-muted-foreground px-2 py-1 mb-1 tracking-wider">SELECT MEMBER</div>
                                                     <div className="max-h-60 overflow-y-auto">
                                                         {teamMembers.map((m) => {
-                                                            const isAssigned = Array.isArray(task.assigned_to) && task.assigned_to.some(current => typeof current === 'string' ? current === m.uid : current.uid === m.uid);
+                                                            const isAssigned = Array.isArray(task.assignedTo) && task.assignedTo.some(current => (current as any).uid === m.uid);
                                                             return (
                                                                 <div
                                                                     key={m.uid}
@@ -567,20 +624,17 @@ export const TaskDetailModalV2: React.FC<TaskDetailsModalProps> = ({ task, isOpe
                                         )}
                                     </div>
                                     <div className="flex flex-wrap gap-2">
-                                        {Array.isArray(task.assigned_to) && task.assigned_to.length > 0 ? (
-                                            task.assigned_to.map((assignee: any, i) => {
-                                                const uid = typeof assignee === 'string' ? assignee : assignee.uid;
-                                                let teamMember = teamMembers.find(m => m.uid === uid);
-                                                if (!teamMember && assignee.name) {
-                                                    teamMember = teamMembers.find(m => m.name === assignee.name);
-                                                }
-                                                const avatar_url = assignee.avatar_url || teamMember?.avatar_url;
+                                        {Array.isArray(task.assignedTo) && task.assignedTo.length > 0 ? (
+                                            task.assignedTo.map((assignee: any, i) => {
+                                                const userId = assignee.uid;
+                                                let teamMember = teamMembers.find(m => m.uid === userId);
+                                                const avatarUrl = assignee.avatarUrl || teamMember?.avatar_url;
                                                 const name = assignee.name || teamMember?.name || 'Unknown';
 
                                                 return (
                                                     <div key={i} className="flex items-center gap-2 bg-surface/50 px-2.5 py-1.5 rounded-lg border border-soft/50">
                                                         <SafeAvatar
-                                                            src={avatar_url}
+                                                            src={avatarUrl}
                                                             name={name}
                                                             alt={name}
                                                             size={16}
@@ -605,13 +659,16 @@ export const TaskDetailModalV2: React.FC<TaskDetailsModalProps> = ({ task, isOpe
                                     task={fullTask}
                                     onUpdate={() => {
                                         // Just trigger local refresh, not full page refresh
-                                        supabase.from('tasks').select('*').eq('id', task.id).single().then(({ data }) => data && setFullTask(data as any));
+                                        withTenant(
+                                            supabase.from('tasks').select('*'),
+                                            user?.tenant_id
+                                        ).eq('id', task.id).single().then(({ data }) => data && setFullTask(data as any));
                                     }}
                                 />
                             </div>
 
                             {/* Subtasks Section */}
-                            {((fullTask.subtasks?.length ?? 0) > 0 || user?.role === 'admin' || user?.role === 'team') && (
+                            {((fullTask.subtasks?.length ?? 0) > 0 || user?.role === 'admin' || (user?.role === 'manager' || user?.role === 'member')) && (
                                 <div className="pt-6 mt-8 -mx-8 px-8 pb-8 border-t border-soft bg-muted/5">
                                     <TaskSubtasks
                                         taskId={task.id}
@@ -645,7 +702,7 @@ export const TaskDetailModalV2: React.FC<TaskDetailsModalProps> = ({ task, isOpe
                                     <TaskActivityFeed taskId={task.id} user={user} />
                                 </div>
                                 {/* Server-side audit log (admin/team) */}
-                                {(user?.role === 'admin' || user?.role === 'team') && (
+                                {(user?.role === 'admin' || (user?.role === 'manager' || user?.role === 'member')) && (
                                     <div className="pl-2 mt-4 pt-4 border-t border-white/5">
                                         <p className="text-[10px] font-bold text-white/20 uppercase tracking-widest mb-3">System Log</p>
                                         <AuditTimeline logs={historyLogs} isLoading={isLoadingHistory} />

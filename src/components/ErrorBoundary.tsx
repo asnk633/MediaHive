@@ -7,7 +7,7 @@ export default class ErrorBoundary extends React.Component<{ children: React.Rea
   static getDerivedStateFromError() { return { hasError: true }; }
 
   componentDidCatch(error: any, info: any) {
-    import('@/lib/logger').then(m => m.logger.error("ErrorBoundary caught error", { error, info }));
+    import('@/lib/logger').then(m => m.logger.log({ type: "ErrorBoundary caught error", level: 'error', metadata: { error, info } }));
   }
 
   render() {

@@ -1,24 +1,45 @@
-// @ts-nocheck
-// src/app/api/audit-log/route.ts
-// Audit log API endpoints
-
 import { NextRequest, NextResponse } from 'next/server';
-import { authorizeByPermission } from '@/app/api/_lib/rbac';
-import { getUserFromRequest } from '../_lib/auth';
-import { db } from '@/db';
-import { auditLog, users } from '@/db/schema';
-import { eq, and, gte, lte, count, sql, desc } from 'drizzle-orm';
-
-// GET /api/audit-log - Get audit logs
-// GET /api/audit-log?stats=true - Get audit log statistics
+import { verifyUser, authorizeByPermission } from '@/lib/server/server-utils';
+import { getDb } from '@/db';
+import { auditLog, users, tenants } from '@/db/schema';
+import { eq, and, gte, lte, count, sql, desc, inArray } from 'drizzle-orm';
+import { withTenantDrizzle } from '@/lib/tenantQuery';
 
 export const dynamic = 'force-dynamic';
 
 export async function GET(req: NextRequest) {
   try {
-    // Authorize user with RBAC - only admin can access audit logs
-    const user = await authorizeByPermission(req, 'manage:users');
-    if (!user) {
+    // 1. Initialize Database
+    const db = await getDb();
+
+    // 2. Authorize user for tenant isolation
+    const authUser = await verifyUser(req);
+    if (!authUser) {
+      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+    }
+
+    // 3. Map Supabase User to Local User (Integer IDs)
+    // The audit_log table and others in SQLite use integer IDs for performance and consistency.
+    // However, authUser.tenant_id/uid are UUIDs from Supabase.
+    // We lookup the local tenant and user based on email.
+    const [localUser] = await db
+      .select({
+        id: users.id,
+        tenantId: users.tenantId
+      })
+      .from(users)
+      .where(eq(users.email, authUser.email as string))
+      .limit(1);
+
+    // Fallback/Validation for Tenant Context
+    // If localUser is found, use its tenantId (integer).
+    // Otherwise fallback to 1 (default tenant) for local dev/initial setup.
+    const localTenantId = localUser?.tenantId || 1;
+    const localUserId = localUser?.id;
+
+    // RBAC Check - only admin can access audit logs
+    const { authorized } = await authorizeByPermission(req, 'manage:users');
+    if (!authorized) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
 
@@ -54,7 +75,12 @@ export async function GET(req: NextRequest) {
           count: count()
         })
         .from(auditLog)
-        .where(gte(auditLog.timestamp, startDate.toISOString()))
+        .where(
+          and(
+            gte(auditLog.createdAt, startDate.toISOString()),
+            eq(auditLog.tenantId, localTenantId)
+          )
+        )
         .groupBy(auditLog.action)
         .orderBy(sql`count DESC`)
         .limit(10);
@@ -66,7 +92,12 @@ export async function GET(req: NextRequest) {
           count: count()
         })
         .from(auditLog)
-        .where(gte(auditLog.timestamp, startDate.toISOString()))
+        .where(
+          and(
+            gte(auditLog.createdAt, startDate.toISOString()),
+            eq(auditLog.tenantId, localTenantId)
+          )
+        )
         .groupBy(auditLog.resourceType)
         .orderBy(sql`count DESC`)
         .limit(10);
@@ -74,12 +105,17 @@ export async function GET(req: NextRequest) {
       // Get daily counts for the period
       const dailyCounts = await db
         .select({
-          date: sql`DATE(${auditLog.timestamp})`.as('date'),
+          date: sql`DATE(${auditLog.createdAt})`.as('date'),
           count: count()
         })
         .from(auditLog)
-        .where(gte(auditLog.timestamp, startDate.toISOString()))
-        .groupBy(sql`DATE(${auditLog.timestamp})`)
+        .where(
+          and(
+            gte(auditLog.createdAt, startDate.toISOString()),
+            eq(auditLog.tenantId, localTenantId)
+          )
+        )
+        .groupBy(sql`DATE(${auditLog.createdAt})`)
         .orderBy(sql`date`);
 
       // Get top users
@@ -89,14 +125,19 @@ export async function GET(req: NextRequest) {
           count: count()
         })
         .from(auditLog)
-        .where(gte(auditLog.timestamp, startDate.toISOString()))
+        .where(
+          and(
+            gte(auditLog.createdAt, startDate.toISOString()),
+            eq(auditLog.tenantId, localTenantId)
+          )
+        )
         .groupBy(auditLog.userId)
         .orderBy(sql`count DESC`)
         .limit(10);
 
       // Fetch user details for top users
-      if (topUsers.length > 0) {
-        const userIds = topUsers.map((user: any) => user.userId);
+      const uIds = topUsers.map((u: any) => u.userId).filter(Boolean);
+      if (uIds.length > 0) {
         const userDetails = await db
           .select({
             id: users.id,
@@ -104,11 +145,10 @@ export async function GET(req: NextRequest) {
             fullName: users.fullName
           })
           .from(users)
-          .where(sql`id IN (${sql.join(userIds, sql`, `)})`);
+          .where(inArray(users.id, uIds as number[]));
 
-        // Add user details to top users
-        topUsers.forEach(user => {
-          const detail = userDetails.find(u => u.id === user.userId);
+        topUsers.forEach((user: any) => {
+          const detail = userDetails.find((u: any) => u.id === user.userId);
           (user as any).user = detail || { id: user.userId, email: 'Unknown', fullName: 'Unknown User' };
         });
       }
@@ -125,69 +165,43 @@ export async function GET(req: NextRequest) {
         },
         { status: 200 }
       );
-    } else {
-      // Regular audit log request
-      // Parse Query
-      const role = null; // Dangerous role query param removed
-      const page = parseInt(searchParams.get('page') || '1', 10);
-      const limit = parseInt(searchParams.get('limit') || '50', 10);
-      const userId = user.uid; // derived from auth
-      const action = searchParams.get('action');
-      const resourceType = searchParams.get('resourceType');
-      const startDate = searchParams.get('startDate');
-      const endDate = searchParams.get('endDate');
-      const includeUserDetails = searchParams.get('includeUserDetails') === 'true';
+    }
 
-      // Get user for tenant isolation
-      const authUser = await getUserFromRequest(req);
-      if (!authUser) {
-        return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
-      }
+    // Regular audit log request
+    const page = parseInt(searchParams.get('page') || '1', 10);
+    const limit = parseInt(searchParams.get('limit') || '50', 10);
+    const userIdFilter = searchParams.get('userId');
+    const action = searchParams.get('action');
+    const resourceType = searchParams.get('resourceType');
+    const startDate = searchParams.get('startDate');
+    const endDate = searchParams.get('endDate');
+    const includeUserDetails = searchParams.get('includeUserDetails') === 'true';
 
-      // Build query conditions
-      const conditions = [];
+    const conditions = [];
+    if (userIdFilter) conditions.push(eq(auditLog.userId, userIdFilter));
+    
+    // Always enforce tenant isolation
+    conditions.push(eq(auditLog.tenantId, localTenantId));
+    
+    if (action) conditions.push(eq(auditLog.action, action));
+    if (resourceType) conditions.push(eq(auditLog.resourceType, resourceType));
+    if (startDate) conditions.push(gte(auditLog.createdAt, startDate));
+    if (endDate) conditions.push(lte(auditLog.createdAt, endDate));
 
-      if (userId) {
-        conditions.push(eq(auditLog.userId, userId));
-      }
+    const offset = (page - 1) * limit;
+    const logs = await db
+      .select()
+      .from(auditLog)
+      .where(conditions.length > 0 ? and(...conditions) : undefined)
+      .orderBy(desc(auditLog.createdAt))
+      .limit(limit)
+      .offset(offset);
 
-      // Add tenant isolation
-      conditions.push(eq(auditLog.tenantId, authUser.tenantId));
+    if (includeUserDetails && logs.length > 0) {
+      const uIds = [...new Set(logs.map((log: any) => log.userId))]
+        .filter((id): id is number => id !== null && id !== undefined);
 
-      if (action) {
-        conditions.push(eq(auditLog.action, action));
-      }
-
-      if (resourceType) {
-        conditions.push(eq(auditLog.resourceType, resourceType));
-      }
-
-      if (startDate) {
-        conditions.push(gte(auditLog.timestamp, startDate));
-      }
-
-      if (endDate) {
-        conditions.push(lte(auditLog.timestamp, endDate));
-      }
-
-      // Calculate offset for pagination
-      const offset = (page - 1) * limit;
-
-      // Fetch audit logs with all conditions applied at once
-      const logs = await db
-        .select()
-        .from(auditLog)
-        .where(conditions.length > 0 ? and(...conditions) : undefined)
-        .orderBy(desc(auditLog.timestamp))
-        .limit(limit)
-        .offset(offset);
-
-      // If requested, include user details
-      if (includeUserDetails && logs.length > 0) {
-        // Get unique user IDs
-        const userIds = [...new Set(logs.map(log => log.userId))];
-
-        // Fetch user details
+      if (uIds.length > 0) {
         const userDetails = await db
           .select({
             id: users.id,
@@ -196,45 +210,49 @@ export async function GET(req: NextRequest) {
             role: users.role
           })
           .from(users)
-          .where(sql`id IN (${sql.join(userIds, sql`, `)})`);
+          .where(inArray(users.id, uIds));
 
-        // Create a map for quick lookup
-        const userMap = userDetails.reduce((acc, user) => {
+        const userMap = userDetails.reduce((acc: any, user: any) => {
           acc[user.id] = user;
           return acc;
-        }, {} as Record<number, typeof userDetails[0]>);
+        }, {} as Record<number, any>);
 
-        // Add user details to logs
-        logs.forEach(log => {
-          (log as any).user = userMap[log.userId] || null;
+        logs.forEach((log: any) => {
+          (log as any).user = userMap[log.userId as number] || null;
         });
       }
-
-      // Get total count for pagination
-      const totalCountResult = await db
-        .select({ count: count() })
-        .from(auditLog)
-        .where(conditions.length > 0 ? and(...conditions) : undefined);
-
-      const totalCount = totalCountResult[0]?.count || 0;
-
-      return NextResponse.json(
-        {
-          logs,
-          pagination: {
-            page,
-            limit,
-            totalCount,
-            totalPages: Math.ceil(totalCount / limit)
-          }
-        },
-        { status: 200 }
-      );
     }
-  } catch (error) {
-    console.error('[GET /api/audit-log]', error);
+
+    const totalCountResult = await db
+      .select({ count: count() })
+      .from(auditLog)
+      .where(conditions.length > 0 ? and(...conditions) : undefined);
+
+    const totalCount = totalCountResult[0]?.count || 0;
+
     return NextResponse.json(
-      { error: 'Failed to fetch audit logs' },
+      {
+        logs,
+        pagination: {
+          page,
+          limit,
+          totalCount,
+          totalPages: Math.ceil(totalCount / limit)
+        }
+      },
+      { status: 200 }
+    );
+  } catch (error: any) {
+    console.error('[GET /api/audit-log] ❌ Critical Error:', {
+      message: error?.message,
+      code: error?.code,
+      stack: error?.stack
+    });
+    return NextResponse.json(
+      { 
+        error: 'Failed to fetch audit logs', 
+        details: error?.message || 'Database connection error or schema mismatch'
+      },
       { status: 500 }
     );
   }
@@ -243,39 +261,47 @@ export async function GET(req: NextRequest) {
 // POST /api/audit-log - Create an audit log entry (internal use)
 export async function POST(req: NextRequest) {
   try {
-    // This endpoint is for internal use only - not exposed to clients
-    // In a real implementation, this would be called by server-side code
-
-    // Get user for tenant isolation
-    const authUser = await getUserFromRequest(req);
+    const db = await getDb();
+    const authUser = await verifyUser(req);
     if (!authUser) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
 
-    const body = await req.json();
-    const { userId, action, resourceType, resourceId, details, ipAddress, userAgent } = body;
+    // Map to local user context
+    const [localUser] = await db
+      .select({
+        id: users.id,
+        tenantId: users.tenantId
+      })
+      .from(users)
+      .where(eq(users.email, authUser.email as string))
+      .limit(1);
 
-    // Validate required fields
-    if (!userId || !action || !resourceType) {
+    const localTenantId = localUser?.tenantId || 1;
+    const localUserId = localUser?.id;
+
+    const body = await req.json();
+    const { action, resourceType, resourceId, details, ipAddress, userAgent } = body;
+
+    if (!action || !resourceType) {
       return NextResponse.json(
-        { error: 'userId, action, and resourceType are required' },
+        { error: 'action and resourceType are required' },
         { status: 400 }
       );
     }
 
-    // Create audit log entry
     const [log] = await db
       .insert(auditLog)
       .values({
-        userId,
+        userId: localUserId || null,
         action,
         resourceType,
         resourceId: resourceId || null,
         details: details ? JSON.stringify(details) : null,
         ipAddress: ipAddress || null,
         userAgent: userAgent || null,
-        tenantId: authUser.tenantId, // Add tenant isolation
-        timestamp: new Date().toISOString(),
+        tenantId: localTenantId,
+        createdAt: new Date().toISOString(),
       })
       .returning();
 

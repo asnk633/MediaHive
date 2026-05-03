@@ -6,10 +6,12 @@ export interface Institution {
     status: StructureStatus;
     created_at?: string;
     updated_at?: string;
+    features?: Record<string, boolean>;
+    userCount?: number;
 }
 
 export interface Department {
-    id: string;
+    id: number;
     name: string;
     status: StructureStatus;
     created_at?: string;

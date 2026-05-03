@@ -1,10 +1,10 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { db } from '@/db';
-import { 
-  tasks, 
-  events, 
-  users, 
-  institutions, 
+import {
+  tasks,
+  events,
+  users,
+  institutions,
   tenants,
   taskComments,
   attachments,
@@ -20,13 +20,28 @@ import {
   notifications
 } from '@/db/schema';
 import { eq, and, gt, lt, desc, asc, count } from 'drizzle-orm';
+import { verifyUser } from '@/lib/verifyUser';
+import { withTenantDrizzle } from '@/lib/tenantQuery';
 
 
 export const dynamic = 'force-dynamic';
 
 export async function GET(request: NextRequest) {
   try {
-    // Get basic replication status
+    // Authenticate and get tenant context
+    const user = await verifyUser(request);
+    if (!user) {
+      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+    }
+
+    // Tenant Security Guard
+    const tenantId = user.tenant_id;
+    if (!tenantId || tenantId === 'null' || tenantId === 'undefined') {
+      console.error(`[GET /api/replication/status] ❌ Missing tenant context for user: ${user.uid}`);
+      return NextResponse.json({ error: 'Missing tenant context' }, { status: 403 });
+    }
+
+    // Get basic replication status for the tenant
     const status = {
       timestamp: new Date().toISOString(),
       node: process.env.HOSTNAME || 'unknown',
@@ -35,16 +50,16 @@ export async function GET(request: NextRequest) {
       pendingEvents: 0,
       tables: [] as { name: string; rowCount: number }[]
     };
-    
+
     // Get approximate row counts for key tables
     try {
       const tableStats = [
-        { name: 'tasks', query: () => db.select({ count: count() }).from(tasks) },
-        { name: 'events', query: () => db.select({ count: count() }).from(events) },
-        { name: 'users', query: () => db.select({ count: count() }).from(users) },
-        { name: 'auditLog', query: () => db.select({ count: count() }).from(auditLog) }
+        { name: 'tasks', query: () => db.select({ count: count() }).from(tasks).where(withTenantDrizzle(tasks, tenantId)) },
+        { name: 'events', query: () => db.select({ count: count() }).from(events).where(withTenantDrizzle(events, tenantId)) },
+        { name: 'users', query: () => db.select({ count: count() }).from(users).where(withTenantDrizzle(users, tenantId)) },
+        { name: 'auditLog', query: () => db.select({ count: count() }).from(auditLog).where(withTenantDrizzle(auditLog, tenantId)) }
       ];
-      
+
       for (const tableStat of tableStats) {
         try {
           const result = await tableStat.query();
@@ -56,14 +71,15 @@ export async function GET(request: NextRequest) {
           console.warn(`Failed to get count for ${tableStat.name}:`, error);
         }
       }
-      
+
       // Get last audit log entry as proxy for last sync
       try {
         const lastAudit = await db.select()
           .from(auditLog)
-          .orderBy(desc(auditLog.timestamp))
+          .where(withTenantDrizzle(auditLog, tenantId))
+          .orderBy(desc(auditLog.createdAt))
           .limit(1);
-          
+
         if (lastAudit.length > 0) {
           status.lastSync = lastAudit[0].timestamp;
         }
@@ -73,7 +89,7 @@ export async function GET(request: NextRequest) {
     } catch (error) {
       console.warn('Failed to get table statistics:', error);
     }
-    
+
     return NextResponse.json(status);
   } catch (error) {
     console.error('Replication status error:', error);

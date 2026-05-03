@@ -5,13 +5,14 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from "
 import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { InventoryIssue, InventoryCondition } from "@/types/inventory";
-import { inventoryIssueService } from "@/services/inventoryIssueService";
+import { InventoryIssueClean } from "@/services/inventory/inventoryContract";
+import { InventoryCondition } from "@/types/inventory";
+import { inventoryIssueService } from '@/services/inventory/inventoryIssueService';
 import { toast } from "sonner";
 import { Loader2 } from "lucide-react";
 
 interface ReturnItemDialogProps {
-    issue: InventoryIssue | null;
+    issue: InventoryIssueClean | null;
     open: boolean;
     onOpenChange: (open: boolean) => void;
     onReturnComplete?: () => void;

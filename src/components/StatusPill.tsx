@@ -1,7 +1,7 @@
 import React from 'react';
 import { cn } from "@/lib/utils";
 
-import { Task } from '@/types/task';
+import { Task } from '@/features/tasks/types/task';
 
 type TaskStatus = Task['status'];
 

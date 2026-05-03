@@ -1,10 +1,10 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { db } from '@/db';
-import { 
-  tasks, 
-  events, 
-  users, 
-  institutions, 
+import {
+  tasks,
+  events,
+  users,
+  institutions,
   tenants,
   taskComments,
   attachments,
@@ -21,6 +21,8 @@ import {
 } from '@/db/schema';
 import { eq, and, gt, lt, desc, asc } from 'drizzle-orm';
 import { z } from 'zod';
+import { verifyUser } from '@/lib/verifyUser';
+import { validateTenant } from '@/lib/tenantQuery';
 
 // Schema for WAL events
 const WalEventSchema = z.object({
@@ -40,8 +42,21 @@ export const dynamic = 'force-dynamic';
 
 export async function POST(request: NextRequest) {
   try {
+    // Authenticate and get tenant context
+    const user = await verifyUser(request);
+    if (!user) {
+      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+    }
+
+    // Tenant Security Guard
+    const tenantId = user.tenant_id;
+    if (!tenantId || tenantId === 'null' || tenantId === 'undefined') {
+      console.error(`[POST /api/replication/ingest] ❌ Missing tenant context for user: ${user.uid}`);
+      return NextResponse.json({ error: 'Missing tenant context' }, { status: 403 });
+    }
+
     const body = await request.json();
-    
+
     // Handle different ingestion types
     if (request.headers.get('content-type') === 'application/json') {
       // Single event ingestion
@@ -52,15 +67,15 @@ export async function POST(request: NextRequest) {
           { status: 400 }
         );
       }
-      
+
       const event = result.data;
       await processWalEvent(event);
-      
+
       return NextResponse.json({ success: true });
     } else {
       // Batch ingestion
       const events = Array.isArray(body) ? body : [body];
-      
+
       for (const event of events) {
         const result = WalEventSchema.safeParse(event);
         if (!result.success) {
@@ -69,10 +84,10 @@ export async function POST(request: NextRequest) {
             { status: 400 }
           );
         }
-        
+
         await processWalEvent(result.data);
       }
-      
+
       return NextResponse.json({ success: true, processed: events.length });
     }
   } catch (error) {
@@ -88,18 +103,18 @@ export async function POST(request: NextRequest) {
 async function processWalEvent(event: WalEvent) {
   // In a real implementation, you would apply the event to the database
   // This is a simplified version that just logs the event
-  
+
   console.log(`Processing WAL event: ${event.operation} on ${event.table}`, {
     id: event.id,
     primaryKey: event.primaryKey,
     data: event.data
   });
-  
+
   // Here you would implement the actual database operations:
   // - INSERT: db.insert(schema[event.table]).values(event.data)
   // - UPDATE: db.update(schema[event.table]).set(event.data).where(primaryKeyCondition)
   // - DELETE: db.delete(schema[event.table]).where(primaryKeyCondition)
-  
+
   // For now, we'll just simulate the processing
   await new Promise(resolve => setTimeout(resolve, 10)); // Simulate processing time
 }

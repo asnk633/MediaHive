@@ -3,16 +3,24 @@
 
 import { NextRequest, NextResponse } from 'next/server';
 import { authorizeByPermission } from '@/app/api/_lib/rbac';
+import { verifyUser } from '@/lib/server/server-utils';
 
 
 export const dynamic = 'force-dynamic';
 
 export async function POST(req: NextRequest) {
   try {
-    // Authorize user with RBAC
-    const user = await authorizeByPermission(req, 'create:tasks');
+    // Authorize user
+    const user = await verifyUser(req);
     if (!user) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+    }
+
+    // Tenant Security guard
+    const tenantId = user.tenant_id;
+    if (!tenantId || tenantId === 'null' || tenantId === 'undefined') {
+      console.error(`[POST /api/ai/generate-task] ❌ Missing tenant context for user: ${user.uid}`);
+      return NextResponse.json({ error: 'Missing tenant context' }, { status: 403 });
     }
 
     // Get task data from request body

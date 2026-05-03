@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { verifyUser } from '@/lib/server-utils';
+import { verifyUser } from '@/lib/verifyUser';
+import { validateTenant } from '@/lib/tenantQuery';
 // import { RolePolicyService } from '@/lib/role-policies.server';
 
 
@@ -10,6 +11,13 @@ export async function GET(request: NextRequest) {
         const user = await verifyUser(request);
         if (!user || user.role !== 'admin') {
             return NextResponse.json({ error: 'Unauthorized' }, { status: 403 });
+        }
+
+        // Tenant Security guard
+        const tenantId = user.tenant_id;
+        if (!tenantId || tenantId === 'null' || tenantId === 'undefined') {
+            console.error(`[GET /api/admin/role-policies] ❌ Missing tenant context for user: ${user.uid}`);
+            return NextResponse.json({ error: 'Missing tenant context' }, { status: 403 });
         }
 
         const { searchParams } = new URL(request.url);

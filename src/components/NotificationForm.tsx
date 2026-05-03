@@ -7,9 +7,11 @@ import { zodResolver } from '@hookform/resolvers/zod';
 import { NotificationFormData, notificationFormSchema } from '@/lib/forms/validators';
 import { useAuth } from '@/contexts/AuthContextProvider';
 import { toast } from 'sonner';
-import { Send, Eye, Loader2, Calendar, Paperclip, X, Users, Megaphone, Bell } from 'lucide-react';
 import { cn } from '@/lib/utils';
-// import NotificationPreviewModal from '@/components/NotificationPreviewModal';
+import { DateSelector } from '@/components/ui/selectors/DateSelector';
+import { TimeSelector } from '@/components/ui/selectors/TimeSelector';
+import { format } from 'date-fns';
+import { X, Send, Loader2 } from 'lucide-react';
 // import { apiClient } from '@/lib/apiClient';
 // import { NotificationService } from '@/services/notificationService';
 
@@ -153,9 +155,35 @@ export function NotificationForm({ initialData, onSubmitSuccess, onCancel }: Not
           </div>
         </div>
 
-        <div>
-          <label className="block text-sm font-medium text-gray-300 mb-1">Schedule</label>
-          <input type="datetime-local" {...register('schedule')} className={inputClasses} />
+        <div className="grid grid-cols-2 gap-4">
+          <DateSelector 
+            label="Schedule Date"
+            date={watchedValues.schedule ? new Date(watchedValues.schedule) : undefined}
+            onChange={(date) => {
+              if (!date) {
+                setValue('schedule', null);
+                return;
+              }
+              const newDate = new Date(date);
+              if (watchedValues.schedule) {
+                const current = new Date(watchedValues.schedule);
+                newDate.setHours(current.getHours());
+                newDate.setMinutes(current.getMinutes());
+              }
+              setValue('schedule', newDate.toISOString());
+            }}
+          />
+          <TimeSelector 
+            label="Schedule Time"
+            value={watchedValues.schedule ? format(new Date(watchedValues.schedule), "HH:mm") : "09:00"}
+            onChange={(time) => {
+              const [h, m] = time.split(':').map(Number);
+              const newDate = watchedValues.schedule ? new Date(watchedValues.schedule) : new Date();
+              newDate.setHours(h);
+              newDate.setMinutes(m);
+              setValue('schedule', newDate.toISOString());
+            }}
+          />
         </div>
 
         <div>

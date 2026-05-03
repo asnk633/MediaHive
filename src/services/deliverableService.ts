@@ -1,5 +1,6 @@
 import { FileService } from '@/services/fileService';
 import { Deliverable } from '@/types/deliverable';
+import { FileSchema } from '@/domain/schemas/file';
 
 export const DeliverableService = {
     uploadDeliverable: async (
@@ -66,7 +67,14 @@ export const DeliverableService = {
 
             // Filter locally for taskId (or update FileService.getFiles to accept filters)
             // For now, let's assume getFiles might need a filter param or we filter here
-            const taskFiles = files.filter((f: any) => f.taskId === taskId || f.metadata?.taskId === taskId);
+            const taskFiles = files.filter((f: any) => {
+                // DTO Validation (since FileService returns these)
+                const parsed = FileSchema.safeParse(f);
+                if (!parsed.success) {
+                    console.warn("[DeliverableService] DTO validation failed for file from FileService:", parsed.error);
+                }
+                return f.taskId === taskId || f.metadata?.taskId === taskId;
+            });
 
             return taskFiles.map((f: any) => ({
                 id: f.id,

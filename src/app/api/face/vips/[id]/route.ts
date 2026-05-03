@@ -21,31 +21,37 @@ export async function DELETE(
       { status: 404 }
     );
   }
-  
+
   try {
     // Authorize user with RBAC - only admins can delete VIPs
     const user = await authorizeByPermission(request, 'manage:users');
-    
+
     if (!user) {
       return NextResponse.json(
         { error: 'Forbidden: Only admins can delete VIPs' },
         { status: 403 }
       );
     }
-    
+
     const params = await context.params;
     const id = parseInt(params.id, 10);
-    
+
     if (isNaN(id)) {
       return NextResponse.json(
         { error: 'Invalid VIP ID' },
         { status: 400 }
       );
     }
-    
+
+    // Tenant Security Guard
+    const tenantId = user.tenant_id;
+    if (!tenantId || tenantId === 'null' || tenantId === 'undefined') {
+      return NextResponse.json({ error: 'Missing tenant context' }, { status: 403 });
+    }
+
     // Delete VIP
-    await deleteVIP(id);
-    
+    await deleteVIP(id, tenantId);
+
     return NextResponse.json(
       { success: true, message: 'VIP deleted successfully' },
       { status: 200 }

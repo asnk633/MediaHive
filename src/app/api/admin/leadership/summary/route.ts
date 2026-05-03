@@ -2,8 +2,9 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { getDb } from '@/db'; // Drizzle Client
 import { departmentHealthSnapshots, performanceSnapshots, adminInterventionNotes } from '@/db/schema';
-import { verifyUser, authorizeByPermission } from '@/lib/server-utils';
+import { verifyUser } from '@/lib/verifyUser';
 import { eq, and, sql, desc } from 'drizzle-orm';
+import { withTenantDrizzle } from '@/lib/tenantQuery';
 
 /*
  * ------------------------------------------------------------------
@@ -69,10 +70,11 @@ function generateNarrative(current: any, previous: any): string[] {
 }
 
 // --- Live Data Helper ---
-async function calculateLiveMetrics(period: string) {
+async function calculateLiveMetrics(period: string, tenantId: string) {
     // Replicating logic from /api/admin/intelligence for consistency
     const { tasks, users, attendance } = await import('@/db/schema');
-    const { gte, eq } = await import('drizzle-orm');
+    const { gte, eq, and } = await import('drizzle-orm');
+    const { withTenantDrizzle } = await import('@/lib/tenantQuery');
 
     // Last 30 days window
     const start = new Date();
@@ -81,12 +83,24 @@ async function calculateLiveMetrics(period: string) {
 
     // Fetch Data
     const db = await getDb();
-    const teamMembers = await db.select().from(users).where(eq(users.role, 'team'));
+    const teamMembers = await db.select().from(users).where(and(
+        eq(users.role, 'team'),
+        withTenantDrizzle(users, tenantId)
+    ));
     if (teamMembers.length === 0) return null;
 
-    const recentTasks = await db.select().from(tasks).where(gte(tasks.created_at, startIso));
-    const allActiveTasks = await db.select().from(tasks).where(eq(tasks.isArchived, false));
-    const attendanceLogs = await db.select().from(attendance).where(gte(attendance.checkIn, startIso));
+    const recentTasks = await db.select().from(tasks).where(and(
+        gte(tasks.created_at, startIso),
+        withTenantDrizzle(tasks, tenantId)
+    ));
+    const allActiveTasks = await db.select().from(tasks).where(and(
+        eq(tasks.isArchived, false),
+        withTenantDrizzle(tasks, tenantId)
+    ));
+    const attendanceLogs = await db.select().from(attendance).where(and(
+        gte(attendance.checkIn, startIso),
+        withTenantDrizzle(attendance, tenantId)
+    ));
 
     // Calculate per-user metrics
     const analysis = teamMembers.map((user: any) => {
@@ -165,17 +179,23 @@ async function calculateLiveMetrics(period: string) {
 export async function GET(req: NextRequest) {
     try {
         // 1. Security Check
-        // 1. Security Check
-        const authResult = await authorizeByPermission(req, 'read:reports');
+        const user = await verifyUser(req);
 
-        if (!authResult.user) {
+        if (!user) {
             console.warn('[API] Leadership Summary: No user found (401)');
             return NextResponse.json({ error: 'Unauthorized: Please sign in' }, { status: 401 });
         }
 
-        if (!authResult.authorized) {
-            console.warn(`[API] Leadership Summary: User ${authResult.user.email} missing permission (403)`);
+        if (user.role !== 'admin') {
+            console.warn(`[API] Leadership Summary: User ${user.email} missing admin role (403)`);
             return NextResponse.json({ error: 'Forbidden: Insufficient permissions' }, { status: 403 });
+        }
+
+        // Tenant Security guard
+        const tenantId = user.tenant_id;
+        if (!tenantId || tenantId === 'null' || tenantId === 'undefined') {
+            console.error(`[GET /api/admin/leadership/summary] ❌ Missing tenant context for user: ${user.uid}`);
+            return NextResponse.json({ error: 'Missing tenant context' }, { status: 403 });
         }
 
         // 2. Parse Query Params
@@ -198,30 +218,43 @@ export async function GET(req: NextRequest) {
                 avgAttendance: sql<number>`avg(${departmentHealthSnapshots.avgAttendanceScore})`
             })
                 .from(departmentHealthSnapshots)
-                .where(eq(departmentHealthSnapshots.period, period)),
+                .where(and(
+                    eq(departmentHealthSnapshots.period, period),
+                    withTenantDrizzle(departmentHealthSnapshots, tenantId)
+                )),
 
             db.select({
                 avgScore: sql<number>`avg(${departmentHealthSnapshots.departmentHealthScore})`
             })
                 .from(departmentHealthSnapshots)
-                .where(eq(departmentHealthSnapshots.period, prevPeriod)),
+                .where(and(
+                    eq(departmentHealthSnapshots.period, prevPeriod),
+                    withTenantDrizzle(departmentHealthSnapshots, tenantId)
+                )),
 
             db.select({
                 status: performanceSnapshots.performanceStatus,
                 count: sql<number>`count(*)`
             })
                 .from(performanceSnapshots)
-                .where(eq(performanceSnapshots.period, period))
+                .where(and(
+                    eq(performanceSnapshots.period, period),
+                    withTenantDrizzle(performanceSnapshots, tenantId)
+                ))
                 .groupBy(performanceSnapshots.performanceStatus),
 
             db.select({ count: sql<number>`count(*)` })
                 .from(adminInterventionNotes)
-                .where(eq(adminInterventionNotes.period, period)),
+                .where(and(
+                    eq(adminInterventionNotes.period, period),
+                    withTenantDrizzle(adminInterventionNotes, tenantId)
+                )),
 
             db.select({ count: sql<number>`count(*)` })
                 .from(performanceSnapshots)
                 .where(and(
                     eq(performanceSnapshots.period, period),
+                    withTenantDrizzle(performanceSnapshots, tenantId),
                     sql`${performanceSnapshots.attendanceDisciplineScore} < 85`
                 ))
         ]);
@@ -237,7 +270,7 @@ export async function GET(req: NextRequest) {
         // If currScore is 0 (and likely no entries), try Live Calculation
         if (currScore === 0) {
             console.log(`[LeadershipSummary] No snapshots for ${period}, falling back to Live Data.`);
-            const liveData = await calculateLiveMetrics(period);
+            const liveData = await calculateLiveMetrics(period, tenantId);
             if (liveData) {
                 currScore = liveData.avgScore;
                 avgCompletion = liveData.avgCompletion;
@@ -291,7 +324,7 @@ export async function GET(req: NextRequest) {
                     healthScore: currScore,
                     totalUsers,
                     atRisk: riskMap.at_risk,
-                    underperforming: riskMap.underperforming
+                    underperforming: riskMap.underperforming,
                 },
                 {
                     healthScore: prevScore

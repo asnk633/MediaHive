@@ -7,11 +7,6 @@ export const ClientNotification = {
    * Create a notification using API
    */
   create: async (userId: string, data: Partial<AppNotification> & { title: string; message: string; type: NotificationType }) => {
-    // Prevent self-notification check
-    if (data.sourceUserId && data.sourceUserId === userId) {
-      return null;
-    }
-
     const notification = {
       userId,
       isRead: false,
@@ -34,11 +29,8 @@ export const ClientNotification = {
    * Broadcast to multiple users using API
    */
   broadcast: async (userIds: string[], data: Partial<AppNotification> & { title: string; message: string; type: NotificationType }) => {
-    // Filter out source user
-    const targets = userIds.filter(id => id !== data.sourceUserId);
-
     // De-duplicate targets
-    const uniqueTargets = Array.from(new Set(targets));
+    const uniqueTargets = Array.from(new Set(userIds));
 
     if (uniqueTargets.length === 0) return;
 

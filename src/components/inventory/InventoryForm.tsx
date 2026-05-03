@@ -228,7 +228,12 @@ export default function InventoryForm({ initialData, mode }: InventoryFormProps)
                 toast.success("Item added to inventory.");
                 nativeNavigate('/inventory', router, 'InventoryForm (Create Success)');
             } else if (mode === 'edit' && initialData) {
-                await inventoryService.update(initialData.id, basePayload as any);
+                await inventoryService.update(
+                    initialData.id, 
+                    basePayload as any,
+                    initialData.updatedAt,
+                    initialData.version
+                );
                 toast.success("Item updated successfully.");
                 nativeNavigate(`/inventory/${initialData.id}`, router, 'InventoryForm (Edit Success)');
             }

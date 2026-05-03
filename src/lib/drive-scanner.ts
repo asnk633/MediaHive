@@ -1,7 +1,7 @@
 import { getDriveClient, ensureFolderPath } from '@/lib/drive';
-import { DriveQueueItem } from '@/types/drive-queue';
-import { logSystemActivity } from '@/lib/server/activity-logger';
 import { getSupabaseAdmin } from '@/lib/server/server-utils';
+import { MonitoringService } from '@/services/monitoringService';
+import { AuditService } from '@/services/auditService';
 
 const INCOMING_FOLDER_NAME = 'MediaHive/Incoming';
 const QUEUE_TABLE = 'drive_queue';
@@ -16,9 +16,8 @@ export class DriveScannerService {
         const rootId = process.env.GOOGLE_DRIVE_FOLDER_ID;
         if (!rootId) throw new Error('GOOGLE_DRIVE_FOLDER_ID is not set');
 
-        console.log(`[DriveScanner] Resolving folder '${INCOMING_FOLDER_NAME}' from root '${rootId}'...`);
+        MonitoringService.info('[DriveScanner] Resolving incoming folder...', { rootId, folder: INCOMING_FOLDER_NAME });
         const resolvedId = await ensureFolderPath(drive, rootId, INCOMING_FOLDER_NAME.split('/'));
-        console.log(`[DriveScanner] Resolved Incoming Folder ID: ${resolvedId}`);
         return resolvedId;
     }
 
@@ -42,7 +41,7 @@ export class DriveScannerService {
                 webViewLink: res.data.webViewLink || null
             };
         } catch (e) {
-            console.error('Failed to get incoming folder info:', e);
+            MonitoringService.error('[DriveScanner] Failed to get incoming folder info', e);
             return { id: '', name: 'Start Scan to Retry', webViewLink: null };
         }
     }
@@ -53,9 +52,11 @@ export class DriveScannerService {
      */
     static async scanIncomingFolder(): Promise<{ count: number, logs: string[] }> {
         const logs: string[] = [];
-        const log = (msg: string) => {
-            console.log(msg);
+        const log = (msg: string, level: 'info' | 'warn' | 'error' = 'info') => {
             logs.push(msg);
+            if (level === 'info') MonitoringService.info(msg);
+            else if (level === 'warn') MonitoringService.warn(msg);
+            else MonitoringService.error(msg, new Error(msg));
         };
 
         try {
@@ -78,7 +79,7 @@ export class DriveScannerService {
                     log(`[DriveScanner] Folder is in Shared Drive: ${driveId}`);
                 }
             } catch (e: any) {
-                log(`[DriveScanner] Warning: Could not determine Drive ID: ${e.message}`);
+                log(`[DriveScanner] Warning: Could not determine Drive ID: ${e.message}`, 'warn');
             }
 
             // 2. Construct List Params
@@ -108,8 +109,6 @@ export class DriveScannerService {
             for (const file of files) {
                 if (!file.id || !file.name) continue;
 
-                // Absolute Purge: Remove check for non-existent 'files' table.
-                // Check only 'drive_queue' for pending/rejected items.
                 const { data: existingQueue, error: queueError } = await supabase
                     .from(QUEUE_TABLE)
                     .select('id')
@@ -117,7 +116,7 @@ export class DriveScannerService {
                     .limit(1);
 
                 if (queueError) {
-                    log(`[DriveScanner] Warning: Queue check failed for ${file.name}: ${queueError.message}`);
+                    log(`[DriveScanner] Warning: Queue check failed for ${file.name}: ${queueError.message}`, 'warn');
                     continue;
                 }
 
@@ -145,23 +144,20 @@ export class DriveScannerService {
                     .insert([newItem]);
 
                 if (insertError) {
-                    log(`[DriveScanner] Error inserting ${file.name}: ${insertError.message}`);
+                    log(`[DriveScanner] Error inserting ${file.name}: ${insertError.message}`, 'error');
                     continue;
                 }
 
-                await logSystemActivity({
-                    actorId: 'system',
-                    actorRole: 'system',
-                    action: 'drive_file_detected',
+                await AuditService.logAction({
+                    action: 'DRIVE_FILE_DETECTED',
                     entityType: 'drive_queue_item',
-                    entityId: file.id || 'unknown',
+                    entityId: file.id,
                     summary: `Drive File Detected: ${file.name}`,
-                    source: 'system',
-                    severity: 'info',
-                    visibility: { mode: 'admin' },
+                    classification: 'OPERATIONAL',
                     metadata: {
                         drive_id: file.id,
-                        size: file.size
+                        size: file.size,
+                        mime_type: file.mimeType
                     }
                 });
 
@@ -172,7 +168,8 @@ export class DriveScannerService {
             return { count: addedCount, logs };
 
         } catch (error: any) {
-            log(`[DriveScanner] Error: ${error.message}`);
+            log(`[DriveScanner] Error: ${error.message}`, 'error');
+            MonitoringService.error('[DriveScanner] Scan failed', error);
             return { count: 0, logs };
         }
     }

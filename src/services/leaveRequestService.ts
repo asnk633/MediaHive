@@ -1,184 +1,220 @@
-// @ts-nocheck
-import { LeaveRequest, LeaveType, ApproveLeaveData, RejectLeaveData } from '@/types/leave';
-import { apiClient } from '@/lib/apiClient';
+import { LeaveRequest, ApproveLeaveData, RejectLeaveData } from '@/types/leave';
+import { supabase } from '@/lib/supabaseClient';
 import { CanonicalDataService } from '@/services/canonicalDataService';
 import { MonitoringService } from '@/services/monitoringService';
-import { getCurrentUser } from '@/lib/auth/verifyUser';
+import { tenantContext } from '@/lib/auth/tenantContext';
+import { TABLES } from '@/lib/dbTables';
 
-const COLLECTION = 'leave_requests';
+const COLLECTION = TABLES.LEAVE_REQUESTS;
 
 export const LeaveRequestService = {
     /**
      * Subscribe to user's leave requests
      */
     subscribeToMyRequests: (uid: string, callback: (requests: LeaveRequest[]) => void) => {
-        let pollInterval: NodeJS.Timeout | null = null;
-        let isCancelled = false;
+        const subscription = supabase
+            .channel('my_leaves')
+            .on('postgres_changes', { 
+                event: '*', 
+                schema: 'public', 
+                table: TABLES.LEAVE_REQUESTS,
+                filter: `requested_by_id=eq.${uid}`
+            }, async () => {
+                const requests = await LeaveRequestService.getMyRequests(uid);
+                callback(requests);
+            })
+            .subscribe();
 
-        const pollRequests = async () => {
-            if (isCancelled) return;
-
-            try {
-                const data = await apiClient('/api/leave', {
-                    method: 'GET'
-                });
-
-                callback(data.requests || []);
-            } catch (error: any) {
-                MonitoringService.warn('Leave requests polling failed', { error: error.message });
-                callback([]);
-            }
-
-            if (!isCancelled) {
-                pollInterval = setTimeout(pollRequests, 30000); // Poll every 30 seconds
-            }
-        };
-
-        pollRequests();
+        // Initial fetch
+        LeaveRequestService.getMyRequests(uid).then(callback);
 
         return () => {
-            isCancelled = true;
-            if (pollInterval) clearTimeout(pollInterval);
+            subscription.unsubscribe();
         };
     },
 
     /**
-     * Subscribe to all pending requests (admin only)
+     * Fetch user's leave requests
      */
-    subscribeToPendingRequests: (callback: (requests: LeaveRequest[]) => void) => {
-        let pollInterval: NodeJS.Timeout | null = null;
-        let isCancelled = false;
-
-        const pollPendingRequests = async () => {
-            if (isCancelled) return;
-
-            try {
-                const data = await apiClient('/api/leave?status=pending', {
-                    method: 'GET'
-                });
-
-                callback(data.requests || []);
-            } catch (error) {
-                console.warn('Pending requests polling failed:', error);
-                callback([]);
-            }
-
-            if (!isCancelled) {
-                pollInterval = setTimeout(pollPendingRequests, 30000); // Poll every 30 seconds
-            }
-        };
-
-        pollPendingRequests();
-
-        return () => {
-            isCancelled = true;
-            if (pollInterval) clearTimeout(pollInterval);
-        };
-    },
-
-    /**
-     * Calculate total days between two dates (inclusive)
-     */
-    calculateTotalDays: (startDate: Date, endDate: Date): number => {
-        const start = new Date(startDate);
-        const end = new Date(endDate);
-
-        // Reset time to start of day for accurate calculation
-        start.setHours(0, 0, 0, 0);
-        end.setHours(0, 0, 0, 0);
-
-        const diffTime = Math.abs(end.getTime() - start.getTime());
-        const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
-
-        return diffDays + 1; // +1 to include both start and end dates
-    },
-
-    /**
-     * Check for overlapping leave requests
-     */
-    checkOverlap: async (uid: string, startDate: Date, endDate: Date): Promise<LeaveRequest[]> => {
+    getMyRequests: async (uid: string): Promise<LeaveRequest[]> => {
         try {
-            const data = await apiClient(`/api/leave/check-overlap?startDate=${startDate.toISOString()}&endDate=${endDate.toISOString()}`, {
-                method: 'GET'
-            });
+            const { data, error } = await supabase
+                .from(TABLES.LEAVE_REQUESTS)
+                .select('*')
+                .eq('requested_by_id', uid)
+                .order('requested_at', { ascending: false });
 
-            return data.overlappingRequests || [];
+            if (error) throw error;
+            return (data as any[]) || [];
         } catch (error) {
-            console.error('Check overlap failed:', error);
+            MonitoringService.error('[LeaveRequestService] Failed to fetch my requests', error, { uid });
             return [];
         }
     },
 
     /**
-     * Submit a new leave request (client-side, routes through API)
+     * Subscribe to all pending requests (Admin view)
      */
-    submitRequest: async (data: {
-        type: LeaveType;
-        startDate: Date;
-        endDate: Date;
-        reason: string;
-    }): Promise<string> => {
-        const user = await getCurrentUser();
-        if (!user) throw new Error("Not authenticated");
+    subscribeToPendingRequests: (callback: (requests: LeaveRequest[]) => void) => {
+        const subscription = supabase
+            .channel('pending_leaves')
+            .on('postgres_changes', { 
+                event: '*', 
+                schema: 'public', 
+                table: TABLES.LEAVE_REQUESTS,
+                filter: `status=eq.pending`
+            }, async () => {
+                const requests = await LeaveRequestService.getPendingRequests();
+                callback(requests);
+            })
+            .subscribe();
 
-        const { data: result, error } = await CanonicalDataService.createRecord(
-            'leave_requests',
-            {
-                ...data,
-                user_id: user.id,
-                status: 'pending'
-            },
-            'leave_request'
-        );
+        // Initial fetch
+        LeaveRequestService.getPendingRequests().then(callback);
 
-        if (error) throw error;
-        return result.id;
+        return () => {
+            subscription.unsubscribe();
+        };
     },
 
     /**
-     * Cancel a pending request
+     * Fetch pending requests
      */
-    cancelRequest: async (requestId: string): Promise<void> => {
-        const success = await CanonicalDataService.patchFields(
-            'leave_requests',
-            requestId,
-            { status: 'cancelled' },
-            'leave_request'
-        );
-        if (!success) throw new Error("Failed to cancel request");
+    getPendingRequests: async (): Promise<LeaveRequest[]> => {
+        try {
+            const { tenantId } = await tenantContext();
+            const { data, error } = await supabase
+                .from(TABLES.LEAVE_REQUESTS)
+                .select('*')
+                .eq('tenant_id', tenantId)
+                .eq('status', 'pending')
+                .order('requested_at', { ascending: true });
+
+            if (error) throw error;
+            return (data as any[]) || [];
+        } catch (error) {
+            MonitoringService.error('[LeaveRequestService] Failed to fetch pending requests', error);
+            return [];
+        }
     },
 
     /**
-     * Approve a leave request (admin only)
+     * Submit a new leave request
      */
-    approveRequest: async (data: ApproveLeaveData): Promise<void> => {
-        const success = await CanonicalDataService.patchFields(
-            'leave_requests',
-            data.requestId,
-            { 
-                status: 'approved',
-                approved_by: data.adminId,
-                admin_notes: data.notes
-            },
-            'leave_request'
-        );
-        if (!success) throw new Error("Failed to approve request");
+    submitRequest: async (request: any): Promise<boolean> => {
+        try {
+            const { tenantId } = await tenantContext();
+            const success = await CanonicalDataService.createRecord(
+                TABLES.LEAVE_REQUESTS,
+                {
+                    ...request,
+                    tenant_id: tenantId,
+                    status: 'pending',
+                    requested_at: new Date().toISOString(),
+                    updated_at: new Date().toISOString()
+                },
+                'CREATE_LEAVE_REQUEST'
+            );
+            return success;
+        } catch (error) {
+            MonitoringService.error('[LeaveRequestService] Failed to submit request', error, { request });
+            return false;
+        }
     },
 
     /**
-     * Reject a leave request (admin only)
+     * Approve a leave request
      */
-    rejectRequest: async (data: RejectLeaveData): Promise<void> => {
-        const success = await CanonicalDataService.patchFields(
-            'leave_requests',
-            data.requestId,
-            { 
-                status: 'rejected',
-                rejected_by: data.adminId,
-                admin_notes: data.notes
-            },
-            'leave_request'
-        );
-        if (!success) throw new Error("Failed to reject request");
+    approveRequest: async (data: ApproveLeaveData): Promise<boolean> => {
+        try {
+            const success = await CanonicalDataService.patchFields(
+                TABLES.LEAVE_REQUESTS,
+                data.requestId,
+                {
+                    status: 'approved',
+                    reviewed_by_id: data.adminUid,
+                    reviewed_at: new Date().toISOString(),
+                    updated_at: new Date().toISOString()
+                },
+                'UPDATE_LEAVE_REQUEST'
+            );
+            return success;
+        } catch (error) {
+            MonitoringService.error('[LeaveRequestService] Failed to approve request', error, { data });
+            return false;
+        }
+    },
+
+    /**
+     * Reject a leave request
+     */
+    rejectRequest: async (data: RejectLeaveData): Promise<boolean> => {
+        try {
+            const success = await CanonicalDataService.patchFields(
+                TABLES.LEAVE_REQUESTS,
+                data.requestId,
+                {
+                    status: 'rejected',
+                    reviewed_by_id: data.adminUid,
+                    reviewed_at: new Date().toISOString(),
+                    rejection_reason: data.reason,
+                    updated_at: new Date().toISOString()
+                },
+                'UPDATE_LEAVE_REQUEST'
+            );
+            return success;
+        } catch (error) {
+            MonitoringService.error('[LeaveRequestService] Failed to reject request', error, { data });
+            return false;
+        }
+    },
+
+    /**
+     * Cancel a leave request (by user)
+     */
+    cancelRequest: async (requestId: string): Promise<boolean> => {
+        try {
+            const success = await CanonicalDataService.patchFields(
+                TABLES.LEAVE_REQUESTS,
+                requestId,
+                {
+                    status: 'cancelled',
+                    updated_at: new Date().toISOString()
+                },
+                'UPDATE_LEAVE_REQUEST'
+            );
+            return success;
+        } catch (error) {
+            MonitoringService.error('[LeaveRequestService] Failed to cancel request', error, { requestId });
+            return false;
+        }
+    },
+
+    /**
+     * Calculate total days between two dates
+     */
+    calculateTotalDays: (start: Date, end: Date): number => {
+        const diffTime = Math.abs(new Date(end).getTime() - new Date(start).getTime());
+        return Math.ceil(diffTime / (1000 * 60 * 60 * 24)) + 1;
+    },
+
+    /**
+     * Check for overlapping requests
+     */
+    checkOverlap: async (uid: string, start: Date, end: Date): Promise<boolean> => {
+        try {
+            const { data, error } = await supabase
+                .from(TABLES.LEAVE_REQUESTS)
+                .select('id')
+                .eq('requested_by_id', uid)
+                .in('status', ['pending', 'approved'])
+                .or(`start_date.lte.${end.toISOString()},end_date.gte.${start.toISOString()}`);
+
+            if (error) throw error;
+            return (data?.length || 0) > 0;
+        } catch (error) {
+            MonitoringService.error('[LeaveRequestService] Overlap check failed', error, { uid, start, end });
+            return false;
+        }
     }
 };

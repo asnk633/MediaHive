@@ -30,6 +30,10 @@ export const TABLES = {
   EVENT_CREW: "event_crew",
   EVENT_EQUIPMENT: "event_equipment",
   SYSTEM_EVENTS: "system_events",
+  
+  // HR & Administration
+  LEAVE_REQUESTS: "leave_requests",
+  LEAVE_BALANCES: "user_leave_balances",
 } as const;
 
 export type TableName = typeof TABLES[keyof typeof TABLES];

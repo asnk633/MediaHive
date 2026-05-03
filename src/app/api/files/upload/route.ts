@@ -180,18 +180,27 @@ export async function POST(req: NextRequest) {
                         fileDoc.institution = metadata.institution;
                     }
 
-                    const { data: createdFile, error: insertError } = await withTenant(
-                        supabaseAdmin
-                            .from('files')
-                            .insert([fileDoc]),
-                        tenantId
-                    )
-                        .select()
-                        .single();
+                    let createdFile;
+                    try {
+                        const { data, error: insertError } = await withTenant(
+                            supabaseAdmin
+                                .from('files')
+                                .insert([fileDoc]),
+                            tenantId
+                        )
+                            .select()
+                            .single();
 
-                    if (insertError) {
-                        console.error('Supabase File Insert Error:', insertError);
-                        throw insertError;
+                        if (insertError) throw insertError;
+                        createdFile = data;
+                    } catch (dbError) {
+                        console.error('[UploadAPI] ❌ DB Insert failed, cleaning up Drive file:', file_id);
+                        try {
+                            await drive.files.delete({ fileId: file_id });
+                        } catch (driveErr) {
+                            console.error('[UploadAPI] 🛑 CRITICAL: Failed to cleanup orphaned Drive file:', file_id, driveErr);
+                        }
+                        throw dbError;
                     }
 
                     // 5. Audit Logging
@@ -207,7 +216,7 @@ export async function POST(req: NextRequest) {
                 } catch (err: any) {
                     console.error('Upload stream error:', err);
                     reject(err);
-                    stream.resume(); // Ensure stream drains logic
+                    stream.resume(); // Ensure stream drains
                 }
             });
 

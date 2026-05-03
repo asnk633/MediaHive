@@ -151,8 +151,12 @@ class OfflineDBWrapper {
     return await db.queue.put(mutation);
   }
 
-  async getPending(): Promise<QueuedMutation[]> {
-    return await db.queue.where('status').equals('pending').sortBy('createdAt');
+  async getPending(limit?: number): Promise<QueuedMutation[]> {
+    const query = db.queue.where('status').equals('pending');
+    if (limit) {
+      return await query.limit(limit).sortBy('createdAt');
+    }
+    return await query.sortBy('createdAt');
   }
 
   async resetProcessing() {

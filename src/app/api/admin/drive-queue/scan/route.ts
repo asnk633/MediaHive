@@ -2,8 +2,8 @@ import { NextRequest, NextResponse } from 'next/server';
 import { verifyUser } from '@/lib/verifyUser';
 import { DriveScannerService } from '@/lib/drive-scanner';
 import { assertDriveEnv } from '@/lib/drive-config';
-import * as Sentry from "@sentry/nextjs";
 import { MonitoringService } from '@/services/monitoringService';
+import { AuditService } from '@/services/auditService';
 
 /**
  * POST /api/admin/drive-queue/scan
@@ -21,15 +21,24 @@ export async function POST(req: NextRequest) {
         try {
             assertDriveEnv();
         } catch (configError: any) {
-            console.error('[DRIVE_QUEUE_SCAN] Config Error:', configError.message);
-            Sentry.captureMessage(`Drive Configuration Error: ${configError.message}`, { level: 'error' });
+            MonitoringService.error('[DRIVE_QUEUE_SCAN] Config Error', configError);
             return NextResponse.json({ 
                 error: 'Drive is not configured correctly on the server.', 
                 details: configError.message 
             }, { status: 503 }); // Service Unavailable
         }
 
-        // 3. Execute Scan
+        // 3. Log the trigger
+        await AuditService.logAction({
+            action: 'DRIVE_SCAN_TRIGGERED',
+            entityType: 'drive_queue',
+            entityId: 'incoming',
+            summary: `Drive scan triggered by admin: ${user.email}`,
+            classification: 'OPERATIONAL',
+            metadata: { actor_email: user.email }
+        });
+
+        // 4. Execute Scan
         const result = await MonitoringService.trace(
             'drive.scan_incoming_folder',
             () => DriveScannerService.scanIncomingFolder()
@@ -42,8 +51,7 @@ export async function POST(req: NextRequest) {
         });
 
     } catch (e: any) {
-        console.error('[DRIVE_QUEUE_SCAN] Runtime Error:', e);
-        Sentry.captureException(e, { tags: { service: 'drive-scanner' } });
+        MonitoringService.error('[DRIVE_QUEUE_SCAN] Runtime Error', e);
         return NextResponse.json({ 
             error: 'An unexpected error occurred during the drive scan.',
             message: e.message 

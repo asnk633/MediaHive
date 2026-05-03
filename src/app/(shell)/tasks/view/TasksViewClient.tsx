@@ -51,7 +51,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card"
 
 import { supabase } from '@/lib/supabaseClient'
-import { AuditTrailService } from '@/services/auditTrailService'
+import { AuditService } from '@/services/auditService'
 import { useAuth } from '@/contexts/AuthContextProvider'
 import { toast } from "sonner"
 import { EditTaskDialog } from '@/components/tasks/EditTaskDialog'
@@ -165,15 +165,14 @@ function TaskViewContent() {
         if (typeof window !== 'undefined' && !confirm("Are you sure you want to delete this task? This action will be permanently logged.")) return;
 
         try {
-            await supabase.from('tasks').delete().eq('id', task.id);
+            await TaskService.deleteTask(task.id);
 
             // PUBLIC SECTOR PASS: Immutable Audit Logging
-            await AuditTrailService.logAction({
-                action: 'DELETE_TASK',
+            await AuditService.logAction('DELETE_TASK', {
                 entityId: task.id,
                 entityType: 'task',
                 reason: reason,
-                metadata: { title: task.title }
+                title: task.title
             });
 
             toast.success("Task deleted and logged successfully");

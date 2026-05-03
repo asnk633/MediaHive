@@ -8,8 +8,9 @@ import { toast } from 'sonner';
 import { useAuth } from '@/contexts/AuthContextProvider';
 import { supabase } from '@/lib/supabaseClient';
 
-import { AuditTrailService } from '@/services/auditTrailService';
+import { AuditService } from '@/services/auditService';
 import { STATUTORY_RETENTION_POLICIES } from '@/services/retentionService';
+import { tenantContext } from '@/lib/auth/tenantContext';
 
 export function PrivacyCenter() {
     const { user } = useAuth();
@@ -32,11 +33,16 @@ export function PrivacyCenter() {
     const handleDataExport = async () => {
         setIsExporting(true);
         try {
+            const { tenantId } = await tenantContext();
             // PUBLIC SECTOR PASS: Comprehensive FOIA-ready Export
-            const { data: tasks } = await supabase.from('tasks').select('*').eq('created_by->uid', user?.uid);
+            const { data: tasks } = await supabase
+                .from('tasks')
+                .select('*')
+                .eq('tenant_id', tenantId)
+                .eq('created_by->uid', user?.uid);
 
-            // Fetch audit trails for these records (Mock/Partial for demo)
-            const auditLogs = await AuditTrailService.exportEntityHistory('current_user', 'user');
+            // Fetch audit trails for these records
+            const auditLogs = await AuditService.exportEntityHistory(user?.uid || 'current_user', 'user');
 
             const exportData = {
                 disclosure_info: {

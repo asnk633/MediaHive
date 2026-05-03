@@ -123,13 +123,20 @@ export const ProductionFileClient: React.FC<ProductionFileClientProps> = ({ id }
     if (!editForm || !data?.event?.id) return;
     setSaving(true);
     
-    const { data: updatedEvent, error } = await ProductionService.updateProduction(id, editForm);
+    const { success, error } = await ProductionService.updateProduction(
+        id, 
+        editForm, 
+        data.event.updated_at, 
+        data.event.version
+    );
     
-    if (error) {
-        toast.error('Failed to update production data');
+    if (error || !success) {
+        toast.error('Failed to update production data - possible conflict');
     } else {
         toast.success('Production protocol updated successfully');
-        setData(prev => prev ? { ...prev, event: updatedEvent } : null);
+        // We don't need to manually update local state as much if we re-fetch, 
+        // but for now, let's just close the edit mode. 
+        // The SyncEngine will handle the real persistence.
         setIsEditing(false);
     }
     setSaving(false);
@@ -150,6 +157,9 @@ export const ProductionFileClient: React.FC<ProductionFileClientProps> = ({ id }
   };
 
   const toggleTask = async (taskId: string, currentStatus: string) => {
+    const task = data?.tasks?.find(t => t.id === taskId);
+    if (!task) return;
+
     const newStatus = currentStatus === 'done' ? 'todo' : 'done';
     
     // Optimistic UI update
@@ -161,7 +171,12 @@ export const ProductionFileClient: React.FC<ProductionFileClientProps> = ({ id }
         };
     });
 
-    const { error } = await ProductionService.updateTask(taskId, { status: newStatus });
+    const { error } = await ProductionService.updateTask(
+        taskId, 
+        { status: newStatus }, 
+        task.updated_at, 
+        task.version
+    );
     if (error) {
         toast.error('Failed to update task status');
         // Revert on error

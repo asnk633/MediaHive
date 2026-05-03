@@ -1,6 +1,9 @@
 import { supabase } from '@/lib/supabaseClient';
 import { tenantContext } from '@/lib/auth/tenantContext';
-import { EventSchema, TaskSchema } from '@/domain/schemas';
+import { EventSchema } from '@/domain/schemas';
+import { MonitoringService } from './monitoringService';
+import { CanonicalDataService } from './canonicalDataService';
+import { mapTask, TaskService } from '@/features/tasks/services/taskService';
 
 export interface ProductionFile {
   event: any;
@@ -16,13 +19,11 @@ export class ProductionService {
   static async getProductionFile(eventId: string): Promise<ProductionFile | null> {
     try {
       if (!eventId) {
-        console.error('[ProductionService] No eventId provided');
+        MonitoringService.warn('[ProductionService] No eventId provided');
         return null;
       }
-      const sanitizedId = eventId.replace(/\/$/, ''); // Remove trailing slash
+      const sanitizedId = eventId.replace(/\/$/, '');
       const { tenantId } = await tenantContext();
-
-      console.log(`[ProductionService] Fetching production: ${sanitizedId} for tenant: ${tenantId}`);
 
       const { data: event, error: eventError } = await supabase
         .from('events')
@@ -42,13 +43,7 @@ export class ProductionService {
         .single();
 
       if (eventError) {
-        console.error('[ProductionService] Error fetching event:', {
-          message: eventError.message,
-          details: eventError.details,
-          hint: eventError.hint,
-          code: eventError.code,
-          sanitizedId
-        });
+        MonitoringService.error('[ProductionService] Error fetching event', eventError, { sanitizedId });
         return null;
       }
 
@@ -57,30 +52,31 @@ export class ProductionService {
       // DTO Validation for Event
       const eventParsed = EventSchema.safeParse(event);
       if (!eventParsed.success) {
-        console.warn("[ProductionService] DTO validation failed for event:", eventParsed.error);
+        MonitoringService.warn("[ProductionService] DTO validation failed for event", { error: eventParsed.error, eventId: sanitizedId });
       }
 
       // 2. Fetch associated Tasks
       const { data: tasks, error: tasksError } = await supabase
         .from('tasks')
-        .select('*')
+        .select(`
+            *,
+            task_assignments(
+                user_id,
+                role,
+                profiles(id, full_name, avatar_url)
+            )
+        `)
         .eq('tenant_id', tenantId)
-        .eq('event_id', eventId)
+        .eq('event_id', sanitizedId)
         .eq('deleted', false)
         .order('due_date', { ascending: true });
 
       if (tasksError) {
-        console.error('[ProductionService] Error fetching tasks:', tasksError);
+        MonitoringService.error('[ProductionService] Error fetching tasks', tasksError, { eventId: sanitizedId });
       }
 
-      // DTO Validation for Tasks
-      const validatedTasks = ((tasks as any[]) || []).map((task: any) => {
-        const parsed = TaskSchema.safeParse(task);
-        if (!parsed.success) {
-          console.warn("[ProductionService] DTO validation failed for task:", parsed.error);
-        }
-        return task;
-      });
+      // Map and validate tasks
+      const validatedTasks = ((tasks as any[]) || []).map(mapTask);
 
       return {
         event,
@@ -88,8 +84,8 @@ export class ProductionService {
         equipment: event.equipment || [],
         tasks: validatedTasks
       };
-    } catch (error) {
-      console.error('[ProductionService] Unexpected error:', error);
+    } catch (error: any) {
+      MonitoringService.error('[ProductionService] Unexpected error', error, { eventId });
       return null;
     }
   }
@@ -97,45 +93,75 @@ export class ProductionService {
   /**
    * Updates production (event) details
    */
-  static async updateProduction(eventId: string, updates: any): Promise<{ data: any; error: any }> {
+  static async updateProduction(
+    eventId: string, 
+    updates: any, 
+    baseUpdatedAt?: string, 
+    baseVersion?: number
+  ): Promise<{ success: boolean; error?: any; data?: any }> {
     try {
-      const { tenantId } = await tenantContext();
       const sanitizedId = eventId.replace(/\/$/, '');
-
-      const { data, error } = await supabase
-        .from('events')
-        .update(updates)
-        .eq('tenant_id', tenantId)
-        .eq('id', sanitizedId)
-        .select()
-        .single();
-
-      return { data, error };
-    } catch (error) {
-      console.error('[ProductionService] Update error:', error);
-      return { data: null, error };
+      const success = await CanonicalDataService.patchFields(
+        'events', 
+        sanitizedId, 
+        updates, 
+        'production', 
+        baseUpdatedAt, 
+        baseVersion
+      );
+      return { success };
+    } catch (error: any) {
+      MonitoringService.error('[ProductionService] Update error', error, { eventId });
+      return { success: false, error };
     }
   }
 
   /**
-   * Updates a single task
+   * Deletes a production and all associated tasks
    */
-  static async updateTask(taskId: string, updates: any): Promise<{ data: any; error: any }> {
+  static async deleteProduction(eventId: string): Promise<{ success: boolean; error?: any }> {
     try {
+      const sanitizedId = eventId.replace(/\/$/, '');
       const { tenantId } = await tenantContext();
 
-      const { data, error } = await supabase
+      // 1. Fetch all associated tasks to soft-delete them
+      const { data: tasks, error: fetchError } = await supabase
         .from('tasks')
-        .update(updates)
+        .select('id')
+        .eq('event_id', sanitizedId)
         .eq('tenant_id', tenantId)
-        .eq('id', taskId)
-        .select()
-        .single();
+        .eq('deleted', false);
 
-      return { data, error };
-    } catch (error) {
-      console.error('[ProductionService] Task update error:', error);
-      return { data: null, error };
+      if (fetchError) throw fetchError;
+
+      // 2. Perform bulk soft-delete of tasks
+      if (tasks && tasks.length > 0) {
+        const taskUpdates = tasks.map(t => ({
+          id: t.id,
+          fields: { deleted: true, deleted_at: new Date().toISOString() }
+        }));
+        await CanonicalDataService.bulkUpdateFields('tasks', taskUpdates, 'task');
+      }
+
+      // 3. Soft-delete the event itself
+      const success = await CanonicalDataService.patchFields(
+        'events', 
+        sanitizedId, 
+        { deleted: true, deleted_at: new Date().toISOString() }, 
+        'production'
+      );
+
+      return { success };
+    } catch (error: any) {
+      MonitoringService.error('[ProductionService] Delete error', error, { eventId });
+      return { success: false, error };
     }
+  }
+
+  /**
+   * Updates a single task - REDIRECTED to TaskService
+   */
+  static async updateTask(taskId: string, updates: any, baseUpdatedAt?: string, baseVersion?: number): Promise<any> {
+    return TaskService.updateTask(taskId, updates, baseUpdatedAt, baseVersion);
   }
 }

@@ -50,6 +50,7 @@ const SYNC_CONFIG = {
 class SyncEngine {
   private processing = false;
   private maxRetries = 5;
+  private batchSize = 50;
   private baseDelay = 2000;
   private tabId: string;
   private consecutiveFailures = 0;
@@ -220,7 +221,9 @@ class SyncEngine {
       store.set(isSyncingAtom, true);
 
       try {
-        const pending = await offlineDB.getPending();
+        const pending = await offlineDB.getPending(this.batchSize);
+        const hasMore = pending.length === this.batchSize;
+        
         store.set(syncProgressAtom, { current: 0, total: pending.length });
         
         let i = 0;
@@ -366,6 +369,15 @@ class SyncEngine {
         store.set(syncProgressAtom, { current: 0, total: 0 });
         await this.updatePendingCount();
         window.dispatchEvent(new CustomEvent('mediahive_sync_end'));
+
+        // If we processed a full batch, there's likely more to do.
+        // Schedule next batch after a breather to prevent UI freeze.
+        if (navigator.onLine && !this.circuitBreakerUntil) {
+          const remaining = await offlineDB.getPending(1);
+          if (remaining.length > 0) {
+            setTimeout(() => this.processQueue(), 500);
+          }
+        }
       }
     };
 
@@ -448,6 +460,9 @@ class SyncEngine {
       'DELETE_EQUIPMENT_BOOKING': 'equipment_bookings',
       'CREATE_INVENTORY_REQUEST': 'inventory_requests',
       'CREATE_LEAVE_REQUEST': 'leave_requests',
+      'UPDATE_LEAVE_REQUEST': 'leave_requests',
+      'INITIALIZE_LEAVE_BALANCE': 'user_leave_balances',
+      'UPDATE_LEAVE_BALANCE': 'user_leave_balances',
     };
 
     const actionMap: Record<string, 'insert' | 'update' | 'delete' | 'bulk_insert' | 'bulk_update'> = {
@@ -467,6 +482,9 @@ class SyncEngine {
       'DELETE_EQUIPMENT_BOOKING': 'delete',
       'CREATE_INVENTORY_REQUEST': 'insert',
       'CREATE_LEAVE_REQUEST': 'insert',
+      'UPDATE_LEAVE_REQUEST': 'update',
+      'INITIALIZE_LEAVE_BALANCE': 'insert',
+      'UPDATE_LEAVE_BALANCE': 'update',
     };
 
     // Dynamic mapping for BULK operations
@@ -495,9 +513,12 @@ class SyncEngine {
 
     // Conflict Detection Logic (for single updates/deletes)
     if (action === 'update' || action === 'delete') {
+      const payloadKeys = Object.keys(mutation.payload);
+      const selectFields = Array.from(new Set(['id', 'updated_at', 'version', 'deleted', 'deleted_at', ...payloadKeys])).join(',');
+      
       const { data: current, error: fetchError } = await supabase
         .from(table)
-        .select('*')
+        .select(selectFields)
         .eq('id', mutation.payload.id)
         .single();
 
@@ -516,6 +537,19 @@ class SyncEngine {
           // Deletion wins - we don't update a deleted record
           console.warn('[SyncEngine] 🛑 Update aborted: Deletion wins.');
           return; 
+        }
+      }
+
+      // HR Specific Conflict Resolution: Status Transition Guard
+      if (table === 'leave_requests' && current && current.status !== 'pending' && action === 'update') {
+        if (mutation.payload.status === 'cancelled') {
+          console.warn(`[SyncEngine] 🛑 Cannot cancel leave request ${mutation.payload.id}: Already ${current.status}`);
+          return; // Ignore the cancellation if already processed
+        }
+        
+        // If an admin tries to approve/reject an already processed request, throw conflict
+        if (mutation.payload.status === 'approved' || mutation.payload.status === 'rejected') {
+          throw new Error(`Request has already been ${current.status}`);
         }
       }
 
@@ -585,6 +619,31 @@ class SyncEngine {
     }
 
     if (action === 'insert') {
+      // 🤝 Inventory Integrity Guard: Double-Booking Prevention
+      if (table === 'equipment_bookings') {
+        const { equipment_id, start_time, end_time, units_requested } = mutation.payload;
+        
+        // 1. Fetch equipment total
+        const { data: equip } = await supabase.from('inventory').select('quantity').eq('id', equipment_id).single();
+        const total = equip?.quantity || 1;
+
+        // 2. Fetch overlapping bookings
+        const { data: overlaps } = await supabase
+          .from('equipment_bookings')
+          .select('units_requested')
+          .eq('equipment_id', equipment_id)
+          .filter('start_time', 'lt', end_time)
+          .filter('end_time', 'gt', start_time);
+
+        const overlapBooked = (overlaps || []).reduce((sum, b) => sum + (b.units_requested || 0), 0);
+        const available = Math.max(0, total - overlapBooked);
+
+        if (units_requested > available) {
+          console.warn(`[SyncEngine] 🛑 Double-booking detected for ${equipment_id}. Requested: ${units_requested}, Available: ${available}`);
+          throw new ConflictError(`Inventory exhausted: only ${available} units available for this period.`, { available, requested: units_requested }, table, ['units_requested']);
+        }
+      }
+
       if (mutation.type === 'ASSIGN_USER') {
         // Enforce idempotency with explicit unique constraint handling
         result = await supabase.from(table).upsert({

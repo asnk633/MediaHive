@@ -1,7 +1,7 @@
 'use client';
 
 import { toast } from 'sonner';
-import { AuditTrailService } from '@/services/auditTrailService';
+import { AuditService } from '@/services/auditService';
 
 export interface KineticSafetyLimits {
     maxPressure: number;
@@ -33,13 +33,11 @@ export class KineticSafetyService {
             console.error(errorMsg);
             toast.error("SAFETY VIOLATION: Hard operational ceiling exceeded.");
 
-            await AuditTrailService.logAction({
-                action: 'KINETIC_VIOLATION',
+            await AuditService.logAction('KINETIC_VIOLATION', {
                 entityId: 'system',
                 entityType: 'hardware',
-                reason: errorMsg,
-                classification: 'MISSION_CRITICAL'
-            });
+                reason: errorMsg
+            }, 'MISSION_CRITICAL');
             return false;
         }
 
@@ -52,13 +50,13 @@ export class KineticSafetyService {
 
         console.log(`[KINETIC-SAFETY][AUTHORIZED] Action ${action} authorized by Dual Op: ${operator2Id}`);
 
-        await AuditTrailService.logAction({
-            action: 'KINETIC_AUTHORIZED',
+        await AuditService.logAction('KINETIC_AUTHORIZED', {
             entityId: 'system',
             entityType: 'hardware',
-            metadata: { action, value: targetValue, operator2: operator2Id },
-            classification: 'MISSION_CRITICAL'
-        });
+            action, 
+            value: targetValue, 
+            operator2: operator2Id
+        }, 'MISSION_CRITICAL');
 
         return true;
     }

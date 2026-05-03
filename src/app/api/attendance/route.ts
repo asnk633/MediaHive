@@ -121,6 +121,28 @@ export async function POST(request: NextRequest) {
 
     const normalizedTenantId = typeof user.tenant_id === 'string' && !isNaN(Number(user.tenant_id)) ? Number(user.tenant_id) : user.tenant_id;
 
+    // 1. Check for existing open session (Prevent double check-in)
+    const existingOpen = await db
+      .select()
+      .from(attendance)
+      .where(and(
+        eq(attendance.userId, userId as any),
+        withTenantDrizzle(attendance, user.tenant_id),
+        sql`${attendance.checkOut} IS NULL`
+      ))
+      .limit(1);
+
+    if (existingOpen.length > 0) {
+      return NextResponse.json(
+        { 
+          error: 'An active session already exists. Please check out first.', 
+          code: 'ACTIVE_SESSION_EXISTS',
+          sessionId: existingOpen[0].id 
+        },
+        { status: 409 }
+      );
+    }
+
     const inserted = await db
       .insert(attendance)
       .values({

@@ -173,15 +173,17 @@ export const inventoryService = {
         return String(result.id);
     },
 
-    async update(id: string, data: Partial<EquipmentItem>): Promise<void> {
+    async update(id: string, data: Partial<EquipmentItem>, baseUpdatedAt?: string, baseVersion?: number): Promise<void> {
         const success = await CanonicalDataService.patchFields(
             TABLES.INVENTORY,
             id,
             mapEquipToRow(data),
-            'inventory'
+            'inventory',
+            baseUpdatedAt,
+            baseVersion
         );
 
-        if (!success) throw new Error('Failed to update inventory');
+        if (!success) throw new Error('Failed to update inventory - potential conflict');
 
         if (data.quantity !== undefined) {
             eventBus.emit('inventory.updated', { itemId: id, quantity: data.quantity });
@@ -264,7 +266,7 @@ export const inventoryService = {
         ) as { data: any[]; error: any };
 
         if (error) {
-            console.error("[InventoryService] Error fetching upcoming bookings:", error);
+            MonitoringService.error("[InventoryService] Error fetching upcoming bookings", error, { days });
             return [];
         }
 

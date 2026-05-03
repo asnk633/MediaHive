@@ -1,8 +1,8 @@
 const fs = require('fs');
 const path = require('path');
 
-const middlewarePath = path.join(__dirname, '..', 'src', 'middleware.ts');
-const disabledPath = path.join(__dirname, '..', 'src', 'middleware.ts.disabled');
+const middlewarePath = path.join(__dirname, '..', 'src', 'proxy.ts');
+const disabledPath = path.join(__dirname, '..', 'src', 'proxy.ts.disabled');
 
 const action = process.argv[2]; // 'disable' or 'enable'
 

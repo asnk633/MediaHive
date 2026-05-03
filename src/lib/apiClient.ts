@@ -1,6 +1,8 @@
 import { getApiBaseUrl } from './api-utils';
 import { Capacitor } from '@capacitor/core';
 import { COPY } from '@/lib/copy';
+import { logPerformance } from '@/system/performanceLogger';
+import { devMonitor } from '@/system/devMonitor';
 
 // Request deduplication cache
 const inflightRequests = new Map<string, Promise<any>>();
@@ -14,12 +16,26 @@ const MAX_RETRIES = 3;
 const RETRY_DELAYS = [1000, 2000, 4000]; // 1s, 2s, 4s exponential backoff
 const isDev = process.env.NODE_ENV === 'development';
 
+// Global AbortController for killing all requests on logout
+let globalAbortController = new AbortController();
+
+/**
+ * Force-kills all in-flight API requests.
+ * Called during logout to prevent post-auth retry loops.
+ */
+export const cancelAllRequests = () => {
+  console.warn('[API Client] 🛑 Killing all in-flight requests');
+  globalAbortController.abort();
+  globalAbortController = new AbortController(); // Reset for next session
+};
+
 interface ApiOptions extends RequestInit {
   url?: string;
   skipDedup?: boolean;
   silent?: boolean;
   signal?: AbortSignal | null | undefined;
   timeout?: number;
+  token?: string | null;
 }
 
 // Helper: Sleep for specified milliseconds
@@ -30,6 +46,11 @@ function sleep(ms: number): Promise<void> {
 // Helper: Determine if error should be retried
 function isRetryable(error: Error): boolean {
   const message = error.message.toLowerCase();
+
+  // Don't retry if the request was intentionally aborted (logout)
+  if (message.includes('aborted') || message.includes('abort')) {
+    return false;
+  }
 
   // Retry rate limiting
   if (message.includes('429') || message.includes('too many requests')) {
@@ -43,13 +64,16 @@ function isRetryable(error: Error): boolean {
     return true;
   }
 
-  // Don't retry auth/permission errors
-  if (message.includes('401') ||
-    message.includes('403') ||
+  // Don't retry auth/permission errors (unless it's a potential race condition we want to 1-tap retry)
+  if (message.includes('403') ||
     message.includes('404') ||
-    message.includes('unauthorized') ||
     message.includes('forbidden')) {
     return false;
+  }
+
+  // ALLOW a single retry for 401/Unauthorized on the client
+  if (message.includes('401') || message.includes('unauthorized')) {
+    return typeof window !== 'undefined'; // Only retry on client
   }
 
   // Default: don't retry
@@ -66,8 +90,19 @@ async function retryWithBackoff<T>(
   for (let attempt = 0; attempt <= MAX_RETRIES; attempt++) {
     try {
       return await fn();
-    } catch (error) {
+    } catch (error: any) {
       lastError = error as Error;
+
+      // Kill loop if auth was lost
+      if (lastError.message === 'AUTH_ABORT') throw lastError;
+
+      // Limit 401 retries to 1 attempt to avoid infinite loops on genuinely bad credentials
+      const isAuthError = lastError.message.toLowerCase().includes('401') ||
+        lastError.message.toLowerCase().includes('unauthorized');
+      if (isAuthError && attempt >= 1) {
+        if (isDev) console.warn(`[API Client] Auth retry failed for ${context}. Stopping retries.`);
+        throw lastError;
+      }
 
       // Don't retry if error is not retryable
       if (!isRetryable(lastError)) {
@@ -331,14 +366,32 @@ export const apiClient = async <T = any>(endpoint: string, options: ApiOptions =
       url = `https://thaiba-garden-media-manager.vercel.app${endpoint}`;
     }
   }
-  // 🌐 WEB: Use Configured API URL (if present) or fall back to Relative (Proxy)
+  // 🌐 WEB or SERVER context
   else {
+    const isServer = typeof window === 'undefined';
+
     if (endpoint.startsWith('http')) {
       url = endpoint;
     } else if (envBaseUrl && envBaseUrl.startsWith('http')) {
       url = `${envBaseUrl}${endpoint}`;
+    } else if (isServer) {
+      // Node.js fetch requires absolute URLs. If no env var, use production fallback.
+      url = `https://thaiba-garden-media-manager.vercel.app${endpoint}`;
+      console.warn(`[API] Server-side fetch detected with no NEXT_PUBLIC_API_URL. Defaulting to: ${url}`);
     } else {
       url = endpoint;
+    }
+  }
+
+  // --- WORKSPACE INJECTION ---
+  if (typeof window !== 'undefined') {
+    const savedWorkspaceId = localStorage.getItem('mediahive_workspace');
+    if (savedWorkspaceId && !url.includes('institution_id=') && !url.includes('/api/auth')) {
+      const separator = url.includes('?') ? '&' : '?';
+      // Only inject if it's an internal API call
+      if (url.startsWith('/') || url.includes('api/')) {
+        url = `${url}${separator}institution_id=${savedWorkspaceId}`;
+      }
     }
   }
 
@@ -352,149 +405,195 @@ export const apiClient = async <T = any>(endpoint: string, options: ApiOptions =
 
   // Wrap the request in retry logic
   const requestPromise = retryWithBackoff(async () => {
-    // Prepare headers
+    // --- HEADER NORMALIZATION ---
+    const normalizeHeaders = (h?: HeadersInit): Record<string, string> => {
+      const result: Record<string, string> = {};
+      if (!h) return result;
+      if (h instanceof Headers) {
+        h.forEach((v, k) => { result[k] = v; });
+      } else if (Array.isArray(h)) {
+        h.forEach(([k, v]) => { result[k] = v; });
+      } else {
+        Object.assign(result, h);
+      }
+      return result;
+    };
+
     const headers = {
       'Content-Type': 'application/json',
-      ...options.headers,
+      ...normalizeHeaders(options.headers),
     } as Record<string, string>;
 
-    // If body is FormData, delete Content-Type to let browser set it with boundary
-    if (options.body instanceof FormData) {
-      delete headers['Content-Type'];
-    }
+    // --- SESSION REINFORCEMENT (Rule 2) ---
+    const isServer = typeof window === 'undefined';
 
-    // Automatically attach Supabase session token if user is signed in
-    // BUT: respect explicitly passed Authorization headers (e.g., from AuthContext)
-    const headersRecord = options.headers as Record<string, string> | undefined;
-    if (!headersRecord?.['Authorization']) {
-      try {
-        const { supabase } = await import('@/lib/supabaseClient');
-        const { data: { session } } = await supabase.auth.getSession();
-
-        if (session?.access_token) {
-          headers['Authorization'] = `Bearer ${session.access_token}`;
-          if (isDev) {
-            console.log(`[API Client] 🔑 Token attached for ${endpoint} (User: ${session.user?.id})`);
+    if (!headers['Authorization'] && !headers['authorization']) {
+      // 🌐 CLIENT: Pulse check for Bearer token fallback
+      if (!isServer) {
+        try {
+          const { supabase } = await import('@/lib/supabaseClient');
+          const { data: { session } } = await supabase.auth.getSession();
+          if (session?.access_token) {
+            headers['Authorization'] = `Bearer ${session.access_token}`;
+            if (isDev) {
+              const masked = `${session.access_token.substring(0, 5)}...${session.access_token.substring(session.access_token.length - 5)}`;
+              console.log(`[API TRACE] Injected Client Bearer token fallback: ${masked}`);
+            }
           }
-        } else {
-          if (isDev) {
-            console.warn(`[API Client] ⚠️ No session found for ${endpoint} - Request might fail 401`);
-          }
+        } catch (err) {
+          if (isDev) console.warn("[API TRACE] Client Bearer token injection failed", err);
         }
-      } catch (error) {
-        if (isDev) console.warn('[API Client] Failed to attach auth token:', error);
       }
-    } else {
-      // Use the explicitly provided Authorization header
-      headers['Authorization'] = headersRecord?.['Authorization'] || '';
-      console.log('[API Client] Using provided Authorization header for:', endpoint);
+      // 🖥️ SERVER: Pulse check for SSR prefetching
+      else {
+        try {
+          // Dynamic imports because next/headers is only available on server
+          const { cookies } = await import('next/headers');
+          const cookieStore = await cookies();
+          const { createServerClient } = await import('@supabase/ssr');
+
+          const allCookies = cookieStore.getAll();
+          if (isDev) {
+            console.log(`[API TRACE][SERVER] 🍪 Cookies count: ${allCookies.length}`, allCookies.map(c => c.name));
+          }
+
+          // 🍪 MANDATORY: Forward cookies to the internal API call
+          // Without this, the server-to-server fetch has no session context.
+          if (allCookies.length > 0) {
+            headers['Cookie'] = allCookies.map(c => `${c.name}=${c.value}`).join('; ');
+            if (isDev) console.log(`[API TRACE][SERVER] 📤 Forwarded Cookies: ${headers['Cookie'].substring(0, 50)}...`);
+          }
+
+          const supabase = createServerClient(
+            process.env.NEXT_PUBLIC_SUPABASE_URL!,
+            process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
+            {
+              cookies: {
+                getAll() {
+                  return cookieStore.getAll();
+                },
+              },
+            }
+          );
+
+          const { data: { session } } = await supabase.auth.getSession();
+          if (session?.access_token) {
+            headers['Authorization'] = `Bearer ${session.access_token}`;
+            if (isDev) {
+              const masked = `${session.access_token.substring(0, 5)}...${session.access_token.substring(session.access_token.length - 5)}`;
+              console.log(`[API TRACE][SERVER] ✅ Injected Bearer token: ${masked}`);
+            }
+          } else {
+            if (isDev) console.log("[API TRACE][SERVER] 🛑 No session found in cookies");
+          }
+        } catch (err) {
+          // Silent - next/headers might not be available in some edge runtimes or middleware/proxy contexts
+          if (isDev) console.warn("[API TRACE][SERVER] 🛑 Injection failed:", (err as Error).message);
+        }
+      }
     }
 
-    // Make the fetch request with timeout (Kill-Switch)
-    // We import fetchWithTimeout from utils or define it. 
-    // To strictly follow the plan, I will define a local helper or use the one I created.
-    // I created src/lib/api-utils.ts. I should import it.
-    // But to avoid import mess in this tool call, I will use a local implementation of timeout fetch here.
-    // Wait, the user asked to REPLACE all dashboard fetches with the shared helper.
-    // apiClient IS the bottleneck.
-
+    const timelineEnabled = isDev || endpoint.includes('/me') || endpoint.includes('/stats') || endpoint.includes('/reports');
     const apiStart = Date.now();
-    const controller = new AbortController();
-    // Dev: 12s — generous for local API, but won't silently block for 2 minutes.
-    // Prod: 30s hard kill-switch (file uploads / reports use their own signals).
-    const TIMEOUT_MS = options.timeout ?? (isDev ? 12_000 : 30_000);
-    const timeoutId = setTimeout(() => controller.abort(), TIMEOUT_MS);
+
+    // Create local controller for 10s timeout management (Rule 5)
+    const localController = new AbortController();
+    const TIMEOUT_MS = options.timeout ?? 10000;
+    const timeoutId = setTimeout(() => {
+      console.warn(`[API] Timeout reached for ${endpoint} (10s) - Aborting`);
+      localController.abort();
+    }, TIMEOUT_MS);
+
+    // Listen to global signal to kill this request on logout
+    const globalAbortHandler = () => {
+      console.warn(`[API] Global abort detected - Killing ${endpoint}`);
+      localController.abort();
+    };
+    globalAbortController.signal.addEventListener('abort', globalAbortHandler);
 
     try {
-      // [API OUTGOING] log every request
-      console.log('[API OUTGOING] ' + url);
+      if (isDev) {
+        console.log(`[API TRACE] -> fetch('${url}') [${options.method || 'GET'}]`);
+        console.log(`[API TRACE] Headers keys:`, Object.keys(headers));
+        console.log(`[API TRACE] Context: ${typeof window === 'undefined' ? 'Server' : 'Client'}`);
+      }
 
-      // (Fatal check removed - handled by URL construction above)
-
+      const apiStart = performance.now();
       const response = await fetch(url, {
         ...options,
         headers,
         credentials: 'include',
-        signal: controller.signal // Bind to timeout
+        signal: options.signal || localController.signal
       });
+
+      const duration = logPerformance(`API: ${options.method || 'GET'} ${endpoint}`, apiStart);
+      if (duration) {
+        devMonitor.recordApiLatency(endpoint.split('?')[0], duration);
+      }
+
       clearTimeout(timeoutId);
+      globalAbortController.signal.removeEventListener('abort', globalAbortHandler);
 
-      if (isDev || endpoint.includes('/me') || endpoint.includes('/stats') || endpoint.includes('/reports')) {
-        console.log(`[API][${response.status}] ${endpoint} took ${Date.now() - apiStart}ms`);
-      }
+      console.log("[API TRACE] response received:", url)
 
-      // Handle 401 Unauthorized
-      if (response.status === 401) {
-        if (!options.silent) {
-          console.warn(`[API Client] 401 Unauthorized for endpoint: ${endpoint}`);
-        }
-        let errorMsg = COPY.errors.unauthorized;
+      if (!response.ok) {
+        let errorBody;
         try {
-          const errData = await response.json();
-          if (errData.error) errorMsg = errData.error;
-        } catch (e) {
-          // ignore
+          errorBody = await response.json();
+        } catch {
+          errorBody = null;
         }
-        throw new Error(errorMsg);
-      }
 
-      // Handle 403 Forbidden
-      if (response.status === 403) {
-        let errorMsg = COPY.errors.forbidden;
-        try {
-          const errData = await response.json();
-          if (errData.error) errorMsg = errData.error;
-        } catch (e) {
-          // ignore
+        const errorMessage =
+          errorBody?.error ||
+          errorBody?.message ||
+          `HTTP ${response.status}: ${response.statusText}`;
+
+        console.error(`[API CLIENT ERROR] ${options.method || 'GET'} ${url}: Status ${response.status}`, {
+          message: errorMessage,
+          body: errorBody,
+          url: url
+        });
+
+        const error = new Error(errorMessage);
+        (error as any).status = response.status;
+        (error as any).body = errorBody;
+
+        if (response.status === 429) {
+          show429Toast();
         }
-        throw new Error(errorMsg);
+
+        throw error;
       }
 
-      // Handle 429 Too Many Requests
-      if (response.status === 429) {
-        console.warn(`[API Client] 429 Rate Limited for endpoint: ${endpoint}`);
-        show429Toast();
-        throw new Error(COPY.toasts.rateLimit);
-      }
-
-      // Handle 404 Not Found
-      if (response.status === 404) {
-        let errorMessage = COPY.errors.notFound;
-        try {
-          const errorData = await response.json();
-          if (errorData.error) {
-            errorMessage = errorData.error;
-          }
-        } catch (e) {
-          // ignore
-        }
-        console.error(`[API Client] 404 Not Found for: ${endpoint}`, errorMessage);
-        throw new Error(errorMessage);
-      }
-
-      // Try to parse the response
       const text = await response.text();
       let data: any;
 
       try {
         data = text ? JSON.parse(text) : {};
-      } catch (parseError) {
-        if (!response.ok) {
-          throw new Error(`HTTP ${response.status}: ${response.statusText}`);
-        }
-        return text as unknown as T;
-      }
 
-      if (!response.ok) {
-        throw new Error(data.error || data.message || `HTTP ${response.status}: ${response.statusText}`);
+        // --- AUTO UNWRAP STANDARDIZED RESPONSES ---
+        // If the response follows the MediaHive standard { success: true, data: ... },
+        // we unwrap it so that legacy components receive the raw data they expect.
+        if (data && typeof data === 'object' && data.success === true && 'data' in data) {
+          if (isDev && !options.silent) {
+            console.log(`[API CLIENT] 🎁 Unwrapping response for ${endpoint}`);
+          }
+          return data.data as T;
+        }
+      } catch (parseError) {
+        return (text as unknown) as T;
       }
 
       return data as T;
 
     } catch (err: any) {
       clearTimeout(timeoutId);
+      globalAbortController.signal.removeEventListener('abort', globalAbortHandler);
       if (err.name === 'AbortError') {
-        console.error(`[API] Timeout detected for ${endpoint} - KILLING REQUEST`);
+        if (globalAbortController.signal.aborted) {
+          throw new Error('AUTH_ABORT');
+        }
         throw new Error(`Request timeout for ${endpoint}`);
       }
       throw err;

@@ -1,6 +1,9 @@
 // @ts-nocheck
 import { LeaveRequest, LeaveType, ApproveLeaveData, RejectLeaveData } from '@/types/leave';
 import { apiClient } from '@/lib/apiClient';
+import { CanonicalDataService } from '@/services/canonicalDataService';
+import { MonitoringService } from '@/services/monitoringService';
+import { getCurrentUser } from '@/lib/auth/verifyUser';
 
 const COLLECTION = 'leave_requests';
 
@@ -21,8 +24,8 @@ export const LeaveRequestService = {
                 });
 
                 callback(data.requests || []);
-            } catch (error) {
-                console.warn('Leave requests polling failed:', error);
+            } catch (error: any) {
+                MonitoringService.warn('Leave requests polling failed', { error: error.message });
                 callback([]);
             }
 
@@ -115,53 +118,67 @@ export const LeaveRequestService = {
         endDate: Date;
         reason: string;
     }): Promise<string> => {
-        const auth = { currentUser: { uid: "mock", email: "mock" } };
-        if (!{ uid: "mock" }.currentUser) throw new Error("Not authenticated");
+        const user = await getCurrentUser();
+        if (!user) throw new Error("Not authenticated");
 
-        const response = await apiClient('/api/leave', {
-            method: 'POST',
-            body: JSON.stringify(data)
-        });
+        const { data: result, error } = await CanonicalDataService.createRecord(
+            'leave_requests',
+            {
+                ...data,
+                user_id: user.id,
+                status: 'pending'
+            },
+            'leave_request'
+        );
 
-        return response.id;
+        if (error) throw error;
+        return result.id;
     },
 
     /**
      * Cancel a pending request
      */
     cancelRequest: async (requestId: string): Promise<void> => {
-        const auth = { currentUser: { uid: "mock", email: "mock" } };
-        if (!{ uid: "mock" }.currentUser) throw new Error("Not authenticated");
-
-        await apiClient('/api/leave/cancel', {
-            method: 'POST',
-            body: JSON.stringify({ requestId })
-        });
+        const success = await CanonicalDataService.patchFields(
+            'leave_requests',
+            requestId,
+            { status: 'cancelled' },
+            'leave_request'
+        );
+        if (!success) throw new Error("Failed to cancel request");
     },
 
     /**
      * Approve a leave request (admin only)
      */
     approveRequest: async (data: ApproveLeaveData): Promise<void> => {
-        const auth = { currentUser: { uid: "mock", email: "mock" } };
-        if (!{ uid: "mock" }.currentUser) throw new Error("Not authenticated");
-
-        await apiClient('/api/leave/approve', {
-            method: 'POST',
-            body: JSON.stringify(data)
-        });
+        const success = await CanonicalDataService.patchFields(
+            'leave_requests',
+            data.requestId,
+            { 
+                status: 'approved',
+                approved_by: data.adminId,
+                admin_notes: data.notes
+            },
+            'leave_request'
+        );
+        if (!success) throw new Error("Failed to approve request");
     },
 
     /**
      * Reject a leave request (admin only)
      */
     rejectRequest: async (data: RejectLeaveData): Promise<void> => {
-        const auth = { currentUser: { uid: "mock", email: "mock" } };
-        if (!{ uid: "mock" }.currentUser) throw new Error("Not authenticated");
-
-        await apiClient('/api/leave/reject', {
-            method: 'POST',
-            body: JSON.stringify(data)
-        });
+        const success = await CanonicalDataService.patchFields(
+            'leave_requests',
+            data.requestId,
+            { 
+                status: 'rejected',
+                rejected_by: data.adminId,
+                admin_notes: data.notes
+            },
+            'leave_request'
+        );
+        if (!success) throw new Error("Failed to reject request");
     }
 };

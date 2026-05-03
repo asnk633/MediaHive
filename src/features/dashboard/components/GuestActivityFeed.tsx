@@ -1,5 +1,5 @@
 import React from 'react';
-import { MediaTask as Task } from '@/services/tasks/taskContract';
+import { Task } from "@/features/tasks/types/task";
 import { formatDistanceToNow } from 'date-fns';
 import { Activity, PlusCircle, Edit3 } from 'lucide-react';
 import { cn, nativeNavigate } from '@/lib/utils';

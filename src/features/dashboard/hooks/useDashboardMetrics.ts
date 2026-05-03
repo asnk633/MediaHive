@@ -1,5 +1,5 @@
 import { useMemo } from 'react';
-import { MediaTask as Task } from '@/services/tasks/taskContract';
+import { Task } from "@/features/tasks/types/task";
 import { AuthUser } from '@/contexts/AuthContextProvider';
 
 interface DashboardMetrics {

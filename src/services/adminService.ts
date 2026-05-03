@@ -2,6 +2,7 @@ import { supabase } from '@/lib/supabaseClient';
 import { tenantContext } from '@/lib/auth/tenantContext';
 import { TABLES } from '@/lib/dbTables';
 import { safeQuery } from '@/lib/safeQuery';
+import { MonitoringService } from '@/services/monitoringService';
 import { User } from '@/types/user';
 import { Institution } from '@/types/structure';
 
@@ -31,7 +32,7 @@ export const AdminService = {
                 pendingInvites: invitesCount.count || 0
             };
         } catch (error) {
-            console.error('[AdminService] Failed to fetch metrics:', error);
+            MonitoringService.error('[AdminService] Failed to fetch metrics', error);
             return { totalUsers: 0, activeWorkspaces: 0, pendingInvites: 0 };
         }
     },
@@ -56,7 +57,7 @@ export const AdminService = {
                 userCount: inst.user_institutions?.[0]?.count || 0
             }));
         } catch (error) {
-            console.error('[AdminService] Failed to fetch workspaces:', error);
+            MonitoringService.error('[AdminService] Failed to fetch workspaces', error);
             return [];
         }
     },
@@ -136,7 +137,7 @@ export const AdminService = {
 
             if (error) throw error;
         } catch (error) {
-            console.error('[AdminService] Failed to remove user workspace access:', error);
+            MonitoringService.error('[AdminService] Failed to remove user workspace access', error, { userId, institutionId });
             throw error;
         }
     },

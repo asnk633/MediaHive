@@ -4,8 +4,8 @@
 import React, { useState, useEffect } from 'react';
 import { createPortal } from 'react-dom';
 import { motion, AnimatePresence } from 'framer-motion';
-import { MediaTask as Task } from '@/services/tasks/taskContract';
-import { taskService } from '@/services/tasks/taskService';
+import { Task } from "@/features/tasks/types/task";
+import { TaskService as taskService } from '@/features/tasks/services/taskService';
 import { Clock, Calendar, CheckCircle2, User as UserIcon, AlertCircle, X, Edit2, UploadCloud, FileCheck, Circle, User, Activity } from 'lucide-react';
 import { format } from 'date-fns';
 import { useAuth } from '@/contexts/AuthContextProvider';

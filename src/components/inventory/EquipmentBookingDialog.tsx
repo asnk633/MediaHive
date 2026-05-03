@@ -7,7 +7,7 @@ import { Label } from "@/components/ui/label";
 import { Input } from "@/components/ui/input";
 import { EquipmentItem, AvailabilityInfo } from "@/services/inventory/inventoryContract";
 import { inventoryService } from '@/services/inventory/inventoryService';
-import { taskService } from '@/services/tasks/taskService';
+import { TaskService as taskService } from '@/features/tasks/services/taskService';
 import { eventService } from '@/services/events/eventService';
 import { useAuth } from "@/contexts/AuthContextProvider";
 import { toast } from "sonner";

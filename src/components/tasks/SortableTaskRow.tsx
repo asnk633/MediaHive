@@ -1,7 +1,7 @@
 import React, { memo } from 'react';
 import { useSortable } from '@dnd-kit/sortable';
 import { CSS } from '@dnd-kit/utilities';
-import { MediaTask as Task } from '@/services/tasks/taskContract';
+import { Task } from "@/features/tasks/types/task";
 import { DataIntegritySignal } from '@/components/ui/DataIntegritySignal';
 import { SafeAvatar } from "@/components/ui/SafeAvatar";
 import { format, isToday, isPast } from 'date-fns';

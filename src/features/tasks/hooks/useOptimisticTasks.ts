@@ -1,6 +1,6 @@
 // @ts-nocheck
 import React, { useState, useMemo, useCallback, useEffect } from 'react';
-import { MediaTask as Task } from '@/services/tasks/taskContract';
+import { Task } from "@/features/tasks/types/task";
 import { toast } from 'sonner';
 import { useConnectivity } from '@/hooks/useConnectivity';
 import { useQueryClient } from '@tanstack/react-query';

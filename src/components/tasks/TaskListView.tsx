@@ -5,7 +5,7 @@ import { useSearchParams, useRouter } from 'next/navigation';
 import { useItemNavigation } from '@/hooks/useItemNavigation';
 import { useBulkSelection } from '@/hooks/useBulkSelection';
 import { TaskListSkeleton } from './TaskListSkeleton';
-import { MediaTask as Task } from '@/services/tasks/taskContract';
+import { Task } from "@/features/tasks/types/task";
 import { format, isToday, isPast } from 'date-fns';
 import { supabase } from '@/lib/supabaseClient';
 import { useAuth } from '@/contexts/AuthContextProvider';

@@ -5,7 +5,7 @@ import { useAuth } from '@/contexts/AuthContextProvider';
 import { useWorkspace } from '@/system/workspace/WorkspaceProvider';
 import { useClientData } from '@/app/(shell)/ClientDataContext';
 import { Event } from '@/features/events/types/event'; // Keep Event import as it's used
-import { MediaTask as Task } from '@/services/tasks/taskContract'; // Added MediaTask as Task
+import { Task } from "@/features/tasks/types/task"; // Added MediaTask as Task
 import { EventService } from '@/features/events/services/eventService';
 import { CalendarView } from '@/components/events/CalendarView';
 import { EventListView } from '@/components/events/EventListView';

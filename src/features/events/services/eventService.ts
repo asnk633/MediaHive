@@ -1,5 +1,5 @@
 import type { Event, EventCrewAssignment, EventEquipmentReservation } from '@/features/events/types/event';
-import type { MediaTask as Task } from '@/services/tasks/taskContract';
+import type { Task } from "@/features/tasks/types/task";
 import { CanonicalDataService } from '@/services/canonicalDataService';
 import { SystemEventService } from './systemEventService';
 import { supabase } from '@/lib/supabaseClient';

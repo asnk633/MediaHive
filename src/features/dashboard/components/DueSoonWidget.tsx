@@ -1,5 +1,5 @@
 import React from 'react';
-import { MediaTask as Task } from '@/services/tasks/taskContract';
+import { Task } from "@/features/tasks/types/task";
 import { Clock, ArrowUpRight } from 'lucide-react';
 import { format, isAfter, isBefore, addHours } from 'date-fns';
 import { useRouter } from 'next/navigation';

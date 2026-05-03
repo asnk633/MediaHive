@@ -50,6 +50,23 @@ export class DataClassificationService {
     }
 
     /**
+     * Mask an entire entity based on registry rules.
+     */
+    static maskEntity(entityType: string, data: any): any {
+        if (!data || typeof data !== 'object') return data;
+        const registry = DATA_REGISTRY[entityType];
+        if (!registry) return data;
+
+        const masked = { ...data };
+        for (const fieldName in registry) {
+            if (masked[fieldName] !== undefined) {
+                masked[fieldName] = this.maskValue(entityType, fieldName, masked[fieldName]);
+            }
+        }
+        return masked;
+    }
+
+    /**
      * Check if a field requires field-level encryption.
      */
     static requiresEncryption(entityType: string, fieldName: string): boolean {

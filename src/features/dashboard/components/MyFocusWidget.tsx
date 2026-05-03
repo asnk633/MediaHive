@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { MediaTask as Task } from '@/services/tasks/taskContract';
+import { Task } from "@/features/tasks/types/task";
 import { TaskItem } from '@/features/tasks/components/TaskItem';
 import { formatDistanceToNow } from 'date-fns';
 import { AlertCircle, Clock, CheckSquare, ArrowUpRight } from 'lucide-react';
@@ -8,7 +8,7 @@ import { nativeNavigate } from '@/lib/utils';
 import { HomeTaskRow } from '@/features/tasks/components/HomeTaskRow';
 import { format, isSameDay, differenceInDays } from 'date-fns';
 import { useItemNavigation } from '@/hooks/useItemNavigation';
-import { taskService } from '@/services/tasks/taskService';
+import { TaskService as taskService } from '@/features/tasks/services/taskService';
 import { ErrorFallback } from '@/components/ui/ErrorFallback';
 
 import { useDashboard } from '@/system/dashboard/DashboardProvider';

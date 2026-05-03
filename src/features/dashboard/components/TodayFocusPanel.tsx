@@ -14,7 +14,7 @@ import {
 } from 'lucide-react';
 import { cn, nativeNavigate } from '@/lib/utils';
 import { ReactiveCard } from '@/components/ui/ReactiveCard';
-import { MediaTask as Task } from '@/services/tasks/taskContract';
+import { Task } from "@/features/tasks/types/task";
 import { CampaignItem as Campaign } from '@/services/campaigns/campaignService';
 import { EventItem as Event } from '@/services/events/eventContract';
 import { isSameDay, isBefore, addDays } from 'date-fns';

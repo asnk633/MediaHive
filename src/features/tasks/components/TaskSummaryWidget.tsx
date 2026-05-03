@@ -1,7 +1,7 @@
 'use client';
 
 import React from 'react';
-import { MediaTask as Task } from "@/services/tasks/taskContract";
+import { Task } from "@/features/tasks/types/task";
 import { ReactiveCard } from '@/components/ui/ReactiveCard';
 import { Clock, Activity, PauseCircle, CheckCircle, CheckSquare } from 'lucide-react';
 import { cn } from '@/lib/utils';

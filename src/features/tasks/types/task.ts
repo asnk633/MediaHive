@@ -53,6 +53,7 @@ export interface Task {
         role?: string; // assignee, reviewer, etc.
         photoURL?: string;
         avatar_url?: string;
+        avatarUrl?: string;
     }[];
     assignedTo?: {
         uid: string;
@@ -60,12 +61,18 @@ export interface Task {
         role?: string;
         photoURL?: string;
         avatar_url?: string;
+        avatarUrl?: string;
     }[]; // Legacy alias for assigned_to
     updated_by?: {
         uid: string;
         name: string;
         role: string;
     };
+    updatedBy?: {
+        uid: string;
+        name: string;
+        role: string;
+    }; // Legacy alias for updated_by
     created_at: any;
     createdAt?: any; // Legacy alias for created_at
     updated_at?: any;

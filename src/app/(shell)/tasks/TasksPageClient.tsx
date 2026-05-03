@@ -6,7 +6,7 @@ import { Plus, CheckSquare, Building2 } from "lucide-react";
 import { Capacitor } from '@capacitor/core';
 import { OfflinePlaceholder } from "@/components/OfflinePlaceholder";
 import { useNative } from "@/hooks/useNative";
-import { MediaTask as Task } from "@/services/tasks/taskContract";
+import { Task } from "@/features/tasks/types/task";
 import { useAuth } from "@/contexts/AuthContextProvider";
 import { useWorkspace } from "@/system/workspace/WorkspaceProvider";
 import AppLink from "@/components/AppLink";

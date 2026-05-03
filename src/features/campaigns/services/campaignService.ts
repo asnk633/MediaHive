@@ -1,5 +1,5 @@
 import { Campaign, CampaignPhase } from '@/features/campaigns/types/campaign';
-import { MediaTask as Task } from '@/services/tasks/taskContract';
+import { Task } from "@/features/tasks/types/task";
 import { supabase } from '@/lib/supabaseClient';
 
 import { offlineDB } from '@/lib/offline/db';

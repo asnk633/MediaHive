@@ -1,4 +1,4 @@
-import { MediaTask as Task } from '@/services/tasks/taskContract';
+import { Task } from "@/features/tasks/types/task";
 import { Event } from '@/features/events/types/event';
 import { DriveFile as MediaFile } from '@/types/file';
 import { User } from '@/types/user';

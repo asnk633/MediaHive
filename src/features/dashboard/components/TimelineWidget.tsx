@@ -1,5 +1,5 @@
 import React from 'react';
-import { MediaTask as Task } from '@/services/tasks/taskContract';
+import { Task } from "@/features/tasks/types/task";
 import { EventItem as Event } from '@/services/events/eventContract';
 import { format, isToday, isTomorrow, addDays, isWithinInterval, startOfDay, endOfDay } from 'date-fns';
 import { Calendar, CheckSquare, Clock } from 'lucide-react';

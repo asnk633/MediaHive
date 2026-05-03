@@ -6,6 +6,8 @@ import { TABLES } from '@/lib/dbTables';
 import { safeQuery } from '@/lib/safeQuery';
 
 import { offlineDB } from '@/lib/offline/db';
+import { MonitoringService } from '@/services/monitoringService';
+import { CanonicalDataService } from '@/services/canonicalDataService';
 
 // DTO Mappers
 function mapEquipment(row: any): EquipmentItem {
@@ -41,7 +43,7 @@ function mapEquipment(row: any): EquipmentItem {
     };
     const result = EquipmentItemSchema.safeParse(item);
     if (!result.success) {
-        console.error("[InventoryMapping][Equipment] Validation failed:", result.error.format());
+        MonitoringService.error("[InventoryMapping][Equipment] Validation failed", result.error, { rowId: row.id });
         return item as EquipmentItem;
     }
     return result.data;
@@ -59,7 +61,7 @@ function mapBooking(row: any): EquipmentBooking {
     };
     const result = EquipmentBookingSchema.safeParse(booking);
     if (!result.success) {
-        console.error("[InventoryMapping][Booking] Validation failed:", result.error.format());
+        MonitoringService.error("[InventoryMapping][Booking] Validation failed", result.error, { rowId: row.id });
         return booking as EquipmentBooking;
     }
     return result.data;
@@ -118,7 +120,7 @@ export const inventoryService = {
         const cacheKey = params.institutionId ? `inventory:${params.institutionId}` : 'inventory';
 
         if (error) {
-            console.warn("[InventoryService] Error fetching equipment, checking cache:", error);
+            MonitoringService.warn("[InventoryService] Error fetching equipment, checking cache", { error: error.message, params });
             const cached = await offlineDB.getCache<any[]>(cacheKey);
             return (cached || []).map(mapEquipment);
         }
@@ -149,8 +151,8 @@ export const inventoryService = {
 
             if (error) throw error;
             return data ? mapEquipment(data) : null;
-        } catch (error) {
-            console.warn(`[InventoryService] Error fetching item ${id}, checking cache:`, error);
+        } catch (error: any) {
+            MonitoringService.warn(`[InventoryService] Error fetching item ${id}, checking cache`, { error: error.message });
             // Check all inventory caches if institutionId unknown
             const cached = await offlineDB.getCache<any[]>('inventory');
             const item = cached?.find(i => i.id === id);
@@ -159,42 +161,27 @@ export const inventoryService = {
     },
 
     async create(data: Partial<EquipmentItem>): Promise<string> {
-        const { tenantId, userId } = await tenantContext();
-
-        const { data: newItem, error } = await safeQuery(() => supabase
-            .from(TABLES.INVENTORY)
-            .insert([{
-                ...mapEquipToRow(data),
-                tenant_id: tenantId,
-                created_by: userId,
-                updated_at: new Date().toISOString(),
-                created_at: new Date().toISOString()
-            }])
-            .select()
-            .single()
+        const { data: result, error } = await CanonicalDataService.createRecord(
+            TABLES.INVENTORY,
+            mapEquipToRow(data),
+            'inventory'
         );
 
         if (error) throw error;
 
-        const mapped = mapEquipment(newItem);
-        eventBus.emit('inventory.updated', { itemId: String(mapped.id), quantity: mapped.quantity });
-        return String(mapped.id);
+        eventBus.emit('inventory.updated', { itemId: String(result.id), quantity: data.quantity || 0 });
+        return String(result.id);
     },
 
     async update(id: string, data: Partial<EquipmentItem>): Promise<void> {
-        const { tenantId } = await tenantContext();
-
-        const { error } = await safeQuery(() => supabase
-            .from(TABLES.INVENTORY)
-            .update({
-                ...mapEquipToRow(data),
-                updated_at: new Date().toISOString()
-            })
-            .eq('id', id)
-            .eq('tenant_id', tenantId)
+        const success = await CanonicalDataService.patchFields(
+            TABLES.INVENTORY,
+            id,
+            mapEquipToRow(data),
+            'inventory'
         );
 
-        if (error) throw error;
+        if (!success) throw new Error('Failed to update inventory');
 
         if (data.quantity !== undefined) {
             eventBus.emit('inventory.updated', { itemId: id, quantity: data.quantity });
@@ -202,16 +189,14 @@ export const inventoryService = {
     },
 
     async delete(id: string): Promise<void> {
-        const { tenantId } = await tenantContext();
-
-        const { error } = await safeQuery(() => supabase
-            .from(TABLES.INVENTORY)
-            .delete()
-            .eq('id', id)
-            .eq('tenant_id', tenantId)
+        const success = await CanonicalDataService.patchFields(
+            TABLES.INVENTORY,
+            id,
+            { deleted: true },
+            'inventory'
         );
 
-        if (error) throw error;
+        if (!success) throw new Error('Failed to delete inventory');
     },
 
     async getBookings(params: { taskId?: string; equipmentId?: string } = {}): Promise<EquipmentBooking[]> {
@@ -227,7 +212,7 @@ export const inventoryService = {
 
         const { data, error } = await safeQuery(() => query) as { data: any[]; error: any };
         if (error) {
-            console.error("[InventoryService] Error fetching bookings:", error);
+            MonitoringService.error("[InventoryService] Error fetching bookings", error, { params });
             return [];
         }
 
@@ -288,39 +273,24 @@ export const inventoryService = {
     },
 
     async createBooking(booking: Partial<EquipmentBooking>): Promise<EquipmentBooking> {
-        const { tenantId, userId } = await tenantContext();
-
-        const { data, error } = await safeQuery(() => supabase
-            .from(TABLES.EQUIPMENT_BOOKINGS)
-            .insert([{
-                ...mapBookingToRow(booking),
-                tenant_id: tenantId,
-                booked_by: userId
-            }])
-            .select()
-            .single()
+        const { data: result, error } = await CanonicalDataService.createRecord(
+            TABLES.EQUIPMENT_BOOKINGS,
+            mapBookingToRow(booking),
+            'equipment_booking'
         );
 
         if (error) throw error;
-        return mapBooking(data);
+        return mapBooking(result);
     },
 
     async createRequest(request: any): Promise<{ id: string }> {
-        const { tenantId, userId } = await tenantContext();
-
-        const { data, error } = await safeQuery(() => supabase
-            .from(TABLES.INVENTORY_REQUESTS)
-            .insert([{
-                ...request,
-                tenant_id: tenantId,
-                user_id: userId,
-                created_at: new Date().toISOString()
-            }])
-            .select()
-            .single()
-        ) as { data: any; error: any };
+        const { data: result, error } = await CanonicalDataService.createRecord(
+            TABLES.INVENTORY_REQUESTS,
+            request,
+            'inventory_request'
+        );
 
         if (error) throw error;
-        return { id: data.id };
+        return { id: result.id };
     }
 };

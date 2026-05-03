@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { MediaTask as Task } from '@/services/tasks/taskContract';
+import { Task } from "@/features/tasks/types/task";
 import { CanonicalDataService } from '@/services/canonicalDataService';
 import AdminConfidencePanel from './AdminConfidencePanel';
 import { useAuth } from '@/contexts/AuthContextProvider';

@@ -440,6 +440,14 @@ class SyncEngine {
       'DELETE_EVENT': 'events',
       'ASSIGN_USER': 'task_assignments',
       'UNASSIGN_USER': 'task_assignments',
+      'CREATE_INVENTORY': 'inventory',
+      'UPDATE_INVENTORY': 'inventory',
+      'DELETE_INVENTORY': 'inventory',
+      'CREATE_EQUIPMENT_BOOKING': 'equipment_bookings',
+      'UPDATE_EQUIPMENT_BOOKING': 'equipment_bookings',
+      'DELETE_EQUIPMENT_BOOKING': 'equipment_bookings',
+      'CREATE_INVENTORY_REQUEST': 'inventory_requests',
+      'CREATE_LEAVE_REQUEST': 'leave_requests',
     };
 
     const actionMap: Record<string, 'insert' | 'update' | 'delete' | 'bulk_insert' | 'bulk_update'> = {
@@ -451,6 +459,14 @@ class SyncEngine {
       'DELETE_EVENT': 'delete',
       'ASSIGN_USER': 'insert',
       'UNASSIGN_USER': 'delete',
+      'CREATE_INVENTORY': 'insert',
+      'UPDATE_INVENTORY': 'update',
+      'DELETE_INVENTORY': 'delete',
+      'CREATE_EQUIPMENT_BOOKING': 'insert',
+      'UPDATE_EQUIPMENT_BOOKING': 'update',
+      'DELETE_EQUIPMENT_BOOKING': 'delete',
+      'CREATE_INVENTORY_REQUEST': 'insert',
+      'CREATE_LEAVE_REQUEST': 'insert',
     };
 
     // Dynamic mapping for BULK operations

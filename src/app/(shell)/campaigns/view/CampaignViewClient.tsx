@@ -6,7 +6,7 @@ import { nativeNavigate } from '@/lib/utils';
 import { useAuth } from '@/contexts/AuthContextProvider';
 import { CampaignService } from '@/features/campaigns/services/campaignService';
 import { Campaign } from '@/features/campaigns/types/campaign';
-import { MediaTask as Task } from '@/services/tasks/taskContract';
+import { Task } from "@/features/tasks/types/task";
 import { ArrowLeft, Calendar, Layers, Clock, CheckCircle, AlertCircle } from 'lucide-react';
 import { format } from 'date-fns';
 import { toast } from 'sonner';

@@ -1,7 +1,7 @@
 import { TABLES } from '@/lib/dbTables';
 import { safeQuery } from '@/lib/safeQuery';
 import { supabase } from '@/lib/supabaseClient';
-import { MediaTask as Task } from '@/services/tasks/taskContract';
+import { Task } from "@/features/tasks/types/task";
 import { EventItem as Event } from '@/services/events/eventContract';
 import { SYSTEM_LIMITS, COMPLETED_TASK_RETENTION_DAYS, TASK_FETCH_LIMIT, EVENT_FETCH_LIMIT } from '@/domain/system/systemLimits';
 import { TaskSchema, EventSchema, UserSchema } from '@/domain/schemas';
@@ -316,7 +316,7 @@ export class CanonicalDataService {
       const now = new Date();
       const sevenDaysAgo = new Date(now.getTime() - COMPLETED_TASK_RETENTION_DAYS * 24 * 60 * 60 * 1000);
 
-      const { mapTask } = await import('@/services/tasks/taskService');
+      const { mapTask } = await import('@/features/tasks/services/taskService');
 
       const processedTasks = finalTasks
         .filter((task: any) => {
@@ -724,7 +724,7 @@ export class CanonicalDataService {
         }
         return item;
       });
-      const { mapTask } = await import('@/services/tasks/taskService');
+      const { mapTask } = await import('@/features/tasks/services/taskService');
       const tasks = ((tasksRes.data as any[]) || []).map((item: any) => {
         const parsed = TaskSchema.safeParse(item);
         if (!parsed.success) {
@@ -877,7 +877,7 @@ export class CanonicalDataService {
         })
       ]);
 
-      const { mapTask } = await import('@/services/tasks/taskService');
+      const { mapTask } = await import('@/features/tasks/services/taskService');
       const { mapEvent } = await import('@/services/events/eventService');
 
       return {

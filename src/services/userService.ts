@@ -4,6 +4,7 @@ import { UserSchema } from '@/domain/schemas/user';
 import { tenantContext } from '@/lib/auth/tenantContext';
 import { TABLES } from '@/lib/dbTables';
 import { safeQuery } from '@/lib/safeQuery';
+import { MonitoringService } from '@/services/monitoringService';
 
 export type { User };
 
@@ -45,18 +46,20 @@ export const UserService = {
             const validatedData = (rawData || []).map((item: any) => {
                 const parsed = UserSchema.safeParse(item);
                 if (!parsed.success) {
-                    console.error("[UserService] DTO validation failed for user record:", parsed.error);
+                    MonitoringService.error("[UserService] DTO validation failed for user record", parsed.error, { userId: item.id });
                     // Return raw if parse fails but log it - or we could filter it out
                     return item as unknown as User;
                 }
-                return parsed.data as User;
+                const mapped = parsed.data as User;
+                const { DataClassificationService } = require('@/services/dataClassificationService');
+                return DataClassificationService.maskEntity('user', mapped);
             });
 
             return validatedData;
         } catch (error: any) {
             // Mock data for Dev Mode 403/401 (Admin Check Failure)
             if (process.env.NODE_ENV === 'development' && (error?.status === 403 || error?.status === 401)) {
-                console.warn("[UserService] Dev Mode: Returning Mock Users due to 403/401", error);
+                MonitoringService.warn("[UserService] Dev Mode: Returning Mock Users due to 403/401", { error: error.message });
                 return [
                     { uid: 'mock_1', id: 'mock_1', name: 'Admin User', email: 'admin@thaiba.com', role: 'admin', institution_id: 'inst_1', created_at: new Date().toISOString(), isActive: true },
                     { uid: 'mock_2', id: 'mock_2', name: 'Team Lead', email: 'team@thaiba.com', role: 'manager', department_id: 'dept_1', created_at: new Date().toISOString(), isActive: true },
@@ -65,10 +68,10 @@ export const UserService = {
             }
 
             if (isNetworkError(error) || error.message?.includes('Forbidden') || error.message?.includes('Not Found')) {
-                console.warn(`[UserService] Failed to fetch users: ${error.message}`);
+                MonitoringService.warn(`[UserService] Failed to fetch users: ${error.message}`);
                 return [];
             }
-            console.error("Failed to fetch users:", error);
+            MonitoringService.error("Failed to fetch users", error);
             return [];
         }
     },
@@ -91,7 +94,7 @@ export const UserService = {
             console.log(`[UserService] ✅ Successfully updated user ${uid} via Supabase`);
         } catch (error) {
             if (!isNetworkError(error)) {
-                console.error(`[UserService] ❌ Failed to update user ${uid}:`, error);
+                MonitoringService.error(`[UserService] Failed to update user ${uid}`, error);
             }
             throw error;
         }

@@ -24,7 +24,9 @@ export default function LoginClient() {
     const [resetLoading, setResetLoading] = useState(false);
     const [showResetModal, setShowResetModal] = useState(false);
     const [resetSuccess, setResetSuccess] = useState(false);
+    const [isRecoveryMode, setIsRecoveryMode] = useState(false);
     const [resetError, setResetError] = useState<string | null>(null);
+    const { login } = useAuth();
 
     // Check for recovery mode on mount
     React.useEffect(() => {

@@ -99,6 +99,15 @@ export default function BootGate({ children }: { children: React.ReactNode }) {
             const onboardingDone = typeof window !== 'undefined' ? localStorage.getItem('mediahive_onboarding_complete') === 'true' : true;
 
             if (user) {
+                // P0: If in recovery mode, stay on the login page to allow password reset
+                // Check both state and URL for maximum reliability
+                const isRecovery = recoveryMode || window.location.search.includes('recovery=true') || window.location.hash.includes('type=recovery');
+                
+                if (isRecovery) {
+                    console.log('[BOOT] Recovery mode active - staying on current page');
+                    return;
+                }
+
                 if (normalizedPath === '/welcome') {
                     if (onboardingDone) {
                         console.log('[BOOT] Onboarding done -> /home');
@@ -111,13 +120,8 @@ export default function BootGate({ children }: { children: React.ReactNode }) {
                     console.log('[BOOT] Onboarding pending -> /welcome');
                     nativeNavigate('/welcome', router, 'BootGate');
                 } else if (normalizedPath === '' || normalizedPath === '/' || normalizedPath === '/login' || normalizedPath === '/signup') {
-                    // Only redirect to /home if NOT in password recovery mode
-                    if (!recoveryMode && !window.location.search.includes('recovery=true')) {
-                        console.log('[BOOT] Navigating -> /home');
-                        nativeNavigate('/home', router, 'BootGate');
-                    } else {
-                        console.log('[BOOT] Staying on login/signup for recovery mode');
-                    }
+                    console.log('[BOOT] Navigating -> /home');
+                    nativeNavigate('/home', router, 'BootGate');
                 }
             } else if (!publicRoutes.includes(normalizedPath)) {
                 console.log('[BOOT] Unauthenticated - redirecting to /login');

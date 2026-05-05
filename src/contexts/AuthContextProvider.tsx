@@ -80,6 +80,16 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
             try {
                 console.log("[BOOT] Checking session...");
 
+                // Detect recovery mode early from URL hash/params
+                if (typeof window !== 'undefined') {
+                    const hash = window.location.hash;
+                    const search = window.location.search;
+                    if (hash.includes('type=recovery') || search.includes('recovery=true')) {
+                        console.log('[BOOT] Recovery mode detected early');
+                        setRecoveryMode(true);
+                    }
+                }
+
                 // Wrap session fetch in timeout
                 const sessionResult = await Promise.race([
                     supabase.auth.getSession(),

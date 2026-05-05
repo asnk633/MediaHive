@@ -300,6 +300,21 @@
     animation: fab-breathing 3.5s ease-in-out infinite;
   }
 
+  @keyframes logo-breathing {
+    0%, 100% {
+      transform: scale(1);
+      opacity: 0.8;
+    }
+    50% {
+      transform: scale(1.1);
+      opacity: 1;
+    }
+  }
+
+  .animate-logo-breathing {
+    animation: logo-breathing 4s ease-in-out infinite;
+  }
+
   /* Intelligent Pause: Stop animation when user interacts */
   .fab-surface:hover, 
   .fab-surface:active,

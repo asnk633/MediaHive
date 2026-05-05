@@ -16,10 +16,13 @@ export const HaloLogo = ({ size = 110, className }: HaloLogoProps) => {
     return (
         <div className={cn("relative flex items-center justify-center", className)} style={{ width: size * 2, height: size * 2 }}>
             {/* Halo Glow */}
-            <div className="logo-halo" style={{ width: size * 2, height: size * 2 }} />
+            <div className="absolute inset-0 bg-primary/20 blur-[60px] rounded-full animate-logo-breathing" />
             
             {/* Circular Glass Container */}
-            <div className="logo-container" style={{ width: size, height: size }}>
+            <div 
+                className="absolute flex items-center justify-center bg-white/5 backdrop-blur-md border border-white/10 rounded-full shadow-2xl" 
+                style={{ width: size, height: size }}
+            >
                 <img
                     src="/logo-app.png"
                     alt="Thaiba Logo"

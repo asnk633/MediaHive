@@ -3,6 +3,7 @@
 
 import React, { useState, useEffect } from "react";
 import { useAuth } from "@/contexts/AuthContextProvider";
+import { supabase } from "@/lib/supabaseClient";
 import { LogOut } from "lucide-react";
 import ImageCropper from "@/components/ImageCropper";
 import { uploadProfilePicture } from "@/services/profilePicture";

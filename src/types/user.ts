@@ -7,7 +7,7 @@ export interface User {
     name: string;
     official_name?: string; // Legacy alias for name
     fullName?: string; // Legacy alias for name
-    role: 'admin' | 'manager' | 'member' | 'guest';
+    role: 'admin' | 'manager' | 'member' | 'team' | 'guest';
     institutionRoles?: Record<string, string>;
     is_super_admin?: boolean;
     photoURL?: string;

@@ -2,7 +2,7 @@
 
 import React, { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
-import { InventoryAsset, InventoryAssetStatus, InventoryCondition } from "@/types/inventory";
+import { InventoryAsset, InventoryAssetStatus, InventoryCondition, INVENTORY_CATEGORIES, INVENTORY_GUIDE } from "@/types/inventory";
 import { inventoryService } from '@/services/inventory/inventoryService';
 import { useAuth } from "@/contexts/AuthContextProvider";
 import { Button } from "@/components/ui/button";
@@ -18,6 +18,8 @@ import AppLink from "@/components/AppLink";
 import { toast } from "sonner";
 import { FileService } from "@/services/fileService";
 import { ImageCropper } from "@/components/ui/ImageCropper";
+import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
+import { Info } from "lucide-react";
 import NextImage from 'next/image';
 import { getDriveImageUrl } from "@/lib/driveUtils";
 
@@ -26,9 +28,7 @@ interface InventoryFormProps {
     mode: 'create' | 'edit';
 }
 
-const CATEGORIES = [
-    "Camera", "Lens", "Audio", "Lights", "Cables", "IT", "Furniture", "decoration", "Other"
-];
+const CATEGORIES = INVENTORY_CATEGORIES;
 
 const CONDITIONS: { value: InventoryCondition; label: string }[] = [
     { value: "good", label: "Good" },
@@ -147,7 +147,8 @@ export default function InventoryForm({ initialData, mode }: InventoryFormProps)
                 folder: 'Photos',
                 subfolder: 'Inventory Photos',
                 module: 'inventory',
-                visibility: { mode: 'all' }
+                uploadContext: 'inventory_asset',
+                visibility: { mode: 'internal' }
             };
 
             const result = await FileService.uploadFile(processedFile, metadata);
@@ -327,8 +328,39 @@ export default function InventoryForm({ initialData, mode }: InventoryFormProps)
                             </div>
 
                             <div className="space-y-0.5">
+                                <div className="flex items-center gap-2 mb-2">
+                                    <Label className={labelClasses}>Category</Label>
+                                    <Popover>
+                                        <PopoverTrigger asChild>
+                                            <button type="button" className="text-white/40 hover:text-white transition-colors">
+                                                <Info className="w-3.5 h-3.5" />
+                                            </button>
+                                        </PopoverTrigger>
+                                        <PopoverContent 
+                                            className="w-80 p-0 bg-[#0f172a]/95 backdrop-blur-xl border border-white/10 shadow-2xl rounded-xl overflow-hidden" 
+                                            align="start"
+                                            sideOffset={8}
+                                        >
+                                            <div className="p-3 border-b border-white/5 bg-white/5">
+                                                <div className="flex items-center gap-2 text-white text-sm font-medium">
+                                                    <Info className="w-4 h-4 text-blue-400" />
+                                                    <span>Categorization Guide</span>
+                                                </div>
+                                            </div>
+                                            <div className="max-h-[300px] overflow-y-auto p-2">
+                                                <div className="space-y-1">
+                                                    {Object.entries(INVENTORY_GUIDE).map(([cat, desc]) => (
+                                                        <div key={cat} className="p-2 hover:bg-white/5 rounded-lg transition-colors group">
+                                                            <span className="text-blue-400 font-medium text-[11px] block group-hover:text-blue-300">{cat}</span>
+                                                            <span className="text-white/50 text-[10px] leading-tight block">{desc}</span>
+                                                        </div>
+                                                    ))}
+                                                </div>
+                                            </div>
+                                        </PopoverContent>
+                                    </Popover>
+                                </div>
                                 <DropdownSelector 
-                                    label="Category"
                                     value={formData.category}
                                     onChange={val => setFormData(prev => ({ ...prev, category: val }))}
                                     options={CATEGORIES.map(cat => ({ id: cat, label: cat }))}
@@ -344,6 +376,17 @@ export default function InventoryForm({ initialData, mode }: InventoryFormProps)
                                     onChange={e => setFormData(prev => ({ ...prev, serialNumber: e.target.value }))}
                                     placeholder="Optional"
                                     className={inputClasses}
+                                />
+                            </div>
+
+                            <div className="space-y-2">
+                                <Label htmlFor="driveFileId" className={labelClasses}>Drive File ID (for Thumbnail)</Label>
+                                <Input
+                                    id="driveFileId"
+                                    value={formData.driveFileId}
+                                    onChange={e => setFormData(prev => ({ ...prev, driveFileId: e.target.value }))}
+                                    placeholder="Optional Google Drive ID"
+                                    className={cn(inputClasses, "font-mono text-[10px]")}
                                 />
                             </div>
                         </div>

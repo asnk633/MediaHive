@@ -46,7 +46,7 @@ export async function POST(req: NextRequest) {
 
         const result = await MonitoringService.trace(
             'drive.scan_incoming_folder',
-            () => DriveScannerService.scanIncomingFolder()
+            () => DriveScannerService.scanIncomingFolder(user.institution_id)
         );
 
         let reconcileResult = { orphansRemoved: 0 };

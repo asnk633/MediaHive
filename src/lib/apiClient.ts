@@ -425,10 +425,15 @@ export const apiClient = async <T = any>(endpoint: string, options: ApiOptions =
       return result;
     };
 
-    const headers = {
-      'Content-Type': 'application/json',
+    const headers: Record<string, string> = {
       ...normalizeHeaders(options.headers),
-    } as Record<string, string>;
+    };
+
+    // ONLY set application/json if not explicitly overridden and NOT FormData
+    // Browser must set boundary for multipart/form-data automatically
+    if (!headers['Content-Type'] && !headers['content-type'] && !(options.body instanceof FormData)) {
+      headers['Content-Type'] = 'application/json';
+    }
 
     // --- SESSION REINFORCEMENT (Rule 2) ---
     const isServer = typeof window === 'undefined';

@@ -83,7 +83,8 @@ export function ProfileHeaderCard({
                         <h2 className="text-lg font-semibold text-foreground">{user?.name || "User Name"}</h2>
                         <button 
                             onClick={() => setIsEditingName?.(true)}
-                            className="p-1 rounded-md hover:bg-surface text-muted-foreground opacity-0 group-hover/name:opacity-100 transition-all"
+                            className="p-1.5 rounded-lg bg-surface/50 hover:bg-surface border border-soft text-muted-foreground opacity-100 lg:opacity-0 lg:group-hover/name:opacity-100 transition-all shadow-sm"
+                            title="Edit Name"
                         >
                             <Edit2 size={14} />
                         </button>

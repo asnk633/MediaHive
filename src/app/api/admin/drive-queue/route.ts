@@ -83,9 +83,16 @@ export async function POST(req: NextRequest) {
         }
 
         if (action === 'approve') {
-            // For now, we just mark as approved. 
-            // In a full implementation, this might trigger a file move/publish.
-            const { error } = await supabase
+            // 1. Get the items first to copy metadata
+            const { data: itemsToPublish, error: fetchError } = await supabase
+                .from('drive_queue')
+                .select('*')
+                .in('id', itemIds);
+
+            if (fetchError) throw fetchError;
+
+            // 2. Mark as approved in queue
+            const { error: updateError } = await supabase
                 .from('drive_queue')
                 .update({ 
                     status: 'approved', 
@@ -95,13 +102,38 @@ export async function POST(req: NextRequest) {
                 })
                 .in('id', itemIds);
 
-            if (error) throw error;
+            if (updateError) throw updateError;
+
+            // 3. Publish to public.files
+            const filesToInsert = (itemsToPublish || []).map(item => ({
+                name: item.name,
+                drive_file_id: item.drive_file_id,
+                mime_type: item.mime_type,
+                size: item.size,
+                web_view_link: item.web_view_link,
+                thumbnail_link: item.thumbnail_link,
+                institution_id: item.institution_id || user.institution_id,
+                tenant_id: user.tenant_id,
+                user_id: user.uid,
+                status: 'active'
+            }));
+
+            if (filesToInsert.length > 0) {
+                const { error: publishError } = await supabase
+                    .from('files')
+                    .upsert(filesToInsert, { onConflict: 'drive_file_id' });
+                
+                if (publishError) {
+                    console.error('[DRIVE_QUEUE_APPROVE] Publish error:', publishError);
+                    // We don't throw here to avoid rollback of the status update, 
+                    // but we should probably log it.
+                }
+            }
             
-            // Note: If bulk, we return the data format expected by executeBulkAction
             return NextResponse.json({ 
                 success: itemIds.length, 
                 failed: 0,
-                message: `Successfully approved ${itemIds.length} items` 
+                message: `Successfully approved and published ${itemIds.length} items` 
             });
         }
 

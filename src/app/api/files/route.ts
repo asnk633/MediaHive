@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { verifyUser } from '@/lib/server/server-utils';
-import { supabase } from '@/lib/supabaseClient';
+import { getSupabaseServerClient } from '@/lib/supabaseServerClient';
 import { TABLES } from '@/lib/dbTables';
 import { safeQuery } from '@/lib/safeQuery';
 
@@ -13,6 +13,7 @@ export async function GET(req: NextRequest) {
             return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
         }
 
+        const supabase = await getSupabaseServerClient();
         const { tenantId } = user; // verifyUser returns user object with tenantId
         const url = new URL(req.url);
         const institutionId = url.searchParams.get('institutionId');
@@ -20,7 +21,8 @@ export async function GET(req: NextRequest) {
         let query = supabase
             .from(TABLES.MEDIA)
             .select('*')
-            .eq('tenant_id', tenantId);
+            .eq('tenant_id', tenantId)
+            .or('upload_context.is.null,upload_context.neq.inventory_asset'); // Include both legacy nulls and non-inventory files
 
         if (institutionId) {
             // Point 4: Deep-link protection. Backend must reject unauthorized institution access.
@@ -37,7 +39,22 @@ export async function GET(req: NextRequest) {
             return NextResponse.json({ error: error.message }, { status: 500 });
         }
 
-        return NextResponse.json({ files: files || [] });
+        // Map snake_case to camelCase for the frontend
+        const mappedFiles = (files || []).map(f => ({
+            ...f,
+            mimeType: f.mime_type,
+            driveFileId: f.drive_file_id,
+            viewLink: f.web_view_link,
+            downloadLink: f.download_link,
+            previewLink: f.thumbnail_link,
+            uploadedByName: f.uploaded_by_name,
+            uploadedByRole: f.uploaded_by_role,
+            folderId: f.folder_id,
+            uploadContext: f.upload_context,
+            taskId: f.task_id
+        }));
+
+        return NextResponse.json({ files: mappedFiles });
 
     } catch (error: any) {
         console.error('GET /api/files catch error:', error);

@@ -4,7 +4,7 @@ import React, { useEffect, useState } from 'react';
 import { DriveQueueItem } from '@/types/drive-queue';
 import { toast } from 'sonner';
 import { formatDistanceToNow } from 'date-fns';
-import { RefreshCw, Check, X, ExternalLink, HardDrive, FolderOpen } from 'lucide-react';
+import { RefreshCw, Check, X, ExternalLink, HardDrive, FolderOpen, Info } from 'lucide-react';
 import { Checkbox } from "@/components/ui/checkbox";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -25,7 +25,9 @@ import {
     DialogHeader,
     DialogTitle,
 } from "@/components/ui/dialog";
+import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { apiClient } from '@/lib/apiClient';
+import { INVENTORY_GUIDE } from '@/types/inventory';
 
 // Helper for safely parsing Firestore Timestamps (Admin SDK serializes to _seconds)
 function parseFirestoreDate(value: any): Date | null {
@@ -570,7 +572,27 @@ export function DriveQueueView() {
                         {/* Common Fields */}
                         <div className="grid grid-cols-2 gap-4">
                             <div className="grid gap-2">
-                                <Label htmlFor="category">Category (Auto)</Label>
+                                <div className="flex items-center gap-2">
+                                    <Label htmlFor="category">Category (Auto)</Label>
+                                    <Popover>
+                                        <PopoverTrigger asChild>
+                                            <button type="button" className="text-muted-foreground hover:text-foreground transition-colors">
+                                                <Info className="w-3.5 h-3.5" />
+                                            </button>
+                                        </PopoverTrigger>
+                                        <PopoverContent className="w-80 p-0" align="start">
+                                            <div className="p-3 border-b bg-muted/50 font-medium text-xs">Categorization Guide</div>
+                                            <div className="max-h-60 overflow-y-auto p-2">
+                                                {Object.entries(INVENTORY_GUIDE).map(([cat, desc]) => (
+                                                    <div key={cat} className="p-2 hover:bg-muted rounded text-[10px]">
+                                                        <div className="font-bold text-primary mb-0.5">{cat}</div>
+                                                        <div className="text-muted-foreground line-clamp-2">{desc}</div>
+                                                    </div>
+                                                ))}
+                                            </div>
+                                        </PopoverContent>
+                                    </Popover>
+                                </div>
                                 <Select
                                     value={metadata.category}
                                     onValueChange={(val) => setMetadata({ ...metadata, category: val })}

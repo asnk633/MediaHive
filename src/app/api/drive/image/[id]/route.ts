@@ -15,17 +15,62 @@ export async function GET(
 
     try {
         const drive = await getDriveClient();
+        const { searchParams } = new URL(req.url);
+        const isThumbnail = searchParams.get('thumbnail') === 'true';
         
-        // 1. Fetch file metadata to get MIME type
+        // 1. Fetch file metadata
         const metadata = await drive.files.get({
             fileId: fileId,
-            fields: 'mimeType, name',
+            fields: 'mimeType, name, thumbnailLink',
             supportsAllDrives: true,
         });
 
+        if (isThumbnail) {
+            if (metadata.data.thumbnailLink) {
+                // Fetch the thumbnail content directly from official link
+                const thumbRes = await fetch(metadata.data.thumbnailLink);
+                if (thumbRes.ok) {
+                    const thumbBuffer = await thumbRes.arrayBuffer();
+                    return new NextResponse(thumbBuffer, {
+                        headers: {
+                            'Content-Type': 'image/jpeg',
+                            'Cache-Control': 'public, max-age=3600',
+                        },
+                    });
+                }
+            }
+
+            // Fallback: Try the public Drive thumbnail service for PDFs/Docs
+            // sz=w400 is width. This often works when metadata.thumbnailLink is missing.
+            const fallbackUrl = `https://drive.google.com/thumbnail?id=${fileId}&sz=w400`;
+            console.log(`[Drive Proxy] 🔄 Attempting fallback thumbnail for ${fileId}: ${fallbackUrl}`);
+            
+            const fallbackRes = await fetch(fallbackUrl);
+            if (fallbackRes.ok) {
+                const thumbBuffer = await fallbackRes.arrayBuffer();
+                const contentType = fallbackRes.headers.get('content-type') || 'image/jpeg';
+                
+                // Only return if it's actually an image (not a login page/html)
+                if (contentType.startsWith('image/')) {
+                    return new NextResponse(thumbBuffer, {
+                        headers: {
+                            'Content-Type': contentType,
+                            'Cache-Control': 'public, max-age=3600',
+                        },
+                    });
+                }
+            }
+
+            console.warn(`[Drive Proxy] ⚠️ No thumbnail available for ${fileId} (${metadata.data.mimeType})`);
+            // DO NOT return the full file content if it's a thumbnail request and it's not an image/video
+            if (metadata.data.mimeType === 'application/pdf' || !metadata.data.mimeType?.startsWith('image/')) {
+                return NextResponse.json({ error: 'Thumbnail not available' }, { status: 404 });
+            }
+        }
+
         const mimeType = metadata.data.mimeType || 'application/octet-stream';
 
-        // 2. Fetch the file content
+        // 2. Fetch the file content (Full media)
         const response = await drive.files.get(
             { 
                 fileId: fileId, 

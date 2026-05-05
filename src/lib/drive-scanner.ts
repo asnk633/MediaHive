@@ -50,7 +50,7 @@ export class DriveScannerService {
      * Scans the Incoming folder for new files and adds them to the queue.
      * Returns the number of new files detected and execution logs.
      */
-    static async scanIncomingFolder(): Promise<{ count: number, logs: string[] }> {
+    static async scanIncomingFolder(institutionId?: string): Promise<{ count: number, logs: string[] }> {
         const logs: string[] = [];
         const log = (msg: string, level: 'info' | 'warn' | 'error' = 'info') => {
             logs.push(msg);
@@ -136,7 +136,8 @@ export class DriveScannerService {
                     thumbnail_link: file.thumbnailLink || '',
                     uploaded_by: file.owners?.[0]?.displayName || 'Drive User',
                     detected_at: new Date().toISOString(),
-                    status: 'pending'
+                    status: 'pending',
+                    institution_id: institutionId
                 };
 
                 const { error: insertError } = await supabase

@@ -22,6 +22,8 @@ export async function POST(req: NextRequest) {
 
         // Tenant Security Guard
         const tenantId = user.tenant_id;
+        console.log(`[UploadAPI] 📁 Starting upload for user: ${user.uid}, tenant: ${tenantId}`);
+        
         if (!tenantId || tenantId === 'null' || tenantId === 'undefined') {
             console.error(`[POST /api/files/upload] ❌ Missing tenant context for user: ${user.uid}`);
             return NextResponse.json({ error: 'Missing tenant context' }, { status: 403 });
@@ -135,6 +137,8 @@ export async function POST(req: NextRequest) {
                         supportsAllDrives: true,
                     });
 
+                    console.log(`[UploadAPI] ✅ Drive upload successful: ${driveFile.data.id}`);
+
                     const file_id = driveFile.data.id;
                     if (!file_id) throw new Error('Failed to retrieve file ID from Google Drive');
 
@@ -152,22 +156,22 @@ export async function POST(req: NextRequest) {
                     const fileDoc: any = {
                         name: metadata.name || filename,
                         type: mimeType.startsWith('image/') ? 'image' : mimeType.startsWith('video/') ? 'video' : 'document',
-                        mimeType: mimeType,
-                        driveFileId: file_id,
-                        viewLink: viewLink,
-                        downloadLink: downloadLink,
-                        previewLink: previewLink,
+                        mime_type: mimeType,
+                        drive_file_id: file_id,
+                        web_view_link: viewLink,
+                        download_link: downloadLink,
+                        thumbnail_link: previewLink,
                         created_at: new Date().toISOString(),
                         uploaded_by: metadata.uploaded_by || user.uid,
-                        uploadedByRole: metadata.uploadedByRole || user.role,
-                        uploadedByName: metadata.uploadedByName || 'Anonymous',
+                        uploaded_by_role: metadata.uploadedByRole || user.role,
+                        uploaded_by_name: metadata.uploadedByName || 'Anonymous',
                         visibility: metadata.visibility || { mode: 'all' },
-                        folderId: targetFolderId,
+                        folder_id: targetFolderId,
                         path: metadata.folder ? `${metadata.folder}/${metadata.subfolder || ''}` : 'Auto',
                         size: driveFile.data.size ? Number(driveFile.data.size) : 0,
-                        uploadContext: metadata.uploadContext || (metadata.taskId ? 'task_attachment' : 'downloads_direct'),
+                        upload_context: metadata.uploadContext || (metadata.taskId ? 'task_attachment' : 'downloads_direct'),
                         institution_id: user.institution_id || null,
-                        taskId: metadata.taskId || null,
+                        task_id: metadata.taskId || null,
                         event_id: metadata.event_id || null,
                         tenant_id: tenantId
                     };
@@ -182,16 +186,18 @@ export async function POST(req: NextRequest) {
 
                     let createdFile;
                     try {
-                        const { data, error: insertError } = await withTenant(
-                            supabaseAdmin
-                                .from('files')
-                                .insert([fileDoc]),
-                            tenantId
-                        )
+                        const { data, error: insertError } = await supabaseAdmin
+                            .from('files')
+                            .insert([fileDoc])
                             .select()
                             .single();
 
-                        if (insertError) throw insertError;
+                        if (insertError) {
+                            console.error(`[UploadAPI] ❌ Supabase insert error:`, insertError);
+                            throw insertError;
+                        }
+                        
+                        console.log(`[UploadAPI] ✅ Supabase metadata saved: ${data.id}`);
                         createdFile = data;
                     } catch (dbError) {
                         console.error('[UploadAPI] ❌ DB Insert failed, cleaning up Drive file:', file_id);

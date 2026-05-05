@@ -46,8 +46,20 @@ export async function GET(request: NextRequest) {
 
         if (error) throw error;
 
+        // Map snake_case to camelCase for the frontend
+        const mappedItems = (items || []).map(item => ({
+            ...item,
+            driveFileId: item.drive_file_id,
+            imageUrl: item.image_url,
+            serialNumber: item.serial_number,
+            purchaseDate: item.purchase_date,
+            purchasePrice: item.purchase_price,
+            assetStatus: item.asset_status,
+            locationStr: item.location_str
+        }));
+
         return NextResponse.json({
-            items: items || [],
+            items: mappedItems,
             meta: {
                 total: count || 0,
                 limit,

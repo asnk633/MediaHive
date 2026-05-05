@@ -21,11 +21,14 @@ export function MediaCard({ file, onClick }: MediaCardProps) {
 
   const isImage = file.mimeType?.startsWith('image/') || false;
   const isVideo = file.mimeType?.startsWith('video/') || false;
+  const isPdf = file.mimeType === 'application/pdf';
 
   // Get file extension for display
   const getFileExtension = (file_name: string) => {
     return file_name.split('.').pop()?.toUpperCase() || '';
   };
+
+  const [imgError, setImgError] = React.useState(false);
 
   // Format date for display
   const formatDate = (timestamp: any) => {
@@ -51,37 +54,56 @@ export function MediaCard({ file, onClick }: MediaCardProps) {
     >
       {/* Thumbnail or Icon */}
       <div className="w-full h-full flex items-center justify-center bg-[var(--bg-surface)] relative">
-        {isImage ? (
-          // For images, show a thumbnail preview
+        {(isImage || isVideo || isPdf) && !imgError ? (
+          // For images, videos, and PDFs, show a thumbnail preview
           <div className="w-full h-full relative">
             <Image
-              src={getDriveImageUrl(file.viewLink)}
+              src={`/api/drive/image/${file.driveFileId}?thumbnail=true`}
               alt={file.name}
               fill
+              unoptimized={true} // Google thumbnails are pre-optimized and don't need Next.js re-processing
               sizes="(max-width: 640px) 100vw, 25vw"
               className="object-cover transition-transform duration-500 group-hover:scale-110"
+              onError={() => {
+                setImgError(true);
+              }}
             />
+            {/* Play overlay for videos */}
+            {isVideo && (
+              <div className="absolute inset-0 flex items-center justify-center bg-black/20 group-hover:bg-transparent transition-colors">
+                <div className="bg-black/50 rounded-full p-3 group-hover:bg-indigo-500/80 transition-colors">
+                  <Play size={20} className="text-white fill-white" />
+                </div>
+              </div>
+            )}
+            {/* PDF Badge/Overlay like WhatsApp */}
+            {isPdf && (
+              <div className="absolute inset-0 flex items-center justify-center">
+                <div className="absolute top-3 left-3 flex items-center gap-1.5 px-2 py-1 bg-red-600 rounded-md shadow-lg border border-red-500/50 z-10">
+                  <FileText size={12} className="text-white" />
+                  <span className="text-[10px] font-bold text-white uppercase">PDF</span>
+                </div>
+                <div className="w-12 h-12 rounded-xl bg-black/30 backdrop-blur-md flex items-center justify-center border border-white/10 opacity-0 group-hover:opacity-100 transition-opacity">
+                  <FileText size={24} className="text-white" />
+                </div>
+              </div>
+            )}
             <div className="absolute inset-0 bg-black/5 group-hover:bg-transparent transition-colors" />
           </div>
-        ) : isVideo ? (
-          // For videos, show a poster frame with play icon
-          <div className="w-full h-full bg-gray-800 flex items-center justify-center relative">
-            <div className="bg-gray-900 border-2 border-dashed rounded-xl w-full h-full flex items-center justify-center text-gray-600">
-              <Video size={24} />
-            </div>
-            <div className="absolute inset-0 flex items-center justify-center">
-              <div className="bg-black/50 rounded-full p-3 group-hover:bg-indigo-500/80 transition-colors">
-                <Play size={20} className="text-white fill-white" />
+        ) : (
+          // Fallback or other file types, show file type icon
+          <div className="w-full h-full flex flex-col items-center justify-center p-2">
+            <div className={`p-4 rounded-xl mb-2 transition-colors ${isPdf ? 'bg-red-500/10 text-red-500' : 'bg-indigo-500/10 text-indigo-400'}`}>
+              <div className="relative">
+                <FileIcon size={32} strokeWidth={1.5} />
+                {isPdf && (
+                  <div className="absolute -top-1 -right-1 px-1.5 py-0.5 bg-red-600 rounded text-[8px] font-bold text-white shadow-sm">
+                    PDF
+                  </div>
+                )}
               </div>
             </div>
-          </div>
-        ) : (
-          // For other file types, show file type icon
-          <div className="w-full h-full flex flex-col items-center justify-center p-2">
-            <div className="p-3 rounded-lg bg-indigo-500/10 text-indigo-400 mb-2">
-              <FileIcon size={24} />
-            </div>
-            <span className="text-xs text-[var(--text-secondary)] font-medium">
+            <span className="text-[10px] text-[var(--text-secondary)] font-bold uppercase tracking-widest">
               {getFileExtension(file.name)}
             </span>
           </div>

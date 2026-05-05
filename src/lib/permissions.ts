@@ -40,7 +40,7 @@ export const ROLES: Record<string, Permission[]> = {
     team: [ // Legacy map to member/manager mix
         'read:tasks', 'create:tasks', 'edit:task_status', 'edit:task_priority',
         'read:events', 'create:events', 'edit:events',
-        'read:users'
+        'read:users', 'upload:files'
     ],
     guest: [
         'read:tasks', 'create:tasks',

@@ -203,10 +203,10 @@ export default function DesktopSideNav() {
                 >
                     {/* Header Section */}
                     <div className="relative px-5 py-6 bg-gradient-to-br from-indigo-500/10 via-transparent to-transparent">
-                        <div className="text-[10px] font-black text-indigo-400/80 uppercase tracking-[0.25em] mb-2.5">Active Session</div>
+                        <div className="text-[10px] font-black text-indigo-400 uppercase tracking-[0.25em] mb-2.5">Active Session</div>
                         <div className="flex flex-col gap-0.5">
                             <div className="text-sm font-bold text-white tracking-tight truncate">{user?.name || 'Authorized User'}</div>
-                            <div className="text-[11px] text-white/40 font-medium truncate">{user?.email}</div>
+                            <div className="text-[11px] text-white/60 font-medium truncate">{user?.email}</div>
                         </div>
                     </div>
                     

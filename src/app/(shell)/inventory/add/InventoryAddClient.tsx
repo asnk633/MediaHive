@@ -322,12 +322,18 @@ export default function InventoryAddClient() {
 
                                         <div className="max-h-[400px] overflow-y-auto p-2 scrollbar-thin scrollbar-thumb-muted/10 scrollbar-track-transparent">
                                             <div className="space-y-1">
-                                                {Object.entries(INVENTORY_GUIDE).map(([cat, desc]) => (
-                                                    <div key={cat} className="group p-3 hover:bg-muted/5 rounded-xl transition-colors">
-                                                        <span className="text-primary font-medium text-sm block mb-1 group-hover:text-primary transition-colors">{cat}</span>
-                                                        <span className="text-muted text-xs leading-relaxed block">{desc}</span>
+                                                {INVENTORY_GUIDE && Object.entries(INVENTORY_GUIDE).length > 0 ? (
+                                                    Object.entries(INVENTORY_GUIDE).map(([cat, desc]) => (
+                                                        <div key={cat} className="group p-3 hover:bg-muted/5 rounded-xl transition-colors">
+                                                            <span className="text-primary font-medium text-sm block mb-1 group-hover:text-primary transition-colors">{cat}</span>
+                                                            <span className="text-muted text-xs leading-relaxed block">{desc}</span>
+                                                        </div>
+                                                    ))
+                                                ) : (
+                                                    <div className="p-4 text-center text-xs text-muted">
+                                                        No categorization guide data available.
                                                     </div>
-                                                ))}
+                                                )}
                                             </div>
                                         </div>
                                     </PopoverContent>

@@ -49,7 +49,9 @@ export const InventoryCard = React.memo<InventoryCardProps>(({
     // Consolidate images for display
     const images = (item as any).images && (item as any).images.length > 0
         ? (item as any).images.map((img: any) => ({ ...img, url: getDriveImageUrl(img.url, img.file_id) }))
-        : ((item as any).imageUrl ? [{ url: getDriveImageUrl((item as any).imageUrl, (item as any).driveFileId), file_id: (item as any).driveFileId || '' }] : []);
+        : ((item as any).imageUrl || (item as any).driveFileId) 
+            ? [{ url: getDriveImageUrl((item as any).imageUrl, (item as any).driveFileId), file_id: (item as any).driveFileId || '' }] 
+            : [];
 
     return (
         <Link

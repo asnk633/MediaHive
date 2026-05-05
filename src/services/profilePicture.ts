@@ -20,18 +20,16 @@ export async function uploadProfilePicture(userId: string, imageBlob: Blob): Pro
 
         // Upload via our server API (which routes to Google Drive)
         // Note: userId is derived from session on the server side for security
-        const response = await apiClient('/api/users/me/avatar', {
+        const response = await apiClient<any>('/api/users/me/avatar', {
             method: 'POST',
             body: formData,
         });
 
-        if (!response.ok) {
-            const error = await response.json();
-            throw new Error(error.error || 'Upload failed');
+        if (response.error) {
+            throw new Error(response.error || 'Upload failed');
         }
 
-        const data = await response.json();
-        const downloadURL = data.avatar_url;
+        const downloadURL = response.avatar_url;
 
         // Cache the URL in localStorage for faster loads
         if (typeof window !== 'undefined') {

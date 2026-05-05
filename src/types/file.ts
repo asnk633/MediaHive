@@ -14,6 +14,7 @@ export interface DriveFile {
     driveFileId: string;
     viewLink: string;
     downloadLink: string;
+    previewLink?: string;
     uploaded_by: string; // uid
     uploadedByRole: string; // 'admin' | 'team'
     uploadedByName?: string; // Cache for display

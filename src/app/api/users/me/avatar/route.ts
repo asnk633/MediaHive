@@ -2,7 +2,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { getDriveClient, ensureFolderPath, makeFilePublic, DRIVE_CONFIG, sanitizeForDrive } from '@/lib/drive';
 import { verifyUser } from '@/lib/server/server-utils';
-import { supabase } from '@/lib/supabaseClient';
+import { getSupabaseAdmin } from '@/lib/server/supabase-admin';
 
 export const dynamic = 'force-dynamic';
 
@@ -60,7 +60,8 @@ export async function POST(req: NextRequest) {
         const publicUrl = `https://drive.google.com/thumbnail?id=${file_id}&sz=s1000`;
 
         // Update Supabase Profile with both URL and direct ID for proxy support
-        const { error: updateError } = await supabase
+        const supabaseAdmin = getSupabaseAdmin();
+        const { error: updateError } = await supabaseAdmin
             .from('profiles')
             .update({
                 avatar_url: publicUrl,

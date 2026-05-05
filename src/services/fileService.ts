@@ -5,7 +5,11 @@ export const FileService = {
     // Fetch files based on user role and visibility
     getFiles: async (userRole: string, userDepartment?: string | number | null, userInstitution?: string | number | null, scope: 'all' | 'downloads' = 'all'): Promise<DriveFile[]> => {
         try {
-            const response = await apiClient<{ files: DriveFile[] }>(`/api/files?scope=${scope}`);
+            let url = `/api/files?scope=${scope}`;
+            if (userInstitution) url += `&institutionId=${userInstitution}`;
+            if (userDepartment) url += `&departmentId=${userDepartment}`;
+            
+            const response = await apiClient<{ files: DriveFile[] }>(url);
             return response.files || [];
         } catch (error) {
             console.error('FileService.getFiles error:', error);

@@ -344,6 +344,14 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
             if (error) {
                 console.error("[LOGIN] Supabase error:", error);
                 setLoading(false);
+                
+                // Enhance the generic 'Failed to fetch' error with configuration advice
+                if (error.message === 'Failed to fetch' || error.name === 'AuthRetryableFetchError') {
+                    const enhancedError = new Error('Connection failed: Please verify your Supabase URL and network connection.');
+                    (enhancedError as any).originalError = error;
+                    throw enhancedError;
+                }
+                
                 throw error;
             }
             

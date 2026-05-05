@@ -1,6 +1,7 @@
 'use client';
 
 import React from 'react';
+import Link from 'next/link';
 import { CheckSquare, User, Clock, AlertCircle } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { ReactiveCard } from '@/components/ui/ReactiveCard';
@@ -63,9 +64,9 @@ export const TodayTasksCard: React.FC<TodayTasksCardProps> = ({ tasks, isLoading
                     ))
                 ) : tasks.length > 0 ? (
                     tasks.map((task) => (
-                        <div 
+                        <Link 
+                            href={`/tasks/${task.id}`}
                             key={task.id}
-                            onClick={() => onViewTask(task.id)}
                             className="group py-3 px-[14px] mx-4 rounded-[18px] bg-white/[0.02] border border-white/[0.05] hover:bg-white/[0.04] hover:border-emerald-500/30 transition-all cursor-pointer flex items-center justify-between gap-4"
                         >
                             <div className="flex items-center gap-3 min-w-0">
@@ -102,7 +103,7 @@ export const TodayTasksCard: React.FC<TodayTasksCardProps> = ({ tasks, isLoading
                             )}>
                                 {getStatusLabel(task.status)}
                             </div>
-                        </div>
+                        </Link>
                     ))
                 ) : (
                     <div className="flex flex-col items-center justify-center py-12 text-center">

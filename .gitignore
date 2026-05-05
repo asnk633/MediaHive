@@ -85,3 +85,6 @@ Thumbs.db
 # Firebase Admin credentials
 credentials/
 *.firebase-admin.json
+
+# Database Backups
+/backups

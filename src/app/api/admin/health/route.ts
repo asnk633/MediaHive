@@ -15,24 +15,8 @@ export async function GET(request: NextRequest) {
         // 1. Check DB Connectivity
         const { error: dbError } = await supabase.from('tenants').select('id').limit(1);
         
-        // 2. Check Task Assignment Drift (Problem 3 Fix)
-        const { data: driftData, error: driftError } = await supabase.rpc('check_assignment_drift');
-        
-        // Fallback to raw query if RPC doesn't exist yet (we'll add it)
+        // 2. Check Task Assignment Drift (Legacy check removed - migration finalized)
         let driftCount = 0;
-        if (driftError) {
-            const { data: rawDrift } = await supabase.rpc('execute_sql', { 
-                sql_query: `
-                    SELECT COUNT(*) as count 
-                    FROM public.tasks t 
-                    WHERE jsonb_array_length(COALESCE(t.assigned_to, '[]')) != 
-                    (SELECT COUNT(*) FROM public.task_assignments WHERE task_id = t.id)
-                `
-            });
-            driftCount = (rawDrift as any)?.[0]?.count || 0;
-        } else {
-            driftCount = (driftData as any) || 0;
-        }
 
         const health = {
             api: 'healthy',

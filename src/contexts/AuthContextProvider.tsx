@@ -150,28 +150,40 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
                 // Use profileData if profile is null but cache exists
                 const finalProfile = profile || profileData;
 
-                const uid = profile?.uid || profile?.id || session.user.id;
-                // Fetch institution roles
-                const { data: roles } = await supabase
-                    .from("user_institutions")
-                    .select("institution_id, role")
-                    .eq("user_id", session.user.id);
-                
-                const institutionRoles: Record<string, string> = {};
-                if (roles) {
-                    roles.forEach((r: any) => institutionRoles[r.institution_id] = r.role);
+                const uid = finalProfile?.uid || finalProfile?.id || session.user.id;
+                // Fetch institution roles (Optional - don't block if fails)
+                let institutionRoles: Record<string, string> = {};
+                try {
+                    const { data: roles } = await Promise.race([
+                        supabase
+                            .from("user_institutions")
+                            .select("institution_id, role")
+                            .eq("user_id", session.user.id),
+                        timeout(5000) // 5s max for roles
+                    ]) as any;
+                    
+                    if (roles) {
+                        roles.forEach((r: any) => institutionRoles[r.institution_id] = r.role);
+                    }
+                } catch (e) {
+                    console.warn("[BOOT] Failed to fetch institution roles", e);
                 }
+
+                // Derived tenant_id fallback
+                const tenantId = finalProfile?.tenantId || finalProfile?.tenant_id || 
+                               session.user.app_metadata?.tenant_id || 
+                               session.user.user_metadata?.tenant_id;
 
                 setUser({
                     uid,
                     id: uid,
                     email: finalProfile?.email || session.user.email || '',
                     name: finalProfile?.name || finalProfile?.full_name || 'User',
-                    role: finalProfile?.role || 'guest',
-                    institution_id: finalProfile?.institution_id,
+                    role: finalProfile?.role || session.user.app_metadata?.role || 'guest',
+                    institution_id: finalProfile?.institution_id || session.user.app_metadata?.institution_id,
                     allowed_institutions: finalProfile?.allowed_institutions || [],
                     institutionRoles,
-                    tenant_id: finalProfile?.tenantId || finalProfile?.tenant_id,
+                    tenant_id: tenantId,
                     department_id: finalProfile?.department_id,
                     avatar_url: finalProfile?.avatar_url,
                     photoURL: finalProfile?.avatar_url,

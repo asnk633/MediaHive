@@ -1,6 +1,7 @@
 'use client';
 
 import React, { useState, useEffect, useMemo, useRef } from 'react';
+import Link from 'next/link';
 import { 
     format, 
     startOfWeek, 
@@ -385,22 +386,20 @@ export function WeekTimelineView({
                                         const activeHeight = isBeingResized ? resizingHeight : height;
 
                                         return (
-                                            <div 
+                                            <Link 
+                                                href={`/events/${event.id}`}
                                                 key={event.id}
                                                 className={cn(
                                                     "event-block", 
                                                     event.is_system_event && "is-system",
-                                                    isBeingResized && "z-50 shadow-glow"
+                                                    isBeingResized && "z-50 shadow-glow",
+                                                    "block no-underline"
                                                 )}
                                                 style={{ 
                                                     top: activeTop, 
                                                     height: activeHeight,
                                                     left: layout?.left,
                                                     width: layout?.width
-                                                }}
-                                                onClick={(e) => {
-                                                    e.stopPropagation();
-                                                    onEventClick(event);
                                                 }}
                                             >
                                                 {!event.is_system_event && (
@@ -422,7 +421,7 @@ export function WeekTimelineView({
                                                         onMouseDown={(e) => handleResizeStart(e, event, 'bottom')}
                                                     />
                                                 )}
-                                            </div>
+                                            </Link>
                                         );
                                     })}
 

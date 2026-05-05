@@ -32,6 +32,8 @@ import {
 import { cn } from "@/lib/utils";
 import { AuditTimeline } from '@/components/tasks/audit/AuditTimeline';
 import { TaskActivityFeed } from '@/components/tasks/TaskActivityFeed';
+import { useEntityPresence } from '@/hooks/useEntityPresence';
+import { PresencePile } from '@/components/collaboration/PresencePile';
 import { CanonicalDataService } from '@/services/canonicalDataService';
 import { AuditLog } from '@/types/audit';
 import { UndoManager, buildSnapshot } from '@/lib/undoManager';
@@ -78,6 +80,9 @@ export const TaskDetailModalV2: React.FC<TaskDetailsModalProps> = ({ task, isOpe
 
     const [isDeleting, setIsDeleting] = useState(false);
     const [error, setError] = useState<string | null>(null);
+
+    // Real-time Presence
+    const { activeUsers } = useEntityPresence('task', task?.id);
 
     const handleDelete = async () => {
         if (!task || isDeleting) return;
@@ -411,26 +416,30 @@ export const TaskDetailModalV2: React.FC<TaskDetailsModalProps> = ({ task, isOpe
                                 height: '180px',
                             }}
                         >
-                            {/* Action Buttons - Top Right, Minimal */}
-                            <div className="absolute top-6 right-6 flex items-center gap-2 z-20">
-                                {(user?.role === 'admin' || (user?.role === 'manager' || user?.role === 'member') || user?.uid === task?.createdBy?.uid) && (
-                                    <button
-                                        onClick={onEdit}
-                                        disabled={isDeleting}
-                                        className="p-2 bg-surface/50 hover:bg-surface rounded-lg transition-colors text-foreground backdrop-blur-sm shadow-sm disabled:opacity-50"
-                                        title="Edit Task"
-                                    >
-                                        <Edit2 size={18} />
-                                    </button>
-                                )}
-                                <button
-                                    onClick={onClose}
-                                    disabled={isDeleting}
-                                    className="p-2 bg-surface/50 hover:bg-surface rounded-lg transition-colors text-foreground backdrop-blur-sm shadow-sm disabled:opacity-50"
-                                >
-                                    <X size={18} />
-                                </button>
-                            </div>
+                             {/* Action Buttons - Top Right, Minimal */}
+                             <div className="absolute top-6 right-6 flex items-center gap-4 z-20">
+                                 <PresencePile users={activeUsers} />
+                                 <div className="h-6 w-px bg-white/10 hidden sm:block" />
+                                 <div className="flex items-center gap-2">
+                                     {(user?.role === 'admin' || (user?.role === 'manager' || user?.role === 'member') || user?.uid === task?.createdBy?.uid) && (
+                                         <button
+                                             onClick={onEdit}
+                                             disabled={isDeleting}
+                                             className="p-2 bg-surface/50 hover:bg-surface rounded-lg transition-colors text-foreground backdrop-blur-sm shadow-sm disabled:opacity-50"
+                                             title="Edit Task"
+                                         >
+                                             <Edit2 size={18} />
+                                         </button>
+                                     )}
+                                     <button
+                                         onClick={onClose}
+                                         disabled={isDeleting}
+                                         className="p-2 bg-surface/50 hover:bg-surface rounded-lg transition-colors text-foreground backdrop-blur-sm shadow-sm disabled:opacity-50"
+                                     >
+                                         <X size={18} />
+                                     </button>
+                                 </div>
+                             </div>
 
                             {/* Identity Content - Centered, Grouped */}
                             <div className="absolute inset-0 flex flex-col justify-center px-8">

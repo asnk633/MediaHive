@@ -28,7 +28,10 @@ export function OfflineStatusIndicator() {
     setCurrentConflict(null);
   };
 
-  if (isOnline && pendingSyncCount === 0 && conflicts.length === 0) {
+  const [mounted, setMounted] = React.useState(false);
+  React.useEffect(() => setMounted(true), []);
+
+  if (!mounted || (isOnline && pendingSyncCount === 0 && conflicts.length === 0)) {
     return null;
   }
 

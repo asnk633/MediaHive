@@ -10,6 +10,11 @@ export function SyncIndicator() {
   const progress = useAtomValue(syncProgressAtom);
   const circuitBreaker = useAtomValue(circuitBreakerAtom);
 
+  const [mounted, setMounted] = React.useState(false);
+  React.useEffect(() => setMounted(true), []);
+
+  if (!mounted) return null;
+
   // Circuit breaker banner — takes priority
   if (circuitBreaker.tripped) {
     const resumeIn = circuitBreaker.resumeAt
@@ -27,6 +32,12 @@ export function SyncIndicator() {
           className="ml-1 text-xs text-yellow-300 hover:text-yellow-100 underline underline-offset-2 transition-colors pointer-events-auto"
         >
           Retry now
+        </button>
+        <button
+          onClick={() => syncEngine.clearQueue()}
+          className="ml-3 text-xs text-red-400 hover:text-red-200 underline underline-offset-2 transition-colors pointer-events-auto"
+        >
+          Clear queue
         </button>
       </div>
     );

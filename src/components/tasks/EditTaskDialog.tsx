@@ -26,6 +26,7 @@ import { AttachmentSection } from '@/components/tasks/AttachmentSection';
 import { useCollaboration } from '@/lib/collaboration/useCollaboration';
 import { PresencePile } from '@/components/collaboration/PresencePile';
 import { TypingIndicator } from '@/components/collaboration/TypingIndicator';
+import { FieldPresence } from '@/components/collaboration/FieldPresence';
 import { useFormState } from '@/hooks/useFormState';
 import { useFormSubmit } from '@/hooks/useFormSubmit';
 import { DraftIndicator } from '@/components/ui/DraftIndicator';
@@ -290,7 +291,10 @@ export function EditTaskDialog({ open, onOpenChange, task, onUpdate }: EditTaskD
                     <div className="space-y-1">
                         <div className="flex items-center justify-between mb-1.5">
                             <Label className={cn(labelClasses, "mb-0")}>Task Title</Label>
-                            <TypingIndicator fieldName="title" userContext={collab.editingUsers['title']} />
+                            <div className="flex items-center gap-2">
+                                <TypingIndicator fieldName="title" userContext={collab.editingUsers['title']} />
+                                <FieldPresence users={collab.activeUsers} field="title" />
+                            </div>
                         </div>
                         <Input
                             value={title}
@@ -309,7 +313,10 @@ export function EditTaskDialog({ open, onOpenChange, task, onUpdate }: EditTaskD
                     <div className="space-y-1">
                         <div className="flex items-center justify-between mb-1.5">
                             <Label className={cn(labelClasses, "mb-0")}>Description</Label>
-                            <TypingIndicator fieldName="description" userContext={collab.editingUsers['description']} />
+                            <div className="flex items-center gap-2">
+                                <TypingIndicator fieldName="description" userContext={collab.editingUsers['description']} />
+                                <FieldPresence users={collab.activeUsers} field="description" />
+                            </div>
                         </div>
                         <Textarea
                             value={description}

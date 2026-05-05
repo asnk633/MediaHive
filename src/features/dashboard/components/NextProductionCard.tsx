@@ -2,6 +2,7 @@
 
 import React, { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
+import Link from 'next/link';
 import { cn } from '@/lib/utils';
 import { useWorkspace } from '@/system/workspace/WorkspaceProvider';
 import { ReactiveCard } from '@/components/ui/ReactiveCard';
@@ -143,12 +144,12 @@ export const NextProductionCard: React.FC = () => {
             </div>
 
             <div className="mt-6 flex items-center">
-                <button 
-                  onClick={() => router.push(`/production/${event.id}`)}
-                  className="flex items-center gap-2 text-[10px] font-black uppercase tracking-widest text-white/20 hover:text-blue-400 transition-colors group/link"
+                <Link 
+                  href={`/production/${event.id}`}
+                  className="flex items-center gap-2 text-[10px] font-black uppercase tracking-widest text-white/20 hover:text-blue-400 transition-colors group/link no-underline"
                 >
                     View Production File <ArrowRight size={12} className="group-hover/link:translate-x-1 transition-transform" />
-                </button>
+                </Link>
             </div>
         </ReactiveCard>
     );

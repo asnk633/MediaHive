@@ -160,8 +160,26 @@ export class CanonicalDataService {
   ): Promise<{ data: any; error: any }> {
     if (healthManager.shouldPauseActivities()) return { data: null, error: new Error('System maintenance in progress') };
 
-    const { tenantId, userId } = await tenantContext();
-    const payload = { ...data, tenant_id: tenantId, created_at: new Date().toISOString(), created_by: userId };
+    const { tenantId, userId, institutionId } = await tenantContext();
+    
+    const finalInstitutionId = data.institution_id || data.institutionId || institutionId;
+
+    // Validation Guard: Prevent creating records without institution_id for mandatory tables
+    const tablesRequiringInstitution = [TABLES.INVENTORY, TABLES.TASKS, TABLES.EVENTS, TABLES.EQUIPMENT_BOOKINGS];
+    if (tablesRequiringInstitution.includes(table as any) && !finalInstitutionId) {
+       const errorMsg = `[CanonicalDataService] Cannot create ${entityType || table} without institution context. Please refresh your session.`;
+       MonitoringService.error(errorMsg, { table, entityId: data.id });
+       return { data: null, error: new Error(errorMsg) };
+    }
+
+    const payload = { 
+      id: data.id || crypto.randomUUID(), // Ensure ID is present for offline validation
+      ...data, 
+      tenant_id: tenantId, 
+      institution_id: finalInstitutionId,
+      created_at: new Date().toISOString(), 
+      created_by: userId 
+    };
 
     const { syncEngine } = require('@/lib/offline/queueManager');
 
@@ -169,9 +187,7 @@ export class CanonicalDataService {
     // Prevent legacy JSONB writes even on creation
     const assignmentField = payload.assigned_to || payload.assignedTo;
     if ((entityType === 'task' || table === TABLES.TASKS) && assignmentField) {
-      // 1. Generate Task ID upfront
-      const taskId = crypto.randomUUID();
-      payload.id = taskId;
+      const taskId = payload.id;
 
       // 2. Extract assignments
       const uids = (assignmentField || []).map((u: any) => typeof u === 'string' ? u : u.uid);
@@ -197,6 +213,40 @@ export class CanonicalDataService {
     const finalId = await syncEngine.enqueueMutation(mutationType, payload);
 
     return { data: { ...payload, id: finalId }, error: null };
+  }
+
+  /**
+   * Get a single record by ID with offline fallback
+   */
+  static async getRecordById(table: string, id: string): Promise<{ data: any; error: any }> {
+    try {
+      const { tenantId } = await tenantContext();
+      
+      const { data, error } = await safeQuery(() => supabase
+        .from(table)
+        .select('*')
+        .eq('id', id)
+        .eq('tenant_id', tenantId)
+        .single()
+      );
+
+      if (error) {
+          // Try offline fallback
+          if (typeof window !== 'undefined') {
+              const tableObj = (db as any)[table];
+              if (tableObj) {
+                  const cached = await tableObj.get(id);
+                  if (cached) return { data: cached, error: null };
+              }
+          }
+          throw error;
+      }
+      
+      return { data, error: null };
+    } catch (error) {
+      console.error(`[CanonicalDataService] Error fetching ${table} by id:`, error);
+      return { data: null, error };
+    }
   }
 
   /**

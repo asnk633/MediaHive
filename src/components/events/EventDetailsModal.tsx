@@ -6,7 +6,7 @@ import { SystemEventService } from '@/features/events/services/systemEventServic
 import {
     X, Calendar, Clock, MapPin, Edit2,
     Share2, Trash2, Video, CheckCircle2,
-    Info, Briefcase, User, Camera, Package
+    Info, Briefcase, User, Camera, Package, Repeat
 } from 'lucide-react';
 import { format } from 'date-fns';
 import { EventMediaTab } from '@/components/media/EventMediaTab';
@@ -27,6 +27,8 @@ import {
 } from "@/components/ui/alert-dialog";
 import { Dialog, DialogContent, DialogTitle, DialogDescription } from "@/components/ui/dialog";
 import { toast } from 'sonner';
+import { useEntityPresence } from '@/hooks/useEntityPresence';
+import { PresencePile } from '@/components/collaboration/PresencePile';
 
 interface EventDetailsModalProps {
     event: Event | null;
@@ -50,9 +52,13 @@ export const EventDetailsModal: React.FC<EventDetailsModalProps> = ({ event, isO
     const { user } = useAuth();
     const [isDeleting, setIsDeleting] = useState(false);
     const [isDeleteOpen, setIsDeleteOpen] = useState(false);
+    const [deleteMode, setDeleteMode] = useState<'single' | 'series'>('single');
     const [relatedTasks, setRelatedTasks] = useState<any[]>([]);
     const [isLoadingTasks, setIsLoadingTasks] = useState(false);
     const { canDeleteEvent, role } = usePermissions();
+
+    // Real-time Presence
+    const { activeUsers } = useEntityPresence('event', event?.id);
 
     useEffect(() => {
         const fetchRelatedTasks = async () => {
@@ -122,11 +128,19 @@ export const EventDetailsModal: React.FC<EventDetailsModalProps> = ({ event, isO
         // 4. Perform actual deletion in background
         try {
             if (event.is_system_event) {
-                // Strip suffix if present (recurring events have _YYYY-MM-DD)
-                const realId = event.id.replace(/_\d{4}-\d{2}-\d{2}$/, '');
+                // System events don't support instances yet
+                const realId = event.id.replace(/_\d+$/, '').replace(/_\d{4}-\d{2}-\d{2}$/, '');
                 await SystemEventService.deleteSystemEvent(realId);
             } else {
-                await EventService.deleteEvent(event.id);
+                const isInstance = (event as any).is_recurring_instance;
+                const seriesId = (event as any).original_series_id || event.id;
+
+                if (isInstance && deleteMode === 'single') {
+                    await EventService.deleteInstance(seriesId, event.start_at);
+                } else {
+                    const realId = event.id.replace(/_\d+$/, '');
+                    await EventService.deleteEvent(realId);
+                }
             }
             // Success matches optimistic update. No further action needed.
         } catch (error) {
@@ -201,16 +215,31 @@ export const EventDetailsModal: React.FC<EventDetailsModalProps> = ({ event, isO
                                 {event.title}
                             </h2>
                         </div>
-                        <div className="flex gap-2">
-                            {allowedToEdit && (
-                                <button
-                                    onClick={onEdit}
-                                    disabled={isDeleting || isDeleteOpen}
-                                    className="flex items-center gap-2 px-5 py-2.5 bg-blue-600 hover:bg-blue-500 text-white rounded-xl shadow-lg shadow-blue-600/20 transition-all font-bold text-sm disabled:opacity-50"
+                        <div className="flex items-center gap-3 sm:gap-6">
+                            <PresencePile users={activeUsers} />
+                            <div className="h-8 w-px bg-soft/50 hidden sm:block" />
+                            <div className="flex gap-2">
+                                <button 
+                                    className="p-2.5 text-muted hover:text-foreground hover:bg-surface transition-all rounded-xl border border-transparent hover:border-soft"
+                                    title="Copy Link"
+                                    onClick={() => {
+                                        const url = `${window.location.origin}/events/${event.id}`;
+                                        navigator.clipboard.writeText(url);
+                                        toast.success("Link copied to clipboard");
+                                    }}
                                 >
-                                    <Edit2 size={16} /> Edit
+                                    <Share2 size={18} />
                                 </button>
-                            )}
+                                {allowedToEdit && (
+                                    <button
+                                        onClick={onEdit}
+                                        disabled={isDeleting || isDeleteOpen}
+                                        className="flex items-center gap-2 px-5 py-2.5 bg-blue-600 hover:bg-blue-500 text-white rounded-xl shadow-lg shadow-blue-600/20 transition-all font-bold text-sm disabled:opacity-50"
+                                    >
+                                        <Edit2 size={16} /> Edit
+                                    </button>
+                                )}
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -390,6 +419,20 @@ export const EventDetailsModal: React.FC<EventDetailsModalProps> = ({ event, isO
                                         </p>
                                     </div>
                                 </div>
+
+                                {event.is_recurring && (
+                                    <div className="flex items-center gap-4">
+                                        <div className="w-10 h-10 rounded-xl bg-blue-500/10 flex items-center justify-center text-blue-500 shrink-0">
+                                            <Repeat size={20} />
+                                        </div>
+                                        <div className="flex-1 min-w-0">
+                                            <p className="text-[10px] uppercase font-bold text-muted tracking-wider">Recurrence</p>
+                                            <p className="text-sm font-semibold text-foreground">
+                                                Recurring Series
+                                            </p>
+                                        </div>
+                                    </div>
+                                )}
                             </div>
 
                             <div className="bg-glass rounded-2xl p-5 shadow-sm">
@@ -456,7 +499,43 @@ export const EventDetailsModal: React.FC<EventDetailsModalProps> = ({ event, isO
                                     <AlertDialogHeader>
                                         <AlertDialogTitle>Delete Event?</AlertDialogTitle>
                                         <AlertDialogDescription className="text-muted">
-                                            Are you sure you want to delete this event? This action cannot be undone.
+                                            {event.is_recurring || (event as any).is_recurring_instance ? (
+                                                <div className="space-y-4 py-2">
+                                                    <p>This is a recurring event. How would you like to delete it?</p>
+                                                    <div className="flex flex-col gap-2">
+                                                        <label className="flex items-center gap-3 p-3 rounded-xl border border-soft hover:bg-surface-soft cursor-pointer transition-all">
+                                                            <input 
+                                                                type="radio" 
+                                                                name="deleteMode" 
+                                                                value="single" 
+                                                                checked={deleteMode === 'single'} 
+                                                                onChange={() => setDeleteMode('single')} 
+                                                                className="accent-primary h-4 w-4"
+                                                            />
+                                                            <div className="text-left">
+                                                                <div className="text-sm font-bold text-foreground">Just this instance</div>
+                                                                <div className="text-[10px] text-muted">Other occurrences in the series will remain.</div>
+                                                            </div>
+                                                        </label>
+                                                        <label className="flex items-center gap-3 p-3 rounded-xl border border-soft hover:bg-surface-soft cursor-pointer transition-all">
+                                                            <input 
+                                                                type="radio" 
+                                                                name="deleteMode" 
+                                                                value="series" 
+                                                                checked={deleteMode === 'series'} 
+                                                                onChange={() => setDeleteMode('series')} 
+                                                                className="accent-primary h-4 w-4"
+                                                            />
+                                                            <div className="text-left">
+                                                                <div className="text-sm font-bold text-foreground">All events in series</div>
+                                                                <div className="text-[10px] text-muted">Removes the entire recurring pattern.</div>
+                                                            </div>
+                                                        </label>
+                                                    </div>
+                                                </div>
+                                            ) : (
+                                                "Are you sure you want to delete this event? This action cannot be undone."
+                                            )}
                                         </AlertDialogDescription>
                                     </AlertDialogHeader>
                                     <AlertDialogFooter>

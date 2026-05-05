@@ -13,6 +13,8 @@ import { runSchemaCheck } from '@/lib/health/schemaCheck';
 import { ConflictResolutionModal } from '@/components/system/ConflictResolutionModal';
 import { SyncIndicator } from '@/components/system/SyncIndicator';
 import { SyncDevPanel } from '@/components/system/SyncDevPanel';
+import { useRouter } from 'next/navigation';
+import { App } from '@capacitor/app';
 
 
 // --- GLOBAL BUFFER FOR DIAGNOSTICS ---
@@ -23,6 +25,7 @@ const MAX_LOGS = 50;
  * RootProviders handles global state, theme, auth, and boot-time diagnostics.
  */
 export default function RootProviders({ children }: { children: ReactNode }) {
+  const router = useRouter();
   const bootStartTime = useRef(Date.now());
   const telemetryEmitted = useRef(false);
 
@@ -113,10 +116,19 @@ export default function RootProviders({ children }: { children: ReactNode }) {
     };
     networkMonitor.addListener(handleNetworkChange);
 
-    // 7. DB Schema Drift Guard
-    runSchemaCheck().catch(err => {
-      originalError('[SchemaCheck] Unexpected error:', err);
-    });
+    // 8. Capacitor Deep Link Listener
+    if ((window as any).Capacitor?.isNative) {
+      App.addListener('appUrlOpen', data => {
+        const url = new URL(data.url);
+        // data.url is the full URL (e.g. https://thaibagarden.media/tasks/123)
+        // We want to extract the pathname and navigate
+        const path = url.pathname;
+        if (path) {
+          router.push(path);
+          toast.info(`Navigating to shared content...`);
+        }
+      });
+    }
 
     return () => {
       clearInterval(watchdogInterval);

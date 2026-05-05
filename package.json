@@ -166,6 +166,7 @@
     "react-syntax-highlighter": "^15.6.1",
     "react-wrap-balancer": "^1.1.1",
     "recharts": "^3.5.1",
+    "rrule": "^2.8.1",
     "sanitize-html": "^2.17.0",
     "sharp": "^0.34.5",
     "simplex-noise": "^4.0.3",

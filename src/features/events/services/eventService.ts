@@ -1,5 +1,6 @@
 import type { Event, EventCrewAssignment, EventEquipmentReservation } from '@/features/events/types/event';
 import type { Task } from "@/features/tasks/types/task";
+import { RecurrenceService } from './recurrenceService';
 import { CanonicalDataService } from '@/services/canonicalDataService';
 import { SystemEventService } from './systemEventService';
 import { supabase } from '@/lib/supabaseClient';
@@ -48,12 +49,76 @@ export const EventService = {
                 await offlineDB.setCache(cacheKey, data);
             }
 
-            return (data as any[]) || [];
+            const rawEvents = (data as any[]) || [];
+            
+            // Expand recurring events
+            const currentYear = new Date().getFullYear();
+            return RecurrenceService.expandEvents(rawEvents, new Date(currentYear, 0, 1), new Date(currentYear, 11, 31));
         } catch (e) {
             const cacheKey = institutionId ? `events:${institutionId}` : 'events';
             console.warn("[EventService] Falling back to cache:", e);
             const cached = await offlineDB.getCache<any[]>(cacheKey);
-            return cached || [];
+            const rawEvents = cached || [];
+            const currentYear = new Date().getFullYear();
+            return RecurrenceService.expandEvents(rawEvents, new Date(currentYear, 0, 1), new Date(currentYear, 11, 31));
+        }
+    },
+
+    async getEventById(id: string): Promise<Event | null> {
+        try {
+            const { tenantId } = await tenantContext();
+
+            // Handle Virtual IDs for recurring instances (e.g. seriesId_timestamp)
+            let searchId = id;
+            let virtualTimestamp: number | null = null;
+            
+            if (id.includes('_')) {
+                const parts = id.split('_');
+                // Ensure it's a valid virtual ID format (UUID_Timestamp)
+                if (parts.length === 2 && !isNaN(Number(parts[1]))) {
+                    searchId = parts[0];
+                    virtualTimestamp = parseInt(parts[1]);
+                }
+            }
+
+            const { data, error } = await safeQuery(() => supabase
+                .from(COLLECTION)
+                .select(`
+                    *,
+                    crew:${TABLES.EVENT_CREW}(
+                        *,
+                        profile:${TABLES.USERS}(id, full_name, avatar_url)
+                    ),
+                    equipment:${TABLES.EVENT_EQUIPMENT}(
+                        *,
+                        inventory:${TABLES.INVENTORY}(id, name, image_url)
+                    )
+                `)
+                .eq('id', searchId)
+                .eq('tenant_id', tenantId)
+                .single()
+            );
+
+            if (error) throw error;
+            const event = data as any;
+
+            if (virtualTimestamp && event.is_recurring) {
+                // Re-expand to find this specific instance
+                const instanceDate = new Date(virtualTimestamp);
+                const expansionStart = new Date(instanceDate.getFullYear(), instanceDate.getMonth(), instanceDate.getDate());
+                const expansionEnd = new Date(expansionStart.getTime() + 24 * 60 * 60 * 1000);
+                
+                const expanded = RecurrenceService.expandEvents([event], expansionStart, expansionEnd);
+                return expanded.find(e => e.id === id) || null;
+            }
+
+            return event;
+        } catch (e) {
+            console.error("[EventService] getEventById failed:", e);
+            // Fallback: Check cache
+            const cacheKey = 'events'; // Simplified for now
+            const cached = await offlineDB.getCache<any[]>(cacheKey);
+            return cached?.find(e => e.id === id) || null;
         }
     },
 
@@ -83,21 +148,22 @@ export const EventService = {
 
                 if (error) throw error;
 
-                const userEvents = ((rawEvents as any[]) || []).map((event: any) => ({
+                // 1. Normalize user events
+                const normalizedUserEvents = ((rawEvents as any[]) || []).map((event: any) => ({
                     ...event,
-                    // Legacy mappings for backward compatibility if any
                     startTime: event.start_at,
                     endTime: event.end_at,
-                    // Normalize created_at to Timestamp schema for compatibility with any components still using it
-                    created_at: typeof event.created_at === 'string'
-                        ? { seconds: Math.floor(new Date(event.created_at).getTime() / 1000), nanoseconds: 0 }
-                        : event.created_at,
                 }));
 
-                // Combine with system events
+                // 2. Expand Recurring User Events
                 const currentYear = new Date().getFullYear();
+                const expansionStart = new Date(currentYear, 0, 1);
+                const expansionEnd = new Date(currentYear + 1, 11, 31);
+                
+                const userEvents = RecurrenceService.expandEvents(normalizedUserEvents, expansionStart, expansionEnd);
+
+                // 3. Combine with system events
                 const allSystemEvents = await SystemEventService.getAllSystemEvents();
-                // Expand for Current Year AND Next Year to ensure visibility
                 const systemEventsCurrent = SystemEventService.expandEventsForView(allSystemEvents, currentYear);
                 const systemEventsNext = SystemEventService.expandEventsForView(allSystemEvents, currentYear + 1);
 
@@ -200,6 +266,8 @@ export const EventService = {
                 media_coverage,
                 on_behalf_of,
                 organizer,
+                is_recurring: event.is_recurring,
+                recurrence_rule: event.recurrence_rule,
                 tenant_id: tenantId,
                 created_by: userId
             };
@@ -250,6 +318,36 @@ export const EventService = {
         if (!success) throw new Error('Failed to enqueue event deletion');
     },
 
+    deleteInstance: async (seriesId: string, instanceDate: string) => {
+        // To delete a single instance, we create an exception record with deleted: true
+        const { tenantId, institutionId } = await tenantContext();
+        
+        // We need the series data to ensure the exception has the right context
+        const { data: series, error } = await supabase.from(TABLES.EVENTS).select('*').eq('id', seriesId).single();
+        if (error || !series) throw new Error('Parent series not found');
+
+        const exceptionRecord = {
+            title: series.title,
+            description: series.description,
+            type: (series as any).type,
+            location: series.location,
+            is_recurring: false,
+            recurrence_rule: null,
+            parent_event_id: seriesId,
+            recurrence_exception_date: instanceDate,
+            start_at: instanceDate,
+            end_at: instanceDate, // End date is typically the same day for a tombstone
+            deleted: true,
+            tenant_id: tenantId,
+            institution_id: institutionId,
+            approval_status: series.approval_status,
+            status: series.status
+        };
+
+        const success = await CanonicalDataService.createRecord(COLLECTION, exceptionRecord, 'event');
+        if (!success) throw new Error('Failed to create recurrence exception');
+    },
+
     updateEvent: async (id: string, updates: Partial<Event> & { crew?: Partial<EventCrewAssignment>[], equipment?: Partial<EventEquipmentReservation>[] }, currentUserUid: string) => {
         try {
             const { tenantId } = await tenantContext();
@@ -293,23 +391,74 @@ export const EventService = {
 
     async checkEquipmentConflicts(inventoryId: string, start: string, end: string, excludeEventId?: string): Promise<any[]> {
         const { tenantId } = await tenantContext();
-        let query = supabase
-            .from(TABLES.EVENT_EQUIPMENT)
-            .select(`*, event:${TABLES.EVENTS}(title)`)
-            .eq('inventory_id', inventoryId)
-            .eq('tenant_id', tenantId)
-            .lt('reserved_from', end)
-            .gt('reserved_to', start);
+        
+        // 1. Fetch relevant equipment reservations for this item
+        // We fetch all non-deleted events that have a reservation for this item.
+        // For performance, we could filter by date, but recurring events might have a first instance in the past.
+        const { data: allReservations, error } = await safeQuery(() => 
+            supabase
+                .from(TABLES.EVENT_EQUIPMENT)
+                .select(`
+                    *,
+                    event:${TABLES.EVENTS}(
+                        id, title, is_recurring, recurrence_rule, start_at, end_at, deleted
+                    )
+                `)
+                .eq('inventory_id', inventoryId)
+                .eq('tenant_id', tenantId)
+        );
 
-        if (excludeEventId) {
-            query = query.neq('event_id', excludeEventId);
-        }
-
-        const { data, error } = await safeQuery(() => query);
         if (error) {
             console.error("Conflict check failed", error);
             return [];
         }
-        return (data as any[]) || [];
+
+        const queryStart = new Date(start);
+        const queryEnd = new Date(end);
+        const conflicts: any[] = [];
+
+        (allReservations as any[] || []).forEach(res => {
+            const event = res.event;
+            if (!event || event.deleted) return;
+            
+            // Allow excluding a specific series (when editing)
+            if (excludeEventId && event.id === excludeEventId) return;
+
+            if (event.is_recurring && event.recurrence_rule) {
+                // Expand recurring event for the query range
+                const instances = RecurrenceService.expandEvents([event], queryStart, queryEnd);
+                
+                // For each instance, check if the reservation (relative to instance start) overlaps
+                instances.forEach(instance => {
+                    // Equipment reservation time is relative to the original event start
+                    const originalEventStart = new Date(event.start_at).getTime();
+                    const resStartOffset = new Date(res.reserved_from).getTime() - originalEventStart;
+                    const resEndOffset = new Date(res.reserved_to).getTime() - originalEventStart;
+
+                    const instanceStart = new Date(instance.start_at).getTime();
+                    const instResStart = new Date(instanceStart + resStartOffset);
+                    const instResEnd = new Date(instanceStart + resEndOffset);
+
+                    if (instResStart < queryEnd && instResEnd > queryStart) {
+                        conflicts.push({
+                            ...res,
+                            reserved_from: instResStart.toISOString(),
+                            reserved_to: instResEnd.toISOString(),
+                            instance_id: instance.id,
+                            is_recurring_conflict: true
+                        });
+                    }
+                });
+            } else {
+                // Simple overlap check for static events
+                const resStart = new Date(res.reserved_from);
+                const resEnd = new Date(res.reserved_to);
+                if (resStart < queryEnd && resEnd > queryStart) {
+                    conflicts.push(res);
+                }
+            }
+        });
+
+        return conflicts;
     }
 };

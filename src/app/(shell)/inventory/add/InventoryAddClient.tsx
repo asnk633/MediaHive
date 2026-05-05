@@ -164,6 +164,7 @@ export default function InventoryAddClient() {
                 imageUrl: formData.imageUrl || '',
                 driveFileId: formData.driveFileId,
                 images: formData.images,
+                institutionId: user?.institution_id
             };
 
             // @ts-ignore - Assuming create method exists and matches

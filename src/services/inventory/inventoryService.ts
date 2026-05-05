@@ -88,6 +88,7 @@ function mapEquipToRow(data: Partial<EquipmentItem>): any {
     if (data.assetStatus !== undefined) row.asset_status = data.assetStatus;
     if (data.notes !== undefined) row.notes = data.notes;
     if (data.remarks !== undefined) row.remarks = data.remarks;
+    if (data.institutionId !== undefined) row.institution_id = data.institutionId;
     return row;
 }
 
@@ -160,7 +161,10 @@ export const inventoryService = {
         }
     },
 
-    async create(data: Partial<EquipmentItem>): Promise<string> {
+    async create(data: Partial<EquipmentItem> & { institutionId: string }): Promise<string> {
+        if (!data.institutionId) {
+            throw new Error("[InventoryService] Cannot create item without institutionId");
+        }
         const { data: result, error } = await CanonicalDataService.createRecord(
             TABLES.INVENTORY,
             mapEquipToRow(data),

@@ -18,6 +18,9 @@ import { format } from 'date-fns';
 import { cn } from '@/lib/utils';
 import { Dialog, DialogContent, DialogTitle, DialogDescription } from '@/components/ui/dialog';
 import { Switch } from '@/components/ui/switch';
+import { useEntityPresence } from '@/hooks/useEntityPresence';
+import { FieldPresence } from '@/components/collaboration/FieldPresence';
+import { PresencePile } from '@/components/collaboration/PresencePile';
 
 interface EventEditModalProps {
     event: Event;
@@ -30,6 +33,9 @@ export const EventEditModal: React.FC<EventEditModalProps> = ({ event, isOpen, o
     const isAdmin = user?.role === 'admin';
     const [loading, setLoading] = useState(false);
     const [teamMembers, setTeamMembers] = useState<{ uid: string; name: string }[]>([]);
+
+    // Real-time Presence
+    const { activeUsers, updateFocus } = useEntityPresence('event', event?.id);
 
     // Organization Data
     const [departmentsList, setDepartmentsList] = useState<{ id: string | number; name: string }[]>([]);
@@ -257,23 +263,34 @@ export const EventEditModal: React.FC<EventEditModalProps> = ({ event, isOpen, o
                     <DialogDescription className="sr-only">
                         Form to edit information for the event including title, date, and description.
                     </DialogDescription>
-                    <button onClick={onClose} className="p-2 hover:bg-glass rounded-full transition-colors text-muted hover:text-foreground">
-                        <X size={20} />
-                    </button>
+                    <div className="flex items-center gap-4">
+                        <PresencePile users={activeUsers} />
+                        <button onClick={onClose} className="p-2 hover:bg-glass rounded-full transition-colors text-muted hover:text-foreground">
+                            <X size={20} />
+                        </button>
+                    </div>
                 </div>
 
                 {/* Form Body - Scrollable */}
                 <div className="p-6 overflow-y-auto custom-scrollbar flex-1 min-h-0">
                     <form id="edit-event-form" onSubmit={handleSubmit} className="space-y-6">
                         <div>
-                            <label className="block text-xs font-bold text-muted uppercase tracking-widest mb-2 px-1">Event Title</label>
+                            <div className="flex items-center justify-between mb-2">
+                                <label className="block text-xs font-bold text-muted uppercase tracking-widest px-1">Event Title</label>
+                                <FieldPresence users={activeUsers} field="title" />
+                            </div>
                             <div className="relative group">
                                 <AlignLeft size={18} className="absolute left-4 top-1/2 -translate-y-1/2 text-muted group-focus-within:text-primary transition-colors" />
                                 <input
                                     className="w-full bg-glass border-none rounded-xl pl-12 pr-4 py-3 text-foreground placeholder-muted focus:ring-2 focus:ring-primary/50 outline-none transition-all shadow-sm"
                                     placeholder="Enter event title"
                                     value={formData.title}
-                                    onChange={e => setFormData({ ...formData, title: e.target.value })}
+                                    onFocus={() => updateFocus('title')}
+                                    onBlur={() => updateFocus(null)}
+                                    onChange={e => {
+                                        setFormData({ ...formData, title: e.target.value });
+                                        updateFocus('title', true); // broadcasting "typing"
+                                    }}
                                     required
                                 />
                             </div>
@@ -298,14 +315,22 @@ export const EventEditModal: React.FC<EventEditModalProps> = ({ event, isOpen, o
                         </div>
 
                         <div>
-                            <label className="block text-xs font-bold text-muted uppercase tracking-widest mb-2 px-1">Location</label>
+                            <div className="flex items-center justify-between mb-2">
+                                <label className="block text-xs font-bold text-muted uppercase tracking-widest px-1">Location</label>
+                                <FieldPresence users={activeUsers} field="location" />
+                            </div>
                             <div className="relative group">
                                 <MapPin size={18} className="absolute left-4 top-1/2 -translate-y-1/2 text-muted group-focus-within:text-primary transition-colors" />
                                 <input
                                     className="w-full bg-glass border-none rounded-xl pl-12 pr-4 py-3 text-foreground placeholder-muted focus:ring-2 focus:ring-primary/50 outline-none transition-all shadow-sm"
                                     placeholder="Location (Optional)"
                                     value={formData.location}
-                                    onChange={e => setFormData({ ...formData, location: e.target.value })}
+                                    onFocus={() => updateFocus('location')}
+                                    onBlur={() => updateFocus(null)}
+                                    onChange={e => {
+                                        setFormData({ ...formData, location: e.target.value });
+                                        updateFocus('location', true);
+                                    }}
                                 />
                             </div>
                         </div>
@@ -361,13 +386,21 @@ export const EventEditModal: React.FC<EventEditModalProps> = ({ event, isOpen, o
                         </div>
 
                         <div>
-                            <label className="block text-xs font-bold text-muted uppercase tracking-widest mb-2 px-1">Description</label>
+                            <div className="flex items-center justify-between mb-2">
+                                <label className="block text-xs font-bold text-muted uppercase tracking-widest px-1">Description</label>
+                                <FieldPresence users={activeUsers} field="description" />
+                            </div>
                             <textarea
                                 className="w-full bg-glass border-none rounded-xl px-4 py-3 text-foreground placeholder-muted focus:ring-2 focus:ring-primary/50 outline-none transition-all min-h-[120px] shadow-sm"
                                 placeholder="Add description or notes..."
                                 rows={4}
                                 value={formData.description}
-                                onChange={e => setFormData({ ...formData, description: e.target.value })}
+                                onFocus={() => updateFocus('description')}
+                                onBlur={() => updateFocus(null)}
+                                onChange={e => {
+                                    setFormData({ ...formData, description: e.target.value });
+                                    updateFocus('description', true);
+                                }}
                             />
                         </div>
 

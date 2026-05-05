@@ -52,7 +52,7 @@ export default function TasksNewClient() {
         initialState: {
             title: '',
             description: '',
-            due_date: undefined as string | undefined,
+            due_date: new Date().toISOString() as string | undefined,
             priority: 'medium' as 'low' | 'medium' | 'high',
             assignedToIds: [] as string[],
             selectedOrgId: '',
@@ -173,9 +173,19 @@ export default function TasksNewClient() {
 
     const submitTask = async () => {
         setError(null);
-        if (!title || !due_date || !selectedOrgId) {
-            throw new Error(COPY.errors.taskMissing);
+        
+        // Comprehensive Validation Check
+        if (!title.trim()) {
+            throw new Error("Task title is required.");
         }
+        if (!due_date) {
+            throw new Error("Please select a due date.");
+        }
+        if (!selectedOrgId) {
+            throw new Error("Please select a Department or Institution.");
+        }
+
+        try {
             const { tenantId } = await tenantContext();
             let finalAssignedTo: { uid: string; name: string }[] = [];
 
@@ -227,6 +237,8 @@ export default function TasksNewClient() {
                 department_id = id;
                 const d = departmentsList.find(dep => String(dep.id) === id);
                 departmentName = d ? d.name : '';
+                // Ensure institution_id is carried over if available
+                if (!institution_id) institution_id = user.institution_id;
             } else if (selectedOrgId.startsWith('inst_')) {
                 const id = selectedOrgId.split('_')[1];
                 institution_id = id;
@@ -321,6 +333,10 @@ export default function TasksNewClient() {
                     console.error("Failed to notify admins", e);
                 }
             }
+        } catch (err: any) {
+            console.error("[TasksNew] Submission failed:", err);
+            throw err; // Re-throw for useFormSubmit to catch
+        }
     };
 
     const { isSubmitting, handleSubmit: handleProtectedSubmit } = useFormSubmit({

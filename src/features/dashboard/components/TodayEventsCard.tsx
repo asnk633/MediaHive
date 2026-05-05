@@ -7,6 +7,8 @@ import { ReactiveCard } from '@/components/ui/ReactiveCard';
 import { Skeleton } from '@/components/ui/skeleton';
 import { format } from 'date-fns';
 
+import Link from 'next/link';
+
 interface TodayEventsCardProps {
     events: any[];
     tasks?: any[];
@@ -41,10 +43,10 @@ export const TodayEventsCard: React.FC<TodayEventsCardProps> = ({ events, tasks 
                     ))
                 ) : events.length > 0 ? (
                     events.map((event) => (
-                        <div 
+                        <Link 
+                            href={`/events/${event.id}`}
                             key={event.id}
-                            onClick={() => onViewEvent(event.id)}
-                            className="group p-4 mx-4 rounded-[18px] bg-white/[0.02] border border-white/[0.05] hover:bg-white/[0.04] hover:border-blue-500/30 transition-all cursor-pointer"
+                            className="group p-4 mx-4 rounded-[18px] bg-white/[0.02] border border-white/[0.05] hover:bg-white/[0.04] hover:border-blue-500/30 transition-all cursor-pointer block no-underline"
                         >
                             <div className="flex items-start justify-between mb-2">
                                 <h4 className="text-sm font-semibold text-white/90 group-hover:text-blue-400 transition-colors">
@@ -107,7 +109,7 @@ export const TodayEventsCard: React.FC<TodayEventsCardProps> = ({ events, tasks 
                                     </div>
                                 );
                             })()}
-                        </div>
+                        </Link>
                     ))
                 ) : (
                     <div className="flex flex-col items-center justify-center py-12 text-center">

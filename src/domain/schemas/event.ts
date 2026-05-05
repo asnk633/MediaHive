@@ -19,6 +19,10 @@ export const EventSchema = z.object({
     updated_at: z.string().optional().nullable(),
     version: z.number().optional().nullable(),
     updated_by: z.string().optional().nullable(),
+    is_recurring: z.boolean().optional().nullable(),
+    recurrence_rule: z.string().optional().nullable(),
+    parent_event_id: z.string().optional().nullable(),
+    recurrence_exception_date: z.string().optional().nullable(),
 });
 
 export type EventDTO = z.infer<typeof EventSchema>;

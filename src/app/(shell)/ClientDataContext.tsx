@@ -44,6 +44,10 @@ export type EventLite = {
   location?: string | null;
   description?: string | null;
   is_system_event?: boolean;
+  is_all_day?: boolean;
+  is_recurring?: boolean;
+  status?: string;
+  date?: string;
 };
 
 type Store = {

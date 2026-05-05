@@ -153,7 +153,7 @@ export function EventListView({ events, onEventClick, showCurrentYearOnly = fals
                                                             <div key={`${event.id}-${idx}`} className="transition-all duration-200 hover:translate-x-1">
                                                                 <EventCard
                                                                     event={event}
-                                                                    onClick={() => onEventClick(event)}
+                                                                    href={`/events/${event.id}`}
                                                                     className="event-surface !p-4 border-l-4 border-l-blue-500/40 hover:border-l-blue-500 transition-all duration-300 shadow-sm hover:shadow-blue-500/10"
                                                                 />
                                                             </div>

@@ -1,4 +1,5 @@
 import React, { memo } from 'react';
+import Link from 'next/link';
 import { useSortable } from '@dnd-kit/sortable';
 import { CSS } from '@dnd-kit/utilities';
 import { Task } from "@/features/tasks/types/task";
@@ -169,12 +170,10 @@ export const SortableTaskRow = memo(({
             className={cn("group flex flex-col transition-all", isDragging && "relative")}
         >
             {/* Main Row */}
-            <div
+            <Link
+                href={`/tasks/${task.id}`}
                 id={`nav-item-${task.id}`}
-                role="button"
-                tabIndex={0}
                 data-active={activeId === task.id}
-                onClick={() => onTaskClick?.(task)}
                 className={cn(
                     "grid grid-cols-[auto_1fr_auto] md:grid-cols-[40px_3fr_1.5fr_0.8fr_1.5fr_1.2fr_1.2fr_1.2fr] gap-2 px-6 items-center border-l-[3px] transition-all duration-300 cursor-pointer focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-blue-500/50 hover:-translate-y-[2px] mb-1 rounded-sm overflow-hidden",
                     density === 'compact' ? "py-2" : "py-4",
@@ -416,7 +415,7 @@ export const SortableTaskRow = memo(({
                     )}
                 </div>
 
-            </div>
+            </Link>
 
             {/* Expanded Detail Panel */}
             <AnimatePresence>
@@ -438,9 +437,9 @@ export const SortableTaskRow = memo(({
                             {/* ... truncated for brevity in this rewrite, but I should copy mostly everything ... */}
                             {/* Actually, for the sake of the task, I will include the Open Full Modal button */}
                             <div className="flex justify-end items-end h-full">
-                                <button onClick={() => onTaskClick?.(task)} className="text-blue-400 hover:text-white text-xs font-bold uppercase flex items-center gap-1 transition-colors">
-                                    Open Full Modal <Edit3 size={12} />
-                                </button>
+                                <Link href={`/tasks/${task.id}`} className="text-blue-400 hover:text-white text-xs font-bold uppercase flex items-center gap-1 transition-colors">
+                                    Open Details <Edit3 size={12} />
+                                </Link>
                             </div>
                         </div>
                     </motion.div>

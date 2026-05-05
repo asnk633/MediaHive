@@ -1,5 +1,5 @@
-
 import React from 'react';
+import Link from 'next/link';
 import {
     format,
     startOfMonth,
@@ -246,10 +246,10 @@ export function CalendarView({ currentDate, onDateChange, events, onDateClick, o
                                          {/* Event Indicators Container */}
                                         <div className="flex-1 flex flex-col gap-1.5 z-20">
                                             {dayEvents.slice(0, 3).map((ev: any) => (
-                                                <motion.div
+                                                <Link
+                                                    href={`/events/${ev.id}`}
                                                     key={ev.id}
                                                     onMouseEnter={(e) => {
-                                                        e.stopPropagation();
                                                         const rect = e.currentTarget.getBoundingClientRect();
                                                         setHoveredEvent({ event: ev, anchorRect: rect });
                                                         setHoveredDate(null);
@@ -257,17 +257,13 @@ export function CalendarView({ currentDate, onDateChange, events, onDateClick, o
                                                     onMouseLeave={() => {
                                                         setHoveredEvent(null);
                                                     }}
-                                                    onClick={(e) => {
-                                                        e.stopPropagation();
-                                                        onEventClick(ev);
-                                                    }}
                                                     className={cn(
-                                                        "event-pill text-[10px] font-bold px-2 py-1 rounded-md truncate w-full cursor-pointer",
+                                                        "event-pill text-[10px] font-bold px-2 py-1 rounded-md truncate w-full cursor-pointer block",
                                                         ev.hasConflict && 'bg-red-500/20 text-red-100 border-red-500/40'
                                                     )}
                                                 >
                                                     {ev.title}
-                                                </motion.div>
+                                                </Link>
                                             ))}
                                         </div>
 

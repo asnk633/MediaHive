@@ -29,6 +29,7 @@ import {
   TooltipProvider,
   TooltipTrigger,
 } from "@/components/ui/tooltip";
+import ClientOnly from "@/components/ClientOnly";
 
 import { usePermissions } from "@/hooks/usePermissions";
 
@@ -58,42 +59,44 @@ export default function TopBar({ title = "MediaHive" }: { title?: string }) {
       {/* 2. Actions & Profile */}
       <div className="flex items-center gap-2 pointer-events-auto">
         {/* Sync Action */}
-        <TooltipProvider>
-          <Tooltip>
-            <TooltipTrigger asChild>
-              <Button
-                variant="ghost"
-                size="icon"
-                onClick={() => processSyncQueue()}
-                disabled={isProcessing}
-                className={cn(
-                  "relative h-10 w-10 rounded-full transition-all duration-300",
-                  "hover:bg-white/5 group",
-                  !isOnline || pendingSyncCount > 0 || isProcessing ? "opacity-100" : "opacity-50"
-                )}
-              >
-                <RefreshCw 
-                  size={18} 
+        <ClientOnly>
+          <TooltipProvider>
+            <Tooltip>
+              <TooltipTrigger asChild>
+                <Button
+                  variant="ghost"
+                  size="icon"
+                  onClick={() => processSyncQueue()}
+                  disabled={isProcessing}
                   className={cn(
-                    "text-white transition-colors",
-                    isProcessing && "animate-spin"
-                  )} 
-                />
-                {!isOnline && (
-                  <span className="absolute top-2.5 right-2.5 w-2 h-2 rounded-full bg-amber-500 border border-sidebar shadow-[0_0_8px_rgba(245,158,11,0.6)]" />
-                )}
-                {pendingSyncCount > 0 && !isProcessing && (
-                  <span className="absolute -top-0.5 -right-0.5 min-w-[14px] h-3.5 px-1 rounded-full bg-indigo-500 text-[8px] font-bold flex items-center justify-center text-white border border-sidebar shadow-lg">
-                    {pendingSyncCount}
-                  </span>
-                )}
-              </Button>
-            </TooltipTrigger>
-            <TooltipContent side="bottom" className="bg-slate-900 border-white/10 text-[10px] font-bold uppercase tracking-widest px-3 py-1.5 rounded-lg shadow-2xl">
-              {isOnline ? (pendingSyncCount > 0 ? `Sync ${pendingSyncCount} Pending` : 'System Up to Date') : 'Offline (Changes Saved)'}
-            </TooltipContent>
-          </Tooltip>
-        </TooltipProvider>
+                    "relative h-10 w-10 rounded-full transition-all duration-300",
+                    "hover:bg-white/5 group",
+                    !isOnline || pendingSyncCount > 0 || isProcessing ? "opacity-100" : "opacity-50"
+                  )}
+                >
+                  <RefreshCw 
+                    size={18} 
+                    className={cn(
+                      "text-white transition-colors",
+                      isProcessing && "animate-spin"
+                    )} 
+                  />
+                  {!isOnline && (
+                    <span className="absolute top-2.5 right-2.5 w-2 h-2 rounded-full bg-amber-500 border border-sidebar shadow-[0_0_8px_rgba(245,158,11,0.6)]" />
+                  )}
+                  {pendingSyncCount > 0 && !isProcessing && (
+                    <span className="absolute -top-0.5 -right-0.5 min-w-[14px] h-3.5 px-1 rounded-full bg-indigo-500 text-[8px] font-bold flex items-center justify-center text-white border border-sidebar shadow-lg">
+                      {pendingSyncCount}
+                    </span>
+                  )}
+                </Button>
+              </TooltipTrigger>
+              <TooltipContent side="bottom" className="bg-slate-900 border-white/10 text-[10px] font-bold uppercase tracking-widest px-3 py-1.5 rounded-lg shadow-2xl">
+                {isOnline ? (pendingSyncCount > 0 ? `Sync ${pendingSyncCount} Pending` : 'System Up to Date') : 'Offline (Changes Saved)'}
+              </TooltipContent>
+            </Tooltip>
+          </TooltipProvider>
+        </ClientOnly>
 
         <div className="h-4 w-[1px] bg-border-soft mx-1" />
 

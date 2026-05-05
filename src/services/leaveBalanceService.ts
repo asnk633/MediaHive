@@ -38,9 +38,13 @@ export const LeaveBalanceService = {
      */
     initializeBalance: async (uid: string, year: number): Promise<LeaveBalance> => {
         const { tenantId } = await tenantContext();
+        const user = await supabase.auth.getUser();
+        const institution_id = user.data.user?.user_metadata?.institution_id;
+
         const balanceData = {
             user_id: uid,
             tenant_id: tenantId,
+            institution_id,
             year,
             balances: {
                 casual: { taken: 0, total: DEFAULT_LEAVE_ALLOWANCES.casual },

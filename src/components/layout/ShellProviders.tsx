@@ -16,15 +16,26 @@ import { GuestOnboardingWrapper } from "@/components/onboarding/GuestOnboardingW
 import { JankMonitor } from "@/components/JankMonitor";
 import { CrashLoopBreaker } from "@/components/CrashLoopBreaker";
 import { AwarenessIndicator } from "@/components/AwarenessIndicator";
+import { collabManager } from "@/lib/collaboration/collabManager";
+import { useAuth } from "@/contexts/AuthContextProvider";
 
 import { MobileViewportSafety } from "@/components/layout/MobileViewportSafety";
 import DesktopSideNav from "@/components/layout/DesktopSideNav";
 
 export default function ShellProviders({ children }: { children: React.ReactNode }) {
-    // Initialize PWA functionality
+    const { user } = useAuth();
+
+    // Initialize PWA and Collaboration functionality
     useEffect(() => {
         initPWA();
-    }, []);
+        
+        if (user) {
+            collabManager.init({
+                id: user.uid || user.id,
+                name: user.name || 'User'
+            });
+        }
+    }, [user]);
 
     return (
         <CrashLoopBreaker>

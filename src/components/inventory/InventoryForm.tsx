@@ -218,12 +218,26 @@ export default function InventoryForm({ initialData, mode }: InventoryFormProps)
         try {
             setLoading(true);
 
+            const institutionId = user?.institution_id;
+
+            if (!institutionId) {
+                toast.error("Institution context missing. Please refresh and try again.");
+                return;
+            }
+
             const basePayload = {
                 ...formData,
+                institutionId: institutionId, // Match the camelCase DTO expected by inventoryService
                 purchaseDate: new Date(formData.purchaseDate).toISOString(),
             };
 
             if (mode === 'create') {
+                // Ensure the required field is present for the service
+                if (!basePayload.name || !basePayload.category) {
+                    toast.error("Please fill in all required fields.");
+                    return;
+                }
+
                 await inventoryService.create(basePayload as any);
                 toast.success("Item added to inventory.");
                 nativeNavigate('/inventory', router, 'InventoryForm (Create Success)');

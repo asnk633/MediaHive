@@ -17,40 +17,33 @@ This document provides procedures for backup, multi-region synchronization, and 
 
 ## Backup Procedures
 
-### Nightly Database Backups
+### Automated Database Backups (Supabase)
 
-Backups are performed automatically every night at 2:00 AM UTC via GitHub Actions workflow.
+Backups are handled via the Supabase managed platform. Additionally, a manual JSON-based backup utility is available for rapid recovery and audit trails.
 
 #### Backup Process
-1. Export database as SQL dump using [scripts/backup/export-db.js](file:///d:/Thaiba%20Garden%20Media%20Manager-Orchids/scripts/backup/export-db.js)
-2. Store backup as GitHub Action artifact with 30-day retention
-3. Verify backup integrity
+1. Export all public tables and auth users to JSON using [scripts/full-backup.ts](file:///d:/MediaHive%20App/scripts/full-backup.ts)
+2. Files are saved in the `backups/backup-[timestamp]/` directory.
+3. Each table is exported as a separate `.json` file.
 
-#### Manual Backup
+#### Manual Backup Execution
 ```bash
-# SQL format backup
-node scripts/backup/export-db.js --format sql --output backup-$(date -u +"%Y%m%d-%H%M%S").sql
-
-# Data directory backup
-node scripts/backup/export-db.js --format data --output backup-$(date -u +"%Y%m%d-%H%M%S")
+npx tsx scripts/full-backup.ts
 ```
+
+#### Latest Backup Location
+- **Path**: `d:\MediaHive App\backups\backup-1777949662617\`
+- **Contents**: 25 public tables + `auth_users.json`.
+- **Status**: Verified via smoke test (2026-05-05).
 
 ### Restore from Backup
 
 #### Restore Process
-1. Stop application services
-2. Restore database from backup file
-3. Start application services
-4. Verify data integrity
+1. Initialize a fresh Supabase project or branch.
+2. Apply schema migrations found in `supabase/migrations/` (or via `scripts/init-schema.cjs`).
+3. Import data using a custom import script (e.g., [scripts/import-data.ts](file:///d:/MediaHive%20App/scripts/import-data.ts) - *In development*).
+4. Verify data integrity and FK constraints.
 
-#### Manual Restore
-```bash
-# SQL format restore
-node scripts/backup/import-db.js --format sql --input backup-file.sql
-
-# Data directory restore
-node scripts/backup/import-db.js --format data --input backup-directory/
-```
 
 ## Replication Setup
 

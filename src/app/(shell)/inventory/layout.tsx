@@ -1,10 +1,12 @@
 "use client";
 
-
-
 import { ReactNode } from "react";
 
-
-export default function InventoryRootLayout({ children }: { children: ReactNode }) {
-    return <>{children}</>;
+export default function InventoryRootLayout({ children, modal }: { children: ReactNode; modal: ReactNode }) {
+    return (
+        <>
+            {children}
+            {modal}
+        </>
+    );
 }

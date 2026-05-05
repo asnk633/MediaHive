@@ -1,24 +1,27 @@
-// @ts-nocheck
+import Link from "next/link";
 import { EventLite } from "@/app/(shell)/ClientDataContext";
 import { format, parseISO } from "date-fns";
-import { Clock, MapPin, Users } from "lucide-react";
+import { Clock, MapPin, Users, Repeat } from "lucide-react";
 import { cn } from "@/lib/utils";
 
 interface EventCardProps {
     event: EventLite;
     onClick?: () => void;
     className?: string;
+    href?: string;
 }
 
-export function EventCard({ event, onClick, className }: EventCardProps) {
+export function EventCard({ event, onClick, className, href }: EventCardProps) {
     const start = event.start_at || event.date;
     const isPending = event.status === 'pending';
+    const targetHref = href || `/events/${event.id}`;
 
     return (
-        <div
+        <Link
+            href={targetHref}
             onClick={onClick}
             className={cn(
-                "event-card-base relative group cursor-pointer overflow-hidden",
+                "event-card-base relative group cursor-pointer overflow-hidden block",
                 isPending && "border-amber-500/30 bg-amber-500/5",
                 className
             )}
@@ -36,11 +39,16 @@ export function EventCard({ event, onClick, className }: EventCardProps) {
                     <h3 className="text-sm font-bold text-white tracking-wide truncate group-hover:text-blue-400 transition-colors">
                         {event.title}
                     </h3>
-                    {event.is_system_event && (
-                        <span className="shrink-0 bg-amber-500/10 text-amber-500 border border-amber-500/20 rounded-full px-2 py-0.5 text-[9px] font-bold uppercase tracking-wider">
-                            System
-                        </span>
-                    )}
+                    <div className="flex items-center gap-1 shrink-0">
+                        {event.is_recurring && (
+                            <Repeat className="h-3 w-3 text-blue-400/70" />
+                        )}
+                        {event.is_system_event && (
+                            <span className="shrink-0 bg-amber-500/10 text-amber-500 border border-amber-500/20 rounded-full px-2 py-0.5 text-[9px] font-bold uppercase tracking-wider">
+                                System
+                            </span>
+                        )}
+                    </div>
                 </div>
 
                 <div className="flex items-center gap-3 text-[11px] text-white/50">
@@ -73,6 +81,6 @@ export function EventCard({ event, onClick, className }: EventCardProps) {
 
                 {/* Optional description preview for List/Timeline if needed, but keeping it compact for Month/Week cell compatibility or specialized views */}
             </div>
-        </div>
+        </Link>
     );
 }

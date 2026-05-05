@@ -66,4 +66,10 @@ export interface Event {
     department_id?: string | number;
     crew?: EventCrewAssignment[];
     equipment?: EventEquipmentReservation[];
+
+    // Recurrence
+    is_recurring?: boolean;
+    recurrence_rule?: string;
+    parent_event_id?: string;
+    recurrence_exception_date?: string;
 }

@@ -35,6 +35,7 @@ import { UserService } from '@/services/userService';
 import { inventoryService } from '@/services/inventory/inventoryService';
 import { useAuth } from '@/contexts/AuthContextProvider';
 import { TimePicker } from '@/components/ui/time-picker';
+import { RecurrenceService } from '@/features/events/services/recurrenceService';
 
 interface CreateEventFormProps {
     initialDate?: Date;
@@ -73,7 +74,9 @@ export const CreateEventForm = ({ initialDate, initialEndDate, onSuccess, onCanc
     const [onBehalfOfEntityName, setOnBehalfOfEntityName] = useState(''); // New state for Entity Mode
 
     // Recurrence State
-    const [recurrenceFreq, setRecurrenceFreq] = useState<'daily' | 'weekly' | 'monthly' | 'yearly'>('yearly');
+    const [isRecurring, setIsRecurring] = useState(false);
+    const [recurrenceFreq, setRecurrenceFreq] = useState<'daily' | 'weekly' | 'monthly' | 'yearly'>('weekly');
+    const [recurrenceInterval, setRecurrenceInterval] = useState(1);
     const [recurrenceEndDate, setRecurrenceEndDate] = useState<string>('');
 
     // New State for Media Coverage
@@ -200,7 +203,20 @@ export const CreateEventForm = ({ initialDate, initialEndDate, onSuccess, onCanc
 
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
-        if (!title || !date) return;
+        
+        // --- Hardened Validation ---
+        if (!title.trim()) {
+            alert("Event Title is required.");
+            return;
+        }
+        if (!date) {
+            alert("Start Date is required.");
+            return;
+        }
+        if (!isAllDay && !time) {
+            alert("Start Time is required for timed events.");
+            return;
+        }
 
         setLoading(true);
         try {
@@ -224,44 +240,38 @@ export const CreateEventForm = ({ initialDate, initialEndDate, onSuccess, onCanc
 
             if (is_system_event && user?.role === 'admin') {
                 const dateTime = new Date(startAtISO);
-                const recurrencePayload: any = {
-                    frequency: recurrenceFreq,
-                    interval: 1,
-                    endDate: recurrenceEndDate ? new Date(recurrenceEndDate).toISOString() : undefined,
-                    month: dateTime.getMonth(), // 0-11
-                    day: dateTime.getDate(),    // 1-31
-                };
-
-                // Add specific constraints
-                if (recurrenceFreq === 'weekly') {
-                    recurrencePayload.weekday = dateTime.getDay(); // 0-6
+                
+                let recurrenceRule: string | undefined = undefined;
+                if (isRecurring) {
+                    recurrenceRule = RecurrenceService.generateRuleString({
+                        frequency: recurrenceFreq,
+                        interval: recurrenceInterval,
+                        startDate: dateTime,
+                        until: recurrenceEndDate ? new Date(recurrenceEndDate) : undefined
+                    });
                 }
 
                 await SystemEventService.addSystemEvent({
                     title,
                     description,
                     type: 'company',
-                    isRecurring: true,
-                    recurrence: recurrencePayload,
+                    isRecurring: isRecurring,
+                    recurrence_rule: recurrenceRule,
                     start_at: startAtISO,
                     end_at: endAtISO,
                     is_all_day: isAllDay
-                });
+                } as any);
                 onSuccess();
                 return;
             }
 
-            if (!isAllDay && !time) return; // If not all-day, time is required
-
             // Resolve Department/Institution ID from name
-            // If "On Behalf Of" is active, use onBehalfOfEntityName, otherwise use standard department state.
             const targetEntityName = createOnBehalfOf ? onBehalfOfEntityName : department;
 
             let deptId = '';
             let deptType = 'department';
             let targetInstitutionId = user?.institution_id;
             let targetDepartmentId: string | null = null;
-            let resolvedInstitutionName = '';
 
             const foundDept = departmentsList.find(d => d.name === targetEntityName);
             if (foundDept) {
@@ -278,25 +288,20 @@ export const CreateEventForm = ({ initialDate, initialEndDate, onSuccess, onCanc
                 }
             }
 
-            // Construct explicit on_behalf_of object (The Entity)
             const on_behalf_of = {
                 id: deptId || 'unknown',
                 name: targetEntityName,
                 type: deptType
             };
 
-            // Construct explicit Organizer object (The Person OR Entity)
             let organizer;
-
             if (createOnBehalfOf) {
-                // In "On Behalf Of" mode, the Entity is the Organizer
                 organizer = {
-                    uid: `entity:${deptId}`, // Virtual UID for entity
+                    uid: `entity:${deptId}`,
                     name: targetEntityName,
-                    role: 'system' // or 'entity'
+                    role: 'system'
                 };
             } else {
-                // In Standard mode, the User is the Organizer
                 organizer = {
                     uid: user?.uid || 'anon',
                     name: user?.official_name || user?.name || 'Guest',
@@ -304,13 +309,7 @@ export const CreateEventForm = ({ initialDate, initialEndDate, onSuccess, onCanc
                 };
             }
 
-            // Legacy support: We still send created_by for backward compat, but API prioritizes user session
-            const legacyCreatedBy = {
-                uid: user?.uid,
-                name: user?.name,
-                role: user?.role
-            };
-
+            // Construct payload
             const payload: any = {
                 title,
                 description,
@@ -319,17 +318,29 @@ export const CreateEventForm = ({ initialDate, initialEndDate, onSuccess, onCanc
                 is_all_day: isAllDay,
                 location,
                 media_coverage,
-                institution_id: targetInstitutionId,
+                institution_id: targetInstitutionId || user?.institution_id,
                 department_id: targetDepartmentId,
                 on_behalf_of,
                 organizer,
+                is_recurring: isRecurring,
+                tenant_id: user?.tenant_id
             };
+
+            if (isRecurring) {
+                payload.recurrence_rule = RecurrenceService.generateRuleString({
+                    frequency: recurrenceFreq,
+                    interval: recurrenceInterval,
+                    startDate: new Date(startAtISO),
+                    until: recurrenceEndDate ? new Date(recurrenceEndDate) : undefined
+                });
+            }
 
             await EventService.addEvent(payload, assignedCrew, reservedEquipment, autoGenerateTasks);
             onSuccess();
-        } catch (error) {
+        } catch (error: any) {
             console.error("Failed to create event:", error);
-            alert("Failed to create event. Working offline?");
+            const msg = error.message || "Failed to create event.";
+            alert(`${msg} ${error.code === 'OFFLINE' ? '(Working offline)' : ''}`);
         } finally {
             setLoading(false);
         }
@@ -386,57 +397,6 @@ export const CreateEventForm = ({ initialDate, initialEndDate, onSuccess, onCanc
                                 />
                             </button>
                         </div>
-
-                        {/* Recurrence Options */}
-                        {is_system_event && (
-                            <div className="pt-4 border-t border-soft grid grid-cols-1 md:grid-cols-2 gap-4">
-                                <div className="space-y-2">
-                                    <label className={labelClasses}>Frequency</label>
-                                    <div className="relative">
-                                        <Repeat size={16} className="absolute left-3 top-1/2 -translate-y-1/2 text-white/40" />
-                                        <Select value={recurrenceFreq} onValueChange={(val: any) => setRecurrenceFreq(val)}>
-                                            <SelectTrigger className="w-full bg-background border-soft text-foreground pl-9 h-11">
-                                                <SelectValue />
-                                            </SelectTrigger>
-                                            <SelectContent className="bg-surface border-soft text-foreground z-[200]">
-                                                <SelectItem value="weekly">Weekly</SelectItem>
-                                                <SelectItem value="monthly">Monthly</SelectItem>
-                                                <SelectItem value="yearly">Yearly</SelectItem>
-                                            </SelectContent>
-                                        </Select>
-                                    </div>
-                                </div>
-                                <div className="space-y-2">
-                                    <label className={labelClasses}>Repeat Until <span className="text-white/40 text-xs">(Optional)</span></label>
-                                    <Popover open={recurrenceEndPopoverOpen} onOpenChange={setRecurrenceEndPopoverOpen}>
-                                        <PopoverTrigger asChild>
-                                            <Button
-                                                variant={"outline"}
-                                                className={cn(
-                                                    "w-full bg-background border-soft text-foreground justify-start text-left font-normal h-11",
-                                                    !recurrenceEndDate && "text-white/40"
-                                                )}
-                                            >
-                                                <CalendarIcon className="mr-2 h-4 w-4 opacity-50" />
-                                                {recurrenceEndDate ? format(new Date(recurrenceEndDate), "PPP") : <span>No End Date</span>}
-                                            </Button>
-                                        </PopoverTrigger>
-                                        <PopoverContent className="w-auto p-0 bg-surface border-soft text-foreground z-[200]" align="start">
-                                            <Calendar
-                                                mode="single"
-                                                selected={recurrenceEndDate ? new Date(recurrenceEndDate) : undefined}
-                                                onSelect={(d) => {
-                                                    setRecurrenceEndDate(d ? d.toISOString() : '');
-                                                    setRecurrenceEndPopoverOpen(false);
-                                                }}
-                                                initialFocus
-                                                disabled={(date) => date < new Date()}
-                                            />
-                                        </PopoverContent>
-                                    </Popover>
-                                </div>
-                            </div>
-                        )}
                     </div>
                 )}
 
@@ -467,6 +427,85 @@ export const CreateEventForm = ({ initialDate, initialEndDate, onSuccess, onCanc
                         checked={isAllDay} 
                         onCheckedChange={setIsAllDay}
                     />
+                </div>
+
+                <div className="space-y-4">
+                    <div className="flex items-center justify-between p-4 rounded-2xl bg-white/5 border border-white/10">
+                        <div className="flex items-center gap-3">
+                            <Repeat size={20} className="text-white/40" />
+                            <div>
+                                <p className="text-sm font-bold text-foreground">Recurring Event</p>
+                                <p className="text-xs text-white/40">Repeat this event on a schedule</p>
+                            </div>
+                        </div>
+                        <Switch 
+                            checked={isRecurring} 
+                            onCheckedChange={setIsRecurring}
+                        />
+                    </div>
+
+                    {isRecurring && (
+                        <div className="p-4 rounded-2xl bg-white/[0.02] border border-white/5 space-y-4 animate-in fade-in slide-in-from-top-2 duration-300">
+                            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                <div className="space-y-2">
+                                    <label className={labelClasses}>Frequency</label>
+                                    <Select value={recurrenceFreq} onValueChange={(val: any) => setRecurrenceFreq(val)}>
+                                        <SelectTrigger className="w-full bg-background border-soft text-foreground h-11">
+                                            <SelectValue />
+                                        </SelectTrigger>
+                                        <SelectContent className="bg-surface border-soft text-foreground z-[200]">
+                                            <SelectItem value="daily">Daily</SelectItem>
+                                            <SelectItem value="weekly">Weekly</SelectItem>
+                                            <SelectItem value="monthly">Monthly</SelectItem>
+                                            <SelectItem value="yearly">Yearly</SelectItem>
+                                        </SelectContent>
+                                    </Select>
+                                </div>
+                                <div className="space-y-2">
+                                    <label className={labelClasses}>Interval (Every X {recurrenceFreq.replace('ly', '')}s)</label>
+                                    <div className="relative">
+                                        <input
+                                            type="number"
+                                            min="1"
+                                            value={recurrenceInterval}
+                                            onChange={e => setRecurrenceInterval(parseInt(e.target.value) || 1)}
+                                            className="w-full bg-background border border-soft rounded-md h-11 px-3 outline-none focus:border-primary/50"
+                                        />
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div className="space-y-2">
+                                <label className={labelClasses}>Repeat Until <span className="text-white/40 text-xs">(Optional)</span></label>
+                                <Popover open={recurrenceEndPopoverOpen} onOpenChange={setRecurrenceEndPopoverOpen}>
+                                    <PopoverTrigger asChild>
+                                        <Button
+                                            variant={"outline"}
+                                            className={cn(
+                                                "w-full bg-background border-soft text-foreground justify-start text-left font-normal h-11",
+                                                !recurrenceEndDate && "text-white/40"
+                                            )}
+                                        >
+                                            <CalendarIcon className="mr-2 h-4 w-4 opacity-50" />
+                                            {recurrenceEndDate ? format(new Date(recurrenceEndDate), "PPP") : <span>No End Date (Continuous)</span>}
+                                        </Button>
+                                    </PopoverTrigger>
+                                    <PopoverContent className="w-auto p-0 bg-surface border-soft text-foreground z-[200]" align="start">
+                                        <Calendar
+                                            mode="single"
+                                            selected={recurrenceEndDate ? new Date(recurrenceEndDate) : undefined}
+                                            onSelect={(d) => {
+                                                setRecurrenceEndDate(d ? d.toISOString() : '');
+                                                setRecurrenceEndPopoverOpen(false);
+                                            }}
+                                            initialFocus
+                                            disabled={(date) => date < new Date()}
+                                        />
+                                    </PopoverContent>
+                                </Popover>
+                            </div>
+                        </div>
+                    )}
                 </div>
             </div>
 

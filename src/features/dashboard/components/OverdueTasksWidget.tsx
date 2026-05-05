@@ -1,5 +1,6 @@
 import React, { useMemo } from 'react';
 import { useRouter } from 'next/navigation';
+import Link from 'next/link';
 import { cn, nativeNavigate } from "@/lib/utils";
 import { Clock, AlertTriangle, ArrowRight } from 'lucide-react';
 import { useDashboard } from '@/system/dashboard/DashboardProvider';
@@ -29,10 +30,10 @@ export const OverdueTasksWidget = () => {
     if (overdueCount === 0) return null;
 
     return (
-        <div 
-            onClick={() => nativeNavigate('/tasks?filter=overdue', router, 'OverdueWidget')}
+        <Link 
+            href="/tasks?filter=overdue"
             className={cn(
-                "group relative pt-6 backdrop-blur-xl rounded-[18px] shadow-[0_10px_30px_rgba(239,68,68,0.15)] cursor-pointer transition-all duration-300",
+                "group relative pt-6 backdrop-blur-xl rounded-[18px] shadow-[0_10px_30px_rgba(239,68,68,0.15)] cursor-pointer transition-all duration-300 block",
                 "card-gradient-border", // We'll override the background logic slightly for the red tint
                 "bg-[linear-gradient(rgba(239,68,68,0.05),rgba(239,68,68,0.05))_padding-box,linear-gradient(180deg,rgba(239,68,68,0.2)_0%,rgba(239,68,68,0.05)_100%)_border-box] border-transparent",
                 "before:absolute before:inset-0 before:rounded-[18px] before:bg-red-500/5 before:opacity-0 group-hover:before:opacity-100 before:transition-opacity"
@@ -72,6 +73,6 @@ export const OverdueTasksWidget = () => {
                     View {overdueCount - 3} more overdue items
                 </p>
             )}
-        </div>
+        </Link>
     );
 };

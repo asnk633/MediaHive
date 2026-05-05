@@ -85,7 +85,7 @@ export async function GET(req: NextRequest) {
 
         // Due tomorrow
         const tasksDueTomorrow = await db.execute(sql`
-            SELECT id, title, created_by, assigned_to, tenant_id
+            SELECT id, title, created_by, tenant_id
             FROM tasks
             WHERE due_date BETWEEN ${tomorrow.toISOString()}::timestamptz AND ${tomorrowEnd.toISOString()}::timestamptz
             AND status NOT IN ('done', 'completed')
@@ -109,7 +109,7 @@ export async function GET(req: NextRequest) {
 
         // Overdue tasks (not completed & past due)
         const overdueTasks = await db.execute(sql`
-            SELECT id, title, created_by, assigned_to, tenant_id
+            SELECT id, title, created_by, tenant_id
             FROM tasks
             WHERE due_date < ${now.toISOString()}::timestamptz
             AND status NOT IN ('done', 'completed')

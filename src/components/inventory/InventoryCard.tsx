@@ -1,13 +1,14 @@
 import React from 'react';
+import Link from 'next/link';
 import Image from 'next/image';
 import { EquipmentItem, InventoryIssueClean } from '@/services/inventory/inventoryContract';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
-import { Card } from '@/components/ui/card';
 import { Box, Layers, AlertCircle, Calendar } from 'lucide-react';
 import { format } from 'date-fns';
 import { Carousel, CarouselContent, CarouselItem, CarouselNext, CarouselPrevious } from '@/components/ui/carousel';
 import { getDriveImageUrl } from '@/lib/driveUtils';
+import { cn } from '@/lib/utils';
 
 interface InventoryCardProps {
     item: EquipmentItem;
@@ -21,7 +22,6 @@ interface InventoryCardProps {
     onView?: (item: EquipmentItem) => void;
 }
 
-// Optimization: Prevent re-renders on grid filtering
 export const InventoryCard = React.memo<InventoryCardProps>(({ 
     item, 
     activeIssue, 
@@ -52,9 +52,12 @@ export const InventoryCard = React.memo<InventoryCardProps>(({
         : ((item as any).imageUrl ? [{ url: getDriveImageUrl((item as any).imageUrl, (item as any).driveFileId), file_id: (item as any).driveFileId || '' }] : []);
 
     return (
-        <Card
-            onClick={() => onView?.(item)}
-            className={`group relative overflow-hidden bg-glass border-soft transition-all duration-300 backdrop-blur-md cursor-pointer ${isOverdue ? 'border-destructive/50 shadow-lg shadow-destructive/20' : 'hover:border-primary/30 hover:shadow-md'}`}
+        <Link
+            href={`/inventory/${item.id}`}
+            className={cn(
+                "group relative overflow-hidden bg-glass border border-white/10 rounded-xl transition-all duration-300 backdrop-blur-md cursor-pointer block",
+                isOverdue ? 'border-destructive/50 shadow-lg shadow-destructive/20' : 'hover:border-primary/30 hover:shadow-md'
+            )}
         >
             {/* Image / Thumbnail Placeholder */}
             <div className="aspect-video w-full bg-surface/50 relative flex items-center justify-center border-b border-soft group-hover:bg-surface/80 transition-colors overflow-hidden"
@@ -242,6 +245,6 @@ export const InventoryCard = React.memo<InventoryCardProps>(({
                     )}
                 </div>
             </div>
-        </Card >
+        </Link>
     );
 });

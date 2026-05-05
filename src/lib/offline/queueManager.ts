@@ -4,6 +4,7 @@ import * as Sentry from "@sentry/nextjs";
 import { ActivityHistory, ActivityAction, buildActivityLabel } from '../activityHistory';
 import { getCurrentUser } from '../auth/verifyUser';
 import { validateMutationPayload } from './preEnqueueValidator';
+import { toast } from 'sonner';
 import { MonitoringService } from '@/services/monitoringService';
 import { v4 as uuidv4 } from 'uuid';
 import { offlineDB, db, QueuedMutation } from './db';
@@ -17,6 +18,8 @@ export const circuitBreakerAtom = atom<{ tripped: boolean; resumeAt: number | nu
 export const syncMetricsAtom = atom({
   queueLength: 0,
   avgSyncTime: 0,
+  totalProcessed: 0,
+  totalFailed: 0,
   conflictsResolved: 0,
   retries: 0,
   lastError: null as string | null,
@@ -60,12 +63,15 @@ class SyncEngine {
   private metrics = {
     queueLength: 0,
     avgSyncTime: 0,
+    totalProcessed: 0,
+    totalFailed: 0,
     conflictsResolved: 0,
     retries: 0,
     lastError: null as string | null,
     lastSyncAt: null as string | null,
     history: [] as { type: string; duration: number; timestamp: string }[],
   };
+  private lastInstitutionId: string | null = null;
 
   constructor() {
     this.tabId = typeof window !== 'undefined' ? (sessionStorage.getItem('mediahive_tab_id') || uuidv4()) : uuidv4();
@@ -219,6 +225,15 @@ class SyncEngine {
     const runSync = async () => {
       this.processing = true;
       store.set(isSyncingAtom, true);
+
+      // Safety timeout for the entire sync run (5 minutes max)
+      const syncTimeout = setTimeout(() => {
+        if (this.processing) {
+          console.error('[SyncEngine] 🛑 Sync run timed out (5m). Force resetting.');
+          this.processing = false;
+          store.set(isSyncingAtom, false);
+        }
+      }, 300000);
 
       try {
         const pending = await offlineDB.getPending(this.batchSize);
@@ -378,6 +393,7 @@ class SyncEngine {
             setTimeout(() => this.processQueue(), 500);
           }
         }
+        clearTimeout(syncTimeout);
       }
     };
 
@@ -452,6 +468,8 @@ class SyncEngine {
       'DELETE_EVENT': 'events',
       'ASSIGN_USER': 'task_assignments',
       'UNASSIGN_USER': 'task_assignments',
+      'ASSIGN_TASK': 'task_assignments', // Legacy
+      'UNASSIGN_TASK': 'task_assignments', // Legacy
       'CREATE_INVENTORY': 'inventory',
       'UPDATE_INVENTORY': 'inventory',
       'DELETE_INVENTORY': 'inventory',
@@ -462,6 +480,7 @@ class SyncEngine {
       'CREATE_LEAVE_REQUEST': 'leave_requests',
       'UPDATE_LEAVE_REQUEST': 'leave_requests',
       'INITIALIZE_LEAVE_BALANCE': 'user_leave_balances',
+      'CREATE_INITIALIZE_LEAVE_BALANCE': 'user_leave_balances',
       'UPDATE_LEAVE_BALANCE': 'user_leave_balances',
     };
 
@@ -474,6 +493,8 @@ class SyncEngine {
       'DELETE_EVENT': 'delete',
       'ASSIGN_USER': 'insert',
       'UNASSIGN_USER': 'delete',
+      'ASSIGN_TASK': 'insert', // Legacy
+      'UNASSIGN_TASK': 'delete', // Legacy
       'CREATE_INVENTORY': 'insert',
       'UPDATE_INVENTORY': 'update',
       'DELETE_INVENTORY': 'delete',
@@ -484,6 +505,7 @@ class SyncEngine {
       'CREATE_LEAVE_REQUEST': 'insert',
       'UPDATE_LEAVE_REQUEST': 'update',
       'INITIALIZE_LEAVE_BALANCE': 'insert',
+      'CREATE_INITIALIZE_LEAVE_BALANCE': 'insert',
       'UPDATE_LEAVE_BALANCE': 'update',
     };
 
@@ -494,8 +516,26 @@ class SyncEngine {
 
     const table = tableMap[mutation.type] || mutation.type.split('_')[2]?.toLowerCase() + 's' || mutation.type.split('_')[1]?.toLowerCase() + 's';
 
+    console.log(`[SyncEngine] Executing ${mutation.type} on table: ${table} (Action: ${action})`, {
+        payload: mutation.payload
+    });
+
     if (!table || !action) {
        throw new Error(`Unknown mutation type: ${mutation.type}`);
+    }
+
+    // Schema Sanitization: Remove fields that are known to cause issues in specific tables
+    if (table === 'user_leave_balances') {
+        delete mutation.payload.created_at;
+        delete mutation.payload.institution_id;
+        delete mutation.payload.created_by;
+        delete mutation.payload.updated_by;
+    }
+    
+    // Deprecated Task Assignments Column Guard
+    if (table === 'tasks') {
+        delete mutation.payload.assigned_to;
+        delete mutation.payload.assignedTo;
     }
 
     // Bulk operations skip conflict detection for now (they are usually admin-driven or system-driven)
@@ -574,7 +614,11 @@ class SyncEngine {
           let conflictFields: string[] = [];
 
           // Remove internal metadata and metadata that always changes from comparison
-          const { id, tenant_id, created_at, updated_at, _forceSync, version, updated_by, ...payloadFields } = mutation.payload;
+          const { 
+            id, tenant_id, created_at, updated_at, _forceSync, version, updated_by, 
+            assigned_to, assignedTo, institution_id, created_by,
+            ...payloadFields 
+          } = mutation.payload;
 
           for (const key in payloadFields) {
             // Only a conflict if:
@@ -644,21 +688,65 @@ class SyncEngine {
         }
       }
 
-      if (mutation.type === 'ASSIGN_USER') {
+      if (mutation.type === 'ASSIGN_USER' || mutation.type === 'ASSIGN_TASK') {
+        // Force correct table for assignments just in case of resolution drift
+        const targetTable = 'task_assignments';
+        
         // Enforce idempotency with explicit unique constraint handling
-        result = await supabase.from(table).upsert({
-          task_id: mutation.payload.task_id,
-          user_id: mutation.payload.user_id,
-          tenant_id: mutation.payload.tenant_id,
+        result = await supabase.from(targetTable).upsert({
+          task_id: mutation.payload.task_id || mutation.payload.taskId,
+          user_id: mutation.payload.user_id || mutation.payload.userId || mutation.payload.uid,
+          tenant_id: mutation.payload.tenant_id || mutation.payload.tenantId,
           role: mutation.payload.role || 'assignee'
         }, { onConflict: 'task_id,user_id' });
       } else {
+        // Legacy Enrichment: Inject missing mandatory fields for older mutations
+        if (action === 'insert' && (!mutation.payload.institution_id || mutation.payload.institution_id === null) && (table === 'tasks' || table === 'events' || table === 'inventory' || table === 'user_leave_balances' || table === 'equipment_bookings')) {
+            if (!this.lastInstitutionId) {
+                const user = await getCurrentUser();
+                let instId = user?.institution_id;
+                
+                // If missing from metadata, check profile (matching tenantContext strategy)
+                if (!instId && user?.id) {
+                    const { data: profile } = await supabase
+                        .from('profiles')
+                        .select('institution_id')
+                        .eq('id', user.id)
+                        .maybeSingle();
+                    if (profile) instId = profile.institution_id;
+                }
+
+                if (instId) this.lastInstitutionId = instId;
+            }
+
+            if (this.lastInstitutionId) {
+                console.log(`[SyncEngine] 💉 Injecting institution_id ${this.lastInstitutionId} into ${table} (Mutation ID: ${mutation.id})`);
+                mutation.payload.institution_id = this.lastInstitutionId;
+            } else {
+                console.warn(`[SyncEngine] ⚠️ Could not resolve institution_id for ${table} in mutation ${mutation.id}. Insert may fail.`);
+            }
+
+            // Also ensure created_by is present for mandatory tables
+            if (!mutation.payload.created_by && (table === 'tasks' || table === 'events' || table === 'inventory')) {
+                const user = await getCurrentUser();
+                if (user?.id) {
+                    console.log(`[SyncEngine] 💉 Injecting created_by ${user.id} into ${table} (Mutation ID: ${mutation.id})`);
+                    mutation.payload.created_by = user.id;
+                }
+            }
+        }
+
         result = await supabase.from(table).insert([mutation.payload]);
       }
-      // Server-side idempotency: a 23505 unique violation means we already inserted this record
-      if (result.error?.code === '23505') {
-        console.warn(`[SyncEngine] ✅ Idempotent: ${table}/${mutation.payload.id} already exists. Treating as success.`);
-        return; 
+      
+      if (result.error) {
+          // Server-side idempotency: a 23505 unique violation means we already inserted this record
+          if (result.error.code === '23505') {
+            console.warn(`[SyncEngine] ✅ Idempotent: ${table}/${mutation.payload.id} already exists. Treating as success.`);
+            return; 
+          }
+          console.error(`[SyncEngine] ❌ execution error for ${mutation.type}:`, result.error);
+          throw new Error(result.error.message || JSON.stringify(result.error));
       }
     } else if (action === 'update') {
       let query = supabase.from(table).update(mutation.payload).eq('id', mutation.payload.id);
@@ -698,8 +786,42 @@ class SyncEngine {
         // Check Constraint Violation (e.g., negative quantity)
         throw new ConflictError(`Integrity Violation: ${err.message}`, {}, table);
       }
+      if (err.code === '23502') {
+        // NOT NULL Violation (Missing fields)
+        throw new Error(`Missing required data for ${table}: ${err.message}`);
+      }
       throw err;
     }
+  }
+
+  /**
+   * EMERGENCY: Force reset sync state if stuck
+   */
+  public forceReset() {
+    console.warn('[SyncEngine] ⚠️ FORCE RESET TRIGGERED');
+    this.processing = false;
+    this.circuitBreakerUntil = null;
+    this.consecutiveFailures = 0;
+    store.set(isSyncingAtom, false);
+    store.set(circuitBreakerAtom, { tripped: false, resumeAt: null });
+    localStorage.removeItem(SYNC_CONFIG.LOCK_KEY);
+    this.processQueue(true);
+  }
+
+  public async clearQueue() {
+    // Only perform confirmation if in browser
+    if (typeof window !== 'undefined') {
+        if (!confirm('Are you sure? This will delete ALL pending offline changes that have not synced yet.')) return;
+    }
+    
+    await db.queue.clear();
+    await this.updatePendingCount();
+    this.consecutiveFailures = 0;
+    this.circuitBreakerUntil = null;
+    store.set(circuitBreakerAtom, { tripped: false, resumeAt: null });
+    this.updateUIState();
+    console.warn('[SyncEngine] 🗑️ Queue cleared.');
+    try { toast.success('Offline queue cleared'); } catch (e) {}
   }
   // Expose metrics mutator for UI
   public incrementConflictsResolved() {

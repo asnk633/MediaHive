@@ -59,11 +59,12 @@ export async function POST(req: NextRequest) {
 
         const publicUrl = `https://drive.google.com/thumbnail?id=${file_id}&sz=s1000`;
 
-        // Update Supabase Profile
+        // Update Supabase Profile with both URL and direct ID for proxy support
         const { error: updateError } = await supabase
             .from('profiles')
             .update({
                 avatar_url: publicUrl,
+                avatar_drive_id: file_id,
                 updated_at: new Date().toISOString()
             })
             .eq('id', userId);

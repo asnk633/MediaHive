@@ -552,6 +552,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
                 department_id: profile?.department_id,
                 avatar_url: profile?.avatar_url,
                 photoURL: profile?.avatar_url,
+                avatar_drive_id: profile?.avatar_drive_id,
             });
         } else {
             setUser(null);
@@ -575,12 +576,23 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
             refreshUser,
             updateProfile: async (updates: any) => {
                 if (!user?.uid) return;
+                
+                // Map 'name' to 'full_name' if present for database compatibility
+                const dbUpdates = { ...updates };
+                if (dbUpdates.name && !dbUpdates.full_name) {
+                    dbUpdates.full_name = dbUpdates.name;
+                    delete dbUpdates.name;
+                }
+
                 const { error } = await supabase
                     .from('profiles')
-                    .update(updates)
+                    .update(dbUpdates)
                     .eq('id', user.uid);
                 
-                if (error) throw error;
+                if (error) {
+                    console.error("[Auth] updateProfile error:", error);
+                    throw error;
+                }
                 await refreshUser();
             }
         }}>

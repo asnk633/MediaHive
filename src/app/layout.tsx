@@ -43,15 +43,21 @@ export default function RootLayout({ children }: { children: ReactNode }) {
             (function () {
               if (typeof window === 'undefined') return;
 
-              // Only stub if Capacitor is not yet injected
-              if (!window.Capacitor) {
+              // Only stub if we are likely on a native platform (localhost/file) and Capacitor is not yet ready.
+              // This prevents the web version from misidentifying itself as native.
+              const isLikelyNative = window.location.origin.includes('localhost') || 
+                                   window.location.protocol === 'file:' ||
+                                   /Capacitor/i.test(navigator.userAgent);
+
+              if (isLikelyNative && !window.Capacitor) {
                 window.Capacitor = {
                   isNative: true,
                   platform: 'android',
                   Plugins: {},
                   triggerEvent: function (eventName, data) {
                     console.warn('[Capacitor stub] Event before bridge ready:', eventName);
-                  }
+                  },
+                  isNativePlatform: function() { return true; }
                 };
               }
             })();

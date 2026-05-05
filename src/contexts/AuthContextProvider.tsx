@@ -327,26 +327,50 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
     const login = async (email: string, password: string) => {
         setLoading(true);
-        console.log("[SUPABASE TRACE] signInWithPassword start")
-        const { error } = await supabase.auth.signInWithPassword({
-            email,
-            password,
-        });
-        console.log("[SUPABASE TRACE] signInWithPassword end")
+        try {
+            console.log("[SUPABASE TRACE] signInWithPassword start for:", email);
+            
+            // Safety timeout for the auth request itself
+            const { error } = await Promise.race([
+                supabase.auth.signInWithPassword({
+                    email,
+                    password,
+                }),
+                timeout(TIMEOUT_MS)
+            ]) as any;
 
-        if (error) {
+            console.log("[SUPABASE TRACE] signInWithPassword finished");
+
+            if (error) {
+                console.error("[LOGIN] Supabase error:", error);
+                setLoading(false);
+                throw error;
+            }
+            
+            // Success! The onAuthStateChange will take over the redirect
+            console.log("[LOGIN] Success, waiting for session state change...");
+        } catch (err: any) {
             setLoading(false);
-            throw error;
+            console.error("[LOGIN] Catch block error:", err);
+            throw err;
         }
     };
 
     const signup = async (email: string, password: string) => {
-        const { error } = await supabase.auth.signUp({
-            email,
-            password,
-        });
+        console.log("[SUPABASE TRACE] signUp start for:", email);
+        const { error } = await Promise.race([
+            supabase.auth.signUp({
+                email,
+                password,
+            }),
+            timeout(TIMEOUT_MS)
+        ]) as any;
 
-        if (error) throw error;
+        if (error) {
+            console.error("[SIGNUP] Supabase error:", error);
+            throw error;
+        }
+        console.log("[SIGNUP] Success");
     };
 
     const logout = async () => {

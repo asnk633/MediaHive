@@ -9,8 +9,11 @@ import { Card, CardContent } from '@/components/ui/card';
 import { useAuth } from '@/contexts/AuthContextProvider';
 import { supabase } from '@/lib/supabaseClient';
 import { Lock, Mail, AlertCircle, Loader2 } from 'lucide-react';
+import { useRouter } from 'next/navigation';
+import { nativeNavigate } from '@/lib/utils';
 
 export default function LoginClient() {
+    const router = useRouter();
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
     const [error, setError] = useState<string | null>(null);
@@ -157,7 +160,13 @@ export default function LoginClient() {
 
                             <div className="text-center pt-2">
                                 <p className="text-sm text-slate-400 font-medium">
-                                    New here? <button type="button" className="text-primary hover:text-primary/80 transition-colors font-bold">Create Account</button>
+                                    New here? <button 
+                                        type="button" 
+                                        onClick={() => nativeNavigate('/welcome', router, 'LoginClient-Signup')}
+                                        className="text-primary hover:text-primary/80 transition-colors font-bold"
+                                    >
+                                        Create Account
+                                    </button>
                                 </p>
                             </div>
                         </form>

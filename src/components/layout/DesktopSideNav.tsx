@@ -196,24 +196,51 @@ export default function DesktopSideNav() {
                         )}
                     </button>
                 </DropdownMenuTrigger>
-                <DropdownMenuContent align="start" sideOffset={12} className="w-64 glass-liquid border-white/10 p-1.5 mt-0 animate-in fade-in zoom-in-95 duration-200">
-                    <div className="px-3 py-3">
-                        <div className="text-[10px] font-bold text-white/50 uppercase tracking-[0.15em] mb-1">Signed in as</div>
-                        <div className="text-sm font-bold text-white truncate">{user?.email}</div>
+                <DropdownMenuContent 
+                    align="start" 
+                    sideOffset={12} 
+                    className="w-72 bg-[#0c0c0e] border-white/10 p-0 overflow-hidden shadow-[0_30px_60px_-12px_rgba(0,0,0,0.9)] ring-1 ring-white/5 animate-in fade-in zoom-in-95 duration-200 rounded-[24px]"
+                >
+                    {/* Header Section */}
+                    <div className="relative px-5 py-6 bg-gradient-to-br from-indigo-500/10 via-transparent to-transparent">
+                        <div className="text-[10px] font-black text-indigo-400/80 uppercase tracking-[0.25em] mb-2.5">Active Session</div>
+                        <div className="flex flex-col gap-0.5">
+                            <div className="text-sm font-bold text-white tracking-tight truncate">{user?.name || 'Authorized User'}</div>
+                            <div className="text-[11px] text-white/40 font-medium truncate">{user?.email}</div>
+                        </div>
                     </div>
-                    <div className="h-px bg-white/5 mx-1 my-1" />
+                    
+                    <div className="h-px bg-white/5" />
 
-                    <DropdownMenuItem className="focus:bg-white/5 focus:text-white cursor-pointer px-3 py-2.5 rounded-lg" onClick={() => nativeNavigate('/settings', router, 'Profile')}>
-                        <Users size={16} className="mr-3 text-indigo-400" />
-                        <span className="text-sm font-medium">My Profile</span>
-                    </DropdownMenuItem>
+                    <div className="p-2 space-y-1">
+                        <DropdownMenuItem 
+                            className="flex items-center gap-3 px-4 py-3 rounded-2xl cursor-pointer hover:bg-white/[0.03] focus:bg-white/[0.03] text-white/70 hover:text-white transition-all group border-none outline-none"
+                            onClick={() => nativeNavigate('/settings', router, 'Profile')}
+                        >
+                            <div className="w-9 h-9 rounded-xl bg-white/5 flex items-center justify-center text-white/40 group-hover:text-indigo-400 group-hover:bg-indigo-500/10 transition-all">
+                                <Settings size={18} />
+                            </div>
+                            <div className="flex flex-col">
+                                <span className="text-sm font-bold tracking-tight">Profile Settings</span>
+                                <span className="text-[10px] text-white/30 font-medium uppercase tracking-wider">Identity & Preferences</span>
+                            </div>
+                        </DropdownMenuItem>
 
-                    <div className="h-px bg-white/5 mx-1 my-1" />
+                        <div className="h-px bg-white/5 my-1 mx-2" />
 
-                    <DropdownMenuItem className="text-rose-400 focus:bg-rose-500/10 focus:text-rose-300 cursor-pointer px-3 py-2.5 rounded-lg" onClick={() => user?.uid && signOut()}>
-                        <LogOut size={16} className="mr-3" />
-                        <span className="text-sm font-medium">Sign Out</span>
-                    </DropdownMenuItem>
+                        <DropdownMenuItem 
+                            className="flex items-center gap-3 px-4 py-3 rounded-2xl cursor-pointer hover:bg-rose-500/10 focus:bg-rose-500/10 text-rose-400/70 hover:text-rose-400 transition-all group border-none outline-none"
+                            onClick={() => user?.uid && signOut()}
+                        >
+                            <div className="w-9 h-9 rounded-xl bg-rose-500/5 flex items-center justify-center text-rose-500/40 group-hover:text-rose-400 group-hover:bg-rose-500/15 transition-all">
+                                <LogOut size={18} />
+                            </div>
+                            <div className="flex flex-col">
+                                <span className="text-sm font-bold tracking-tight">Sign Out</span>
+                                <span className="text-[10px] text-rose-500/30 font-medium uppercase tracking-wider">Terminate Session</span>
+                            </div>
+                        </DropdownMenuItem>
+                    </div>
                 </DropdownMenuContent>
             </DropdownMenu>
         );

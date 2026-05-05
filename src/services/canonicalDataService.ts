@@ -338,7 +338,10 @@ export class CanonicalDataService {
         .eq('deleted', false);
 
       if (filters.institutionId) {
+        console.log(`[CanonicalDataService] Filtering tasks by institution: ${filters.institutionId}`);
         query = query.eq('institution_id', filters.institutionId);
+      } else {
+        console.warn(`[CanonicalDataService] Fetching tasks WITHOUT institution filter (Global)`);
       }
       if (filters.status && filters.status.length > 0) {
         query = query.in('status', filters.status);
@@ -499,7 +502,10 @@ export class CanonicalDataService {
         .eq('tenant_id', tenantId);
 
       if (filters.institutionId) {
+        console.log(`[CanonicalDataService] Filtering events by institution: ${filters.institutionId}`);
         query = query.eq('institution_id', filters.institutionId);
+      } else {
+        console.warn(`[CanonicalDataService] Fetching events WITHOUT institution filter (Global)`);
       }
       if (filters.status && filters.status.length > 0) {
         query = query.in('status', filters.status);

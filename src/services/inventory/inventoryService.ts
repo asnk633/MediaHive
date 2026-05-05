@@ -115,7 +115,12 @@ export const inventoryService = {
 
         if (params.limit) query = query.limit(params.limit);
         if (params.category) query = query.eq('category', params.category);
-        if (params.institutionId) query = query.eq('institution_id', params.institutionId);
+        if (params.institutionId) {
+            console.log(`[InventoryService] Filtering equipment by institution: ${params.institutionId}`);
+            query = query.eq('institution_id', params.institutionId);
+        } else {
+            console.warn(`[InventoryService] Fetching equipment WITHOUT institution filter (Global)`);
+        }
 
         const { data, error } = await safeQuery(() => query) as { data: any[]; error: any };
         const cacheKey = params.institutionId ? `inventory:${params.institutionId}` : 'inventory';

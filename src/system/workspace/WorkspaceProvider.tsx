@@ -109,22 +109,24 @@ export function WorkspaceProvider({ children }: { children: React.ReactNode }) {
             }
 
             if (selected) {
-                setCurrentWorkspace(selected);
-                localStorage.setItem(STORAGE_KEY, selected.institution_id);
+                if (currentWorkspace?.institution_id !== selected.institution_id) {
+                    setCurrentWorkspace(selected);
+                    localStorage.setItem(STORAGE_KEY, selected.institution_id);
+                }
             } else if (user.institution_id) {
-                // UI-P14: Critical Fallback for production sync
-                // If the user has a primary institution_id but it's not in the available list (e.g. sync lag),
-                // we synthesize a workspace to prevent empty pages if RLS permits.
-                const syntheticWorkspace: Workspace = {
-                    tenant_id: String(user.tenant_id || ''),
-                    institution_id: String(user.institution_id || ''),
-                    name: "Default Institution",
-                    features: {}
-                };
-                setCurrentWorkspace(syntheticWorkspace);
-                console.log(`[Workspace] Applied synthetic fallback for primary institution: ${user.institution_id}`);
+                const instIdStr = String(user.institution_id);
+                if (currentWorkspace?.institution_id !== instIdStr) {
+                    // UI-P14: Critical Fallback for production sync
+                    const syntheticWorkspace: Workspace = {
+                        tenant_id: String(user.tenant_id || ''),
+                        institution_id: instIdStr,
+                        name: "Default Institution",
+                        features: {}
+                    };
+                    setCurrentWorkspace(syntheticWorkspace);
+                    console.log(`[Workspace] Applied synthetic fallback for primary institution: ${instIdStr}`);
+                }
             } else if (savedId) {
-                // If we have a saved ID but it's not in our allowed list, clear it
                 localStorage.removeItem(STORAGE_KEY);
             }
 
@@ -132,7 +134,7 @@ export function WorkspaceProvider({ children }: { children: React.ReactNode }) {
         };
 
         initWorkspace();
-    }, [user?.uid, user?.tenant_id, user?.institution_id, authReady, fetchWorkspaces]);
+    }, [user?.uid, user?.tenant_id, user?.institution_id, authReady, fetchWorkspaces, currentWorkspace?.institution_id]);
 
     const setWorkspace = useCallback((workspaceId: string) => {
         const selected = availableWorkspaces.find(w => w.institution_id === workspaceId);

@@ -406,6 +406,12 @@ export class CanonicalDataService {
         } catch (e) { /* ignore IndexedDB errors */ }
       }
 
+      if (processedTasks.length === 0) {
+        console.warn(`[CanonicalDataService] No tasks returned for tenant: ${tenantId.slice(0, 8)}... (Filters: ${JSON.stringify(filters)})`);
+      } else {
+        console.log(`[CanonicalDataService] Successfully fetched ${processedTasks.length} tasks`);
+      }
+
       return processedTasks as Task[];
     } catch (error: any) {
       if (typeof window !== 'undefined' && isNetworkError(error)) {
@@ -547,10 +553,18 @@ export class CanonicalDataService {
           } catch (e) {}
         }
 
+        console.log(`[CanonicalDataService] Successfully fetched ${allEvents.length} events (including system events)`);
         return allEvents as Event[];
       } catch (err) {
         // System events failed — return user events only with meta
         (mappedUserEvents as any).__meta = { total: finalEvents.length, isCapped, limit: EVENT_FETCH_LIMIT };
+        
+        if (mappedUserEvents.length === 0) {
+          console.warn(`[CanonicalDataService] No events returned for tenant: ${tenantId.slice(0, 8)}... (Filters: ${JSON.stringify(filters)})`);
+        } else {
+          console.log(`[CanonicalDataService] Successfully fetched ${mappedUserEvents.length} events (user only)`);
+        }
+        
         return mappedUserEvents as Event[];
       }
     } catch (error: any) {

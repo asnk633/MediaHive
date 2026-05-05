@@ -111,6 +111,18 @@ export function WorkspaceProvider({ children }: { children: React.ReactNode }) {
             if (selected) {
                 setCurrentWorkspace(selected);
                 localStorage.setItem(STORAGE_KEY, selected.institution_id);
+            } else if (user.institution_id) {
+                // UI-P14: Critical Fallback for production sync
+                // If the user has a primary institution_id but it's not in the available list (e.g. sync lag),
+                // we synthesize a workspace to prevent empty pages if RLS permits.
+                const syntheticWorkspace: Workspace = {
+                    tenant_id: String(user.tenant_id),
+                    institution_id: user.institution_id,
+                    name: "Default Institution",
+                    features: {}
+                };
+                setCurrentWorkspace(syntheticWorkspace);
+                console.log(`[Workspace] Applied synthetic fallback for primary institution: ${user.institution_id}`);
             } else if (savedId) {
                 // If we have a saved ID but it's not in our allowed list, clear it
                 localStorage.removeItem(STORAGE_KEY);

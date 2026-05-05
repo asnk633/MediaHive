@@ -1,7 +1,8 @@
 'use client';
 
-import { AnchorHTMLAttributes, ReactNode } from 'react';
+import React, { AnchorHTMLAttributes, ReactNode, useState, useEffect } from 'react';
 import Link from 'next/link';
+
 declare global {
     interface Window {
         Capacitor?: {
@@ -26,8 +27,14 @@ interface AppLinkProps extends Omit<AnchorHTMLAttributes<HTMLAnchorElement>, 'hr
  * Next.js routing benefits on web.
  */
 export default function AppLink({ href, children, className, ...props }: AppLinkProps) {
-    // Detect if running in Capacitor native environment
-    const isNative = typeof window !== 'undefined' && window.Capacitor?.isNative;
+    const [mounted, setMounted] = useState(false);
+    
+    useEffect(() => {
+        setMounted(true);
+    }, []);
+
+    // Detect if running in Capacitor native environment - only safe after mount
+    const isNative = mounted && typeof window !== 'undefined' && window.Capacitor?.isNative;
 
     // Normalize href for trailingSlash: true consistency
     // Only if it's an internal path (starts with /) and doesn't already have a slash or extension/query/hash

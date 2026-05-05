@@ -118,12 +118,17 @@ export class AlertService {
 
       // DTO Sanitization Layer
       return ((data as any[]) || []).reduce((acc: AppNotification[], item: any) => {
+        // Skip empty or clearly invalid items before parsing to prevent noise
+        if (!item || Object.keys(item).length === 0 || !item.id) {
+          return acc;
+        }
+
         const parsed = NotificationSchema.safeParse(item);
         
         if (!parsed.success) {
-          console.error("[AlertService] 🚨 DROPPING INVALID NOTIFICATION:", {
-            id: item.id,
-            errors: parsed.error.format(),
+          console.warn("[AlertService] 🚨 DROPPING INVALID NOTIFICATION:", {
+            id: item.id || 'unknown',
+            errors: parsed.error.issues.map(i => `${i.path.join('.')}: ${i.message}`),
             rawData: item
           });
           return acc; // Skip this item

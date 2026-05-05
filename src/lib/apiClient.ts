@@ -369,10 +369,16 @@ export const apiClient = async <T = any>(endpoint: string, options: ApiOptions =
   // 🌐 WEB or SERVER context
   else {
     const isServer = typeof window === 'undefined';
+    const isInternalApi = endpoint.startsWith('/api/');
 
     if (endpoint.startsWith('http')) {
       url = endpoint;
-    } else if (envBaseUrl && envBaseUrl.startsWith('http')) {
+    } 
+    // On the web, if it's an internal API route, use relative path to avoid DNS issues with external domains
+    else if (!isServer && isInternalApi) {
+      url = endpoint;
+    }
+    else if (envBaseUrl && envBaseUrl.startsWith('http')) {
       url = `${envBaseUrl}${endpoint}`;
     } else if (isServer) {
       // Node.js fetch requires absolute URLs. If no env var, use production fallback.

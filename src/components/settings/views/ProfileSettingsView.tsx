@@ -12,10 +12,16 @@ import { ThemeSelector } from './ThemeSelector';
 import { AvatarUploadModal } from '../AvatarUploadModal';
 
 export const ProfileSettingsView = () => {
-    const { user } = useAuth();
+    const { user, updateProfile } = useAuth();
     const [isEditorOpen, setIsEditorOpen] = React.useState(false);
     const [selectedImage, setSelectedImage] = React.useState<string | null>(null);
+    const [name, setName] = React.useState(user?.name || '');
+    const [isSaving, setIsSaving] = React.useState(false);
     const fileInputRef = React.useRef<HTMLInputElement>(null);
+
+    React.useEffect(() => {
+        if (user?.name) setName(user.name);
+    }, [user?.name]);
 
     const handleAvatarChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
         const file = e.target.files?.[0];
@@ -36,6 +42,20 @@ export const ProfileSettingsView = () => {
 
         // Reset input to allow selecting same file again
         e.target.value = '';
+    };
+
+    const handleSave = async () => {
+        if (!user) return;
+        setIsSaving(true);
+        try {
+            await updateProfile({ name });
+            toast.success('Profile updated successfully');
+        } catch (error: any) {
+            console.error('Failed to update profile:', error);
+            toast.error(error.message || 'Failed to update profile');
+        } finally {
+            setIsSaving(false);
+        }
     };
 
     return (
@@ -96,11 +116,11 @@ export const ProfileSettingsView = () => {
                 <div className="grid gap-2">
                     <Label>Full Name</Label>
                     <Input
-                        defaultValue={user?.name || ''}
-                        readOnly
-                        className="bg-slate-950/50 border-[#ffffff1a] text-slate-400 cursor-not-allowed"
+                        value={name}
+                        onChange={(e) => setName(e.target.value)}
+                        className="bg-slate-950/50 border-[#ffffff1a] text-white focus:border-blue-500 transition-colors"
                     />
-                    <p className="text-xs text-slate-500">Managed by Google Auth provider.</p>
+                    <p className="text-[10px] text-slate-500 uppercase tracking-wider font-bold">Editable Public Identity</p>
                 </div>
 
                 <div className="grid gap-2">
@@ -122,11 +142,14 @@ export const ProfileSettingsView = () => {
                 </div>
             </div>
 
-            <div className="pt-4 border-t border-white/5 opacity-50">
-                <Button disabled className="bg-blue-600/50 text-white cursor-not-allowed">
-                    Save Changes
+            <div className="pt-4 border-t border-white/5">
+                <Button 
+                    onClick={handleSave} 
+                    disabled={isSaving || name === user?.name}
+                    className="bg-blue-600 hover:bg-blue-500 text-white shadow-lg shadow-blue-900/20 px-8"
+                >
+                    {isSaving ? 'Saving...' : 'Save Changes'}
                 </Button>
-                <span className="ml-4 text-xs text-slate-500">Profile editing disabled in Settings v1</span>
             </div>
         </div>
     );

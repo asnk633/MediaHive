@@ -26,6 +26,7 @@ type AuthContextType = {
     signOut: () => Promise<void>;
     getIdToken: () => Promise<string | null>;
     refreshUser: () => Promise<void>;
+    updateProfile: (updates: any) => Promise<void>;
 };
 
 export type AuthUser = User;
@@ -571,7 +572,17 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
             logout,
             signOut,
             getIdToken,
-            refreshUser
+            refreshUser,
+            updateProfile: async (updates: any) => {
+                if (!user?.uid) return;
+                const { error } = await supabase
+                    .from('profiles')
+                    .update(updates)
+                    .eq('id', user.uid);
+                
+                if (error) throw error;
+                await refreshUser();
+            }
         }}>
             {children}
         </AuthContext.Provider>

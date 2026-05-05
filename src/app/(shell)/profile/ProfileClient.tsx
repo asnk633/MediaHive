@@ -14,6 +14,7 @@ import { InstitutionContextCard } from "@/components/profile/InstitutionContextC
 import { UserPreferences } from "@/components/profile/UserPreferences";
 import { ActivitySummary } from "@/components/profile/ActivitySummary";
 import { HelpInfoCard } from "@/components/profile/HelpInfoCard";
+import { SecurityCard } from "@/components/profile/SecurityCard";
 
 import { useRouter } from "next/navigation";
 import { nativeNavigate } from "@/lib/utils";
@@ -142,6 +143,9 @@ export default function ProfileClient() {
                     notifications={notifications}
                     setNotifications={setNotifications}
                 />
+
+                {/* Account Security */}
+                <SecurityCard />
 
                 {/* Activity Summary */}
                 <ActivitySummary user={user} />

@@ -26,7 +26,7 @@ export default function LoginClient() {
     const [resetSuccess, setResetSuccess] = useState(false);
     const [isRecoveryMode, setIsRecoveryMode] = useState(false);
     const [resetError, setResetError] = useState<string | null>(null);
-    const { login } = useAuth();
+    const { user, loading: authLoading, login } = useAuth();
 
     // Check for recovery mode on mount
     React.useEffect(() => {
@@ -68,6 +68,14 @@ export default function LoginClient() {
 
     const handleUpdatePassword = async (e: React.FormEvent) => {
         e.preventDefault();
+        
+        // Final safety check for session
+        if (!user) {
+            toast.error('Auth session missing! Your link may have expired.');
+            setError('Auth session missing! Your link may have expired. Please request a new one.');
+            return;
+        }
+
         if (newPassword !== confirmNewPassword) {
             setError('Passwords do not match');
             return;
@@ -164,72 +172,111 @@ export default function LoginClient() {
                 <div className="w-full backdrop-blur-xl bg-gradient-to-b from-white/10 to-white/5 border border-white/10 shadow-2xl rounded-2xl overflow-hidden mb-8">
                     <div className="p-10">
                         {isRecoveryMode ? (
-                            <form onSubmit={handleUpdatePassword} className="space-y-6">
-                                <AnimatePresence>
-                                    {error && (
+                            <div className="space-y-6">
+                                <AnimatePresence mode="wait">
+                                    {(!user && !authLoading) ? (
                                         <motion.div
-                                            initial={{ opacity: 0, y: -10 }}
-                                            animate={{ opacity: 1, y: 0 }}
-                                            className="p-4 bg-red-500/10 border border-red-500/20 rounded-xl text-red-200 text-sm flex items-center gap-2"
+                                            key="recovery-error"
+                                            initial={{ opacity: 0, scale: 0.95 }}
+                                            animate={{ opacity: 1, scale: 1 }}
+                                            className="text-center space-y-6"
                                         >
-                                            <AlertCircle className="w-4 h-4 text-red-500 shrink-0" />
-                                            {error}
+                                            <div className="w-16 h-16 bg-red-500/10 rounded-full flex items-center justify-center mx-auto border border-red-500/20">
+                                                <AlertCircle className="w-8 h-8 text-red-500" />
+                                            </div>
+                                            <div className="space-y-2">
+                                                <h3 className="text-xl font-bold text-white">Link Invalid or Expired</h3>
+                                                <p className="text-slate-400 text-sm">
+                                                    Your recovery session could not be verified. This happens if the link was already used or has expired.
+                                                </p>
+                                            </div>
+                                            <Button 
+                                                onClick={() => {
+                                                    setIsRecoveryMode(false);
+                                                    setShowResetModal(true);
+                                                }}
+                                                className="w-full h-11 bg-primary text-white font-bold rounded-full"
+                                            >
+                                                Request New Link
+                                            </Button>
+                                            <button 
+                                                type="button"
+                                                onClick={() => setIsRecoveryMode(false)}
+                                                className="text-sm font-medium text-slate-500 hover:text-white transition-colors"
+                                            >
+                                                Back to Login
+                                            </button>
                                         </motion.div>
+                                    ) : (
+                                        <motion.form
+                                            key="recovery-form"
+                                            initial={{ opacity: 0 }}
+                                            animate={{ opacity: 1 }}
+                                            onSubmit={handleUpdatePassword}
+                                            className="space-y-6"
+                                        >
+                                            {error && (
+                                                <div className="p-4 bg-red-500/10 border border-red-500/20 rounded-xl text-red-200 text-sm flex items-center gap-2">
+                                                    <AlertCircle className="w-4 h-4 text-red-500 shrink-0" />
+                                                    {error}
+                                                </div>
+                                            )}
+
+                                            <div className="space-y-2">
+                                                <label className="text-[11px] font-bold text-slate-400 uppercase tracking-widest ml-1">
+                                                    New Password
+                                                </label>
+                                                <div className="relative group">
+                                                    <Lock className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-500 group-focus-within:text-primary transition-colors" />
+                                                    <input
+                                                        type="password"
+                                                        required
+                                                        value={newPassword}
+                                                        onChange={(e) => setNewPassword(e.target.value)}
+                                                        placeholder="••••••••••••"
+                                                        className="w-full h-12 bg-white/5 border border-white/10 rounded-full pl-11 pr-6 text-white placeholder:text-slate-600 focus:outline-none focus:ring-2 focus:ring-primary/40 focus:bg-white/10 transition-all text-sm"
+                                                    />
+                                                </div>
+                                            </div>
+
+                                            <div className="space-y-2">
+                                                <label className="text-[11px] font-bold text-slate-400 uppercase tracking-widest ml-1">
+                                                    Confirm New Password
+                                                </label>
+                                                <div className="relative group">
+                                                    <Lock className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-500 group-focus-within:text-primary transition-colors" />
+                                                    <input
+                                                        type="password"
+                                                        required
+                                                        value={confirmNewPassword}
+                                                        onChange={(e) => setConfirmNewPassword(e.target.value)}
+                                                        placeholder="••••••••••••"
+                                                        className="w-full h-12 bg-white/5 border border-white/10 rounded-full pl-11 pr-6 text-white placeholder:text-slate-600 focus:outline-none focus:ring-2 focus:ring-primary/40 focus:bg-white/10 transition-all text-sm"
+                                                    />
+                                                </div>
+                                            </div>
+
+                                            <button
+                                                type="submit"
+                                                disabled={loading || authLoading}
+                                                className="w-full h-12 bg-primary hover:bg-primary/90 text-white font-bold rounded-full shadow-lg transition-all flex items-center justify-center text-sm"
+                                            >
+                                                {loading ? <Loader2 className="w-4 h-4 animate-spin" /> : 'Update Password'}
+                                            </button>
+                                            
+                                            <div className="text-center">
+                                                <button 
+                                                    type="button"
+                                                    onClick={() => setIsRecoveryMode(false)}
+                                                    className="text-sm font-medium text-slate-500 hover:text-white transition-colors"
+                                                >
+                                                    Cancel
+                                                </button>
+                                            </div>
+                                        </motion.form>
                                     )}
                                 </AnimatePresence>
-
-                                <div className="space-y-2">
-                                    <label className="text-[11px] font-bold text-slate-400 uppercase tracking-widest ml-1">
-                                        New Password
-                                    </label>
-                                    <div className="relative group">
-                                        <Lock className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-500 group-focus-within:text-primary transition-colors" />
-                                        <input
-                                            type="password"
-                                            required
-                                            value={newPassword}
-                                            onChange={(e) => setNewPassword(e.target.value)}
-                                            placeholder="••••••••••••"
-                                            className="w-full h-12 bg-white/5 border border-white/10 rounded-full pl-11 pr-6 text-white placeholder:text-slate-600 focus:outline-none focus:ring-2 focus:ring-primary/40 focus:bg-white/10 transition-all text-sm"
-                                        />
-                                    </div>
-                                </div>
-
-                                <div className="space-y-2">
-                                    <label className="text-[11px] font-bold text-slate-400 uppercase tracking-widest ml-1">
-                                        Confirm New Password
-                                    </label>
-                                    <div className="relative group">
-                                        <Lock className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-500 group-focus-within:text-primary transition-colors" />
-                                        <input
-                                            type="password"
-                                            required
-                                            value={confirmNewPassword}
-                                            onChange={(e) => setConfirmNewPassword(e.target.value)}
-                                            placeholder="••••••••••••"
-                                            className="w-full h-12 bg-white/5 border border-white/10 rounded-full pl-11 pr-6 text-white placeholder:text-slate-600 focus:outline-none focus:ring-2 focus:ring-primary/40 focus:bg-white/10 transition-all text-sm"
-                                        />
-                                    </div>
-                                </div>
-
-                                <button
-                                    type="submit"
-                                    disabled={loading}
-                                    className="w-full h-12 bg-primary hover:bg-primary/90 text-white font-bold rounded-full shadow-lg transition-all flex items-center justify-center text-sm"
-                                >
-                                    {loading ? <Loader2 className="w-4 h-4 animate-spin" /> : 'Update Password'}
-                                </button>
-                                
-                                <div className="text-center">
-                                    <button 
-                                        type="button"
-                                        onClick={() => setIsRecoveryMode(false)}
-                                        className="text-sm font-medium text-slate-500 hover:text-white transition-colors"
-                                    >
-                                        Back to Login
-                                    </button>
-                                </div>
-                            </form>
+                            </div>
                         ) : (
                             <form onSubmit={handleLogin} className="space-y-8">
                                 <AnimatePresence>

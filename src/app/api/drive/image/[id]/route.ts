@@ -5,9 +5,9 @@ export const dynamic = 'force-dynamic';
 
 export async function GET(
     req: NextRequest,
-    { params }: { params: { id: string } }
+    { params }: { params: Promise<{ id: string }> }
 ) {
-    const fileId = params.id;
+    const { id: fileId } = await params;
 
     if (!fileId) {
         return NextResponse.json({ error: 'Missing file ID' }, { status: 400 });

@@ -31,7 +31,8 @@ export const EventService = {
                         inventory:${TABLES.INVENTORY}(id, name, image_url)
                     )
                 `)
-                .eq('tenant_id', tenantId);
+                .eq('tenant_id', tenantId)
+                .eq('deleted', false);
 
             if (institutionId) {
                 query = query.eq('institution_id', institutionId);
@@ -136,7 +137,8 @@ export const EventService = {
                 let query = supabase
                     .from(COLLECTION)
                     .select('*')
-                    .eq('tenant_id', tenantId);
+                    .eq('tenant_id', tenantId)
+                    .eq('deleted', false);
 
                 if (institutionId) {
                     query = query.eq('institution_id', institutionId);

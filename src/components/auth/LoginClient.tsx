@@ -24,8 +24,7 @@ export default function LoginClient() {
     const [resetLoading, setResetLoading] = useState(false);
     const [showResetModal, setShowResetModal] = useState(false);
     const [resetSuccess, setResetSuccess] = useState(false);
-    const [isRecoveryMode, setIsRecoveryMode] = useState(false);
-    const { login } = useAuth();
+    const [resetError, setResetError] = useState<string | null>(null);
 
     // Check for recovery mode on mount
     React.useEffect(() => {
@@ -93,6 +92,7 @@ export default function LoginClient() {
         } catch (err: any) {
             console.error('[UPDATE_PWD] Error:', err);
             setError(err.message || 'Failed to update password.');
+            toast.error(err.message || 'Failed to update password.');
         } finally {
             setLoading(false);
         }
@@ -100,23 +100,37 @@ export default function LoginClient() {
 
     const handleResetPassword = async (e: React.FormEvent) => {
         e.preventDefault();
+        if (!email) {
+            toast.error('Please enter your email address.');
+            return;
+        }
+
         setResetLoading(true);
-        setError(null);
+        setResetError(null);
+        console.log('[RESET] Attempting to send reset link to:', email);
 
         try {
             // Force the redirect URL to match the current origin (Vercel URL in prod)
             const redirectUrl = `${window.location.origin}/login?recovery=true`;
-            console.log('[RESET] Sending reset link with redirect:', redirectUrl);
+            console.log('[RESET] Using redirect URL:', redirectUrl);
             
             const { error: resetError } = await supabase.auth.resetPasswordForEmail(email, {
                 redirectTo: redirectUrl,
             });
 
-            if (resetError) throw resetError;
+            if (resetError) {
+                console.error('[RESET] Supabase Error:', resetError);
+                throw resetError;
+            }
+            
+            console.log('[RESET] Link sent successfully');
             setResetSuccess(true);
+            toast.success('Reset link sent! Please check your inbox.');
         } catch (err: any) {
-            console.error('[RESET] Error:', err);
-            setError(err.message || 'Failed to send reset link.');
+            console.error('[RESET] Caught Exception:', err);
+            const msg = err.message || 'Failed to send reset link.';
+            setResetError(msg);
+            toast.error(msg);
         } finally {
             setResetLoading(false);
         }
@@ -358,6 +372,19 @@ export default function LoginClient() {
                                     </div>
                                     
                                     <form onSubmit={handleResetPassword} className="space-y-6">
+                                        <AnimatePresence>
+                                            {resetError && (
+                                                <motion.div
+                                                    initial={{ opacity: 0, y: -10 }}
+                                                    animate={{ opacity: 1, y: 0 }}
+                                                    className="p-3 bg-red-500/10 border border-red-500/20 rounded-xl text-red-200 text-xs flex items-center gap-2"
+                                                >
+                                                    <AlertCircle className="w-4 h-4 text-red-500 shrink-0" />
+                                                    {resetError}
+                                                </motion.div>
+                                            )}
+                                        </AnimatePresence>
+
                                         <div className="space-y-2">
                                             <div className="relative group">
                                                 <Mail className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-500 group-focus-within:text-primary" />

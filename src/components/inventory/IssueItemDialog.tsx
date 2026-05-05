@@ -39,7 +39,7 @@ export function IssueItemDialog({ item, request, open, onOpenChange, users = [] 
 
     // Form State
     const [issuedToId, setIssuedToId] = useState(request?.requestedBy || "");
-    const [issuedToRole, setIssuedToRole] = useState<'guest' | 'manager' | 'member'>('guest'); // Default
+    const [issuedToRole, setIssuedToRole] = useState<'guest' | 'manager' | 'member' | 'team'>('guest'); // Default
     const [conditionOut, setConditionOut] = useState<InventoryCondition>((item?.condition as InventoryCondition) || 'good');
     const [expectedReturnAt, setExpectedReturnAt] = useState<Date | undefined>(undefined);
     const [projectNote, setProjectNote] = useState(request?.purpose || "");

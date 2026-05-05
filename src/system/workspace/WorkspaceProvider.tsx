@@ -17,7 +17,7 @@ interface WorkspaceContextType {
     currentWorkspace: Workspace | null;
     currentWorkspaceId: string | null;
     availableWorkspaces: Workspace[];
-    currentRole: 'admin' | 'manager' | 'member' | 'guest';
+    currentRole: 'admin' | 'manager' | 'member' | 'team' | 'guest';
     setWorkspace: (workspaceId: string) => void;
     loading: boolean;
     isSingleWorkspace: boolean;

@@ -9,7 +9,7 @@ export interface DeviceRequest {
     requester: {
         uid: string;
         name: string;
-        role: 'manager' | 'member' | 'guest' | 'admin';
+        role: 'manager' | 'member' | 'team' | 'guest' | 'admin';
     };
 
     // What they want

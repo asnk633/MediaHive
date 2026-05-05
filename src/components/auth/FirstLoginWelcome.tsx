@@ -11,7 +11,7 @@ import { useAuth } from '@/contexts/AuthContextProvider';
 import { nativeNavigate } from '@/lib/utils';
 
 interface FirstLoginWelcomeProps {
-  userRole: 'admin' | 'manager' | 'member' | 'guest';
+  userRole: 'admin' | 'manager' | 'member' | 'team' | 'guest';
   userId: string;
 }
 

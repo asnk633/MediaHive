@@ -31,7 +31,7 @@ const WatchdogUI = ({ onRetry }: { onRetry: () => void }) => (
 );
 
 export default function BootGate({ children }: { children: React.ReactNode }) {
-    const { user, loading } = useAuth();
+    const { user, loading, recoveryMode } = useAuth();
     const router = useRouter();
     const pathname = usePathname();
     const [showWatchdog, setShowWatchdog] = useState(false);
@@ -111,8 +111,13 @@ export default function BootGate({ children }: { children: React.ReactNode }) {
                     console.log('[BOOT] Onboarding pending -> /welcome');
                     nativeNavigate('/welcome', router, 'BootGate');
                 } else if (normalizedPath === '' || normalizedPath === '/' || normalizedPath === '/login' || normalizedPath === '/signup') {
-                    console.log('[BOOT] Navigating -> /home');
-                    nativeNavigate('/home', router, 'BootGate');
+                    // Only redirect to /home if NOT in password recovery mode
+                    if (!recoveryMode && !window.location.search.includes('recovery=true')) {
+                        console.log('[BOOT] Navigating -> /home');
+                        nativeNavigate('/home', router, 'BootGate');
+                    } else {
+                        console.log('[BOOT] Staying on login/signup for recovery mode');
+                    }
                 }
             } else if (!publicRoutes.includes(normalizedPath)) {
                 console.log('[BOOT] Unauthenticated - redirecting to /login');

@@ -21,7 +21,7 @@ import { PageLayout } from "@/components/ui/layout/PageLayout";
 import { toast } from 'sonner';
 
 export default function ProfileClient() {
-    const { user } = useAuth();
+    const { user, signOut } = useAuth();
     const router = useRouter();
     const [notifications, setNotifications] = useState(true);
 
@@ -77,8 +77,7 @@ export default function ProfileClient() {
 
     const handleSignOut = async () => {
         try {
-            await signOut(auth);
-            nativeNavigate('/login', router, 'Profile (Sign Out)');
+            await signOut();
         } catch (error) {
             console.error('Sign out failed:', error);
         }

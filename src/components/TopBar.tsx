@@ -142,7 +142,6 @@ export default function TopBar({ title = "MediaHive" }: { title?: string }) {
             <DropdownMenuItem
               onClick={async () => {
                 await signOut();
-                nativeNavigate('/login', router, 'TopBar:Logout');
               }}
               className="text-sm py-2 text-red-400 focus:bg-red-500/10 focus:text-red-400 cursor-pointer rounded-sm"
             >

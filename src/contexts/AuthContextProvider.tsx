@@ -21,7 +21,7 @@ type AuthContextType = {
     recoveryMode: boolean;
     setRecoveryMode: (mode: boolean) => void;
     login: (email: string, password: string) => Promise<void>;
-    signup: (email: string, password: string) => Promise<void>;
+    signup: (email: string, password: string, metadata?: Record<string, any>) => Promise<void>;
     logout: () => Promise<void>;
     signOut: () => Promise<void>;
     getIdToken: () => Promise<string | null>;
@@ -364,12 +364,15 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         }
     };
 
-    const signup = async (email: string, password: string) => {
+    const signup = async (email: string, password: string, metadata?: Record<string, any>) => {
         console.log("[SUPABASE TRACE] signUp start for:", email);
         const { error } = await Promise.race([
             supabase.auth.signUp({
                 email,
                 password,
+                options: {
+                    data: metadata
+                }
             }),
             timeout(TIMEOUT_MS)
         ]) as any;
@@ -383,22 +386,39 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
     const logout = async () => {
         try {
-            setUser(null);
-            setLoading(false);
-            setRecoveryMode(false);
-
+            setLoading(true);
             console.log("[SUPABASE TRACE] signOut start")
-            await supabase.auth.signOut();
+            
+            // Await the actual sign out before clearing local state
+            // This prevents race conditions where a hard navigation (window.location.href)
+            // cancels the sign-out request if it's still pending.
+            await Promise.race([
+                supabase.auth.signOut(),
+                new Promise(res => setTimeout(res, 3000)) // 3s fallback
+            ]);
+            
             console.log("[SUPABASE TRACE] signOut end")
 
             // Clear React Query cache and remove from localStorage on logout
             queryClient.clear();
             if (typeof window !== 'undefined') {
+                // MANUALLY purge Supabase keys to prevent session re-hydration loops
+                Object.keys(localStorage).forEach(key => {
+                    if (key.startsWith('sb-')) {
+                        localStorage.removeItem(key);
+                    }
+                });
+                
                 localStorage.removeItem('REACT_QUERY_OFFLINE_CACHE');
                 localStorage.removeItem('mediahive_workspace');
+                localStorage.removeItem('mediahive_onboarding_complete');
             }
 
             cancelAllRequests();
+            
+            setUser(null);
+            setRecoveryMode(false);
+            setLoading(false);
         } catch (err) {
             console.error("[Auth] Logout failed:", err);
             setUser(null);

@@ -36,17 +36,10 @@ const INSTITUTIONS = [
     { id: "7d6b7d59-af69-4d2c-abfd-545d53be5e31", name: "Thaiba Cultural Center" }
 ];
 
-const ROLES = [
-    { id: 'guest', name: 'Guest (View Only)' },
-    { id: 'team', name: 'Team Member (Production)' },
-    { id: 'admin', name: 'Administrator (Full Access)' }
-];
-
 export default function SignupClient() {
     const router = useRouter();
     const [fullName, setFullName] = useState('');
     const [institutionId, setInstitutionId] = useState('');
-    const [role, setRole] = useState('guest');
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
     const [confirmPassword, setConfirmPassword] = useState('');
@@ -60,7 +53,7 @@ export default function SignupClient() {
         setError(null);
         
         if (!fullName) {
-            setError('Please enter your full name');
+            setError('Please enter your display name');
             return;
         }
 
@@ -90,8 +83,7 @@ export default function SignupClient() {
 
             const metadata = {
                 full_name: fullName,
-                institution_id: institutionId,
-                role: role
+                institution_id: institutionId
             };
 
             console.log('[SIGNUP] Attempting signup with metadata:', metadata);
@@ -156,7 +148,7 @@ export default function SignupClient() {
 
                 <div className="w-full backdrop-blur-xl bg-gradient-to-b from-white/10 to-white/5 border border-white/10 shadow-2xl rounded-2xl overflow-hidden mb-8">
                     <div className="p-8">
-                        <form onSubmit={handleSignup} className="space-y-5">
+                        <form onSubmit={handleSignup} className="space-y-6">
                             <AnimatePresence>
                                 {error && (
                                     <motion.div
@@ -171,10 +163,10 @@ export default function SignupClient() {
                                 )}
                             </AnimatePresence>
 
-                            <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
+                            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                                 <div className="space-y-2">
                                     <label className="text-[10px] font-bold text-slate-400 uppercase tracking-widest ml-1">
-                                        Full Name
+                                        Display Name
                                     </label>
                                     <div className="relative group">
                                         <User className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-500 group-focus-within:text-primary transition-colors" />
@@ -183,31 +175,12 @@ export default function SignupClient() {
                                             required
                                             value={fullName}
                                             onChange={(e) => setFullName(e.target.value)}
-                                            placeholder="John Doe"
+                                            placeholder="Your Name"
                                             className="w-full h-11 bg-white/5 border border-white/10 rounded-full pl-11 pr-6 text-white placeholder:text-slate-600 focus:outline-none focus:ring-2 focus:ring-primary/40 focus:bg-white/10 transition-all text-sm"
                                         />
                                     </div>
                                 </div>
 
-                                <div className="space-y-2">
-                                    <label className="text-[10px] font-bold text-slate-400 uppercase tracking-widest ml-1">
-                                        Email Address
-                                    </label>
-                                    <div className="relative group">
-                                        <Mail className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-500 group-focus-within:text-primary transition-colors" />
-                                        <input
-                                            type="email"
-                                            required
-                                            value={email}
-                                            onChange={(e) => setEmail(e.target.value)}
-                                            placeholder="your@email.com"
-                                            className="w-full h-11 bg-white/5 border border-white/10 rounded-full pl-11 pr-6 text-white placeholder:text-slate-600 focus:outline-none focus:ring-2 focus:ring-primary/40 focus:bg-white/10 transition-all text-sm"
-                                        />
-                                    </div>
-                                </div>
-                            </div>
-
-                            <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
                                 <div className="space-y-2">
                                     <label className="text-[10px] font-bold text-slate-400 uppercase tracking-widest ml-1">
                                         Institution
@@ -229,30 +202,26 @@ export default function SignupClient() {
                                         </select>
                                     </div>
                                 </div>
+                            </div>
 
-                                <div className="space-y-2">
-                                    <label className="text-[10px] font-bold text-slate-400 uppercase tracking-widest ml-1">
-                                        Requested Role
-                                    </label>
-                                    <div className="relative group">
-                                        <Shield className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-500 group-focus-within:text-primary transition-colors" />
-                                        <select
-                                            required
-                                            value={role}
-                                            onChange={(e) => setRole(e.target.value)}
-                                            className="w-full h-11 bg-white/5 border border-white/10 rounded-full pl-11 pr-6 text-white appearance-none focus:outline-none focus:ring-2 focus:ring-primary/40 focus:bg-[#0f172a] transition-all text-sm cursor-pointer"
-                                        >
-                                            {ROLES.map(r => (
-                                                <option key={r.id} value={r.id} className="bg-[#0f172a]">
-                                                    {r.name}
-                                                </option>
-                                            ))}
-                                        </select>
-                                    </div>
+                            <div className="space-y-2">
+                                <label className="text-[10px] font-bold text-slate-400 uppercase tracking-widest ml-1">
+                                    Email Address
+                                </label>
+                                <div className="relative group">
+                                    <Mail className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-500 group-focus-within:text-primary transition-colors" />
+                                    <input
+                                        type="email"
+                                        required
+                                        value={email}
+                                        onChange={(e) => setEmail(e.target.value)}
+                                        placeholder="your@email.com"
+                                        className="w-full h-11 bg-white/5 border border-white/10 rounded-full pl-11 pr-6 text-white placeholder:text-slate-600 focus:outline-none focus:ring-2 focus:ring-primary/40 focus:bg-white/10 transition-all text-sm"
+                                    />
                                 </div>
                             </div>
 
-                            <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
+                            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                                 <div className="space-y-2">
                                     <label className="text-[10px] font-bold text-slate-400 uppercase tracking-widest ml-1">
                                         Create Password

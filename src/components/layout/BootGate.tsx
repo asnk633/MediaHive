@@ -93,6 +93,7 @@ export default function BootGate({ children }: { children: React.ReactNode }) {
     // 2. Navigation Logic
     useEffect(() => {
         const normalizedPath = pathname.endsWith('/') && pathname.length > 1 ? pathname.slice(0, -1) : pathname;
+        const publicRoutes = ['/login', '/signup', '/welcome', '', '/'];
 
         if (!loading) {
             const onboardingDone = typeof window !== 'undefined' ? localStorage.getItem('mediahive_onboarding_complete') === 'true' : true;
@@ -109,11 +110,11 @@ export default function BootGate({ children }: { children: React.ReactNode }) {
                 if (!onboardingDone) {
                     console.log('[BOOT] Onboarding pending -> /welcome');
                     nativeNavigate('/welcome', router, 'BootGate');
-                } else if (normalizedPath === '' || normalizedPath === '/' || normalizedPath === '/login') {
+                } else if (normalizedPath === '' || normalizedPath === '/' || normalizedPath === '/login' || normalizedPath === '/signup') {
                     console.log('[BOOT] Navigating -> /home');
                     nativeNavigate('/home', router, 'BootGate');
                 }
-            } else if (normalizedPath !== '/login' && normalizedPath !== '' && normalizedPath !== '/' && normalizedPath !== '/welcome') {
+            } else if (!publicRoutes.includes(normalizedPath)) {
                 console.log('[BOOT] Unauthenticated - redirecting to /login');
                 nativeNavigate('/login', router, 'BootGate');
             }

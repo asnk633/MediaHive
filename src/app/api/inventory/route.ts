@@ -47,7 +47,7 @@ export async function GET(request: NextRequest) {
         if (error) throw error;
 
         // Map snake_case to camelCase for the frontend
-        const mappedItems = (items || []).map(item => ({
+        const mappedItems = (items || []).map((item: any) => ({
             ...item,
             driveFileId: item.drive_file_id,
             imageUrl: item.image_url,

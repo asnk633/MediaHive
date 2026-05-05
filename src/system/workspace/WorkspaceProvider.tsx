@@ -116,8 +116,8 @@ export function WorkspaceProvider({ children }: { children: React.ReactNode }) {
                 // If the user has a primary institution_id but it's not in the available list (e.g. sync lag),
                 // we synthesize a workspace to prevent empty pages if RLS permits.
                 const syntheticWorkspace: Workspace = {
-                    tenant_id: String(user.tenant_id),
-                    institution_id: user.institution_id,
+                    tenant_id: String(user.tenant_id || ''),
+                    institution_id: String(user.institution_id || ''),
                     name: "Default Institution",
                     features: {}
                 };

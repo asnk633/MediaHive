@@ -18,6 +18,9 @@ export default function LoginClient() {
     const [password, setPassword] = useState('');
     const [error, setError] = useState<string | null>(null);
     const [loading, setLoading] = useState(false);
+    const [resetLoading, setResetLoading] = useState(false);
+    const [showResetModal, setShowResetModal] = useState(false);
+    const [resetSuccess, setResetSuccess] = useState(false);
     const { login } = useAuth();
 
     const handleLogin = async (e: React.FormEvent) => {
@@ -48,6 +51,26 @@ export default function LoginClient() {
             }
         } finally {
             setLoading(false);
+        }
+    };
+
+    const handleResetPassword = async (e: React.FormEvent) => {
+        e.preventDefault();
+        setResetLoading(true);
+        setError(null);
+
+        try {
+            const { error: resetError } = await supabase.auth.resetPasswordForEmail(email, {
+                redirectTo: `${window.location.origin}/login?recovery=true`,
+            });
+
+            if (resetError) throw resetError;
+            setResetSuccess(true);
+        } catch (err: any) {
+            console.error('[RESET] Error:', err);
+            setError(err.message || 'Failed to send reset link.');
+        } finally {
+            setResetLoading(false);
         }
     };
 
@@ -124,7 +147,11 @@ export default function LoginClient() {
                                     />
                                 </div>
                                 <div className="flex justify-end mt-1">
-                                    <button type="button" className="text-[11px] font-bold text-primary hover:text-primary/80 transition-colors uppercase tracking-widest">
+                                    <button 
+                                        type="button" 
+                                        onClick={() => setShowResetModal(true)}
+                                        className="text-[11px] font-bold text-primary hover:text-primary/80 transition-colors uppercase tracking-widest"
+                                    >
                                         Forgot?
                                     </button>
                                 </div>
@@ -183,6 +210,87 @@ export default function LoginClient() {
                     </p>
                 </div>
             </div>
+
+            {/* Reset Password Modal */}
+            <AnimatePresence>
+                {showResetModal && (
+                    <div className="fixed inset-0 z-[100] flex items-center justify-center p-4">
+                        <motion.div 
+                            initial={{ opacity: 0 }}
+                            animate={{ opacity: 1 }}
+                            exit={{ opacity: 0 }}
+                            className="absolute inset-0 bg-black/60 backdrop-blur-sm"
+                            onClick={() => setShowResetModal(false)}
+                        />
+                        <motion.div 
+                            initial={{ scale: 0.9, opacity: 0, y: 20 }}
+                            animate={{ scale: 1, opacity: 1, y: 0 }}
+                            exit={{ scale: 0.9, opacity: 0, y: 20 }}
+                            className="relative w-full max-w-sm bg-slate-900 border border-white/10 rounded-2xl shadow-2xl p-8 overflow-hidden"
+                        >
+                            <div className="absolute top-0 inset-x-0 h-1 bg-gradient-to-r from-transparent via-primary to-transparent" />
+                            
+                            {resetSuccess ? (
+                                <div className="text-center space-y-6">
+                                    <div className="w-16 h-16 bg-green-500/10 rounded-full flex items-center justify-center mx-auto border border-green-500/20">
+                                        <Loader2 className="w-8 h-8 text-green-500" />
+                                    </div>
+                                    <h3 className="text-xl font-bold text-white">Check Your Inbox</h3>
+                                    <p className="text-slate-400 text-sm">
+                                        If an account exists for <span className="text-white font-medium">{email}</span>, you will receive a reset link shortly.
+                                    </p>
+                                    <Button 
+                                        onClick={() => setShowResetModal(false)}
+                                        className="w-full h-11 bg-primary text-white font-bold rounded-full"
+                                    >
+                                        Close
+                                    </Button>
+                                </div>
+                            ) : (
+                                <div className="space-y-6">
+                                    <div className="space-y-2 text-center">
+                                        <h3 className="text-xl font-bold text-white">Reset Password</h3>
+                                        <p className="text-slate-400 text-sm">Enter your email to receive a recovery link.</p>
+                                    </div>
+                                    
+                                    <form onSubmit={handleResetPassword} className="space-y-6">
+                                        <div className="space-y-2">
+                                            <div className="relative group">
+                                                <Mail className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-500 group-focus-within:text-primary" />
+                                                <input
+                                                    type="email"
+                                                    required
+                                                    value={email}
+                                                    onChange={(e) => setEmail(e.target.value)}
+                                                    placeholder="media@thaibagarden.com"
+                                                    className="w-full h-11 bg-white/5 border border-white/10 rounded-full pl-11 pr-6 text-white placeholder:text-slate-600 focus:outline-none focus:ring-2 focus:ring-primary/40 transition-all text-sm"
+                                                />
+                                            </div>
+                                        </div>
+                                        
+                                        <div className="flex flex-col gap-3">
+                                            <Button 
+                                                type="submit"
+                                                disabled={resetLoading || !email}
+                                                className="w-full h-11 bg-primary hover:bg-primary/90 text-white font-bold rounded-full transition-all"
+                                            >
+                                                {resetLoading ? <Loader2 className="w-4 h-4 animate-spin" /> : 'Send Reset Link'}
+                                            </Button>
+                                            <button 
+                                                type="button"
+                                                onClick={() => setShowResetModal(false)}
+                                                className="text-sm font-medium text-slate-500 hover:text-white transition-colors py-1"
+                                            >
+                                                Cancel
+                                            </button>
+                                        </div>
+                                    </form>
+                                </div>
+                            )}
+                        </motion.div>
+                    </div>
+                )}
+            </AnimatePresence>
         </div>
     );
 }

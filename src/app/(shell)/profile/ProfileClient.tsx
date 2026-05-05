@@ -21,9 +21,12 @@ import { PageLayout } from "@/components/ui/layout/PageLayout";
 import { toast } from 'sonner';
 
 export default function ProfileClient() {
-    const { user, signOut } = useAuth();
+    const { user, signOut, refreshUser } = useAuth();
     const router = useRouter();
     const [notifications, setNotifications] = useState(true);
+    const [isEditingName, setIsEditingName] = useState(false);
+    const [newName, setNewName] = useState(user?.name || '');
+    const [updatingName, setUpdatingName] = useState(false);
 
     // Image Upload State
     const [showCropper, setShowCropper] = useState(false);
@@ -31,8 +34,37 @@ export default function ProfileClient() {
     const [uploading, setUploading] = useState(false);
     const fileInputRef = React.useRef<HTMLInputElement>(null);
 
+    useEffect(() => {
+        if (user?.name) {
+            setNewName(user.name);
+        }
+    }, [user?.name]);
+
     const handleAvatarClick = () => {
         fileInputRef.current?.click();
+    };
+
+    const handleNameUpdate = async () => {
+        if (!user || !newName.trim()) return;
+        setUpdatingName(true);
+        try {
+            const { error } = await supabase
+                .from('profiles')
+                .update({ full_name: newName.trim() })
+                .eq('id', user.uid);
+
+            if (error) throw error;
+            
+            toast.success('Display name updated!');
+            setIsEditingName(false);
+            if (refreshUser) await refreshUser();
+            router.refresh();
+        } catch (error) {
+            console.error('Failed to update name:', error);
+            toast.error('Failed to update name.');
+        } finally {
+            setUpdatingName(false);
+        }
     };
 
     const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -65,6 +97,7 @@ export default function ProfileClient() {
             const blob = await response.blob();
             const file = new File([blob], 'profile.jpg', { type: 'image/jpeg' });
             await uploadProfilePicture(user.uid, file);
+            if (refreshUser) await refreshUser();
             router.refresh();
         } catch (error) {
             console.error('Upload failed:', error);
@@ -90,6 +123,12 @@ export default function ProfileClient() {
                 <ProfileHeaderCard
                     user={user}
                     onAvatarClick={handleAvatarClick}
+                    isEditingName={isEditingName}
+                    setIsEditingName={setIsEditingName}
+                    newName={newName}
+                    setNewName={setNewName}
+                    onSaveName={handleNameUpdate}
+                    updatingName={updatingName}
                 />
 
                 {/* Grid Layout for Cards */}

@@ -400,9 +400,11 @@ export const EventService = {
             if (crew) {
                 const currentEvent = await EventService.getEventById(id);
                 const oldCrewIds = (currentEvent?.crew || []).map(c => c.user_id);
-                const newCrewIds = crew.map(c => c.user_id);
+                const newCrewIds = crew.map(c => c.user_id).filter((id): id is string => !!id);
 
-                const toAssign = crew.filter(c => !oldCrewIds.includes(c.user_id));
+                const toAssign = crew.filter((c): c is Partial<EventCrewAssignment> & { user_id: string } => 
+                    !!c.user_id && !oldCrewIds.includes(c.user_id)
+                );
                 const toUnassign = oldCrewIds.filter(uid => !newCrewIds.includes(uid));
 
                 for (const member of toAssign) {
@@ -425,17 +427,19 @@ export const EventService = {
             if (equipment) {
                 const currentEvent = await EventService.getEventById(id);
                 const oldEquipIds = (currentEvent?.equipment || []).map(e => e.inventory_id);
-                const newEquipIds = equipment.map(e => e.inventory_id);
+                const newEquipIds = equipment.map(e => e.inventory_id).filter((id): id is string => !!id);
 
-                const toAdd = equipment.filter(e => !oldEquipIds.includes(e.inventory_id));
+                const toAdd = equipment.filter((e): e is Partial<EventEquipmentReservation> & { inventory_id: string } => 
+                    !!e.inventory_id && !oldEquipIds.includes(e.inventory_id)
+                );
                 const toRemove = oldEquipIds.filter(iid => !newEquipIds.includes(iid));
 
                 for (const item of toAdd) {
                     await syncEngine.enqueueMutation('ASSIGN_EQUIPMENT', { 
                         event_id: id, 
                         inventory_id: item.inventory_id, 
-                        reserved_from: item.reserved_from, 
-                        reserved_to: item.reserved_to, 
+                        reserved_from: String(item.reserved_from), 
+                        reserved_to: String(item.reserved_to), 
                         tenant_id: tenantId 
                     });
                 }

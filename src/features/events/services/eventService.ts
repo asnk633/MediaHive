@@ -83,11 +83,19 @@ export const EventService = {
                 }
             }
 
+            // Final safety check for UUID format
+            const isUuid = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(searchId);
+            if (!isUuid) {
+                console.warn(`[EventService] Invalid UUID format for ID: ${searchId}`);
+                return null;
+            }
+
             const { data, error } = await safeQuery(() => supabase
                 .from(COLLECTION)
                 .select(`
                     *,
-                    crew:${TABLES.EVENT_CREW}(
+                    creator:profiles!events_created_by_fkey(id, full_name, avatar_url),
+                    crew:event_crew(
                         *,
                         profile:${TABLES.USERS}(id, full_name, avatar_url)
                     ),
@@ -98,31 +106,52 @@ export const EventService = {
                 `)
                 .eq('id', searchId)
                 .eq('tenant_id', tenantId)
+                .eq('deleted', false)
                 .single()
             );
 
-            if (error) throw error;
-            const event = data as any;
+            if (error) {
+                // Return null on NOT_FOUND, otherwise re-throw to be caught by the service catch block
+                if (error.code === 'PGRST116') return null;
+                throw error;
+            }
+            
+            if (!data) return null;
+            
+            // Map the flat data to the expected Event structure
+            const rawEvent = data as any;
+            const mappedEvent = {
+                ...rawEvent,
+                created_by: rawEvent.creator ? {
+                    uid: rawEvent.creator.id,
+                    name: rawEvent.creator.full_name,
+                    role: (rawEvent as any).created_by_role // Fallback if exists
+                } : {
+                    uid: rawEvent.created_by,
+                    name: "Unknown User"
+                }
+            };
 
-            if (virtualTimestamp && event.is_recurring) {
+            // Normalize dates and structure
+            const normalized = normalizeEvents([mappedEvent])[0];
+
+            if (virtualTimestamp && (normalized as any).is_recurring) {
                 // Re-expand to find this specific instance
                 const instanceDate = new Date(virtualTimestamp);
                 const expansionStart = new Date(instanceDate.getFullYear(), instanceDate.getMonth(), instanceDate.getDate());
                 const expansionEnd = new Date(expansionStart.getTime() + 24 * 60 * 60 * 1000);
                 
-                const expanded = RecurrenceService.expandEvents([event], expansionStart, expansionEnd);
+                const expanded = RecurrenceService.expandEvents([normalized as any], expansionStart, expansionEnd);
                 return expanded.find(e => e.id === id) || null;
             }
 
-            return event;
+            return normalized;
         } catch (e: any) {
-            console.error("[EventService] getEventById failed:", {
-                message: e?.message,
-                code: e?.code,
-                details: e?.details,
-                hint: e?.hint,
-                id
-            });
+            console.error(`[EventService] getEventById failed for ID: ${id}`);
+            console.error(`Error details: ${e?.message || 'No message'} (${e?.code || 'No code'})`);
+            if (e?.details) console.error(`Details: ${e.details}`);
+            if (e?.hint) console.error(`Hint: ${e.hint}`);
+            
             // Fallback: Check cache
             const cacheKey = 'events'; // Simplified for now
             const cached = await offlineDB.getCache<any[]>(cacheKey);

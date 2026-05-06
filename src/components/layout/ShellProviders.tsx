@@ -65,7 +65,7 @@ export default function ShellProviders({ children }: { children: React.ReactNode
                         {/* Desktop Sidebar */}
                         <DesktopSideNav />
 
-                        <div className="flex-1 flex flex-col min-w-0 relative lg:pl-[var(--current-sidebar-width)] transition-[padding-left] duration-[240ms] ease-[cubic-bezier(0.4,0,0.2,1)]">
+                        <div className="flex-1 flex flex-col min-w-0 relative lg:pl-[calc(var(--current-sidebar-width)+3rem)] transition-[padding-left] duration-[240ms] ease-[cubic-bezier(0.4,0,0.2,1)]">
                             {/* Keyboard Navigation Detector */}
                             <KeyboardNavigationDetector />
 

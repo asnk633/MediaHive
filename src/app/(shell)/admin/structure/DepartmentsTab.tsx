@@ -30,11 +30,11 @@ export function DepartmentsTab() {
         setSaving(true);
         try {
             await StructureService.updateDepartment(editingDept.id, { name: editName });
-            toast.success("Office / Unit name updated");
+            toast.success("Department name updated");
             setEditOpen(false);
             fetchDepartments();
         } catch (error) {
-            toast.error("Failed to update office / unit");
+            toast.error("Failed to update department");
         } finally {
             setSaving(false);
         }
@@ -64,12 +64,12 @@ export function DepartmentsTab() {
         setCreating(true);
         try {
             await StructureService.createDepartment(newName);
-            toast.success("Office / Unit created");
+            toast.success("Department created");
             setNewName('');
             setCreateOpen(false);
             fetchDepartments();
         } catch (error) {
-            toast.error("Failed to create office / unit");
+            toast.error("Failed to create department");
         } finally {
             setCreating(false);
         }
@@ -79,7 +79,7 @@ export function DepartmentsTab() {
         const newStatus = currentStatus === 'active' ? 'archived' : 'active';
         try {
             await StructureService.updateDepartment(Number(id), { status: newStatus });
-            toast.success(`Office / Unit ${newStatus === 'active' ? 'activated' : 'archived'}`);
+            toast.success(`Department ${newStatus === 'active' ? 'activated' : 'archived'}`);
             fetchDepartments();
         } catch (error) {
             toast.error("Status update failed");
@@ -89,18 +89,18 @@ export function DepartmentsTab() {
     return (
         <div className="space-y-6">
             <div className="flex justify-between items-center">
-                <h3 className="text-lg font-medium text-slate-200">Offices / Units</h3>
+                <h3 className="text-lg font-medium text-slate-200">Departments</h3>
                 <Dialog open={createOpen} onOpenChange={setCreateOpen}>
                     <DialogTrigger asChild>
                         <Button className="bg-blue-600 hover:bg-blue-500 text-white">
-                            <Plus className="w-4 h-4 mr-2" /> Add Office / Unit
+                            <Plus className="w-4 h-4 mr-2" /> Add Department
                         </Button>
                     </DialogTrigger>
                     <DialogContent className="bg-slate-950/90 backdrop-blur-xl border-white/10">
                         <DialogHeader>
-                            <DialogTitle className="text-white">New Office / Unit</DialogTitle>
+                            <DialogTitle className="text-white">New Department</DialogTitle>
                             <DialogDescription className="text-slate-400">
-                                Create a new global office / unit for user assignment.
+                                Create a new global department for user assignment.
                             </DialogDescription>
                         </DialogHeader>
                         <form onSubmit={handleCreate} className="space-y-4 pt-4">
@@ -170,9 +170,9 @@ export function DepartmentsTab() {
                     {departments.length === 0 && (
                         <div className="col-span-full flex flex-col items-center justify-center py-16 text-center border border-dashed border-white/10 rounded-xl bg-white/5">
                             <Users className="w-12 h-12 text-slate-600 mb-4" />
-                            <h3 className="text-lg font-medium text-slate-400">No offices / units found</h3>
+                            <h3 className="text-lg font-medium text-slate-400">No departments found</h3>
                             <p className="text-sm text-slate-500 max-w-sm mt-2">
-                                Create global offices / units to assign users to.
+                                Create global departments to assign users to.
                             </p>
                         </div>
                     )}
@@ -183,7 +183,7 @@ export function DepartmentsTab() {
             <Dialog open={editOpen} onOpenChange={setEditOpen}>
                 <DialogContent className="bg-slate-950/90 backdrop-blur-xl border-white/10">
                     <DialogHeader>
-                        <DialogTitle className="text-white">Edit Office / Unit</DialogTitle>
+                        <DialogTitle className="text-white">Edit Department</DialogTitle>
                         <DialogDescription className="text-slate-400">
                             Update the display name. Changes will propagate globally.
                         </DialogDescription>

@@ -182,7 +182,7 @@ export default function TasksNewClient() {
             throw new Error("Please select a due date.");
         }
         if (!selectedOrgId) {
-            throw new Error("Please select a Department or Institution.");
+            throw new Error("Please select a Department / Institution.");
         }
 
         try {
@@ -528,7 +528,7 @@ export default function TasksNewClient() {
                                             /* Read-Only View for Guests or Single-Option Users */
                                             <div className="space-y-2">
                                                 <label className="block text-sm font-medium text-white/70">
-                                                    Requested By <span className="text-white/40 text-xs">(Department / Unit / Office)</span>
+                                                    Requested By <span className="text-white/40 text-xs">(Department / Institution)</span>
                                                 </label>
                                                 <div className="w-full bg-white/5 pl-4 pr-4 py-3 rounded-xl border border-[#ffffff1a] text-sm text-white flex items-center gap-3">
                                                     <Briefcase size={14} className="text-gray-400" />
@@ -543,7 +543,7 @@ export default function TasksNewClient() {
                                                                 const id = selectedOrgId.split('_')[1];
                                                                 return institutionsList.find(i => String(i.id) === id)?.name || "Unknown Institution";
                                                             }
-                                                            return "Unknown Unit";
+                                                            return "Unknown Entity";
                                                         })()}
                                                     </span>
                                                     {/* Show different badge based on why it's locked */}
@@ -554,7 +554,7 @@ export default function TasksNewClient() {
                                         ) : (
                                             /* Interactive Dropdown for others */
                                             <DropdownSelector 
-                                                label="Requested By (Department / Unit / Office)"
+                                                label="Requested By (Department / Institution)"
                                                 value={selectedOrgId}
                                                 onChange={setSelectedOrgId}
                                                 options={[
@@ -570,7 +570,7 @@ export default function TasksNewClient() {
                                 {canCreateOnBehalf && createAs === 'on_behalf_of' && (
                                     <div className="space-y-0.5 animate-in fade-in zoom-in-95 duration-200">
                                         <DropdownSelector 
-                                            label="Publishing On Behalf Of (Identity)"
+                                            label="Publishing On Behalf Of (Dept / Inst)"
                                             value={onBehalfOfId}
                                             onChange={(val) => {
                                                 setOnBehalfOfId(val);

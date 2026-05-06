@@ -55,12 +55,12 @@ export const DepartmentManagement = () => {
         setSaving('creating');
         try {
             await StructureService.createDepartment(createName);
-            toast.success("Office / Unit created");
+            toast.success("Department created");
             setCreateName('');
             setIsCreating(false);
             fetchDepartments();
         } catch (e) {
-            toast.error("Failed to create office / unit");
+            toast.error("Failed to create department");
         } finally {
             setSaving(null);
         }
@@ -72,11 +72,11 @@ export const DepartmentManagement = () => {
         setSaving(id);
         try {
             await StructureService.updateDepartment(id, { name: editName });
-            toast.success("Office / Unit updated");
+            toast.success("Department updated");
             setEditingId(null);
             fetchDepartments();
         } catch (e) {
-            toast.error("Failed to update office / unit");
+            toast.error("Failed to update department");
         } finally {
             setSaving(null);
         }
@@ -90,11 +90,11 @@ export const DepartmentManagement = () => {
         try {
             // Soft delete by archiving
             await StructureService.updateDepartment(id, { status: 'archived' });
-            toast.success("Office / Unit archived");
+            toast.success("Department archived");
             fetchDepartments();
         } catch (e) {
             console.error(e);
-            toast.error("Failed to archive office / unit");
+            toast.error("Failed to archive department");
         } finally {
             setSaving(null);
             setDeleteConfirmId(null);
@@ -115,8 +115,8 @@ export const DepartmentManagement = () => {
         <div className="max-w-4xl mx-auto">
             <div className="mb-6 flex justify-between items-center">
                 <div>
-                    <h2 className="text-xl font-semibold text-white">Offices / Units</h2>
-                    <p className="text-sm text-[var(--color-text-secondary)]">Manage specific offices / units</p>
+                    <h2 className="text-xl font-semibold text-white">Departments</h2>
+                    <p className="text-sm text-[var(--color-text-secondary)]">Manage specific departments</p>
                 </div>
                 {!isCreating && (
                     <button
@@ -124,7 +124,7 @@ export const DepartmentManagement = () => {
                         className="flex items-center gap-2 bg-indigo-600 hover:bg-indigo-700 text-white px-4 py-2 rounded-lg transition-colors"
                     >
                         <Plus size={18} />
-                        Add Office / Unit
+                        Add Department
                     </button>
                 )}
             </div>
@@ -145,7 +145,7 @@ export const DepartmentManagement = () => {
                                 autoFocus
                                 value={createName}
                                 onChange={(e) => setCreateName(e.target.value)}
-                                placeholder="Enter office / unit name..."
+                                placeholder="Enter department name..."
                                 className="flex-1 bg-transparent border-none text-white focus:outline-none focus:ring-0 placeholder-white/30 text-lg font-medium"
                             />
                             <div className="flex gap-2">
@@ -197,7 +197,7 @@ export const DepartmentManagement = () => {
                                             value={editName}
                                             onChange={(e) => setEditName(e.target.value)}
                                             className="flex-1 bg-white/5 border border-[#ffffff1a] rounded-lg px-3 py-2 text-white focus:outline-none focus:border-blue-500 transition-colors"
-                                            placeholder="Office / Unit Name"
+                                            placeholder="Department Name"
                                             onKeyDown={(e) => {
                                                 if (e.key === 'Enter') handleUpdate(dept.id);
                                                 if (e.key === 'Escape') setEditingId(null);

@@ -16,7 +16,7 @@ export interface SafeQueryOptions {
   payload?: any;
 }
 
-export type SafeQueryErrorType = 'SCHEMA' | 'NETWORK' | 'AUTH' | 'RLS' | 'UNKNOWN';
+export type SafeQueryErrorType = 'SCHEMA' | 'NETWORK' | 'AUTH' | 'RLS' | 'VALIDATION' | 'UNKNOWN';
 
 export interface SafeQueryResult<T> {
   data: T | T[] | null;
@@ -45,6 +45,10 @@ function classifyError(error: any): SafeQueryErrorType {
 
   if (status === 503 || status === 404 || message.includes('fetch') || message.includes('network')) {
     return 'NETWORK';
+  }
+
+  if (code === '23505' || code === '23502' || code === '23503') {
+    return 'VALIDATION';
   }
 
   return 'UNKNOWN';
@@ -123,7 +127,7 @@ export async function safeQuery<T>(
         }
 
         // Fatal errors: Don't retry
-        if (errorType === 'SCHEMA' || errorType === 'AUTH') {
+        if (errorType === 'SCHEMA' || errorType === 'AUTH' || errorType === 'RLS' || errorType === 'VALIDATION') {
           healthManager.recordFailure(false, errorType, { endpoint, error: lastError });
           
           Sentry.captureException(lastError, {

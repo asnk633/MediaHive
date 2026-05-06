@@ -11,7 +11,7 @@ export interface Institution {
 }
 
 export interface Department {
-    id: number;
+    id: string;
     name: string;
     status: StructureStatus;
     created_at?: string;

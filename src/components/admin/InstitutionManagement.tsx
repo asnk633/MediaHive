@@ -115,8 +115,8 @@ export const InstitutionManagement = () => {
         <div className="max-w-4xl mx-auto">
             <div className="mb-6 flex justify-between items-center">
                 <div>
-                    <h2 className="text-xl font-semibold text-white">Institutions</h2>
-                    <p className="text-sm text-[var(--color-text-secondary)]">Manage organization institutions</p>
+                    <h2 className="text-xl font-semibold text-white">Departments / Institutions</h2>
+                    <p className="text-sm text-[var(--color-text-secondary)]">Manage organization departments and institutions</p>
                 </div>
                 {!isCreating && (
                     <button
@@ -124,7 +124,7 @@ export const InstitutionManagement = () => {
                         className="flex items-center gap-2 bg-indigo-600 hover:bg-indigo-700 text-white px-4 py-2 rounded-lg transition-colors"
                     >
                         <Plus size={18} />
-                        Add Institution
+                        Add Department / Institution
                     </button>
                 )}
             </div>

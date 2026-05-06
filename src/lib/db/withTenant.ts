@@ -44,11 +44,16 @@ export async function withTenant() {
 export function handleApiError(context: string, error: any) {
     console.error(`[DB] ❌ ${context} Error:`, JSON.stringify(error, null, 2));
 
+    let status = 500;
+    if (error.code === 'PGRST116') status = 404;
+    else if (error.message?.includes('Unauthorized') || error.message?.includes('Authentication required')) status = 401;
+    else if (error.message?.includes('Forbidden') || error.message?.includes('Permission denied')) status = 403;
+
     return NextResponse.json({
         error: error.message || 'Internal Server Error',
         context,
         code: error.code
     }, {
-        status: error.code === 'PGRST116' ? 404 : 500
+        status
     });
 }

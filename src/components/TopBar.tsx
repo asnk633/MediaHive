@@ -57,9 +57,9 @@ export default function TopBar({ title = "MediaHive" }: { title?: string }) {
       </div>
 
       {/* 2. Actions & Profile */}
-      <div className="flex items-center gap-2 pointer-events-auto">
-        {/* Sync Action */}
-        <ClientOnly>
+      <ClientOnly>
+        <div className="flex items-center gap-2 pointer-events-auto">
+          {/* Sync Action */}
           <TooltipProvider>
             <Tooltip>
               <TooltipTrigger asChild>
@@ -96,60 +96,60 @@ export default function TopBar({ title = "MediaHive" }: { title?: string }) {
               </TooltipContent>
             </Tooltip>
           </TooltipProvider>
-        </ClientOnly>
 
-        <div className="h-4 w-[1px] bg-border-soft mx-1" />
+          <div className="h-4 w-[1px] bg-border-soft mx-1" />
 
-        {/* Quick Actions */}
-        <div className="flex items-center gap-2">
-          <HealthIndicator />
-          <NotificationBell />
-        </div>
+          {/* Quick Actions */}
+          <div className="flex items-center gap-2">
+            <HealthIndicator />
+            <NotificationBell />
+          </div>
 
-        <div className="h-4 w-[1px] bg-border-soft mx-1" />
+          <div className="h-4 w-[1px] bg-border-soft mx-1" />
 
-        {/* Profile Menu */}
-        <DropdownMenu>
-          <DropdownMenuTrigger asChild>
-            <Button
-              variant="ghost"
-              className="h-9 w-9 p-0 rounded-full hover:bg-surface group transition-all"
-            >
-              <div className="w-8 h-8 rounded-full overflow-hidden bg-surface border border-border-soft flex items-center justify-center">
-                {(user?.avatar_url || user?.photoURL) ? (
-                  <img src={getDriveImageUrl(user.avatar_url || user.photoURL, user.avatar_drive_id)} alt="Avatar" className="w-full h-full object-cover" />
-                ) : (
-                  <span className="text-xs font-medium text-text-muted">
-                    {user?.email?.[0]?.toUpperCase() || 'U'}
-                  </span>
-                )}
+          {/* Profile Menu */}
+          <DropdownMenu>
+            <DropdownMenuTrigger asChild>
+              <Button
+                variant="ghost"
+                className="h-9 w-9 p-0 rounded-full hover:bg-surface group transition-all"
+              >
+                <div className="w-8 h-8 rounded-full overflow-hidden bg-surface border border-border-soft flex items-center justify-center">
+                  {(user?.avatar_url || user?.photoURL) ? (
+                    <img src={getDriveImageUrl(user.avatar_url || user.photoURL, user.avatar_drive_id)} alt="Avatar" className="w-full h-full object-cover" />
+                  ) : (
+                    <span className="text-xs font-medium text-text-muted">
+                      {user?.email?.[0]?.toUpperCase() || 'U'}
+                    </span>
+                  )}
+                </div>
+              </Button>
+            </DropdownMenuTrigger>
+            <DropdownMenuContent align="end" className="w-56 bg-slate-950/80 backdrop-blur-xl border border-white/10 rounded-2xl shadow-2xl p-1 mt-2 ring-1 ring-white/5 animate-in fade-in zoom-in-95 duration-200">
+              <div className="px-3 py-2 border-b border-white/5 mb-1">
+                <p className="text-sm font-medium text-white">{user?.name || 'User'}</p>
+                <p className="text-[10px] font-black uppercase tracking-widest text-indigo-400 mt-0.5">{currentRole || 'Guest'}</p>
+                <p className="text-xs text-slate-400 truncate mt-1">{user?.email}</p>
               </div>
-            </Button>
-          </DropdownMenuTrigger>
-          <DropdownMenuContent align="end" className="w-56 bg-slate-950/80 backdrop-blur-xl border border-white/10 rounded-2xl shadow-2xl p-1 mt-2 ring-1 ring-white/5 animate-in fade-in zoom-in-95 duration-200">
-            <div className="px-3 py-2 border-b border-white/5 mb-1">
-              <p className="text-sm font-medium text-white">{user?.name || 'User'}</p>
-              <p className="text-[10px] font-black uppercase tracking-widest text-indigo-400 mt-0.5">{currentRole || 'Guest'}</p>
-              <p className="text-xs text-slate-400 truncate mt-1">{user?.email}</p>
-            </div>
-            <DropdownMenuItem onClick={() => nativeNavigate('/profile', router, 'TopBar:Profile')} className="text-sm py-2 cursor-pointer focus:bg-surface focus:text-white rounded-sm">
-              <User size={16} className="mr-2 text-text-muted" /> Profile
-            </DropdownMenuItem>
-            <DropdownMenuItem onClick={() => nativeNavigate('/settings', router, 'TopBar:Settings')} className="text-sm py-2 cursor-pointer focus:bg-surface focus:text-white rounded-sm">
-              <Settings size={16} className="mr-2 text-text-muted" /> Settings
-            </DropdownMenuItem>
-            <DropdownMenuSeparator className="bg-border-soft mx-1" />
-            <DropdownMenuItem
-              onClick={async () => {
-                await signOut();
-              }}
-              className="text-sm py-2 text-red-400 focus:bg-red-500/10 focus:text-red-400 cursor-pointer rounded-sm"
-            >
-              <LogOut size={16} className="mr-2" /> Sign out
-            </DropdownMenuItem>
-          </DropdownMenuContent>
-        </DropdownMenu>
-      </div>
+              <DropdownMenuItem onClick={() => nativeNavigate('/profile', router, 'TopBar:Profile')} className="text-sm py-2 cursor-pointer focus:bg-surface focus:text-white rounded-sm">
+                <User size={16} className="mr-2 text-text-muted" /> Profile
+              </DropdownMenuItem>
+              <DropdownMenuItem onClick={() => nativeNavigate('/settings', router, 'TopBar:Settings')} className="text-sm py-2 cursor-pointer focus:bg-surface focus:text-white rounded-sm">
+                <Settings size={16} className="mr-2 text-text-muted" /> Settings
+              </DropdownMenuItem>
+              <DropdownMenuSeparator className="bg-border-soft mx-1" />
+              <DropdownMenuItem
+                onClick={async () => {
+                  await signOut();
+                }}
+                className="text-sm py-2 text-red-400 focus:bg-red-500/10 focus:text-red-400 cursor-pointer rounded-sm"
+              >
+                <LogOut size={16} className="mr-2" /> Sign out
+              </DropdownMenuItem>
+            </DropdownMenuContent>
+          </DropdownMenu>
+        </div>
+      </ClientOnly>
     </header >
   );
 }

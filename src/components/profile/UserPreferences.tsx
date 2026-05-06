@@ -1,6 +1,7 @@
 import React from 'react';
 import { Bell, Moon, Sun } from 'lucide-react';
 import { cn } from '@/lib/utils';
+import { Switch } from '@/components/ui/switch';
 
 interface UserPreferencesProps {
     notifications: boolean;
@@ -37,20 +38,10 @@ function ToggleRow({ icon: Icon, label, helper, checked, onChange }: { icon: any
                 </div>
             </div>
 
-            <button
-                onClick={() => onChange(!checked)}
-                className={cn(
-                    "w-11 h-6 rounded-full relative transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-primary/30",
-                    checked ? "bg-primary" : "bg-muted"
-                )}
-            >
-                <span
-                    className={cn(
-                        "absolute top-1 left-1 bg-white w-4 h-4 rounded-full shadow-sm transition-all duration-200",
-                        checked ? "translate-x-5" : "translate-x-0"
-                    )}
-                />
-            </button>
+            <Switch
+                checked={checked}
+                onCheckedChange={onChange}
+            />
         </div>
     );
 }

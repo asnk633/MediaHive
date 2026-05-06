@@ -126,7 +126,7 @@ export function UserDialog({ open, onOpenChange, user, onSave, institutions, dep
                 payload.department_id = null; // Clear other
             } else {
                 if (!selectedDepartment) {
-                    toast.error("Please select an office / unit");
+                    toast.error("Please select a Department / Institution");
                     setLoading(false);
                     return;
                 }
@@ -204,7 +204,7 @@ export function UserDialog({ open, onOpenChange, user, onSave, institutions, dep
                         >
                             <TabsList className="bg-slate-800 border border-white/5 w-full">
                                 <TabsTrigger value="institution" className="flex-1">Institution</TabsTrigger>
-                                <TabsTrigger value="department" className="flex-1">Office / Unit</TabsTrigger>
+                                <TabsTrigger value="department" className="flex-1">Department</TabsTrigger>
                             </TabsList>
 
                             <div className="mt-4 p-4 bg-slate-800/50 rounded-xl border border-white/5">
@@ -225,10 +225,10 @@ export function UserDialog({ open, onOpenChange, user, onSave, institutions, dep
                                 </TabsContent>
 
                                 <TabsContent value="department" className="mt-0">
-                                    <Label className="text-xs text-white/50 mb-2 block">Select Global Office / Unit</Label>
+                                    <Label className="text-xs text-white/50 mb-2 block">Select Department</Label>
                                     <Select value={String(selectedDepartment)} onValueChange={setSelectedDepartment}>
                                         <SelectTrigger className="bg-white/5 border-white/10 text-white">
-                                            <SelectValue placeholder="Choose Office / Unit..." />
+                                            <SelectValue placeholder="Choose Department..." />
                                         </SelectTrigger>
                                         <SelectContent className="bg-slate-950/90 backdrop-blur-xl border-white/10">
                                             {departments.map(dept => (

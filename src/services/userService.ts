@@ -106,7 +106,7 @@ export const UserService = {
 
             const { data, error } = await safeQuery(() => supabase
                 .from(TABLES.USERS)
-                .select('id, full_name, avatar_url')
+                .select('id, full_name, avatar_url, department_id, institution_id')
                 .eq('tenant_id', tenantId)
             );
 
@@ -123,7 +123,9 @@ export const UserService = {
                     uid: p.id,
                     name: p.full_name || 'Unknown User',
                     avatar_url: p.avatar_url,
-                    photoURL: p.avatar_url
+                    photoURL: p.avatar_url,
+                    department_id: p.department_id,
+                    institution_id: p.institution_id
                 };
             });
         } catch (error) {

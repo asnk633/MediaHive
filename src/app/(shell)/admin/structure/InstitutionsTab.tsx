@@ -30,11 +30,11 @@ export function InstitutionsTab() {
         setSaving(true);
         try {
             await StructureService.updateInstitution(editingInst.id, { name: editName });
-            toast.success("Institution name updated");
+            toast.success("Department / Institution name updated");
             setEditOpen(false);
             fetchInstitutions();
         } catch (error) {
-            toast.error("Failed to update institution");
+            toast.error("Failed to update Department / Institution");
         } finally {
             setSaving(false);
         }
@@ -47,7 +47,7 @@ export function InstitutionsTab() {
             setInstitutions(data.institutions || []);
         } catch (error) {
             console.error(error);
-            toast.error("Failed to load institutions");
+            toast.error("Failed to load Departments / Institutions");
         } finally {
             setLoading(false);
         }
@@ -64,12 +64,12 @@ export function InstitutionsTab() {
         setCreating(true);
         try {
             await StructureService.createInstitution(newName);
-            toast.success("Institution created");
+            toast.success("Department / Institution created");
             setNewName('');
             setCreateOpen(false);
             fetchInstitutions();
         } catch (error) {
-            toast.error("Failed to create institution");
+            toast.error("Failed to create Department / Institution");
         } finally {
             setCreating(false);
         }
@@ -79,7 +79,7 @@ export function InstitutionsTab() {
         const newStatus = currentStatus === 'active' ? 'archived' : 'active';
         try {
             await StructureService.updateInstitution(String(id), { status: newStatus });
-            toast.success(`Institution ${newStatus === 'active' ? 'activated' : 'archived'}`);
+            toast.success(`Department / Institution ${newStatus === 'active' ? 'activated' : 'archived'}`);
             fetchInstitutions();
         } catch (error) {
             toast.error("Status update failed");
@@ -89,18 +89,18 @@ export function InstitutionsTab() {
     return (
         <div className="space-y-6">
             <div className="flex justify-between items-center">
-                <h3 className="text-lg font-medium text-slate-200">All Institutions</h3>
+                <h3 className="text-lg font-medium text-slate-200">All Departments / Institutions</h3>
                 <Dialog open={createOpen} onOpenChange={setCreateOpen}>
                     <DialogTrigger asChild>
                         <Button className="bg-blue-600 hover:bg-blue-500 text-white">
-                            <Plus className="w-4 h-4 mr-2" /> Add Institution
+                            <Plus className="w-4 h-4 mr-2" /> Add Department / Institution
                         </Button>
                     </DialogTrigger>
                     <DialogContent className="bg-surface backdrop-blur-xl border-soft">
                         <DialogHeader>
-                            <DialogTitle className="text-foreground">New Institution</DialogTitle>
+                            <DialogTitle className="text-foreground">New Department / Institution</DialogTitle>
                             <DialogDescription className="text-muted">
-                                Create a new institution to isolate resources.
+                                Create a new department or institution to isolate resources.
                             </DialogDescription>
                         </DialogHeader>
                         <form onSubmit={handleCreate} className="space-y-4 pt-4">
@@ -109,7 +109,7 @@ export function InstitutionsTab() {
                                 <Input
                                     value={newName}
                                     onChange={e => setNewName(e.target.value)}
-                                    placeholder="e.g. Thaiba Garden"
+                                    placeholder="e.g. Media & IT Department"
                                     className="bg-background border-soft text-foreground"
                                 />
                             </div>
@@ -173,9 +173,9 @@ export function InstitutionsTab() {
                     {institutions.length === 0 && (
                         <div className="col-span-full flex flex-col items-center justify-center py-16 text-center border border-dashed border-white/10 rounded-xl bg-white/5">
                             <Building className="w-12 h-12 text-slate-600 mb-4" />
-                            <h3 className="text-lg font-medium text-slate-400">No institutions found</h3>
+                            <h3 className="text-lg font-medium text-slate-400">No entities found</h3>
                             <p className="text-sm text-slate-500 max-w-sm mt-2">
-                                Create an institution to start organizing your hierarchy.
+                                Create a department or institution to start organizing your hierarchy.
                             </p>
                         </div>
                     )}
@@ -186,7 +186,7 @@ export function InstitutionsTab() {
             <Dialog open={editOpen} onOpenChange={setEditOpen}>
                 <DialogContent className="bg-slate-950/90 backdrop-blur-xl border-white/10">
                     <DialogHeader>
-                        <DialogTitle className="text-white">Edit Institution</DialogTitle>
+                        <DialogTitle className="text-white">Edit Department / Institution</DialogTitle>
                         <DialogDescription className="text-slate-400">
                             Update the display name. Changes will propagate globally.
                         </DialogDescription>
@@ -197,7 +197,7 @@ export function InstitutionsTab() {
                             <Input
                                 value={editName}
                                 onChange={e => setEditName(e.target.value)}
-                                placeholder="e.g. Thaiba Garden"
+                                placeholder="e.g. Media & IT Department"
                                 className="bg-slate-800 border-white/10 text-white"
                             />
                         </div>

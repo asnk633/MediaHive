@@ -36,10 +36,10 @@ export function InstitutionContextCard({ user }: InstitutionContextCardProps) {
                     // Explicitly BLOCK "Thaiba Garden HQ" for Guests at Unit level
                     if (resolvedName && !resolvedName.includes("Thaiba Garden HQ")) {
                         if (resolvedName !== targetDeptId) {
-                            name = `${resolvedName} (Office / Unit)`;
+                            name = `${resolvedName} (Dept / Inst)`;
                         } else {
                             // If ID itself is the name (failure to resolve but ID exists), use it
-                            name = `${targetDeptId} (Office / Unit)`;
+                            name = `${targetDeptId} (Dept / Inst)`;
                         }
                     }
                 }
@@ -51,9 +51,9 @@ export function InstitutionContextCard({ user }: InstitutionContextCardProps) {
                     // CRITICAL: Block HQ for Guests as per user request
                     if (resolvedName && !resolvedName.includes("Thaiba Garden HQ")) {
                         if (resolvedName !== user.institution_id) {
-                            name = `${resolvedName} (Institution)`;
+                            name = `${resolvedName} (Dept / Inst)`;
                         } else {
-                            name = `${user.institution_id} (Institution)`;
+                            name = `${user.institution_id} (Dept / Inst)`;
                         }
                     } else {
                         // If it resolved to HQ, treat as invalid for Guest. 
@@ -67,7 +67,7 @@ export function InstitutionContextCard({ user }: InstitutionContextCardProps) {
                     // Use the exact official name as the context
                     // We check if it looks like an Org name vs just a person name? 
                     // Usually safe to append context.
-                    name = `${user.official_name} (Office / Unit)`;
+                    name = `${user.official_name} (Dept / Inst)`;
                 }
 
                 // If still !name, then it remains null -> Error State.
@@ -91,7 +91,7 @@ export function InstitutionContextCard({ user }: InstitutionContextCardProps) {
                     No Organization Context Found
                 </p>
                 <p className="text-sm text-red-300/60 mt-1">
-                    Please contact support to assign your account to a Unit or Office.
+                    Please contact support to assign your account to a Department / Institution.
                 </p>
             </div>
         );

@@ -104,7 +104,7 @@ export const InviteUserModal: React.FC<InviteUserModalProps> = ({ isOpen, onClos
                 <div className="p-6 border-b border-white/5 flex items-center justify-between">
                     <div>
                         <h2 className="text-xl font-bold text-white">Invite New User</h2>
-                        <p className="text-sm text-white/50">Grant access to multiple workspaces</p>
+                        <p className="text-sm text-white/50">Grant access to multiple departments</p>
                     </div>
                     <button onClick={onClose} className="p-2 hover:bg-white/5 rounded-full text-white/40 hover:text-white transition-colors">
                         <X size={20} />
@@ -154,7 +154,7 @@ export const InviteUserModal: React.FC<InviteUserModalProps> = ({ isOpen, onClos
                         </div>
 
                         <div className="space-y-4">
-                            <label className="text-[10px] font-bold uppercase tracking-widest text-white/40 ml-1">Workspace Access</label>
+                            <label className="text-[10px] font-bold uppercase tracking-widest text-white/40 ml-1">Department Access</label>
                             <div className="max-h-[300px] overflow-y-auto space-y-2 pr-2 custom-scrollbar">
                                 {fetchingWorkspaces ? (
                                     <div className="flex items-center justify-center py-8">

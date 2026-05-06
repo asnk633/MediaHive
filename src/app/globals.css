@@ -53,6 +53,7 @@
 
     /* Accent (Indigo - Control only) */
     --accent-primary: #6366f1;
+    --accent-primary-rgb: 99, 102, 241;
     --accent-primary-soft: rgba(99, 102, 241, 0.15);
 
     /* Borders (Low Contrast) */
@@ -365,5 +366,38 @@
   .bottom-nav-item.active {
     opacity: 1 !important;
     color: var(--accent-primary) !important;
+  }
+  /* --- APPLE STYLE TOGGLE --- */
+  .switch-apple {
+    all: unset;
+    display: inline-flex;
+    align-items: center;
+    width: 50px !important;
+    height: 25px !important;
+    border-radius: 50px !important;
+    background: linear-gradient(to bottom, #b3b3b3, #e6e6e6) !important;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    position: relative;
+  }
+
+  .switch-apple[data-state="checked"] {
+    background: linear-gradient(to bottom, #4cd964, #5de24e) !important;
+  }
+
+  .switch-apple-thumb {
+    display: block;
+    width: 23px !important;
+    height: 23px !important;
+    border-radius: 50% !important;
+    background-color: #fff !important;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.3) !important;
+    transition: all 0.3s ease !important;
+    transform: translateX(1px);
+    pointer-events: none;
+  }
+
+  .switch-apple-thumb[data-state="checked"] {
+    transform: translateX(25px);
   }
 }

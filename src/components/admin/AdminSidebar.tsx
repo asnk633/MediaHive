@@ -18,7 +18,7 @@ import { cn } from "@/lib/utils";
 const adminNavItems = [
     { id: 'overview', label: 'Overview', icon: LayoutDashboard, path: '/admin' },
     { id: 'users', label: 'Users', icon: Users, path: '/admin/users' },
-    { id: 'workspaces', label: 'Workspaces', icon: Building2, path: '/admin/workspaces' },
+    { id: 'workspaces', label: 'Departments', icon: Building2, path: '/admin/workspaces' },
     { id: 'permissions', label: 'Permissions', icon: ShieldCheck, path: '/admin/permissions' },
     { id: 'activity', label: 'Activity Logs', icon: Activity, path: '/admin/activity' },
     { id: 'settings', label: 'System Settings', icon: Settings, path: '/admin/system-settings' },

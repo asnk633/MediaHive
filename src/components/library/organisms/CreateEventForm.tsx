@@ -48,6 +48,8 @@ interface CreateEventFormProps {
 
 export const CreateEventForm = ({ initialDate, initialEndDate, onSuccess, onCancel, isModal = false, forceSystemEvent = false }: CreateEventFormProps) => {
     const { user } = useAuth();
+    const isPrivilegedRole = user?.role === 'admin' || user?.role === 'manager' || user?.role === 'member' || user?.role === 'team';
+
     const [loading, setLoading] = useState(false);
 
     // Organization Data
@@ -64,7 +66,7 @@ export const CreateEventForm = ({ initialDate, initialEndDate, onSuccess, onCanc
     const [location, setLocation] = useState('');
     const [description, setDescription] = useState('');
     const [isAllDay, setIsAllDay] = useState(false);
-    const [department, setDepartment] = useState('Operations');
+    const [department, setDepartment] = useState('');
     const [createdById, setCreatedById] = useState('');
     const [teamMembers, setTeamMembers] = useState<{ uid: string; name: string; department_id?: string | number; institution_id?: string | number }[]>([]);
 
@@ -114,30 +116,21 @@ export const CreateEventForm = ({ initialDate, initialEndDate, onSuccess, onCanc
     // Fetch real team members from Firestore with department info
     useEffect(() => {
         const fetchTeamMembers = async () => {
-            const members = await UserService.getTeamMembers();
-            // Fetch full user details including department for each member
-            const membersWithDept = await Promise.all(
-                members.map(async (m) => {
-                    try {
-                        const response = await apiClient(`/api/users/${m.uid}`, { method: 'GET' });
-                        const userDoc = response.user;
-                        return {
-                            uid: m.uid,
-                            name: m.name,
-                            department_id: userDoc?.department_id,
-                            institution_id: userDoc?.institution_id,
-                        };
-                    } catch (e) {
-                        // Fallback if user details can't be fetched
-                        return {
-                            uid: m.uid,
-                            name: m.name,
-                        };
-                    }
-                })
-            );
-            const otherMembers = membersWithDept.filter(m => m.uid !== user?.uid);
-            setTeamMembers(otherMembers);
+            try {
+                const members = await UserService.getTeamMembers();
+                // Filter out current user and map to expected format
+                const otherMembers = members
+                    .filter(m => m.uid !== user?.uid)
+                    .map(m => ({
+                        uid: m.uid,
+                        name: m.name,
+                        department_id: m.department_id,
+                        institution_id: m.institution_id
+                    }));
+                setTeamMembers(otherMembers);
+            } catch (e) {
+                console.error("Failed to fetch team members", e);
+            }
         };
         fetchTeamMembers();
     }, [user?.uid]);
@@ -153,6 +146,23 @@ export const CreateEventForm = ({ initialDate, initialEndDate, onSuccess, onCanc
             }
         };
         fetchInventory();
+    }, []);
+
+    // Fetch Organizations
+    useEffect(() => {
+        const fetchOrgs = async () => {
+            try {
+                const [deptData, instData] = await Promise.all([
+                    StructureService.getDepartments(),
+                    StructureService.getInstitutions()
+                ]);
+                setDepartmentsList(deptData.departments);
+                setInstitutionsList(instData.institutions);
+            } catch (e) {
+                console.error("Failed to fetch organizations", e);
+            }
+        };
+        fetchOrgs();
     }, []);
 
     const hasInitialized = useRef(false);
@@ -379,23 +389,11 @@ export const CreateEventForm = ({ initialDate, initialEndDate, onSuccess, onCanc
                                 <label className="text-sm font-bold text-foreground block">System Event</label>
                                 <span className="text-xs text-white/50 block mt-1">Recurring event for everyone</span>
                             </div>
-                            <button
-                                type="button"
-                                onClick={() => setIsSystemEvent(!is_system_event)}
-                                className={`
-                                    relative inline-flex h-7 w-12 shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors duration-200 ease-in-out focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-2 focus:ring-offset-background
-                                    ${is_system_event ? 'bg-primary' : 'bg-muted'}
-                                `}
-                            >
-                                <span className="sr-only">Use setting</span>
-                                <span
-                                    aria-hidden="true"
-                                    className={`
-                                        pointer-events-none inline-block h-6 w-6 transform rounded-full bg-background shadow ring-0 transition duration-200 ease-in-out
-                                        ${is_system_event ? 'translate-x-5' : 'translate-x-0'}
-                                    `}
-                                />
-                            </button>
+                            <Switch
+                                id="system-event"
+                                checked={is_system_event}
+                                onCheckedChange={setIsSystemEvent}
+                            />
                         </div>
                     </div>
                 )}
@@ -514,8 +512,8 @@ export const CreateEventForm = ({ initialDate, initialEndDate, onSuccess, onCanc
             {
                 !is_system_event && (
                     <>
-                        {/* Admin Only: Create On Behalf Of Toggle */}
-                        {user?.role === 'admin' && (
+                        {/* Admin/Team: Create On Behalf Of Toggle */}
+                        {isPrivilegedRole && (
                             <div className="space-y-4 p-5 rounded-2xl bg-blue-500/5 border-2 border-blue-500/20">
                                 <div className="flex items-center gap-2 mb-1">
                                     <Shield size={16} className="text-blue-400" />
@@ -527,38 +525,22 @@ export const CreateEventForm = ({ initialDate, initialEndDate, onSuccess, onCanc
                                     <div className="flex-1">
                                         <label className="text-sm font-bold text-foreground block">Create On Behalf Of</label>
                                         <span className="text-xs text-white/50 block mt-1">
-                                            {createOnBehalfOf ? "Event owned by an Office / Institution" : "Event owned by you (the user)"}
+                                            {createOnBehalfOf ? "Event owned by a Department / Institution" : "Event owned by you (the user)"}
                                         </span>
                                     </div>
-                                    <button
-                                        type="button"
-                                        onClick={() => {
-                                            const newValue = !createOnBehalfOf;
-                                            setCreateOnBehalfOf(newValue);
-                                            if (!newValue) {
-                                                // Reset when toggling off
+                                    <Switch
+                                        id="create-on-behalf-of"
+                                        checked={createOnBehalfOf}
+                                        onCheckedChange={(checked) => {
+                                            setCreateOnBehalfOf(checked);
+                                            if (!checked) {
                                                 setOnBehalfOfEntityName('');
-                                                // Restore default department if needed
                                                 if (user?.department_id) setDepartment(String(user.department_id));
                                             } else {
-                                                // Initialize with current department if valid
                                                 setOnBehalfOfEntityName(department);
                                             }
                                         }}
-                                        className={`
-                                            relative inline-flex h-7 w-12 shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors duration-200 ease-in-out focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-2 focus:ring-offset-background
-                                            ${createOnBehalfOf ? 'bg-primary' : 'bg-muted'}
-                                        `}
-                                    >
-                                        <span className="sr-only">Create on behalf of</span>
-                                        <span
-                                            aria-hidden="true"
-                                            className={`
-                                                pointer-events-none inline-block h-6 w-6 transform rounded-full bg-background shadow ring-0 transition duration-200 ease-in-out
-                                                ${createOnBehalfOf ? 'translate-x-5' : 'translate-x-0'}
-                                            `}
-                                        />
-                                    </button>
+                                    />
                                 </div>
 
                                 {/* Entity Selector (When ON) */}
@@ -569,11 +551,11 @@ export const CreateEventForm = ({ initialDate, initialEndDate, onSuccess, onCanc
                                             <Briefcase size={20} className={iconClasses} />
                                             <Select value={onBehalfOfEntityName} onValueChange={setOnBehalfOfEntityName}>
                                                 <SelectTrigger className="w-full bg-background border-soft text-foreground h-14 rounded-2xl pl-12">
-                                                    <SelectValue placeholder="Select Office / Institution" />
+                                                    <SelectValue placeholder="Select Department / Institution" />
                                                 </SelectTrigger>
                                                 <SelectContent className="bg-surface border-soft text-foreground max-h-80 z-[200]">
                                                     <SelectGroup>
-                                                        <SelectLabel className="text-white/50 text-xs font-bold uppercase tracking-wider px-2 py-1.5">Offices / Units</SelectLabel>
+                                                        <SelectLabel className="text-white/50 text-xs font-bold uppercase tracking-wider px-2 py-1.5">Departments / Units</SelectLabel>
                                                         {departmentsList.map(dept => (
                                                             <SelectItem key={dept.id} value={dept.name}>{dept.name}</SelectItem>
                                                         ))}
@@ -782,7 +764,7 @@ export const CreateEventForm = ({ initialDate, initialEndDate, onSuccess, onCanc
                         {/* Department / Unit */}
                         <div className="space-y-2">
                             <label className={labelClasses}>Department / Unit</label>
-                            {user?.role === 'admin' ? (
+                            {isPrivilegedRole ? (
                                 // Admin: Always Editable Dropdown
                                 <div className={inputContainerClasses}>
                                     <Briefcase size={20} className={iconClasses} />
@@ -876,23 +858,11 @@ export const CreateEventForm = ({ initialDate, initialEndDate, onSuccess, onCanc
                                         Creates Preparation, Execution, and Post Production tasks automatically.
                                     </span>
                                 </div>
-                                <button
-                                    type="button"
-                                    onClick={() => setAutoGenerateTasks(!autoGenerateTasks)}
-                                    className={`
-                                        relative inline-flex h-7 w-12 shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors duration-200 ease-in-out focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-2 focus:ring-offset-background
-                                        ${autoGenerateTasks ? 'bg-primary' : 'bg-muted'}
-                                    `}
-                                >
-                                    <span className="sr-only">Auto-generate tasks</span>
-                                    <span
-                                        aria-hidden="true"
-                                        className={`
-                                            pointer-events-none inline-block h-6 w-6 transform rounded-full bg-background shadow ring-0 transition duration-200 ease-in-out
-                                            ${autoGenerateTasks ? 'translate-x-5' : 'translate-x-0'}
-                                        `}
-                                    />
-                                </button>
+                                <Switch
+                                    id="auto-generate-tasks"
+                                    checked={autoGenerateTasks}
+                                    onCheckedChange={setAutoGenerateTasks}
+                                />
                             </div>
                         </div>
                     </>

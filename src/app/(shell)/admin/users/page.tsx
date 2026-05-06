@@ -160,9 +160,9 @@ export default function AdminUsersPage() {
                 }
             />
 
-            <div className="flex gap-8 h-[calc(100vh-16rem)] min-h-[500px]">
+            <div className="flex flex-col lg:flex-row gap-8 h-auto lg:h-[calc(100vh-16rem)] min-h-[500px]">
                 {/* Left Panel: User List / Invite List */}
-                <div className="w-[380px] flex flex-col gap-4">
+                <div className="w-full lg:w-[380px] flex flex-col gap-4">
                     <div className="flex bg-white/5 p-1 rounded-2xl">
                         <button 
                             onClick={() => setViewMode('users')}
@@ -197,7 +197,7 @@ export default function AdminUsersPage() {
                         />
                     </div>
 
-                    <div className="flex-1 overflow-y-auto pr-2 space-y-2 no-scrollbar">
+                    <div className="flex-1 overflow-y-auto pr-2 space-y-2 no-scrollbar max-h-[400px] lg:max-h-none">
                         {loading ? (
                             <div className="flex justify-center py-12"><Loader2 className="animate-spin text-white/20" /></div>
                         ) : viewMode === 'users' ? (
@@ -275,7 +275,7 @@ export default function AdminUsersPage() {
                 </div>
 
                 {/* Right Panel: Detail View */}
-                <div className="flex-1 flex flex-col rounded-[40px] glass-liquid border-white/5 overflow-hidden">
+                <div className="flex-1 flex flex-col rounded-[40px] glass-liquid border-white/5 overflow-hidden min-h-[600px] lg:min-h-0">
                     <AnimatePresence mode="wait">
                         {viewMode === 'users' && selectedUserId && selectedUser ? (
                             <motion.div 

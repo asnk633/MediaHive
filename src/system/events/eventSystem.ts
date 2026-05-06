@@ -5,7 +5,7 @@ export type MediaHiveEvent =
     | { type: 'task.updated'; data: { taskId: string; changes: any } }
     | { type: 'task.completed'; data: { taskId: string; userId: string } }
     | { type: 'inventory.updated'; data: { itemId: string; quantity: number } }
-    | { type: 'inventory.issued'; data: { itemId: string; userId: string; issueId: string } }
+    | { type: 'inventory.issued'; data: { itemId: string; userId: string; deptId?: string | number | null; issueId: string } }
     | { type: 'inventory.returned'; data: { itemId: string; issueId: string } }
     | { type: 'event.created'; data: { eventId: string; title: string } };
 

@@ -73,7 +73,7 @@ export const InventoryIssueSchema = z.object({
     id: z.union([z.string(), z.number()]),
     itemId: z.union([z.string(), z.number()]),
     itemName: z.string(),
-    issuedToUserId: z.string(),
+    issuedToUserId: z.string().optional().nullable(),
     issuedToRole: z.string(),
     issuedBy: z.string(),
     institutionId: z.union([z.string(), z.number()]).optional().nullable(),

@@ -7,9 +7,21 @@ export async function GET() {
     try {
         const { db, tenantId, user } = await withTenant();
 
-        const role = (user.app_metadata?.role || user.user_metadata?.role) as string;
-        if (role !== 'admin' && role !== 'team') {
-            return NextResponse.json({ error: 'Forbidden' }, { status: 403 });
+        // 1. Robust Role Extraction
+        // Checking app_metadata (synced) and user_metadata (session-based)
+        const role = (user.app_metadata?.role || user.user_metadata?.role || user.role)?.toLowerCase();
+        
+        console.log(`[REPORTS] Access check - User: ${user.id}, Role: ${role}, Tenant: ${tenantId}`);
+
+        // 2. Permission Check
+        const authorizedRoles = ['admin', 'team', 'super', 'owner'];
+        if (!role || !authorizedRoles.includes(role)) {
+            console.warn(`[REPORTS] ⚠️ Access Denied: User ${user.id} has insufficient role: ${role}`);
+            return NextResponse.json({ 
+                error: 'Forbidden: Insufficient permissions',
+                userRole: role,
+                required: authorizedRoles.join('/')
+            }, { status: 403 });
         }
 
         const headers = {

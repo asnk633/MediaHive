@@ -51,8 +51,28 @@ export default function DesktopSideNav() {
     const [isCollapsed, setIsCollapsed] = useState(false);
     const [mounted, setMounted] = useState(false);
     const { role: currentRole } = usePermissions();
-
     const { currentWorkspace } = useWorkspace();
+    const isAdminRoute = pathname.startsWith('/admin');
+
+    const updateWidthVar = (collapsed: boolean) => {
+        const width = collapsed ? 'var(--sidebar-collapsed-width)' : 'var(--sidebar-width)';
+        document.documentElement.style.setProperty('--current-sidebar-width', width);
+    };
+
+    useEffect(() => {
+        setMounted(true);
+        if (isAdminRoute) {
+            document.documentElement.style.setProperty('--current-sidebar-width', '0px');
+            return;
+        }
+        const saved = localStorage.getItem('sidebar-collapsed');
+        const collapsed = saved === 'true';
+        setIsCollapsed(collapsed);
+        updateWidthVar(collapsed);
+    }, [isAdminRoute]);
+
+    if (!mounted) return null;
+    if (isAdminRoute) return null;
 
     // Grouped Navigation Structure
     const navGroups = [
@@ -134,18 +154,6 @@ export default function DesktopSideNav() {
             })
         })).filter(group => group.items.length > 0);
 
-    useEffect(() => {
-        setMounted(true);
-        const saved = localStorage.getItem('sidebar-collapsed');
-        const collapsed = saved === 'true';
-        setIsCollapsed(collapsed);
-        updateWidthVar(collapsed);
-    }, []);
-
-    const updateWidthVar = (collapsed: boolean) => {
-        const width = collapsed ? 'var(--sidebar-collapsed-width)' : 'var(--sidebar-width)';
-        document.documentElement.style.setProperty('--current-sidebar-width', width);
-    };
 
     const toggleCollapse = () => {
         const next = !isCollapsed;

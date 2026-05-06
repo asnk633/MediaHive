@@ -25,14 +25,9 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
             <AdminSidebar />
             
             <style jsx global>{`
-                /* Hide main sidebar when in admin context */
-                aside.lg\\:flex:not(.fixed.left-6) {
-                    display: none !important;
-                }
-                
                 /* Adjust main padding for admin sidebar */
                 main#main-scroll-container {
-                    padding-left: 240px !important;
+                    padding-left: var(--admin-sidebar-width, 240px) !important;
                 }
                 
                 @media (max-width: 1024px) {

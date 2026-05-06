@@ -8,6 +8,7 @@ import { toast } from 'sonner';
 import { tenantContext } from '@/lib/auth/tenantContext';
 import { TABLES } from '@/lib/dbTables';
 import { safeQuery } from '@/lib/safeQuery';
+import { normalizeEvents } from '@/lib/normalization';
 
 import { offlineDB } from '@/lib/offline/db';
 
@@ -150,19 +151,13 @@ export const EventService = {
 
                 if (error) throw error;
 
-                // 1. Normalize user events
-                const normalizedUserEvents = ((rawEvents as any[]) || []).map((event: any) => ({
-                    ...event,
-                    startTime: event.start_at,
-                    endTime: event.end_at,
-                }));
 
                 // 2. Expand Recurring User Events
                 const currentYear = new Date().getFullYear();
                 const expansionStart = new Date(currentYear, 0, 1);
                 const expansionEnd = new Date(currentYear + 1, 11, 31);
                 
-                const userEvents = RecurrenceService.expandEvents(normalizedUserEvents, expansionStart, expansionEnd);
+                const userEvents = RecurrenceService.expandEvents((rawEvents as any[]) || [], expansionStart, expansionEnd);
 
                 // 3. Combine with system events
                 const allSystemEvents = await SystemEventService.getAllSystemEvents();
@@ -192,13 +187,13 @@ export const EventService = {
                     }
                 });
 
-                const combined = Array.from(uniqueEventsMap.values());
+                const normalized = normalizeEvents(Array.from(uniqueEventsMap.values()));
                 
                 // Update Cache
                 const cacheKey = institutionId ? `events:${institutionId}` : 'events';
-                await offlineDB.setCache(cacheKey, combined);
+                await offlineDB.setCache(cacheKey, normalized);
                 
-                callback(combined);
+                callback(normalized);
             } catch (error) {
                 const cacheKey = institutionId ? `events:${institutionId}` : 'events';
                 console.warn('Event polling failed, using cache:', error);

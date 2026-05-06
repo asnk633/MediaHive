@@ -48,7 +48,18 @@ export function EventHoverTooltip({ event, anchorRect, isVisible }: EventHoverTo
             <div className="flex flex-col gap-1.5 mt-1">
                 <div className="flex items-center gap-2 text-[10px] text-white/60">
                     <Clock size={12} className="text-blue-400" />
-                    <span>{event.start_at} {event.end_at ? ` - ${event.end_at}` : ''}</span>
+                    <span>
+                        {(() => {
+                            const formatTime = (t: any) => {
+                                if (!t) return '';
+                                if (typeof t === 'string') return t;
+                                return format(t, 'h:mm a');
+                            };
+                            const start = formatTime(event.start_at);
+                            const end = event.end_at ? ` - ${formatTime(event.end_at)}` : '';
+                            return `${start}${end}`;
+                        })()}
+                    </span>
                 </div>
                 
                 {event.location && (

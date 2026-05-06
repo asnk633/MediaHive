@@ -25,6 +25,7 @@ import {
     TrendingUp,
     Info
 } from 'lucide-react';
+import { isToday, isPast } from 'date-fns';
 import { Button } from "@/components/ui/button";
 import { cn, nativeNavigate } from "@/lib/utils";
 import { ReactiveCard } from '@/components/ui/ReactiveCard';
@@ -59,7 +60,6 @@ import AppTour from "@/components/onboarding/AppTour";
 import { OverdueTasksWidget } from "@/features/dashboard/components/OverdueTasksWidget";
 import { TodayFocusPanel } from "@/features/dashboard/components/TodayFocusPanel";
 import { useCampaigns } from "@/services/campaigns/useCampaigns";
-import { ProductionDashboard } from "@/features/dashboard/components/ProductionDashboard";
 import { ProductionInsights } from "@/features/dashboard/components/ProductionInsights";
 import { SystemStatusWidget } from "@/features/dashboard/components/SystemStatusWidget";
 import { AdminOversightWidget } from "@/features/dashboard/components/AdminOversightWidget";
@@ -71,6 +71,8 @@ import { useOperationalSummary } from "@/hooks/useOperationalSummary";
 import { DashboardSection } from "@/components/home/DashboardSection";
 import { CrewScheduleCard } from "@/features/dashboard/components/CrewScheduleCard";
 import { EquipmentUsageCard } from "@/features/dashboard/components/EquipmentUsageCard";
+import { TodayEventsCard } from '@/features/dashboard/components/TodayEventsCard';
+import { TodayTasksCard } from '@/features/dashboard/components/TodayTasksCard';
 
 import { usePermissions } from "@/hooks/usePermissions";
 
@@ -197,6 +199,17 @@ export default function HomeClient() {
 
     const isActuallyLoading = authLoading || loadingData || !tasksLoaded || campaignsLoading;
 
+    const todayTasks = useMemo(() => {
+        return displayTasks.filter(t => {
+            const due = t.due_date;
+            return due && (isToday(due) || (t.status !== 'done' && isPast(due)));
+        });
+    }, [displayTasks]);
+
+    const todayEvents = useMemo(() => {
+        return events.filter(e => e.date && isToday(e.date));
+    }, [events]);
+
     const dashboardContextValue = useMemo(() => ({
         tasks: displayTasks as NormalizedTask[],
         events,
@@ -305,45 +318,50 @@ export default function HomeClient() {
                                 <ProductionPulseBar />
                             </div>
                         </div>
-                        {/* Primary Row */}
-                        <div className="grid grid-cols-1 lg:grid-cols-4 gap-6 animate-in fade-in slide-in-from-bottom-4 duration-1000">
-                            <div className="lg:col-span-2">
-                                <NextProductionCard />
-                            </div>
-                            <div className="lg:col-span-2">
-                                <SystemStatusWidget />
-                            </div>
+                        {/* 1 - System Status and Today's Completion */}
+                        <div className="animate-in fade-in slide-in-from-bottom-4 duration-700">
+                            <SystemStatusWidget />
                         </div>
 
-                        {/* Operational Section (Always Visible) */}
-                        <div className="space-y-6">
-                            <ProductionDashboard />
+                        {/* 2 & 3 - Today's Tasks & Today's Events */}
+                        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 animate-in fade-in slide-in-from-bottom-4 duration-800">
+                            <TodayTasksCard 
+                                tasks={todayTasks} 
+                                isLoading={isActuallyLoading} 
+                                onViewTask={(id) => router.push(`/tasks?id=${id}`)}
+                            />
+                            <TodayEventsCard 
+                                events={todayEvents} 
+                                tasks={tasks}
+                                isLoading={isActuallyLoading} 
+                                onViewEvent={(id) => router.push(`/calendar?id=${id}`)}
+                            />
+                        </div>
+
+                        {/* 4 - Next Production */}
+                        <div className="animate-in fade-in slide-in-from-bottom-4 duration-900">
+                            <NextProductionCard />
+                        </div>
+
+                        {/* Live Monitoring Indicator */}
+                        <div className="p-4 rounded-[18px] bg-white/[0.02] border border-white/5 flex items-center justify-between">
+                            <div className="flex items-center gap-3">
+                                <Zap size={14} className="text-amber-400" />
+                                <span className="text-[11px] font-bold text-white/40 uppercase tracking-widest">
+                                    Live monitoring active for {user?.name || user?.fullName || 'Super Admin'}
+                                </span>
+                            </div>
+                            <div className="flex items-center gap-4">
+                                <div className="flex items-center gap-1.5">
+                                    <div className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse" />
+                                    <span className="text-[10px] font-bold text-white/20 uppercase tracking-widest">Connected</span>
+                                </div>
+                            </div>
                         </div>
 
                         {/* Collapsed Sections */}
                         <div className="space-y-8 pt-4 border-t border-white/5">
-                            {/* Operational Panels Group */}
-                            <DashboardSection
-                                sectionId="operational-group"
-                                title="Operational Panels"
-                                className="space-y-6 mb-4"
-                                icon={<LayoutDashboard size={18} className="text-blue-500 self-center" />}
-                                isExpanded={operationalPanelsExpanded}
-                                onToggle={() => toggleSection('mh_home_operational_panels_expanded', operationalPanelsExpanded, setOperationalPanelsExpanded)}
-                            >
-                                <div className="grid grid-cols-1 md:grid-cols-[repeat(2,minmax(260px,1fr))] gap-5 pt-2">
-                                    <div className="flex flex-col">
-                                        <h3 className="text-xs font-bold text-white/30 uppercase tracking-widest mb-4 ml-2 mt-2">Crew Schedule</h3>
-                                        <CrewScheduleCard crew={operationalData.crew} isLoading={operationalLoading} />
-                                    </div>
-                                    <div className="flex flex-col">
-                                        <h3 className="text-xs font-bold text-white/30 uppercase tracking-widest mb-4 ml-2 mt-2">Equipment Usage</h3>
-                                        <EquipmentUsageCard equipment={operationalData.equipment} isLoading={operationalLoading} />
-                                    </div>
-                                </div>
-                            </DashboardSection>
-
-                            {/* Insights Group */}
+                            {/* 5 - Insights Group */}
                             <DashboardSection
                                 sectionId="insights-group"
                                 title="Insights"
@@ -363,9 +381,30 @@ export default function HomeClient() {
                                             <h3 className="text-xs font-bold text-white/30 uppercase tracking-widest mb-4 ml-2 mt-2">Strategic Insights</h3>
                                             <ProductionInsights 
                                                 data={{ events, tasks }} 
-                                                isLoading={authLoading || loading || !tasksLoaded} 
+                                                isLoading={isActuallyLoading} 
                                             />
                                         </div>
+                                    </div>
+                                </div>
+                            </DashboardSection>
+
+                            {/* 6 - Operational Panels Group */}
+                            <DashboardSection
+                                sectionId="operational-group"
+                                title="Operational Panels"
+                                className="space-y-6 mb-4"
+                                icon={<LayoutDashboard size={18} className="text-blue-500 self-center" />}
+                                isExpanded={operationalPanelsExpanded}
+                                onToggle={() => toggleSection('mh_home_operational_panels_expanded', operationalPanelsExpanded, setOperationalPanelsExpanded)}
+                            >
+                                <div className="grid grid-cols-1 md:grid-cols-[repeat(2,minmax(260px,1fr))] gap-5 pt-2">
+                                    <div className="flex flex-col">
+                                        <h3 className="text-xs font-bold text-white/30 uppercase tracking-widest mb-4 ml-2 mt-2">Crew Schedule</h3>
+                                        <CrewScheduleCard crew={operationalData.crew} isLoading={operationalLoading} />
+                                    </div>
+                                    <div className="flex flex-col">
+                                        <h3 className="text-xs font-bold text-white/30 uppercase tracking-widest mb-4 ml-2 mt-2">Equipment Usage</h3>
+                                        <EquipmentUsageCard equipment={operationalData.equipment} isLoading={operationalLoading} />
                                     </div>
                                 </div>
                             </DashboardSection>

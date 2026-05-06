@@ -68,7 +68,7 @@ export function EventPreviewCard({ events, date, anchorRect, isVisible }: EventP
                     {events.slice(0, 3).map((ev) => {
                         let timeStr = 'All Day';
                         if (ev.start_at) {
-                            timeStr = ev.start_at;
+                            timeStr = typeof ev.start_at === 'string' ? ev.start_at : format(ev.start_at, 'h:mm a');
                         }
 
                         const hasConflict = (ev as any).hasConflict;

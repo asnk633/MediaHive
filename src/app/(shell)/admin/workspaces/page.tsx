@@ -172,30 +172,48 @@ export default function WorkspacesPage() {
     };
 
     const handleDelete = async () => {
-        if (!selectedWorkspace || deleting) return;
+        if (!selectedId || deleting) return;
 
         setDeleting(true);
         try {
             // Suffix name to allow reuse of the original name
             const timestamp = new Date().toLocaleDateString();
-            const archivedName = `${selectedWorkspace.name} (Archived ${timestamp})`;
+            const archivedName = `${selectedWorkspace?.name} (Archived ${timestamp})`;
 
-            await StructureService.updateInstitution(selectedWorkspace.id, {
+            await StructureService.updateInstitution(selectedId, {
                 name: archivedName,
                 status: 'archived'
             });
             toast.success("Department / Institution archived successfully");
             setDeleteConfirmOpen(false);
             setEditOpen(false);
+            setSelectedId(null);
             await fetchData();
-            
-            // If we're not showing archived, we need to deselect the archived item
-            if (!showArchived) {
-                setSelectedId(null);
-            }
         } catch (error) {
-            console.error("Archive error:", error);
-            toast.error("Failed to archive");
+            toast.error("Failed to archive Department / Institution");
+        } finally {
+            setDeleting(false);
+        }
+    };
+
+    const handlePermanentDelete = async () => {
+        if (!selectedId || deleting) return;
+        
+        if (!window.confirm(`CRITICAL: Are you sure you want to PERMANENTLY DELETE ${selectedWorkspace?.name}? This action cannot be undone and may fail if there is linked data.`)) {
+            return;
+        }
+
+        setDeleting(true);
+        try {
+            await StructureService.deleteInstitution(selectedId);
+            toast.success("Department / Institution permanently deleted");
+            setDeleteConfirmOpen(false);
+            setEditOpen(false);
+            setSelectedId(null);
+            await fetchData();
+        } catch (error: any) {
+            console.error("Delete error:", error);
+            toast.error(error.message || "Failed to delete. Entity may have linked data (tasks, events, etc.)");
         } finally {
             setDeleting(false);
         }
@@ -288,7 +306,7 @@ export default function WorkspacesPage() {
 
             <div className="flex flex-col lg:flex-row gap-8 h-auto lg:h-[calc(100vh-16rem)] min-h-[500px]">
                 {/* Left Panel: Workspace List */}
-                <div className="w-full lg:w-[380px] flex flex-col gap-4">
+                <div className="w-full lg:w-[320px] flex flex-col gap-4">
                     <div className="flex items-center justify-between">
                         <div className="relative flex-1">
                             <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-white/20" size={16} />
@@ -533,16 +551,26 @@ export default function WorkspacesPage() {
                         <Button 
                             onClick={handleDelete}
                             disabled={deleting}
+                            variant="secondary"
+                            className="h-12 w-full rounded-xl bg-white/5 hover:bg-white/10 text-white font-medium transition-all"
+                        >
+                            {deleting ? "Processing..." : "Archive Entity (Safe)"}
+                        </Button>
+                        
+                        <Button 
+                            onClick={handlePermanentDelete}
+                            disabled={deleting}
                             className="h-12 w-full rounded-xl bg-red-500 hover:bg-red-400 text-white font-bold transition-all shadow-lg shadow-red-500/20"
                         >
-                            {deleting ? "Archiving..." : "Yes, Archive Entity"}
+                            {deleting ? "Deleting..." : "Permanently Delete"}
                         </Button>
+
                         <Button 
                             type="button" 
                             variant="ghost" 
                             onClick={() => setDeleteConfirmOpen(false)} 
                             disabled={deleting}
-                            className="h-12 w-full rounded-xl text-white/60 hover:text-white hover:bg-white/5"
+                            className="h-12 w-full rounded-xl text-white/40 hover:text-white hover:bg-white/5"
                         >
                             Cancel
                         </Button>

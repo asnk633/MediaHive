@@ -1,8 +1,8 @@
 "use client";
 
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { usePathname, useRouter } from 'next/navigation';
-import { motion } from 'framer-motion';
+import { motion, AnimatePresence } from 'framer-motion';
 import {
     LayoutDashboard,
     Users,
@@ -11,6 +11,7 @@ import {
     Activity,
     Settings,
     ChevronLeft,
+    ChevronRight,
     ShieldAlert
 } from 'lucide-react';
 import { cn } from "@/lib/utils";
@@ -18,64 +19,115 @@ import { cn } from "@/lib/utils";
 const adminNavItems = [
     { id: 'overview', label: 'Overview', icon: LayoutDashboard, path: '/admin' },
     { id: 'users', label: 'Users', icon: Users, path: '/admin/users' },
-    { id: 'workspaces', label: 'Departments', icon: Building2, path: '/admin/workspaces' },
-    { id: 'permissions', label: 'Permissions', icon: ShieldCheck, path: '/admin/permissions' },
+    { id: 'workspaces', label: 'Workspaces', icon: Building2, path: '/admin/workspaces' },
+    { id: 'permissions', label: 'Permissions', icon: ShieldCheck, path: '/admin/security' },
     { id: 'activity', label: 'Activity Logs', icon: Activity, path: '/admin/activity' },
-    { id: 'settings', label: 'System Settings', icon: Settings, path: '/admin/system-settings' },
+    { id: 'settings', label: 'Global Setup', icon: Settings, path: '/admin/structure' },
 ];
 
 export default function AdminSidebar() {
     const router = useRouter();
     const pathname = usePathname();
+    const [isCollapsed, setIsCollapsed] = useState(false);
+    const [mounted, setMounted] = useState(false);
+
+    useEffect(() => {
+        setMounted(true);
+        const saved = localStorage.getItem('admin-sidebar-collapsed');
+        if (saved === 'true') {
+            setIsCollapsed(true);
+            updatePadding(true);
+        } else {
+            updatePadding(false);
+        }
+    }, []);
+
+    const updatePadding = (collapsed: boolean) => {
+        const width = collapsed ? '72px' : '240px';
+        document.documentElement.style.setProperty('--admin-sidebar-width', width);
+    };
+
+    const toggleCollapse = () => {
+        const next = !isCollapsed;
+        setIsCollapsed(next);
+        localStorage.setItem('admin-sidebar-collapsed', String(next));
+        updatePadding(next);
+    };
+
+    if (!mounted) return null;
 
     return (
-        <aside className="fixed left-6 top-1/2 -translate-y-1/2 z-[70] flex flex-col w-[240px] h-fit max-h-[calc(100vh-6rem)] rounded-[32px] glass-liquid border-white/10 shadow-2xl p-4 space-y-6">
-            <div className="px-4 py-2 flex items-center gap-3">
-                <div className="w-8 h-8 rounded-lg bg-indigo-500/20 flex items-center justify-center text-indigo-400">
-                    <ShieldAlert size={18} />
+        <motion.aside 
+            initial={false}
+            animate={{ width: isCollapsed ? '76px' : '240px' }}
+            transition={{ duration: 0.3, ease: [0.16, 1, 0.3, 1] }}
+            className="fixed left-6 top-1/2 -translate-y-1/2 z-[70] hidden lg:flex flex-col h-fit max-h-[calc(100vh-6rem)] rounded-[32px] glass-liquid border-white/10 shadow-2xl overflow-hidden"
+        >
+            <div className={cn("p-4 space-y-6 flex-1 flex flex-col", isCollapsed ? "items-center" : "")}>
+                <div className={cn("px-2 py-2 flex items-center gap-3", isCollapsed ? "justify-center" : "")}>
+                    <div className="w-8 h-8 rounded-lg bg-indigo-500/20 flex items-center justify-center text-indigo-400 shrink-0">
+                        <ShieldAlert size={18} />
+                    </div>
+                    {!isCollapsed && (
+                        <div>
+                            <h2 className="text-sm font-black text-white tracking-tight">Admin Panel</h2>
+                            <p className="text-[10px] font-bold text-white/30 uppercase tracking-widest">Global Control</p>
+                        </div>
+                    )}
                 </div>
-                <div>
-                    <h2 className="text-sm font-black text-white tracking-tight">Admin Panel</h2>
-                    <p className="text-[10px] font-bold text-white/30 uppercase tracking-widest">Global Control</p>
+
+                <nav className="flex-1 space-y-1.5">
+                    {adminNavItems.map((item) => {
+                        const isActive = pathname === item.path;
+                        return (
+                            <button
+                                key={item.id}
+                                onClick={() => router.push(item.path)}
+                                title={isCollapsed ? item.label : undefined}
+                                className={cn(
+                                    "group relative w-full flex items-center gap-3 p-3 rounded-2xl transition-all duration-300",
+                                    isActive 
+                                        ? "bg-white/10 text-white shadow-xl" 
+                                        : "text-white/40 hover:bg-white/5 hover:text-white",
+                                    isCollapsed ? "justify-center" : ""
+                                )}
+                            >
+                                <item.icon size={18} className={cn("transition-transform group-hover:scale-110 shrink-0", isActive ? "text-indigo-400" : "")} />
+                                {!isCollapsed && <span className="text-sm font-semibold tracking-tight whitespace-nowrap">{item.label}</span>}
+                                {isActive && (
+                                    <motion.div 
+                                        layoutId="admin-active-pill"
+                                        className="absolute left-0 w-1 h-4 bg-indigo-500 rounded-r-full"
+                                    />
+                                )}
+                            </button>
+                        );
+                    })}
+                </nav>
+
+                <div className="pt-4 border-t border-white/5 space-y-2">
+                    <button 
+                        onClick={() => router.push('/home')}
+                        className={cn("w-full flex items-center gap-3 p-3 rounded-2xl text-white/40 hover:bg-white/5 hover:text-white transition-all", isCollapsed ? "justify-center" : "")}
+                        title={isCollapsed ? "Exit Admin" : undefined}
+                    >
+                        <ChevronLeft size={18} className="shrink-0" />
+                        {!isCollapsed && <span className="text-sm font-semibold">Exit Admin</span>}
+                    </button>
+                    
+                    <button 
+                        onClick={toggleCollapse}
+                        className={cn("w-full flex items-center gap-3 p-3 rounded-2xl text-white/20 hover:bg-white/5 hover:text-white/60 transition-all", isCollapsed ? "justify-center" : "")}
+                    >
+                        {isCollapsed ? <ChevronRight size={18} /> : (
+                            <>
+                                <ChevronLeft size={18} />
+                                <span className="text-xs font-medium">Collapse</span>
+                            </>
+                        )}
+                    </button>
                 </div>
             </div>
-
-            <nav className="flex-1 space-y-1.5">
-                {adminNavItems.map((item) => {
-                    const isActive = pathname === item.path;
-                    return (
-                        <button
-                            key={item.id}
-                            onClick={() => router.push(item.path)}
-                            className={cn(
-                                "group relative w-full flex items-center gap-3 p-3 rounded-2xl transition-all duration-300",
-                                isActive 
-                                    ? "bg-white/10 text-white shadow-xl" 
-                                    : "text-white/40 hover:bg-white/5 hover:text-white"
-                            )}
-                        >
-                            <item.icon size={18} className={cn("transition-transform group-hover:scale-110", isActive ? "text-indigo-400" : "")} />
-                            <span className="text-sm font-semibold tracking-tight">{item.label}</span>
-                            {isActive && (
-                                <motion.div 
-                                    layoutId="admin-active-pill"
-                                    className="absolute left-0 w-1 h-4 bg-indigo-500 rounded-r-full"
-                                />
-                            )}
-                        </button>
-                    );
-                })}
-            </nav>
-
-            <div className="pt-4 border-t border-white/5">
-                <button 
-                    onClick={() => router.push('/home')}
-                    className="w-full flex items-center gap-3 p-3 rounded-2xl text-white/40 hover:bg-white/5 hover:text-white transition-all"
-                >
-                    <ChevronLeft size={18} />
-                    <span className="text-sm font-semibold">Exit Admin</span>
-                </button>
-            </div>
-        </aside>
+        </motion.aside>
     );
 }

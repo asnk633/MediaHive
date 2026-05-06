@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { Calendar as CalendarIcon, Clock, MapPin, AlignLeft, User, Briefcase, Camera, Check, Repeat, Lock, Shield, AlertTriangle } from 'lucide-react';
+import { Calendar as CalendarIcon, Clock, MapPin, AlignLeft, User, Briefcase, Camera, Check, Repeat, Lock, Shield, AlertTriangle, Search, Package } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { format, isBefore, startOfDay } from 'date-fns';
 import { Button } from '@/components/ui/button';
@@ -200,13 +200,15 @@ export const CreateEventForm = ({ initialDate, initialEndDate, onSuccess, onCanc
 
         // Only auto-set department if it's still at default or empty
         if (department === 'Operations' || !department) {
-            if (user.department_id && (
-                departmentsList.some(d => String(d.name) === String(user.department_id) || String(d.id) === String(user.department_id)) || 
-                institutionsList.some(i => String(i.name) === String(user.department_id) || String(i.id) === String(user.department_id))
-            )) {
-                setDepartment(String(user.department_id));
+            const foundDept = departmentsList.find(d => String(d.id) === String(user.department_id) || d.name === user.department_id);
+            const foundInst = institutionsList.find(i => String(i.id) === String(user.department_id) || i.name === user.department_id);
+            
+            if (foundDept) {
+                setDepartment(String(foundDept.id));
+            } else if (foundInst) {
+                setDepartment(String(foundInst.id));
             } else if (departmentsList.length > 0) {
-                setDepartment(departmentsList[0].name);
+                setDepartment(String(departmentsList[0].id));
             }
         }
     }, [departmentsList, institutionsList, user]);
@@ -275,32 +277,35 @@ export const CreateEventForm = ({ initialDate, initialEndDate, onSuccess, onCanc
                 return;
             }
 
-            // Resolve Department/Institution ID from name
-            const targetEntityName = createOnBehalfOf ? onBehalfOfEntityName : department;
+            // Resolve Department/Institution ID and Name
+            const targetEntityId = createOnBehalfOf ? onBehalfOfEntityName : department;
 
             let deptId = '';
             let deptType = 'department';
             let targetInstitutionId = user?.institution_id;
             let targetDepartmentId: string | null = null;
+            let entityName = '';
 
-            const foundDept = departmentsList.find(d => d.name === targetEntityName);
+            const foundDept = departmentsList.find(d => String(d.id) === String(targetEntityId));
             if (foundDept) {
                 deptId = String(foundDept.id);
                 deptType = 'department';
                 targetDepartmentId = String(foundDept.id);
+                entityName = foundDept.name;
             } else {
-                const foundInst = institutionsList.find(i => i.name === targetEntityName);
+                const foundInst = institutionsList.find(i => String(i.id) === String(targetEntityId));
                 if (foundInst) {
                     deptId = String(foundInst.id);
                     deptType = 'institution';
                     targetInstitutionId = foundInst.id;
                     targetDepartmentId = null;
+                    entityName = foundInst.name;
                 }
             }
 
             const on_behalf_of = {
                 id: deptId || 'unknown',
-                name: targetEntityName,
+                name: entityName || targetEntityId || 'Unknown Entity',
                 type: deptType
             };
 
@@ -308,7 +313,7 @@ export const CreateEventForm = ({ initialDate, initialEndDate, onSuccess, onCanc
             if (createOnBehalfOf) {
                 organizer = {
                     uid: `entity:${deptId}`,
-                    name: targetEntityName,
+                    name: entityName || targetEntityId || 'Unknown Entity',
                     role: 'system'
                 };
             } else {
@@ -557,13 +562,13 @@ export const CreateEventForm = ({ initialDate, initialEndDate, onSuccess, onCanc
                                                     <SelectGroup>
                                                         <SelectLabel className="text-white/50 text-xs font-bold uppercase tracking-wider px-2 py-1.5">Departments / Units</SelectLabel>
                                                         {departmentsList.map(dept => (
-                                                            <SelectItem key={dept.id} value={dept.name}>{dept.name}</SelectItem>
+                                                            <SelectItem key={`dept-${dept.id}`} value={String(dept.id)}>{dept.name}</SelectItem>
                                                         ))}
                                                     </SelectGroup>
                                                     <SelectGroup>
                                                         <SelectLabel className="text-white/50 text-xs font-bold uppercase tracking-wider px-2 py-1.5 mt-2">Institutions</SelectLabel>
                                                         {institutionsList.map(inst => (
-                                                            <SelectItem key={inst.id} value={inst.name}>{inst.name}</SelectItem>
+                                                            <SelectItem key={`inst-${inst.id}`} value={String(inst.id)}>{inst.name}</SelectItem>
                                                         ))}
                                                     </SelectGroup>
                                                 </SelectContent>
@@ -776,13 +781,13 @@ export const CreateEventForm = ({ initialDate, initialEndDate, onSuccess, onCanc
                                             <SelectGroup>
                                                 <SelectLabel className="text-white/50 text-xs font-bold uppercase tracking-wider px-2 py-1.5">Offices / Units</SelectLabel>
                                                 {departmentsList.map(dept => (
-                                                    <SelectItem key={dept.id} value={dept.name}>{dept.name}</SelectItem>
+                                                    <SelectItem key={`dept-${dept.id}`} value={String(dept.id)}>{dept.name}</SelectItem>
                                                 ))}
                                             </SelectGroup>
                                             <SelectGroup>
                                                 <SelectLabel className="text-white/50 text-xs font-bold uppercase tracking-wider px-2 py-1.5 mt-2">Institutions</SelectLabel>
                                                 {institutionsList.map(inst => (
-                                                    <SelectItem key={inst.id} value={inst.name}>{inst.name}</SelectItem>
+                                                    <SelectItem key={`inst-${inst.id}`} value={String(inst.id)}>{inst.name}</SelectItem>
                                                 ))}
                                             </SelectGroup>
                                         </SelectContent>
@@ -882,11 +887,17 @@ export const CreateEventForm = ({ initialDate, initialEndDate, onSuccess, onCanc
                                         + Add Team Member
                                     </Button>
                                 </PopoverTrigger>
-                                <PopoverContent className="w-[300px] p-0 bg-surface border-soft z-[205]">
+                                 <PopoverContent className="w-[320px] p-0 bg-[#0b1220]/95 border-white/10 shadow-2xl shadow-black/50 backdrop-blur-xl z-[205] rounded-2xl overflow-hidden">
                                     <Command className="bg-transparent">
-                                        <CommandInput placeholder="Search team members..." className="text-white" />
-                                        <CommandList>
-                                            <CommandEmpty>No team member found.</CommandEmpty>
+                                        <div className="flex items-center border-b border-white/5 px-3">
+                                            <Search className="mr-2 h-4 w-4 shrink-0 opacity-50" />
+                                            <CommandInput 
+                                                placeholder="Search team members..." 
+                                                className="flex h-11 w-full rounded-md bg-transparent py-3 text-sm outline-none placeholder:text-white/30 disabled:cursor-not-allowed disabled:opacity-50" 
+                                            />
+                                        </div>
+                                        <CommandList className="max-h-[300px] overflow-y-auto scrollbar-thin scrollbar-thumb-white/10 p-1">
+                                            <CommandEmpty className="py-6 text-center text-sm text-white/30">No team member found.</CommandEmpty>
                                             <CommandGroup>
                                                 {teamMembers.map((member) => (
                                                     <CommandItem
@@ -896,9 +907,12 @@ export const CreateEventForm = ({ initialDate, initialEndDate, onSuccess, onCanc
                                                                 setAssignedCrew([...assignedCrew, { user_id: member.uid, name: member.name, role: '' }]);
                                                             }
                                                         }}
-                                                        className="text-white hover:bg-white/10"
+                                                        className="flex items-center gap-3 px-3 py-2.5 rounded-xl text-white/70 aria-selected:bg-white/10 aria-selected:text-white cursor-pointer transition-colors"
                                                     >
-                                                        {member.name}
+                                                        <div className="w-8 h-8 rounded-full bg-primary/20 flex items-center justify-center text-primary text-[10px] font-bold">
+                                                            {member.name.split(' ').map(n => n[0]).join('').toUpperCase().substring(0, 2)}
+                                                        </div>
+                                                        <span className="flex-1 text-sm font-medium">{member.name}</span>
                                                     </CommandItem>
                                                 ))}
                                             </CommandGroup>
@@ -952,11 +966,17 @@ export const CreateEventForm = ({ initialDate, initialEndDate, onSuccess, onCanc
                                         + Reserve Equipment
                                     </Button>
                                 </PopoverTrigger>
-                                <PopoverContent className="w-[300px] p-0 bg-surface border-soft z-[205]">
+                                 <PopoverContent className="w-[320px] p-0 bg-[#0b1220]/95 border-white/10 shadow-2xl shadow-black/50 backdrop-blur-xl z-[205] rounded-2xl overflow-hidden">
                                     <Command className="bg-transparent">
-                                        <CommandInput placeholder="Search inventory..." className="text-white" />
-                                        <CommandList>
-                                            <CommandEmpty>No equipment found.</CommandEmpty>
+                                        <div className="flex items-center border-b border-white/5 px-3">
+                                            <Search className="mr-2 h-4 w-4 shrink-0 opacity-50" />
+                                            <CommandInput 
+                                                placeholder="Search inventory..." 
+                                                className="flex h-11 w-full rounded-md bg-transparent py-3 text-sm outline-none placeholder:text-white/30 disabled:cursor-not-allowed disabled:opacity-50" 
+                                            />
+                                        </div>
+                                        <CommandList className="max-h-[300px] overflow-y-auto scrollbar-thin scrollbar-thumb-white/10 p-1">
+                                            <CommandEmpty className="py-6 text-center text-sm text-white/30">No equipment found.</CommandEmpty>
                                             <CommandGroup>
                                                 {inventoryList.map((item) => (
                                                     <CommandItem
@@ -970,9 +990,15 @@ export const CreateEventForm = ({ initialDate, initialEndDate, onSuccess, onCanc
                                                                 checkConflicts([...reservedEquipment, newEntry]);
                                                             }
                                                         }}
-                                                        className="text-white hover:bg-white/10"
+                                                        className="flex items-center gap-3 px-3 py-2.5 rounded-xl text-white/70 aria-selected:bg-white/10 aria-selected:text-white cursor-pointer transition-colors"
                                                     >
-                                                        {item.name}
+                                                        <div className="w-8 h-8 rounded-lg bg-blue-500/10 flex items-center justify-center text-blue-400">
+                                                            <Package size={14} />
+                                                        </div>
+                                                        <div className="flex-1 flex flex-col">
+                                                            <span className="text-sm font-medium">{item.name}</span>
+                                                            <span className="text-[10px] text-white/30 uppercase tracking-tighter">{item.category || 'General'}</span>
+                                                        </div>
                                                     </CommandItem>
                                                 ))}
                                             </CommandGroup>

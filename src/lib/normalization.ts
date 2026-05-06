@@ -15,8 +15,10 @@ export interface NormalizedTask extends Omit<Task, 'due_date' | 'completed_at' |
     updated_at: Date;
 }
 
-export interface NormalizedEvent extends Omit<Event, 'date'> {
+export interface NormalizedEvent extends Omit<Event, 'date' | 'start_at' | 'end_at'> {
     date: Date;
+    start_at: Date;
+    end_at: Date;
 }
 
 /**
@@ -49,8 +51,19 @@ export const normalizeTasks = (tasks: Task[]): NormalizedTask[] => {
 };
 
 export const normalizeEvents = (events: Event[]): NormalizedEvent[] => {
-    return events.map(e => ({
-        ...e,
-        date: toRequiredDate(e.date)
-    }));
+    return events.map(e => {
+        // Handle various possible field names from different service layers
+        const rawStart = (e as any).start_at || (e as any).startTime || (e as any).start_time || (e as any).date;
+        const rawEnd = (e as any).end_at || (e as any).endTime || (e as any).end_time || rawStart;
+
+        const start = toDate(rawStart);
+        const end = toDate(rawEnd) || start;
+        
+        return {
+            ...e,
+            date: start || new Date(0),
+            start_at: start || new Date(0),
+            end_at: end || new Date(0)
+        };
+    });
 };

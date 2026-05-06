@@ -31,15 +31,39 @@ export default function AdminActivityPage() {
             const { tenantId } = await tenantContext();
             const { data, error } = await supabase
                 .from('audit_log')
-                .select('*, profiles(full_name, email)')
+                .select(`
+                    *,
+                    profiles:user_id (
+                        full_name,
+                        email
+                    )
+                `)
                 .eq('tenant_id', tenantId)
                 .order('created_at', { ascending: false })
                 .limit(100);
 
-            if (error) throw error;
+            if (error) {
+                console.error('[AUDIT] Supabase Error Details:', {
+                    message: error.message,
+                    details: error.details,
+                    hint: error.hint,
+                    code: error.code
+                });
+                throw error;
+            }
             setLogs(data || []);
-        } catch (error) {
+        } catch (error: any) {
             console.error('Failed to fetch audit logs:', error);
+            // If it's a join error, try fetching without join as fallback
+            if (error?.code === 'PGRST204' || error?.message?.includes('relationship')) {
+                console.warn('[AUDIT] Join failed, attempting fallback fetch...');
+                const { data } = await supabase
+                    .from('audit_log')
+                    .select('*')
+                    .eq('tenant_id', (await tenantContext()).tenantId)
+                    .limit(100);
+                setLogs(data || []);
+            }
         } finally {
             setLoading(false);
         }

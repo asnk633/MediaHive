@@ -119,9 +119,9 @@ export default function AdminDashboardPage() {
                             />
                             <QuickActionCard 
                                 icon={Bell} 
-                                title="Global Alerts" 
-                                desc="System broadcast" 
-                                href="/admin/alerts" 
+                                title="System Updates" 
+                                desc="Version & maintenance" 
+                                href="/admin/system-updates" 
                                 color="amber" 
                             />
                             <QuickActionCard 

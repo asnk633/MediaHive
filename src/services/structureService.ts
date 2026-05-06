@@ -117,6 +117,27 @@ export const StructureService = {
         }
     },
 
+    deleteInstitution: async (id: string) => {
+        try {
+            const { tenantId } = await tenantContext();
+
+            const { error } = await safeQuery(() => 
+                supabase
+                    .from('institutions')
+                    .delete()
+                    .eq('id', id)
+                    .eq('tenant_id', tenantId),
+                { table: 'institutions', type: 'DELETE' }
+            );
+
+            if (error) throw error;
+            return true;
+        } catch (error) {
+            MonitoringService.error("[StructureService] Delete institution failed", error, { id });
+            throw error;
+        }
+    },
+
     // Departments
     getDepartments: async (showArchived = false) => {
         try {
@@ -127,6 +148,10 @@ export const StructureService = {
                     .from('units')
                     .select('*')
                     .eq('tenant_id', tenantId);
+
+                if (!showArchived) {
+                    query = query.eq('status', 'active');
+                }
 
                 return query.order('name', { ascending: true });
             }, { table: 'units' });
@@ -148,6 +173,7 @@ export const StructureService = {
 
             const payload = {
                 name: name.trim(),
+                status: 'active',
                 tenant_id: tenantId,
                 created_at: new Date().toISOString()
             };
@@ -193,6 +219,27 @@ export const StructureService = {
             return updated as Department;
         } catch (error) {
             MonitoringService.error("[StructureService] Update department failed", error, { id });
+            throw error;
+        }
+    },
+
+    deleteDepartment: async (id: string) => {
+        try {
+            const { tenantId } = await tenantContext();
+
+            const { error } = await safeQuery(() => 
+                supabase
+                    .from('units')
+                    .delete()
+                    .eq('id', id)
+                    .eq('tenant_id', tenantId),
+                { table: 'units', type: 'DELETE' }
+            );
+
+            if (error) throw error;
+            return true;
+        } catch (error) {
+            MonitoringService.error("[StructureService] Delete department failed", error, { id });
             throw error;
         }
     },

@@ -5,7 +5,7 @@ import { StructureService } from '@/services/structureService';
 import { Department } from '@/types/structure';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
-import { Plus, Archive, Loader2, Users, Edit2 } from 'lucide-react';
+import { Plus, Archive, Loader2, Users, Edit2, Trash2 } from 'lucide-react';
 import { toast } from 'sonner';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger, DialogDescription } from '@/components/ui/dialog';
 import { Label } from '@/components/ui/label';
@@ -86,6 +86,21 @@ export function DepartmentsTab() {
         }
     };
 
+    const handlePermanentDelete = async (id: string, name: string) => {
+        if (!window.confirm(`CRITICAL: Are you sure you want to PERMANENTLY DELETE the department "${name}"? This will fail if users or entities are still assigned to it.`)) {
+            return;
+        }
+
+        try {
+            await StructureService.deleteDepartment(id);
+            toast.success("Department permanently deleted");
+            fetchDepartments();
+        } catch (error: any) {
+            console.error("Delete error:", error);
+            toast.error(error.message || "Failed to delete department. Check for linked data.");
+        }
+    };
+
     return (
         <div className="space-y-6">
             <div className="flex justify-between items-center">
@@ -159,10 +174,19 @@ export function DepartmentsTab() {
                                     variant="ghost"
                                     size="sm"
                                     onClick={() => handleStatusToggle(dept.id, dept.status)}
-                                    className={dept.status === 'active' ? "text-red-400 hover:text-red-300 hover:bg-red-500/10" : "text-green-400 hover:text-green-300 hover:bg-green-500/10"}
+                                    className={dept.status === 'active' ? "text-slate-400 hover:text-white hover:bg-white/5" : "text-green-400 hover:text-green-300 hover:bg-green-500/10"}
                                 >
                                     {dept.status === 'active' ? <Archive className="w-4 h-4 mr-2" /> : <Plus className="w-4 h-4 mr-2" />}
                                     {dept.status === 'active' ? 'Archive' : 'Activate'}
+                                </Button>
+                                <Button
+                                    variant="ghost"
+                                    size="sm"
+                                    onClick={() => handlePermanentDelete(dept.id, dept.name)}
+                                    className="text-red-400 hover:text-red-300 hover:bg-red-500/10"
+                                >
+                                    <Trash2 className="w-4 h-4 mr-2" />
+                                    Delete
                                 </Button>
                             </div>
                         </div>

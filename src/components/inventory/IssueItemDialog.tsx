@@ -132,7 +132,7 @@ export function IssueItemDialog({ item, request, open, onOpenChange }: IssueItem
                     <div className="p-3.5 bg-white/[0.03] rounded-xl border border-white/5 text-sm">
                         <div className="flex justify-between items-center">
                             <span className="text-slate-500 font-medium">Current Condition</span>
-                            <Badge variant="outline" className="capitalize bg-blue-500/10 text-blue-400 border-blue-500/20">{item.condition}</Badge>
+                            <Badge variant="info" className="capitalize bg-blue-500/10 text-blue-400 border-blue-500/20">{item.condition}</Badge>
                         </div>
                     </div>
 

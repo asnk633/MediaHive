@@ -22,7 +22,6 @@ import { canAccessFeature, UserRole } from '@/system/features/featureAccess';
 import { FeatureKey } from '@/system/features/featureRegistry';
 import { cn, nativeNavigate } from "@/lib/utils";
 import { motion } from 'framer-motion';
-import { Badge } from "@/components/ui/badge";
 
 interface LabFeature {
     id: string;

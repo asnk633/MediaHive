@@ -147,7 +147,7 @@ export const InventoryList: React.FC<InventoryListProps> = ({
                                     </div>
                                 </TableCell>
                                 <TableCell>
-                                    <Badge variant="outline" className="bg-white/5 border-white/10 text-slate-400 font-normal">
+                                    <Badge variant="neutral" className="bg-white/5 border-white/10 text-slate-400 font-normal">
                                         {item.category}
                                     </Badge>
                                 </TableCell>

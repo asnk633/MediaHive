@@ -75,10 +75,10 @@ export function DepartmentsTab() {
         }
     };
 
-    const handleStatusToggle = async (id: string | number, currentStatus: 'active' | 'archived') => {
+    const handleStatusToggle = async (id: string, currentStatus: 'active' | 'archived') => {
         const newStatus = currentStatus === 'active' ? 'archived' : 'active';
         try {
-            await StructureService.updateDepartment(Number(id), { status: newStatus });
+            await StructureService.updateDepartment(id, { status: newStatus });
             toast.success(`Department ${newStatus === 'active' ? 'activated' : 'archived'}`);
             fetchDepartments();
         } catch (error) {

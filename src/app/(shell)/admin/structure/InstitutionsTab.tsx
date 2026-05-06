@@ -75,10 +75,10 @@ export function InstitutionsTab() {
         }
     };
 
-    const handleStatusToggle = async (id: string | number, currentStatus: 'active' | 'archived') => {
+    const handleStatusToggle = async (id: string, currentStatus: 'active' | 'archived') => {
         const newStatus = currentStatus === 'active' ? 'archived' : 'active';
         try {
-            await StructureService.updateInstitution(String(id), { status: newStatus });
+            await StructureService.updateInstitution(id, { status: newStatus });
             toast.success(`Department / Institution ${newStatus === 'active' ? 'activated' : 'archived'}`);
             fetchInstitutions();
         } catch (error) {

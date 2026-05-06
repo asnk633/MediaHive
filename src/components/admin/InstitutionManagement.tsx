@@ -19,7 +19,7 @@ import { Institution } from '@/types/structure';
 export const InstitutionManagement = () => {
     const [institutions, setInstitutions] = useState<Institution[]>([]);
     const [loading, setLoading] = useState(true);
-    const [saving, setSaving] = useState<string | number | null>(null);
+    const [saving, setSaving] = useState<string | null>(null);
 
     // Inline Edit/Create State
     const [editingId, setEditingId] = useState<string | null>(null);
@@ -71,7 +71,7 @@ export const InstitutionManagement = () => {
 
         setSaving(id);
         try {
-            await StructureService.updateInstitution(String(id), { name: editName });
+            await StructureService.updateInstitution(id, { name: editName });
             toast.success("Institution updated");
             setEditingId(null);
             fetchInstitutions();
@@ -89,7 +89,7 @@ export const InstitutionManagement = () => {
         setSaving(id);
         try {
             // Soft delete by archiving
-            await StructureService.updateInstitution(String(id), { status: 'archived' });
+            await StructureService.updateInstitution(id, { status: 'archived' });
             toast.success("Institution archived");
             fetchInstitutions();
         } catch (e) {
@@ -158,10 +158,10 @@ export const InstitutionManagement = () => {
                                 </button>
                                 <button
                                     type="submit"
-                                    disabled={saving === -1}
+                                    disabled={saving === 'creating'}
                                     className="px-4 py-1.5 text-sm bg-indigo-600 hover:bg-indigo-500 text-white rounded-lg font-medium disabled:opacity-50"
                                 >
-                                    {saving === -1 ? 'Creating...' : 'Create'}
+                                    {saving === 'creating' ? 'Creating...' : 'Create'}
                                 </button>
                             </div>
                         </form>

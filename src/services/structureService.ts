@@ -174,7 +174,7 @@ export const StructureService = {
         }
     },
 
-    updateDepartment: async (id: string, updateData: { name?: string }) => {
+    updateDepartment: async (id: string, updateData: { name?: string; status?: StructureStatus }) => {
         try {
             const { tenantId } = await tenantContext();
 

@@ -19,17 +19,17 @@ import { Department } from '@/types/structure';
 export const DepartmentManagement = () => {
     const [departments, setDepartments] = useState<Department[]>([]);
     const [loading, setLoading] = useState(true);
-    const [saving, setSaving] = useState<string | number | null>(null);
+    const [saving, setSaving] = useState<string | null>(null);
 
     // Inline Edit/Create State
-    const [editingId, setEditingId] = useState<number | null>(null);
+    const [editingId, setEditingId] = useState<string | null>(null);
     const [editName, setEditName] = useState('');
 
     const [isCreating, setIsCreating] = useState(false);
     const [createName, setCreateName] = useState('');
 
     // Delete Confirmation State
-    const [deleteConfirmId, setDeleteConfirmId] = useState<number | null>(null);
+    const [deleteConfirmId, setDeleteConfirmId] = useState<string | null>(null);
 
     useEffect(() => {
         fetchDepartments();
@@ -66,7 +66,7 @@ export const DepartmentManagement = () => {
         }
     };
 
-    const handleUpdate = async (id: number) => {
+    const handleUpdate = async (id: string) => {
         if (!editName.trim()) return;
 
         setSaving(id);
@@ -101,7 +101,7 @@ export const DepartmentManagement = () => {
         }
     };
 
-    const handleDeleteClick = (id: number, e: React.MouseEvent) => {
+    const handleDeleteClick = (id: string, e: React.MouseEvent) => {
         e.stopPropagation();
         setDeleteConfirmId(id);
     };
@@ -158,10 +158,10 @@ export const DepartmentManagement = () => {
                                 </button>
                                 <button
                                     type="submit"
-                                    disabled={saving === -1}
+                                    disabled={saving === 'creating'}
                                     className="px-4 py-1.5 text-sm bg-indigo-600 hover:bg-indigo-500 text-white rounded-lg font-medium disabled:opacity-50"
                                 >
-                                    {saving === -1 ? 'Creating...' : 'Create'}
+                                    {saving === 'creating' ? 'Creating...' : 'Create'}
                                 </button>
                             </div>
                         </form>

@@ -100,7 +100,7 @@ export const UserService = {
         }
     },
 
-    getTeamMembers: async (): Promise<{ uid: string; name: string; avatar_url?: string; photoURL?: string }[]> => {
+    getTeamMembers: async (): Promise<{ uid: string; name: string; avatar_url?: string; photoURL?: string; department_id?: string | number; institution_id?: string | number }[]> => {
         try {
             const { tenantId } = await tenantContext();
 

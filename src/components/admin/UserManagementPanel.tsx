@@ -220,7 +220,7 @@ export const UserManagementPanel: React.FC<UserManagementPanelProps> = ({ instit
                       </Badge>
                       {/* Show Office / Unit / Institution if available */}
                       <Badge variant="neutral" className="bg-white/5 text-white/60">
-                        {departments.find(d => Number(d.id) === Number(user.department_id) || d.name === user.department_id)?.name || user.department_id}
+                        {departments.find(d => d.id === user.department_id || d.name === user.department_id)?.name || user.department_id}
                       </Badge>
                     </div>
                   </div>
@@ -308,13 +308,13 @@ export const UserManagementPanel: React.FC<UserManagementPanelProps> = ({ instit
 
               <div className="space-y-2">
                 <label className="text-xs text-gray-400">Office / Unit</label>
-                <Select value={editingUser.department_id?.toString()} onValueChange={v => setEditingUser({ ...editingUser, department_id: v })}>
+                <Select value={editingUser.department_id} onValueChange={v => setEditingUser({ ...editingUser, department_id: v })}>
                   <SelectTrigger className="bg-black/20 border-[#ffffff1a] text-white">
                     <SelectValue placeholder="Select Office / Unit" />
                   </SelectTrigger>
                   <SelectContent className="bg-gray-800 border-[#ffffff1a] text-white">
                     {departments.map(d => (
-                      <SelectItem key={d.id} value={d.id.toString()}>{d.name}</SelectItem>
+                      <SelectItem key={d.id} value={d.id}>{d.name}</SelectItem>
                     ))}
                   </SelectContent>
                 </Select>
@@ -322,13 +322,13 @@ export const UserManagementPanel: React.FC<UserManagementPanelProps> = ({ instit
 
               <div className="space-y-2">
                 <label className="text-xs text-gray-400">Institution</label>
-                <Select value={editingUser.institution_id?.toString()} onValueChange={v => setEditingUser({ ...editingUser, institution_id: v })}>
+                <Select value={editingUser.institution_id} onValueChange={v => setEditingUser({ ...editingUser, institution_id: v })}>
                   <SelectTrigger className="bg-black/20 border-[#ffffff1a] text-white">
                     <SelectValue placeholder="Select Institution" />
                   </SelectTrigger>
                   <SelectContent className="bg-gray-800 border-[#ffffff1a] text-white">
                     {institutions.map(i => (
-                      <SelectItem key={i.id} value={i.id.toString()}>{i.name}</SelectItem>
+                      <SelectItem key={i.id} value={i.id}>{i.name}</SelectItem>
                     ))}
                   </SelectContent>
                 </Select>
@@ -380,7 +380,7 @@ export const UserManagementPanel: React.FC<UserManagementPanelProps> = ({ instit
                     {users
                       .filter(u => u.uid !== selectedUser.uid && u.status === 'active')
                       .map((user, index) => (
-                        <SelectItem key={user.uid || `select-${index}`} value={user.uid?.toString() || ''}>
+                        <SelectItem key={user.uid || `select-${index}`} value={user.uid || ''}>
                           {user.name || user.email} ({user.role})
                         </SelectItem>
                       ))}

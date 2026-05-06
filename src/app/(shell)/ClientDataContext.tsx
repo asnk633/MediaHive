@@ -37,10 +37,10 @@ export type NotificationLite = {
 export type EventLite = {
   id: string;
   title: string;
-  start_time: string;
-  start_at?: string; // Alias
-  end_time?: string | null;
-  end_at?: string; // Alias
+  start_time: string | Date;
+  start_at?: string | Date; // Alias
+  end_time?: string | Date | null;
+  end_at?: string | Date; // Alias
   location?: string | null;
   description?: string | null;
   is_system_event?: boolean;

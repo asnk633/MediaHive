@@ -9,6 +9,7 @@ import { EventCard } from "@/components/event/EventCard";
 import { EventModal } from "@/components/event/EventModal";
 import { Button } from "@/components/ui/button";
 import { cn, nativeNavigate } from "@/lib/utils";
+import { normalizeDate } from "@/features/events/utils/dateNormalization";
 import { useRouter } from "next/navigation";
 import { DayPicker } from "react-day-picker";
 import "react-day-picker/style.css";
@@ -64,7 +65,7 @@ export default function CalendarClient() {
         if (filter === 'all' || filter === 'events') {
             events.forEach(e => {
                 if (e.start_time) {
-                    items.push({ type: "event", data: e, date: parseISO(e.start_time) });
+                    items.push({ type: "event", data: e, date: normalizeDate(e.start_time) || new Date() });
                 }
             });
         }
@@ -72,7 +73,7 @@ export default function CalendarClient() {
         if (filter === 'all' || filter === 'tasks') {
             tasks.forEach(t => {
                 if (t.due_date) {
-                    items.push({ type: "task", data: t, date: parseISO(t.due_date) });
+                    items.push({ type: "task", data: t, date: normalizeDate(t.due_date) || new Date() });
                 }
             });
         }

@@ -31,8 +31,8 @@ export interface Event {
     description?: string;
     
     // Core timing (TIMESTAMPTZ)
-    start_at: string; // ISO string
-    end_at: string;   // ISO string
+    start_at: string | Date; // ISO string or Date object
+    end_at: string | Date;   // ISO string or Date object
     is_all_day?: boolean;
 
     // Legacy fields - to be removed after migration

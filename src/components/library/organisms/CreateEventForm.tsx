@@ -88,7 +88,7 @@ export const CreateEventForm = ({ initialDate, initialEndDate, onSuccess, onCanc
     const [assignedCrew, setAssignedCrew] = useState<{ user_id: string; name: string; role: string }[]>([]);
     const [reservedEquipment, setReservedEquipment] = useState<{ inventory_id: string; name: string; reserved_from: string; reserved_to: string }[]>([]);
     const [equipmentConflicts, setEquipmentConflicts] = useState<Record<string, any[]>>({});
-    const [inventoryList, setInventoryList] = useState<{ id: string; name: string }[]>([]);
+    const [inventoryList, setInventoryList] = useState<{ id: string; name: string; category?: string }[]>([]);
     const [autoGenerateTasks, setAutoGenerateTasks] = useState(true);
     const [isCheckingConflicts, setIsCheckingConflicts] = useState(false);
 
@@ -140,7 +140,7 @@ export const CreateEventForm = ({ initialDate, initialEndDate, onSuccess, onCanc
         const fetchInventory = async () => {
             try {
                 const items = await inventoryService.getEquipment();
-                setInventoryList(items.map(i => ({ id: String(i.id), name: i.name })));
+                setInventoryList(items.map(i => ({ id: String(i.id), name: i.name, category: i.category })));
             } catch (e) {
                 console.error("Failed to fetch inventory", e);
             }

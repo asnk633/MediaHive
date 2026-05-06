@@ -315,7 +315,7 @@ export const EventService = {
         if (!success) throw new Error('Failed to enqueue event deletion');
     },
 
-    deleteInstance: async (seriesId: string, instanceDate: string) => {
+    deleteInstance: async (seriesId: string, instanceDate: string | Date) => {
         // To delete a single instance, we create an exception record with deleted: true
         const { tenantId, institutionId } = await tenantContext();
         
@@ -331,9 +331,9 @@ export const EventService = {
             is_recurring: false,
             recurrence_rule: null,
             parent_event_id: seriesId,
-            recurrence_exception_date: instanceDate,
-            start_at: instanceDate,
-            end_at: instanceDate, // End date is typically the same day for a tombstone
+            recurrence_exception_date: typeof instanceDate === 'string' ? instanceDate : instanceDate.toISOString(),
+            start_at: typeof instanceDate === 'string' ? instanceDate : instanceDate.toISOString(),
+            end_at: typeof instanceDate === 'string' ? instanceDate : instanceDate.toISOString(), // End date is typically the same day for a tombstone
             deleted: true,
             tenant_id: tenantId,
             institution_id: institutionId,
@@ -386,7 +386,7 @@ export const EventService = {
         }
     },
 
-    async checkEquipmentConflicts(inventoryId: string, start: string, end: string, excludeEventId?: string): Promise<any[]> {
+    async checkEquipmentConflicts(inventoryId: string, start: string | Date, end: string | Date, excludeEventId?: string): Promise<any[]> {
         const { tenantId } = await tenantContext();
         
         // 1. Fetch relevant equipment reservations for this item

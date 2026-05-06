@@ -12,9 +12,12 @@ export interface EventWithConflict extends Event {
 export function detectEventConflicts(events: Event[]): EventWithConflict[] {
     if (events.length <= 1) return events;
 
-    // Helper to convert "HH:mm" to minutes from midnight
-    const toMinutes = (time: string | undefined): number | null => {
+    // Helper to convert "HH:mm" or Date to minutes from midnight
+    const toMinutes = (time: string | Date | undefined): number | null => {
         if (!time) return null;
+        if (time instanceof Date) {
+            return time.getHours() * 60 + time.getMinutes();
+        }
         // Handle ISO string extraction if needed
         const timeStr = time.includes('T') ? time.split('T')[1].substring(0, 5) : time;
         const [hours, minutes] = timeStr.split(':').map(Number);

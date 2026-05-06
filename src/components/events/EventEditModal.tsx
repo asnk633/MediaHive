@@ -236,7 +236,7 @@ export const EventEditModal: React.FC<EventEditModalProps> = ({ event, isOpen, o
                     department_id: targetDepartmentId
                 };
 
-                await EventService.updateEvent(event.id, payload, user?.uid || '');
+                await EventService.updateEvent(event.id, payload, user?.uid || '', undefined, undefined);
             }
 
             onClose();

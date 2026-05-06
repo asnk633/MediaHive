@@ -46,7 +46,30 @@ export const MutationSchemaRegistry: Record<string, z.ZodType<any>> = {
     id: z.string().uuid()
   }),
 
-  // Relational Assignments
+  // Relational Assignments (Tasks)
   'ASSIGN_USER': AssignmentPayloadSchema,
   'UNASSIGN_USER': UnassignmentPayloadSchema,
+
+  // Relational Assignments (Events)
+  'ASSIGN_CREW': z.object({
+    event_id: z.string().uuid(),
+    user_id: z.string().uuid(),
+    role: z.string().optional(),
+    tenant_id: z.string().uuid()
+  }),
+  'UNASSIGN_CREW': z.object({
+    event_id: z.string().uuid(),
+    user_id: z.string().uuid()
+  }),
+  'ASSIGN_EQUIPMENT': z.object({
+    event_id: z.string().uuid(),
+    inventory_id: z.string().uuid(),
+    reserved_from: z.string(),
+    reserved_to: z.string(),
+    tenant_id: z.string().uuid()
+  }),
+  'UNASSIGN_EQUIPMENT': z.object({
+    event_id: z.string().uuid(),
+    inventory_id: z.string().uuid()
+  }),
 };

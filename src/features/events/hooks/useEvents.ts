@@ -75,7 +75,7 @@ export function useUpdateEvent() {
 
     return useMutation({
         mutationFn: ({ id, updates }: { id: string; updates: Partial<Event> }) =>
-            EventService.updateEvent(id, updates, user?.uid || ''),
+            EventService.updateEvent(id, updates, user?.uid || '', (updates as any).crew, (updates as any).equipment),
         onMutate: async ({ id, updates }) => {
             await queryClient.cancelQueries({ queryKey: ['events', workspaceId] });
             const previousEvents = queryClient.getQueryData<Event[]>(['events', workspaceId]);

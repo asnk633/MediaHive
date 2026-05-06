@@ -154,7 +154,7 @@ export default function EventsClient() {
                             onEventClick={(event: any) => router.push(`/events/${event.id}`)}
                             onEventUpdate={async (id, updates) => {
                                 try {
-                                    await EventService.updateEvent(id, updates, user?.uid || '');
+                                    await EventService.updateEvent(id, updates, user?.uid || '', undefined, undefined);
                                     // Subscription will handle the update in state
                                 } catch (error) {
                                     console.error("Failed to update event via week timeline", error);

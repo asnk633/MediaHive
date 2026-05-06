@@ -380,41 +380,74 @@ export const EventService = {
         if (!success) throw new Error('Failed to create recurrence exception');
     },
 
-    updateEvent: async (id: string, updates: Partial<Event> & { crew?: Partial<EventCrewAssignment>[], equipment?: Partial<EventEquipmentReservation>[] }, currentUserUid: string) => {
+    updateEvent: async (
+        id: string, 
+        updates: Partial<Event>, 
+        currentUserUid: string,
+        crew?: Partial<EventCrewAssignment>[], 
+        equipment?: Partial<EventEquipmentReservation>[]
+    ) => {
         try {
             const { tenantId } = await tenantContext();
-            const { crew, equipment, ...eventUpdates } = updates;
             const baseUpdatedAt = (updates as any).updated_at;
 
-            const success = await CanonicalDataService.patchFields(COLLECTION, id, eventUpdates, 'event', baseUpdatedAt);
+            const success = await CanonicalDataService.patchFields(COLLECTION, id, updates, 'event', baseUpdatedAt);
             if (!success) throw new Error('Failed to enqueue event update');
 
-            // Crew/Equipment updates (NOTE: Direct Supabase calls)
+            const { syncEngine } = require('@/lib/offline/queueManager');
+
+            // Crew updates (Relational Offline Sync)
             if (crew) {
-                await safeQuery(() => supabase.from(TABLES.EVENT_CREW).delete().eq('event_id', id));
-                if (crew.length > 0) {
-                    await safeQuery(() => supabase.from(TABLES.EVENT_CREW).insert(
-                        crew.map(c => ({ event_id: id, user_id: c.user_id, role: c.role, tenant_id: tenantId }))
-                    ));
+                const currentEvent = await EventService.getEventById(id);
+                const oldCrewIds = (currentEvent?.crew || []).map(c => c.user_id);
+                const newCrewIds = crew.map(c => c.user_id);
+
+                const toAssign = crew.filter(c => !oldCrewIds.includes(c.user_id));
+                const toUnassign = oldCrewIds.filter(uid => !newCrewIds.includes(uid));
+
+                for (const member of toAssign) {
+                    await syncEngine.enqueueMutation('ASSIGN_CREW', { 
+                        event_id: id, 
+                        user_id: member.user_id, 
+                        role: member.role, 
+                        tenant_id: tenantId 
+                    });
+                }
+                for (const uid of toUnassign) {
+                    await syncEngine.enqueueMutation('UNASSIGN_CREW', { 
+                        event_id: id, 
+                        user_id: uid 
+                    });
                 }
             }
 
+            // Equipment updates (Relational Offline Sync)
             if (equipment) {
-                await safeQuery(() => supabase.from(TABLES.EVENT_EQUIPMENT).delete().eq('event_id', id));
-                if (equipment.length > 0) {
-                    await safeQuery(() => supabase.from(TABLES.EVENT_EQUIPMENT).insert(
-                        equipment.map(e => ({ 
-                            event_id: id, 
-                            inventory_id: e.inventory_id, 
-                            reserved_from: e.reserved_from, 
-                            reserved_to: e.reserved_to, 
-                            tenant_id: tenantId 
-                        }))
-                    ));
+                const currentEvent = await EventService.getEventById(id);
+                const oldEquipIds = (currentEvent?.equipment || []).map(e => e.inventory_id);
+                const newEquipIds = equipment.map(e => e.inventory_id);
+
+                const toAdd = equipment.filter(e => !oldEquipIds.includes(e.inventory_id));
+                const toRemove = oldEquipIds.filter(iid => !newEquipIds.includes(iid));
+
+                for (const item of toAdd) {
+                    await syncEngine.enqueueMutation('ASSIGN_EQUIPMENT', { 
+                        event_id: id, 
+                        inventory_id: item.inventory_id, 
+                        reserved_from: item.reserved_from, 
+                        reserved_to: item.reserved_to, 
+                        tenant_id: tenantId 
+                    });
+                }
+                for (const iid of toRemove) {
+                    await syncEngine.enqueueMutation('UNASSIGN_EQUIPMENT', { 
+                        event_id: id, 
+                        inventory_id: iid 
+                    });
                 }
             }
 
-            return { id, ...eventUpdates };
+            return { id, ...updates };
         } catch (err) {
             console.error("Error updating event:", err);
             throw err;

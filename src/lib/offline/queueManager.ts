@@ -310,7 +310,18 @@ class SyncEngine {
             // 4. LOG ACTIVITY (Timeline)
             this.logActivityForMutation(mutation);
           } catch (error: any) {
-            console.error(`[SyncEngine] Failed to sync ${mutation.type}:`, error);
+            // Enhanced logging for Supabase/PostgREST errors
+            const serializableError = {
+              message: error?.message || 'Unknown error',
+              code: error?.code,
+              details: error?.details,
+              hint: error?.hint,
+              status: error?.status,
+              name: error?.name,
+              type: mutation.type,
+              id: mutation.id
+            };
+            console.error(`[SyncEngine] ❌ Failed to sync ${mutation.type}:`, serializableError);
             
             if (error instanceof ConflictError) {
               await offlineDB.updateStatus(mutation.id, 'conflict');
@@ -482,6 +493,10 @@ class SyncEngine {
       'INITIALIZE_LEAVE_BALANCE': 'user_leave_balances',
       'CREATE_INITIALIZE_LEAVE_BALANCE': 'user_leave_balances',
       'UPDATE_LEAVE_BALANCE': 'user_leave_balances',
+      'ASSIGN_CREW': 'event_crew',
+      'UNASSIGN_CREW': 'event_crew',
+      'ASSIGN_EQUIPMENT': 'event_equipment',
+      'UNASSIGN_EQUIPMENT': 'event_equipment',
     };
 
     const actionMap: Record<string, 'insert' | 'update' | 'delete' | 'bulk_insert' | 'bulk_update'> = {
@@ -507,6 +522,10 @@ class SyncEngine {
       'INITIALIZE_LEAVE_BALANCE': 'insert',
       'CREATE_INITIALIZE_LEAVE_BALANCE': 'insert',
       'UPDATE_LEAVE_BALANCE': 'update',
+      'ASSIGN_CREW': 'insert',
+      'UNASSIGN_CREW': 'delete',
+      'ASSIGN_EQUIPMENT': 'insert',
+      'UNASSIGN_EQUIPMENT': 'delete',
     };
 
     // Dynamic mapping for BULK operations
@@ -749,7 +768,11 @@ class SyncEngine {
           throw new Error(result.error.message || JSON.stringify(result.error));
       }
     } else if (action === 'update') {
-      let query = supabase.from(table).update(mutation.payload).eq('id', mutation.payload.id);
+      // 1. Sanitize Payload: Remove fields that shouldn't be in the UPDATE SET clause
+      const { id, startTime, endTime, institutionId, ...actualUpdates } = mutation.payload;
+      
+      // 2. Build Query
+      let query = supabase.from(table).update(actualUpdates).eq('id', id);
       
       // Strict OCC: If we have a baseVersion, enforce it in the WHERE clause for atomic protection
       if (mutation.baseVersion) {
@@ -770,6 +793,16 @@ class SyncEngine {
           .delete()
           .eq('task_id', mutation.payload.task_id)
           .eq('user_id', mutation.payload.user_id);
+      } else if (mutation.type === 'UNASSIGN_CREW') {
+        result = await supabase.from(table)
+          .delete()
+          .eq('event_id', mutation.payload.event_id)
+          .eq('user_id', mutation.payload.user_id);
+      } else if (mutation.type === 'UNASSIGN_EQUIPMENT') {
+        result = await supabase.from(table)
+          .delete()
+          .eq('event_id', mutation.payload.event_id)
+          .eq('inventory_id', mutation.payload.inventory_id);
       } else {
         result = await supabase.from(table).delete().eq('id', mutation.payload.id);
       }

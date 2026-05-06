@@ -40,13 +40,14 @@ import { RecurrenceService } from '@/features/events/services/recurrenceService'
 interface CreateEventFormProps {
     initialDate?: Date;
     initialEndDate?: Date;
+    initialEvent?: any;
     onSuccess: () => void;
     onCancel?: () => void;
     isModal?: boolean;
     forceSystemEvent?: boolean;
 }
 
-export const CreateEventForm = ({ initialDate, initialEndDate, onSuccess, onCancel, isModal = false, forceSystemEvent = false }: CreateEventFormProps) => {
+export const CreateEventForm = ({ initialDate, initialEndDate, initialEvent, onSuccess, onCancel, isModal = false, forceSystemEvent = false }: CreateEventFormProps) => {
     const { user } = useAuth();
     const isPrivilegedRole = user?.role === 'admin' || user?.role === 'manager' || user?.role === 'member' || user?.role === 'team';
 
@@ -166,6 +167,60 @@ export const CreateEventForm = ({ initialDate, initialEndDate, onSuccess, onCanc
     }, []);
 
     const hasInitialized = useRef(false);
+
+    // Initial Event Pre-population
+    useEffect(() => {
+        if (initialEvent && !hasInitialized.current) {
+            setTitle(initialEvent.title || '');
+            setDescription(initialEvent.description || '');
+            setLocation(initialEvent.location || '');
+            setIsAllDay(!!initialEvent.is_all_day);
+            setIsSystemEvent(!!initialEvent.is_system_event);
+            
+            if (initialEvent.start_at) {
+                const start = new Date(initialEvent.start_at);
+                setDate(format(start, 'yyyy-MM-dd'));
+                if (!initialEvent.is_all_day) setTime(format(start, 'HH:mm'));
+            }
+            
+            if (initialEvent.end_at) {
+                const end = new Date(initialEvent.end_at);
+                setEndDate(format(end, 'yyyy-MM-dd'));
+                if (!initialEvent.is_all_day) setEndTime(format(end, 'HH:mm'));
+            }
+            
+            if (initialEvent.on_behalf_of) {
+                setCreateOnBehalfOf(true);
+                setOnBehalfOfEntityName(String(initialEvent.on_behalf_of.id));
+            } else if (initialEvent.department_id) {
+                setDepartment(String(initialEvent.department_id));
+            }
+            
+            if (initialEvent.media_coverage) {
+                setMediaCoverage(initialEvent.media_coverage);
+            }
+
+            if (initialEvent.crew) {
+                setAssignedCrew(initialEvent.crew.map((c: any) => ({
+                    user_id: c.user_id,
+                    name: c.profile?.full_name || 'Team Member',
+                    role: c.role || ''
+                })));
+            }
+
+            if (initialEvent.equipment) {
+                setReservedEquipment(initialEvent.equipment.map((e: any) => ({
+                    inventory_id: e.inventory_id,
+                    name: e.inventory?.name || 'Equipment',
+                    reserved_from: e.reserved_from,
+                    reserved_to: e.reserved_to
+                })));
+            }
+
+            setIsRecurring(!!initialEvent.is_recurring);
+            hasInitialized.current = true;
+        }
+    }, [initialEvent]);
 
     // Conflict Detection Logic
     const checkConflicts = async (newRes?: typeof reservedEquipment) => {
@@ -334,7 +389,7 @@ export const CreateEventForm = ({ initialDate, initialEndDate, onSuccess, onCanc
                 location,
                 media_coverage,
                 institution_id: targetInstitutionId || user?.institution_id,
-                department_id: targetDepartmentId,
+                department_id: targetDepartmentId && !isNaN(Number(targetDepartmentId)) ? Number(targetDepartmentId) : null,
                 on_behalf_of,
                 organizer,
                 is_recurring: isRecurring,
@@ -350,7 +405,11 @@ export const CreateEventForm = ({ initialDate, initialEndDate, onSuccess, onCanc
                 });
             }
 
-            await EventService.addEvent(payload, assignedCrew, reservedEquipment, autoGenerateTasks);
+            if (initialEvent) {
+                await EventService.updateEvent(initialEvent.id, payload, user?.uid || '', assignedCrew, reservedEquipment);
+            } else {
+                await EventService.addEvent(payload, assignedCrew, reservedEquipment, autoGenerateTasks);
+            }
             onSuccess();
         } catch (error: any) {
             console.error("Failed to create event:", error);
@@ -1063,10 +1122,10 @@ export const CreateEventForm = ({ initialDate, initialEndDate, onSuccess, onCanc
                     {loading ? (
                         <>
                             <div className="animate-spin rounded-full h-4 w-4 border-2 border-primary-foreground/30 border-t-primary-foreground" />
-                            Creating...
+                            {initialEvent ? 'Saving...' : 'Creating...'}
                         </>
                     ) : (
-                        'Create Event'
+                        initialEvent ? 'Save Changes' : 'Create Event'
                     )}
                 </button>
             </div>

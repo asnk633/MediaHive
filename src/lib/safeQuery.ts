@@ -16,7 +16,7 @@ export interface SafeQueryOptions {
   payload?: any;
 }
 
-export type SafeQueryErrorType = 'SCHEMA' | 'NETWORK' | 'AUTH' | 'RLS' | 'VALIDATION' | 'UNKNOWN';
+export type SafeQueryErrorType = 'SCHEMA' | 'NETWORK' | 'AUTH' | 'RLS' | 'VALIDATION' | 'NOT_FOUND' | 'UNKNOWN';
 
 export interface SafeQueryResult<T> {
   data: T | T[] | null;
@@ -31,7 +31,11 @@ function classifyError(error: any): SafeQueryErrorType {
   const message = error.message || '';
   const status = error.status;
 
-  if (code === 'PGRST116' || message.includes('relation') || message.includes('does not exist')) {
+  if (code === 'PGRST116') {
+    return 'NOT_FOUND';
+  }
+
+  if (message.includes('relation') || message.includes('does not exist')) {
     return 'SCHEMA';
   }
   
@@ -47,7 +51,7 @@ function classifyError(error: any): SafeQueryErrorType {
     return 'NETWORK';
   }
 
-  if (code === '23505' || code === '23502' || code === '23503') {
+  if (code === '23505' || code === '23502' || code === '23503' || code === '22P02') {
     return 'VALIDATION';
   }
 
@@ -127,7 +131,7 @@ export async function safeQuery<T>(
         }
 
         // Fatal errors: Don't retry
-        if (errorType === 'SCHEMA' || errorType === 'AUTH' || errorType === 'RLS' || errorType === 'VALIDATION') {
+        if (errorType === 'SCHEMA' || errorType === 'AUTH' || errorType === 'RLS' || errorType === 'VALIDATION' || errorType === 'NOT_FOUND') {
           healthManager.recordFailure(false, errorType, { endpoint, error: lastError });
           
           Sentry.captureException(lastError, {

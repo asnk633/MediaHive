@@ -375,9 +375,13 @@ class HealthManager {
     this.stats.failingEndpoint = metadata?.endpoint || 'unknown';
     if (isRetry) this.stats.totalRetries++;
     
-    this.stats.consecutiveFailures++;
-    this.circuitBreaker.failures++;
-    this.circuitBreaker.lastFailure = Date.now();
+    const isHealthError = type === 'NETWORK' || type === 'UNKNOWN';
+    
+    if (isHealthError) {
+      this.stats.consecutiveFailures++;
+      this.circuitBreaker.failures++;
+      this.circuitBreaker.lastFailure = Date.now();
+    }
 
     // Circuit Breaker Logic
     if (this.circuitBreaker.failures >= this.circuitBreaker.FAILURE_THRESHOLD) {

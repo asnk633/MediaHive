@@ -115,8 +115,14 @@ export const EventService = {
             }
 
             return event;
-        } catch (e) {
-            console.error("[EventService] getEventById failed:", e);
+        } catch (e: any) {
+            console.error("[EventService] getEventById failed:", {
+                message: e?.message,
+                code: e?.code,
+                details: e?.details,
+                hint: e?.hint,
+                id
+            });
             // Fallback: Check cache
             const cacheKey = 'events'; // Simplified for now
             const cached = await offlineDB.getCache<any[]>(cacheKey);

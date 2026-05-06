@@ -88,9 +88,6 @@ export default function DesktopSideNav() {
                 ...(canReadReports ? [
                     { id: 'reports', label: 'Reports', icon: BarChart3, path: '/reports' }
                 ] : []),
-                ...(currentRole !== 'guest' ? [
-                    { id: 'leave', label: 'Request Leave', icon: Coffee, path: '/leave/request' }
-                ] : []),
                 // Phase 5D: Trash — hidden from Guests
                 ...(currentRole !== 'guest' ? [
                     { id: 'trash', label: 'Trash', icon: Trash2, path: '/tasks/trash' }
@@ -125,6 +122,10 @@ export default function DesktopSideNav() {
                 ...(['admin', 'manager'].includes(currentRole) ? [
                     { id: 'users', label: 'User Directory', icon: Users, path: '/admin/users' },
                     { id: 'governance', label: 'Governance', icon: ShieldCheck, path: '/governance' }
+                ] : []),
+                // Team Members: Request Leave
+                ...(currentRole !== 'guest' ? [
+                    { id: 'leave', label: 'Request Leave', icon: Coffee, path: '/leave/request' }
                 ] : []),
                 { id: 'settings', label: 'Settings', icon: Settings, path: '/settings' },
             ],

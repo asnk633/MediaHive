@@ -100,7 +100,7 @@ export default function RequestLeavePage() {
                     <div className="space-y-1">
                         <p className="text-sm font-bold text-white/70">Important Notice</p>
                         <p className="text-xs text-white/30 leading-relaxed">
-                            Please ensure your leave request is submitted at least 3 days in advance for casual leave and 14 days for planned leave. 
+                            Please ensure your leave request is submitted at least 3 days in advance for casual leave and 30 days for planned leave. 
                             Your supervisor will be notified automatically upon submission.
                         </p>
                     </div>

@@ -78,9 +78,9 @@ export const LEAVE_STATUS_CONFIG: Record<LeaveStatus, { label: string; color: st
 
 // Minimum notice periods (in days)
 export const MINIMUM_NOTICE: Record<LeaveType, number> = {
-    casual: 1,
+    casual: 3,
     sick: 0, // Can be same day
-    planned: 3,
+    planned: 30,
     emergency: 0,
     other: 1
 };

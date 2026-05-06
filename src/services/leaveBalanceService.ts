@@ -4,6 +4,7 @@ import { CanonicalDataService } from '@/services/canonicalDataService';
 import { MonitoringService } from '@/services/monitoringService';
 import { tenantContext } from '@/lib/auth/tenantContext';
 import { TABLES } from '@/lib/dbTables';
+import { toast } from 'sonner';
 
 export const LeaveBalanceService = {
     /**

@@ -32,7 +32,12 @@ export default function CalendarClient() {
         const fetchEvents = async () => {
             try {
                 const data = await CanonicalDataService.getEvents();
-                setEvents(data as EventLite[]);
+                const mappedData = data.map((e: any) => ({
+                    ...e,
+                    start_time: e.startTime,
+                    end_time: e.endTime
+                })) as EventLite[];
+                setEvents(mappedData);
             } catch (err) {
                 console.error("Failed to fetch events:", err);
             } finally {

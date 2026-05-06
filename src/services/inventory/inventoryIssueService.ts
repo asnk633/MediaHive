@@ -20,6 +20,7 @@ function mapIssue(row: any): InventoryIssueClean {
         issuedAt: row.issued_at || row.issuedAt,
         expectedReturnAt: row.expected_return_at || row.expectedReturnAt,
         returnedAt: row.returned_at || row.returnedAt,
+        issuedToDeptId: row.issued_to_dept_id || row.issuedToDeptId,
         tenantId: row.tenant_id || row.tenantId
     };
     const result = InventoryIssueSchema.safeParse(issue);
@@ -40,6 +41,7 @@ export const inventoryIssueService = {
                 item_id: data.itemId,
                 item_name: data.itemName,
                 issued_to_user_id: data.issuedToUserId,
+                issued_to_dept_id: data.issuedToDeptId,
                 issued_to_role: data.issuedToRole,
                 issued_by: userId,
                 institution_id: data.institutionId,
@@ -65,6 +67,7 @@ export const inventoryIssueService = {
             eventBus.emit('inventory.issued', {
                 itemId: data.itemId,
                 userId: data.issuedToUserId,
+                deptId: data.issuedToDeptId,
                 issueId: created.id
             });
 

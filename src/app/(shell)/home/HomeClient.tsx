@@ -66,7 +66,6 @@ import { AdminOversightWidget } from "@/features/dashboard/components/AdminOvers
 import { MediaTeamOverview } from "@/features/dashboard/components/MediaTeamOverview";
 import { EventsNext7DaysWidget } from "@/features/dashboard/components/EventsNext7DaysWidget";
 import { ProductionPulseBar } from "@/features/dashboard/components/ProductionPulseBar";
-import { NextProductionCard } from '@/features/dashboard/components/NextProductionCard';
 import { useOperationalSummary } from "@/hooks/useOperationalSummary";
 import { DashboardSection } from "@/components/home/DashboardSection";
 import { CrewScheduleCard } from "@/features/dashboard/components/CrewScheduleCard";
@@ -338,10 +337,6 @@ export default function HomeClient() {
                             />
                         </div>
 
-                        {/* 4 - Next Production */}
-                        <div className="animate-in fade-in slide-in-from-bottom-4 duration-900">
-                            <NextProductionCard />
-                        </div>
 
                         {/* Live Monitoring Indicator */}
                         <div className="p-4 rounded-[18px] bg-white/[0.02] border border-white/5 flex items-center justify-between">

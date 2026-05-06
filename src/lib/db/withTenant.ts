@@ -18,21 +18,46 @@ export async function withTenant() {
         throw new Error('Unauthorized: Authentication required');
     }
 
-    // 2. Extract Tenant ID from JWT (app_metadata or user_metadata)
-    // Preference: app_metadata (synced from DB) > user_metadata (session sync)
-    const tenantId = session.user?.app_metadata?.tenant_id || session.user?.user_metadata?.tenant_id;
+    // 2. Extract Tenant context from JWT (app_metadata or user_metadata)
+    let tenantId = session.user?.app_metadata?.tenant_id || session.user?.user_metadata?.tenant_id;
+    let role = session.user?.app_metadata?.role || session.user?.user_metadata?.role;
+
+    // 🧠 FALLBACK: If missing in JWT, check DB (essential for initial sync or local dev)
+    if (!tenantId || !role) {
+        console.log(`[DB] 🕵️ Context missing in JWT for ${session.user.id}, re-syncing from DB profiles...`);
+        const { data: profile } = await supabase
+            .from('profiles')
+            .select('tenant_id, role')
+            .eq('id', session.user.id)
+            .single();
+        
+        if (profile) {
+            tenantId = tenantId || profile.tenant_id;
+            role = role || profile.role;
+        }
+    }
 
     if (!tenantId) {
         console.error('[DB] ❌ Unauthorized: Tenant context missing for user', session.user.id);
         throw new Error('Unauthorized: Tenant context missing');
     }
 
-    console.log(`[DB] ✅ Tenant context established: ${tenantId.slice(0, 8)}... for user ${session.user.id.slice(0, 8)}...`);
+    // 3. Create a merged user object with verified metadata
+    const mergedUser = {
+        ...session.user,
+        app_metadata: {
+            ...session.user.app_metadata,
+            tenant_id: tenantId,
+            role: role
+        }
+    };
+
+    console.log(`[DB] ✅ Context established: Tenant ${tenantId.slice(0, 8)}..., Role ${role} for user ${session.user.id.slice(0, 8)}...`);
 
     return {
         db: supabase,
         tenantId: tenantId as string,
-        user: session.user
+        user: mergedUser
     };
 }
 

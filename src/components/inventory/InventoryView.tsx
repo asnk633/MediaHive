@@ -4,6 +4,7 @@ import React, { useState, useEffect, useMemo, useCallback } from 'react';
 import { useRouter } from 'next/navigation';
 import { PageHeader } from "@/components/ui/layout/PageHeader";
 import { InventoryGrid } from './InventoryGrid';
+import { InventoryList } from './InventoryList';
 import { InventoryDetailDialog } from './InventoryDetailDialog';
 import { InventoryFilters, SortOption } from './InventoryFilters';
 import { EquipmentItem, InventoryIssueClean, InventoryRequestClean } from '@/services/inventory/inventoryContract';
@@ -49,6 +50,7 @@ export default function InventoryView() {
     const [search, setSearch] = useState('');
     const [category, setCategory] = useState<string | null>(null);
     const [sortBy, setSortBy] = useState<SortOption>('name_asc');
+    const [viewMode, setViewMode] = useState<'list' | 'grid'>('list');
 
     // Guide State
     const [isGuideOpen, setIsGuideOpen] = useState(false);
@@ -284,21 +286,38 @@ export default function InventoryView() {
                         sortBy={sortBy}
                         onSortChange={setSortBy}
                         categories={Object.values(INVENTORY_CATEGORIES)}
+                        viewMode={viewMode}
+                        onViewModeChange={setViewMode}
                     />
 
-                    {/* Grid */}
-                    <InventoryGrid
-                        items={processedItems}
-                        loading={loading}
-                        activeIssues={activeIssues}
-                        pendingRequestItemIds={myRequests}
-                        role={currentRole}
-                        onRequest={handleRequest}
-                        onReturn={handleReturn}
-                        onBook={setBookingDialogItem}
-                        onEdit={['admin', 'manager'].includes(currentRole) ? handleEdit : undefined}
-                        onView={setViewItem}
-                    />
+                    {/* Content Area */}
+                    {viewMode === 'list' ? (
+                        <InventoryList
+                            items={processedItems}
+                            loading={loading}
+                            activeIssues={activeIssues}
+                            pendingRequestItemIds={myRequests}
+                            role={currentRole}
+                            onRequest={handleRequest}
+                            onReturn={handleReturn}
+                            onBook={setBookingDialogItem}
+                            onEdit={['admin', 'manager'].includes(currentRole) ? handleEdit : undefined}
+                            onView={setViewItem}
+                        />
+                    ) : (
+                        <InventoryGrid
+                            items={processedItems}
+                            loading={loading}
+                            activeIssues={activeIssues}
+                            pendingRequestItemIds={myRequests}
+                            role={currentRole}
+                            onRequest={handleRequest}
+                            onReturn={handleReturn}
+                            onBook={setBookingDialogItem}
+                            onEdit={['admin', 'manager'].includes(currentRole) ? handleEdit : undefined}
+                            onView={setViewItem}
+                        />
+                    )}
                 </>
             ) : (
                 <div className="space-y-6 animate-in fade-in duration-500">

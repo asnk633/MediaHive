@@ -1,7 +1,8 @@
 import React from 'react';
-import { Search, ArrowUpDown, Filter } from 'lucide-react';
+import { Search, ArrowUpDown, Filter, List, Grid } from 'lucide-react';
 import { Input } from '@/components/ui/input';
 import { DropdownSelector } from '@/components/ui/selectors/DropdownSelector';
+import { cn } from '@/lib/utils';
 
 export type SortOption = 'name_asc' | 'name_desc' | 'category' | 'status' | 'date_newest' | 'date_oldest' | 'qty_low_high' | 'qty_high_low';
 
@@ -13,6 +14,8 @@ interface InventoryFiltersProps {
     sortBy: SortOption;
     onSortChange: (value: SortOption) => void;
     categories: string[] | readonly string[];
+    viewMode?: 'list' | 'grid';
+    onViewModeChange?: (mode: 'list' | 'grid') => void;
 }
 
 export const InventoryFilters: React.FC<InventoryFiltersProps> = ({
@@ -22,11 +25,13 @@ export const InventoryFilters: React.FC<InventoryFiltersProps> = ({
     onCategoryChange,
     sortBy,
     onSortChange,
-    categories
+    categories,
+    viewMode = 'list',
+    onViewModeChange
 }) => {
     return (
-        <div className="flex flex-col md:flex-row gap-4 mb-6 w-full">
-            {/* Search - Full width on mobile, Grow on desktop */}
+        <div className="flex flex-col xl:flex-row gap-4 mb-6 w-full items-stretch xl:items-center">
+            {/* Search */}
             <div className="relative flex-1">
                 <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400" size={18} />
                 <Input
@@ -37,10 +42,10 @@ export const InventoryFilters: React.FC<InventoryFiltersProps> = ({
                 />
             </div>
 
-            {/* Controls Row - Stacked below search on mobile, Side-by-side on desktop */}
-            <div className="flex gap-4 w-full md:w-auto">
+            {/* Controls Row */}
+            <div className="flex flex-wrap md:flex-nowrap gap-3 items-center">
                 {/* Sort Dropdown */}
-                <div className="flex-1 md:w-[180px]">
+                <div className="flex-1 min-w-[160px] md:w-[180px]">
                     <DropdownSelector 
                         value={sortBy}
                         onChange={(v) => onSortChange(v as SortOption)}
@@ -58,7 +63,7 @@ export const InventoryFilters: React.FC<InventoryFiltersProps> = ({
                 </div>
 
                 {/* Category Dropdown */}
-                <div className="flex-1 md:w-[200px]">
+                <div className="flex-1 min-w-[160px] md:w-[200px]">
                     <DropdownSelector 
                         value={category || "all"}
                         onChange={(v) => onCategoryChange(v === "all" ? null : v)}
@@ -68,6 +73,36 @@ export const InventoryFilters: React.FC<InventoryFiltersProps> = ({
                         ]}
                     />
                 </div>
+
+                {/* View Mode Toggle */}
+                {onViewModeChange && (
+                    <div className="flex items-center gap-1 p-1 bg-white/5 border border-white/10 rounded-xl shrink-0">
+                        <button
+                            onClick={() => onViewModeChange('list')}
+                            className={cn(
+                                "p-2 rounded-lg transition-all",
+                                viewMode === 'list' 
+                                ? "bg-white/10 text-blue-400 shadow-sm" 
+                                : "text-slate-500 hover:text-white hover:bg-white/5"
+                            )}
+                            title="List View"
+                        >
+                            <List size={18} />
+                        </button>
+                        <button
+                            onClick={() => onViewModeChange('grid')}
+                            className={cn(
+                                "p-2 rounded-lg transition-all",
+                                viewMode === 'grid' 
+                                ? "bg-white/10 text-blue-400 shadow-sm" 
+                                : "text-slate-500 hover:text-white hover:bg-white/5"
+                            )}
+                            title="Grid View"
+                        >
+                            <Grid size={18} />
+                        </button>
+                    </div>
+                )}
             </div>
         </div>
     );

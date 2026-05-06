@@ -26,6 +26,7 @@ export function usePermissions() {
             canManageUsers: false,
             canDeleteEvent: false,
             canUploadFiles: false,
+            canReadReports: false,
             role: 'guest'
         };
 
@@ -42,6 +43,7 @@ export function usePermissions() {
             canManageUsers: hasPerm('manage:users'),
             canDeleteEvent: hasPerm('delete:events'),
             canUploadFiles: hasPerm('upload:files'),
+            canReadReports: hasPerm('read:reports'),
             canManageAllTasks: canManageAllTasksHelper(user, currentRole as any),
             
             // Dynamic helpers (context-aware)

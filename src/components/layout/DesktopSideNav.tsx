@@ -23,6 +23,7 @@ import {
     Kanban,
     Activity,
     ShieldAlert,
+    Video,
 } from 'lucide-react';
 import { useAuth } from '@/contexts/AuthContextProvider';
 import { useWorkspace } from '@/system/workspace/WorkspaceProvider';
@@ -50,7 +51,7 @@ export default function DesktopSideNav() {
     const { user, signOut, loading: authLoading } = useAuth();
     const [isCollapsed, setIsCollapsed] = useState(false);
     const [mounted, setMounted] = useState(false);
-    const { role: currentRole } = usePermissions();
+    const { role: currentRole, canReadReports } = usePermissions();
     const { currentWorkspace } = useWorkspace();
     const isAdminRoute = pathname.startsWith('/admin');
 
@@ -83,7 +84,9 @@ export default function DesktopSideNav() {
                 { id: 'home', label: 'Dashboard', icon: LayoutDashboard, path: '/home' },
                 { id: 'tasks', label: 'My Tasks', icon: CheckSquare, path: '/tasks', feature: 'tasks' as FeatureKey },
                 { id: 'calendar', label: 'Events', icon: Calendar, path: '/events', feature: 'events' as FeatureKey },
-                { id: 'reports', label: 'Reports', icon: BarChart3, path: '/reports' },
+                ...(canReadReports ? [
+                    { id: 'reports', label: 'Reports', icon: BarChart3, path: '/reports' }
+                ] : []),
                 // Phase 5D: Trash — hidden from Guests
                 ...(currentRole !== 'guest' ? [
                     { id: 'trash', label: 'Trash', icon: Trash2, path: '/tasks/trash' }
@@ -103,10 +106,7 @@ export default function DesktopSideNav() {
             label: 'Laboratory',
             feature: 'labs' as FeatureKey,
             items: [
-                { id: 'flowboard', label: 'Flowboard', icon: Kanban, path: '/labs/flowboard', feature: 'flowboard' as FeatureKey },
-                { id: 'ai-assistant', label: 'AI Assistant', icon: Bot, path: '/labs/ai-assistant', feature: 'aiAssistant' as FeatureKey },
-                { id: 'automation', label: 'Automation', icon: Terminal, path: '/labs/automation', feature: 'automationEngine' as FeatureKey },
-                { id: 'intelligence', label: 'Intelligence', icon: Activity, path: '/labs/intelligence', feature: 'intelligenceDashboard' as FeatureKey },
+                { id: 'labs-hub', label: 'MediaHive Labs', icon: FlaskConical, path: '/labs' },
             ]
         },
         {

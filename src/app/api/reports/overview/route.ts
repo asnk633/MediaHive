@@ -3,7 +3,7 @@ import { withTenant, handleApiError } from '@/lib/db/withTenant';
 
 export const dynamic = 'force-dynamic';
 
-export async function GET() {
+export async function GET(req: Request) {
     try {
         const { db, tenantId, user } = await withTenant();
 
@@ -14,7 +14,7 @@ export async function GET() {
         console.log(`[REPORTS] Access check - User: ${user.id}, Role: ${role}, Tenant: ${tenantId}`);
 
         // 2. Permission Check
-        const authorizedRoles = ['admin', 'team', 'super', 'owner'];
+        const authorizedRoles = ['admin', 'manager', 'team', 'super', 'owner'];
         if (!role || !authorizedRoles.includes(role)) {
             console.warn(`[REPORTS] ⚠️ Access Denied: User ${user.id} has insufficient role: ${role}`);
             return NextResponse.json({ 
@@ -24,11 +24,21 @@ export async function GET() {
             }, { status: 403 });
         }
 
+        // 3. Institution Filtering
+        const { searchParams } = new URL(req.url);
+        const institutionId = searchParams.get('institution_id');
+
         const headers = {
             'Cache-Control': 'public, s-maxage=300, stale-while-revalidate=60',
         };
 
         // Parallel aggregation queries using Supabase count
+        const buildBaseQuery = (table: string) => {
+            let q = db.from(table).select('*', { count: 'exact', head: true }).eq('tenant_id', tenantId);
+            if (institutionId) q = q.eq('institution_id', institutionId);
+            return q;
+        };
+
         const [
             { count: totalTasks, error: e1 },
             { count: totalEvents, error: e2 },
@@ -36,11 +46,11 @@ export async function GET() {
             { count: lowStock, error: e4 },
             { count: outOfStock, error: e5 }
         ] = await Promise.all([
-            db.from('tasks').select('*', { count: 'exact', head: true }).eq('tenant_id', tenantId),
-            db.from('events').select('*', { count: 'exact', head: true }).eq('tenant_id', tenantId),
-            db.from('inventory').select('*', { count: 'exact', head: true }).eq('tenant_id', tenantId),
-            db.from('inventory').select('*', { count: 'exact', head: true }).eq('tenant_id', tenantId).eq('status', 'low'),
-            db.from('inventory').select('*', { count: 'exact', head: true }).eq('tenant_id', tenantId).eq('status', 'out')
+            buildBaseQuery('tasks'),
+            buildBaseQuery('events'),
+            buildBaseQuery('inventory'),
+            buildBaseQuery('inventory').eq('status', 'low'),
+            buildBaseQuery('inventory').eq('status', 'out')
         ]);
 
         if (e1) return handleApiError('REP_TASKS', e1);

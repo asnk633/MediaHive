@@ -24,6 +24,7 @@ import {
     Activity,
     ShieldAlert,
     Video,
+    Coffee,
 } from 'lucide-react';
 import { useAuth } from '@/contexts/AuthContextProvider';
 import { useWorkspace } from '@/system/workspace/WorkspaceProvider';
@@ -87,6 +88,9 @@ export default function DesktopSideNav() {
                 ...(canReadReports ? [
                     { id: 'reports', label: 'Reports', icon: BarChart3, path: '/reports' }
                 ] : []),
+                ...(currentRole !== 'guest' ? [
+                    { id: 'leave', label: 'Request Leave', icon: Coffee, path: '/leave/request' }
+                ] : []),
                 // Phase 5D: Trash — hidden from Guests
                 ...(currentRole !== 'guest' ? [
                     { id: 'trash', label: 'Trash', icon: Trash2, path: '/tasks/trash' }
@@ -119,9 +123,9 @@ export default function DesktopSideNav() {
                 ] : []),
                 // Institutional Manager/Admin: Users list
                 ...(['admin', 'manager'].includes(currentRole) ? [
-                    { id: 'users', label: 'User Directory', icon: Users, path: '/admin/users' }
+                    { id: 'users', label: 'User Directory', icon: Users, path: '/admin/users' },
+                    { id: 'governance', label: 'Governance', icon: ShieldCheck, path: '/governance' }
                 ] : []),
-                { id: 'governance', label: 'Governance', icon: ShieldCheck, path: '/governance' },
                 { id: 'settings', label: 'Settings', icon: Settings, path: '/settings' },
             ],
         }
@@ -301,7 +305,7 @@ export default function DesktopSideNav() {
                 isCollapsed ? "items-center px-4" : "px-7"
             )}>
                 {/* Workspace Switcher */}
-                <WorkspaceSwitcher />
+                <WorkspaceSwitcher isCollapsed={isCollapsed} />
 
                 {/* Notification Bell */}
                 <div className={cn("flex items-center", isCollapsed ? "justify-center" : "gap-4")}>

@@ -13,7 +13,11 @@ import { cn } from '@/lib/utils';
 
 import ClientOnly from "@/components/ClientOnly";
 
-export function WorkspaceSwitcher() {
+interface WorkspaceSwitcherProps {
+    isCollapsed?: boolean;
+}
+
+export function WorkspaceSwitcher({ isCollapsed }: WorkspaceSwitcherProps) {
     const { currentWorkspace, availableWorkspaces, setWorkspace, loading, isSingleWorkspace } = useWorkspace();
 
     if (loading) {
@@ -30,18 +34,20 @@ export function WorkspaceSwitcher() {
     // If only one workspace is available and user is not admin, just show a static label or hide entirely
     if (isSingleWorkspace) {
         return (
-            <div className="flex items-center gap-2 px-2 py-1.5 opacity-60">
+            <div className={cn("flex items-center gap-2 py-1.5 opacity-60", isCollapsed ? "justify-center px-0" : "px-2")}>
                 <div className="w-7 h-7 rounded-lg bg-white/5 border border-white/10 flex items-center justify-center shrink-0">
                     <Building2 size={14} className="text-white/40" />
                 </div>
-                <div className="flex flex-col overflow-hidden">
-                    <span className="text-xs font-bold text-white tracking-tight truncate leading-tight">
-                        {currentWorkspace.name}
-                    </span>
-                    <span className="text-[10px] text-white/40 font-medium uppercase tracking-wider">
-                        Default Department
-                    </span>
-                </div>
+                {!isCollapsed && (
+                    <div className="flex flex-col overflow-hidden">
+                        <span className="text-xs font-bold text-white tracking-tight truncate leading-tight">
+                            {currentWorkspace.name}
+                        </span>
+                        <span className="text-[10px] text-white/40 font-medium uppercase tracking-wider">
+                            Default Department
+                        </span>
+                    </div>
+                )}
             </div>
         );
     }
@@ -49,19 +55,26 @@ export function WorkspaceSwitcher() {
     return (
         <ClientOnly>
             <DropdownMenu>
-                <DropdownMenuTrigger className="flex items-center gap-2 px-2 py-1.5 hover:bg-white/5 rounded-xl transition-all duration-200 outline-none group text-left">
+                <DropdownMenuTrigger className={cn(
+                    "flex items-center hover:bg-white/5 rounded-xl transition-all duration-200 outline-none group text-left",
+                    isCollapsed ? "justify-center p-1" : "gap-2 px-2 py-1.5"
+                )}>
                     <div className="w-7 h-7 rounded-lg bg-blue-500/10 border border-blue-500/20 flex items-center justify-center shrink-0 group-hover:bg-blue-500/20 transition-colors">
                         <Building2 size={14} className="text-blue-400" />
                     </div>
-                    <div className="flex flex-col overflow-hidden">
-                        <span className="text-xs font-bold text-white tracking-tight truncate leading-tight">
-                            {currentWorkspace.name}
-                        </span>
-                        <span className="text-[10px] text-white/40 font-medium uppercase tracking-wider">
-                            Switch Department
-                        </span>
-                    </div>
-                    <ChevronDown size={14} className="text-white/20 group-hover:text-white/40 transition-colors ml-1" />
+                    {!isCollapsed && (
+                        <>
+                            <div className="flex flex-col overflow-hidden">
+                                <span className="text-xs font-bold text-white tracking-tight truncate leading-tight">
+                                    {currentWorkspace.name}
+                                </span>
+                                <span className="text-[10px] text-white/40 font-medium uppercase tracking-wider">
+                                    Switch Department
+                                </span>
+                            </div>
+                            <ChevronDown size={14} className="text-white/20 group-hover:text-white/40 transition-colors ml-1" />
+                        </>
+                    )}
                 </DropdownMenuTrigger>
 
                 <DropdownMenuContent align="start" className="w-64 glass-panel border-white/10 bg-[#0a0a0a]/95 text-white p-1.5 mt-2 animate-in fade-in zoom-in-95 duration-200">

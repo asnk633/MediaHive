@@ -136,5 +136,57 @@ export const LeaveBalanceService = {
         const balance = await LeaveBalanceService.getUserBalance(uid);
         if (!balance) return 0;
         return balance.balances[type].total - balance.balances[type].taken;
+    },
+
+    /**
+     * Get all leave balances for an institution (Admin view)
+     */
+    getAllBalances: async (year?: number): Promise<any[]> => {
+        const targetYear = year || new Date().getFullYear();
+        const { tenantId } = await tenantContext();
+        
+        try {
+            const { data, error } = await supabase
+                .from(TABLES.LEAVE_BALANCES)
+                .select(`
+                    *,
+                    profiles:user_id (id, full_name, avatar_url, department_id)
+                `)
+                .eq('tenant_id', tenantId)
+                .eq('year', targetYear);
+
+            if (error) throw error;
+            return data || [];
+        } catch (error) {
+            MonitoringService.error('[LeaveBalanceService] Failed to fetch all balances', error, { year: targetYear });
+            return [];
+        }
+    },
+
+    /**
+     * Update leave allocation for a user (Admin only)
+     */
+    updateAllocation: async (uid: string, type: LeaveType, totalDays: number): Promise<void> => {
+        const balance = await LeaveBalanceService.getUserBalance(uid);
+        if (!balance) return;
+
+        const newBalances = { ...balance.balances };
+        newBalances[type] = {
+            ...newBalances[type],
+            total: totalDays
+        };
+
+        try {
+            await CanonicalDataService.patchFields(
+                TABLES.LEAVE_BALANCES,
+                String(balance.id),
+                { balances: newBalances, updated_at: new Date().toISOString() },
+                'UPDATE_LEAVE_ALLOCATION'
+            );
+            toast.success(`Updated ${type} allocation to ${totalDays} days`);
+        } catch (error) {
+            MonitoringService.error('[LeaveBalanceService] Failed to update allocation', error, { uid, type, totalDays });
+            toast.error('Failed to update allocation');
+        }
     }
 };

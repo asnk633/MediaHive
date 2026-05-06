@@ -12,7 +12,8 @@ import {
     Mail, 
     ShieldAlert,
     ChevronRight,
-    ArrowUpRight
+    ArrowUpRight,
+    BarChart3
 } from 'lucide-react';
 import AppLink from '@/components/AppLink';
 import { AdminService, TenantMetrics } from '@/services/adminService';
@@ -111,6 +112,13 @@ export default function AdminDashboardPage() {
                                 color="blue" 
                             />
                             <QuickActionCard 
+                                icon={BarChart3} 
+                                title="Team Leaves" 
+                                desc="Analytics & team counts" 
+                                href="/admin/leave-analytics" 
+                                color="purple" 
+                            />
+                            <QuickActionCard 
                                 icon={Building2} 
                                 title="Workspaces" 
                                 desc="Configure institutions" 
@@ -123,13 +131,6 @@ export default function AdminDashboardPage() {
                                 desc="Version & maintenance" 
                                 href="/admin/system-updates" 
                                 color="amber" 
-                            />
-                            <QuickActionCard 
-                                icon={Activity} 
-                                title="Audit Trail" 
-                                desc="Compliance monitoring" 
-                                href="/admin/activity" 
-                                color="purple" 
                             />
                         </div>
                     </div>

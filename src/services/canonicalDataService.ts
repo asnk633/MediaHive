@@ -499,7 +499,8 @@ export class CanonicalDataService {
       let query = supabase
         .from(TABLES.EVENTS)
         .select('*, version, updated_by')
-        .eq('tenant_id', tenantId);
+        .eq('tenant_id', tenantId)
+        .eq('deleted', false);
 
       if (filters.institutionId) {
         console.log(`[CanonicalDataService] Filtering events by institution: ${filters.institutionId}`);
@@ -759,6 +760,7 @@ export class CanonicalDataService {
               )
             `)
             .eq('tenant_id', tenantId)
+            .eq('deleted', false)
             .gte('start_at', startOfDay)
             .lte('start_at', endOfDay);
 

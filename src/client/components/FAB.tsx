@@ -171,7 +171,7 @@ export default function FAB({ onMainClick }: FABProps) {
         const isMember = user?.role === 'member';
         const hasRoleAccess = !currentConfig.role || currentConfig.role === user?.role;
         
-        if (currentConfig.href && hasRoleAccess && !isGuest) {
+        if (currentConfig.href && hasRoleAccess && !isMember) {
           trackSafe('direct_action', { target: currentConfig.href });
           router.push(currentConfig.href);
         } else {

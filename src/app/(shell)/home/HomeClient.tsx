@@ -284,15 +284,17 @@ export default function HomeClient() {
                                             New Event
                                         </button>
                                     </Magnetic>
-                                    <Magnetic strength={0.3}>
-                                        <button 
-                                            onClick={() => router.push('/campaigns/new')} 
-                                            className="btn-premium group flex items-center gap-2 h-11 px-6 rounded-2xl bg-white/5 border border-white/10 hover:bg-white/10 text-white text-sm font-semibold active:scale-95 whitespace-nowrap"
-                                        >
-                                            <FolderPlus size={18} className="text-blue-400 group-hover:scale-110 transition-transform" /> 
-                                            New Campaign
-                                        </button>
-                                    </Magnetic>
+                                    {currentRole !== 'guest' && (
+                                        <Magnetic strength={0.3}>
+                                            <button 
+                                                onClick={() => router.push('/campaigns/new')} 
+                                                className="btn-premium group flex items-center gap-2 h-11 px-6 rounded-2xl bg-white/5 border border-white/10 hover:bg-white/10 text-white text-sm font-semibold active:scale-95 whitespace-nowrap"
+                                            >
+                                                <FolderPlus size={18} className="text-blue-400 group-hover:scale-110 transition-transform" /> 
+                                                New Campaign
+                                            </button>
+                                        </Magnetic>
+                                    )}
                                     {['admin', 'manager'].includes(currentRole) && (
                                         <Magnetic strength={0.3}>
                                             <button 
@@ -308,19 +310,23 @@ export default function HomeClient() {
                             </div>
                         </motion.div>
 
-                        <div className="space-y-6">
-                            <div className="flex items-baseline gap-3 ml-2">
-                                <Zap size={18} className="text-amber-400 self-center" />
-                                <h2 className="text-sm font-bold tracking-tight text-white/90">Production Pulse</h2>
+                        {currentRole !== 'guest' && (
+                            <div className="space-y-6">
+                                <div className="flex items-baseline gap-3 ml-2">
+                                    <Zap size={18} className="text-amber-400 self-center" />
+                                    <h2 className="text-sm font-bold tracking-tight text-white/90">Production Pulse</h2>
+                                </div>
+                                <div className="animate-in fade-in slide-in-from-top-4 duration-700">
+                                    <ProductionPulseBar />
+                                </div>
                             </div>
-                            <div className="animate-in fade-in slide-in-from-top-4 duration-700">
-                                <ProductionPulseBar />
-                            </div>
-                        </div>
+                        )}
                         {/* 1 - System Status and Today's Completion */}
-                        <div className="animate-in fade-in slide-in-from-bottom-4 duration-700">
-                            <SystemStatusWidget />
-                        </div>
+                        {['admin', 'manager'].includes(currentRole) && (
+                            <div className="animate-in fade-in slide-in-from-bottom-4 duration-700">
+                                <SystemStatusWidget />
+                            </div>
+                        )}
 
                         {/* 2 & 3 - Today's Tasks & Today's Events */}
                         <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 animate-in fade-in slide-in-from-bottom-4 duration-800">
@@ -339,71 +345,77 @@ export default function HomeClient() {
 
 
                         {/* Live Monitoring Indicator */}
-                        <div className="p-4 rounded-[18px] bg-white/[0.02] border border-white/5 flex items-center justify-between">
-                            <div className="flex items-center gap-3">
-                                <Zap size={14} className="text-amber-400" />
-                                <span className="text-[11px] font-bold text-white/40 uppercase tracking-widest">
-                                    Live monitoring active for {user?.name || user?.fullName || 'Super Admin'}
-                                </span>
-                            </div>
-                            <div className="flex items-center gap-4">
-                                <div className="flex items-center gap-1.5">
-                                    <div className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse" />
-                                    <span className="text-[10px] font-bold text-white/20 uppercase tracking-widest">Connected</span>
+                        {['admin', 'manager'].includes(currentRole) && (
+                            <div className="p-4 rounded-[18px] bg-white/[0.02] border border-white/5 flex items-center justify-between">
+                                <div className="flex items-center gap-3">
+                                    <Zap size={14} className="text-amber-400" />
+                                    <span className="text-[11px] font-bold text-white/40 uppercase tracking-widest">
+                                        Live monitoring active for {user?.name || user?.fullName || 'Super Admin'}
+                                    </span>
+                                </div>
+                                <div className="flex items-center gap-4">
+                                    <div className="flex items-center gap-1.5">
+                                        <div className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse" />
+                                        <span className="text-[10px] font-bold text-white/20 uppercase tracking-widest">Connected</span>
+                                    </div>
                                 </div>
                             </div>
-                        </div>
+                        )}
 
                         {/* Collapsed Sections */}
-                        <div className="space-y-8 pt-4 border-t border-white/5">
-                            {/* 5 - Insights Group */}
-                            <DashboardSection
-                                sectionId="insights-group"
-                                title="Insights"
-                                className="space-y-6"
-                                icon={<BarChart3 size={18} className="text-premium-gradient self-center" />}
-                                isExpanded={strategicInsightsExpanded}
-                                onToggle={() => toggleSection('mh_home_strategic_insights_expanded', strategicInsightsExpanded, setStrategicInsightsExpanded)}
-                            >
-                                <div className="space-y-8">
-                                    <OverdueTasksWidget />
-                                    <div className="space-y-[12px]">
-                                        <div className="space-y-6">
-                                            <h3 className="text-xs font-bold text-white/30 uppercase tracking-widest mb-4 ml-2 mt-2">Global Governance</h3>
-                                            <AdminOversightWidget />
-                                        </div>
-                                        <div className="space-y-6 pt-2">
-                                            <h3 className="text-xs font-bold text-white/30 uppercase tracking-widest mb-4 ml-2 mt-2">Strategic Insights</h3>
-                                            <ProductionInsights 
-                                                data={{ events, tasks }} 
-                                                isLoading={isActuallyLoading} 
-                                            />
+                        {currentRole !== 'guest' && (
+                            <div className="space-y-8 pt-4 border-t border-white/5">
+                                {/* 5 - Insights Group */}
+                                <DashboardSection
+                                    sectionId="insights-group"
+                                    title="Insights"
+                                    className="space-y-6"
+                                    icon={<BarChart3 size={18} className="text-premium-gradient self-center" />}
+                                    isExpanded={strategicInsightsExpanded}
+                                    onToggle={() => toggleSection('mh_home_strategic_insights_expanded', strategicInsightsExpanded, setStrategicInsightsExpanded)}
+                                >
+                                    <div className="space-y-8">
+                                        <OverdueTasksWidget />
+                                        <div className="space-y-[12px]">
+                                            {['admin', 'manager'].includes(currentRole) && (
+                                                <div className="space-y-6">
+                                                    <h3 className="text-xs font-bold text-white/30 uppercase tracking-widest mb-4 ml-2 mt-2">Global Governance</h3>
+                                                    <AdminOversightWidget />
+                                                </div>
+                                            )}
+                                            <div className="space-y-6 pt-2">
+                                                <h3 className="text-xs font-bold text-white/30 uppercase tracking-widest mb-4 ml-2 mt-2">Strategic Insights</h3>
+                                                <ProductionInsights 
+                                                    data={{ events, tasks }} 
+                                                    isLoading={isActuallyLoading} 
+                                                />
+                                            </div>
                                         </div>
                                     </div>
-                                </div>
-                            </DashboardSection>
+                                </DashboardSection>
 
-                            {/* 6 - Operational Panels Group */}
-                            <DashboardSection
-                                sectionId="operational-group"
-                                title="Operational Panels"
-                                className="space-y-6 mb-4"
-                                icon={<LayoutDashboard size={18} className="text-blue-500 self-center" />}
-                                isExpanded={operationalPanelsExpanded}
-                                onToggle={() => toggleSection('mh_home_operational_panels_expanded', operationalPanelsExpanded, setOperationalPanelsExpanded)}
-                            >
-                                <div className="grid grid-cols-1 md:grid-cols-[repeat(2,minmax(260px,1fr))] gap-5 pt-2">
-                                    <div className="flex flex-col">
-                                        <h3 className="text-xs font-bold text-white/30 uppercase tracking-widest mb-4 ml-2 mt-2">Crew Schedule</h3>
-                                        <CrewScheduleCard crew={operationalData.crew} isLoading={operationalLoading} />
+                                {/* 6 - Operational Panels Group */}
+                                <DashboardSection
+                                    sectionId="operational-group"
+                                    title="Operational Panels"
+                                    className="space-y-6 mb-4"
+                                    icon={<LayoutDashboard size={18} className="text-blue-500 self-center" />}
+                                    isExpanded={operationalPanelsExpanded}
+                                    onToggle={() => toggleSection('mh_home_operational_panels_expanded', operationalPanelsExpanded, setOperationalPanelsExpanded)}
+                                >
+                                    <div className="grid grid-cols-1 md:grid-cols-[repeat(2,minmax(260px,1fr))] gap-5 pt-2">
+                                        <div className="flex flex-col">
+                                            <h3 className="text-xs font-bold text-white/30 uppercase tracking-widest mb-4 ml-2 mt-2">Crew Schedule</h3>
+                                            <CrewScheduleCard crew={operationalData.crew} isLoading={operationalLoading} />
+                                        </div>
+                                        <div className="flex flex-col">
+                                            <h3 className="text-xs font-bold text-white/30 uppercase tracking-widest mb-4 ml-2 mt-2">Equipment Usage</h3>
+                                            <EquipmentUsageCard equipment={operationalData.equipment} isLoading={operationalLoading} />
+                                        </div>
                                     </div>
-                                    <div className="flex flex-col">
-                                        <h3 className="text-xs font-bold text-white/30 uppercase tracking-widest mb-4 ml-2 mt-2">Equipment Usage</h3>
-                                        <EquipmentUsageCard equipment={operationalData.equipment} isLoading={operationalLoading} />
-                                    </div>
-                                </div>
-                            </DashboardSection>
-                        </div>
+                                </DashboardSection>
+                            </div>
+                        )}
                     </div>
                 </div>
             </PageLayout>

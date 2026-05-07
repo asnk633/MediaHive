@@ -32,7 +32,7 @@ export const FEATURE_REGISTRY: Record<FeatureKey, FeatureConfig> = {
     productionCenter: { enabled: true, minRole: 'standard', isLabs: true },
     governance: { enabled: true, minRole: 'manager' },
     leave_management: { enabled: true, minRole: 'standard' },
-    reports: { enabled: true },
-    policySimulation: { enabled: true, minRole: 'guest', isLabs: true },
+    reports: { enabled: true, minRole: 'manager' },
+    policySimulation: { enabled: true, minRole: 'admin', isLabs: true },
     labs: { enabled: true, minRole: 'admin' },
 };

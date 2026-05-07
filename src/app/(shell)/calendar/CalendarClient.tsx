@@ -12,6 +12,7 @@ import { cn, nativeNavigate } from "@/lib/utils";
 import { normalizeDate } from "@/features/events/utils/dateNormalization";
 import { CanonicalDataService } from "@/services/canonicalDataService";
 import { useRouter } from "next/navigation";
+import { useEvents } from "@/features/events/hooks/useEvents";
 import { DayPicker } from "react-day-picker";
 import "react-day-picker/style.css";
 
@@ -22,30 +23,18 @@ type CalendarItem =
 export type CalendarView = 'timeline' | 'month' | 'week';
 
 export default function CalendarClient() {
+    const { data: rawEvents, isLoading: eventsLoading } = useEvents();
     const { tasks, loading: tasksLoading } = useClientData();
-    const [events, setEvents] = useState<EventLite[]>([]);
-    const [eventsLoading, setEventsLoading] = useState(true);
+    
+    const events = useMemo(() => {
+        return (rawEvents || []).map((e: any) => ({
+            ...e,
+            start_time: e.start_time || e.startTime,
+            end_time: e.end_time || e.endTime
+        })) as EventLite[];
+    }, [rawEvents]);
     
     const loading = tasksLoading || eventsLoading;
-
-    useEffect(() => {
-        const fetchEvents = async () => {
-            try {
-                const data = await CanonicalDataService.getEvents();
-                const mappedData = data.map((e: any) => ({
-                    ...e,
-                    start_time: e.startTime,
-                    end_time: e.endTime
-                })) as EventLite[];
-                setEvents(mappedData);
-            } catch (err) {
-                console.error("Failed to fetch events:", err);
-            } finally {
-                setEventsLoading(false);
-            }
-        };
-        fetchEvents();
-    }, []);
     const searchParams = typeof window !== 'undefined' ? new URLSearchParams(window.location.search) : new URLSearchParams();
     const router = useRouter();
     const [isEventModalOpen, setIsEventModalOpen] = useState(false);

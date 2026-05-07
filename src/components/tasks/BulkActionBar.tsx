@@ -106,7 +106,7 @@ export const BulkActionBar: React.FC<BulkActionBarProps> = ({
 
     const selectedIdsArray = Array.from(selectedIds);
 
-    // Guest / empty — guard evaluated after all hooks (Rules of Hooks requires hooks
+    // Member / empty — guard evaluated after all hooks (Rules of Hooks requires hooks
     // to run unconditionally; we move the guard below the useCallback declarations).
 
     const loadTeamMembers = async () => {

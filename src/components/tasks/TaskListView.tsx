@@ -508,7 +508,7 @@ const TaskListViewComponent: React.FC<TaskListViewProps> = ({ tasks, loading = f
         }
 
         const isCreator = (typeof task.created_by === 'string' ? task.created_by : task.created_by?.uid) === user?.uid;
-        const allowed = userRole === 'admin' || (userRole === 'manager' || userRole === 'member') || (userRole === 'guest' && isCreator);
+        const allowed = userRole === 'admin' || (userRole === 'manager' || userRole === 'member') || (userRole === 'member' && isCreator);
         console.log(`[TRASH_DEBUG] Soft Delete Guard Check: ${allowed ? 'PASS' : 'FAIL'} (isCreator: ${isCreator})`);
 
         if (!allowed) {

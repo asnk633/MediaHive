@@ -218,7 +218,4 @@ export function MemberWelcomeModal({ onOpenGuide }: MemberWelcomeModalProps) {
             </motion.div>
         </div>
     );
-}.div>
-        </div>
-    );
 }

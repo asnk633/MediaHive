@@ -33,7 +33,7 @@ export function InstitutionContextCard({ user }: InstitutionContextCardProps) {
                 if (targetDeptId) {
                     const resolvedName = await StructureService.getDepartmentName(targetDeptId);
 
-                    // Explicitly BLOCK "Thaiba Garden HQ" for Guests at Unit level
+                    // Explicitly BLOCK "Thaiba Garden HQ" for Members at Unit level
                     if (resolvedName && !resolvedName.includes("Thaiba Garden HQ")) {
                         if (resolvedName !== targetDeptId) {
                             name = `${resolvedName} (Dept / Inst)`;
@@ -48,7 +48,7 @@ export function InstitutionContextCard({ user }: InstitutionContextCardProps) {
                 if (!name && user?.institution_id) {
                     const resolvedName = await StructureService.getInstitutionName(user.institution_id);
 
-                    // CRITICAL: Block HQ for Guests as per user request
+                    // CRITICAL: Block HQ for Members as per user request
                     if (resolvedName && !resolvedName.includes("Thaiba Garden HQ")) {
                         if (resolvedName !== user.institution_id) {
                             name = `${resolvedName} (Dept / Inst)`;
@@ -56,9 +56,9 @@ export function InstitutionContextCard({ user }: InstitutionContextCardProps) {
                             name = `${user.institution_id} (Dept / Inst)`;
                         }
                     } else {
-                        // If it resolved to HQ, treat as invalid for Guest. 
+                        // If it resolved to HQ, treat as invalid for Member. 
                         // But we don't set error yet, we try the next fallback (official_name).
-                        console.warn("Guest context resolved to HQ, ignoring Institution ID.");
+                        console.warn("Member context resolved to HQ, ignoring Institution ID.");
                     }
                 }
 

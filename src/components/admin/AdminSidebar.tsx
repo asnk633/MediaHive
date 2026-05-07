@@ -17,19 +17,21 @@ import {
     Sliders
 } from 'lucide-react';
 import { cn } from "@/lib/utils";
+import { useAuth } from '@/contexts/AuthContextProvider';
 
 const adminNavItems = [
-    { id: 'overview', label: 'Overview', icon: LayoutDashboard, path: '/admin' },
-    { id: 'users', label: 'Users', icon: Users, path: '/admin/users' },
-    { id: 'leave-analytics', label: 'Leave Analytics', icon: BarChart3, path: '/admin/leave-analytics' },
-    { id: 'workspaces', label: 'Workspaces', icon: Building2, path: '/admin/workspaces' },
-    { id: 'permissions', label: 'Permissions', icon: ShieldCheck, path: '/admin/security' },
-    { id: 'activity', label: 'Activity Logs', icon: Activity, path: '/admin/activity' },
-    { id: 'features', label: 'Feature Config', icon: Sliders, path: '/admin/settings/features' },
-    { id: 'settings', label: 'Global Setup', icon: Settings, path: '/admin/structure' },
+    { id: 'overview', label: 'Overview', icon: LayoutDashboard, path: '/admin', minRole: 'manager' },
+    { id: 'users', label: 'Users', icon: Users, path: '/admin/users', minRole: 'manager' },
+    { id: 'leave-analytics', label: 'Leave Analytics', icon: BarChart3, path: '/admin/leave-analytics', minRole: 'manager' },
+    { id: 'workspaces', label: 'Workspaces', icon: Building2, path: '/admin/workspaces', minRole: 'admin' },
+    { id: 'permissions', label: 'Permissions', icon: ShieldCheck, path: '/admin/security', minRole: 'admin' },
+    { id: 'activity', label: 'Activity Logs', icon: Activity, path: '/admin/activity', minRole: 'admin' },
+    { id: 'features', label: 'Feature Config', icon: Sliders, path: '/admin/settings/features', minRole: 'admin' },
+    { id: 'settings', label: 'Global Setup', icon: Settings, path: '/admin/structure', minRole: 'admin' },
 ];
 
 export default function AdminSidebar() {
+    const { user } = useAuth();
     const router = useRouter();
     const pathname = usePathname();
     const [isCollapsed, setIsCollapsed] = useState(false);
@@ -60,6 +62,13 @@ export default function AdminSidebar() {
 
     if (!mounted) return null;
 
+    // Filter items based on role
+    const filteredItems = adminNavItems.filter(item => {
+        if (user?.role === 'admin') return true;
+        if (user?.role === 'manager') return item.minRole === 'manager';
+        return false;
+    });
+
     return (
         <motion.aside 
             initial={false}
@@ -88,7 +97,7 @@ export default function AdminSidebar() {
                 </div>
 
                 <nav className="flex-1 space-y-1">
-                    {adminNavItems.map((item) => {
+                    {filteredItems.map((item) => {
                         const isActive = pathname === item.path;
                         return (
                             <button

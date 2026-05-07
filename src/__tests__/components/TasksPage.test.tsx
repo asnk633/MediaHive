@@ -83,7 +83,7 @@ describe('TasksPage - New Task Button Visibility', () => {
     });
 
     /**
-     * REAL USER RISK: Guests should also see the New Task button
+     * REAL USER RISK: Members should also see the New Task button
      * (Based on current implementation - button is NOT role-gated)
      * If this changes, update test accordingly
      */
@@ -115,15 +115,15 @@ describe('TasksPage - New Task Button Visibility', () => {
     });
 
     /**
-     * REAL USER RISK: Guests should not see view switcher
-     * This prevents confusion and enforces simplified guest UX
+     * REAL USER RISK: Members should not see view switcher
+     * This prevents confusion and enforces simplified member UX
      */
     test('Member: View switcher is hidden', async () => {
         renderWithAuth(mockMemberUser);
 
         await screen.findByText('Tasks');
 
-        // Guest should NOT see view mode buttons
+        // Member should NOT see view mode buttons
         const kanbanButton = screen.queryByTitle('Kanban Board');
         const listButton = screen.queryByTitle('List View');
 

@@ -154,7 +154,7 @@ describe('Governance Engine Tests', () => {
     const restrictivePolicy: Policy = {
       id: 'restrictive-policy-1',
       name: 'Restrictive Policy',
-      description: 'Blocks guest users from updating status',
+      description: 'Blocks member users from updating status',
       owner: 'admin-user',
       scope: PolicyScope.ROLE_BASED,
       rule: {
@@ -180,7 +180,7 @@ describe('Governance Engine Tests', () => {
     // First, verify that the action is disallowed
     const context: EnforcementContext = {
       policyId: 'restrictive-policy-1',
-      userId: 'guest-user-123',
+      userId: 'member-user-123',
       userRole: 'member',
       action: 'update',
       resourceType: 'task',

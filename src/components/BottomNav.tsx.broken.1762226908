@@ -5,7 +5,7 @@ import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
 import { useState } from "react";
 
-type Role = "admin" | "team" | "guest";
+type Role = "admin" | "team" | "member";
 
 export default function BottomNav({ onFabClick }: { onFabClick?: () => void }) {
   const pathname = usePathname();
@@ -40,7 +40,7 @@ export default function BottomNav({ onFabClick }: { onFabClick?: () => void }) {
 {/* FAB overlay + role-aware menu */}
 />
           <div className="fixed bottom-[150px] left-0 right-0 z-50 mx-auto flex max-w-sm flex-col items-center gap-4 px-4">
-            {role !== "guest" && (
+            {role !== "member" && (
               <MenuBtn
                 label="Create Event"
                 onClick={() => {
@@ -69,8 +69,8 @@ export default function BottomNav({ onFabClick }: { onFabClick?: () => void }) {
               />
             )}
 
-            {role === "guest" && (
-              <p className="text-xs text-white/70">Admin will assign a team member after submission.</p>
+            {role === 'member' && (
+              <p className=\"text-xs text-white/70\">Admin will assign a team member after submission.</p>
             )}
           </div>
         </>

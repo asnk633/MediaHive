@@ -38,7 +38,7 @@ export function InventoryRequestDialog({ item, open, onOpenChange }: InventoryRe
                 itemId: item.id,
                 itemName: item.name,
                 requestedBy: user.uid,
-                requestedByRole: 'guest',
+                requestedByRole: 'member',
                 purpose,
                 institution_id: user.institution_id || '', // Fallback or strict? Rules check this.
             });

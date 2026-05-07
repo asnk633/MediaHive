@@ -72,11 +72,10 @@ export async function POST(req: NextRequest) {
             return NextResponse.json({ error: 'Missing tenant context' }, { status: 403 });
         }
 
-        // Check if user is admin or team (guests might be restricted depending on policy)
-        // For now, allowing guests to create if that's the requirement, but usually it's Admin/Team.
-        // The prompt says "Read-only for guest" in context of RLS, so let's enforce it here too.
+        // Check if user is admin or team (members might be restricted depending on policy)
+        // For now, allowing managers/admins to create. Members are read-only for campaigns.
         if (user.role === 'member') {
-            return NextResponse.json({ error: 'Guests cannot create campaigns' }, { status: 403 });
+            return NextResponse.json({ error: 'Members cannot create campaigns' }, { status: 403 });
         }
 
         const body = await req.json();

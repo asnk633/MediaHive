@@ -4,11 +4,11 @@ import { Activity } from 'lucide-react';
 import { TaskStats } from '@/services/canonicalDataService';
 import { cn } from '@/lib/utils';
 
-interface GuestTaskOverviewWidgetProps {
+interface MemberTaskOverviewWidgetProps {
     stats: TaskStats | null;
 }
 
-export function GuestTaskOverviewWidget({ stats }: GuestTaskOverviewWidgetProps) {
+export function MemberTaskOverviewWidget({ stats }: MemberTaskOverviewWidgetProps) {
     // Safe default to 0 if stats are missing (loading or error)
     const inProgress = stats?.inProgress || 0;
     const dueToday = stats?.dueToday || 0;

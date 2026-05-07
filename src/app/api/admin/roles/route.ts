@@ -26,7 +26,7 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ error: 'targetUid and newRole are required' }, { status: 400 });
     }
 
-    const validRoles = ['guest', 'team', 'admin'];
+    const validRoles = ['member', 'team', 'manager', 'admin'];
     if (!validRoles.includes(newRole)) {
       return NextResponse.json({ error: `Role must be one of: ${validRoles.join(', ')}` }, { status: 400 });
     }

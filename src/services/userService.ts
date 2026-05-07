@@ -100,36 +100,55 @@ export const UserService = {
         }
     },
 
-    getTeamMembers: async (): Promise<{ uid: string; name: string; avatar_url?: string; photoURL?: string; department_id?: string | number; institution_id?: string | number }[]> => {
+    getTeamMembers: async (contextId?: string | null): Promise<{ uid: string; name: string; avatar_url?: string; photoURL?: string; department_id?: string | number; institution_id?: string | number; role: string }[]> => {
         try {
             const { tenantId } = await tenantContext();
+            console.log(`[UserService] Omniscient fetch for tenant: ${tenantId}, context: ${contextId}`);
 
-            const { data, error } = await safeQuery(() => supabase
-                .from(TABLES.USERS)
-                .select('id, full_name, avatar_url, department_id, institution_id')
-                .eq('tenant_id', tenantId)
-            );
+            // 1. Fetch ALL data for the tenant to ensure no silent misses
+            const [profilesRes, wsRes, instMapRes] = await Promise.all([
+                supabase.from(TABLES.USERS).select('*').eq('tenant_id', tenantId),
+                supabase.from('user_institutions').select('*').eq('tenant_id', tenantId),
+                supabase.from('institutions').select('id, unit_id').eq('tenant_id', tenantId)
+            ]);
 
-            if (error) throw error;
+            if (profilesRes.error) throw profilesRes.error;
+            
+            const profiles = profilesRes.data || [];
+            const allWsAssignments = wsRes.data || [];
+            const institutionMappings = instMapRes.data || [];
 
-            const users = Array.isArray(data) ? data : (data ? [data] : []);
-            return users.map((p: any) => {
-                // Partial validation for subset of fields
-                const parsed = UserSchema.partial().safeParse(p);
-                if (!parsed.success) {
-                    console.warn("[UserService] Partial DTO validation failed for team member:", parsed.error);
-                }
+            // 2. Resolve the target institution ID
+            let targetInstitutionId = contextId;
+            if (contextId?.includes('_')) {
+                targetInstitutionId = contextId.split('_')[1];
+            }
+
+            // Check if targetInstitutionId is actually a Unit ID (Department)
+            const resolvedInst = institutionMappings.find(m => m.unit_id === targetInstitutionId || m.id === targetInstitutionId);
+            if (resolvedInst) {
+                targetInstitutionId = resolvedInst.id;
+            }
+
+            // 3. Map and return
+            return profiles.map((p: any) => {
+                const wsAssignment = allWsAssignments.find(a => a.user_id === p.id && a.institution_id === targetInstitutionId);
+                // If a workspace role exists, it MUST override the global role.
+                // If NO workspace role exists, the user is implicitly a 'member' in this workspace context.
+                const effectiveRole = wsAssignment?.role || (targetInstitutionId ? 'member' : p.role);
+
                 return {
                     uid: p.id,
                     name: p.full_name || 'Unknown User',
                     avatar_url: p.avatar_url,
                     photoURL: p.avatar_url,
                     department_id: p.department_id,
-                    institution_id: p.institution_id
+                    institution_id: p.institution_id,
+                    role: effectiveRole || 'member'
                 };
             });
         } catch (error) {
-            console.error("Failed to fetch team members:", JSON.stringify(error, null, 2));
+            console.error("[UserService] Omniscient fetch failed:", error);
             return [];
         }
     },
@@ -140,7 +159,7 @@ export const UserService = {
 
             const { data, error } = await safeQuery(() => supabase
                 .from(TABLES.USERS)
-                .select('id, name')
+                .select('id, name, full_name')
                 .eq('tenant_id', tenantId)
                 .eq('role', 'admin')
             );
@@ -148,18 +167,36 @@ export const UserService = {
             if (error) throw error;
 
             const users = Array.isArray(data) ? data : (data ? [data] : []);
-            return users.map((p: any) => {
-                const parsed = UserSchema.partial().safeParse(p);
-                if (!parsed.success) {
-                    console.warn("[UserService] Partial DTO validation failed for admin:", parsed.error);
-                }
-                return {
-                    uid: p.id,
-                    name: p.name
-                };
-            });
+            return users.map((p: any) => ({
+                uid: p.id,
+                name: p.full_name || p.name || 'Admin User'
+            }));
         } catch (error) {
             console.error("Failed to fetch admins:", error);
+            return [];
+        }
+    },
+
+    getManagers: async (): Promise<{ uid: string; name: string }[]> => {
+        try {
+            const { tenantId } = await tenantContext();
+
+            const { data, error } = await safeQuery(() => supabase
+                .from(TABLES.USERS)
+                .select('id, name, full_name')
+                .eq('tenant_id', tenantId)
+                .eq('role', 'manager')
+            );
+
+            if (error) throw error;
+
+            const users = Array.isArray(data) ? data : (data ? [data] : []);
+            return users.map((p: any) => ({
+                uid: p.id,
+                name: p.full_name || p.name || 'Manager User'
+            }));
+        } catch (error) {
+            console.error("Failed to fetch managers:", error);
             return [];
         }
     }

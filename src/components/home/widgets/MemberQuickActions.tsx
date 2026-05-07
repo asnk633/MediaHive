@@ -4,7 +4,7 @@ import { Plus } from 'lucide-react';
 import { useRouter } from 'next/navigation';
 import { nativeNavigate } from '@/lib/utils';
 
-export const GuestQuickActions = () => {
+export const MemberQuickActions = () => {
     const router = useRouter();
 
     return (
@@ -12,7 +12,7 @@ export const GuestQuickActions = () => {
             className="group relative overflow-hidden bg-gradient-to-br from-blue-600 to-violet-600 rounded-2xl p-6 shadow-xl cursor-pointer"
             whileHover={{ scale: 1.02 }}
             whileTap={{ scale: 0.98 }}
-            onClick={() => nativeNavigate('/tasks/new', router, 'GuestQuickActions (New Request)')}
+            onClick={() => nativeNavigate('/tasks/new', router, 'MemberQuickActions (New Request)')}
         >
             {/* Background Glow */}
             <div className="absolute inset-0 bg-white/10 opacity-0 group-hover:opacity-20 transition-opacity" />

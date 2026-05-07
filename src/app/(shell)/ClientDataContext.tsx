@@ -153,7 +153,7 @@ export function ClientDataProvider({ children }: { children: React.ReactNode }) 
           due_date: input.due_date ?? null,
           priority: input.priority ?? "medium",
           status: "todo",
-          created_by: { uid: user?.uid, name: user?.name || 'Unknown', role: user?.role || 'guest' },
+          created_by: { uid: user?.uid, name: user?.name || 'Unknown', role: user?.role || 'member' },
           institution_id: user?.institution_id ? String(user.institution_id) : null,
           tenant_id: user?.tenant_id ? String(user.tenant_id) : null
         })

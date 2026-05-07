@@ -11,17 +11,17 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
     const router = useRouter();
 
     useEffect(() => {
-        // Only redirect if auth is explicitly resolved and user is NOT an admin
+        // Only redirect if auth is explicitly resolved and user is NOT an authorized role
         if (!loading) {
-            const isAdmin = user?.role === 'admin';
+            const isAuthorized = ['admin', 'manager'].includes(user?.role || '');
             
             console.log('[AdminLayout] Security Audit:', { 
-                authorized: isAdmin,
+                authorized: isAuthorized,
                 role: user?.role, 
                 path: window.location.pathname 
             });
             
-            if (!isAdmin) {
+            if (!isAuthorized) {
                 // Wait a tiny bit to avoid flickers on refresh
                 const timer = setTimeout(() => {
                     console.warn('[AdminLayout] Unauthorized access attempt. Redirecting...');
@@ -43,7 +43,7 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
         );
     }
 
-    if (!user || user.role !== 'admin') {
+    if (!user || !['admin', 'manager'].includes(user.role)) {
         return (
             <div className="flex items-center justify-center min-h-screen bg-[var(--bg)] px-6">
                 <div className="max-w-md w-full glass-liquid p-8 rounded-[32px] border-white/5 text-center space-y-6">
@@ -53,7 +53,7 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
                     <div>
                         <h1 className="text-xl font-bold text-white mb-2">Access Restricted</h1>
                         <p className="text-sm text-white/40 leading-relaxed">
-                            You don't have the required administrative privileges to view this section. 
+                            You don't have the required privileges to view this section. 
                             If you believe this is an error, please contact your system administrator.
                         </p>
                     </div>

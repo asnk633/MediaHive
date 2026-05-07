@@ -103,7 +103,7 @@ export default function LabsPage() {
     const router = useRouter();
     const { user } = useAuth();
     const { currentWorkspace, tenantSettings } = useWorkspace();
-    const currentRole = user?.role as UserRole || 'guest';
+    const currentRole = user?.role as UserRole || 'member';
     const [isSimulationOpen, setIsSimulationOpen] = React.useState(false);
 
     const container = {

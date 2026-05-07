@@ -19,13 +19,15 @@ import {
     ShieldCheck,
     UserCircle,
     ChevronRight,
-    MapPin
+    MapPin,
+    AlertTriangle
 } from 'lucide-react';
 import { toast } from 'sonner';
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { cn } from "@/lib/utils";
 import { motion, AnimatePresence } from 'framer-motion';
 import { InviteUserModal } from '@/components/admin/users/InviteUserModal';
+import { ConfirmationDialog } from "@/components/ui/ConfirmationDialog";
 
 export default function AdminUsersPage() {
     const [viewMode, setViewMode] = useState<'users' | 'invites'>('users');
@@ -39,6 +41,20 @@ export default function AdminUsersPage() {
     const [workspaceAccess, setWorkspaceAccess] = useState<any[]>([]);
     const [loadingAccess, setLoadingAccess] = useState(false);
     const [isInviteModalOpen, setIsInviteModalOpen] = useState(false);
+
+    // Confirmation Dialog State
+    const [confirmConfig, setConfirmConfig] = useState<{
+        open: boolean;
+        title: string;
+        description: string;
+        action: () => void | Promise<void>;
+        variant?: 'danger' | 'primary';
+    }>({
+        open: false,
+        title: '',
+        description: '',
+        action: () => { },
+    });
 
     const selectedUser = users.find(u => u.uid === selectedUserId);
     const selectedInvite = invites.find(i => i.id === selectedInviteId);
@@ -95,25 +111,61 @@ export default function AdminUsersPage() {
     );
 
     const handleUpdateRole = async (instId: string, newRole: string) => {
-        if (!selectedUserId) return;
-        try {
-            await AdminService.setUserWorkspaceRole(selectedUserId, instId, newRole);
-            toast.success("Workspace role updated");
-            fetchAccess(selectedUserId);
-        } catch (error) {
-            toast.error("Update failed");
-        }
+        if (!selectedUserId || !selectedUser) return;
+        
+        const inst = institutions.find(i => i.id === instId);
+        
+        setConfirmConfig({
+            open: true,
+            title: "Confirm Role Change",
+            description: `Are you sure you want to change ${selectedUser.name}'s role to ${newRole.toUpperCase()} in ${inst?.name || instId}? This will immediately update their access level.`,
+            variant: 'primary',
+            action: async () => {
+                try {
+                    await AdminService.setUserWorkspaceRole(selectedUserId, instId, newRole);
+                    toast.success("Workspace role updated");
+                    fetchAccess(selectedUserId);
+                } catch (error) {
+                    toast.error("Update failed");
+                }
+            }
+        });
     };
 
     const handleRemoveAccess = async (instId: string) => {
-        if (!selectedUserId) return;
-        try {
-            await AdminService.removeUserWorkspaceAccess(selectedUserId, instId);
-            toast.success("Access revoked");
-            fetchAccess(selectedUserId);
-        } catch (error) {
-            toast.error("Action failed");
-        }
+        if (!selectedUserId || !selectedUser) return;
+        
+        const inst = institutions.find(i => i.id === instId);
+
+        setConfirmConfig({
+            open: true,
+            title: "Revoke Workspace Access",
+            description: `Are you sure you want to completely remove ${selectedUser.name}'s access to ${inst?.name || instId}? They will no longer be able to see or interact with this workspace.`,
+            variant: 'danger',
+            action: async () => {
+                try {
+                    await AdminService.removeUserWorkspaceAccess(selectedUserId, instId);
+                    toast.success("Access revoked");
+                    fetchAccess(selectedUserId);
+                } catch (error) {
+                    toast.error("Action failed");
+                }
+            }
+        });
+    };
+
+    const handleDeactivate = async () => {
+        if (!selectedUser) return;
+        
+        setConfirmConfig({
+            open: true,
+            title: "Deactivate User Account",
+            description: `Are you sure you want to deactivate ${selectedUser.name}'s global account? They will be locked out of the entire platform until reactivated.`,
+            variant: 'danger',
+            action: async () => {
+                toast.info("Deactivation service not yet fully linked. Pending backend update.");
+            }
+        });
     };
 
     const handleAddAccess = async () => {
@@ -135,14 +187,22 @@ export default function AdminUsersPage() {
     );
 
     const handleCancelInvite = async (id: string) => {
-        if (!confirm("Are you sure you want to cancel this invitation?")) return;
-        try {
-            await AdminService.cancelInvitation(id);
-            toast.success("Invitation cancelled");
-            fetchData();
-        } catch (error) {
-            toast.error("Failed to cancel invitation");
-        }
+        const invite = invites.find(i => i.id === id);
+        setConfirmConfig({
+            open: true,
+            title: "Cancel Invitation",
+            description: `Are you sure you want to cancel the invitation for ${invite?.email || 'this user'}? The link will be immediately invalidated.`,
+            variant: 'danger',
+            action: async () => {
+                try {
+                    await AdminService.cancelInvitation(id);
+                    toast.success("Invitation cancelled");
+                    fetchData();
+                } catch (error) {
+                    toast.error("Failed to cancel invitation");
+                }
+            }
+        });
     };
 
     return (
@@ -312,10 +372,27 @@ export default function AdminUsersPage() {
                                         </div>
                                     </div>
                                     <div className="flex gap-2">
-                                        <button className="h-10 px-4 rounded-xl border border-white/10 text-xs font-bold text-white/60 hover:bg-white/5 transition-colors">
+                                        <button 
+                                            onClick={handleDeactivate}
+                                            className="h-10 px-4 rounded-xl border border-white/10 text-xs font-bold text-white/60 hover:bg-white/5 transition-colors"
+                                        >
                                             Deactivate
                                         </button>
-                                        <button className="h-10 w-10 rounded-xl border border-rose-500/20 text-rose-400 flex items-center justify-center hover:bg-rose-500/10 transition-colors">
+                                        <button 
+                                            onClick={() => {
+                                                if (!selectedUser) return;
+                                                setConfirmConfig({
+                                                    open: true,
+                                                    title: "Permanently Delete User",
+                                                    description: `Are you sure you want to permanently delete ${selectedUser.name}? This action is IRREVERSIBLE and will remove all their data from the system.`,
+                                                    variant: 'danger',
+                                                    action: async () => {
+                                                        toast.info("Delete service pending backend safety audit.");
+                                                    }
+                                                });
+                                            }}
+                                            className="h-10 w-10 rounded-xl border border-rose-500/20 text-rose-400 flex items-center justify-center hover:bg-rose-500/10 transition-colors"
+                                        >
                                             <Trash2 size={18} />
                                         </button>
                                     </div>
@@ -358,7 +435,7 @@ export default function AdminUsersPage() {
 
                                                 <div className="flex items-center gap-4">
                                                     <div className="flex bg-black/20 p-1 rounded-xl">
-                                                        {['member', 'manager', 'admin'].map(r => (
+                                                        {['admin', 'manager', 'team', 'member'].map(r => (
                                                             <button
                                                                 key={r}
                                                                 onClick={() => handleUpdateRole(access.institution_id, r)}
@@ -496,6 +573,15 @@ export default function AdminUsersPage() {
                 isOpen={isInviteModalOpen}
                 onClose={() => setIsInviteModalOpen(false)}
                 onSuccess={fetchData}
+            />
+
+            <ConfirmationDialog 
+                open={confirmConfig.open}
+                onOpenChange={(open) => setConfirmConfig(prev => ({ ...prev, open }))}
+                title={confirmConfig.title}
+                description={confirmConfig.description}
+                variant={confirmConfig.variant}
+                onConfirm={confirmConfig.action}
             />
         </PageLayout>
     );

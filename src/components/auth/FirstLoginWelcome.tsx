@@ -11,7 +11,7 @@ import { useAuth } from '@/contexts/AuthContextProvider';
 import { nativeNavigate } from '@/lib/utils';
 
 interface FirstLoginWelcomeProps {
-  userRole: 'admin' | 'manager' | 'member' | 'team' | 'guest';
+  userRole: 'admin' | 'manager' | 'team' | 'member';
   userId: string;
 }
 
@@ -56,7 +56,7 @@ export const FirstLoginWelcome: React.FC<FirstLoginWelcomeProps> = ({ userRole, 
       nativeNavigate('/admin', router);
     } else if ((userRole === 'manager' || userRole === 'member')) {
       nativeNavigate('/tasks', router);
-    } else { // guest
+    } else { // team or other
       nativeNavigate('/tasks', router);
     }
   };
@@ -98,15 +98,15 @@ export const FirstLoginWelcome: React.FC<FirstLoginWelcomeProps> = ({ userRole, 
             'Upload and review media files as needed'
           ]
         };
-      case 'guest':
+      case 'member':
         return {
           title: 'Welcome!',
           icon: <Eye className="w-8 h-8 text-green-400" />,
-          message: 'You have guest privileges.',
+          message: 'You have member privileges.',
           hints: [
-            'You can view and comment on assigned items',
-            'Access only the content specifically shared with you',
-            'Limited permissions for workflow management'
+            'You can view and create tasks',
+            'Communicate with the media team',
+            'Track progress of your requests'
           ]
         };
       default:
@@ -137,7 +137,7 @@ export const FirstLoginWelcome: React.FC<FirstLoginWelcomeProps> = ({ userRole, 
               className={
                 userRole === 'admin'
                   ? 'border-red-500/30 text-red-300'
-                  : (userRole === 'manager' || userRole === 'member')
+                  : (userRole === 'manager' || userRole === 'team')
                     ? 'border-blue-500/30 text-blue-300'
                     : 'border-green-500/30 text-green-300'
               }
@@ -187,7 +187,7 @@ export const FirstLoginWelcome: React.FC<FirstLoginWelcomeProps> = ({ userRole, 
                 <span>View your tasks in the Tasks section</span>
               </div>
             )}
-            {userRole === 'guest' && (
+            {userRole === 'member' && (
               <div className="flex items-center justify-center gap-1">
                 <Home className="w-3 h-3" />
                 <span>Assigned items will appear on your dashboard</span>

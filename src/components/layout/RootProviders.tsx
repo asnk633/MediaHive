@@ -43,9 +43,16 @@ export default function RootProviders({ children }: { children: ReactNode }) {
     const originalWarn = console.warn;
 
     window.onerror = (msg, src, line, col, err) => {
+      // Silence benign layout warnings before they hit originalError
+      if (typeof msg === 'string' && (
+        msg.includes('ResizeObserver') || 
+        msg.includes('undelivered notifications')
+      )) return;
+      
       originalError("GLOBAL ERROR", msg, src, line, col, err);
     };
     window.onunhandledrejection = (e) => {
+      if (e.reason?.message?.includes('ResizeObserver')) return;
       originalError("UNHANDLED PROMISE", e.reason);
     };
 
@@ -61,15 +68,18 @@ export default function RootProviders({ children }: { children: ReactNode }) {
 
     console.log = (...args) => { addToBuffer('LOG', args); originalLog.apply(console, args); };
     console.error = (...args) => {
-      // Suppress benign MOCK_KEY offline errors that trigger Next.js error overlays
-      const isBenignMOCK_KEYOfflineError = args.some(arg =>
-        typeof arg === 'string' &&
-        arg.includes('Could not reach Cloud Firestore backend') &&
-        arg.includes('offline mode')
-      );
-      if (isBenignMOCK_KEYOfflineError) {
-        addToBuffer('WARN', ['[Suppressed MOCK_KEY Offline Error]', ...args]);
-        originalWarn.apply(console, ['[MOCK_KEY]', 'Operating in offline mode.']);
+      // Suppress benign MOCK_KEY offline errors and ResizeObserver loop warnings
+      const isSuppressedError = args.some(arg => {
+        if (typeof arg !== 'string') return false;
+        return (
+          (arg.includes('Could not reach Cloud Firestore backend') && arg.includes('offline mode')) ||
+          arg.includes('ResizeObserver loop completed with undelivered notifications') ||
+          arg.includes('ResizeObserver loop limit exceeded')
+        );
+      });
+
+      if (isSuppressedError) {
+        addToBuffer('WARN', ['[Suppressed Benign Error]', ...args]);
         return;
       }
 

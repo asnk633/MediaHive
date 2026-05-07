@@ -12,7 +12,7 @@ interface PolicySimulationPanelProps {
     onClose: () => void;
 }
 
-const ROLES = ['admin', 'manager', 'team', 'guest'];
+const ROLES = ['admin', 'manager', 'team', 'member'];
 const FIELDS = ['status', 'priority', 'assigned_to', 'deleted', 'title'];
 
 export const PolicySimulationPanel: React.FC<PolicySimulationPanelProps> = ({

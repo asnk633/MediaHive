@@ -26,8 +26,8 @@ export async function POST(request: NextRequest) {
       return Response.json({ error: 'Email and role are required' }, { status: 400 });
     }
 
-    if (!['admin', 'team', 'guest'].includes(role)) {
-      return Response.json({ error: 'Invalid role. Must be admin, team, or guest' }, { status: 400 });
+    if (!['admin', 'manager', 'team', 'member'].includes(role)) {
+      return Response.json({ error: 'Invalid role. Must be admin, manager, team, or member' }, { status: 400 });
     }
 
     // Use provided institution_id if admin, otherwise fallback to admin's institution

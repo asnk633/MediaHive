@@ -18,7 +18,7 @@ interface InviteUserPanelProps {
 export const InviteUserPanel: React.FC<InviteUserPanelProps> = ({ institution_id }) => {
   const [isFeatureEnabledFlag, setIsFeatureEnabledFlag] = useState(false);
   const [email, setEmail] = useState('');
-  const [role, setRole] = useState<'admin' | 'team' | 'guest'>('team');
+  const [role, setRole] = useState<'admin' | 'manager' | 'team' | 'member'>('member');
   const [isLoading, setIsLoading] = useState(false);
   const [invites, setInvites] = useState<any[]>([]);
   const [loadingInvites, setLoadingInvites] = useState(true);
@@ -142,14 +142,15 @@ export const InviteUserPanel: React.FC<InviteUserPanelProps> = ({ institution_id
               />
             </div>
             <div>
-              <Select value={role} onValueChange={(value: 'admin' | 'team' | 'guest') => setRole(value)}>
+              <Select value={role} onValueChange={(value: 'admin' | 'manager' | 'team' | 'member') => setRole(value)}>
                 <SelectTrigger className="bg-black/20 border-white/20 text-white">
                   <SelectValue placeholder="Select role" />
                 </SelectTrigger>
                 <SelectContent className="bg-gray-800 border-white/20 text-white">
                   <SelectItem value="admin">Admin</SelectItem>
+                  <SelectItem value="manager">Manager</SelectItem>
                   <SelectItem value="team">Team</SelectItem>
-                  <SelectItem value="guest">Guest</SelectItem>
+                  <SelectItem value="member">Member</SelectItem>
                 </SelectContent>
               </Select>
             </div>

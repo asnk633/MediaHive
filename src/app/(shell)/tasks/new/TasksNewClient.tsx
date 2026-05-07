@@ -21,12 +21,14 @@ import { PageLayout } from "@/components/ui/layout/PageLayout";
 import { toast } from 'sonner';
 import { COPY } from '@/lib/copy';
 import { tenantContext } from '@/lib/auth/tenantContext';
+import { useWorkspace } from '@/system/workspace/WorkspaceProvider';
 
 export default function TasksNewClient() {
     const router = useRouter();
     const searchParams = typeof window !== 'undefined' ? new URLSearchParams(window.location.search) : new URLSearchParams();
     const campaign_id = searchParams.get('campaign_id');
     const { user } = useAuth();
+    const { currentRole, currentWorkspaceId } = useWorkspace();
     const [error, setError] = useState<string | null>(null);
     const [teamMembers, setTeamMembers] = useState<{ uid: string; name: string }[]>([]);
     const [campaignName, setCampaignName] = useState<string>('');
@@ -45,23 +47,22 @@ export default function TasksNewClient() {
 
     if (!user) return null;
 
-    const canCreateOnBehalf = user.role === 'admin' || user.role === 'manager';
+    const isAdmin = currentRole?.toLowerCase() === 'admin';
+    const isTeam = currentRole?.toLowerCase() === 'manager' || currentRole?.toLowerCase() === 'team';
+    const isMember = currentRole?.toLowerCase() === 'member';
+    const canCreateOnBehalf = isAdmin || isTeam;
 
     const { state: formData, setState: setFormData, clearDraft, isDraftSaved } = useFormState({
         key: 'draft:task:new',
         initialState: {
-            title: '',
-            description: '',
-            due_date: new Date().toISOString() as string | undefined,
             priority: 'medium' as 'low' | 'medium' | 'high',
             assignedToIds: [] as string[],
             selectedOrgId: '',
-            createAs: 'myself' as 'myself' | 'on_behalf_of',
-            onBehalfOfId: ''
+            isDelegating: false
         }
     });
 
-    const { title, description, priority, assignedToIds, selectedOrgId, createAs, onBehalfOfId } = formData;
+    const { title, description, priority, assignedToIds, selectedOrgId, isDelegating } = formData;
     const due_date = formData.due_date ? new Date(formData.due_date) : undefined;
 
     const setTitle = (val: string) => setFormData(prev => ({ ...prev, title: val }));
@@ -72,20 +73,18 @@ export default function TasksNewClient() {
         ...prev, 
         assignedToIds: typeof val === 'function' ? val(prev.assignedToIds) : val 
     }));
-    const setCreateAs = (val: 'myself' | 'on_behalf_of') => setFormData(prev => ({ ...prev, createAs: val }));
     const setSelectedOrgId = (val: string) => setFormData(prev => ({ ...prev, selectedOrgId: val }));
-    const setOnBehalfOfId = (val: string) => setFormData(prev => ({ ...prev, onBehalfOfId: val }));
+    const setIsDelegating = (val: boolean) => setFormData(prev => ({ ...prev, isDelegating: val }));
 
     const [files, setFiles] = useState<File[]>([]);
     const [uploadProgress, setUploadProgress] = useState<string>('');
 
     // Save persistence
     useEffect(() => {
-        if (typeof window !== 'undefined') {
-            sessionStorage.setItem('task-create-as-pref', createAs);
-            if (onBehalfOfId) sessionStorage.setItem('task-on-behalf-id-pref', onBehalfOfId);
+        if (typeof window !== 'undefined' && selectedOrgId) {
+            sessionStorage.setItem('task-org-pref', selectedOrgId);
         }
-    }, [createAs, onBehalfOfId]);
+    }, [selectedOrgId]);
 
     // Fetch Organizations
     useEffect(() => {
@@ -149,24 +148,36 @@ export default function TasksNewClient() {
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [user.department_id, user.institution_id, user.department_id, user.institution_id, departmentsList.length, institutionsList.length]);
 
-    const isMember = user?.role?.toLowerCase() === 'member';
-    const isAdmin = user?.role === 'admin';
-    const isTeam = user?.role === 'manager' || user?.role === 'team';
+    // Role derived above to ensure consistency across the component lifecycle
+    console.log("[TasksNew] User Role Detection (Active Context):", { role: currentRole, isAdmin, isTeam, isMember });
 
     // Fetch real team members from Firestore
     useEffect(() => {
         const fetchTeamMembers = async () => {
-            const members = await UserService.getTeamMembers();
-            // Filter out current user explicitly
-            // Also exclude "media@thaibagarden.com" (Media Admin) from the list
-            const otherMembers = members.filter(m =>
-                m.uid !== user?.uid &&
-                m.name !== 'Media Admin'
-            );
-            setTeamMembers(otherMembers);
+            const contextId = selectedOrgId || currentWorkspaceId;
+            const members = await UserService.getTeamMembers(contextId);
+
+            // Exhaustive Diagnostic Filter
+            const filtered = members.filter(m => {
+                const role = (m as any).role?.toLowerCase().trim();
+                const isCreator = m.uid === user?.uid;
+                const isMediaAdmin = m.name === 'Media Admin';
+                const hasCorrectRole = (role === 'manager' || role === 'team');
+
+                if (!hasCorrectRole && !isCreator) {
+                    console.log(`[TasksDeepDive] Excluding ${m.name}: Role '${role}' not in leadership.`);
+                }
+
+                return (
+                    hasCorrectRole &&
+                    !isMediaAdmin
+                );
+            });
+            
+            setTeamMembers(filtered);
         };
         fetchTeamMembers();
-    }, [user?.uid]);
+    }, [user?.uid, currentWorkspaceId, selectedOrgId]);
     // ...
     // ...
 
@@ -189,14 +200,8 @@ export default function TasksNewClient() {
             const { tenantId } = await tenantContext();
             let finalAssignedTo: { uid: string; name: string }[] = [];
 
-            if (isAdmin) {
-                // Admin selected multiple people
-                // Map selected IDs to user objects
+            if (isAdmin || isTeam) {
                 finalAssignedTo = assignedToIds.map(id => {
-                    // Need to find member object from ID.
-                    // In the render loop we map teamMembers. Let's look it up here.
-                    // Note: mockMembers was used in previous code, but we have teamMembers state now.
-                    // However, teamMembers state doesn't track "Myself".
                     // Let's rely on finding them in the combined list or just constructing if we have info.
                     // Actually, earlier code had `mockMembers` error.
                     // We should use `teamMembers` + `user`.
@@ -206,22 +211,26 @@ export default function TasksNewClient() {
                     return null;
                 }).filter(Boolean) as { uid: string; name: string }[];
 
-            } else if (isTeam) {
-                // Team assigns self
-                finalAssignedTo = [{ uid: user.uid, name: user.name || 'Unknown' }];
+                // Fallback: If no one selected, assign to self
+                if (finalAssignedTo.length === 0) {
+                    finalAssignedTo = [{ uid: user.uid, name: user.name || 'Unknown' }];
+                }
             }
             // Member: finalAssignedTo remains empty array (Admin assigns later)
  
             // Prepare On Behalf Of Data
             let onBehalfOfData = undefined;
-            // Only process if toggle is Active AND we have a selected ID
-            if (canCreateOnBehalf && createAs === 'on_behalf_of' && onBehalfOfId) {
-                if (onBehalfOfId.startsWith('dept_')) {
-                    const id = onBehalfOfId.split('_')[1];
+            const userDeptId = user.department_id ? `dept_${user.department_id}` : null;
+            const userInstId = user.institution_id ? `inst_${user.institution_id}` : null;
+            
+            // Only treat as 'On Behalf Of' if explicitly delegating and selected something other than defaults
+            if (isDelegating && selectedOrgId && selectedOrgId !== userDeptId && selectedOrgId !== userInstId) {
+                if (selectedOrgId.startsWith('dept_')) {
+                    const id = selectedOrgId.split('_')[1];
                     const dept = departmentsList.find(d => String(d.id) === id);
                     if (dept) onBehalfOfData = { id: dept.id, name: dept.name, type: 'department' };
-                } else if (onBehalfOfId.startsWith('inst_')) {
-                    const id = onBehalfOfId.split('_')[1];
+                } else if (selectedOrgId.startsWith('inst_')) {
+                    const id = selectedOrgId.split('_')[1];
                     const inst = institutionsList.find(i => String(i.id) === id);
                     if (inst) onBehalfOfData = { id: inst.id, name: inst.name, type: 'institution' };
                 }
@@ -314,15 +323,20 @@ export default function TasksNewClient() {
             if (isMember) {
                 try {
                     const { pushNotification } = await import('@/services/alertService');
-                    const admins = await UserService.getAdmins();
- 
-                    await Promise.all(admins.map(admin =>
+                    const [admins, managers] = await Promise.all([
+                        UserService.getAdmins(),
+                        UserService.getManagers()
+                    ]);
+
+                    const recipients = [...admins, ...managers];
+
+                    await Promise.all(recipients.map(recipient =>
                         pushNotification({
-                            user_id: admin.uid,
+                            user_id: recipient.uid,
                             created_by: user.uid,
-                            type: 'task_assigned', // Using valid type
-                            title: 'New Pending Task',
-                            message: `${user.official_name || user.name || user.email || 'Member'} created "${title}"`,
+                            type: 'task_assigned',
+                            title: 'Task Assignment Required',
+                            message: `${user.official_name || user.name || 'A member'} has created "${title}" and a team member needs to be assigned to the task`,
                             entity_type: 'task',
                             entity_id: newTaskId,
                             action_url: `/tasks/view?id=${newTaskId}`,
@@ -460,32 +474,8 @@ export default function TasksNewClient() {
  
                         {/* Form */}
                         <form onSubmit={handleSubmit} className="space-y-6">
-                            {/* ... (keep existing form content) ... */}
-                            {/* I will truncate this for the tool call but I should be careful */}
-                            {/* Actually I'll use use multi_replace if form is large */}
-                            {/* Wait, the form content is large. I'll just replace the wrapper. */}
  
-                            {/* Create As Toggle - Admin/Team Only */}
-                            {canCreateOnBehalf && (
-                                <div className="flex bg-white/5 p-1 rounded-xl w-full mb-4">
-                                    <button
-                                        type="button"
-                                        onClick={() => setCreateAs('myself')}
-                                        className={`flex-1 py-2 rounded-lg text-sm font-medium transition-all ${createAs === 'myself' ? 'bg-blue-600 text-white shadow-lg' : 'text-gray-400 hover:text-white'}`}
-                                    >
-                                        As Myself
-                                    </button>
-                                    <button
-                                        type="button"
-                                        onClick={() => setCreateAs('on_behalf_of')}
-                                        className={`flex-1 py-2 rounded-lg text-sm font-medium transition-all ${createAs === 'on_behalf_of' ? 'bg-blue-600 text-white shadow-lg' : 'text-gray-400 hover:text-white'}`}
-                                    >
-                                        On Behalf Of
-                                    </button>
-                                </div>
-                            )}
- 
-                            {/* Title \u0026 Desc Group */}
+                            {/* Title & Desc Group */}
                             <div className="space-y-5">
                                 <div className="space-y-2">
                                     <label className="block text-sm font-medium text-white/70 mb-2">Task Title</label>
@@ -521,76 +511,55 @@ export default function TasksNewClient() {
                                     />
                                 </div>
  
-                                {/* Unified Department or Institution Dropdown (Myself Mode) */}
-                                {createAs === 'myself' && (
-                                    <div className="space-y-0.5">
-                                        {isMember || (departmentsList.length + institutionsList.length === 1) ? (
-                                            /* Read-Only View for Members or Single-Option Users */
-                                            <div className="space-y-2">
-                                                <label className="block text-sm font-medium text-white/70">
-                                                    Requested By <span className="text-white/40 text-xs">(Department / Institution)</span>
-                                                </label>
-                                                <div className="w-full bg-white/5 pl-4 pr-4 py-3 rounded-xl border border-[#ffffff1a] text-sm text-white flex items-center gap-3">
-                                                    <Briefcase size={14} className="text-gray-400" />
-                                                    <span>
-                                                        {(() => {
-                                                            if (!selectedOrgId) return <span className="text-gray-500 italic">No Department Assigned (Processing...)</span>;
-                                                            if (selectedOrgId.startsWith('dept_')) {
-                                                                const id = selectedOrgId.split('_')[1];
-                                                                return departmentsList.find(d => String(d.id) === id)?.name || "Unknown Department";
-                                                            }
-                                                            if (selectedOrgId.startsWith('inst_')) {
-                                                                const id = selectedOrgId.split('_')[1];
-                                                                return institutionsList.find(i => String(i.id) === id)?.name || "Unknown Institution";
-                                                            }
-                                                            return "Unknown Entity";
-                                                        })()}
-                                                    </span>
-                                                    {/* Show different badge based on why it's locked */}
-                                                    {isMember \u0026\u0026 selectedOrgId \u0026\u0026 \u003cspan className=\"ml-auto text-xs text-green-400/70 italic\"\u003eAuto-set\u003c/span\u003e}
-                                                    {!isMember \u0026\u0026 (departmentsList.length + institutionsList.length === 1) \u0026\u0026 \u003cspan className=\"ml-auto text-xs text-blue-400/70 italic\"\u003eVerified\u003c/span\u003e}
-                                                </div>
-                                            </div>
-                                        ) : (
-                                            /* Interactive Dropdown for others */
-                                            <DropdownSelector 
-                                                label="Requested By (Department / Institution)"
-                                                value={selectedOrgId}
-                                                onChange={setSelectedOrgId}
-                                                options={[
-                                                    ...departmentsList.map(dept => ({ id: `dept_${dept.id}`, label: dept.name, icon: <Briefcase size={14} /> })),
-                                                    ...institutionsList.map(inst => ({ id: `inst_${inst.id}`, label: inst.name, icon: <Building size={14} /> }))
-                                                ]}
-                                            />
-                                        )}
-                                    </div>
-                                )}
-
-                                {/* Identity Selector (On Behalf Of Mode) - Replaces Department */}
-                                {canCreateOnBehalf && createAs === 'on_behalf_of' && (
-                                    <div className="space-y-0.5 animate-in fade-in zoom-in-95 duration-200">
+                                {/* Unified Department or Institution Selector */}
+                                {isDelegating ? (
+                                    <div className="space-y-0.5 animate-in fade-in slide-in-from-top-2 duration-300">
+                                        <div className="flex items-center justify-between mb-2">
+                                            <label className="block text-sm font-medium text-white/70">
+                                                Requested By <span className="text-white/40 text-xs">(Dept / Inst)</span>
+                                            </label>
+                                            <button 
+                                                type="button"
+                                                onClick={() => {
+                                                    setIsDelegating(false);
+                                                    // Reset to user's default
+                                                    const def = user.department_id ? `dept_${user.department_id}` : (user.institution_id ? `inst_${user.institution_id}` : '');
+                                                    setSelectedOrgId(def);
+                                                }}
+                                                className="text-[10px] uppercase tracking-wider text-blue-400/60 hover:text-blue-400 font-bold transition-colors"
+                                            >
+                                                Back to Myself
+                                            </button>
+                                        </div>
                                         <DropdownSelector 
-                                            label="Publishing On Behalf Of (Dept / Inst)"
-                                            value={onBehalfOfId}
-                                            onChange={(val) => {
-                                                setOnBehalfOfId(val);
-                                                if (val) {
-                                                    setSelectedOrgId(val);
-                                                } else {
-                                                    setSelectedOrgId('');
-                                                }
-                                            }}
+                                            label=""
+                                            value={selectedOrgId}
+                                            onChange={setSelectedOrgId}
                                             options={[
-                                                ...departmentsList.map(dept => ({ id: `dept_${dept.id}`, label: dept.name, icon: <Flag size={14} /> })),
-                                                ...institutionsList.map(inst => ({ id: `inst_${inst.id}`, label: inst.name, icon: <Flag size={14} /> }))
+                                                ...departmentsList.map(dept => ({ id: `dept_${dept.id}`, label: dept.name, icon: <Briefcase size={14} /> })),
+                                                ...institutionsList.map(inst => ({ id: `inst_${inst.id}`, label: inst.name, icon: <Building size={14} /> }))
                                             ]}
                                         />
                                     </div>
+                                ) : (
+                                    /* Hidden by default as requested. Leadership can toggle. */
+                                    canCreateOnBehalf && (
+                                        <button 
+                                            type="button"
+                                            onClick={() => setIsDelegating(true)}
+                                            className="w-full py-3 px-4 rounded-xl border border-dashed border-white/10 hover:border-blue-500/30 hover:bg-blue-500/5 transition-all group flex items-center justify-center gap-2"
+                                        >
+                                            <Briefcase size={14} className="text-white/20 group-hover:text-blue-400/50 transition-colors" />
+                                            <span className="text-xs font-bold text-white/40 group-hover:text-blue-400/70 uppercase tracking-widest">
+                                                Request on behalf of another entity?
+                                            </span>
+                                        </button>
+                                    )
                                 )}
                             </div>
 
-                            {/* Priority - Admin Only */}
-                            {isAdmin && (
+                            {/* Priority - Admin, Manager, and Team */}
+                            {(isAdmin || isTeam) && (
                                 <div className="space-y-3 pt-4 border-t border-white/5">
                                     <label className="block text-sm font-medium text-white/70 mb-2">
                                         Priority
@@ -615,43 +584,49 @@ export default function TasksNewClient() {
                                 </div>
                             )}
 
-                            {/* Assigned To - Admin Only */}
-                            {isAdmin && (
+                            {/* Assigned To - Admin, Manager, and Team Only */}
+                            {(isAdmin || isTeam) && (
                                 <div className="space-y-3 pt-2">
                                     <label className="block text-sm font-medium text-white/70 mb-2">
                                         Assign To Team Members
                                     </label>
                                     <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
 
-                                        {teamMembers.map(m => (
-                                            <label
-                                                key={m.uid}
-                                                className={`group flex items-center p-3 rounded-xl border cursor-pointer transition-all duration-300 ${assignedToIds.includes(m.uid)
-                                                    ? 'bg-gradient-to-r from-blue-500/20 to-indigo-500/10 border-blue-500/30 shadow-[0_0_10px_rgba(59,130,246,0.1)]'
-                                                    : 'bg-white/5 border-white/5 hover:bg-white/10'
-                                                    }`}
-                                            >
-                                                <div className={`w-5 h-5 rounded-full flex items-center justify-center border transition-colors ${assignedToIds.includes(m.uid) ? 'border-blue-400 bg-blue-500' : 'border-gray-600 bg-transparent group-hover:border-gray-500'
-                                                    }`}>
-                                                    {assignedToIds.includes(m.uid) && <div className="w-1.5 h-1.5 bg-white rounded-full" />}
-                                                </div>
-                                                <input
-                                                    type="checkbox"
-                                                    className="hidden"
-                                                    checked={assignedToIds.includes(m.uid)}
-                                                    onChange={(e) => {
-                                                        if (e.target.checked) {
-                                                            setAssignedToIds([...assignedToIds, m.uid]);
-                                                        } else {
-                                                            setAssignedToIds(assignedToIds.filter(id => id !== m.uid));
-                                                        }
-                                                    }}
-                                                />
-                                                <span className={`ml-3 text-sm font-medium transition-colors ${assignedToIds.includes(m.uid) ? 'text-blue-100' : 'text-gray-400 group-hover:text-gray-300'}`}>
-                                                    {m.name}
-                                                </span>
-                                            </label>
-                                        ))}
+                                        {teamMembers.length > 0 ? (
+                                            teamMembers.map(m => (
+                                                <label
+                                                    key={m.uid}
+                                                    className={`group flex items-center p-3 rounded-xl border cursor-pointer transition-all duration-300 ${assignedToIds.includes(m.uid)
+                                                        ? 'bg-gradient-to-r from-blue-500/20 to-indigo-500/10 border-blue-500/30 shadow-[0_0_10px_rgba(59,130,246,0.1)]'
+                                                        : 'bg-white/5 border-white/5 hover:bg-white/10'
+                                                        }`}
+                                                >
+                                                    <div className={`w-5 h-5 rounded-full flex items-center justify-center border transition-colors ${assignedToIds.includes(m.uid) ? 'border-blue-400 bg-blue-500' : 'border-gray-600 bg-transparent group-hover:border-gray-500'
+                                                        }`}>
+                                                        {assignedToIds.includes(m.uid) && <div className="w-1.5 h-1.5 bg-white rounded-full" />}
+                                                    </div>
+                                                    <input
+                                                        type="checkbox"
+                                                        className="hidden"
+                                                        checked={assignedToIds.includes(m.uid)}
+                                                        onChange={(e) => {
+                                                            if (e.target.checked) {
+                                                                setAssignedToIds([...assignedToIds, m.uid]);
+                                                            } else {
+                                                                setAssignedToIds(assignedToIds.filter(id => id !== m.uid));
+                                                            }
+                                                        }}
+                                                    />
+                                                    <span className={`ml-3 text-sm font-medium transition-colors ${assignedToIds.includes(m.uid) ? 'text-blue-100' : 'text-gray-400 group-hover:text-gray-300'}`}>
+                                                        {m.name}
+                                                    </span>
+                                                </label>
+                                            ))
+                                        ) : (
+                                            <div className="col-span-full py-4 px-4 bg-white/5 border border-dashed border-white/10 rounded-xl text-center text-xs text-gray-500">
+                                                No other team members found in this workspace.
+                                            </div>
+                                        )}
                                     </div>
                                 </div>
                             )}
@@ -707,13 +682,8 @@ export default function TasksNewClient() {
                                         {(user.name || 'U').charAt(0)}
                                     </div>
                                     <div className="text-xs text-gray-500">
-                                        Assigning as <span className="text-gray-300">
-                                            {createAs === 'on_behalf_of' ? (
-                                                onBehalfOfId ? ( // Lookup name
-                                                    departmentsList.find(d => `dept_${d.id}` === onBehalfOfId)?.name ||
-                                                    institutionsList.find(i => `inst_${i.id}` === onBehalfOfId)?.name || 'Unknown'
-                                                ) : '...'
-                                            ) : (user.name || 'Unknown')}
+                                        Creating as <span className="text-gray-300">
+                                            {user.name || 'Unknown'}
                                         </span>
                                     </div>
                                 </div>

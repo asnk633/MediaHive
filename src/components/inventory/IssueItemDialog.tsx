@@ -41,7 +41,7 @@ export function IssueItemDialog({ item, request, open, onOpenChange }: IssueItem
     // Form State
     const [issuedToId, setIssuedToId] = useState(request?.requestedBy || "");
     const [issuedToDeptId, setIssuedToDeptId] = useState("");
-    const [issuedToRole, setIssuedToRole] = useState<'guest' | 'manager' | 'member' | 'team'>('guest');
+    const [issuedToRole, setIssuedToRole] = useState<'member' | 'manager' | 'member' | 'team'>('member');
     const [conditionOut, setConditionOut] = useState<InventoryCondition>((item?.condition as InventoryCondition) || 'good');
     const [expectedReturnAt, setExpectedReturnAt] = useState<Date | undefined>(undefined);
     const [projectNote, setProjectNote] = useState(request?.purpose || "");
@@ -57,7 +57,7 @@ export function IssueItemDialog({ item, request, open, onOpenChange }: IssueItem
             setProjectNote(request?.purpose || "");
             setConditionOut((item?.condition as InventoryCondition) || 'good');
             setExpectedReturnAt(undefined);
-            if (request) setIssuedToRole('guest');
+            if (request) setIssuedToRole('member');
 
             fetchSelectionData();
         }

@@ -94,7 +94,7 @@ export const TaskRatingComponent = ({ task, onRatingSubmitted }: TaskRatingProps
                 {
                     uid: user.uid,
                     name: user.name || 'Unknown',
-                    role: user.role || 'guest'
+                    role: user.role || 'member'
                 }
             );
             setSubmitted(true);

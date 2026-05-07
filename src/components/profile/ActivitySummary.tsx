@@ -43,7 +43,7 @@ export function ActivitySummary({ user }: ActivitySummaryProps) {
         };
 
         fetchStats();
-    }, [user, supabase]);
+    }, [user]);
 
     return (
         <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
@@ -79,7 +79,7 @@ export function ActivitySummary({ user }: ActivitySummaryProps) {
                     <span className="text-xs font-bold uppercase tracking-wide opacity-80">Last Active</span>
                 </div>
                 <div className="text-lg font-medium text-foreground z-10">
-                    2 days ago
+                    Just now
                 </div>
                 <div className="absolute -right-4 -bottom-4 text-purple-500/10 group-hover:text-purple-500/20 transition-colors">
                     <Clock size={80} />

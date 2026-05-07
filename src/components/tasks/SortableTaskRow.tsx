@@ -224,7 +224,7 @@ export const SortableTaskRow = memo(({
                 {/* Title */}
                 <div className="min-w-0 pr-4">
                     <div className="flex items-center gap-2">
-                        {/* Checkbox — visible to all roles; guests can select for visual reference */}
+                        {/* Checkbox — visible to all roles; members can select for visual reference */}
                         <div
                             role="checkbox"
                             aria-checked={isSelected}
@@ -355,7 +355,7 @@ export const SortableTaskRow = memo(({
                 <div className="hidden md:block" onClick={e => e.stopPropagation()}>
                     {mode === 'trash' ? (
                         <div className="flex items-center gap-1.5">
-                            {/* Admin/Team can restore. Guest cannot. */}
+                            {/* Admin/Team can restore. Member cannot. */}
                             {canRestoreTask ? (
                                 <button
                                     onClick={() => onRestore?.(task.id)}

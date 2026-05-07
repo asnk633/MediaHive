@@ -9,11 +9,13 @@ import { Badge } from '@/components/ui/badge';
 
 import { AlertCircle, User, UserX, UserCheck, Users, RotateCcw } from 'lucide-react';
 import { toast } from 'sonner';
+import { ConfirmationDialog } from "@/components/ui/ConfirmationDialog";
 import { apiClient } from '@/lib/apiClient';
 import { UserService } from '@/services/userService';
 import { StructureService } from '@/services/structureService';
 import { useAuth } from '@/contexts/AuthContextProvider';
 import { updateUserStatus, getUsersByStatus, reassignTasks, reassignEvents, reassignMedia, getOrphanedItems } from '@/services/userLifecycleService';
+import { getRoleBadgeColors } from '@/lib/roleStyles';
 
 interface UserManagementPanelProps {
   institution_id: string | number;
@@ -33,6 +35,20 @@ export const UserManagementPanel: React.FC<UserManagementPanelProps> = ({ instit
   const [departments, setDepartments] = useState<any[]>([]);
   const [institutions, setInstitutions] = useState<any[]>([]);
   const [editingUser, setEditingUser] = useState<any>(null);
+
+  // Confirmation state
+  const [confirmConfig, setConfirmConfig] = useState<{
+    open: boolean;
+    title: string;
+    description: string;
+    action: () => void | Promise<void>;
+    variant?: 'danger' | 'primary';
+  }>({
+    open: false,
+    title: '',
+    description: '',
+    action: () => { },
+  });
 
   useEffect(() => {
     const checkFeature = async () => {
@@ -86,14 +102,24 @@ export const UserManagementPanel: React.FC<UserManagementPanelProps> = ({ instit
       return;
     }
 
-    try {
-      await updateUserStatus(userId, status, currentUser.uid);
-      toast.success(`User status updated to ${status}`);
-      fetchUsers();
-    } catch (error) {
-      console.error('Error updating user status:', error);
-      toast.error('Failed to update user status');
-    }
+    const user = users.find(u => u.uid === userId);
+
+    setConfirmConfig({
+      open: true,
+      title: status === 'disabled' ? "Disable User Access" : "Enable User Access",
+      description: `Are you sure you want to ${status === 'disabled' ? 'disable' : 'enable'} access for ${user?.name || user?.email || 'this user'}?`,
+      variant: status === 'disabled' ? 'danger' : 'primary',
+      action: async () => {
+        try {
+          await updateUserStatus(userId, status, currentUser.uid);
+          toast.success(`User status updated to ${status}`);
+          fetchUsers();
+        } catch (error) {
+          console.error('Error updating user status:', error);
+          toast.error('Failed to update user status');
+        }
+      }
+    });
   };
 
   const handleShowReassignment = async (user: any) => {
@@ -209,12 +235,7 @@ export const UserManagementPanel: React.FC<UserManagementPanelProps> = ({ instit
                     <div className="flex items-center gap-2 mt-1">
                       <Badge
                         variant="neutral"
-                        className={`${user.role === 'admin'
-                          ? 'border-red-500/30 text-red-300'
-                          : (user.role === 'manager' || user.role === 'member')
-                            ? 'border-blue-500/30 text-blue-300'
-                            : 'border-green-500/30 text-green-300'
-                          }`}
+                        className={getRoleBadgeColors(user.role)}
                       >
                         {user.role}
                       </Badge>
@@ -300,8 +321,9 @@ export const UserManagementPanel: React.FC<UserManagementPanelProps> = ({ instit
                   </SelectTrigger>
                   <SelectContent className="bg-gray-800 border-[#ffffff1a] text-white">
                     <SelectItem value="admin">Admin</SelectItem>
-                    <SelectItem value="team">Team Member</SelectItem>
-                    <SelectItem value="guest">Guest</SelectItem>
+                    <SelectItem value="manager">Manager</SelectItem>
+                    <SelectItem value="team">Team</SelectItem>
+                    <SelectItem value="member">Member</SelectItem>
                   </SelectContent>
                 </Select>
               </div>
@@ -408,6 +430,15 @@ export const UserManagementPanel: React.FC<UserManagementPanelProps> = ({ instit
           </div>
         )}
       </CardContent>
+
+      <ConfirmationDialog 
+        open={confirmConfig.open}
+        onOpenChange={(open) => setConfirmConfig(prev => ({ ...prev, open }))}
+        title={confirmConfig.title}
+        description={confirmConfig.description}
+        variant={confirmConfig.variant}
+        onConfirm={confirmConfig.action}
+      />
     </Card>
   );
 };

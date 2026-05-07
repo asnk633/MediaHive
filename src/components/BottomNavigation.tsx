@@ -64,7 +64,7 @@ export default function BottomNavigation() {
     { key: 'spacer', label: '', href: '', icon: null },
     { key: 'inventory', label: 'Inventory', href: '/inventory', icon: Package },
     { key: 'downloads', label: 'Files', href: '/downloads', icon: Download },
-    // Role-based Switch: Reports for Team/Admin, Profile for Guests
+    // Role-based Switch: Reports for Team/Admin, Profile for Members
     isMember
       ? { key: 'profile', label: 'Profile', href: '/profile', icon: User }
       : user?.role === 'admin'

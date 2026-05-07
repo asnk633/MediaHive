@@ -194,8 +194,8 @@ export const InviteUserModal: React.FC<InviteUserModalProps> = ({ isOpen, onClos
                                                 >
                                                     <option value="admin">Admin</option>
                                                     <option value="manager">Manager</option>
+                                                    <option value="team">Team</option>
                                                     <option value="member">Member</option>
-                                                    <option value="guest">Guest</option>
                                                 </select>
                                             )}
                                         </div>

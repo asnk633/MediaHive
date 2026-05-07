@@ -25,6 +25,7 @@ import {
     ShieldAlert,
     Video,
     Coffee,
+    Sliders,
 } from 'lucide-react';
 import { useAuth } from '@/contexts/AuthContextProvider';
 import { useWorkspace } from '@/system/workspace/WorkspaceProvider';
@@ -119,7 +120,8 @@ export default function DesktopSideNav() {
             items: [
                 // Global Admin: Control Panel
                 ...(user?.role === 'admin' ? [
-                    { id: 'admin-panel', label: 'Control Panel', icon: ShieldAlert, path: '/admin' }
+                    { id: 'admin-panel', label: 'Control Panel', icon: ShieldAlert, path: '/admin' },
+                    { id: 'features', label: 'Feature Config', icon: Sliders, path: '/admin/settings/features' }
                 ] : []),
                 // Institutional Manager/Admin: Users list
                 ...(['admin', 'manager'].includes(currentRole) ? [
@@ -154,7 +156,7 @@ export default function DesktopSideNav() {
                 if ('feature' in item && item.feature) {
                     return canAccessFeature(
                         item.feature as FeatureKey,
-                        (currentRole as UserRole) || 'guest',
+                        (currentRole as UserRole) || 'member',
                         currentWorkspace ? { id: currentWorkspace.institution_id, features: currentWorkspace.features, tenantSettings } : undefined
                     );
                 }
@@ -213,7 +215,7 @@ export default function DesktopSideNav() {
                                     </span>
                                     <div className="flex items-center">
                                         <span className="text-[10px] text-white/40 font-black uppercase tracking-[0.2em] leading-none">
-                                            {currentRole || 'Guest'}
+                                            {currentRole || 'Member'}
                                         </span>
                                     </div>
                                 </div>

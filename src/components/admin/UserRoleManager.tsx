@@ -108,7 +108,7 @@ const UserRoleManager = () => {
                 <td className="py-2 px-4 border-b">
                   <span className={`px-2 py-1 rounded text-xs ${
                     user.role === 'admin' ? 'bg-red-200 text-red-800' :
-                    (user.role === 'manager' || user.role === 'member') ? 'bg-blue-200 text-blue-800' :
+                    ['manager', 'team', 'member'].includes(user.role) ? 'bg-blue-200 text-blue-800' :
                     'bg-gray-200 text-gray-800'
                   }`}>
                     {user.role}
@@ -121,9 +121,10 @@ const UserRoleManager = () => {
                     onChange={(val) => handleRoleChange(user.uid, val)}
                     disabled={updating[user.uid]}
                     options={[
-                      { id: 'guest', label: 'guest', icon: <UserIcon size={14} /> },
-                      { id: 'team', label: 'team', icon: <Shield size={14} /> },
-                      { id: 'admin', label: 'admin', icon: <ShieldAlert size={14} className="text-red-400" /> },
+                      { id: 'admin', label: 'Admin', icon: <ShieldAlert size={14} className="text-red-400" /> },
+                      { id: 'manager', label: 'Manager', icon: <Shield size={14} /> },
+                      { id: 'team', label: 'Team', icon: <Shield size={14} /> },
+                      { id: 'member', label: 'Member', icon: <UserIcon size={14} /> },
                     ]}
                   />
                   {updating[user.uid] && <span className="ml-2 text-xs">Updating...</span>}

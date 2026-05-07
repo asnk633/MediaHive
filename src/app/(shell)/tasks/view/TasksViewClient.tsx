@@ -191,8 +191,8 @@ function TaskViewContent() {
         if (!newComment.trim()) return;
         const mockComment: Comment = {
             id: Date.now().toString(),
-            userId: user?.uid || 'guest',
-            userName: user?.name || 'Guest',
+            userId: user?.uid || 'member',
+            userName: user?.name || 'Member',
             content: newComment,
             created_at: new Date().toISOString()
         };

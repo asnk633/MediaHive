@@ -65,7 +65,7 @@ export function canEditTask(user: any, task: any, currentRole?: Role): boolean {
     if (role === 'admin' || role === 'manager' || user.isAdmin) return true;
 
     // Member/Team -> only if assigned to them or created by them
-    if (role === 'member' || (role === 'manager' || role === 'member') || user.isTeam) {
+    if (role === 'member' || (role === 'manager' || role === 'team') || user.isTeam) {
         const creatorId = getUserId(task.created_by);
         if (creatorId === userId) return true;
         

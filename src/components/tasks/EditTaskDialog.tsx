@@ -220,7 +220,7 @@ export function EditTaskDialog({ open, onOpenChange, task, onUpdate }: EditTaskD
 
     const isAdmin = user?.role?.toLowerCase() === 'admin';
     const is_super_admin = (user as any)?.is_super_admin || user?.email === 'media@thaibagarden.com';
-    const isTeam = (user?.role === 'manager' || user?.role === 'member');
+    const isTeam = (user?.role === 'manager' || user?.role === 'member' || user?.role === 'team');
     const isMember = user?.role === 'member';
 
     const taskCreatorId = (task as any).created_by?.uid || (task as any).created_by;
@@ -240,8 +240,8 @@ export function EditTaskDialog({ open, onOpenChange, task, onUpdate }: EditTaskD
 
     // Status: 
     // - Admin: Always
-    // - Team/Guest: Only if Assginee
-    // Note: Guest Creator CANNOT change status unless assigned (strict workflow)
+    // - Team/Member: Only if Assginee
+    // Note: Member Creator CANNOT change status unless assigned (strict workflow)
     const canEditStatus = isAdmin || is_super_admin || isAssignee;
 
     const canEditMeta = isAdmin || is_super_admin; // For Due Date etc.

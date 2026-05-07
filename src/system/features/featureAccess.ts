@@ -4,8 +4,9 @@ const ROLE_RANK = {
     guest: 0,
     viewer: 1,
     standard: 2,
-    admin: 3,
-    owner: 4,
+    manager: 3,
+    admin: 4,
+    owner: 5,
 };
 
 export type UserRole = keyof typeof ROLE_RANK;

@@ -15,7 +15,7 @@ export type FeatureKey =
 
 export interface FeatureConfig {
     enabled: boolean;
-    minRole?: 'guest' | 'viewer' | 'standard' | 'admin' | 'owner';
+    minRole?: 'guest' | 'viewer' | 'standard' | 'manager' | 'admin' | 'owner';
     isLabs?: boolean;
 }
 

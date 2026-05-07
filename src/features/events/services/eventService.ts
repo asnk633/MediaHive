@@ -35,9 +35,11 @@ export const EventService = {
                 .eq('tenant_id', tenantId)
                 .eq('deleted', false);
 
+            /*
             if (institutionId) {
                 query = query.eq('institution_id', institutionId);
             }
+            */
 
             const { data, error } = await safeQuery(() => query
                 .order('start_at', { ascending: true })
@@ -47,7 +49,7 @@ export const EventService = {
 
             // Update Cache
             if (data) {
-                const cacheKey = institutionId ? `events:${institutionId}` : 'events';
+                const cacheKey = 'events';
                 await offlineDB.setCache(cacheKey, data);
             }
 
@@ -57,7 +59,7 @@ export const EventService = {
             const currentYear = new Date().getFullYear();
             return RecurrenceService.expandEvents(rawEvents, new Date(currentYear, 0, 1), new Date(currentYear, 11, 31));
         } catch (e) {
-            const cacheKey = institutionId ? `events:${institutionId}` : 'events';
+            const cacheKey = 'events';
             console.warn("[EventService] Falling back to cache:", e);
             const cached = await offlineDB.getCache<any[]>(cacheKey);
             const rawEvents = cached || [];
@@ -176,9 +178,11 @@ export const EventService = {
                     .eq('tenant_id', tenantId)
                     .eq('deleted', false);
 
+                /*
                 if (institutionId) {
                     query = query.eq('institution_id', institutionId);
                 }
+                */
 
                 const { data: rawEvents, error } = await safeQuery(() => query
                     .order('start_at', { ascending: true })
@@ -225,12 +229,12 @@ export const EventService = {
                 const normalized = normalizeEvents(Array.from(uniqueEventsMap.values()));
                 
                 // Update Cache
-                const cacheKey = institutionId ? `events:${institutionId}` : 'events';
+                const cacheKey = 'events';
                 await offlineDB.setCache(cacheKey, normalized);
                 
                 callback(normalized);
             } catch (error) {
-                const cacheKey = institutionId ? `events:${institutionId}` : 'events';
+                const cacheKey = 'events';
                 console.warn('Event polling failed, using cache:', error);
                 if (!isCancelled) {
                     const cached = await offlineDB.getCache<any[]>(cacheKey);
@@ -247,7 +251,7 @@ export const EventService = {
 
         if (typeof window !== 'undefined') {
             const handleStorage = async () => {
-                const cacheKey = institutionId ? `events:${institutionId}` : 'events';
+                const cacheKey = 'events';
                 const cached = await offlineDB.getCache<any[]>(cacheKey);
                 callback(cached || []);
             };

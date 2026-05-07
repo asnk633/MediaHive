@@ -21,30 +21,19 @@ import { useRouter } from 'next/navigation';
 import { nativeNavigate, cn } from '@/lib/utils'; // Added cn import
 
 import { usePermissions } from '@/hooks/usePermissions';
+import { useEvents } from '@/features/events/hooks/useEvents';
 
 export default function EventsClient() {
     const router = useRouter();
     const { user } = useAuth();
     const { currentWorkspaceId } = useWorkspace();
     const { tasks } = useClientData(); // Get tasks for Timeline
-    const [events, setEvents] = useState<Event[]>([]);
-    const [loading, setLoading] = useState(true);
+    const { data: rawEvents, isLoading: loading } = useEvents();
+    const events = rawEvents || [];
     const [viewMode, setViewMode] = useState<'month' | 'week' | 'timeline' | 'list'>('month');
     const [selectedEvent, setSelectedEvent] = useState<Event | null>(null);
     const [currentDate, setCurrentDate] = useState(new Date());
     const { role } = usePermissions();
-
-    useEffect(() => {
-        if (!user) return;
-        setEvents([]); // Clear events on workspace change
-        setLoading(true);
-        const unsubscribe = EventService.subscribeToEvents((data) => {
-            setEvents(data);
-            setLoading(false);
-        }, currentWorkspaceId || undefined);
-
-        return () => unsubscribe();
-    }, [user, currentWorkspaceId]);
 
     const canCreate = ['admin', 'manager', 'member', 'team'].includes(role);
 

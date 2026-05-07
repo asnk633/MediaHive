@@ -1,26 +1,23 @@
 import { FeatureKey, FEATURE_REGISTRY } from './featureRegistry';
 
 const ROLE_RANK = {
-    guest: 0,
-    member: 1,
-    team: 2,
-    viewer: 2,
-    standard: 3,
-    manager: 4,
-    admin: 5,
-    owner: 6,
+    member: 0,
+    team: 1,
+    manager: 2,
+    admin: 3,
 };
 
-export type UserRole = 'guest' | 'member' | 'team' | 'viewer' | 'standard' | 'manager' | 'admin' | 'owner';
+export type UserRole = 'member' | 'team' | 'manager' | 'admin';
 
 export interface WorkspaceContext {
     id: string;
     features?: Record<string, boolean>;
+    tenantSettings?: Record<string, any>;
 }
 
 export function canAccessFeature(
     feature: FeatureKey,
-    userRole: UserRole = 'guest',
+    userRole: UserRole = 'member',
     workspace?: WorkspaceContext
 ): boolean {
     const config = FEATURE_REGISTRY[feature];
@@ -28,7 +25,14 @@ export function canAccessFeature(
 
     // 1. Role Check (Hard Gate)
     const userLevel = ROLE_RANK[userRole] ?? 0;
-    const minLevel = ROLE_RANK[config.minRole ?? 'guest'];
+    
+    // Check if there is a tenant override for the minimum role
+    const overrideRole = workspace?.tenantSettings?.featureOverrides?.[feature];
+    const minRoleToUse = (overrideRole && ROLE_RANK[overrideRole as UserRole] !== undefined) 
+        ? overrideRole 
+        : (config.minRole ?? 'member');
+        
+    const minLevel = ROLE_RANK[minRoleToUse as UserRole];
 
     if (userLevel < minLevel) return false;
 

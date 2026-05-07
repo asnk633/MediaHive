@@ -41,9 +41,10 @@ export function logFirestoreAccess(user: User, collection: string) {
 
 export function deriveRoleFromClaims(claims: any): string {
   if (claims?.admin === true) return 'admin';
+  if (claims?.manager === true) return 'manager';
   if (claims?.team === true) return 'team';
-  if (claims?.guest === true) return 'guest';
-  return 'guest';
+  if (claims?.member === true) return 'member';
+  return 'member';
 }
 
 export function logFatalAuthError(message: string) {

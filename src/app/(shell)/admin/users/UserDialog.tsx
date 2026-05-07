@@ -26,15 +26,15 @@ export function UserDialog({ open, onOpenChange, user, onSave, institutions, dep
     const [loading, setLoading] = useState(false);
 
     // Form State
-    const [role, setRole] = useState('guest');
+    const [role, setRole] = useState('member');
     const [isActive, setIsActive] = useState(true);
-
+ 
     // Affiliation State
     // XOR: affiliationType = 'institution' | 'department'
     const [affiliationType, setAffiliationType] = useState<'institution' | 'department'>('institution');
     const [selectedInstitution, setSelectedInstitution] = useState<string | number>('');
     const [selectedDepartment, setSelectedDepartment] = useState<string | number>('');
-
+ 
     useEffect(() => {
         if (open) {
             if (user) {
@@ -56,7 +56,7 @@ export function UserDialog({ open, onOpenChange, user, onSave, institutions, dep
                 }
             } else {
                 // Reset for create
-                setRole('guest');
+                setRole('member');
                 setIsActive(true);
                 setAffiliationType('institution');
                 setSelectedInstitution('');
@@ -64,23 +64,23 @@ export function UserDialog({ open, onOpenChange, user, onSave, institutions, dep
             }
         }
     }, [open, user]);
-
+ 
     const handleSave = async () => {
         setLoading(true);
         try {
             // Payload initialized strictly below
             const payload: any = { role, isActive };
-
+ 
             // Logic for Name
             const nameInput = document.getElementById('user-name') as HTMLInputElement;
             const nameValue = nameInput?.value?.trim() || null;
-
+ 
             if (!nameValue) {
                 toast.error('Full Name is required');
                 setLoading(false);
                 return;
             }
-
+ 
             if (user) {
                 // For existing users, update 'official_name' to override others
                 // Also update 'name' as fallback
@@ -90,23 +90,23 @@ export function UserDialog({ open, onOpenChange, user, onSave, institutions, dep
                 // For invites, pass 'name'
                 payload.name = nameValue;
             }
-
+ 
             // Logic for Email
             if (!user) {
                 const emailInput = document.getElementById('user-email') as HTMLInputElement;
-
+ 
                 if (!nameValue) {
                     toast.error('Full Name is required');
                     setLoading(false);
                     return;
                 }
-
+ 
                 if (!emailInput || !emailInput.value) {
                     toast.error("Please enter an email address");
                     setLoading(false);
                     return;
                 }
-
+ 
                 // Validate email format
                 if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(emailInput.value)) {
                     toast.error('Valid email is required');
@@ -115,7 +115,7 @@ export function UserDialog({ open, onOpenChange, user, onSave, institutions, dep
                 }
                 payload.email = emailInput.value;
             }
-
+ 
             if (affiliationType === 'institution') {
                 if (!selectedInstitution) {
                     toast.error("Please select an institution");
@@ -133,7 +133,7 @@ export function UserDialog({ open, onOpenChange, user, onSave, institutions, dep
                 payload.department_id = selectedDepartment;
                 payload.institution_id = null; // Clear other
             }
-
+ 
             await onSave(payload);
             onOpenChange(false);
         } catch (error) {
@@ -142,7 +142,7 @@ export function UserDialog({ open, onOpenChange, user, onSave, institutions, dep
             setLoading(false);
         }
     };
-
+ 
     return (
         <Dialog open={open} onOpenChange={onOpenChange}>
             <DialogContent className="bg-slate-950/90 backdrop-blur-xl border-white/10 sm:max-w-[500px]">
@@ -154,7 +154,7 @@ export function UserDialog({ open, onOpenChange, user, onSave, institutions, dep
                         {user ? 'Update user roles and affiliations.' : 'Invite a new member to the organization.'}
                     </DialogDescription>
                 </DialogHeader>
-
+ 
                 <div className="space-y-6 pt-4">
                     {/* Name Input (Optional for Invite, Editable for User) */}
                     <div className="space-y-2">
@@ -166,7 +166,7 @@ export function UserDialog({ open, onOpenChange, user, onSave, institutions, dep
                             defaultValue={user?.official_name || user?.name || ''}
                         />
                     </div>
-
+ 
                     {/* Email Input (Create Mode Only) */}
                     {!user && (
                         <div className="space-y-2">
@@ -178,7 +178,7 @@ export function UserDialog({ open, onOpenChange, user, onSave, institutions, dep
                             />
                         </div>
                     )}
-
+ 
                     {/* Role Selection */}
                     <div className="space-y-2">
                         <Label className="text-sm font-medium text-white/70">Role</Label>
@@ -188,8 +188,9 @@ export function UserDialog({ open, onOpenChange, user, onSave, institutions, dep
                             </SelectTrigger>
                             <SelectContent className="bg-slate-800 border-white/10">
                                 <SelectItem value="admin">Admin</SelectItem>
+                                <SelectItem value="manager">Manager</SelectItem>
                                 <SelectItem value="team">Team Member</SelectItem>
-                                <SelectItem value="guest">Guest</SelectItem>
+                                <SelectItem value="member">Member</SelectItem>
                             </SelectContent>
                         </Select>
                     </div>

@@ -32,7 +32,7 @@ export async function GET() {
       const newProfile = {
         id: uid,
         email: email || null,
-        role: 'guest',
+        role: 'member',
         institution_id: instData?.id || null,
         created_at: new Date().toISOString()
       };
@@ -49,7 +49,7 @@ export async function GET() {
           user: {
             uid,
             email,
-            role: 'guest',
+            role: 'member',
             name: email?.split('@')[0] || 'User'
           }
         });

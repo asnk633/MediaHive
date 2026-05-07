@@ -56,7 +56,7 @@ export function evaluatePolicyImplications(context: PolicyEvaluationContext): Po
       admin: 4,
       manager: 3,
       team: 2,
-      guest: 1
+      member: 1
     };
     
     const userPriority = roleHierarchy[userRole as keyof typeof roleHierarchy] || 0;

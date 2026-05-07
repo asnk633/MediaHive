@@ -102,7 +102,7 @@ const LAB_FEATURES: LabFeature[] = [
 export default function LabsPage() {
     const router = useRouter();
     const { user } = useAuth();
-    const { currentWorkspace } = useWorkspace();
+    const { currentWorkspace, tenantSettings } = useWorkspace();
     const currentRole = user?.role as UserRole || 'guest';
     const [isSimulationOpen, setIsSimulationOpen] = React.useState(false);
 
@@ -155,7 +155,7 @@ export default function LabsPage() {
                     const hasAccess = canAccessFeature(
                         feature.key,
                         currentRole,
-                        currentWorkspace ? { id: currentWorkspace.institution_id, features: currentWorkspace.features } : undefined
+                        currentWorkspace ? { id: currentWorkspace.institution_id, features: currentWorkspace.features, tenantSettings } : undefined
                     );
 
                     return (

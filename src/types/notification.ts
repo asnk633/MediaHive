@@ -21,7 +21,7 @@ export type NotificationType =
     | 'event_updated'       // Phase 2A
     | 'task_created'        // Phase 3 Fix
     | 'task_reopened'       // Phase 13 Smart Notifications
-    | 'approval_request'    // Guest Approval Workflow
+    | 'approval_request'    // Member Approval Workflow
     | 'media_proofing'      // Media Proofing Automation
     | 'task_status_suggestion'  // Task State Automation
     | 'task_ready_signal'      // Task State Automation

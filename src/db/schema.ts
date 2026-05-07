@@ -35,7 +35,7 @@ export const users = sqliteTable('users', {
   passwordHash: text('password_hash').notNull(),
   fullName: text('full_name').notNull(),
   avatar_url: text('avatar_url'),
-  role: text('role').notNull(), // 'admin', 'team', 'guest'
+  role: text('role').notNull(), // 'admin', 'manager', 'team', 'member'
   institution_id: integer('institution_id').notNull().references(() => institutions.id),
   department_id: integer('department_id').references(() => departments.id),
   tenantId: integer('tenant_id').notNull().references(() => tenants.id),
@@ -218,7 +218,7 @@ export const files = sqliteTable('files', {
   fileType: text('file_type').notNull(),
   fileSize: integer('file_size').notNull(),
   folder: text('folder'),
-  visibility: text('visibility').notNull(), // 'all', 'team', 'guest'
+  visibility: text('visibility').notNull(), // 'all', 'team', 'member'
   uploadedById: integer('uploaded_by_id').notNull().references(() => users.id),
   institution_id: integer('institution_id').notNull().references(() => institutions.id),
   department_id: integer('department_id').references(() => departments.id),

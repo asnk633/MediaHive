@@ -84,7 +84,7 @@ export const createUserSchema = z.object({
   email: emailSchema,
   password: passwordSchema,
   fullName: nameSchema,
-  role: z.enum(['admin', 'team', 'guest']),
+  role: z.enum(['admin', 'manager', 'team', 'member']),
   institution_id: idSchema,
   tenantId: idSchema,
 });
@@ -92,7 +92,7 @@ export const createUserSchema = z.object({
 export const updateUserSchema = z.object({
   email: emailSchema.optional(),
   fullName: nameSchema.optional(),
-  role: z.enum(['admin', 'team', 'guest']).optional(),
+  role: z.enum(['admin', 'manager', 'team', 'member']).optional(),
   institution_id: idSchema.optional(),
   tenantId: idSchema.optional(),
 });

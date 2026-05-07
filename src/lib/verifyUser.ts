@@ -97,7 +97,7 @@ export async function verifyUser(req: Request, options = { strict: true }): Prom
             return {
                 uid: userId,
                 email: email,
-                role: 'guest',
+                role: 'member',
                 isInitial: true
             };
         }

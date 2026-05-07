@@ -23,11 +23,11 @@ const mockTeamUser: AuthUser = {
   tenantId: 1
 };
 
-const mockGuestUser: AuthUser = {
+const mockMemberUser: AuthUser = {
   id: 3,
-  email: 'guest@example.com',
-  fullName: 'Guest User',
-  role: 'guest',
+  email: 'member@example.com',
+  fullName: 'Member User',
+  role: 'member',
   institution_id: 1,
   tenantId: 1
 };
@@ -38,7 +38,7 @@ console.log('Testing RBAC functions...');
 console.log('Testing hasRole function:');
 console.log('Admin has admin role:', hasRole(mockAdminUser, ['admin']));
 console.log('Member has member role:', hasRole(mockTeamUser, ['member']));
-console.log('Guest has guest role:', hasRole(mockGuestUser, ['guest']));
+console.log('Member has member role:', hasRole(mockMemberUser, ['member']));
 console.log('Admin has admin or member role:', hasRole(mockAdminUser, ['admin', 'member']));
 console.log('Member has admin role (should be false):', hasRole(mockTeamUser, ['admin']));
 console.log('Null user has admin role (should be false):', hasRole(null, ['admin']));
@@ -50,8 +50,8 @@ console.log('Admin has read:reports permission:', hasPermission(mockAdminUser.ro
 console.log('Team has read:tasks permission:', hasPermission(mockTeamUser.role, 'read:tasks'));
 console.log('Team has create:tasks permission:', hasPermission(mockTeamUser.role, 'create:tasks'));
 console.log('Team has edit:task_status permission:', hasPermission(mockTeamUser.role, 'edit:task_status'));
-console.log('Guest has read:tasks permission:', hasPermission(mockGuestUser.role, 'read:tasks'));
-console.log('Guest has manage:users permission (should be false):', hasPermission(mockGuestUser.role, 'manage:users'));
+console.log('Member has read:tasks permission:', hasPermission(mockMemberUser.role, 'read:tasks'));
+console.log('Member has manage:users permission (should be false):', hasPermission(mockMemberUser.role, 'manage:users'));
 console.log('Team has manage:users permission (should be false):', hasPermission(mockTeamUser.role, 'manage:users'));
 
 console.log('\nRBAC tests completed successfully!');

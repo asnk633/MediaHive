@@ -16,7 +16,7 @@ export const taskFormSchema = z.object({
 export const notificationFormSchema = z.object({
   title: z.string().min(1, 'Title is required').max(150, 'Title must be at most 150 characters'),
   body: z.string().min(1, 'Body is required').max(2000, 'Body must be at most 2000 characters'),
-  audience: z.array(z.enum(['all', 'admins', 'team', 'guests'])).min(1, 'At least one audience is required'),
+  audience: z.array(z.enum(['all', 'admins', 'team', 'members'])).min(1, 'At least one audience is required'),
   schedule: z.string().optional().nullable(),
   media: z.string().optional().nullable(),
 });

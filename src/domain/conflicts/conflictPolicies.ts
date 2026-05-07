@@ -23,7 +23,7 @@ const ROLE_RANKS: Record<string, number> = {
     'admin': 100,
     'manager': 50,
     'team': 10,
-    'guest': 0
+    'member': 0
 };
 
 export const defaultPolicies: ConflictPolicy[] = [

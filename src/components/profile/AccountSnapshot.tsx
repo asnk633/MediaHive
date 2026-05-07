@@ -12,35 +12,37 @@ export function AccountSnapshot({ user }: AccountSnapshotProps) {
     const getAccessLevel = (role: string) => {
         switch (role) {
             case 'admin': return 'Full System Access';
+            case 'manager': return 'Administrative Access';
             case 'team': return 'Production Access';
-            default: return 'Limited (Request Only)';
+            case 'member': return 'Request Only';
+            default: return 'Pending Verification';
         }
     };
-
+ 
     // Determine Account Type
     const getAccountType = (user: AuthUser | null) => {
         if (user?.is_super_admin) return 'Root Administrator';
-        if (user?.role === 'guest') return 'Office / Unit Account';
+        if (user?.role === 'member') return 'Office / Unit Account';
         if (user?.institution_id) return 'Institution Account';
         return 'Standard Account';
     };
-
+ 
     // Placeholder for joined date - AuthContext doesn't expose it yet, so we'll mock or leave blank
     // If real data needed, we'd need to fetch from user.metadata.creationTime in context
     const joinedDate = "Jan 2026";
-
+ 
     return (
         <div className="bg-card border border-border rounded-2xl p-6">
             <div className="grid grid-cols-1 md:grid-cols-2 gap-x-6 gap-y-6">
                 <SnapshotItem
                     icon={Shield}
                     label="Role"
-                    value={user?.role ? user.role.charAt(0).toUpperCase() + user.role.slice(1) : 'Guest'}
+                    value={user?.role ? user.role.charAt(0).toUpperCase() + user.role.slice(1) : 'Member'}
                 />
                 <SnapshotItem
                     icon={User}
                     label="Access Level"
-                    value={getAccessLevel(user?.role || 'guest')}
+                    value={getAccessLevel(user?.role || 'member')}
                 />
                 <SnapshotItem
                     icon={Mail}

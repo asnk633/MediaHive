@@ -10,7 +10,7 @@ import { useFormState } from "@/hooks/useFormState";
 import { useFormSubmit } from "@/hooks/useFormSubmit";
 import { DraftIndicator } from "@/components/ui/DraftIndicator";
 
-type Role = "admin" | "team" | "guest";
+type Role = "admin" | "manager" | "team" | "member";
 
 export default function CreateEventModal({ open, role, onClose }: { open: boolean; role: Role; onClose: () => void; }) {
   // Events temporarily disabled — no-op stub
@@ -34,7 +34,7 @@ export default function CreateEventModal({ open, role, onClose }: { open: boolea
   const setLoc = (val: string) => setFormData(prev => ({ ...prev, loc: val }));
 
   const hint =
-    role === "guest" ? "Admin will review and assign resources after submission."
+    role === "member" ? "Admin will review and assign resources after submission."
       : role === "team" ? "Ensure both date/time fields are filled."
         : "Set visibility and attendees before creating.";
 
@@ -140,7 +140,7 @@ export default function CreateEventModal({ open, role, onClose }: { open: boolea
         <button onClick={onClose} disabled={isSubmitting} className="rounded-md bg-white/10 px-4 py-2 disabled:opacity-50">Cancel</button>
         <button onClick={submit} disabled={isSubmitting} className="rounded-md bg-[#00BFA6] px-4 py-2 font-semibold text-black flex items-center gap-2 disabled:opacity-50">
             {isSubmitting && <div className="w-4 h-4 rounded-full border-2 border-black/30 border-t-black animate-spin" />}
-            {role === "guest" ? "Submit for Review" : "Create Event"}
+            {role === "member" ? "Submit for Review" : "Create Event"}
         </button>
       </div>
     </ModalBase>

@@ -53,7 +53,7 @@ export default function DesktopSideNav() {
     const [isCollapsed, setIsCollapsed] = useState(false);
     const [mounted, setMounted] = useState(false);
     const { role: currentRole, canReadReports } = usePermissions();
-    const { currentWorkspace } = useWorkspace();
+    const { currentWorkspace, tenantSettings } = useWorkspace();
     const isAdminRoute = pathname.startsWith('/admin');
 
     const updateWidthVar = (collapsed: boolean) => {
@@ -88,8 +88,8 @@ export default function DesktopSideNav() {
                 ...(canReadReports ? [
                     { id: 'reports', label: 'Reports', icon: BarChart3, path: '/reports', feature: 'reports' as FeatureKey }
                 ] : []),
-                // Phase 5D: Trash — hidden from Guests
-                ...(currentRole !== 'guest' ? [
+                // Phase 5D: Trash — hidden from Members
+                ...(currentRole !== 'member' ? [
                     { id: 'trash', label: 'Trash', icon: Trash2, path: '/tasks/trash' }
                 ] : []),
             ]
@@ -103,7 +103,7 @@ export default function DesktopSideNav() {
             ]
         },
         // Laboratory Hub (Alpha/Beta tools)
-        ...(currentRole !== 'guest' ? [
+        ...(currentRole !== 'member' ? [
             {
                 id: 'labs',
                 label: 'Laboratory',
@@ -127,22 +127,22 @@ export default function DesktopSideNav() {
                     { id: 'governance', label: 'Governance', icon: ShieldCheck, path: '/governance', feature: 'governance' as FeatureKey }
                 ] : []),
                 // Team Members: Request Leave
-                ...(currentRole !== 'guest' ? [
+                ...(currentRole !== 'member' ? [
                     { id: 'leave', label: 'Request Leave', icon: Coffee, path: '/leave/request', feature: 'leave_management' as FeatureKey }
                 ] : []),
                 { id: 'settings', label: 'Settings', icon: Settings, path: '/settings' },
             ],
         }
     ];
-
+ 
     // Final Filter based on Feature Flags
     const filteredGroups = navGroups
         .filter(group => {
             if ('feature' in group && (group as any).feature) {
                 return canAccessFeature(
                     (group as any).feature as FeatureKey,
-                    (currentRole as UserRole) || 'guest',
-                    currentWorkspace ? { id: currentWorkspace.institution_id, features: currentWorkspace.features } : undefined
+                    (currentRole as UserRole) || 'member',
+                    currentWorkspace ? { id: currentWorkspace.institution_id, features: currentWorkspace.features, tenantSettings } : undefined
                 );
             }
             return true;
@@ -155,7 +155,7 @@ export default function DesktopSideNav() {
                     return canAccessFeature(
                         item.feature as FeatureKey,
                         (currentRole as UserRole) || 'guest',
-                        currentWorkspace ? { id: currentWorkspace.institution_id, features: currentWorkspace.features } : undefined
+                        currentWorkspace ? { id: currentWorkspace.institution_id, features: currentWorkspace.features, tenantSettings } : undefined
                     );
                 }
                 return true;

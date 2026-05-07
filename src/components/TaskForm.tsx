@@ -10,7 +10,7 @@ export default function TaskForm({ onCancel, onSubmit }: { onCancel: () => void;
   const [description, setDescription] = useState('');
   const [priority, setPriority] = useState('medium');
   const { user } = useAuth();
-  const isGuest = user?.role === 'guest';
+  const isMember = user?.role === 'member';
 
   return (
     <form className="p-4 bg-white rounded shadow" onSubmit={async (e) => { e.preventDefault(); await onSubmit({ title, description, priority }); }}>
@@ -21,7 +21,7 @@ export default function TaskForm({ onCancel, onSubmit }: { onCancel: () => void;
           value={title}
           onChange={(e) => setTitle(e.target.value)}
           required
-          disabled={isGuest}
+          disabled={isMember}
         />
         <textarea
           className="input disabled:opacity-50 disabled:cursor-not-allowed"
@@ -29,14 +29,14 @@ export default function TaskForm({ onCancel, onSubmit }: { onCancel: () => void;
           rows={3}
           value={description}
           onChange={(e) => setDescription(e.target.value)}
-          disabled={isGuest}
+          disabled={isMember}
         />
         <div className="space-y-0.5">
           <DropdownSelector 
             label="Task Priority"
             value={priority}
             onChange={(val) => setPriority(val)}
-            disabled={isGuest}
+            disabled={isMember}
             options={[
               { id: 'urgent', label: 'Urgent', icon: <Flag className="text-red-500" size={14} /> },
               { id: 'high', label: 'High', icon: <Flag className="text-orange-500" size={14} /> },
@@ -45,11 +45,11 @@ export default function TaskForm({ onCancel, onSubmit }: { onCancel: () => void;
             ]}
           />
         </div>
-
+ 
         <div className="flex justify-end gap-2">
           <button type="button" className="btn-secondary" onClick={onCancel}>Cancel</button>
-          {!isGuest && <button type="submit" className="btn-primary">Create</button>}
-          {isGuest && <button type="submit" className="btn-primary">Request Assignment</button>}
+          {!isMember && <button type="submit" className="btn-primary">Create</button>}
+          {isMember && <button type="submit" className="btn-primary">Request Assignment</button>}
         </div>
       </div>
     </form>

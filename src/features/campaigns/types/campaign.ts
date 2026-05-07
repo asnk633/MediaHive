@@ -1,7 +1,7 @@
 import { TimestampLike } from '@/types/timestamp';
 
 export type CampaignPhase = 'planning' | 'production' | 'review' | 'publish' | 'completed';
-export type CampaignRole = 'admin' | 'team' | 'guest';
+export type CampaignRole = 'admin' | 'manager' | 'team' | 'member';
 
 export interface Campaign {
     id: string;

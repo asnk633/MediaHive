@@ -143,18 +143,18 @@ async function main() {
     console.log(" - checking/inserting users...");
     let adminId: number;
     let johnId: number;
-    let guestId: number;
+    let memberId: number;
     
     // Check for existing users
     const existingAdmin = await db.select({id: users.id}).from(users).where(eq(users.email, "admin@thaiba.com")).limit(1);
     const existingJohn = await db.select({id: users.id}).from(users).where(eq(users.email, "john.doe@thaiba.com")).limit(1);
-    const existingGuest = await db.select({id: users.id}).from(users).where(eq(users.email, "guest@thaiba.com")).limit(1);
+    const existingMember = await db.select({id: users.id}).from(users).where(eq(users.email, "member@thaiba.com")).limit(1);
     
-    if (existingAdmin.length === 0 && existingJohn.length === 0 && existingGuest.length === 0) {
+    if (existingAdmin.length === 0 && existingJohn.length === 0 && existingMember.length === 0) {
       // Insert new users and capture their IDs
       const adminPasswordHash = bcrypt.hashSync("ChangeMe123!", 10);
       const teamPasswordHash = bcrypt.hashSync("team-pass-123", 10);
-      const guestPasswordHash = bcrypt.hashSync("guest-pass-123", 10);
+      const memberPasswordHash = bcrypt.hashSync("member-pass-123", 10);
 
       const insertedUsers = await db.insert(users).values([
         {
@@ -180,11 +180,11 @@ async function main() {
           updated_at: now(),
         },
         {
-          email: "guest@thaiba.com",
-          passwordHash: guestPasswordHash,
-          fullName: "Guest User",
+          email: "member@thaiba.com",
+          passwordHash: memberPasswordHash,
+          fullName: "Member User",
           avatar_url: null,
-          role: "guest",
+          role: "member",
           institution_id,
           tenantId: tenantId,
           created_at: now(),
@@ -195,16 +195,16 @@ async function main() {
       // Find the inserted users by email
       const adminUser = insertedUsers.find((u: { email: string; id: number }) => u.email === "admin@thaiba.com");
       const johnUser = insertedUsers.find((u: { email: string; id: number }) => u.email === "john.doe@thaiba.com");
-      const guestUser = insertedUsers.find((u: { email: string; id: number }) => u.email === "guest@thaiba.com");
+      const memberUser = insertedUsers.find((u: { email: string; id: number }) => u.email === "member@thaiba.com");
 
       adminId = adminUser?.id || 1;
       johnId = johnUser?.id || 2;
-      guestId = guestUser?.id || 3;
+      memberId = memberUser?.id || 3;
     } else {
       // Users already exist, get their IDs
       adminId = existingAdmin.length > 0 ? existingAdmin[0].id : 1;
       johnId = existingJohn.length > 0 ? existingJohn[0].id : 2;
-      guestId = existingGuest.length > 0 ? existingGuest[0].id : 3;
+      memberId = existingMember.length > 0 ? existingMember[0].id : 3;
     }
 
     // 6) Seed user departments and institutions

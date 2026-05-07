@@ -167,7 +167,7 @@ export function EventModal({ isOpen, onClose, defaultDate, eventToEdit }: EventM
         }
     };
 
-    const canCreate = user?.role === 'admin' || user?.role === 'manager' || user?.role === 'member' || user?.role === 'guest';
+    const canCreate = user?.role === 'admin' || user?.role === 'manager' || user?.role === 'member';
     const isAdmin = user?.role === 'admin';
 
     return (
@@ -191,7 +191,7 @@ export function EventModal({ isOpen, onClose, defaultDate, eventToEdit }: EventM
                         {/* Header */}
                         <div className="px-6 py-4 border-b border-[#ffffff1a] flex justify-between items-center bg-white/5">
                             <h3 className="text-xl font-bold text-white flex items-center gap-2">
-                                {eventToEdit ? (is_system_event ? 'Edit System Event' : 'Edit Event') : (is_system_event ? 'New System Event' : (user?.role === 'guest' ? 'Request Event' : 'New Event'))}
+                                {eventToEdit ? (is_system_event ? 'Edit System Event' : 'Edit Event') : (is_system_event ? 'New System Event' : (user?.role === 'member' ? 'Request Event' : 'New Event'))}
                             </h3>
                             <button onClick={onClose} className="p-2 hover:bg-white/10 rounded-full transition-colors text-white/70 hover:text-white">
                                 <X size={20} />

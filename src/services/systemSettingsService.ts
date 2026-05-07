@@ -5,7 +5,7 @@ import { withTenant } from "@/lib/tenantQuery";
 const TABLE = "system_settings";
 
 export interface SystemSettings {
-    allowGuestTasks: boolean;
+    allowMemberTasks: boolean;
     publicFilesDefault: boolean;
     driveAutoScan: boolean;
     lastUpdated?: string;
@@ -13,7 +13,7 @@ export interface SystemSettings {
 }
 
 const DEFAULT_SETTINGS: SystemSettings = {
-    allowGuestTasks: true,
+    allowMemberTasks: true,
     publicFilesDefault: true,
     driveAutoScan: true
 };

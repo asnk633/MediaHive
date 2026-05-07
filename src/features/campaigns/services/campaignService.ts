@@ -9,7 +9,7 @@ export type CreateCampaignData = Partial<Campaign>;
 export const CampaignService = {
     /**
      * Create a new campaign.
-     * Guests default to 'planning' phase.
+     * Members default to 'planning' phase.
      */
     async createCampaign(data: Partial<Campaign>, user: { uid: string, role: string, name: string }) {
         const { data: { session } } = await supabase.auth.getSession();
@@ -106,8 +106,8 @@ export const CampaignService = {
     },
 
     async deleteCampaign(id: string, user: { role: string }) {
-        if (!['admin', 'team'].includes(user.role)) {
-            throw new Error("Unauthorized: Only Admin/Team can delete campaigns");
+        if (!['admin', 'manager', 'team'].includes(user.role)) {
+            throw new Error("Unauthorized: Only Admin/Manager/Team can delete campaigns");
         }
 
         const { error } = await supabase

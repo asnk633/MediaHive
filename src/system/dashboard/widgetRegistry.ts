@@ -17,7 +17,7 @@ export const widgetRegistry: DashboardWidget[] = [
         id: "task-intelligence",
         name: "Task Intelligence",
         component: TaskIntelligenceWidget,
-        roles: ["admin", "team", "guest"],
+        roles: ["admin", "team", "member"],
         section: "intelligence",
         priority: 10
     },
@@ -41,7 +41,7 @@ export const widgetRegistry: DashboardWidget[] = [
         id: "media-team-overview",
         name: "Media Team Overview",
         component: MediaTeamOverview,
-        roles: ["admin", "team", "guest"],
+        roles: ["admin", "team", "member"],
         section: "strategic",
         priority: 40
     },
@@ -57,7 +57,7 @@ export const widgetRegistry: DashboardWidget[] = [
         id: "next-7-days-events",
         name: "Upcoming Events",
         component: EventsNext7DaysWidget,
-        roles: ["admin", "team", "guest"],
+        roles: ["admin", "team", "member"],
         section: "strategic",
         priority: 60
     },
@@ -74,7 +74,7 @@ export const widgetRegistry: DashboardWidget[] = [
 /**
  * Filters the registry based on user role and target section.
  */
-export function getWidgetsForSection(section: string, userRole: string = 'guest') {
+export function getWidgetsForSection(section: string, userRole: string = 'member') {
     return widgetRegistry
         .filter(widget => widget.section === section && widget.roles.includes(userRole))
         .sort((a, b) => (a.priority || 0) - (b.priority || 0));

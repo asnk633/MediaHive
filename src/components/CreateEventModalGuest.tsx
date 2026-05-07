@@ -5,7 +5,7 @@ import { DateSelector } from "@/components/ui/selectors/DateSelector";
 import { TimeSelector } from "@/components/ui/selectors/TimeSelector";
 import { format } from "date-fns";
 
-export default function CreateEventModalGuest({ open, onClose }: { open: boolean; onClose: () => void }) {
+export default function CreateEventModalMember({ open, onClose }: { open: boolean; onClose: () => void }) {
   const [start, setStart] = useState("");
   const [end, setEnd] = useState("");
   if (!open) return null;

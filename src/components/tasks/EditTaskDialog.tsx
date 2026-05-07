@@ -221,7 +221,7 @@ export function EditTaskDialog({ open, onOpenChange, task, onUpdate }: EditTaskD
     const isAdmin = user?.role?.toLowerCase() === 'admin';
     const is_super_admin = (user as any)?.is_super_admin || user?.email === 'media@thaibagarden.com';
     const isTeam = (user?.role === 'manager' || user?.role === 'member');
-    const isGuest = user?.role === 'guest';
+    const isMember = user?.role === 'member';
 
     const taskCreatorId = (task as any).created_by?.uid || (task as any).created_by;
     const isCreator = user?.uid === taskCreatorId;

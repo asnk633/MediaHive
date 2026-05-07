@@ -6,7 +6,7 @@ export const UserSchema = z.object({
     name: z.string().optional().nullable(),
     full_name: z.string().optional().nullable(),
     email: z.string().email().optional().nullable(),
-    role: z.enum(['admin', 'team', 'guest', 'manager']).optional().nullable(),
+    role: z.enum(['admin', 'manager', 'team', 'member']).optional().nullable(),
     institution_id: z.union([z.string(), z.number()]).optional().nullable(),
     department_id: z.union([z.string(), z.number()]).optional().nullable(),
     avatar_url: z.string().optional().nullable(),

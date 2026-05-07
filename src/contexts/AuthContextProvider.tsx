@@ -16,7 +16,7 @@ type AuthContextType = {
     user: User | null;
     loading: boolean;
     authReady: boolean;     // true once the initial session check is complete
-    authStatus: 'loading' | 'authenticated' | 'unauthenticated' | 'guest';
+    authStatus: 'loading' | 'authenticated' | 'unauthenticated';
     authResolved: boolean;
     recoveryMode: boolean;
     setRecoveryMode: (mode: boolean) => void;
@@ -45,7 +45,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
     // Derived states for backward compatibility with downstream components
     const authResolved = !loading;
-    const authStatus = loading ? 'loading' : user ? (user.role === 'guest' ? 'guest' : 'authenticated') : 'unauthenticated';
+    const authStatus = loading ? 'loading' : user ? 'authenticated' : 'unauthenticated';
 
     const sanitizeUrl = useCallback(() => {
         if (typeof window === 'undefined') return;
@@ -190,7 +190,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
                     id: uid,
                     email: finalProfile?.email || session.user.email || '',
                     name: finalProfile?.name || finalProfile?.full_name || 'User',
-                    role: finalProfile?.role || session.user.app_metadata?.role || 'guest',
+                    role: finalProfile?.role || session.user.app_metadata?.role || 'member',
                     institution_id: finalProfile?.institution_id || session.user.app_metadata?.institution_id,
                     allowed_institutions: finalProfile?.allowed_institutions || [],
                     institutionRoles,
@@ -291,7 +291,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
                             id: uid,
                             email: finalProfile?.email || session.user.email || '',
                             name: finalProfile?.name || finalProfile?.full_name || 'User',
-                            role: finalProfile?.role || 'guest',
+                            role: finalProfile?.role || 'member',
                             institution_id: finalProfile?.institution_id,
                             allowed_institutions: finalProfile?.allowed_institutions || [],
                             institutionRoles,
@@ -317,7 +317,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
                                 id: session.user.id,
                                 email: session.user.email || '',
                                 name: 'User',
-                                role: 'guest'
+                                role: 'member'
                             });
                         }
                     } finally {
@@ -544,7 +544,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
                 id: uid,
                 email: profile?.email || session.user.email || '',
                 name: profile?.name || profile?.full_name || 'User',
-                role: profile?.role || 'guest',
+                role: profile?.role || 'member',
                 institution_id: profile?.institution_id,
                 allowed_institutions: profile?.allowed_institutions || [],
                 institutionRoles,

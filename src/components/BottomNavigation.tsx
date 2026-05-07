@@ -54,8 +54,8 @@ export default function BottomNavigation() {
   const showFAB = mounted && isOnAllowedPage && !hasModalParam;
 
   const { user } = useAuth(); // Helper to access auth context
-  // Assume guest if no role or specific guest role
-  const isGuest = user?.role === 'guest';
+  // Assume member if no role or specific member role
+  const isMember = user?.role === 'member';
 
   const items = [
     { key: 'home', label: 'Home', href: '/home', icon: Home },
@@ -65,7 +65,7 @@ export default function BottomNavigation() {
     { key: 'inventory', label: 'Inventory', href: '/inventory', icon: Package },
     { key: 'downloads', label: 'Files', href: '/downloads', icon: Download },
     // Role-based Switch: Reports for Team/Admin, Profile for Guests
-    isGuest
+    isMember
       ? { key: 'profile', label: 'Profile', href: '/profile', icon: User }
       : user?.role === 'admin'
         ? { key: 'governance', label: 'Gov', href: '/governance', icon: ShieldCheck }

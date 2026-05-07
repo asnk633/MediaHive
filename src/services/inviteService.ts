@@ -5,7 +5,7 @@ import { isFeatureEnabled } from '@/app/featureFlags';
 export interface Invite {
   id: string;
   email: string;
-  role: 'admin' | 'team' | 'guest';
+  role: 'admin' | 'manager' | 'team' | 'member';
   invitedBy: string; // userId of the admin who created the invite
   institution_id: string | number; // tenant isolation
   department_id?: string | number | null;
@@ -20,7 +20,7 @@ export interface Invite {
 // Create a new invite
 export const createInvite = async (
   email: string,
-  role: 'admin' | 'team' | 'guest',
+  role: 'admin' | 'manager' | 'team' | 'member',
   invitedByUserId: string,
   institution_id: string | number,
   department_id?: string | number,
@@ -32,8 +32,8 @@ export const createInvite = async (
   }
 
   // Validate role
-  if (!['admin', 'team', 'guest'].includes(role)) {
-    throw new Error('Invalid role. Must be admin, team, or guest');
+  if (!['admin', 'manager', 'team', 'member'].includes(role)) {
+    throw new Error('Invalid role. Must be admin, manager, team, or member');
   }
 
   const response = await apiClient('/api/invites', {

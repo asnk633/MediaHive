@@ -62,26 +62,26 @@ export function InstitutionContextCard({ user }: InstitutionContextCardProps) {
                     }
                 }
 
-                // Priority 3: Official Name (Fallback for Guest Accounts without linked Structure IDs)
+                // Priority 3: Official Name (Fallback for Member Accounts without linked Structure IDs)
                 if (!name && user?.official_name) {
                     // Use the exact official name as the context
                     // We check if it looks like an Org name vs just a person name? 
                     // Usually safe to append context.
                     name = `${user.official_name} (Dept / Inst)`;
                 }
-
+ 
                 // If still !name, then it remains null -> Error State.
-
+ 
             } catch (error) {
                 console.warn("Failed to resolve context name:", error);
             }
-
+ 
             setInstName(name);
         };
         fetchName();
     }, [user?.department_id, user?.institution_id]);
-
-    if (!user || user.role !== 'guest') return null;
+ 
+    if (!user || user.role !== 'member') return null;
 
     if (!instName) {
         return (

@@ -30,7 +30,7 @@ export const CampaignCreateModal: React.FC<CampaignCreateModalProps> = ({ isOpen
 
     if (!isOpen || !user) return null;
 
-    const isGuest = user.role === 'guest';
+    const isMember = user.role === 'member';
 
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
@@ -43,7 +43,7 @@ export const CampaignCreateModal: React.FC<CampaignCreateModalProps> = ({ isOpen
                 endDate: new Date(formData.endDate).toISOString(),
             }, {
                 uid: user.uid,
-                role: user.role || 'guest',
+                role: user.role || 'member',
                 name: user.name || 'User'
             });
             toast.success('Campaign created successfully');
@@ -68,13 +68,13 @@ export const CampaignCreateModal: React.FC<CampaignCreateModalProps> = ({ isOpen
                 </div>
 
                 <form onSubmit={handleSubmit} className="p-6 space-y-4">
-                    {/* Guest Warning */}
-                    {isGuest && (
+                    {/* Member Warning */}
+                    {isMember && (
                         <div className="bg-blue-500/10 border border-blue-500/20 rounded-xl p-3 flex items-start gap-3">
                             <Info size={18} className="text-blue-400 mt-0.5" />
                             <div className="text-sm text-blue-200">
                                 <p className="font-semibold text-blue-100">Planning Mode</p>
-                                <p className="text-xs opacity-80">This campaign will start in <strong>Planning</strong>. A team member will review it before moving to production.</p>
+                                <p className="text-xs opacity-80">As a member, your campaign will start in <strong>Planning</strong>. The media team will review it before moving to production.</p>
                             </div>
                         </div>
                     )}

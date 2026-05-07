@@ -74,7 +74,7 @@ export async function PUT(
         }
 
         // Guests cannot update campaigns
-        if (user.role === 'guest') {
+        if (user.role === 'member') {
             return NextResponse.json({ error: 'Guests cannot update campaigns' }, { status: 403 });
         }
 

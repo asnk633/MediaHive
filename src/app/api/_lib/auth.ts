@@ -77,8 +77,8 @@ export function canChangeTaskStatus(
     return true;
   }
 
-  // Team members can move tasks forward in the workflow
-  if (user.role === 'member' || user.role === 'manager') {
+  // Managers and Team members can move tasks forward in the workflow
+  if (user.role === 'manager' || user.role === 'team') {
     const statusOrder: Record<TaskStatus, number> = {
       pending: -1,
       todo: 0,
@@ -92,9 +92,11 @@ export function canChangeTaskStatus(
     return statusOrder[newStatus] >= statusOrder[currentStatus];
   }
 
-  // Guests can only move their own tasks to in_progress
-  if (user.role === 'guest') {
-    return currentStatus === 'todo' && newStatus === 'in_progress';
+  // Members (Requesters) can only move tasks to 'done' from 'review' or create new ones as 'todo'
+  if (user.role === 'member') {
+    if (currentStatus === 'review' && newStatus === 'done') return true;
+    if (currentStatus === 'pending' && newStatus === 'todo') return true;
+    return false;
   }
 
   return false;

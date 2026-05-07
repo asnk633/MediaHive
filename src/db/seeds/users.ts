@@ -59,10 +59,10 @@ async function main() {
             updated_at: new Date().toISOString(),
         },
         {
-            email: 'guest1@thaiba.com',
-            fullName: 'Guest One',
+            email: 'member1@thaiba.com',
+            fullName: 'Member One',
             passwordHash: '$2a$10$dummyhashfordemopurposesonly',
-            role: 'guest',
+            role: 'member',
             avatar_url: null,
             institution_id: 1,
             tenantId: 1, // Add missing tenantId
@@ -70,10 +70,10 @@ async function main() {
             updated_at: new Date().toISOString(),
         },
         {
-            email: 'guest2@thaiba.com',
-            fullName: 'Guest Two',
+            email: 'member2@thaiba.com',
+            fullName: 'Member Two',
             passwordHash: '$2a$10$dummyhashfordemopurposesonly',
-            role: 'guest',
+            role: 'member',
             avatar_url: null,
             institution_id: 1,
             tenantId: 1, // Add missing tenantId

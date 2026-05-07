@@ -44,7 +44,7 @@ export const DeliverableService = {
                 driveFileId: uploadResult.file_id,
                 uploaded_by: {
                     ...uploader,
-                    role: uploader.role || 'viewer'
+                    role: uploader.role || 'member'
                 },
                 created_at: new Date(),
                 version: 1 // Baseline version for unified files

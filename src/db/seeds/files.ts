@@ -81,7 +81,7 @@ async function main() {
             fileType: 'application/pdf',
             fileSize: 3456789,
             folder: 'public',
-            visibility: 'guest',
+            visibility: 'member',
             uploadedById: 1,
             institution_id: 1,
             tenantId: 1, // Add missing tenantId
@@ -93,7 +93,7 @@ async function main() {
             fileType: 'image/vnd.adobe.photoshop',
             fileSize: 5678901,
             folder: 'templates',
-            visibility: 'guest',
+            visibility: 'member',
             uploadedById: 4,
             institution_id: 1,
             tenantId: 1, // Add missing tenantId

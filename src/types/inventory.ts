@@ -137,7 +137,7 @@ export interface InventoryRequest {
     itemId: string | number;
     itemName: string;
     requestedBy: string; // uid
-    requestedByRole: 'guest' | 'team' | 'admin';
+    requestedByRole: 'member' | 'team' | 'admin';
     purpose: string;
     institutionId: string | number;
     status: 'pending' | 'approved' | 'rejected' | 'issued';
@@ -155,7 +155,7 @@ export interface InventoryIssue {
     itemId: string | number;
     itemName: string;
     issuedToUserId: string;
-    issuedToRole: 'guest' | 'team';
+    issuedToRole: 'member' | 'team';
     issuedBy: string; // uid
 
     issuedFor: {

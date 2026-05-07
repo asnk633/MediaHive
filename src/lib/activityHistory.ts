@@ -144,15 +144,15 @@ export const ActivityHistory = {
      * Retrieve entries for a task, filtered by role.
      * Returns newest-first, max 10 shown.
      *
-     * @param viewerUid - UID of the current user (for "You" substitution + guest filter)
-     * @param role      - 'admin' | 'team' | 'guest'
+     * @param viewerUid - UID of the current user (for "You" substitution + member filter)
+     * @param role      - 'admin' | 'manager' | 'team' | 'member'
      */
     get(taskId: string, viewerUid: string, role: string): ActivityEntry[] {
         if (typeof window === 'undefined') return [];
         const entries = safeParse(localStorage.getItem(storageKey(taskId)));
 
         let filtered = entries;
-        if (role === 'guest') {
+        if (role === 'member') {
             filtered = entries.filter(e => e.actorUid === viewerUid);
         }
         // team: see all entries for tasks they can access (caller already scoped to taskId)
@@ -184,7 +184,7 @@ export const ActivityHistory = {
             e.label.includes('(Followed policy)')
         );
 
-        if (role === 'guest') {
+        if (role === 'member') {
             filtered = filtered.filter(e => e.actorUid === viewerUid);
         }
 

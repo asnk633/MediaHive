@@ -36,7 +36,7 @@ describe('Governance Engine Tests', () => {
         condition: 'Role-based restriction',
         target: 'task_update',
         action: 'update',
-        parameters: { field: 'status', role: 'guest' }
+        parameters: { field: 'status', role: 'member' }
       },
       enforcementType: EnforcementType.DISALLOWED,
       version: '1.0.0',
@@ -44,7 +44,7 @@ describe('Governance Engine Tests', () => {
       created_at: Date.now(),
       updated_at: Date.now(),
       conditions: {
-        role: 'guest',
+        role: 'member',
         field: 'status',
         action: 'update'
       }
@@ -57,7 +57,7 @@ describe('Governance Engine Tests', () => {
     const context: EnforcementContext = {
       policyId: 'test-policy-1',
       userId: 'user-123',
-      userRole: 'guest',
+      userRole: 'member',
       action: 'update',
       resourceType: 'task',
       field: 'status',
@@ -161,7 +161,7 @@ describe('Governance Engine Tests', () => {
         condition: 'Role-based restriction',
         target: 'task_status',
         action: 'update',
-        parameters: { role: 'guest' }
+        parameters: { role: 'member' }
       },
       enforcementType: EnforcementType.DISALLOWED,
       version: '1.0.0',
@@ -169,7 +169,7 @@ describe('Governance Engine Tests', () => {
       created_at: Date.now(),
       updated_at: Date.now(),
       conditions: {
-        role: 'guest',
+        role: 'member',
         action: 'update'
       }
     };
@@ -181,7 +181,7 @@ describe('Governance Engine Tests', () => {
     const context: EnforcementContext = {
       policyId: 'restrictive-policy-1',
       userId: 'guest-user-123',
-      userRole: 'guest',
+      userRole: 'member',
       action: 'update',
       resourceType: 'task',
       field: 'status',
@@ -190,7 +190,8 @@ describe('Governance Engine Tests', () => {
       timestamp: Date.now()
     };
 
-    let result = await governanceEngine.evaluateGovernance(context);
+    // Evaluate governance
+    result = await governanceEngine.evaluateGovernance(context);
     expect(result.allowed).toBe(false);
 
     // Request an exception
@@ -198,8 +199,8 @@ describe('Governance Engine Tests', () => {
       'restrictive-policy-1',
       context,
       'Business justification for status update',
-      'Guest User',
-      'guest'
+      'Member User',
+      'member'
     );
 
     expect(requestId).toBeDefined();

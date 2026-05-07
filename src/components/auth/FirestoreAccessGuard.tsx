@@ -28,11 +28,12 @@ const FirestoreAccessGuard = ({
   }
 
   // Additional check: ensure user has valid role claims
-  const hasAccess = user && (user.role === 'admin' || user.role === 'manager' || user.role === 'member' || user.is_super_admin);
+  const hasAccess = user && (['admin', 'manager', 'team', 'member'].includes(user.role) || user.is_super_admin);
 
   if (!hasAccess) {
-    if (authStatus === 'guest') {
-      return <div className="p-8 text-center text-muted">Awaiting administrative approval for profile access.</div>;
+    if (user && user.role === 'member') {
+      // Members are allowed, but we could add a specialized "Pending" state if we wanted to later.
+      // For now, they pass hasAccess.
     }
     console.error('FATAL: Authenticated user has no valid role - unknown state:', user?.uid);
     return <div className="p-8 text-center text-destructive font-bold">FATAL ERROR: Invalid authorization state</div>;

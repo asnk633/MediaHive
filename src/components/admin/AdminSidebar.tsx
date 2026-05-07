@@ -13,7 +13,8 @@ import {
     ChevronLeft,
     ChevronRight,
     ShieldAlert,
-    BarChart3
+    BarChart3,
+    Sliders
 } from 'lucide-react';
 import { cn } from "@/lib/utils";
 
@@ -24,6 +25,7 @@ const adminNavItems = [
     { id: 'workspaces', label: 'Workspaces', icon: Building2, path: '/admin/workspaces' },
     { id: 'permissions', label: 'Permissions', icon: ShieldCheck, path: '/admin/security' },
     { id: 'activity', label: 'Activity Logs', icon: Activity, path: '/admin/activity' },
+    { id: 'features', label: 'Feature Config', icon: Sliders, path: '/admin/settings/features' },
     { id: 'settings', label: 'Global Setup', icon: Settings, path: '/admin/structure' },
 ];
 

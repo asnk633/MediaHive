@@ -27,11 +27,11 @@ export function usePermissions() {
             canDeleteEvent: false,
             canUploadFiles: false,
             canReadReports: false,
-            role: 'guest'
+            role: 'member'
         };
 
         const hasPerm = (p: Permission) => {
-            const perms = ROLES[currentRole] || ROLES.guest;
+            const perms = ROLES[currentRole] || ROLES.member;
             return perms.includes(p);
         };
 

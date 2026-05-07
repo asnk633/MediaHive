@@ -8,15 +8,15 @@ import { CanonicalDataService } from '@/services/canonicalDataService';
 import { Task } from "@/features/tasks/types/task";
 import { format } from 'date-fns';
 
-export function GuestProfilePage() {
+export function MemberProfilePage() {
     const { user } = useAuth();
     const router = useRouter();
     const [tasks, setTasks] = useState<Task[]>([]);
     const [loading, setLoading] = useState(true);
-
+ 
     useEffect(() => {
         if (!user) return;
-
+ 
         const loadData = async () => {
             setLoading(true);
             try {
@@ -31,27 +31,27 @@ export function GuestProfilePage() {
                 setLoading(false);
             }
         };
-
+ 
         loadData();
     }, [user]);
-
+ 
     if (!user) return null;
-
+ 
     const parseDate = (ts: any) => {
         if (!ts) return new Date(0);
         if (typeof ts === 'string') return new Date(ts);
         if (ts.seconds) return new Date(ts.seconds * 1000);
         return new Date(0);
     };
-
+ 
     const activeCount = tasks.filter(t => t.status !== 'done').length;
     const completedCount = tasks.filter(t => t.status === 'done').length;
-
+ 
     // Recent Activity: Last 5 updated tasks
     const recentActivity = [...tasks]
         .sort((a, b) => parseDate(b.updatedAt).getTime() - parseDate(a.updatedAt).getTime())
         .slice(0, 5);
-
+ 
     return (
         <div className="min-h-screen bg-background relative overflow-hidden pb-20 lg:pb-0">
             <div className="bg-white/5 backdrop-blur-md border border-[#ffffff1a] rounded-3xl p-8 mb-8">
@@ -67,23 +67,23 @@ export function GuestProfilePage() {
                         </div>
                         <div className="absolute bottom-0 right-0 bg-green-500 w-6 h-6 rounded-full border-4 border-[#0f172a]" />
                     </div>
-
+ 
                     <div className="text-center md:text-left flex-1">
                         <h1 className="text-3xl font-bold text-white mb-2">{user.name}</h1>
                         <p className="text-blue-400 font-medium mb-4">{user.email}</p>
                         <div className="flex flex-wrap gap-3 justify-center md:justify-start">
                             <span className="px-3 py-1 rounded-full bg-white/10 text-sm text-gray-300 border border-white/5">
-                                Guest Account
+                                Member Account
                             </span>
                             <span className="px-3 py-1 rounded-full bg-white/10 text-sm text-gray-300 border border-white/5">
                                 {user.department_id || 'General'}
                             </span>
                         </div>
                     </div>
-
+ 
                     <div className="flex flex-col gap-3 w-full md:w-auto">
                         <button
-                            onClick={() => nativeNavigate('/tasks', router, 'GuestProfile (View Requests)')}
+                            onClick={() => nativeNavigate('/tasks', router, 'MemberProfile (View Requests)')}
                             className="bg-blue-600 hover:bg-blue-500 text-white px-6 py-3 rounded-xl font-medium transition-all shadow-lg shadow-blue-500/20 active:scale-95 flex items-center justify-center gap-2"
                         >
                             <ClipboardList size={18} />
@@ -92,7 +92,7 @@ export function GuestProfilePage() {
                     </div>
                 </div>
             </div>
-
+ 
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
                 <div className="bg-slate-800/30 border border-white/5 rounded-2xl p-6">
                     <div className="flex items-center gap-3 mb-4">
@@ -106,7 +106,7 @@ export function GuestProfilePage() {
                         <span className="text-gray-400 text-sm">in progress</span>
                     </div>
                 </div>
-
+ 
                 <div className="bg-slate-800/30 border border-white/5 rounded-2xl p-6">
                     <div className="flex items-center gap-3 mb-4">
                         <div className="p-2 bg-green-500/20 text-green-400 rounded-lg">
@@ -120,7 +120,7 @@ export function GuestProfilePage() {
                     </div>
                 </div>
             </div>
-
+ 
             {/* Recent Activity Section */}
             <div className="bg-white/5 backdrop-blur-md border border-white/5 rounded-3xl p-6">
                 <h3 className="text-xl font-bold text-white mb-6 px-2">Recent Request Activity</h3>
@@ -130,7 +130,7 @@ export function GuestProfilePage() {
                     ) : recentActivity.length > 0 ? (
                         recentActivity.map(task => (
                             <div key={task.id}
-                                onClick={() => nativeNavigate(`/tasks/view?id=${task.id}`, router, 'GuestProfile (Task Click)')}
+                                onClick={() => nativeNavigate(`/tasks/view?id=${task.id}`, router, 'MemberProfile (Task Click)')}
                                 className="flex items-center justify-between p-4 bg-white/5 rounded-xl border border-white/5 hover:bg-white/10 transition-colors cursor-pointer group"
                             >
                                 <div className="flex items-center gap-4">

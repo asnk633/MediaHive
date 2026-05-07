@@ -86,7 +86,7 @@ export const TaskActivityFeed: React.FC<TaskActivityFeedProps> = ({ taskId, user
     if (!user) return null;
 
     // Guests who have no entries: hide feed entirely
-    if (user.role === 'guest' && entries.length === 0) return null;
+    if (user.role === 'member' && entries.length === 0) return null;
 
     if (loading) {
         return (

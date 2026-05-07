@@ -168,7 +168,7 @@ export default function FAB({ onMainClick }: FABProps) {
         onMainClick();
         trackSafe('external_click');
       } else {
-        const isGuest = user?.role === 'guest';
+        const isMember = user?.role === 'member';
         const hasRoleAccess = !currentConfig.role || currentConfig.role === user?.role;
         
         if (currentConfig.href && hasRoleAccess && !isGuest) {

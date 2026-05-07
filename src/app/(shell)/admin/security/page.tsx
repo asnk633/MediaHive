@@ -15,7 +15,7 @@ import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/com
 import { Badge } from "@/components/ui/badge";
 
 interface SystemSettings {
-    allowGuestTasks: boolean;
+    allowMemberTasks: boolean;
     publicFilesDefault: boolean;
     driveAutoScan: boolean;
 }
@@ -89,13 +89,14 @@ export default function SecurityRulesPage() {
                             <h3 className="text-sm font-medium text-slate-300 flex items-center gap-2">
                                 <Users className="w-4 h-4" /> Role Access Model
                             </h3>
-                            <div className="space-y-2">
+                             <div className="space-y-2">
                                 <RoleBadge role="Admin" access="Full Access" color="bg-purple-500/10 text-purple-400 border-purple-500/20" />
-                                <RoleBadge role="Team" access="Operational Access (No Delete)" color="bg-blue-500/10 text-blue-400 border-blue-500/20" />
-                                <RoleBadge role="Guest" access="Request Only (Pending Approval)" color="bg-yellow-500/10 text-yellow-400 border-yellow-500/20" />
+                                <RoleBadge role="Manager" access="Full Access (Strategic)" color="bg-indigo-500/10 text-indigo-400 border-indigo-500/20" />
+                                <RoleBadge role="Team" access="Operational Access (Execution)" color="bg-blue-500/10 text-blue-400 border-blue-500/20" />
+                                <RoleBadge role="Member" access="Request Only (Pending Approval)" color="bg-emerald-500/10 text-emerald-400 border-emerald-500/20" />
                             </div>
                         </div>
-
+ 
                         <div className="space-y-4">
                             <h3 className="text-sm font-medium text-slate-300 flex items-center gap-2">
                                 <Lock className="w-4 h-4" /> Data Protection
@@ -117,7 +118,7 @@ export default function SecurityRulesPage() {
                         </div>
                     </CardContent>
                 </Card>
-
+ 
                 {/* Section 2: Active Controls */}
                 <div className="space-y-4">
                     <h2 className="text-xl font-semibold text-white flex items-center gap-2">
@@ -128,16 +129,16 @@ export default function SecurityRulesPage() {
                         Toggle these rules to adjust system behavior in real-time.
                         <strong> All changes are logged as CRITICAL security events.</strong>
                     </p>
-
+ 
                     <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                         <SecurityToggle
-                            label="Guest Task Creation"
-                            description="Allow guests to submit tasks for approval."
-                            checked={settings?.allowGuestTasks ?? true}
+                            label="Member Task Creation"
+                            description="Allow members to submit tasks for approval."
+                            checked={settings?.allowMemberTasks ?? true}
                             // Fix: handleToggle logic in parent handles the flip. 
                             // But Switch onCheckedChange gives NEW value.
                             // So let's align.
-                            onChange={(checked: boolean) => handleToggle('allowGuestTasks', !checked)}
+                            onChange={(checked: boolean) => handleToggle('allowMemberTasks', !checked)}
                             icon={<Users className="w-5 h-5 text-indigo-400" />}
                             loading={loading}
                         />

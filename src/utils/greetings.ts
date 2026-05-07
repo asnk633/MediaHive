@@ -31,7 +31,7 @@ const teamWelcomeMessages = [
     "You bring the skill. We’ve got the system."
 ];
 
-const guestWelcomeMessages = [
+const memberWelcomeMessages = [
     "Welcome. You’re in the right place.",
     "Hello! Submit your request and we’ll take it from here.",
     "Welcome to the Media Hub — let’s get started.",
@@ -65,8 +65,9 @@ function getRandomMessage(role: string): string {
     const normalizedRole = role.toLowerCase();
 
     if (normalizedRole === 'admin') messages = adminWelcomeMessages;
-    else if ((normalizedRole === 'manager' || normalizedRole === 'member')) messages = teamWelcomeMessages;
-    else messages = guestWelcomeMessages; // default to guest for any other role
+    else if (normalizedRole === 'manager') messages = adminWelcomeMessages; // Or give them team
+    else if (normalizedRole === 'team') messages = teamWelcomeMessages;
+    else messages = memberWelcomeMessages; // default to member for any other role
 
     const randomIndex = Math.floor(Math.random() * messages.length);
     return messages[randomIndex];
@@ -99,7 +100,7 @@ function resolveName(user: any): string {
  * Generates the full welcome object.
  */
 export function getWelcomeData(user: any): WelcomeMessage {
-    const role = user?.role || 'guest';
+    const role = user?.role || 'member';
     const name = resolveName(user);
     const timeGreeting = getTimeBasedGreeting();
 

@@ -75,7 +75,7 @@ export async function POST(req: NextRequest) {
         // Check if user is admin or team (guests might be restricted depending on policy)
         // For now, allowing guests to create if that's the requirement, but usually it's Admin/Team.
         // The prompt says "Read-only for guest" in context of RLS, so let's enforce it here too.
-        if (user.role === 'guest') {
+        if (user.role === 'member') {
             return NextResponse.json({ error: 'Guests cannot create campaigns' }, { status: 403 });
         }
 

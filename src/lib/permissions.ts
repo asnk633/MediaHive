@@ -1,4 +1,4 @@
-export type Role = 'admin' | 'manager' | 'member' | 'guest' | 'team'; // Maintain 'team' for compat
+export type Role = 'admin' | 'manager' | 'team' | 'member';
 
 export type Permission =
     | 'read:tasks'
@@ -32,19 +32,15 @@ export const ROLES: Record<string, Permission[]> = {
         'read:events', 'create:events', 'edit:events',
         'read:users', 'upload:files', 'read:reports'
     ],
+    team: [ 
+        'read:tasks', 'create:tasks', 'edit:tasks', 'edit:task_status', 'edit:task_priority',
+        'read:events', 'create:events', 'edit:events',
+        'read:users', 'upload:files'
+    ],
     member: [
         'read:tasks', 'create:tasks', 'edit:task_status',
         'read:events', 'create:events',
         'upload:files'
-    ],
-    team: [ // Legacy map to member/manager mix
-        'read:tasks', 'create:tasks', 'edit:task_status', 'edit:task_priority',
-        'read:events', 'create:events', 'edit:events',
-        'read:users', 'upload:files', 'read:reports'
-    ],
-    guest: [
-        'read:tasks', 'create:tasks',
-        'read:events'
     ]
 };
 
@@ -62,7 +58,7 @@ function getUserId(user: any): string {
 
 export function canEditTask(user: any, task: any, currentRole?: Role): boolean {
     if (!user || !task) return false;
-    const role = currentRole || user.role?.toLowerCase() || 'guest';
+    const role = currentRole || user.role?.toLowerCase() || 'member';
     const userId = getUserId(user);
 
     // Admin/Manager -> always
@@ -78,27 +74,27 @@ export function canEditTask(user: any, task: any, currentRole?: Role): boolean {
         return assignees.some((a: any) => getUserId(a) === userId);
     }
 
-    // Guest -> only if they created it
+    // Member -> only if they created it
     const creatorId = getUserId(task.created_by);
     return creatorId === userId;
 }
 
 export function canChangeStatus(user: any, task: any, currentRole?: Role): boolean {
     if (!user || !task) return false;
-    const role = currentRole || user.role?.toLowerCase() || 'guest';
+    const role = currentRole || user.role?.toLowerCase() || 'member';
     const userId = getUserId(user);
 
     // Admin/Manager/Member -> yes
     if (['admin', 'manager', 'member', 'team'].includes(role)) return true;
 
-    // Guest -> only if creator
+    // Member -> only if creator
     const creatorId = getUserId(task.created_by);
     return creatorId === userId;
 }
 
 export function canEditPriority(user: any, task: any, currentRole?: Role): boolean {
     if (!user || !task) return false;
-    const role = currentRole || user.role?.toLowerCase() || 'guest';
+    const role = currentRole || user.role?.toLowerCase() || 'member';
 
     // Admin/Manager -> yes
     if (['admin', 'manager'].includes(role)) return true;
@@ -108,7 +104,7 @@ export function canEditPriority(user: any, task: any, currentRole?: Role): boole
 
 export function canAssignTask(user: any, currentRole?: Role): boolean {
     if (!user) return false;
-    const role = currentRole || user.role?.toLowerCase() || 'guest';
+    const role = currentRole || user.role?.toLowerCase() || 'member';
 
     // Admin/Manager -> yes
     return ['admin', 'manager'].includes(role);
@@ -117,7 +113,7 @@ export function canAssignTask(user: any, currentRole?: Role): boolean {
 export function hasPermission(role: Role | string, permission: Permission): boolean {
     if (!role) return false;
     const r = role.toLowerCase();
-    const permissions = ROLES[r] || ROLES.guest;
+    const permissions = ROLES[r] || ROLES.member;
     return permissions.includes(permission);
 }
 
@@ -138,12 +134,12 @@ export function hasRole(user: any, role: Role | Role[]): boolean {
  * Used for legacy compatibility with components not yet migrated to usePermissions hook.
  */
 export function resolveUserRole(user: any): Role {
-    if (!user) return 'guest';
+    if (!user) return 'member';
     
     // 1. Direct role property
     if (user.role) {
         const r = user.role.toLowerCase();
-        if (['admin', 'manager', 'member', 'team', 'guest'].includes(r)) {
+        if (['admin', 'manager', 'member', 'team'].includes(r)) {
             return r as Role;
         }
     }
@@ -152,5 +148,5 @@ export function resolveUserRole(user: any): Role {
     if (user.isAdmin) return 'admin';
     if (user.isTeam) return 'team';
     
-    return 'guest';
+    return 'member';
 }

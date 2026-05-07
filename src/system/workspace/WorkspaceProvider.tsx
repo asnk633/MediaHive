@@ -11,16 +11,18 @@ export interface Workspace {
     institution_id: string;
     name: string;
     features?: Record<string, boolean>;
+    tenantSettings?: Record<string, any>;
 }
 
 interface WorkspaceContextType {
     currentWorkspace: Workspace | null;
     currentWorkspaceId: string | null;
     availableWorkspaces: Workspace[];
-    currentRole: 'admin' | 'manager' | 'member' | 'team' | 'guest';
+    currentRole: 'admin' | 'manager' | 'member' | 'team';
     setWorkspace: (workspaceId: string) => void;
     loading: boolean;
     isSingleWorkspace: boolean;
+    tenantSettings: Record<string, any>;
 }
 
 const WorkspaceContext = createContext<WorkspaceContextType | null>(null);
@@ -32,6 +34,7 @@ export function WorkspaceProvider({ children }: { children: React.ReactNode }) {
     const [currentWorkspace, setCurrentWorkspace] = useState<Workspace | null>(null);
     const [availableWorkspaces, setAvailableWorkspaces] = useState<Workspace[]>([]);
     const [loading, setLoading] = useState(true);
+    const [tenantSettings, setTenantSettings] = useState<Record<string, any>>({});
 
     const currentWorkspaceId = currentWorkspace?.institution_id || null;
     const isSingleWorkspace = !loading && availableWorkspaces.length <= 1 && user?.role !== 'admin';
@@ -50,29 +53,36 @@ export function WorkspaceProvider({ children }: { children: React.ReactNode }) {
             if (uiError) throw uiError;
             const assignedIds = ((userInsts as any[]) || []).map((ui: any) => ui.institution_id) || [];
 
-            // 2. Fetch institution details
-            let query = supabase
+            // 2. Fetch institution details and tenant settings in parallel
+            let instQuery = supabase
                 .from('institutions')
                 .select('*')
                 .eq('tenant_id', tenantId);
 
-            // Role-based filtering: Team/Guest/Manager can only see assigned institutions
+            // Role-based filtering: Team/Member/Manager can only see assigned institutions
             // Global Admin can see all in the tenant
             if (user?.role !== 'admin') {
                 if (assignedIds.length === 0) return [];
-                query = query.in('id', assignedIds);
+                instQuery = instQuery.in('id', assignedIds);
             }
 
-            const { data: insts, error } = await query;
+            const [instsRes, tenantRes] = await Promise.all([
+                instQuery,
+                supabase.from('tenants').select('settings').eq('id', tenantId).single()
+            ]);
 
-            if (error) throw error;
+            if (instsRes.error) throw instsRes.error;
+            
+            const fetchedTenantSettings = tenantRes.data?.settings || {};
+            setTenantSettings(fetchedTenantSettings);
 
-            const workspaces: Workspace[] = ((insts as any[]) || [])
+            const workspaces: Workspace[] = ((instsRes.data as any[]) || [])
                 .map((inst: any) => ({
                     tenant_id: inst.tenant_id,
                     institution_id: inst.id,
                     name: inst.name,
-                    features: inst.features || {}
+                    features: inst.features || {},
+                    tenantSettings: fetchedTenantSettings
                 }));
 
             setAvailableWorkspaces(workspaces);
@@ -121,7 +131,8 @@ export function WorkspaceProvider({ children }: { children: React.ReactNode }) {
                         tenant_id: String(user.tenant_id || ''),
                         institution_id: instIdStr,
                         name: "Default Institution",
-                        features: {}
+                        features: {},
+                        tenantSettings: tenantSettings
                     };
                     setCurrentWorkspace(syntheticWorkspace);
                     console.log(`[Workspace] Applied synthetic fallback for primary institution: ${instIdStr}`);
@@ -164,8 +175,8 @@ export function WorkspaceProvider({ children }: { children: React.ReactNode }) {
                     Object.keys(FEATURE_REGISTRY).forEach((key) => {
                         results[key] = canAccessFeature(
                             key as FeatureKey,
-                            (user?.role as UserRole) || 'guest',
-                            currentWorkspace ? { id: currentWorkspace.institution_id, features: currentWorkspace.features } : undefined
+                            (user?.role as UserRole) || 'member',
+                            currentWorkspace ? { id: currentWorkspace.institution_id, features: currentWorkspace.features, tenantSettings } : undefined
                         );
                     });
                     return results;
@@ -175,7 +186,7 @@ export function WorkspaceProvider({ children }: { children: React.ReactNode }) {
     }, [currentWorkspace, currentWorkspaceId, availableWorkspaces, user?.role]);
 
     const currentRole = useMemo(() => {
-        if (!user) return 'guest';
+        if (!user) return 'member';
 
         
         // Check workspace-specific role
@@ -188,7 +199,7 @@ export function WorkspaceProvider({ children }: { children: React.ReactNode }) {
             return user.role as any;
         }
         
-        return 'guest';
+        return 'member';
     }, [user, currentWorkspaceId]);
 
     return (
@@ -199,7 +210,8 @@ export function WorkspaceProvider({ children }: { children: React.ReactNode }) {
             currentRole,
             setWorkspace,
             loading,
-            isSingleWorkspace
+            isSingleWorkspace,
+            tenantSettings
         }}>
             {children}
         </WorkspaceContext.Provider>

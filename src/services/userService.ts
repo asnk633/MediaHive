@@ -63,7 +63,7 @@ export const UserService = {
                 return [
                     { uid: 'mock_1', id: 'mock_1', name: 'Admin User', email: 'admin@thaiba.com', role: 'admin', institution_id: 'inst_1', created_at: new Date().toISOString(), isActive: true },
                     { uid: 'mock_2', id: 'mock_2', name: 'Team Lead', email: 'team@thaiba.com', role: 'manager', department_id: 'dept_1', created_at: new Date().toISOString(), isActive: true },
-                    { uid: 'mock_3', id: 'mock_3', name: 'Guest User', email: 'guest@thaiba.com', role: 'guest', created_at: new Date().toISOString(), isActive: true }
+                    { uid: 'mock_3', id: 'mock_3', name: 'Member User', email: 'member@thaiba.com', role: 'member', created_at: new Date().toISOString(), isActive: true }
                 ];
             }
 

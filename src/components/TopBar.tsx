@@ -128,7 +128,7 @@ export default function TopBar({ title = "MediaHive" }: { title?: string }) {
             <DropdownMenuContent align="end" className="w-56 bg-slate-950/80 backdrop-blur-xl border border-white/10 rounded-2xl shadow-2xl p-1 mt-2 ring-1 ring-white/5 animate-in fade-in zoom-in-95 duration-200">
               <div className="px-3 py-2 border-b border-white/5 mb-1">
                 <p className="text-sm font-medium text-white">{user?.name || 'User'}</p>
-                <p className="text-[10px] font-black uppercase tracking-widest text-indigo-400 mt-0.5">{currentRole || 'Guest'}</p>
+                <p className="text-[10px] font-black uppercase tracking-widest text-indigo-400 mt-0.5">{currentRole || 'Member'}</p>
                 <p className="text-xs text-slate-400 truncate mt-1">{user?.email}</p>
               </div>
               <DropdownMenuItem onClick={() => nativeNavigate('/profile', router, 'TopBar:Profile')} className="text-sm py-2 cursor-pointer focus:bg-surface focus:text-white rounded-sm">

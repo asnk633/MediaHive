@@ -39,7 +39,7 @@ export async function selfHealUser(userId: string, email?: string): Promise<bool
         id: userId,
         email: email || user?.email,
         full_name: user?.user_metadata?.full_name || 'New User',
-        role: 'guest',
+        role: 'member',
         status: 'active',
         tenant_id: tenant_id,
         created_at: new Date().toISOString()

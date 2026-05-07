@@ -10,12 +10,12 @@ export default function GovernancePage() {
     const router = useRouter();
 
     useEffect(() => {
-        if (authStatus === 'unauthenticated' || (user && user.role === 'guest')) {
+        if (authStatus === 'unauthenticated' || (user && user.role === 'member')) {
             router.push('/');
         }
     }, [user, authStatus, router]);
 
-    if (!user || user.role === 'guest') return null;
+    if (!user || user.role === 'member') return null;
 
     return <GovernanceDashboard />;
 }

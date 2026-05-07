@@ -51,11 +51,11 @@ describe('TasksPage - New Task Button Visibility', () => {
         name: 'Admin User'
     };
 
-    const mockGuestUser = {
-        uid: 'guest-123',
-        email: 'guest@test.com',
-        role: 'guest',
-        name: 'Guest User'
+    const mockMemberUser = {
+        uid: 'member-123',
+        email: 'member@test.com',
+        role: 'member',
+        name: 'Member User'
     };
 
     const renderWithAuth = (user: any) => {
@@ -87,8 +87,8 @@ describe('TasksPage - New Task Button Visibility', () => {
      * (Based on current implementation - button is NOT role-gated)
      * If this changes, update test accordingly
      */
-    test('Guest: New Task button is visible', async () => {
-        renderWithAuth(mockGuestUser);
+    test('Member: New Task button is visible', async () => {
+        renderWithAuth(mockMemberUser);
 
         await screen.findByText('Tasks');
 
@@ -98,8 +98,8 @@ describe('TasksPage - New Task Button Visibility', () => {
     });
 
     /**
-     * REAL USER RISK: View switcher should only be visible to non-guest users
-     * Guests should not see Kanban/List/Confidence toggle
+     * REAL USER RISK: View switcher should only be visible to non-member users
+     * Members should not see Kanban/List/Confidence toggle
      */
     test('Admin: View switcher is visible', async () => {
         renderWithAuth(mockAdminUser);
@@ -118,8 +118,8 @@ describe('TasksPage - New Task Button Visibility', () => {
      * REAL USER RISK: Guests should not see view switcher
      * This prevents confusion and enforces simplified guest UX
      */
-    test('Guest: View switcher is hidden', async () => {
-        renderWithAuth(mockGuestUser);
+    test('Member: View switcher is hidden', async () => {
+        renderWithAuth(mockMemberUser);
 
         await screen.findByText('Tasks');
 
@@ -147,8 +147,8 @@ describe('TasksPage - New Task Button Visibility', () => {
     /**
      * REAL USER RISK: Non-admins should not see Admin Confidence Panel
      */
-    test('Guest: Confidence view button is hidden', async () => {
-        renderWithAuth(mockGuestUser);
+    test('Member: Confidence view button is hidden', async () => {
+        renderWithAuth(mockMemberUser);
 
         await screen.findByText('Tasks');
 

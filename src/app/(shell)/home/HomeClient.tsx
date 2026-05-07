@@ -284,7 +284,7 @@ export default function HomeClient() {
                                             New Event
                                         </button>
                                     </Magnetic>
-                                    {currentRole !== 'guest' && (
+                                    {currentRole !== 'member' && (
                                         <Magnetic strength={0.3}>
                                             <button 
                                                 onClick={() => router.push('/campaigns/new')} 
@@ -310,7 +310,7 @@ export default function HomeClient() {
                             </div>
                         </motion.div>
 
-                        {currentRole !== 'guest' && (
+                        {currentRole !== 'member' && (
                             <div className="space-y-6">
                                 <div className="flex items-baseline gap-3 ml-2">
                                     <Zap size={18} className="text-amber-400 self-center" />
@@ -363,7 +363,7 @@ export default function HomeClient() {
                         )}
 
                         {/* Collapsed Sections */}
-                        {currentRole !== 'guest' && (
+                        {currentRole !== 'member' && (
                             <div className="space-y-8 pt-4 border-t border-white/5">
                                 {/* 5 - Insights Group */}
                                 <DashboardSection

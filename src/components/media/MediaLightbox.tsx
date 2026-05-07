@@ -154,7 +154,7 @@ export function MediaLightbox({ file, files, loading = false, onClose, onNavigat
 
   // Handle uploading a new version
   const handleUploadNewVersion = async (newFile: File) => {
-    if (!user || user.role === 'guest') return;
+    if (!user || user.role === 'member') return;
 
     setIsUploading(true);
     try {
@@ -659,9 +659,9 @@ export function MediaLightbox({ file, files, loading = false, onClose, onNavigat
                         </form>
                       )}
 
-                      {user && user.role === 'guest' && (
+                      {user && user.role === 'member' && (
                         <p className="text-[var(--text-secondary)] text-sm mt-2 italic">
-                          Guests can view comments but cannot add new ones.
+                          Members can view comments but cannot add new ones.
                         </p>
                       )}
                     </div>

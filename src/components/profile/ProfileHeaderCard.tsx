@@ -96,7 +96,7 @@ export function ProfileHeaderCard({
                         "px-3 py-0.5 rounded-full text-[10px] font-medium uppercase tracking-wider",
                         getRoleBadgeColors(role)
                     )}>
-                        {is_super_admin ? "SUPER ADMIN" : (role || "Guest")}
+                        {is_super_admin ? "SUPER ADMIN" : (role || "Member")}
                     </span>
                     {user?.official_name && (
                         <span className="text-sm text-muted-foreground border-l border-border pl-2">{user.official_name}</span>

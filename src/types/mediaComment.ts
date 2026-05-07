@@ -5,7 +5,7 @@ export interface MediaComment {
   mediaId: string; // Reference to the media file
   authorId: string; // UID of the commenter
   authorName: string; // Display name of the commenter
-  authorRole: string; // Role of the commenter ('admin' | 'team' | 'guest')
+  authorRole: string; // Role of the commenter ('admin' | 'team' | 'member')
   content: string; // The comment text
   created_at: any; // Timestamp
 }

@@ -149,9 +149,9 @@ export default function TasksNewClient() {
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [user.department_id, user.institution_id, user.department_id, user.institution_id, departmentsList.length, institutionsList.length]);
 
-    const isGuest = user?.role?.toLowerCase() === 'guest';
+    const isMember = user?.role?.toLowerCase() === 'member';
     const isAdmin = user?.role === 'admin';
-    const isTeam = user?.role === 'manager' || user?.role === 'member';
+    const isTeam = user?.role === 'manager' || user?.role === 'team';
 
     // Fetch real team members from Firestore
     useEffect(() => {
@@ -210,8 +210,8 @@ export default function TasksNewClient() {
                 // Team assigns self
                 finalAssignedTo = [{ uid: user.uid, name: user.name || 'Unknown' }];
             }
-            // Guest: finalAssignedTo remains empty array (Admin assigns later)
-
+            // Member: finalAssignedTo remains empty array (Admin assigns later)
+ 
             // Prepare On Behalf Of Data
             let onBehalfOfData = undefined;
             // Only process if toggle is Active AND we have a selected ID
@@ -226,12 +226,12 @@ export default function TasksNewClient() {
                     if (inst) onBehalfOfData = { id: inst.id, name: inst.name, type: 'institution' };
                 }
             }
-
+ 
             // Resolve Structure IDs
             let department_id = null;
             let institution_id = user.institution_id;
             let departmentName = '';
-
+ 
             if (selectedOrgId.startsWith('dept_')) {
                 const id = selectedOrgId.split('_')[1];
                 department_id = id;
@@ -244,12 +244,12 @@ export default function TasksNewClient() {
                 institution_id = id;
                 department_id = null;
             }
-
+ 
             const newTaskData = {
                 title,
                 description,
-                status: isGuest ? 'pending' : 'todo',
-                priority: isGuest ? 'low' : priority,
+                status: isMember ? 'pending' : 'todo',
+                priority: isMember ? 'low' : priority,
                 due_date: due_date ? (typeof due_date === 'string' ? new Date(due_date).toISOString() : (due_date as Date).toISOString()) : new Date().toISOString(),
                 department: departmentName,
                 department_id: department_id,
@@ -260,7 +260,7 @@ export default function TasksNewClient() {
                 campaign_id: campaign_id || undefined,
                 on_behalf_of: onBehalfOfData
             };
-
+ 
             const { data: newTask, error: insertError } = await CanonicalDataService.createRecord('tasks', newTaskData, 'task');
             if (insertError) { 
                 // In offline mode, createRecord might return data: null and error: null if enqueued
@@ -274,7 +274,7 @@ export default function TasksNewClient() {
             }
             
             const newTaskId = newTask?.id || uuidv4(); // Fallback ID for offline attachments if needed
-
+ 
             // Upload Attachments natively
             if (files.length > 0) {
                 setUploadProgress(`0/${files.length}`);
@@ -288,7 +288,7 @@ export default function TasksNewClient() {
                         // Assuming bucket is named 'task_attachments'
                         await supabase.storage.from('task_attachments').upload(filePath, file);
                         const { data: publicUrlData } = supabase.storage.from('task_attachments').getPublicUrl(filePath);
-
+ 
                         finalFiles.push({
                             id: uuidv4(),
                             name: file.name,
@@ -309,20 +309,20 @@ export default function TasksNewClient() {
                     await supabase.from('tasks').update({ files: finalFiles }).eq('id', newTaskId);
                 }
             }
-
-            // Notify Admins if Guest created it
-            if (isGuest) {
+ 
+            // Notify Admins if Member created it
+            if (isMember) {
                 try {
                     const { pushNotification } = await import('@/services/alertService');
                     const admins = await UserService.getAdmins();
-
+ 
                     await Promise.all(admins.map(admin =>
                         pushNotification({
                             user_id: admin.uid,
                             created_by: user.uid,
                             type: 'task_assigned', // Using valid type
                             title: 'New Pending Task',
-                            message: `${user.official_name || user.name || user.email || 'Guest'} created "${title}"`,
+                            message: `${user.official_name || user.name || user.email || 'Member'} created "${title}"`,
                             entity_type: 'task',
                             entity_id: newTaskId,
                             action_url: `/tasks/view?id=${newTaskId}`,
@@ -338,7 +338,7 @@ export default function TasksNewClient() {
             throw err; // Re-throw for useFormSubmit to catch
         }
     };
-
+ 
     const { isSubmitting, handleSubmit: handleProtectedSubmit } = useFormSubmit({
         onSubmit: submitTask,
         onSuccess: () => {
@@ -352,16 +352,16 @@ export default function TasksNewClient() {
             setError(err.message || COPY.errors.generic);
         }
     });
-
+ 
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
         await handleProtectedSubmit(undefined);
     };
-
+ 
     const handleRetry = async () => {
         await handleProtectedSubmit(undefined);
     };
-
+ 
     // Power User: Cmd/Ctrl + Enter to Submit
     useEffect(() => {
         const handleKeyDown = (e: KeyboardEvent) => {
@@ -373,7 +373,7 @@ export default function TasksNewClient() {
         window.addEventListener('keydown', handleKeyDown);
         return () => window.removeEventListener('keydown', handleKeyDown);
     }, []);
-
+ 
     // Escape to Cancel (Task 79)
     useEffect(() => {
         const handleEscape = (e: KeyboardEvent) => {
@@ -389,26 +389,26 @@ export default function TasksNewClient() {
         window.addEventListener('keydown', handleEscape);
         return () => window.removeEventListener('keydown', handleEscape);
     }, [router, searchParams]);
-
+ 
     // Date Shortcuts (Task 75)
     useEffect(() => {
         const handleDateShortcut = (e: KeyboardEvent) => {
             if (e.altKey && (e.key === 'ArrowRight' || e.key === 'ArrowLeft')) {
                 e.preventDefault(); // Prevent browser nav (Alt+Left is Back)
-
+ 
                 const current = due_date ? new Date(due_date) : new Date();
                 // If invalid date, start today
                 if (isNaN(current.getTime())) {
                     setDueDate(new Date());
                     return;
                 }
-
+ 
                 // Add/Sub day
                 const change = e.key === 'ArrowRight' ? 1 : -1;
                 current.setDate(current.getDate() + change);
-
+ 
                 setDueDate(current);
-
+ 
                 // Quiet Feedback
                 toast.dismiss(); // Prevent stacking
                 toast(`Due: ${format(current, 'EEE, MMM d')}`, {
@@ -420,7 +420,7 @@ export default function TasksNewClient() {
         window.addEventListener('keydown', handleDateShortcut);
         return () => window.removeEventListener('keydown', handleDateShortcut);
     }, [due_date]);
-
+ 
     return (
         <PageLayout mode="plain">
             <div className="flex flex-col items-center">
@@ -445,7 +445,7 @@ export default function TasksNewClient() {
                             <h1 className="text-lg font-bold text-white tracking-wide">New Task</h1>
                             <DraftIndicator isSaved={isDraftSaved} className="w-[80px] justify-end" />
                         </div>
-
+ 
                         {campaignName && (
                             <div className="mb-6 p-3 bg-blue-500/10 border border-blue-500/20 rounded-xl flex items-center gap-3 animate-in fade-in slide-in-from-top-2">
                                 <div className="w-8 h-8 rounded-full bg-blue-500/20 flex items-center justify-center text-blue-400">
@@ -457,14 +457,14 @@ export default function TasksNewClient() {
                                 </div>
                             </div>
                         )}
-
+ 
                         {/* Form */}
                         <form onSubmit={handleSubmit} className="space-y-6">
                             {/* ... (keep existing form content) ... */}
                             {/* I will truncate this for the tool call but I should be careful */}
                             {/* Actually I'll use use multi_replace if form is large */}
                             {/* Wait, the form content is large. I'll just replace the wrapper. */}
-
+ 
                             {/* Create As Toggle - Admin/Team Only */}
                             {canCreateOnBehalf && (
                                 <div className="flex bg-white/5 p-1 rounded-xl w-full mb-4">
@@ -484,8 +484,8 @@ export default function TasksNewClient() {
                                     </button>
                                 </div>
                             )}
-
-                            {/* Title & Desc Group */}
+ 
+                            {/* Title \u0026 Desc Group */}
                             <div className="space-y-5">
                                 <div className="space-y-2">
                                     <label className="block text-sm font-medium text-white/70 mb-2">Task Title</label>
@@ -497,7 +497,7 @@ export default function TasksNewClient() {
                                         className="w-full bg-black/20 backdrop-blur-sm p-4 rounded-2xl border border-white/5 shadow-inner focus:bg-black/40 focus:ring-2 focus:ring-blue-500/30 focus:border-blue-500/50 outline-none transition-all placeholder:text-gray-700 font-medium text-white text-lg"
                                     />
                                 </div>
-
+ 
                                 <div className="space-y-2">
                                     <label className="block text-sm font-medium text-white/70 mb-2">{COPY.labels.description}</label>
                                     <textarea
@@ -510,8 +510,8 @@ export default function TasksNewClient() {
                                     />
                                 </div>
                             </div>
-
-                            {/* Date & Department/Institution Grid */}
+ 
+                            {/* Date \u0026 Department/Institution Grid */}
                             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 pt-2">
                                 <div className="space-y-0.5">
                                     <DateSelector 
@@ -520,12 +520,12 @@ export default function TasksNewClient() {
                                         onChange={setDueDate}
                                     />
                                 </div>
-
+ 
                                 {/* Unified Department or Institution Dropdown (Myself Mode) */}
                                 {createAs === 'myself' && (
                                     <div className="space-y-0.5">
-                                        {isGuest || (departmentsList.length + institutionsList.length === 1) ? (
-                                            /* Read-Only View for Guests or Single-Option Users */
+                                        {isMember || (departmentsList.length + institutionsList.length === 1) ? (
+                                            /* Read-Only View for Members or Single-Option Users */
                                             <div className="space-y-2">
                                                 <label className="block text-sm font-medium text-white/70">
                                                     Requested By <span className="text-white/40 text-xs">(Department / Institution)</span>
@@ -547,8 +547,8 @@ export default function TasksNewClient() {
                                                         })()}
                                                     </span>
                                                     {/* Show different badge based on why it's locked */}
-                                                    {isGuest && selectedOrgId && <span className="ml-auto text-xs text-green-400/70 italic">Auto-set</span>}
-                                                    {!isGuest && (departmentsList.length + institutionsList.length === 1) && <span className="ml-auto text-xs text-blue-400/70 italic">Verified</span>}
+                                                    {isMember \u0026\u0026 selectedOrgId \u0026\u0026 \u003cspan className=\"ml-auto text-xs text-green-400/70 italic\"\u003eAuto-set\u003c/span\u003e}
+                                                    {!isMember \u0026\u0026 (departmentsList.length + institutionsList.length === 1) \u0026\u0026 \u003cspan className=\"ml-auto text-xs text-blue-400/70 italic\"\u003eVerified\u003c/span\u003e}
                                                 </div>
                                             </div>
                                         ) : (

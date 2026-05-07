@@ -74,7 +74,7 @@ export default function InventoryView() {
                     })
                 : Promise.resolve([]);
 
-            // 3. Fetch My Requests (Optional - Guest/Standard Only)
+            // 3. Fetch My Requests (Optional - Member/Standard Only)
             const requestsPromise = (user && !['admin', 'manager', 'team'].includes(currentRole))
                 ? inventoryRequestService.getMyRequests(user.uid, currentWorkspaceId || '')
                     .catch(err => {
@@ -158,7 +158,7 @@ export default function InventoryView() {
             // Admin/Manager/Team -> Issue directly (Shortcut)
             setIssueDialogItem(item);
         } else {
-            // Member/Guest -> Request
+            // Member/Standard -> Request
             setRequestDialogItem(item);
         }
     }, [currentRole]);

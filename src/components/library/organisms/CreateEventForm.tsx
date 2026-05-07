@@ -374,8 +374,8 @@ export const CreateEventForm = ({ initialDate, initialEndDate, initialEvent, onS
             } else {
                 organizer = {
                     uid: user?.uid || 'anon',
-                    name: user?.official_name || user?.name || 'Guest',
-                    role: user?.role || 'guest'
+                    name: user?.official_name || user?.name || 'Member',
+                    role: user?.role || 'member'
                 };
             }
 
@@ -853,7 +853,7 @@ export const CreateEventForm = ({ initialDate, initialEndDate, initialEvent, onS
                                     </Select>
                                 </div>
                             ) : (
-                                // Guest/Team: Read-only (auto-filled from user profile)
+                                // Member/Team: Read-only (auto-filled from user profile)
                                 <>
                                     <div className={inputContainerClasses}>
                                         <Lock size={16} className="absolute left-4 top-1/2 -translate-y-1/2 text-muted z-10" />

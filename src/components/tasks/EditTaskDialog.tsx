@@ -141,7 +141,7 @@ export function EditTaskDialog({ open, onOpenChange, task, onUpdate }: EditTaskD
         try {
             const list = await CampaignService.getCampaigns({
                 uid: user.uid,
-                role: user.role || 'guest'
+                role: user.role || 'member'
             });
             setCampaigns(list);
         } catch (error) {

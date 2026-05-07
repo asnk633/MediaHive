@@ -26,7 +26,7 @@ exports.users = (0, sqlite_core_1.sqliteTable)('users', {
     passwordHash: (0, sqlite_core_1.text)('password_hash').notNull(),
     fullName: (0, sqlite_core_1.text)('full_name').notNull(),
     avatar_url: (0, sqlite_core_1.text)('avatar_url'),
-    role: (0, sqlite_core_1.text)('role').notNull(), // 'admin', 'team', 'guest'
+    role: (0, sqlite_core_1.text)('role').notNull(), // 'admin', 'manager', 'team', 'member'
     institution_id: (0, sqlite_core_1.integer)('institution_id').notNull().references(function () { return exports.institutions.id; }),
     tenantId: (0, sqlite_core_1.integer)('tenant_id').notNull().references(function () { return exports.tenants.id; }),
     created_at: (0, sqlite_core_1.text)('created_at').notNull(),
@@ -117,7 +117,7 @@ exports.files = (0, sqlite_core_1.sqliteTable)('files', {
     fileType: (0, sqlite_core_1.text)('file_type').notNull(),
     fileSize: (0, sqlite_core_1.integer)('file_size').notNull(),
     folder: (0, sqlite_core_1.text)('folder'),
-    visibility: (0, sqlite_core_1.text)('visibility').notNull(), // 'all', 'team', 'guest'
+    visibility: (0, sqlite_core_1.text)('visibility').notNull(), // 'all', 'team', 'member'
     uploadedById: (0, sqlite_core_1.integer)('uploaded_by_id').notNull().references(function () { return exports.users.id; }),
     institution_id: (0, sqlite_core_1.integer)('institution_id').notNull().references(function () { return exports.institutions.id; }),
     tenantId: (0, sqlite_core_1.integer)('tenant_id').notNull().references(function () { return exports.tenants.id; }),

@@ -83,8 +83,8 @@ if (db.tasks.size === 0) {
   const t3: Task = {
     id: makeId("tsk"),
     institution_id: "1",
-    title: "Guest request: drone b-roll from campus",
-    description: "Sample guest submission requiring approval.",
+    title: "Member request: drone b-roll from campus",
+    description: "Sample member submission requiring approval.",
     status: "pending",
     priority: "low",
     due_date: null,

@@ -136,7 +136,7 @@ export const ProfileSettingsView = () => {
                     <Label>Role</Label>
                     <div className="flex items-center gap-2">
                         <Badge variant="neutral" className="capitalize bg-blue-500/10 text-blue-400 border-blue-500/20">
-                            {user?.role || 'Guest'}
+                            {user?.role || 'Member'}
                         </Badge>
                     </div>
                 </div>

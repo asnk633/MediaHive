@@ -73,9 +73,9 @@ export async function PUT(
             return NextResponse.json({ error: 'Missing tenant context' }, { status: 403 });
         }
 
-        // Guests cannot update campaigns
+        // Members cannot update campaigns
         if (user.role === 'member') {
-            return NextResponse.json({ error: 'Guests cannot update campaigns' }, { status: 403 });
+            return NextResponse.json({ error: 'Members cannot update campaigns' }, { status: 403 });
         }
 
         const body = await req.json();

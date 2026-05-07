@@ -36,7 +36,7 @@ export const ActiveCampaignsWidget = () => {
 
                 const data = await CampaignService.getCampaigns({
                     uid: user.uid,
-                    role: user.role || 'guest'
+                    role: user.role || 'member'
                 });
                 // Filter out completed/archived if needed, keeping simple for now
                 const active = data.filter(c => c.phase !== 'completed');

@@ -49,7 +49,7 @@ export async function POST(request: NextRequest) {
         }
 
         // Validate allowed keys
-        const allowedKeys = ['allowGuestTasks', 'publicFilesDefault', 'driveAutoScan'];
+        const allowedKeys = ['allowMemberTasks', 'publicFilesDefault', 'driveAutoScan'];
         if (!allowedKeys.includes(key)) {
             return NextResponse.json({ error: 'Invalid setting key' }, { status: 400 });
         }

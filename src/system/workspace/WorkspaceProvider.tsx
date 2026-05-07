@@ -188,18 +188,22 @@ export function WorkspaceProvider({ children }: { children: React.ReactNode }) {
     const currentRole = useMemo(() => {
         if (!user) return 'member';
 
+        let role: string = 'member';
         
         // Check workspace-specific role
         if (currentWorkspaceId && user.institutionRoles?.[currentWorkspaceId]) {
-            return user.institutionRoles[currentWorkspaceId] as any;
+            role = user.institutionRoles[currentWorkspaceId];
         }
-        
         // Fallback to global role if this workspace is their primary
-        if (user.institution_id === currentWorkspaceId) {
-            return user.role as any;
+        else if (user.institution_id === currentWorkspaceId) {
+            role = user.role || 'member';
         }
+
+        // Final normalization: 'guest' -> 'member'
+        const normalized = role.toLowerCase();
+        if (normalized === 'guest') return 'member';
         
-        return 'member';
+        return normalized as any;
     }, [user, currentWorkspaceId]);
 
     return (

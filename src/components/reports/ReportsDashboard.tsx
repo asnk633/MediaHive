@@ -144,9 +144,9 @@ export default function ReportsDashboard() {
             } catch (error: any) {
                 // Check if it's a 403 Forbidden
                 if (error?.status === 403 || error?.message?.includes('Forbidden')) {
-                    // Expected for Guests/Viewers. Do nothing or show "Access Denied" UI.
+                    // Expected for Members/Viewers. Do nothing or show "Access Denied" UI.
                     // The Tabs (Intelligence/Activity) are admin focused anyway.
-                    console.log("User is not authorized for Report Overview (Guest/Viewer)");
+                    console.log("User is not authorized for Report Overview (Member/Viewer)");
                 } else {
                     console.error('Failed to load overview', error);
                 }

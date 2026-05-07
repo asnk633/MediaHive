@@ -42,7 +42,7 @@ export default function RequestManager() {
         if (!user) return;
         setLoading(true);
         try {
-            // If admin, load all. If team/guest, load own.
+            // If admin, load all. If team/member, load own.
             let data: DeviceRequest[] = [];
             if (user.role === 'admin') {
                 data = await deviceRequestService.getAllRequests();

@@ -36,7 +36,7 @@ const ROLES = [
     },
     {
         id: 'guest',
-        label: 'Guest',
+        label: 'Member',
         icon: User,
         color: 'text-white/40',
         bg: 'bg-white/5',

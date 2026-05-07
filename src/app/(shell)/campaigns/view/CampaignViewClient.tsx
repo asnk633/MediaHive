@@ -53,7 +53,7 @@ function CampaignDashboardContent() {
     if (loading) return <div className="p-8 text-center text-white">Loading Campaign...</div>;
     if (!campaign) return null;
 
-    const isGuest = user?.role !== 'admin' && user?.role !== 'manager' && user?.role !== 'member';
+    const canEditDetails = user?.role === 'admin' || user?.role === 'manager';
 
     // Simple status colors
     const getPhaseColor = (p: string) => {
@@ -92,7 +92,7 @@ function CampaignDashboardContent() {
                     <div className={`px-4 py-1.5 rounded-full border text-xs font-bold uppercase tracking-wider ${getPhaseColor(campaign.phase)}`}>
                         {campaign.phase}
                     </div>
-                    {(isGuest && campaign.phase === 'planning') && (
+                    {(!canEditDetails && campaign.phase === 'planning') && (
                         <button className="px-4 py-2 bg-white/10 hover:bg-white/20 text-white rounded-xl text-sm font-semibold transition-colors">
                             Edit Details
                         </button>

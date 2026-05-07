@@ -327,12 +327,10 @@ export default function HomeClient() {
                             <SystemStatusWidget />
                         </div>
 
-                        {/* 1b - Personal Request Summary (For Members) */}
-                        {currentRole === 'member' && (
-                            <div className="animate-in fade-in slide-in-from-bottom-4 duration-700">
-                                <MemberRequestSummaryWidget />
-                            </div>
-                        )}
+                        {/* 1b - Personal Request Summary (Available to all, but hidden if empty for non-members) */}
+                        <div className="animate-in fade-in slide-in-from-bottom-4 duration-700">
+                            <MemberRequestSummaryWidget allowEmpty={currentRole === 'member'} />
+                        </div>
 
                         {/* 2 & 3 - Today's Tasks & Today's Events */}
                         <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 animate-in fade-in slide-in-from-bottom-4 duration-800">

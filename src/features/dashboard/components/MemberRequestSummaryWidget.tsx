@@ -8,7 +8,7 @@ import { cn } from '@/lib/utils';
 
 import { NormalizedTask } from "@/lib/normalization";
 
-export const MemberRequestSummaryWidget = () => {
+export const MemberRequestSummaryWidget = ({ allowEmpty = true }: { allowEmpty?: boolean }) => {
     const { tasks, user } = useDashboard();
     
     const myStats = useMemo(() => {
@@ -20,10 +20,12 @@ export const MemberRequestSummaryWidget = () => {
         });
 
         const total = myTasks.length;
+        if (total === 0 && !allowEmpty) return null;
+
         const todo = myTasks.filter(t => t.status === 'todo').length;
         const inProgress = myTasks.filter(t => t.status === 'in_progress').length;
         const review = myTasks.filter(t => t.status === 'review').length;
-        const done = myTasks.filter(t => t.status === 'done' || t.status === 'completed').length;
+        const done = myTasks.filter(t => t.status === 'done').length;
 
         const progress = total > 0 ? Math.round((done / total) * 100) : 0;
 

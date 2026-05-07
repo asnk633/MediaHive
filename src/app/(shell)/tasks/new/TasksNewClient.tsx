@@ -55,6 +55,9 @@ export default function TasksNewClient() {
     const { state: formData, setState: setFormData, clearDraft, isDraftSaved } = useFormState({
         key: 'draft:task:new',
         initialState: {
+            title: '',
+            description: '',
+            due_date: undefined as string | undefined,
             priority: 'medium' as 'low' | 'medium' | 'high',
             assignedToIds: [] as string[],
             selectedOrgId: '',

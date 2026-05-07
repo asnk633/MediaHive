@@ -22,6 +22,8 @@ import { canAccessFeature, UserRole } from '@/system/features/featureAccess';
 import { FeatureKey } from '@/system/features/featureRegistry';
 import { cn, nativeNavigate } from "@/lib/utils";
 import { motion } from 'framer-motion';
+import { PolicySimulationPanel } from '@/components/tasks/PolicySimulationPanel';
+import { Box } from 'lucide-react';
 
 interface LabFeature {
     id: string;
@@ -84,6 +86,16 @@ const LAB_FEATURES: LabFeature[] = [
         path: '/labs/production-center',
         color: 'from-red-500 to-rose-600',
         status: 'beta'
+    },
+    {
+        id: 'policy-simulation',
+        key: 'policySimulation',
+        label: 'Policy Simulation',
+        description: 'Safe sandbox to test and verify conflict resolution policies and logic.',
+        icon: Box,
+        path: '#simulation',
+        color: 'from-blue-400 to-indigo-500',
+        status: 'stable'
     }
 ];
 
@@ -92,6 +104,7 @@ export default function LabsPage() {
     const { user } = useAuth();
     const { currentWorkspace } = useWorkspace();
     const currentRole = user?.role as UserRole || 'guest';
+    const [isSimulationOpen, setIsSimulationOpen] = React.useState(false);
 
     const container = {
         hidden: { opacity: 0 },
@@ -149,7 +162,14 @@ export default function LabsPage() {
                         <motion.div
                             key={feature.id}
                             variants={item}
-                            onClick={() => hasAccess && nativeNavigate(feature.path, router, `Labs:${feature.label}`)}
+                            onClick={() => {
+                                if (!hasAccess) return;
+                                if (feature.path === '#simulation') {
+                                    setIsSimulationOpen(true);
+                                } else {
+                                    nativeNavigate(feature.path, router, `Labs:${feature.label}`);
+                                }
+                            }}
                             className={cn(
                                 "group relative overflow-hidden rounded-[28px] border p-6 transition-all duration-500 h-full flex flex-col",
                                 hasAccess 
@@ -243,6 +263,12 @@ export default function LabsPage() {
                     </p>
                 </div>
             </div>
+
+            {/* Policy Simulation Panel */}
+            <PolicySimulationPanel 
+                isOpen={isSimulationOpen}
+                onClose={() => setIsSimulationOpen(false)}
+            />
         </div>
     );
 }

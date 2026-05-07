@@ -11,6 +11,7 @@ export type FeatureKey =
     | 'governance'
     | 'leave_management'
     | 'reports'
+    | 'policySimulation'
     | 'labs';
 
 export interface FeatureConfig {
@@ -32,5 +33,6 @@ export const FEATURE_REGISTRY: Record<FeatureKey, FeatureConfig> = {
     governance: { enabled: true, minRole: 'manager' },
     leave_management: { enabled: true, minRole: 'standard' },
     reports: { enabled: true },
+    policySimulation: { enabled: true, minRole: 'guest', isLabs: true },
     labs: { enabled: true, minRole: 'admin' },
 };

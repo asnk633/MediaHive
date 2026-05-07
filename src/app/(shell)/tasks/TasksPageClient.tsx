@@ -186,17 +186,6 @@ export default function TasksPageClient() {
                         <ConflictAwarenessBadge />
 
                         {/* Phase 14: Dev Only Stress Seeder Removed */}
-                        {/* Phase 12: Policy Simulation (Admin Only) */}
-                        {user?.role === 'admin' && (
-                            <button
-                                onClick={() => setIsSimulationOpen(true)}
-                                className="h-10 px-4 rounded-xl bg-blue-500/10 border border-blue-500/20 text-blue-400 hover:bg-blue-500 hover:text-white transition-all flex items-center gap-2 text-sm font-bold shadow-lg shadow-blue-500/5 group"
-                                title="Policy Simulation Sandbox"
-                            >
-                                <Box size={18} className="group-active:scale-90 transition-transform" />
-                                <span className="hidden lg:inline">Simulation</span>
-                            </button>
-                        )}
 
                         <AppLink href="/tasks/new">
                             <button
@@ -253,13 +242,6 @@ export default function TasksPageClient() {
                 user={user}
             />
 
-            {/* Phase 12: Policy Simulation Sandbox */}
-            {user?.role === 'admin' && (
-                <PolicySimulationPanel
-                    isOpen={isSimulationOpen}
-                    onClose={() => setIsSimulationOpen(false)}
-                />
-            )}
         </PageLayout >
     );
 }

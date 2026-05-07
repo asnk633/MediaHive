@@ -102,14 +102,17 @@ export default function DesktopSideNav() {
                 { id: 'inventory', label: 'Media Inventory', icon: HardDrive, path: '/inventory', feature: 'inventory' as FeatureKey },
             ]
         },
-        {
-            id: 'labs',
-            label: 'Laboratory',
-            feature: 'labs' as FeatureKey,
-            items: [
-                { id: 'labs-hub', label: 'MediaHive Labs', icon: FlaskConical, path: '/labs' },
-            ]
-        },
+        // Laboratory Hub (Alpha/Beta tools)
+        ...(currentRole !== 'guest' ? [
+            {
+                id: 'labs',
+                label: 'Laboratory',
+                feature: 'labs' as FeatureKey,
+                items: [
+                    { id: 'labs-hub', label: 'MediaHive Labs', icon: FlaskConical, path: '/labs' },
+                ]
+            }
+        ] : []),
         {
             id: 'admin',
             label: 'System',

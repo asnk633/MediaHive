@@ -2,14 +2,16 @@ import { FeatureKey, FEATURE_REGISTRY } from './featureRegistry';
 
 const ROLE_RANK = {
     guest: 0,
-    viewer: 1,
-    standard: 2,
-    manager: 3,
-    admin: 4,
-    owner: 5,
+    member: 1,
+    team: 2,
+    viewer: 2,
+    standard: 3,
+    manager: 4,
+    admin: 5,
+    owner: 6,
 };
 
-export type UserRole = keyof typeof ROLE_RANK;
+export type UserRole = 'guest' | 'member' | 'team' | 'viewer' | 'standard' | 'manager' | 'admin' | 'owner';
 
 export interface WorkspaceContext {
     id: string;

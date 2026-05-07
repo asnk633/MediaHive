@@ -176,8 +176,7 @@ export function WorkspaceProvider({ children }: { children: React.ReactNode }) {
 
     const currentRole = useMemo(() => {
         if (!user) return 'guest';
-        // Global admin has admin rights everywhere
-        if (user.role === 'admin') return 'admin';
+
         
         // Check workspace-specific role
         if (currentWorkspaceId && user.institutionRoles?.[currentWorkspaceId]) {

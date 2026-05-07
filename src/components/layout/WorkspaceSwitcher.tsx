@@ -22,9 +22,11 @@ export function WorkspaceSwitcher({ isCollapsed }: WorkspaceSwitcherProps) {
 
     if (loading) {
         return (
-            <div className="flex items-center gap-2 px-2 py-1 bg-white/5 rounded-lg animate-pulse">
-                <div className="w-4 h-4 rounded-full bg-white/10" />
-                <div className="w-20 h-3 bg-white/10 rounded" />
+            <div className="flex items-center h-12 px-0 bg-white/5 rounded-[18px] animate-pulse">
+                <div className="grid grid-cols-[40px_1fr] items-center w-full">
+                    <div className="w-10 h-10 rounded-xl bg-white/10 shrink-0" />
+                    {!isCollapsed && <div className="ml-4 w-24 h-4 bg-white/10 rounded" />}
+                </div>
             </div>
         );
     }
@@ -34,20 +36,25 @@ export function WorkspaceSwitcher({ isCollapsed }: WorkspaceSwitcherProps) {
     // If only one workspace is available and user is not admin, just show a static label or hide entirely
     if (isSingleWorkspace) {
         return (
-            <div className={cn("flex items-center gap-2 py-1.5 opacity-60", isCollapsed ? "justify-center px-0" : "px-2")}>
-                <div className="w-7 h-7 rounded-lg bg-white/5 border border-white/10 flex items-center justify-center shrink-0">
-                    <Building2 size={14} className="text-white/40" />
-                </div>
-                {!isCollapsed && (
-                    <div className="flex flex-col overflow-hidden">
-                        <span className="text-xs font-bold text-white tracking-tight truncate leading-tight">
-                            {currentWorkspace.name}
-                        </span>
-                        <span className="text-[10px] text-white/40 font-medium uppercase tracking-wider">
-                            Default Department
-                        </span>
+            <div className={cn(
+                "flex items-center h-12 rounded-[18px] transition-all duration-300 opacity-60 px-0",
+                isCollapsed ? "justify-center" : ""
+            )}>
+                <div className="grid grid-cols-[40px_1fr] items-center w-full">
+                    <div className="w-10 h-10 rounded-xl bg-white/5 border border-white/10 flex items-center justify-center shrink-0">
+                        <Building2 size={16} className="text-white/40" />
                     </div>
-                )}
+                    {!isCollapsed && (
+                        <div className="flex flex-col overflow-hidden ml-4">
+                            <span className="text-sm font-bold text-white tracking-tight truncate leading-tight">
+                                {currentWorkspace.name}
+                            </span>
+                            <span className="text-[9px] text-white/40 font-black uppercase tracking-[0.2em] mt-0.5">
+                                Active Dept
+                            </span>
+                        </div>
+                    )}
+                </div>
             </div>
         );
     }
@@ -56,25 +63,27 @@ export function WorkspaceSwitcher({ isCollapsed }: WorkspaceSwitcherProps) {
         <ClientOnly>
             <DropdownMenu>
                 <DropdownMenuTrigger className={cn(
-                    "flex items-center hover:bg-white/5 rounded-xl transition-all duration-200 outline-none group text-left",
-                    isCollapsed ? "justify-center p-1" : "gap-2 px-2 py-1.5"
+                    "flex items-center w-full h-12 hover:bg-white/5 rounded-[18px] transition-all duration-300 outline-none group text-left px-0",
+                    isCollapsed ? "justify-center" : ""
                 )}>
-                    <div className="w-7 h-7 rounded-lg bg-blue-500/10 border border-blue-500/20 flex items-center justify-center shrink-0 group-hover:bg-blue-500/20 transition-colors">
-                        <Building2 size={14} className="text-blue-400" />
-                    </div>
-                    {!isCollapsed && (
-                        <>
-                            <div className="flex flex-col overflow-hidden">
-                                <span className="text-xs font-bold text-white tracking-tight truncate leading-tight">
-                                    {currentWorkspace.name}
-                                </span>
-                                <span className="text-[10px] text-white/40 font-medium uppercase tracking-wider">
-                                    Switch Department
-                                </span>
+                    <div className="grid grid-cols-[40px_1fr] items-center w-full">
+                        <div className="w-10 h-10 rounded-xl bg-indigo-500/10 border border-indigo-500/20 flex items-center justify-center shrink-0 group-hover:bg-indigo-500/20 transition-colors">
+                            <Building2 size={16} className="text-indigo-400" />
+                        </div>
+                        {!isCollapsed && (
+                            <div className="flex flex-1 items-center justify-between ml-4 overflow-hidden">
+                                <div className="flex flex-col overflow-hidden">
+                                    <span className="text-sm font-bold text-white tracking-tight truncate leading-tight">
+                                        {currentWorkspace.name}
+                                    </span>
+                                    <span className="text-[9px] text-white/40 font-black uppercase tracking-[0.2em] mt-0.5">
+                                        Switch Dept
+                                    </span>
+                                </div>
+                                <ChevronDown size={14} className="text-white/20 group-hover:text-white/40 transition-colors ml-2 shrink-0" />
                             </div>
-                            <ChevronDown size={14} className="text-white/20 group-hover:text-white/40 transition-colors ml-1" />
-                        </>
-                    )}
+                        )}
+                    </div>
                 </DropdownMenuTrigger>
 
                 <DropdownMenuContent align="start" className="w-64 glass-panel border-white/10 bg-[#0a0a0a]/95 text-white p-1.5 mt-2 animate-in fade-in zoom-in-95 duration-200">

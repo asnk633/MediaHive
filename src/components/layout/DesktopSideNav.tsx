@@ -186,27 +186,36 @@ export default function DesktopSideNav() {
         return (
             <DropdownMenu>
                 <DropdownMenuTrigger asChild>
-                    <button className={cn("flex items-center outline-none group", isCollapsed ? "justify-center" : "gap-3")}>
-                        <div className="relative">
-                            <div className="w-9 h-9 rounded-xl overflow-hidden bg-white/10 ring-1 ring-white/20 shrink-0 shadow-lg group-hover:ring-indigo-500/50 transition-all duration-300">
-                                {(user?.avatar_url || user?.photoURL) ? (
-                                    <img src={getDriveImageUrl(user.avatar_url || user.photoURL, user.avatar_drive_id)} alt="Avatar" className="w-full h-full object-cover" />
-                                ) : (
-                                    <span className="w-full h-full flex items-center justify-center text-xs font-bold text-white/40 uppercase">
-                                        {user?.email?.[0] || 'U'}
-                                    </span>
-                                )}
-                            </div>
-                            <div className="absolute -bottom-0.5 -right-0.5 w-2.5 h-2.5 bg-emerald-500 border-2 border-[#09090b] rounded-full shadow-sm" />
-                        </div>
-                        {!isCollapsed && (
-                            <div className="flex flex-col overflow-hidden text-left">
-                                <span className="text-sm font-bold text-white truncate group-hover:text-indigo-400 transition-colors tracking-tight">{user?.name || 'Authorized User'}</span>
-                                <div className="flex items-center gap-1.5">
-                                    <span className="text-[10px] text-white/50 font-black uppercase tracking-widest">{currentRole || 'Guest'}</span>
+                    <button className={cn(
+                        "group relative w-full flex items-center h-12 px-0 rounded-[18px] transition-all duration-300 outline-none hover:bg-white/[0.03]",
+                        isCollapsed ? "justify-center" : ""
+                    )}>
+                        <div className="grid grid-cols-[40px_1fr] items-center w-full">
+                            <div className="relative shrink-0">
+                                <div className="w-10 h-10 rounded-xl overflow-hidden bg-white/10 ring-1 ring-white/20 shadow-lg group-hover:ring-indigo-500/50 transition-all duration-300">
+                                    {(user?.avatar_url || user?.photoURL) ? (
+                                        <img src={getDriveImageUrl(user.avatar_url || user.photoURL, user.avatar_drive_id)} alt="Avatar" className="w-full h-full object-cover" />
+                                    ) : (
+                                        <span className="w-full h-full flex items-center justify-center text-xs font-bold text-white/40 uppercase">
+                                            {user?.email?.[0] || 'U'}
+                                        </span>
+                                    )}
                                 </div>
+                                <div className="absolute -bottom-0.5 -right-0.5 w-2.5 h-2.5 bg-emerald-500 border-2 border-[#09090b] rounded-full shadow-sm" />
                             </div>
-                        )}
+                            {!isCollapsed && (
+                                <div className="flex flex-col overflow-hidden text-left ml-4">
+                                    <span className="text-sm font-bold text-white truncate group-hover:text-indigo-400 transition-colors tracking-tight leading-none mb-1">
+                                        {user?.name || 'Authorized User'}
+                                    </span>
+                                    <div className="flex items-center">
+                                        <span className="text-[10px] text-white/40 font-black uppercase tracking-[0.2em] leading-none">
+                                            {currentRole || 'Guest'}
+                                        </span>
+                                    </div>
+                                </div>
+                            )}
+                        </div>
                     </button>
                 </DropdownMenuTrigger>
                 <DropdownMenuContent 
@@ -274,147 +283,169 @@ export default function DesktopSideNav() {
         >
             {/* 1. Brand Header */}
             <div className={cn(
-                "h-[72px] flex items-center transition-[padding] duration-300",
-                isCollapsed ? "justify-center px-4" : "px-7"
+                "h-[80px] flex items-center transition-all duration-300 border-b border-white/[0.03] px-4",
+                isCollapsed ? "justify-center" : ""
             )}>
-                <div className="relative group cursor-pointer" onClick={() => router.push('/home')}>
-                    <img
-                        src="/mediahive-icon.png"
-                        alt="MH"
-                        className="w-10 h-10 rounded-xl shrink-0 shadow-2xl transition-transform group-hover:scale-110"
-                    />
-                    <div className="absolute inset-0 bg-indigo-500/20 blur-xl opacity-0 group-hover:opacity-100 transition-opacity" />
-                </div>
+                <div className="flex items-center w-full">
+                    <div className="relative group cursor-pointer shrink-0" onClick={() => router.push('/home')}>
+                        <img
+                            src="/mediahive-icon.png"
+                            alt="MH"
+                            className="w-10 h-10 rounded-xl shrink-0 shadow-2xl transition-all duration-500 group-hover:scale-110 group-hover:rotate-3"
+                        />
+                        <div className="absolute inset-0 bg-indigo-500/20 blur-xl opacity-0 group-hover:opacity-100 transition-opacity" />
+                    </div>
 
-                <AnimatePresence>
-                    {!isCollapsed && (
-                        <motion.span
-                            initial={{ opacity: 0, x: -10 }}
-                            animate={{ opacity: 1, x: 0 }}
-                            exit={{ opacity: 0, x: -10 }}
-                            className="text-xl font-black text-white tracking-tighter whitespace-nowrap overflow-hidden ml-4 text-premium-gradient"
-                        >
-                            MediaHive
-                        </motion.span>
-                    )}
-                </AnimatePresence>
-            </div>
-
-            {/* 2. Identity Cluster */}
-            <div className={cn(
-                "flex flex-col gap-5 mb-8 transition-all duration-300 border-b border-white/5 pb-6",
-                isCollapsed ? "items-center px-4" : "px-7"
-            )}>
-                {/* Workspace Switcher */}
-                <WorkspaceSwitcher isCollapsed={isCollapsed} />
-
-                {/* Notification Bell */}
-                <div className={cn("flex items-center", isCollapsed ? "justify-center" : "gap-4")}>
-                    <NotificationBell />
-                    {!isCollapsed && (
-                        <span className="text-xs font-bold text-white/40 uppercase tracking-widest">Team Updates</span>
-                    )}
-                </div>
-
-                {/* Avatar / Profile */}
-                {renderIdentity()}
-            </div>
-
-            {/* 3. Navigation List */}
-            <div className="flex-1 overflow-y-auto no-scrollbar px-4 space-y-7">
-                {filteredGroups.map((group) => (
-                    <div key={group.id} className="space-y-3">
+                    <AnimatePresence mode="wait">
                         {!isCollapsed && (
-                            <motion.h3
-                                initial={false}
-                                animate={{ opacity: 1, x: 0 }}
-                                exit={{ opacity: 0, x: -10 }}
-                                className="px-4 text-[10px] font-black text-white/20 uppercase tracking-[0.2em] whitespace-nowrap overflow-hidden"
+                            <motion.div
+                                initial={{ opacity: 0, x: -10, filter: 'blur(8px)' }}
+                                animate={{ opacity: 1, x: 0, filter: 'blur(0px)' }}
+                                exit={{ opacity: 0, x: -10, filter: 'blur(8px)' }}
+                                transition={{ duration: 0.3, ease: "easeOut" }}
+                                className="flex flex-col ml-4"
                             >
-                                {group.label}
-                            </motion.h3>
+                                <span className="text-xl font-black text-white tracking-tighter text-premium-gradient leading-none mb-0.5">
+                                    MediaHive
+                                </span>
+                                <span className="text-[10px] font-bold text-white/20 uppercase tracking-[0.2em] leading-none">
+                                    Intelligence
+                                </span>
+                            </motion.div>
                         )}
-                        <div className="space-y-1.5">
-                            {group.items.map((item) => {
-                                const isActive = pathname === item.path || pathname.startsWith(item.path + '/');
-                                return (
-                                    <button
-                                        key={item.id}
-                                        onClick={() => nativeNavigate(item.path, router, `Nav:${item.label}`)}
-                                        className={cn(
-                                            "group relative w-full flex items-center gap-3.5 p-3 rounded-2xl transition-all duration-300 ease-out active:scale-95 sidebar-item",
-                                            isActive
-                                                ? "bg-white/[0.05] shadow-[inset_0_1px_0_rgba(255,255,255,0.05)] premium-shadow"
-                                                : "hover:bg-white/[0.02]"
-                                        )}
-                                        title={isCollapsed ? item.label : undefined}
-                                    >
-                                        <div className="relative">
-                                            <item.icon
-                                                size={18}
-                                                className={cn(
-                                                    "transition-all duration-300 shrink-0",
-                                                    isActive
-                                                        ? "text-indigo-400 drop-shadow-[0_0_12px_rgba(129,140,248,0.6)] scale-110"
-                                                        : "text-white/40 group-hover:text-white group-hover:scale-110"
-                                                )}
-                                            />
-                                            {isActive && (
-                                                <div className="absolute inset-0 bg-indigo-500/20 blur-md rounded-full -z-10" />
-                                            )}
-                                        </div>
+                    </AnimatePresence>
+                </div>
+            </div>
 
-                                        <motion.span
-                                            initial={false}
-                                            animate={{
-                                                opacity: isCollapsed ? 0 : 1,
-                                                x: isCollapsed ? -10 : 0,
-                                                display: isCollapsed ? 'none' : 'block',
-                                            }}
-                                            className={cn(
-                                                "text-sm font-semibold tracking-tight transition-colors duration-300",
-                                                isActive ? "text-white" : "text-white/40 group-hover:text-white"
-                                            )}
-                                        >
-                                            {item.label}
-                                        </motion.span>
+            {/* 2. Content Area */}
+            <div className="flex-1 overflow-y-auto no-scrollbar py-6">
+                {/* Identity Section (Switcher, Alerts, Profile) */}
+                <div className={cn(
+                    "flex flex-col gap-2 mb-8 px-4",
+                    isCollapsed ? "items-center" : ""
+                )}>
+                    {/* Workspace Switcher */}
+                    <div className="w-full">
+                        <WorkspaceSwitcher isCollapsed={isCollapsed} />
+                    </div>
 
-                                        {isActive && (
-                                            <motion.div 
-                                                layoutId="active-pill"
-                                                className="absolute left-0 w-1 h-5 bg-indigo-500 rounded-r-full shadow-[0_0_15px_rgba(99,102,241,0.8)]"
-                                            />
-                                        )}
-                                    </button>
-                                );
-                            })}
+                    {/* Alerts / Team Updates */}
+                    <div className={cn(
+                        "group relative w-full flex items-center h-12 px-0 rounded-[18px] transition-all duration-300 hover:bg-white/[0.03]",
+                        isCollapsed ? "justify-center" : ""
+                    )}>
+                        <div className="grid grid-cols-[40px_1fr] items-center w-full">
+                            <div className="w-10 h-10 flex items-center justify-center shrink-0">
+                                <NotificationBell />
+                            </div>
+                            {!isCollapsed && (
+                                <div className="flex flex-col overflow-hidden ml-4">
+                                    <span className="text-[9px] font-black text-white/20 uppercase tracking-[0.2em] leading-none mb-1">Status</span>
+                                    <span className="text-sm font-bold text-white/60 truncate">Team Updates</span>
+                                </div>
+                            )}
                         </div>
                     </div>
-                ))}
+
+                    {/* Profile Section */}
+                    <div className="w-full">
+                        {renderIdentity()}
+                    </div>
+                </div>
+
+                <div className="h-px bg-white/[0.03] mx-6 mb-8" />
+
+                {/* Main Navigation */}
+                <div className="px-4 space-y-9">
+                    {filteredGroups.map((group) => (
+                        <div key={group.id} className="space-y-4">
+                            {!isCollapsed && (
+                                <motion.h3
+                                    className="pl-[56px] text-[10px] font-black text-white/20 uppercase tracking-[0.3em] whitespace-nowrap"
+                                >
+                                    {group.label}
+                                </motion.h3>
+                            )}
+                            <div className="space-y-1">
+                                {group.items.map((item) => {
+                                    const isActive = pathname === item.path || pathname.startsWith(item.path + '/');
+                                    return (
+                                        <button
+                                            key={item.id}
+                                            onClick={() => nativeNavigate(item.path, router, `Nav:${item.label}`)}
+                                            className={cn(
+                                                "group relative w-full flex items-center h-12 px-0 rounded-[18px] transition-all duration-300 ease-out active:scale-[0.97] sidebar-item overflow-hidden",
+                                                isActive
+                                                    ? "bg-white/[0.06] shadow-[0_4px_12px_rgba(0,0,0,0.1),inset_0_1px_1px_rgba(255,255,255,0.05)]"
+                                                    : "hover:bg-white/[0.03] text-white/40"
+                                            )}
+                                            title={isCollapsed ? item.label : undefined}
+                                        >
+                                            {/* Active Highlight Pill */}
+                                            {isActive && (
+                                                <motion.div 
+                                                    layoutId="active-pill"
+                                                    transition={{ type: "spring", stiffness: 300, damping: 30 }}
+                                                    className="absolute left-0 w-1 h-6 bg-indigo-500 rounded-r-full shadow-[0_0_15px_rgba(99,102,241,0.8)]"
+                                                />
+                                            )}
+
+                                            <div className="grid grid-cols-[40px_1fr] items-center w-full">
+                                                <div className="w-10 h-10 flex items-center justify-center shrink-0 transition-transform duration-300 group-hover:scale-110">
+                                                    <item.icon
+                                                        size={20}
+                                                        strokeWidth={isActive ? 2.5 : 2}
+                                                        className={cn(
+                                                            "transition-all duration-300",
+                                                            isActive
+                                                                ? "text-indigo-400 drop-shadow-[0_0_10px_rgba(129,140,248,0.5)]"
+                                                                : "text-inherit group-hover:text-white"
+                                                        )}
+                                                    />
+                                                </div>
+
+                                                {!isCollapsed && (
+                                                    <span
+                                                        className={cn(
+                                                            "ml-4 text-sm font-bold tracking-tight transition-colors duration-300 truncate text-left",
+                                                            isActive ? "text-white" : "text-inherit group-hover:text-white"
+                                                        )}
+                                                    >
+                                                        {item.label}
+                                                    </span>
+                                                )}
+                                            </div>
+                                        </button>
+                                    );
+                                })}
+                            </div>
+                        </div>
+                    ))}
+                </div>
             </div>
 
             {/* 4. Footer / Collapse Trigger */}
-            <div className="p-4 mt-auto">
+            <div className="p-4 mt-auto border-t border-white/[0.03]">
                 <button
                     onClick={toggleCollapse}
-                    className="w-full flex items-center justify-center py-2 rounded-md hover:bg-white/5 transition-colors text-text-muted hover:text-text-secondary"
+                    className="w-full flex items-center justify-center h-12 rounded-xl hover:bg-white/5 transition-all group text-white/40 hover:text-white active:scale-95"
                 >
-                    {isCollapsed ? <ChevronRight size={16} /> : (
-                        <div className="flex items-center gap-2">
+                    {isCollapsed ? (
+                        <div className="w-10 h-10 flex items-center justify-center bg-white/5 rounded-xl group-hover:bg-indigo-500/10 group-hover:text-indigo-400 transition-all">
+                            <ChevronRight size={18} />
+                        </div>
+                    ) : (
+                        <div className="flex items-center gap-2 px-4 h-9 bg-white/[0.03] rounded-xl group-hover:bg-white/10 transition-all">
                             <ChevronLeft size={16} />
-                            <motion.span
-                                initial={false}
-                                animate={{ opacity: 1, x: 0 }}
-                                exit={{ opacity: 0, x: -10 }}
-                                transition={{ duration: 0.24, ease: [0.4, 0, 0.2, 1] }}
-                                className="text-xs font-medium whitespace-nowrap overflow-hidden"
-                            >
-                                Collapse Sidebar
-                            </motion.span>
+                            <span className="text-[10px] font-black uppercase tracking-[0.2em]">Collapse</span>
                         </div>
                     )}
                 </button>
             </div>
+
+
+
+
         </motion.aside>
     );
 }

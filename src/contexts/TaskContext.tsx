@@ -50,9 +50,11 @@ export const TaskProvider: React.FC<{ children: React.ReactNode }> = ({ children
                         tenantId
                     );
 
+                    /*
                     if (user.institution_id) {
                         query = query.eq('institution_id', user.institution_id);
                     }
+                    */
 
                     const { data, error } = await query;
 

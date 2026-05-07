@@ -22,7 +22,7 @@ export function useOperationalSummary() {
     const fetchOperationalData = useCallback(async () => {
         setIsSyncing(true);
         try {
-            const summary = await CanonicalDataService.getTodayOperationalSummary(currentWorkspaceId || undefined);
+            const summary = await CanonicalDataService.getTodayOperationalSummary();
             setData(summary);
         } catch (error) {
             console.error('[useOperationalSummary] Fetch error:', error);
@@ -31,22 +31,22 @@ export function useOperationalSummary() {
             setIsLoading(false);
             setIsSyncing(false);
         }
-    }, [currentWorkspaceId]);
+    }, []);
 
     useEffect(() => {
         fetchOperationalData();
 
         if (!user?.tenant_id) return;
 
-        const subscriptionId = `operational-summary-${user.tenant_id}-${currentWorkspaceId || 'all'}`;
+        const subscriptionId = `operational-summary-${user.tenant_id}-global`;
         
         const setupRealtime = async () => {
-            const filter = `tenant_id=eq.${user.tenant_id}${currentWorkspaceId ? `&institution_id=eq.${currentWorkspaceId}` : ''}`;
+            const filter = `tenant_id=eq.${user.tenant_id}`;
             await synergySyncManager.subscribe(
                 subscriptionId,
                 { table: '*', filter },
                 () => {
-                    console.log('[useOperationalSummary] Real-time update detected');
+                    console.log('[useOperationalSummary] Global real-time update detected');
                     fetchOperationalData();
                 }
             );

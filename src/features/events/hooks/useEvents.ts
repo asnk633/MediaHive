@@ -12,17 +12,13 @@ import { CanonicalDataService } from '@/services/canonicalDataService';
  */
 export function useEvents() {
     const { canFetch } = useAuthQueryGuard();
-    const { currentWorkspace } = useWorkspace();
-    const workspaceId = currentWorkspace?.institution_id;
 
     return useQuery({
-        queryKey: ['events', workspaceId],
+        queryKey: ['events', 'global'],
         queryFn: async () => {
-            console.log("[DATA TRACE] useEvents fetching via CanonicalDataService");
-            // CanonicalDataService handle tenant wrapping and direct Supabase calls
-            const events = await CanonicalDataService.getEvents({
-                institutionId: workspaceId
-            });
+            console.log("[DATA TRACE] useEvents fetching via CanonicalDataService (Global)");
+            // CanonicalDataService now ignores institutionId internally, but we'll stop passing it here too
+            const events = await CanonicalDataService.getEvents({});
             return events || [];
         },
         enabled: canFetch,
@@ -35,14 +31,12 @@ export function useEvents() {
 
 export function useCreateEvent() {
     const queryClient = useQueryClient();
-    const { currentWorkspace } = useWorkspace();
-    const workspaceId = currentWorkspace?.institution_id;
 
     return useMutation({
         mutationFn: (event: Partial<Event>) => EventService.addEvent(event as any),
         onMutate: async (newEvent) => {
-            await queryClient.cancelQueries({ queryKey: ['events', workspaceId] });
-            const previousEvents = queryClient.getQueryData<Event[]>(['events', workspaceId]);
+            await queryClient.cancelQueries({ queryKey: ['events', 'global'] });
+            const previousEvents = queryClient.getQueryData<Event[]>(['events', 'global']);
 
             if (previousEvents) {
                 const optimisticEvent = {
@@ -51,18 +45,18 @@ export function useCreateEvent() {
                     status: 'pending',
                     created_at: new Date().toISOString(),
                 } as Event;
-                queryClient.setQueryData(['events'], [optimisticEvent, ...previousEvents]);
+                queryClient.setQueryData(['events', 'global'], [optimisticEvent, ...previousEvents]);
             }
 
             return { previousEvents };
         },
         onError: (err, newEvent, context) => {
             if (context?.previousEvents) {
-                queryClient.setQueryData(['events', workspaceId], context.previousEvents);
+                queryClient.setQueryData(['events', 'global'], context.previousEvents);
             }
         },
         onSettled: () => {
-            queryClient.invalidateQueries({ queryKey: ['events', workspaceId] });
+            queryClient.invalidateQueries({ queryKey: ['events', 'global'] });
         },
     });
 }
@@ -70,18 +64,16 @@ export function useCreateEvent() {
 export function useUpdateEvent() {
     const queryClient = useQueryClient();
     const { user } = useAuth();
-    const { currentWorkspace } = useWorkspace();
-    const workspaceId = currentWorkspace?.institution_id;
 
     return useMutation({
         mutationFn: ({ id, updates }: { id: string; updates: Partial<Event> }) =>
             EventService.updateEvent(id, updates, user?.uid || '', (updates as any).crew, (updates as any).equipment),
         onMutate: async ({ id, updates }) => {
-            await queryClient.cancelQueries({ queryKey: ['events', workspaceId] });
-            const previousEvents = queryClient.getQueryData<Event[]>(['events', workspaceId]);
+            await queryClient.cancelQueries({ queryKey: ['events', 'global'] });
+            const previousEvents = queryClient.getQueryData<Event[]>(['events', 'global']);
 
             if (previousEvents) {
-                queryClient.setQueryData(['events', workspaceId], (old: Event[] | undefined) =>
+                queryClient.setQueryData(['events', 'global'], (old: Event[] | undefined) =>
                     old?.map(event => event.id === id ? { ...event, ...updates } : event)
                 );
             }
@@ -90,28 +82,26 @@ export function useUpdateEvent() {
         },
         onError: (err, variables, context) => {
             if (context?.previousEvents) {
-                queryClient.setQueryData(['events', workspaceId], context.previousEvents);
+                queryClient.setQueryData(['events', 'global'], context.previousEvents);
             }
         },
         onSettled: () => {
-            queryClient.invalidateQueries({ queryKey: ['events', workspaceId] });
+            queryClient.invalidateQueries({ queryKey: ['events', 'global'] });
         },
     });
 }
 
 export function useDeleteEvent() {
     const queryClient = useQueryClient();
-    const { currentWorkspace } = useWorkspace();
-    const workspaceId = currentWorkspace?.institution_id;
 
     return useMutation({
         mutationFn: (id: string) => EventService.deleteEvent(id),
         onMutate: async (id) => {
-            await queryClient.cancelQueries({ queryKey: ['events', workspaceId] });
-            const previousEvents = queryClient.getQueryData<Event[]>(['events', workspaceId]);
+            await queryClient.cancelQueries({ queryKey: ['events', 'global'] });
+            const previousEvents = queryClient.getQueryData<Event[]>(['events', 'global']);
 
             if (previousEvents) {
-                queryClient.setQueryData(['events', workspaceId], (old: Event[] | undefined) =>
+                queryClient.setQueryData(['events', 'global'], (old: Event[] | undefined) =>
                     old?.filter(event => event.id !== id)
                 );
             }
@@ -120,11 +110,11 @@ export function useDeleteEvent() {
         },
         onError: (err, id, context) => {
             if (context?.previousEvents) {
-                queryClient.setQueryData(['events', workspaceId], context.previousEvents);
+                queryClient.setQueryData(['events', 'global'], context.previousEvents);
             }
         },
         onSettled: () => {
-            queryClient.invalidateQueries({ queryKey: ['events', workspaceId] });
+            queryClient.invalidateQueries({ queryKey: ['events', 'global'] });
         },
     });
 }

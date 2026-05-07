@@ -11,15 +11,13 @@ import { useWorkspace } from '@/system/workspace/WorkspaceProvider';
  * Uses React Query for caching, automatic retries, and background refetching.
  */
 export function useTasks() {
-    console.log("[DATA TRACE] useTasks initialized")
+    console.log("[DATA TRACE] useTasks initialized (Global)")
     const { canFetch } = useAuthQueryGuard();
-    const { currentWorkspace } = useWorkspace();
-    const workspaceId = currentWorkspace?.institution_id;
 
     return useQuery({
-        queryKey: ['tasks', workspaceId],
+        queryKey: ['tasks', 'global'],
         queryFn: async () => {
-            console.log("[DATA TRACE] useTasks fetching")
+            console.log("[DATA TRACE] useTasks fetching global tasks")
             const response = await TaskService.getTasks();
             console.log("[DATA TRACE] useTasks response received")
             return response || [];
@@ -35,14 +33,12 @@ export function useTasks() {
 
 export function useCreateTask() {
     const queryClient = useQueryClient();
-    const { currentWorkspace } = useWorkspace();
-    const workspaceId = currentWorkspace?.institution_id;
 
     return useMutation({
         mutationFn: (task: Partial<Task>) => TaskService.createTask(task),
         onMutate: async (newTask) => {
-            await queryClient.cancelQueries({ queryKey: ['tasks', workspaceId] });
-            const previousTasks = queryClient.getQueryData<Task[]>(['tasks', workspaceId]);
+            await queryClient.cancelQueries({ queryKey: ['tasks', 'global'] });
+            const previousTasks = queryClient.getQueryData<Task[]>(['tasks', 'global']);
 
             if (previousTasks) {
                 // Optimistically add the new task with a temporary ID
@@ -53,36 +49,34 @@ export function useCreateTask() {
                     created_at: new Date().toISOString()
                 } as Task;
 
-                queryClient.setQueryData(['tasks', workspaceId], [optimisticTask, ...previousTasks]);
+                queryClient.setQueryData(['tasks', 'global'], [optimisticTask, ...previousTasks]);
             }
 
             return { previousTasks };
         },
         onError: (err, newTask, context) => {
             if (context?.previousTasks) {
-                queryClient.setQueryData(['tasks', workspaceId], context.previousTasks);
+                queryClient.setQueryData(['tasks', 'global'], context.previousTasks);
             }
         },
         onSettled: () => {
-            queryClient.invalidateQueries({ queryKey: ['tasks', workspaceId] });
+            queryClient.invalidateQueries({ queryKey: ['tasks', 'global'] });
         },
     });
 }
 
 export function useUpdateTask() {
     const queryClient = useQueryClient();
-    const { currentWorkspace } = useWorkspace();
-    const workspaceId = currentWorkspace?.institution_id;
 
     return useMutation({
         mutationFn: ({ id, updates }: { id: string; updates: Partial<Task> }) =>
             TaskService.updateTask(id, updates),
         onMutate: async ({ id, updates }) => {
-            await queryClient.cancelQueries({ queryKey: ['tasks', workspaceId] });
-            const previousTasks = queryClient.getQueryData<Task[]>(['tasks', workspaceId]);
+            await queryClient.cancelQueries({ queryKey: ['tasks', 'global'] });
+            const previousTasks = queryClient.getQueryData<Task[]>(['tasks', 'global']);
 
             if (previousTasks) {
-                queryClient.setQueryData(['tasks', workspaceId], (old: Task[] | undefined) =>
+                queryClient.setQueryData(['tasks', 'global'], (old: Task[] | undefined) =>
                     old?.map(task => task.id === id ? { ...task, ...updates } : task)
                 );
             }
@@ -91,28 +85,26 @@ export function useUpdateTask() {
         },
         onError: (err, variables, context) => {
             if (context?.previousTasks) {
-                queryClient.setQueryData(['tasks', workspaceId], context.previousTasks);
+                queryClient.setQueryData(['tasks', 'global'], context.previousTasks);
             }
         },
         onSettled: () => {
-            queryClient.invalidateQueries({ queryKey: ['tasks', workspaceId] });
+            queryClient.invalidateQueries({ queryKey: ['tasks', 'global'] });
         },
     });
 }
 
 export function useDeleteTask() {
     const queryClient = useQueryClient();
-    const { currentWorkspace } = useWorkspace();
-    const workspaceId = currentWorkspace?.institution_id;
 
     return useMutation({
         mutationFn: (id: string) => TaskService.deleteTask(id),
         onMutate: async (id) => {
-            await queryClient.cancelQueries({ queryKey: ['tasks', workspaceId] });
-            const previousTasks = queryClient.getQueryData<Task[]>(['tasks', workspaceId]);
+            await queryClient.cancelQueries({ queryKey: ['tasks', 'global'] });
+            const previousTasks = queryClient.getQueryData<Task[]>(['tasks', 'global']);
 
             if (previousTasks) {
-                queryClient.setQueryData(['tasks', workspaceId], (old: Task[] | undefined) =>
+                queryClient.setQueryData(['tasks', 'global'], (old: Task[] | undefined) =>
                     old?.filter(task => task.id !== id)
                 );
             }
@@ -121,11 +113,11 @@ export function useDeleteTask() {
         },
         onError: (err, id, context) => {
             if (context?.previousTasks) {
-                queryClient.setQueryData(['tasks', workspaceId], context.previousTasks);
+                queryClient.setQueryData(['tasks', 'global'], context.previousTasks);
             }
         },
         onSettled: () => {
-            queryClient.invalidateQueries({ queryKey: ['tasks', workspaceId] });
+            queryClient.invalidateQueries({ queryKey: ['tasks', 'global'] });
         },
     });
 }

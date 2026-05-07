@@ -131,7 +131,7 @@ export default function HomeClient() {
         setLoadingData(true);
         setError(null);
         try {
-            const filter = { institutionId: currentWorkspaceId, role: currentRole, userId: user?.uid, signal };
+            const filter = { role: currentRole, userId: user?.uid, signal };
             const [tData, eData] = await Promise.all([
                 CanonicalDataService.getTasks(filter),
                 CanonicalDataService.getEvents(filter),
@@ -166,7 +166,7 @@ export default function HomeClient() {
         if (!authReady || !isOnline || isReplaying) return;
 
         const unsubscribe = CanonicalDataService.subscribeToTasks(
-            { institutionId: currentWorkspaceId, role: currentRole, userId: user?.uid },
+            { role: currentRole, userId: user?.uid },
             (updatedTasks) => {
                 const normalized = normalizeTasks(updatedTasks || []);
                 syncRemoteTasks(normalized, user);

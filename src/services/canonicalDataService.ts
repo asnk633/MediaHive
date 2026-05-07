@@ -337,12 +337,14 @@ export class CanonicalDataService {
         .eq('tenant_id', tenantId)
         .eq('deleted', false);
 
+      /* 
       if (filters.institutionId) {
         console.log(`[CanonicalDataService] Filtering tasks by institution: ${filters.institutionId}`);
         query = query.eq('institution_id', filters.institutionId);
       } else {
         console.warn(`[CanonicalDataService] Fetching tasks WITHOUT institution filter (Global)`);
       }
+      */
       if (filters.status && filters.status.length > 0) {
         query = query.in('status', filters.status);
       }
@@ -502,12 +504,14 @@ export class CanonicalDataService {
         .eq('tenant_id', tenantId)
         .eq('deleted', false);
 
+      /*
       if (filters.institutionId) {
         console.log(`[CanonicalDataService] Filtering events by institution: ${filters.institutionId}`);
         query = query.eq('institution_id', filters.institutionId);
       } else {
         console.warn(`[CanonicalDataService] Fetching events WITHOUT institution filter (Global)`);
       }
+      */
       if (filters.status && filters.status.length > 0) {
         query = query.in('status', filters.status);
       }
@@ -677,9 +681,11 @@ export class CanonicalDataService {
       const { tenantId } = await tenantContext();
 
       let query = supabase.from(TABLES.USERS).select('*').eq('tenant_id', tenantId);
+      /*
       if (institution_id) {
         query = query.eq('institution_id', institution_id);
       }
+      */
 
       const { data, error } = await safeQuery(() => query) as { data: any[]; error: any };
       if (error) throw error;
@@ -764,9 +770,11 @@ export class CanonicalDataService {
             .gte('start_at', startOfDay)
             .lte('start_at', endOfDay);
 
+          /*
           if (institutionId) {
             query = query.eq('institution_id', institutionId);
           }
+          */
           
           return query.order('start_at', { ascending: true });
         }),
@@ -778,10 +786,12 @@ export class CanonicalDataService {
             .eq('deleted', false)
             .or(`due_date.gte.${startOfDay},status.neq.done`);
 
+          /*
           if (institutionId) {
             query = query.eq('institution_id', institutionId);
           }
-
+          */
+          
           return query.order('due_date', { ascending: true });
         })
       ]);

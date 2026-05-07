@@ -67,9 +67,11 @@ export const TaskService = {
                 `)
                 .eq('deleted', false);
             
+            /*
             if (params.institutionId) {
                 query = query.eq('institution_id', params.institutionId);
             }
+            */
             if (params.status) {
                 query = query.eq('status', params.status);
             }

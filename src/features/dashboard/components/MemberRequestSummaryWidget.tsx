@@ -30,7 +30,7 @@ export const MemberRequestSummaryWidget = () => {
         return { total, todo, inProgress, review, done, progress };
     }, [tasks, user]);
 
-    if (!myStats || myStats.total === 0) return null;
+    if (!myStats) return null;
 
     const items: { label: string; value: number; icon: any; color: string; bg: string }[] = [
         { label: 'Pending', value: myStats.todo, icon: Clock, color: 'text-amber-400', bg: 'bg-amber-400/10' },

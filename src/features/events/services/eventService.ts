@@ -18,7 +18,7 @@ export const EventService = {
     async getEvents(institutionId?: string): Promise<Event[]> {
         try {
             const { tenantId } = await tenantContext();
-
+ 
             let query = supabase
                 .from(COLLECTION)
                 .select(`
@@ -34,37 +34,36 @@ export const EventService = {
                 `)
                 .eq('tenant_id', tenantId)
                 .eq('deleted', false);
-
-            /*
-            if (institutionId) {
-                query = query.eq('institution_id', institutionId);
-            }
-            */
-
+ 
             const { data, error } = await safeQuery(() => query
                 .order('start_at', { ascending: true })
             );
-
+ 
             if (error) throw error;
-
+ 
             // Update Cache
             if (data) {
                 const cacheKey = 'events';
                 await offlineDB.setCache(cacheKey, data);
             }
-
-            const rawEvents = (data as any[]) || [];
+ 
+            const rawEvents = normalizeEvents((data as any[]) || []);
             
             // Expand recurring events
             const currentYear = new Date().getFullYear();
-            return RecurrenceService.expandEvents(rawEvents, new Date(currentYear, 0, 1), new Date(currentYear, 11, 31));
-        } catch (e) {
+            const start = new Date(currentYear - 1, 0, 1);
+            const end = new Date(currentYear + 1, 11, 31);
+            const expanded = RecurrenceService.expandEvents(rawEvents, start, end);
+            
+            return expanded;
+        } catch (e: any) {
             const cacheKey = 'events';
-            console.warn("[EventService] Falling back to cache:", e);
             const cached = await offlineDB.getCache<any[]>(cacheKey);
-            const rawEvents = cached || [];
+            const rawEvents = normalizeEvents((cached || []) as any);
             const currentYear = new Date().getFullYear();
-            return RecurrenceService.expandEvents(rawEvents, new Date(currentYear, 0, 1), new Date(currentYear, 11, 31));
+            const start = new Date(currentYear - 1, 0, 1);
+            const end = new Date(currentYear + 1, 11, 31);
+            return RecurrenceService.expandEvents(rawEvents, start, end);
         }
     },
 

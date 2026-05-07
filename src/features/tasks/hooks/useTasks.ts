@@ -17,9 +17,7 @@ export function useTasks() {
     return useQuery({
         queryKey: ['tasks', 'global'],
         queryFn: async () => {
-            console.log("[DATA TRACE] useTasks fetching global tasks")
             const response = await TaskService.getTasks();
-            console.log("[DATA TRACE] useTasks response received")
             return response || [];
         },
         enabled: canFetch,

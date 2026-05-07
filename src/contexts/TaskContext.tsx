@@ -70,7 +70,6 @@ export const TaskProvider: React.FC<{ children: React.ReactNode }> = ({ children
                     setTasks(sortedTasks);
                     setNetworkError(false);
                 } catch (error) {
-                    console.warn('Task polling failed:', error);
                     setNetworkError(true);
                 }
             } catch (error) {
@@ -124,7 +123,6 @@ export const TaskProvider: React.FC<{ children: React.ReactNode }> = ({ children
         try {
             const tenantId = user?.tenant_id ? String(user.tenant_id) : undefined;
             if (!tenantId) {
-                console.warn("[TaskContext] updateTask blocked: No tenant context");
                 return;
             }
 

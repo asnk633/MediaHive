@@ -16,9 +16,7 @@ export function useEvents() {
     return useQuery({
         queryKey: ['events', 'global'],
         queryFn: async () => {
-            console.log("[DATA TRACE] useEvents fetching via CanonicalDataService (Global)");
-            // CanonicalDataService now ignores institutionId internally, but we'll stop passing it here too
-            const events = await CanonicalDataService.getEvents({});
+            const events = await EventService.getEvents();
             return events || [];
         },
         enabled: canFetch,

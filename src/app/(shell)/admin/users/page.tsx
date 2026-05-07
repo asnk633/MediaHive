@@ -29,7 +29,21 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { InviteUserModal } from '@/components/admin/users/InviteUserModal';
 import { ConfirmationDialog } from "@/components/ui/ConfirmationDialog";
 
+import { useRouter } from 'next/navigation';
+import { usePermissions } from '@/hooks/usePermissions';
+
 export default function AdminUsersPage() {
+    const router = useRouter();
+    const { role: currentRole } = usePermissions();
+
+    useEffect(() => {
+        if (currentRole && currentRole !== 'admin') {
+            router.push('/home');
+        }
+    }, [currentRole, router]);
+
+    if (!currentRole || currentRole !== 'admin') return null;
+
     const [viewMode, setViewMode] = useState<'users' | 'invites'>('users');
     const [users, setUsers] = useState<User[]>([]);
     const [invites, setInvites] = useState<any[]>([]);

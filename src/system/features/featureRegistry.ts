@@ -30,7 +30,7 @@ export const FEATURE_REGISTRY: Record<FeatureKey, FeatureConfig> = {
     aiAssistant: { enabled: false, minRole: 'team', isLabs: true },
     intelligenceDashboard: { enabled: true, minRole: 'admin', isLabs: true },
     productionCenter: { enabled: true, minRole: 'team', isLabs: true },
-    governance: { enabled: true, minRole: 'manager' },
+    governance: { enabled: true, minRole: 'admin' },
     leave_management: { enabled: true, minRole: 'team' },
     reports: { enabled: true, minRole: 'manager' },
     policySimulation: { enabled: true, minRole: 'admin', isLabs: true },

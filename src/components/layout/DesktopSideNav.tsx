@@ -123,8 +123,8 @@ export default function DesktopSideNav() {
                     { id: 'admin-panel', label: 'Control Panel', icon: ShieldAlert, path: '/admin' },
                     { id: 'features', label: 'Feature Config', icon: Sliders, path: '/admin/settings/features' }
                 ] : []),
-                // Institutional Manager/Admin: Users list
-                ...(['admin', 'manager'].includes(currentRole) ? [
+                // Global Admin: User Management & Governance
+                ...(currentRole === 'admin' ? [
                     { id: 'users', label: 'User Directory', icon: Users, path: '/admin/users' },
                     { id: 'governance', label: 'Governance', icon: ShieldCheck, path: '/governance', feature: 'governance' as FeatureKey }
                 ] : []),

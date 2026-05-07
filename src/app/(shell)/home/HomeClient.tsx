@@ -62,6 +62,7 @@ import { TodayFocusPanel } from "@/features/dashboard/components/TodayFocusPanel
 import { useCampaigns } from "@/services/campaigns/useCampaigns";
 import { ProductionInsights } from "@/features/dashboard/components/ProductionInsights";
 import { SystemStatusWidget } from "@/features/dashboard/components/SystemStatusWidget";
+import { MemberRequestSummaryWidget } from "@/features/dashboard/components/MemberRequestSummaryWidget";
 import { AdminOversightWidget } from "@/features/dashboard/components/AdminOversightWidget";
 import { MediaTeamOverview } from "@/features/dashboard/components/MediaTeamOverview";
 import { EventsNext7DaysWidget } from "@/features/dashboard/components/EventsNext7DaysWidget";
@@ -321,10 +322,15 @@ export default function HomeClient() {
                                 </div>
                             </div>
                         )}
-                        {/* 1 - System Status and Today's Completion */}
-                        {['admin', 'manager'].includes(currentRole) && (
+                        {/* 1 - System Status (Visible to all for transparency) */}
+                        <div className="animate-in fade-in slide-in-from-bottom-4 duration-700">
+                            <SystemStatusWidget />
+                        </div>
+
+                        {/* 1b - Personal Request Summary (For Members) */}
+                        {currentRole === 'member' && (
                             <div className="animate-in fade-in slide-in-from-bottom-4 duration-700">
-                                <SystemStatusWidget />
+                                <MemberRequestSummaryWidget />
                             </div>
                         )}
 

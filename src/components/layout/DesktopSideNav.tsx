@@ -86,7 +86,7 @@ export default function DesktopSideNav() {
                 { id: 'tasks', label: 'My Tasks', icon: CheckSquare, path: '/tasks', feature: 'tasks' as FeatureKey },
                 { id: 'calendar', label: 'Events', icon: Calendar, path: '/events', feature: 'events' as FeatureKey },
                 ...(canReadReports ? [
-                    { id: 'reports', label: 'Reports', icon: BarChart3, path: '/reports' }
+                    { id: 'reports', label: 'Reports', icon: BarChart3, path: '/reports', feature: 'reports' as FeatureKey }
                 ] : []),
                 // Phase 5D: Trash — hidden from Guests
                 ...(currentRole !== 'guest' ? [
@@ -121,11 +121,11 @@ export default function DesktopSideNav() {
                 // Institutional Manager/Admin: Users list
                 ...(['admin', 'manager'].includes(currentRole) ? [
                     { id: 'users', label: 'User Directory', icon: Users, path: '/admin/users' },
-                    { id: 'governance', label: 'Governance', icon: ShieldCheck, path: '/governance' }
+                    { id: 'governance', label: 'Governance', icon: ShieldCheck, path: '/governance', feature: 'governance' as FeatureKey }
                 ] : []),
                 // Team Members: Request Leave
                 ...(currentRole !== 'guest' ? [
-                    { id: 'leave', label: 'Request Leave', icon: Coffee, path: '/leave/request' }
+                    { id: 'leave', label: 'Request Leave', icon: Coffee, path: '/leave/request', feature: 'leave_management' as FeatureKey }
                 ] : []),
                 { id: 'settings', label: 'Settings', icon: Settings, path: '/settings' },
             ],

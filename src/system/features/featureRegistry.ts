@@ -8,6 +8,9 @@ export type FeatureKey =
     | 'aiAssistant'
     | 'intelligenceDashboard'
     | 'productionCenter'
+    | 'governance'
+    | 'leave_management'
+    | 'reports'
     | 'labs';
 
 export interface FeatureConfig {
@@ -26,5 +29,8 @@ export const FEATURE_REGISTRY: Record<FeatureKey, FeatureConfig> = {
     aiAssistant: { enabled: false, minRole: 'standard', isLabs: true },
     intelligenceDashboard: { enabled: true, minRole: 'admin', isLabs: true },
     productionCenter: { enabled: true, minRole: 'standard', isLabs: true },
+    governance: { enabled: true, minRole: 'manager' },
+    leave_management: { enabled: true, minRole: 'standard' },
+    reports: { enabled: true },
     labs: { enabled: true, minRole: 'admin' },
 };

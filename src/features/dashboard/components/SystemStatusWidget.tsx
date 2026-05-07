@@ -6,8 +6,11 @@ import { ReactiveCard } from '@/components/ui/ReactiveCard';
 import { Clock, Activity, PauseCircle, CheckCircle } from 'lucide-react';
 import { cn } from '@/lib/utils';
 
+import { usePermissions } from '@/hooks/usePermissions';
+
 export const SystemStatusWidget = () => {
-    const { metrics, user } = useDashboard();
+    const { metrics } = useDashboard();
+    const { role: currentRole } = usePermissions();
     
     if (!metrics) return null;
 
@@ -56,7 +59,7 @@ export const SystemStatusWidget = () => {
             </div>
 
             {/* Completion Progress Bar (Leadership Only) */}
-            {user?.role !== 'member' && (
+            {currentRole !== 'member' && (
                 <ReactiveCard className="p-[18px] dashboard-card-primary card-hover-elevation transition-all flex flex-col justify-center">
                     <div className="flex justify-between items-end mb-[14px]">
                         <div>

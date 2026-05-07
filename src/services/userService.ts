@@ -125,14 +125,14 @@ export const UserService = {
             }
 
             // Check if targetInstitutionId is actually a Unit ID (Department)
-            const resolvedInst = institutionMappings.find(m => m.unit_id === targetInstitutionId || m.id === targetInstitutionId);
+            const resolvedInst = institutionMappings.find((m: any) => m.unit_id === targetInstitutionId || m.id === targetInstitutionId);
             if (resolvedInst) {
                 targetInstitutionId = resolvedInst.id;
             }
 
             // 3. Map and return
             return profiles.map((p: any) => {
-                const wsAssignment = allWsAssignments.find(a => a.user_id === p.id && a.institution_id === targetInstitutionId);
+                const wsAssignment = allWsAssignments.find((a: any) => a.user_id === p.id && a.institution_id === targetInstitutionId);
                 // If a workspace role exists, it MUST override the global role.
                 // If NO workspace role exists, the user is implicitly a 'member' in this workspace context.
                 const effectiveRole = wsAssignment?.role || (targetInstitutionId ? 'member' : p.role);

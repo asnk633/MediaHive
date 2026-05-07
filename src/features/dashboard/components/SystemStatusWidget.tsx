@@ -7,7 +7,7 @@ import { Clock, Activity, PauseCircle, CheckCircle } from 'lucide-react';
 import { cn } from '@/lib/utils';
 
 export const SystemStatusWidget = () => {
-    const { metrics } = useDashboard();
+    const { metrics, user } = useDashboard();
     
     if (!metrics) return null;
 
@@ -17,6 +17,11 @@ export const SystemStatusWidget = () => {
         { label: 'On Hold', value: metrics.blocked || 0, icon: PauseCircle, color: 'text-red-400', bg: 'bg-red-400/10' },
         { label: 'Completed', value: metrics.completedToday || 0, icon: CheckCircle, color: 'text-emerald-400', bg: 'bg-emerald-400/10' },
     ];
+
+    const totalToday = (metrics.dueToday || 0) + (metrics.completedToday || 0);
+    const completionPercent = totalToday > 0 
+        ? Math.round(((metrics.completedToday || 0) / totalToday) * 100) 
+        : 0;
 
     const totalTasks = (metrics.dueToday || 0) + (metrics.inProgress || 0) + (metrics.blocked || 0) + (metrics.completedToday || 0);
 
@@ -50,6 +55,26 @@ export const SystemStatusWidget = () => {
                 ))}
             </div>
 
+            {/* Completion Progress Bar (Leadership Only) */}
+            {user?.role !== 'member' && (
+                <ReactiveCard className="p-[18px] dashboard-card-primary card-hover-elevation transition-all flex flex-col justify-center">
+                    <div className="flex justify-between items-end mb-[14px]">
+                        <div>
+                            <p className="text-sm font-medium text-white/85 mb-1">Today's Completion</p>
+                            <p className="text-sm font-medium text-white/60">
+                                {metrics.completedToday || 0} of {totalToday} tasks completed
+                            </p>
+                        </div>
+                        <span className="text-2xl font-black tracking-tighter text-emerald-400">{completionPercent}%</span>
+                    </div>
+                    <div className="h-3 w-full bg-white/5 rounded-full overflow-hidden">
+                        <div 
+                            className="h-full bg-emerald-500 shadow-[0_0_10px_rgba(16,185,129,0.3)] transition-all duration-1000 ease-out" 
+                            style={{ width: `${completionPercent}%` }}
+                        />
+                    </div>
+                </ReactiveCard>
+            )}
         </div>
     );
 };

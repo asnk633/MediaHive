@@ -499,7 +499,7 @@ class SyncEngine {
       'UNASSIGN_EQUIPMENT': 'event_equipment',
     };
 
-    const actionMap: Record<string, 'insert' | 'update' | 'delete' | 'bulk_insert' | 'bulk_update'> = {
+    const actionMap: Record<string, 'insert' | 'update' | 'delete' | 'bulk_insert' | 'bulk_update' | 'bulk_delete'> = {
       'CREATE_TASK': 'insert',
       'UPDATE_TASK': 'update',
       'DELETE_TASK': 'delete',

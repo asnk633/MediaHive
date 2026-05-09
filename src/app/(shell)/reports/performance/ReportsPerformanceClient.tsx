@@ -15,17 +15,13 @@ import {
 import { MediaTeamOverview } from '@/features/dashboard/components/MediaTeamOverview';
 import { apiClient } from '@/lib/apiClient';
 import { TaskService } from '@/services/tasks';
+import { StructureService } from '@/services/structureService';
 import { Task } from '@/features/tasks/types/task';
 import { format, subMonths, isSameMonth, differenceInHours } from 'date-fns';
 import { PageLayout } from '@/components/ui/layout/PageLayout';
 import { cn } from '@/lib/utils';
 import { Skeleton } from '@/components/ui/skeleton';
 
-interface UserPerformance {
-    name: string;
-    completed: number;
-    tasks: Task[];
-}
 
 export default function ReportsPerformanceClient() {
     const router = useRouter();

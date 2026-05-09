@@ -283,7 +283,7 @@ export function NotificationForm({ initialData, onSubmitSuccess, onCancel }: Not
               <MultiSelect 
                 label="Select Recipients"
                 placeholder="Search Users..."
-                options={allUsers.map(u => ({ id: u.uid || u.id, label: u.name || u.full_name || 'User' }))}
+                options={allUsers.map(u => ({ id: u.uid || u.id, label: u.name || u.fullName || 'User' }))}
                 selected={selectedUserIds}
                 onChange={setSelectedUserIds}
               />

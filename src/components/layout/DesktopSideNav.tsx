@@ -118,14 +118,9 @@ export default function DesktopSideNav() {
             id: 'admin',
             label: 'System',
             items: [
-                // Global Admin: Control Panel
-                ...(user?.role === 'admin' ? [
-                    { id: 'admin-panel', label: 'Control Panel', icon: ShieldAlert, path: '/admin' },
-                    { id: 'features', label: 'Feature Config', icon: Sliders, path: '/admin/settings/features' }
-                ] : []),
-                // Global Admin: User Management & Governance
+                // Global Admin: System Management
                 ...(currentRole === 'admin' ? [
-                    { id: 'users', label: 'User Directory', icon: Users, path: '/admin/users' },
+                    { id: 'admin-panel', label: 'Control Panel', icon: ShieldAlert, path: '/admin' },
                     { id: 'governance', label: 'Governance', icon: ShieldCheck, path: '/governance', feature: 'governance' as FeatureKey }
                 ] : []),
                 // Team Members: Request Leave

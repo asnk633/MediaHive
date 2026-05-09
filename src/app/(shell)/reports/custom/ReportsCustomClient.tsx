@@ -49,6 +49,7 @@ export default function ReportsCustomClient() {
     const [statusFilter, setStatusFilter] = useState<string[]>([]);
     const [priorityFilter, setPriorityFilter] = useState<string[]>([]);
     const [entityFilter, setEntityFilter] = useState<string[]>([]);
+    const [deptFilter, setDeptFilter] = useState<string[]>([]);
     const [searchQuery, setSearchQuery] = useState('');
 
     useEffect(() => {
@@ -59,23 +60,26 @@ export default function ReportsCustomClient() {
     const loadAllData = async () => {
         setLoading(true);
         try {
-            const [taskData, fileData, equipmentData, structData] = await Promise.all([
+            const [taskData, fileData, equipmentData, instData, deptData] = await Promise.all([
                 TaskService.getTasks(),
                 FileService.getFiles(user!.role, user!.department_id, user!.institution_id),
                 inventoryService.getEquipment(),
-                StructureService.getInstitutions()
+                StructureService.getInstitutions(),
+                StructureService.getDepartments()
             ]);
 
             setTasks(taskData || []);
             setFiles(fileData || []);
             setEquipment(equipmentData || []);
-            setInstitutions(structData.institutions || []);
+            setInstitutions(instData.institutions || []);
+            setDepartments(deptData.departments || []);
         } catch (error) {
             console.error("Failed to load custom report data:", error);
             setTasks([]);
             setFiles([]);
             setEquipment([]);
             setInstitutions([]);
+            setDepartments([]);
         } finally {
             setLoading(false);
         }
@@ -90,11 +94,15 @@ export default function ReportsCustomClient() {
             return tasks.filter(t => {
                 const matchesStatus = statusFilter.length === 0 || statusFilter.includes(t.status);
                 const matchesPriority = priorityFilter.length === 0 || priorityFilter.includes(t.priority);
-                const entityId = t.on_behalf_of?.id || t.institution_id || t.created_by?.institution_id;
-                const matchesEntity = entityFilter.length === 0 || entityFilter.includes(String(entityId));
+                
+                const instId = t.on_behalf_of?.id || t.institution_id || t.created_by?.institution_id;
+                const matchesInst = entityFilter.length === 0 || entityFilter.includes(String(instId));
+                
+                const deptId = t.department_id || t.created_by?.department_id;
+                const matchesDept = deptFilter.length === 0 || deptFilter.includes(String(deptId));
                 
                 const matchesSearch = !searchQuery || t.title.toLowerCase().includes(searchQuery.toLowerCase()) || t.description?.toLowerCase().includes(searchQuery.toLowerCase());
-                return matchesStatus && matchesPriority && matchesEntity && matchesSearch;
+                return matchesStatus && matchesPriority && matchesInst && matchesDept && matchesSearch;
             });
         } else if (source === 'media_assets') {
             return files.filter(f => {
@@ -288,7 +296,7 @@ export default function ReportsCustomClient() {
                                             <button onClick={() => setEntityFilter([])} className="text-[10px] font-bold text-indigo-400 hover:text-indigo-300 transition-colors uppercase">Clear</button>
                                         )}
                                     </div>
-                                    <div className="flex flex-col gap-1 max-h-[200px] overflow-y-auto pr-2 custom-scrollbar">
+                                    <div className="flex flex-col gap-1 max-h-[160px] overflow-y-auto pr-2 custom-scrollbar">
                                         {institutions.map(inst => (
                                             <button
                                                 key={inst.id}
@@ -306,6 +314,36 @@ export default function ReportsCustomClient() {
                                         ))}
                                         {institutions.length === 0 && (
                                             <span className="text-[10px] text-white/10 italic">No institutions identified</span>
+                                        )}
+                                    </div>
+                                </div>
+
+                                {/* Department Filters */}
+                                <div className="space-y-4">
+                                    <div className="flex items-center justify-between">
+                                        <h3 className="text-[10px] font-bold text-white/20 uppercase tracking-[0.2em]">Departmental Context</h3>
+                                        {deptFilter.length > 0 && (
+                                            <button onClick={() => setDeptFilter([])} className="text-[10px] font-bold text-indigo-400 hover:text-indigo-300 transition-colors uppercase">Clear</button>
+                                        )}
+                                    </div>
+                                    <div className="flex flex-col gap-1 max-h-[160px] overflow-y-auto pr-2 custom-scrollbar">
+                                        {departments.map(dept => (
+                                            <button
+                                                key={dept.id}
+                                                onClick={() => toggleFilter(setDeptFilter, String(dept.id))}
+                                                className={cn(
+                                                    "w-full flex items-center justify-start gap-3 px-3 py-3 rounded-lg text-[10px] font-bold uppercase transition-all border text-left",
+                                                    deptFilter.includes(String(dept.id))
+                                                        ? "bg-white/10 border-white/20 text-white"
+                                                        : "bg-white/[0.02] border-white/5 text-white/20 hover:text-white/40"
+                                                )}
+                                            >
+                                                <div className={cn("w-1.5 h-1.5 rounded-full", deptFilter.includes(String(dept.id)) ? "bg-emerald-400" : "bg-white/10")} />
+                                                <span className="truncate">{dept.name}</span>
+                                            </button>
+                                        ))}
+                                        {departments.length === 0 && (
+                                            <span className="text-[10px] text-white/10 italic">No departments identified</span>
                                         )}
                                     </div>
                                 </div>

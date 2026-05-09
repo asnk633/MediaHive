@@ -35,7 +35,7 @@ import {
 import { usePersistentConflicts } from '@/hooks/usePersistentConflicts';
 import { ConflictStatus, ConflictResolution, PersistentConflict } from '@/lib/conflictStore';
 import type { ConflictCategory } from '@/domain/conflicts/types';
-import { formatDate } from '@/lib/dateUtils';
+import { formatDate, formatTimeOnly } from '@/lib/dateUtils';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { DropdownSelector } from '@/components/ui/selectors/DropdownSelector';
@@ -302,7 +302,7 @@ export const ConflictResolutionCenter: React.FC<ConflictResolutionCenterProps> =
                       </div>
                       <div className="flex items-center gap-1.5 text-[11px] font-medium text-white/40">
                         <Clock size={12} />
-                        <span>{formatDate(new Date(conflict.timestamp), 'HH:mm')}</span>
+                        <span>{formatTimeOnly(conflict.timestamp)}</span>
                       </div>
                     </div>
                   </motion.button>
@@ -410,7 +410,7 @@ export const ConflictResolutionCenter: React.FC<ConflictResolutionCenterProps> =
                   <div className="flex items-center gap-6">
                     <div className="flex flex-col">
                       <span className="text-[10px] font-black text-white/20 uppercase tracking-widest mb-1">Detected At</span>
-                      <span className="text-xs font-bold text-white/60">{formatDate(new Date(selectedConflict.created_at))}</span>
+                      <span className="text-xs font-bold text-white/60">{formatDate(selectedConflict.created_at)}</span>
                     </div>
                     <div className="w-px h-6 bg-white/10" />
                     <div className="flex flex-col">

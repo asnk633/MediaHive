@@ -985,6 +985,19 @@ const TaskListViewComponent: React.FC<TaskListViewProps> = ({ tasks, loading = f
                     }}
                 />
             )}
+
+            {/* Edit Task Dialog */}
+            {taskToEdit && (
+                <EditTaskDialog
+                    open={editDialogOpen}
+                    onOpenChange={setEditDialogOpen}
+                    task={taskToEdit}
+                    onUpdate={async (updates) => {
+                        await onTaskMutate?.([taskToEdit.id], updates, () => TaskService.updateTask(taskToEdit.id, updates));
+                        return true;
+                    }}
+                />
+            )}
         </div>
     );
 };

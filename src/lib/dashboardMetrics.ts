@@ -24,6 +24,7 @@ export interface DashboardMetrics {
     readonly performance: {
         readonly completedThisWeek: number;
         readonly avgCompletionTimeDays: number;
+        readonly avgLeadTimeHours: number;
         readonly workloadDistribution: Record<string, number>;
         readonly productivityTrend: { date: string; count: number }[];
     };
@@ -51,6 +52,7 @@ export const EMPTY_METRICS: DashboardMetrics = {
     performance: {
         completedThisWeek: 0,
         avgCompletionTimeDays: 0,
+        avgLeadTimeHours: 0,
         workloadDistribution: {},
         productivityTrend: []
     }
@@ -293,6 +295,7 @@ export const computeDashboardMetrics = (
         performance: {
             completedThisWeek: completedThisWeekCount,
             avgCompletionTimeDays: Number(avgCompletionTimeDays.toFixed(1)),
+            avgLeadTimeHours: completionsWithTime > 0 ? Math.round(totalCompletionTimeMs / completionsWithTime / (1000 * 60 * 60)) : 0,
             workloadDistribution: workloadMap,
             productivityTrend
         }

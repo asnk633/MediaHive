@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { Calendar as CalendarIcon, Clock, MapPin, AlignLeft, User, Briefcase, Camera, Check, Repeat, Lock, Shield, AlertTriangle, Search, Package } from 'lucide-react';
+import { Calendar as CalendarIcon, Clock, MapPin, AlignLeft, User, Briefcase, Camera, Check, Repeat, Lock, Shield, AlertTriangle, Search, Package, TestTube2 } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { format, isBefore, startOfDay } from 'date-fns';
 import { Button } from '@/components/ui/button';
@@ -92,6 +92,7 @@ export const CreateEventForm = ({ initialDate, initialEndDate, initialEvent, onS
     const [inventoryList, setInventoryList] = useState<{ id: string; name: string; category?: string }[]>([]);
     const [autoGenerateTasks, setAutoGenerateTasks] = useState(true);
     const [isCheckingConflicts, setIsCheckingConflicts] = useState(false);
+    const [is_demo_data, setIsDemoData] = useState(false);
 
     // Popover State (to fix overlay bug)
     const [datePopoverOpen, setDatePopoverOpen] = useState(false);
@@ -393,7 +394,8 @@ export const CreateEventForm = ({ initialDate, initialEndDate, initialEvent, onS
                 on_behalf_of,
                 organizer,
                 is_recurring: isRecurring,
-                tenant_id: user?.tenant_id
+                tenant_id: user?.tenant_id,
+                is_demo_data
             };
 
             if (isRecurring) {
@@ -569,6 +571,27 @@ export const CreateEventForm = ({ initialDate, initialEndDate, initialEvent, onS
                         </div>
                     )}
                 </div>
+
+                {/* Demo Data Toggle */}
+                {(user?.role === 'admin' || user?.role === 'manager') && (
+                    <div className="p-4 rounded-2xl bg-amber-500/5 border border-amber-500/10">
+                        <div className="flex items-center justify-between">
+                            <div className="flex items-center gap-3">
+                                <div className="w-8 h-8 rounded-full bg-amber-500/10 flex items-center justify-center text-amber-500">
+                                    <TestTube2 size={16} />
+                                </div>
+                                <div>
+                                    <p className="text-sm font-bold text-amber-200">Test / Demo Data</p>
+                                    <p className="text-[10px] text-amber-500/60 uppercase tracking-widest font-bold">Exclude from official reports</p>
+                                </div>
+                            </div>
+                            <Switch
+                                checked={is_demo_data}
+                                onCheckedChange={setIsDemoData}
+                            />
+                        </div>
+                    </div>
+                )}
             </div>
 
 

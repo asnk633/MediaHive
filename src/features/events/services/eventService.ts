@@ -289,7 +289,7 @@ export const EventService = {
             // 1. Sanitize Event Payload
             const { 
                 title, description, start_at, end_at, is_all_day, location,
-                media_coverage, on_behalf_of, organizer, institution_id, department_id 
+                media_coverage, on_behalf_of, organizer, institution_id, department_id, is_demo_data 
             } = event;
 
             const cleanedEvent: any = {
@@ -305,7 +305,8 @@ export const EventService = {
                 is_recurring: event.is_recurring,
                 recurrence_rule: event.recurrence_rule,
                 tenant_id: tenantId,
-                created_by: userId
+                created_by: userId,
+                is_demo_data: !!is_demo_data
             };
 
             if (institution_id) cleanedEvent.institution_id = institution_id;
@@ -356,7 +357,8 @@ export const EventService = {
                         department_id: cleanedEvent.department_id || null,
                         tenant_id: tenantId,
                         created_by: userId,
-                        updated_by: userId
+                        updated_by: userId,
+                        is_demo_data: !!is_demo_data
                     } as any);
                 }
             }

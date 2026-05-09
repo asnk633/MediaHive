@@ -14,8 +14,9 @@ import { Calendar } from "@/components/ui/calendar";
 import { cn } from "@/lib/utils";
 import {
     Loader2, Edit3, Calendar as CalendarIcon, Layers, CheckCircle2,
-    Circle, Clock, AlertCircle, Flag, Users, Trash2, UploadCloud
+    Circle, Clock, AlertCircle, Flag, Users, Trash2, UploadCloud, TestTube2
 } from "lucide-react";
+import { Switch } from "@/components/ui/switch";
 import { toast } from "sonner";
 import { format } from "date-fns";
 import { TaskService } from '@/services/tasks';
@@ -47,6 +48,7 @@ interface EditTaskDialogProps {
         created_by?: any;
         assigned_to?: { uid: string; name: string }[];
         assignedTo?: { uid: string; name: string; userId?: string }[];
+        is_demo_data?: boolean;
     };
     onUpdate: (updates: any) => Promise<boolean>;
 }
@@ -77,11 +79,12 @@ export function EditTaskDialog({ open, onOpenChange, task, onUpdate }: EditTaskD
             status: task.status || 'todo',
             due_date: task.due_date ? new Date(task.due_date).toISOString() : undefined as string | undefined,
             campaign_id: task.campaign_id || "none",
-            assignedToIds: ((task.assigned_to || task.assignedTo)?.map(m => (m as any).uid || (m as any).userId) || []) as string[]
+            assignedToIds: ((task.assigned_to || task.assignedTo)?.map(m => (m as any).uid || (m as any).userId) || []) as string[],
+            is_demo_data: !!task.is_demo_data
         }
     });
 
-    const { title, description, priority, status, campaign_id, assignedToIds } = formData;
+    const { title, description, priority, status, campaign_id, assignedToIds, is_demo_data } = formData;
     const due_date = formData.due_date ? new Date(formData.due_date) : undefined;
 
     const setTitle = (val: string) => setFormData(prev => ({ ...prev, title: val }));
@@ -94,6 +97,7 @@ export function EditTaskDialog({ open, onOpenChange, task, onUpdate }: EditTaskD
         ...prev,
         assignedToIds: typeof val === 'function' ? val(prev.assignedToIds) : val
     }));
+    const setIsDemoData = (val: boolean) => setFormData(prev => ({ ...prev, is_demo_data: val }));
 
     const [teamMembers, setTeamMembers] = useState<{ uid: string; name: string }[]>([]);
     const [campaigns, setCampaigns] = useState<Campaign[]>([]);
@@ -138,6 +142,7 @@ export function EditTaskDialog({ open, onOpenChange, task, onUpdate }: EditTaskD
                     .map((m: any) => m.uid || m.userId)
                     .filter(Boolean);
                 setAssignedToIds(ids);
+                setIsDemoData(!!task.is_demo_data);
                 if (task.due_date) {
                     try {
                         const d = new Date(task.due_date);
@@ -180,6 +185,7 @@ export function EditTaskDialog({ open, onOpenChange, task, onUpdate }: EditTaskD
             priority,
             status,
             campaign_id: campaign_id === "none" ? null : campaign_id,
+            is_demo_data
         };
 
         if (canAssign) {
@@ -474,6 +480,30 @@ export function EditTaskDialog({ open, onOpenChange, task, onUpdate }: EditTaskD
                                             </button>
                                         );
                                     })}
+                                </div>
+                            </div>
+                        )}
+                                </div>
+                            </div>
+                        )}
+
+                        {/* Demo Data Management */}
+                        {(isAdmin || isManager) && (
+                            <div className="p-4 rounded-2xl bg-amber-500/5 border border-amber-500/10">
+                                <div className="flex items-center justify-between">
+                                    <div className="flex items-center gap-3">
+                                        <div className="w-8 h-8 rounded-full bg-amber-500/10 flex items-center justify-center text-amber-500">
+                                            <TestTube2 size={16} />
+                                        </div>
+                                        <div>
+                                            <p className="text-sm font-bold text-amber-200">Test / Demo Data</p>
+                                            <p className="text-[10px] text-amber-500/60 uppercase tracking-widest font-bold">Exclude from official reports</p>
+                                        </div>
+                                    </div>
+                                    <Switch
+                                        checked={is_demo_data}
+                                        onCheckedChange={setIsDemoData}
+                                    />
                                 </div>
                             </div>
                         )}

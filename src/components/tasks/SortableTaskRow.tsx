@@ -249,6 +249,11 @@ export const SortableTaskRow = memo(({
                         <div className="flex flex-col flex-1 min-w-0">
                             <span className={cn("text-sm font-medium truncate transition-colors duration-200", task.status === 'done' ? "text-white/35 line-through" : "text-white/90 group-hover:text-white")}>
                                 {task.title}
+                                {task.is_demo_data && (
+                                    <span className="ml-2 inline-flex items-center text-[9px] uppercase font-bold text-amber-500 bg-amber-500/10 border border-amber-500/20 rounded px-1.5 py-0.5 tracking-[0.05em]" title="Test / Demo Data">
+                                        Demo
+                                    </span>
+                                )}
                                 {(task as any).isPendingSync && (
                                     <span className="ml-2 inline-flex items-center text-[10px] uppercase font-bold text-amber-500/70 border border-amber-500/20 rounded px-1.5 py-0.5" title="Pending Sync">
                                         Offline

@@ -53,6 +53,7 @@ export default function ReportsActivityClient() {
     };
 
     const filteredTasks = tasks.filter(task => {
+        if (task.is_demo_data) return false;
         const created = task.created_at?.seconds
             ? new Date(task.created_at.seconds * 1000)
             : new Date(task.created_at as any);

@@ -3,7 +3,8 @@
 
 import React, { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
-import { ArrowLeft, Calendar as CalendarIcon, User, Briefcase, Flag, Building } from 'lucide-react';
+import { ArrowLeft, Calendar as CalendarIcon, User, Briefcase, Flag, Building, TestTube2 } from 'lucide-react';
+import { Switch } from '@/components/ui/switch';
 import { useAuth } from '@/contexts/AuthContextProvider';
 import { format } from "date-fns";
 import { DateSelector } from '@/components/ui/selectors/DateSelector';
@@ -62,11 +63,12 @@ export default function TasksNewClient() {
             priority: 'medium' as 'low' | 'medium' | 'high',
             assignedToIds: [] as string[],
             selectedOrgId: '',
-            isDelegating: false
+            isDelegating: false,
+            is_demo_data: false
         }
     });
 
-    const { title, description, priority, assignedToIds, selectedOrgId, isDelegating } = formData;
+    const { title, description, priority, assignedToIds, selectedOrgId, isDelegating, is_demo_data } = formData;
     const due_date = formData.due_date ? new Date(formData.due_date) : undefined;
 
     const setTitle = (val: string) => setFormData(prev => ({ ...prev, title: val }));
@@ -79,6 +81,7 @@ export default function TasksNewClient() {
     }));
     const setSelectedOrgId = (val: string) => setFormData(prev => ({ ...prev, selectedOrgId: val }));
     const setIsDelegating = (val: boolean) => setFormData(prev => ({ ...prev, isDelegating: val }));
+    const setIsDemoData = (val: boolean) => setFormData(prev => ({ ...prev, is_demo_data: val }));
 
     const [files, setFiles] = useState<File[]>([]);
     const [uploadProgress, setUploadProgress] = useState<string>('');
@@ -274,7 +277,8 @@ export default function TasksNewClient() {
                 created_by: user.uid,
                 assigned_to: finalAssignedTo.length > 0 ? finalAssignedTo : undefined,
                 campaign_id: campaign_id || undefined,
-                on_behalf_of: onBehalfOfData
+                on_behalf_of: onBehalfOfData,
+                is_demo_data: is_demo_data
             };
  
             const { data: newTask, error: insertError } = await CanonicalDataService.createRecord('tasks', newTaskData, 'task');
@@ -695,6 +699,27 @@ export default function TasksNewClient() {
                                     </div>
                                 </div>
                             </div>
+
+                            {/* Demo Data Toggle */}
+                            {(isAdmin || isTeam) && (
+                                <div className="p-4 rounded-2xl bg-amber-500/5 border border-amber-500/10 mb-4 mt-2">
+                                    <div className="flex items-center justify-between">
+                                        <div className="flex items-center gap-3">
+                                            <div className="w-8 h-8 rounded-full bg-amber-500/10 flex items-center justify-center text-amber-500">
+                                                <TestTube2 size={16} />
+                                            </div>
+                                            <div>
+                                                <p className="text-sm font-bold text-amber-200">Test / Demo Data</p>
+                                                <p className="text-[10px] text-amber-500/60 uppercase tracking-widest font-bold">Exclude from official reports</p>
+                                            </div>
+                                        </div>
+                                        <Switch
+                                            checked={is_demo_data}
+                                            onCheckedChange={setIsDemoData}
+                                        />
+                                    </div>
+                                </div>
+                            )}
 
                             {/* Phase 28 Inline Recovery */}
                             {error && (

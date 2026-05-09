@@ -141,34 +141,63 @@ export default function ReportsCustomClient() {
                     {/* Sidebar Filters */}
                     <div className="lg:col-span-1 space-y-8">
                         {/* Mode Switcher */}
-                        <div className="bg-white/[0.03] p-1.5 rounded-2xl border border-white/5 flex gap-1">
-                            <button
-                                onClick={() => setSource('tasks')}
-                                className={cn(
-                                    "flex-1 flex items-center justify-center gap-2 py-3 rounded-xl transition-all font-bold text-[10px] uppercase tracking-widest",
-                                    source === 'tasks' ? "bg-white/10 text-white shadow-lg" : "text-white/20 hover:text-white/40"
-                                )}
-                            >
-                                <CheckSquare size={14} /> Tasks
-                            </button>
-                            <button
-                                onClick={() => setSource('media_assets')}
-                                className={cn(
-                                    "flex-1 flex items-center justify-center gap-2 py-3 rounded-xl transition-all font-bold text-[10px] uppercase tracking-widest",
-                                    source === 'media_assets' ? "bg-indigo-500/20 text-indigo-400 shadow-lg border border-indigo-500/20" : "text-white/20 hover:text-white/40"
-                                )}
-                            >
-                                <Database size={14} /> Media Assets
-                            </button>
-                            <button
-                                onClick={() => setSource('equipment')}
-                                className={cn(
-                                    "flex-1 flex items-center justify-center gap-2 py-3 rounded-xl transition-all font-bold text-[10px] uppercase tracking-widest",
-                                    source === 'equipment' ? "bg-emerald-500/20 text-emerald-400 shadow-lg border border-emerald-500/20" : "text-white/20 hover:text-white/40"
-                                )}
-                            >
-                                <Database size={14} /> Equipment Inventory
-                            </button>
+                        <div className="space-y-4">
+                            <h3 className="text-[10px] font-bold text-white/20 uppercase tracking-[0.2em]">Select Report Mode</h3>
+                            <div className="flex flex-col gap-2">
+                                <button
+                                    onClick={() => setSource('tasks')}
+                                    className={cn(
+                                        "flex items-center gap-3 px-4 py-4 rounded-xl border transition-all text-left",
+                                        source === 'tasks'
+                                            ? "bg-white/10 border-white/10 text-white shadow-xl"
+                                            : "bg-white/[0.02] border-white/5 text-white/20 hover:text-white/40 hover:bg-white/[0.04]"
+                                    )}
+                                >
+                                    <div className={cn("p-2 rounded-lg", source === 'tasks' ? "bg-white/10 text-white" : "bg-white/5 text-white/20")}>
+                                        <CheckSquare size={16} />
+                                    </div>
+                                    <div className="flex flex-col">
+                                        <span className="text-sm font-bold">Tasks & Projects</span>
+                                        <span className="text-[10px] font-medium opacity-40">System throughput & attribution</span>
+                                    </div>
+                                </button>
+
+                                <button
+                                    onClick={() => setSource('media_assets')}
+                                    className={cn(
+                                        "flex items-center gap-3 px-4 py-4 rounded-xl border transition-all text-left",
+                                        source === 'media_assets'
+                                            ? "bg-indigo-500/10 border-indigo-500/20 text-indigo-400 shadow-xl"
+                                            : "bg-white/[0.02] border-white/5 text-white/20 hover:text-white/40 hover:bg-white/[0.04]"
+                                    )}
+                                >
+                                    <div className={cn("p-2 rounded-lg", source === 'media_assets' ? "bg-indigo-500/10 text-indigo-400" : "bg-white/5 text-white/20")}>
+                                        <Database size={16} />
+                                    </div>
+                                    <div className="flex flex-col">
+                                        <span className="text-sm font-bold">Media Assets</span>
+                                        <span className="text-[10px] font-medium opacity-40">Digital files & task outputs</span>
+                                    </div>
+                                </button>
+
+                                <button
+                                    onClick={() => setSource('equipment')}
+                                    className={cn(
+                                        "flex items-center gap-3 px-4 py-4 rounded-xl border transition-all text-left",
+                                        source === 'equipment'
+                                            ? "bg-emerald-500/10 border-emerald-500/20 text-emerald-400 shadow-xl"
+                                            : "bg-white/[0.02] border-white/5 text-white/20 hover:text-white/40 hover:bg-white/[0.04]"
+                                    )}
+                                >
+                                    <div className={cn("p-2 rounded-lg", source === 'equipment' ? "bg-emerald-500/10 text-emerald-400" : "bg-white/5 text-white/20")}>
+                                        <Database size={16} />
+                                    </div>
+                                    <div className="flex flex-col">
+                                        <span className="text-sm font-bold">Equipment Inventory</span>
+                                        <span className="text-[10px] font-medium opacity-40">Hardware, gear & devices</span>
+                                    </div>
+                                </button>
+                            </div>
                         </div>
 
                         {/* Search */}

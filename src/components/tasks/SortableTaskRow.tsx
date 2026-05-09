@@ -11,7 +11,7 @@ import {
     MoreVertical, Calendar, User as UserIcon, CheckCircle2, Clock,
     AlertCircle, Circle, Filter, Edit3, Layers, UserPlus,
     ChevronRight, ChevronDown, Globe, GripVertical,
-    Activity, Flag, Zap, LifeBuoy, ShieldCheck, RotateCcw, Trash2
+    Activity, Flag, Zap, LifeBuoy, ShieldCheck, RotateCcw, Trash2, Eye
 } from 'lucide-react';
 import {
     getAdminSeverity,
@@ -95,6 +95,7 @@ interface SortableTaskRowProps {
     // Handlers
     toggleExpand: (id: string) => void;
     onTaskClick: (task: Task) => void;
+    onEditTask?: (task: Task) => void;
     onToggleSelection: (id: string, shiftHeld: boolean) => void;
     onStatusChange?: (status: Task['status']) => void;
     onRestore?: (id: string) => void;
@@ -119,7 +120,8 @@ export const SortableTaskRow = memo(({
     onStatusChange,
     onRestore,
     onPermanentDelete,
-    onSoftDelete
+    onSoftDelete,
+    onEditTask
 }: SortableTaskRowProps) => {
 
     const {
@@ -170,12 +172,11 @@ export const SortableTaskRow = memo(({
             className={cn("group flex flex-col transition-all", isDragging && "relative")}
         >
             {/* Main Row */}
-            <Link
-                href={`/tasks/${task.id}`}
+            <div
                 id={`nav-item-${task.id}`}
                 data-active={activeId === task.id}
                 className={cn(
-                    "grid grid-cols-[auto_1fr_auto] md:grid-cols-[40px_minmax(0,2.5fr)_minmax(0,1.5fr)_80px_100px_90px_minmax(0,1.2fr)_110px] gap-x-4 px-6 items-center border-l-[3px] transition-all duration-200 cursor-pointer focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-blue-500/50 hover:bg-white/[0.025]",
+                    "grid grid-cols-[auto_1fr_auto] md:grid-cols-[40px_minmax(0,2.5fr)_minmax(0,1.5fr)_80px_100px_90px_minmax(0,1.2fr)_120px_140px] gap-x-8 px-6 items-center border-l-[3px] transition-all duration-200 cursor-default focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-blue-500/50 hover:bg-white/[0.025]",
                     density === 'compact' ? "py-2" : "py-3",
                     isSelected
                         ? "bg-blue-500/[0.06] ring-1 ring-inset ring-blue-500/20"
@@ -327,72 +328,34 @@ export const SortableTaskRow = memo(({
                     </span>
                 </div>
 
-
-                {/* Status or Trash Actions */}
-                <div className="hidden md:flex items-center gap-1" onClick={e => e.stopPropagation()}>
-                    {mode === 'trash' ? (
-                        <div className="flex items-center gap-1.5">
-                            {/* Admin/Team can restore. Member cannot. */}
-                            {canRestoreTask ? (
-                                <button
-                                    onClick={() => onRestore?.(task.id)}
-                                    title="Restore"
-                                    className="p-1.5 rounded-lg text-emerald-400 hover:bg-emerald-500/10 transition-colors"
-                                >
-                                    <RotateCcw size={14} />
-                                </button>
-                            ) : null}
-
-                            {/* ONLY Admin can permanent delete. */}
-                            {canPermDelete && (
-                                <button
-                                    onClick={() => onPermanentDelete?.(task.id)}
-                                    title="Delete Forever"
-                                    className="p-1.5 rounded-lg text-red-400 hover:bg-red-500/10 transition-colors"
-                                >
-                                    <Trash2 size={14} />
-                                </button>
-                            )}
-                        </div>
-                    ) : (
+                {/* Status Column */}
+                <div className="hidden md:flex items-center" onClick={e => e.stopPropagation()}>
+                    {mode === 'trash' ? null : (
                         allowedToUpdateStatus && onStatusChange ? (
                             <DropdownMenu>
                                 <DropdownMenuTrigger className="outline-none">
                                     <StatusPill status={task.status || 'todo'} />
                                 </DropdownMenuTrigger>
-                                <DropdownMenuContent align="end" className="w-[140px]">
-                                    <DropdownMenuItem onClick={() => onStatusChange('todo')}>
+                                <DropdownMenuContent align="end" className="w-[140px] bg-slate-900 border-white/10">
+                                    <DropdownMenuItem onClick={() => onStatusChange('todo')} className="text-white/70 hover:text-white hover:bg-white/5">
                                         <Circle size={14} className="mr-2" /> To Do
                                     </DropdownMenuItem>
-                                    <DropdownMenuItem onClick={() => onStatusChange('in_progress')}>
+                                    <DropdownMenuItem onClick={() => onStatusChange('in_progress')} className="text-white/70 hover:text-white hover:bg-white/5">
                                         <Clock size={14} className="mr-2" /> Working
                                     </DropdownMenuItem>
-                                    <DropdownMenuItem onClick={() => onStatusChange('review')}>
+                                    <DropdownMenuItem onClick={() => onStatusChange('review')} className="text-white/70 hover:text-white hover:bg-white/5">
                                         <AlertCircle size={14} className="mr-2" /> On Hold
                                     </DropdownMenuItem>
-                                    <DropdownMenuItem onClick={() => onStatusChange('done')}>
+                                    <DropdownMenuItem onClick={() => onStatusChange('done')} className="text-white/70 hover:text-white hover:bg-white/5">
                                         <CheckCircle2 size={14} className="mr-2 text-emerald-500" /> Completed
                                     </DropdownMenuItem>
                                 </DropdownMenuContent>
                             </DropdownMenu>
                         ) : <StatusPill status={task.status} className="opacity-70 cursor-default" />
                     )}
-
-                    {/* Phase 14: Single-row Soft Delete (Move to Trash) in Normal View */}
-                    {mode === 'default' && (
-                        canSoftDelete ? (
-                            <button
-                                onClick={(e) => { e.stopPropagation(); onSoftDelete?.(task.id); }}
-                                title="Move to Trash"
-                                className="ml-1 p-1.5 rounded-lg text-white/15 hover:text-red-400 hover:bg-red-500/10 transition-all opacity-0 group-hover:opacity-100"
-                            >
-                                <Trash2 size={13} />
-                            </button>
-                        ) : null
-                    )}
                 </div>
 
-                {/* Completed Date Column (Last) */}
+                {/* Completed Date Column */}
                 <div className="hidden md:flex items-center justify-end">
                     <span className="text-xs text-white/35 tabular-nums">
                         {task.status === 'done' && task.completedAt ? (
@@ -403,7 +366,81 @@ export const SortableTaskRow = memo(({
                     </span>
                 </div>
 
-            </Link>
+                {/* Quick Actions Column */}
+                <div className="hidden md:flex items-center justify-center gap-3">
+                    {mode === 'default' && (
+                        <>
+                            <TooltipProvider>
+                                <Tooltip>
+                                    <TooltipTrigger asChild>
+                                        <button
+                                            onClick={(e) => { e.stopPropagation(); onTaskClick(task); }}
+                                            className="p-2 rounded-lg text-white/30 hover:text-blue-400 hover:bg-blue-500/10 transition-all opacity-0 group-hover:opacity-100"
+                                        >
+                                            <Eye size={14} />
+                                        </button>
+                                    </TooltipTrigger>
+                                    <TooltipContent className="bg-slate-900 border-white/10 text-[10px] font-bold uppercase tracking-widest py-1 px-2">View Details</TooltipContent>
+                                </Tooltip>
+                            </TooltipProvider>
+
+                            {allowedToEdit && (
+                                <TooltipProvider>
+                                    <Tooltip>
+                                        <TooltipTrigger asChild>
+                                            <button
+                                                onClick={(e) => { e.stopPropagation(); onEditTask?.(task); }}
+                                                className="p-2 rounded-lg text-white/30 hover:text-amber-400 hover:bg-amber-500/10 transition-all opacity-0 group-hover:opacity-100"
+                                            >
+                                                <Edit3 size={14} />
+                                            </button>
+                                        </TooltipTrigger>
+                                        <TooltipContent className="bg-slate-900 border-white/10 text-[10px] font-bold uppercase tracking-widest py-1 px-2">Edit Task</TooltipContent>
+                                    </Tooltip>
+                                </TooltipProvider>
+                            )}
+
+                            {canSoftDelete && (
+                                <TooltipProvider>
+                                    <Tooltip>
+                                        <TooltipTrigger asChild>
+                                            <button
+                                                onClick={(e) => { e.stopPropagation(); onSoftDelete?.(task.id); }}
+                                                className="p-2 rounded-lg text-white/30 hover:text-red-400 hover:bg-red-500/10 transition-all opacity-0 group-hover:opacity-100"
+                                            >
+                                                <Trash2 size={14} />
+                                            </button>
+                                        </TooltipTrigger>
+                                        <TooltipContent className="bg-slate-900 border-white/10 text-[10px] font-bold uppercase tracking-widest py-1 px-2">Move to Trash</TooltipContent>
+                                    </Tooltip>
+                                </TooltipProvider>
+                            )}
+                        </>
+                    )}
+
+                    {mode === 'trash' && (
+                        <div className="flex items-center gap-1.5">
+                            {canRestoreTask && (
+                                <button
+                                    onClick={(e) => { e.stopPropagation(); onRestore?.(task.id); }}
+                                    className="p-2 rounded-lg text-emerald-400 hover:bg-emerald-500/10 transition-colors"
+                                >
+                                    <RotateCcw size={14} />
+                                </button>
+                            )}
+                            {canPermDelete && (
+                                <button
+                                    onClick={(e) => { e.stopPropagation(); onPermanentDelete?.(task.id); }}
+                                    className="p-2 rounded-lg text-red-400 hover:bg-red-500/10 transition-colors"
+                                >
+                                    <Trash2 size={14} />
+                                </button>
+                            )}
+                        </div>
+                    )}
+                </div>
+
+            </div>
 
             {/* Expanded Detail Panel */}
             <AnimatePresence>

@@ -826,7 +826,7 @@ const TaskListViewComponent: React.FC<TaskListViewProps> = ({ tasks, loading = f
             {/* Main Task List Console */}
             <div className="flex-1 flex flex-col min-h-0 rounded-2xl border border-soft bg-surface shadow-sm overflow-hidden">
                 {/* Unified Header Row */}
-                <div className="grid grid-cols-[auto_1fr_auto] md:grid-cols-[40px_minmax(0,2.5fr)_minmax(0,1.5fr)_80px_100px_90px_minmax(0,1.2fr)_110px] gap-x-4 px-6 py-2.5 border-b border-white/[0.05] text-[10px] font-bold text-white/25 uppercase tracking-widest items-center bg-black/30 sticky top-0 z-10">
+                <div className="grid grid-cols-[auto_1fr_auto] md:grid-cols-[40px_minmax(0,2.5fr)_minmax(0,1.5fr)_80px_100px_90px_minmax(0,1.2fr)_120px_140px] gap-x-8 px-6 py-2.5 border-b border-white/[0.05] text-[10px] font-bold text-white/25 uppercase tracking-widest items-center bg-black/30 sticky top-0 z-10">
                     <div
                         role="checkbox"
                         aria-checked={isAllSelected ? true : isIndeterminate ? 'mixed' : false}
@@ -847,6 +847,7 @@ const TaskListViewComponent: React.FC<TaskListViewProps> = ({ tasks, loading = f
                     <div className="hidden md:block text-right">Due</div>
                     <div className="hidden md:block">Status</div>
                     <div className="hidden md:block text-right">Completed</div>
+                    <div className="hidden md:block text-center">Actions</div>
                 </div>
 
                 {loading ? (
@@ -916,6 +917,10 @@ const TaskListViewComponent: React.FC<TaskListViewProps> = ({ tasks, loading = f
                                                         setTimeout(() => virtualizer.measure(), 0);
                                                     }}
                                                     onTaskClick={(t) => onTaskClick?.(t)}
+                                                    onEditTask={(t) => {
+                                                        setTaskToEdit(t);
+                                                        setEditDialogOpen(true);
+                                                    }}
                                                     onToggleSelection={handleToggleSelection}
                                                     onStatusChange={mode !== 'trash' ? (newStatus) => handleStatusUpdate(task.id, newStatus) : undefined}
                                                     mode={mode}

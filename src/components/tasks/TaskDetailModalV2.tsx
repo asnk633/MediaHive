@@ -6,7 +6,7 @@ import { createPortal } from 'react-dom';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Task } from "@/features/tasks/types/task";
 import { TaskService as taskService } from '@/services/tasks';
-import { Clock, Calendar, CheckCircle2, User as UserIcon, AlertCircle, X, Edit2, UploadCloud, FileCheck, Circle, User, Activity } from 'lucide-react';
+import { Clock, Calendar, CheckCircle2, User as UserIcon, AlertCircle, X, Edit2, UploadCloud, FileCheck, Circle, User, Activity, Trash2, Users, UserPlus } from 'lucide-react';
 import { format } from 'date-fns';
 import { useAuth } from '@/contexts/AuthContextProvider';
 import { SafeAvatar } from '@/components/ui/SafeAvatar';
@@ -249,7 +249,15 @@ export const TaskDetailModalV2: React.FC<TaskDetailsModalProps> = ({ task, isOpe
     React.useEffect(() => {
         const fetchTeam = async () => {
             const members = await UserService.getTeamMembers();
-            setTeamMembers(members.map(m => ({
+            const filtered = members.filter(m => {
+                const role = (m as any).role?.toLowerCase().trim();
+                const name = m.name?.toLowerCase() || '';
+                return ['manager', 'team', 'member'].includes(role) && 
+                       !name.includes('admin') && 
+                       role !== 'admin' && 
+                       role !== 'superadmin';
+            });
+            setTeamMembers(filtered.map(m => ({
                 uid: m.uid,
                 name: m.name || 'Unknown',
                 avatar_url: m.avatar_url || m.photoURL
@@ -422,14 +430,28 @@ export const TaskDetailModalV2: React.FC<TaskDetailsModalProps> = ({ task, isOpe
                                  <div className="h-6 w-px bg-white/10 hidden sm:block" />
                                  <div className="flex items-center gap-2">
                                      {(user?.role === 'admin' || (user?.role === 'manager' || user?.role === 'member') || user?.uid === task?.createdBy?.uid) && (
-                                         <button
-                                             onClick={onEdit}
-                                             disabled={isDeleting}
-                                             className="p-2 bg-surface/50 hover:bg-surface rounded-lg transition-colors text-foreground backdrop-blur-sm shadow-sm disabled:opacity-50"
-                                             title="Edit Task"
-                                         >
-                                             <Edit2 size={18} />
-                                         </button>
+                                         <>
+                                             <button
+                                                 onClick={async () => {
+                                                     if (confirm("Are you sure you want to move this task to trash?")) {
+                                                         await handleDelete();
+                                                     }
+                                                 }}
+                                                 disabled={isDeleting}
+                                                 className="p-2 bg-red-500/10 hover:bg-red-500/20 rounded-lg transition-colors text-red-400 backdrop-blur-sm shadow-sm disabled:opacity-50"
+                                                 title="Move to Trash"
+                                             >
+                                                 <Trash2 size={18} />
+                                             </button>
+                                             <button
+                                                 onClick={onEdit}
+                                                 disabled={isDeleting}
+                                                 className="p-2 bg-surface/50 hover:bg-surface rounded-lg transition-colors text-foreground backdrop-blur-sm shadow-sm disabled:opacity-50"
+                                                 title="Edit Task"
+                                             >
+                                                 <Edit2 size={18} />
+                                             </button>
+                                         </>
                                      )}
                                      <button
                                          onClick={onClose}
@@ -547,115 +569,139 @@ export const TaskDetailModalV2: React.FC<TaskDetailsModalProps> = ({ task, isOpe
                                 onRatingSubmitted={onClose}
                             />
 
-                            {/* Description - Primary Reading */}
+                            {/* Section 1: Perspective */}
                             <div className="mb-8">
-                                <label className="text-[10px] font-bold text-white/20 uppercase tracking-widest mb-3 block">Perspective & Description</label>
+                                <div className="flex items-center gap-2 mb-4">
+                                    <div className="w-1.5 h-1.5 rounded-full bg-blue-500/50" />
+                                    <span className="text-[10px] font-bold uppercase tracking-widest text-white/30">Perspective & Description</span>
+                                </div>
                                 <div
-                                    className="text-sm text-white/60 leading-relaxed max-w-prose"
+                                    className="text-sm text-white/70 leading-relaxed max-w-prose bg-white/[0.02] border border-white/[0.05] p-5 rounded-2xl"
                                     style={{ lineHeight: '1.8' }}
                                 >
                                     {task.description || <span className="italic text-white/20">No institutional description provided.</span>}
                                 </div>
                             </div>
 
-                            {/* Linked Event */}
-                            {linkedEvent && (
-                                <div className="mb-8 p-4 bg-primary/5 border border-primary/20 rounded-xl flex items-center justify-between group hover:bg-primary/10 transition-all">
-                                    <div className="flex items-center gap-3">
-                                        <div className="w-8 h-8 rounded-lg bg-primary/20 flex items-center justify-center text-primary">
-                                            <Calendar size={16} />
-                                        </div>
-                                        <div>
-                                            <p className="text-[10px] uppercase tracking-wider font-bold text-primary/60 mb-0.5">Part of Event</p>
-                                            <p className="text-sm font-medium text-white">{linkedEvent.title}</p>
-                                        </div>
-                                    </div>
-                                    <button 
-                                        onClick={() => router.push(`/events?id=${linkedEvent.id}`)}
-                                        className="text-[10px] font-bold text-primary uppercase tracking-widest opacity-0 group-hover:opacity-100 transition-all"
-                                    >
-                                        Open Event →
-                                    </button>
+                            {/* Section 2: Request Info */}
+                            <div className="mb-8">
+                                <div className="flex items-center gap-2 mb-4">
+                                    <div className="w-1.5 h-1.5 rounded-full bg-emerald-500/50" />
+                                    <span className="text-[10px] font-bold uppercase tracking-widest text-white/30">Request Context</span>
                                 </div>
-                            )}
-
-                            {/* Info Card - Simple & Demoted */}
-                            <div className="grid grid-cols-1 md:grid-cols-2 gap-6 p-6 bg-surface/20 rounded-xl border border-soft/50 mb-8">
-                                <div className="space-y-6">
-                                    {/* Due Date moved to Header for Emphasis */}
-
-                                    <div className="flex items-start gap-3">
-                                        <User size={16} className="text-muted-foreground/60 mt-0.5 shrink-0" />
-                                        <div>
-                                            <p className="text-[10px] uppercase tracking-wider font-bold text-muted-foreground/60 mb-1.5">Requested By</p>
-                                            <p className="text-xs text-muted-foreground">
-                                                <ResolvedStructureName
-                                                    id={task.departmentId || task.institutionId}
-                                                    type={task.departmentId ? 'department' : 'institution'}
-                                                    fallback={(!task.departmentId && !task.institutionId) ? (task.department || task.createdBy?.name) : undefined}
-                                                />
-                                            </p>
+                                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                    <div className="p-5 bg-white/[0.02] border border-white/[0.05] rounded-2xl group hover:bg-white/[0.04] transition-all">
+                                        <div className="flex items-start gap-4">
+                                            <div className="w-10 h-10 rounded-xl bg-blue-500/10 flex items-center justify-center text-blue-400 shrink-0">
+                                                <User size={20} />
+                                            </div>
+                                            <div className="flex-1 min-w-0">
+                                                <p className="text-[10px] uppercase tracking-wider font-bold text-white/30 mb-1">Requested By</p>
+                                                <p className="text-sm font-semibold text-white/90 truncate">
+                                                    <ResolvedStructureName
+                                                        id={task.departmentId || task.institutionId}
+                                                        type={task.departmentId ? 'department' : 'institution'}
+                                                        fallback={(!task.departmentId && !task.institutionId) ? (task.department || task.createdBy?.name) : undefined}
+                                                    />
+                                                </p>
+                                            </div>
                                         </div>
                                     </div>
+
+                                    {linkedEvent && (
+                                        <div className="p-5 bg-white/[0.02] border border-white/[0.05] rounded-2xl group hover:bg-white/[0.04] transition-all">
+                                            <div className="flex items-start gap-4">
+                                                <div className="w-10 h-10 rounded-xl bg-amber-500/10 flex items-center justify-center text-amber-400 shrink-0">
+                                                    <Calendar size={20} />
+                                                </div>
+                                                <div className="flex-1 min-w-0">
+                                                    <p className="text-[10px] uppercase tracking-wider font-bold text-white/30 mb-1">Timeline Context</p>
+                                                    <div className="flex items-center justify-between">
+                                                        <p className="text-sm font-semibold text-white/90 truncate">{linkedEvent.title}</p>
+                                                        <button 
+                                                            onClick={() => router.push(`/events?id=${linkedEvent.id}`)}
+                                                            className="text-[9px] font-bold text-blue-400 hover:text-blue-300 transition-colors uppercase tracking-widest flex items-center gap-1 shrink-0"
+                                                        >
+                                                            Visit Event →
+                                                        </button>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    )}
                                 </div>
+                            </div>
 
-                                <div className="space-y-3">
-                                    <div className="flex items-center justify-between">
-                                        <p className="text-[10px] uppercase tracking-wider font-bold text-muted-foreground/60">Assigned Team</p>
-                                        {(user?.role === 'admin') && (
-                                            <Popover>
-                                                <PopoverTrigger asChild>
-                                                    <button className="text-[10px] font-bold text-primary hover:text-primary/80 transition-colors uppercase tracking-wider flex items-center gap-1 opacity-70 hover:opacity-100">
-                                                        <UserIcon size={11} /> Assign
-                                                    </button>
-                                                </PopoverTrigger>
-                                                <PopoverContent className="w-56 p-2 bg-popover border-soft text-foreground z-[110]" align="end" side="bottom">
-                                                    <div className="text-xs font-bold text-muted-foreground px-2 py-1 mb-1 tracking-wider">SELECT MEMBER</div>
-                                                    <div className="max-h-60 overflow-y-auto">
-                                                        {teamMembers.map((m) => {
-                                                            const isAssigned = Array.isArray(task.assignedTo) && task.assignedTo.some(current => (current as any).uid === m.uid);
-                                                            return (
-                                                                <div
-                                                                    key={m.uid}
-                                                                    onClick={() => handleToggleAssign(m)}
-                                                                    className={`flex items-center gap-2 px-2 py-2 rounded-lg cursor-pointer text-sm transition-colors ${isAssigned ? 'bg-primary/10 text-primary' : 'hover:bg-muted/50 text-foreground'}`}
-                                                                >
-                                                                    <div className={`w-4 h-4 rounded border flex items-center justify-center ${isAssigned ? 'bg-primary border-primary' : 'border-muted-foreground'}`}>
-                                                                        {isAssigned && <span className="text-primary-foreground text-[10px]">✓</span>}
-                                                                    </div>
-                                                                    {m.name}
-                                                                </div>
-                                                            );
-                                                        })}
+                            {/* Section 3: Task Assignment */}
+                            <div className="mb-8">
+                                <div className="flex items-center gap-2 mb-4">
+                                    <div className="w-1.5 h-1.5 rounded-full bg-purple-500/50" />
+                                    <span className="text-[10px] font-bold uppercase tracking-widest text-white/30">Task Assignment</span>
+                                </div>
+                                <div className="p-5 bg-white/[0.02] border border-white/[0.05] rounded-2xl group hover:bg-white/[0.04] transition-all">
+                                    <div className="flex items-start gap-4">
+                                        <div className="w-10 h-10 rounded-xl bg-purple-500/10 flex items-center justify-center text-purple-400 shrink-0">
+                                            <Users size={20} />
+                                        </div>
+                                        <div className="flex-1 min-w-0">
+                                            <div className="flex items-center justify-between mb-2">
+                                                <p className="text-[10px] uppercase tracking-wider font-bold text-white/30">Assigned Team Members</p>
+                                                {(user?.role === 'admin') && (
+                                                    <Popover>
+                                                        <PopoverTrigger asChild>
+                                                            <button className="text-[9px] font-bold text-blue-400 hover:text-blue-300 transition-colors uppercase tracking-widest flex items-center gap-1">
+                                                                Manage Team
+                                                            </button>
+                                                        </PopoverTrigger>
+                                                        <PopoverContent className="w-56 p-2 bg-[#0d0e17] border border-white/10 text-white z-[110] shadow-2xl rounded-xl" align="end" side="bottom">
+                                                            <div className="text-[9px] font-bold text-white/30 px-2 py-1 mb-1 tracking-widest uppercase">SELECT MEMBER</div>
+                                                            <div className="max-h-60 overflow-y-auto custom-scrollbar">
+                                                                {teamMembers.map((m) => {
+                                                                    const isAssigned = Array.isArray(task.assignedTo) && task.assignedTo.some(current => (current as any).uid === m.uid);
+                                                                    return (
+                                                                        <div
+                                                                            key={m.uid}
+                                                                            onClick={() => handleToggleAssign(m)}
+                                                                            className={cn(
+                                                                                "flex items-center gap-2 px-2 py-2 rounded-lg cursor-pointer text-sm transition-all",
+                                                                                isAssigned ? 'bg-blue-500/10 text-blue-400' : 'hover:bg-white/5 text-white/60'
+                                                                            )}
+                                                                        >
+                                                                            <div className={cn(
+                                                                                "w-4 h-4 rounded border flex items-center justify-center transition-all",
+                                                                                isAssigned ? 'bg-blue-500 border-blue-500' : 'border-white/20'
+                                                                            )}>
+                                                                                {isAssigned && <CheckCircle2 size={10} className="text-white" />}
+                                                                            </div>
+                                                                            <span className="truncate text-xs font-medium">{m.name}</span>
+                                                                        </div>
+                                                                    );
+                                                                })}
+                                                            </div>
+                                                        </PopoverContent>
+                                                    </Popover>
+                                                )}
+                                            </div>
+                                            <div className="flex flex-wrap gap-2">
+                                                {Array.isArray(task.assignedTo) && task.assignedTo.length > 0 ? (
+                                                    task.assignedTo.map((assignee: any, i) => (
+                                                        <div key={i} className="flex items-center gap-2 bg-white/[0.05] px-3 py-1.5 rounded-xl border border-white/[0.05] hover:bg-white/[0.1] transition-all">
+                                                            <SafeAvatar
+                                                                src={assignee.avatarUrl}
+                                                                name={assignee.name}
+                                                                size={18}
+                                                            />
+                                                            <span className="text-xs text-white/80 font-medium">{assignee.name}</span>
+                                                        </div>
+                                                    ))
+                                                ) : (
+                                                    <div className="flex flex-col items-center justify-center py-4 w-full bg-white/[0.01] border border-dashed border-white/10 rounded-xl">
+                                                        <UserPlus size={20} className="text-white/10 mb-2" />
+                                                        <p className="text-[10px] text-white/20 uppercase tracking-widest font-bold">No Team Assigned</p>
                                                     </div>
-                                                </PopoverContent>
-                                            </Popover>
-                                        )}
-                                    </div>
-                                    <div className="flex flex-wrap gap-2">
-                                        {Array.isArray(task.assignedTo) && task.assignedTo.length > 0 ? (
-                                            task.assignedTo.map((assignee: any, i) => {
-                                                const userId = assignee.uid;
-                                                let teamMember = teamMembers.find(m => m.uid === userId);
-                                                const avatarUrl = assignee.avatarUrl || teamMember?.avatar_url;
-                                                const name = assignee.name || teamMember?.name || 'Unknown';
-
-                                                return (
-                                                    <div key={i} className="flex items-center gap-2 bg-surface/50 px-2.5 py-1.5 rounded-lg border border-soft/50">
-                                                        <SafeAvatar
-                                                            src={avatarUrl}
-                                                            name={name}
-                                                            alt={name}
-                                                            size={16}
-                                                            className="border border-soft"
-                                                        />
-                                                        <span className="text-[11px] text-muted-foreground">{name}</span>
-                                                    </div>
-                                                );
-                                            })
-                                        ) : (
-                                            <p className="text-[10px] text-muted-foreground/40 italic">No one assigned</p>
-                                        )}
+                                                )}
+                                            </div>
+                                        </div>
                                     </div>
                                 </div>
                             </div>

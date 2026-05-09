@@ -12,7 +12,7 @@ import { Calendar } from "@/components/ui/calendar";
 import { cn } from "@/lib/utils";
 import {
     Loader2, Edit3, Calendar as CalendarIcon, Layers, CheckCircle2,
-    Circle, Clock, AlertCircle, Flag, Users
+    Circle, Clock, AlertCircle, Flag, Users, Trash2, UploadCloud
 } from "lucide-react";
 import { toast } from "sonner";
 import { format } from "date-fns";
@@ -153,7 +153,11 @@ export function EditTaskDialog({ open, onOpenChange, task, onUpdate }: EditTaskD
             UserService.getTeamMembers().then(members => {
                 const filtered = members.filter(m => {
                     const role = (m as any).role?.toLowerCase().trim();
-                    return ['manager', 'team', 'member'].includes(role) && m.name !== 'Media Admin';
+                    const name = m.name?.toLowerCase() || '';
+                    return ['manager', 'team', 'member'].includes(role) && 
+                           !name.includes('admin') && 
+                           role !== 'admin' && 
+                           role !== 'superadmin';
                 });
                 setTeamMembers(filtered);
             }).catch(console.error);
@@ -215,16 +219,18 @@ export function EditTaskDialog({ open, onOpenChange, task, onUpdate }: EditTaskD
                 className="z-[150] sm:max-w-[640px] bg-[#0d0e17] text-white border border-white/[0.07] shadow-[0_32px_80px_-16px_rgba(0,0,0,0.7)] p-0 rounded-[28px] overflow-hidden"
             >
                 {/* Header */}
-                <div className="flex items-center justify-between px-7 pt-6 pb-5 border-b border-white/[0.06]">
+                <div className="flex items-center justify-between px-7 pt-6 pb-5 border-b border-white/[0.06] bg-white/[0.01]">
                     <div className="flex items-center gap-3">
                         <div className={cn("p-2.5 rounded-xl", canSave ? "bg-blue-500/10 text-blue-400" : "bg-white/5 text-white/40")}>
                             <Edit3 size={18} />
                         </div>
                         <div>
                             <div className="flex items-center gap-2.5">
-                                <h2 className="text-base font-bold text-white tracking-tight">
-                                    {canSave ? "Edit Task" : "Task Details"}
-                                </h2>
+                                <DialogHeader className="flex-1">
+                                    <DialogTitle className="text-base font-bold text-white tracking-tight">
+                                        {canSave ? "Edit Task" : "Task Details"}
+                                    </DialogTitle>
+                                </DialogHeader>
                                 <div className="flex items-center gap-1.5 px-2 py-0.5 rounded-full bg-emerald-500/10 border border-emerald-500/20">
                                     <div className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse" />
                                     <span className="text-[9px] font-bold text-emerald-400 uppercase tracking-wider">Live Sync</span>
@@ -233,217 +239,261 @@ export function EditTaskDialog({ open, onOpenChange, task, onUpdate }: EditTaskD
                             </div>
                         </div>
                     </div>
-                    <PresencePile users={collab.activeUsers} />
+                    <div className="flex items-center gap-4 mr-12">
+                        <PresencePile users={collab.activeUsers} />
+                        {(isAdmin || isSuperAdmin || isManager || isCreator) && (
+                            <button
+                                type="button"
+                                onClick={async () => {
+                                    if (confirm("Are you sure you want to move this task to trash?")) {
+                                        await TaskService.deleteTask(task.id);
+                                        toast.success("Task moved to trash");
+                                        onOpenChange(false);
+                                    }
+                                }}
+                                className="p-2 text-white/20 hover:text-red-400 hover:bg-red-500/10 rounded-lg transition-all"
+                                title="Move to Trash"
+                            >
+                                <Trash2 size={18} />
+                            </button>
+                        )}
+                    </div>
                 </div>
 
                 <DialogDescription className="sr-only">Edit the selected task.</DialogDescription>
 
-                <form onSubmit={handleSubmit} className="px-7 py-6 space-y-5 max-h-[75vh] overflow-y-auto custom-scrollbar">
+                <form onSubmit={handleSubmit} className="px-7 py-6 space-y-7 max-h-[75vh] overflow-y-auto custom-scrollbar bg-[#0d0e17]">
 
-                    {/* Task Title */}
-                    <div>
-                        <div className="flex items-center justify-between mb-2">
-                            <label className={labelCls}>Task Title</label>
-                            <div className="flex items-center gap-2">
-                                <TypingIndicator fieldName="title" userContext={collab.editingUsers['title']} />
-                                <FieldPresence users={collab.activeUsers} field="title" />
+                    {/* Section 1: General Info */}
+                    <div className="space-y-5">
+                        <div className="flex items-center gap-2 pb-2 border-b border-white/5">
+                            <div className="w-1.5 h-1.5 rounded-full bg-blue-500/50" />
+                            <span className="text-[10px] font-bold uppercase tracking-widest text-white/30">General Information</span>
+                        </div>
+                        
+                        {/* Task Title */}
+                        <div>
+                            <div className="flex items-center justify-between mb-2">
+                                <label className={labelCls}>Task Title</label>
+                                <div className="flex items-center gap-2">
+                                    <TypingIndicator fieldName="title" userContext={collab.editingUsers['title']} />
+                                    <FieldPresence users={collab.activeUsers} field="title" />
+                                </div>
+                            </div>
+                            <Input
+                                value={title}
+                                onChange={e => { setTitle(e.target.value); collab.onTyping('title', true); }}
+                                onFocus={() => collab.onFieldFocus('title')}
+                                onBlur={() => collab.onFieldBlur('title')}
+                                className={inputCls}
+                                placeholder="What needs to be done?"
+                                disabled={!canEditContent}
+                            />
+                        </div>
+
+                        {/* Description */}
+                        <div>
+                            <div className="flex items-center justify-between mb-2">
+                                <label className={labelCls}>Description</label>
+                                <div className="flex items-center gap-2">
+                                    <TypingIndicator fieldName="description" userContext={collab.editingUsers['description']} />
+                                    <FieldPresence users={collab.activeUsers} field="description" />
+                                </div>
+                            </div>
+                            <Textarea
+                                value={description}
+                                onChange={e => { setDescription(e.target.value); collab.onTyping('description', true); }}
+                                onFocus={() => collab.onFieldFocus('description')}
+                                onBlur={() => collab.onFieldBlur('description')}
+                                className="bg-white/[0.03] border border-white/[0.07] text-white placeholder:text-white/25 focus:border-blue-500/40 focus:ring-0 focus:bg-white/[0.05] transition-all rounded-xl min-h-[120px] p-4 text-sm leading-relaxed resize-none disabled:opacity-40 disabled:cursor-not-allowed"
+                                placeholder="Add more context, requirements, or links..."
+                                disabled={!canEditContent}
+                            />
+                        </div>
+                    </div>
+
+                    {/* Section 2: Timeline & Context */}
+                    <div className="space-y-5">
+                        <div className="flex items-center gap-2 pb-2 border-b border-white/5">
+                            <div className="w-1.5 h-1.5 rounded-full bg-amber-500/50" />
+                            <span className="text-[10px] font-bold uppercase tracking-widest text-white/30">Timeline & Context</span>
+                        </div>
+
+                        <div className="grid grid-cols-2 gap-5">
+                            {/* Due Date */}
+                            <div>
+                                <label className={labelCls}>Due Date</label>
+                                <Popover open={calOpen} onOpenChange={setCalOpen}>
+                                    <PopoverTrigger asChild>
+                                        <button
+                                            type="button"
+                                            disabled={!canEditDueDate}
+                                            className={cn(
+                                                "w-full h-11 flex items-center gap-2.5 px-3.5 rounded-xl border text-sm transition-all",
+                                                "bg-white/[0.03] border-white/[0.07] text-white hover:bg-white/[0.05]",
+                                                "disabled:opacity-40 disabled:cursor-not-allowed shadow-inner",
+                                                !due_date && "text-white/30"
+                                            )}
+                                        >
+                                            <CalendarIcon size={15} className="text-white/40 shrink-0" />
+                                            {due_date ? format(due_date, "MMM d, yyyy") : "Select date"}
+                                        </button>
+                                    </PopoverTrigger>
+                                    <PopoverContent className="w-auto p-0 bg-[#0d0e17] border border-white/[0.1] text-white z-[200] shadow-2xl rounded-2xl overflow-hidden" align="start">
+                                        <Calendar
+                                            mode="single"
+                                            selected={due_date}
+                                            onSelect={(d) => { setDueDate(d); setCalOpen(false); }}
+                                            initialFocus
+                                            className="bg-transparent text-white p-4"
+                                            classNames={{
+                                                day_selected: "bg-blue-600 text-white rounded-xl shadow-lg shadow-blue-500/20",
+                                                day_today: "bg-white/10 text-white rounded-xl font-bold border border-white/20",
+                                                day: "text-white hover:bg-white/10 rounded-xl w-10 h-10 p-0 font-normal transition-colors",
+                                                head_cell: "text-white/40 w-10 font-bold text-[10px] uppercase tracking-widest",
+                                                caption_label: "text-sm font-bold tracking-tight px-2",
+                                                nav_button: "text-white/60 hover:text-white hover:bg-white/10 rounded-lg w-8 h-8 flex items-center justify-center transition-colors",
+                                            }}
+                                        />
+                                    </PopoverContent>
+                                </Popover>
+                            </div>
+
+                            {/* Campaign */}
+                            <div>
+                                <label className={labelCls}>Campaign</label>
+                                <Select value={campaign_id} onValueChange={setCampaignId} disabled={!canEditContent}>
+                                    <SelectTrigger className="bg-white/[0.03] border border-white/[0.07] text-white h-11 rounded-xl focus:ring-0 disabled:opacity-40 shadow-inner">
+                                        <div className="flex items-center gap-2 min-w-0">
+                                            <Layers size={13} className="text-white/40 shrink-0" />
+                                            <SelectValue placeholder="No Campaign" />
+                                        </div>
+                                    </SelectTrigger>
+                                    <SelectContent className="bg-[#0d0e17] border border-white/[0.1] text-white z-[200] rounded-xl shadow-2xl">
+                                        <SelectItem value="none" className="text-white/40 italic py-2.5">No Campaign</SelectItem>
+                                        {campaigns.map(c => (
+                                            <SelectItem key={c.id} value={c.id} className="py-2.5 focus:bg-blue-500/10 focus:text-blue-200">{c.name}</SelectItem>
+                                        ))}
+                                    </SelectContent>
+                                </Select>
                             </div>
                         </div>
-                        <Input
-                            value={title}
-                            onChange={e => { setTitle(e.target.value); collab.onTyping('title', true); }}
-                            onFocus={() => collab.onFieldFocus('title')}
-                            onBlur={() => collab.onFieldBlur('title')}
-                            className={inputCls}
-                            placeholder="What needs to be done?"
-                            disabled={!canEditContent}
-                        />
                     </div>
 
-                    {/* Description */}
-                    <div>
-                        <div className="flex items-center justify-between mb-2">
-                            <label className={labelCls}>Description</label>
-                            <div className="flex items-center gap-2">
-                                <TypingIndicator fieldName="description" userContext={collab.editingUsers['description']} />
-                                <FieldPresence users={collab.activeUsers} field="description" />
-                            </div>
+                    {/* Section 3: Governance */}
+                    <div className="space-y-6">
+                        <div className="flex items-center gap-2 pb-2 border-b border-white/5">
+                            <div className="w-1.5 h-1.5 rounded-full bg-emerald-500/50" />
+                            <span className="text-[10px] font-bold uppercase tracking-widest text-white/30">Governance</span>
                         </div>
-                        <Textarea
-                            value={description}
-                            onChange={e => { setDescription(e.target.value); collab.onTyping('description', true); }}
-                            onFocus={() => collab.onFieldFocus('description')}
-                            onBlur={() => collab.onFieldBlur('description')}
-                            className="bg-white/[0.04] border border-white/[0.08] text-white placeholder:text-white/25 focus:border-blue-500/40 focus:ring-0 focus:bg-white/[0.06] transition-all rounded-xl min-h-[100px] resize-none disabled:opacity-40 disabled:cursor-not-allowed"
-                            placeholder="Add more context..."
-                            disabled={!canEditContent}
-                        />
-                    </div>
 
-                    {/* Due Date + Campaign row */}
-                    <div className="grid grid-cols-2 gap-4">
-                        {/* Due Date */}
+                        {/* Priority Toggle Buttons */}
                         <div>
-                            <label className={labelCls}>Due Date</label>
-                            <Popover open={calOpen} onOpenChange={setCalOpen}>
-                                <PopoverTrigger asChild>
-                                    <button
-                                        type="button"
-                                        disabled={!canEditDueDate}
-                                        className={cn(
-                                            "w-full h-11 flex items-center gap-2.5 px-3.5 rounded-xl border text-sm transition-all",
-                                            "bg-white/[0.04] border-white/[0.08] text-white hover:bg-white/[0.06]",
-                                            "disabled:opacity-40 disabled:cursor-not-allowed",
-                                            !due_date && "text-white/30"
-                                        )}
-                                    >
-                                        <CalendarIcon size={15} className="text-white/40 shrink-0" />
-                                        {due_date ? format(due_date, "MMM d, yyyy") : "Select date"}
-                                    </button>
-                                </PopoverTrigger>
-                                <PopoverContent className="w-auto p-0 bg-[#10111a] border-white/[0.08] text-white z-[200]" align="start">
-                                    <Calendar
-                                        mode="single"
-                                        selected={due_date}
-                                        onSelect={(d) => { setDueDate(d); setCalOpen(false); }}
-                                        initialFocus
-                                        className="bg-[#10111a] text-white"
-                                        classNames={{
-                                            day_selected: "bg-blue-600 text-white rounded-full",
-                                            day_today: "bg-white/10 text-white rounded-full",
-                                            day: "text-white hover:bg-white/10 rounded-full w-9 h-9 p-0 font-normal",
-                                            head_cell: "text-white/40 w-9 font-normal text-[0.75rem]",
-                                            caption_label: "text-white font-semibold",
-                                            nav_button: "text-white hover:bg-white/10 rounded-full",
-                                        }}
-                                    />
-                                </PopoverContent>
-                            </Popover>
-                        </div>
-
-                        {/* Campaign */}
-                        <div>
-                            <label className={labelCls}>Campaign</label>
-                            <Select value={campaign_id} onValueChange={setCampaignId} disabled={!canEditContent}>
-                                <SelectTrigger className="bg-white/[0.04] border border-white/[0.08] text-white h-11 rounded-xl focus:ring-0 disabled:opacity-40">
-                                    <div className="flex items-center gap-2 min-w-0">
-                                        <Layers size={13} className="text-white/40 shrink-0" />
-                                        <SelectValue placeholder="No Campaign" />
-                                    </div>
-                                </SelectTrigger>
-                                <SelectContent className="bg-[#10111a] border-white/[0.08] text-white z-[200]">
-                                    <SelectItem value="none" className="text-white/40 italic">No Campaign</SelectItem>
-                                    {campaigns.map(c => (
-                                        <SelectItem key={c.id} value={c.id}>{c.name}</SelectItem>
-                                    ))}
-                                </SelectContent>
-                            </Select>
-                        </div>
-                    </div>
-
-                    {/* Priority Toggle Buttons */}
-                    <div>
-                        <label className={labelCls}>Priority</label>
-                        <div className="grid grid-cols-4 gap-2">
-                            {PRIORITY_OPTIONS.map(opt => (
-                                <button
-                                    key={opt.value}
-                                    type="button"
-                                    disabled={!canEditPriority}
-                                    onClick={() => setPriority(opt.value)}
-                                    className={cn(
-                                        "h-10 rounded-xl border text-xs font-semibold transition-all duration-150",
-                                        "disabled:opacity-40 disabled:cursor-not-allowed",
-                                        priority === opt.value
-                                            ? opt.activeClass
-                                            : "bg-white/[0.03] border-white/[0.07] text-white/40 hover:bg-white/[0.06] hover:text-white/60"
-                                    )}
-                                >
-                                    {opt.label}
-                                </button>
-                            ))}
-                        </div>
-                    </div>
-
-                    {/* Status Toggle Buttons */}
-                    <div>
-                        <label className={labelCls}>Status</label>
-                        <div className="grid grid-cols-4 gap-2">
-                            {STATUS_OPTIONS.map(opt => {
-                                const Icon = opt.icon;
-                                return (
+                            <label className={labelCls}>Priority</label>
+                            <div className="grid grid-cols-4 gap-2.5">
+                                {PRIORITY_OPTIONS.map(opt => (
                                     <button
                                         key={opt.value}
                                         type="button"
-                                        disabled={!canEditStatus}
-                                        onClick={() => setStatus(opt.value)}
+                                        disabled={!canEditPriority}
+                                        onClick={() => setPriority(opt.value)}
                                         className={cn(
-                                            "h-10 rounded-xl border text-xs font-semibold flex items-center justify-center gap-1.5 transition-all duration-150",
+                                            "h-11 rounded-xl border text-[11px] font-bold uppercase tracking-wider transition-all duration-200",
                                             "disabled:opacity-40 disabled:cursor-not-allowed",
-                                            status === opt.value
-                                                ? opt.activeClass
-                                                : "bg-white/[0.03] border-white/[0.07] text-white/40 hover:bg-white/[0.06] hover:text-white/60"
+                                            priority === opt.value
+                                                ? opt.activeClass + " shadow-lg"
+                                                : "bg-white/[0.02] border-white/[0.06] text-white/30 hover:bg-white/[0.05] hover:text-white/50"
                                         )}
                                     >
-                                        <Icon size={13} />
-                                        <span className="hidden sm:inline">{opt.label}</span>
+                                        {opt.label}
                                     </button>
-                                );
-                            })}
+                                ))}
+                            </div>
                         </div>
-                    </div>
 
-                    {/* Assign To Team Members */}
-                    {canAssign && teamMembers.length > 0 && (
+                        {/* Status Toggle Buttons */}
                         <div>
-                            <label className={cn(labelCls, "mb-3")}>Assign To Team Members</label>
-                            <div className="grid grid-cols-2 gap-2">
-                                {teamMembers.map(m => {
-                                    const selected = assignedToIds.includes(m.uid);
+                            <label className={labelCls}>Status</label>
+                            <div className="grid grid-cols-4 gap-2.5">
+                                {STATUS_OPTIONS.map(opt => {
+                                    const Icon = opt.icon;
                                     return (
                                         <button
-                                            key={m.uid}
+                                            key={opt.value}
                                             type="button"
-                                            onClick={() => setAssignedToIds(prev =>
-                                                prev.includes(m.uid)
-                                                    ? prev.filter(id => id !== m.uid)
-                                                    : [...prev, m.uid]
-                                            )}
+                                            disabled={!canEditStatus}
+                                            onClick={() => setStatus(opt.value)}
                                             className={cn(
-                                                "flex items-center gap-3 px-3.5 py-2.5 rounded-xl border text-sm font-medium transition-all duration-150 text-left",
-                                                selected
-                                                    ? "bg-blue-500/15 border-blue-500/40 text-blue-200"
-                                                    : "bg-white/[0.03] border-white/[0.07] text-white/55 hover:bg-white/[0.06] hover:text-white/80"
+                                                "h-11 rounded-xl border text-[11px] font-bold uppercase tracking-wider flex items-center justify-center gap-2 transition-all duration-200",
+                                                "disabled:opacity-40 disabled:cursor-not-allowed",
+                                                status === opt.value
+                                                    ? opt.activeClass + " shadow-lg"
+                                                    : "bg-white/[0.02] border-white/[0.06] text-white/30 hover:bg-white/[0.05] hover:text-white/50"
                                             )}
                                         >
-                                            <div className={cn(
-                                                "w-4 h-4 rounded-full border-2 flex items-center justify-center shrink-0 transition-all",
-                                                selected ? "border-blue-400 bg-blue-500" : "border-white/20"
-                                            )}>
-                                                {selected && <div className="w-1.5 h-1.5 bg-white rounded-full" />}
-                                            </div>
-                                            <span className="truncate">{m.name}</span>
+                                            <Icon size={14} />
+                                            <span className="hidden sm:inline">{opt.label}</span>
                                         </button>
                                     );
                                 })}
                             </div>
                         </div>
-                    )}
+
+                        {/* Assign To Team Members */}
+                        {canAssign && teamMembers.length > 0 && (
+                            <div>
+                                <label className={cn(labelCls, "mb-3")}>Assign To Team Members</label>
+                                <div className="grid grid-cols-2 gap-2.5">
+                                    {teamMembers.map(m => {
+                                        const selected = assignedToIds.includes(m.uid);
+                                        return (
+                                            <button
+                                                key={m.uid}
+                                                type="button"
+                                                onClick={() => setAssignedToIds(prev =>
+                                                    prev.includes(m.uid)
+                                                        ? prev.filter(id => id !== m.uid)
+                                                        : [...prev, m.uid]
+                                                )}
+                                                className={cn(
+                                                    "flex items-center gap-3 px-4 py-3 rounded-xl border text-sm font-semibold transition-all duration-200 text-left",
+                                                    selected
+                                                        ? "bg-blue-500/10 border-blue-500/30 text-blue-100 shadow-md"
+                                                        : "bg-white/[0.02] border-white/[0.06] text-white/40 hover:bg-white/[0.04] hover:text-white/60"
+                                                )}
+                                            >
+                                                <div className={cn(
+                                                    "w-4.5 h-4.5 rounded-md border-2 flex items-center justify-center shrink-0 transition-all",
+                                                    selected ? "border-blue-400 bg-blue-500" : "border-white/10"
+                                                )}>
+                                                    {selected && <CheckCircle2 size={12} className="text-white" />}
+                                                </div>
+                                                <span className="truncate">{m.name}</span>
+                                            </button>
+                                        );
+                                    })}
+                                </div>
+                            </div>
+                        )}
+                    </div>
 
                     {/* Attachments / Deliverables */}
-                    <div className="border-t border-white/[0.06] pt-5 space-y-3">
+                    <div className="pt-7 border-t border-white/[0.06] space-y-4">
                         <div className="flex items-center justify-between">
-                            <label className={labelCls}>Attachments & Deliverables</label>
+                            <div className="flex items-center gap-2">
+                                <div className="w-1.5 h-1.5 rounded-full bg-purple-500/50" />
+                                <span className="text-[10px] font-bold uppercase tracking-widest text-white/30">Attachments & Deliverables</span>
+                            </div>
                             <button
                                 type="button"
                                 onClick={() => setShowUploadModal(true)}
-                                className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-blue-500/10 border border-blue-500/20 text-blue-400 text-xs font-semibold hover:bg-blue-500/20 transition-colors"
+                                className="flex items-center gap-1.5 px-3.5 py-2 rounded-xl bg-blue-500/10 border border-blue-500/20 text-blue-400 text-[11px] font-bold uppercase tracking-widest hover:bg-blue-500/20 transition-all shadow-sm"
                             >
-                                <Users size={12} />
+                                <UploadCloud size={13} />
                                 Upload File
                             </button>
                         </div>
-                        <div className="bg-white/[0.02] border border-white/[0.06] rounded-xl p-4 min-h-[80px] max-h-[280px] overflow-y-auto custom-scrollbar">
+                        <div className="bg-white/[0.01] border border-white/[0.06] rounded-2xl p-5 min-h-[100px] max-h-[300px] overflow-y-auto custom-scrollbar shadow-inner">
                             <AttachmentSection
                                 task={fullTask}
                                 onUpdate={() => {
@@ -455,38 +505,48 @@ export function EditTaskDialog({ open, onOpenChange, task, onUpdate }: EditTaskD
 
                     {/* Error */}
                     {error && (
-                        <div className="flex items-center gap-3 px-4 py-3 rounded-xl bg-red-500/10 border border-red-500/20">
-                            <AlertCircle size={14} className="text-red-400 shrink-0" />
-                            <span className="text-sm text-red-300 font-medium flex-1">{error}</span>
+                        <motion.div 
+                            initial={{ opacity: 0, y: 10 }}
+                            animate={{ opacity: 1, y: 0 }}
+                            className="flex items-center gap-4 px-5 py-4 rounded-2xl bg-red-500/10 border border-red-500/20 shadow-lg shadow-red-500/5"
+                        >
+                            <AlertCircle size={18} className="text-red-400 shrink-0" />
+                            <div className="flex-1">
+                                <p className="text-xs font-bold text-red-200 uppercase tracking-widest mb-0.5">Update Failed</p>
+                                <p className="text-sm text-red-300/80 font-medium">{error}</p>
+                            </div>
                             <button
                                 type="button"
                                 onClick={() => handleProtectedSubmit(undefined)}
-                                className="text-xs font-bold text-red-400 hover:text-red-200 uppercase tracking-widest transition-colors"
+                                className="px-3.5 py-1.5 rounded-lg bg-red-500/20 text-red-300 text-[10px] font-bold uppercase tracking-widest hover:bg-red-500/30 transition-colors"
                             >
                                 Retry
                             </button>
-                        </div>
+                        </motion.div>
                     )}
 
                     {/* Footer Actions */}
-                    <div className="flex justify-end gap-3 pt-2 border-t border-white/[0.06]">
+                    <div className="flex justify-end gap-3 pt-5 border-t border-white/[0.06]">
                         <Button
                             type="button"
                             variant="ghost"
                             onClick={() => onOpenChange(false)}
                             disabled={isSubmitting}
-                            className="text-white/50 hover:text-white hover:bg-white/[0.05] rounded-xl h-11 px-6 text-sm font-semibold"
+                            className="text-white/40 hover:text-white hover:bg-white/[0.05] rounded-xl h-12 px-6 text-xs font-bold uppercase tracking-widest transition-all"
                         >
-                            {canSave ? "Cancel" : "Close"}
+                            {canSave ? "Discard" : "Close"}
                         </Button>
                         {canSave && (
                             <Button
                                 type="submit"
                                 disabled={isSubmitting}
-                                className="bg-blue-600 hover:bg-blue-500 text-white rounded-xl h-11 px-8 text-sm font-semibold shadow-lg shadow-blue-500/20 transition-all"
+                                className="bg-blue-600 hover:bg-blue-500 text-white rounded-xl h-12 px-10 text-xs font-bold uppercase tracking-widest shadow-xl shadow-blue-600/20 transition-all active:scale-95"
                             >
-                                {isSubmitting && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
-                                Save Changes
+                                {isSubmitting ? (
+                                    <Loader2 className="h-4 w-4 animate-spin" />
+                                ) : (
+                                    "Save Changes"
+                                )}
                             </Button>
                         )}
                     </div>

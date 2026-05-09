@@ -555,6 +555,33 @@ class SyncEngine {
     if (table === 'tasks') {
         delete mutation.payload.assigned_to;
         delete mutation.payload.assignedTo;
+
+        // FK Guard: department_id must be a valid integer or null
+        // Sanitize camelCase duplicates
+        delete mutation.payload.departmentId;
+        delete mutation.payload.institutionId;
+        delete mutation.payload.dueDate;
+        delete mutation.payload.createdAt;
+        delete mutation.payload.updatedAt;
+        delete mutation.payload.completedAt;
+        delete mutation.payload.createdBy;
+        delete mutation.payload.updatedBy;
+        delete mutation.payload.assignedBy;
+
+        // Ensure department_id is a valid integer or null
+        const rawDeptId = mutation.payload.department_id;
+        if (rawDeptId !== null && rawDeptId !== undefined) {
+            if (typeof rawDeptId === 'string') {
+                // Strip 'dept_' prefix if present
+                const stripped = rawDeptId.replace(/^dept_/, '');
+                const parsed = /^\d+$/.test(stripped) ? parseInt(stripped, 10) : null;
+                mutation.payload.department_id = parsed;
+            } else if (typeof rawDeptId === 'number' && !isNaN(rawDeptId)) {
+                mutation.payload.department_id = rawDeptId;
+            } else {
+                mutation.payload.department_id = null;
+            }
+        }
     }
 
     // Bulk operations skip conflict detection for now (they are usually admin-driven or system-driven)

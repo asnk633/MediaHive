@@ -93,12 +93,20 @@ export default function HomeClient() {
     const { displayTasks, mutate, syncRemoteTasks, isReplaying } = useOptimisticTasks(tasks, setTasks as React.Dispatch<React.SetStateAction<Task[]>>);
     const { isOnline } = useConnectivity();
 
+    const sanitizedTasks = useMemo(() => {
+        return tasks.filter(t => !t.deleted && !t.is_demo_data);
+    }, [tasks]);
+
+    const sanitizedEvents = useMemo(() => {
+        return events.filter(e => !e.deleted && !e.is_demo_data);
+    }, [events]);
+
     const dashboardMetrics = useMemo(() => {
         if (!authReady || !tasksLoaded) return null;
-        const metrics = computeDashboardMetrics(tasks, events);
+        const metrics = computeDashboardMetrics(sanitizedTasks, sanitizedEvents);
         assertDashboardMetrics(metrics); 
         return metrics;
-    }, [tasks, events, authReady, tasksLoaded]);
+    }, [sanitizedTasks, sanitizedEvents, authReady, tasksLoaded]);
 
     // Collapsible Group States
     const [operationalPanelsExpanded, setOperationalPanelsExpanded] = useState(false);
@@ -211,15 +219,15 @@ export default function HomeClient() {
     }, [events]);
 
     const dashboardContextValue = useMemo(() => ({
-        tasks: displayTasks as NormalizedTask[],
-        events,
+        tasks: displayTasks.filter(t => !t.deleted && !t.is_demo_data) as NormalizedTask[],
+        events: sanitizedEvents,
         metrics: dashboardMetrics,
         loading: isActuallyLoading,
         error,
         mutate,
         refresh: fetchData,
         user
-    }), [displayTasks, events, dashboardMetrics, isActuallyLoading, error, mutate, fetchData, user]);
+    }), [displayTasks, sanitizedEvents, dashboardMetrics, isActuallyLoading, error, mutate, fetchData, user]);
 
     return (
         <DashboardProvider value={dashboardContextValue}>

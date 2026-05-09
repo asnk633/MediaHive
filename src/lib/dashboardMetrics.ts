@@ -100,6 +100,12 @@ export const computeDashboardMetrics = (
     const weekStart = startOfWeek(now);
     const weekEnd = endOfWeek(now);
 
+    // Filter out demo and deleted tasks/events to ensure metrics reflect production data
+    const filteredTasks = tasks.filter(t => !t.deleted && !t.is_demo_data);
+    const filteredEvents = events.filter(e => !(e as any).deleted && !(e as any).is_demo_data);
+    
+    // Use filtered arrays for all computations
+    
     let dueToday = 0;
     let overdue = 0;
     let upcomingTasks = 0; // New
@@ -126,7 +132,7 @@ export const computeDashboardMetrics = (
         productivityMap[dateKey] = 0;
     }
 
-    tasks.forEach(task => {
+    filteredTasks.forEach(task => {
         const completed_at = task.completed_at;
         const isDone = task.status === 'done';
         const created_at = task.created_at;
@@ -232,13 +238,13 @@ export const computeDashboardMetrics = (
     })).sort((a, b) => a.date.localeCompare(b.date));
 
     // Rule 5: Upcoming Events (7 Days) - Inclusive
-    const next7DayEvents = events.filter(e => {
+    const next7DayEvents = filteredEvents.filter(e => {
         const d = e.date;
         return d && isWithinInterval(d, { start: todayStart, end: next7DaysEnd });
     }).sort((a, b) => (a.date.getTime()) - (b.date.getTime()));
 
     // Rule 6: Weekly Events
-    const thisWeekEvents = events.filter(e => {
+    const thisWeekEvents = filteredEvents.filter(e => {
         const d = e.date;
         return d && isWithinInterval(d, { start: weekStart, end: weekEnd });
     }).sort((a, b) => (a.date.getTime()) - (b.date.getTime()));
@@ -274,7 +280,7 @@ export const computeDashboardMetrics = (
         todo,
         blocked: onHold,
         upcomingTasks,
-        totalTasks: tasks.length,
+        totalTasks: filteredTasks.length,
         adminTotals: {
             pendingApprovals,
             globalOverdue,

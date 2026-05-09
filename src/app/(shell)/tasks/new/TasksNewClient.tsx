@@ -273,6 +273,7 @@ export default function TasksNewClient() {
                 department: departmentName,
                 department_id: department_id,
                 institution_id: institution_id,
+                tenant_id: tenantId,
                 assigned_by: user.uid,
                 created_by: user.uid,
                 assigned_to: finalAssignedTo.length > 0 ? finalAssignedTo : undefined,

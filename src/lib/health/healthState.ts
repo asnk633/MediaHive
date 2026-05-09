@@ -35,14 +35,14 @@ class HealthManager {
     state: 'CLOSED' as 'CLOSED' | 'OPEN' | 'HALF_OPEN',
     failures: 0,
     lastFailure: 0,
-    OPEN_WINDOW_MS: 30000,
-    FAILURE_THRESHOLD: 5
+    OPEN_WINDOW_MS: 15000,
+    FAILURE_THRESHOLD: 10
   };
 
   private readonly THRESHOLDS = {
-    RETRYING: 1,
-    DEGRADED: 3,
-    DOWN: 5,
+    RETRYING: 2,
+    DEGRADED: 5,
+    DOWN: 10,
     STALE_MS: 30000
   };
 

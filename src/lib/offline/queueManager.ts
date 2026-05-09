@@ -57,8 +57,8 @@ class SyncEngine {
   private baseDelay = 2000;
   private tabId: string;
   private consecutiveFailures = 0;
-  private readonly CIRCUIT_BREAKER_THRESHOLD = 3;
-  private readonly CIRCUIT_BREAKER_COOLDOWN = 30000; // 30s
+  private readonly CIRCUIT_BREAKER_THRESHOLD = 10;
+  private readonly CIRCUIT_BREAKER_COOLDOWN = 15000; // 15s
   private circuitBreakerUntil: number | null = null;
   private metrics = {
     queueLength: 0,
@@ -526,12 +526,14 @@ class SyncEngine {
       'UNASSIGN_CREW': 'delete',
       'ASSIGN_EQUIPMENT': 'insert',
       'UNASSIGN_EQUIPMENT': 'delete',
+      'BULK_DELETE_TASK': 'bulk_delete',
     };
 
     // Dynamic mapping for BULK operations
     let action = actionMap[mutation.type];
     if (mutation.type.startsWith('BULK_CREATE')) action = 'bulk_insert';
     if (mutation.type.startsWith('BULK_UPDATE')) action = 'bulk_update';
+    if (mutation.type.startsWith('BULK_DELETE')) action = 'bulk_delete';
 
     const table = tableMap[mutation.type] || mutation.type.split('_')[2]?.toLowerCase() + 's' || mutation.type.split('_')[1]?.toLowerCase() + 's';
 
@@ -567,6 +569,7 @@ class SyncEngine {
         delete mutation.payload.createdBy;
         delete mutation.payload.updatedBy;
         delete mutation.payload.assignedBy;
+        delete mutation.payload.isDemoData;
 
         // Ensure department_id is a valid integer or null
         const rawDeptId = mutation.payload.department_id;
@@ -593,6 +596,13 @@ class SyncEngine {
 
     if (action === 'bulk_update') {
       result = await supabase.from(table).upsert(mutation.payload.updates);
+      if (result.error) throw result.error;
+      return;
+    }
+
+    if (action === 'bulk_delete') {
+      const ids = mutation.payload.ids || [mutation.payload.id];
+      result = await supabase.from(table).delete().in('id', ids);
       if (result.error) throw result.error;
       return;
     }

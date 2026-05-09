@@ -22,22 +22,29 @@ export const TrashService = {
         return (data || []).map(mapTask);
     },
 
-    restore: async (id: string): Promise<void> => {
-        const success = await CanonicalDataService.patchFields(
-            TABLES.TASKS,
-            id,
-            { deleted: false },
-            'task'
-        );
-        if (!success) throw new Error("Failed to restore task");
+    restore: async (ids: string | string[]): Promise<void> => {
+        const targetIds = Array.isArray(ids) ? ids : [ids];
+        
+        for (const id of targetIds) {
+            const success = await CanonicalDataService.patchFields(
+                TABLES.TASKS,
+                id,
+                { deleted: false },
+                'task'
+            );
+            if (!success) throw new Error(`Failed to restore task ${id}`);
+        }
     },
 
     permanentDelete: async (ids: string | string[]): Promise<void> => {
         const targetIds = Array.isArray(ids) ? ids : [ids];
         
-        for (const id of targetIds) {
-            const success = await CanonicalDataService.hardDelete(TABLES.TASKS, id, 'task');
-            if (!success) throw new Error(`Failed to enqueue delete for task ${id}`);
+        if (targetIds.length > 1) {
+            const success = await CanonicalDataService.bulkHardDelete(TABLES.TASKS, targetIds, 'task');
+            if (!success) throw new Error("Failed to enqueue bulk delete");
+        } else if (targetIds.length === 1) {
+            const success = await CanonicalDataService.hardDelete(TABLES.TASKS, targetIds[0], 'task');
+            if (!success) throw new Error(`Failed to enqueue delete for task ${targetIds[0]}`);
         }
     }
 };

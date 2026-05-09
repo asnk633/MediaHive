@@ -171,6 +171,25 @@ export class CanonicalDataService {
   }
 
   /**
+   * Permanently delete multiple records with offline-first support
+   */
+  static async bulkHardDelete(
+    table: string,
+    ids: string[],
+    entityType?: string
+  ): Promise<boolean> {
+    if (healthManager.shouldPauseActivities()) return false;
+
+    const { tenantId } = await tenantContext();
+    const { syncEngine } = require('@/lib/offline/queueManager');
+    
+    const mutationType = `BULK_DELETE_${(entityType || table).toUpperCase()}`;
+    await syncEngine.enqueueMutation(mutationType, { ids, tenant_id: tenantId });
+
+    return true;
+  }
+
+  /**
    * Create a new record with offline-first support
    */
   static async createRecord(
@@ -234,6 +253,7 @@ export class CanonicalDataService {
       delete finalPayload.createdBy;
       delete finalPayload.updatedBy;
       delete finalPayload.assignedBy;
+      delete finalPayload.isDemoData;
 
       // Coerce department_id: must be a valid integer or null (FK: departments.id is integer)
       const rawDeptId = finalPayload.department_id;

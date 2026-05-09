@@ -16,6 +16,7 @@ import {
 import { apiClient } from '@/lib/apiClient';
 import { supabase } from '@/lib/supabaseClient';
 import { Task } from '@/features/tasks/types/task';
+import { StructureService } from '@/services/structureService';
 import { format, subMonths, isSameMonth } from 'date-fns';
 import { PageLayout } from '@/components/ui/layout/PageLayout';
 import { PageHeader } from '@/components/ui/layout/PageHeader';
@@ -25,6 +26,7 @@ import { Skeleton } from '@/components/ui/skeleton';
 export default function ReportsActivityClient() {
     const router = useRouter();
     const [tasks, setTasks] = useState<Task[]>([]);
+    const [institutions, setInstitutions] = useState<any[]>([]);
     const [loading, setLoading] = useState(true);
     const [selectedMonth, setSelectedMonth] = useState(new Date());
 
@@ -36,7 +38,15 @@ export default function ReportsActivityClient() {
 
     useEffect(() => {
         fetchTasks();
+        fetchInstitutions();
     }, []);
+
+    const fetchInstitutions = async () => {
+        try {
+            const { institutions: data } = await StructureService.getInstitutions(true); // Include archived for historic reports
+            setInstitutions(data);
+        } catch (err) {}
+    };
 
     const fetchTasks = async () => {
         setLoading(true);
@@ -53,7 +63,12 @@ export default function ReportsActivityClient() {
     };
 
     const filteredTasks = tasks.filter(task => {
-        if (task.is_demo_data || task.deleted) return false;
+        // Robust filtering for demo and deleted data
+        const isDemo = task.is_demo_data === true || (task as any).is_demo_data === 'true';
+        const isDeleted = task.deleted === true || (task as any).deleted === 'true' || !!(task as any).deleted_at;
+        
+        if (isDemo || isDeleted) return false;
+        
         const created = task.created_at?.seconds
             ? new Date(task.created_at.seconds * 1000)
             : new Date(task.created_at as any);
@@ -197,6 +212,11 @@ export default function ReportsActivityClient() {
                                         <tr key={task.id} className="group hover:bg-white/[0.02] transition-colors">
                                             <td className="px-8 py-6">
                                                 <div className="flex flex-col">
+                                                    <div className="flex items-center gap-2 mb-1">
+                                                        <span className="text-[10px] font-bold text-blue-400/60 uppercase tracking-widest bg-blue-400/5 px-2 py-0.5 rounded border border-blue-400/10">
+                                                            {institutions.find(inst => String(inst.id) === String(task.institution_id || (task as any).institutionId))?.name || 'Global'}
+                                                        </span>
+                                                    </div>
                                                     <span className="text-sm font-bold text-white group-hover:text-blue-400 transition-colors">
                                                         {task.title}
                                                     </span>

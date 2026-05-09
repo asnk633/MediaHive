@@ -175,7 +175,7 @@ export const SortableTaskRow = memo(({
                 id={`nav-item-${task.id}`}
                 data-active={activeId === task.id}
                 className={cn(
-                    "grid grid-cols-[auto_1fr_auto] md:grid-cols-[40px_3fr_1.5fr_0.8fr_1.5fr_1.2fr_1.2fr_1.2fr] gap-2 px-6 items-center border-l-[3px] transition-all duration-300 cursor-pointer focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-blue-500/50 hover:-translate-y-[2px] mb-1 rounded-sm overflow-hidden",
+                    "grid grid-cols-[auto_1fr_auto] md:grid-cols-[40px_3fr_1.5fr_0.8fr_1.5fr_1.2fr_1.2fr_1.5fr] gap-2 px-6 items-center border-l-[3px] transition-all duration-300 cursor-pointer focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-blue-500/50 hover:-translate-y-[2px] mb-1 rounded-sm overflow-hidden",
                     density === 'compact' ? "py-2" : "py-4",
                     isSelected
                         ? "bg-blue-500/[0.06] ring-1 ring-inset ring-blue-500/20"
@@ -279,11 +279,17 @@ export const SortableTaskRow = memo(({
 
                 {/* Requested By */}
                 <div className="hidden md:flex items-center text-white/45 text-xs truncate font-medium">
-                    <ResolvedStructureName
-                        id={task.departmentId || task.institutionId}
-                        type={task.departmentId ? 'department' : 'institution'}
-                        fallback={task.departmentId || '-'}
-                    />
+                    {task.on_behalf_of?.name ? (
+                        <span className="text-blue-400/80 font-bold tracking-tight">
+                            {task.on_behalf_of.name}
+                        </span>
+                    ) : (
+                        <ResolvedStructureName
+                            id={task.departmentId || task.institutionId}
+                            type={task.departmentId ? 'department' : 'institution'}
+                            fallback={task.departmentId || '-'}
+                        />
+                    )}
                 </div>
 
                 {/* Priority */}
@@ -325,31 +331,6 @@ export const SortableTaskRow = memo(({
                     </div>
                 </div>
 
-                {/* Completed Date (Role-Wide) */}
-                <div className="hidden md:block text-right">
-                    <div className="text-xs text-white/40 hover:text-white/70 transition-colors">
-                        {task.status === 'done' && task.completedAt ? (
-                            <TooltipProvider delayDuration={0}>
-                                <Tooltip>
-                                    <TooltipTrigger className="cursor-default">
-                                        {(() => {
-                                            const date = new Date((task as any).completedAt);
-                                            return date ? format(date, 'd MMM yyyy') : '-';
-                                        })()}
-                                    </TooltipTrigger>
-                                    <TooltipContent>
-                                        <p>Marked completed on {new Date((task as any).completedAt) ? format(new Date((task as any).completedAt)!, 'd MMM yyyy') : 'Unknown'}</p>
-                                    </TooltipContent>
-                                </Tooltip>
-                            </TooltipProvider>
-                        ) : (
-                            <span className="text-white/10 select-none">—</span>
-                        )}
-                        <span className="text-white/40 truncate max-w-[120px]">
-                            {task.departmentId || 'General'}
-                        </span>
-                    </div>
-                </div>
 
                 {/* Status or Trash Actions */}
                 <div className="hidden md:block" onClick={e => e.stopPropagation()}>
@@ -413,6 +394,17 @@ export const SortableTaskRow = memo(({
                             </button>
                         ) : null
                     )}
+                </div>
+
+                {/* Completed Date Column (Last) */}
+                <div className="hidden md:block text-right">
+                    <div className="text-xs text-white/40 tabular-nums">
+                        {task.status === 'done' && task.completedAt ? (
+                            <span>{format(safeDate(task.completedAt)!, 'd MMM yyyy')}</span>
+                        ) : (
+                            <span className="text-white/10 select-none">—</span>
+                        )}
+                    </div>
                 </div>
 
             </Link>

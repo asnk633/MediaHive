@@ -229,7 +229,8 @@ export default function TasksNewClient() {
             const userInstId = user.institution_id ? `inst_${user.institution_id}` : null;
             
             // Only treat as 'On Behalf Of' if explicitly delegating and selected something other than defaults
-            if (isDelegating && selectedOrgId && selectedOrgId !== userDeptId && selectedOrgId !== userInstId) {
+            // OR if it's a different entity even if not 'explicitly' delegating (safety fallback)
+            if (selectedOrgId && (selectedOrgId !== userDeptId && selectedOrgId !== userInstId)) {
                 if (selectedOrgId.startsWith('dept_')) {
                     const id = selectedOrgId.split('_')[1];
                     const dept = departmentsList.find(d => String(d.id) === id);
@@ -248,7 +249,8 @@ export default function TasksNewClient() {
  
             if (selectedOrgId.startsWith('dept_')) {
                 const id = selectedOrgId.split('_')[1];
-                department_id = parseInt(id);
+                const isNumeric = /^\d+$/.test(id);
+                department_id = isNumeric ? parseInt(id) : null;
                 const d = departmentsList.find(dep => String(dep.id) === id);
                 departmentName = d ? d.name : '';
                 // Ensure institution_id is carried over if available

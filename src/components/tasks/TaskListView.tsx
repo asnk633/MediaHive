@@ -826,7 +826,7 @@ const TaskListViewComponent: React.FC<TaskListViewProps> = ({ tasks, loading = f
             {/* Main Task List Console */}
             <div className="flex-1 flex flex-col min-h-0 rounded-2xl border border-soft bg-surface shadow-sm overflow-hidden">
                 {/* Unified Header Row */}
-                <div className="grid grid-cols-[auto_1fr_auto] md:grid-cols-[40px_3fr_1.5fr_0.8fr_1.5fr_1.2fr_1.2fr_1.2fr] gap-2 px-6 py-3 bg-white/[0.02] border-b border-white/5 text-[10px] font-bold text-slate-300 tracking-widest uppercase shrink-0">
+                <div className="grid grid-cols-[auto_1fr_auto] md:grid-cols-[40px_3fr_1.5fr_0.8fr_1.5fr_1.2fr_1.2fr_1.5fr] gap-2 px-6 py-3 border-b border-white/[0.03] text-[10px] font-bold text-white/30 uppercase tracking-[0.1em] items-center bg-black/20">
                     <div
                         role="checkbox"
                         aria-checked={isAllSelected ? true : isIndeterminate ? 'mixed' : false}
@@ -845,8 +845,8 @@ const TaskListViewComponent: React.FC<TaskListViewProps> = ({ tasks, loading = f
                     <div className="hidden md:block">Priority</div>
                     <div className="hidden md:block">Assignee</div>
                     <div className="hidden md:block text-right">Due Date</div>
-                    <div className="hidden md:block text-right">Completed</div>
                     <div className="hidden md:block">Status</div>
+                    <div className="hidden md:block text-right">Completed Date</div>
                 </div>
 
                 {loading ? (

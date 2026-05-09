@@ -27,7 +27,10 @@ import { cn } from '@/lib/utils';
 import { Skeleton } from '@/components/ui/skeleton';
 import { format } from 'date-fns';
 
-type DataSource = 'tasks' | 'media_assets' | 'media_inventory';
+import { inventoryService } from '@/services/inventory/inventoryService';
+import { EquipmentItem } from '@/services/inventory/inventoryContract';
+
+type DataSource = 'tasks' | 'media_assets' | 'equipment';
 
 export default function ReportsCustomClient() {
     const router = useRouter();
@@ -35,6 +38,7 @@ export default function ReportsCustomClient() {
     const [loading, setLoading] = useState(true);
     const [tasks, setTasks] = useState<Task[]>([]);
     const [files, setFiles] = useState<DriveFile[]>([]);
+    const [equipment, setEquipment] = useState<EquipmentItem[]>([]);
 
     // Filter State
     const [source, setSource] = useState<DataSource>('tasks');
@@ -50,17 +54,20 @@ export default function ReportsCustomClient() {
     const loadAllData = async () => {
         setLoading(true);
         try {
-            const [taskData, fileData] = await Promise.all([
+            const [taskData, fileData, equipmentData] = await Promise.all([
                 TaskService.getTasks(),
-                FileService.getFiles(user!.role, user!.department_id, user!.institution_id)
+                FileService.getFiles(user!.role, user!.department_id, user!.institution_id),
+                inventoryService.getEquipment()
             ]);
 
             setTasks(taskData || []);
             setFiles(fileData || []);
+            setEquipment(equipmentData || []);
         } catch (error) {
             console.error("Failed to load custom report data:", error);
             setTasks([]);
             setFiles([]);
+            setEquipment([]);
         } finally {
             setLoading(false);
         }
@@ -78,18 +85,17 @@ export default function ReportsCustomClient() {
                 const matchesSearch = !searchQuery || t.title.toLowerCase().includes(searchQuery.toLowerCase()) || t.description?.toLowerCase().includes(searchQuery.toLowerCase());
                 return matchesStatus && matchesPriority && matchesSearch;
             });
-        } else if (source === 'media_assets' || source === 'media_inventory') {
+        } else if (source === 'media_assets') {
             return files.filter(f => {
                 const matchesType = statusFilter.length === 0 || statusFilter.includes(f.type);
                 const matchesSearch = !searchQuery || f.name.toLowerCase().includes(searchQuery.toLowerCase());
-                
-                // Content Filter
-                const isInventory = f.uploadContext === 'downloads_direct';
-                const isProduction = f.uploadContext === 'task_final' || f.uploadContext === 'task_attachment';
-                
-                const matchesSource = source === 'media_inventory' ? isInventory : isProduction;
-                
-                return matchesType && matchesSearch && matchesSource;
+                return matchesType && matchesSearch;
+            });
+        } else if (source === 'equipment') {
+            return equipment.filter(e => {
+                const matchesStatus = statusFilter.length === 0 || statusFilter.includes(e.status);
+                const matchesSearch = !searchQuery || e.name.toLowerCase().includes(searchQuery.toLowerCase()) || e.brand?.toLowerCase().includes(searchQuery.toLowerCase());
+                return matchesStatus && matchesSearch;
             });
         }
         return [];
@@ -152,16 +158,16 @@ export default function ReportsCustomClient() {
                                     source === 'media_assets' ? "bg-indigo-500/20 text-indigo-400 shadow-lg border border-indigo-500/20" : "text-white/20 hover:text-white/40"
                                 )}
                             >
-                                <Database size={14} /> Production Assets
+                                <Database size={14} /> Media Assets
                             </button>
                             <button
-                                onClick={() => setSource('media_inventory')}
+                                onClick={() => setSource('equipment')}
                                 className={cn(
                                     "flex-1 flex items-center justify-center gap-2 py-3 rounded-xl transition-all font-bold text-[10px] uppercase tracking-widest",
-                                    source === 'media_inventory' ? "bg-emerald-500/20 text-emerald-400 shadow-lg border border-emerald-500/20" : "text-white/20 hover:text-white/40"
+                                    source === 'equipment' ? "bg-emerald-500/20 text-emerald-400 shadow-lg border border-emerald-500/20" : "text-white/20 hover:text-white/40"
                                 )}
                             >
-                                <Database size={14} /> Media Inventory
+                                <Database size={14} /> Equipment Inventory
                             </button>
                         </div>
 
@@ -238,20 +244,22 @@ export default function ReportsCustomClient() {
 
                         {source !== 'tasks' && (
                             <div className="space-y-4">
-                                <h3 className="text-[10px] font-bold text-white/20 uppercase tracking-[0.2em]">Asset Type</h3>
+                                <h3 className="text-[10px] font-bold text-white/20 uppercase tracking-[0.2em]">
+                                    {source === 'equipment' ? 'Equipment Status' : 'Asset Type'}
+                                </h3>
                                 <div className="flex flex-wrap gap-2">
-                                    {['poster', 'video', 'pdf', 'other'].map(t => (
+                                    {(source === 'equipment' ? ['available', 'maintenance', 'in_use', 'damaged'] : ['poster', 'video', 'pdf', 'other']).map(t => (
                                         <button
                                             key={t}
                                             onClick={() => toggleFilter(setStatusFilter, t)}
                                             className={cn(
                                                 "px-3 py-1.5 rounded-lg text-[10px] font-bold uppercase transition-all border",
                                                 statusFilter.includes(t)
-                                                    ? "bg-indigo-500/10 border-indigo-500/20 text-indigo-400"
+                                                    ? (source === 'equipment' ? "bg-emerald-500/10 border-emerald-500/20 text-emerald-400" : "bg-indigo-500/10 border-indigo-500/20 text-indigo-400")
                                                     : "bg-white/[0.02] border-white/5 text-white/20 hover:text-white/40"
                                             )}
                                         >
-                                            {t}
+                                            {t.replace('_', ' ')}
                                         </button>
                                     ))}
                                 </div>
@@ -276,10 +284,18 @@ export default function ReportsCustomClient() {
                                 <table className="w-full text-left table-auto">
                                     <thead className="bg-[#0f172a] border-b border-white/5">
                                         <tr>
-                                            <th className="px-8 py-4 text-[10px] font-bold text-white/20 uppercase tracking-widest">{source === 'tasks' ? 'Task Descriptor' : 'Asset Descriptor'}</th>
-                                            <th className="px-8 py-4 text-[10px] font-bold text-white/20 uppercase tracking-widest">{source === 'tasks' ? 'Institutional Hub' : 'Source Entity'}</th>
-                                            <th className="px-8 py-4 text-[10px] font-bold text-white/20 uppercase tracking-widest">{source === 'tasks' ? 'Operational Rank' : 'Resource Details'}</th>
-                                            <th className="px-8 py-4 text-[10px] font-bold text-white/20 uppercase tracking-widest text-right">{source === 'tasks' ? 'Timeline' : 'Expansion Date'}</th>
+                                            <th className="px-8 py-4 text-[10px] font-bold text-white/20 uppercase tracking-widest">
+                                                {source === 'tasks' ? 'Task Descriptor' : source === 'equipment' ? 'Equipment Spec' : 'Asset Descriptor'}
+                                            </th>
+                                            <th className="px-8 py-4 text-[10px] font-bold text-white/20 uppercase tracking-widest">
+                                                {source === 'tasks' ? 'Institutional Hub' : source === 'equipment' ? 'Inventory Path' : 'Source Entity'}
+                                            </th>
+                                            <th className="px-8 py-4 text-[10px] font-bold text-white/20 uppercase tracking-widest">
+                                                {source === 'tasks' ? 'Operational Rank' : source === 'equipment' ? 'Asset Health' : 'Resource Details'}
+                                            </th>
+                                            <th className="px-8 py-4 text-[10px] font-bold text-white/20 uppercase tracking-widest text-right">
+                                                {source === 'tasks' ? 'Timeline' : 'Expansion Date'}
+                                            </th>
                                         </tr>
                                     </thead>
                                     <tbody className="divide-y divide-white/5">
@@ -305,14 +321,16 @@ export default function ReportsCustomClient() {
                                                             <span className="text-sm font-bold text-white group-hover:text-indigo-400 transition-colors uppercase tracking-tight">
                                                                 {source === 'tasks' ? item.title : item.name}
                                                             </span>
-                                                            <span className="text-[10px] text-white/20 font-medium mt-1 uppercase">ID: {item.id.slice(0, 8)}</span>
+                                                            <span className="text-[10px] text-white/20 font-medium mt-1 uppercase">
+                                                                {source === 'equipment' ? `${item.brand} ${item.model}` : `ID: ${item.id.slice(0, 8)}`}
+                                                            </span>
                                                         </div>
                                                     </td>
                                                     <td className="px-8 py-6">
                                                         <span className="text-xs font-bold text-white/40 uppercase tracking-wider">
                                                             {source === 'tasks' 
                                                                 ? (item.on_behalf_of?.name || item.created_by?.institution_name || 'Media & IT') 
-                                                                : (item.department || 'Creative Library')}
+                                                                : source === 'equipment' ? (item.category || 'General Equipment') : (item.department || 'Creative Library')}
                                                         </span>
                                                     </td>
                                                     <td className="px-8 py-6">
@@ -325,6 +343,15 @@ export default function ReportsCustomClient() {
                                                             )}>
                                                                 {item.priority}
                                                             </span>
+                                                        ) : source === 'equipment' ? (
+                                                            <span className={cn(
+                                                                "inline-flex px-2 py-1 rounded text-[10px] font-bold uppercase tracking-widest border",
+                                                                item.status === 'available' ? "bg-emerald-500/10 text-emerald-500 border-emerald-500/20" :
+                                                                    item.status === 'maintenance' ? "bg-amber-500/10 text-amber-500 border-amber-500/20" :
+                                                                        "bg-white/5 text-white/40 border-white/10"
+                                                            )}>
+                                                                {item.status}
+                                                            </span>
                                                         ) : (
                                                             <div className="flex flex-col">
                                                                 <span className="text-[10px] font-bold text-white uppercase">{item.type || 'Media'}</span>
@@ -336,8 +363,10 @@ export default function ReportsCustomClient() {
                                                     </td>
                                                     <td className="px-8 py-6 text-right">
                                                         <span className="text-[10px] font-bold text-white/20 uppercase">
-                                                            {item.created_at ? format(
-                                                                item.created_at.seconds ? new Date(item.created_at.seconds * 1000) : new Date(item.created_at),
+                                                            {item.created_at || item.createdAt ? format(
+                                                                (item.created_at?.seconds || item.createdAt?.seconds) 
+                                                                    ? new Date((item.created_at?.seconds || item.createdAt?.seconds) * 1000) 
+                                                                    : new Date(item.created_at || item.createdAt),
                                                                 'dd MMM yyyy'
                                                             ) : 'N/A'}
                                                         </span>

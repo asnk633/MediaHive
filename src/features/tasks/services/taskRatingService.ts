@@ -1,7 +1,7 @@
 import { apiClient } from '@/lib/apiClient';
 import { Task } from '@/features/tasks/types/task';
 import { TaskRating, UserPerformanceStats } from '@/features/tasks/types/taskRating';
-import { TaskService } from '@/features/tasks/services/taskService';
+import { TaskService } from '@/services/tasks';
 
 /**
  * Task Rating Service

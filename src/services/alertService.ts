@@ -134,7 +134,14 @@ export class AlertService {
           return acc; // Skip this item
         }
 
-        acc.push(parsed.data as unknown as AppNotification);
+        const notificationData = parsed.data as any;
+        
+        // Map database 'body' to 'message' for UI compatibility
+        if (notificationData.body && !notificationData.message) {
+          notificationData.message = notificationData.body;
+        }
+
+        acc.push(notificationData as AppNotification);
         return acc;
       }, []);
     } catch (error: any) {

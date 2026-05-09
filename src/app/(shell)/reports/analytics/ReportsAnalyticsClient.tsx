@@ -14,7 +14,7 @@ import {
     CheckCircle2
 } from 'lucide-react';
 import { apiClient } from '@/lib/apiClient';
-import { TaskService } from '@/features/tasks/services/taskService';
+import { TaskService } from '@/services/tasks';
 import { Task } from '@/features/tasks/types/task';
 import { FileService } from '@/services/fileService';
 import { DriveFile } from '@/types/file';

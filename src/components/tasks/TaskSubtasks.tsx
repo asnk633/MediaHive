@@ -4,7 +4,7 @@ import React, { useState, useEffect } from 'react';
 import { useAuth } from '@/contexts/AuthContextProvider';
 import { apiClient } from '@/lib/apiClient';
 import { supabase } from '@/lib/supabaseClient';
-import { TaskService } from '@/features/tasks/services/taskService';
+import { TaskService } from '@/services/tasks';
 import { CheckCircle2, Circle, Plus, Trash2 } from 'lucide-react';
 import { toast } from 'sonner';
 

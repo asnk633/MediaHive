@@ -3,7 +3,7 @@ import { tenantContext } from '@/lib/auth/tenantContext';
 import { EventSchema } from '@/domain/schemas';
 import { MonitoringService } from './monitoringService';
 import { CanonicalDataService } from './canonicalDataService';
-import { mapTask, TaskService } from '@/features/tasks/services/taskService';
+import { mapTask, TaskService } from '@/services/tasks';
 
 export interface ProductionFile {
   event: any;

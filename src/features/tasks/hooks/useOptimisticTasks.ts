@@ -10,7 +10,7 @@ import { TrashService } from '@/services/trashService';
 import { BulkOperationsService } from '@/services/bulkOperationsService';
 import { ActivityHistory, buildActivityLabel } from '@/lib/activityHistory';
 import { evaluatePolicies, PolicyResult } from '@/domain/conflicts/conflictPolicies';
-import { TaskService } from '@/features/tasks/services/taskService';
+import { TaskService } from '@/services/tasks';
 import { canPerformAction, OfflineAction } from '@/lib/offline-contracts';
 import { TaskConflict, ConflictCategory } from '@/domain/conflicts/types';
 

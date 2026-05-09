@@ -14,7 +14,7 @@ import { Loader2, Edit3, Calendar as CalendarIcon, Layers, Users } from "lucide-
 import { toast } from "sonner";
 import { format } from "date-fns";
 import { supabase } from "@/lib/supabaseClient";
-import { TaskService } from '@/features/tasks/services/taskService';
+import { TaskService } from '@/services/tasks';
 import { CampaignService } from '@/features/campaigns/services/campaignService';
 import { Campaign } from '@/features/campaigns/types/campaign';
 import { useAuth } from "@/contexts/AuthContextProvider";

@@ -161,20 +161,34 @@ export default function TasksNewClient() {
             const contextId = selectedOrgId || currentWorkspaceId;
             const members = await UserService.getTeamMembers(contextId);
 
-            // Exhaustive Diagnostic Filter
+            // Context-Aware Filter
             const filtered = members.filter(m => {
                 const role = (m as any).role?.toLowerCase().trim();
                 const isCreator = m.uid === user?.uid;
                 const isMediaAdmin = m.name === 'Media Admin';
-                const hasCorrectRole = (role === 'manager' || role === 'team');
+                
+                // Allow standard non-admin roles for assignment
+                const isValidRole = ['manager', 'team', 'member'].includes(role);
 
-                if (!hasCorrectRole && !isCreator) {
-                    console.log(`[TasksDeepDive] Excluding ${m.name}: Role '${role}' not in leadership.`);
+                // Context filtering
+                let matchesContext = true;
+                if (selectedOrgId) {
+                    const [type, id] = selectedOrgId.split('_');
+                    if (type === 'dept') {
+                        matchesContext = String(m.department_id) === String(id);
+                    } else if (type === 'inst') {
+                        matchesContext = String(m.institution_id) === String(id);
+                    }
+                }
+
+                if (!isValidRole && !isCreator) {
+                    console.log(`[TasksDeepDive] Excluding ${m.name}: Invalid role '${role}'`);
                 }
 
                 return (
-                    hasCorrectRole &&
-                    !isMediaAdmin
+                    isValidRole &&
+                    !isMediaAdmin &&
+                    matchesContext
                 );
             });
             
@@ -247,7 +261,7 @@ export default function TasksNewClient() {
  
             if (selectedOrgId.startsWith('dept_')) {
                 const id = selectedOrgId.split('_')[1];
-                department_id = id;
+                department_id = parseInt(id);
                 const d = departmentsList.find(dep => String(dep.id) === id);
                 departmentName = d ? d.name : '';
                 // Ensure institution_id is carried over if available

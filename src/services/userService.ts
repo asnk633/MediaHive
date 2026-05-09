@@ -130,23 +130,30 @@ export const UserService = {
                 targetInstitutionId = resolvedInst.id;
             }
 
-            // 3. Map and return
-            return profiles.map((p: any) => {
+            // 3. Map and Filter
+            return profiles.reduce((acc: any[], p: any) => {
                 const wsAssignment = allWsAssignments.find((a: any) => a.user_id === p.id && a.institution_id === targetInstitutionId);
-                // If a workspace role exists, it MUST override the global role.
-                // If NO workspace role exists, the user is implicitly a 'member' in this workspace context.
-                const effectiveRole = wsAssignment?.role || (targetInstitutionId ? 'member' : p.role);
+                
+                // A user matches the context if:
+                // 1. They have an explicit workspace assignment
+                // 2. Their profile institution_id matches
+                // 3. (Optional fallback) If no context is provided, return everyone
+                const matchesContext = !targetInstitutionId || wsAssignment || String(p.institution_id) === String(targetInstitutionId);
 
-                return {
-                    uid: p.id,
-                    name: p.full_name || 'Unknown User',
-                    avatar_url: p.avatar_url,
-                    photoURL: p.avatar_url,
-                    department_id: p.department_id,
-                    institution_id: p.institution_id,
-                    role: effectiveRole || 'member'
-                };
-            });
+                if (matchesContext) {
+                    const effectiveRole = wsAssignment?.role || p.role || 'member';
+                    acc.push({
+                        uid: p.id,
+                        name: p.full_name || 'Unknown User',
+                        avatar_url: p.avatar_url,
+                        photoURL: p.avatar_url,
+                        department_id: p.department_id,
+                        institution_id: targetInstitutionId || p.institution_id,
+                        role: effectiveRole
+                    });
+                }
+                return acc;
+            }, []);
         } catch (error) {
             console.error("[UserService] Omniscient fetch failed:", error);
             return [];

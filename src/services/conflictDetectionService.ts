@@ -7,7 +7,7 @@ import {
     OffDayConflict
 } from '@/types/conflict';
 import { SystemEventService } from '@/features/events/services/systemEventService';
-import { TaskService } from '@/features/tasks/services/taskService';
+import { TaskService } from '@/services/tasks';
 import { TaskSchema } from '@/domain/schemas/task';
 
 /**

@@ -18,7 +18,7 @@ export const TrashService = {
             return [];
         }
 
-        const { mapTask } = require('@/features/tasks/services/taskService');
+        const { mapTask } = require('@/services/tasks');
         return (data || []).map(mapTask);
     },
 

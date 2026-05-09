@@ -44,7 +44,8 @@ export interface AppNotification {
     institution_id?: string;   // Contextual institution
     type: NotificationType;
     title: string;
-    message: string;
+    message?: string;
+    body?: string;
     entity_type: NotificationEntityType;
     entity_id: string;
     action_url?: string;       // Navigation intent
@@ -61,7 +62,8 @@ export interface CreateNotificationParams {
     institution_id?: string;
     type: NotificationType;
     title: string;
-    message: string;
+    message?: string;
+    body?: string;
     entity_type: NotificationEntityType;
     entity_id: string;
     action_url?: string;

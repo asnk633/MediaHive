@@ -60,7 +60,7 @@ import { getRelativeTime, getInitials, formatDate as formatDisplayDate } from '@
 
 import { Task } from '@/features/tasks/types/task';
 import { CampaignService } from '@/features/campaigns/services/campaignService'
-import { TaskService } from '@/features/tasks/services/taskService';
+import { TaskService } from '@/services/tasks';
 
 // --- Mock Data / Interfaces ---
 interface Comment {

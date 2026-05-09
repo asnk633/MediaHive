@@ -14,7 +14,7 @@ import {
 } from 'lucide-react';
 import { MediaTeamOverview } from '@/features/dashboard/components/MediaTeamOverview';
 import { apiClient } from '@/lib/apiClient';
-import { TaskService } from '@/features/tasks/services/taskService';
+import { TaskService } from '@/services/tasks';
 import { Task } from '@/features/tasks/types/task';
 import { format, subMonths, isSameMonth, differenceInHours } from 'date-fns';
 import { PageLayout } from '@/components/ui/layout/PageLayout';

@@ -11,7 +11,17 @@ import { cn } from '@/lib/utils';
 import { DateSelector } from '@/components/ui/selectors/DateSelector';
 import { TimeSelector } from '@/components/ui/selectors/TimeSelector';
 import { format } from 'date-fns';
-import { X, Send, Loader2 } from 'lucide-react';
+import { X, Send, Loader2, Bell, AlignLeft, Users, Paperclip, Calendar as CalendarIcon, Clock } from 'lucide-react';
+import { AlertService } from '@/services/alertService';
+import { StructureService } from '@/services/structureService';
+import { UserService } from '@/services/userService';
+import { MultiSelect } from '@/components/ui/selectors/MultiSelect';
+import { Institution, Department } from '@/types/structure';
+import { User } from '@/types/user';
+import { Input } from '@/components/ui/input';
+import { Textarea } from '@/components/ui/textarea';
+import { Button } from '@/components/ui/button';
+import { ToggleGroup, ToggleGroupItem } from '@/components/ui/toggle-group';
 // import { apiClient } from '@/lib/apiClient';
 // import { NotificationService } from '@/services/notificationService';
 
@@ -58,6 +68,34 @@ export function NotificationForm({ initialData, onSubmitSuccess, onCancel }: Not
     }
   }, [initialData, reset]);
 
+  // Targeting State
+  const [audienceMode, setAudienceMode] = useState<'broadcast' | 'institutions' | 'departments' | 'direct' | 'combined'>('broadcast');
+  const [institutions, setInstitutions] = useState<Institution[]>([]);
+  const [departments, setDepartments] = useState<Department[]>([]);
+  const [allUsers, setAllUsers] = useState<User[]>([]);
+  
+  const [selectedInstIds, setSelectedInstIds] = useState<string[]>([]);
+  const [selectedDeptIds, setSelectedDeptIds] = useState<string[]>([]);
+  const [selectedUserIds, setSelectedUserIds] = useState<string[]>([]);
+
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        const [instRes, deptRes, usersRes] = await Promise.all([
+          StructureService.getInstitutions(),
+          StructureService.getDepartments(),
+          UserService.getAllUsers()
+        ]);
+        setInstitutions(instRes.institutions);
+        setDepartments(deptRes.departments);
+        setAllUsers(usersRes);
+      } catch (err) {
+        console.error("Failed to fetch targeting data:", err);
+      }
+    };
+    fetchData();
+  }, []);
+
   // Custom file state
   const [selectedFile, setSelectedFile] = useState<File | undefined>(undefined);
 
@@ -93,25 +131,58 @@ export function NotificationForm({ initialData, onSubmitSuccess, onCancel }: Not
         return;
       }
 
-      // Construct JSON payload instead of FormData
-      const payload = {
+      let targetUserIds: string[] = [];
+
+      switch (audienceMode) {
+        case 'broadcast':
+          targetUserIds = allUsers.map(u => u.uid || u.id);
+          break;
+        case 'institutions':
+          targetUserIds = allUsers
+            .filter(u => u.institution_id && selectedInstIds.includes(String(u.institution_id)))
+            .map(u => u.uid || u.id);
+          break;
+        case 'departments':
+          targetUserIds = allUsers
+            .filter(u => u.department_id && selectedDeptIds.includes(String(u.department_id)))
+            .map(u => u.uid || u.id);
+          break;
+        case 'direct':
+          targetUserIds = selectedUserIds;
+          break;
+        case 'combined':
+          targetUserIds = allUsers
+            .filter(u => 
+              u.institution_id && selectedInstIds.includes(String(u.institution_id)) &&
+              u.department_id && selectedDeptIds.includes(String(u.department_id))
+            )
+            .map(u => u.uid || u.id);
+          break;
+      }
+
+      if (targetUserIds.length === 0) {
+        toast.error('No recipients found for the current selection.');
+        setIsSending(false);
+        return;
+      }
+
+      const params = {
         title: data.title,
-        body: data.body,
-        audience: data.audience, // Array
-        scheduledAt: data.schedule ? new Date(data.schedule).toISOString() : null,
-        // attachments: [] // File upload disabled for now
+        message: data.body,
+        type: 'broadcast',
+        priority: 'medium',
+        created_by: user.id
       };
 
-      const response = { success: true, message: 'Mock sent' }; // await NotificationService.createBroadcastNotification(payload);
+      await AlertService.createBatchNotifications(targetUserIds, params);
 
-      if (response.success) {
-        toast.success(response.message || 'Notification sent successfully!');
-        reset();
-        setSelectedFile(undefined);
-        onSubmitSuccess?.();
-      } else {
-        toast.error(response.message || 'Failed to send notification.');
-      }
+      toast.success(`Notification broadcasted to ${targetUserIds.length} users!`);
+      reset();
+      setSelectedFile(undefined);
+      setSelectedInstIds([]);
+      setSelectedDeptIds([]);
+      setSelectedUserIds([]);
+      onSubmitSuccess?.();
     } catch (error: any) {
       console.error('Error sending notification:', error);
       toast.error(error.message || 'An unexpected error occurred.');
@@ -120,94 +191,201 @@ export function NotificationForm({ initialData, onSubmitSuccess, onCancel }: Not
     }
   };
 
-  const inputClasses = "w-full bg-background backdrop-blur-sm p-3 rounded-xl border border-soft shadow-inner focus:bg-surface focus:ring-2 focus:ring-primary/30 focus:border-primary/50 outline-none transition-all placeholder:text-muted font-medium text-foreground";
+  const labelClasses = "text-[10px] font-black uppercase tracking-[0.2em] text-white/40 px-1 mb-2 flex items-center gap-2";
 
   return (
     <>
-      <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
-        <div>
-          <label className="block text-sm font-medium text-gray-300 mb-1">Title</label>
-          <input {...register('title')} className={inputClasses} placeholder="Title" />
-          {errors.title && <p className="text-red-400 text-sm">{errors.title.message}</p>}
+      <form onSubmit={handleSubmit(onSubmit)} className="space-y-8">
+        <div className="space-y-6">
+          <div>
+            <label className={labelClasses}>
+              <Bell size={12} className="text-blue-400" />
+              Notification Title
+            </label>
+            <Input 
+              {...register('title')} 
+              placeholder="e.g. System Maintenance Update" 
+              className="h-12 bg-white/[0.03] border-white/10 rounded-2xl focus:bg-white/[0.08] transition-all"
+              error={errors.title?.message}
+            />
+          </div>
+
+          <div>
+            <label className={labelClasses}>
+              <AlignLeft size={12} className="text-blue-400" />
+              Broadcast Message
+            </label>
+            <Textarea 
+              {...register('body')} 
+              placeholder="Type your message here..." 
+              className="min-h-[120px] bg-white/[0.03] border-white/10 rounded-2xl focus:bg-white/[0.08] transition-all resize-none p-4"
+            />
+            {errors.body && <p className="text-red-400 text-xs mt-1.5 ml-1">{errors.body.message}</p>}
+          </div>
+
+          <div>
+            <label className={labelClasses}>
+              <Users size={12} className="text-blue-400" />
+              Target Audience Mode
+            </label>
+            <ToggleGroup 
+              type="single" 
+              value={audienceMode} 
+              onValueChange={(val) => val && setAudienceMode(val as any)}
+              className="bg-white/[0.03] p-1 rounded-2xl border border-white/10 w-full flex-wrap gap-1"
+            >
+              {[
+                { id: 'broadcast', label: 'Broadcast' },
+                { id: 'institutions', label: 'Institutions' },
+                { id: 'departments', label: 'Departments' },
+                { id: 'direct', label: 'Direct' },
+                { id: 'combined', label: 'Inst & Dept' }
+              ].map(mode => (
+                <ToggleGroupItem 
+                  key={mode.id}
+                  value={mode.id} 
+                  className="flex-1 rounded-xl data-[state=on]:bg-blue-600 data-[state=on]:text-white transition-all py-6 text-[10px] font-black uppercase tracking-widest"
+                >
+                  {mode.label}
+                </ToggleGroupItem>
+              ))}
+            </ToggleGroup>
+          </div>
+
+          {(audienceMode === 'institutions' || audienceMode === 'combined') && (
+            <div className="animate-in fade-in slide-in-from-top-2 duration-300">
+              <MultiSelect 
+                label="Select Institutions"
+                placeholder="Search Institutions..."
+                options={institutions.map(i => ({ id: String(i.id), label: i.name }))}
+                selected={selectedInstIds}
+                onChange={setSelectedInstIds}
+              />
+            </div>
+          )}
+
+          {(audienceMode === 'departments' || audienceMode === 'combined') && (
+            <div className="animate-in fade-in slide-in-from-top-2 duration-300">
+              <MultiSelect 
+                label="Select Departments"
+                placeholder="Search Departments..."
+                options={departments.map(d => ({ id: String(d.id), label: d.name }))}
+                selected={selectedDeptIds}
+                onChange={setSelectedDeptIds}
+              />
+            </div>
+          )}
+
+          {audienceMode === 'direct' && (
+            <div className="animate-in fade-in slide-in-from-top-2 duration-300">
+              <MultiSelect 
+                label="Select Recipients"
+                placeholder="Search Users..."
+                options={allUsers.map(u => ({ id: u.uid || u.id, label: u.name || u.full_name || 'User' }))}
+                selected={selectedUserIds}
+                onChange={setSelectedUserIds}
+              />
+            </div>
+          )}
+
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
+            <DateSelector 
+              label="Schedule Date"
+              date={watchedValues.schedule ? new Date(watchedValues.schedule) : undefined}
+              onChange={(date) => {
+                if (!date) {
+                  setValue('schedule', null);
+                  return;
+                }
+                const newDate = new Date(date);
+                if (watchedValues.schedule) {
+                  const current = new Date(watchedValues.schedule);
+                  newDate.setHours(current.getHours());
+                  newDate.setMinutes(current.getMinutes());
+                }
+                setValue('schedule', newDate.toISOString());
+              }}
+            />
+            <TimeSelector 
+              label="Schedule Time"
+              value={watchedValues.schedule ? format(new Date(watchedValues.schedule), "HH:mm") : "09:00"}
+              onChange={(time) => {
+                const [h, m] = time.split(':').map(Number);
+                const newDate = watchedValues.schedule ? new Date(watchedValues.schedule) : new Date();
+                newDate.setHours(h);
+                newDate.setMinutes(m);
+                setValue('schedule', newDate.toISOString());
+              }}
+            />
+          </div>
+
+          <div>
+            <label className={labelClasses}>
+              <Paperclip size={12} className="text-blue-400" />
+              Media Attachment
+            </label>
+            <div className="flex flex-col gap-3">
+              <div 
+                onClick={() => fileInputRef.current?.click()}
+                className={cn(
+                  "border-2 border-dashed rounded-2xl p-4 flex flex-col items-center justify-center gap-2 cursor-pointer transition-all",
+                  selectedFile 
+                    ? "border-blue-500/50 bg-blue-500/5" 
+                    : "border-white/10 bg-white/[0.02] hover:border-white/20 hover:bg-white/[0.04]"
+                )}
+              >
+                {!selectedFile ? (
+                  <>
+                    <div className="w-10 h-10 rounded-full bg-white/5 flex items-center justify-center text-white/40">
+                      <Paperclip size={20} />
+                    </div>
+                    <span className="text-sm font-bold text-white/60">Upload Assets</span>
+                    <span className="text-[10px] text-white/30 uppercase tracking-wider">PNG, JPG or PDF</span>
+                  </>
+                ) : (
+                  <div className="flex items-center justify-between w-full px-2">
+                    <div className="flex items-center gap-3">
+                      <div className="w-10 h-10 rounded-xl bg-blue-500/20 flex items-center justify-center text-blue-400">
+                        <Paperclip size={20} />
+                      </div>
+                      <div className="flex flex-col">
+                        <span className="text-sm font-bold text-white/90 truncate max-w-[200px]">
+                          {selectedFile.name}
+                        </span>
+                        <span className="text-[10px] text-white/40 uppercase tracking-tight">
+                          {(selectedFile.size / 1024).toFixed(1)} KB
+                        </span>
+                      </div>
+                    </div>
+                    <button 
+                      type="button" 
+                      onClick={(e) => { e.stopPropagation(); handleRemoveAttachment(); }}
+                      className="p-2 hover:bg-white/10 rounded-full text-white/40 hover:text-red-400 transition-colors"
+                    >
+                      <X size={18} />
+                    </button>
+                  </div>
+                )}
+              </div>
+              <input type="file" ref={fileInputRef} className="hidden" onChange={onFileSelect} />
+            </div>
+          </div>
         </div>
 
-        <div>
-          <label className="block text-sm font-medium text-gray-300 mb-1">Body</label>
-          <textarea {...register('body')} rows={4} className={inputClasses} placeholder="Message" />
-          {errors.body && <p className="text-red-400 text-sm">{errors.body.message}</p>}
-        </div>
-
-        <div>
-          <label className="block text-sm font-medium text-gray-300 mb-1">Audience</label>
+        <div className="pt-6 border-t border-white/5 flex items-center justify-between">
+          <p className="text-[10px] text-white/20 font-medium max-w-[200px]">
+            By clicking send, you agree to broadcast this message to the selected audience.
+          </p>
           <div className="flex gap-4">
-            {['all', 'premium'].map(aud => (
-              <label key={aud} className="flex items-center gap-2 text-white capitalize">
-                <input
-                  type="radio"
-                  value={aud}
-                  checked={watchedValues.audience?.[0] === aud}
-                  onChange={() => setValue('audience', [aud as any])}
-                  className="form-radio"
-                />
-                {aud}
-              </label>
-            ))}
+            <Button 
+              type="submit" 
+              isLoading={isSending} 
+              className="min-w-[160px] rounded-2xl h-14 font-black uppercase tracking-widest bg-blue-600 hover:bg-blue-500 shadow-[0_0_30px_rgba(37,99,235,0.3)] border-t border-white/20"
+            >
+              {!isSending && <Send size={16} className="mr-2" />}
+              Send Broadcast
+            </Button>
           </div>
-        </div>
-
-        <div className="grid grid-cols-2 gap-4">
-          <DateSelector 
-            label="Schedule Date"
-            date={watchedValues.schedule ? new Date(watchedValues.schedule) : undefined}
-            onChange={(date) => {
-              if (!date) {
-                setValue('schedule', null);
-                return;
-              }
-              const newDate = new Date(date);
-              if (watchedValues.schedule) {
-                const current = new Date(watchedValues.schedule);
-                newDate.setHours(current.getHours());
-                newDate.setMinutes(current.getMinutes());
-              }
-              setValue('schedule', newDate.toISOString());
-            }}
-          />
-          <TimeSelector 
-            label="Schedule Time"
-            value={watchedValues.schedule ? format(new Date(watchedValues.schedule), "HH:mm") : "09:00"}
-            onChange={(time) => {
-              const [h, m] = time.split(':').map(Number);
-              const newDate = watchedValues.schedule ? new Date(watchedValues.schedule) : new Date();
-              newDate.setHours(h);
-              newDate.setMinutes(m);
-              setValue('schedule', newDate.toISOString());
-            }}
-          />
-        </div>
-
-        <div>
-          <label className="block text-sm font-medium text-gray-300 mb-1">Attachment</label>
-          <div className="flex gap-2 items-center">
-            <button type="button" onClick={() => fileInputRef.current?.click()} className="bg-gray-700 text-white px-4 py-2 rounded">
-              {selectedFile ? 'Change File' : 'Select File'}
-            </button>
-            {selectedFile && (
-              <span className="text-gray-300 flex items-center gap-2">
-                {selectedFile.name}
-                <X size={16} className="cursor-pointer" onClick={handleRemoveAttachment} />
-              </span>
-            )}
-            <input type="file" ref={fileInputRef} className="hidden" onChange={onFileSelect} />
-          </div>
-        </div>
-
-        <div className="flex justify-end gap-2">
-          {onCancel && <button type="button" onClick={onCancel} className="px-4 py-2 text-gray-300">Cancel</button>}
-          <button type="submit" disabled={isSending} className="bg-blue-600 text-white px-6 py-2 rounded flex items-center gap-2">
-            {isSending ? <Loader2 className="animate-spin" /> : <Send size={16} />}
-            Send
-          </button>
         </div>
       </form>
 

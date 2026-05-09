@@ -28,21 +28,32 @@ import { cn } from "@/lib/utils";
 import { motion, AnimatePresence } from 'framer-motion';
 import { InviteUserModal } from '@/components/admin/users/InviteUserModal';
 import { ConfirmationDialog } from "@/components/ui/ConfirmationDialog";
+import {
+    DropdownMenu,
+    DropdownMenuContent,
+    DropdownMenuItem,
+    DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
 
 import { useRouter } from 'next/navigation';
 import { usePermissions } from '@/hooks/usePermissions';
+import { useAuth } from '@/contexts/AuthContextProvider';
 
 export default function AdminUsersPage() {
     const router = useRouter();
+    const { user, authResolved } = useAuth();
     const { role: currentRole } = usePermissions();
+    
+    // Check if user has global admin role or workspace admin role
+    const isAdmin = user?.role === 'admin' || currentRole === 'admin';
 
     useEffect(() => {
-        if (currentRole && currentRole !== 'admin') {
+        if (authResolved && !isAdmin) {
             router.push('/home');
         }
-    }, [currentRole, router]);
+    }, [isAdmin, authResolved, router]);
 
-    if (!currentRole || currentRole !== 'admin') return null;
+    if (!authResolved || !isAdmin) return null;
 
     const [viewMode, setViewMode] = useState<'users' | 'invites'>('users');
     const [users, setUsers] = useState<User[]>([]);
@@ -163,6 +174,26 @@ export default function AdminUsersPage() {
                     fetchAccess(selectedUserId);
                 } catch (error) {
                     toast.error("Action failed");
+                }
+            }
+        });
+    };
+
+    const handleUpdateGlobalRole = async (newRole: string) => {
+        if (!selectedUserId || !selectedUser) return;
+        
+        setConfirmConfig({
+            open: true,
+            title: "Change Global Role",
+            description: `Are you sure you want to change ${selectedUser.name}'s global role to ${newRole.toUpperCase()}? This affects their base access level across the entire platform.`,
+            variant: 'primary',
+            action: async () => {
+                try {
+                    await UserService.updateUser(selectedUserId, { role: newRole as any });
+                    toast.success("Global role updated");
+                    fetchData(); // Refresh list to update role label
+                } catch (error) {
+                    toast.error("Update failed");
                 }
             }
         });
@@ -379,9 +410,27 @@ export default function AdminUsersPage() {
                                                 <div className="px-3 py-1 rounded-lg bg-white/5 border border-white/5 flex items-center gap-2 text-[10px] font-black text-white/40 uppercase tracking-widest">
                                                     <Mail size={12} /> {selectedUser.email}
                                                 </div>
-                                                <div className="px-3 py-1 rounded-lg bg-indigo-500/10 border border-indigo-500/20 flex items-center gap-2 text-[10px] font-black text-indigo-400 uppercase tracking-widest">
-                                                    <Shield size={12} /> Global {selectedUser.role}
-                                                </div>
+                                                <DropdownMenu>
+                                                    <DropdownMenuTrigger asChild>
+                                                        <button className="px-3 py-1 rounded-lg bg-indigo-500/10 border border-indigo-500/20 flex items-center gap-2 text-[10px] font-black text-indigo-400 uppercase tracking-widest hover:bg-indigo-500/20 transition-colors">
+                                                            <Shield size={12} /> Global {selectedUser.role}
+                                                        </button>
+                                                    </DropdownMenuTrigger>
+                                                    <DropdownMenuContent align="start" className="bg-[#09090b] border-white/10 text-white min-w-[140px]">
+                                                        {['admin', 'manager', 'team', 'member'].map((r) => (
+                                                            <DropdownMenuItem 
+                                                                key={r}
+                                                                onClick={() => handleUpdateGlobalRole(r)}
+                                                                className={cn(
+                                                                    "text-[10px] font-black uppercase tracking-widest cursor-pointer",
+                                                                    selectedUser.role === r ? "text-indigo-400 bg-indigo-500/10" : "text-white/60"
+                                                                )}
+                                                            >
+                                                                {r}
+                                                            </DropdownMenuItem>
+                                                        ))}
+                                                    </DropdownMenuContent>
+                                                </DropdownMenu>
                                             </div>
                                         </div>
                                     </div>

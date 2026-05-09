@@ -183,25 +183,6 @@ export class CanonicalDataService {
 
     const { syncEngine } = require('@/lib/offline/queueManager');
 
-    // Special Handling: Task Assignments (Relational Migration)
-    // Prevent legacy JSONB writes even on creation
-    const assignmentField = payload.assigned_to || payload.assignedTo;
-    if ((entityType === 'task' || table === TABLES.TASKS) && assignmentField) {
-      const taskId = payload.id;
-
-      // 2. Extract assignments
-      const uids = (assignmentField || []).map((u: any) => typeof u === 'string' ? u : u.uid);
-      
-      // 3. Enqueue relational assignments first
-      for (const uid of uids) {
-        await syncEngine.enqueueMutation('ASSIGN_USER', { task_id: taskId, user_id: uid, tenant_id: tenantId });
-      }
-
-      // 4. Cleanup legacy fields from creation payload
-      delete payload.assigned_to;
-      delete payload.assignedTo;
-    }
-
     // 5. Broadcast to real-time peers (optimistic)
     if (entityType) {
       const { collabManager } = require('@/lib/collaboration/collabManager');
@@ -210,7 +191,24 @@ export class CanonicalDataService {
 
     // 6. Persist via True Offline Sync Engine
     const mutationType = `CREATE_${(entityType || table).toUpperCase()}`;
-    const finalId = await syncEngine.enqueueMutation(mutationType, payload);
+    
+    // Prevent legacy JSONB writes even on creation
+    const assignmentField = payload.assigned_to || payload.assignedTo;
+    const finalPayload = { ...payload };
+    if ((entityType === 'task' || table === TABLES.TASKS) && assignmentField) {
+      delete finalPayload.assigned_to;
+      delete finalPayload.assignedTo;
+    }
+
+    const finalId = await syncEngine.enqueueMutation(mutationType, finalPayload);
+
+    // Relational assignments AFTER task creation to satisfy FK constraints
+    if ((entityType === 'task' || table === TABLES.TASKS) && assignmentField) {
+      const uids = (assignmentField || []).map((u: any) => typeof u === 'string' ? u : u.uid);
+      for (const uid of uids) {
+        await syncEngine.enqueueMutation('ASSIGN_USER', { task_id: finalId, user_id: uid, tenant_id: tenantId });
+      }
+    }
 
     return { data: { ...payload, id: finalId }, error: null };
   }
@@ -371,7 +369,7 @@ export class CanonicalDataService {
       const now = new Date();
       const sevenDaysAgo = new Date(now.getTime() - COMPLETED_TASK_RETENTION_DAYS * 24 * 60 * 60 * 1000);
 
-      const { mapTask } = await import('@/features/tasks/services/taskService');
+      const { mapTask } = await import('@/services/tasks');
 
       const processedTasks = finalTasks
         .filter((task: any) => {
@@ -806,7 +804,7 @@ export class CanonicalDataService {
         }
         return item;
       });
-      const { mapTask } = await import('@/features/tasks/services/taskService');
+      const { mapTask } = await import('@/services/tasks');
       const tasks = ((tasksRes.data as any[]) || []).map((item: any) => {
         const parsed = TaskSchema.safeParse(item);
         if (!parsed.success) {
@@ -959,7 +957,7 @@ export class CanonicalDataService {
         })
       ]);
 
-      const { mapTask } = await import('@/features/tasks/services/taskService');
+      const { mapTask } = await import('@/services/tasks');
       const { mapEvent } = await import('@/services/events/eventService');
 
       return {

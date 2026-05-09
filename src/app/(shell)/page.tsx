@@ -1,6 +1,6 @@
 import { dehydrate, HydrationBoundary } from "@tanstack/react-query";
 import { createServerQueryClient } from "@/lib/serverQueryClient";
-import { TaskService } from "@/features/tasks/services/taskService";
+import { TaskService } from "@/services/tasks";
 import { EventService } from "@/features/events/services/eventService";
 import HomeClient from './home/HomeClient';
 

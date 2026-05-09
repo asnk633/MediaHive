@@ -1,7 +1,7 @@
 "use client";
 
 import * as React from "react";
-import { ChevronDown, Check } from "lucide-react";
+import { ChevronDown, Check, Search } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
 import {
@@ -27,6 +27,7 @@ interface DropdownSelectorProps {
   className?: string;
   triggerClassName?: string;
   disabled?: boolean;
+  searchable?: boolean;
 }
 
 export function DropdownSelector({
@@ -38,9 +39,24 @@ export function DropdownSelector({
   className,
   triggerClassName,
   disabled = false,
+  searchable = true,
 }: DropdownSelectorProps) {
   const [open, setOpen] = React.useState(false);
+  const [searchQuery, setSearchQuery] = React.useState("");
+  
   const selectedOption = options.find((opt) => opt.id === value);
+
+  const filteredOptions = React.useMemo(() => {
+    if (!searchQuery) return options;
+    return options.filter((opt) =>
+      opt.label.toLowerCase().includes(searchQuery.toLowerCase())
+    );
+  }, [options, searchQuery]);
+
+  // Reset search when opening
+  React.useEffect(() => {
+    if (open) setSearchQuery("");
+  }, [open]);
 
   return (
     <div className={cn("space-y-2", className)}>
@@ -86,37 +102,57 @@ export function DropdownSelector({
           style={{ width: "var(--radix-popover-trigger-width)" }}
         >
           <div className="bg-[#0b1220]/95 backdrop-blur-2xl border border-white/10 rounded-[20px] shadow-2xl overflow-hidden animate-in fade-in zoom-in-95 duration-200">
+            {searchable && (
+              <div className="p-2 border-b border-white/5">
+                <div className="relative">
+                  <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-3.5 w-3.5 text-white/30" />
+                  <input
+                    className="w-full bg-white/5 border-none focus:ring-0 text-sm h-9 pl-9 pr-4 rounded-lg text-white/90 placeholder:text-white/20 font-medium"
+                    placeholder="Search..."
+                    value={searchQuery}
+                    onChange={(e) => setSearchQuery(e.target.value)}
+                    autoFocus
+                  />
+                </div>
+              </div>
+            )}
             <ScrollArea className="max-h-[300px]">
               <div className="p-2 space-y-1">
-                {options.map((option) => (
-                  <button
-                    key={option.id}
-                    onClick={() => {
-                      onChange(option.id);
-                      setOpen(false);
-                    }}
-                    className={cn(
-                      "w-full px-3 py-2.5 rounded-xl flex items-center justify-between transition-all",
-                      "text-sm font-bold",
-                      value === option.id
-                        ? "bg-blue-600 text-white shadow-lg shadow-blue-600/20"
-                        : "text-white/40 hover:bg-white/5 hover:text-white"
-                    )}
-                  >
-                    <div className="flex items-center gap-3">
-                      {option.icon && (
-                         <span className={cn(
-                           "h-4 w-4",
-                           value === option.id ? "text-white" : "text-white/50"
-                         )}>
-                            {option.icon}
-                         </span>
+                {filteredOptions.length > 0 ? (
+                  filteredOptions.map((option) => (
+                    <button
+                      key={option.id}
+                      onClick={() => {
+                        onChange(option.id);
+                        setOpen(false);
+                      }}
+                      className={cn(
+                        "w-full px-3 py-2.5 rounded-xl flex items-center justify-between transition-all text-left",
+                        "text-sm font-bold",
+                        value === option.id
+                          ? "bg-blue-600 text-white shadow-lg shadow-blue-600/20"
+                          : "text-white/40 hover:bg-white/5 hover:text-white"
                       )}
-                      <span>{option.label}</span>
-                    </div>
-                    {value === option.id && <Check className="h-4 w-4" />}
-                  </button>
-                ))}
+                    >
+                      <div className="flex items-center gap-3 truncate">
+                        {option.icon && (
+                           <span className={cn(
+                             "h-4 w-4 shrink-0",
+                             value === option.id ? "text-white" : "text-white/50"
+                           )}>
+                              {option.icon}
+                           </span>
+                        )}
+                        <span className="truncate">{option.label}</span>
+                      </div>
+                      {value === option.id && <Check className="h-4 w-4 shrink-0" />}
+                    </button>
+                  ))
+                ) : (
+                  <div className="py-6 text-center text-xs font-bold text-white/20 uppercase tracking-widest">
+                    No results found
+                  </div>
+                )}
               </div>
             </ScrollArea>
           </div>

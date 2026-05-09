@@ -1,8 +1,8 @@
 /**
- * Phase 8B: Conflict Resolution Center
+ * Phase 11: Premium Conflict Resolution Center
  * 
- * Dedicated page for viewing and resolving persistent conflicts
- * with non-blocking, user-controlled resolution.
+ * A simplified, human-centric interface for resolving data sync conflicts.
+ * Replaces technical JSON views with clear comparison cards and plain-English explanations.
  */
 
 'use client';
@@ -13,9 +13,8 @@ import {
   AlertTriangle, 
   Clock, 
   User, 
-  Calendar,
-  X,
   Check,
+  X,
   Eye,
   EyeOff,
   Filter,
@@ -23,23 +22,24 @@ import {
   Server,
   HardDrive,
   Hash,
-  Tag,
   Shield,
-  Zap,
   Archive,
   ChevronRight,
-  ChevronDown
+  Info,
+  HelpCircle,
+  MousePointer2,
+  Undo2,
+  Trash2,
+  Edit3
 } from 'lucide-react';
 import { usePersistentConflicts } from '@/hooks/usePersistentConflicts';
-import { ConflictStatus, ConflictResolution } from '@/lib/conflictStore';
+import { ConflictStatus, ConflictResolution, PersistentConflict } from '@/lib/conflictStore';
 import type { ConflictCategory } from '@/domain/conflicts/types';
-import { usePolicyGuidance } from '@/hooks/usePolicyGuidance';
 import { formatDate } from '@/lib/dateUtils';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
-import Link from 'next/link';
-import { PolicyGuidanceDisplay } from '@/components/conflicts/PolicyGuidanceDisplay';
 import { DropdownSelector } from '@/components/ui/selectors/DropdownSelector';
+import { cn } from '@/lib/utils';
 
 interface ConflictResolutionCenterProps {
   onBack?: () => void;
@@ -48,7 +48,6 @@ interface ConflictResolutionCenterProps {
 export const ConflictResolutionCenter: React.FC<ConflictResolutionCenterProps> = ({ onBack }) => {
   const [selectedConflictId, setSelectedConflictId] = useState<string | null>(null);
   const [showResolved, setShowResolved] = useState(false);
-  const [showDetails, setShowDetails] = useState(true);
   const [filterCategory, setFilterCategory] = useState<ConflictCategory | 'all'>('all');
   
   const { 
@@ -57,7 +56,6 @@ export const ConflictResolutionCenter: React.FC<ConflictResolutionCenterProps> =
     error, 
     resolveConflict, 
     updateConflictStatus,
-    getUnresolvedCount
   } = usePersistentConflicts({
     status: showResolved ? undefined : [ConflictStatus.DETECTED, ConflictStatus.SURFACED]
   });
@@ -75,48 +73,64 @@ export const ConflictResolutionCenter: React.FC<ConflictResolutionCenterProps> =
 
   const selectedConflict = conflicts.find(c => c.id === selectedConflictId);
 
-  // Phase 10: Policy guidance for selected conflict
-  const policyGuidance = usePolicyGuidance({
-    conflict: selectedConflict || {
-      taskId: '',
-      field: '',
-      category: 'content' as ConflictCategory,
-      localValue: '',
-      serverValue: '',
-      remoteActor: '',
-      timestamp: Date.now()
-    } as any,
-    userRole: 'team', // Placeholder - would come from actual user context
-    remoteUserRole: selectedConflict?.remoteActorRole || 'team',
-    isOnline: true, // Placeholder - would come from actual connectivity context
-    isReplaying: false, // Placeholder - would come from actual replay state
-    isPaused: false, // Placeholder - would come from actual pause state
-    hasPatch: false, // Simplified check - would come from actual patch state
-    isBootComplete: true // Placeholder - would come from actual boot state
-  });
-
-  const getStatusBadge = (status: ConflictStatus) => {
-    switch (status) {
-      case ConflictStatus.DETECTED:
-        return <Badge variant="warning">Detected</Badge>;
-      case ConflictStatus.SURFACED:
-        return <Badge variant="info">Surfaced</Badge>;
-      case ConflictStatus.RESOLVED:
-        return <Badge variant="success">Resolved</Badge>;
-      case ConflictStatus.DISMISSED:
-        return <Badge variant="neutral">Dismissed</Badge>;
-    }
+  const humanizeField = (field: string) => {
+    const mapping: Record<string, string> = {
+      'title': 'Task Title',
+      'description': 'Description',
+      'status': 'Task Status',
+      'priority': 'Priority Level',
+      'assigned_to': 'Assigned User',
+      'due_at': 'Due Date',
+      'media_coverage': 'Media Coverage',
+      'location': 'Location',
+      'tags': 'Tags',
+      'is_deleted': 'Deletion Status'
+    };
+    return mapping[field] || field.charAt(0).toUpperCase() + field.slice(1).replace(/_/g, ' ');
   };
 
-  const getCategoryBadge = (category: ConflictCategory) => {
-    switch (category) {
-      case 'benign':
-        return <Badge variant="success">Benign</Badge>;
-      case 'content':
-        return <Badge variant="warning">Content</Badge>;
-      case 'structural':
-        return <Badge variant="danger">Structural</Badge>;
+  const getConflictDescription = (conflict: PersistentConflict) => {
+    const isDeletionField = conflict.field.toLowerCase().includes('deleted');
+    if (isDeletionField) {
+      return conflict.localValue === true 
+        ? "You deleted this item, but it still exists on the server."
+        : "This item was deleted on the server, but you still have it locally.";
     }
+    return `The "${humanizeField(conflict.field)}" was changed both locally and on the server.`;
+  };
+
+  const renderValue = (value: any, field: string) => {
+    if (value === null || value === undefined) return <span className="text-white/20 italic">Empty</span>;
+    
+    const isDeletionField = field.toLowerCase().includes('deleted');
+    if (isDeletionField) {
+      return (
+        <div className="flex flex-col items-center gap-2">
+          {value === true ? <Trash2 size={40} className="text-rose-500 mb-2" /> : <Check size={40} className="text-emerald-500 mb-2" />}
+          <span className={cn("text-2xl font-black uppercase tracking-widest", value === true ? "text-rose-400" : "text-emerald-400")}>
+            {value === true ? 'Item Deleted' : 'Item Active'}
+          </span>
+        </div>
+      );
+    }
+
+    if (typeof value === 'boolean') {
+      return (
+        <span className={cn("text-2xl font-black uppercase tracking-widest", value ? "text-emerald-400" : "text-rose-400")}>
+          {value ? 'True' : 'False'}
+        </span>
+      );
+    }
+
+    if (typeof value === 'object') {
+      return (
+        <pre className="text-sm font-mono bg-black/20 p-4 rounded-2xl w-full max-h-[200px] overflow-auto text-left">
+          {JSON.stringify(value, null, 2)}
+        </pre>
+      );
+    }
+
+    return <span className="text-2xl font-bold text-white max-w-full break-words">{String(value)}</span>;
   };
 
   const handleResolve = async (id: string, resolution: ConflictResolution) => {
@@ -135,324 +149,312 @@ export const ConflictResolutionCenter: React.FC<ConflictResolutionCenterProps> =
 
   if (loading) {
     return (
-      <div className="flex items-center justify-center h-64">
-        <div className="text-center">
-          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-500 mx-auto mb-4"></div>
-          <p className="text-white/60">Loading conflicts...</p>
+      <div className="flex flex-col items-center justify-center h-[60vh]">
+        <div className="relative w-16 h-16">
+          <div className="absolute inset-0 rounded-full border-t-2 border-indigo-500 animate-spin" />
+          <div className="absolute inset-2 rounded-full border-b-2 border-indigo-400/50 animate-spin-reverse" />
         </div>
+        <p className="mt-6 text-white/40 font-medium tracking-wide">Syncing data conflicts...</p>
       </div>
     );
   }
 
   if (error) {
     return (
-      <div className="flex items-center justify-center h-64">
-        <div className="text-center">
-          <AlertTriangle className="h-12 w-12 text-red-500 mx-auto mb-4" />
-          <p className="text-red-400 mb-2">Failed to load conflicts</p>
-          <p className="text-white/60 text-sm">{error.message}</p>
+      <div className="flex flex-col items-center justify-center h-[60vh] p-8 text-center">
+        <div className="w-16 h-16 rounded-2xl bg-rose-500/10 flex items-center justify-center mb-6 ring-1 ring-rose-500/20">
+          <AlertTriangle className="h-8 w-8 text-rose-500" />
         </div>
+        <h2 className="text-xl font-bold text-white mb-2">Sync Error</h2>
+        <p className="text-white/40 max-w-xs mx-auto text-sm leading-relaxed mb-6">
+          {error.message || "We couldn't load the conflict data right now."}
+        </p>
+        <Button variant="outline" onClick={() => window.location.reload()} className="rounded-xl">
+          Try Again
+        </Button>
       </div>
     );
   }
 
   return (
-    <div className="flex flex-col h-full bg-gray-900 text-white">
-      {/* Header */}
-      <div className="border-b border-gray-800 p-6">
+    <div className="flex flex-col h-full text-white overflow-hidden">
+      {/* Header Section */}
+      <header className="px-8 py-10 flex flex-col gap-6 bg-gradient-to-b from-indigo-500/5 to-transparent">
         <div className="flex items-center justify-between">
-          <div className="flex items-center gap-4">
+          <div className="flex items-center gap-6">
             {onBack && (
-              <Button 
-                variant="ghost" 
-                size="sm" 
+              <button 
                 onClick={onBack}
-                className="text-white/60 hover:text-white"
+                className="w-10 h-10 rounded-xl bg-white/5 flex items-center justify-center hover:bg-white/10 transition-all text-white/60 hover:text-white"
               >
-                <ArrowLeft className="h-4 w-4 mr-2" />
-                Back
-              </Button>
+                <ArrowLeft size={20} />
+              </button>
             )}
             <div>
-              <h1 className="text-2xl font-bold">Conflict Resolution Center</h1>
-              <p className="text-white/60 mt-1">
-                {unresolvedCount} unresolved conflicts requiring attention
-              </p>
+              <h1 className="text-3xl font-black tracking-tight text-premium-gradient">Resolution Center</h1>
+              <div className="flex items-center gap-2 mt-2">
+                <div className={cn(
+                  "w-2 h-2 rounded-full animate-pulse",
+                  unresolvedCount > 0 ? "bg-amber-500 shadow-[0_0_8px_rgba(245,158,11,0.5)]" : "bg-emerald-500 shadow-[0_0_8px_rgba(16,185,129,0.5)]"
+                )} />
+                <p className="text-sm font-bold text-white/40 uppercase tracking-widest">
+                  {unresolvedCount > 0 ? `${unresolvedCount} Conflicts Detected` : 'All Clear • System Synced'}
+                </p>
+              </div>
             </div>
           </div>
           
-          <div className="flex items-center gap-3">
-            <Button
-              variant="outline"
-              size="sm"
+          <div className="flex items-center gap-4">
+            <button
               onClick={() => setShowResolved(!showResolved)}
-              className="flex items-center gap-2"
+              className={cn(
+                "h-10 px-4 rounded-xl flex items-center gap-2 text-sm font-bold transition-all ring-1 ring-white/10",
+                showResolved ? "bg-indigo-500/10 text-indigo-400 ring-indigo-500/30" : "bg-white/5 text-white/60 hover:text-white hover:bg-white/10"
+              )}
             >
-              {showResolved ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
-              {showResolved ? 'Hide Resolved' : 'Show All'}
-            </Button>
+              {showResolved ? <EyeOff size={16} /> : <Eye size={16} />}
+              {showResolved ? 'Hide Resolved' : 'History'}
+            </button>
             
-            <div className="px-2">
-              <DropdownSelector 
-                label="Category Filter"
-                value={filterCategory}
-                onChange={val => setFilterCategory(val as any)}
-                options={[
-                  { id: 'all', label: 'All Categories' },
-                  { id: 'benign', label: 'Benign', icon: <Check size={14} className="text-green-400" /> },
-                  { id: 'content', label: 'Content', icon: <AlertTriangle size={14} className="text-orange-400" /> },
-                  { id: 'structural', label: 'Structural', icon: <Zap size={14} className="text-red-400" /> },
-                ]}
-              />
-            </div>
+            <DropdownSelector 
+              label="Filter"
+              value={filterCategory}
+              onChange={val => setFilterCategory(val as any)}
+              options={[
+                { id: 'all', label: 'All Types' },
+                { id: 'benign', label: 'Minor', icon: <Info size={14} className="text-emerald-400" /> },
+                { id: 'content', label: 'Changes', icon: <Edit3 size={14} className="text-amber-400" /> },
+                { id: 'structural', label: 'Critical', icon: <Trash2 size={14} className="text-rose-400" /> },
+              ]}
+            />
           </div>
         </div>
-      </div>
 
-      <div className="flex flex-1 overflow-hidden">
-        {/* Conflict List */}
-        <div className="w-1/2 border-r border-gray-800 flex flex-col">
-          <div className="p-4 border-b border-gray-800">
-            <h2 className="font-semibold flex items-center gap-2">
-              <AlertTriangle className="h-5 w-5 text-amber-500" />
-              Conflicts ({filteredConflicts.length})
-            </h2>
+        <div className="p-4 bg-indigo-500/5 border border-indigo-500/10 rounded-2xl flex items-start gap-4">
+          <HelpCircle size={20} className="text-indigo-400 shrink-0 mt-0.5" />
+          <p className="text-sm text-indigo-100/60 leading-relaxed">
+            Conflicts happen when data was edited on multiple devices simultaneously. Choose which version of the data you want to keep to synchronize the system.
+          </p>
+        </div>
+      </header>
+
+      <main className="flex-1 flex overflow-hidden px-8 pb-8 gap-8">
+        {/* Left Side: List */}
+        <div className="w-[400px] flex flex-col gap-4 overflow-hidden">
+          <div className="flex items-center justify-between px-2">
+            <h2 className="text-xs font-black text-white/20 uppercase tracking-[0.2em]">Open Issues</h2>
+            <Badge variant="neutral" className="opacity-50">{filteredConflicts.length}</Badge>
           </div>
-          
-          <div className="flex-1 overflow-y-auto">
-            <AnimatePresence>
+
+          <div className="flex-1 overflow-y-auto no-scrollbar space-y-3">
+            <AnimatePresence mode="popLayout">
               {filteredConflicts.length === 0 ? (
-                <div className="flex items-center justify-center h-64 text-center p-8">
-                  <div>
-                    <Check className="h-12 w-12 text-green-500 mx-auto mb-4" />
-                    <p className="text-white/60">No conflicts found</p>
-                    {filterCategory !== 'all' && (
-                      <p className="text-sm text-white/40 mt-2">
-                        Try changing your filter settings
-                      </p>
-                    )}
+                <motion.div 
+                  initial={{ opacity: 0 }}
+                  animate={{ opacity: 1 }}
+                  className="flex flex-col items-center justify-center py-20 text-center bg-white/[0.02] border border-dashed border-white/10 rounded-3xl"
+                >
+                  <div className="w-12 h-12 rounded-2xl bg-emerald-500/10 flex items-center justify-center mb-4">
+                    <Check className="text-emerald-500" />
                   </div>
-                </div>
+                  <p className="text-sm font-bold text-white/40 uppercase tracking-widest px-8">No conflicts to resolve</p>
+                </motion.div>
               ) : (
-                <div className="divide-y divide-gray-800">
-                  {filteredConflicts.map((conflict) => (
-                    <motion.div
-                      key={conflict.id}
-                      initial={{ opacity: 0, y: 20 }}
-                      animate={{ opacity: 1, y: 0 }}
-                      exit={{ opacity: 0, y: -20 }}
-                      className={`p-4 hover:bg-gray-800/50 cursor-pointer transition-colors ${
-                        selectedConflictId === conflict.id ? 'bg-gray-800' : ''
-                      }`}
-                      onClick={() => setSelectedConflictId(conflict.id)}
-                    >
-                      <div className="flex items-start justify-between">
-                        <div className="flex-1 min-w-0">
-                          <div className="flex items-center gap-2 mb-2">
-                            <span className="font-mono text-sm text-blue-400">
-                              <Hash className="h-3 w-3 inline mr-1" />
-                              {conflict.taskId.substring(0, 8)}
-                            </span>
-                            {getCategoryBadge(conflict.category)}
-                            {getStatusBadge(conflict.status)}
-                          </div>
-                          
-                          <h3 className="font-medium truncate mb-1">
-                            Field: {conflict.field}
-                          </h3>
-                          
-                          <div className="flex items-center gap-4 text-sm text-white/60">
-                            <div className="flex items-center gap-1">
-                              <User className="h-3 w-3" />
-                              {conflict.remoteActor}
-                            </div>
-                            <div className="flex items-center gap-1">
-                              <Clock className="h-3 w-3" />
-                              {formatDate(new Date(conflict.timestamp))}
-                            </div>
-                          </div>
-                          
-                          <div className="mt-2 text-sm">
-                            <div className="flex items-center gap-2">
-                              <span className="text-green-400">Local:</span>
-                              <span className="font-mono text-xs bg-green-900/20 px-2 py-1 rounded">
-                                {String(conflict.localValue).substring(0, 30)}
-                                {String(conflict.localValue).length > 30 ? '...' : ''}
-                              </span>
-                            </div>
-                            <div className="flex items-center gap-2 mt-1">
-                              <span className="text-amber-400">Remote:</span>
-                              <span className="font-mono text-xs bg-amber-900/20 px-2 py-1 rounded">
-                                {String(conflict.serverValue).substring(0, 30)}
-                                {String(conflict.serverValue).length > 30 ? '...' : ''}
-                              </span>
-                            </div>
-                          </div>
-                        </div>
-                        
-                        <ChevronRight className="h-5 w-5 text-white/40 ml-2" />
+                filteredConflicts.map((conflict) => (
+                  <motion.button
+                    key={conflict.id}
+                    layout
+                    initial={{ opacity: 0, x: -20 }}
+                    animate={{ opacity: 1, x: 0 }}
+                    exit={{ opacity: 0, scale: 0.95 }}
+                    onClick={() => setSelectedConflictId(conflict.id)}
+                    className={cn(
+                      "w-full p-5 rounded-3xl transition-all duration-300 text-left group flex flex-col gap-3 border",
+                      selectedConflictId === conflict.id 
+                        ? "bg-indigo-500/10 border-indigo-500/30 ring-1 ring-indigo-500/20" 
+                        : "bg-white/[0.03] border-white/5 hover:bg-white/[0.06] hover:border-white/10"
+                    )}
+                  >
+                    <div className="flex items-center justify-between">
+                      <div className="flex items-center gap-2">
+                        {conflict.category === 'structural' ? (
+                          <Trash2 size={14} className="text-rose-400" />
+                        ) : (
+                          <Edit3 size={14} className="text-amber-400" />
+                        )}
+                        <span className="text-xs font-black uppercase tracking-widest text-white/40">
+                          {conflict.category}
+                        </span>
                       </div>
-                    </motion.div>
-                  ))}
-                </div>
+                      <span className="text-[10px] font-mono text-white/20">
+                        ID: {conflict.taskId.substring(0, 6)}
+                      </span>
+                    </div>
+
+                    <h3 className="font-bold text-base text-white group-hover:text-indigo-400 transition-colors">
+                      {humanizeField(conflict.field)}
+                    </h3>
+
+                    <div className="flex items-center gap-4 pt-1">
+                      <div className="flex items-center gap-1.5 text-[11px] font-medium text-white/40">
+                        <User size={12} />
+                        <span>{conflict.remoteActor}</span>
+                      </div>
+                      <div className="flex items-center gap-1.5 text-[11px] font-medium text-white/40">
+                        <Clock size={12} />
+                        <span>{formatDate(new Date(conflict.timestamp), 'HH:mm')}</span>
+                      </div>
+                    </div>
+                  </motion.button>
+                ))
               )}
             </AnimatePresence>
           </div>
         </div>
 
-        {/* Conflict Detail */}
-        <div className="w-1/2 flex flex-col">
-          {selectedConflict ? (
-            <>
-              <div className="p-6 border-b border-gray-800">
-                <div className="flex items-center justify-between mb-4">
-                  <h2 className="text-xl font-bold">Conflict Details</h2>
-                  <Button
-                    variant="ghost"
-                    size="sm"
-                    onClick={() => setShowDetails(!showDetails)}
-                  >
-                    {showDetails ? <ChevronDown className="h-4 w-4" /> : <ChevronRight className="h-4 w-4" />}
-                  </Button>
-                </div>
-                
-                {showDetails && (
-                  <div className="space-y-4">
-                    <div>
-                      <h3 className="text-sm font-semibold text-white/60 mb-2">Task Information</h3>
-                      <div className="grid grid-cols-2 gap-3 text-sm">
-                        <div>
-                          <span className="text-white/40">Task ID:</span>
-                          <div className="font-mono text-blue-400">{selectedConflict.taskId}</div>
-                        </div>
-                        <div>
-                          <span className="text-white/40">Field:</span>
-                          <div className="font-medium">{selectedConflict.field}</div>
-                        </div>
-                        <div>
-                          <span className="text-white/40">Category:</span>
-                          <div>{getCategoryBadge(selectedConflict.category)}</div>
-                        </div>
-                        <div>
-                          <span className="text-white/40">Status:</span>
-                          <div>{getStatusBadge(selectedConflict.status)}</div>
-                        </div>
-                      </div>
+        {/* Right Side: Detail View */}
+        <div className="flex-1 flex flex-col overflow-hidden">
+          <AnimatePresence mode="wait">
+            {selectedConflict ? (
+              <motion.div
+                key={selectedConflict.id}
+                initial={{ opacity: 0, scale: 0.98, filter: 'blur(10px)' }}
+                animate={{ opacity: 1, scale: 1, filter: 'blur(0px)' }}
+                exit={{ opacity: 0, scale: 0.98, filter: 'blur(10px)' }}
+                className="h-full flex flex-col bg-white/[0.03] border border-white/10 rounded-[40px] overflow-hidden"
+              >
+                {/* Detail Header */}
+                <div className="p-8 border-b border-white/5 flex items-center justify-between bg-white/[0.02]">
+                  <div className="flex items-center gap-5">
+                    <div className="w-14 h-14 rounded-2xl bg-indigo-500/10 flex items-center justify-center ring-1 ring-indigo-500/20">
+                      <Shield className="text-indigo-400" size={28} />
                     </div>
-                    
                     <div>
-                      <h3 className="text-sm font-semibold text-white/60 mb-2">Conflict Values</h3>
-                      <div className="space-y-3">
-                        <div className="bg-green-900/10 border border-green-800 rounded-lg p-3">
-                          <div className="flex items-center gap-2 mb-2">
-                            <div className="w-3 h-3 rounded-full bg-green-500"></div>
-                            <span className="font-semibold text-green-400">Your Value (Local)</span>
-                          </div>
-                          <pre className="font-mono text-sm bg-black/20 p-2 rounded">
-                            {JSON.stringify(selectedConflict.localValue, null, 2)}
-                          </pre>
+                      <h2 className="text-2xl font-bold text-white tracking-tight">Review Conflict</h2>
+                      <p className="text-white/40 text-sm mt-1">{getConflictDescription(selectedConflict)}</p>
+                    </div>
+                  </div>
+                  
+                  <button 
+                    onClick={() => setSelectedConflictId(null)}
+                    className="w-10 h-10 rounded-full hover:bg-white/10 flex items-center justify-center text-white/40 transition-all"
+                  >
+                    <X size={20} />
+                  </button>
+                </div>
+
+                {/* Comparison Section */}
+                <div className="flex-1 overflow-y-auto p-8 space-y-8 no-scrollbar">
+                  <div className="grid grid-cols-2 gap-8 h-full">
+                    {/* Option A: Local */}
+                    <div className="flex flex-col gap-6">
+                      <div className="flex items-center justify-between px-2">
+                        <div className="flex items-center gap-2">
+                          <HardDrive size={16} className="text-emerald-400" />
+                          <span className="text-xs font-black uppercase tracking-widest text-emerald-400">Your Version</span>
+                        </div>
+                        <Badge variant="success" className="bg-emerald-500/10 text-emerald-400 border-emerald-500/20">Recent</Badge>
+                      </div>
+
+                      <div className="flex-1 bg-emerald-500/5 border border-emerald-500/10 rounded-[32px] p-8 flex flex-col items-center justify-center text-center relative group hover:border-emerald-500/30 transition-all duration-500">
+                        <div className="absolute top-6 right-6 opacity-0 group-hover:opacity-100 transition-opacity">
+                          <MousePointer2 size={24} className="text-emerald-400 animate-bounce" />
                         </div>
                         
-                        <div className="bg-amber-900/10 border border-amber-800 rounded-lg p-3">
-                          <div className="flex items-center gap-2 mb-2">
-                            <div className="w-3 h-3 rounded-full bg-amber-500"></div>
-                            <span className="font-semibold text-amber-400">Remote Value</span>
-                            <span className="text-xs text-amber-400/60">
-                              by {selectedConflict.remoteActor}
-                            </span>
-                          </div>
-                          <pre className="font-mono text-sm bg-black/20 p-2 rounded">
-                            {JSON.stringify(selectedConflict.serverValue, null, 2)}
-                          </pre>
+                        <div className="text-xs font-black text-emerald-400/30 uppercase tracking-[0.4em] mb-6">Current Value</div>
+                        <div className="flex-1 flex items-center justify-center w-full">
+                          {renderValue(selectedConflict.localValue, selectedConflict.field)}
                         </div>
+                        
+                        <Button 
+                          onClick={() => handleResolve(selectedConflict.id, ConflictResolution.LOCAL)}
+                          className="mt-10 h-14 px-8 rounded-2xl bg-emerald-500 hover:bg-emerald-600 text-white font-bold shadow-xl shadow-emerald-500/20 transition-all active:scale-95 shrink-0"
+                        >
+                          Keep My Version
+                        </Button>
                       </div>
                     </div>
-                    
-                    <div className="text-sm text-white/60">
-                      <div className="flex items-center gap-2 mb-1">
-                        <Clock className="h-4 w-4" />
-                        <span>Detected: {formatDate(new Date(selectedConflict.created_at))}</span>
-                      </div>
-                      {selectedConflict.resolvedAt && (
+
+                    {/* Option B: Server */}
+                    <div className="flex flex-col gap-6">
+                      <div className="flex items-center justify-between px-2">
                         <div className="flex items-center gap-2">
-                          <Check className="h-4 w-4 text-green-500" />
-                          <span>Resolved: {formatDate(new Date(selectedConflict.resolvedAt))}</span>
+                          <Server size={16} className="text-amber-400" />
+                          <span className="text-xs font-black uppercase tracking-widest text-amber-400">Server Version</span>
                         </div>
-                      )}
-                    </div>
-                    
-                    {/* Phase 10: Policy Guidance Display */}
-                    {policyGuidance && policyGuidance.explanations.length > 0 && (
-                      <div className="mt-4 pt-4 border-t border-gray-700">
-                        <PolicyGuidanceDisplay explanations={policyGuidance.explanations} />
+                        <span className="text-[10px] font-bold text-white/30 uppercase tracking-widest">
+                          By {selectedConflict.remoteActor}
+                        </span>
                       </div>
-                    )}
-                  </div>
-                )}
-              </div>
-              
-              <div className="flex-1 p-6">
-                <div className="bg-gray-800/50 rounded-xl p-6 border border-gray-700">
-                  <h3 className="font-semibold mb-4 flex items-center gap-2">
-                    <Shield className="h-5 w-5 text-blue-500" />
-                    Resolution Options
-                  </h3>
-                  
-                  <div className="space-y-4">
-                    <div className="flex gap-3">
-                      <Button
-                        variant="default"
-                        className="flex-1 bg-green-600 hover:bg-green-700"
-                        onClick={() => handleResolve(selectedConflict.id, ConflictResolution.LOCAL)}
-                        disabled={selectedConflict.status === ConflictStatus.RESOLVED}
-                      >
-                        <HardDrive className="h-4 w-4 mr-2" />
-                        Keep My Changes
-                      </Button>
-                      
-                      <Button
-                        variant="outline"
-                        className="flex-1 border-amber-600 text-amber-400 hover:bg-amber-900/20"
-                        onClick={() => handleResolve(selectedConflict.id, ConflictResolution.SERVER)}
-                        disabled={selectedConflict.status === ConflictStatus.RESOLVED}
-                      >
-                        <Server className="h-4 w-4 mr-2" />
-                        Accept Remote Changes
-                      </Button>
+
+                      <div className="flex-1 bg-amber-500/5 border border-amber-500/10 rounded-[32px] p-8 flex flex-col items-center justify-center text-center relative group hover:border-amber-500/30 transition-all duration-500">
+                        <div className="text-xs font-black text-amber-400/30 uppercase tracking-[0.4em] mb-6">Stored Value</div>
+                        <div className="flex-1 flex items-center justify-center w-full">
+                          {renderValue(selectedConflict.serverValue, selectedConflict.field)}
+                        </div>
+
+                        <Button 
+                          variant="outline"
+                          onClick={() => handleResolve(selectedConflict.id, ConflictResolution.SERVER)}
+                          className="mt-10 h-14 px-8 rounded-2xl border-amber-500/30 text-amber-400 hover:bg-amber-500/10 font-bold transition-all active:scale-95 shrink-0"
+                        >
+                          Accept Server Version
+                        </Button>
+                      </div>
                     </div>
-                    
-                    <Button
-                      variant="ghost"
-                      className="w-full text-white/60 hover:text-white hover:bg-gray-700"
-                      onClick={() => handleDismiss(selectedConflict.id)}
-                      disabled={selectedConflict.status === ConflictStatus.RESOLVED}
-                    >
-                      <Archive className="h-4 w-4 mr-2" />
-                      Dismiss Conflict
-                    </Button>
                   </div>
-                  
-                  {selectedConflict.status === ConflictStatus.RESOLVED && (
-                    <div className="mt-4 p-3 bg-green-900/20 border border-green-800 rounded-lg text-center">
-                      <Check className="h-5 w-5 text-green-500 mx-auto mb-2" />
-                      <p className="text-sm text-green-400">
-                        This conflict has been resolved
-                      </p>
+                </div>
+
+                {/* Detail Footer */}
+                <div className="p-6 bg-white/[0.01] border-t border-white/5 flex items-center justify-between px-8">
+                  <div className="flex items-center gap-6">
+                    <div className="flex flex-col">
+                      <span className="text-[10px] font-black text-white/20 uppercase tracking-widest mb-1">Detected At</span>
+                      <span className="text-xs font-bold text-white/60">{formatDate(new Date(selectedConflict.created_at))}</span>
                     </div>
-                  )}
+                    <div className="w-px h-6 bg-white/10" />
+                    <div className="flex flex-col">
+                      <span className="text-[10px] font-black text-white/20 uppercase tracking-widest mb-1">System Role</span>
+                      <span className="text-xs font-bold text-white/60 capitalize">{selectedConflict.remoteActorRole || 'Team'}</span>
+                    </div>
+                  </div>
+
+                  <button
+                    onClick={() => handleDismiss(selectedConflict.id)}
+                    className="flex items-center gap-2 text-xs font-black uppercase tracking-widest text-white/30 hover:text-rose-400 transition-colors py-2 px-4 rounded-xl hover:bg-rose-500/5"
+                  >
+                    <Archive size={14} />
+                    Dismiss Without Sync
+                  </button>
+                </div>
+              </motion.div>
+            ) : (
+              <div className="h-full flex flex-col items-center justify-center bg-white/[0.01] border border-dashed border-white/10 rounded-[40px] text-center p-12">
+                <div className="w-20 h-20 rounded-[28px] bg-white/[0.03] flex items-center justify-center mb-8 ring-1 ring-white/10">
+                  <Shield size={32} className="text-white/20" />
+                </div>
+                <h2 className="text-xl font-bold text-white mb-3 tracking-tight">Select an issue to resolve</h2>
+                <p className="text-white/40 max-w-[280px] text-sm leading-relaxed mb-10">
+                  Pick a conflict from the left list to see a detailed comparison and choose which version to keep.
+                </p>
+                
+                <div className="grid grid-cols-2 gap-4 w-full max-w-sm">
+                   <div className="p-4 rounded-2xl bg-white/[0.02] border border-white/5 flex flex-col gap-1 items-start text-left">
+                      <Undo2 size={16} className="text-indigo-400 mb-2" />
+                      <span className="text-[10px] font-black uppercase tracking-widest text-white/30">Auto Recovery</span>
+                      <span className="text-xs font-bold text-white/60">System attempts to preserve work.</span>
+                   </div>
+                   <div className="p-4 rounded-2xl bg-white/[0.02] border border-white/5 flex flex-col gap-1 items-start text-left">
+                      <MousePointer2 size={16} className="text-indigo-400 mb-2" />
+                      <span className="text-[10px] font-black uppercase tracking-widest text-white/30">Manual Control</span>
+                      <span className="text-xs font-bold text-white/60">You decide the final source of truth.</span>
+                   </div>
                 </div>
               </div>
-            </>
-          ) : (
-            <div className="flex items-center justify-center h-full text-center p-8">
-              <div>
-                <AlertTriangle className="h-12 w-12 text-amber-500 mx-auto mb-4" />
-                <p className="text-white/60">Select a conflict to view details</p>
-              </div>
-            </div>
-          )}
+            )}
+          </AnimatePresence>
         </div>
-      </div>
+      </main>
     </div>
   );
 };

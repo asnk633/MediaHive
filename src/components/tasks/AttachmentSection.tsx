@@ -14,7 +14,7 @@ import { supabase } from '@/lib/supabaseClient';
 import { v4 as uuidv4 } from 'uuid';
 import { cn } from '@/lib/utils';
 import { AttachmentActivityLog } from './AttachmentActivityLog';
-import { TaskService } from '@/features/tasks/services/taskService';
+import { TaskService } from '@/services/tasks';
 
 interface AttachmentSectionProps {
     task: Task;

@@ -11,7 +11,7 @@ import { supabase } from '@/lib/supabaseClient';
 import { useAuth } from '@/contexts/AuthContextProvider';
 import { withTenant } from '@/lib/tenantQuery';
 import { UserService } from '@/services/userService';
-import { TaskService } from '@/features/tasks/services/taskService';
+import { TaskService } from '@/services/tasks';
 import { BulkActionBar } from './BulkActionBar';
 import { EditTaskDialog } from './EditTaskDialog';
 import { TrashService } from '@/services/trashService';

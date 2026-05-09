@@ -8,7 +8,7 @@ import { nativeNavigate } from '@/lib/utils';
 import { HomeTaskRow } from '@/features/tasks/components/HomeTaskRow';
 import { format, isSameDay, differenceInDays } from 'date-fns';
 import { useItemNavigation } from '@/hooks/useItemNavigation';
-import { TaskService as taskService } from '@/features/tasks/services/taskService';
+import { TaskService as taskService } from '@/services/tasks';
 import { ErrorFallback } from '@/components/ui/ErrorFallback';
 
 import { useDashboard } from '@/system/dashboard/DashboardProvider';

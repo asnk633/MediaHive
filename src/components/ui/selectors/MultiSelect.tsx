@@ -1,7 +1,7 @@
 "use client";
 
 import * as React from "react";
-import { X, ChevronDown, Check } from "lucide-react";
+import { X, ChevronDown, Check, Search } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
 import {
@@ -24,6 +24,7 @@ interface MultiSelectProps {
   placeholder?: string;
   label?: string;
   className?: string;
+  searchable?: boolean;
 }
 
 export function MultiSelect({
@@ -33,8 +34,22 @@ export function MultiSelect({
   placeholder = "Select options",
   label,
   className,
+  searchable = true,
 }: MultiSelectProps) {
   const [open, setOpen] = React.useState(false);
+  const [searchQuery, setSearchQuery] = React.useState("");
+
+  const filteredOptions = React.useMemo(() => {
+    if (!searchQuery) return options;
+    return options.filter((opt) =>
+      opt.label.toLowerCase().includes(searchQuery.toLowerCase())
+    );
+  }, [options, searchQuery]);
+
+  // Reset search when opening
+  React.useEffect(() => {
+    if (open) setSearchQuery("");
+  }, [open]);
 
   const toggleOption = (id: string) => {
     const newSelected = selected.includes(id)
@@ -101,24 +116,44 @@ export function MultiSelect({
           style={{ width: "var(--radix-popover-trigger-width)" }}
         >
           <div className="bg-[#0b1220]/95 backdrop-blur-2xl border border-white/10 rounded-[20px] shadow-2xl overflow-hidden animate-in fade-in zoom-in-95 duration-200">
+            {searchable && (
+              <div className="p-2 border-b border-white/5">
+                <div className="relative">
+                  <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-3.5 w-3.5 text-white/30" />
+                  <input
+                    className="w-full bg-white/5 border-none focus:ring-0 text-sm h-9 pl-9 pr-4 rounded-lg text-white/90 placeholder:text-white/20 font-medium"
+                    placeholder="Search options..."
+                    value={searchQuery}
+                    onChange={(e) => setSearchQuery(e.target.value)}
+                    autoFocus
+                  />
+                </div>
+              </div>
+            )}
             <ScrollArea className="max-h-[300px]">
               <div className="p-2 space-y-1">
-                {options.map((option) => (
-                  <button
-                    key={option.id}
-                    onClick={() => toggleOption(option.id)}
-                    className={cn(
-                      "w-full px-3 py-2.5 rounded-xl flex items-center justify-between transition-all",
-                      "text-sm font-bold",
-                      selected.includes(option.id)
-                        ? "bg-blue-600/20 text-blue-400 border border-blue-500/20"
-                        : "text-white/40 hover:bg-white/5 hover:text-white border border-transparent"
-                    )}
-                  >
-                    <span>{option.label}</span>
-                    {selected.includes(option.id) && <Check className="h-4 w-4" />}
-                  </button>
-                ))}
+                {filteredOptions.length > 0 ? (
+                  filteredOptions.map((option) => (
+                    <button
+                      key={option.id}
+                      onClick={() => toggleOption(option.id)}
+                      className={cn(
+                        "w-full px-3 py-2.5 rounded-xl flex items-center justify-between transition-all",
+                        "text-sm font-bold text-left",
+                        selected.includes(option.id)
+                          ? "bg-blue-600/20 text-blue-400 border border-blue-500/20"
+                          : "text-white/40 hover:bg-white/5 hover:text-white border border-transparent"
+                      )}
+                    >
+                      <span>{option.label}</span>
+                      {selected.includes(option.id) && <Check className="h-4 w-4" />}
+                    </button>
+                  ))
+                ) : (
+                  <div className="py-6 text-center text-xs font-bold text-white/20 uppercase tracking-widest">
+                    No results found
+                  </div>
+                )}
               </div>
             </ScrollArea>
           </div>

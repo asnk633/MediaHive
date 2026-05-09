@@ -3,7 +3,8 @@
 import React, { useEffect, useState } from 'react';
 import { useParams, useRouter } from 'next/navigation';
 import { TaskDetailModalV2 } from '@/components/tasks/TaskDetailModalV2';
-import { TaskService } from '@/features/tasks/services/taskService';
+import { EditTaskDialog } from '@/components/tasks/EditTaskDialog';
+import { TaskService } from '@/services/tasks';
 import { Task } from '@/features/tasks/types/task';
 import { PageLayout } from '@/components/ui/layout/PageLayout';
 import { toast } from 'sonner';
@@ -14,6 +15,7 @@ export default function TaskStandalonePage() {
     const id = params.id as string;
     const [task, setTask] = useState<Task | null>(null);
     const [loading, setLoading] = useState(true);
+    const [isEditDialogOpen, setIsEditDialogOpen] = useState(false);
 
     useEffect(() => {
         if (!id) return;
@@ -58,12 +60,34 @@ export default function TaskStandalonePage() {
                 task={task}
                 isOpen={true}
                 onClose={() => router.push('/tasks')}
-                onEdit={() => router.push(`/tasks/edit?id=${task.id}`)}
+                onEdit={() => setIsEditDialogOpen(true)}
                 onTaskMutate={async (ids, updates, apiCall) => {
                     if (apiCall) await apiCall();
+                    // Refetch or refresh to keep standalone state in sync
+                    const updated = await TaskService.getTaskById(id);
+                    if (updated) setTask(updated);
                     router.refresh();
                 }}
             />
+
+            {isEditDialogOpen && (
+                <EditTaskDialog
+                    open={isEditDialogOpen}
+                    onOpenChange={setIsEditDialogOpen}
+                    task={task}
+                    onUpdate={async (updates) => {
+                        try {
+                            await TaskService.updateTask(task.id, updates);
+                            const updated = await TaskService.getTaskById(task.id);
+                            if (updated) setTask(updated);
+                            return true;
+                        } catch (e) {
+                            console.error(e);
+                            return false;
+                        }
+                    }}
+                />
+            )}
         </PageLayout>
     );
 }

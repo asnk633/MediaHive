@@ -10,19 +10,19 @@ import { Label } from "@/components/ui/label";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { Calendar } from "@/components/ui/calendar";
 import { cn } from "@/lib/utils";
-import { Loader2, Edit3, Calendar as CalendarIcon, Layers, Users } from "lucide-react";
+import {
+    Loader2, Edit3, Calendar as CalendarIcon, Layers, CheckCircle2,
+    Circle, Clock, AlertCircle, Flag, Users
+} from "lucide-react";
 import { toast } from "sonner";
 import { format } from "date-fns";
-import { supabase } from "@/lib/supabaseClient";
 import { TaskService } from '@/services/tasks';
 import { CampaignService } from '@/features/campaigns/services/campaignService';
 import { Campaign } from '@/features/campaigns/types/campaign';
 import { useAuth } from "@/contexts/AuthContextProvider";
 import { UserService } from "@/services/userService";
-import { useRouter } from 'next/navigation';
-import { DeliverablesList } from '@/components/deliverables/DeliverablesList';
-import { DeliverableUploadModal } from '@/components/deliverables/DeliverableUploadModal';
 import { AttachmentSection } from '@/components/tasks/AttachmentSection';
+import { DeliverableUploadModal } from '@/components/deliverables/DeliverableUploadModal';
 import { useCollaboration } from '@/lib/collaboration/useCollaboration';
 import { PresencePile } from '@/components/collaboration/PresencePile';
 import { TypingIndicator } from '@/components/collaboration/TypingIndicator';
@@ -44,14 +44,27 @@ interface EditTaskDialogProps {
         campaign_id?: string;
         created_by?: any;
         assigned_to?: { uid: string; name: string }[];
-        assignedTo?: { uid: string; name: string }[]; // Added legacy support
+        assignedTo?: { uid: string; name: string; userId?: string }[];
     };
     onUpdate: (updates: any) => Promise<boolean>;
 }
 
+const PRIORITY_OPTIONS = [
+    { value: 'low', label: 'Low', color: 'text-green-400', activeClass: 'bg-green-500/20 border-green-500/50 text-green-300' },
+    { value: 'medium', label: 'Medium', color: 'text-amber-400', activeClass: 'bg-amber-500/20 border-amber-500/50 text-amber-300' },
+    { value: 'high', label: 'High', color: 'text-orange-400', activeClass: 'bg-orange-500/20 border-orange-500/50 text-orange-300' },
+    { value: 'urgent', label: 'Urgent', color: 'text-red-400', activeClass: 'bg-red-500/20 border-red-500/50 text-red-300' },
+];
+
+const STATUS_OPTIONS = [
+    { value: 'todo', label: 'To Do', icon: Circle, activeClass: 'bg-white/10 border-white/30 text-white' },
+    { value: 'in_progress', label: 'In Progress', icon: Clock, activeClass: 'bg-blue-500/20 border-blue-500/50 text-blue-300' },
+    { value: 'review', label: 'On Hold', icon: AlertCircle, activeClass: 'bg-amber-500/20 border-amber-500/50 text-amber-300' },
+    { value: 'done', label: 'Completed', icon: CheckCircle2, activeClass: 'bg-emerald-500/20 border-emerald-500/50 text-emerald-300' },
+];
+
 export function EditTaskDialog({ open, onOpenChange, task, onUpdate }: EditTaskDialogProps) {
     const { user } = useAuth();
-    const router = useRouter();
     const [fullTask, setFullTask] = useState<any>(task);
     const { state: formData, setState: setFormData, clearDraft, isDraftSaved, isRestored } = useFormState({
         key: `draft:task:${task.id}`,
@@ -59,139 +72,116 @@ export function EditTaskDialog({ open, onOpenChange, task, onUpdate }: EditTaskD
             title: task.title,
             description: task.description || "",
             priority: task.priority,
+            status: task.status || 'todo',
             due_date: task.due_date ? new Date(task.due_date).toISOString() : undefined as string | undefined,
             campaign_id: task.campaign_id || "none",
             assignedToIds: ((task.assigned_to || task.assignedTo)?.map(m => (m as any).uid || (m as any).userId) || []) as string[]
         }
     });
 
-    const { title, description, priority, campaign_id, assignedToIds } = formData;
+    const { title, description, priority, status, campaign_id, assignedToIds } = formData;
     const due_date = formData.due_date ? new Date(formData.due_date) : undefined;
 
     const setTitle = (val: string) => setFormData(prev => ({ ...prev, title: val }));
     const setDescription = (val: string) => setFormData(prev => ({ ...prev, description: val }));
-    const setPriority = (val: "low" | "medium" | "high" | "urgent") => setFormData(prev => ({ ...prev, priority: val }));
+    const setPriority = (val: string) => setFormData(prev => ({ ...prev, priority: val as any }));
+    const setStatus = (val: string) => setFormData(prev => ({ ...prev, status: val }));
     const setDueDate = (val: Date | undefined) => setFormData(prev => ({ ...prev, due_date: val ? val.toISOString() : undefined }));
     const setCampaignId = (val: string) => setFormData(prev => ({ ...prev, campaign_id: val }));
     const setAssignedToIds = (val: string[] | ((prev: string[]) => string[])) => setFormData(prev => ({
         ...prev,
         assignedToIds: typeof val === 'function' ? val(prev.assignedToIds) : val
     }));
-    
+
     const [teamMembers, setTeamMembers] = useState<{ uid: string; name: string }[]>([]);
     const [campaigns, setCampaigns] = useState<Campaign[]>([]);
     const [error, setError] = useState<string | null>(null);
-
-    // Attachments State
     const [showUploadModal, setShowUploadModal] = useState(false);
     const [refreshTrigger, setRefreshTrigger] = useState(0);
+    const [calOpen, setCalOpen] = useState(false);
 
     const collab = useCollaboration('tasks', task?.id || '');
 
+    const isAdmin = user?.role?.toLowerCase() === 'admin';
+    const is_super_admin = (user as any)?.is_super_admin || user?.email === 'media@thaibagarden.com';
+    const isTeam = user?.role === 'manager' || user?.role === 'member' || user?.role === 'team';
+    const isMember = user?.role === 'member';
+    const taskCreatorId = (task as any).created_by?.uid || (task as any).created_by;
+    const isCreator = user?.uid === taskCreatorId;
+    const assignedArray = Array.isArray(task.assigned_to) ? task.assigned_to :
+        Array.isArray(task.assignedTo) ? task.assignedTo : [];
+    const isAssignee = assignedArray.some((u: any) => (typeof u === 'string' ? u : u.uid) === user?.uid);
+
+    const canEditContent = isAdmin || is_super_admin || isTeam || isCreator;
+    const canEditPriority = isAdmin || is_super_admin;
+    const canEditStatus = isAdmin || is_super_admin || isAssignee;
+    const canEditMeta = isAdmin || is_super_admin;
+    const canAssign = isAdmin || is_super_admin;
+    const canSave = canEditContent || canEditPriority || canEditStatus;
+
     useEffect(() => {
         if (open && user && task?.id) {
-            // Skip resetting local state from props if we just restored a draft
             if (!isRestored) {
                 setTitle(task.title);
                 setDescription(task.description || "");
                 setPriority(task.priority);
+                setStatus(task.status || 'todo');
                 setCampaignId(task.campaign_id || "none");
-                setAssignedToIds((task.assigned_to || task.assignedTo)?.map(m => (m as any).uid || (m as any).userId) || []);
-            }
-
-            // Handle Date
-            if (!isRestored) {
+                const ids = ((task.assigned_to || task.assignedTo) ?? [])
+                    .map((m: any) => m.uid || m.userId)
+                    .filter(Boolean);
+                setAssignedToIds(ids);
                 if (task.due_date) {
                     try {
-                        const dateObj = new Date(task.due_date);
-                        if (dateObj && !isNaN(dateObj.getTime())) {
-                            setDueDate(dateObj);
-                        } else {
-                            setDueDate(undefined);
-                        }
-                    } catch (e) {
-                        setDueDate(undefined);
-                    }
+                        const d = new Date(task.due_date);
+                        if (!isNaN(d.getTime())) setDueDate(d);
+                        else setDueDate(undefined);
+                    } catch { setDueDate(undefined); }
                 } else {
                     setDueDate(undefined);
                 }
             }
 
-            // Campaigns & Team
-            // Campaigns
-            loadCampaigns();
+            CampaignService.getCampaigns({ uid: user.uid, role: user.role || 'member' })
+                .then(setCampaigns).catch(console.error);
 
-            // Team (Admins only)
-            if (isAdmin) {
-                loadTeamMembers();
-            }
+            UserService.getTeamMembers().then(members => {
+                const filtered = members.filter(m => {
+                    const role = (m as any).role?.toLowerCase().trim();
+                    return ['manager', 'team', 'member'].includes(role) && m.name !== 'Media Admin';
+                });
+                setTeamMembers(filtered);
+            }).catch(console.error);
 
-            // HYDRATE: Fetch fresh task data to ensure 'files' and other dynamic fields are up to date
-            // This fixes the issue where List View might pass a stale or partial object without files
-            TaskService.getTaskById(task.id).then((fresh) => {
-                if (fresh) {
-                    setFullTask(fresh as any);
-                }
+            TaskService.getTaskById(task.id).then(fresh => {
+                if (fresh) setFullTask(fresh as any);
             });
         }
-    }, [open, task, user, isRestored]);
-
-    const loadCampaigns = async () => {
-        if (!user) return;
-        try {
-            const list = await CampaignService.getCampaigns({
-                uid: user.uid,
-                role: user.role || 'member'
-            });
-            setCampaigns(list);
-        } catch (error) {
-            console.error("Failed to load campaigns", error);
-        }
-    };
-
-    const loadTeamMembers = async () => {
-        if (!user) return;
-        try {
-            const members = await UserService.getTeamMembers();
-            setTeamMembers(members);
-        } catch (error) {
-            console.error("Failed to load team members", error);
-        }
-    };
+    }, [open, task, user]);
 
     const submitUpdate = async () => {
         setError(null);
-        if (!title.trim()) {
-            throw new Error("Title is required");
-        }
+        if (!title.trim()) throw new Error("Title is required");
 
         const updates: any = {
             title,
             description,
             priority,
+            status,
             campaign_id: campaign_id === "none" ? null : campaign_id,
         };
 
-        // Calculate final assigned_to objects
-        if (isAdmin) {
-            // Map IDs back to objects
-            const finalAssignedTo = assignedToIds.map(id => {
-                const member = teamMembers.find(m => m.uid === id);
-                if (member) return { uid: member.uid, name: member.name };
-                return null;
+        if (canAssign) {
+            updates.assigned_to = assignedToIds.map(id => {
+                const m = teamMembers.find(m => m.uid === id);
+                return m ? { uid: m.uid, name: m.name } : null;
             }).filter(Boolean);
-            updates.assigned_to = finalAssignedTo;
         }
 
-        if (due_date) {
-            updates.due_date = due_date.toISOString();
-        }
+        if (due_date) updates.due_date = due_date.toISOString();
 
         const success = await onUpdate(updates);
-        if (!success) {
-            const isApproval = (task as any).approval_status === 'pending';
-            throw new Error(isApproval ? "Approval didn’t go through" : "Task couldn’t be updated");
-        }
+        if (!success) throw new Error("Task couldn't be updated");
     };
 
     const { isSubmitting, handleSubmit: handleProtectedSubmit } = useFormSubmit({
@@ -201,96 +191,54 @@ export function EditTaskDialog({ open, onOpenChange, task, onUpdate }: EditTaskD
             clearDraft();
             onOpenChange(false);
         },
-        onError: (err) => {
-            setError(err.message);
-        }
+        onError: (err) => setError(err.message)
     });
 
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
-        // Two-step Confirmation
-        const confirmed = window.confirm("Are you sure you want to update this task?");
-        if (!confirmed) return;
         await handleProtectedSubmit(undefined);
     };
 
-    // Styles matching Night Sky theme
-    const inputClasses = "bg-[#0a0c10] border-[#ffffff1a] text-white placeholder:text-white/50 focus:border-blue-500/50 focus:ring-blue-500/10 transition-all rounded-xl h-11 disabled:opacity-50 disabled:cursor-not-allowed";
-    const labelClasses = "uppercase text-[10px] font-bold tracking-widest text-white/50 mb-1.5 block";
-
-    const isAdmin = user?.role?.toLowerCase() === 'admin';
-    const is_super_admin = (user as any)?.is_super_admin || user?.email === 'media@thaibagarden.com';
-    const isTeam = (user?.role === 'manager' || user?.role === 'member' || user?.role === 'team');
-    const isMember = user?.role === 'member';
-
-    const taskCreatorId = (task as any).created_by?.uid || (task as any).created_by;
-    const isCreator = user?.uid === taskCreatorId;
-
-    const assignedArray = Array.isArray(task.assigned_to) ? task.assigned_to : [];
-    const isAssignee = assignedArray.some((u: any) => (typeof u === 'string' ? u : u.uid) === user?.uid);
-
-    // --- STRICT PERMISSION UI RULES (Matching Backend) ---
-    const canEditContent = isAdmin || is_super_admin || isTeam || isCreator;
-
-    // Priority: ADMIN ONLY
-    const canEditPriority = isAdmin || is_super_admin;
-
-    // Assignee: ADMIN ONLY
-    // (Handled directly in JSX by conditional rendering)
-
-    // Status: 
-    // - Admin: Always
-    // - Team/Member: Only if Assginee
-    // Note: Member Creator CANNOT change status unless assigned (strict workflow)
-    const canEditStatus = isAdmin || is_super_admin || isAssignee;
-
-    const canEditMeta = isAdmin || is_super_admin; // For Due Date etc.
-
-    const canSave = canEditContent || canEditPriority || canEditStatus;
+    // Shared style tokens
+    const labelCls = "text-[10px] font-bold uppercase tracking-widest text-white/40 mb-2 block";
+    const inputCls = "bg-white/[0.04] border border-white/[0.08] text-white placeholder:text-white/25 focus:border-blue-500/40 focus:ring-0 focus:bg-white/[0.06] transition-all rounded-xl h-11 disabled:opacity-40 disabled:cursor-not-allowed";
 
     return (
         <Dialog open={open} onOpenChange={onOpenChange}>
             <DialogContent
                 overlayClassName="z-[150]"
-                className="z-[150] sm:max-w-2xl bg-[#10111a] text-white border-[#ffffff1a] shadow-[0_0_50px_-12px_rgba(0,0,0,0.5)] p-6 rounded-[24px] backdrop-blur-3xl"
+                className="z-[150] sm:max-w-[640px] bg-[#0d0e17] text-white border border-white/[0.07] shadow-[0_32px_80px_-16px_rgba(0,0,0,0.7)] p-0 rounded-[28px] overflow-hidden"
             >
-                <DialogHeader className="mb-4">
-                    <DialogTitle className="text-xl font-bold tracking-tight text-white flex items-center justify-between">
-                        <div className="flex items-center gap-3">
-                            <div className={cn("p-2.5 rounded-xl text-blue-500", canSave ? "bg-blue-600/10" : "bg-white/5 text-white/50")}>
-                                {canSave ? <Edit3 size={20} /> : <Layers size={20} />}
-                            </div>
-                            <div className="flex items-center gap-2">
-                                <span>{canSave ? "Edit Task" : "Task Details"}</span>
+                {/* Header */}
+                <div className="flex items-center justify-between px-7 pt-6 pb-5 border-b border-white/[0.06]">
+                    <div className="flex items-center gap-3">
+                        <div className={cn("p-2.5 rounded-xl", canSave ? "bg-blue-500/10 text-blue-400" : "bg-white/5 text-white/40")}>
+                            <Edit3 size={18} />
+                        </div>
+                        <div>
+                            <div className="flex items-center gap-2.5">
+                                <h2 className="text-base font-bold text-white tracking-tight">
+                                    {canSave ? "Edit Task" : "Task Details"}
+                                </h2>
                                 <div className="flex items-center gap-1.5 px-2 py-0.5 rounded-full bg-emerald-500/10 border border-emerald-500/20">
-                                    <div className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse" />
-                                    <span className="text-[10px] font-bold text-emerald-500 uppercase tracking-wider">Live Sync</span>
+                                    <div className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse" />
+                                    <span className="text-[9px] font-bold text-emerald-400 uppercase tracking-wider">Live Sync</span>
                                 </div>
                                 <DraftIndicator isSaved={isDraftSaved} />
                             </div>
                         </div>
-                        <PresencePile users={collab.activeUsers} />
-                    </DialogTitle>
-                    <DialogDescription className="sr-only">
-                        {canSave ? "Modify the details of the selected task." : "View the details of the selected task."}
-                    </DialogDescription>
-                </DialogHeader>
+                    </div>
+                    <PresencePile users={collab.activeUsers} />
+                </div>
 
-                <form onSubmit={handleSubmit} className="space-y-5">
-                    {/* ... Inputs ... */}
+                <DialogDescription className="sr-only">Edit the selected task.</DialogDescription>
 
-                    {/* ... (Existing inputs with disabled props are fine, keeping them via context match would be hard with replace logic on huge block. 
-                         I will target specific areas or wrap inputs. 
-                         Wait, I need to keep the inputs. 
-                         The previous file view showed inputs. I will use a StartLine/EndLine that covers Header and Footer changes primarily, 
-                         or modify the Button area.
-                         
-                         Let's split this into chunks to be safe.
-                    */}
+                <form onSubmit={handleSubmit} className="px-7 py-6 space-y-5 max-h-[75vh] overflow-y-auto custom-scrollbar">
 
-                    <div className="space-y-1">
-                        <div className="flex items-center justify-between mb-1.5">
-                            <Label className={cn(labelClasses, "mb-0")}>Task Title</Label>
+                    {/* Task Title */}
+                    <div>
+                        <div className="flex items-center justify-between mb-2">
+                            <label className={labelCls}>Task Title</label>
                             <div className="flex items-center gap-2">
                                 <TypingIndicator fieldName="title" userContext={collab.editingUsers['title']} />
                                 <FieldPresence users={collab.activeUsers} field="title" />
@@ -298,21 +246,19 @@ export function EditTaskDialog({ open, onOpenChange, task, onUpdate }: EditTaskD
                         </div>
                         <Input
                             value={title}
-                            onChange={(e) => {
-                                setTitle(e.target.value);
-                                collab.onTyping('title', true);
-                            }}
+                            onChange={e => { setTitle(e.target.value); collab.onTyping('title', true); }}
                             onFocus={() => collab.onFieldFocus('title')}
                             onBlur={() => collab.onFieldBlur('title')}
-                            className={inputClasses}
+                            className={inputCls}
                             placeholder="What needs to be done?"
                             disabled={!canEditContent}
                         />
                     </div>
 
-                    <div className="space-y-1">
-                        <div className="flex items-center justify-between mb-1.5">
-                            <Label className={cn(labelClasses, "mb-0")}>Description</Label>
+                    {/* Description */}
+                    <div>
+                        <div className="flex items-center justify-between mb-2">
+                            <label className={labelCls}>Description</label>
                             <div className="flex items-center gap-2">
                                 <TypingIndicator fieldName="description" userContext={collab.editingUsers['description']} />
                                 <FieldPresence users={collab.activeUsers} field="description" />
@@ -320,194 +266,211 @@ export function EditTaskDialog({ open, onOpenChange, task, onUpdate }: EditTaskD
                         </div>
                         <Textarea
                             value={description}
-                            onChange={(e) => {
-                                setDescription(e.target.value);
-                                collab.onTyping('description', true);
-                            }}
+                            onChange={e => { setDescription(e.target.value); collab.onTyping('description', true); }}
                             onFocus={() => collab.onFieldFocus('description')}
                             onBlur={() => collab.onFieldBlur('description')}
-                            className={cn(
-                                "bg-[#0a0c10] border-[#ffffff1a] text-white placeholder:text-white/50 focus:border-blue-500/50 focus:ring-blue-500/10 transition-all rounded-xl min-h-[120px] custom-scrollbar disabled:opacity-50 disabled:cursor-not-allowed resize-none"
-                            )}
-                            placeholder="Provide more context..."
+                            className="bg-white/[0.04] border border-white/[0.08] text-white placeholder:text-white/25 focus:border-blue-500/40 focus:ring-0 focus:bg-white/[0.06] transition-all rounded-xl min-h-[100px] resize-none disabled:opacity-40 disabled:cursor-not-allowed"
+                            placeholder="Add more context..."
                             disabled={!canEditContent}
                         />
                     </div>
 
+                    {/* Due Date + Campaign row */}
                     <div className="grid grid-cols-2 gap-4">
-                        <div className="space-y-1">
-                            <Label className={labelClasses}>Priority</Label>
-                            <Select
-                                value={priority?.toLowerCase() || 'low'}
-                                onValueChange={(v: any) => setPriority(v)}
-                                disabled={!isAdmin && !is_super_admin && !canEditMeta}
-                            >
-                                <SelectTrigger className="bg-[#0a0c10] border-[#ffffff1a] text-white focus:ring-blue-500/10 h-11 rounded-xl disabled:opacity-50 disabled:cursor-not-allowed">
-                                    <SelectValue />
-                                </SelectTrigger>
-                                <SelectContent className="bg-[#0a0c10] border-[#ffffff1a] text-white z-[200]">
-                                    <SelectItem value="low">Low</SelectItem>
-                                    <SelectItem value="medium">Medium</SelectItem>
-                                    <SelectItem value="high">High</SelectItem>
-                                    <SelectItem value="urgent">Urgent</SelectItem>
-                                </SelectContent>
-                            </Select>
-                        </div>
-
-                        {/* Assigned To - Admin Only */}
-                        {isAdmin && (
-                            <div className="space-y-1">
-                                <Label className={labelClasses}>Assigned To</Label>
-                                <Popover>
-                                    <PopoverTrigger asChild>
-                                        <Button
-                                            variant="outline"
-                                            className="w-full justify-between bg-[#0a0c10] border-[#ffffff1a] text-white hover:bg-white/5 hover:text-white h-11 rounded-xl"
-                                        >
-                                            <span className="truncate">
-                                                {assignedToIds.length === 0
-                                                    ? "Unassigned"
-                                                    : `${assignedToIds.length} Member${assignedToIds.length === 1 ? '' : 's'}`}
-                                            </span>
-                                            <Users size={16} className="opacity-50" />
-                                        </Button>
-                                    </PopoverTrigger>
-                                    <PopoverContent className="w-[200px] p-0 bg-[#0a0c10] border-[#ffffff1a] text-white shadow-xl z-[200]" align="start">
-                                        <div className="p-2 space-y-1 max-h-[200px] overflow-y-auto">
-                                            {teamMembers.map(m => (
-                                                <div
-                                                    key={m.uid}
-                                                    className={cn(
-                                                        "flex items-center gap-2 px-2 py-1.5 rounded-lg cursor-pointer transition-colors",
-                                                        assignedToIds.includes(m.uid) ? "bg-blue-600/20 text-blue-200" : "hover:bg-white/5 text-gray-400"
-                                                    )}
-                                                    onClick={() => {
-                                                        setAssignedToIds(prev =>
-                                                            prev.includes(m.uid)
-                                                                ? prev.filter(id => id !== m.uid)
-                                                                : [...prev, m.uid]
-                                                        );
-                                                    }}
-                                                >
-                                                    <div className={cn(
-                                                        "w-4 h-4 rounded border flex items-center justify-center",
-                                                        assignedToIds.includes(m.uid) ? "border-blue-500 bg-blue-500" : "border-white/20"
-                                                    )}>
-                                                        {assignedToIds.includes(m.uid) && <div className="w-1.5 h-1.5 bg-white rounded-full" />}
-                                                    </div>
-                                                    <span className="text-xs font-medium truncate">{m.name}</span>
-                                                </div>
-                                            ))}
-                                        </div>
-                                    </PopoverContent>
-                                </Popover>
-                            </div>
-                        )}
-                        {/* Hidden spacer if not admin to keep grid correct? No, standard grid flow is fine */}
-
-
-                        <div className="space-y-1 flex flex-col">
-                            <Label className={labelClasses}>Due Date</Label>
-                            <Popover>
+                        {/* Due Date */}
+                        <div>
+                            <label className={labelCls}>Due Date</label>
+                            <Popover open={calOpen} onOpenChange={setCalOpen}>
                                 <PopoverTrigger asChild>
-                                    <Button
-                                        variant={"outline"}
-                                        disabled={!isAdmin && !is_super_admin && !canEditMeta}
+                                    <button
+                                        type="button"
+                                        disabled={!canEditMeta}
                                         className={cn(
-                                            "w-full justify-start text-left font-normal bg-[#0a0c10] border-[#ffffff1a] text-white hover:bg-white/5 hover:text-white h-11 rounded-xl disabled:opacity-50 disabled:cursor-not-allowed",
-                                            !due_date && "text-muted-foreground"
+                                            "w-full h-11 flex items-center gap-2.5 px-3.5 rounded-xl border text-sm transition-all",
+                                            "bg-white/[0.04] border-white/[0.08] text-white hover:bg-white/[0.06]",
+                                            "disabled:opacity-40 disabled:cursor-not-allowed",
+                                            !due_date && "text-white/30"
                                         )}
                                     >
-                                        <CalendarIcon className="mr-2 h-4 w-4" />
-                                        {due_date ? format(due_date, "dd/MM/yyyy") : <span>Pick a date</span>}
-                                    </Button>
+                                        <CalendarIcon size={15} className="text-white/40 shrink-0" />
+                                        {due_date ? format(due_date, "MMM d, yyyy") : "Select date"}
+                                    </button>
                                 </PopoverTrigger>
-                                <PopoverContent className="w-auto p-0 bg-[#10111a] border-[#ffffff1a] text-white z-[200]" align="start">
+                                <PopoverContent className="w-auto p-0 bg-[#10111a] border-white/[0.08] text-white z-[200]" align="start">
                                     <Calendar
                                         mode="single"
                                         selected={due_date}
-                                        onSelect={setDueDate}
+                                        onSelect={(d) => { setDueDate(d); setCalOpen(false); }}
                                         initialFocus
                                         className="bg-[#10111a] text-white"
                                         classNames={{
                                             day_selected: "bg-blue-600 text-white rounded-full",
                                             day_today: "bg-white/10 text-white rounded-full",
-                                            day: "text-white hover:bg-white/10 rounded-full w-9 h-9 p-0 font-normal aria-selected:opacity-100",
-                                            head_cell: "text-white/50 w-9 font-normal text-[0.8rem]",
-                                            caption_label: "text-white",
+                                            day: "text-white hover:bg-white/10 rounded-full w-9 h-9 p-0 font-normal",
+                                            head_cell: "text-white/40 w-9 font-normal text-[0.75rem]",
+                                            caption_label: "text-white font-semibold",
                                             nav_button: "text-white hover:bg-white/10 rounded-full",
                                         }}
                                     />
                                 </PopoverContent>
                             </Popover>
                         </div>
-                    </div>
 
-                    <div className="space-y-1">
-                        <Label className={labelClasses}>Campaign</Label>
-                        <Select value={campaign_id} onValueChange={setCampaignId} disabled={!canEditContent}>
-                            <SelectTrigger className="bg-[#0a0c10] border-[#ffffff1a] text-white focus:ring-blue-500/10 h-11 rounded-xl w-full disabled:opacity-50 disabled:cursor-not-allowed">
-                                <div className="flex items-center gap-2 truncate">
-                                    <Layers size={14} className="text-white/50" />
-                                    <SelectValue placeholder="Select Campaign" />
-                                </div>
-                            </SelectTrigger>
-                            <SelectContent className="bg-[#0a0c10] border-[#ffffff1a] text-white z-[200]">
-                                <SelectItem value="none" className="text-white/50 italic">No Campaign</SelectItem>
-                                {campaigns.map(c => (
-                                    <SelectItem key={c.id} value={c.id}>{c.name}</SelectItem>
-                                ))}
-                            </SelectContent>
-                        </Select>
-                    </div>
-
-                    <div className="space-y-4 pt-4 border-t border-white/5">
-                        <div className="flex items-center justify-between">
-                            <Label className={labelClasses}>Attachments / Deliverables</Label>
-                            <Button
-                                type="button"
-                                variant="outline"
-                                size="sm"
-                                onClick={() => setShowUploadModal(true)} // Open Upload Modal
-                                className="h-7 text-xs border-blue-500/30 text-blue-400 hover:bg-blue-500/10 hover:text-blue-300"
-                            >
-                                <Users className="w-3 h-3 mr-1.5" /> Upload File
-                            </Button>
+                        {/* Campaign */}
+                        <div>
+                            <label className={labelCls}>Campaign</label>
+                            <Select value={campaign_id} onValueChange={setCampaignId} disabled={!canEditContent}>
+                                <SelectTrigger className="bg-white/[0.04] border border-white/[0.08] text-white h-11 rounded-xl focus:ring-0 disabled:opacity-40">
+                                    <div className="flex items-center gap-2 min-w-0">
+                                        <Layers size={13} className="text-white/40 shrink-0" />
+                                        <SelectValue placeholder="No Campaign" />
+                                    </div>
+                                </SelectTrigger>
+                                <SelectContent className="bg-[#10111a] border-white/[0.08] text-white z-[200]">
+                                    <SelectItem value="none" className="text-white/40 italic">No Campaign</SelectItem>
+                                    {campaigns.map(c => (
+                                        <SelectItem key={c.id} value={c.id}>{c.name}</SelectItem>
+                                    ))}
+                                </SelectContent>
+                            </Select>
                         </div>
-                        <div className="bg-[#0a0c10] border border-[#ffffff1a] rounded-xl p-4 min-h-[100px] max-h-[500px] overflow-y-auto custom-scrollbar">
+                    </div>
+
+                    {/* Priority Toggle Buttons */}
+                    <div>
+                        <label className={labelCls}>Priority</label>
+                        <div className="grid grid-cols-4 gap-2">
+                            {PRIORITY_OPTIONS.map(opt => (
+                                <button
+                                    key={opt.value}
+                                    type="button"
+                                    disabled={!canEditPriority}
+                                    onClick={() => setPriority(opt.value)}
+                                    className={cn(
+                                        "h-10 rounded-xl border text-xs font-semibold transition-all duration-150",
+                                        "disabled:opacity-40 disabled:cursor-not-allowed",
+                                        priority === opt.value
+                                            ? opt.activeClass
+                                            : "bg-white/[0.03] border-white/[0.07] text-white/40 hover:bg-white/[0.06] hover:text-white/60"
+                                    )}
+                                >
+                                    {opt.label}
+                                </button>
+                            ))}
+                        </div>
+                    </div>
+
+                    {/* Status Toggle Buttons */}
+                    <div>
+                        <label className={labelCls}>Status</label>
+                        <div className="grid grid-cols-4 gap-2">
+                            {STATUS_OPTIONS.map(opt => {
+                                const Icon = opt.icon;
+                                return (
+                                    <button
+                                        key={opt.value}
+                                        type="button"
+                                        disabled={!canEditStatus}
+                                        onClick={() => setStatus(opt.value)}
+                                        className={cn(
+                                            "h-10 rounded-xl border text-xs font-semibold flex items-center justify-center gap-1.5 transition-all duration-150",
+                                            "disabled:opacity-40 disabled:cursor-not-allowed",
+                                            status === opt.value
+                                                ? opt.activeClass
+                                                : "bg-white/[0.03] border-white/[0.07] text-white/40 hover:bg-white/[0.06] hover:text-white/60"
+                                        )}
+                                    >
+                                        <Icon size={13} />
+                                        <span className="hidden sm:inline">{opt.label}</span>
+                                    </button>
+                                );
+                            })}
+                        </div>
+                    </div>
+
+                    {/* Assign To Team Members */}
+                    {canAssign && teamMembers.length > 0 && (
+                        <div>
+                            <label className={cn(labelCls, "mb-3")}>Assign To Team Members</label>
+                            <div className="grid grid-cols-2 gap-2">
+                                {teamMembers.map(m => {
+                                    const selected = assignedToIds.includes(m.uid);
+                                    return (
+                                        <button
+                                            key={m.uid}
+                                            type="button"
+                                            onClick={() => setAssignedToIds(prev =>
+                                                prev.includes(m.uid)
+                                                    ? prev.filter(id => id !== m.uid)
+                                                    : [...prev, m.uid]
+                                            )}
+                                            className={cn(
+                                                "flex items-center gap-3 px-3.5 py-2.5 rounded-xl border text-sm font-medium transition-all duration-150 text-left",
+                                                selected
+                                                    ? "bg-blue-500/15 border-blue-500/40 text-blue-200"
+                                                    : "bg-white/[0.03] border-white/[0.07] text-white/55 hover:bg-white/[0.06] hover:text-white/80"
+                                            )}
+                                        >
+                                            <div className={cn(
+                                                "w-4 h-4 rounded-full border-2 flex items-center justify-center shrink-0 transition-all",
+                                                selected ? "border-blue-400 bg-blue-500" : "border-white/20"
+                                            )}>
+                                                {selected && <div className="w-1.5 h-1.5 bg-white rounded-full" />}
+                                            </div>
+                                            <span className="truncate">{m.name}</span>
+                                        </button>
+                                    );
+                                })}
+                            </div>
+                        </div>
+                    )}
+
+                    {/* Attachments / Deliverables */}
+                    <div className="border-t border-white/[0.06] pt-5 space-y-3">
+                        <div className="flex items-center justify-between">
+                            <label className={labelCls}>Attachments & Deliverables</label>
+                            <button
+                                type="button"
+                                onClick={() => setShowUploadModal(true)}
+                                className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-blue-500/10 border border-blue-500/20 text-blue-400 text-xs font-semibold hover:bg-blue-500/20 transition-colors"
+                            >
+                                <Users size={12} />
+                                Upload File
+                            </button>
+                        </div>
+                        <div className="bg-white/[0.02] border border-white/[0.06] rounded-xl p-4 min-h-[80px] max-h-[280px] overflow-y-auto custom-scrollbar">
                             <AttachmentSection
                                 task={fullTask}
                                 onUpdate={() => {
-                                    // Refresh local data only
-                                    TaskService.getTaskById(task.id).then((t) => t && setFullTask(t as any));
+                                    TaskService.getTaskById(task.id).then(t => t && setFullTask(t as any));
                                 }}
                             />
                         </div>
                     </div>
 
+                    {/* Error */}
                     {error && (
-                        <div className="flex items-center justify-center gap-3 py-2 animate-in fade-in slide-in-from-bottom-2">
-                            <span className="text-sm text-red-400 font-medium">{error}</span>
-                            <div className="w-1 h-1 bg-white/10 rounded-full" />
+                        <div className="flex items-center gap-3 px-4 py-3 rounded-xl bg-red-500/10 border border-red-500/20">
+                            <AlertCircle size={14} className="text-red-400 shrink-0" />
+                            <span className="text-sm text-red-300 font-medium flex-1">{error}</span>
                             <button
                                 type="button"
-                                onClick={(e) => {
-                                    handleProtectedSubmit(undefined);
-                                }}
-                                className="text-xs font-bold text-white/50 hover:text-white uppercase tracking-widest transition-colors flex items-center gap-1.5"
+                                onClick={() => handleProtectedSubmit(undefined)}
+                                className="text-xs font-bold text-red-400 hover:text-red-200 uppercase tracking-widest transition-colors"
                             >
                                 Retry
                             </button>
                         </div>
                     )}
 
-                    <div className="flex justify-end gap-3 pt-6 border-t border-white/5">
+                    {/* Footer Actions */}
+                    <div className="flex justify-end gap-3 pt-2 border-t border-white/[0.06]">
                         <Button
                             type="button"
                             variant="ghost"
                             onClick={() => onOpenChange(false)}
                             disabled={isSubmitting}
-                            className="text-gray-400 hover:text-white hover:bg-white/5 rounded-xl text-sm font-semibold h-11 px-6"
+                            className="text-white/50 hover:text-white hover:bg-white/[0.05] rounded-xl h-11 px-6 text-sm font-semibold"
                         >
                             {canSave ? "Cancel" : "Close"}
                         </Button>
@@ -515,7 +478,7 @@ export function EditTaskDialog({ open, onOpenChange, task, onUpdate }: EditTaskD
                             <Button
                                 type="submit"
                                 disabled={isSubmitting}
-                                className="bg-blue-600 hover:bg-blue-500 text-white rounded-xl text-sm font-semibold h-11 px-8 shadow-lg shadow-blue-500/20"
+                                className="bg-blue-600 hover:bg-blue-500 text-white rounded-xl h-11 px-8 text-sm font-semibold shadow-lg shadow-blue-500/20 transition-all"
                             >
                                 {isSubmitting && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
                                 Save Changes
@@ -525,7 +488,6 @@ export function EditTaskDialog({ open, onOpenChange, task, onUpdate }: EditTaskD
                 </form>
             </DialogContent>
 
-            {/* Upload Modal - Rendered outside to prevent context conflicts, though Portals handle it, simpler DOM structure helps */}
             <DeliverableUploadModal
                 taskId={task.id}
                 isOpen={showUploadModal}

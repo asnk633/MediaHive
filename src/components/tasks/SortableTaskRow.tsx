@@ -182,18 +182,24 @@ export const SortableTaskRow = memo(({
                         : "bg-white/[0.01] hover:bg-white/[0.02]",
                     activeId === task.id && "bg-blue-500/[0.08] ring-1 ring-inset ring-blue-500/30 z-10",
                     (() => {
-                        // Use Intelligence Flags for Accent
-                        if (task.isOverdue) return "border-l-red-500 bg-red-500/[0.02]";
-                        if (task.isDueToday) return "border-l-amber-500 bg-amber-500/[0.02]";
-                        if (task.isUpcoming) return "border-l-blue-400"; // Soft accent
+                        // 1. Completed state (Green)
+                        if (task.status === 'done') {
+                            return "border-l-emerald-500 bg-emerald-500/[0.02]";
+                        }
 
-                        // Fallback logic for tasks without flags (e.g. legacy/static)
-                        if (overdue) return "border-l-red-500";
-                        if (today) return "border-l-blue-500";
+                        // 2. Urgency Flags (Active Tasks Only)
+                        if (task.isOverdue || overdue) return "border-l-red-500 bg-red-500/[0.02]";
+                        if (task.isDueToday || today) return "border-l-blue-500 bg-blue-500/[0.05] shadow-[inset_2px_0_10px_rgba(59,130,246,0.1)]"; // Glowing Blue
+                        if (task.isUpcoming) return "border-l-yellow-500/50"; // Soft Yellow
 
-                        const prio = task.priority === 'urgent' ? 6 : task.priority === 'high' ? 4 : task.priority === 'medium' ? 2 : 0;
-                        const severity = getAdminSeverity(prio);
-                        return getSeverityColor(severity).replace('bg-', 'border-l-');
+                        // 3. Priority Base Colors (Fallback for other active tasks)
+                        switch (task.priority) {
+                            case 'urgent': return "border-l-red-500";
+                            case 'high': return "border-l-orange-500";
+                            case 'medium': return "border-l-yellow-500";
+                            case 'low': return "border-l-slate-500";
+                            default: return "border-l-slate-600";
+                        }
                     })(),
                     isDragging && "bg-blue-500/10 border-blue-500 ring-2 ring-blue-500/40",
                     (task as any).isOptimistic && !(task as any).isPendingSync && "opacity-70 transition-opacity duration-300",
@@ -313,8 +319,8 @@ export const SortableTaskRow = memo(({
                 <div className="hidden md:flex items-center justify-end">
                     <span className={cn("text-xs font-medium tabular-nums",
                         (task as any).isOverdue || overdue ? "text-red-400 font-semibold" :
-                            (task as any).isDueToday || today ? "text-amber-400 font-semibold" :
-                                (task as any).isUpcoming ? "text-blue-400" :
+                            (task as any).isDueToday || today ? "text-blue-400 font-semibold" :
+                                (task as any).isUpcoming ? "text-yellow-400/80" :
                                     "text-white/35"
                     )}>
                         {(task as any).isDueToday || today ? "Today" : dueDate ? format(dueDate, 'MMM d') : <span className="text-white/15">—</span>}

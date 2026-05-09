@@ -233,7 +233,7 @@ export const TaskDetailModalV2: React.FC<TaskDetailsModalProps> = ({ task, isOpe
             if (!task?.event_id) return;
             const { data, error } = await supabase
                 .from('events')
-                .select('id, title')
+                .select('id, title, on_behalf_of, department_id, institution_id')
                 .eq('id', task.event_id)
                 .single();
             if (data) setLinkedEvent(data);
@@ -597,14 +597,15 @@ export const TaskDetailModalV2: React.FC<TaskDetailsModalProps> = ({ task, isOpe
                                             </div>
                                             <div className="flex-1 min-w-0">
                                                 <p className="text-[10px] uppercase tracking-wider font-bold text-white/30 mb-1">
-                                                    {(task.on_behalf_of || task.departmentId || task.institutionId) ? 'Requested On behalf of' : 'Requested By'}
+                                                    {(task.on_behalf_of || task.departmentId || task.institutionId || linkedEvent?.on_behalf_of || linkedEvent?.department_id || linkedEvent?.institution_id) ? 'Requested On behalf of' : 'Requested By'}
                                                 </p>
                                                 <p className="text-sm font-semibold text-white/90 truncate">
-                                                    {task.on_behalf_of?.name ? task.on_behalf_of.name : (
+                                                    {task.on_behalf_of?.name ? task.on_behalf_of.name : 
+                                                     linkedEvent?.on_behalf_of?.name ? linkedEvent.on_behalf_of.name : (
                                                         <ResolvedStructureName
-                                                            id={task.departmentId || task.institutionId}
-                                                            type={task.departmentId ? 'department' : 'institution'}
-                                                            fallback={(!task.departmentId && !task.institutionId) ? (task.department || task.createdBy?.name) : undefined}
+                                                            id={task.departmentId || task.institutionId || linkedEvent?.department_id || linkedEvent?.institution_id}
+                                                            type={(task.departmentId || linkedEvent?.department_id) ? 'department' : 'institution'}
+                                                            fallback={(!task.departmentId && !task.institutionId && !linkedEvent?.department_id && !linkedEvent?.institution_id) ? (task.department || task.createdBy?.name) : undefined}
                                                         />
                                                     )}
                                                 </p>

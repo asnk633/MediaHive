@@ -80,8 +80,9 @@ export default function ReportsCustomClient() {
             });
         } else {
             return files.filter(f => {
+                const matchesType = statusFilter.length === 0 || statusFilter.includes(f.type);
                 const matchesSearch = !searchQuery || f.name.toLowerCase().includes(searchQuery.toLowerCase());
-                return matchesSearch;
+                return matchesType && matchesSearch;
             });
         }
     }, [source, tasks, files, statusFilter, priorityFilter, searchQuery]);
@@ -125,29 +126,26 @@ export default function ReportsCustomClient() {
                 <div className="grid grid-cols-1 lg:grid-cols-4 gap-8">
                     {/* Sidebar Filters */}
                     <div className="lg:col-span-1 space-y-8">
-                        {/* Data Source */}
-                        <div className="space-y-4">
-                            <h3 className="text-[10px] font-bold text-white/20 uppercase tracking-[0.2em]">Data Source</h3>
-                            <div className="grid grid-cols-1 gap-2">
-                                {[
-                                    { id: 'tasks', label: 'Tasks & Projects', icon: CheckSquare },
-                                    { id: 'media', label: 'Media Assets', icon: Database },
-                                ].map(s => (
-                                    <button
-                                        key={s.id}
-                                        onClick={() => setSource(s.id as DataSource)}
-                                        className={cn(
-                                            "flex items-center gap-3 px-4 py-3 rounded-xl border transition-all text-left",
-                                            source === s.id
-                                                ? "bg-white/10 border-white/10 text-white shadow-xl"
-                                                : "bg-white/[0.02] border-white/5 text-white/40 hover:text-white/60"
-                                        )}
-                                    >
-                                        <s.icon size={16} />
-                                        <span className="text-sm font-bold">{s.label}</span>
-                                    </button>
-                                ))}
-                            </div>
+                        {/* Mode Switcher */}
+                        <div className="bg-white/[0.03] p-1.5 rounded-2xl border border-white/5 flex gap-1">
+                            <button
+                                onClick={() => setSource('tasks')}
+                                className={cn(
+                                    "flex-1 flex items-center justify-center gap-2 py-3 rounded-xl transition-all font-bold text-[10px] uppercase tracking-widest",
+                                    source === 'tasks' ? "bg-white/10 text-white shadow-lg" : "text-white/20 hover:text-white/40"
+                                )}
+                            >
+                                <CheckSquare size={14} /> Tasks
+                            </button>
+                            <button
+                                onClick={() => setSource('media')}
+                                className={cn(
+                                    "flex-1 flex items-center justify-center gap-2 py-3 rounded-xl transition-all font-bold text-[10px] uppercase tracking-widest",
+                                    source === 'media' ? "bg-emerald-500/20 text-emerald-400 shadow-lg border border-emerald-500/20" : "text-white/20 hover:text-white/40"
+                                )}
+                            >
+                                <Database size={14} /> Media Inventory
+                            </button>
                         </div>
 
                         {/* Search */}
@@ -219,6 +217,26 @@ export default function ReportsCustomClient() {
                                     </div>
                                 </div>
                             </>
+                        {source === 'media' && (
+                            <div className="space-y-4">
+                                <h3 className="text-[10px] font-bold text-white/20 uppercase tracking-[0.2em]">Asset Type</h3>
+                                <div className="flex flex-wrap gap-2">
+                                    {['poster', 'video', 'pdf', 'other'].map(t => (
+                                        <button
+                                            key={t}
+                                            onClick={() => toggleFilter(setStatusFilter, t)}
+                                            className={cn(
+                                                "px-3 py-1.5 rounded-lg text-[10px] font-bold uppercase transition-all border",
+                                                statusFilter.includes(t)
+                                                    ? "bg-emerald-500/10 border-emerald-500/20 text-emerald-400"
+                                                    : "bg-white/[0.02] border-white/5 text-white/20 hover:text-white/40"
+                                            )}
+                                        >
+                                            {t}
+                                        </button>
+                                    ))}
+                                </div>
+                            </div>
                         )}
                     </div>
 

@@ -77,9 +77,12 @@ export const MediaTeamOverview = ({ performance: propPerformance }: MediaTeamOve
             <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
                 {/* Team Workload Distribution */}
                 <ReactiveCard className="lg:col-span-2 dashboard-card-safe-padding dashboard-card-secondary">
-                    <div className="flex items-center gap-3 mb-6">
-                        <Users className="text-blue-400" size={18} />
-                        <h3 className="text-sm font-medium text-white/85">Workload Distribution</h3>
+                    <div className="flex items-center justify-between mb-6">
+                        <div className="flex items-center gap-3">
+                            <Users className="text-blue-400" size={18} />
+                            <h3 className="text-sm font-medium text-white/85">Team Assignment Distribution</h3>
+                        </div>
+                        <span className="text-[10px] text-white/20 font-bold uppercase tracking-widest">Total Tasks</span>
                     </div>
                     
                     <div className="space-y-6">

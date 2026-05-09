@@ -144,8 +144,8 @@ export default function ReportsPerformanceClient() {
         };
         
         filteredTasks.forEach(task => {
-            // Workload (uncompleted tasks) - Still tracked by team members doing the work
-            if (task.status !== 'done' && task.assignedTo && Array.isArray(task.assignedTo)) {
+            // Workload (all tasks in selected period) - Tracked by team members
+            if (task.assignedTo && Array.isArray(task.assignedTo)) {
                 task.assignedTo.forEach(assignee => {
                     const name = assignee.name || 'Unassigned';
                     workloadMap[name] = (workloadMap[name] || 0) + 1;

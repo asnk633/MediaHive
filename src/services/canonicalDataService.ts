@@ -200,6 +200,34 @@ export class CanonicalDataService {
       delete finalPayload.assignedTo;
     }
 
+    // Task Schema Sanitizer: strip fields Postgres doesn't accept and enforce FK types
+    if (entityType === 'task' || table === TABLES.TASKS) {
+      // Strip camelCase duplicate aliases — Postgres only knows snake_case columns
+      delete finalPayload.departmentId;
+      delete finalPayload.institutionId;
+      delete finalPayload.dueDate;
+      delete finalPayload.createdAt;
+      delete finalPayload.updatedAt;
+      delete finalPayload.completedAt;
+      delete finalPayload.createdBy;
+      delete finalPayload.updatedBy;
+      delete finalPayload.assignedBy;
+
+      // Coerce department_id: must be a valid integer or null (FK: departments.id is integer)
+      const rawDeptId = finalPayload.department_id;
+      if (rawDeptId !== null && rawDeptId !== undefined) {
+        if (typeof rawDeptId === 'string') {
+          const stripped = rawDeptId.replace(/^dept_/, '');
+          finalPayload.department_id = /^\d+$/.test(stripped) ? parseInt(stripped, 10) : null;
+        } else if (typeof rawDeptId === 'number' && !isNaN(rawDeptId)) {
+          finalPayload.department_id = rawDeptId;
+        } else {
+          finalPayload.department_id = null;
+        }
+      }
+    }
+
+
     const finalId = await syncEngine.enqueueMutation(mutationType, finalPayload);
 
     // Relational assignments AFTER task creation to satisfy FK constraints

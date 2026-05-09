@@ -93,7 +93,7 @@ export default function ReportsPerformanceClient() {
         const avgLeadTimeDays = (avgLeadTimeHours / 24).toFixed(1);
 
         // Leaderboard & Department mapping
-        const entityMap = new Map<string, { name: string; completed: number; total: number; tasks: Task[] }>();
+        const entityMap = new Map<string, { name: string; completed: number; total: number; tasks: Task[]; isInternal: boolean }>();
         const workloadMap: Record<string, number> = {};
 
         // Helper to resolve entity info from task

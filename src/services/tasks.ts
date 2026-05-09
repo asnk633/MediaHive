@@ -31,10 +31,14 @@ export const mapTask = (t: any): Task => {
         dueDate: t.due_date || t.dueDate,
         institutionId: t.institution_id || t.institutionId,
         departmentId: t.department_id || t.departmentId,
+        created_by: t.creator ? { uid: t.created_by, name: t.creator.full_name, role: t.creator.role } : { uid: t.created_by, name: 'Unknown', role: 'member' },
+        updated_by: t.updater ? { uid: t.updated_by, name: t.updater.full_name, role: t.updater.role } : { uid: t.updated_by, name: 'Unknown', role: 'member' },
+        assigned_by: t.assigner ? { uid: t.assigned_by, name: t.assigner.full_name, role: t.assigner.role } : { uid: t.assigned_by, name: 'Unknown', role: 'admin' },
+        // Legacy support
+        updatedBy: t.updater ? { uid: t.updated_by, name: t.updater.full_name, role: t.updater.role } : { uid: t.updated_by, name: 'Unknown', role: 'member' },
         createdAt: t.created_at || t.createdAt,
         updatedAt: t.updated_at || t.updatedAt,
         completedAt: t.completed_at || t.completedAt,
-        updatedBy: t.updated_by || t.updatedBy,
     };
 
     // Intelligence Flags (Computed)
@@ -63,7 +67,10 @@ export const TaskService = {
                         user_id,
                         role,
                         profiles(id, full_name, avatar_url)
-                    )
+                    ),
+                    creator:profiles!tasks_created_by_fkey(id, full_name, avatar_url, role),
+                    updater:profiles!tasks_updated_by_fkey(id, full_name, avatar_url, role),
+                    assigner:profiles!tasks_assigned_by_fkey(id, full_name, avatar_url, role)
                 `)
                 .eq('deleted', false);
             
@@ -108,7 +115,10 @@ export const TaskService = {
                         user_id,
                         role,
                         profiles(id, full_name, avatar_url)
-                    )
+                    ),
+                    creator:profiles!tasks_created_by_fkey(id, full_name, avatar_url, role),
+                    updater:profiles!tasks_updated_by_fkey(id, full_name, avatar_url, role),
+                    assigner:profiles!tasks_assigned_by_fkey(id, full_name, avatar_url, role)
                 `)
                 .eq('id', id)
                 .single();

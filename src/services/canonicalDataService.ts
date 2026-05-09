@@ -358,7 +358,10 @@ export class CanonicalDataService {
             user_id,
             role,
             profiles:${TABLES.USERS}(id, full_name, avatar_url)
-          )
+          ),
+          creator:profiles!tasks_created_by_fkey(id, full_name, avatar_url, role),
+          updater:profiles!tasks_updated_by_fkey(id, full_name, avatar_url, role),
+          assigner:profiles!tasks_assigned_by_fkey(id, full_name, avatar_url, role)
         `)
         .eq('tenant_id', tenantId)
         .eq('deleted', false);
@@ -807,7 +810,12 @@ export class CanonicalDataService {
         safeQuery(() => {
           let query = supabase
             .from(TABLES.TASKS)
-            .select('*')
+            .select(`
+              *,
+              creator:profiles!tasks_created_by_fkey(id, full_name, avatar_url, role),
+              updater:profiles!tasks_updated_by_fkey(id, full_name, avatar_url, role),
+              assigner:profiles!tasks_assigned_by_fkey(id, full_name, avatar_url, role)
+            `)
             .eq('tenant_id', tenantId)
             .eq('deleted', false)
             .or(`due_date.gte.${startOfDay},status.neq.done`);
@@ -947,7 +955,12 @@ export class CanonicalDataService {
         safeQuery(() => {
           let q = supabase
             .from(TABLES.TASKS)
-            .select('*')
+            .select(`
+              *,
+              creator:profiles!tasks_created_by_fkey(id, full_name, avatar_url, role),
+              updater:profiles!tasks_updated_by_fkey(id, full_name, avatar_url, role),
+              assigner:profiles!tasks_assigned_by_fkey(id, full_name, avatar_url, role)
+            `)
             .eq('tenant_id', tenantId)
             .eq('deleted', false)
             .ilike('title', searchTerm);

@@ -27,7 +27,7 @@ import { cn } from '@/lib/utils';
 import { Skeleton } from '@/components/ui/skeleton';
 import { format } from 'date-fns';
 
-type DataSource = 'tasks' | 'media';
+type DataSource = 'tasks' | 'media_assets' | 'media_inventory';
 
 export default function ReportsCustomClient() {
     const router = useRouter();
@@ -78,13 +78,21 @@ export default function ReportsCustomClient() {
                 const matchesSearch = !searchQuery || t.title.toLowerCase().includes(searchQuery.toLowerCase()) || t.description?.toLowerCase().includes(searchQuery.toLowerCase());
                 return matchesStatus && matchesPriority && matchesSearch;
             });
-        } else {
+        } else if (source === 'media_assets' || source === 'media_inventory') {
             return files.filter(f => {
                 const matchesType = statusFilter.length === 0 || statusFilter.includes(f.type);
                 const matchesSearch = !searchQuery || f.name.toLowerCase().includes(searchQuery.toLowerCase());
-                return matchesType && matchesSearch;
+                
+                // Content Filter
+                const isInventory = f.uploadContext === 'downloads_direct';
+                const isProduction = f.uploadContext === 'task_final' || f.uploadContext === 'task_attachment';
+                
+                const matchesSource = source === 'media_inventory' ? isInventory : isProduction;
+                
+                return matchesType && matchesSearch && matchesSource;
             });
         }
+        return [];
     }, [source, tasks, files, statusFilter, priorityFilter, searchQuery]);
 
     const handleExport = (format: 'csv' | 'pdf') => {
@@ -138,10 +146,19 @@ export default function ReportsCustomClient() {
                                 <CheckSquare size={14} /> Tasks
                             </button>
                             <button
-                                onClick={() => setSource('media')}
+                                onClick={() => setSource('media_assets')}
                                 className={cn(
                                     "flex-1 flex items-center justify-center gap-2 py-3 rounded-xl transition-all font-bold text-[10px] uppercase tracking-widest",
-                                    source === 'media' ? "bg-emerald-500/20 text-emerald-400 shadow-lg border border-emerald-500/20" : "text-white/20 hover:text-white/40"
+                                    source === 'media_assets' ? "bg-indigo-500/20 text-indigo-400 shadow-lg border border-indigo-500/20" : "text-white/20 hover:text-white/40"
+                                )}
+                            >
+                                <Database size={14} /> Production Assets
+                            </button>
+                            <button
+                                onClick={() => setSource('media_inventory')}
+                                className={cn(
+                                    "flex-1 flex items-center justify-center gap-2 py-3 rounded-xl transition-all font-bold text-[10px] uppercase tracking-widest",
+                                    source === 'media_inventory' ? "bg-emerald-500/20 text-emerald-400 shadow-lg border border-emerald-500/20" : "text-white/20 hover:text-white/40"
                                 )}
                             >
                                 <Database size={14} /> Media Inventory
@@ -219,7 +236,7 @@ export default function ReportsCustomClient() {
                             </>
                         )}
 
-                        {source === 'media' && (
+                        {source !== 'tasks' && (
                             <div className="space-y-4">
                                 <h3 className="text-[10px] font-bold text-white/20 uppercase tracking-[0.2em]">Asset Type</h3>
                                 <div className="flex flex-wrap gap-2">
@@ -230,7 +247,7 @@ export default function ReportsCustomClient() {
                                             className={cn(
                                                 "px-3 py-1.5 rounded-lg text-[10px] font-bold uppercase transition-all border",
                                                 statusFilter.includes(t)
-                                                    ? "bg-emerald-500/10 border-emerald-500/20 text-emerald-400"
+                                                    ? "bg-indigo-500/10 border-indigo-500/20 text-indigo-400"
                                                     : "bg-white/[0.02] border-white/5 text-white/20 hover:text-white/40"
                                             )}
                                         >

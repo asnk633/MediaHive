@@ -32,17 +32,12 @@ export const TrashService = {
         if (!success) throw new Error("Failed to restore task");
     },
 
-    permanentDelete: async (id: string): Promise<void> => {
-        // We'll use a direct delete via CanonicalDataService if supported, 
-        // or a specific mutation type. For now, we'll assume a direct call is needed 
-        // as CanonicalDataService doesn't have a 'hardDelete' yet.
-        const { tenantId } = await tenantContext();
-        const { error } = await supabase
-            .from(TABLES.TASKS)
-            .delete()
-            .eq('id', id)
-            .eq('tenant_id', tenantId);
-
-        if (error) throw error;
+    permanentDelete: async (ids: string | string[]): Promise<void> => {
+        const targetIds = Array.isArray(ids) ? ids : [ids];
+        
+        for (const id of targetIds) {
+            const success = await CanonicalDataService.hardDelete(TABLES.TASKS, id, 'task');
+            if (!success) throw new Error(`Failed to enqueue delete for task ${id}`);
+        }
     }
 };

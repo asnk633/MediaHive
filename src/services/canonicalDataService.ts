@@ -151,6 +151,26 @@ export class CanonicalDataService {
   }
 
   /**
+   * Permanently delete a record with offline-first support
+   */
+  static async hardDelete(
+    table: string, 
+    id: string, 
+    entityType?: string
+  ): Promise<boolean> {
+    if (healthManager.shouldPauseActivities()) return false;
+
+    const { tenantId } = await tenantContext();
+
+    // 1. Persist via True Offline Sync Engine
+    const { syncEngine } = require('@/lib/offline/queueManager');
+    const mutationType = `DELETE_${(entityType || table).toUpperCase()}`;
+    await syncEngine.enqueueMutation(mutationType, { id, tenant_id: tenantId });
+
+    return true;
+  }
+
+  /**
    * Create a new record with offline-first support
    */
   static async createRecord(

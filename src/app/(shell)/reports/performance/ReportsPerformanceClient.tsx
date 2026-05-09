@@ -169,7 +169,7 @@ export default function ReportsPerformanceClient() {
     });
 
     const leaderboard = Array.from(entityMap.values())
-        .filter(e => e.completed > 0 && !e.isInternal)
+        .filter(e => e.completed > 0)
         .sort((a, b) => b.completed - a.completed)
         .slice(0, 5);
 
@@ -294,7 +294,14 @@ export default function ReportsPerformanceClient() {
                                         <div className="w-8 text-xs font-bold text-white/20">#{idx + 1}</div>
                                         <div className="flex-1">
                                             <div className="flex justify-between items-end mb-2">
-                                                <span className="text-sm font-bold text-white group-hover:text-amber-400 transition-colors">{user.name}</span>
+                                                <div className="flex items-center gap-2">
+                                                    <span className="text-sm font-bold text-white group-hover:text-amber-400 transition-colors">{user.name}</span>
+                                                    {user.isInternal ? (
+                                                        <span className="text-[8px] font-bold text-white/20 bg-white/5 px-1.5 py-0.5 rounded uppercase tracking-wider">Internal</span>
+                                                    ) : (
+                                                        <span className="text-[8px] font-bold text-amber-500/40 bg-amber-500/5 px-1.5 py-0.5 rounded border border-amber-500/10 uppercase tracking-wider">Requested</span>
+                                                    )}
+                                                </div>
                                                 <span className="text-xs font-bold text-white tracking-tight">{user.completed}</span>
                                             </div>
                                             <div className="h-2 w-full bg-white/5 rounded-full overflow-hidden">

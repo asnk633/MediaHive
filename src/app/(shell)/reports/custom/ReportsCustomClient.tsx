@@ -21,6 +21,8 @@ import { TaskService } from '@/services/tasks';
 import { Task } from '@/features/tasks/types/task';
 import { FileService } from '@/services/fileService';
 import { DriveFile } from '@/types/file';
+import { StructureService } from '@/services/structureService';
+import { Institution, Department } from '@/types/structure';
 import { useAuth } from '@/contexts/AuthContextProvider';
 import { PageLayout } from '@/components/ui/layout/PageLayout';
 import { cn } from '@/lib/utils';
@@ -39,11 +41,14 @@ export default function ReportsCustomClient() {
     const [tasks, setTasks] = useState<Task[]>([]);
     const [files, setFiles] = useState<DriveFile[]>([]);
     const [equipment, setEquipment] = useState<EquipmentItem[]>([]);
+    const [institutions, setInstitutions] = useState<Institution[]>([]);
+    const [departments, setDepartments] = useState<Department[]>([]);
 
     // Filter State
     const [source, setSource] = useState<DataSource>('tasks');
     const [statusFilter, setStatusFilter] = useState<string[]>([]);
     const [priorityFilter, setPriorityFilter] = useState<string[]>([]);
+    const [entityFilter, setEntityFilter] = useState<string[]>([]);
     const [searchQuery, setSearchQuery] = useState('');
 
     useEffect(() => {
@@ -54,20 +59,23 @@ export default function ReportsCustomClient() {
     const loadAllData = async () => {
         setLoading(true);
         try {
-            const [taskData, fileData, equipmentData] = await Promise.all([
+            const [taskData, fileData, equipmentData, structData] = await Promise.all([
                 TaskService.getTasks(),
                 FileService.getFiles(user!.role, user!.department_id, user!.institution_id),
-                inventoryService.getEquipment()
+                inventoryService.getEquipment(),
+                StructureService.getInstitutions()
             ]);
 
             setTasks(taskData || []);
             setFiles(fileData || []);
             setEquipment(equipmentData || []);
+            setInstitutions(structData.institutions || []);
         } catch (error) {
             console.error("Failed to load custom report data:", error);
             setTasks([]);
             setFiles([]);
             setEquipment([]);
+            setInstitutions([]);
         } finally {
             setLoading(false);
         }
@@ -82,8 +90,11 @@ export default function ReportsCustomClient() {
             return tasks.filter(t => {
                 const matchesStatus = statusFilter.length === 0 || statusFilter.includes(t.status);
                 const matchesPriority = priorityFilter.length === 0 || priorityFilter.includes(t.priority);
+                const entityId = t.on_behalf_of?.id || t.institution_id || t.created_by?.institution_id;
+                const matchesEntity = entityFilter.length === 0 || entityFilter.includes(String(entityId));
+                
                 const matchesSearch = !searchQuery || t.title.toLowerCase().includes(searchQuery.toLowerCase()) || t.description?.toLowerCase().includes(searchQuery.toLowerCase());
-                return matchesStatus && matchesPriority && matchesSearch;
+                return matchesStatus && matchesPriority && matchesEntity && matchesSearch;
             });
         } else if (source === 'media_assets') {
             return files.filter(f => {
@@ -266,6 +277,36 @@ export default function ReportsCustomClient() {
                                                 {p}
                                             </button>
                                         ))}
+                                    </div>
+                                </div>
+
+                                {/* Institution Filters */}
+                                <div className="space-y-4">
+                                    <div className="flex items-center justify-between">
+                                        <h3 className="text-[10px] font-bold text-white/20 uppercase tracking-[0.2em]">Institutional Hub</h3>
+                                        {entityFilter.length > 0 && (
+                                            <button onClick={() => setEntityFilter([])} className="text-[10px] font-bold text-indigo-400 hover:text-indigo-300 transition-colors uppercase">Clear</button>
+                                        )}
+                                    </div>
+                                    <div className="flex flex-col gap-1 max-h-[200px] overflow-y-auto pr-2 custom-scrollbar">
+                                        {institutions.map(inst => (
+                                            <button
+                                                key={inst.id}
+                                                onClick={() => toggleFilter(setEntityFilter, String(inst.id))}
+                                                className={cn(
+                                                    "flex items-center gap-2 px-3 py-2 rounded-lg text-[10px] font-bold uppercase transition-all border text-left",
+                                                    entityFilter.includes(String(inst.id))
+                                                        ? "bg-white/10 border-white/20 text-white"
+                                                        : "bg-white/[0.02] border-white/5 text-white/20 hover:text-white/40"
+                                                )}
+                                            >
+                                                <div className={cn("w-1.5 h-1.5 rounded-full", entityFilter.includes(String(inst.id)) ? "bg-indigo-400" : "bg-white/10")} />
+                                                <span className="truncate">{inst.name}</span>
+                                            </button>
+                                        ))}
+                                        {institutions.length === 0 && (
+                                            <span className="text-[10px] text-white/10 italic">No institutions identified</span>
+                                        )}
                                     </div>
                                 </div>
                             </>

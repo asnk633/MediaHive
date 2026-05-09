@@ -13,6 +13,17 @@ export interface SmartMetadata {
 export type TaskStatus = Task['status'];
 export type TaskPriority = Task['priority'];
 
+export interface TaskUser {
+    uid: string;
+    id?: string; // profile id
+    name: string;
+    role: string;
+    institution_id?: string | number | null;
+    department_id?: string | number | null;
+    institution_name?: string | null;
+    department_name?: string | null;
+}
+
 export interface Task {
     smartMetadata?: SmartMetadata;
     // Intelligence Flags (Computed)
@@ -37,16 +48,8 @@ export interface Task {
     department?: string;
     on_behalf_of?: any;
     event_id?: string;
-    assigned_by: {
-        uid: string;
-        name: string;
-        role: string;
-    };
-    created_by: {
-        uid: string;
-        name: string;
-        role: string;
-    };
+    assigned_by: TaskUser;
+    created_by: TaskUser;
     assigned_to?: {
         uid: string;
         name: string;
@@ -63,16 +66,8 @@ export interface Task {
         avatar_url?: string;
         avatarUrl?: string;
     }[]; // Legacy alias for assigned_to
-    updated_by?: {
-        uid: string;
-        name: string;
-        role: string;
-    };
-    updatedBy?: {
-        uid: string;
-        name: string;
-        role: string;
-    }; // Legacy alias for updated_by
+    updated_by?: TaskUser;
+    updatedBy?: TaskUser; // Legacy alias for updated_by
     created_at: any;
     createdAt?: any; // Legacy alias for created_at
     updated_at?: any;
@@ -112,11 +107,7 @@ export interface Task {
     // ── Soft Delete ─────────────────────────────────────────
     deleted?: boolean;
     deleted_at?: any;
-    deleted_by?: {
-        uid: string;
-        name: string;
-        role: string;
-    };
+    deleted_by?: TaskUser;
 }
 
 export type TaskFileSection = 'requester-inputs' | 'team-working-files' | 'team-final-exports';

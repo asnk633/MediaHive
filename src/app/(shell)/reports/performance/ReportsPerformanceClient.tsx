@@ -98,24 +98,30 @@ export default function ReportsPerformanceClient() {
 
         // Helper to resolve entity info from task
         const getEntityInfo = (task: Task) => {
-            // Priority 1: On Behalf Of
+            // Priority 1: On Behalf Of (The True Requester)
             if (task.on_behalf_of?.id) {
-                return { id: String(task.on_behalf_of.id), name: task.on_behalf_of.name || 'External' };
+                return { id: String(task.on_behalf_of.id), name: task.on_behalf_of.name || 'External', isInternal: false };
             }
 
             // Priority 2: Department ID
             if (task.department_id) {
                 const dept = departments.find(d => String(d.id) === String(task.department_id));
-                if (dept) return { id: String(dept.id), name: dept.name };
+                if (dept) {
+                    const isMediaTeam = dept.name?.toLowerCase().includes('media') || dept.name?.toLowerCase().includes('it department');
+                    return { id: String(dept.id), name: dept.name, isInternal: isMediaTeam };
+                }
             }
 
             // Priority 3: Institution ID
             if (task.institution_id) {
                 const inst = institutions.find(i => String(i.id) === String(task.institution_id));
-                if (inst) return { id: String(inst.id), name: inst.name };
+                if (inst) {
+                    const isMediaTeam = inst.name?.toLowerCase().includes('media') || inst.name?.toLowerCase().includes('it department');
+                    return { id: String(inst.id), name: inst.name, isInternal: isMediaTeam };
+                }
             }
 
-            return { id: 'general', name: 'General' };
+            return { id: 'general', name: 'Internal / General', isInternal: true };
         };
         
         filteredTasks.forEach(task => {
@@ -127,26 +133,26 @@ export default function ReportsPerformanceClient() {
                 });
             }
 
-            // Productivity Metrics - Tracked by Requesting Entity
-            const { id: entityId, name: entityName } = getEntityInfo(task);
-            
-            if (!entityMap.has(entityId)) {
-                entityMap.set(entityId, { name: entityName, completed: 0, total: 0, tasks: [] });
-            }
-            
-            const stats = entityMap.get(entityId)!;
-            stats.total++;
-            
-            if (task.status === 'done') {
-                stats.completed++;
-                stats.tasks.push(task);
-            }
-        });
+        // Productivity Metrics - Tracked by Requesting Entity
+        const { id: entityId, name: entityName, isInternal } = getEntityInfo(task);
+        
+        if (!entityMap.has(entityId)) {
+            entityMap.set(entityId, { name: entityName, completed: 0, total: 0, tasks: [], isInternal });
+        }
+        
+        const stats = entityMap.get(entityId)!;
+        stats.total++;
+        
+        if (task.status === 'done') {
+            stats.completed++;
+            stats.tasks.push(task);
+        }
+    });
 
-        const leaderboard = Array.from(entityMap.values())
-            .filter(e => e.completed > 0)
-            .sort((a, b) => b.completed - a.completed)
-            .slice(0, 5);
+    const leaderboard = Array.from(entityMap.values())
+        .filter(e => e.completed > 0 && !e.isInternal)
+        .sort((a, b) => b.completed - a.completed)
+        .slice(0, 5);
 
         // Productivity Trend (all completions in filtered month)
         const trendMap: Record<string, number> = {};
@@ -259,7 +265,10 @@ export default function ReportsPerformanceClient() {
                             {loading ? (
                                 [1, 2, 3].map(i => <Skeleton key={i} className="h-16 w-full bg-white/5 rounded-xl" />)
                             ) : performanceData.leaderboard.length === 0 ? (
-                                <div className="py-20 text-center text-white/20 font-medium">No activity data available.</div>
+                                <div className="py-20 text-center space-y-2">
+                                    <div className="text-white/20 font-medium text-sm">No external requesting entities found.</div>
+                                    <div className="text-[10px] text-white/10 uppercase tracking-widest">Tasks without 'On Behalf Of' are categorized as internal.</div>
+                                </div>
                             ) : (
                                 performanceData.leaderboard.map((user, idx) => (
                                     <div key={user.name} className="flex items-center gap-4 group">

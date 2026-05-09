@@ -175,8 +175,8 @@ export const SortableTaskRow = memo(({
                 id={`nav-item-${task.id}`}
                 data-active={activeId === task.id}
                 className={cn(
-                    "grid grid-cols-[auto_1fr_auto] md:grid-cols-[40px_3fr_1.5fr_0.8fr_1.5fr_1.2fr_1.2fr_1.5fr] gap-2 px-6 items-center border-l-[3px] transition-all duration-300 cursor-pointer focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-blue-500/50 hover:-translate-y-[2px] mb-1 rounded-sm overflow-hidden",
-                    density === 'compact' ? "py-2" : "py-4",
+                    "grid grid-cols-[auto_1fr_auto] md:grid-cols-[40px_minmax(0,2.5fr)_minmax(0,1.5fr)_80px_100px_90px_minmax(0,1.2fr)_110px] gap-x-4 px-6 items-center border-l-[3px] transition-all duration-200 cursor-pointer focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-blue-500/50 hover:bg-white/[0.025]",
+                    density === 'compact' ? "py-2" : "py-3",
                     isSelected
                         ? "bg-blue-500/[0.06] ring-1 ring-inset ring-blue-500/20"
                         : "bg-white/[0.01] hover:bg-white/[0.02]",
@@ -240,7 +240,7 @@ export const SortableTaskRow = memo(({
                             {isSelected && <CheckCircle2 size={10} className="text-white" />}
                         </div>
                         <div className="flex flex-col flex-1 min-w-0">
-                            <span className={cn("text-base font-semibold truncate transition-colors duration-200 cursor-text", task.status === 'done' ? "text-white/40 line-through" : "text-white group-hover:text-blue-200")}>
+                            <span className={cn("text-sm font-medium truncate transition-colors duration-200", task.status === 'done' ? "text-white/35 line-through" : "text-white/90 group-hover:text-white")}>
                                 {task.title}
                                 {(task as any).isPendingSync && (
                                     <span className="ml-2 inline-flex items-center text-[10px] uppercase font-bold text-amber-500/70 border border-amber-500/20 rounded px-1.5 py-0.5" title="Pending Sync">
@@ -278,7 +278,7 @@ export const SortableTaskRow = memo(({
                 {/* Desktop Columns - Reordered per Request: Priority -> Assigned -> Due -> Completed -> Status */}
 
                 {/* Requested By */}
-                <div className="hidden md:flex items-center text-white/45 text-xs truncate font-medium">
+                <div className="hidden md:flex items-center text-white/50 text-xs truncate">
                     {task.on_behalf_of?.name ? (
                         <span className="text-blue-400/80 font-bold tracking-tight">
                             {task.on_behalf_of.name}
@@ -293,47 +293,37 @@ export const SortableTaskRow = memo(({
                 </div>
 
                 {/* Priority */}
-                <div className="hidden md:block"><PriorityBadge priority={task.priority} /></div>
+                <div className="hidden md:flex items-center justify-center"><PriorityBadge priority={task.priority} /></div>
 
                 {/* Assigned */}
                 <div className="hidden md:flex items-center gap-2">
                     {task.assignedTo && task.assignedTo.length > 0 ? (
                         <SafeAvatar
-                            size={24}
+                            size={22}
                             src={task.assignedTo[0].avatarUrl}
                             alt={task.assignedTo[0].name || 'Assignee'}
                             name={task.assignedTo[0].name}
                         />
                     ) : (
-                        <span className="text-xs italic text-white/50">Unassigned</span>
+                        <span className="text-xs text-white/25 italic">—</span>
                     )}
                 </div>
 
                 {/* Due Date */}
-                <div className="hidden md:block text-right">
-                    <div className={cn("text-xs font-mono flex items-center justify-end gap-1.5",
-                        (task as any).isOverdue || overdue ? "text-red-500 font-bold" :
-                            (task as any).isDueToday || today ? "text-amber-500 font-bold" :
-                                (task as any).isUpcoming ? "text-blue-400 font-medium" :
-                                    "text-white/40"
+                <div className="hidden md:flex items-center justify-end">
+                    <span className={cn("text-xs font-medium tabular-nums",
+                        (task as any).isOverdue || overdue ? "text-red-400 font-semibold" :
+                            (task as any).isDueToday || today ? "text-amber-400 font-semibold" :
+                                (task as any).isUpcoming ? "text-blue-400" :
+                                    "text-white/35"
                     )}>
-                        {(task as any).isDueToday || today ? "Today" : dueDate ? format(dueDate, 'MMM d') : '-'}
-                        {(task as any).dueDate && (
-                            <TooltipProvider delayDuration={0}>
-                                <Tooltip>
-                                    <TooltipTrigger>
-                                        <Globe size={10} className="opacity-40 hover:opacity-100 transition-opacity" />
-                                    </TooltipTrigger>
-                                    <TooltipContent><p>Scheduled in Indian Standard Time</p></TooltipContent>
-                                </Tooltip>
-                            </TooltipProvider>
-                        )}
-                    </div>
+                        {(task as any).isDueToday || today ? "Today" : dueDate ? format(dueDate, 'MMM d') : <span className="text-white/15">—</span>}
+                    </span>
                 </div>
 
 
                 {/* Status or Trash Actions */}
-                <div className="hidden md:block" onClick={e => e.stopPropagation()}>
+                <div className="hidden md:flex items-center gap-1" onClick={e => e.stopPropagation()}>
                     {mode === 'trash' ? (
                         <div className="flex items-center gap-1.5">
                             {/* Admin/Team can restore. Member cannot. */}
@@ -388,23 +378,23 @@ export const SortableTaskRow = memo(({
                             <button
                                 onClick={(e) => { e.stopPropagation(); onSoftDelete?.(task.id); }}
                                 title="Move to Trash"
-                                className="ml-2 p-1.5 rounded-lg text-white/20 hover:text-red-400 hover:bg-red-500/10 transition-all opacity-0 group-hover:opacity-100"
+                                className="ml-1 p-1.5 rounded-lg text-white/15 hover:text-red-400 hover:bg-red-500/10 transition-all opacity-0 group-hover:opacity-100"
                             >
-                                <Trash2 size={14} />
+                                <Trash2 size={13} />
                             </button>
                         ) : null
                     )}
                 </div>
 
                 {/* Completed Date Column (Last) */}
-                <div className="hidden md:block text-right">
-                    <div className="text-xs text-white/40 tabular-nums">
+                <div className="hidden md:flex items-center justify-end">
+                    <span className="text-xs text-white/35 tabular-nums">
                         {task.status === 'done' && task.completedAt ? (
-                            <span>{format(safeDate(task.completedAt)!, 'd MMM yyyy')}</span>
+                            format(safeDate(task.completedAt)!, 'd MMM yyyy')
                         ) : (
-                            <span className="text-white/10 select-none">—</span>
+                            <span className="text-white/15">—</span>
                         )}
-                    </div>
+                    </span>
                 </div>
 
             </Link>

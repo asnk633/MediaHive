@@ -95,13 +95,17 @@ export default function ReportsCustomClient() {
                 const matchesStatus = statusFilter.length === 0 || statusFilter.includes(t.status);
                 const matchesPriority = priorityFilter.length === 0 || priorityFilter.includes(t.priority);
                 
-                const instId = t.on_behalf_of?.id || t.institution_id || t.created_by?.institution_id;
-                const matchesInst = entityFilter.length === 0 || entityFilter.includes(String(instId));
+                // Attribution Logic (Matches ReportsPerformanceClient logic)
+                const taskInstId = t.on_behalf_of?.type === 'institution' ? t.on_behalf_of.id : (t.institution_id || t.institutionId || t.created_by?.institution_id);
+                const matchesInst = entityFilter.length === 0 || entityFilter.includes(String(taskInstId));
                 
-                const deptId = t.department_id || t.created_by?.department_id;
-                const matchesDept = deptFilter.length === 0 || deptFilter.includes(String(deptId));
+                const taskDeptId = t.on_behalf_of?.type === 'department' ? t.on_behalf_of.id : (t.department_id || t.departmentId || t.created_by?.department_id);
+                const matchesDept = deptFilter.length === 0 || deptFilter.includes(String(taskDeptId));
                 
-                const matchesSearch = !searchQuery || t.title.toLowerCase().includes(searchQuery.toLowerCase()) || t.description?.toLowerCase().includes(searchQuery.toLowerCase());
+                const matchesSearch = !searchQuery || 
+                    t.title.toLowerCase().includes(searchQuery.toLowerCase()) || 
+                    t.description?.toLowerCase().includes(searchQuery.toLowerCase());
+                    
                 return matchesStatus && matchesPriority && matchesInst && matchesDept && matchesSearch;
             });
         } else if (source === 'media_assets') {

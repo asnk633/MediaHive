@@ -33,22 +33,31 @@ export const mapTask = (t: any): Task => {
         departmentId: t.department_id || t.departmentId,
         created_by: t.creator ? { 
             uid: t.created_by, 
+            id: t.creator.id,
             name: t.creator.full_name, 
             role: t.creator.role,
+            institution_id: t.creator.institution_id,
+            department_id: t.creator.department_id,
             institution_name: t.creator.institutions?.name,
             department_name: t.creator.departments?.name
         } : { uid: t.created_by, name: 'Unknown', role: 'member' },
         updated_by: t.updater ? { 
             uid: t.updated_by, 
+            id: t.updater.id,
             name: t.updater.full_name, 
             role: t.updater.role,
+            institution_id: t.updater.institution_id,
+            department_id: t.updater.department_id,
             institution_name: t.updater.institutions?.name,
             department_name: t.updater.departments?.name
         } : (t.creator ? { uid: t.created_by, name: t.creator.full_name, role: t.creator.role } : { uid: t.updated_by || t.created_by, name: 'Unknown', role: 'member' }),
         assigned_by: t.assigner ? { 
             uid: t.assigned_by, 
+            id: t.assigner.id,
             name: t.assigner.full_name, 
             role: t.assigner.role,
+            institution_id: t.assigner.institution_id,
+            department_id: t.assigner.department_id,
             institution_name: t.assigner.institutions?.name,
             department_name: t.assigner.departments?.name
         } : { uid: t.assigned_by, name: 'Unknown', role: 'admin' },

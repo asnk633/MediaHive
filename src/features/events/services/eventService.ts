@@ -3,6 +3,7 @@ import type { Task } from "@/features/tasks/types/task";
 import { RecurrenceService } from './recurrenceService';
 import { CanonicalDataService } from '@/services/canonicalDataService';
 import { SystemEventService } from './systemEventService';
+import { TaskService } from '@/services/tasks';
 import { supabase } from '@/lib/supabaseClient';
 import { toast } from 'sonner';
 import { tenantContext } from '@/lib/auth/tenantContext';
@@ -283,7 +284,7 @@ export const EventService = {
         autoGenerateTasks: boolean = true
     ) => {
         try {
-            const { tenantId, userId } = await tenantContext();
+            const { tenantId, userId, institutionId } = await tenantContext();
 
             // 1. Sanitize Event Payload
             const { 
@@ -339,6 +340,25 @@ export const EventService = {
                     tenant_id: tenantId
                 }));
                 await safeQuery(() => supabase.from(TABLES.EVENT_EQUIPMENT).insert(equipToInsert));
+            }
+
+            // 3. Auto-generate Actionable Tasks
+            if (autoGenerateTasks && media_coverage && Array.isArray(media_coverage) && media_coverage.length > 0) {
+                for (const coverage of media_coverage) {
+                    await TaskService.createTask({
+                        title: `${title} - ${coverage}`,
+                        description: `Auto-generated media coverage task for event: ${title}`,
+                        status: 'todo',
+                        priority: 'medium',
+                        due_date: end_at,
+                        event_id: data.id,
+                        institution_id: cleanedEvent.institution_id || institutionId,
+                        department_id: cleanedEvent.department_id || null,
+                        tenant_id: tenantId,
+                        created_by: userId,
+                        updated_by: userId
+                    } as any);
+                }
             }
 
             return data;

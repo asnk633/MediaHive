@@ -495,64 +495,91 @@ export const EventDetailsModal: React.FC<EventDetailsModalProps> = ({ event, isO
                                         <Trash2 size={18} />
                                     </button>
                                 </AlertDialogTrigger>
-                                <AlertDialogContent className="bg-surface border-soft text-foreground z-[120]">
-                                    <AlertDialogHeader>
-                                        <AlertDialogTitle>Delete Event?</AlertDialogTitle>
-                                        <AlertDialogDescription className="text-muted">
-                                            {event.is_recurring || (event as any).is_recurring_instance ? (
-                                                <div className="space-y-4 py-2">
-                                                    <p>This is a recurring event. How would you like to delete it?</p>
-                                                    <div className="flex flex-col gap-2">
-                                                        <label className="flex items-center gap-3 p-3 rounded-xl border border-soft hover:bg-surface-soft cursor-pointer transition-all">
-                                                            <input 
-                                                                type="radio" 
-                                                                name="deleteMode" 
-                                                                value="single" 
-                                                                checked={deleteMode === 'single'} 
-                                                                onChange={() => setDeleteMode('single')} 
-                                                                className="accent-primary h-4 w-4"
-                                                            />
-                                                            <div className="text-left">
-                                                                <div className="text-sm font-bold text-foreground">Just this instance</div>
-                                                                <div className="text-[10px] text-muted">Other occurrences in the series will remain.</div>
-                                                            </div>
-                                                        </label>
-                                                        <label className="flex items-center gap-3 p-3 rounded-xl border border-soft hover:bg-surface-soft cursor-pointer transition-all">
-                                                            <input 
-                                                                type="radio" 
-                                                                name="deleteMode" 
-                                                                value="series" 
-                                                                checked={deleteMode === 'series'} 
-                                                                onChange={() => setDeleteMode('series')} 
-                                                                className="accent-primary h-4 w-4"
-                                                            />
-                                                            <div className="text-left">
-                                                                <div className="text-sm font-bold text-foreground">All events in series</div>
-                                                                <div className="text-[10px] text-muted">Removes the entire recurring pattern.</div>
-                                                            </div>
-                                                        </label>
+                                <AlertDialogContent className="max-w-[440px] bg-[#0F1218]/95 backdrop-blur-2xl border border-white/10 text-foreground z-[120] rounded-[2.5rem] p-0 overflow-hidden shadow-2xl shadow-black/50">
+                                    <div className="p-8 flex flex-col items-center text-center">
+                                        {/* Danger Icon */}
+                                        <div className="w-20 h-20 rounded-3xl bg-red-500/10 flex items-center justify-center text-red-500 mb-6 rotate-3">
+                                            <Trash2 size={40} strokeWidth={1.5} />
+                                        </div>
+
+                                        <AlertDialogHeader className="space-y-3">
+                                            <AlertDialogTitle className="text-2xl font-bold tracking-tight">Delete Event?</AlertDialogTitle>
+                                            <AlertDialogDescription className="text-white/50 text-sm leading-relaxed px-4">
+                                                {event.is_recurring || (event as any).is_recurring_instance ? (
+                                                    <div className="space-y-4 py-2">
+                                                        <p className="text-white/70 font-medium">This is a recurring event. How would you like to proceed?</p>
+                                                        <div className="flex flex-col gap-3">
+                                                            <label className={cn(
+                                                                "flex items-center gap-4 p-4 rounded-2xl border transition-all cursor-pointer group",
+                                                                deleteMode === 'single' ? "bg-red-500/10 border-red-500/30 ring-1 ring-red-500/30" : "bg-white/5 border-white/10 hover:bg-white/10"
+                                                            )}>
+                                                                <div className={cn(
+                                                                    "w-5 h-5 rounded-full border-2 flex items-center justify-center shrink-0 transition-all",
+                                                                    deleteMode === 'single' ? "border-red-500" : "border-white/20"
+                                                                )}>
+                                                                    {deleteMode === 'single' && <div className="w-2 h-2 rounded-full bg-red-500" />}
+                                                                </div>
+                                                                <input 
+                                                                    type="radio" 
+                                                                    name="deleteMode" 
+                                                                    value="single" 
+                                                                    checked={deleteMode === 'single'} 
+                                                                    onChange={() => setDeleteMode('single')} 
+                                                                    className="hidden"
+                                                                />
+                                                                <div className="text-left">
+                                                                    <div className={cn("text-sm font-bold", deleteMode === 'single' ? "text-red-400" : "text-white")}>Just this instance</div>
+                                                                    <div className="text-[10px] text-white/40">Other occurrences will remain.</div>
+                                                                </div>
+                                                            </label>
+
+                                                            <label className={cn(
+                                                                "flex items-center gap-4 p-4 rounded-2xl border transition-all cursor-pointer group",
+                                                                deleteMode === 'series' ? "bg-red-500/10 border-red-500/30 ring-1 ring-red-500/30" : "bg-white/5 border-white/10 hover:bg-white/10"
+                                                            )}>
+                                                                <div className={cn(
+                                                                    "w-5 h-5 rounded-full border-2 flex items-center justify-center shrink-0 transition-all",
+                                                                    deleteMode === 'series' ? "border-red-500" : "border-white/20"
+                                                                )}>
+                                                                    {deleteMode === 'series' && <div className="w-2 h-2 rounded-full bg-red-500" />}
+                                                                </div>
+                                                                <input 
+                                                                    type="radio" 
+                                                                    name="deleteMode" 
+                                                                    value="series" 
+                                                                    checked={deleteMode === 'series'} 
+                                                                    onChange={() => setDeleteMode('series')} 
+                                                                    className="hidden"
+                                                                />
+                                                                <div className="text-left">
+                                                                    <div className={cn("text-sm font-bold", deleteMode === 'series' ? "text-red-400" : "text-white")}>All events in series</div>
+                                                                    <div className="text-[10px] text-white/40">Removes the entire recurring pattern.</div>
+                                                                </div>
+                                                            </label>
+                                                        </div>
                                                     </div>
-                                                </div>
-                                            ) : (
-                                                "Are you sure you want to delete this event? This action cannot be undone."
-                                            )}
-                                        </AlertDialogDescription>
-                                    </AlertDialogHeader>
-                                    <AlertDialogFooter>
-                                        <AlertDialogCancel
-                                            onClick={() => setIsDeleteOpen(false)}
-                                            className="bg-transparent border-soft text-muted hover:bg-surface hover:text-foreground"
-                                        >
-                                            Cancel
-                                        </AlertDialogCancel>
-                                        <AlertDialogAction
-                                            onClick={confirmDelete}
-                                            className="bg-red-500 hover:bg-red-600 text-white border-0"
-                                            disabled={isDeleting}
-                                        >
-                                            {isDeleting ? 'Deleting...' : 'Delete'}
-                                        </AlertDialogAction>
-                                    </AlertDialogFooter>
+                                                ) : (
+                                                    "Are you sure you want to delete this event? This action is permanent and cannot be undone."
+                                                )}
+                                            </AlertDialogDescription>
+                                        </AlertDialogHeader>
+
+                                        <AlertDialogFooter className="w-full flex flex-col sm:flex-row gap-3 pt-8">
+                                            <AlertDialogCancel
+                                                onClick={() => setIsDeleteOpen(false)}
+                                                className="flex-1 h-12 rounded-2xl bg-white/5 border-white/10 text-white font-bold hover:bg-white/10 hover:text-white transition-all border-0"
+                                            >
+                                                Cancel
+                                            </AlertDialogCancel>
+                                            <AlertDialogAction
+                                                onClick={confirmDelete}
+                                                disabled={isDeleting}
+                                                className="flex-1 h-12 rounded-2xl bg-red-600 hover:bg-red-500 text-white font-bold shadow-lg shadow-red-600/20 border-0 transition-all active:scale-95 disabled:opacity-50"
+                                            >
+                                                {isDeleting ? 'Deleting...' : 'Delete Event'}
+                                            </AlertDialogAction>
+                                        </AlertDialogFooter>
+                                    </div>
                                 </AlertDialogContent>
                             </AlertDialog>
                         )}

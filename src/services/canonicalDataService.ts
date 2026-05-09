@@ -178,7 +178,9 @@ export class CanonicalDataService {
       tenant_id: tenantId, 
       institution_id: finalInstitutionId,
       created_at: new Date().toISOString(), 
-      created_by: userId 
+      created_by: userId,
+      updated_at: new Date().toISOString(),
+      updated_by: userId 
     };
 
     const { syncEngine } = require('@/lib/offline/queueManager');

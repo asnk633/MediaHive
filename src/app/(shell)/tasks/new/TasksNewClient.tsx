@@ -158,7 +158,9 @@ export default function TasksNewClient() {
     // Fetch real team members from Firestore
     useEffect(() => {
         const fetchTeamMembers = async () => {
-            const contextId = selectedOrgId || currentWorkspaceId;
+            // Use the user's current institution/workspace context, not the 'Requested By' selection.
+            // This ensures you can always assign tasks to your own team members.
+            const contextId = currentWorkspaceId;
             const members = await UserService.getTeamMembers(contextId);
 
             // Context-Aware Filter
@@ -170,25 +172,10 @@ export default function TasksNewClient() {
                 // Allow standard non-admin roles for assignment
                 const isValidRole = ['manager', 'team', 'member'].includes(role);
 
-                // Context filtering
-                let matchesContext = true;
-                if (selectedOrgId) {
-                    const [type, id] = selectedOrgId.split('_');
-                    if (type === 'dept') {
-                        matchesContext = String(m.department_id) === String(id);
-                    } else if (type === 'inst') {
-                        matchesContext = String(m.institution_id) === String(id);
-                    }
-                }
-
-                if (!isValidRole && !isCreator) {
-                    console.log(`[TasksDeepDive] Excluding ${m.name}: Invalid role '${role}'`);
-                }
-
+                // Role and System exclusion
                 return (
                     isValidRole &&
-                    !isMediaAdmin &&
-                    matchesContext
+                    !isMediaAdmin
                 );
             });
             

@@ -443,6 +443,7 @@ export const EventDetailsModal: React.FC<EventDetailsModalProps> = ({ event, isO
                                     <div className="w-10 h-10 rounded-full bg-gradient-to-br from-blue-600 to-indigo-600 flex items-center justify-center text-white font-bold shadow-lg">
                                         {/* Avatar Initials logic */}
                                         {(() => {
+                                            if (event.on_behalf_of?.name) return event.on_behalf_of.name.charAt(0);
                                             const entity = event.organizer || event.created_by;
                                             return entity?.name ? entity.name.charAt(0) : (event.department?.charAt(0) || 'O');
                                         })()}
@@ -451,6 +452,7 @@ export const EventDetailsModal: React.FC<EventDetailsModalProps> = ({ event, isO
                                         <p className="text-sm font-bold text-foreground break-words">
                                             {/* Organizer Name Logic */}
                                             {(() => {
+                                                if (event.on_behalf_of?.name) return event.on_behalf_of.name;
                                                 const entity = event.organizer || event.created_by;
                                                 return entity?.name || event.department || 'Unknown';
                                             })()}

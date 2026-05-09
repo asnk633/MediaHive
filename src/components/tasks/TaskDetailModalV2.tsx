@@ -597,14 +597,16 @@ export const TaskDetailModalV2: React.FC<TaskDetailsModalProps> = ({ task, isOpe
                                             </div>
                                             <div className="flex-1 min-w-0">
                                                 <p className="text-[10px] uppercase tracking-wider font-bold text-white/30 mb-1">
-                                                    {(task.departmentId || task.institutionId) ? 'Requested On behalf of' : 'Requested By'}
+                                                    {(task.on_behalf_of || task.departmentId || task.institutionId) ? 'Requested On behalf of' : 'Requested By'}
                                                 </p>
                                                 <p className="text-sm font-semibold text-white/90 truncate">
-                                                    <ResolvedStructureName
-                                                        id={task.departmentId || task.institutionId}
-                                                        type={task.departmentId ? 'department' : 'institution'}
-                                                        fallback={(!task.departmentId && !task.institutionId) ? (task.department || task.createdBy?.name) : undefined}
-                                                    />
+                                                    {task.on_behalf_of?.name ? task.on_behalf_of.name : (
+                                                        <ResolvedStructureName
+                                                            id={task.departmentId || task.institutionId}
+                                                            type={task.departmentId ? 'department' : 'institution'}
+                                                            fallback={(!task.departmentId && !task.institutionId) ? (task.department || task.createdBy?.name) : undefined}
+                                                        />
+                                                    )}
                                                 </p>
                                             </div>
                                         </div>

@@ -103,21 +103,26 @@ export function EditTaskDialog({ open, onOpenChange, task, onUpdate }: EditTaskD
     const collab = useCollaboration('tasks', task?.id || '');
 
     const isAdmin = user?.role?.toLowerCase() === 'admin';
-    const is_super_admin = (user as any)?.is_super_admin || user?.email === 'media@thaibagarden.com';
-    const isTeam = user?.role === 'manager' || user?.role === 'member' || user?.role === 'team';
-    const isMember = user?.role === 'member';
+    const isSuperAdmin = (user as any)?.is_super_admin || user?.email === 'media@thaibagarden.com';
+    const isManager = user?.role?.toLowerCase() === 'manager';
+    const isMember = user?.role?.toLowerCase() === 'member';
+    const isTeam = isManager || isMember || user?.role?.toLowerCase() === 'team';
+    
     const taskCreatorId = (task as any).created_by?.uid || (task as any).created_by;
     const isCreator = user?.uid === taskCreatorId;
+    
     const assignedArray = Array.isArray(task.assigned_to) ? task.assigned_to :
         Array.isArray(task.assignedTo) ? task.assignedTo : [];
-    const isAssignee = assignedArray.some((u: any) => (typeof u === 'string' ? u : u.uid) === user?.uid);
+    const isAssignee = assignedArray.some((u: any) => (typeof u === 'string' ? u : (u.uid || u.userId)) === user?.uid);
 
-    const canEditContent = isAdmin || is_super_admin || isTeam || isCreator;
-    const canEditPriority = isAdmin || is_super_admin;
-    const canEditStatus = isAdmin || is_super_admin || isAssignee;
-    const canEditMeta = isAdmin || is_super_admin;
-    const canAssign = isAdmin || is_super_admin;
-    const canSave = canEditContent || canEditPriority || canEditStatus;
+    // Permission Logic
+    const canEditContent = isAdmin || isSuperAdmin || isManager || isMember || isCreator;
+    const canEditPriority = isAdmin || isSuperAdmin || isManager;
+    const canEditStatus = isAdmin || isSuperAdmin || isManager || isAssignee;
+    const canEditDueDate = isAdmin || isSuperAdmin || isManager || isMember;
+    const canAssign = isAdmin || isSuperAdmin || isManager;
+    
+    const canSave = canEditContent || canEditPriority || canEditStatus || canEditDueDate;
 
     useEffect(() => {
         if (open && user && task?.id) {
@@ -284,7 +289,7 @@ export function EditTaskDialog({ open, onOpenChange, task, onUpdate }: EditTaskD
                                 <PopoverTrigger asChild>
                                     <button
                                         type="button"
-                                        disabled={!canEditMeta}
+                                        disabled={!canEditDueDate}
                                         className={cn(
                                             "w-full h-11 flex items-center gap-2.5 px-3.5 rounded-xl border text-sm transition-all",
                                             "bg-white/[0.04] border-white/[0.08] text-white hover:bg-white/[0.06]",

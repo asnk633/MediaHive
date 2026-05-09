@@ -158,7 +158,7 @@ export default function ReportsCustomClient() {
                                 <button
                                     onClick={() => setSource('tasks')}
                                     className={cn(
-                                        "flex items-center gap-3 px-4 py-4 rounded-xl border transition-all text-left",
+                                        "w-full flex items-center justify-start gap-3 px-4 py-4 rounded-xl border transition-all text-left",
                                         source === 'tasks'
                                             ? "bg-white/10 border-white/10 text-white shadow-xl"
                                             : "bg-white/[0.02] border-white/5 text-white/20 hover:text-white/40 hover:bg-white/[0.04]"
@@ -176,7 +176,7 @@ export default function ReportsCustomClient() {
                                 <button
                                     onClick={() => setSource('media_assets')}
                                     className={cn(
-                                        "flex items-center gap-3 px-4 py-4 rounded-xl border transition-all text-left",
+                                        "w-full flex items-center justify-start gap-3 px-4 py-4 rounded-xl border transition-all text-left",
                                         source === 'media_assets'
                                             ? "bg-indigo-500/10 border-indigo-500/20 text-indigo-400 shadow-xl"
                                             : "bg-white/[0.02] border-white/5 text-white/20 hover:text-white/40 hover:bg-white/[0.04]"
@@ -194,7 +194,7 @@ export default function ReportsCustomClient() {
                                 <button
                                     onClick={() => setSource('equipment')}
                                     className={cn(
-                                        "flex items-center gap-3 px-4 py-4 rounded-xl border transition-all text-left",
+                                        "w-full flex items-center justify-start gap-3 px-4 py-4 rounded-xl border transition-all text-left",
                                         source === 'equipment'
                                             ? "bg-emerald-500/10 border-emerald-500/20 text-emerald-400 shadow-xl"
                                             : "bg-white/[0.02] border-white/5 text-white/20 hover:text-white/40 hover:bg-white/[0.04]"
@@ -294,7 +294,7 @@ export default function ReportsCustomClient() {
                                                 key={inst.id}
                                                 onClick={() => toggleFilter(setEntityFilter, String(inst.id))}
                                                 className={cn(
-                                                    "flex items-center gap-2 px-3 py-2 rounded-lg text-[10px] font-bold uppercase transition-all border text-left",
+                                                    "w-full flex items-center justify-start gap-3 px-3 py-3 rounded-lg text-[10px] font-bold uppercase transition-all border text-left",
                                                     entityFilter.includes(String(inst.id))
                                                         ? "bg-white/10 border-white/20 text-white"
                                                         : "bg-white/[0.02] border-white/5 text-white/20 hover:text-white/40"

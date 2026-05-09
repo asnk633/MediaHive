@@ -169,8 +169,8 @@ export default function ReportsPerformanceClient() {
     });
 
     const leaderboard = Array.from(entityMap.values())
-        .filter(e => e.completed > 0)
-        .sort((a, b) => b.completed - a.completed)
+        .filter(e => e.total > 0)
+        .sort((a, b) => b.total - a.total)
         .slice(0, 5);
 
         // Productivity Trend (all completions in filtered month)
@@ -302,13 +302,17 @@ export default function ReportsPerformanceClient() {
                                                         <span className="text-[8px] font-bold text-amber-500/40 bg-amber-500/5 px-1.5 py-0.5 rounded border border-amber-500/10 uppercase tracking-wider">Requested</span>
                                                     )}
                                                 </div>
-                                                <span className="text-xs font-bold text-white tracking-tight">{user.completed}</span>
+                                                <span className="text-xs font-bold text-white tracking-tight">{user.total}</span>
                                             </div>
                                             <div className="h-2 w-full bg-white/5 rounded-full overflow-hidden">
-                                                <div
-                                                    className="h-full bg-gradient-to-r from-amber-500 to-orange-500 rounded-full transition-all duration-1000"
-                                                    style={{ width: `${(user.completed / (performanceData.leaderboard[0].completed || 1)) * 100}%` }}
+                                                <div 
+                                                    className="h-full bg-premium-gradient rounded-full transition-all duration-1000"
+                                                    style={{ width: `${(user.total / (performanceData.leaderboard[0].total || 1)) * 100}%` }}
                                                 />
+                                            </div>
+                                            <div className="flex justify-between mt-1">
+                                                <span className="text-[8px] text-white/20 font-bold uppercase tracking-wider">Total Requests</span>
+                                                <span className="text-[8px] text-emerald-400/60 font-bold uppercase tracking-wider">{user.completed} Done</span>
                                             </div>
                                         </div>
                                     </div>

@@ -850,7 +850,18 @@ class SyncEngine {
         // NOT NULL Violation (Missing fields)
         throw new Error(`Missing required data for ${table}: ${err.message}`);
       }
+      if (err.code === '42501') {
+        // RLS Policy Violation — non-retryable, log and discard
+        console.error(`[SyncEngine] 🔒 RLS violation on ${table} (mutation ${mutation.id}): ${err.message}. Mutation will be dropped.`);
+        throw new Error(`Permission denied: ${err.message}`);
+      }
+      if (err.code === '23503') {
+        // FK Constraint Violation — non-retryable (e.g. task_id doesn't exist)
+        console.error(`[SyncEngine] 🔑 FK violation on ${table} (mutation ${mutation.id}): ${err.message}. Mutation will be dropped.`);
+        throw new Error(`Foreign key error: ${err.message}`);
+      }
       throw err;
+
     }
   }
 

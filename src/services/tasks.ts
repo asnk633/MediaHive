@@ -68,9 +68,9 @@ export const TaskService = {
                         role,
                         profiles(id, full_name, avatar_url)
                     ),
-                    creator:profiles!tasks_created_by_fkey(id, full_name, avatar_url, role),
-                    updater:profiles!tasks_updated_by_fkey(id, full_name, avatar_url, role),
-                    assigner:profiles!tasks_assigned_by_fkey(id, full_name, avatar_url, role)
+                    creator:profiles!tasks_created_by_fkey(id, full_name, avatar_url, role, institution_id, department_id),
+                    updater:profiles!tasks_updated_by_fkey(id, full_name, avatar_url, role, institution_id, department_id),
+                    assigner:profiles!tasks_assigned_by_fkey(id, full_name, avatar_url, role, institution_id, department_id)
                 `)
                 .eq('deleted', false);
             
@@ -116,9 +116,9 @@ export const TaskService = {
                         role,
                         profiles(id, full_name, avatar_url)
                     ),
-                    creator:profiles!tasks_created_by_fkey(id, full_name, avatar_url, role),
-                    updater:profiles!tasks_updated_by_fkey(id, full_name, avatar_url, role),
-                    assigner:profiles!tasks_assigned_by_fkey(id, full_name, avatar_url, role)
+                    creator:profiles!tasks_created_by_fkey(id, full_name, avatar_url, role, institution_id, department_id),
+                    updater:profiles!tasks_updated_by_fkey(id, full_name, avatar_url, role, institution_id, department_id),
+                    assigner:profiles!tasks_assigned_by_fkey(id, full_name, avatar_url, role, institution_id, department_id)
                 `)
                 .eq('id', id)
                 .single();

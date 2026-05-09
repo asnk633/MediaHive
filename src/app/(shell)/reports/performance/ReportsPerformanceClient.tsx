@@ -98,12 +98,32 @@ export default function ReportsPerformanceClient() {
 
         // Helper to resolve entity info from task
         const getEntityInfo = (task: Task) => {
-            // Priority 1: On Behalf Of (The True Requester)
+            // Priority 1: On Behalf Of (Explicit Request)
             if (task.on_behalf_of?.id) {
                 return { id: String(task.on_behalf_of.id), name: task.on_behalf_of.name || 'External', isInternal: false };
             }
 
-            // Priority 2: Department ID
+            // Priority 2: Task Creator's Affiliation (Implicit Request)
+            // If the creator is NOT from the Media Team, attribute to their department/institution
+            const creator = (task as any).creator;
+            if (creator) {
+                if (creator.department_id) {
+                    const dept = departments.find(d => String(d.id) === String(creator.department_id));
+                    if (dept) {
+                        const isMediaTeam = dept.name?.toLowerCase().includes('media') || dept.name?.toLowerCase().includes('it department');
+                        if (!isMediaTeam) return { id: String(dept.id), name: dept.name, isInternal: false };
+                    }
+                }
+                if (creator.institution_id) {
+                    const inst = institutions.find(i => String(i.id) === String(creator.institution_id));
+                    if (inst) {
+                        const isMediaTeam = inst.name?.toLowerCase().includes('media') || inst.name?.toLowerCase().includes('it department');
+                        if (!isMediaTeam) return { id: String(inst.id), name: inst.name, isInternal: false };
+                    }
+                }
+            }
+
+            // Priority 3: Task's Own Department/Institution
             if (task.department_id) {
                 const dept = departments.find(d => String(d.id) === String(task.department_id));
                 if (dept) {
@@ -112,7 +132,6 @@ export default function ReportsPerformanceClient() {
                 }
             }
 
-            // Priority 3: Institution ID
             if (task.institution_id) {
                 const inst = institutions.find(i => String(i.id) === String(task.institution_id));
                 if (inst) {

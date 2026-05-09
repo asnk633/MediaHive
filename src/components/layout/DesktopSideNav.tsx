@@ -84,7 +84,7 @@ export default function DesktopSideNav() {
             label: 'Workspace',
             items: [
                 { id: 'home', label: 'Dashboard', icon: LayoutDashboard, path: '/home' },
-                { id: 'tasks', label: 'My Tasks', icon: CheckSquare, path: '/tasks', feature: 'tasks' as FeatureKey },
+                { id: 'tasks', label: 'Tasks', icon: CheckSquare, path: '/tasks', feature: 'tasks' as FeatureKey },
                 { id: 'calendar', label: 'Events', icon: Calendar, path: '/events', feature: 'events' as FeatureKey },
                 ...(canReadReports ? [
                     { id: 'reports', label: 'Reports', icon: BarChart3, path: '/reports', feature: 'reports' as FeatureKey }

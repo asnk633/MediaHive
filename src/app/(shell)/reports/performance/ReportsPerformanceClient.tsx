@@ -30,6 +30,8 @@ interface UserPerformance {
 export default function ReportsPerformanceClient() {
     const router = useRouter();
     const [tasks, setTasks] = useState<Task[]>([]);
+    const [institutions, setInstitutions] = useState<any[]>([]);
+    const [departments, setDepartments] = useState<any[]>([]);
     const [loading, setLoading] = useState(true);
     const [selectedMonth, setSelectedMonth] = useState(new Date());
 
@@ -41,7 +43,21 @@ export default function ReportsPerformanceClient() {
 
     useEffect(() => {
         fetchTasks();
+        fetchStructure();
     }, []);
+
+    const fetchStructure = async () => {
+        try {
+            const [instData, deptData] = await Promise.all([
+                StructureService.getInstitutions(true),
+                StructureService.getDepartments(true)
+            ]);
+            setInstitutions(instData.institutions);
+            setDepartments(deptData.departments);
+        } catch (err) {
+            console.error("Failed to fetch structure data:", err);
+        }
+    };
 
     const fetchTasks = async () => {
         setLoading(true);
@@ -80,31 +96,59 @@ export default function ReportsPerformanceClient() {
         const avgLeadTimeHours = completedTasks.length > 0 ? Math.round(totalHours / completedTasks.length) : 0;
         const avgLeadTimeDays = (avgLeadTimeHours / 24).toFixed(1);
 
-        // Leaderboard (Top Performers)
-        const userMap = new Map<string, UserPerformance>();
+        // Leaderboard & Department mapping
+        const entityMap = new Map<string, { name: string; completed: number; total: number; tasks: Task[] }>();
         const workloadMap: Record<string, number> = {};
+
+        // Helper to resolve entity info from task
+        const getEntityInfo = (task: Task) => {
+            // Priority 1: On Behalf Of
+            if (task.on_behalf_of?.id) {
+                return { id: String(task.on_behalf_of.id), name: task.on_behalf_of.name || 'External' };
+            }
+
+            // Priority 2: Department ID
+            if (task.department_id) {
+                const dept = departments.find(d => String(d.id) === String(task.department_id));
+                if (dept) return { id: String(dept.id), name: dept.name };
+            }
+
+            // Priority 3: Institution ID
+            if (task.institution_id) {
+                const inst = institutions.find(i => String(i.id) === String(task.institution_id));
+                if (inst) return { id: String(inst.id), name: inst.name };
+            }
+
+            return { id: 'general', name: 'General' };
+        };
         
         filteredTasks.forEach(task => {
-            // Workload (uncompleted tasks)
-            if (task.status !== 'done' && task.assignedTo && Array.isArray(task.assignedTo)) {
-                task.assignedTo.forEach(assignee => {
+            // Workload (uncompleted tasks) - Still tracked by team members doing the work
+            if (task.status !== 'done' && task.assigned_to && Array.isArray(task.assigned_to)) {
+                task.assigned_to.forEach(assignee => {
                     const name = assignee.name || 'Unassigned';
                     workloadMap[name] = (workloadMap[name] || 0) + 1;
                 });
             }
 
+            // Productivity Metrics - Tracked by Requesting Entity
+            const { id: entityId, name: entityName } = getEntityInfo(task);
+            
+            if (!entityMap.has(entityId)) {
+                entityMap.set(entityId, { name: entityName, completed: 0, total: 0, tasks: [] });
+            }
+            
+            const stats = entityMap.get(entityId)!;
+            stats.total++;
+            
             if (task.status === 'done') {
-                const userName = task.completed_by?.name || 'Media Team';
-                if (!userMap.has(userName)) {
-                    userMap.set(userName, { name: userName, completed: 0, tasks: [] });
-                }
-                const user = userMap.get(userName)!;
-                user.completed++;
-                user.tasks.push(task);
+                stats.completed++;
+                stats.tasks.push(task);
             }
         });
 
-        const leaderboard = Array.from(userMap.values())
+        const leaderboard = Array.from(entityMap.values())
+            .filter(e => e.completed > 0)
             .sort((a, b) => b.completed - a.completed)
             .slice(0, 5);
 
@@ -122,17 +166,15 @@ export default function ReportsPerformanceClient() {
         const productivityTrend = Object.entries(trendMap)
             .map(([date, count]) => ({ date, count }))
             .sort((a, b) => new Date(a.date).getTime() - new Date(b.date).getTime())
-            .slice(-7); // Keep it to 7 data points for visual consistency
+            .slice(-7);
 
-        // Department distribution
-        const deptMap = new Map<string, number>();
-        filteredTasks.forEach(task => {
-            const dept = String(task.institution_id || 'General');
-            deptMap.set(dept, (deptMap.get(dept) || 0) + 1);
-        });
-
-        const depts = Array.from(deptMap.entries())
-            .map(([name, count]) => ({ name, count }))
+        // Prepare Turnaround Data (from entityMap)
+        const depts = Array.from(entityMap.values())
+            .map(e => ({ 
+                name: e.name, 
+                count: e.total,
+                completed: e.completed
+            }))
             .sort((a, b) => b.count - a.count);
 
         return {
@@ -141,7 +183,7 @@ export default function ReportsPerformanceClient() {
             leaderboard,
             depts,
             totalCompleted: completedTasks.length,
-            completedThisWeek: completedTasks.length, // In context of report month view
+            completedThisWeek: completedTasks.length,
             throughput: filteredTasks.length > 0 ? Math.round((completedTasks.length / filteredTasks.length) * 100) : 0,
             workloadDistribution: workloadMap,
             productivityTrend,
@@ -198,12 +240,12 @@ export default function ReportsPerformanceClient() {
                     <div className="lg:col-span-2 dashboard-card-primary p-8">
                         <div className="flex items-center justify-between mb-8">
                             <div className="flex items-center gap-3">
-                                <div className="p-2 bg-yellow-500/10 rounded-xl">
-                                    <Trophy size={18} className="text-yellow-500" />
+                                <div className="p-2 bg-amber-500/10 rounded-xl">
+                                    <Trophy size={18} className="text-amber-500" />
                                 </div>
-                                <h2 className="text-xl font-bold text-white">Top Contributors</h2>
+                                <h2 className="text-xl font-bold text-white tracking-tight">Top Departments</h2>
                             </div>
-                            <span className="text-[10px] font-bold text-white/20 uppercase tracking-widest">Completed Tasks</span>
+                            <span className="text-[10px] font-black text-white/20 uppercase tracking-[0.2em]">Volume</span>
                         </div>
 
                         <div className="space-y-6">
@@ -281,18 +323,23 @@ export default function ReportsPerformanceClient() {
                 </div>
 
                 {/* Turnaround Table */}
-                <div className="dashboard-card-primary overflow-hidden">
-                    <div className="px-8 py-6 border-b border-white/5 flex items-center justify-between">
-                        <h2 className="text-lg font-bold text-white">Institutional Turnaround</h2>
-                        <span className="text-[10px] font-bold text-white/20 uppercase tracking-widest">Lead Time Analysis</span>
+                <div className="dashboard-card-secondary border border-white/5 rounded-3xl overflow-hidden shadow-[0_32px_64px_-16px_rgba(0,0,0,0.5)]">
+                    <div className="px-8 py-8 border-b border-white/5 flex items-center justify-between bg-white/[0.01]">
+                        <div className="space-y-1">
+                            <h2 className="text-2xl font-bold text-white tracking-tight">Institutional Distribution</h2>
+                            <p className="text-xs text-white/30 font-medium">Detailed breakdown of task volume and throughput share.</p>
+                        </div>
+                        <div className="px-4 py-2 bg-white/5 rounded-xl border border-white/5">
+                            <span className="text-[10px] font-black text-white/40 uppercase tracking-[0.2em]">Lead Time Analysis</span>
+                        </div>
                     </div>
                     <div className="overflow-x-auto">
                         <table className="w-full text-left">
-                            <thead className="bg-white/[0.02] border-b border-white/5">
-                                <tr>
-                                    <th className="px-8 py-4 text-[10px] font-bold text-white/20 uppercase tracking-widest">Institution / Department</th>
-                                    <th className="px-8 py-4 text-[10px] font-bold text-white/20 uppercase tracking-widest">Task Volume</th>
-                                    <th className="px-8 py-4 text-[10px] font-bold text-white/20 uppercase tracking-widest text-right">Throughput Share</th>
+                            <thead>
+                                <tr className="bg-white/[0.02]">
+                                    <th className="px-8 py-6 text-[10px] font-black text-white/20 uppercase tracking-[0.2em]">Institution / Department</th>
+                                    <th className="px-8 py-6 text-[10px] font-black text-white/20 uppercase tracking-[0.2em]">Requests</th>
+                                    <th className="px-8 py-6 text-[10px] font-black text-white/20 uppercase tracking-[0.2em] text-right">Throughput Share</th>
                                 </tr>
                             </thead>
                             <tbody className="divide-y divide-white/5">

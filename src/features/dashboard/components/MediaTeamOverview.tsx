@@ -77,12 +77,12 @@ export const MediaTeamOverview = ({ performance: propPerformance }: MediaTeamOve
             <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
                 {/* Team Workload Distribution */}
                 <ReactiveCard className="lg:col-span-2 dashboard-card-safe-padding dashboard-card-secondary">
-                    <div className="flex items-center gap-3 dashboard-card-header-spacing">
+                    <div className="flex items-center gap-3 mb-6">
                         <Users className="text-blue-400" size={18} />
                         <h3 className="text-sm font-medium text-white/85">Workload Distribution</h3>
                     </div>
                     
-                    <div className="space-y-4">
+                    <div className="space-y-6">
                         {members.length > 0 ? members.map(([name, count], idx) => (
                             <div key={idx} className="flex items-center gap-4">
                                 <div className="min-w-[120px] text-xs font-semibold text-white/60 truncate">
@@ -106,7 +106,7 @@ export const MediaTeamOverview = ({ performance: propPerformance }: MediaTeamOve
 
                 {/* Productivity Trend Sparkline-like View */}
                 <ReactiveCard className="dashboard-card-safe-padding dashboard-card-secondary">
-                    <div className="flex items-center gap-3 dashboard-card-header-spacing">
+                    <div className="flex items-center gap-3 mb-6">
                         <BarChart3 className="text-blue-400" size={18} />
                         <h3 className="text-sm font-medium text-white/85">Productivity Trend</h3>
                     </div>

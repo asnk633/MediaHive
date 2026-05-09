@@ -523,7 +523,7 @@ export default function TasksNewClient() {
                                     <div className="space-y-0.5 animate-in fade-in slide-in-from-top-2 duration-300">
                                         <div className="flex items-center justify-between mb-2">
                                             <label className="block text-sm font-medium text-white/70">
-                                                Requested By <span className="text-white/40 text-xs">(Dept / Inst)</span>
+                                                Requested On behalf of <span className="text-white/40 text-xs">(Dept / Inst)</span>
                                             </label>
                                             <button 
                                                 type="button"

@@ -437,7 +437,7 @@ export const EventDetailsModal: React.FC<EventDetailsModalProps> = ({ event, isO
 
                             <div className="bg-glass rounded-2xl p-5 shadow-sm">
                                 <h3 className="text-[10px] uppercase font-bold text-muted tracking-wider mb-4 flex items-center gap-2">
-                                    <User size={12} /> {event.created_by?.role === 'member' ? 'Created By' : 'Organizer'}
+                                    <User size={12} /> {(event.on_behalf_of || event.institution_id || event.department_id || event.department) ? 'Requested On behalf of' : (event.created_by?.role === 'member' ? 'Requested By' : 'Organizer')}
                                 </h3>
                                 <div className="flex items-center gap-3">
                                     <div className="w-10 h-10 rounded-full bg-gradient-to-br from-blue-600 to-indigo-600 flex items-center justify-center text-white font-bold shadow-lg">

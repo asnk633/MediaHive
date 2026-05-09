@@ -841,7 +841,7 @@ const TaskListViewComponent: React.FC<TaskListViewProps> = ({ tasks, loading = f
                         {isIndeterminate && <Minus size={10} className="text-blue-400" />}
                     </div>
                     <div className="flex items-center gap-2">Task <DataIntegritySignal meta={(tasks as any).__meta} variant="muted" /></div>
-                    <div className="hidden md:block">Requested By</div>
+                    <div className="hidden md:block">Requester</div>
                     <div className="hidden md:block text-center">Priority</div>
                     <div className="hidden md:block">Assignee</div>
                     <div className="hidden md:block text-right">Due</div>

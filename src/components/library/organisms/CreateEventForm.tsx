@@ -610,7 +610,7 @@ export const CreateEventForm = ({ initialDate, initialEndDate, initialEvent, onS
                                 {/* Entity Selector (When ON) */}
                                 {createOnBehalfOf && (
                                     <div className="pt-4 mt-4 border-t border-blue-500/20">
-                                        <label className={labelClasses}>On Behalf Of (Entity)</label>
+                                        <label className={labelClasses}>Requested On behalf of (Entity)</label>
                                         <div className={inputContainerClasses}>
                                             <Briefcase size={20} className={iconClasses} />
                                             <Select value={onBehalfOfEntityName} onValueChange={setOnBehalfOfEntityName}>

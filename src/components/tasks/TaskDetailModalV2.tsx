@@ -596,7 +596,9 @@ export const TaskDetailModalV2: React.FC<TaskDetailsModalProps> = ({ task, isOpe
                                                 <User size={20} />
                                             </div>
                                             <div className="flex-1 min-w-0">
-                                                <p className="text-[10px] uppercase tracking-wider font-bold text-white/30 mb-1">Requested By</p>
+                                                <p className="text-[10px] uppercase tracking-wider font-bold text-white/30 mb-1">
+                                                    {(task.departmentId || task.institutionId) ? 'Requested On behalf of' : 'Requested By'}
+                                                </p>
                                                 <p className="text-sm font-semibold text-white/90 truncate">
                                                     <ResolvedStructureName
                                                         id={task.departmentId || task.institutionId}

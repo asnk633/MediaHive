@@ -31,7 +31,7 @@ export const MediaTeamOverview = ({ performance: propPerformance }: MediaTeamOve
         },
         { 
             label: 'Avg Turnaround', 
-            value: `${performance.avgCompletionTimeDays}d`, 
+            value: performance.avgCompletionTimeDays === 0 ? `${performance.avgLeadTimeHours}h` : `${performance.avgCompletionTimeDays}d`, 
             subValue: 'Process efficiency',
             icon: Timer, 
             color: 'text-blue-400', 
@@ -129,8 +129,8 @@ export const MediaTeamOverview = ({ performance: propPerformance }: MediaTeamOve
                                             )}
                                         </div>
                                     </div>
-                                    <span className="text-[8px] font-black text-white/20 uppercase">
-                                        {idx === 6 ? 'Now' : ''}
+                                    <span className="text-[8px] font-black text-white/20 uppercase whitespace-nowrap">
+                                        {day.date}
                                     </span>
                                 </div>
                             );

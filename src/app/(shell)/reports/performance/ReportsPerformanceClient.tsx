@@ -120,8 +120,8 @@ export default function ReportsPerformanceClient() {
         
         filteredTasks.forEach(task => {
             // Workload (uncompleted tasks) - Still tracked by team members doing the work
-            if (task.status !== 'done' && task.assigned_to && Array.isArray(task.assigned_to)) {
-                task.assigned_to.forEach(assignee => {
+            if (task.status !== 'done' && task.assignedTo && Array.isArray(task.assignedTo)) {
+                task.assignedTo.forEach(assignee => {
                     const name = assignee.name || 'Unassigned';
                     workloadMap[name] = (workloadMap[name] || 0) + 1;
                 });
@@ -158,11 +158,16 @@ export default function ReportsPerformanceClient() {
             }
         });
 
-        // Convert to sorted array for the chart
-        const productivityTrend = Object.entries(trendMap)
-            .map(([date, count]) => ({ date, count }))
-            .sort((a, b) => new Date(a.date).getTime() - new Date(b.date).getTime())
-            .slice(-7);
+        // Ensure we have last 7 days padded for the trend chart
+        const productivityTrend = Array.from({ length: 7 }).map((_, i) => {
+            const d = new Date();
+            d.setDate(d.getDate() - (6 - i));
+            const dayKey = format(d, 'MMM dd');
+            return {
+                date: dayKey,
+                count: trendMap[dayKey] || 0
+            };
+        });
 
         // Prepare Turnaround Data (from entityMap)
         const depts = Array.from(entityMap.values())
@@ -239,9 +244,15 @@ export default function ReportsPerformanceClient() {
                                 <div className="p-2 bg-amber-500/10 rounded-xl">
                                     <Trophy size={18} className="text-amber-500" />
                                 </div>
-                                <h2 className="text-xl font-bold text-white tracking-tight">Top Departments</h2>
+                                <div className="space-y-0.5">
+                                    <h2 className="text-xl font-bold text-white tracking-tight">Top Departments</h2>
+                                    <p className="text-[10px] text-white/20 font-medium">Requesting entities with highest completions.</p>
+                                </div>
                             </div>
-                            <span className="text-[10px] font-black text-white/20 uppercase tracking-[0.2em]">Volume</span>
+                            <div className="flex flex-col items-end">
+                                <span className="text-[10px] font-black text-white/20 uppercase tracking-[0.2em]">Throughput</span>
+                                <span className="text-[8px] text-white/10 font-bold uppercase mt-0.5">By completions</span>
+                            </div>
                         </div>
 
                         <div className="space-y-6">

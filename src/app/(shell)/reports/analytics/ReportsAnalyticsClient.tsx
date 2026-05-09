@@ -87,26 +87,41 @@ export default function ReportsAnalyticsClient() {
 
         const totalTasks = filteredTasks.length;
 
-        // Priority concentration
+        // Strategic Load (Priority Concentration)
         const urgentTasks = filteredTasks.filter(t => t.priority === 'urgent' || t.priority === 'high').length;
-        const priorityConcentration = totalTasks > 0 ? Math.round((urgentTasks / totalTasks) * 100) : 0;
+        const strategicLoad = totalTasks > 0 ? Math.round((urgentTasks / totalTasks) * 100) : 0;
 
-        // Media Growth (Current vs Last Month - simplified for demo)
+        // Media Expansion (Dynamic Calculation)
+        // For now, we simulate a 'previous' count if we don't have historical data
         const currentFiles = filteredFiles.length;
-        const mediaGrowth = currentFiles > 0 ? 12 : 0; // Simulated delta for visual depth
+        const previousFiles = files.length - currentFiles;
+        const mediaExpansion = previousFiles > 0 
+            ? Math.round(((currentFiles) / previousFiles) * 100) 
+            : (currentFiles > 0 ? 100 : 0);
 
-        // Correlation: Linked to Events/Campaigns
+        // Linkage Rate (Correlation)
         const linkedTasks = filteredTasks.filter(t => t.event_id || t.campaign_id).length;
-        const correlationRate = totalTasks > 0 ? Math.round((linkedTasks / totalTasks) * 100) : 0;
+        const linkageRate = totalTasks > 0 ? Math.round((linkedTasks / totalTasks) * 100) : 0;
+
+        // Institutional Growth Trend Data
+        // Group tasks by day to create a simple trend
+        const dayMap: Record<string, number> = {};
+        filteredTasks.forEach(t => {
+            const date = t.created_at?.seconds ? new Date(t.created_at.seconds * 1000) : new Date(t.created_at as any);
+            const day = format(date, 'd');
+            dayMap[day] = (dayMap[day] || 0) + 1;
+        });
+        const growthTrend = Array.from({ length: 10 }).map((_, i) => dayMap[String(i + 1)] || 0);
 
         return {
             statusMap,
             totalTasks,
-            priorityConcentration,
+            strategicLoad,
             mediaCount: files.length,
             currentFiles,
-            mediaGrowth,
-            correlationRate
+            mediaExpansion,
+            linkageRate,
+            growthTrend
         };
     }, [filteredTasks, filteredFiles, files]);
 
@@ -170,8 +185,8 @@ export default function ReportsAnalyticsClient() {
                     {[
                         { label: 'System Tasks', value: analytics.totalTasks, icon: PieChart, color: 'text-blue-400', bg: 'bg-blue-400/10' },
                         { label: 'Media Assets', value: analytics.mediaCount, icon: Database, color: 'text-emerald-400', bg: 'bg-emerald-400/10' },
-                        { label: 'Strategic Load', value: `${analytics.priorityConcentration}%`, icon: ShieldAlert, color: 'text-amber-400', bg: 'bg-amber-400/10' },
-                        { label: 'Linkage Rate', value: `${analytics.correlationRate}%`, icon: Share2, color: 'text-indigo-400', bg: 'bg-indigo-400/10' },
+                        { label: 'Strategic Load', value: `${analytics.strategicLoad}%`, icon: ShieldAlert, color: 'text-amber-400', bg: 'bg-amber-400/10' },
+                        { label: 'Linkage Rate', value: `${analytics.linkageRate}%`, icon: Share2, color: 'text-indigo-400', bg: 'bg-indigo-400/10' },
                     ].map((m, i) => (
                         <div key={i} className="glass-card p-6 rounded-2xl border border-white/5 bg-white/[0.01] flex flex-col gap-1">
                             <div className="flex justify-between items-start mb-2">
@@ -247,7 +262,7 @@ export default function ReportsAnalyticsClient() {
                                     <h2 className="text-xl font-bold text-white">Institutional Growth</h2>
                                 </div>
                                 <div className="flex items-center gap-2 px-3 py-1 bg-emerald-500/10 rounded-full border border-emerald-500/20 text-emerald-400 text-[10px] font-bold">
-                                    <TrendingUp size={12} /> +{analytics.mediaGrowth}% vs Prev
+                                    <TrendingUp size={12} /> +{analytics.mediaExpansion}% Acceleration
                                 </div>
                             </div>
 
@@ -317,31 +332,31 @@ export default function ReportsAnalyticsClient() {
                         <div className="p-8 space-y-4">
                             <span className="text-[10px] font-bold text-white/20 uppercase tracking-widest">Load Density</span>
                             <div className="flex items-end gap-2">
-                                <span className="text-3xl font-bold text-white">{analytics.priorityConcentration}%</span>
+                                <span className="text-3xl font-bold text-white">{analytics.strategicLoad}%</span>
                                 <span className="text-xs font-medium text-amber-500 mb-1">Strategic Concentration</span>
                             </div>
                             <div className="h-2 w-full bg-white/5 rounded-full">
-                                <div className="h-full bg-amber-500 rounded-full" style={{ width: `${analytics.priorityConcentration}%` }} />
+                                <div className="h-full bg-amber-500 rounded-full" style={{ width: `${analytics.strategicLoad}%` }} />
                             </div>
                         </div>
                         <div className="p-8 space-y-4">
                             <span className="text-[10px] font-bold text-white/20 uppercase tracking-widest">Correlation Impact</span>
                             <div className="flex items-end gap-2">
-                                <span className="text-3xl font-bold text-white">{analytics.correlationRate}%</span>
+                                <span className="text-3xl font-bold text-white">{analytics.linkageRate}%</span>
                                 <span className="text-xs font-medium text-indigo-500 mb-1">Resource Linkage</span>
                             </div>
                             <div className="h-2 w-full bg-white/5 rounded-full">
-                                <div className="h-full bg-indigo-500 rounded-full" style={{ width: `${analytics.correlationRate}%` }} />
+                                <div className="h-full bg-indigo-500 rounded-full" style={{ width: `${analytics.linkageRate}%` }} />
                             </div>
                         </div>
                         <div className="p-8 space-y-4">
                             <span className="text-[10px] font-bold text-white/20 uppercase tracking-widest">Media Expansion</span>
                             <div className="flex items-end gap-2">
-                                <span className="text-3xl font-bold text-white">+{analytics.mediaGrowth}%</span>
+                                <span className="text-3xl font-bold text-white">+{analytics.mediaExpansion}%</span>
                                 <span className="text-xs font-medium text-emerald-500 mb-1">Asset Acceleration</span>
                             </div>
                             <div className="h-2 w-full bg-white/5 rounded-full">
-                                <div className="h-full bg-emerald-500 rounded-full" style={{ width: `${analytics.mediaGrowth}%` }} />
+                                <div className="h-full bg-emerald-500 rounded-full" style={{ width: `${analytics.mediaExpansion}%` }} />
                             </div>
                         </div>
                     </div>

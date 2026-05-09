@@ -240,8 +240,9 @@ export default function ReportsCustomClient() {
                                     <thead className="bg-[#0f172a] border-b border-white/5">
                                         <tr>
                                             <th className="px-8 py-4 text-[10px] font-bold text-white/20 uppercase tracking-widest">{source === 'tasks' ? 'Task Descriptor' : 'Asset Descriptor'}</th>
-                                            <th className="px-8 py-4 text-[10px] font-bold text-white/20 uppercase tracking-widest">{source === 'tasks' ? 'Institutional Hub' : 'Origin'}</th>
-                                            <th className="px-8 py-4 text-[10px] font-bold text-white/20 uppercase tracking-widest text-right">{source === 'tasks' ? 'Operational Rank' : 'Resource Share'}</th>
+                                            <th className="px-8 py-4 text-[10px] font-bold text-white/20 uppercase tracking-widest">{source === 'tasks' ? 'Institutional Hub' : 'Source Entity'}</th>
+                                            <th className="px-8 py-4 text-[10px] font-bold text-white/20 uppercase tracking-widest">{source === 'tasks' ? 'Operational Rank' : 'Resource Details'}</th>
+                                            <th className="px-8 py-4 text-[10px] font-bold text-white/20 uppercase tracking-widest text-right">{source === 'tasks' ? 'Timeline' : 'Expansion Date'}</th>
                                         </tr>
                                     </thead>
                                     <tbody className="divide-y divide-white/5">
@@ -272,10 +273,12 @@ export default function ReportsCustomClient() {
                                                     </td>
                                                     <td className="px-8 py-6">
                                                         <span className="text-xs font-bold text-white/40 uppercase tracking-wider">
-                                                            {source === 'tasks' ? (item.institution_id || 'General') : (item.department || 'Repository')}
+                                                            {source === 'tasks' 
+                                                                ? (item.on_behalf_of?.name || item.created_by?.institution_name || 'Media & IT') 
+                                                                : (item.department || 'Creative Library')}
                                                         </span>
                                                     </td>
-                                                    <td className="px-8 py-6 text-right">
+                                                    <td className="px-8 py-6">
                                                         {source === 'tasks' ? (
                                                             <span className={cn(
                                                                 "inline-flex px-2 py-1 rounded text-[10px] font-bold uppercase tracking-widest border",
@@ -286,8 +289,21 @@ export default function ReportsCustomClient() {
                                                                 {item.priority}
                                                             </span>
                                                         ) : (
-                                                            <span className="text-[10px] font-bold text-white/20 uppercase">{Math.round((item.size || 0) / 1024)} KB</span>
+                                                            <div className="flex flex-col">
+                                                                <span className="text-[10px] font-bold text-white uppercase">{item.type || 'Media'}</span>
+                                                                <span className="text-[10px] text-white/20 uppercase tracking-widest mt-1">
+                                                                    {item.mimeType?.split('/')[1] || 'Asset'}
+                                                                </span>
+                                                            </div>
                                                         )}
+                                                    </td>
+                                                    <td className="px-8 py-6 text-right">
+                                                        <span className="text-[10px] font-bold text-white/20 uppercase">
+                                                            {item.created_at ? format(
+                                                                item.created_at.seconds ? new Date(item.created_at.seconds * 1000) : new Date(item.created_at),
+                                                                'dd MMM yyyy'
+                                                            ) : 'N/A'}
+                                                        </span>
                                                     </td>
                                                 </tr>
                                             ))

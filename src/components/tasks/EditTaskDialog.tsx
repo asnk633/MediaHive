@@ -1,5 +1,7 @@
 "use client";
 
+import { motion, AnimatePresence } from "framer-motion";
+
 import React, { useState, useEffect } from "react";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
@@ -504,26 +506,29 @@ export function EditTaskDialog({ open, onOpenChange, task, onUpdate }: EditTaskD
                     </div>
 
                     {/* Error */}
-                    {error && (
-                        <motion.div 
-                            initial={{ opacity: 0, y: 10 }}
-                            animate={{ opacity: 1, y: 0 }}
-                            className="flex items-center gap-4 px-5 py-4 rounded-2xl bg-red-500/10 border border-red-500/20 shadow-lg shadow-red-500/5"
-                        >
-                            <AlertCircle size={18} className="text-red-400 shrink-0" />
-                            <div className="flex-1">
-                                <p className="text-xs font-bold text-red-200 uppercase tracking-widest mb-0.5">Update Failed</p>
-                                <p className="text-sm text-red-300/80 font-medium">{error}</p>
-                            </div>
-                            <button
-                                type="button"
-                                onClick={() => handleProtectedSubmit(undefined)}
-                                className="px-3.5 py-1.5 rounded-lg bg-red-500/20 text-red-300 text-[10px] font-bold uppercase tracking-widest hover:bg-red-500/30 transition-colors"
+                    <AnimatePresence mode="wait">
+                        {error && (
+                            <motion.div 
+                                initial={{ opacity: 0, y: 10 }}
+                                animate={{ opacity: 1, y: 0 }}
+                                exit={{ opacity: 0, y: -10 }}
+                                className="flex items-center gap-4 px-5 py-4 rounded-2xl bg-red-500/10 border border-red-500/20 shadow-lg shadow-red-500/5"
                             >
-                                Retry
-                            </button>
-                        </motion.div>
-                    )}
+                                <AlertCircle size={18} className="text-red-400 shrink-0" />
+                                <div className="flex-1">
+                                    <p className="text-xs font-bold text-red-200 uppercase tracking-widest mb-0.5">Update Failed</p>
+                                    <p className="text-sm text-red-300/80 font-medium">{error}</p>
+                                </div>
+                                <button
+                                    type="button"
+                                    onClick={() => handleProtectedSubmit(undefined)}
+                                    className="px-3.5 py-1.5 rounded-lg bg-red-500/20 text-red-300 text-[10px] font-bold uppercase tracking-widest hover:bg-red-500/30 transition-colors"
+                                >
+                                    Retry
+                                </button>
+                            </motion.div>
+                        )}
+                    </AnimatePresence>
 
                     {/* Footer Actions */}
                     <div className="flex justify-end gap-3 pt-5 border-t border-white/[0.06]">

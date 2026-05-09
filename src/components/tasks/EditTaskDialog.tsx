@@ -483,9 +483,6 @@ export function EditTaskDialog({ open, onOpenChange, task, onUpdate }: EditTaskD
                                 </div>
                             </div>
                         )}
-                                </div>
-                            </div>
-                        )}
 
                         {/* Demo Data Management */}
                         {(isAdmin || isManager) && (

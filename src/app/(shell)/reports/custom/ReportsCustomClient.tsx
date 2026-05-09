@@ -217,6 +217,8 @@ export default function ReportsCustomClient() {
                                     </div>
                                 </div>
                             </>
+                        )}
+
                         {source === 'media' && (
                             <div className="space-y-4">
                                 <h3 className="text-[10px] font-bold text-white/20 uppercase tracking-[0.2em]">Asset Type</h3>

@@ -33,6 +33,7 @@ import { FieldPresence } from '@/components/collaboration/FieldPresence';
 import { useFormState } from '@/hooks/useFormState';
 import { useFormSubmit } from '@/hooks/useFormSubmit';
 import { DraftIndicator } from '@/components/ui/DraftIndicator';
+import { MultiSelect } from '@/components/ui/selectors/MultiSelect';
 
 interface EditTaskDialogProps {
     open: boolean;
@@ -161,10 +162,8 @@ export function EditTaskDialog({ open, onOpenChange, task, onUpdate }: EditTaskD
                 const filtered = members.filter(m => {
                     const role = (m as any).role?.toLowerCase().trim();
                     const name = m.name?.toLowerCase() || '';
-                    return ['manager', 'team', 'member'].includes(role) && 
-                           !name.includes('admin') && 
-                           role !== 'admin' && 
-                           role !== 'superadmin';
+                    // Allow everyone except maybe system/superadmin accounts if they are hidden
+                    return !name.includes('system') && role !== 'superadmin';
                 });
                 setTeamMembers(filtered);
             }).catch(console.error);
@@ -448,39 +447,16 @@ export function EditTaskDialog({ open, onOpenChange, task, onUpdate }: EditTaskD
                         </div>
 
                         {/* Assign To Team Members */}
-                        {canAssign && teamMembers.length > 0 && (
+                        {canAssign && (
                             <div>
                                 <label className={cn(labelCls, "mb-3")}>Assign To Team Members</label>
-                                <div className="grid grid-cols-2 gap-2.5">
-                                    {teamMembers.map(m => {
-                                        const selected = assignedToIds.includes(m.uid);
-                                        return (
-                                            <button
-                                                key={m.uid}
-                                                type="button"
-                                                onClick={() => setAssignedToIds(prev =>
-                                                    prev.includes(m.uid)
-                                                        ? prev.filter(id => id !== m.uid)
-                                                        : [...prev, m.uid]
-                                                )}
-                                                className={cn(
-                                                    "flex items-center gap-3 px-4 py-3 rounded-xl border text-sm font-semibold transition-all duration-200 text-left",
-                                                    selected
-                                                        ? "bg-blue-500/10 border-blue-500/30 text-blue-100 shadow-md"
-                                                        : "bg-white/[0.02] border-white/[0.06] text-white/40 hover:bg-white/[0.04] hover:text-white/60"
-                                                )}
-                                            >
-                                                <div className={cn(
-                                                    "w-4.5 h-4.5 rounded-md border-2 flex items-center justify-center shrink-0 transition-all",
-                                                    selected ? "border-blue-400 bg-blue-500" : "border-white/10"
-                                                )}>
-                                                    {selected && <CheckCircle2 size={12} className="text-white" />}
-                                                </div>
-                                                <span className="truncate">{m.name}</span>
-                                            </button>
-                                        );
-                                    })}
-                                </div>
+                                <MultiSelect
+                                    placeholder="Add assignees..."
+                                    options={teamMembers.map(m => ({ id: m.uid, label: m.name }))}
+                                    selected={assignedToIds}
+                                    onChange={setAssignedToIds}
+                                    className="w-full"
+                                />
                             </div>
                         )}
 

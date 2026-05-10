@@ -339,6 +339,23 @@ class SyncEngine {
                   entityId: mutation.payload.id 
                 }
               });
+            } else if (error?.code === '23503') {
+              // DATA INTEGRITY ERROR: This is a permanent data error (e.g. FK violation)
+              // We mark it as 'failed' immediately and DO NOT trip the circuit breaker
+              // so that subsequent mutations (which might be valid) can still process.
+              await offlineDB.updateStatus(mutation.id, 'failed');
+              this.metrics.lastError = `Data Integrity Error: ${error.message}`;
+              
+              Sentry.captureException(error, {
+                tags: { sync_failure: 'data_integrity' },
+                extra: { 
+                  mutationType: mutation.type, 
+                  mutationId: mutation.id,
+                  errorCode: error.code,
+                  details: error.details
+                }
+              });
+              this.updateUIState();
             } else if (mutation.retries >= this.maxRetries - 1) {
               await offlineDB.updateStatus(mutation.id, 'failed');
               this.metrics.lastError = error?.message ?? 'Unknown error';
@@ -801,6 +818,26 @@ class SyncEngine {
             console.warn(`[SyncEngine] ✅ Idempotent: ${table}/${mutation.payload.id} already exists. Treating as success.`);
             return; 
           }
+
+          // FK Violation Special Handling: Auto-Correction
+          if (result.error.code === '23503' && table === 'tasks' && mutation.payload.department_id) {
+              console.warn(`[SyncEngine] 🩹 Foreign Key Violation (department_id: ${mutation.payload.department_id}). Nullifying and retrying task creation.`);
+              
+              // Nullify the invalid reference
+              const correctedPayload = { ...mutation.payload, department_id: null };
+              
+              // Retry the insertion immediately with corrected payload
+              const retryResult = await supabase.from(table).insert([correctedPayload]);
+              
+              if (!retryResult.error || retryResult.error.code === '23505') {
+                  console.log(`[SyncEngine] ✅ Task creation succeeded after FK auto-correction.`);
+                  return;
+              }
+              
+              // If it still fails, throw the original error to be handled by the permanent failure logic
+              throw result.error;
+          }
+
           console.error(`[SyncEngine] ❌ execution error for ${mutation.type}:`, result.error);
           throw new Error(result.error.message || JSON.stringify(result.error));
       }
@@ -867,8 +904,8 @@ class SyncEngine {
       }
       if (err.code === '23503') {
         // FK Constraint Violation — non-retryable (e.g. task_id doesn't exist)
-        console.error(`[SyncEngine] 🔑 FK violation on ${table} (mutation ${mutation.id}): ${err.message}. Mutation will be dropped.`);
-        throw new Error(`Foreign key error: ${err.message}`);
+        console.error(`[SyncEngine] 🔑 FK violation on ${table} (mutation ${mutation.id}): ${err.message}.`);
+        throw err; // Throw original error to preserve .code for processQueue
       }
       throw err;
 

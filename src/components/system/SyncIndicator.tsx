@@ -22,22 +22,25 @@ export function SyncIndicator() {
       : 30;
 
     return (
-      <div className="fixed bottom-28 right-4 z-[999] flex items-center gap-3 bg-yellow-500/10 backdrop-blur border border-yellow-500/30 px-4 py-2.5 rounded-full shadow-lg animate-in fade-in slide-in-from-bottom-2">
-        <AlertTriangle className="w-4 h-4 text-yellow-400 shrink-0" />
-        <span className="text-sm font-medium text-yellow-200/90">
-          Sync paused, retrying in {resumeIn}s…
-        </span>
-        <button
-          onClick={() => syncEngine.processQueue(true)}
-          className="ml-1 text-xs text-yellow-300 hover:text-yellow-100 underline underline-offset-2 transition-colors pointer-events-auto"
-        >
-          Retry now
-        </button>
+      <div className="fixed bottom-28 right-4 z-[999] flex flex-col items-end gap-2">
+        <div className="flex items-center gap-3 bg-yellow-500/10 backdrop-blur border border-yellow-500/30 px-4 py-2.5 rounded-full shadow-lg animate-in fade-in slide-in-from-bottom-2">
+          <AlertTriangle className="w-4 h-4 text-yellow-400 shrink-0" />
+          <span className="text-sm font-medium text-yellow-200/90">
+            Sync paused, retrying in {resumeIn}s…
+          </span>
+          <button
+            onClick={() => syncEngine.processQueue(true)}
+            className="ml-1 text-xs text-yellow-300 hover:text-yellow-100 underline underline-offset-2 transition-colors pointer-events-auto"
+          >
+            Retry now
+          </button>
+        </div>
+        
         <button
           onClick={() => syncEngine.clearQueue()}
-          className="ml-3 text-xs text-red-400 hover:text-red-200 underline underline-offset-2 transition-colors pointer-events-auto"
+          className="text-[10px] text-white/40 hover:text-red-400 transition-colors flex items-center gap-1 pr-2"
         >
-          Clear queue
+          Discard pending changes
         </button>
       </div>
     );

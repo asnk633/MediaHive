@@ -30,8 +30,14 @@ import {
   MousePointer2,
   Undo2,
   Trash2,
-  Edit3
+  Edit3,
+  CheckCircle2, 
+  History, 
+  ShieldAlert, 
+  RefreshCw 
 } from 'lucide-react';
+import { offlineDB } from '@/lib/offline/db';
+import { toast } from 'sonner';
 import { usePersistentConflicts } from '@/hooks/usePersistentConflicts';
 import { ConflictStatus, ConflictResolution, PersistentConflict } from '@/lib/conflictStore';
 import type { ConflictCategory } from '@/domain/conflicts/types';
@@ -40,6 +46,7 @@ import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { DropdownSelector } from '@/components/ui/selectors/DropdownSelector';
 import { cn } from '@/lib/utils';
+import { useTasks } from '@/features/tasks/hooks/useTasks';
 
 interface ConflictResolutionCenterProps {
   onBack?: () => void;
@@ -49,6 +56,10 @@ export const ConflictResolutionCenter: React.FC<ConflictResolutionCenterProps> =
   const [selectedConflictId, setSelectedConflictId] = useState<string | null>(null);
   const [showResolved, setShowResolved] = useState(false);
   const [filterCategory, setFilterCategory] = useState<ConflictCategory | 'all'>('all');
+  const [isPurging, setIsPurging] = useState(false);
+  
+  // Phase 11: Task Context for better descriptions
+  const { data: allTasks = [] } = useTasks();
   
   const { 
     conflicts, 
@@ -56,9 +67,25 @@ export const ConflictResolutionCenter: React.FC<ConflictResolutionCenterProps> =
     error, 
     resolveConflict, 
     updateConflictStatus,
+    clearAllConflicts
   } = usePersistentConflicts({
     status: showResolved ? undefined : [ConflictStatus.DETECTED, ConflictStatus.SURFACED]
   });
+
+  const handlePurgeAndResync = async () => {
+      if (!confirm("This will clear all local data and reload the app to redownload everything from the server. Use this to clear ghost data or stale profiles. Continue?")) return;
+      
+      setIsPurging(true);
+      const success = await offlineDB.purgeAllData();
+      
+      if (success) {
+          toast.success("Local data purged. Reloading app...");
+          setTimeout(() => window.location.reload(), 1500);
+      } else {
+          toast.error("Failed to purge local data.");
+          setIsPurging(false);
+      }
+  };
 
   const unresolvedCount = conflicts.filter(c => 
     c.status === ConflictStatus.DETECTED || c.status === ConflictStatus.SURFACED
@@ -80,7 +107,14 @@ export const ConflictResolutionCenter: React.FC<ConflictResolutionCenterProps> =
       'status': 'Task Status',
       'priority': 'Priority Level',
       'assigned_to': 'Assigned User',
+      'assignedTo': 'Assigned User',
+      'due_date': 'Due Date',
+      'dueDate': 'Due Date',
       'due_at': 'Due Date',
+      'completed_at': 'Completion Date',
+      'completedAt': 'Completion Date',
+      'updated_at': 'Last Update',
+      'updatedAt': 'Last Update',
       'media_coverage': 'Media Coverage',
       'location': 'Location',
       'tags': 'Tags',
@@ -89,14 +123,59 @@ export const ConflictResolutionCenter: React.FC<ConflictResolutionCenterProps> =
     return mapping[field] || field.charAt(0).toUpperCase() + field.slice(1).replace(/_/g, ' ');
   };
 
+  const humanizeValue = (value: any, field: string) => {
+    if (value === null || value === undefined) return 'Empty';
+    
+    if (field === 'status') {
+      const mapping: Record<string, string> = {
+        'todo': 'To Do',
+        'in_progress': 'Working',
+        'review': 'On Hold',
+        'on_hold': 'On Hold',
+        'done': 'Completed',
+        'completed': 'Completed',
+        'pending': 'Approval Needed'
+      };
+      if (mapping[value]) return mapping[value];
+      // Fallback: convert underscores to spaces and Title Case
+      return String(value)
+        .replace(/_/g, ' ')
+        .replace(/\b\w/g, l => l.toUpperCase());
+    }
+    
+    if (field === 'priority') {
+      return (typeof value === 'string' ? value.charAt(0).toUpperCase() + value.slice(1) : String(value));
+    }
+
+    if (field.toLowerCase().includes('_at') || field.toLowerCase().includes('date') || field.toLowerCase().includes('at')) {
+      if (typeof value === 'string' || typeof value === 'number' || (typeof value === 'object' && 'seconds' in value)) {
+        return formatDate(value);
+      }
+    }
+
+    if (typeof value === 'object') {
+        return JSON.stringify(value);
+    }
+    
+    return String(value);
+  };
+
   const getConflictDescription = (conflict: PersistentConflict) => {
+    const task = allTasks.find(t => t.id === conflict.taskId);
+    const taskName = task?.title || `Task #${conflict.taskId.substring(0, 4)}`;
+    
     const isDeletionField = conflict.field.toLowerCase().includes('deleted');
     if (isDeletionField) {
       return conflict.localValue === true 
-        ? "You deleted this item, but it still exists on the server."
-        : "This item was deleted on the server, but you still have it locally.";
+        ? `You deleted "${taskName}", but it still exists on the server.`
+        : `"${taskName}" was deleted on the server, but you still have it locally.`;
     }
-    return `The "${humanizeField(conflict.field)}" was changed both locally and on the server.`;
+
+    const fieldName = humanizeField(conflict.field);
+    const localVal = humanizeValue(conflict.localValue, conflict.field);
+    const serverVal = humanizeValue(conflict.serverValue, conflict.field);
+
+    return `For "${taskName}", you set ${fieldName} to "${localVal}", while ${conflict.remoteActor} set it to "${serverVal}".`;
   };
 
   const renderValue = (value: any, field: string) => {
@@ -122,6 +201,8 @@ export const ConflictResolutionCenter: React.FC<ConflictResolutionCenterProps> =
       );
     }
 
+    const humanValue = humanizeValue(value, field);
+
     if (typeof value === 'object') {
       return (
         <pre className="text-sm font-mono bg-black/20 p-4 rounded-2xl w-full max-h-[200px] overflow-auto text-left">
@@ -130,7 +211,7 @@ export const ConflictResolutionCenter: React.FC<ConflictResolutionCenterProps> =
       );
     }
 
-    return <span className="text-2xl font-bold text-white max-w-full break-words">{String(value)}</span>;
+    return <span className="text-2xl font-bold text-white max-w-full break-words">{humanValue}</span>;
   };
 
   const handleResolve = async (id: string, resolution: ConflictResolution) => {
@@ -242,8 +323,18 @@ export const ConflictResolutionCenter: React.FC<ConflictResolutionCenterProps> =
         {/* Left Side: List */}
         <div className="w-[400px] flex flex-col gap-4 overflow-hidden">
           <div className="flex items-center justify-between px-2">
-            <h2 className="text-xs font-black text-white/20 uppercase tracking-[0.2em]">Open Issues</h2>
-            <Badge variant="neutral" className="opacity-50">{filteredConflicts.length}</Badge>
+            <div className="flex items-center gap-2">
+              <h2 className="text-xs font-black text-white/20 uppercase tracking-[0.2em]">Open Issues</h2>
+              <Badge variant="neutral" className="opacity-50">{filteredConflicts.length}</Badge>
+            </div>
+            {filteredConflicts.length > 0 && (
+              <button 
+                onClick={clearAllConflicts}
+                className="text-[10px] font-black uppercase tracking-widest text-rose-400/40 hover:text-rose-400 transition-colors"
+              >
+                Dismiss All
+              </button>
+            )}
           </div>
 
           <div className="flex-1 overflow-y-auto no-scrollbar space-y-3">
@@ -310,6 +401,32 @@ export const ConflictResolutionCenter: React.FC<ConflictResolutionCenterProps> =
               )}
             </AnimatePresence>
           </div>
+
+          {/* Maintenance Actions (Now persistent in Sidebar) */}
+          <div className="mt-auto pt-6 border-t border-white/5">
+              <div className="flex flex-col gap-4 p-5 rounded-3xl bg-red-500/5 border border-red-500/10">
+                  <div className="flex items-center gap-3">
+                      <div className="w-10 h-10 rounded-2xl bg-red-500/10 flex items-center justify-center ring-1 ring-red-500/20">
+                          <ShieldAlert size={20} className="text-red-400" />
+                      </div>
+                      <div>
+                          <h3 className="text-xs font-black text-red-400 uppercase tracking-widest">Maintenance</h3>
+                          <p className="text-[10px] text-white/30 font-bold uppercase tracking-tight mt-0.5">Purge Local Cache</p>
+                      </div>
+                  </div>
+                  <p className="text-[11px] text-white/40 leading-relaxed px-1">
+                      Seeing stale data? Wipe local cache and force a fresh sync.
+                  </p>
+                  <button
+                      onClick={handlePurgeAndResync}
+                      disabled={isPurging}
+                      className="w-full py-3 rounded-2xl bg-red-500/10 hover:bg-red-500/20 text-red-400 text-[10px] font-black uppercase tracking-[0.2em] transition-all flex items-center justify-center gap-2 border border-red-500/20 disabled:opacity-50"
+                  >
+                      {isPurging ? <RefreshCw size={14} className="animate-spin" /> : <RefreshCw size={14} />}
+                      {isPurging ? 'Purging...' : 'Purge & Resync'}
+                  </button>
+              </div>
+          </div>
         </div>
 
         {/* Right Side: Detail View */}
@@ -353,7 +470,12 @@ export const ConflictResolutionCenter: React.FC<ConflictResolutionCenterProps> =
                           <HardDrive size={16} className="text-emerald-400" />
                           <span className="text-xs font-black uppercase tracking-widest text-emerald-400">Your Version</span>
                         </div>
-                        <Badge variant="success" className="bg-emerald-500/10 text-emerald-400 border-emerald-500/20">Recent</Badge>
+                        <div className="flex items-center gap-2">
+                          <span className="text-[10px] font-bold text-white/30 uppercase tracking-widest">By You</span>
+                          {selectedConflict.created_at >= selectedConflict.timestamp && (
+                            <Badge variant="success" className="bg-emerald-500/10 text-emerald-400 border-emerald-500/20">Latest</Badge>
+                          )}
+                        </div>
                       </div>
 
                       <div className="flex-1 bg-emerald-500/5 border border-emerald-500/10 rounded-[32px] p-8 flex flex-col items-center justify-center text-center relative group hover:border-emerald-500/30 transition-all duration-500">
@@ -361,7 +483,7 @@ export const ConflictResolutionCenter: React.FC<ConflictResolutionCenterProps> =
                           <MousePointer2 size={24} className="text-emerald-400 animate-bounce" />
                         </div>
                         
-                        <div className="text-xs font-black text-emerald-400/30 uppercase tracking-[0.4em] mb-6">Current Value</div>
+                        <div className="text-xs font-black text-emerald-400/30 uppercase tracking-[0.4em] mb-6">Your Update</div>
                         <div className="flex-1 flex items-center justify-center w-full">
                           {renderValue(selectedConflict.localValue, selectedConflict.field)}
                         </div>
@@ -382,13 +504,18 @@ export const ConflictResolutionCenter: React.FC<ConflictResolutionCenterProps> =
                           <Server size={16} className="text-amber-400" />
                           <span className="text-xs font-black uppercase tracking-widest text-amber-400">Server Version</span>
                         </div>
-                        <span className="text-[10px] font-bold text-white/30 uppercase tracking-widest">
-                          By {selectedConflict.remoteActor}
-                        </span>
+                        <div className="flex items-center gap-2">
+                          <span className="text-[10px] font-bold text-white/30 uppercase tracking-widest">
+                            By {selectedConflict.remoteActor}
+                          </span>
+                          {selectedConflict.timestamp > selectedConflict.created_at && (
+                            <Badge variant="warning" className="bg-amber-500/10 text-amber-400 border-amber-500/20">Latest</Badge>
+                          )}
+                        </div>
                       </div>
 
                       <div className="flex-1 bg-amber-500/5 border border-amber-500/10 rounded-[32px] p-8 flex flex-col items-center justify-center text-center relative group hover:border-amber-500/30 transition-all duration-500">
-                        <div className="text-xs font-black text-amber-400/30 uppercase tracking-[0.4em] mb-6">Stored Value</div>
+                        <div className="text-xs font-black text-amber-400/30 uppercase tracking-[0.4em] mb-6">{selectedConflict.remoteActor}'s Update</div>
                         <div className="flex-1 flex items-center justify-center w-full">
                           {renderValue(selectedConflict.serverValue, selectedConflict.field)}
                         </div>
@@ -404,6 +531,7 @@ export const ConflictResolutionCenter: React.FC<ConflictResolutionCenterProps> =
                     </div>
                   </div>
                 </div>
+
 
                 {/* Detail Footer */}
                 <div className="p-6 bg-white/[0.01] border-t border-white/5 flex items-center justify-between px-8">

@@ -272,6 +272,41 @@ class OfflineDBWrapper {
   async getCurrentProfile() {
     return await db.profiles.toCollection().first();
   }
+
+  /**
+   * Deep Purge: Wipes everything in IndexedDB to resolve "ghost data" issues.
+   * This is the last resort for sync engine or data integrity panics.
+   */
+  async purgeAllData() {
+    console.warn('[OfflineDB] 🧨 Initiating Total Data Purge...');
+    try {
+      // 1. Clear all tables
+      await Promise.all([
+        db.tasks.clear(),
+        db.events.clear(),
+        db.inventory.clear(),
+        db.profiles.clear(),
+        db.cache.clear(),
+        db.queue.clear()
+      ]);
+      
+      console.log('[OfflineDB] ✅ Database cleared successfully.');
+      
+      // 2. Clear sync-related localStorage
+      const syncKeys = [
+        'mediahive_sync_lock',
+        'mediahive_last_telemetry',
+        'mediahive_sync_pending_count',
+        'mediahive_last_sync_at'
+      ];
+      syncKeys.forEach(k => localStorage.removeItem(k));
+      
+      return true;
+    } catch (err) {
+      console.error('[OfflineDB] ❌ Purge failed:', err);
+      return false;
+    }
+  }
 }
 
 export const offlineDB = new OfflineDBWrapper();

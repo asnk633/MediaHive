@@ -6,7 +6,7 @@ import { useItemNavigation } from '@/hooks/useItemNavigation';
 import { useBulkSelection } from '@/hooks/useBulkSelection';
 import { TaskListSkeleton } from './TaskListSkeleton';
 import { Task } from "@/features/tasks/types/task";
-import { format, isToday, isPast } from 'date-fns';
+import { format, isToday, isPast, isYesterday } from 'date-fns';
 import { supabase } from '@/lib/supabaseClient';
 import { useAuth } from '@/contexts/AuthContextProvider';
 import { withTenant } from '@/lib/tenantQuery';
@@ -296,11 +296,10 @@ const TaskListViewComponent: React.FC<TaskListViewProps> = ({ tasks, loading = f
                 // Active Tasks Logic
                 // Filter: "Today" / "Overdue" View (Applies only to Active)
                 if (view === 'today') {
-                    // Legacy 'today' view can be handled as due_today equivalent or kept standard
-                    // For now, keeping standard behaviour but checking filters
+                    // Today Focus: Only show Today + Overdue from Yesterday
                     const due = safeDate(t.dueDate);
                     if (!due) return;
-                    if (!(isToday(due) || isPast(due))) return;
+                    if (!(isToday(due) || isYesterday(due))) return;
                 } else if (view === 'overdue') {
                     const due = safeDate(t.dueDate);
                     if (!due || !isPast(due) || isToday(due)) return;

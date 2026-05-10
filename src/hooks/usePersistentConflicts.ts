@@ -109,6 +109,16 @@ export function usePersistentConflicts(initialQuery?: ConflictQueryOptions) {
     }
   };
 
+  // Clear all conflicts
+  const clearAllConflicts = async () => {
+    try {
+      await conflictStore.clearAll();
+      setConflicts([]);
+    } catch (err) {
+      setError(err instanceof Error ? err : new Error('Failed to clear conflicts'));
+    }
+  };
+
   // Get conflicts for surfacing to user
   const getConflictsForSurfacing = async (): Promise<PersistentConflict[]> => {
     try {
@@ -130,6 +140,7 @@ export function usePersistentConflicts(initialQuery?: ConflictQueryOptions) {
     updateConflictStatus,
     markAsSurfaced,
     getUnresolvedCount,
-    getConflictsForSurfacing
+    getConflictsForSurfacing,
+    clearAllConflicts
   };
 }

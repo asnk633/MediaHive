@@ -158,7 +158,7 @@ export function EditTaskDialog({ open, onOpenChange, task, onUpdate }: EditTaskD
             CampaignService.getCampaigns({ uid: user.uid, role: user.role || 'member' })
                 .then(setCampaigns).catch(console.error);
 
-            const institutionId = (task as any).institution_id || (task as any).institutionId;
+            const institutionId = (isAdmin || isSuperAdmin) ? null : ((task as any).institution_id || (task as any).institutionId);
             UserService.getTeamMembers(institutionId).then(members => {
                 console.log(`[EditTaskDialog] Fetched ${members.length} raw members for institution: ${institutionId}`);
                 const filtered = members.filter(m => {

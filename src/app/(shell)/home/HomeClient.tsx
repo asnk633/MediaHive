@@ -229,6 +229,8 @@ export default function HomeClient() {
         user
     }), [displayTasks, sanitizedEvents, dashboardMetrics, isActuallyLoading, error, mutate, fetchData, user]);
 
+    const inspirationLine = useMemo(() => getInspirationLine(currentRole), [currentRole]);
+
     return (
         <DashboardProvider value={dashboardContextValue}>
             <PageLayout mode="plain" className="pt-0 pb-0 space-y-0">
@@ -263,7 +265,7 @@ export default function HomeClient() {
                                                 </span>
                                             </div>
                                             <p className="text-sm text-white/40 font-medium tracking-wide italic">
-                                                {getInspirationLine()}
+                                                {inspirationLine}
                                             </p>
                                         </>
                                     )}

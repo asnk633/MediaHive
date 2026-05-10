@@ -291,12 +291,15 @@ class AwarenessService {
   // Phase 8A: Notify all listeners
   private notifyListeners() {
     const state = this.getState();
-    this.listeners.forEach(listener => {
-      try {
-        listener(state);
-      } catch (e) {
-        console.error('[Awareness] Error notifying listener:', e);
-      }
+    // Use microtask to decouple from React render cycle
+    Promise.resolve().then(() => {
+      this.listeners.forEach(listener => {
+        try {
+          listener(state);
+        } catch (e) {
+          console.error('[Awareness] Error notifying listener:', e);
+        }
+      });
     });
   }
 

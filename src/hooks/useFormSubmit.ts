@@ -9,31 +9,33 @@ interface UseFormSubmitOptions<T> {
 
 export function useFormSubmit<T>({ onSubmit, onSuccess, onError }: UseFormSubmitOptions<T>) {
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const isActuallySubmitting = useRef(false);
   const lastSubmitTime = useRef<number>(0);
 
   const handleSubmit = useCallback(async (data: T) => {
     const now = Date.now();
-    // STEP 2: Prevent duplicate clicks (debounce 1s)
-    if (now - lastSubmitTime.current < 1000) {
-      console.warn("Submission debounced (too fast)");
+    
+    // 1. Debounce protection (2 seconds)
+    if (now - lastSubmitTime.current < 2000) {
+      console.warn("[useFormSubmit] Blocked: Clicked too fast.");
       return;
     }
-    
-    // STEP 3: Block duplicate mutation creation (prevent multiple inflight requests)
-    if (isSubmitting) {
-        console.warn("Submission already in progress");
+
+    // 2. State protection (Sync check via Ref)
+    if (isActuallySubmitting.current) {
+        console.warn("[useFormSubmit] Blocked: Submission already in flight.");
         return;
     }
 
     lastSubmitTime.current = now;
+    isActuallySubmitting.current = true;
     setIsSubmitting(true);
 
     try {
       await onSubmit(data);
       onSuccess?.();
     } catch (err: any) {
-      console.error("Submission failed", err);
-      // Only show toast if no custom error handler is provided, or let caller handle it.
+      console.error("[useFormSubmit] Execution failed:", err);
       if (onError) {
         onError(err);
       } else {
@@ -41,8 +43,9 @@ export function useFormSubmit<T>({ onSubmit, onSuccess, onError }: UseFormSubmit
       }
     } finally {
       setIsSubmitting(false);
+      isActuallySubmitting.current = false;
     }
-  }, [onSubmit, onSuccess, onError, isSubmitting]);
+  }, [onSubmit, onSuccess, onError]);
 
   return {
     isSubmitting,

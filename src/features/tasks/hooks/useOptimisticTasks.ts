@@ -321,8 +321,6 @@ export function useOptimisticTasks(
 
     // ── PHASE 8 & 9 & 11: REAL-TIME SYNC & CONFLICT DETECTION ──────────────────
     const syncRemoteTasks = useCallback((newTasks: Task[], currentUser: any) => {
-        let detectedConflicts: TaskConflict[] = [];
-
         // Phase 8A: Update awareness service system state
         const { awarenessService } = require('@/lib/awarenessService');
         awarenessService.setSystemState({
@@ -331,73 +329,50 @@ export function useOptimisticTasks(
             isPaused: isPausedDueToAuth || isAuthPaused
         });
 
-        setDeferredRemoteUpdates(prevDeferred => {
-            const nextDeferred = { ...prevDeferred };
-            let deferredChanged = false;
+        const currentPatches = patchesRef.current;
+        const prevTasksMap = new Map(serverTasks.map(t => [t.id, t]));
+        
+        const nextDeferred: Record<string, Task> = { ...deferredRef.current };
+        let deferredChanged = false;
+        const finalServerTasks: Task[] = [];
 
-            setServerTasks(prevServerTasks => {
-                const finalTasks: Task[] = [];
-                const prevTasksMap = new Map(prevServerTasks.map(t => [t.id, t]));
-                const currentPatches = patchesRef.current;
+        newTasks.forEach(newTask => {
+            const hasPatch = !!currentPatches[newTask.id];
+            const hasRecentCommit = !!recentPatchesRef.current[newTask.id];
+            const oldTask = prevTasksMap.get(newTask.id);
 
-                newTasks.forEach(newTask => {
-                    const hasPatch = !!currentPatches[newTask.id];
-                    const hasRecentCommit = !!recentPatchesRef.current[newTask.id];
-                    const oldTask = prevTasksMap.get(newTask.id);
+            // Phase 8A: Process awareness updates OUTSIDE state setters
+            if (oldTask) {
+                awarenessService.processTaskUpdate(newTask, oldTask, currentUser, hasPatch);
+            }
 
-                    // Phase 8A: Process awareness updates BEFORE applying task changes
-                    if (oldTask) {
-                        awarenessService.processTaskUpdate(newTask, oldTask, currentUser, hasPatch);
-                    }
+            if (hasPatch || hasRecentCommit) {
+                // Defer this update so we don't clobber the optimistic UI
+                finalServerTasks.push(oldTask || newTask); 
 
-                    if (hasPatch || hasRecentCommit) {
-                        // Defer this update so we don't clobber the optimistic UI
-                        // OR a recently committed mutation (within 5s grace window).
-                        finalTasks.push(oldTask || newTask); // Keep old server state for now
+                // Check if it's an external update
+                const isExternal = newTask.updatedBy?.uid && newTask.updatedBy.uid !== currentUser?.uid;
 
-                        // Check if it's an external update
-                        const isExternal = newTask.updatedBy?.uid && newTask.updatedBy.uid !== currentUser?.uid;
-
-                        if (isExternal || !nextDeferred[newTask.id]) {
-                            nextDeferred[newTask.id] = newTask;
-                            deferredChanged = true;
-                        }
-                    } else {
-                        // Safe to apply directly
-                        finalTasks.push(newTask);
-                        if (nextDeferred[newTask.id]) {
-                            delete nextDeferred[newTask.id];
-                            deferredChanged = true;
-                        }
-                    }
-                });
-
-
-                return finalTasks;
-            });
-
-            return deferredChanged ? nextDeferred : prevDeferred;
+                if (isExternal || !nextDeferred[newTask.id]) {
+                    nextDeferred[newTask.id] = newTask;
+                    deferredChanged = true;
+                }
+            } else {
+                // Safe to apply directly
+                finalServerTasks.push(newTask);
+                if (nextDeferred[newTask.id]) {
+                    delete nextDeferred[newTask.id];
+                    deferredChanged = true;
+                }
+            }
         });
 
-        // Buffer newly detected conflicts
-        if (detectedConflicts.length > 0) {
-            setConflictBuffer(prev => {
-                const next = { ...prev };
-                let hasNew = false;
-                detectedConflicts.forEach(conflict => {
-                    const existing = next[conflict.taskId] || [];
-                    if (!existing.find(c => c.field === conflict.field && JSON.stringify(c.serverValue) === JSON.stringify(conflict.serverValue))) {
-                        next[conflict.taskId] = [...existing, conflict];
-                        hasNew = true;
-                    }
-                });
-                if (hasNew) {
-                    toast('Some tasks need your attention', { icon: '⚠️', duration: 4000 });
-                }
-                return hasNew ? next : prev;
-            });
+        // Apply state updates in batch (React handles multiple setters in same tick)
+        setServerTasks(finalServerTasks);
+        if (deferredChanged) {
+            setDeferredRemoteUpdates(nextDeferred);
         }
-    }, [setServerTasks, isOnline, isReplaying, isPausedDueToAuth, isAuthPaused]);
+    }, [serverTasks, isOnline, isReplaying, isPausedDueToAuth, isAuthPaused, setServerTasks]);
 
     // Phase 8B: Guarding Detection Mechanics (The Strict Gate)
     useEffect(() => {

@@ -296,72 +296,75 @@ export default function TasksNewClient() {
             
             const newTaskId = newTask?.id || uuidv4(); // Fallback ID for offline attachments if needed
  
-            // Upload Attachments natively
-            if (files.length > 0) {
-                setUploadProgress(`0/${files.length}`);
-                let uploadedCount = 0;
-                let finalFiles = [];
-                for (const file of files) {
+            // Trigger Background Work (Notifications)
+            // We do NOT await this to ensure the UI closes immediately as requested.
+            if (isMember) {
+                const adminNotifyPromise = (async () => {
                     try {
-                        const fileExt = file.name.split('.').pop();
-                        const fileName = `${uuidv4()}.${fileExt}`;
-                        const filePath = `${newTaskId}/${fileName}`;
-                        // Assuming bucket is named 'task_attachments'
-                        await supabase.storage.from('task_attachments').upload(filePath, file);
-                        const { data: publicUrlData } = supabase.storage.from('task_attachments').getPublicUrl(filePath);
- 
-                        finalFiles.push({
-                            id: uuidv4(),
-                            name: file.name,
-                            mimeType: file.type,
-                            size: file.size,
-                            url: publicUrlData.publicUrl,
-                            uploaded_by: { uid: user.uid, name: user.name, role: user.role },
-                            uploaded_at: new Date().toISOString(),
-                            section: 'requester-inputs'
-                        });
-                        uploadedCount++;
-                        setUploadProgress(`${uploadedCount}/${files.length}`);
+                        const { pushNotification } = await import('@/services/alertService');
+                        const [admins, managers] = await Promise.all([
+                            UserService.getAdmins(),
+                            UserService.getManagers()
+                        ]);
+
+                        const recipients = [...admins, ...managers];
+
+                        await Promise.all(recipients.map(recipient =>
+                            pushNotification({
+                                user_id: recipient.uid,
+                                created_by: user.uid,
+                                type: 'task_assigned',
+                                title: 'Task Assignment Required',
+                                message: `${user.official_name || user.name || 'A member'} has created "${title}" and a team member needs to be assigned to the task`,
+                                entity_type: 'task',
+                                entity_id: newTaskId,
+                                action_url: `/tasks/view?id=${newTaskId}`,
+                                priority: 'medium'
+                            })
+                        ));
                     } catch (e) {
-                        console.error(`Failed to upload ${file.name}`, e);
+                        console.error("[TasksNew] Background notification failed:", e);
                     }
-                }
-                if (finalFiles.length > 0) {
-                    await supabase.from('tasks').update({ files: finalFiles }).eq('id', newTaskId);
+                })();
+            }
+
+            // Return success immediately if no files to upload
+            if (files.length === 0) return;
+
+            // Handle Attachments (We keep the user on page for these to ensure transfer completes)
+            setUploadProgress(`0/${files.length}`);
+            let uploadedCount = 0;
+            let finalFiles = [];
+            for (const file of files) {
+                try {
+                    const fileExt = file.name.split('.').pop();
+                    const fileName = `${uuidv4()}.${fileExt}`;
+                    const filePath = `${newTaskId}/${fileName}`;
+                    await supabase.storage.from('task_attachments').upload(filePath, file);
+                    const { data: publicUrlData } = supabase.storage.from('task_attachments').getPublicUrl(filePath);
+
+                    finalFiles.push({
+                        id: uuidv4(),
+                        name: file.name,
+                        mimeType: file.type,
+                        size: file.size,
+                        url: publicUrlData.publicUrl,
+                        uploaded_by: { uid: user.uid, name: user.name, role: user.role },
+                        uploaded_at: new Date().toISOString(),
+                        section: 'requester-inputs'
+                    });
+                    uploadedCount++;
+                    setUploadProgress(`${uploadedCount}/${files.length}`);
+                } catch (e) {
+                    console.error(`Failed to upload ${file.name}`, e);
                 }
             }
- 
-            // Notify Admins if Member created it
-            if (isMember) {
-                try {
-                    const { pushNotification } = await import('@/services/alertService');
-                    const [admins, managers] = await Promise.all([
-                        UserService.getAdmins(),
-                        UserService.getManagers()
-                    ]);
-
-                    const recipients = [...admins, ...managers];
-
-                    await Promise.all(recipients.map(recipient =>
-                        pushNotification({
-                            user_id: recipient.uid,
-                            created_by: user.uid,
-                            type: 'task_assigned',
-                            title: 'Task Assignment Required',
-                            message: `${user.official_name || user.name || 'A member'} has created "${title}" and a team member needs to be assigned to the task`,
-                            entity_type: 'task',
-                            entity_id: newTaskId,
-                            action_url: `/tasks/view?id=${newTaskId}`,
-                            priority: 'medium'
-                        })
-                    ));
-                } catch (e) {
-                    console.error("Failed to notify admins", e);
-                }
+            if (finalFiles.length > 0) {
+                await supabase.from('tasks').update({ files: finalFiles }).eq('id', newTaskId);
             }
         } catch (err: any) {
             console.error("[TasksNew] Submission failed:", err);
-            throw err; // Re-throw for useFormSubmit to catch
+            throw err; 
         }
     };
  
@@ -485,7 +488,8 @@ export default function TasksNewClient() {
                         )}
  
                         {/* Form */}
-                        <form onSubmit={handleSubmit} className="space-y-6">
+                        <form onSubmit={handleSubmit} className="relative">
+                            <fieldset disabled={isSubmitting} className="space-y-6">
  
                             {/* Title & Desc Group */}
                             <div className="space-y-5">
@@ -755,6 +759,7 @@ export default function TasksNewClient() {
                                 )}
                             </button>
 
+                            </fieldset>
                         </form>
                     </div>
                 </div>

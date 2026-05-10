@@ -299,7 +299,7 @@ export class CanonicalDataService {
       );
 
       if (error) {
-          // Try offline fallback
+          // 1. Try offline fallback first
           if (typeof window !== 'undefined') {
               const tableObj = (db as any)[table];
               if (tableObj) {
@@ -307,12 +307,18 @@ export class CanonicalDataService {
                   if (cached) return { data: cached, error: null };
               }
           }
+          
+          // 2. If truly not found on server, return null gracefully
+          if (error.code === 'PGRST116') return { data: null, error: null };
+          
+          // 3. Otherwise throw for real errors
           throw error;
       }
       
       return { data, error: null };
-    } catch (error) {
-      console.error(`[CanonicalDataService] Error fetching ${table} by id:`, error);
+    } catch (error: any) {
+      const errorMsg = error?.message || (typeof error === 'object' ? JSON.stringify(error) : String(error));
+      console.error(`[CanonicalDataService] Error fetching ${table} by id (${id}):`, errorMsg);
       return { data: null, error };
     }
   }

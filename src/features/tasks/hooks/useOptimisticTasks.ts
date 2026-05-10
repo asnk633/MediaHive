@@ -420,6 +420,7 @@ export function useOptimisticTasks(
 
                         const conflict: TaskConflict = {
                             taskId,
+                            taskTitle: remoteState.title || localState?.title || `Task #${taskId.substring(0, 4)}`,
                             field,
                             category,
                             localValue,

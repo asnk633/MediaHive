@@ -4,6 +4,7 @@ export type ConflictCategory = 'benign' | 'content' | 'structural';
 
 export interface TaskConflict {
     taskId: string;
+    taskTitle?: string;
     field: string;
     category: ConflictCategory;
     localValue: any;

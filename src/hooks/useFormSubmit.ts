@@ -42,8 +42,13 @@ export function useFormSubmit<T>({ onSubmit, onSuccess, onError }: UseFormSubmit
         toast.error(err.message || "An error occurred during submission");
       }
     } finally {
+      // Clear UI state immediately to unlock the view
       setIsSubmitting(false);
-      isActuallySubmitting.current = false;
+      
+      // Keep internal lock for 2 seconds to prevent rapid double-clicks
+      setTimeout(() => {
+        isActuallySubmitting.current = false;
+      }, 2000);
     }
   }, [onSubmit, onSuccess, onError]);
 

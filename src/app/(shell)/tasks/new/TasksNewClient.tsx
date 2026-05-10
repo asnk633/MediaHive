@@ -298,8 +298,9 @@ export default function TasksNewClient() {
  
             // Trigger Background Work (Notifications)
             // We do NOT await this to ensure the UI closes immediately as requested.
+            // Trigger Background Work (Notifications) - Offloaded to macrotask
             if (isMember) {
-                const adminNotifyPromise = (async () => {
+                setTimeout(async () => {
                     try {
                         const { pushNotification } = await import('@/services/alertService');
                         const [admins, managers] = await Promise.all([
@@ -325,11 +326,19 @@ export default function TasksNewClient() {
                     } catch (e) {
                         console.error("[TasksNew] Background notification failed:", e);
                     }
-                })();
+                }, 0);
             }
 
-            // Return success immediately if no files to upload
-            if (files.length === 0) return;
+            // Phase 28: Immediate Navigation for better UX
+            // If no files, navigate NOW. Side effects (notifications) will finish in background.
+            if (files.length === 0) {
+                clearDraft();
+                toast.success(COPY.toasts.taskCreated);
+                const returnTo = searchParams.get('returnTo');
+                if (returnTo === 'home') router.push('/home');
+                else router.push('/tasks');
+                return; // Early return to trigger onSuccess immediately
+            }
 
             // Handle Attachments (We keep the user on page for these to ensure transfer completes)
             setUploadProgress(`0/${files.length}`);

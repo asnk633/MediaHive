@@ -100,15 +100,15 @@ export const UserService = {
         }
     },
 
-    getTeamMembers: async (contextId?: string | null): Promise<{ uid: string; name: string; avatar_url?: string; photoURL?: string; department_id?: string | number; institution_id?: string | number; role: string }[]> => {
+    getTeamMembers: async (contextId?: string | null, requesterId?: string): Promise<{ uid: string; name: string; avatar_url?: string; photoURL?: string; department_id?: string | number; institution_id?: string | number; role: string }[]> => {
         try {
-            const { tenantId, userId } = await tenantContext();
+            const { tenantId, userId: contextUserId } = await tenantContext();
+            const userId = requesterId || contextUserId;
 
             // 1. Fetch ALL data for the tenant to ensure no silent misses
-            const [profilesRes, wsRes, instMapRes] = await Promise.all([
+            const [profilesRes, wsRes] = await Promise.all([
                 supabase.from(TABLES.USERS).select('*').eq('tenant_id', tenantId),
-                supabase.from('user_institutions').select('*').eq('tenant_id', tenantId),
-                supabase.from('institutions').select('id, unit_id').eq('tenant_id', tenantId)
+                supabase.from('user_institutions').select('*').eq('tenant_id', tenantId)
             ]);
 
             if (profilesRes.error) {

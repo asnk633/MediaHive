@@ -282,6 +282,15 @@ const TaskListViewComponent: React.FC<TaskListViewProps> = ({ tasks, loading = f
 
             // Segregate
             if (t.status === 'done') {
+                // For Today Focus, only show what was actually completed today
+                if (view === 'today') {
+                    const comp = safeDate(t.completedAt || t.completed_at);
+                    if (!comp || !isToday(comp)) return;
+                }
+
+                // For specific time-bound filters, we usually only want pending tasks
+                if (['overdue', 'due_today', 'upcoming'].includes(view)) return;
+
                 completedTasks.push(t);
             } else {
                 // Active Tasks Logic

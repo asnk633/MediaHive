@@ -110,7 +110,7 @@ export function MultiSelect({
           </div>
         </PopoverTrigger>
         <PopoverContent
-          className="p-0 bg-transparent border-none shadow-none"
+          className="p-0 bg-transparent border-none shadow-none z-[200]"
           align="start"
           sideOffset={8}
           style={{ width: "var(--radix-popover-trigger-width)" }}

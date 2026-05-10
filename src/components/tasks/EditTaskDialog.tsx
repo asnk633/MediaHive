@@ -158,15 +158,20 @@ export function EditTaskDialog({ open, onOpenChange, task, onUpdate }: EditTaskD
             CampaignService.getCampaigns({ uid: user.uid, role: user.role || 'member' })
                 .then(setCampaigns).catch(console.error);
 
-            UserService.getTeamMembers().then(members => {
+            const institutionId = (task as any).institution_id || (task as any).institutionId;
+            UserService.getTeamMembers(institutionId).then(members => {
+                console.log(`[EditTaskDialog] Fetched ${members.length} raw members for institution: ${institutionId}`);
                 const filtered = members.filter(m => {
                     const role = (m as any).role?.toLowerCase().trim();
                     const name = m.name?.toLowerCase() || '';
                     // Allow everyone except maybe system/superadmin accounts if they are hidden
                     return !name.includes('system') && role !== 'superadmin';
                 });
+                console.log(`[EditTaskDialog] Filtered to ${filtered.length} potential assignees`);
                 setTeamMembers(filtered);
-            }).catch(console.error);
+            }).catch(err => {
+                console.error("[EditTaskDialog] Failed to fetch team members:", err);
+            });
 
             TaskService.getTaskById(task.id).then(fresh => {
                 if (fresh) setFullTask(fresh as any);

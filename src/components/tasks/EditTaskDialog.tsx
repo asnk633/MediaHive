@@ -164,8 +164,8 @@ export function EditTaskDialog({ open, onOpenChange, task, onUpdate }: EditTaskD
                 const filtered = members.filter(m => {
                     const role = (m as any).role?.toLowerCase().trim();
                     const name = m.name?.toLowerCase() || '';
-                    // Allow everyone except maybe system/superadmin accounts if they are hidden
-                    return !name.includes('system') && role !== 'superadmin';
+                    // Exclude generic system/admin accounts from the selection list
+                    return !name.includes('system') && !name.includes('admin') && role !== 'superadmin';
                 });
                 console.log(`[EditTaskDialog] Filtered to ${filtered.length} potential assignees`);
                 setTeamMembers(filtered);

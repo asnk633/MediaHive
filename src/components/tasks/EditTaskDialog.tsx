@@ -118,8 +118,9 @@ export function EditTaskDialog({ open, onOpenChange, task, onUpdate }: EditTaskD
     const taskCreatorId = (task as any).created_by?.uid || (task as any).created_by;
     const isCreator = user?.uid === taskCreatorId;
     
-    const assignedArray = Array.isArray(task.assigned_to) ? task.assigned_to :
-        Array.isArray(task.assignedTo) ? task.assignedTo : [];
+    const assignedArray = (Array.isArray((task as any).assignedTo) && (task as any).assignedTo.length > 0) 
+        ? (task as any).assignedTo 
+        : (Array.isArray(task.assigned_to) ? task.assigned_to : []);
     const isAssignee = assignedArray.some((u: any) => (typeof u === 'string' ? u : (u.uid || u.userId)) === user?.uid);
 
     // Permission Logic
@@ -127,55 +128,75 @@ export function EditTaskDialog({ open, onOpenChange, task, onUpdate }: EditTaskD
     const canEditPriority = isAdmin || isSuperAdmin || isManager;
     const canEditStatus = isAdmin || isSuperAdmin || isManager || isAssignee;
     const canEditDueDate = isAdmin || isSuperAdmin || isManager || isMember;
-    const canAssign = isAdmin || isSuperAdmin || isManager;
+    const canAssign = true; // Always allow visibility; UserService handles filtering of eligible assignees
     
     const canSave = canEditContent || canEditPriority || canEditStatus || canEditDueDate;
 
     useEffect(() => {
         if (open && user && task?.id) {
             if (!isRestored) {
-                setTitle(task.title);
+                setTitle(task.title || "");
                 setDescription(task.description || "");
-                setPriority(task.priority);
-                setStatus(task.status || 'todo');
-                setCampaignId(task.campaign_id || "none");
-                const ids = ((task.assigned_to || task.assignedTo) ?? [])
-                    .map((m: any) => m.uid || m.userId)
-                    .filter(Boolean);
-                setAssignedToIds(ids);
+                setPriority(task.priority || "medium");
+                setStatus(task.status || "todo");
+                setCampaignId(task.campaign_id || "");
+                setDueDate(task.due_date ? new Date(task.due_date) : undefined);
                 setIsDemoData(!!task.is_demo_data);
-                if (task.due_date) {
-                    try {
-                        const d = new Date(task.due_date);
-                        if (!isNaN(d.getTime())) setDueDate(d);
-                        else setDueDate(undefined);
-                    } catch { setDueDate(undefined); }
-                } else {
-                    setDueDate(undefined);
-                }
+
+                // Priority: (task as any).assignedTo (modern DTO) -> task.assigned_to (legacy)
+                const taskAssignedTo = ((task as any).assignedTo?.length ? (task as any).assignedTo : task.assigned_to) || [];
+                const ids = taskAssignedTo
+                    .map((m: any) => m.uid || m.userId || (typeof m === 'string' ? m : null))
+                    .filter(Boolean);
+                
+                setAssignedToIds(ids);
             }
 
             CampaignService.getCampaigns({ uid: user.uid, role: user.role || 'member' })
                 .then(setCampaigns).catch(console.error);
 
-            const institutionId = (isAdmin || isSuperAdmin) ? null : ((task as any).institution_id || (task as any).institutionId);
-            UserService.getTeamMembers(institutionId).then(members => {
-                console.log(`[EditTaskDialog] Fetched ${members.length} raw members for institution: ${institutionId}`);
+            // Determine if the user is an admin or super admin to decide whether to fetch all members or only those in the task's institution
+            const currentIsAdmin = user?.role?.toLowerCase() === 'admin' || user?.role?.toLowerCase() === 'superadmin';
+            const currentIsSuperAdmin = (user as any)?.is_super_admin || user?.email === 'media@thaibagarden.com' || user?.role?.toLowerCase() === 'superadmin';
+            const currentIsManager = user?.role?.toLowerCase() === 'manager';
+            
+            // If admin/superadmin/manager, we want the most inclusive view possible
+            const isElevated = currentIsAdmin || currentIsSuperAdmin || currentIsManager;
+            
+            // If admin/superadmin, pass null to fetch all members (omniscient view)
+            const finalInstitutionId = (currentIsAdmin || currentIsSuperAdmin) ? null : ((task as any).institution_id || (task as any).institutionId);
+            
+            UserService.getTeamMembers(finalInstitutionId, user.uid).then(members => {
                 const filtered = members.filter(m => {
                     const role = (m as any).role?.toLowerCase().trim();
                     const name = m.name?.toLowerCase() || '';
-                    // Exclude generic system/admin accounts from the selection list
-                    return !name.includes('system') && !name.includes('admin') && role !== 'superadmin';
+                    // Exclude generic system/admin accounts from the selection list, but keep real users
+                    const isGenericAdmin = name.includes('admin user') || name === 'admin' || name === 'super admin';
+                    const isSystem = name.includes('system');
+                    return !isGenericAdmin && !isSystem && role !== 'superadmin';
                 });
-                console.log(`[EditTaskDialog] Filtered to ${filtered.length} potential assignees`);
                 setTeamMembers(filtered);
             }).catch(err => {
                 console.error("[EditTaskDialog] Failed to fetch team members:", err);
             });
 
+            // Always fetch latest task data to ensure we have current assignments
             TaskService.getTaskById(task.id).then(fresh => {
-                if (fresh) setFullTask(fresh as any);
-            });
+                if (fresh) {
+                    // Sync assignments specifically
+                    const freshAssignedTo = ((fresh as any).assignedTo?.length ? (fresh as any).assignedTo : (fresh as any).assigned_to) || [];
+                    const freshIds = freshAssignedTo
+                        .map((m: any) => m.uid || m.userId || (typeof m === 'string' ? m : null))
+                        .filter(Boolean);
+
+                    // If the current list is empty (default state) or if fresh has data, sync it.
+                    // We don't want to overwrite if the user just manually edited it,
+                    // but on first load/open, we want the most accurate data.
+                    if (assignedToIds.length === 0 || freshIds.length > 0) {
+                        setAssignedToIds(freshIds);
+                    }
+                }
+            }).catch(err => console.error('[EditTaskDialog] Failed to fetch fresh task:', err));
         }
     }, [open, task, user]);
 
@@ -195,8 +216,13 @@ export function EditTaskDialog({ open, onOpenChange, task, onUpdate }: EditTaskD
         if (canAssign) {
             updates.assigned_to = assignedToIds.map(id => {
                 const m = teamMembers.find(m => m.uid === id);
-                return m ? { uid: m.uid, name: m.name } : null;
-            }).filter(Boolean);
+                // Try to find in original task if not in teamMembers
+                const original = (task as any).assignedTo?.find((o: any) => (o.uid || o.userId) === id);
+                return { 
+                    uid: id, 
+                    name: m?.name || original?.name || 'Assigned Member' 
+                };
+            });
         }
 
         if (due_date) updates.due_date = due_date.toISOString();

@@ -143,9 +143,9 @@ export const TaskService = {
                         role,
                         profiles(id, full_name, avatar_url)
                     ),
-                    creator:profiles!tasks_created_by_fkey(id, full_name, avatar_url, role, institution_id, department_id, institutions(name), departments(name)),
-                    updater:profiles!tasks_updated_by_fkey(id, full_name, avatar_url, role, institution_id, department_id, institutions(name), departments(name)),
-                    assigner:profiles!tasks_assigned_by_fkey(id, full_name, avatar_url, role, institution_id, department_id, institutions(name), departments(name))
+                    creator:profiles!tasks_created_by_fkey(id, full_name, avatar_url, role, institution_id, department_id, institutions(name)),
+                    updater:profiles!tasks_updated_by_fkey(id, full_name, avatar_url, role, institution_id, department_id, institutions(name)),
+                    assigner:profiles!tasks_assigned_by_fkey(id, full_name, avatar_url, role, institution_id, department_id, institutions(name))
                 `)
                 .eq('id', id)
                 .single();

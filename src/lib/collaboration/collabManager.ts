@@ -48,8 +48,26 @@ class CollaborationManager {
         if (this.presenceDebounceTimer) clearTimeout(this.presenceDebounceTimer);
         this.presenceDebounceTimer = setTimeout(() => {
           const state = channel.presenceState();
-          const users = Object.values(state).flat() as unknown as PresenceUser[];
-          this.notify(channelKey, users);
+          const allEntries = Object.values(state).flat() as unknown as PresenceUser[];
+          
+          // Deduplicate by ID - a user might have multiple tabs/connections
+          const uniqueUsersMap = new Map<string, PresenceUser>();
+          allEntries.forEach(u => {
+            if (!uniqueUsersMap.has(u.id)) {
+              uniqueUsersMap.set(u.id, u);
+            } else {
+              // Optionally merge state (e.g., if one tab is typing but others aren't)
+              const existing = uniqueUsersMap.get(u.id)!;
+              uniqueUsersMap.set(u.id, {
+                ...existing,
+                editingField: u.editingField || existing.editingField,
+                isTyping: u.isTyping || existing.isTyping,
+                lastActive: Math.max(u.lastActive || 0, existing.lastActive || 0)
+              });
+            }
+          });
+
+          this.notify(channelKey, Array.from(uniqueUsersMap.values()));
         }, 1000); // 1s debounce for sync
       })
       .on('broadcast', { event: 'field_focus' }, ({ payload }: { payload: any }) => {
@@ -120,14 +138,27 @@ class CollaborationManager {
       const needsUpdate = users.some(u => u.editingField && now - (u.lastActive || 0) > 5000);
       
       if (needsUpdate) {
-        // We can't easily force-untrack others, but we can notify local UI
-        const activeUsers = users.map(u => {
-          if (u.editingField && now - (u.lastActive || 0) > 5000) {
-            return { ...u, editingField: undefined, isTyping: false };
+        // Deduplicate and update state
+        const uniqueUsersMap = new Map<string, PresenceUser>();
+        users.forEach(u => {
+          const processed = (u.editingField && now - (u.lastActive || 0) > 5000)
+            ? { ...u, editingField: undefined, isTyping: false }
+            : u;
+            
+          if (!uniqueUsersMap.has(u.id)) {
+            uniqueUsersMap.set(u.id, processed);
+          } else {
+            const existing = uniqueUsersMap.get(u.id)!;
+            uniqueUsersMap.set(u.id, {
+              ...existing,
+              editingField: processed.editingField || existing.editingField,
+              isTyping: processed.isTyping || existing.isTyping,
+              lastActive: Math.max(processed.lastActive || 0, existing.lastActive || 0)
+            });
           }
-          return u;
         });
-        this.notify(key, activeUsers);
+        
+        this.notify(key, Array.from(uniqueUsersMap.values()));
       }
     });
   }

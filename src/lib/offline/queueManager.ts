@@ -975,12 +975,12 @@ class SyncEngine {
         } else if (mutation.payload.priority) {
           action = 'priority_changed';
           value = mutation.payload.priority;
-        } else if (mutation.type === 'ASSIGN_TASK') {
+        } else if (mutation.type === 'ASSIGN_TASK' || mutation.type === 'ASSIGN_USER') {
           action = 'assigned';
-          value = mutation.payload.user_name || 'Member';
-        } else if (mutation.type === 'UNASSIGN_TASK') {
+          value = mutation.payload.user_name || mutation.payload.user_id || 'Member';
+        } else if (mutation.type === 'UNASSIGN_TASK' || mutation.type === 'UNASSIGN_USER') {
           action = 'unassigned';
-          value = mutation.payload.user_name || 'Member';
+          value = mutation.payload.user_name || mutation.payload.user_id || 'Member';
         }
 
         if (action) {

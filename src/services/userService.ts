@@ -102,8 +102,7 @@ export const UserService = {
 
     getTeamMembers: async (contextId?: string | null): Promise<{ uid: string; name: string; avatar_url?: string; photoURL?: string; department_id?: string | number; institution_id?: string | number; role: string }[]> => {
         try {
-            const { tenantId } = await tenantContext();
-            console.log(`[UserService] Omniscient fetch for tenant: ${tenantId}, context: ${contextId}`);
+            const { tenantId, userId } = await tenantContext();
 
             // 1. Fetch ALL data for the tenant to ensure no silent misses
             const [profilesRes, wsRes, instMapRes] = await Promise.all([
@@ -112,45 +111,72 @@ export const UserService = {
                 supabase.from('institutions').select('id, unit_id').eq('tenant_id', tenantId)
             ]);
 
-            if (profilesRes.error) throw profilesRes.error;
+            if (profilesRes.error) {
+                console.error("[UserService] Profiles fetch error:", profilesRes.error);
+                throw profilesRes.error;
+            }
             
             const profiles = profilesRes.data || [];
             const allWsAssignments = wsRes.data || [];
-            const institutionMappings = instMapRes.data || [];
+            
+            // 2. Identify requester role for scoping
+            const requesterProfile = profiles.find(p => p.id === userId);
+            const globalRole = requesterProfile?.role?.toLowerCase();
+            const isRequesterGlobalAdmin = globalRole === 'admin' || globalRole === 'superadmin';
 
-            // 2. Resolve the target institution ID
+            // Check if requester has elevated role in ANY institution
+            const requesterWsAssignments = allWsAssignments.filter((a: any) => a.user_id === userId);
+            const hasElevatedWsRole = requesterWsAssignments.some((a: any) => 
+                a.role?.toLowerCase() === 'admin' || a.role?.toLowerCase() === 'manager'
+            );
+
+            const isOmniscient = isRequesterGlobalAdmin || hasElevatedWsRole;
+
+            // 3. Resolve target institution ID (handle unit_id alias)
             let targetInstitutionId = contextId;
-            if (contextId?.includes('_')) {
-                targetInstitutionId = contextId.split('_')[1];
+            if (targetInstitutionId) {
+                const { data: institutionMappings } = await supabase.from('institutions').select('id, unit_id');
+                if (institutionMappings) {
+                    const resolvedInst = institutionMappings.find((m: any) => m.unit_id === targetInstitutionId || m.id === targetInstitutionId);
+                    if (resolvedInst) {
+                        targetInstitutionId = resolvedInst.id;
+                    }
+                }
             }
 
-            // Check if targetInstitutionId is actually a Unit ID (Department)
-            const resolvedInst = institutionMappings.find((m: any) => m.unit_id === targetInstitutionId || m.id === targetInstitutionId);
-            if (resolvedInst) {
-                targetInstitutionId = resolvedInst.id;
-            }
-
-            // 3. Map and Filter
+            // 4. Map profiles to team members with proper filtering
             return profiles.reduce((acc: any[], p: any) => {
+                // Security boundary: same tenant only
+                if (p.tenant_id !== requesterProfile?.tenant_id) return acc;
+
+                // Visibility logic:
+                // - Omniscient (Admin/Manager) sees everyone in tenant
+                // - Global users (institution_id: null) are visible to everyone
+                // - Normal members see others in their current context
                 const wsAssignment = allWsAssignments.find((a: any) => a.user_id === p.id && a.institution_id === targetInstitutionId);
+                const isGlobalUser = !p.institution_id;
                 
-                // A user matches the context if:
-                // 1. They have an explicit workspace assignment
-                // 2. Their profile institution_id matches
-                // 3. (Optional fallback) If no context is provided, return everyone
-                const matchesContext = !targetInstitutionId || wsAssignment || String(p.institution_id) === String(targetInstitutionId);
+                const matchesContext = isOmniscient || !targetInstitutionId || isGlobalUser || wsAssignment || String(p.institution_id) === String(targetInstitutionId);
 
                 if (matchesContext) {
-                    const effectiveRole = wsAssignment?.role || p.role || 'member';
-                    acc.push({
-                        uid: p.id,
-                        name: p.full_name || 'Unknown User',
-                        avatar_url: p.avatar_url,
-                        photoURL: p.avatar_url,
-                        department_id: p.department_id,
-                        institution_id: targetInstitutionId || p.institution_id,
-                        role: effectiveRole
-                    });
+                    // Determine effective role
+                    const wsRole = wsAssignment?.role || (String(p.institution_id) === String(targetInstitutionId) ? p.role : null);
+                    const effectiveRole = wsRole || p.role || 'member';
+
+                    // Filter out system users to keep list clean
+                    const isSystemUser = p.full_name?.toLowerCase().includes('admin user') || p.full_name?.toLowerCase().includes('super admin');
+                    
+                    if (!isSystemUser) {
+                        acc.push({
+                            uid: p.id,
+                            name: p.full_name || 'Unknown User',
+                            avatar_url: p.avatar_url,
+                            photoURL: p.avatar_url,
+                            role: effectiveRole,
+                            institution_id: p.institution_id,
+                            department_id: p.department_id
+                        });
+                    }
                 }
                 return acc;
             }, []);

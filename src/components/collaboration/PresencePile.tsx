@@ -14,10 +14,18 @@ interface PresencePileProps {
 }
 
 export function PresencePile({ users, maxUsers = 4 }: PresencePileProps) {
-  if (!users || users.length === 0) return null;
+  const uniqueUsers = React.useMemo(() => {
+    const map = new Map();
+    (users || []).forEach(u => {
+      if (u.id && !map.has(u.id)) map.set(u.id, u);
+    });
+    return Array.from(map.values());
+  }, [users]);
 
-  const displayUsers = users.slice(0, maxUsers);
-  const remaining = users.length - maxUsers;
+  const displayUsers = uniqueUsers.slice(0, maxUsers);
+  const remaining = uniqueUsers.length - maxUsers;
+
+  if (uniqueUsers.length === 0) return null;
 
   return (
     <div className="flex items-center -space-x-2">

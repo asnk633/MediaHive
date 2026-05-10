@@ -120,7 +120,7 @@ export const UserService = {
             const allWsAssignments = wsRes.data || [];
             
             // 2. Identify requester role for scoping
-            const requesterProfile = profiles.find(p => p.id === userId);
+            const requesterProfile = profiles.find((p: any) => p.id === userId);
             const globalRole = requesterProfile?.role?.toLowerCase();
             const isRequesterGlobalAdmin = globalRole === 'admin' || globalRole === 'superadmin';
 

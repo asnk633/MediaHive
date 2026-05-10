@@ -60,6 +60,9 @@ export function useOptimisticTasks(
     const conflictBufferRef = React.useRef(conflictBuffer);
     useEffect(() => { conflictBufferRef.current = conflictBuffer; }, [conflictBuffer]);
 
+    const serverTasksRef = React.useRef(serverTasks);
+    useEffect(() => { serverTasksRef.current = serverTasks; }, [serverTasks]);
+
     // Ref to hold recently successfully synced patches for accurate conflict evaluation
     const recentPatchesRef = React.useRef<Record<string, Partial<Task>>>({});
 
@@ -330,7 +333,7 @@ export function useOptimisticTasks(
         });
 
         const currentPatches = patchesRef.current;
-        const prevTasksMap = new Map(serverTasks.map(t => [t.id, t]));
+        const prevTasksMap = new Map(serverTasksRef.current.map(t => [t.id, t]));
         
         const nextDeferred: Record<string, Task> = { ...deferredRef.current };
         let deferredChanged = false;
@@ -372,7 +375,7 @@ export function useOptimisticTasks(
         if (deferredChanged) {
             setDeferredRemoteUpdates(nextDeferred);
         }
-    }, [serverTasks, isOnline, isReplaying, isPausedDueToAuth, isAuthPaused, setServerTasks]);
+    }, [isOnline, isReplaying, isPausedDueToAuth, isAuthPaused, setServerTasks]);
 
     // Phase 8B: Guarding Detection Mechanics (The Strict Gate)
     useEffect(() => {

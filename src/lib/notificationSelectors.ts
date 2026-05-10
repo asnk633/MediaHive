@@ -124,8 +124,8 @@ export function filterNotifications(
         // 4. Search Filter
         if (filters.search) {
             const query = filters.search.toLowerCase();
-            const matchTitle = n.title.toLowerCase().includes(query);
-            const matchMessage = n.message.toLowerCase().includes(query);
+            const matchTitle = n.title?.toLowerCase()?.includes(query);
+            const matchMessage = n.message?.toLowerCase()?.includes(query) || n.body?.toLowerCase()?.includes(query);
             if (!matchTitle && !matchMessage) return false;
         }
 

@@ -44,6 +44,7 @@ export const eventService = {
 
     async create(data: Partial<EventItem>): Promise<EventItem> {
         const { tenantId, userId } = await tenantContext();
+        const { eventBus } = await import('@/system/events/eventSystem');
 
         const { data: result, error } = await supabase
             .from('events')
@@ -56,6 +57,10 @@ export const eventService = {
             .single();
 
         if (error) throw error;
-        return mapEvent(result);
+        
+        const mapped = mapEvent(result);
+        eventBus.emit('event.created', { eventId: mapped.id, title: mapped.title });
+        
+        return mapped;
     }
 };

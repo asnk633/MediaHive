@@ -9,6 +9,8 @@ export interface QueuedMutation {
   createdAt: string; // ISO String
   baseUpdatedAt?: string; // The updated_at value on the server when the mutation was created
   baseVersion?: number; // The version value on the server when the mutation was created
+  taskIds?: string[]; // Support for bulk operations
+  snapshot?: any; // Rich metadata for conflict resolution and recovery
 }
 
 export class MediaHiveDB extends Dexie {

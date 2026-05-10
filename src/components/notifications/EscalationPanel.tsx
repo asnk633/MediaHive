@@ -17,7 +17,7 @@ export function EscalationPanel({ notifications }: EscalationPanelProps) {
     const stats = {
         overdue: notifications.filter(n => n.type === 'task_overdue' && !n.read).length,
         stale: notifications.filter(n => n.type === 'stale_task_escalation' && !n.read).length,
-        inventory: notifications.filter(n => n.type.includes('inventory_escalated') && !n.read).length,
+        inventory: notifications.filter(n => n.type?.includes('inventory_escalated') && !n.read).length,
     };
 
     // 3. Hide if empty

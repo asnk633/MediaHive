@@ -3,16 +3,16 @@ import { z } from 'zod';
 export const NotificationSchema = z.object({
     id: z.string(),
     user_id: z.string(),
-    type: z.string(),
+    type: z.string().nullable(),
     title: z.string(),
-    message: z.string().optional(),
-    body: z.string().optional(),
-    entity_type: z.string().optional(),
-    entity_id: z.string().optional(),
-    priority: z.enum(['low', 'medium', 'high', 'urgent']).optional(),
-    read: z.boolean().optional(),
-    created_at: z.string().optional(),
-    tenant_id: z.string().optional(),
+    message: z.string().optional().nullable(),
+    body: z.string().optional().nullable(),
+    entity_type: z.string().optional().nullable(),
+    entity_id: z.string().optional().nullable(),
+    priority: z.enum(['low', 'medium', 'high', 'urgent']).optional().nullable(),
+    read: z.boolean().optional().nullable(),
+    created_at: z.string().optional().nullable(),
+    tenant_id: z.string().optional().nullable(),
 });
 
 export type NotificationDTO = z.infer<typeof NotificationSchema>;

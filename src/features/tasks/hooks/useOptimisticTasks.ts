@@ -458,6 +458,7 @@ export function useOptimisticTasks(
                 newConflictsToPersist.forEach(conflict => {
                     conflictStore.addConflict({
                         taskId: conflict.taskId,
+                        taskTitle: conflict.taskTitle,
                         field: conflict.field,
                         category: conflict.category,
                         localValue: conflict.localValue,

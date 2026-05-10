@@ -11,19 +11,57 @@ export class AlertService {
   static init() {
     console.log('[AlertService] Initializing event subscriptions');
 
+    // 1. Task Completed -> Notify Assigner
     eventBus.subscribe('task.completed', (data) => {
       console.log('[AlertService] Task completed event received:', data);
-      this.createNotification({
-        user_id: data.userId,
-        type: 'task_completed',
-        title: 'Task Completed',
-        message: `Task #${data.taskId.slice(0, 8)} has been marked as done.`,
-        entity_type: 'task',
-        entity_id: data.taskId,
-        priority: 'low'
-      }).catch(console.error);
+      
+      // Notify the person who assigned the task (if it's not the person who completed it)
+      const recipientId = data.assignerId;
+      if (recipientId && recipientId !== data.userId) {
+          this.createNotification({
+            user_id: recipientId,
+            created_by: data.userId,
+            type: 'task_completed',
+            title: 'Task Completed',
+            message: `Task "${data.title || data.taskId.slice(0, 8)}" has been marked as done.`,
+            entity_type: 'task',
+            entity_id: data.taskId,
+            priority: 'low'
+          }).catch(console.error);
+      }
     });
 
+    // 2. Task Created -> Notify Assignees
+    eventBus.subscribe('task.created', (data) => {
+        console.log('[AlertService] Task created event received:', data);
+        if (data.assignedTo && data.assignedTo.length > 0) {
+            this.createBatchNotifications(data.assignedTo, {
+                type: 'task_assigned',
+                title: 'New Task Assigned',
+                message: `You have been assigned to: ${data.title}`,
+                entity_type: 'task',
+                entity_id: data.taskId,
+                priority: 'medium'
+            }).catch(console.error);
+        }
+    });
+
+    // 3. Task Status Changed -> Notify Assigner
+    eventBus.subscribe('task.updated', (data) => {
+      if (data.changes.status && data.assignerId) {
+        this.createNotification({
+          user_id: data.assignerId,
+          type: 'status_changed',
+          title: 'Task Status Updated',
+          message: `Task "${data.title || data.taskId.slice(0, 8)}" is now: ${data.changes.status.replace('_', ' ')}`,
+          entity_type: 'task',
+          entity_id: data.taskId,
+          priority: 'low'
+        }).catch(console.error);
+      }
+    });
+
+    // 4. Inventory Issued -> Notify Recipient
     eventBus.subscribe('inventory.issued', (data) => {
       this.createNotification({
         user_id: data.userId,
@@ -34,6 +72,65 @@ export class AlertService {
         entity_id: data.issueId,
         priority: 'medium'
       }).catch(console.error);
+    });
+
+    // 5. Event Created -> Notify Everyone
+    eventBus.subscribe('event.created', async (data) => {
+      try {
+        const { UserService } = await import('@/services/userService');
+        const users = await UserService.getAllUsers();
+        const userIds = users.map(u => u.id);
+        
+        await this.createBatchNotifications(userIds, {
+          type: 'event_created',
+          title: 'New Event Scheduled',
+          message: `New event: ${data.title}`,
+          entity_type: 'event',
+          entity_id: data.eventId,
+          priority: 'medium'
+        });
+      } catch (error) {
+        console.error('[AlertService] Error notifying for event.created:', error);
+      }
+    });
+
+    // 6. File Uploaded -> Notify Task Assigner or Everyone
+    eventBus.subscribe('file.uploaded', async (data) => {
+      try {
+        if (data.taskId) {
+            const { TaskService } = await import('@/services/tasks');
+            const task = await TaskService.getTaskById(data.taskId);
+            const recipientId = task?.assigned_by?.uid || task?.created_by?.uid;
+            
+            if (recipientId) {
+              await this.createNotification({
+                user_id: recipientId,
+                type: 'file_uploaded',
+                title: 'New File Attached',
+                message: `New file "${data.fileName}" uploaded to task: ${task?.title}`,
+                entity_type: 'task',
+                entity_id: data.taskId,
+                priority: 'low'
+              });
+            }
+        } else {
+            // Global file upload (e.g. to Downloads page) -> Notify Everyone
+            const { UserService } = await import('@/services/userService');
+            const users = await UserService.getAllUsers();
+            const userIds = users.map(u => u.id);
+            
+            await this.createBatchNotifications(userIds, {
+              type: 'file_uploaded',
+              title: 'New File Available',
+              message: `A new file "${data.fileName}" has been uploaded to the platform.`,
+              entity_type: 'file',
+              entity_id: data.fileId,
+              priority: 'low'
+            });
+        }
+      } catch (error) {
+        console.error('[AlertService] Error notifying for file.uploaded:', error);
+      }
     });
   }
 

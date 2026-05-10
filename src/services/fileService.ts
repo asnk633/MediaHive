@@ -18,19 +18,31 @@ export const FileService = {
     },
 
     uploadFile: async (file: File, metadata: Partial<DriveFile>, retries = 2) => {
+        const { eventBus } = await import('@/system/events/eventSystem');
         const attempt = async (remaining: number): Promise<any> => {
             try {
                 const formData = new FormData();
                 formData.append('metadata', JSON.stringify(metadata));
                 formData.append('file', file);
 
-                return await apiClient<{ success: boolean; file_id: string; viewLink: string; downloadLink: string }>('/api/files/upload', {
+                const result = await apiClient<{ success: boolean; file_id: string; viewLink: string; downloadLink: string }>('/api/files/upload', {
                     method: 'POST',
                     body: formData,
                     headers: {
                         'X-Upload-Metadata': JSON.stringify(metadata)
                     }
                 });
+
+                if (result.success) {
+                    eventBus.emit('file.uploaded', { 
+                        fileId: result.file_id, 
+                        fileName: file.name,
+                        taskId: metadata.taskId,
+                        section: metadata.section
+                    });
+                }
+
+                return result;
             } catch (error) {
                 if (remaining > 0) {
                     console.warn(`[FileService] Upload failed, retrying... (${remaining} left)`);

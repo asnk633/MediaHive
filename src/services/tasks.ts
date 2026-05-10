@@ -163,14 +163,60 @@ export const TaskService = {
     },
 
     async createTask(task: Partial<Task>) {
+        const { eventBus } = await import('@/system/events/eventSystem');
         const { data, error } = await CanonicalDataService.createRecord('tasks', task, 'task');
         if (error) throw error;
+        
+        if (data) {
+            // Get assignee IDs from the task object (handle both assigned_to and assignedTo)
+            const assigneeIds = (task.assignedTo || task.assigned_to || []).map((a: any) => typeof a === 'string' ? a : (a.uid || a.userId));
+            eventBus.emit('task.created', { 
+                taskId: data.id, 
+                title: data.title,
+                assignedTo: assigneeIds
+            });
+        }
         return data;
     },
 
     async updateTask(id: string, updates: Partial<Task>, baseUpdatedAt?: string, baseVersion?: number) {
+        const { eventBus } = await import('@/system/events/eventSystem');
+        const { getCurrentUser } = await import('@/lib/auth/verifyUser');
+        const user = await getCurrentUser();
+
+        // If status is changing to 'done', we need task info for the notification (title, assigner)
+        let taskInfo = null;
+        if (updates.status === 'done') {
+            taskInfo = await this.getTaskById(id);
+        }
+
         const success = await CanonicalDataService.patchFields('tasks', id, updates, 'task', baseUpdatedAt, baseVersion);
         if (!success) throw new Error('Failed to enqueue task update');
+
+        // Emit events for status changes
+        if (updates.status) {
+            // Get task info for the notification if not already fetched
+            if (!taskInfo) {
+                taskInfo = await this.getTaskById(id);
+            }
+
+            eventBus.emit('task.updated', { 
+                taskId: id, 
+                title: taskInfo?.title,
+                changes: { status: updates.status },
+                assignerId: taskInfo?.assigned_by?.uid || taskInfo?.created_by?.uid
+            });
+
+            if (updates.status === 'done') {
+                eventBus.emit('task.completed', { 
+                    taskId: id, 
+                    title: taskInfo?.title,
+                    userId: user?.id || 'unknown',
+                    assignerId: taskInfo?.assigned_by?.uid || taskInfo?.created_by?.uid
+                });
+            }
+        }
+
         return { id, ...updates };
     },
 

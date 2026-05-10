@@ -32,4 +32,6 @@ export interface DriveFile {
     version?: number;
     is_demo_data?: boolean;
     originalName?: string; // For SystemHealthPanel display
+    taskId?: string; // Optional task association
+    section?: string; // Optional section association
 }

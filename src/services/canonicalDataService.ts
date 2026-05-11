@@ -203,23 +203,32 @@ export class CanonicalDataService {
     
     const finalInstitutionId = data.institution_id || data.institutionId || institutionId;
 
-    // Validation Guard: Prevent creating records without institution_id for mandatory tables
-    const tablesRequiringInstitution = [TABLES.INVENTORY, TABLES.TASKS, TABLES.EVENTS, TABLES.EQUIPMENT_BOOKINGS];
-    if (tablesRequiringInstitution.includes(table as any) && !finalInstitutionId) {
-       const errorMsg = `[CanonicalDataService] Cannot create ${entityType || table} without institution context. Please refresh your session.`;
+    // Validation Guard: Relaxed to support 'Either-Or' logic for Tasks and Events
+    const tablesRequiringInstitution = [TABLES.INVENTORY, TABLES.EQUIPMENT_BOOKINGS];
+    const isOptionalInstitutionTable = [TABLES.TASKS, TABLES.EVENTS].includes(table as any);
+    
+    // If it's a mandatory table and no ID, or if it's optional but we have NEITHER inst nor dept
+    const hasOrgContext = finalInstitutionId || data.department_id || data.departmentId;
+
+    if ((tablesRequiringInstitution.includes(table as any) && !finalInstitutionId) || (isOptionalInstitutionTable && !hasOrgContext)) {
+       const errorMsg = `[CanonicalDataService] Cannot create ${entityType || table} without organizational context (Institution or Department).`;
        MonitoringService.error(errorMsg, { table, entityId: data.id });
        return { data: null, error: new Error(errorMsg) };
     }
 
+    // Robust UUID Sanitization: Replace empty strings with null for all potential UUID fields
+    const sanitizeUUID = (val: any) => (val === "" || val === "null" || val === "undefined") ? null : val;
+
     const payload = { 
-      id: data.id || crypto.randomUUID(), // Ensure ID is present for offline validation
+      id: sanitizeUUID(data.id) || crypto.randomUUID(),
       ...data, 
-      tenant_id: tenantId, 
-      institution_id: finalInstitutionId,
+      tenant_id: sanitizeUUID(tenantId), 
+      institution_id: sanitizeUUID(finalInstitutionId),
+      department_id: sanitizeUUID(data.department_id || data.departmentId),
       created_at: new Date().toISOString(), 
-      created_by: userId,
+      created_by: sanitizeUUID(userId),
       updated_at: new Date().toISOString(),
-      updated_by: userId 
+      updated_by: sanitizeUUID(userId) 
     };
 
     const { syncEngine } = require('@/lib/offline/queueManager');

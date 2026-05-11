@@ -166,7 +166,7 @@ export function EditTaskDialog({ open, onOpenChange, task, onUpdate }: EditTaskD
             // If admin/superadmin, pass null to fetch all members (omniscient view)
             const finalInstitutionId = (task as any).institution_id || (task as any).institutionId || null;
             
-            UserService.getTeamMembers(finalInstitutionId, user.uid).then(members => {
+            UserService.getTeamMembers(finalInstitutionId, user.uid, { forceMediaIT: true }).then(members => {
                 const filtered = members.filter(m => {
                     const role = (m as any).role?.toLowerCase().trim();
                     const name = m.name?.toLowerCase() || '';

@@ -105,6 +105,13 @@ export const UserService = {
             const { tenantId, userId: contextUserId } = await tenantContext();
             const userId = requesterId || contextUserId;
 
+            // UUID Validation Gate
+            const uuidRegex = /^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i;
+            if (!tenantId || !uuidRegex.test(tenantId)) {
+                console.warn("[UserService] ⚠️ Invalid tenantId for getTeamMembers:", tenantId);
+                return [];
+            }
+
             // 1. Fetch ALL data for the tenant to ensure no silent misses
             const [profilesRes, wsRes] = await Promise.all([
                 supabase.from(TABLES.USERS).select('*').eq('tenant_id', tenantId),

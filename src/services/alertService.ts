@@ -8,6 +8,11 @@ import { TABLES } from '@/lib/dbTables';
 
 
 export class AlertService {
+  private static isValidUUID(uuid: string): boolean {
+    const uuidRegex = /^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i;
+    return uuidRegex.test(uuid);
+  }
+
   static init() {
     console.log('[AlertService] Initializing event subscriptions');
 
@@ -142,6 +147,12 @@ export class AlertService {
     try {
       const { tenantId, userId } = await tenantContext();
 
+      // Robust UUID Validation
+      if (!params.user_id || !this.isValidUUID(params.user_id)) {
+        console.warn('[AlertService] ⚠️ Invalid recipient UUID:', params.user_id);
+        return null;
+      }
+
       // Prevent self-notifications
       if (params.created_by && params.created_by === userId) {
         console.log('Skipping self-notification for user:', userId);
@@ -181,17 +192,24 @@ export class AlertService {
     try {
       const { tenantId } = await tenantContext();
 
-      const notifications = userIds.map(userId => {
-        const { message, ...cleanParams } = params;
-        return {
-          ...cleanParams,
-          user_id: userId,
-          body: params.body || params.message,
-          tenant_id: tenantId,
-          read: false,
-          created_at: new Date().toISOString()
-        };
-      });
+      const notifications = userIds
+        .filter(id => id && this.isValidUUID(id))
+        .map(userId => {
+          const { message, ...cleanParams } = params;
+          return {
+            ...cleanParams,
+            user_id: userId,
+            body: params.body || params.message,
+            tenant_id: tenantId,
+            read: false,
+            created_at: new Date().toISOString()
+          };
+        });
+
+      if (notifications.length === 0) {
+        console.warn('[AlertService] No valid recipients for batch notification');
+        return;
+      }
 
       const { error } = await fromTable(TABLES.NOTIFICATIONS)
         .insert(notifications);

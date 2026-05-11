@@ -40,7 +40,7 @@ export async function tenantContext(): Promise<{ tenantId: string, userId: strin
         }
     }
 
-    if (!tenantId) {
+    if (!tenantId || tenantId === "") {
         console.error('[TENANT] context missing for user', session.user.id);
         throw new Error('Unauthorized: Tenant context missing');
     }
@@ -50,6 +50,6 @@ export async function tenantContext(): Promise<{ tenantId: string, userId: strin
     return {
         tenantId: tenantId as string,
         userId: session.user.id,
-        institutionId: institutionId as string | null
+        institutionId: (institutionId && institutionId !== "") ? institutionId as string : null
     };
 }

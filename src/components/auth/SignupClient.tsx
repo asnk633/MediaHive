@@ -198,7 +198,7 @@ export default function SignupClient() {
                                             className="w-full h-11 bg-white/5 border border-white/10 rounded-full pl-11 pr-6 text-white appearance-none focus:outline-none focus:ring-2 focus:ring-primary/40 focus:bg-[#0f172a] transition-all text-sm cursor-pointer"
                                             suppressHydrationWarning
                                         >
-                                            <option value="" disabled className="bg-[#0f172a]">Select Institution</option>
+                                            <option value="" className="bg-[#0f172a]">None / Select Institution</option>
                                             {institutions.map(inst => (
                                                 <option key={inst.id} value={inst.id} className="bg-[#0f172a]">
                                                     {inst.name}
@@ -220,7 +220,7 @@ export default function SignupClient() {
                                             className="w-full h-11 bg-white/5 border border-white/10 rounded-full pl-11 pr-6 text-white appearance-none focus:outline-none focus:ring-2 focus:ring-primary/40 focus:bg-[#0f172a] transition-all text-sm cursor-pointer"
                                             suppressHydrationWarning
                                         >
-                                            <option value="" disabled className="bg-[#0f172a]">Select Department</option>
+                                            <option value="" className="bg-[#0f172a]">None / Select Department</option>
                                             {departments.map(dept => (
                                                 <option key={dept.id} value={dept.id} className="bg-[#0f172a]">
                                                     {dept.name}

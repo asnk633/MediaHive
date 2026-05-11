@@ -96,7 +96,7 @@ export const EventEditModal: React.FC<EventEditModalProps> = ({ event, isOpen, o
     useEffect(() => {
         if (isAdmin) {
             const fetchTeamMembers = async () => {
-                const members = await UserService.getTeamMembers(event?.institution_id || null);
+                const members = await UserService.getTeamMembers(event?.institution_id || null, user?.uid, { forceMediaIT: true });
                 setTeamMembers(members);
             };
             fetchTeamMembers();

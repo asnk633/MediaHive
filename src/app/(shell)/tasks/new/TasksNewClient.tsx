@@ -146,7 +146,7 @@ export default function TasksNewClient() {
             // Use the user's current institution/workspace context, not the 'Requested By' selection.
             // This ensures you can always assign tasks to your own team members.
             const contextId = currentWorkspaceId;
-            const members = await UserService.getTeamMembers(contextId);
+            const members = await UserService.getTeamMembers(contextId, user.uid, { forceMediaIT: true });
 
             // Context-Aware Filter
             const filtered = members.filter(m => {
@@ -516,13 +516,16 @@ export default function TasksNewClient() {
                                                     </button>
                                                 )}
                                             </div>
-                                            <DropdownSelector 
-                                                label=""
-                                                value={formData.selectedInstitutionId}
-                                                onChange={setSelectedInstitutionId}
-                                                options={institutionsList.map(inst => ({ id: String(inst.id), label: inst.name, icon: <Building size={14} /> }))}
-                                                disabled={!formData.isDelegating}
-                                            />
+                                                <DropdownSelector 
+                                                    label=""
+                                                    value={formData.selectedInstitutionId}
+                                                    onChange={(val) => {
+                                                        setSelectedInstitutionId(val);
+                                                        if (val) setSelectedDepartmentId(''); // Mutual Exclusivity
+                                                    }}
+                                                    options={[{id: '', label: 'None'}, ...institutionsList.map(inst => ({ id: String(inst.id), label: inst.name, icon: <Building size={14} /> }))]}
+                                                    disabled={!formData.isDelegating}
+                                                />
                                         </div>
                                     )}
 
@@ -532,8 +535,11 @@ export default function TasksNewClient() {
                                             <DropdownSelector 
                                                 label=""
                                                 value={formData.selectedDepartmentId}
-                                                onChange={setSelectedDepartmentId}
-                                                options={departmentsList.map(dept => ({ id: String(dept.id), label: dept.name, icon: <Briefcase size={14} /> }))}
+                                                onChange={(val) => {
+                                                    setSelectedDepartmentId(val);
+                                                    if (val) setSelectedInstitutionId(''); // Mutual Exclusivity
+                                                }}
+                                                options={[{id: '', label: 'None'}, ...departmentsList.map(dept => ({ id: String(dept.id), label: dept.name, icon: <Briefcase size={14} /> }))]}
                                                 disabled={!formData.isDelegating}
                                             />
                                         </div>

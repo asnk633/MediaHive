@@ -484,8 +484,51 @@ class SyncEngine {
     }
   }
 
+  /**
+   * Sanitizes payload by converting empty strings or invalid "null"/"undefined" strings to null.
+   * This is critical for UUID columns in Postgres.
+   */
+  private sanitizePayload(payload: any): any {
+      if (!payload || typeof payload !== 'object') return payload;
+      
+      const sanitized = { ...payload };
+      const uuidRegex = /^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i;
+      
+      Object.keys(sanitized).forEach(key => {
+          const val = sanitized[key];
+          
+          // 1. Explicit Empty Strings to Null
+          if (val === "" || val === "null" || val === "undefined") {
+              sanitized[key] = null;
+          }
+          
+          // 2. Stringified objects that should be objects
+          if (typeof val === 'string' && (val.startsWith('{') || val.startsWith('['))) {
+              try {
+                  sanitized[key] = JSON.parse(val);
+              } catch (e) {}
+          }
+
+          // 3. Detect potentially malformed UUID strings that aren't "" but aren't valid
+          // Only do this for known ID fields to avoid corrupting actual text data
+          const isIdField = key.endsWith('_id') || key.endsWith('Id') || key === 'id' || key === 'uid' || key === 'user_id' || key === 'task_id' || key === 'event_id';
+          if (isIdField && typeof val === 'string' && val.length > 0 && !uuidRegex.test(val)) {
+              // If it's a number (like department_id), ignore. If it's a string like "None", set to null.
+              if (isNaN(Number(val))) {
+                  console.warn(`[SyncEngine] ⚠️ Sanitizing invalid UUID string for field ${key}: "${val}" -> null`);
+                  sanitized[key] = null;
+              }
+          }
+      });
+      
+      return sanitized;
+  }
+
   private async executeMutation(mutation: QueuedMutation) {
     let result;
+    
+    // Sanitize payload before processing
+    mutation.payload = this.sanitizePayload(mutation.payload);
     
     const tableMap: Record<string, string> = {
       'CREATE_TASK': 'tasks',
@@ -765,10 +808,20 @@ class SyncEngine {
         // Force correct table for assignments just in case of resolution drift
         const targetTable = 'task_assignments';
         
+        const taskId = mutation.payload.task_id || mutation.payload.taskId;
+        const userId = mutation.payload.user_id || mutation.payload.userId || mutation.payload.uid;
+
+        // Validation Gate: Ensure we have valid UUIDs
+        const uuidRegex = /^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i;
+        if (!taskId || !userId || !uuidRegex.test(taskId) || !uuidRegex.test(userId)) {
+            console.error(`[SyncEngine] 🛑 Invalid UUIDs for assignment: taskId=${taskId}, userId=${userId}. Skipping.`);
+            return;
+        }
+
         // Enforce idempotency with explicit unique constraint handling
         result = await supabase.from(targetTable).upsert({
-          task_id: mutation.payload.task_id || mutation.payload.taskId,
-          user_id: mutation.payload.user_id || mutation.payload.userId || mutation.payload.uid,
+          task_id: taskId,
+          user_id: userId,
           tenant_id: mutation.payload.tenant_id || mutation.payload.tenantId,
           role: mutation.payload.role || 'assignee'
         }, { onConflict: 'task_id,user_id' });

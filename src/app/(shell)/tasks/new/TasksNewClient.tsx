@@ -182,11 +182,8 @@ export default function TasksNewClient() {
         if (!due_date) {
             throw new Error("Please select a due date.");
         }
-        if (!formData.selectedInstitutionId) {
-            throw new Error("Please select an Institution.");
-        }
-        if (!formData.selectedDepartmentId) {
-            throw new Error("Please select a Department.");
+        if (!formData.selectedInstitutionId && !formData.selectedDepartmentId) {
+            throw new Error("Please select either an Institution or a Department.");
         }
 
         try {
@@ -226,7 +223,7 @@ export default function TasksNewClient() {
             }
  
             // Resolve Structure IDs
-            const institution_id = formData.selectedInstitutionId;
+            const institution_id = formData.selectedInstitutionId || null;
             const department_id = formData.selectedDepartmentId ? parseInt(formData.selectedDepartmentId) : null;
             const dept = departmentsList.find(d => String(d.id) === formData.selectedDepartmentId);
             const departmentName = dept ? dept.name : '';
@@ -505,38 +502,42 @@ export default function TasksNewClient() {
  
                                 {/* Institution \u0026 Department Selectors */}
                                 <div className="space-y-4 pt-2">
-                                    <div className="space-y-2">
-                                        <div className="flex items-center justify-between">
-                                            <label className="block text-sm font-medium text-white/70">Institution</label>
-                                            {canCreateOnBehalf && !formData.isDelegating && (
-                                                <button 
-                                                    type="button"
-                                                    onClick={() => setIsDelegating(true)}
-                                                    className="text-[10px] uppercase tracking-wider text-blue-400/60 hover:text-blue-400 font-bold transition-colors"
-                                                >
-                                                    Change Entity
-                                                </button>
-                                            )}
+                                    {(formData.selectedInstitutionId || canCreateOnBehalf) && (
+                                        <div className="space-y-2">
+                                            <div className="flex items-center justify-between">
+                                                <label className="block text-sm font-medium text-white/70">Institution</label>
+                                                {canCreateOnBehalf && !formData.isDelegating && (
+                                                    <button 
+                                                        type="button"
+                                                        onClick={() => setIsDelegating(true)}
+                                                        className="text-[10px] uppercase tracking-wider text-blue-400/60 hover:text-blue-400 font-bold transition-colors"
+                                                    >
+                                                        Change Entity
+                                                    </button>
+                                                )}
+                                            </div>
+                                            <DropdownSelector 
+                                                label=""
+                                                value={formData.selectedInstitutionId}
+                                                onChange={setSelectedInstitutionId}
+                                                options={institutionsList.map(inst => ({ id: String(inst.id), label: inst.name, icon: <Building size={14} /> }))}
+                                                disabled={!formData.isDelegating}
+                                            />
                                         </div>
-                                        <DropdownSelector 
-                                            label=""
-                                            value={formData.selectedInstitutionId}
-                                            onChange={setSelectedInstitutionId}
-                                            options={institutionsList.map(inst => ({ id: String(inst.id), label: inst.name, icon: <Building size={14} /> }))}
-                                            disabled={!formData.isDelegating}
-                                        />
-                                    </div>
+                                    )}
 
-                                    <div className="space-y-2">
-                                        <label className="block text-sm font-medium text-white/70">Department</label>
-                                        <DropdownSelector 
-                                            label=""
-                                            value={formData.selectedDepartmentId}
-                                            onChange={setSelectedDepartmentId}
-                                            options={departmentsList.map(dept => ({ id: String(dept.id), label: dept.name, icon: <Briefcase size={14} /> }))}
-                                            disabled={!formData.isDelegating}
-                                        />
-                                    </div>
+                                    {(formData.selectedDepartmentId || canCreateOnBehalf) && (
+                                        <div className="space-y-2">
+                                            <label className="block text-sm font-medium text-white/70">Department</label>
+                                            <DropdownSelector 
+                                                label=""
+                                                value={formData.selectedDepartmentId}
+                                                onChange={setSelectedDepartmentId}
+                                                options={departmentsList.map(dept => ({ id: String(dept.id), label: dept.name, icon: <Briefcase size={14} /> }))}
+                                                disabled={!formData.isDelegating}
+                                            />
+                                        </div>
+                                    )}
                                     
                                     {formData.isDelegating && (
                                         <button 

@@ -283,7 +283,7 @@ export default function TasksNewClient() {
                                 created_by: user.uid,
                                 type: 'task_assigned',
                                 title: 'Task Assignment Required',
-                                message: `${user.official_name || user.name || 'A member'} has created "${title}" and a team member needs to be assigned to the task`,
+                                body: `${user.official_name || user.name || 'A member'} has created "${title}" and a team member needs to be assigned to the task`,
                                 entity_type: 'task',
                                 entity_id: newTaskId,
                                 action_url: `/tasks/view?id=${newTaskId}`,

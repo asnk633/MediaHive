@@ -24,6 +24,8 @@ export const COPY = {
             today: "Nothing due today.",
             upcoming: "No upcoming tasks.",
             done: "No completed tasks yet.",
+            assigned: "No tasks assigned to you.",
+            requested: "No tasks requested by you.",
             filter: "No tasks match your filters.",
         },
         notifications: {

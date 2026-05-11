@@ -153,13 +153,20 @@ const TaskListViewComponent: React.FC<TaskListViewProps> = ({ tasks, loading = f
     const urlStatus = searchParams.get('status') || 'all';
     const urlPriority = searchParams.get('priority') || 'all';
 
-    const [view, setView] = useState<'today' | 'all' | 'mine' | 'overdue' | 'due_today' | 'upcoming'>('today');
+    const [view, setView] = useState<'today' | 'all' | 'assigned' | 'requested' | 'overdue' | 'due_today' | 'upcoming'>('today');
 
     useEffect(() => {
-        if (urlFilter && ['overdue', 'due_today', 'upcoming', 'mine', 'all'].includes(urlFilter)) {
-            setView(urlFilter as any);
+        if (urlFilter && ['overdue', 'due_today', 'upcoming', 'mine', 'assigned', 'requested', 'all'].includes(urlFilter)) {
+            const mappedView = urlFilter === 'mine' ? 'assigned' : urlFilter;
+            setView(mappedView as any);
+        } else if (userRole && !urlFilter) {
+            // Set dynamic default based on role if no URL filter is present
+            const role = userRole.toLowerCase();
+            if (role === 'team') setView('assigned');
+            else if (role === 'member') setView('all');
+            else setView('today');
         }
-    }, [urlFilter]);
+    }, [urlFilter, userRole]);
 
     const [filterStatus, setFilterStatus] = useState<string>(urlStatus);
     const [filterPriority, setFilterPriority] = useState<string>(urlPriority);
@@ -273,11 +280,16 @@ const TaskListViewComponent: React.FC<TaskListViewProps> = ({ tasks, loading = f
             if (filterStatus !== 'all' && t.status !== filterStatus) return;
             if (filterPriority !== 'all' && t.priority !== filterPriority) return;
 
-            // Filter: "Mine" View (Applies to everything)
-            if (view === 'mine' && user) {
+            // Filter: "Assigned" View
+            if (view === 'assigned' && user) {
                 const isAssigned = t.assignedTo && Array.isArray(t.assignedTo) && t.assignedTo.some(a => a.uid === user.uid);
-                const isCreatedBy = t.createdBy?.uid === user.uid;
-                if (!isAssigned && !isCreatedBy) return;
+                if (!isAssigned) return;
+            }
+
+            // Filter: "Requested" View
+            if (view === 'requested' && user) {
+                const isCreatedBy = (t.createdBy?.uid || t.created_by?.uid || t.created_by) === user.uid;
+                if (!isCreatedBy) return;
             }
 
             // Segregate
@@ -699,36 +711,53 @@ const TaskListViewComponent: React.FC<TaskListViewProps> = ({ tasks, loading = f
             {/* Top Bar: A4 Today Mode Toggle & Filters */}
             {mode !== 'trash' && (
                 <div className="flex flex-col md:flex-row gap-4 items-start md:items-center justify-between border-b border-[#ffffff1a] pb-6 relative">
-                    {/* A4: Primary Time Scope Toggle */}
+                    {/* Dynamic Role-Based Time Scope Toggle */}
                     <div className="flex bg-white/[0.01] p-1 rounded-lg border border-white/10 backdrop-blur-md">
-                        <button
-                            onClick={() => setView('today')}
-                            className={cn(
-                                "px-6 py-2 text-[10px] font-bold uppercase tracking-widest rounded-md transition-all flex items-center gap-2",
-                                view === 'today' ? "bg-blue-500/10 text-blue-400 shadow-sm border border-blue-500/20 z-10" : "text-white/60 hover:text-white/80"
-                            )}
-                        >
-                            Today <span className="text-[9px] opacity-80">Focus</span>
-                        </button>
-                        <button
-                            onClick={() => setView('all')}
-                            className={cn(
-                                "px-6 py-2 text-[10px] font-bold uppercase tracking-widest rounded-md transition-all",
-                                view === 'all' ? "bg-white/5 text-white shadow-sm border border-white/10 z-10" : "text-white/60 hover:text-white/80"
-                            )}
-                        >
-                            All Tasks
-                        </button>
-                        <div className="w-px h-4 bg-white/5 mx-1 self-center" />
-                        <button
-                            onClick={() => setView('mine')}
-                            className={cn(
-                                "px-4 py-2 text-[10px] font-bold uppercase tracking-widest rounded-md transition-all",
-                                view === 'mine' ? "text-white bg-white/5 z-10" : "text-white/60 hover:text-white/80"
-                            )}
-                        >
-                            Mine
-                        </button>
+                        {(() => {
+                            const config = {
+                                team: [
+                                    { id: 'assigned', label: 'My Tasks' },
+                                    { id: 'today', label: 'Today Focus' },
+                                    { id: 'all', label: 'All Tasks' }
+                                ],
+                                manager: [
+                                    { id: 'today', label: 'Today Focus' },
+                                    { id: 'all', label: 'All Tasks' },
+                                    { id: 'requested', label: 'My Requests' }
+                                ],
+                                admin: [
+                                    { id: 'today', label: 'Today Focus' },
+                                    { id: 'all', label: 'All Tasks' },
+                                    { id: 'requested', label: 'My Requests' }
+                                ],
+                                member: [
+                                    { id: 'all', label: 'All Tasks' },
+                                    { id: 'requested', label: 'My Requests' },
+                                    { id: 'today', label: 'Today Focus' }
+                                ]
+                            };
+
+                            const roleKey = (userRole?.toLowerCase() || 'member') as keyof typeof config;
+                            const tabs = config[roleKey] || config.member;
+
+                            return tabs.map((tab, idx) => (
+                                <React.Fragment key={tab.id}>
+                                    <button
+                                        onClick={() => setView(tab.id as any)}
+                                        className={cn(
+                                            "px-6 py-2 text-[10px] font-bold uppercase tracking-widest rounded-md transition-all flex items-center gap-2 whitespace-nowrap",
+                                            view === tab.id 
+                                                ? (tab.id === 'today' ? "bg-blue-500/10 text-blue-400 shadow-sm border border-blue-500/20 z-10" : "bg-white/5 text-white shadow-sm border border-white/10 z-10")
+                                                : "text-white/60 hover:text-white/80"
+                                        )}
+                                    >
+                                        {tab.label}
+                                        {tab.id === 'today' && <span className="hidden lg:inline text-[9px] opacity-80 font-normal">Focus</span>}
+                                    </button>
+                                    {idx === 1 && <div className="w-px h-4 bg-white/5 mx-1 self-center" />}
+                                </React.Fragment>
+                            ));
+                        })()}
                     </div>
 
                     {/* Filters & KPI */}
@@ -865,7 +894,12 @@ const TaskListViewComponent: React.FC<TaskListViewProps> = ({ tasks, loading = f
                         <EmptyState
                             icon={CheckCircle2}
                             title={COPY.emptyStates.generic}
-                            description={view === 'today' ? COPY.emptyStates.tasks.today : COPY.emptyStates.tasks.all}
+                            description={
+                                view === 'today' ? COPY.emptyStates.tasks.today : 
+                                view === 'assigned' ? COPY.emptyStates.tasks.assigned :
+                                view === 'requested' ? COPY.emptyStates.tasks.requested :
+                                COPY.emptyStates.tasks.all
+                            }
                             action={view === 'today' ? (
                                 <button
                                     onClick={() => setView('all')}

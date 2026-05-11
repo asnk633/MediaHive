@@ -168,7 +168,7 @@ export function NotificationForm({ initialData, onSubmitSuccess, onCancel }: Not
 
       const params = {
         title: data.title,
-        message: data.body,
+        body: data.body,
         type: 'announcement' as any,
         priority: 'medium' as any,
         entity_type: 'announcement' as any,

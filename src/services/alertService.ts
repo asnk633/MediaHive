@@ -23,7 +23,7 @@ export class AlertService {
             created_by: data.userId,
             type: 'task_completed',
             title: 'Task Completed',
-            message: `Task "${data.title || data.taskId.slice(0, 8)}" has been marked as done.`,
+            body: `Task "${data.title || data.taskId.slice(0, 8)}" has been marked as done.`,
             entity_type: 'task',
             entity_id: data.taskId,
             priority: 'low'
@@ -38,7 +38,7 @@ export class AlertService {
             this.createBatchNotifications(data.assignedTo, {
                 type: 'task_assigned',
                 title: 'New Task Assigned',
-                message: `You have been assigned to: ${data.title}`,
+                body: `You have been assigned to: ${data.title}`,
                 entity_type: 'task',
                 entity_id: data.taskId,
                 priority: 'medium'
@@ -53,7 +53,7 @@ export class AlertService {
           user_id: data.assignerId,
           type: 'status_changed',
           title: 'Task Status Updated',
-          message: `Task "${data.title || data.taskId.slice(0, 8)}" is now: ${data.changes.status.replace('_', ' ')}`,
+          body: `Task "${data.title || data.taskId.slice(0, 8)}" is now: ${data.changes.status.replace('_', ' ')}`,
           entity_type: 'task',
           entity_id: data.taskId,
           priority: 'low'
@@ -67,7 +67,7 @@ export class AlertService {
         user_id: data.userId,
         type: 'inventory_issued',
         title: 'Equipment Issued',
-        message: `You have been issued equipment for request #${data.issueId.slice(0, 8)}.`,
+        body: `You have been issued equipment for request #${data.issueId.slice(0, 8)}.`,
         entity_type: 'device_request',
         entity_id: data.issueId,
         priority: 'medium'
@@ -84,7 +84,7 @@ export class AlertService {
         await this.createBatchNotifications(userIds, {
           type: 'event_created',
           title: 'New Event Scheduled',
-          message: `New event: ${data.title}`,
+          body: `New event: ${data.title}`,
           entity_type: 'event',
           entity_id: data.eventId,
           priority: 'medium'
@@ -107,7 +107,7 @@ export class AlertService {
                 user_id: recipientId,
                 type: 'file_uploaded',
                 title: 'New File Attached',
-                message: `New file "${data.fileName}" uploaded to task: ${task?.title}`,
+                body: `New file "${data.fileName}" uploaded to task: ${task?.title}`,
                 entity_type: 'task',
                 entity_id: data.taskId,
                 priority: 'low'
@@ -122,7 +122,7 @@ export class AlertService {
             await this.createBatchNotifications(userIds, {
               type: 'file_uploaded',
               title: 'New File Available',
-              message: `A new file "${data.fileName}" has been uploaded to the platform.`,
+              body: `A new file "${data.fileName}" has been uploaded to the platform.`,
               entity_type: 'file',
               entity_id: data.fileId,
               priority: 'low'
@@ -148,13 +148,17 @@ export class AlertService {
         return null;
       }
 
+      const { message, ...cleanParams } = params;
+      const finalParams = {
+        ...cleanParams,
+        body: params.body || params.message,
+        tenant_id: tenantId,
+        read: false,
+        created_at: new Date().toISOString()
+      };
+
       const { data, error } = await fromTable(TABLES.NOTIFICATIONS)
-        .insert([{
-          ...params,
-          tenant_id: tenantId,
-          read: false,
-          created_at: new Date().toISOString()
-        }])
+        .insert([finalParams])
         .select()
         .single();
 
@@ -177,13 +181,17 @@ export class AlertService {
     try {
       const { tenantId } = await tenantContext();
 
-      const notifications = userIds.map(userId => ({
-        ...params,
-        user_id: userId,
-        tenant_id: tenantId,
-        read: false,
-        created_at: new Date().toISOString()
-      }));
+      const notifications = userIds.map(userId => {
+        const { message, ...cleanParams } = params;
+        return {
+          ...cleanParams,
+          user_id: userId,
+          body: params.body || params.message,
+          tenant_id: tenantId,
+          read: false,
+          created_at: new Date().toISOString()
+        };
+      });
 
       const { error } = await fromTable(TABLES.NOTIFICATIONS)
         .insert(notifications);

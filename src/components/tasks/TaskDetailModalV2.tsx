@@ -320,7 +320,7 @@ export const TaskDetailModalV2: React.FC<TaskDetailsModalProps> = ({ task, isOpe
                     created_by: user!.uid,
                     type: 'task_assigned',
                     title: 'New Assignment',
-                    message: `You have been assigned to "${task.title}"`,
+                    body: `You have been assigned to "${task.title}"`,
                     entity_type: 'task',
                     entity_id: task.id,
                     action_url: `/tasks/view?id=${task.id}`,

@@ -178,7 +178,7 @@ export default function WorkspacesPage() {
     };
 
     const handleDelete = async () => {
-        if (!selectedId || deleting) return;
+        if (!selectedId || !selectedWorkspace || deleting) return;
 
         setDeleting(true);
         try {
@@ -207,7 +207,7 @@ export default function WorkspacesPage() {
     };
 
     const handlePermanentDelete = async () => {
-        if (!selectedId || deleting) return;
+        if (!selectedId || !selectedWorkspace || deleting) return;
         
         if (!window.confirm(`CRITICAL: Are you sure you want to PERMANENTLY DELETE ${selectedWorkspace?.name}? This action cannot be undone and may fail if there is linked data.`)) {
             return;

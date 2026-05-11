@@ -36,7 +36,7 @@ const MODULES = [
 ];
 
 export default function WorkspacesPage() {
-    const [workspaces, setWorkspaces] = useState<Institution[]>([]);
+    const [workspaces, setWorkspaces] = useState<(Institution & { type: 'institution' | 'department' })[]>([]);
     const [loading, setLoading] = useState(true);
     const [search, setSearch] = useState('');
     const [selectedId, setSelectedId] = useState<string | null>(null);
@@ -106,7 +106,7 @@ export default function WorkspacesPage() {
 
         setSaving(true);
         try {
-            await AdminService.updateWorkspaceFeatures(selectedWorkspace.id, newFeatures);
+            await AdminService.updateWorkspaceFeatures(selectedWorkspace.id, newFeatures, selectedWorkspace.type);
             // Optimistic update
             setWorkspaces(prev => prev.map(w => 
                 w.id === selectedWorkspace.id ? { ...w, features: newFeatures } : w
@@ -125,6 +125,8 @@ export default function WorkspacesPage() {
 
         setCreating(true);
         try {
+            // Default to Institution unless name contains "Department" or user chooses?
+            // For now, let's just make it a toggle in the UI later, but for this call:
             await StructureService.createInstitution(newName);
             toast.success("Department / Institution created");
             setNewName('');
@@ -157,7 +159,11 @@ export default function WorkspacesPage() {
 
         setUpdating(true);
         try {
-            await StructureService.updateInstitution(selectedWorkspace.id, {
+            const updateFn = selectedWorkspace.type === 'department' 
+                ? StructureService.updateDepartment 
+                : StructureService.updateInstitution;
+
+            await (updateFn as any)(selectedWorkspace.id, {
                 name: editName.trim(),
                 status: editStatus
             });
@@ -180,7 +186,11 @@ export default function WorkspacesPage() {
             const timestamp = new Date().toLocaleDateString();
             const archivedName = `${selectedWorkspace?.name} (Archived ${timestamp})`;
 
-            await StructureService.updateInstitution(selectedId, {
+            const updateFn = selectedWorkspace.type === 'department' 
+                ? StructureService.updateDepartment 
+                : StructureService.updateInstitution;
+
+            await (updateFn as any)(selectedId, {
                 name: archivedName,
                 status: 'archived'
             });
@@ -205,7 +215,11 @@ export default function WorkspacesPage() {
 
         setDeleting(true);
         try {
-            await StructureService.deleteInstitution(selectedId);
+            const deleteFn = selectedWorkspace.type === 'department' 
+                ? StructureService.deleteDepartment 
+                : StructureService.deleteInstitution;
+
+            await (deleteFn as any)(selectedId);
             toast.success("Department / Institution permanently deleted");
             setDeleteConfirmOpen(false);
             setEditOpen(false);
@@ -227,7 +241,11 @@ export default function WorkspacesPage() {
             // Attempt to remove the (Archived ...) suffix
             const restoredName = selectedWorkspace.name.replace(/\s\(Archived\s.*\)$/, '');
 
-            await StructureService.updateInstitution(selectedWorkspace.id, {
+            const updateFn = selectedWorkspace.type === 'department' 
+                ? StructureService.updateDepartment 
+                : StructureService.updateInstitution;
+
+            await (updateFn as any)(selectedWorkspace.id, {
                 name: restoredName,
                 status: 'active'
             });
@@ -311,7 +329,7 @@ export default function WorkspacesPage() {
                         <div className="relative flex-1">
                             <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-white/20" size={16} />
                             <input
-                                placeholder="Search departments..."
+                                placeholder="Search departments & institutions..."
                                 className="w-full h-11 pl-10 pr-4 bg-white/5 border border-white/5 rounded-2xl text-sm text-white placeholder:text-white/20 focus:outline-none focus:border-indigo-500/50 transition-colors"
                                 value={search}
                                 onChange={(e) => setSearch(e.target.value)}
@@ -352,11 +370,19 @@ export default function WorkspacesPage() {
                                         <h4 className={cn("text-sm font-bold truncate", selectedId === workspace.id ? "text-white" : "text-white/60")}>
                                             {workspace.name}
                                         </h4>
-                                        {workspace.status === 'archived' && (
-                                            <span className="px-1.5 py-0.5 rounded-md bg-red-500/10 border border-red-500/20 text-[8px] font-black text-red-400 uppercase tracking-widest">
-                                                Archived
+                                        <div className="flex gap-1">
+                                            <span className={cn(
+                                                "px-1.5 py-0.5 rounded-md text-[8px] font-black uppercase tracking-widest",
+                                                workspace.type === 'department' ? "bg-purple-500/10 text-purple-400 border border-purple-500/20" : "bg-blue-500/10 text-blue-400 border border-blue-500/20"
+                                            )}>
+                                                {workspace.type}
                                             </span>
-                                        )}
+                                            {workspace.status === 'archived' && (
+                                                <span className="px-1.5 py-0.5 rounded-md bg-red-500/10 border border-red-500/20 text-[8px] font-black text-red-400 uppercase tracking-widest">
+                                                    Archived
+                                                </span>
+                                            )}
+                                        </div>
                                     </div>
                                     <div className="flex items-center gap-2 text-[10px] text-white/30 font-medium uppercase tracking-widest mt-0.5">
                                         <Users size={10} /> {workspace.userCount || 0} Members
@@ -387,6 +413,12 @@ export default function WorkspacesPage() {
                                         <div>
                                             <h2 className="text-3xl font-black text-white tracking-tighter mb-1">{selectedWorkspace.name}</h2>
                                             <div className="flex gap-3">
+                                                <div className={cn(
+                                                    "px-3 py-1 rounded-lg border text-[10px] font-black uppercase tracking-widest",
+                                                    selectedWorkspace.type === 'department' ? "bg-purple-500/10 border-purple-500/20 text-purple-400" : "bg-blue-500/10 border-blue-500/20 text-blue-400"
+                                                )}>
+                                                    Type: {selectedWorkspace.type}
+                                                </div>
                                                 <div className={cn(
                                                     "px-3 py-1 rounded-lg border text-[10px] font-black uppercase tracking-widest",
                                                     selectedWorkspace.status === 'active' 

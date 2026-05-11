@@ -9,7 +9,6 @@ import {
   PopoverContent,
   PopoverTrigger,
 } from "@/components/ui/popover";
-import { ScrollArea } from "@/components/ui/scroll-area";
 
 interface DropdownOption {
   id: string;
@@ -116,7 +115,7 @@ export function DropdownSelector({
                 </div>
               </div>
             )}
-            <ScrollArea className="max-h-[300px]">
+            <div className="max-h-[400px] overflow-y-auto scrollbar-thin scrollbar-thumb-white/10 scrollbar-track-transparent">
               <div className="p-2 space-y-1">
                 {filteredOptions.length > 0 ? (
                   filteredOptions.map((option) => (
@@ -154,7 +153,7 @@ export function DropdownSelector({
                   </div>
                 )}
               </div>
-            </ScrollArea>
+            </div>
           </div>
         </PopoverContent>
       </Popover>

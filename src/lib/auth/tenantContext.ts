@@ -11,8 +11,12 @@ import { supabase } from '@/lib/supabaseClient';
 export async function tenantContext(): Promise<{ tenantId: string, userId: string, institutionId: string | null }> {
     const { data: { session }, error } = await supabase.auth.getSession();
 
-    if (error || !session) {
+    if (error) {
         console.error('[AUTH] session validation failed', error);
+        throw new Error('Unauthorized: No active session');
+    }
+    if (!session) {
+        // Silently throw so callers can handle unauthenticated state (e.g. public pages)
         throw new Error('Unauthorized: No active session');
     }
 

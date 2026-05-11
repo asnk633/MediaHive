@@ -38,24 +38,59 @@ export const AdminService = {
     },
 
     /**
-     * Fetch all institutions with metadata
+     * Fetch all institutions and departments with metadata
      */
-    getAllWorkspaces: async (): Promise<Institution[]> => {
+    getAllWorkspaces: async (): Promise<(Institution & { type: 'institution' | 'department' })[]> => {
         try {
             const { tenantId } = await tenantContext();
-            const { data, error } = await safeQuery(() => 
+            
+            // 1. Fetch Institutions with member counts
+            const { data: instData, error: instError } = await safeQuery(() => 
                 supabase
                     .from('institutions')
                     .select('*, user_institutions(count)')
                     .eq('tenant_id', tenantId)
                     .order('name')
             );
+            if (instError) throw instError;
 
-            if (error) throw error;
-            return ((data as any[]) || []).map((inst: any) => ({
+            // 2. Fetch Departments with member counts from profiles
+            const { data: deptData, error: deptError } = await safeQuery(() => 
+                supabase
+                    .from('departments')
+                    .select('*')
+                    .eq('tenant_id', tenantId)
+                    .order('name')
+            );
+            if (deptError) throw deptError;
+
+            // 3. Fetch Department member counts manually
+            const { data: deptCounts, error: countError } = await supabase
+                .from('profiles')
+                .select('department_id')
+                .eq('tenant_id', tenantId)
+                .not('department_id', 'is', null);
+
+            const deptCountMap = (deptCounts || []).reduce((acc: any, curr: any) => {
+                acc[curr.department_id] = (acc[curr.department_id] || 0) + 1;
+                return acc;
+            }, {});
+
+            // 4. Combine and unify
+            const institutions = ((instData as any[]) || []).map(inst => ({
                 ...inst,
+                type: 'institution' as const,
                 userCount: inst.user_institutions?.[0]?.count || 0
             }));
+
+            const departments = ((deptData as any[]) || []).map(dept => ({
+                ...dept,
+                id: String(dept.id), // Ensure string ID for consistency
+                type: 'department' as const,
+                userCount: deptCountMap[dept.id] || 0
+            }));
+
+            return [...institutions, ...departments].sort((a, b) => a.name.localeCompare(b.name));
         } catch (error) {
             MonitoringService.error('[AdminService] Failed to fetch workspaces', error);
             return [];
@@ -65,16 +100,17 @@ export const AdminService = {
     /**
      * Update module feature toggles for a workspace
      */
-    updateWorkspaceFeatures: async (id: string, features: Record<string, boolean>) => {
+    updateWorkspaceFeatures: async (id: string, features: Record<string, boolean>, type: 'institution' | 'department' = 'institution') => {
         try {
+            const table = type === 'department' ? 'departments' : 'institutions';
             const { error } = await supabase
-                .from('institutions')
+                .from(table)
                 .update({ features, updated_at: new Date().toISOString() })
                 .eq('id', id);
 
             if (error) throw error;
         } catch (error) {
-            console.error('[AdminService] Failed to update features:', error);
+            console.error(`[AdminService] Failed to update ${type} features:`, error);
             throw error;
         }
     },

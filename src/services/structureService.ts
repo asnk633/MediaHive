@@ -8,7 +8,14 @@ export const StructureService = {
     // Institutions
     getInstitutions: async (showArchived = false) => {
         try {
-            const { tenantId } = await tenantContext();
+            let tenantId: string;
+            try {
+                const ctx = await tenantContext();
+                tenantId = ctx.tenantId;
+            } catch (e) {
+                // Public/Signup fallback for primary tenant
+                tenantId = '7bc0bbe7-1943-4929-a769-5fdfbc487446';
+            }
 
             const { data, error } = await safeQuery(() => {
                 let query = supabase
@@ -21,7 +28,7 @@ export const StructureService = {
                 }
 
                 return query.order('name', { ascending: true });
-            }, { table: 'institutions' });
+            }, { table: 'institutions', silent: true });
 
             if (error) throw error;
 
@@ -141,11 +148,18 @@ export const StructureService = {
     // Departments
     getDepartments: async (showArchived = false) => {
         try {
-            const { tenantId } = await tenantContext();
+            let tenantId: string;
+            try {
+                const ctx = await tenantContext();
+                tenantId = ctx.tenantId;
+            } catch (e) {
+                // Public/Signup fallback for primary tenant
+                tenantId = '7bc0bbe7-1943-4929-a769-5fdfbc487446';
+            }
 
             const { data, error } = await safeQuery(() => {
                 let query = supabase
-                    .from('units')
+                    .from('departments')
                     .select('*')
                     .eq('tenant_id', tenantId);
 
@@ -154,7 +168,7 @@ export const StructureService = {
                 }
 
                 return query.order('name', { ascending: true });
-            }, { table: 'units' });
+            }, { table: 'departments', silent: true });
 
             if (error) throw error;
 
@@ -180,12 +194,12 @@ export const StructureService = {
 
             const { data, error } = await safeQuery(() => 
                 supabase
-                    .from('units')
+                    .from('departments')
                     .insert([payload])
                     .select()
                     .single(),
                 { 
-                    table: 'units', 
+                    table: 'departments', 
                     type: 'INSERT', 
                     payload,
                     offlineFirst: true 
@@ -206,13 +220,13 @@ export const StructureService = {
 
             const { data: updated, error } = await safeQuery(() => 
                 supabase
-                    .from('units')
+                    .from('departments')
                     .update(updateData)
                     .eq('id', id)
                     .eq('tenant_id', tenantId)
                     .select()
                     .single(),
-                { table: 'units', type: 'UPDATE', payload: updateData }
+                { table: 'departments', type: 'UPDATE', payload: updateData }
             );
 
             if (error) throw error;
@@ -229,11 +243,11 @@ export const StructureService = {
 
             const { error } = await safeQuery(() => 
                 supabase
-                    .from('units')
+                    .from('departments')
                     .delete()
                     .eq('id', id)
                     .eq('tenant_id', tenantId),
-                { table: 'units', type: 'DELETE' }
+                { table: 'departments', type: 'DELETE' }
             );
 
             if (error) throw error;

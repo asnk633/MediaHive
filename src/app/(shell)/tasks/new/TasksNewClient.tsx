@@ -62,7 +62,8 @@ export default function TasksNewClient() {
             due_date: undefined as string | undefined,
             priority: 'medium' as 'low' | 'medium' | 'high',
             assignedToIds: [] as string[],
-            selectedOrgId: '',
+            selectedInstitutionId: '',
+            selectedDepartmentId: '',
             isDelegating: false,
             is_demo_data: false
         }
@@ -79,7 +80,8 @@ export default function TasksNewClient() {
         ...prev, 
         assignedToIds: typeof val === 'function' ? val(prev.assignedToIds) : val 
     }));
-    const setSelectedOrgId = (val: string) => setFormData(prev => ({ ...prev, selectedOrgId: val }));
+    const setSelectedInstitutionId = (val: string) => setFormData(prev => ({ ...prev, selectedInstitutionId: val }));
+    const setSelectedDepartmentId = (val: string) => setFormData(prev => ({ ...prev, selectedDepartmentId: val }));
     const setIsDelegating = (val: boolean) => setFormData(prev => ({ ...prev, isDelegating: val }));
     const setIsDemoData = (val: boolean) => setFormData(prev => ({ ...prev, is_demo_data: val }));
 
@@ -88,10 +90,13 @@ export default function TasksNewClient() {
 
     // Save persistence
     useEffect(() => {
-        if (typeof window !== 'undefined' && selectedOrgId) {
-            sessionStorage.setItem('task-org-pref', selectedOrgId);
+        if (typeof window !== 'undefined' && formData.selectedInstitutionId) {
+            sessionStorage.setItem('task-inst-pref', formData.selectedInstitutionId);
         }
-    }, [selectedOrgId]);
+        if (typeof window !== 'undefined' && formData.selectedDepartmentId) {
+            sessionStorage.setItem('task-dept-pref', formData.selectedDepartmentId);
+        }
+    }, [formData.selectedInstitutionId, formData.selectedDepartmentId]);
 
     // Fetch Organizations
     useEffect(() => {
@@ -118,42 +123,19 @@ export default function TasksNewClient() {
     useEffect(() => {
         if (departmentsList.length === 0 && institutionsList.length === 0) return;
 
-        // Helper to find dept/inst
-        // Check Explicit IDs first (New standard), then explicit defaults, then name matches
-        const userDeptId = user.department_id || user.department_id || user.department_id;
-        const userInstId = user.institution_id || user.institution_id || user.default_institution || user.institution_id;
+        const userDeptId = user.department_id;
+        const userInstId = user.institution_id;
 
-        // 1. Auto-select if ONLY one option exists (Friction Removal)
-        const totalOptions = departmentsList.length + institutionsList.length;
-        if (totalOptions === 1) {
-            if (departmentsList.length === 1) {
-                setSelectedOrgId(`dept_${departmentsList[0].id}`);
-                return;
-            }
-            if (institutionsList.length === 1) {
-                setSelectedOrgId(`inst_${institutionsList[0].id}`);
-                return;
-            }
+        if (userDeptId && !formData.selectedDepartmentId) {
+            const dept = departmentsList.find(d => String(d.id) === String(userDeptId));
+            if (dept) setSelectedDepartmentId(String(dept.id));
         }
 
-        // 2. User Defaults
-        if (userDeptId) {
-            const dept = departmentsList.find(d => String(d.id) === String(userDeptId) || d.name === String(userDeptId));
-            if (dept) {
-                setSelectedOrgId(`dept_${dept.id}`);
-                return;
-            }
+        if (userInstId && !formData.selectedInstitutionId) {
+            const inst = institutionsList.find(i => String(i.id) === String(userInstId));
+            if (inst) setSelectedInstitutionId(String(inst.id));
         }
-
-        if (userInstId) {
-            const inst = institutionsList.find(i => String(i.id) === String(userInstId) || i.name === String(userInstId));
-            if (inst) {
-                setSelectedOrgId(`inst_${inst.id}`);
-                return;
-            }
-        }
-        // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [user.department_id, user.institution_id, user.department_id, user.institution_id, departmentsList.length, institutionsList.length]);
+    }, [user.department_id, user.institution_id, departmentsList.length, institutionsList.length]);
 
     // Role derived above to ensure consistency across the component lifecycle
     console.log("[TasksNew] User Role Detection (Active Context):", { role: currentRole, isAdmin, isTeam, isMember });
@@ -200,8 +182,11 @@ export default function TasksNewClient() {
         if (!due_date) {
             throw new Error("Please select a due date.");
         }
-        if (!selectedOrgId) {
-            throw new Error("Please select a Department / Institution.");
+        if (!formData.selectedInstitutionId) {
+            throw new Error("Please select an Institution.");
+        }
+        if (!formData.selectedDepartmentId) {
+            throw new Error("Please select a Department.");
         }
 
         try {
@@ -228,41 +213,23 @@ export default function TasksNewClient() {
  
             // Prepare On Behalf Of Data
             let onBehalfOfData = undefined;
-            const userDeptId = user.department_id ? `dept_${user.department_id}` : null;
-            const userInstId = user.institution_id ? `inst_${user.institution_id}` : null;
+            const userDeptId = user.department_id ? String(user.department_id) : null;
+            const userInstId = user.institution_id ? String(user.institution_id) : null;
             
-            // Only treat as 'On Behalf Of' if explicitly delegating and selected something other than defaults
-            // OR if it's a different entity even if not 'explicitly' delegating (safety fallback)
-            if (selectedOrgId && (selectedOrgId !== userDeptId && selectedOrgId !== userInstId)) {
-                if (selectedOrgId.startsWith('dept_')) {
-                    const id = selectedOrgId.split('_')[1];
-                    const dept = departmentsList.find(d => String(d.id) === id);
-                    if (dept) onBehalfOfData = { id: dept.id, name: dept.name, type: 'department' };
-                } else if (selectedOrgId.startsWith('inst_')) {
-                    const id = selectedOrgId.split('_')[1];
-                    const inst = institutionsList.find(i => String(i.id) === id);
-                    if (inst) onBehalfOfData = { id: inst.id, name: inst.name, type: 'institution' };
-                }
+            if (formData.selectedInstitutionId !== userInstId || formData.selectedDepartmentId !== userDeptId) {
+                const inst = institutionsList.find(i => String(i.id) === formData.selectedInstitutionId);
+                const dept = departmentsList.find(d => String(d.id) === formData.selectedDepartmentId);
+                onBehalfOfData = {
+                    institution: inst ? { id: inst.id, name: inst.name } : null,
+                    department: dept ? { id: dept.id, name: dept.name } : null
+                };
             }
  
             // Resolve Structure IDs
-            let department_id = null;
-            let institution_id = user.institution_id;
-            let departmentName = '';
- 
-            if (selectedOrgId.startsWith('dept_')) {
-                const id = selectedOrgId.split('_')[1];
-                const isNumeric = /^\d+$/.test(id);
-                department_id = isNumeric ? parseInt(id) : null;
-                const d = departmentsList.find(dep => String(dep.id) === id);
-                departmentName = d ? d.name : '';
-                // Ensure institution_id is carried over if available
-                if (!institution_id) institution_id = user.institution_id;
-            } else if (selectedOrgId.startsWith('inst_')) {
-                const id = selectedOrgId.split('_')[1];
-                institution_id = id;
-                department_id = null;
-            }
+            const institution_id = formData.selectedInstitutionId;
+            const department_id = formData.selectedDepartmentId ? parseInt(formData.selectedDepartmentId) : null;
+            const dept = departmentsList.find(d => String(d.id) === formData.selectedDepartmentId);
+            const departmentName = dept ? dept.name : '';
  
             const newTaskData = {
                 title,
@@ -536,51 +503,55 @@ export default function TasksNewClient() {
                                     />
                                 </div>
  
-                                {/* Unified Department or Institution Selector */}
-                                {isDelegating ? (
-                                    <div className="space-y-0.5 animate-in fade-in slide-in-from-top-2 duration-300">
-                                        <div className="flex items-center justify-between mb-2">
-                                            <label className="block text-sm font-medium text-white/70">
-                                                Requested On behalf of <span className="text-white/40 text-xs">(Dept / Inst)</span>
-                                            </label>
-                                            <button 
-                                                type="button"
-                                                onClick={() => {
-                                                    setIsDelegating(false);
-                                                    // Reset to user's default
-                                                    const def = user.department_id ? `dept_${user.department_id}` : (user.institution_id ? `inst_${user.institution_id}` : '');
-                                                    setSelectedOrgId(def);
-                                                }}
-                                                className="text-[10px] uppercase tracking-wider text-blue-400/60 hover:text-blue-400 font-bold transition-colors"
-                                            >
-                                                Back to Myself
-                                            </button>
+                                {/* Institution \u0026 Department Selectors */}
+                                <div className="space-y-4 pt-2">
+                                    <div className="space-y-2">
+                                        <div className="flex items-center justify-between">
+                                            <label className="block text-sm font-medium text-white/70">Institution</label>
+                                            {canCreateOnBehalf && !formData.isDelegating && (
+                                                <button 
+                                                    type="button"
+                                                    onClick={() => setIsDelegating(true)}
+                                                    className="text-[10px] uppercase tracking-wider text-blue-400/60 hover:text-blue-400 font-bold transition-colors"
+                                                >
+                                                    Change Entity
+                                                </button>
+                                            )}
                                         </div>
                                         <DropdownSelector 
                                             label=""
-                                            value={selectedOrgId}
-                                            onChange={setSelectedOrgId}
-                                            options={[
-                                                ...departmentsList.map(dept => ({ id: `dept_${dept.id}`, label: dept.name, icon: <Briefcase size={14} /> })),
-                                                ...institutionsList.map(inst => ({ id: `inst_${inst.id}`, label: inst.name, icon: <Building size={14} /> }))
-                                            ]}
+                                            value={formData.selectedInstitutionId}
+                                            onChange={setSelectedInstitutionId}
+                                            options={institutionsList.map(inst => ({ id: String(inst.id), label: inst.name, icon: <Building size={14} /> }))}
+                                            disabled={!formData.isDelegating}
                                         />
                                     </div>
-                                ) : (
-                                    /* Hidden by default as requested. Leadership can toggle. */
-                                    canCreateOnBehalf && (
+
+                                    <div className="space-y-2">
+                                        <label className="block text-sm font-medium text-white/70">Department</label>
+                                        <DropdownSelector 
+                                            label=""
+                                            value={formData.selectedDepartmentId}
+                                            onChange={setSelectedDepartmentId}
+                                            options={departmentsList.map(dept => ({ id: String(dept.id), label: dept.name, icon: <Briefcase size={14} /> }))}
+                                            disabled={!formData.isDelegating}
+                                        />
+                                    </div>
+                                    
+                                    {formData.isDelegating && (
                                         <button 
                                             type="button"
-                                            onClick={() => setIsDelegating(true)}
-                                            className="w-full py-3 px-4 rounded-xl border border-dashed border-white/10 hover:border-blue-500/30 hover:bg-blue-500/5 transition-all group flex items-center justify-center gap-2"
+                                            onClick={() => {
+                                                setIsDelegating(false);
+                                                setSelectedInstitutionId(user.institution_id || '');
+                                                setSelectedDepartmentId(String(user.department_id || ''));
+                                            }}
+                                            className="w-full py-2 text-[10px] uppercase tracking-wider text-blue-400/60 hover:text-blue-400 font-bold transition-colors text-center border border-dashed border-white/10 rounded-xl mt-2"
                                         >
-                                            <Briefcase size={14} className="text-white/20 group-hover:text-blue-400/50 transition-colors" />
-                                            <span className="text-xs font-bold text-white/40 group-hover:text-blue-400/70 uppercase tracking-widest">
-                                                Request on behalf of another entity?
-                                            </span>
+                                            Reset to My Defaults
                                         </button>
-                                    )
-                                )}
+                                    )}
+                                </div>
                             </div>
 
                             {/* Priority - Admin, Manager, and Team */}

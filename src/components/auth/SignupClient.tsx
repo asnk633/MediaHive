@@ -57,13 +57,8 @@ export default function SignupClient() {
             return;
         }
 
-        if (!institutionId) {
-            setError('Please select your institution');
-            return;
-        }
-
-        if (!departmentId) {
-            setError('Please select your department');
+        if (!institutionId && !departmentId) {
+            setError('Please select either an institution or a department');
             return;
         }
 
@@ -86,11 +81,12 @@ export default function SignupClient() {
                 return;
             }
 
-            const metadata = {
+            const metadata: any = {
                 full_name: fullName,
-                institution_id: institutionId,
-                department_id: parseInt(departmentId)
             };
+
+            if (institutionId) metadata.institution_id = institutionId;
+            if (departmentId) metadata.department_id = parseInt(departmentId);
 
             console.log('[SIGNUP] Attempting signup with metadata:', metadata);
             await signup(email, password, metadata);
@@ -197,7 +193,6 @@ export default function SignupClient() {
                                     <div className="relative group">
                                         <Building2 className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-500 group-focus-within:text-primary transition-colors" />
                                         <select
-                                            required
                                             value={institutionId}
                                             onChange={(e) => setInstitutionId(e.target.value)}
                                             className="w-full h-11 bg-white/5 border border-white/10 rounded-full pl-11 pr-6 text-white appearance-none focus:outline-none focus:ring-2 focus:ring-primary/40 focus:bg-[#0f172a] transition-all text-sm cursor-pointer"
@@ -220,7 +215,6 @@ export default function SignupClient() {
                                     <div className="relative group">
                                         <LayoutGrid className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-500 group-focus-within:text-primary transition-colors" />
                                         <select
-                                            required
                                             value={departmentId}
                                             onChange={(e) => setDepartmentId(e.target.value)}
                                             className="w-full h-11 bg-white/5 border border-white/10 rounded-full pl-11 pr-6 text-white appearance-none focus:outline-none focus:ring-2 focus:ring-primary/40 focus:bg-[#0f172a] transition-all text-sm cursor-pointer"

@@ -543,7 +543,7 @@ export default function TasksNewClient() {
                                             type="button"
                                             onClick={() => {
                                                 setIsDelegating(false);
-                                                setSelectedInstitutionId(user.institution_id || '');
+                                                setSelectedInstitutionId(String(user.institution_id || ''));
                                                 setSelectedDepartmentId(String(user.department_id || ''));
                                             }}
                                             className="w-full py-2 text-[10px] uppercase tracking-wider text-blue-400/60 hover:text-blue-400 font-bold transition-colors text-center border border-dashed border-white/10 rounded-xl mt-2"

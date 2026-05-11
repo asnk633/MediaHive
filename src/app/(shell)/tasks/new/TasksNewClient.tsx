@@ -69,7 +69,7 @@ export default function TasksNewClient() {
         }
     });
 
-    const { title, description, priority, assignedToIds, selectedOrgId, isDelegating, is_demo_data } = formData;
+    const { title, description, priority, assignedToIds, selectedInstitutionId, selectedDepartmentId, isDelegating, is_demo_data } = formData;
     const due_date = formData.due_date ? new Date(formData.due_date) : undefined;
 
     const setTitle = (val: string) => setFormData(prev => ({ ...prev, title: val }));
@@ -167,7 +167,7 @@ export default function TasksNewClient() {
             setTeamMembers(filtered);
         };
         fetchTeamMembers();
-    }, [user?.uid, currentWorkspaceId, selectedOrgId]);
+    }, [user?.uid, currentWorkspaceId, selectedInstitutionId, selectedDepartmentId]);
     // ...
     // ...
 

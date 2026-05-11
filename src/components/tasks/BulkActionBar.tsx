@@ -113,7 +113,7 @@ export const BulkActionBar: React.FC<BulkActionBarProps> = ({
         if (teamMembers.length > 0) return;
         setMembersLoading(true);
         try {
-            const members = await UserService.getTeamMembers();
+            const members = await UserService.getTeamMembers(null);
             setTeamMembers(members);
         } catch {
             toast.error('Failed to load team members');

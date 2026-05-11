@@ -119,7 +119,7 @@ export const CreateEventForm = ({ initialDate, initialEndDate, initialEvent, onS
     useEffect(() => {
         const fetchTeamMembers = async () => {
             try {
-                const members = await UserService.getTeamMembers();
+                const members = await UserService.getTeamMembers(null, user?.uid, { forceMediaIT: true });
                 // Filter out current user and map to expected format
                 const otherMembers = members
                     .filter(m => m.uid !== user?.uid)

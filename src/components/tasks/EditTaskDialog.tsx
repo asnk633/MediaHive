@@ -164,7 +164,7 @@ export function EditTaskDialog({ open, onOpenChange, task, onUpdate }: EditTaskD
             const isElevated = currentIsAdmin || currentIsSuperAdmin || currentIsManager;
             
             // If admin/superadmin, pass null to fetch all members (omniscient view)
-            const finalInstitutionId = (currentIsAdmin || currentIsSuperAdmin) ? null : ((task as any).institution_id || (task as any).institutionId);
+            const finalInstitutionId = (task as any).institution_id || (task as any).institutionId || null;
             
             UserService.getTeamMembers(finalInstitutionId, user.uid).then(members => {
                 const filtered = members.filter(m => {

@@ -248,7 +248,7 @@ export const TaskDetailModalV2: React.FC<TaskDetailsModalProps> = ({ task, isOpe
     // Fetch team members & Fresh Task Data
     React.useEffect(() => {
         const fetchTeam = async () => {
-            const members = await UserService.getTeamMembers();
+            const members = await UserService.getTeamMembers(task?.institution_id || task?.institutionId || null);
             const filtered = members.filter(m => {
                 const role = (m as any).role?.toLowerCase().trim();
                 const name = m.name?.toLowerCase() || '';

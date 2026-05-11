@@ -100,7 +100,7 @@ export const UserService = {
         }
     },
 
-    getTeamMembers: async (contextId?: string | null, requesterId?: string): Promise<{ uid: string; name: string; avatar_url?: string; photoURL?: string; department_id?: string | number; institution_id?: string | number; role: string }[]> => {
+    getTeamMembers: async (contextId?: string | number | null, requesterId?: string, options?: { forceMediaIT?: boolean, includeAll?: boolean }): Promise<{ uid: string; name: string; avatar_url?: string; photoURL?: string; department_id?: string | number; institution_id?: string | number; role: string }[]> => {
         try {
             const { tenantId, userId: contextUserId } = await tenantContext();
             const userId = requesterId || contextUserId;
@@ -144,19 +144,48 @@ export const UserService = {
                 }
             }
 
+            // Media & IT Department IDs (Hardened to include 103, 100, 4)
+            const MEDIA_IT_DEPT_IDS = [103, 100, 4];
+
             // 4. Map profiles to team members with proper filtering
             return profiles.reduce((acc: any[], p: any) => {
                 // Security boundary: same tenant only
                 if (p.tenant_id !== requesterProfile?.tenant_id) return acc;
 
                 // Visibility logic:
-                // - Omniscient (Admin/Manager) sees everyone in tenant
-                // - Global users (institution_id: null) are visible to everyone
-                // - Normal members see others in their current context
+                // - forceMediaIT: only show Media & IT department members
+                // - contextId provided: strictly filter by that institution
+                // - No contextId: 
+                //    - Admin/Manager: sees Media & IT + their own institution/department
+                //    - Normal Member: sees their own institution/department
+                
+                const isMediaITUser = MEDIA_IT_DEPT_IDS.includes(Number(p.department_id));
                 const wsAssignment = allWsAssignments.find((a: any) => a.user_id === p.id && a.institution_id === targetInstitutionId);
                 const isGlobalUser = !p.institution_id;
                 
-                const matchesContext = isOmniscient || !targetInstitutionId || isGlobalUser || wsAssignment || String(p.institution_id) === String(targetInstitutionId);
+                let matchesContext = false;
+
+                if (options?.forceMediaIT) {
+                    matchesContext = isMediaITUser;
+                } else if (options?.includeAll && isOmniscient) {
+                    matchesContext = true;
+                } else if (targetInstitutionId) {
+                    const isTargetMatch = wsAssignment || String(p.institution_id) === String(targetInstitutionId);
+                    // Even in a specific context, Admins/Managers should see Media & IT (executors)
+                    matchesContext = isTargetMatch || (isOmniscient && isMediaITUser);
+                } else {
+                    // Default behavior (No contextId)
+                    const sameInstitution = p.institution_id && p.institution_id === requesterProfile?.institution_id;
+                    const sameDepartment = p.department_id && p.department_id === requesterProfile?.department_id;
+                    
+                    if (isOmniscient) {
+                        // Admins see Media & IT + their own context
+                        matchesContext = isMediaITUser || sameInstitution || sameDepartment || isGlobalUser;
+                    } else {
+                        // Members see their own context + global users
+                        matchesContext = sameInstitution || sameDepartment || isGlobalUser;
+                    }
+                }
 
                 if (matchesContext) {
                     // Determine effective role
@@ -164,12 +193,15 @@ export const UserService = {
                     const effectiveRole = wsRole || p.role || 'member';
 
                     // Filter out system users to keep list clean
-                    const isSystemUser = p.full_name?.toLowerCase().includes('admin user') || p.full_name?.toLowerCase().includes('super admin');
+                    const fullName = p.full_name || p.name || '';
+                    const isSystemUser = fullName.toLowerCase().includes('admin user') || 
+                                       fullName.toLowerCase().includes('super admin') ||
+                                       fullName.toLowerCase().includes('generic admin');
                     
                     if (!isSystemUser) {
                         acc.push({
                             uid: p.id,
-                            name: p.full_name || 'Unknown User',
+                            name: fullName || 'Unknown User',
                             avatar_url: p.avatar_url,
                             photoURL: p.avatar_url,
                             role: effectiveRole,
@@ -181,7 +213,7 @@ export const UserService = {
                 return acc;
             }, []);
         } catch (error) {
-            console.error("[UserService] Omniscient fetch failed:", error);
+            console.error("[UserService] getTeamMembers failed:", error);
             return [];
         }
     },

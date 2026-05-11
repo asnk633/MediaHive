@@ -18,7 +18,7 @@ export default function SignupClient() {
     const [institutionId, setInstitutionId] = useState('');
     const [departmentId, setDepartmentId] = useState('');
     const [institutions, setInstitutions] = useState<{ id: string, name: string }[]>([]);
-    const [departments, setDepartments] = useState<{ id: number, name: string }[]>([]);
+    const [departments, setDepartments] = useState<{ id: string, name: string }[]>([]);
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
     const [confirmPassword, setConfirmPassword] = useState('');

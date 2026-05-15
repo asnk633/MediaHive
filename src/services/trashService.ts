@@ -19,7 +19,7 @@ export const TrashService = {
         }
 
         const { TaskSchema } = await import('@/domain/schemas');
-        const tasks = (data || []).map(item => {
+        const tasks = (data || []).map((item: any) => {
             const v = TaskSchema.safeParse(item);
             if (!v.success) {
                 console.warn(`[TrashService] Task ${item.id} validation failed:`, v.error.format());

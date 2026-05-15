@@ -59,7 +59,7 @@ export default function InventoryView() {
         setLoading(true);
         try {
             // 1. Fetch Items (Critical)
-            const itemsPromise = inventoryService.getEquipment({ limit: 300, institutionId: currentWorkspaceId || undefined })
+            const itemsPromise = inventoryService.getEquipment({ limit: 300, institutionId: currentWorkspaceId ? String(currentWorkspaceId) : undefined })
                 .catch(err => {
                     console.error("Failed to fetch inventory items", err);
                     return [];
@@ -76,7 +76,7 @@ export default function InventoryView() {
 
             // 3. Fetch My Requests (Optional - Member/Standard Only)
             const requestsPromise = (user && !['admin', 'manager', 'team'].includes(currentRole))
-                ? inventoryRequestService.getMyRequests(user.uid, currentWorkspaceId || '')
+                ? inventoryRequestService.getMyRequests(user.uid, currentWorkspaceId ? String(currentWorkspaceId) : '')
                     .catch(err => {
                         console.warn('Failed to fetch my requests:', err);
                         return [];

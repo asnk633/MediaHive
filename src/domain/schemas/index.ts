@@ -4,3 +4,4 @@ export * from './task';
 export * from './campaign';
 export * from './notification';
 export * from './file';
+export * from './institution';

@@ -139,7 +139,7 @@ export default function DesktopSideNav() {
                 return canAccessFeature(
                     (group as any).feature as FeatureKey,
                     (currentRole as UserRole) || 'member',
-                    currentWorkspace ? { id: currentWorkspace.institution_id, features: currentWorkspace.features, tenantSettings } : undefined
+                    currentWorkspace ? { id: String(currentWorkspace.id), features: currentWorkspace.features, tenantSettings } : undefined
                 );
             }
             return true;
@@ -152,7 +152,7 @@ export default function DesktopSideNav() {
                     return canAccessFeature(
                         item.feature as FeatureKey,
                         (currentRole as UserRole) || 'member',
-                        currentWorkspace ? { id: currentWorkspace.institution_id, features: currentWorkspace.features, tenantSettings } : undefined
+                        currentWorkspace ? { id: String(currentWorkspace.id), features: currentWorkspace.features, tenantSettings } : undefined
                     );
                 }
                 return true;

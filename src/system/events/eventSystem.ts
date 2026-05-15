@@ -1,9 +1,9 @@
 type EventCallback<T = any> = (data: T) => void;
 
 export type MediaHiveEvent =
-    | { type: 'task.created'; data: { taskId: string; title: string; assignedTo?: string[] } }
-    | { type: 'task.updated'; data: { taskId: string; title?: string; changes: any; assignerId?: string } }
-    | { type: 'task.completed'; data: { taskId: string; title?: string; userId: string; assignerId?: string } }
+    | { type: 'task.created'; data: { taskId: string; title: string; assignedTo?: string[]; institution_id?: string | number | null; department_id?: string | number | null } }
+    | { type: 'task.updated'; data: { taskId: string; title?: string; changes: any; assignerId?: string; institution_id?: string | number | null; department_id?: string | number | null } }
+    | { type: 'task.completed'; data: { taskId: string; title?: string; userId: string; assignerId?: string; institution_id?: string | number | null; department_id?: string | number | null } }
     | { type: 'file.uploaded'; data: { fileId: string; fileName: string; taskId?: string; section?: string } }
     | { type: 'file.updated'; data: { fileId: string; changes: any } }
     | { type: 'inventory.updated'; data: { itemId: string; quantity: number } }

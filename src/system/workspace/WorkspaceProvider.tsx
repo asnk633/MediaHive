@@ -17,7 +17,7 @@ export interface Workspace {
 
 interface WorkspaceContextType {
     currentWorkspace: Workspace | null;
-    currentWorkspaceId: string | null;
+    currentWorkspaceId: string | number | null;
     availableWorkspaces: Workspace[];
     currentRole: 'admin' | 'manager' | 'member' | 'team';
     setWorkspace: (workspaceId: string) => void;
@@ -159,7 +159,7 @@ export function WorkspaceProvider({ children }: { children: React.ReactNode }) {
         };
 
         initWorkspace();
-    }, [user?.uid, user?.tenant_id, user?.institution_id, authReady, fetchWorkspaces, currentWorkspace?.institution_id]);
+    }, [user?.uid, user?.tenant_id, user?.institution_id, authReady, fetchWorkspaces, currentWorkspace?.id]);
 
     const setWorkspace = useCallback((workspaceId: string | number) => {
         const selected = availableWorkspaces.find(w => String(w.id) === String(workspaceId));
@@ -203,7 +203,7 @@ export function WorkspaceProvider({ children }: { children: React.ReactNode }) {
         if (!user) return 'member';
 
         // Global Admin always keeps their role
-        if (user.role === 'admin' || user.role === 'superadmin') return 'admin';
+        if (user.role === 'admin') return 'admin';
 
         let role: string = 'member';
         

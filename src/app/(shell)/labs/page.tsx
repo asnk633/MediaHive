@@ -155,7 +155,7 @@ export default function LabsPage() {
                     const hasAccess = canAccessFeature(
                         feature.key,
                         currentRole,
-                        currentWorkspace ? { id: currentWorkspace.institution_id, features: currentWorkspace.features, tenantSettings } : undefined
+                        currentWorkspace ? { id: String(currentWorkspace.id), features: currentWorkspace.features, tenantSettings } : undefined
                     );
 
                     return (

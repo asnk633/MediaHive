@@ -376,7 +376,7 @@ export default function AdminUsersPage() {
                                             {user.name || 'Anonymous'}
                                         </h4>
                                         <p className="text-[10px] text-white/30 font-medium truncate uppercase tracking-widest">
-                                            {user.role === 'guest' ? 'member' : user.role} • {user.email}
+                                            {user.role} • {user.email}
                                         </p>
                                     </div>
                                     <ChevronRight size={14} className={cn("transition-transform", selectedUserId === user.uid ? "text-indigo-400 translate-x-0" : "text-white/10 -translate-x-2 opacity-0 group-hover:opacity-100 group-hover:translate-x-0")} />
@@ -461,7 +461,7 @@ export default function AdminUsersPage() {
                                                 <DropdownMenu>
                                                     <DropdownMenuTrigger asChild>
                                                         <button className="px-3 py-1 rounded-lg bg-indigo-500/10 border border-indigo-500/20 flex items-center gap-2 text-[10px] font-black text-indigo-400 uppercase tracking-widest hover:bg-indigo-500/20 transition-colors">
-                                                            <Shield size={12} /> Global {selectedUser.role === 'guest' ? 'member' : selectedUser.role}
+                                                            <Shield size={12} /> Global {selectedUser.role}
                                                         </button>
                                                     </DropdownMenuTrigger>
                                                     <DropdownMenuContent align="start" className="bg-[#09090b] border-white/10 text-white min-w-[140px]">

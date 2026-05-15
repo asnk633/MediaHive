@@ -193,7 +193,7 @@ export async function verifyAdmin(req: Request) {
         };
     }
 
-    const isAdmin = user.role === 'admin' || user.role === 'owner';
+    const isAdmin = user.role === 'admin';
     if (!isAdmin) {
         return { 
             authorized: false, 

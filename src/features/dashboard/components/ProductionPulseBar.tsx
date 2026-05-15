@@ -15,7 +15,7 @@ export const ProductionPulseBar: React.FC = () => {
 
     const fetchPulseData = useCallback(async () => {
         try {
-            const summary = await CanonicalDataService.getTodayOperationalSummary(currentWorkspaceId || undefined);
+            const summary = await CanonicalDataService.getTodayOperationalSummary(currentWorkspaceId ? String(currentWorkspaceId) : undefined);
             setData(summary);
         } catch (error) {
             console.error('[ProductionPulseBar] Fetch error:', error);

@@ -21,7 +21,7 @@ export const NextProductionCard: React.FC = () => {
     useEffect(() => {
         const fetchNext = async () => {
             setLoading(true);
-            const summary = await CanonicalDataService.getNextProductionSummary(currentWorkspaceId || undefined);
+            const summary = await CanonicalDataService.getNextProductionSummary(currentWorkspaceId ? String(currentWorkspaceId) : undefined);
             setData(summary);
             setLoading(false);
         };

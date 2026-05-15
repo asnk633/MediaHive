@@ -5,6 +5,7 @@ import { devMonitor } from "@/system/devMonitor";
 import { logPerformance } from "@/system/performanceLogger";
 import { RealtimeChannel } from "@supabase/supabase-js";
 import { timeSync } from "@/lib/timeSync";
+import { db } from "@/lib/offline/db";
 
 /**
  * RealtimeManager
@@ -220,7 +221,15 @@ class RealtimeManager {
               console.log("[Realtime] System pulse RESTORED. Resuming Realtime.");
               this.stopPolling();
               this.fillRealtimeGaps(); // Fill gaps missed during outage
-              this.startGlobalSync();
+              // Throttle recovery attempts to avoid infinite recursion
+            const lastAttempt = (this as any)._lastSyncAttempt || 0;
+            if (Date.now() - lastAttempt < 10000) {
+              console.warn('[Realtime] Sync recovery throttled. Waiting for next health pulse.');
+              return;
+            }
+            (this as any)._lastSyncAttempt = Date.now();
+            
+            this.startGlobalSync();
             }
           }
         });
@@ -243,6 +252,13 @@ class RealtimeManager {
                 const start = performance.now();
                 console.log("[Realtime] Task change detected:", payload.eventType);
                 
+                // 🤝 Update local IndexedDB to keep it in sync with server reality
+                if (payload.new && payload.new.id) {
+                    db.table(TABLES.TASKS).put(payload.new).catch(e => console.warn('[Realtime] DB Sync failed:', e));
+                } else if (payload.eventType === 'DELETE' && payload.old?.id) {
+                    db.table(TABLES.TASKS).delete(payload.old.id).catch(e => console.warn('[Realtime] DB Sync failed:', e));
+                }
+
                 // Update cache directly for immediate UI feedback
                 queryClient.setQueryData(["tasks"], (old: any[] | undefined) => {
                     if (!old) return old;
@@ -260,14 +276,27 @@ class RealtimeManager {
         );
 
         // -- Basic Invalidation Sync (Events, Campaigns) --
-        const tablesToInvalidate = [TABLES.EVENTS, TABLES.CAMPAIGNS, TABLES.NOTIFICATIONS];
+        const tablesToInvalidate = [TABLES.EVENTS, TABLES.CAMPAIGNS, TABLES.NOTIFICATIONS, TABLES.INVENTORY];
         tablesToInvalidate.forEach(table => {
             channel.on(
                 "postgres_changes",
                 { event: "*", schema: "public", table },
-                (payload: any) => {
+                async (payload: any) => {
                     console.log(`[Realtime] ${table} change detected - invalidating cache`);
+                    
+                    // 🤝 Sync local DB
+                    if (payload.new && payload.new.id) {
+                        const t = (db as any)[table];
+                        if (t) t.put(payload.new).catch(() => {});
+                    } else if (payload.eventType === 'DELETE' && payload.old?.id) {
+                        const t = (db as any)[table];
+                        if (t) t.delete(payload.old.id).catch(() => {});
+                    }
+
                     queryClient.invalidateQueries({ queryKey: [table] });
+                    
+                    // Fire custom event for legacy components
+                    window.dispatchEvent(new CustomEvent(`mediahive_table_update_${table}`, { detail: payload }));
                 }
             );
         });

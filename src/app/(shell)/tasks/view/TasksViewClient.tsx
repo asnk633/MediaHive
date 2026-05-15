@@ -57,6 +57,8 @@ import { toast } from "sonner"
 import { EditTaskDialog } from '@/components/tasks/EditTaskDialog'
 import { AttachmentSection } from '@/components/tasks/AttachmentSection'
 import { getRelativeTime, getInitials, formatDate as formatDisplayDate } from '@/lib/utils'
+import { useTableRealtime } from '@/hooks/useTableRealtime'
+import { TABLES } from '@/lib/dbTables'
 
 import { Task } from '@/features/tasks/types/task';
 import { CampaignService } from '@/features/campaigns/services/campaignService'
@@ -104,6 +106,18 @@ function TaskViewContent() {
 
         loadTask();
     }, [taskId]);
+
+    // ✨ REAL-TIME UPDATE: Reload when this specific task changes on the server
+    useTableRealtime(TABLES.TASKS, (payload) => {
+        if (payload.new && payload.new.id === taskId) {
+            console.log(`[REALTIME] Auto-refreshing task ${taskId} due to server update.`);
+            setTask(payload.new);
+            // Re-fetch campaign name if it changed
+            if (payload.new.campaign_id !== task?.campaign_id) {
+                loadCampaignName(payload.new.campaign_id);
+            }
+        }
+    });
 
     const loadTask = async () => {
         if (!taskId) return;

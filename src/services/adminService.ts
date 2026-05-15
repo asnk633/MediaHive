@@ -76,19 +76,30 @@ export const AdminService = {
                 return acc;
             }, {});
 
-            // 4. Combine and unify
-            const institutions = ((instData as any[]) || []).map(inst => ({
-                ...inst,
-                type: 'institution' as const,
-                userCount: inst.user_institutions?.[0]?.count || 0
-            }));
+            // 4. Combine and unify with validation
+            const { InstitutionSchema } = await import('@/domain/schemas');
+            
+            const institutions = ((instData as any[]) || []).map(inst => {
+                const validation = InstitutionSchema.safeParse(inst);
+                if (!validation.success) {
+                    console.warn(`[AdminService] Institution ${inst.id} validation failed:`, validation.error.format());
+                }
+                return {
+                    ...inst,
+                    type: 'institution' as const,
+                    userCount: inst.user_institutions?.[0]?.count || 0
+                };
+            });
 
-            const departments = ((deptData as any[]) || []).map(dept => ({
-                ...dept,
-                id: String(dept.id), // Ensure string ID for consistency
-                type: 'department' as const,
-                userCount: deptCountMap[dept.id] || 0
-            }));
+            const departments = ((deptData as any[]) || []).map(dept => {
+                // Departments currently follow institution schema or simplified version
+                return {
+                    ...dept,
+                    id: String(dept.id), // Ensure string ID for consistency
+                    type: 'department' as const,
+                    userCount: deptCountMap[dept.id] || 0
+                };
+            });
 
             return [...institutions, ...departments].sort((a, b) => a.name.localeCompare(b.name));
         } catch (error) {
@@ -224,6 +235,22 @@ export const AdminService = {
             .eq('id', inviteId);
 
         if (error) throw error;
+        return true;
+    },
+
+    /**
+     * Permanently delete a user account and their associated data.
+     * This calls a secure RPC function on the server.
+     */
+    deleteUser: async (uid: string) => {
+        const { error } = await supabase.rpc('delete_user_permanently', {
+            target_user_id: uid
+        });
+
+        if (error) {
+            MonitoringService.error('[AdminService] Failed to permanently delete user', error, { uid });
+            throw error;
+        }
         return true;
     }
 };

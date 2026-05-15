@@ -112,17 +112,33 @@ export default function ReportsCustomClient() {
             return files.filter(f => {
                 const matchesType = statusFilter.length === 0 || statusFilter.includes(f.type);
                 const matchesSearch = !searchQuery || f.name.toLowerCase().includes(searchQuery.toLowerCase());
-                return matchesType && matchesSearch;
+                
+                // File-level organizational filtering
+                const fileInsts = f.visibility?.institutions || [];
+                const matchesInst = entityFilter.length === 0 || fileInsts.some(id => entityFilter.includes(String(id)));
+                const matchesDept = deptFilter.length === 0 || (f.department && deptFilter.includes(String(f.department)));
+                
+                return matchesType && matchesSearch && matchesInst && matchesDept;
             });
         } else if (source === 'equipment') {
             return equipment.filter(e => {
-                const matchesStatus = statusFilter.length === 0 || statusFilter.includes(e.status);
-                const matchesSearch = !searchQuery || e.name.toLowerCase().includes(searchQuery.toLowerCase()) || e.brand?.toLowerCase().includes(searchQuery.toLowerCase());
-                return matchesStatus && matchesSearch;
+                const matchesStatus = statusFilter.length === 0 || 
+                    statusFilter.includes(e.status) || 
+                    (e.assetStatus && statusFilter.includes(e.assetStatus));
+                const matchesSearch = !searchQuery || 
+                    e.name.toLowerCase().includes(searchQuery.toLowerCase()) || 
+                    (e.brand && e.brand.toLowerCase().includes(searchQuery.toLowerCase())) ||
+                    (e.model && e.model.toLowerCase().includes(searchQuery.toLowerCase()));
+                
+                // Equipment institutional filtering
+                const matchesInst = entityFilter.length === 0 || (e.institutionId && entityFilter.includes(String(e.institutionId)));
+                const matchesDept = deptFilter.length === 0; // Equipment doesn't typically have a dept link in core schema
+
+                return matchesStatus && matchesSearch && matchesInst && matchesDept;
             });
         }
         return [];
-    }, [source, tasks, files, statusFilter, priorityFilter, searchQuery]);
+    }, [source, tasks, files, equipment, statusFilter, priorityFilter, searchQuery, entityFilter, deptFilter]);
 
     const handleExport = (format: 'csv' | 'pdf') => {
         alert(`Exporting ${filteredData.length} records as ${format.toUpperCase()}... (Module logic connected)`);

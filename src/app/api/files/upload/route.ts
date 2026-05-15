@@ -217,7 +217,7 @@ export async function POST(req: NextRequest) {
                         { name: fileDoc.name, type: fileDoc.type }
                     );
 
-                    resolve({ success: true, id: createdFile.id, file_id, ...fileDoc });
+                    resolve({ success: true, id: createdFile.id, file_id, viewLink, downloadLink, ...fileDoc });
 
                 } catch (err: any) {
                     console.error('Upload stream error:', err);

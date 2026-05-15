@@ -35,7 +35,6 @@ export default function FAB({ onMainClick }: FABProps) {
   const FAB_CONFIG: Record<string, { icon: any; label: string; href?: string; role?: string }> = {
     "/tasks": { icon: CheckSquare, label: "Create Task", href: "/tasks/new" },
     "/events": { icon: CalendarPlus, label: "Create Event", href: "/events/new" },
-    "/files": { icon: Upload, label: "Upload File", href: "/downloads/new" },
     "/downloads": { icon: Upload, label: "Upload File", href: "/downloads/new" },
     "/inventory": { icon: PackagePlus, label: "Add Item", href: "/inventory/new" },
   };
@@ -278,7 +277,7 @@ export default function FAB({ onMainClick }: FABProps) {
   if (hasError) {
     return (
       <button 
-        onClick={() => window.location.reload()}
+        onClick={() => router.push('/home')}
         className="fab fixed left-1/2 bottom-8 -translate-x-1/2 w-16 h-16 rounded-full bg-slate-800 text-white flex flex-col items-center justify-center shadow-lg z-[110] border border-white/10"
       >
         <Plus size={24} className="rotate-45" />

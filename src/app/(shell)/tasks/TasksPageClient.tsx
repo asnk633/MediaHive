@@ -111,7 +111,7 @@ export default function TasksPageClient() {
         );
 
         return () => unsubscribe();
-    }, [authReady, isNative, user, role, isOnline, isReplaying, syncRemoteTasks, currentWorkspaceId]);
+    }, [authReady, isNative, user?.uid, role, isOnline, isReplaying, currentWorkspaceId]);
 
     useEffect(() => {
         if (!authReady) return;

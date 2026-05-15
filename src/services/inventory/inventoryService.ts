@@ -111,15 +111,16 @@ export const inventoryService = {
         let query = supabase
             .from(TABLES.INVENTORY)
             .select('*')
-            .eq('tenant_id', tenantId);
+            .eq('tenant_id', tenantId)
+            .or('deleted.is.null,deleted.eq.false');
 
         if (params.limit) query = query.limit(params.limit);
         if (params.category) query = query.eq('category', params.category);
-        if (params.institutionId) {
+        if (params.institutionId && /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(params.institutionId)) {
             console.log(`[InventoryService] Filtering equipment by institution: ${params.institutionId}`);
             query = query.eq('institution_id', params.institutionId);
-        } else {
-            console.warn(`[InventoryService] Fetching equipment WITHOUT institution filter (Global)`);
+        } else if (params.institutionId) {
+            console.warn(`[InventoryService] Skipping invalid institution filter: ${params.institutionId}`);
         }
 
         const { data, error } = await safeQuery(() => query) as { data: any[]; error: any };
@@ -200,12 +201,14 @@ export const inventoryService = {
     },
 
     async delete(id: string): Promise<void> {
+        console.log(`[InventoryService] Attempting to delete asset: ${id}`);
         const success = await CanonicalDataService.patchFields(
             TABLES.INVENTORY,
             id,
             { deleted: true },
             'inventory'
         );
+        console.log(`[InventoryService] Delete result for ${id}:`, success);
 
         if (!success) throw new Error('Failed to delete inventory');
     },

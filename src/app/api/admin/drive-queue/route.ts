@@ -115,6 +115,7 @@ export async function POST(req: NextRequest) {
                 institution_id: item.institution_id || user.institution_id,
                 tenant_id: user.tenant_id,
                 user_id: user.uid,
+                upload_context: 'detected',
                 status: 'active'
             }));
 

@@ -84,6 +84,54 @@ export interface OperationalSummary {
  */
 export class CanonicalDataService {
   /**
+   * Cleans payload for Postgres compatibility (strips camelCase, handles FK coercion)
+   */
+  public static sanitizeForPostgres(table: string, payload: any, entityType?: string): any {
+    const finalPayload = { ...payload };
+
+    // Prevent legacy JSONB writes
+    delete finalPayload.assigned_to;
+    delete finalPayload.assignedTo;
+
+    // Entity-specific sanitization
+    if (entityType === 'task' || table === TABLES.TASKS) {
+      delete finalPayload.departmentId;
+      delete finalPayload.institutionId;
+      delete finalPayload.dueDate;
+      delete finalPayload.createdAt;
+      delete finalPayload.updatedAt;
+      delete finalPayload.completedAt;
+      delete finalPayload.createdBy;
+      delete finalPayload.updatedBy;
+      delete finalPayload.assignedBy;
+      delete finalPayload.isDemoData;
+
+      // Coerce department_id
+      const rawDeptId = finalPayload.department_id;
+      if (rawDeptId !== null && rawDeptId !== undefined) {
+        if (typeof rawDeptId === 'string') {
+          const stripped = rawDeptId.replace(/^dept_/, '');
+          finalPayload.department_id = /^\d+$/.test(stripped) ? parseInt(stripped, 10) : null;
+        } else if (typeof rawDeptId === 'number' && !isNaN(rawDeptId)) {
+          finalPayload.department_id = rawDeptId;
+        } else {
+          finalPayload.department_id = null;
+        }
+      }
+    }
+
+    // 🛡️ Global Guard: Strip fields from tables that don't support them
+    const tablesWithoutDeptOrUpdatedBy = [TABLES.INVENTORY, TABLES.EQUIPMENT_BOOKINGS, TABLES.INVENTORY_REQUESTS];
+    if (tablesWithoutDeptOrUpdatedBy.includes(table as any)) {
+        delete finalPayload.department_id;
+        delete finalPayload.departmentId;
+        delete finalPayload.updated_by;
+        delete finalPayload.updatedBy;
+    }
+
+    return finalPayload;
+  }
+  /**
    * Patch multiple fields on an entity atomically
    * Supports real-time collaboration and offline queuing
    */
@@ -142,10 +190,46 @@ export class CanonicalDataService {
       collabManager.broadcastUpdate(entityType, id, fields);
     }
 
-    // 3. Persist via True Offline Sync Engine
-    const { syncEngine } = require('@/lib/offline/queueManager');
-    const mutationType = `UPDATE_${(entityType || table).toUpperCase()}`;
-    await syncEngine.enqueueMutation(mutationType, { id, ...payload, tenant_id: tenantId }, baseUpdatedAt, baseVersion);
+    // 3. Persist: Network-First Strategy
+    const finalPayload = this.sanitizeForPostgres(table, payload, entityType);
+    let directSuccess = false;
+
+    if (typeof navigator !== 'undefined' && navigator.onLine) {
+        try {
+            console.log(`[CanonicalDataService] 🌐 Attempting direct patch for ${table}/${id}...`);
+            // Implement timeout for direct patch (5s)
+            const timeoutPromise = new Promise((_, reject) => setTimeout(() => reject(new Error('MUTATION_TIMEOUT')), 5000));
+            const mutationPromise = supabase
+                .from(table)
+                .update(finalPayload)
+                .eq('id', id)
+                .eq('tenant_id', tenantId);
+
+            const { error: directError } = await Promise.race([mutationPromise, timeoutPromise]) as any;
+            
+            if (directError) throw directError;
+            
+            directSuccess = true;
+            console.log(`[CanonicalDataService] ✅ Direct patch successful for ${table}/${id}`);
+            
+            // Sync local DB
+            if (typeof window !== 'undefined') {
+                const tableObj = (db as any)[table];
+                if (tableObj) {
+                    const existing = await tableObj.get(id);
+                    await tableObj.put({ ...existing, ...finalPayload });
+                }
+            }
+        } catch (err) {
+            console.warn(`[CanonicalDataService] ⚠️ Direct patch failed, falling back to SyncEngine:`, err);
+        }
+    }
+
+    if (!directSuccess) {
+        const { syncEngine } = require('@/lib/offline/queueManager');
+        const mutationType = `UPDATE_${(entityType || table).toUpperCase()}`;
+        await syncEngine.enqueueMutation(mutationType, { id, ...finalPayload, tenant_id: tenantId }, baseUpdatedAt, baseVersion);
+    }
 
     return true;
   }
@@ -224,67 +308,64 @@ export class CanonicalDataService {
       ...data, 
       tenant_id: sanitizeUUID(tenantId), 
       institution_id: sanitizeUUID(finalInstitutionId),
-      department_id: sanitizeUUID(data.department_id || data.departmentId),
-      created_at: new Date().toISOString(), 
+      created_at: data.created_at || new Date().toISOString(), 
       created_by: sanitizeUUID(userId),
-      updated_at: new Date().toISOString(),
-      updated_by: sanitizeUUID(userId) 
+      updated_at: new Date().toISOString()
     };
+    
+    // Only add updated_by if it's NOT an inventory table (standard schema)
+    const tablesWithoutUpdatedBy = [TABLES.INVENTORY, TABLES.EQUIPMENT_BOOKINGS, TABLES.INVENTORY_REQUESTS];
+    if (!tablesWithoutUpdatedBy.includes(table as any)) {
+      (payload as any).updated_by = sanitizeUUID(userId);
+    }
 
     const { syncEngine } = require('@/lib/offline/queueManager');
 
-    // 5. Broadcast to real-time peers (optimistic)
+    // 5. Broadcast to real-time peers (optimistic local broadcast)
     if (entityType) {
       const { collabManager } = require('@/lib/collaboration/collabManager');
       collabManager.broadcastUpdate(entityType, payload.id || 'new', payload);
     }
 
-    // 6. Persist via True Offline Sync Engine
-    const mutationType = `CREATE_${(entityType || table).toUpperCase()}`;
-    
-    // Prevent legacy JSONB writes even on creation
+    // 6. Persist: Network-First Strategy
     const assignmentField = payload.assigned_to || payload.assignedTo;
-    const finalPayload = { ...payload };
-    if ((entityType === 'task' || table === TABLES.TASKS) && assignmentField) {
-      delete finalPayload.assigned_to;
-      delete finalPayload.assignedTo;
-    }
+    const finalPayload = this.sanitizeForPostgres(table, payload, entityType);
+    
+    let finalId = payload.id;
+    let directSuccess = false;
 
-    // Task Schema Sanitizer: strip fields Postgres doesn't accept and enforce FK types
-    if (entityType === 'task' || table === TABLES.TASKS) {
-      // Strip camelCase duplicate aliases — Postgres only knows snake_case columns
-      delete finalPayload.departmentId;
-      delete finalPayload.institutionId;
-      delete finalPayload.dueDate;
-      delete finalPayload.createdAt;
-      delete finalPayload.updatedAt;
-      delete finalPayload.completedAt;
-      delete finalPayload.createdBy;
-      delete finalPayload.updatedBy;
-      delete finalPayload.assignedBy;
-      delete finalPayload.isDemoData;
-
-      // Coerce department_id: must be a valid integer or null (FK: departments.id is integer)
-      const rawDeptId = finalPayload.department_id;
-      if (rawDeptId !== null && rawDeptId !== undefined) {
-        if (typeof rawDeptId === 'string') {
-          const stripped = rawDeptId.replace(/^dept_/, '');
-          finalPayload.department_id = /^\d+$/.test(stripped) ? parseInt(stripped, 10) : null;
-        } else if (typeof rawDeptId === 'number' && !isNaN(rawDeptId)) {
-          finalPayload.department_id = rawDeptId;
-        } else {
-          finalPayload.department_id = null;
+    if (typeof navigator !== 'undefined' && navigator.onLine) {
+        try {
+            // Implement timeout for direct insert (5s)
+            const timeoutPromise = new Promise((_, reject) => setTimeout(() => reject(new Error('MUTATION_TIMEOUT')), 5000));
+            const mutationPromise = supabase.from(table).insert([finalPayload]);
+            
+            const { error: directError } = await Promise.race([mutationPromise, timeoutPromise]) as any;
+            if (directError) throw directError;
+            
+            directSuccess = true;
+            console.log(`[CanonicalDataService] ✅ Direct insert successful for ${table}/${finalId}`);
+            
+            if (typeof window !== 'undefined') {
+                const tableObj = (db as any)[table];
+                if (tableObj) await tableObj.put({ ...finalPayload, id: finalId });
+            }
+        } catch (err) {
+            console.warn(`[CanonicalDataService] ⚠️ Direct insert failed, falling back to SyncEngine:`, err);
         }
-      }
     }
 
-
-    const finalId = await syncEngine.enqueueMutation(mutationType, finalPayload);
+    if (!directSuccess) {
+        console.log(`[CanonicalDataService] 📥 Enqueueing mutation for ${table} (Offline/Retry mode)`);
+        const mutationType = `CREATE_${(entityType || table).toUpperCase()}`;
+        finalId = await syncEngine.enqueueMutation(mutationType, finalPayload);
+    }
 
     // Relational assignments AFTER task creation to satisfy FK constraints
     if ((entityType === 'task' || table === TABLES.TASKS) && assignmentField) {
       const uids = (assignmentField || []).map((u: any) => typeof u === 'string' ? u : u.uid);
       for (const uid of uids) {
+        // Assignments are typically fast, but we still queue them for consistency
         await syncEngine.enqueueMutation('ASSIGN_USER', { task_id: finalId, user_id: uid, tenant_id: tenantId });
       }
     }
@@ -435,12 +516,11 @@ export class CanonicalDataService {
         query = query.in('status', filters.status);
       }
       if (filters.createdBy) {
-      query = query.eq('created_by', filters.createdBy);
+        query = query.eq('created_by', filters.createdBy);
       }
-      if (filters.assignedTo) {
-        // Use the new join table for filtering
-        query = query.filter('task_assignments.user_id', 'eq', filters.assignedTo);
-      }
+      // Note: assignedTo filter removed here as PostgREST does not support top-level 
+      // filtering on joined table columns. Filtering should be done client-side or 
+      // via specialized relational queries.
 
       const { data: tasks, error } = await safeQuery(() => query
         .order('created_at', { ascending: false })

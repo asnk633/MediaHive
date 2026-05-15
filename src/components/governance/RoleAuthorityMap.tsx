@@ -1,7 +1,7 @@
 'use client';
 
 import React from 'react';
-import { Shield, Users, User, CheckCircle2, XCircle } from 'lucide-react';
+import { Shield, Users, User, CheckCircle2, XCircle, ShieldCheck } from 'lucide-react';
 
 const ROLES = [
     {
@@ -20,6 +20,21 @@ const ROLES = [
         ]
     },
     {
+        id: 'manager',
+        label: 'Manager',
+        icon: ShieldCheck,
+        color: 'text-indigo-400',
+        bg: 'bg-indigo-500/10',
+        border: 'border-indigo-500/20',
+        capabilities: [
+            { label: 'Full Data Control', enabled: true },
+            { label: 'Resolve Any Conflict', enabled: true },
+            { label: 'Override Policies', enabled: false },
+            { label: 'Permanent Purge', enabled: false },
+            { label: 'System Configuration', enabled: false }
+        ]
+    },
+    {
         id: 'team',
         label: 'Team',
         icon: Users,
@@ -35,7 +50,7 @@ const ROLES = [
         ]
     },
     {
-        id: 'guest',
+        id: 'member',
         label: 'Member',
         icon: User,
         color: 'text-white/40',

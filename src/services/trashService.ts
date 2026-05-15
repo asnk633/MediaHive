@@ -18,8 +18,17 @@ export const TrashService = {
             return [];
         }
 
+        const { TaskSchema } = await import('@/domain/schemas');
+        const tasks = (data || []).map(item => {
+            const v = TaskSchema.safeParse(item);
+            if (!v.success) {
+                console.warn(`[TrashService] Task ${item.id} validation failed:`, v.error.format());
+            }
+            return item;
+        });
+
         const { mapTask } = require('@/services/tasks');
-        return (data || []).map(mapTask);
+        return tasks.map(mapTask);
     },
 
     restore: async (ids: string | string[]): Promise<void> => {

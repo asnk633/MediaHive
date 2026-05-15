@@ -14,6 +14,7 @@ export interface SafeQueryOptions {
   table?: string;
   type?: 'INSERT' | 'UPDATE' | 'DELETE';
   payload?: any;
+  timeout?: number;
 }
 
 export type SafeQueryErrorType = 'SCHEMA' | 'NETWORK' | 'AUTH' | 'RLS' | 'VALIDATION' | 'NOT_FOUND' | 'UNKNOWN';
@@ -47,7 +48,7 @@ function classifyError(error: any): SafeQueryErrorType {
     return 'RLS';
   }
 
-  if (status === 503 || status === 404 || message.includes('fetch') || message.includes('network')) {
+  if (status === 503 || status === 404 || message.includes('fetch') || message.includes('network') || message === 'QUERY_TIMEOUT') {
     return 'NETWORK';
   }
 
@@ -108,7 +109,15 @@ export async function safeQuery<T>(
   try {
     while (attempt <= retries) {
       try {
-        const result = await queryFn();
+        // Implement timeout protection
+        const timeoutPromise = new Promise((_, reject) => 
+            setTimeout(() => reject(new Error('QUERY_TIMEOUT')), options.timeout || 15000)
+        );
+
+        const result = await Promise.race([
+            queryFn(),
+            timeoutPromise
+        ]) as PostgrestResponse<T> | PostgrestSingleResponse<T>;
         
         // Sync time from server headers
         if (result && (result as any).headers?.date) {

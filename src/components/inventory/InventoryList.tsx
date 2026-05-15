@@ -29,6 +29,7 @@ import {
     DropdownMenuTrigger,
     DropdownMenuSeparator
 } from "@/components/ui/dropdown-menu";
+import { Trash2 } from 'lucide-react';
 
 interface InventoryListProps {
     items: EquipmentItem[];
@@ -41,6 +42,7 @@ interface InventoryListProps {
     onReturn?: (item: EquipmentItem) => void;
     onBook?: (item: EquipmentItem) => void;
     onView?: (item: EquipmentItem) => void;
+    onDelete?: (item: EquipmentItem) => void;
 }
 
 export const InventoryList: React.FC<InventoryListProps> = ({
@@ -53,7 +55,8 @@ export const InventoryList: React.FC<InventoryListProps> = ({
     onEdit,
     onReturn,
     onBook,
-    onView
+    onView,
+    onDelete
 }) => {
     // Optimization: Create map for O(1) access
     const issueMap = React.useMemo(() => {
@@ -247,6 +250,18 @@ export const InventoryList: React.FC<InventoryListProps> = ({
                                                 {isOk && onBook && (
                                                     <DropdownMenuItem onClick={() => onBook(item)} className="focus:bg-white/5 cursor-pointer text-blue-400">
                                                         <Calendar size={14} className="mr-2" /> Book Schedule
+                                                    </DropdownMenuItem>
+                                                )}
+                                                {canManage && onDelete && (
+                                                    <DropdownMenuItem 
+                                                        onClick={() => {
+                                                            if (window.confirm(`Are you sure you want to delete ${item.name}?`)) {
+                                                                onDelete(item);
+                                                            }
+                                                        }} 
+                                                        className="focus:bg-red-500/10 cursor-pointer text-red-500"
+                                                    >
+                                                        <Trash2 size={14} className="mr-2" /> Delete Asset
                                                     </DropdownMenuItem>
                                                 )}
                                             </DropdownMenuContent>

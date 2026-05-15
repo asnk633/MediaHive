@@ -527,9 +527,6 @@ class SyncEngine {
   private async executeMutation(mutation: QueuedMutation) {
     let result;
     
-    // Sanitize payload before processing
-    mutation.payload = this.sanitizePayload(mutation.payload);
-    
     const tableMap: Record<string, string> = {
       'CREATE_TASK': 'tasks',
       'UPDATE_TASK': 'tasks',
@@ -539,8 +536,8 @@ class SyncEngine {
       'DELETE_EVENT': 'events',
       'ASSIGN_USER': 'task_assignments',
       'UNASSIGN_USER': 'task_assignments',
-      'ASSIGN_TASK': 'task_assignments', // Legacy
-      'UNASSIGN_TASK': 'task_assignments', // Legacy
+      'ASSIGN_TASK': 'task_assignments', 
+      'UNASSIGN_TASK': 'task_assignments', 
       'CREATE_INVENTORY': 'inventory',
       'UPDATE_INVENTORY': 'inventory',
       'DELETE_INVENTORY': 'inventory',
@@ -559,6 +556,14 @@ class SyncEngine {
       'UNASSIGN_EQUIPMENT': 'event_equipment',
     };
 
+    const table = tableMap[mutation.type] || mutation.type.split('_')[2]?.toLowerCase() + 's' || mutation.type.split('_')[1]?.toLowerCase() + 's';
+
+    // Sanitize payload before processing
+    // Use the comprehensive master sanitizer from CanonicalDataService to ensure schema compatibility
+    const { CanonicalDataService } = require('@/services/canonicalDataService');
+    mutation.payload = CanonicalDataService.sanitizeForPostgres(table, mutation.payload);
+    mutation.payload = this.sanitizePayload(mutation.payload);
+    
     const actionMap: Record<string, 'insert' | 'update' | 'delete' | 'bulk_insert' | 'bulk_update' | 'bulk_delete'> = {
       'CREATE_TASK': 'insert',
       'UPDATE_TASK': 'update',
@@ -568,8 +573,8 @@ class SyncEngine {
       'DELETE_EVENT': 'delete',
       'ASSIGN_USER': 'insert',
       'UNASSIGN_USER': 'delete',
-      'ASSIGN_TASK': 'insert', // Legacy
-      'UNASSIGN_TASK': 'delete', // Legacy
+      'ASSIGN_TASK': 'insert', 
+      'UNASSIGN_TASK': 'delete', 
       'CREATE_INVENTORY': 'insert',
       'UPDATE_INVENTORY': 'update',
       'DELETE_INVENTORY': 'delete',
@@ -594,8 +599,6 @@ class SyncEngine {
     if (mutation.type.startsWith('BULK_CREATE')) action = 'bulk_insert';
     if (mutation.type.startsWith('BULK_UPDATE')) action = 'bulk_update';
     if (mutation.type.startsWith('BULK_DELETE')) action = 'bulk_delete';
-
-    const table = tableMap[mutation.type] || mutation.type.split('_')[2]?.toLowerCase() + 's' || mutation.type.split('_')[1]?.toLowerCase() + 's';
 
     console.log(`[SyncEngine] Executing ${mutation.type} on table: ${table} (Action: ${action})`, {
         payload: mutation.payload

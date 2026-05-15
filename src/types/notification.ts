@@ -42,6 +42,7 @@ export interface AppNotification {
     user_id: string;           // Target user to notify
     created_by?: string;       // User who triggered the action
     institution_id?: string;   // Contextual institution
+    department_id?: number;    // Contextual department
     type: NotificationType;
     title: string;
     message?: string;
@@ -60,6 +61,7 @@ export interface CreateNotificationParams {
     user_id: string;
     created_by?: string;
     institution_id?: string;
+    department_id?: number;
     type: NotificationType;
     title: string;
     message?: string;

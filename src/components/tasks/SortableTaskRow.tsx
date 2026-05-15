@@ -52,7 +52,7 @@ const PriorityBadge = ({ priority, className }: any) => {
 
 const StatusPill = ({ status, className, onClick }: any) => {
     const config: any = {
-        done: { color: 'emerald', icon: CheckCircle2, label: 'Completed' },
+        done: { color: 'emerald', icon: CheckCircle2, label: 'Done' },
         in_progress: { color: 'blue', icon: Clock, label: 'Working' },
         review: { color: 'amber', icon: AlertCircle, label: 'On Hold' },
         todo: { color: 'slate', icon: Circle, label: 'To Do' },
@@ -176,8 +176,8 @@ export const SortableTaskRow = memo(({
                 id={`nav-item-${task.id}`}
                 data-active={activeId === task.id}
                 className={cn(
-                    "grid grid-cols-[auto_1fr_auto] md:grid-cols-[40px_minmax(0,2.5fr)_minmax(0,1.5fr)_80px_100px_90px_minmax(0,1.2fr)_120px_140px] gap-x-8 px-6 items-center border-l-[3px] transition-all duration-200 cursor-default focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-blue-500/50 hover:bg-white/[0.025]",
-                    density === 'compact' ? "py-2" : "py-3",
+                    "grid grid-cols-[auto_1fr_auto] md:grid-cols-[28px_minmax(0,10fr)_minmax(0,4fr)_70px_45px_70px_100px_90px_80px] gap-x-2 px-1.5 items-center border-l-[3px] transition-all duration-200 cursor-default focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-blue-500/50 hover:bg-white/[0.025]",
+                    density === 'compact' ? "py-1.5" : "py-2.5",
                     isSelected
                         ? "bg-blue-500/[0.06] ring-1 ring-inset ring-blue-500/20"
                         : "bg-white/[0.01] hover:bg-white/[0.02]",
@@ -208,7 +208,7 @@ export const SortableTaskRow = memo(({
                 )}
             >
                 {/* Expander / Drag Handle */}
-                <div className="flex items-center justify-center -ml-2">
+                <div className="flex items-center justify-center -ml-1">
                     {/* Drag Handle (Visible on Hover or Touch) */}
                     <div
                         {...attributes}
@@ -232,22 +232,9 @@ export const SortableTaskRow = memo(({
                 <div className="min-w-0 pr-4">
                     <div className="flex items-center gap-2">
                         {/* Checkbox — visible to all roles; members can select for visual reference */}
-                        <div
-                            role="checkbox"
-                            aria-checked={isSelected}
-                            aria-label={`Select task: ${task.title}`}
-                            tabIndex={0}
-                            onClick={(e) => { e.stopPropagation(); onToggleSelection(task.id, e.shiftKey); }}
-                            onKeyDown={(e) => { if (e.key === ' ' || e.key === 'Enter') { e.preventDefault(); e.stopPropagation(); onToggleSelection(task.id, false); } }}
-                            className={cn(
-                                "w-4 h-4 rounded border flex items-center justify-center mr-2 shrink-0 transition-all cursor-pointer",
-                                isSelected ? "bg-blue-500 border-blue-500" : "border-white/20 hover:border-white/40"
-                            )}
-                        >
-                            {isSelected && <CheckCircle2 size={10} className="text-white" />}
-                        </div>
+
                         <div className="flex flex-col flex-1 min-w-0">
-                            <span className={cn("text-sm font-medium truncate transition-colors duration-200", task.status === 'done' ? "text-white/35 line-through" : "text-white/90 group-hover:text-white")}>
+                            <span className={cn("text-[13px] font-medium truncate transition-colors duration-200", task.status === 'done' ? "text-white/35 line-through" : "text-white/90 group-hover:text-white")}>
                                 {task.title}
                                 {task.is_demo_data && (
                                     <span className="ml-2 inline-flex items-center text-[9px] uppercase font-bold text-amber-500 bg-amber-500/10 border border-amber-500/20 rounded px-1.5 py-0.5 tracking-[0.05em]" title="Test / Demo Data">
@@ -352,7 +339,7 @@ export const SortableTaskRow = memo(({
                                         <AlertCircle size={14} className="mr-2" /> On Hold
                                     </DropdownMenuItem>
                                     <DropdownMenuItem onClick={() => onStatusChange('done')} className="text-white/70 hover:text-white hover:bg-white/5">
-                                        <CheckCircle2 size={14} className="mr-2 text-emerald-500" /> Completed
+                                        <CheckCircle2 size={14} className="mr-2 text-emerald-500" /> Done
                                     </DropdownMenuItem>
                                 </DropdownMenuContent>
                             </DropdownMenu>
@@ -372,20 +359,20 @@ export const SortableTaskRow = memo(({
                 </div>
 
                 {/* Quick Actions Column */}
-                <div className="hidden md:flex items-center justify-center gap-3">
+                <div className="hidden md:flex items-center justify-center gap-1.5">
                     {mode === 'default' && (
                         <>
                             <TooltipProvider>
                                 <Tooltip>
                                     <TooltipTrigger asChild>
-                                        <button
-                                            onClick={(e) => { e.stopPropagation(); onTaskClick(task); }}
-                                            className="p-2 rounded-lg text-white/30 hover:text-blue-400 hover:bg-blue-500/10 transition-all opacity-0 group-hover:opacity-100"
-                                        >
-                                            <Eye size={14} />
-                                        </button>
+                                            <button
+                                                onClick={(e) => { e.stopPropagation(); onTaskClick(task); }}
+                                                className="p-0.5 rounded text-white/30 hover:text-blue-400 hover:bg-blue-500/10 transition-all opacity-0 group-hover:opacity-100"
+                                            >
+                                                <Eye size={12} />
+                                            </button>
                                     </TooltipTrigger>
-                                    <TooltipContent className="bg-slate-900 border-white/10 text-[10px] font-bold uppercase tracking-widest py-1 px-2">View Details</TooltipContent>
+                                    <TooltipContent className="bg-slate-900 border-white/10 text-[10px] font-bold uppercase tracking-widest py-1 px-2">View</TooltipContent>
                                 </Tooltip>
                             </TooltipProvider>
 
@@ -395,12 +382,12 @@ export const SortableTaskRow = memo(({
                                         <TooltipTrigger asChild>
                                             <button
                                                 onClick={(e) => { e.stopPropagation(); onEditTask?.(task); }}
-                                                className="p-2 rounded-lg text-white/30 hover:text-amber-400 hover:bg-amber-500/10 transition-all opacity-0 group-hover:opacity-100"
+                                                className="p-0.5 rounded text-white/30 hover:text-amber-400 hover:bg-amber-500/10 transition-all opacity-0 group-hover:opacity-100"
                                             >
-                                                <Edit3 size={14} />
+                                                <Edit3 size={12} />
                                             </button>
                                         </TooltipTrigger>
-                                        <TooltipContent className="bg-slate-900 border-white/10 text-[10px] font-bold uppercase tracking-widest py-1 px-2">Edit Task</TooltipContent>
+                                        <TooltipContent className="bg-slate-900 border-white/10 text-[10px] font-bold uppercase tracking-widest py-1 px-2">Edit</TooltipContent>
                                     </Tooltip>
                                 </TooltipProvider>
                             )}
@@ -411,12 +398,12 @@ export const SortableTaskRow = memo(({
                                         <TooltipTrigger asChild>
                                             <button
                                                 onClick={(e) => { e.stopPropagation(); onSoftDelete?.(task.id); }}
-                                                className="p-2 rounded-lg text-white/30 hover:text-red-400 hover:bg-red-500/10 transition-all opacity-0 group-hover:opacity-100"
+                                                className="p-0.5 rounded text-white/30 hover:text-red-400 hover:bg-red-500/10 transition-all opacity-0 group-hover:opacity-100"
                                             >
-                                                <Trash2 size={14} />
+                                                <Trash2 size={12} />
                                             </button>
                                         </TooltipTrigger>
-                                        <TooltipContent className="bg-slate-900 border-white/10 text-[10px] font-bold uppercase tracking-widest py-1 px-2">Move to Trash</TooltipContent>
+                                        <TooltipContent className="bg-slate-900 border-white/10 text-[10px] font-bold uppercase tracking-widest py-1 px-2">Trash</TooltipContent>
                                     </Tooltip>
                                 </TooltipProvider>
                             )}

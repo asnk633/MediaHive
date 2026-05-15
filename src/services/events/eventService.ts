@@ -43,20 +43,10 @@ export const eventService = {
     },
 
     async create(data: Partial<EventItem>): Promise<EventItem> {
-        const { tenantId, userId } = await tenantContext();
         const { eventBus } = await import('@/system/events/eventSystem');
+        const { CanonicalDataService } = await import('@/services/canonicalDataService');
 
-        const { data: result, error } = await supabase
-            .from('events')
-            .insert([{
-                ...data,
-                tenant_id: tenantId,
-                created_by: userId
-            }])
-            .select()
-            .single();
-
-        if (error) throw error;
+        const result = await CanonicalDataService.createRecord('events', data, 'event');
         
         const mapped = mapEvent(result);
         eventBus.emit('event.created', { eventId: mapped.id, title: mapped.title });

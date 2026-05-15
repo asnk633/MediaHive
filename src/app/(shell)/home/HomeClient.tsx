@@ -139,8 +139,12 @@ export default function HomeClient() {
 
         setLoadingData(true);
         setError(null);
+        console.log('[HomeClient] Fetching core data...', { role: currentRole, userId: user?.uid });
         try {
-            const filter = { role: currentRole, userId: user?.uid, signal };
+            const filter = { 
+                role: currentRole, 
+                signal 
+            };
             const [tData, eData] = await Promise.all([
                 CanonicalDataService.getTasks(filter),
                 CanonicalDataService.getEvents(filter),
@@ -151,6 +155,7 @@ export default function HomeClient() {
             setTasks(normalizeTasks(tData || []));
             setEvents(normalizeEvents(eData || []));
             setTasksLoaded(true);
+            console.log('[HomeClient] Core data loaded successfully', { tasks: tData.length, events: eData.length });
         } catch (error: any) {
             if (error.name === 'AbortError') return;
             console.error('Failed to fetch dashboard data:', error);
@@ -205,7 +210,21 @@ export default function HomeClient() {
         return () => window.removeEventListener('keydown', handleKeyDown);
     }, [router]);
 
-    const isActuallyLoading = authLoading || loadingData || !tasksLoaded || campaignsLoading;
+    const isAuthLoading = authLoading || !authReady;
+    const isDataLoading = loadingData || !tasksLoaded;
+    const isActuallyLoading = isAuthLoading || isDataLoading;
+    
+    // Log state changes in dev to track bottlenecks
+    if (process.env.NODE_ENV === 'development') {
+        console.log('[HomeClient] Loading State:', { 
+            isActuallyLoading, 
+            authLoading, 
+            loadingData, 
+            tasksLoaded, 
+            campaignsLoading,
+            role: currentRole
+        });
+    }
 
     const todayTasks = useMemo(() => {
         return displayTasks.filter(t => {
@@ -246,7 +265,7 @@ export default function HomeClient() {
                             <div className="absolute inset-0 bg-gradient-to-r from-indigo-500/10 via-transparent to-transparent opacity-30 rounded-[32px] pointer-events-none" />
                             <div className="relative z-10 flex flex-col md:flex-row md:items-center justify-between gap-8 px-0">
                                 <div className="space-y-2 text-left min-w-[280px]">
-                                    {isActuallyLoading ? (
+                                    {isAuthLoading ? (
                                         <div className="space-y-3">
                                             <Skeleton className="h-10 w-64 bg-white/10" />
                                             <Skeleton className="h-4 w-80 bg-white/5" />
@@ -346,13 +365,13 @@ export default function HomeClient() {
                         <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 animate-in fade-in slide-in-from-bottom-4 duration-800">
                             <TodayTasksCard 
                                 tasks={todayTasks} 
-                                isLoading={isActuallyLoading} 
+                                isLoading={isDataLoading} 
                                 onViewTask={(id) => router.push(`/tasks?id=${id}`)}
                             />
                             <TodayEventsCard 
                                 events={todayEvents} 
                                 tasks={tasks}
-                                isLoading={isActuallyLoading} 
+                                isLoading={isDataLoading} 
                                 onViewEvent={(id) => router.push(`/calendar?id=${id}`)}
                             />
                         </div>
@@ -401,7 +420,7 @@ export default function HomeClient() {
                                                 <h3 className="text-xs font-bold text-white/30 uppercase tracking-widest mb-4 ml-2 mt-2">Strategic Insights</h3>
                                                 <ProductionInsights 
                                                     data={{ events, tasks }} 
-                                                    isLoading={isActuallyLoading} 
+                                                    isLoading={isDataLoading} 
                                                 />
                                             </div>
                                         </div>

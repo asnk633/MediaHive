@@ -22,7 +22,7 @@ export async function GET(req: NextRequest) {
             .from(TABLES.MEDIA)
             .select('*')
             .eq('tenant_id', tenantId)
-            .or('upload_context.is.null,upload_context.neq.inventory_asset'); // Include both legacy nulls and non-inventory files
+            .or('upload_context.is.null,upload_context.neq.inventory_asset'); // Show everything except inventory assets
 
         if (institutionId) {
             // Point 4: Deep-link protection. Backend must reject unauthorized institution access.

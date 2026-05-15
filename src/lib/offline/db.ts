@@ -193,6 +193,7 @@ class OfflineDBWrapper {
     } else if (key.includes('events') && Array.isArray(value)) {
       await db.events.bulkPut(value);
     } else if (key.includes('inventory') && Array.isArray(value)) {
+      await db.inventory.clear();
       await db.inventory.bulkPut(value);
     } else {
       // 2. Generic key-value cache with expiration

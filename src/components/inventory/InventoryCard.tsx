@@ -4,7 +4,7 @@ import Image from 'next/image';
 import { EquipmentItem, InventoryIssueClean } from '@/services/inventory/inventoryContract';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
-import { Box, Layers, AlertCircle, Calendar } from 'lucide-react';
+import { Box, Layers, AlertCircle, Calendar, Trash2 } from 'lucide-react';
 import { format } from 'date-fns';
 import { Carousel, CarouselContent, CarouselItem, CarouselNext, CarouselPrevious } from '@/components/ui/carousel';
 import { getDriveImageUrl } from '@/lib/driveUtils';
@@ -20,6 +20,7 @@ interface InventoryCardProps {
     onReturn?: (item: EquipmentItem) => void;
     onBook?: (item: EquipmentItem) => void;
     onView?: (item: EquipmentItem) => void;
+    onDelete?: (item: EquipmentItem) => void;
 }
 
 export const InventoryCard = React.memo<InventoryCardProps>(({ 
@@ -31,7 +32,8 @@ export const InventoryCard = React.memo<InventoryCardProps>(({
     onEdit, 
     onReturn, 
     onBook, 
-    onView 
+    onView,
+    onDelete
 }) => {
     // Adaptive Status Logic
     const status = item.status;
@@ -202,9 +204,29 @@ export const InventoryCard = React.memo<InventoryCardProps>(({
                         <Button
                             variant="outline"
                             className="flex-1 border-[#ffffff1a] text-slate-300 hover:text-white hover:bg-white/5"
-                            onClick={() => onEdit(item)}
+                            onClick={(e) => {
+                                e.preventDefault();
+                                e.stopPropagation();
+                                onEdit(item);
+                            }}
                         >
                             Edit
+                        </Button>
+                    )}
+
+                    {(role === 'admin' || role === 'manager') && onDelete && (
+                        <Button
+                            variant="ghost"
+                            className="w-10 h-10 p-0 text-red-500 hover:text-white hover:bg-red-500/20 border-white/5"
+                            onClick={(e) => {
+                                e.preventDefault();
+                                e.stopPropagation();
+                                if (window.confirm(`Permanently delete ${item.name}?`)) {
+                                    onDelete(item);
+                                }
+                            }}
+                        >
+                            <Trash2 size={16} />
                         </Button>
                     )}
 

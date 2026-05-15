@@ -6,8 +6,13 @@ export const FileService = {
     getFiles: async (userRole: string, userDepartment?: string | number | null, userInstitution?: string | number | null, scope: 'all' | 'downloads' = 'all'): Promise<DriveFile[]> => {
         try {
             let url = `/api/files?scope=${scope}`;
-            if (userInstitution) url += `&institutionId=${userInstitution}`;
-            if (userDepartment) url += `&departmentId=${userDepartment}`;
+            
+            // For unified downloads library, we often want to see across institutions
+            // Only apply filters if not in downloads scope or if explicitly required
+            if (scope !== 'downloads') {
+                if (userInstitution) url += `&institutionId=${userInstitution}`;
+                if (userDepartment) url += `&departmentId=${userDepartment}`;
+            }
             
             const response = await apiClient<{ files: DriveFile[] }>(url);
             return response.files || [];

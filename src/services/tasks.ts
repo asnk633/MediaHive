@@ -173,7 +173,9 @@ export const TaskService = {
             eventBus.emit('task.created', { 
                 taskId: data.id, 
                 title: data.title,
-                assignedTo: assigneeIds
+                assignedTo: assigneeIds,
+                institution_id: data.institution_id,
+                department_id: data.department_id
             });
         }
         return data;
@@ -204,7 +206,9 @@ export const TaskService = {
                 taskId: id, 
                 title: taskInfo?.title,
                 changes: { status: updates.status },
-                assignerId: taskInfo?.assigned_by?.uid || taskInfo?.created_by?.uid
+                assignerId: taskInfo?.assigned_by?.uid || taskInfo?.created_by?.uid,
+                institution_id: taskInfo?.institution_id,
+                department_id: taskInfo?.department_id
             });
 
             if (updates.status === 'done') {
@@ -212,7 +216,9 @@ export const TaskService = {
                     taskId: id, 
                     title: taskInfo?.title,
                     userId: user?.id || 'unknown',
-                    assignerId: taskInfo?.assigned_by?.uid || taskInfo?.created_by?.uid
+                    assignerId: taskInfo?.assigned_by?.uid || taskInfo?.created_by?.uid,
+                    institution_id: taskInfo?.institution_id,
+                    department_id: taskInfo?.department_id
                 });
             }
         }

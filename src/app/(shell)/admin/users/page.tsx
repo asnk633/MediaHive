@@ -38,6 +38,21 @@ import {
 import { useRouter } from 'next/navigation';
 import { usePermissions } from '@/hooks/usePermissions';
 import { useAuth } from '@/contexts/AuthContextProvider';
+import { 
+    Command,
+    CommandInput,
+    CommandList,
+    CommandEmpty,
+    CommandGroup,
+    CommandItem
+} from "@/components/ui/command";
+import {
+    Dialog,
+    DialogContent,
+    DialogHeader,
+    DialogTitle,
+    DialogDescription,
+} from "@/components/ui/dialog";
 
 export default function AdminUsersPage() {
     const router = useRouter();
@@ -59,7 +74,9 @@ export default function AdminUsersPage() {
     const [users, setUsers] = useState<User[]>([]);
     const [invites, setInvites] = useState<any[]>([]);
     const [institutions, setInstitutions] = useState<Institution[]>([]);
+    const [departments, setDepartments] = useState<any[]>([]);
     const [loading, setLoading] = useState(true);
+    const [isAddWorkspaceOpen, setIsAddWorkspaceOpen] = useState(false);
     const [search, setSearch] = useState('');
     const [selectedUserId, setSelectedUserId] = useState<string | null>(null);
     const [selectedInviteId, setSelectedInviteId] = useState<string | null>(null);
@@ -87,18 +104,20 @@ export default function AdminUsersPage() {
     const fetchData = async () => {
         setLoading(true);
         try {
-            const [usersData, instData, inviteData] = await Promise.all([
+            const [usersData, instData, inviteData, deptData] = await Promise.all([
                 UserService.getAllUsers(),
                 StructureService.getInstitutions(),
-                AdminService.getInvitations()
+                AdminService.getInvitations(),
+                StructureService.getDepartments()
             ]);
             setUsers(usersData);
             setInstitutions(instData.institutions || []);
             setInvites(inviteData);
+            setDepartments(deptData.departments || []);
             
-            if (viewMode === 'users' && usersData.length > 0 && !selectedUserId) {
+            if (viewMode === 'users' && usersData.length > 0 && (!selectedUserId || !usersData.find(u => u.uid === selectedUserId))) {
                 setSelectedUserId(usersData[0].uid);
-            } else if (viewMode === 'invites' && inviteData.length > 0 && !selectedInviteId) {
+            } else if (viewMode === 'invites' && inviteData.length > 0 && (!selectedInviteId || !inviteData.find(i => i.id === selectedInviteId))) {
                 setSelectedInviteId(inviteData[0].id);
             }
         } catch (error) {
@@ -152,6 +171,26 @@ export default function AdminUsersPage() {
                     fetchAccess(selectedUserId);
                 } catch (error) {
                     toast.error("Update failed");
+                }
+            }
+        });
+    };
+
+    const handleRemoveDepartment = async () => {
+        if (!selectedUserId || !selectedUser) return;
+        
+        setConfirmConfig({
+            open: true,
+            title: "Remove Department Access",
+            description: `Are you sure you want to remove ${selectedUser.name} from the ${departments.find(d => String(d.id) === String(selectedUser.department_id))?.name || 'current'} department?`,
+            variant: 'danger',
+            action: async () => {
+                try {
+                    await UserService.updateUser(selectedUserId, { department_id: null as any });
+                    toast.success("Department access removed");
+                    fetchData();
+                } catch (error) {
+                    toast.error("Failed to remove department");
                 }
             }
         });
@@ -213,18 +252,27 @@ export default function AdminUsersPage() {
         });
     };
 
-    const handleAddAccess = async () => {
-        // Simple prompt for MVP, better UI would use a dropdown
-        const instName = prompt("Enter Institution ID to add access to:");
-        if (!instName || !selectedUserId) return;
+    const handleAddAccess = (id: string, type: 'institution' | 'department') => {
+        if (!id || !selectedUserId) return;
         
-        try {
-            await AdminService.setUserWorkspaceRole(selectedUserId, instName, 'member');
-            toast.success("Access granted");
-            fetchAccess(selectedUserId);
-        } catch (error) {
-            toast.error("Failed to add access");
-        }
+        setIsAddWorkspaceOpen(false);
+
+        const action = type === 'institution' 
+            ? AdminService.setUserWorkspaceRole(selectedUserId, id, 'member')
+            : UserService.updateUser(selectedUserId, { department_id: Number(id) as any });
+
+        toast.promise(
+            action,
+            {
+                loading: `Adding ${type}...`,
+                success: () => {
+                    if (type === 'institution') fetchAccess(selectedUserId);
+                    else fetchData();
+                    return `${type === 'institution' ? 'Workspace' : 'Department'} access granted`;
+                },
+                error: `Failed to add ${type}`
+            }
+        );
     };
 
     const filteredInvites = invites.filter(i =>
@@ -328,7 +376,7 @@ export default function AdminUsersPage() {
                                             {user.name || 'Anonymous'}
                                         </h4>
                                         <p className="text-[10px] text-white/30 font-medium truncate uppercase tracking-widest">
-                                            {user.role} • {user.email}
+                                            {user.role === 'guest' ? 'member' : user.role} • {user.email}
                                         </p>
                                     </div>
                                     <ChevronRight size={14} className={cn("transition-transform", selectedUserId === user.uid ? "text-indigo-400 translate-x-0" : "text-white/10 -translate-x-2 opacity-0 group-hover:opacity-100 group-hover:translate-x-0")} />
@@ -413,7 +461,7 @@ export default function AdminUsersPage() {
                                                 <DropdownMenu>
                                                     <DropdownMenuTrigger asChild>
                                                         <button className="px-3 py-1 rounded-lg bg-indigo-500/10 border border-indigo-500/20 flex items-center gap-2 text-[10px] font-black text-indigo-400 uppercase tracking-widest hover:bg-indigo-500/20 transition-colors">
-                                                            <Shield size={12} /> Global {selectedUser.role}
+                                                            <Shield size={12} /> Global {selectedUser.role === 'guest' ? 'member' : selectedUser.role}
                                                         </button>
                                                     </DropdownMenuTrigger>
                                                     <DropdownMenuContent align="start" className="bg-[#09090b] border-white/10 text-white min-w-[140px]">
@@ -431,6 +479,12 @@ export default function AdminUsersPage() {
                                                         ))}
                                                     </DropdownMenuContent>
                                                 </DropdownMenu>
+
+                                                {selectedUser.department_id && (
+                                                    <div className="px-3 py-1 rounded-lg bg-emerald-500/10 border border-emerald-500/20 flex items-center gap-2 text-[10px] font-black text-emerald-400 uppercase tracking-widest">
+                                                        <MapPin size={12} /> {departments.find(d => String(d.id) === String(selectedUser.department_id))?.name || 'Department'}
+                                                    </div>
+                                                )}
                                             </div>
                                         </div>
                                     </div>
@@ -450,7 +504,14 @@ export default function AdminUsersPage() {
                                                     description: `Are you sure you want to permanently delete ${selectedUser.name}? This action is IRREVERSIBLE and will remove all their data from the system.`,
                                                     variant: 'danger',
                                                     action: async () => {
-                                                        toast.info("Delete service pending backend safety audit.");
+                                                        try {
+                                                            await AdminService.deleteUser(selectedUser.uid);
+                                                            toast.success("User permanently deleted");
+                                                            setSelectedUserId(null);
+                                                            fetchData();
+                                                        } catch (error: any) {
+                                                            toast.error(error.message || "Deletion failed");
+                                                        }
                                                     }
                                                 });
                                             }}
@@ -468,7 +529,7 @@ export default function AdminUsersPage() {
                                             <Building2 size={14} /> Workspace Access Control
                                         </h3>
                                         <button 
-                                            onClick={handleAddAccess}
+                                            onClick={() => setIsAddWorkspaceOpen(true)}
                                             className="text-[10px] font-bold text-indigo-400 hover:text-indigo-300 transition-colors uppercase tracking-widest flex items-center gap-1"
                                         >
                                             <Plus size={12} /> Add Workspace
@@ -478,50 +539,84 @@ export default function AdminUsersPage() {
                                     <div className="space-y-3">
                                         {loadingAccess ? (
                                             <div className="py-12 flex justify-center"><Loader2 className="animate-spin text-white/10" /></div>
-                                        ) : workspaceAccess.length === 0 ? (
+                                        ) : (workspaceAccess.length === 0 && !selectedUser.department_id) ? (
                                             <div className="p-12 rounded-[32px] border-2 border-dashed border-white/5 flex flex-col items-center justify-center text-center">
                                                 <MapPin className="text-white/10 mb-4" size={40} />
-                                                <p className="text-sm font-bold text-white/40">No institutional access granted</p>
+                                                <p className="text-sm font-bold text-white/40">No access granted</p>
                                                 <p className="text-xs text-white/20 mt-1">This user can only access global resources.</p>
                                             </div>
-                                        ) : workspaceAccess.map(access => (
-                                            <div key={access.id} className="p-5 rounded-[28px] bg-white/5 border border-white/5 flex items-center justify-between group hover:bg-white/[0.07] transition-all">
-                                                <div className="flex items-center gap-4">
-                                                    <div className="w-10 h-10 rounded-xl bg-indigo-500/10 flex items-center justify-center text-indigo-400">
-                                                        <Building2 size={18} />
-                                                    </div>
-                                                    <div>
-                                                        <h4 className="text-sm font-bold text-white">{access.institutions?.name}</h4>
-                                                        <p className="text-[10px] text-white/30 font-medium uppercase tracking-widest">Institution ID: {access.institution_id}</p>
-                                                    </div>
-                                                </div>
+                                        ) : (
+                                            <>
+                                                {/* Department Access */}
+                                                {selectedUser.department_id && (
+                                                    <div className="p-5 rounded-[28px] bg-emerald-500/5 border border-emerald-500/10 flex items-center justify-between group hover:bg-emerald-500/10 transition-all">
+                                                        <div className="flex items-center gap-4">
+                                                            <div className="w-10 h-10 rounded-xl bg-emerald-500/10 flex items-center justify-center text-emerald-400">
+                                                                <MapPin size={18} />
+                                                            </div>
+                                                            <div>
+                                                                <h4 className="text-sm font-bold text-white">
+                                                                    {departments.find(d => String(d.id) === String(selectedUser.department_id))?.name || 'Unknown Department'}
+                                                                </h4>
+                                                                <p className="text-[10px] text-emerald-400/40 font-medium uppercase tracking-widest">Primary Department</p>
+                                                            </div>
+                                                        </div>
 
-                                                <div className="flex items-center gap-4">
-                                                    <div className="flex bg-black/20 p-1 rounded-xl">
-                                                        {['admin', 'manager', 'team', 'member'].map(r => (
-                                                            <button
-                                                                key={r}
-                                                                onClick={() => handleUpdateRole(access.institution_id, r)}
-                                                                className={cn(
-                                                                    "px-3 py-1.5 rounded-lg text-[10px] font-black uppercase tracking-widest transition-all",
-                                                                    access.role === r 
-                                                                        ? "bg-indigo-500 text-white shadow-lg" 
-                                                                        : "text-white/20 hover:text-white/40"
-                                                                )}
+                                                        <div className="flex items-center gap-4">
+                                                            <div className="px-3 py-1.5 rounded-lg bg-emerald-500 text-white text-[10px] font-black uppercase tracking-widest shadow-lg">
+                                                                Assignee
+                                                            </div>
+                                                            <button 
+                                                                onClick={handleRemoveDepartment}
+                                                                className="w-8 h-8 rounded-lg text-white/10 hover:text-rose-400 hover:bg-rose-500/10 flex items-center justify-center transition-all"
                                                             >
-                                                                {r}
+                                                                <Trash2 size={14} />
                                                             </button>
-                                                        ))}
+                                                        </div>
                                                     </div>
-                                                    <button 
-                                                        onClick={() => handleRemoveAccess(access.institution_id)}
-                                                        className="w-8 h-8 rounded-lg text-white/10 hover:text-rose-400 hover:bg-rose-500/10 flex items-center justify-center transition-all"
-                                                    >
-                                                        <Trash2 size={14} />
-                                                    </button>
-                                                </div>
-                                            </div>
-                                        ))}
+                                                )}
+
+                                                {/* Institution Access */}
+                                                {workspaceAccess.map(access => (
+                                                    <div key={access.id} className="p-5 rounded-[28px] bg-white/5 border border-white/5 flex items-center justify-between group hover:bg-white/[0.07] transition-all">
+                                                        <div className="flex items-center gap-4">
+                                                            <div className="w-10 h-10 rounded-xl bg-indigo-500/10 flex items-center justify-center text-indigo-400">
+                                                                <Building2 size={18} />
+                                                            </div>
+                                                            <div>
+                                                                <h4 className="text-sm font-bold text-white">{access.institutions?.name}</h4>
+                                                                <p className="text-[10px] text-white/20 font-medium uppercase tracking-widest">Workspace Access</p>
+                                                            </div>
+                                                        </div>
+
+                                                        <div className="flex items-center gap-4">
+                                                            <div className="flex bg-black/20 p-1 rounded-xl">
+                                                                {['admin', 'manager', 'team', 'member'].map(r => (
+                                                                    <button
+                                                                        key={r}
+                                                                        onClick={() => handleUpdateRole(access.institution_id, r)}
+                                                                        className={cn(
+                                                                            "px-3 py-1.5 rounded-lg text-[10px] font-black uppercase tracking-widest transition-all",
+                                                                            access.role === r 
+                                                                                ? "bg-indigo-500 text-white shadow-lg" 
+                                                                                : "text-white/20 hover:text-white/40"
+                                                                        )}
+                                                                    >
+                                                                        {r}
+                                                                    </button>
+                                                                ))}
+                                                            </div>
+                                                            <button 
+                                                                onClick={() => handleRemoveAccess(access.institution_id)}
+                                                                className="w-8 h-8 rounded-lg text-white/10 hover:text-rose-400 hover:bg-rose-500/10 flex items-center justify-center transition-all"
+                                                            >
+                                                                <Trash2 size={14} />
+                                                            </button>
+                                                        </div>
+                                                    </div>
+                                                ))}
+                                            </>
+                                        )}
                                     </div>
                                 </div>
                             </motion.div>
@@ -646,6 +741,54 @@ export default function AdminUsersPage() {
                 variant={confirmConfig.variant}
                 onConfirm={confirmConfig.action}
             />
+            <Dialog open={isAddWorkspaceOpen} onOpenChange={setIsAddWorkspaceOpen}>
+                <DialogContent className="p-0 bg-[#09090b] border-white/10 overflow-hidden max-w-md shadow-2xl">
+                    <DialogHeader className="p-6 pb-2">
+                        <DialogTitle className="text-white text-xl font-black uppercase tracking-widest">Add Workspace</DialogTitle>
+                        <DialogDescription className="text-white/40 text-xs font-medium uppercase tracking-widest">Select an institution to grant access.</DialogDescription>
+                    </DialogHeader>
+                    
+                    <Command className="bg-transparent border-none">
+                        <CommandInput 
+                            placeholder="Search workspaces..." 
+                            className="text-white border-white/5 h-14"
+                        />
+                        <CommandList className="max-h-[400px] border-white/5 scrollbar-thin scrollbar-thumb-white/10">
+                            <CommandEmpty className="py-10 text-white/40 text-[10px] uppercase tracking-widest font-black text-center">No workspaces found.</CommandEmpty>
+                            
+                            <CommandGroup heading="Departments" className="px-2 pb-2 text-[10px] font-black uppercase tracking-widest text-emerald-400/40">
+                                {departments
+                                    .filter(dept => !selectedUser || String(dept.id) !== String(selectedUser.department_id))
+                                    .map(dept => (
+                                        <CommandItem
+                                            key={dept.id}
+                                            onSelect={() => handleAddAccess(String(dept.id), 'department')}
+                                            className="flex flex-col items-start gap-1 py-3 px-4 rounded-xl data-[selected=true]:bg-emerald-500/10 cursor-pointer transition-all"
+                                        >
+                                            <span className="text-sm font-bold text-white tracking-tight">{dept.name}</span>
+                                            <span className="text-[9px] text-emerald-400/40 font-medium uppercase tracking-widest">Organizational Unit</span>
+                                        </CommandItem>
+                                    ))}
+                            </CommandGroup>
+
+                            <CommandGroup heading="Institutions" className="px-2 pb-4 text-[10px] font-black uppercase tracking-widest text-indigo-400/40 border-t border-white/5 mt-2 pt-2">
+                                {institutions
+                                    .filter(inst => !workspaceAccess.some(acc => acc.institution_id === inst.id))
+                                    .map(inst => (
+                                        <CommandItem
+                                            key={inst.id}
+                                            onSelect={() => handleAddAccess(inst.id, 'institution')}
+                                            className="flex flex-col items-start gap-1 py-3 px-4 rounded-xl data-[selected=true]:bg-indigo-500/10 cursor-pointer transition-all"
+                                        >
+                                            <span className="text-sm font-bold text-white tracking-tight">{inst.name}</span>
+                                            <span className="text-[9px] text-indigo-400/40 font-medium uppercase tracking-widest">Physical Workspace</span>
+                                        </CommandItem>
+                                    ))}
+                            </CommandGroup>
+                        </CommandList>
+                    </Command>
+                </DialogContent>
+            </Dialog>
         </PageLayout>
     );
 }

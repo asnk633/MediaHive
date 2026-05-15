@@ -91,8 +91,16 @@ export const BulkOperationsService = {
         }
       }
 
-      // Log bulk activity for sequential ops
       if (results.length > 0) {
+        const { TaskSchema } = await import('@/domain/schemas');
+        results.forEach(r => {
+            const validation = TaskSchema.safeParse(r);
+            if (!validation.success) {
+                // We don't block but log it for health auditing
+                console.warn(`[BulkOperationsService] Task ${r.taskId} result validation failed`);
+            }
+        });
+
         const actionMap: Record<string, any> = { 'assign': 'assigned', 'delete': 'deleted' };
         ActivityHistory.pushBulk(results.map(r => r.taskId), {
           action: actionMap[operation] || 'status_changed',

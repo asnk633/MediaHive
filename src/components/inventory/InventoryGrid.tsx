@@ -14,6 +14,7 @@ interface InventoryGridProps {
     onReturn?: (item: EquipmentItem) => void;
     onBook?: (item: EquipmentItem) => void;
     onView?: (item: EquipmentItem) => void;
+    onDelete?: (item: EquipmentItem) => void;
 }
 
 export const InventoryGrid: React.FC<InventoryGridProps> = ({
@@ -26,7 +27,8 @@ export const InventoryGrid: React.FC<InventoryGridProps> = ({
     onEdit,
     onReturn,
     onBook,
-    onView
+    onView,
+    onDelete
 }) => {
     // Optimization: Create map for O(1) access
     const issueMap = React.useMemo(() => {
@@ -90,6 +92,7 @@ export const InventoryGrid: React.FC<InventoryGridProps> = ({
                     onReturn={onReturn}
                     onBook={onBook}
                     onView={onView}
+                    onDelete={onDelete}
                 />
             ))}
         </div>

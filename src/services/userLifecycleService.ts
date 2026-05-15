@@ -67,7 +67,17 @@ export async function getUsersByStatus(
     return [];
   }
 
-  return (data as any[]) || [];
+  // Health Audit: Validate user DTOs
+  const { UserSchema } = await import('@/domain/schemas');
+  const users = (data as any[]) || [];
+  users.forEach(u => {
+    const v = UserSchema.safeParse(u);
+    if (!v.success) {
+      console.warn(`[UserLifecycleService] User ${u.id} failed health audit`);
+    }
+  });
+
+  return users;
 };
 
 // Reassign tasks from a disabled user to another user

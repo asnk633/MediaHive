@@ -7,8 +7,9 @@ import { FEATURE_REGISTRY, FeatureKey } from '@/system/features/featureRegistry'
 import { supabase } from '@/lib/supabaseClient';
 
 export interface Workspace {
+    id: string | number;
     tenant_id: string;
-    institution_id: string;
+    type: 'institution' | 'department';
     name: string;
     features?: Record<string, boolean>;
     tenantSettings?: Record<string, any>;
@@ -36,62 +37,73 @@ export function WorkspaceProvider({ children }: { children: React.ReactNode }) {
     const [loading, setLoading] = useState(true);
     const [tenantSettings, setTenantSettings] = useState<Record<string, any>>({});
 
-    const currentWorkspaceId = currentWorkspace?.institution_id || null;
+    const currentWorkspaceId = currentWorkspace?.id || null;
     const isSingleWorkspace = !loading && availableWorkspaces.length <= 1 && user?.role !== 'admin';
 
     // Fetch available institutions for the user's tenant
     const fetchWorkspaces = useCallback(async (tenantId: string) => {
         try {
-            console.log(`[Workspace] Fetching institutions for tenant: ${tenantId}`);
+            console.log(`[Workspace] Fetching workspaces for tenant: ${tenantId}`);
 
-            // 1. Fetch assigned workspace IDs from user_institutions table
-            const { data: userInsts, error: uiError } = await supabase
-                .from('user_institutions')
-                .select('institution_id')
-                .eq('user_id', user?.uid);
-
-            if (uiError) throw uiError;
-            const assignedIds = ((userInsts as any[]) || []).map((ui: any) => ui.institution_id) || [];
-
-            // 2. Fetch institution details and tenant settings in parallel
-            let instQuery = supabase
-                .from('institutions')
-                .select('*')
-                .eq('tenant_id', tenantId);
-
-            // Role-based filtering: Team/Member/Manager can only see assigned institutions
-            // Global Admin can see all in the tenant
-            if (user?.role !== 'admin') {
-                if (assignedIds.length === 0) return [];
-                instQuery = instQuery.in('id', assignedIds);
-            }
-
-            const [instsRes, tenantRes] = await Promise.all([
-                instQuery,
+            // 1. Fetch available entities in parallel
+            const [instsRes, deptsRes, tenantRes] = await Promise.all([
+                supabase.from('institutions').select('*').eq('tenant_id', tenantId),
+                supabase.from('departments').select('*').eq('tenant_id', tenantId),
                 supabase.from('tenants').select('settings').eq('id', tenantId).single()
             ]);
 
             if (instsRes.error) throw instsRes.error;
+            if (deptsRes.error) throw deptsRes.error;
             
             const fetchedTenantSettings = tenantRes.data?.settings || {};
             setTenantSettings(fetchedTenantSettings);
 
-            const workspaces: Workspace[] = ((instsRes.data as any[]) || [])
-                .map((inst: any) => ({
+            const allInstitutions = (instsRes.data as any[]) || [];
+            const allDepartments = (deptsRes.data as any[]) || [];
+
+            // 2. Role-based filtering
+            let filteredInstitutions = allInstitutions;
+            let filteredDepartments = allDepartments;
+
+            if (user?.role !== 'admin') {
+                // Source of truth: profile fields
+                const allowedInstIds = user?.allowed_institutions || [];
+                const primaryInstId = user?.institution_id;
+                const primaryDeptId = user?.department_id;
+
+                const allAllowedInsts = new Set([...allowedInstIds, primaryInstId].filter(Boolean));
+                
+                filteredInstitutions = allInstitutions.filter(inst => allAllowedInsts.has(inst.id));
+                filteredDepartments = allDepartments.filter(dept => Number(dept.id) === Number(primaryDeptId));
+            }
+
+            // 3. Unify into Workspace models
+            const workspaces: Workspace[] = [
+                ...filteredDepartments.map((dept: any) => ({
+                    id: dept.id,
+                    tenant_id: dept.tenant_id,
+                    type: 'department' as const,
+                    name: dept.name,
+                    features: dept.features || {},
+                    tenantSettings: fetchedTenantSettings
+                })),
+                ...filteredInstitutions.map((inst: any) => ({
+                    id: inst.id,
                     tenant_id: inst.tenant_id,
-                    institution_id: inst.id,
+                    type: 'institution' as const,
                     name: inst.name,
                     features: inst.features || {},
                     tenantSettings: fetchedTenantSettings
-                }));
+                }))
+            ];
 
             setAvailableWorkspaces(workspaces);
             return workspaces;
         } catch (error) {
-            console.error('[Workspace] Failed to fetch institutions:', error);
+            console.error('[Workspace] Failed to fetch workspaces:', error);
             return [];
         }
-    }, [user?.uid, user?.role]);
+    }, [user?.uid, user?.role, user?.allowed_institutions, user?.institution_id, user?.department_id]);
 
     useEffect(() => {
         if (!authReady) return;
@@ -106,36 +118,38 @@ export function WorkspaceProvider({ children }: { children: React.ReactNode }) {
 
             // 1. Try localStorage
             const savedId = localStorage.getItem(STORAGE_KEY);
-            let selected = workspaces.find(w => w.institution_id === savedId);
+            let selected = workspaces.find(w => String(w.id) === savedId);
 
-            // 2. Try User's profile institution_id (primary)
+            // 2. Try User's primary department/institution
+            if (!selected && user.department_id) {
+                selected = workspaces.find(w => w.type === 'department' && Number(w.id) === Number(user.department_id));
+            }
             if (!selected && user.institution_id) {
-                selected = workspaces.find(w => w.institution_id === user.institution_id);
+                selected = workspaces.find(w => w.type === 'institution' && String(w.id) === String(user.institution_id));
             }
 
-            // 3. Fallback to first available from the allowed list
+            // 3. Fallback to first available
             if (!selected && workspaces.length > 0) {
                 selected = workspaces[0];
             }
 
             if (selected) {
-                if (currentWorkspace?.institution_id !== selected.institution_id) {
+                if (String(currentWorkspace?.id) !== String(selected.id)) {
                     setCurrentWorkspace(selected);
-                    localStorage.setItem(STORAGE_KEY, selected.institution_id);
+                    localStorage.setItem(STORAGE_KEY, String(selected.id));
                 }
-            } else if (user.institution_id) {
-                const instIdStr = String(user.institution_id);
-                if (currentWorkspace?.institution_id !== instIdStr) {
-                    // UI-P14: Critical Fallback for production sync
+            } else if (user.department_id || user.institution_id) {
+                const fallbackId = String(user.department_id || user.institution_id);
+                if (String(currentWorkspace?.id) !== fallbackId) {
                     const syntheticWorkspace: Workspace = {
+                        id: fallbackId,
                         tenant_id: String(user.tenant_id || ''),
-                        institution_id: instIdStr,
-                        name: "Default Institution",
+                        type: user.department_id ? 'department' : 'institution',
+                        name: user.department_id ? "Default Department" : "Default Institution",
                         features: {},
                         tenantSettings: tenantSettings
                     };
                     setCurrentWorkspace(syntheticWorkspace);
-                    console.log(`[Workspace] Applied synthetic fallback for primary institution: ${instIdStr}`);
                 }
             } else if (savedId) {
                 localStorage.removeItem(STORAGE_KEY);
@@ -147,11 +161,11 @@ export function WorkspaceProvider({ children }: { children: React.ReactNode }) {
         initWorkspace();
     }, [user?.uid, user?.tenant_id, user?.institution_id, authReady, fetchWorkspaces, currentWorkspace?.institution_id]);
 
-    const setWorkspace = useCallback((workspaceId: string) => {
-        const selected = availableWorkspaces.find(w => w.institution_id === workspaceId);
+    const setWorkspace = useCallback((workspaceId: string | number) => {
+        const selected = availableWorkspaces.find(w => String(w.id) === String(workspaceId));
         if (selected) {
             setCurrentWorkspace(selected);
-            localStorage.setItem(STORAGE_KEY, selected.institution_id);
+            localStorage.setItem(STORAGE_KEY, String(selected.id));
         }
     }, [availableWorkspaces]);
 
@@ -176,7 +190,7 @@ export function WorkspaceProvider({ children }: { children: React.ReactNode }) {
                         results[key] = canAccessFeature(
                             key as FeatureKey,
                             (user?.role as UserRole) || 'member',
-                            currentWorkspace ? { id: currentWorkspace.institution_id, features: currentWorkspace.features, tenantSettings } : undefined
+                            currentWorkspace ? { id: String(currentWorkspace.id), features: currentWorkspace.features, tenantSettings } : undefined
                         );
                     });
                     return results;
@@ -188,23 +202,27 @@ export function WorkspaceProvider({ children }: { children: React.ReactNode }) {
     const currentRole = useMemo(() => {
         if (!user) return 'member';
 
+        // Global Admin always keeps their role
+        if (user.role === 'admin' || user.role === 'superadmin') return 'admin';
+
         let role: string = 'member';
         
-        // Check workspace-specific role
-        if (currentWorkspaceId && user.institutionRoles?.[currentWorkspaceId]) {
-            role = user.institutionRoles[currentWorkspaceId];
+        // Check workspace-specific role (Institutions only usually, but generic support)
+        const wsId = String(currentWorkspaceId);
+        if (wsId && user.institutionRoles?.[wsId]) {
+            role = user.institutionRoles[wsId];
         }
         // Fallback to global role if this workspace is their primary
-        else if (user.institution_id === currentWorkspaceId) {
+        else if (String(user.institution_id) === wsId || String(user.department_id) === wsId) {
             role = user.role || 'member';
         }
 
-        // Final normalization: 'guest' -> 'member'
+        // Final normalization: 'guest' is legacy, now 'member'
         const normalized = role.toLowerCase();
         if (normalized === 'guest') return 'member';
         
         return normalized as any;
-    }, [user, currentWorkspaceId]);
+    }, [user, currentWorkspaceId, user?.role, user?.institution_id, user?.department_id]);
 
     return (
         <WorkspaceContext.Provider value={{

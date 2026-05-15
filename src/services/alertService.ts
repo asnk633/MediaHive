@@ -31,7 +31,9 @@ export class AlertService {
             body: `Task "${data.title || data.taskId.slice(0, 8)}" has been marked as done.`,
             entity_type: 'task',
             entity_id: data.taskId,
-            priority: 'low'
+            priority: 'low',
+            institution_id: data.institution_id,
+            department_id: data.department_id
           }).catch(console.error);
       }
     });
@@ -46,7 +48,9 @@ export class AlertService {
                 body: `You have been assigned to: ${data.title}`,
                 entity_type: 'task',
                 entity_id: data.taskId,
-                priority: 'medium'
+                priority: 'medium',
+                institution_id: data.institution_id,
+                department_id: data.department_id
             }).catch(console.error);
         }
     });
@@ -61,7 +65,9 @@ export class AlertService {
           body: `Task "${data.title || data.taskId.slice(0, 8)}" is now: ${data.changes.status.replace('_', ' ')}`,
           entity_type: 'task',
           entity_id: data.taskId,
-          priority: 'low'
+          priority: 'low',
+          institution_id: data.institution_id,
+          department_id: data.department_id
         }).catch(console.error);
       }
     });

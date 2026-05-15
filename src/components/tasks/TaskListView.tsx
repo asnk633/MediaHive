@@ -22,7 +22,7 @@ import { debounce } from 'lodash';
 import {
     CheckCircle2, Clock,
     AlertCircle, Circle, Filter,
-    Rows, List, Minus
+    Rows, List, Minus, CheckSquare
 } from 'lucide-react';
 import {
     DndContext,
@@ -863,19 +863,9 @@ const TaskListViewComponent: React.FC<TaskListViewProps> = ({ tasks, loading = f
             {/* Main Task List Console */}
             <div className="flex-1 flex flex-col min-h-0 rounded-2xl border border-soft bg-surface shadow-sm overflow-hidden">
                 {/* Unified Header Row */}
-                <div className="grid grid-cols-[auto_1fr_auto] md:grid-cols-[40px_minmax(0,2.5fr)_minmax(0,1.5fr)_80px_100px_90px_minmax(0,1.2fr)_120px_140px] gap-x-8 px-6 py-2.5 border-b border-white/[0.05] text-[10px] font-bold text-white/25 uppercase tracking-widest items-center bg-black/30 sticky top-0 z-10">
-                    <div
-                        role="checkbox"
-                        aria-checked={isAllSelected ? true : isIndeterminate ? 'mixed' : false}
-                        aria-label="Select all tasks"
-                        tabIndex={0}
-                        onClick={() => isAllSelected ? clear() : selectAll()}
-                        onKeyDown={(e) => { if (e.key === ' ' || e.key === 'Enter') { e.preventDefault(); isAllSelected ? clear() : selectAll(); } }}
-                        className="w-4 h-4 rounded border flex items-center justify-center cursor-pointer transition-all border-white/20 hover:border-white/40"
-                        style={{ background: isAllSelected ? '#3b82f6' : isIndeterminate ? 'rgba(59,130,246,0.3)' : undefined, borderColor: (isAllSelected || isIndeterminate) ? '#3b82f6' : undefined }}
-                    >
-                        {isAllSelected && <CheckCircle2 size={10} className="text-white" />}
-                        {isIndeterminate && <Minus size={10} className="text-blue-400" />}
+                <div className="grid grid-cols-[auto_1fr_auto] md:grid-cols-[28px_minmax(0,10fr)_minmax(0,4fr)_70px_45px_70px_100px_90px_80px] gap-x-2 px-1.5 py-2 border-b border-white/[0.05] text-[9px] font-bold text-white/20 uppercase tracking-widest items-center bg-black/30 sticky top-0 z-10">
+                    <div className="flex items-center justify-center opacity-20">
+                        <CheckSquare size={14} />
                     </div>
                     <div className="flex items-center gap-2">Task <DataIntegritySignal meta={(tasks as any).__meta} variant="muted" /></div>
                     <div className="hidden md:block">Requester</div>
@@ -883,8 +873,8 @@ const TaskListViewComponent: React.FC<TaskListViewProps> = ({ tasks, loading = f
                     <div className="hidden md:block">Assignee</div>
                     <div className="hidden md:block text-right">Due</div>
                     <div className="hidden md:block">Status</div>
-                    <div className="hidden md:block text-right">Completed</div>
-                    <div className="hidden md:block text-center">Actions</div>
+                    <div className="hidden md:block text-right">Date</div>
+                    <div className="hidden md:block text-center">Ops</div>
                 </div>
 
                 {loading ? (
@@ -914,7 +904,7 @@ const TaskListViewComponent: React.FC<TaskListViewProps> = ({ tasks, loading = f
                         <TaskListSkeleton count={1} />
                     )
                 ) : (
-                    <div ref={parentRef} className="flex-1 min-h-0 overflow-auto divide-y divide-soft">
+                    <div ref={parentRef} className="flex-1 min-h-0 overflow-y-auto overflow-x-hidden divide-y divide-soft">
                         <DndContext
                             sensors={sensors}
                             collisionDetection={closestCenter}

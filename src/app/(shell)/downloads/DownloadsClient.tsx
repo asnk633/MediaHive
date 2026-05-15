@@ -52,7 +52,7 @@ export default function DownloadsClient() {
         setLoading(true);
         try {
             // Fetch all library files
-            const data = await FileService.getFiles(user.role, user.department_id, user.institution_id);
+            const data = await FileService.getFiles(user.role, user.department_id, user.institution_id, 'downloads');
             setFiles(data);
         } catch (e) {
             console.error(e);
@@ -85,7 +85,7 @@ export default function DownloadsClient() {
     }, [files, search, category]);
 
     const canUpload = user?.role === 'admin' || user?.role === 'manager' || user?.role === 'member' || user?.role === 'team';
-    const isAdmin = user?.role === 'admin';
+    const isAdmin = user?.role === 'admin' || user?.role === 'manager' || user?.role === 'owner';
 
     if (isChecking) return <div className="h-screen bg-[var(--bg-card)]" />;
 

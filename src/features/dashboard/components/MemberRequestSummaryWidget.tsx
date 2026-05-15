@@ -16,7 +16,8 @@ export const MemberRequestSummaryWidget = ({ allowEmpty = true }: { allowEmpty?:
 
         const myTasks = (tasks as NormalizedTask[]).filter(t => {
             const creatorUid = typeof t.created_by === 'string' ? t.created_by : t.created_by?.uid;
-            return creatorUid === user.uid || t.assigned_by?.uid === user.uid;
+            const isAssignee = (t as any).task_assignments?.some((ta: any) => ta.user_id === user.uid);
+            return creatorUid === user.uid || t.assigned_by?.uid === user.uid || isAssignee;
         });
 
         const total = myTasks.length;

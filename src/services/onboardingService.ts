@@ -142,6 +142,15 @@ export const OnboardingService = {
             if (error) throw error;
             if (!invites || invites.length === 0) return;
 
+            // Health Audit: Validate invite DTOs
+            const { NotificationSchema } = await import('@/domain/schemas');
+            for (const invite of invites) {
+                const validation = NotificationSchema.safeParse(invite);
+                if (!validation.success) {
+                    console.warn(`[OnboardingService] Invite ${invite.id} failed health audit`);
+                }
+            }
+
             for (const invite of invites) {
                 // Check expiry
                 if (new Date(invite.expires_at) < new Date()) {

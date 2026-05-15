@@ -13,6 +13,8 @@ export const NotificationSchema = z.object({
     read: z.boolean().optional().nullable(),
     created_at: z.string().optional().nullable(),
     tenant_id: z.string().optional().nullable(),
+    institution_id: z.string().optional().nullable(),
+    department_id: z.number().optional().nullable(),
 });
 
 export type NotificationDTO = z.infer<typeof NotificationSchema>;

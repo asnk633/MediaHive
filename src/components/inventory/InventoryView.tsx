@@ -178,6 +178,17 @@ export default function InventoryView() {
         nativeNavigate(`/inventory/edit?id=${item.id}`, router, 'InventoryView (Edit)');
     }, [router]);
 
+    const handleDelete = useCallback(async (item: EquipmentItem) => {
+        try {
+            await inventoryService.delete(String(item.id));
+            toast.success("Item moved to trash");
+            fetchData(); // Refresh list
+        } catch (error) {
+            console.error("Deletion failed:", error);
+            toast.error("Failed to delete item");
+        }
+    }, [currentRole]);
+
     return (
         <div className="space-y-6">
             <PageHeader
@@ -303,6 +314,7 @@ export default function InventoryView() {
                             onBook={setBookingDialogItem}
                             onEdit={['admin', 'manager'].includes(currentRole) ? handleEdit : undefined}
                             onView={setViewItem}
+                            onDelete={handleDelete}
                         />
                     ) : (
                         <InventoryGrid
@@ -316,6 +328,7 @@ export default function InventoryView() {
                             onBook={setBookingDialogItem}
                             onEdit={['admin', 'manager'].includes(currentRole) ? handleEdit : undefined}
                             onView={setViewItem}
+                            onDelete={handleDelete}
                         />
                     )}
                 </>

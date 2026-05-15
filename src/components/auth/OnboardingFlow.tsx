@@ -143,7 +143,7 @@ export const OnboardingFlow: React.FC<OnboardingFlowProps> = ({ userName, worksp
                         </div>
 
                         <button 
-                            onClick={() => router.push('/dashboard')}
+                            onClick={() => router.push('/home')}
                             className="w-full py-5 bg-emerald-500 hover:bg-emerald-600 text-white font-black text-sm uppercase tracking-widest rounded-2xl shadow-xl shadow-emerald-500/20 flex items-center justify-center gap-2 transition-all"
                         >
                             Open Dashboard

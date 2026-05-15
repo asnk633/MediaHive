@@ -1,11 +1,12 @@
 'use client';
 
-import { useState, useEffect, useCallback } from 'react';
+import { useState, useEffect, useCallback, useRef } from 'react';
 import { CanonicalDataService, OperationalSummary } from '@/services/canonicalDataService';
 import { synergySyncManager } from '@/system/realtimeSync';
 import { useAuth } from '@/contexts/AuthContextProvider';
 import { useWorkspace } from '@/system/workspace/WorkspaceProvider';
 import { toast } from 'sonner';
+import { TABLES } from '@/lib/dbTables';
 
 export function useOperationalSummary() {
     const { user } = useAuth();
@@ -18,18 +19,21 @@ export function useOperationalSummary() {
     });
     const [isLoading, setIsLoading] = useState(true);
     const [isSyncing, setIsSyncing] = useState(false);
+    const syncRef = useRef(false);
 
     const fetchOperationalData = useCallback(async () => {
-        setIsSyncing(true);
         try {
+            syncRef.current = true;
+            setIsSyncing(true);
             const summary = await CanonicalDataService.getTodayOperationalSummary();
             setData(summary);
         } catch (error) {
             console.error('[useOperationalSummary] Fetch error:', error);
             toast.error('Failed to sync operational data');
         } finally {
-            setIsLoading(false);
+            syncRef.current = false;
             setIsSyncing(false);
+            setIsLoading(false);
         }
     }, []);
 
@@ -42,14 +46,20 @@ export function useOperationalSummary() {
         
         const setupRealtime = async () => {
             const filter = `tenant_id=eq.${user.tenant_id}`;
-            await synergySyncManager.subscribe(
-                subscriptionId,
-                { table: '*', filter },
-                () => {
-                    console.log('[useOperationalSummary] Global real-time update detected');
-                    fetchOperationalData();
-                }
-            );
+            // Subscribe to specific tables that affect operational summary to reduce noise
+            const tables = [TABLES.TASKS, TABLES.EVENTS, TABLES.EQUIPMENT_BOOKINGS];
+            
+            for (const table of tables) {
+                await synergySyncManager.subscribe(
+                    `${subscriptionId}-${table}`,
+                    { table, filter },
+                    () => {
+                        if (syncRef.current) return; // Cooldown/Guard using Ref
+                        console.log(`[useOperationalSummary] Real-time update detected on ${table}`);
+                        fetchOperationalData();
+                    }
+                );
+            }
         };
 
         setupRealtime();

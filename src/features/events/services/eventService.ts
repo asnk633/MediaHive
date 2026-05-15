@@ -46,6 +46,15 @@ export const EventService = {
             if (data) {
                 const cacheKey = 'events';
                 await offlineDB.setCache(cacheKey, data);
+                
+                // Validate data integrity for the health check
+                const { EventSchema } = await import('@/domain/schemas');
+                (data as any[]).forEach(item => {
+                    const v = EventSchema.safeParse(item);
+                    if (!v.success) {
+                        console.warn(`[EventService] Event ${item.id} failed validation:`, v.error.format());
+                    }
+                });
             }
  
             const rawEvents = normalizeEvents((data as any[]) || []);
@@ -119,6 +128,14 @@ export const EventService = {
             }
             
             if (!data) return null;
+            
+            // Validate raw data before mapping
+            const { EventSchema } = await import('@/domain/schemas');
+            const validation = EventSchema.safeParse(data);
+            if (!validation.success) {
+                console.error('[EventService] Schema validation failed:', validation.error.format());
+                // In production we might still try to return the data, but for health check we need this logic.
+            }
             
             // Map the flat data to the expected Event structure
             const rawEvent = data as any;

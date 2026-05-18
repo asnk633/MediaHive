@@ -36,6 +36,7 @@ workflows:
 
       - name: Install dependencies
         script: |
+          flutter clean
           flutter pub get
 
       - name: Generate environment file

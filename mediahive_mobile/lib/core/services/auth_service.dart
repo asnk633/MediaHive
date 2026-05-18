@@ -2,13 +2,15 @@ import 'dart:async';
 import 'package:supabase_flutter/supabase_flutter.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'logger_service.dart';
+import 'fcm_service.dart';
 
 class AuthService {
   final SupabaseClient _client;
   final LoggerService _logger;
+  final Ref _ref;
   StreamSubscription<AuthState>? _authSubscription;
 
-  AuthService(this._client, this._logger) {
+  AuthService(this._client, this._logger, this._ref) {
     _init();
   }
 
@@ -21,8 +23,10 @@ class AuthService {
       
       if (event == AuthChangeEvent.signedIn) {
         _logger.info('User signed in: ${session?.user.email}');
+        _ref.read(fcmServiceProvider).initialize();
       } else if (event == AuthChangeEvent.signedOut) {
         _logger.info('User signed out');
+        _ref.read(fcmServiceProvider).deregisterToken();
       } else if (event == AuthChangeEvent.tokenRefreshed) {
         _logger.info('Session token refreshed successfully');
       } else if (event == AuthChangeEvent.userUpdated) {
@@ -65,6 +69,7 @@ class AuthService {
           'full_name': name,
           'institution_id': institutionId,
           'department_id': departmentId,
+          'department': departmentId, // Backward compatibility
           'role': 'Member', // Default role
         },
       );
@@ -81,6 +86,22 @@ class AuthService {
     await _client.auth.signOut();
   }
 
+  Future<UserResponse> updatePassword(String newPassword) async {
+    _logger.info('Attempting password update for current user');
+    try {
+      final response = await _client.auth.updateUser(
+        UserAttributes(
+          password: newPassword,
+        ),
+      );
+      _logger.info('Password update successful');
+      return response;
+    } catch (e) {
+      _logger.error('Password update failed', e);
+      rethrow;
+    }
+  }
+
   void dispose() {
     _authSubscription?.cancel();
   }
@@ -89,5 +110,5 @@ class AuthService {
 final authServiceProvider = Provider<AuthService>((ref) {
   final client = Supabase.instance.client;
   final logger = ref.watch(loggerProvider.notifier);
-  return AuthService(client, logger);
+  return AuthService(client, logger, ref);
 });

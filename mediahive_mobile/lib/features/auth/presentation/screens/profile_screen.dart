@@ -4,6 +4,7 @@ import 'package:lucide_icons/lucide_icons.dart';
 import 'package:go_router/go_router.dart';
 import '../../../../core/design_tokens.dart';
 import '../../../../presentation/widgets/theme_toggle_button.dart';
+import '../../../../presentation/providers/navigation_provider.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 import '../../../../core/theme_provider.dart';
 import 'login_screen.dart';
@@ -83,7 +84,7 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
               _buildDeveloperContact(),
               const SizedBox(height: 40),
               Text(
-                'VERSION 1.0.4 (BETA)',
+                'VERSION 1.0.7',
                 style: TextStyle(fontSize: 10, color: colors.textSecondary, fontWeight: FontWeight.bold, letterSpacing: 2),
               ),
             ],
@@ -250,10 +251,15 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
   }
 
 
-  void _showImageSourcePicker(BuildContext context) {
+  void _showImageSourcePicker(BuildContext context) async {
     final colors = ref.read(themeColorsProvider);
-    showModalBottomSheet(
+    
+    // Hide nav bar while picker is open
+    ref.read(bottomNavVisibleProvider.notifier).state = false;
+    
+    await showModalBottomSheet(
       context: context,
+      useRootNavigator: true, // Ensure it's above everything
       backgroundColor: colors.surface,
       shape: const RoundedRectangleBorder(borderRadius: BorderRadius.vertical(top: Radius.circular(20))),
       builder: (context) => SafeArea(
@@ -286,6 +292,11 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
         ),
       ),
     );
+
+    // Restore nav bar after picker is closed
+    if (mounted) {
+      ref.read(bottomNavVisibleProvider.notifier).state = true;
+    }
   }
 
   Future<void> _pickImage(ImageSource source) async {
@@ -367,8 +378,8 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
         final rawRole = dbProfile?['role'] as String? ?? metadata['role'] as String? ?? 'Member';
         
         // Resolve names from the profile map (populated by provider)
-        final institutionName = dbProfile?['institution_name'] as String? ?? metadata['institution_id']?.toString() ?? 'Thaiba Garden';
-        final departmentName = dbProfile?['department_name'] as String? ?? metadata['department']?.toString() ?? 'Media & IT';
+        final institutionName = dbProfile?['institution_name'] as String? ?? metadata['institution_id']?.toString() ?? 'None';
+        final departmentName = dbProfile?['department_name'] as String? ?? metadata['department_id']?.toString() ?? metadata['department']?.toString() ?? 'None';
         
         // Format join date
         String joinDate = 'Recently';
@@ -732,7 +743,7 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
           _buildHelpBullet(colors, 'Members can request tasks and events directly.'),
           _buildHelpBullet(colors, 'You cannot assign team members; admins handle assignment.'),
           _buildHelpBullet(colors, 'Priorities are managed by the Media Team based on workload.'),
-          _buildHelpBullet(colors, 'For account changes or role updates, please contact Thaiba Garden Media & IT department.'),
+          _buildHelpBullet(colors, 'For account changes or role updates, please contact your institution\'s Media & IT department.'),
           const SizedBox(height: 24),
           SizedBox(
             width: double.infinity,
@@ -932,7 +943,7 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
         ),
         const SizedBox(height: 12),
         Text(
-          'MediaHive is the central workspace for the Thaiba Garden Media Team — built to manage tasks, events, creative workflows, and team coordination in one organized platform. Designed for fast-moving media operations, it helps teams plan, collaborate, and create efficiently.',
+          'MediaHive is the central workspace for your organization\'s Media Team — built to manage tasks, events, creative workflows, and team coordination in one organized platform. Designed for fast-moving media operations, it helps teams plan, collaborate, and create efficiently.',
           style: TextStyle(fontSize: 12, color: colors.textSecondary.withOpacity(0.6), height: 1.6),
         ),
       ],

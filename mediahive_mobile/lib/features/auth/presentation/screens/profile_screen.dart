@@ -84,7 +84,7 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
               _buildDeveloperContact(),
               const SizedBox(height: 40),
               Text(
-                'VERSION 1.0.7 (BETA)',
+                'VERSION 1.0.7-BETA',
                 style: TextStyle(fontSize: 10, color: colors.textSecondary, fontWeight: FontWeight.bold, letterSpacing: 2),
               ),
             ],

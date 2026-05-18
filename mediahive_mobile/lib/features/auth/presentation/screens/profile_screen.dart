@@ -943,7 +943,7 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
         ),
         const SizedBox(height: 12),
         Text(
-          'MediaHive is the central workspace for your organization\'s Media Team — built to manage tasks, events, creative workflows, and team coordination in one organized platform. Designed for fast-moving media operations, it helps teams plan, collaborate, and create efficiently.',
+          'MediaHive is the central workspace for Thaiba Garden\'s Media Team — built to manage tasks, events, creative workflows, and team coordination in one organized platform. Designed for fast-moving media operations, it helps teams plan, collaborate, and create efficiently.',
           style: TextStyle(fontSize: 12, color: colors.textSecondary.withOpacity(0.6), height: 1.6),
         ),
       ],

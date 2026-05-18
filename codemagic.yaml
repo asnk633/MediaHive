@@ -38,11 +38,10 @@ workflows:
         script: |
           flutter pub get
 
-      - name: Build iOS IPA (Unsigned)
+      - name: Build iOS Bundle (Unsigned)
         script: |
-          # Build a release IPA without requiring immediate Apple developer signing keys
-          # This allows you to generate a compiled build for staging and code signing later
-          flutter build ipa --release --no-codesign
+          # Build an iOS app bundle without signing keys to bypass Provisioning Profile checks
+          flutter build ios --release --no-codesign
 
     artifacts:
       # Upload the compiled iOS app bundle and build artifacts

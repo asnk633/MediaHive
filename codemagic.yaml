@@ -40,13 +40,12 @@ workflows:
 
       - name: Build iOS Bundle (Unsigned)
         script: |
-          # Build an iOS app bundle without signing keys to bypass Provisioning Profile checks
-          flutter build ios --release --no-codesign
+          # Build an iOS app bundle targeting the simulator to bypass Provisioning Profile checks
+          flutter build ios --simulator
 
     artifacts:
       # Upload the compiled iOS app bundle and build artifacts
-      - build/ios/ipa/*.ipa
-      - build/ios/iphoneos/*.app
+      - build/ios/iphonesimulator/*.app
 
     publishing:
       email:

@@ -38,6 +38,11 @@ workflows:
         script: |
           flutter pub get
 
+      - name: Generate environment file
+        script: |
+          echo "SUPABASE_URL=https://fcctcorycpvebupluzpe.supabase.co" > .env
+          echo "SUPABASE_ANON_KEY=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImZjY3Rjb3J5Y3B2ZWJ1cGx1enBlIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzIyNjQ1NDEsImV4cCI6MjA4Nzg0MDU0MX0.D2X24KYzoN5tNXZgPaVT7cMWDE2TxYlCeFEa5DHcn1M" >> .env
+
       - name: Build iOS Bundle (Unsigned)
         script: |
           # Build an iOS app bundle targeting the simulator to bypass Provisioning Profile checks

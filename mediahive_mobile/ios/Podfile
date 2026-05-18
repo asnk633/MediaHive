@@ -68,4 +68,42 @@ post_install do |installer|
   end
   
   main_project.save
+
+  # 4. Modify all generated CocoaPods xcconfig files to ensure BUILD_LIBRARY_FOR_DISTRIBUTION is NO
+  Dir.glob(File.join(File.dirname(__FILE__), 'Pods/Target Support Files/**/*.xcconfig')).each do |xcconfig_path|
+    content = File.read(xcconfig_path)
+    
+    if content.include?('BUILD_LIBRARY_FOR_DISTRIBUTION')
+      content.gsub!(/BUILD_LIBRARY_FOR_DISTRIBUTION\s*=\s*YES/, 'BUILD_LIBRARY_FOR_DISTRIBUTION = NO')
+    else
+      content << "\nBUILD_LIBRARY_FOR_DISTRIBUTION = NO\n"
+    end
+    
+    if content.include?('APPLICATION_EXTENSION_API_ONLY')
+      content.gsub!(/APPLICATION_EXTENSION_API_ONLY\s*=\s*YES/, 'APPLICATION_EXTENSION_API_ONLY = NO')
+    else
+      content << "\nAPPLICATION_EXTENSION_API_ONLY = NO\n"
+    end
+    
+    File.write(xcconfig_path, content)
+  end
+
+  # 5. Modify all Flutter xcconfig files to ensure BUILD_LIBRARY_FOR_DISTRIBUTION is NO
+  Dir.glob(File.join(File.dirname(__FILE__), 'Flutter/*.xcconfig')).each do |xcconfig_path|
+    content = File.read(xcconfig_path)
+    
+    if content.include?('BUILD_LIBRARY_FOR_DISTRIBUTION')
+      content.gsub!(/BUILD_LIBRARY_FOR_DISTRIBUTION\s*=\s*YES/, 'BUILD_LIBRARY_FOR_DISTRIBUTION = NO')
+    else
+      content << "\nBUILD_LIBRARY_FOR_DISTRIBUTION = NO\n"
+    end
+    
+    if content.include?('APPLICATION_EXTENSION_API_ONLY')
+      content.gsub!(/APPLICATION_EXTENSION_API_ONLY\s*=\s*YES/, 'APPLICATION_EXTENSION_API_ONLY = NO')
+    else
+      content << "\nAPPLICATION_EXTENSION_API_ONLY = NO\n"
+    end
+    
+    File.write(xcconfig_path, content)
+  end
 end

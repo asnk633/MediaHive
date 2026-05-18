@@ -1,0 +1,58 @@
+# Codemagic CI/CD Configuration for MediaHive iOS Builds
+# Place this file in the root of your git repository.
+
+workflows:
+  ios-build:
+    name: MediaHive iOS Build
+    max_build_duration: 120
+    instance_type: mac_mini_m1 # Highly performant and cost-efficient Apple Silicon builder
+    
+    environment:
+      flutter: stable
+      xcode: latest
+      cocoapods: default
+      
+    # Point directly to your mobile subdirectory
+    working_directory: mediahive_mobile
+
+    triggering:
+      events:
+        - push
+      branch_patterns:
+        - pattern: '*'
+          include: true
+          source: true
+
+    scripts:
+      - name: Initialize packages and submodules
+        script: |
+          echo "Initializing packages..."
+          flutter channel stable
+          flutter upgrade
+          
+      - name: Run Flutter Doctor
+        script: |
+          flutter doctor -v
+
+      - name: Install dependencies
+        script: |
+          flutter pub get
+
+      - name: Build iOS IPA (Unsigned)
+        script: |
+          # Build a release IPA without requiring immediate Apple developer signing keys
+          # This allows you to generate a compiled build for staging and code signing later
+          flutter build ipa --release --no-codesign
+
+    artifacts:
+      # Upload the compiled iOS app bundle and build artifacts
+      - build/ios/ipa/*.ipa
+      - build/ios/iphoneos/*.app
+
+    publishing:
+      email:
+        recipients:
+          - admin@thaibagarden.com # Default recipient for success/failure build notifications
+        notify:
+          success: true
+          failure: true

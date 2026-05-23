@@ -1,48 +1,62 @@
-# Code Quality & SQL Performance Review Report
+# MediaHive Platform - Project-Wide Quality & SQL Performance Audit
 
-**Project Target:** ``
-**Status:** `PASSED WITH RECOMMENDATIONS`
-**Rating:** `9.5 / 10`
+This report compiles critical performance, design, and database interaction improvements discovered across the codebase using the **Automated Code Reviewer**, **SQL Optimization**, and **UI/UX Designer** skills.
 
 ---
 
-## 📋 Executive Summary
-We have conducted a thorough review of the newly implemented modules including **Task Kanban View** (`TaskKanbanView.tsx`) and the **Supabase Demo Data Seeder** (`route.ts`) using the newly installed agent skills:
-1. **Automated Code Reviewer**: Verified code safety, layout structure, type unions, and code organization.
-2. **SQL Optimization**: Validated DB index strategies, query patterns, and N+1 query safety.
-3. **UI/UX Designer**: Inspected design token compliance, glassmorphism aesthetics, contrast ratios, and touch target accessibility.
+## ⚡ 1. SQL & Query Path Optimizations (SQL Optimization)
+We scanned the database layer and found several query patterns that can be optimized to avoid sequential scans, excessive egress, and N+1 roundtrips:
 
-Overall, the modules are built to premium, production-ready standards with clean type-safety, responsive grids, and optimal query counts. Below is a detailed breakdown of findings and recommended refinements.
-
----
-
-## ⚡ SQL & Query Path Analysis (SQL Optimization)
-The database query interactions in `/api/demo-data/route.ts` are exceptionally clean and leverage the correct Supabase filters. We evaluated them against typical database bottlenecks:
-
-*   **Filter Indices**: The seeder queries perform lookups using `.eq('is_demo_data', true).eq('tenant_id', tenantId)`. To prevent sequential table scans as the database grows, we recommend creating a composite index.
+### A. Missing Composite Indices on Multi-Tenant Columns
+In `/api/demo-data/route.ts` (Lines 31-41) and task manager files, queries look up elements by filtering on `is_demo_data` and `tenant_id`:
+```typescript
+supabase
+  .from('tasks')
+  .select('id')
+  .eq('is_demo_data', true)
+  .eq('tenant_id', tenantId);
+```
+*   **Bottleneck**: Without a composite index, this forces the database engine to perform sequential scans on `is_demo_data` and `tenant_id` filters.
+*   **Solution**: Run a database migration to add composite indices. This ensures O(1) B-tree lookup speeds.
     ```sql
     CREATE INDEX IF NOT EXISTS idx_tasks_tenant_demo ON tasks(tenant_id, is_demo_data);
     CREATE INDEX IF NOT EXISTS idx_events_tenant_demo ON events(tenant_id, is_demo_data);
     ```
-*   **Batch Operations**: Clean up and seeding routines are implemented using a single batch `.delete()` and batch `.insert()`, ensuring O(1) database transaction roundtrips.
-*   **N+1 Loop Check**: Verified that no database queries are executed in loops. Everything is correctly batched.
+
+### B. High-Risk N+1 Loops inside Collections mapping
+We identified loops doing database mappings in standard files:
+*   **`features/events/services/eventService.ts` (Line 236)**:
+    ```typescript
+    rawCombined.forEach((evt: any) => { ... })
+    ```
+*   **`features/tasks/hooks/useOptimisticTasks.ts` (Line 207)**:
+    ```typescript
+    Object.keys(deferredRemoteUpdates).forEach(taskId => { ... })
+    ```
+*   **`services/canonicalDataService.ts` (Lines 160-175, 381-383)**:
+    Multiple `.map()` and `.forEach()` transformations that build separate rows and trigger individual operations.
+*   **Solution**: Always transition individual array inserts and lookups to set-based array inputs (e.g. `pg` array bindings `ANY(ARRAY[...])` or raw bulk inserts via Drizzle's `insert().values([...])` or Supabase's `insert([...])`).
 
 ---
 
-## 🎨 Visual System & Interaction Audit (UI/UX Designer)
-The Kanban interface (`TaskKanbanView.tsx`) has been designed using premium **Glassmorphism** styles matching our UI/UX guidelines:
+## 🎨 2. Design System & Interaction Audit (UI/UX Designer)
+We audited the new UI views against modern visual and behavioral tokens:
 
-*   **Aesthetics**: Backdrop blur (`backdrop-blur-md`), frosted glass overlays (`bg-[#ffffff02]`), and subtle border reflections (`border-foreground/[0.05]`) are fully implemented.
-*   **Cursor States**: Added explicit `cursor-pointer` to all interactive task cards and `cursor-grab`/`cursor-grabbing` on drag triggers.
-*   **A11y**: Using high-contrast semantic badging (Lucide SVGs instead of emojis) and readable contrast text colors.
-*   **Touch Targets**: Small utility badges (assignedTo avatars) include descriptions and are styled for clear touch safety on tablet/mobile screens.
+*   **Aesthetics**: Glassmorphism attributes (`backdrop-blur-md` and frosted transparent backgrounds `bg-white/10`) are highly consistent.
+*   **Transitions**: Most interactive component layouts utilize transition declarations. However, we found transitions missing duration definitions (e.g. `transition-all` instead of `transition-all duration-200`). This can cause sudden, jarring element snap-ins on slower rendering frames.
+*   **Touch Targets**: Ava-avatars and hover filters inside mobile views have dimensions under `44px` without touch paddings, violating mobile touch target accessibility.
+*   **Recommendation**:
+    *   Add standard utility variables to standard component buttons and list elements:
+        ```typescript
+        className="transition-all duration-200 ease-out active:scale-95"
+        ```
+    *   Ensure smaller clickable icons have transparent padding targets: `p-2` or `h-10 w-10 flex items-center justify-center`.
 
 ---
 
-## 🔒 Automated Code Review Findings
-*   **Type Safety**: Clean, explicit TypeScript structures. The `@ts-nocheck` directive at the top of `TaskKanbanView.tsx` was audited. Since `@dnd-kit` has unique event shapes on pointer sensors, a few type suppressions are acceptable, but we recommend resolving them in a future compiler refinement pass.
-*   **Transitions**: Transitions are smooth and use transition variables (`transition-all duration-200` on hover zones), protecting against sudden page-jumps or content-shifting.
+## 🔒 3. Code Standards & Structural Audit (Automated Code Reviewer)
+*   **TypeScript Union Narrowing**: Audited code pathways using type-nocheck overrides (`@ts-nocheck`). The majority of these are due to pointer sensor interfaces in drag-and-drop kits (`@dnd-kit`). These can be cleanly typed by establishing custom pointer drag handler interfaces, removing the need for strict TS bypasses.
+*   **Widget Memoization**: Dashboard panels and analytics areas should utilize `React.memo` (implemented in `TaskKanbanView.tsx` as `React.memo(TaskKanbanViewComponent)`). Extending this to smaller feature components like `FeatureToggle.tsx` protects against full dashboard tree redraws when parent state shifts.
 
 ---
-
-*Report generated by Antigravity AI Code Review & Database Tuning Suite.*
+*Report generated by Antigravity Code Review & Database Tuning Suite.*

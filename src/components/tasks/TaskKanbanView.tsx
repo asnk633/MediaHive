@@ -135,7 +135,7 @@ function KanbanCard({ task, canDrag, onClick }: { task: Task; canDrag: boolean; 
                 onClick();
             }}
             className={cn(
-                "group relative bg-foreground/[0.01] hover:bg-foreground/[0.02] border border-foreground/[0.05] hover:border-foreground/[0.08] p-4 rounded-xl shadow-sm transition-all select-none text-left flex flex-col justify-between gap-4 cursor-pointer active:scale-[0.98]",
+                "group relative bg-foreground/[0.01] hover:bg-foreground/[0.02] border border-foreground/[0.05] hover:border-foreground/[0.08] p-4 rounded-xl shadow-sm transition-all duration-200 select-none text-left flex flex-col justify-between gap-4 cursor-pointer active:scale-[0.98]",
                 isDragging && "shadow-2xl border-primary/20 bg-background/80 cursor-grabbing"
             )}
         >
@@ -146,7 +146,7 @@ function KanbanCard({ task, canDrag, onClick }: { task: Task; canDrag: boolean; 
                         {...attributes} 
                         {...listeners}
                         onClick={(e) => e.stopPropagation()}
-                        className="cursor-grab active:cursor-grabbing p-1 -ml-1.5 -mt-1 rounded hover:bg-foreground/5 text-foreground/30 hover:text-foreground/60 transition-colors"
+                        className="cursor-grab active:cursor-grabbing p-1 -ml-1.5 -mt-1 rounded hover:bg-foreground/5 text-foreground/30 hover:text-foreground/60 transition-colors duration-200"
                         title="Drag to reorder"
                     >
                         <GripVertical size={14} />

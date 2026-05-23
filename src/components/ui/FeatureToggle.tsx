@@ -1,7 +1,7 @@
 // src/components/ui/FeatureToggle.tsx
 "use client";
 
-import { useEffect, useState } from 'react';
+import React, { useEffect, useState } from 'react';
 
 interface FeatureToggleProps {
   featureName: string;
@@ -9,7 +9,7 @@ interface FeatureToggleProps {
   fallback?: React.ReactNode;
 }
 
-export default function FeatureToggle({ featureName, children, fallback }: FeatureToggleProps) {
+function FeatureToggleComponent({ featureName, children, fallback }: FeatureToggleProps) {
   const [isEnabled, setIsEnabled] = useState(false);
 
   useEffect(() => {
@@ -29,3 +29,6 @@ export default function FeatureToggle({ featureName, children, fallback }: Featu
 
   return isEnabled ? children : (fallback || null);
 }
+
+const FeatureToggle = React.memo(FeatureToggleComponent);
+export default FeatureToggle;

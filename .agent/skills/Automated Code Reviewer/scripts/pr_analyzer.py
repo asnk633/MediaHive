@@ -62,7 +62,7 @@ class PrAnalyzer:
                 if any(x in root for x in ['node_modules', '.next', 'dist', 'build', 'graphify-out', '.git']):
                     continue
                 for file in files:
-                    if file.endswith(('.ts', '.tsx', '.js', '.jsx', '.sql')):
+                    if file.endswith(('.ts', '.tsx', '.js', '.jsx', '.sql', '.dart')):
                         self._analyze_file(Path(root) / file)
                         
         self.results['status'] = 'success'
@@ -82,6 +82,10 @@ class PrAnalyzer:
             return
 
         rel_path = file_path.relative_to(self.target_path.parent if self.target_path.is_file() else self.target_path)
+
+        if file_path.suffix == '.dart':
+            self._analyze_dart_file(file_path, lines, rel_path)
+            return
 
         # 1. Type Safety Check (ts-nocheck or excessive 'any')
         nocheck_matches = [i for i, line in enumerate(lines) if '@ts-nocheck' in line]
@@ -155,6 +159,45 @@ class PrAnalyzer:
                     'message': 'Transition defined without an explicit duration (e.g. duration-200). Smoothly animate interactions.',
                     'code': line.strip()
                 })
+
+    def _analyze_dart_file(self, file_path: Path, lines: List[str], rel_path: Path):
+        for idx, line in enumerate(lines):
+            # 1. Print statements check
+            if 'print(' in line and not line.strip().startswith('//') and not 'debugPrint' in line:
+                self.findings.append({
+                    'file': str(rel_path),
+                    'line': idx + 1,
+                    'type': 'Effective Dart Style',
+                    'severity': 'Warning',
+                    'message': 'Avoid raw print statements in production Flutter apps. Use debugPrint() or a standardized Logger instead.',
+                    'code': line.strip()
+                })
+            
+            # 2. Dynamic type bypass check
+            if 'dynamic' in line and not line.strip().startswith('//') and not 'Map<String, dynamic>' in line:
+                self.findings.append({
+                    'file': str(rel_path),
+                    'line': idx + 1,
+                    'type': 'Type Safety',
+                    'severity': 'Medium',
+                    'message': 'Usage of "dynamic" type bypasses compilation safety checks. Use explicit interfaces or records instead.',
+                    'code': line.strip()
+                })
+
+            # 3. Missing const constructors in UI lists / widgets
+            if 'Container(' in line or 'SizedBox(' in line or 'Padding(' in line:
+                context = line
+                if idx > 0:
+                    context = lines[idx-1] + " " + line
+                if 'const' not in context and 'new' not in line:
+                    self.findings.append({
+                        'file': str(rel_path),
+                        'line': idx + 1,
+                        'type': 'Flutter Performance',
+                        'severity': 'Info',
+                        'message': 'Recommend declaring custom layout widgets as "const" to optimize heap allocations and rebuilds.',
+                        'code': line.strip()
+                    })
 
     def generate_report(self):
         """Generate and display the report"""

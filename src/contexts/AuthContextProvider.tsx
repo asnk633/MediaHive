@@ -31,7 +31,7 @@ type AuthContextType = {
 
 export type AuthUser = User;
 
-const AuthContext = createContext<AuthContextType | null>(null);
+export const AuthContext = createContext<AuthContextType | null>(null);
 
 let sessionPromise: Promise<string | null> | null = null;
 let cachedSessionToken: string | null = null;

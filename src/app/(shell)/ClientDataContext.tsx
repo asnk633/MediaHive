@@ -18,6 +18,7 @@ import { apiFromUiStatus, uiFromApiStatus, type UiStatus } from "./utils/uiMaps"
 export type TaskLite = {
   id: string;
   title: string;
+  description?: string | null;
   due_date?: string | null;
   dueDate?: string | null; // Alias
   status?: UiStatus;
@@ -99,7 +100,7 @@ export function ClientDataProvider({ children }: { children: React.ReactNode }) 
         supabase
           .from("tasks")
           .select(`
-            id, title, due_date, status, priority, event_id,
+            id, title, description, due_date, status, priority, event_id,
             task_assignments(user_id, role, profiles(id, full_name, avatar_url))
           `),
         String(user.tenant_id)

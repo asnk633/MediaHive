@@ -22,13 +22,42 @@ jest.mock('next/navigation', () => ({
     usePathname: () => '/tasks',
 }));
 
-// Mock lucide-react icons
-jest.mock('lucide-react', () => ({
-    Plus: () => <span>Plus Icon</span>,
-    LayoutGrid: () => <span>LayoutGrid Icon</span>,
-    List: () => <span>List Icon</span>,
-    BarChart3: () => <span>BarChart3 Icon</span>
-}));
+// Mock lucide-react icons using Proxy to dynamically support all icons
+jest.mock('lucide-react', () => {
+    return new Proxy({}, {
+        get: (target, name) => {
+            return (props: any) => <span data-testid={String(name)}>{String(name)} Icon</span>;
+        }
+    });
+});
+
+// Mock useWorkspace dynamically based on useAuth
+jest.mock('@/system/workspace/WorkspaceProvider', () => {
+    return {
+        useWorkspace: () => {
+            const { useAuth } = require('@/contexts/AuthContextProvider');
+            const { user } = useAuth();
+            return {
+                currentWorkspaceId: 'test-workspace',
+                currentRole: user?.role || 'member'
+            };
+        }
+    };
+});
+
+// Mock react-query useQueryClient hook
+jest.mock('@tanstack/react-query', () => {
+    const original = jest.requireActual('@tanstack/react-query');
+    return {
+        ...original,
+        useQueryClient: () => ({
+            getQueryData: jest.fn(),
+            setQueryData: jest.fn(),
+            invalidateQueries: jest.fn(),
+            cancelQueries: jest.fn(),
+        }),
+    };
+});
 
 // Mock TaskKanbanView, TaskListView, TaskConfidenceView
 jest.mock('@/components/tasks/TaskKanbanView', () => ({

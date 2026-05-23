@@ -2,7 +2,7 @@
 'use client';
 
 import React, { useEffect, useState, useCallback } from "react";
-import { Plus, CheckSquare, Building2 } from "lucide-react";
+import { Plus, CheckSquare, Building2, LayoutGrid, List as ListIcon, BarChart3 } from "lucide-react";
 import { Capacitor } from '@capacitor/core';
 import { OfflinePlaceholder } from "@/components/OfflinePlaceholder";
 import { useNative } from "@/hooks/useNative";
@@ -11,7 +11,7 @@ import { useAuth } from "@/contexts/AuthContextProvider";
 import { useWorkspace } from "@/system/workspace/WorkspaceProvider";
 import AppLink from "@/components/AppLink";
 import { useRouter, useSearchParams } from "next/navigation";
-import { nativeNavigate } from "@/lib/utils";
+import { nativeNavigate, cn } from "@/lib/utils";
 import { CanonicalDataService } from "@/services/canonicalDataService";
 import { supabase } from '@/lib/supabaseClient';
 import { useOptimisticTasks } from "@/features/tasks/hooks/useOptimisticTasks";
@@ -19,12 +19,17 @@ import { useConnectivity } from "@/hooks/useConnectivity";
 import { PERFORMANCE_THRESHOLDS } from '@/domain/system/performanceThresholds';
 import { PageLayout } from "@/components/ui/layout/PageLayout";
 import { PageHeader } from "@/components/ui/layout/PageHeader";
+import { usePermissions } from "@/hooks/usePermissions";
 import dynamic from 'next/dynamic';
 
 // Dynamic imports for heavy components
 const TaskListView = dynamic(() => import("@/components/tasks/TaskListView").then(mod => mod.TaskListView), {
     loading: () => <div className="p-6 space-y-4 min-h-[400px]"><div className="h-12 w-full bg-foreground/5 animate-pulse rounded-xl" /><div className="h-64 w-full bg-foreground/5 animate-pulse rounded-xl" /></div>
 });
+const TaskKanbanView = dynamic(() => import("@/components/tasks/TaskKanbanView").then(mod => mod.TaskKanbanView), {
+    loading: () => <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 animate-pulse"><div className="h-96 bg-foreground/5 animate-pulse rounded-xl" /></div>
+});
+const TaskConfidenceView = dynamic(() => import("@/components/tasks/TaskConfidenceView").then(mod => mod.TaskConfidenceView));
 const TaskDetailModalV2 = dynamic(() => import("@/components/tasks/TaskDetailModalV2").then(mod => mod.TaskDetailModalV2));
 const EditTaskDialog = dynamic(() => import("@/components/tasks/EditTaskDialog").then(mod => mod.EditTaskDialog));
 import { ConflictResolutionPanel } from "@/components/tasks/ConflictResolutionPanel";
@@ -44,6 +49,22 @@ export default function TasksPageClient() {
     const role = user?.role;
     const router = useRouter();
     const searchParams = useSearchParams();
+
+    const { canManageAllTasks } = usePermissions();
+    const [viewMode, setViewMode] = useState<'list' | 'kanban' | 'confidence'>(() => {
+        if (typeof window !== 'undefined') {
+            const saved = localStorage.getItem('tasks-view-pref');
+            return (saved === 'kanban' || saved === 'confidence' || saved === 'list') ? saved : 'list';
+        }
+        return 'list';
+    });
+
+    const handleViewModeChange = (mode: 'list' | 'kanban' | 'confidence') => {
+        setViewMode(mode);
+        if (typeof window !== 'undefined') {
+            localStorage.setItem('tasks-view-pref', mode);
+        }
+    };
 
     // Modal States
     const taskIdFromUrl = searchParams.get('id');
@@ -184,8 +205,40 @@ export default function TasksPageClient() {
                 description="Accountability-focused task management."
                 actions={
                     <div className="flex items-center gap-3">
-
-                        {/* Phase 14: Dev Only Stress Seeder Removed */}
+                        {canManageAllTasks && (
+                            <div className="flex items-center bg-foreground/5 p-1 rounded-xl border border-foreground/10 mr-2">
+                                <button
+                                    title="List View"
+                                    onClick={() => handleViewModeChange('list')}
+                                    className={cn(
+                                        "p-2 rounded-lg transition-all",
+                                        viewMode === 'list' ? "bg-primary/10 text-primary border border-primary/20" : "text-foreground/60 hover:text-foreground/90"
+                                    )}
+                                >
+                                    <ListIcon size={16} />
+                                </button>
+                                <button
+                                    title="Kanban Board"
+                                    onClick={() => handleViewModeChange('kanban')}
+                                    className={cn(
+                                        "p-2 rounded-lg transition-all",
+                                        viewMode === 'kanban' ? "bg-primary/10 text-primary border border-primary/20" : "text-foreground/60 hover:text-foreground/90"
+                                    )}
+                                >
+                                    <LayoutGrid size={16} />
+                                </button>
+                                <button
+                                    title="Admin Confidence Panel"
+                                    onClick={() => handleViewModeChange('confidence')}
+                                    className={cn(
+                                        "p-2 rounded-lg transition-all",
+                                        viewMode === 'confidence' ? "bg-primary/10 text-primary border border-primary/20" : "text-foreground/60 hover:text-foreground/90"
+                                    )}
+                                >
+                                    <BarChart3 size={16} />
+                                </button>
+                            </div>
+                        )}
 
                         <AppLink href="/tasks/new">
                             <button
@@ -203,13 +256,28 @@ export default function TasksPageClient() {
             {/* Content */}
             <div className="flex-1">
                 <TaskSummaryWidget tasks={visibleTasks} />
-                <TaskListView
-                    tasks={visibleTasks}
-                    loading={loading}
-                    error={error}
-                    onTaskClick={handleTaskClick}
-                    onTaskMutate={mutate}
-                />
+                {viewMode === 'kanban' ? (
+                    <TaskKanbanView
+                        tasks={visibleTasks}
+                        loading={loading}
+                        onTaskClick={handleTaskClick}
+                        onTaskMutate={mutate}
+                    />
+                ) : viewMode === 'confidence' ? (
+                    <TaskConfidenceView
+                        tasks={visibleTasks}
+                        loading={loading}
+                        onTaskClick={handleTaskClick}
+                    />
+                ) : (
+                    <TaskListView
+                        tasks={visibleTasks}
+                        loading={loading}
+                        error={error}
+                        onTaskClick={handleTaskClick}
+                        onTaskMutate={mutate}
+                    />
+                )}
             </div>
 
             {/* Detail Modal */}

@@ -89,6 +89,21 @@ class UploadService {
     }
   }
 
+  Future<String?> uploadFile(File file, String destinationPath, {String bucketName = 'media'}) async {
+    try {
+      if (!await file.exists()) return null;
+      
+      await _client.storage
+          .from(bucketName)
+          .upload(destinationPath, file);
+          
+      return _client.storage.from(bucketName).getPublicUrl(destinationPath);
+    } catch (e) {
+      _logger.error('❌ Direct upload failed', e);
+      return null;
+    }
+  }
+
   Future<int> getPendingCount() async {
     final box = await Hive.openBox<Map>(_boxName);
     return box.length;

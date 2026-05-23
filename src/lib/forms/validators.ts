@@ -6,7 +6,7 @@ export const taskFormSchema = z.object({
   description: z.string().max(2000, 'Description must be at most 2000 characters').optional().nullable(),
   due_date: z.string().optional().nullable(),
   dueTime: z.string().optional().nullable(),
-  priority: z.enum(['Urgent', 'High', 'Medium', 'Low']),
+  priority: z.enum(['High', 'Medium', 'Low']),
   assignedToId: z.number().int().positive().optional().nullable(),
   tags: z.array(z.string()).optional(),
   attachments: z.array(z.string()).optional(),

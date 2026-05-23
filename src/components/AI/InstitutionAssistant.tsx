@@ -162,13 +162,13 @@ export function InstitutionAssistant() {
             <div className="flex space-x-2">
               <button
                 onClick={() => setMode('suggestions')}
-                className={`px-2 py-1 text-xs rounded ${mode === 'suggestions' ? 'bg-blue-500 text-white' : 'bg-gray-200'}`}
+                className={`px-2 py-1 text-xs rounded ${mode === 'suggestions' ? 'bg-blue-500 text-foreground' : 'bg-gray-200'}`}
               >
                 Suggestions
               </button>
               <button
                 onClick={() => setMode('chat')}
-                className={`px-2 py-1 text-xs rounded ${mode === 'chat' ? 'bg-blue-500 text-white' : 'bg-gray-200'}`}
+                className={`px-2 py-1 text-xs rounded ${mode === 'chat' ? 'bg-blue-500 text-foreground' : 'bg-gray-200'}`}
               >
                 Chat
               </button>
@@ -196,7 +196,7 @@ export function InstitutionAssistant() {
                   <button
                     onClick={generateSuggestions}
                     disabled={loading || !query.trim()}
-                    className="ml-2 bg-blue-500 text-white px-4 py-2 rounded disabled:opacity-50"
+                    className="ml-2 bg-blue-500 text-foreground px-4 py-2 rounded disabled:opacity-50"
                   >
                     {loading ? 'Generating...' : 'Get Suggestions'}
                   </button>
@@ -238,7 +238,7 @@ export function InstitutionAssistant() {
                           </div>
                           <button
                             onClick={() => applySuggestion(suggestion)}
-                            className="bg-green-500 text-white px-3 py-1 rounded text-sm ml-2"
+                            className="bg-green-500 text-foreground px-3 py-1 rounded text-sm ml-2"
                           >
                             Apply
                           </button>
@@ -265,7 +265,7 @@ export function InstitutionAssistant() {
                       <div 
                         className={`inline-block p-2 rounded max-w-xs ${
                           message.role === 'user' 
-                            ? 'bg-blue-500 text-white' 
+                            ? 'bg-blue-500 text-foreground' 
                             : 'bg-gray-200 text-gray-800'
                         }`}
                       >
@@ -294,7 +294,7 @@ export function InstitutionAssistant() {
                   <button
                     onClick={handleChat}
                     disabled={loading || !query.trim()}
-                    className="ml-2 bg-blue-500 text-white px-4 py-2 rounded disabled:opacity-50"
+                    className="ml-2 bg-blue-500 text-foreground px-4 py-2 rounded disabled:opacity-50"
                   >
                     {loading ? 'Thinking...' : 'Send'}
                   </button>

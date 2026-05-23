@@ -58,7 +58,7 @@ export function AuditLogTable() {
 
     return (
         <div className="bg-surface border border-soft rounded-2xl shadow-sm overflow-hidden">
-            <div className="p-6 border-b border-white/5 flex items-center justify-between">
+            <div className="p-6 border-b border-foreground/5 flex items-center justify-between">
                 <div className="flex items-center gap-3">
                     <Shield className="text-emerald-500" size={24} />
                     <div>
@@ -87,7 +87,7 @@ export function AuditLogTable() {
                             Array.from({ length: 5 }).map((_, i) => (
                                 <tr key={i} className="animate-pulse">
                                     <td colSpan={5} className="px-6 py-4">
-                                        <div className="h-4 bg-white/5 rounded w-full"></div>
+                                        <div className="h-4 bg-foreground/5 rounded w-full"></div>
                                     </td>
                                 </tr>
                             ))
@@ -119,8 +119,8 @@ export function AuditLogTable() {
                                         const count = detailsObj.successCount || detailsObj.taskCount || 0;
                                         return (
                                             <div>
-                                                <span className="text-white font-medium">Bulk {op}</span>
-                                                <div className="text-white/50 text-xs mt-0.5">
+                                                <span className="text-foreground font-medium">Bulk {op}</span>
+                                                <div className="text-foreground/70 text-xs mt-0.5">
                                                     Successfully processed {count} tasks.
                                                 </div>
                                             </div>
@@ -149,14 +149,14 @@ export function AuditLogTable() {
                                     // 3. Tasks
                                     if (type === 'task') {
                                         if (action === 'create') {
-                                            return <span className="text-white/80">Created a new task</span>;
+                                            return <span className="text-foreground/80">Created a new task</span>;
                                         }
                                         if (action === 'update') {
                                             const changes = Array.isArray(detailsObj.changes) ? detailsObj.changes.join(', ') : 'details';
-                                            return <span className="text-white/80">Modified {changes}</span>;
+                                            return <span className="text-foreground/80">Modified {changes}</span>;
                                         }
                                         if (action === 'delete') {
-                                            return <span className="text-white/80">Deleted task</span>;
+                                            return <span className="text-foreground/80">Deleted task</span>;
                                         }
                                     }
 
@@ -196,7 +196,7 @@ export function AuditLogTable() {
                                         <td className="px-6 py-4">
                                             <div className="flex items-center gap-3">
                                                 <div className="w-8 h-8 rounded-full bg-gradient-to-br from-indigo-500 to-indigo-700 flex items-center justify-center shadow-sm">
-                                                    <User size={14} className="text-white" />
+                                                    <User size={14} className="text-foreground" />
                                                 </div>
                                                 <div>
                                                     <div className="text-sm text-foreground font-medium">

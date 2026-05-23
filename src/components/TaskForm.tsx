@@ -38,7 +38,6 @@ export default function TaskForm({ onCancel, onSubmit }: { onCancel: () => void;
             onChange={(val) => setPriority(val)}
             disabled={isMember}
             options={[
-              { id: 'urgent', label: 'Urgent', icon: <Flag className="text-red-500" size={14} /> },
               { id: 'high', label: 'High', icon: <Flag className="text-orange-500" size={14} /> },
               { id: 'medium', label: 'Medium', icon: <Flag className="text-yellow-500" size={14} /> },
               { id: 'low', label: 'Low', icon: <Flag className="text-blue-500" size={14} /> },

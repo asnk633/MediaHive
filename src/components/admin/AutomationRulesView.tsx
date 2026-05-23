@@ -107,7 +107,7 @@ export default function AutomationRulesView() {
                         </div>
                         <button
                             onClick={handleCreate}
-                            className="flex items-center gap-2 px-6 py-3 bg-indigo-600 hover:bg-indigo-500 text-white rounded-xl transition-all font-semibold shadow-xl shadow-indigo-900/20 hover:scale-[1.02]"
+                            className="flex items-center gap-2 px-6 py-3 bg-indigo-600 hover:bg-indigo-500 text-foreground rounded-xl transition-all font-semibold shadow-xl shadow-indigo-900/20 hover:scale-[1.02]"
                         >
                             <Plus className="w-5 h-5" />
                             Create Custom Rule
@@ -143,11 +143,11 @@ export default function AutomationRulesView() {
                             {/* Active Rules Section */}
                             <section className="space-y-6">
                                 <div className="flex items-center gap-3">
-                                    <h2 className="text-xl font-bold text-white flex items-center gap-3">
+                                    <h2 className="text-xl font-bold text-foreground flex items-center gap-3">
                                         <span className="flex w-3 h-3 rounded-full bg-emerald-500 shadow-[0_0_12px_rgba(16,185,129,0.8)] animate-pulse" />
                                         Active Overrides
                                     </h2>
-                                    <span className="px-2.5 py-0.5 rounded-full bg-white/5 text-xs text-slate-400 font-mono border border-white/5">{activeRules.length}</span>
+                                    <span className="px-2.5 py-0.5 rounded-full bg-foreground/5 text-xs text-slate-400 font-mono border border-foreground/5">{activeRules.length}</span>
                                 </div>
 
                                 {activeRules.length === 0 ? (
@@ -274,7 +274,7 @@ function RuleCard({ rule, readOnly, onEdit, onClone, onActivate, variant = 'acti
                             {rule.action}
                         </div>
 
-                        <div className="flex items-center gap-1.5 px-2 py-1 rounded bg-white/5 border border-white/5 text-xs font-mono text-slate-400">
+                        <div className="flex items-center gap-1.5 px-2 py-1 rounded bg-foreground/5 border border-foreground/5 text-xs font-mono text-slate-400">
                             <span className={isActive ? 'text-indigo-300' : ''}>{rule.scopeType}</span>
                             {rule.scopeId !== 'global' && (
                                 <>
@@ -302,7 +302,7 @@ function RuleCard({ rule, readOnly, onEdit, onClone, onActivate, variant = 'acti
                 {/* Right: Actions */}
                 <div className="flex items-center gap-1 shrink-0">
                     {!readOnly && rule.locked && (
-                        <button onClick={() => onClone(rule)} className="p-2 text-slate-600 hover:text-white hover:bg-white/5 rounded-lg transition-colors" title="Clone as Draft">
+                        <button onClick={() => onClone(rule)} className="p-2 text-slate-600 hover:text-foreground hover:bg-foreground/5 rounded-lg transition-colors" title="Clone as Draft">
                             <Copy className="w-4 h-4" />
                         </button>
                     )}
@@ -320,7 +320,7 @@ function RuleCard({ rule, readOnly, onEdit, onClone, onActivate, variant = 'acti
                     {/* Toggle Expand */}
                     <button
                         onClick={() => setExpanded(!expanded)}
-                        className={`p-2 rounded-lg transition-all ${expanded ? 'bg-white/10 text-white' : 'text-slate-700 hover:text-slate-400'}`}
+                        className={`p-2 rounded-lg transition-all ${expanded ? 'bg-foreground/10 text-foreground' : 'text-slate-700 hover:text-slate-400'}`}
                     >
                         <ChevronRight className={`w-4 h-4 transition-transform ${expanded ? 'rotate-90' : ''}`} />
                     </button>
@@ -329,7 +329,7 @@ function RuleCard({ rule, readOnly, onEdit, onClone, onActivate, variant = 'acti
 
             {/* Expanded Details */}
             {expanded && (
-                <div className="mt-4 pt-4 border-t border-white/5 space-y-4 animate-in slide-in-from-top-1 duration-200">
+                <div className="mt-4 pt-4 border-t border-foreground/5 space-y-4 animate-in slide-in-from-top-1 duration-200">
                     <div className="grid gap-2">
                         <label className="text-[10px] font-bold text-muted uppercase tracking-widest pl-1">Conditions</label>
                         {rule.conditions.map((c: any, i: number) => (
@@ -520,7 +520,7 @@ function RuleEditor({ initialData, onClose, onSave }: any) {
                     <button onClick={onClose} className="px-5 py-2.5 text-muted hover:text-foreground text-sm font-medium transition-colors">Cancel</button>
                     <button
                         onClick={() => onSave(formData)}
-                        className="px-8 py-2.5 bg-indigo-600 hover:bg-indigo-500 text-white rounded-xl text-sm font-semibold shadow-xl shadow-indigo-500/20 transition-all hover:scale-[1.02]"
+                        className="px-8 py-2.5 bg-indigo-600 hover:bg-indigo-500 text-foreground rounded-xl text-sm font-semibold shadow-xl shadow-indigo-500/20 transition-all hover:scale-[1.02]"
                     >
                         Save Rule
                     </button>

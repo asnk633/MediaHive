@@ -14,7 +14,7 @@ export default function NotFoundClient() {
                 <p className="text-xl text-[var(--text-secondary)] mb-8">Page not found</p>
                 <button
                     onClick={handleGoHome}
-                    className="px-6 py-3 bg-blue-600 hover:bg-blue-700 text-white rounded-xl font-medium transition-colors"
+                    className="px-6 py-3 bg-blue-600 hover:bg-blue-700 text-foreground rounded-xl font-medium transition-colors"
                 >
                     Go Home
                 </button>

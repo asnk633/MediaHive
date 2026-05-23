@@ -364,7 +364,7 @@ function PolicyCard({ config, currentValue, isEnabled, onSave, isProcessing }: a
                         className={`
                             absolute inset-0 w-full h-10 rounded-xl text-sm font-bold flex items-center justify-center gap-2 transition-all duration-300 transform
                             ${hasChanges
-                                ? 'bg-indigo-500 hover:bg-indigo-400 text-white shadow-lg shadow-indigo-500/25 translate-y-0 opacity-100 z-10'
+                                ? 'bg-indigo-500 hover:bg-indigo-400 text-foreground shadow-lg shadow-indigo-500/25 translate-y-0 opacity-100 z-10'
                                 : 'translate-y-2 opacity-0 -z-10 pointer-events-none'
                             }
                         `}

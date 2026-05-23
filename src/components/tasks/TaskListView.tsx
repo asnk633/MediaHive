@@ -81,22 +81,23 @@ const safeDate = (date: any): Date | null => {
 
 const PriorityBadge = React.forwardRef<HTMLSpanElement, any>(({ priority, className, ...props }, ref) => {
     const styles = {
-        urgent: 'bg-red-500/10 text-red-500 border-red-500/20',
+        urgent: 'bg-orange-500/10 text-orange-500 border-orange-500/20',
         high: 'bg-orange-500/10 text-orange-500 border-orange-500/20',
         medium: 'bg-yellow-500/10 text-yellow-500 border-yellow-500/20',
         low: 'bg-slate-500/10 text-slate-400 border-slate-500/20'
     };
+    const displayPriority = priority === 'urgent' ? 'high' : priority;
     return (
         <span
             ref={ref}
             className={cn(
-                "px-2 py-0.5 rounded text-[10px] uppercase font-bold tracking-wider border cursor-pointer hover:bg-white/5 transition-colors",
-                styles[(priority || 'low') as keyof typeof styles] || styles.low,
+                "px-2 py-0.5 rounded text-[10px] uppercase font-bold tracking-wider border cursor-pointer hover:bg-foreground/5 transition-colors",
+                styles[(displayPriority || 'low') as keyof typeof styles] || styles.low,
                 className
             )}
             {...props}
         >
-            {priority}
+            {displayPriority}
         </span>
     );
 });
@@ -126,7 +127,7 @@ const StatusPill = React.forwardRef<HTMLSpanElement, any>(({ status, onClick, cl
             ref={ref}
             onClick={onClick}
             className={cn(
-                "px-2.5 py-1 rounded text-xs font-semibold border flex items-center gap-1.5 transition-all select-none w-fit cursor-pointer hover:bg-white/5 active:scale-95",
+                "px-2.5 py-1 rounded text-xs font-semibold border flex items-center gap-1.5 transition-all select-none w-fit cursor-pointer hover:bg-foreground/5 active:scale-95",
                 // @ts-ignore
                 colorStyles[color],
                 className
@@ -153,7 +154,7 @@ const TaskListViewComponent: React.FC<TaskListViewProps> = ({ tasks, loading = f
     const urlStatus = searchParams.get('status') || 'all';
     const urlPriority = searchParams.get('priority') || 'all';
 
-    const [view, setView] = useState<'today' | 'all' | 'assigned' | 'requested' | 'overdue' | 'due_today' | 'upcoming'>('today');
+    const [view, setView] = useState<'today' | 'all' | 'assigned' | 'requested' | 'overdue' | 'due_today' | 'upcoming'>('all');
 
     useEffect(() => {
         if (urlFilter && ['overdue', 'due_today', 'upcoming', 'mine', 'assigned', 'requested', 'all'].includes(urlFilter)) {
@@ -163,8 +164,7 @@ const TaskListViewComponent: React.FC<TaskListViewProps> = ({ tasks, loading = f
             // Set dynamic default based on role if no URL filter is present
             const role = userRole.toLowerCase();
             if (role === 'team') setView('assigned');
-            else if (role === 'member') setView('all');
-            else setView('today');
+            else setView('all');
         }
     }, [urlFilter, userRole]);
 
@@ -340,9 +340,9 @@ const TaskListViewComponent: React.FC<TaskListViewProps> = ({ tasks, loading = f
             if (dateA && !dateB) return -1; // Date first
             if (!dateA && dateB) return 1;
 
-            // Compare Priority (Urgent > High > Medium > Low)
+            // Compare Priority (High > Medium > Low)
             const getPrioWeight = (p: string | undefined) => {
-                switch (p) { case 'urgent': return 0; case 'high': return 1; case 'medium': return 2; case 'low': return 3; default: return 4; }
+                switch (p) { case 'urgent': case 'high': return 1; case 'medium': return 2; case 'low': return 3; default: return 4; }
             };
             return getPrioWeight(a.priority) - getPrioWeight(b.priority);
         });
@@ -712,7 +712,7 @@ const TaskListViewComponent: React.FC<TaskListViewProps> = ({ tasks, loading = f
             {mode !== 'trash' && (
                 <div className="flex flex-col md:flex-row gap-4 items-start md:items-center justify-between border-b border-[#ffffff1a] pb-6 relative">
                     {/* Dynamic Role-Based Time Scope Toggle */}
-                    <div className="flex bg-white/[0.01] p-1 rounded-lg border border-white/10 backdrop-blur-md">
+                    <div className="flex bg-foreground/[0.01] p-1 rounded-lg border border-foreground/10 backdrop-blur-md">
                         {(() => {
                             const config = {
                                 team: [
@@ -747,14 +747,14 @@ const TaskListViewComponent: React.FC<TaskListViewProps> = ({ tasks, loading = f
                                         className={cn(
                                             "px-6 py-2 text-[10px] font-bold uppercase tracking-widest rounded-md transition-all flex items-center gap-2 whitespace-nowrap",
                                             view === tab.id 
-                                                ? (tab.id === 'today' ? "bg-blue-500/10 text-blue-400 shadow-sm border border-blue-500/20 z-10" : "bg-white/5 text-white shadow-sm border border-white/10 z-10")
-                                                : "text-white/60 hover:text-white/80"
+                                                ? (tab.id === 'today' ? "bg-primary/10 text-primary shadow-sm border border-primary/20 z-10" : "bg-foreground/5 text-foreground shadow-sm border border-foreground/10 z-10")
+                                                : "text-foreground/80 hover:text-foreground/80"
                                         )}
                                     >
                                         {tab.label}
                                         {tab.id === 'today' && <span className="hidden lg:inline text-[9px] opacity-80 font-normal">Focus</span>}
                                     </button>
-                                    {idx === 1 && <div className="w-px h-4 bg-white/5 mx-1 self-center" />}
+                                    {idx === 1 && <div className="w-px h-4 bg-foreground/5 mx-1 self-center" />}
                                 </React.Fragment>
                             ));
                         })()}
@@ -763,35 +763,35 @@ const TaskListViewComponent: React.FC<TaskListViewProps> = ({ tasks, loading = f
                     {/* Filters & KPI */}
                     <div className="flex items-center gap-2">
                         {canManage && (
-                            <div className="hidden lg:flex items-center gap-2 px-3 py-1.5 bg-[#0F1218] border border-white/5 rounded-full mr-2">
+                            <div className="hidden lg:flex items-center gap-2 px-3 py-1.5 bg-[#0F1218] border border-foreground/5 rounded-full mr-2">
                                 <div className="w-2 h-2 rounded-full bg-emerald-500 shadow-[0_0_8px_rgba(16,185,129,0.5)] animate-pulse" />
                                 <span className="text-[9px] font-bold uppercase tracking-widest text-emerald-400">System Healthy</span>
                             </div>
                         )}
 
-                        <div className="flex items-center gap-1.5 bg-white/5 rounded-xl border border-white/10 px-2 py-1.5">
+                        <div className="flex items-center gap-1.5 bg-foreground/5 rounded-xl border border-foreground/10 px-2 py-1.5">
                             <button
                                 onClick={toggleDensity}
                                 className={cn(
-                                    "h-8 w-8 flex items-center justify-center rounded-lg transition-all hover:bg-white/10 text-white/85",
-                                    density === 'compact' && "bg-blue-500/10 text-blue-400"
+                                    "h-8 w-8 flex items-center justify-center rounded-lg transition-all hover:bg-foreground/10 text-foreground/85",
+                                    density === 'compact' && "bg-primary/10 text-primary"
                                 )}
                                 title={density === 'compact' ? "Switch to Comfortable View" : "Switch to Compact View"}
                             >
                                 {density === 'compact' ? <List size={16} /> : <Rows size={16} />}
                             </button>
 
-                            <div className="w-px h-4 bg-white/10 mx-1" />
+                            <div className="w-px h-4 bg-foreground/10 mx-1" />
 
-                            <Filter className="w-4 h-4 text-white/85" />
+                            <Filter className="w-4 h-4 text-foreground/85" />
                             <Select value={filterStatus} onValueChange={handleStatusChange}>
                                 <SelectTrigger aria-label="Filter status" className={cn(
-                                    "w-[130px] border-none bg-transparent hover:bg-white/5 h-8 text-xs transition-colors rounded-lg",
-                                    filterStatus !== 'all' ? "text-white/85 font-medium" : "text-white/60"
+                                    "w-[130px] border-none bg-transparent hover:bg-foreground/5 h-8 text-xs transition-colors rounded-lg",
+                                    filterStatus !== 'all' ? "text-foreground/85 font-medium" : "text-foreground/80"
                                 )}>
                                     <SelectValue placeholder="Status" />
                                 </SelectTrigger>
-                                <SelectContent className="backdrop-blur-md border-white/10 shadow-lg shadow-black/30 bg-slate-900/95">
+                                <SelectContent className="backdrop-blur-md border-foreground/10 shadow-lg shadow-black/30 bg-slate-900/95">
                                     <SelectItem value="all">Any Status</SelectItem>
                                     <SelectItem value="todo">Pending</SelectItem>
                                     <SelectItem value="in_progress">Working</SelectItem>
@@ -801,14 +801,13 @@ const TaskListViewComponent: React.FC<TaskListViewProps> = ({ tasks, loading = f
                             </Select>
                             <Select value={filterPriority} onValueChange={handlePriorityChange}>
                                 <SelectTrigger aria-label="Filter priority" className={cn(
-                                    "w-[130px] border-none bg-transparent hover:bg-white/5 h-8 text-xs transition-colors rounded-lg",
-                                    filterPriority !== 'all' ? "text-white/85 font-medium" : "text-white/60"
+                                    "w-[130px] border-none bg-transparent hover:bg-foreground/5 h-8 text-xs transition-colors rounded-lg",
+                                    filterPriority !== 'all' ? "text-foreground/85 font-medium" : "text-foreground/80"
                                 )}>
                                     <SelectValue placeholder="Priority" />
                                 </SelectTrigger>
-                                <SelectContent className="backdrop-blur-md border-white/10 shadow-lg shadow-black/30 bg-slate-900/95">
+                                <SelectContent className="backdrop-blur-md border-foreground/10 shadow-lg shadow-black/30 bg-slate-900/95">
                                     <SelectItem value="all">Any Priority</SelectItem>
-                                    <SelectItem value="urgent">Urgent</SelectItem>
                                     <SelectItem value="high">High</SelectItem>
                                     <SelectItem value="medium">Medium</SelectItem>
                                     <SelectItem value="low">Low</SelectItem>
@@ -841,9 +840,9 @@ const TaskListViewComponent: React.FC<TaskListViewProps> = ({ tasks, loading = f
                                             </button>
                                         )}
                                         {progressCount > 0 && (
-                                            <button onClick={() => handleStatusChange('in_progress')} className="group flex items-center gap-1.5 px-3 py-1 bg-blue-500/5 hover:bg-blue-500/10 border border-blue-500/20 rounded-full transition-all">
-                                                <div className="w-1.5 h-1.5 rounded-full bg-blue-500" />
-                                                <span className="text-[10px] font-bold text-blue-400 uppercase tracking-wide group-hover:text-blue-300">In Progress {progressCount}</span>
+                                            <button onClick={() => handleStatusChange('in_progress')} className="group flex items-center gap-1.5 px-3 py-1 bg-primary/5 hover:bg-primary/10 border border-primary/20 rounded-full transition-all">
+                                                <div className="w-1.5 h-1.5 rounded-full bg-primary" />
+                                                <span className="text-[10px] font-bold text-primary uppercase tracking-wide group-hover:text-primary-soft">In Progress {progressCount}</span>
                                             </button>
                                         )}
                                         {completedTodayCount > 0 && (
@@ -863,7 +862,7 @@ const TaskListViewComponent: React.FC<TaskListViewProps> = ({ tasks, loading = f
             {/* Main Task List Console */}
             <div className="flex-1 flex flex-col min-h-0 rounded-2xl border border-soft bg-surface shadow-sm overflow-hidden">
                 {/* Unified Header Row */}
-                <div className="grid grid-cols-[auto_1fr_auto] md:grid-cols-[28px_minmax(0,10fr)_minmax(0,4fr)_70px_45px_70px_100px_90px_80px] gap-x-2 px-1.5 py-2 border-b border-white/[0.05] text-[9px] font-bold text-white/20 uppercase tracking-widest items-center bg-black/30 sticky top-0 z-10">
+                <div className="grid grid-cols-[auto_1fr_auto] md:grid-cols-[44px_minmax(0,10fr)_minmax(0,4fr)_65px_45px_65px_90px_75px_95px] gap-x-2 pl-1.5 pr-3 py-2 border-b border-foreground/[0.05] text-[9px] font-bold text-foreground/80 uppercase tracking-widest items-center bg-black/30 sticky top-0 z-10">
                     <div className="flex items-center justify-center opacity-20">
                         <CheckSquare size={14} />
                     </div>
@@ -873,7 +872,7 @@ const TaskListViewComponent: React.FC<TaskListViewProps> = ({ tasks, loading = f
                     <div className="hidden md:block">Assignee</div>
                     <div className="hidden md:block text-right">Due</div>
                     <div className="hidden md:block">Status</div>
-                    <div className="hidden md:block text-right">Date</div>
+                    <div className="hidden md:block text-center">Date</div>
                     <div className="hidden md:block text-center">Ops</div>
                 </div>
 
@@ -898,7 +897,7 @@ const TaskListViewComponent: React.FC<TaskListViewProps> = ({ tasks, loading = f
                                     View All Tasks
                                 </button>
                             ) : undefined}
-                            className="bg-white/[0.01]"
+                            className="bg-foreground/[0.01]"
                         />
                     ) : (
                         <TaskListSkeleton count={1} />

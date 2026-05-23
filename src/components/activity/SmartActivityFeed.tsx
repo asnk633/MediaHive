@@ -130,8 +130,8 @@ export const SmartActivityFeed: React.FC = () => {
                         className={`
                             px-4 py-1.5 rounded-lg text-xs font-bold uppercase tracking-wider transition-all
                             ${filter === f
-                                ? 'bg-primary text-white shadow-md'
-                                : 'text-muted-foreground hover:text-foreground hover:bg-white/5'
+                                ? 'bg-primary text-foreground shadow-md'
+                                : 'text-muted-foreground hover:text-foreground hover:bg-foreground/5'
                             }
                         `}
                     >
@@ -153,7 +153,7 @@ export const SmartActivityFeed: React.FC = () => {
                                 <div
                                     key={act.id}
                                     onClick={() => handleItemClick(act)}
-                                    className="group relative flex items-start gap-4 p-4 bg-white/5 hover:bg-white/10 border border-white/10 hover:border-white/20 rounded-xl transition-all cursor-pointer"
+                                    className="group relative flex items-start gap-4 p-4 bg-foreground/5 hover:bg-foreground/10 border border-foreground/10 hover:border-foreground/20 rounded-xl transition-all cursor-pointer"
                                 >
                                     {/* Icon Box */}
                                     <div className="mt-1 flex-shrink-0 w-10 h-10 rounded-full bg-surface border border-soft flex items-center justify-center group-hover:scale-110 transition-transform shadow-sm">

@@ -16,11 +16,11 @@ export const OverviewCard = ({ title, value, trend, icon: Icon, variant = 'white
         <div className={`
       p-5 rounded-[20px] flex flex-col justify-between aspect-[4/3] shadow-sm transition-all hover:-translate-y-1
       ${isPrimary
-                ? 'bg-gradient-to-br from-[var(--color-primary-start)] to-[var(--color-primary-end)] text-white shadow-blue-500/25'
+                ? 'bg-gradient-to-br from-[var(--color-primary-start)] to-[var(--color-primary-end)] text-foreground shadow-blue-500/25'
                 : 'bg-white border border-[var(--color-border)] text-[var(--color-text-primary)]'
             }
     `}>
-            <div className={`p-2 rounded-lg w-fit ${isPrimary ? 'bg-white/20 backdrop-blur-sm' : 'bg-blue-50 text-blue-500'}`}>
+            <div className={`p-2 rounded-lg w-fit ${isPrimary ? 'bg-foreground/20 backdrop-blur-sm' : 'bg-blue-50 text-blue-500'}`}>
                 <Icon size={20} />
             </div>
 

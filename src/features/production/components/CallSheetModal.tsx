@@ -73,9 +73,9 @@ export const CallSheetModal: React.FC<CallSheetModalProps> = ({ isOpen, onClose,
 
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
-      <DialogContent className="sm:max-w-[210mm] max-h-[95vh] overflow-y-auto bg-slate-950 border-white/10 text-white p-0 rounded-none md:rounded-[32px] overflow-x-hidden no-print-dialog">
+      <DialogContent className="sm:max-w-[210mm] max-h-[95vh] overflow-y-auto bg-slate-950 border-foreground/10 text-foreground p-0 rounded-none md:rounded-[32px] overflow-x-hidden no-print-dialog">
         {/* Sticky Header */}
-        <div className="sticky top-0 z-50 bg-slate-950/80 backdrop-blur-xl border-b border-white/10 p-6 flex items-center justify-between no-print">
+        <div className="sticky top-0 z-50 bg-slate-950/80 backdrop-blur-xl border-b border-foreground/10 p-6 flex items-center justify-between no-print">
           <DialogHeader>
             <DialogTitle className="text-xl font-black uppercase tracking-widest flex items-center gap-3">
               <FileText className="text-blue-500" /> Production Call Sheet
@@ -85,13 +85,13 @@ export const CallSheetModal: React.FC<CallSheetModalProps> = ({ isOpen, onClose,
             <Button 
               variant="outline" 
               onClick={handleCopyLink}
-              className="bg-white/5 border-white/10 hover:bg-white/10 text-white rounded-xl h-10 px-4 font-bold"
+              className="bg-foreground/5 border-foreground/10 hover:bg-foreground/10 text-foreground rounded-xl h-10 px-4 font-bold"
             >
               <Copy size={16} className="mr-2" /> Copy Link
             </Button>
             <Button 
               onClick={handlePrint}
-              className="bg-blue-600 hover:bg-blue-500 text-white border-blue-400/20 rounded-xl h-10 px-6 shadow-lg shadow-blue-500/20 font-bold"
+              className="bg-blue-600 hover:bg-blue-500 text-foreground border-blue-400/20 rounded-xl h-10 px-6 shadow-lg shadow-blue-500/20 font-bold"
             >
               <Printer size={16} className="mr-2" /> Print / PDF
             </Button>

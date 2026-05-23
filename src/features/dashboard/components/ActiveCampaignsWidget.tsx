@@ -40,7 +40,7 @@ export const ActiveCampaignsWidget = () => {
             <div className="space-y-6">
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
                     {[1, 2, 3].map(i => (
-                        <div key={i} className="h-40 rounded-[18px] bg-white/[0.02] border border-white/5 animate-pulse" />
+                        <div key={i} className="h-40 rounded-[18px] bg-foreground/[0.02] border border-foreground/5 animate-pulse" />
                     ))}
                 </div>
             </div>
@@ -65,12 +65,12 @@ export const ActiveCampaignsWidget = () => {
             </div>
 
             {campaigns.length === 0 ? (
-                <div className="flex flex-col items-center justify-center py-12 px-6 border border-dashed border-white/10 rounded-[18px] bg-white/[0.01] animate-in fade-in duration-700">
-                    <div className="w-12 h-12 rounded-full bg-white/5 flex items-center justify-center mb-4 text-white/20">
+                <div className="flex flex-col items-center justify-center py-12 px-6 border border-dashed border-foreground/10 rounded-[18px] bg-foreground/[0.01] animate-in fade-in duration-700">
+                    <div className="w-12 h-12 rounded-full bg-foreground/5 flex items-center justify-center mb-4 text-foreground/80">
                         <FolderPlus size={24} />
                     </div>
-                    <h3 className="text-sm font-bold text-white/40 uppercase tracking-widest">No active campaigns yet</h3>
-                    <p className="text-[10px] text-white/20 mt-1 text-center">Create a campaign to start tracking initiatives.</p>
+                    <h3 className="text-sm font-bold text-foreground/80 uppercase tracking-widest">No active campaigns yet</h3>
+                    <p className="text-[10px] text-foreground/80 mt-1 text-center">Create a campaign to start tracking initiatives.</p>
                 </div>
             ) : (
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-[20px]">
@@ -82,13 +82,13 @@ export const ActiveCampaignsWidget = () => {
                             review: { label: 'Review', color: 'text-amber-400', bg: 'bg-amber-400/10', border: 'border-amber-400/20', glow: 'bg-amber-500 shadow-[0_0_15px_rgba(251,191,36,0.2)]' },
                             publish: { label: 'Publishing', color: 'text-emerald-400', bg: 'bg-emerald-400/10', border: 'border-emerald-400/20', glow: 'bg-emerald-500 shadow-[0_0_15px_rgba(16,185,129,0.2)]' },
                             completed: { label: 'Completed', color: 'text-slate-400', bg: 'bg-slate-400/10', border: 'border-slate-400/20', glow: 'bg-slate-400 shadow-[0_0_15px_rgba(148,163,184,0.2)]' }
-                        }[campaign.phase] || { label: campaign.phase, color: 'text-white/40', bg: 'bg-white/5', border: 'border-white/10', glow: 'bg-white/10' };
+                        }[campaign.phase] || { label: campaign.phase, color: 'text-foreground/80', bg: 'bg-foreground/5', border: 'border-foreground/10', glow: 'bg-foreground/10' };
 
                         return (
                             <div
                                 key={campaign.id}
                                 onClick={() => nativeNavigate(`/campaigns/${campaign.id}`, router, 'ActiveCampaigns:Detail')}
-                                className="group relative flex flex-col justify-between p-5 lg:px-6 rounded-[18px] border border-white/5 bg-white/[0.01] backdrop-blur-md hover:bg-white/[0.02] hover:border-blue-500/20 transition-all duration-300 cursor-pointer overflow-hidden active:scale-[0.98] shadow-sm hover:shadow-blue-500/5 text-left hover:-translate-y-[2px]"
+                                className="group relative flex flex-col justify-between p-5 lg:px-6 rounded-[18px] border border-foreground/5 bg-foreground/[0.01] backdrop-blur-md hover:bg-foreground/[0.02] hover:border-blue-500/20 transition-all duration-300 cursor-pointer overflow-hidden active:scale-[0.98] shadow-sm hover:shadow-blue-500/5 text-left hover:-translate-y-[2px]"
                             >
                                 {/* 3px Accent Strip (Match Events) */}
                                 <div className={cn(
@@ -106,20 +106,20 @@ export const ActiveCampaignsWidget = () => {
                                         )}>
                                             {statusConfig.label}
                                         </div>
-                                        <div className="flex items-center gap-1.5 text-[9px] font-bold text-white/10 bg-white/5 border border-white/10 px-2 py-0.5 rounded-full uppercase tracking-tighter group-hover:text-white/20 transition-colors">
+                                        <div className="flex items-center gap-1.5 text-[9px] font-bold text-foreground/70 bg-foreground/5 border border-foreground/10 px-2 py-0.5 rounded-full uppercase tracking-tighter group-hover:text-foreground/80 transition-colors">
                                             Institutional
                                         </div>
                                     </div>
 
-                                    <h3 className="text-sm font-bold text-white/60 group-hover:text-white leading-snug line-clamp-2 min-h-[40px] transition-all duration-300">
+                                    <h3 className="text-sm font-bold text-foreground/80 group-hover:text-foreground leading-snug line-clamp-2 min-h-[40px] transition-all duration-300">
                                         {campaign.name}
                                     </h3>
                                 </div>
 
-                                <div className="flex items-center justify-between pt-4 border-t border-white/5 mt-4">
+                                <div className="flex items-center justify-between pt-4 border-t border-foreground/5 mt-4">
                                     <div className="flex flex-col">
-                                        <span className="text-[8px] font-black text-white/10 uppercase tracking-[0.2em] mb-0.5 group-hover:text-white/20 transition-colors">Deadline</span>
-                                        <span className="text-xs font-bold text-white/20 group-hover:text-white/40 transition-colors">
+                                        <span className="text-[8px] font-black text-foreground/70 uppercase tracking-[0.2em] mb-0.5 group-hover:text-foreground/80 transition-colors">Deadline</span>
+                                        <span className="text-xs font-bold text-foreground/80 group-hover:text-foreground/80 transition-colors">
                                             {new Date(campaign.endDate as string).toLocaleDateString(undefined, { month: 'short', day: 'numeric', year: 'numeric' })}
                                         </span>
                                     </div>

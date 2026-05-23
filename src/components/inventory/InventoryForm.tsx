@@ -31,18 +31,17 @@ interface InventoryFormProps {
 const CATEGORIES = INVENTORY_CATEGORIES;
 
 const CONDITIONS: { value: InventoryCondition; label: string }[] = [
-    { value: "good", label: "Good" },
-    { value: "needs_repair", label: "Needs Repair" },
-    { value: "broken", label: "Broken" },
-    { value: "lost", label: "Lost" },
-    { value: "retired", label: "Retired" },
+    { value: "Good", label: "Good" },
+    { value: "Fair", label: "Fair" },
+    { value: "Poor", label: "Poor" },
+    { value: "Damaged", label: "Damaged" },
 ];
 
 const STATUSES: { value: InventoryAssetStatus; label: string }[] = [
-    { value: "available", label: "Available" },
-    { value: "in_use", label: "In Use" },
-    { value: "maintenance", label: "Maintenance" },
-    { value: "retired", label: "Retired" },
+    { value: "Available", label: "Available" },
+    { value: "In Use", label: "In Use" },
+    { value: "Maintenance", label: "Maintenance" },
+    { value: "Retired", label: "Retired" },
 ];
 
 export default function InventoryForm({ initialData, mode }: InventoryFormProps) {
@@ -52,16 +51,16 @@ export default function InventoryForm({ initialData, mode }: InventoryFormProps)
 
     const [uploadingImage, setUploadingImage] = useState(false);
 
-    const inputClasses = "bg-white/5 border-[#ffffff1a] text-white placeholder:text-white/50 focus:border-blue-500/50 focus:ring-0";
-    const labelClasses = "text-white/70 font-medium";
+    const inputClasses = "bg-foreground/5 border-[#ffffff1a] text-foreground placeholder:text-foreground/70 focus:border-blue-500/50 focus:ring-0";
+    const labelClasses = "text-foreground/70 font-medium";
 
     const [formData, setFormData] = useState({
         name: "",
         category: "",
         purchaseDate: new Date().toISOString().split('T')[0],
         purchasePrice: 0,
-        condition: "good" as InventoryCondition,
-        status: "available" as InventoryAssetStatus,
+        condition: "Good" as InventoryCondition,
+        status: "Available" as InventoryAssetStatus,
         serialNumber: "",
         remarks: "",
         imageUrl: "",
@@ -71,6 +70,20 @@ export default function InventoryForm({ initialData, mode }: InventoryFormProps)
 
     useEffect(() => {
         if (initialData) {
+            let uiCondition: any = 'Good';
+            const condDb = (initialData.condition || '').toUpperCase();
+            if (condDb === 'GOOD') uiCondition = 'Good';
+            else if (condDb === 'NEED REPAIR' || condDb === 'NEED_REPAIR' || condDb === 'FAIR') uiCondition = 'Fair';
+            else if (condDb === 'POOR') uiCondition = 'Poor';
+            else if (condDb === 'DAMAGED') uiCondition = 'Damaged';
+
+            let uiStatus: any = 'Available';
+            const statusDb = (initialData.status || '').toUpperCase();
+            if (statusDb === 'AVAILABLE') uiStatus = 'Available';
+            else if (statusDb === 'IN USE' || statusDb === 'IN_USE') uiStatus = 'In Use';
+            else if (statusDb === 'UNDER REPAIR' || statusDb === 'UNDER_REPAIR' || statusDb === 'MAINTENANCE') uiStatus = 'Maintenance';
+            else if (statusDb === 'DISPOSED' || statusDb === 'RETIRED') uiStatus = 'Retired';
+
             setFormData({
                 name: initialData.name,
                 category: initialData.category,
@@ -78,8 +91,8 @@ export default function InventoryForm({ initialData, mode }: InventoryFormProps)
                     ? (initialData.purchaseDate as any).toDate().toISOString().split('T')[0]
                     : new Date(initialData.purchaseDate as string | number).toISOString().split('T')[0],
                 purchasePrice: initialData.purchasePrice,
-                condition: initialData.condition,
-                status: initialData.status || "available",
+                condition: uiCondition,
+                status: uiStatus,
                 serialNumber: initialData.serialNumber || "",
                 remarks: initialData.remarks || "",
                 imageUrl: initialData.imageUrl || "",
@@ -226,8 +239,21 @@ export default function InventoryForm({ initialData, mode }: InventoryFormProps)
                 return;
             }
 
+            let dbCondition = formData.condition;
+            if (formData.condition === 'Good') dbCondition = 'Good';
+            else if (formData.condition === 'Fair') dbCondition = 'Need Repair';
+            else if (formData.condition === 'Poor' || formData.condition === 'Damaged') dbCondition = 'Damaged';
+
+            let dbStatus = formData.status;
+            if (formData.status === 'Available') dbStatus = 'Available';
+            else if (formData.status === 'In Use') dbStatus = 'In Use';
+            else if (formData.status === 'Maintenance') dbStatus = 'Under Repair';
+            else if (formData.status === 'Retired') dbStatus = 'Disposed';
+
             const basePayload = {
                 ...formData,
+                condition: dbCondition,
+                status: dbStatus,
                 institutionId: institutionId, // Match the camelCase DTO expected by inventoryService
                 purchaseDate: new Date(formData.purchaseDate).toISOString(),
             };
@@ -269,7 +295,7 @@ export default function InventoryForm({ initialData, mode }: InventoryFormProps)
                 <div className="flex justify-center mb-4">
                     <AlertTriangle className="h-12 w-12 text-yellow-500" />
                 </div>
-                <h2 className="text-2xl font-bold text-white mb-2">Unauthorized</h2>
+                <h2 className="text-2xl font-bold text-foreground mb-2">Unauthorized</h2>
                 <p className="text-slate-400 mb-6">
                     You do not have permission to manage inventory assets.
                 </p>
@@ -289,12 +315,12 @@ export default function InventoryForm({ initialData, mode }: InventoryFormProps)
                     <button
                         type="button"
                         onClick={() => router.back()}
-                        className="p-2 rounded-full hover:bg-white/5 text-slate-400 transition-colors"
+                        className="p-2 rounded-full hover:bg-foreground/5 text-slate-400 transition-colors"
                     >
                         <ArrowLeft className="w-5 h-5" />
                     </button>
                     <div>
-                        <h1 className="text-2xl font-bold text-white">
+                        <h1 className="text-2xl font-bold text-foreground">
                             {mode === 'create' ? 'Add New Item' : 'Edit Item'}
                         </h1>
                         <p className="text-slate-400 text-sm">Fill in the details for your equipment or consumable.</p>
@@ -303,7 +329,7 @@ export default function InventoryForm({ initialData, mode }: InventoryFormProps)
                 <Button 
                     type="submit" 
                     disabled={loading || uploadingImage} 
-                    className="bg-blue-600 hover:bg-blue-500 text-white min-w-[140px]"
+                    className="bg-blue-600 hover:bg-blue-500 text-foreground min-w-[140px]"
                 >
                     {loading ? <Loader2 className="w-4 h-4 animate-spin mr-2" /> : <Save className="w-4 h-4 mr-2" />}
                     {mode === 'create' ? 'Create Asset' : 'Save Changes'}
@@ -332,17 +358,17 @@ export default function InventoryForm({ initialData, mode }: InventoryFormProps)
                                     <Label className={labelClasses}>Category</Label>
                                     <Popover>
                                         <PopoverTrigger asChild>
-                                            <button type="button" className="text-white/40 hover:text-white transition-colors">
+                                            <button type="button" className="text-foreground/80 hover:text-foreground transition-colors">
                                                 <Info className="w-3.5 h-3.5" />
                                             </button>
                                         </PopoverTrigger>
                                         <PopoverContent 
-                                            className="w-80 p-0 bg-[#0f172a]/95 backdrop-blur-xl border border-white/10 shadow-2xl rounded-xl overflow-hidden" 
+                                            className="w-80 p-0 bg-[var(--glass-liquid-bg)]/95 backdrop-blur-xl border border-foreground/10 shadow-2xl rounded-xl overflow-hidden" 
                                             align="start"
                                             sideOffset={8}
                                         >
-                                            <div className="p-3 border-b border-white/5 bg-white/5">
-                                                <div className="flex items-center gap-2 text-white text-sm font-medium">
+                                            <div className="p-3 border-b border-foreground/5 bg-foreground/5">
+                                                <div className="flex items-center gap-2 text-foreground text-sm font-medium">
                                                     <Info className="w-4 h-4 text-blue-400" />
                                                     <span>Categorization Guide</span>
                                                 </div>
@@ -350,9 +376,9 @@ export default function InventoryForm({ initialData, mode }: InventoryFormProps)
                                             <div className="max-h-[300px] overflow-y-auto p-2">
                                                 <div className="space-y-1">
                                                     {Object.entries(INVENTORY_GUIDE).map(([cat, desc]) => (
-                                                        <div key={cat} className="p-2 hover:bg-white/5 rounded-lg transition-colors group">
+                                                        <div key={cat} className="p-2 hover:bg-foreground/5 rounded-lg transition-colors group">
                                                             <span className="text-blue-400 font-medium text-[11px] block group-hover:text-blue-300">{cat}</span>
-                                                            <span className="text-white/50 text-[10px] leading-tight block">{desc}</span>
+                                                            <span className="text-foreground/70 text-[10px] leading-tight block">{desc}</span>
                                                         </div>
                                                     ))}
                                                 </div>
@@ -427,7 +453,7 @@ export default function InventoryForm({ initialData, mode }: InventoryFormProps)
                     <div className="bg-glass border-soft rounded-2xl p-6 space-y-6 backdrop-blur-md">
                         <div className="flex items-center gap-2 mb-2">
                             <CalendarIcon className="w-4 h-4 text-blue-400" />
-                            <h3 className="font-bold text-white uppercase tracking-wider text-xs">Rental & Booking Settings</h3>
+                            <h3 className="font-bold text-foreground uppercase tracking-wider text-xs">Rental & Booking Settings</h3>
                         </div>
 
                         <div className="flex items-center justify-between p-4 rounded-xl bg-blue-500/5 border border-blue-500/10">
@@ -475,7 +501,7 @@ export default function InventoryForm({ initialData, mode }: InventoryFormProps)
                                 {/* Cover Slot */}
                                 <div className="space-y-2">
                                     <span className="text-[10px] uppercase tracking-widest text-slate-500 font-bold">Cover Photo</span>
-                                    <div className="aspect-video relative rounded-xl border border-dashed border-white/10 overflow-hidden group">
+                                    <div className="aspect-video relative rounded-xl border border-dashed border-foreground/10 overflow-hidden group">
                                         {formData.images[0] ? (
                                             <>
                                                 <NextImage 
@@ -489,7 +515,7 @@ export default function InventoryForm({ initialData, mode }: InventoryFormProps)
                                                 </div>
                                             </>
                                         ) : (
-                                            <div className="absolute inset-0 flex flex-col items-center justify-center gap-2 bg-white/[0.02]">
+                                            <div className="absolute inset-0 flex flex-col items-center justify-center gap-2 bg-foreground/[0.02]">
                                                 <ImageIcon className="w-8 h-8 text-slate-700" />
                                                 <Label className="cursor-pointer">
                                                     <span className="text-xs text-blue-400 hover:text-blue-300 transition-colors">Upload Cover</span>

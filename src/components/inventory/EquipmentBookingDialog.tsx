@@ -136,7 +136,7 @@ export function EquipmentBookingDialog({ item, open, onOpenChange, onSuccess }: 
                                     <Button
                                         variant="outline"
                                         className={cn(
-                                            "w-full justify-start text-left font-normal bg-slate-950/50 border-white/10 hover:bg-white/5",
+                                            "w-full justify-start text-left font-normal bg-slate-950/50 border-foreground/10 hover:bg-foreground/5",
                                             !startDate && "text-muted-foreground"
                                         )}
                                     >
@@ -144,7 +144,7 @@ export function EquipmentBookingDialog({ item, open, onOpenChange, onSuccess }: 
                                         {startDate ? format(startDate, "PPP") : <span>Pick a date</span>}
                                     </Button>
                                 </PopoverTrigger>
-                                <PopoverContent className="w-auto p-0 bg-slate-900 border-white/10" align="start">
+                                <PopoverContent className="w-auto p-0 bg-slate-900 border-foreground/10" align="start">
                                     <Calendar
                                         mode="single"
                                         selected={startDate}
@@ -161,7 +161,7 @@ export function EquipmentBookingDialog({ item, open, onOpenChange, onSuccess }: 
                                     <Button
                                         variant="outline"
                                         className={cn(
-                                            "w-full justify-start text-left font-normal bg-slate-950/50 border-white/10 hover:bg-white/5",
+                                            "w-full justify-start text-left font-normal bg-slate-950/50 border-foreground/10 hover:bg-foreground/5",
                                             !endDate && "text-muted-foreground"
                                         )}
                                     >
@@ -169,7 +169,7 @@ export function EquipmentBookingDialog({ item, open, onOpenChange, onSuccess }: 
                                         {endDate ? format(endDate, "PPP") : <span>Pick a date</span>}
                                     </Button>
                                 </PopoverTrigger>
-                                <PopoverContent className="w-auto p-0 bg-slate-900 border-white/10" align="start">
+                                <PopoverContent className="w-auto p-0 bg-slate-900 border-foreground/10" align="start">
                                     <Calendar
                                         mode="single"
                                         selected={endDate}
@@ -192,13 +192,13 @@ export function EquipmentBookingDialog({ item, open, onOpenChange, onSuccess }: 
                                 max={item.quantity}
                                 value={units}
                                 onChange={e => setUnits(parseInt(e.target.value) || 1)}
-                                className="bg-slate-950/50 border-white/10"
+                                className="bg-slate-950/50 border-foreground/10"
                             />
                         </div>
                         {item.isRentable && (
                              <div className="flex-1 p-2.5 rounded bg-blue-500/10 border border-blue-500/20 text-xs text-blue-300">
                                 <div className="opacity-70 mb-0.5">Estimated Rental Cost</div>
-                                <div className="font-bold text-sm text-white">
+                                <div className="font-bold text-sm text-foreground">
                                     ₹{(item.rentalRatePerDay || 0) * units} / day
                                 </div>
                              </div>
@@ -208,7 +208,7 @@ export function EquipmentBookingDialog({ item, open, onOpenChange, onSuccess }: 
                     {/* Availability Status */}
                     <div className={cn(
                         "p-3 rounded-lg border flex items-center gap-3 transition-colors",
-                        checking ? "bg-slate-800/10 border-white/5 opacity-50" :
+                        checking ? "bg-slate-800/10 border-foreground/5 opacity-50" :
                         isAvailable ? "bg-emerald-500/10 border-emerald-500/20 text-emerald-400" : 
                         "bg-red-500/10 border-red-500/20 text-red-400"
                     )}>
@@ -223,14 +223,14 @@ export function EquipmentBookingDialog({ item, open, onOpenChange, onSuccess }: 
                     </div>
 
                     {/* Links */}
-                    <div className="space-y-4 pt-2 border-t border-white/5">
+                    <div className="space-y-4 pt-2 border-t border-foreground/5">
                         <div className="space-y-2">
                             <Label className="text-slate-400">Link to Task (Optional)</Label>
                             <Select value={taskId} onValueChange={setTaskId}>
-                                <SelectTrigger className="bg-slate-950/50 border-white/10">
+                                <SelectTrigger className="bg-slate-950/50 border-foreground/10">
                                     <SelectValue placeholder="Select a task" />
                                 </SelectTrigger>
-                                <SelectContent className="bg-slate-900 border-white/10 text-slate-300">
+                                <SelectContent className="bg-slate-900 border-foreground/10 text-slate-300">
                                     <SelectItem value="none">No association</SelectItem>
                                     {tasks.map(t => (
                                         <SelectItem key={t.id} value={t.id}>{t.title}</SelectItem>
@@ -247,7 +247,7 @@ export function EquipmentBookingDialog({ item, open, onOpenChange, onSuccess }: 
                         <Button 
                             type="submit" 
                             disabled={loading || checking || !isAvailable}
-                            className="bg-blue-600 hover:bg-blue-500 text-white min-w-[120px]"
+                            className="bg-blue-600 hover:bg-blue-500 text-foreground min-w-[120px]"
                         >
                             {loading ? <Loader2 className="w-4 h-4 animate-spin mr-2" /> : "Confirm Booking"}
                         </Button>

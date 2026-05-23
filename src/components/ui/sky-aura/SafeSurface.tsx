@@ -12,11 +12,11 @@ export const SafeSurface = React.forwardRef<HTMLDivElement, SafeSurfaceProps>(
             <div
                 ref={ref}
                 className={cn(
-                    "relative overflow-hidden rounded-2xl border border-white/5 bg-white/[0.03] backdrop-blur-xl shadow-soft",
+                    "relative overflow-hidden rounded-2xl border border-foreground/5 bg-foreground/[0.03] backdrop-blur-xl shadow-soft",
                     // Gentle inner glow logic via pseudo-element or shadow? 
                     // Let's use shadow-inner for depth
                     "shadow-[inset_0_1px_1px_rgba(255,255,255,0.05)]",
-                    isInteractive && "transition-all duration-300 hover:bg-white/[0.05] hover:border-white/10 hover:shadow-glow cursor-pointer",
+                    isInteractive && "transition-all duration-300 hover:bg-foreground/[0.05] hover:border-foreground/10 hover:shadow-glow cursor-pointer",
                     className
                 )}
                 {...props}

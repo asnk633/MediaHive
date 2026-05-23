@@ -87,7 +87,7 @@ export function InstitutionContextCard({ user }: InstitutionContextCardProps) {
         return (
             <div className="bg-red-500/10 border border-red-500/20 border-l-2 border-l-red-500 rounded-2xl p-6 backdrop-blur-md">
                 <h3 className="text-sm font-semibold text-red-400 mb-1">Context Error</h3>
-                <p className="text-base font-medium text-white/90">
+                <p className="text-base font-medium text-foreground/90">
                     No Organization Context Found
                 </p>
                 <p className="text-sm text-red-300/60 mt-1">

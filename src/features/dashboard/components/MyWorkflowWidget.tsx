@@ -50,10 +50,10 @@ export const MyWorkflowWidget = ({ tasks, userId }: MyWorkflowWidgetProps) => {
                 }
             `}
         >
-            <div className={`p-2 rounded-full bg-white/5 mb-2 group-hover:scale-110 transition-transform`}>
-                <Icon size={20} className={count > 0 ? "text-white" : "text-gray-500"} />
+            <div className={`p-2 rounded-full bg-foreground/5 mb-2 group-hover:scale-110 transition-transform`}>
+                <Icon size={20} className={count > 0 ? "text-foreground" : "text-gray-500"} />
             </div>
-            <span className="text-2xl font-bold text-white">{count}</span>
+            <span className="text-2xl font-bold text-foreground">{count}</span>
             <span className="text-[10px] uppercase font-bold text-gray-400 tracking-wider mt-1">{label}</span>
             {subtitle && <span className="text-[9px] text-gray-600 font-medium absolute bottom-2 opacity-0 group-hover:opacity-100 transition-opacity">{subtitle}</span>}
         </button>

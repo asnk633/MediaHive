@@ -27,10 +27,18 @@ mixin _$Task {
   String get requester => throw _privateConstructorUsedError;
   String get assignee => throw _privateConstructorUsedError;
   String get dueDate => throw _privateConstructorUsedError;
+  String? get createdBy => throw _privateConstructorUsedError;
+  String? get createdAt => throw _privateConstructorUsedError;
   String? get completionDate => throw _privateConstructorUsedError;
   String? get description => throw _privateConstructorUsedError;
   String? get onBehalfOf => throw _privateConstructorUsedError;
+  String? get completedByName => throw _privateConstructorUsedError;
   List<String> get attachments => throw _privateConstructorUsedError;
+  String? get eventId => throw _privateConstructorUsedError;
+  bool get isBlocked => throw _privateConstructorUsedError;
+  String? get blockedBy => throw _privateConstructorUsedError;
+  bool get requiresReview => throw _privateConstructorUsedError;
+  String? get department => throw _privateConstructorUsedError;
 
   Map<String, dynamic> toJson() => throw _privateConstructorUsedError;
   @JsonKey(ignore: true)
@@ -50,10 +58,18 @@ abstract class $TaskCopyWith<$Res> {
       String requester,
       String assignee,
       String dueDate,
+      String? createdBy,
+      String? createdAt,
       String? completionDate,
       String? description,
       String? onBehalfOf,
-      List<String> attachments});
+      String? completedByName,
+      List<String> attachments,
+      String? eventId,
+      bool isBlocked,
+      String? blockedBy,
+      bool requiresReview,
+      String? department});
 }
 
 /// @nodoc
@@ -76,10 +92,18 @@ class _$TaskCopyWithImpl<$Res, $Val extends Task>
     Object? requester = null,
     Object? assignee = null,
     Object? dueDate = null,
+    Object? createdBy = freezed,
+    Object? createdAt = freezed,
     Object? completionDate = freezed,
     Object? description = freezed,
     Object? onBehalfOf = freezed,
+    Object? completedByName = freezed,
     Object? attachments = null,
+    Object? eventId = freezed,
+    Object? isBlocked = null,
+    Object? blockedBy = freezed,
+    Object? requiresReview = null,
+    Object? department = freezed,
   }) {
     return _then(_value.copyWith(
       id: null == id
@@ -110,6 +134,14 @@ class _$TaskCopyWithImpl<$Res, $Val extends Task>
           ? _value.dueDate
           : dueDate // ignore: cast_nullable_to_non_nullable
               as String,
+      createdBy: freezed == createdBy
+          ? _value.createdBy
+          : createdBy // ignore: cast_nullable_to_non_nullable
+              as String?,
+      createdAt: freezed == createdAt
+          ? _value.createdAt
+          : createdAt // ignore: cast_nullable_to_non_nullable
+              as String?,
       completionDate: freezed == completionDate
           ? _value.completionDate
           : completionDate // ignore: cast_nullable_to_non_nullable
@@ -122,10 +154,34 @@ class _$TaskCopyWithImpl<$Res, $Val extends Task>
           ? _value.onBehalfOf
           : onBehalfOf // ignore: cast_nullable_to_non_nullable
               as String?,
+      completedByName: freezed == completedByName
+          ? _value.completedByName
+          : completedByName // ignore: cast_nullable_to_non_nullable
+              as String?,
       attachments: null == attachments
           ? _value.attachments
           : attachments // ignore: cast_nullable_to_non_nullable
               as List<String>,
+      eventId: freezed == eventId
+          ? _value.eventId
+          : eventId // ignore: cast_nullable_to_non_nullable
+              as String?,
+      isBlocked: null == isBlocked
+          ? _value.isBlocked
+          : isBlocked // ignore: cast_nullable_to_non_nullable
+              as bool,
+      blockedBy: freezed == blockedBy
+          ? _value.blockedBy
+          : blockedBy // ignore: cast_nullable_to_non_nullable
+              as String?,
+      requiresReview: null == requiresReview
+          ? _value.requiresReview
+          : requiresReview // ignore: cast_nullable_to_non_nullable
+              as bool,
+      department: freezed == department
+          ? _value.department
+          : department // ignore: cast_nullable_to_non_nullable
+              as String?,
     ) as $Val);
   }
 }
@@ -145,10 +201,18 @@ abstract class _$$TaskImplCopyWith<$Res> implements $TaskCopyWith<$Res> {
       String requester,
       String assignee,
       String dueDate,
+      String? createdBy,
+      String? createdAt,
       String? completionDate,
       String? description,
       String? onBehalfOf,
-      List<String> attachments});
+      String? completedByName,
+      List<String> attachments,
+      String? eventId,
+      bool isBlocked,
+      String? blockedBy,
+      bool requiresReview,
+      String? department});
 }
 
 /// @nodoc
@@ -168,10 +232,18 @@ class __$$TaskImplCopyWithImpl<$Res>
     Object? requester = null,
     Object? assignee = null,
     Object? dueDate = null,
+    Object? createdBy = freezed,
+    Object? createdAt = freezed,
     Object? completionDate = freezed,
     Object? description = freezed,
     Object? onBehalfOf = freezed,
+    Object? completedByName = freezed,
     Object? attachments = null,
+    Object? eventId = freezed,
+    Object? isBlocked = null,
+    Object? blockedBy = freezed,
+    Object? requiresReview = null,
+    Object? department = freezed,
   }) {
     return _then(_$TaskImpl(
       id: null == id
@@ -202,6 +274,14 @@ class __$$TaskImplCopyWithImpl<$Res>
           ? _value.dueDate
           : dueDate // ignore: cast_nullable_to_non_nullable
               as String,
+      createdBy: freezed == createdBy
+          ? _value.createdBy
+          : createdBy // ignore: cast_nullable_to_non_nullable
+              as String?,
+      createdAt: freezed == createdAt
+          ? _value.createdAt
+          : createdAt // ignore: cast_nullable_to_non_nullable
+              as String?,
       completionDate: freezed == completionDate
           ? _value.completionDate
           : completionDate // ignore: cast_nullable_to_non_nullable
@@ -214,10 +294,34 @@ class __$$TaskImplCopyWithImpl<$Res>
           ? _value.onBehalfOf
           : onBehalfOf // ignore: cast_nullable_to_non_nullable
               as String?,
+      completedByName: freezed == completedByName
+          ? _value.completedByName
+          : completedByName // ignore: cast_nullable_to_non_nullable
+              as String?,
       attachments: null == attachments
           ? _value._attachments
           : attachments // ignore: cast_nullable_to_non_nullable
               as List<String>,
+      eventId: freezed == eventId
+          ? _value.eventId
+          : eventId // ignore: cast_nullable_to_non_nullable
+              as String?,
+      isBlocked: null == isBlocked
+          ? _value.isBlocked
+          : isBlocked // ignore: cast_nullable_to_non_nullable
+              as bool,
+      blockedBy: freezed == blockedBy
+          ? _value.blockedBy
+          : blockedBy // ignore: cast_nullable_to_non_nullable
+              as String?,
+      requiresReview: null == requiresReview
+          ? _value.requiresReview
+          : requiresReview // ignore: cast_nullable_to_non_nullable
+              as bool,
+      department: freezed == department
+          ? _value.department
+          : department // ignore: cast_nullable_to_non_nullable
+              as String?,
     ));
   }
 }
@@ -233,10 +337,18 @@ class _$TaskImpl implements _Task {
       required this.requester,
       required this.assignee,
       required this.dueDate,
+      this.createdBy,
+      this.createdAt,
       this.completionDate,
       this.description,
       this.onBehalfOf,
-      final List<String> attachments = const []})
+      this.completedByName,
+      final List<String> attachments = const [],
+      this.eventId,
+      this.isBlocked = false,
+      this.blockedBy,
+      this.requiresReview = false,
+      this.department})
       : _attachments = attachments;
 
   factory _$TaskImpl.fromJson(Map<String, dynamic> json) =>
@@ -257,11 +369,17 @@ class _$TaskImpl implements _Task {
   @override
   final String dueDate;
   @override
+  final String? createdBy;
+  @override
+  final String? createdAt;
+  @override
   final String? completionDate;
   @override
   final String? description;
   @override
   final String? onBehalfOf;
+  @override
+  final String? completedByName;
   final List<String> _attachments;
   @override
   @JsonKey()
@@ -272,8 +390,21 @@ class _$TaskImpl implements _Task {
   }
 
   @override
+  final String? eventId;
+  @override
+  @JsonKey()
+  final bool isBlocked;
+  @override
+  final String? blockedBy;
+  @override
+  @JsonKey()
+  final bool requiresReview;
+  @override
+  final String? department;
+
+  @override
   String toString() {
-    return 'Task(id: $id, title: $title, status: $status, priority: $priority, requester: $requester, assignee: $assignee, dueDate: $dueDate, completionDate: $completionDate, description: $description, onBehalfOf: $onBehalfOf, attachments: $attachments)';
+    return 'Task(id: $id, title: $title, status: $status, priority: $priority, requester: $requester, assignee: $assignee, dueDate: $dueDate, createdBy: $createdBy, createdAt: $createdAt, completionDate: $completionDate, description: $description, onBehalfOf: $onBehalfOf, completedByName: $completedByName, attachments: $attachments, eventId: $eventId, isBlocked: $isBlocked, blockedBy: $blockedBy, requiresReview: $requiresReview, department: $department)';
   }
 
   @override
@@ -291,31 +422,55 @@ class _$TaskImpl implements _Task {
             (identical(other.assignee, assignee) ||
                 other.assignee == assignee) &&
             (identical(other.dueDate, dueDate) || other.dueDate == dueDate) &&
+            (identical(other.createdBy, createdBy) ||
+                other.createdBy == createdBy) &&
+            (identical(other.createdAt, createdAt) ||
+                other.createdAt == createdAt) &&
             (identical(other.completionDate, completionDate) ||
                 other.completionDate == completionDate) &&
             (identical(other.description, description) ||
                 other.description == description) &&
             (identical(other.onBehalfOf, onBehalfOf) ||
                 other.onBehalfOf == onBehalfOf) &&
+            (identical(other.completedByName, completedByName) ||
+                other.completedByName == completedByName) &&
             const DeepCollectionEquality()
-                .equals(other._attachments, _attachments));
+                .equals(other._attachments, _attachments) &&
+            (identical(other.eventId, eventId) || other.eventId == eventId) &&
+            (identical(other.isBlocked, isBlocked) ||
+                other.isBlocked == isBlocked) &&
+            (identical(other.blockedBy, blockedBy) ||
+                other.blockedBy == blockedBy) &&
+            (identical(other.requiresReview, requiresReview) ||
+                other.requiresReview == requiresReview) &&
+            (identical(other.department, department) ||
+                other.department == department));
   }
 
   @JsonKey(ignore: true)
   @override
-  int get hashCode => Object.hash(
-      runtimeType,
-      id,
-      title,
-      status,
-      priority,
-      requester,
-      assignee,
-      dueDate,
-      completionDate,
-      description,
-      onBehalfOf,
-      const DeepCollectionEquality().hash(_attachments));
+  int get hashCode => Object.hashAll([
+        runtimeType,
+        id,
+        title,
+        status,
+        priority,
+        requester,
+        assignee,
+        dueDate,
+        createdBy,
+        createdAt,
+        completionDate,
+        description,
+        onBehalfOf,
+        completedByName,
+        const DeepCollectionEquality().hash(_attachments),
+        eventId,
+        isBlocked,
+        blockedBy,
+        requiresReview,
+        department
+      ]);
 
   @JsonKey(ignore: true)
   @override
@@ -340,10 +495,18 @@ abstract class _Task implements Task {
       required final String requester,
       required final String assignee,
       required final String dueDate,
+      final String? createdBy,
+      final String? createdAt,
       final String? completionDate,
       final String? description,
       final String? onBehalfOf,
-      final List<String> attachments}) = _$TaskImpl;
+      final String? completedByName,
+      final List<String> attachments,
+      final String? eventId,
+      final bool isBlocked,
+      final String? blockedBy,
+      final bool requiresReview,
+      final String? department}) = _$TaskImpl;
 
   factory _Task.fromJson(Map<String, dynamic> json) = _$TaskImpl.fromJson;
 
@@ -362,13 +525,29 @@ abstract class _Task implements Task {
   @override
   String get dueDate;
   @override
+  String? get createdBy;
+  @override
+  String? get createdAt;
+  @override
   String? get completionDate;
   @override
   String? get description;
   @override
   String? get onBehalfOf;
   @override
+  String? get completedByName;
+  @override
   List<String> get attachments;
+  @override
+  String? get eventId;
+  @override
+  bool get isBlocked;
+  @override
+  String? get blockedBy;
+  @override
+  bool get requiresReview;
+  @override
+  String? get department;
   @override
   @JsonKey(ignore: true)
   _$$TaskImplCopyWith<_$TaskImpl> get copyWith =>

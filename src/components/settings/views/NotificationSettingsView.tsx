@@ -80,14 +80,14 @@ export const NotificationSettingsView = () => {
     return (
         <div className="space-y-6 max-w-2xl">
             <div className="space-y-1">
-                <h3 className="text-lg font-medium text-white">Notifications</h3>
+                <h3 className="text-lg font-medium text-foreground">Notifications</h3>
                 <p className="text-sm text-slate-400">
                     Configure how you receive alerts and updates.
                 </p>
             </div>
 
             <div className="space-y-4">
-                <Card className="bg-slate-950/30 border-white/5">
+                <Card className="bg-slate-950/30 border-foreground/5">
                     <CardContent className="p-4 flex items-center justify-between">
                         <div className="space-y-0.5">
                             <Label className="text-base text-slate-200" htmlFor="notify-requests">Device Requests</Label>
@@ -102,7 +102,7 @@ export const NotificationSettingsView = () => {
                     </CardContent>
                 </Card>
 
-                <Card className="bg-slate-950/30 border-white/5">
+                <Card className="bg-slate-950/30 border-foreground/5">
                     <CardContent className="p-4 flex items-center justify-between">
                         <div className="space-y-0.5">
                             <Label className="text-base text-slate-200" htmlFor="notify-tasks">Task Assignments</Label>
@@ -117,7 +117,7 @@ export const NotificationSettingsView = () => {
                     </CardContent>
                 </Card>
 
-                <Card className="bg-slate-950/30 border-white/5">
+                <Card className="bg-slate-950/30 border-foreground/5">
                     <CardContent className="p-4 flex items-center justify-between">
                         <div className="space-y-0.5">
                             <Label className="text-base text-slate-200" htmlFor="notify-system">System Updates</Label>

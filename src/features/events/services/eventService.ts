@@ -30,7 +30,7 @@ export const EventService = {
                     ),
                     equipment:${TABLES.EVENT_EQUIPMENT}(
                         *,
-                        inventory:${TABLES.INVENTORY}(id, name, image_url)
+                        inventory:inventory(id, name, image_url)
                     )
                 `)
                 .eq('tenant_id', tenantId)
@@ -112,7 +112,7 @@ export const EventService = {
                     ),
                     equipment:${TABLES.EVENT_EQUIPMENT}(
                         *,
-                        inventory:${TABLES.INVENTORY}(id, name, image_url)
+                        inventory:inventory(id, name, image_url)
                     )
                 `)
                 .eq('id', searchId)

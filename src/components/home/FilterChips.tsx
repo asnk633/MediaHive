@@ -19,7 +19,7 @@ export function FilterChips({ filters, activeFilter, onSelect }: FilterChipsProp
                         className={cn(
                             "px-5 py-2 rounded-full text-xs font-semibold whitespace-nowrap transition-all duration-200",
                             isActive
-                                ? "bg-[var(--text-primary)] text-white shadow-lg shadow-gray-200/50"
+                                ? "bg-[var(--text-primary)] text-foreground shadow-lg shadow-gray-200/50"
                                 : "bg-white text-[var(--text-secondary)] border border-transparent hover:bg-gray-50"
                         )}
                     >

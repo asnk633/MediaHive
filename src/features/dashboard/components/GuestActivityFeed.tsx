@@ -50,10 +50,10 @@ export const MemberActivityFeed = ({ tasks }: MemberActivityFeedProps) => {
     if (activities.length === 0) return null;
 
     return (
-        <div className="bg-white/5 backdrop-blur-md border border-[#ffffff1a] rounded-[18px] p-5 shadow-xl animate-in fade-in duration-700">
+        <div className="bg-foreground/5 backdrop-blur-md border border-[#ffffff1a] rounded-[18px] p-5 shadow-xl animate-in fade-in duration-700">
             <div className="flex items-center gap-2 mb-4">
                 <Activity className="w-5 h-5 text-blue-400" />
-                <h3 className="text-lg font-bold text-white">My Request Updates</h3>
+                <h3 className="text-lg font-bold text-foreground">My Request Updates</h3>
             </div>
 
             <div className="space-y-4">
@@ -64,7 +64,7 @@ export const MemberActivityFeed = ({ tasks }: MemberActivityFeedProps) => {
                         onClick={() => nativeNavigate(`/tasks/view?id=${act.id}`, router, 'MemberActivityFeed (Task)')}
                     >
                         {/* Timeline Line */}
-                        <div className="absolute left-[9px] top-8 bottom-0 w-px bg-white/10 last:hidden" />
+                        <div className="absolute left-[9px] top-8 bottom-0 w-px bg-foreground/10 last:hidden" />
 
                         <div className={cn("mt-1 h-5 w-5 rounded-full flex items-center justify-center shadow-lg border border-[#ffffff1a] shrink-0 transition-transform group-hover:scale-110",
                             act.type === 'created' ? "bg-blue-500/20 text-blue-400" : "bg-violet-500/20 text-violet-400"

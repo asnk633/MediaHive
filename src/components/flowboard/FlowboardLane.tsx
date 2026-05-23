@@ -26,8 +26,8 @@ export const FlowboardLane: React.FC<FlowboardLaneProps> = ({
         emerald: 'border-emerald-500/30',
         orange: 'border-orange-500/30',
         fuchsia: 'border-fuchsia-500/30',
-        gray: 'border-white/10'
-    }[color] || 'border-white/10';
+        gray: 'border-foreground/10'
+    }[color] || 'border-foreground/10';
 
     const bgGradient = {
         blue: 'from-blue-500/5',
@@ -50,16 +50,16 @@ export const FlowboardLane: React.FC<FlowboardLaneProps> = ({
         .sort((a, b) => b.count - a.count);
 
     return (
-        <div className="flex flex-col h-full min-w-[280px] w-[280px] bg-[#0B0E14]/50 border-r border-white/5 first:pl-0 last:border-r-0 relative">
+        <div className="flex flex-col h-full min-w-[280px] w-[280px] bg-[#0B0E14]/50 border-r border-foreground/5 first:pl-0 last:border-r-0 relative">
             {/* Top Glimmer */}
             <div className={`absolute top-0 inset-x-0 h-32 bg-gradient-to-b ${bgGradient} to-transparent pointer-events-none`} />
 
             {/* Header */}
-            <div className={`p-4 border-b border-white/5 shrink-0 sticky top-0 bg-[#0B0E14]/95 backdrop-blur-md z-10 space-y-3`}>
+            <div className={`p-4 border-b border-foreground/5 shrink-0 sticky top-0 bg-[#0B0E14]/95 backdrop-blur-md z-10 space-y-3`}>
                 <div className="flex items-center justify-between">
                     <div className="flex items-center gap-2">
                         <h3 className="text-sm font-bold text-gray-200 uppercase tracking-wider">{title}</h3>
-                        <span className="text-xs font-mono text-gray-500 bg-white/5 px-1.5 py-0.5 rounded">{tasks.length}</span>
+                        <span className="text-xs font-mono text-gray-500 bg-foreground/5 px-1.5 py-0.5 rounded">{tasks.length}</span>
                     </div>
                 </div>
 
@@ -74,10 +74,10 @@ export const FlowboardLane: React.FC<FlowboardLaneProps> = ({
                                     flex items-center gap-1 pl-0.5 pr-1.5 py-0.5 rounded-full text-[9px] font-bold border
                                     ${user.count > 3
                                         ? 'bg-red-500/10 text-red-400 border-red-500/20'
-                                        : 'bg-white/5 text-gray-400 border-white/10'}
+                                        : 'bg-foreground/5 text-gray-400 border-foreground/10'}
                                 `}
                             >
-                                <div className="w-3.5 h-3.5 rounded-full bg-white/10 flex items-center justify-center">
+                                <div className="w-3.5 h-3.5 rounded-full bg-foreground/10 flex items-center justify-center">
                                     {user.name[0]?.toUpperCase() || 'U'}
                                 </div>
                                 <span>{user.count}</span>
@@ -93,7 +93,7 @@ export const FlowboardLane: React.FC<FlowboardLaneProps> = ({
             {/* Tasks Container */}
             <div className="flex-1 overflow-y-auto p-3 space-y-3 scrollbar-thin scrollbar-thumb-white/10 scrollbar-track-transparent">
                 {tasks.length === 0 ? (
-                    <div className="h-32 flex flex-col items-center justify-center text-center p-4 border-2 border-dashed border-white/5 rounded-xl">
+                    <div className="h-32 flex flex-col items-center justify-center text-center p-4 border-2 border-dashed border-foreground/5 rounded-xl">
                         <span className="text-xs text-gray-600 font-medium">No tasks</span>
                     </div>
                 ) : (

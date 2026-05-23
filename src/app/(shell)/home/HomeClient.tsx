@@ -143,6 +143,7 @@ export default function HomeClient() {
         try {
             const filter = { 
                 role: currentRole, 
+                includeAllHistory: true,
                 signal 
             };
             const [tData, eData] = await Promise.all([
@@ -180,7 +181,7 @@ export default function HomeClient() {
         if (!authReady || !isOnline || isReplaying) return;
 
         const unsubscribe = CanonicalDataService.subscribeToTasks(
-            { role: currentRole, userId: user?.uid },
+            { role: currentRole, userId: user?.uid, includeAllHistory: true },
             (updatedTasks) => {
                 const normalized = normalizeTasks(updatedTasks || []);
                 syncRemoteTasks(normalized, user);
@@ -262,29 +263,31 @@ export default function HomeClient() {
                             transition={{ duration: 0.6, ease: "easeOut" }}
                             className="relative pt-6 pb-2"
                         >
-                            <div className="absolute inset-0 bg-gradient-to-r from-indigo-500/10 via-transparent to-transparent opacity-30 rounded-[32px] pointer-events-none" />
+                            <div className="absolute inset-0 bg-foreground/[0.01] rounded-[32px] pointer-events-none" />
                             <div className="relative z-10 flex flex-col md:flex-row md:items-center justify-between gap-8 px-0">
                                 <div className="space-y-2 text-left min-w-[280px]">
                                     {isAuthLoading ? (
                                         <div className="space-y-3">
-                                            <Skeleton className="h-10 w-64 bg-white/10" />
-                                            <Skeleton className="h-4 w-80 bg-white/5" />
+                                            <Skeleton className="h-10 w-64 bg-foreground/10" />
+                                            <Skeleton className="h-4 w-80 bg-foreground/5" />
                                         </div>
                                     ) : (
                                         <>
-                                            <div className="flex items-baseline gap-2">
-                                                <h1 className="text-3xl md:text-4xl font-bold tracking-tight text-premium-gradient">
-                                                    {welcomeData.greeting.split(',')[0]}, 
-                                                    <span className="text-accent-gradient ml-2">
-                                                        {welcomeData.greeting.split(',')[1]?.trim()}
-                                                    </span>
-                                                </h1>
-                                                <span className="text-2xl animate-bounce duration-[3000ms]">
-                                                    {welcomeData.icon || "👋"}
+                                            <div className="flex flex-col gap-1">
+                                                <span className="text-[11px] font-black text-[#60A5FA] uppercase tracking-[0.2em] leading-none mb-1">
+                                                    {welcomeData.greeting.split(',')[0]}
                                                 </span>
+                                                <div className="flex items-baseline gap-2">
+                                                    <h1 className="text-3xl md:text-4xl font-bold tracking-tight text-foreground">
+                                                        {welcomeData.greeting.split(',')[1]?.trim()}
+                                                    </h1>
+                                                    <span className="text-2xl animate-bounce duration-[3000ms]">
+                                                        {welcomeData.icon || "👋"}
+                                                    </span>
+                                                </div>
                                             </div>
-                                            <p className="text-sm text-white/40 font-medium tracking-wide italic">
-                                                {inspirationLine}
+                                            <p className="text-sm text-foreground/80 font-medium tracking-wide italic">
+                                                Reviewing today's wins.
                                             </p>
                                         </>
                                     )}
@@ -299,29 +302,29 @@ export default function HomeClient() {
                                     <Magnetic strength={0.3}>
                                         <button 
                                             onClick={() => router.push('/tasks/new?returnTo=home')} 
-                                            className="btn-premium group flex items-center gap-2 h-11 px-6 rounded-2xl bg-indigo-500 text-white text-sm font-semibold shadow-xl shadow-indigo-500/25 active:scale-95 whitespace-nowrap"
+                                            className="group flex items-center gap-3 h-12 px-6 rounded-2xl glass-liquid hover:bg-foreground/[0.1] text-foreground text-sm font-semibold active:scale-95 whitespace-nowrap transition-all border border-foreground/10"
                                         >
-                                            <CheckSquare size={18} className="group-hover:rotate-12 transition-transform" /> 
-                                            New Task
+                                            <CheckSquare size={18} className="text-primary group-hover:rotate-12 transition-transform" /> 
+                                            NEW TASK
                                         </button>
                                     </Magnetic>
                                     <Magnetic strength={0.3}>
                                         <button 
                                             onClick={() => router.push('/calendar')} 
-                                            className="btn-premium group flex items-center gap-2 h-11 px-6 rounded-2xl bg-blue-500 text-white text-sm font-semibold shadow-xl shadow-blue-500/25 active:scale-95 whitespace-nowrap"
+                                            className="group flex items-center gap-3 h-12 px-6 rounded-2xl glass-liquid hover:bg-foreground/[0.1] text-foreground text-sm font-semibold active:scale-95 whitespace-nowrap transition-all border border-foreground/10"
                                         >
-                                            <CalendarIcon size={18} className="group-hover:rotate-12 transition-transform" /> 
-                                            New Event
+                                            <CalendarIcon size={18} className="text-primary group-hover:rotate-12 transition-transform" /> 
+                                            NEW EVENT
                                         </button>
                                     </Magnetic>
                                     {currentRole !== 'member' && (
                                         <Magnetic strength={0.3}>
                                             <button 
                                                 onClick={() => router.push('/campaigns/new')} 
-                                                className="btn-premium group flex items-center gap-2 h-11 px-6 rounded-2xl bg-white/5 border border-white/10 hover:bg-white/10 text-white text-sm font-semibold active:scale-95 whitespace-nowrap"
+                                                className="group flex items-center gap-3 h-12 px-6 rounded-2xl glass-liquid hover:bg-foreground/[0.1] text-foreground text-sm font-semibold active:scale-95 whitespace-nowrap transition-all border border-foreground/10"
                                             >
-                                                <FolderPlus size={18} className="text-blue-400 group-hover:scale-110 transition-transform" /> 
-                                                New Campaign
+                                                <FolderPlus size={18} className="text-primary group-hover:scale-110 transition-transform" /> 
+                                                NEW CAMPAIGN
                                             </button>
                                         </Magnetic>
                                     )}
@@ -329,10 +332,10 @@ export default function HomeClient() {
                                         <Magnetic strength={0.3}>
                                             <button 
                                                 onClick={() => router.push('/notifications/new')} 
-                                                className="btn-premium group flex items-center gap-2 h-11 px-6 rounded-2xl bg-white/5 border border-white/10 hover:bg-white/10 text-white text-sm font-semibold active:scale-95 whitespace-nowrap"
+                                                className="group flex items-center gap-3 h-12 px-6 rounded-2xl glass-liquid hover:bg-foreground/[0.1] text-foreground text-sm font-semibold active:scale-95 whitespace-nowrap transition-all border border-foreground/10"
                                             >
-                                                <Bell size={18} className="text-amber-400 animate-swing transition-transform" /> 
-                                                Notify Team
+                                                <Bell size={18} className="text-rose-400 animate-swing transition-transform" /> 
+                                                NOTIFY TEAM
                                             </button>
                                         </Magnetic>
                                     )}
@@ -344,7 +347,7 @@ export default function HomeClient() {
                             <div className="space-y-6">
                                 <div className="flex items-baseline gap-3 ml-2">
                                     <Zap size={18} className="text-amber-400 self-center" />
-                                    <h2 className="text-sm font-bold tracking-tight text-white/90">Production Pulse</h2>
+                                    <h2 className="text-sm font-bold tracking-tight text-foreground/90">Production Pulse</h2>
                                 </div>
                                 <div className="animate-in fade-in slide-in-from-top-4 duration-700">
                                     <ProductionPulseBar />
@@ -379,17 +382,17 @@ export default function HomeClient() {
 
                         {/* Live Monitoring Indicator */}
                         {['admin', 'manager'].includes(currentRole) && (
-                            <div className="p-4 rounded-[18px] bg-white/[0.02] border border-white/5 flex items-center justify-between">
+                            <div className="p-4 rounded-[18px] bg-foreground/[0.02] border border-foreground/5 flex items-center justify-between">
                                 <div className="flex items-center gap-3">
                                     <Zap size={14} className="text-amber-400" />
-                                    <span className="text-[11px] font-bold text-white/40 uppercase tracking-widest">
+                                    <span className="text-[11px] font-bold text-foreground/80 uppercase tracking-widest">
                                         Live monitoring active for {user?.name || user?.fullName || 'Super Admin'}
                                     </span>
                                 </div>
                                 <div className="flex items-center gap-4">
                                     <div className="flex items-center gap-1.5">
                                         <div className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse" />
-                                        <span className="text-[10px] font-bold text-white/20 uppercase tracking-widest">Connected</span>
+                                        <span className="text-[10px] font-bold text-foreground/80 uppercase tracking-widest">Connected</span>
                                     </div>
                                 </div>
                             </div>
@@ -397,7 +400,7 @@ export default function HomeClient() {
 
                         {/* Collapsed Sections */}
                         {currentRole !== 'member' && (
-                            <div className="space-y-8 pt-4 border-t border-white/5">
+                            <div className="space-y-8 pt-4 border-t border-foreground/5">
                                 {/* 5 - Insights Group */}
                                 <DashboardSection
                                     sectionId="insights-group"
@@ -412,12 +415,12 @@ export default function HomeClient() {
                                         <div className="space-y-[12px]">
                                             {['admin', 'manager'].includes(currentRole) && (
                                                 <div className="space-y-6">
-                                                    <h3 className="text-xs font-bold text-white/30 uppercase tracking-widest mb-4 ml-2 mt-2">Global Governance</h3>
+                                                    <h3 className="text-xs font-bold text-foreground/70 uppercase tracking-widest mb-4 ml-2 mt-2">Global Governance</h3>
                                                     <AdminOversightWidget />
                                                 </div>
                                             )}
                                             <div className="space-y-6 pt-2">
-                                                <h3 className="text-xs font-bold text-white/30 uppercase tracking-widest mb-4 ml-2 mt-2">Strategic Insights</h3>
+                                                <h3 className="text-xs font-bold text-foreground/70 uppercase tracking-widest mb-4 ml-2 mt-2">Strategic Insights</h3>
                                                 <ProductionInsights 
                                                     data={{ events, tasks }} 
                                                     isLoading={isDataLoading} 
@@ -438,11 +441,11 @@ export default function HomeClient() {
                                 >
                                     <div className="grid grid-cols-1 md:grid-cols-[repeat(2,minmax(260px,1fr))] gap-5 pt-2">
                                         <div className="flex flex-col">
-                                            <h3 className="text-xs font-bold text-white/30 uppercase tracking-widest mb-4 ml-2 mt-2">Crew Schedule</h3>
+                                            <h3 className="text-xs font-bold text-foreground/70 uppercase tracking-widest mb-4 ml-2 mt-2">Crew Schedule</h3>
                                             <CrewScheduleCard crew={operationalData.crew} isLoading={operationalLoading} />
                                         </div>
                                         <div className="flex flex-col">
-                                            <h3 className="text-xs font-bold text-white/30 uppercase tracking-widest mb-4 ml-2 mt-2">Equipment Usage</h3>
+                                            <h3 className="text-xs font-bold text-foreground/70 uppercase tracking-widest mb-4 ml-2 mt-2">Equipment Usage</h3>
                                             <EquipmentUsageCard equipment={operationalData.equipment} isLoading={operationalLoading} />
                                         </div>
                                     </div>

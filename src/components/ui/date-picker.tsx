@@ -41,7 +41,7 @@ export function DatePicker({ date, setDate, placeholder = "Pick a date", classNa
                 <Button
                     variant={"outline"}
                     className={cn(
-                        "w-full justify-start text-left font-normal bg-background/50 border-input hover:bg-white/5 hover:text-white transition-colors overflow-hidden",
+                        "w-full justify-start text-left font-normal bg-background/50 border-input hover:bg-foreground/5 hover:text-foreground transition-colors overflow-hidden",
                         !date && "text-muted-foreground",
                         className
                     )}
@@ -73,7 +73,7 @@ export function DatePicker({ date, setDate, placeholder = "Pick a date", classNa
                     />
                     {showTime && date && (
                         <div className="p-2 border-l border-[#ffffff1a] flex flex-col gap-2">
-                            <div className="flex items-center gap-2 text-white/50 text-xs font-bold uppercase tracking-widest pl-2">
+                            <div className="flex items-center gap-2 text-foreground/70 text-xs font-bold uppercase tracking-widest pl-2">
                                 <Clock size={12} />
                                 Time
                             </div>

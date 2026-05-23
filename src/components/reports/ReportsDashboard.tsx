@@ -164,12 +164,12 @@ export default function ReportsDashboard() {
             <Tabs defaultValue="intelligence" className="w-full space-y-6">
                 <div className="w-full overflow-x-auto pb-2 -mb-2">
                     <TabsList className="bg-slate-900/50 border border-[#ffffff1a] p-1 w-full md:w-auto inline-flex">
-                        <TabsTrigger value="intelligence" className="flex-1 md:flex-none data-[state=active]:bg-blue-600 data-[state=active]:text-white text-slate-400">
+                        <TabsTrigger value="intelligence" className="flex-1 md:flex-none data-[state=active]:bg-blue-600 data-[state=active]:text-foreground text-slate-400">
                             <LayoutDashboard size={16} className="mr-2" /> Admin Intelligence
                         </TabsTrigger>
                         <TabsTrigger
                             value="activity"
-                            className="flex-1 md:flex-none data-[state=active]:bg-blue-600 data-[state=active]:text-white text-slate-400"
+                            className="flex-1 md:flex-none data-[state=active]:bg-blue-600 data-[state=active]:text-foreground text-slate-400"
                             title="This is a read-only audit log. Entries cannot be edited or deleted."
                         >
                             <List size={16} className="mr-2" /> System Activity (Admin Only)
@@ -221,7 +221,7 @@ export default function ReportsDashboard() {
 
                             <button
                                 onClick={() => handleExport('csv')}
-                                className="w-full md:w-auto flex items-center justify-center space-x-2 px-3 py-2 md:py-1.5 bg-[#ffffff05] hover:bg-[#ffffff0a] border border-[#ffffff1a] rounded text-sm text-white/70 transition-colors"
+                                className="w-full md:w-auto flex items-center justify-center space-x-2 px-3 py-2 md:py-1.5 bg-[#ffffff05] hover:bg-[#ffffff0a] border border-[#ffffff1a] rounded text-sm text-foreground/70 transition-colors"
                             >
                                 <Download className="w-4 h-4" />
                                 <span>CSV</span>
@@ -235,14 +235,14 @@ export default function ReportsDashboard() {
                                 placeholder="Filter by Actor ID"
                                 value={filterActor}
                                 onChange={(e) => setFilterActor(e.target.value)}
-                                className="bg-[#0f121a] border border-[#ffffff1a] text-white/70 text-sm rounded px-3 py-2 md:py-1 w-full md:w-40 focus:outline-none focus:border-blue-500 placeholder:text-white/20"
+                                className="bg-[#0f121a] border border-[#ffffff1a] text-foreground/70 text-sm rounded px-3 py-2 md:py-1 w-full md:w-40 focus:outline-none focus:border-blue-500 placeholder:text-foreground/80"
                             />
                             <input
                                 type="text"
                                 placeholder="Entity Type (e.g. task)"
                                 value={filterEntityType}
                                 onChange={(e) => setFilterEntityType(e.target.value)}
-                                className="bg-[#0f121a] border border-[#ffffff1a] text-white/70 text-sm rounded px-3 py-2 md:py-1 w-full md:w-40 focus:outline-none focus:border-blue-500 placeholder:text-white/20"
+                                className="bg-[#0f121a] border border-[#ffffff1a] text-foreground/70 text-sm rounded px-3 py-2 md:py-1 w-full md:w-40 focus:outline-none focus:border-blue-500 placeholder:text-foreground/80"
                             />
                             <div className="flex gap-2">
                                 <button
@@ -254,7 +254,7 @@ export default function ReportsDashboard() {
                                 {(filterActor || filterEntityType) && (
                                     <button
                                         onClick={() => { setFilterActor(''); setFilterEntityType(''); setAppliedFilters({ actor: '', entityType: '' }); }}
-                                        className="px-3 md:px-0 text-white/40 text-xs hover:text-white border border-[#ffffff1a] md:border-none rounded md:rounded-none"
+                                        className="px-3 md:px-0 text-foreground/80 text-xs hover:text-foreground border border-[#ffffff1a] md:border-none rounded md:rounded-none"
                                     >
                                         Clear
                                     </button>
@@ -264,7 +264,7 @@ export default function ReportsDashboard() {
                     </div>
 
                     <div className="bg-[#0f121a]/50 rounded-2xl border border-[#ffffff0a] p-6 backdrop-blur-xl">
-                        <h2 className="text-xl font-semibold text-white mb-6 flex items-center space-x-2">
+                        <h2 className="text-xl font-semibold text-foreground mb-6 flex items-center space-x-2">
                             <History className="w-5 h-5 text-blue-400" />
                             <span>System Activity Logs</span>
                         </h2>
@@ -284,11 +284,11 @@ export default function ReportsDashboard() {
                                 </div>
                             ) : activities.length === 0 ? (
                                 <div className="flex flex-col items-center justify-center py-16 text-center border2 border-dashed border-[#ffffff1a] rounded-xl bg-slate-900/20">
-                                    <div className="w-16 h-16 rounded-full bg-white/5 flex items-center justify-center mb-4">
-                                        <Activity className="w-8 h-8 text-white/20" />
+                                    <div className="w-16 h-16 rounded-full bg-foreground/5 flex items-center justify-center mb-4">
+                                        <Activity className="w-8 h-8 text-foreground/80" />
                                     </div>
-                                    <h3 className="text-white/40 font-medium">Log is quiet</h3>
-                                    <p className="text-white/20 text-sm mt-1">No system events yet. Activity will appear as actions occur.</p>
+                                    <h3 className="text-foreground/80 font-medium">Log is quiet</h3>
+                                    <p className="text-foreground/80 text-sm mt-1">No system events yet. Activity will appear as actions occur.</p>
                                 </div>
                             ) : (
                                 <div className="relative border-l border-[#ffffff1a] ml-4 space-y-8 py-2">
@@ -297,7 +297,7 @@ export default function ReportsDashboard() {
                                             <div className={`absolute -left-[9px] top-1 w-4 h-4 rounded-full border-2 border-slate-900 ${getActivityColor(item.type)}`} />
                                             <div className="space-y-1">
                                                 <div className="flex items-center justify-between">
-                                                    <p className="font-medium text-white text-sm">{item.title}</p>
+                                                    <p className="font-medium text-foreground text-sm">{item.title}</p>
                                                     <span className="text-xs text-slate-500 whitespace-nowrap">
                                                         {safeFormatDistanceToNow(item.timestamp)}
                                                     </span>

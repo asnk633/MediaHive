@@ -15,7 +15,7 @@ export function OnboardingProgress({ current, total }: OnboardingProgressProps) 
                     key={i}
                     className={cn(
                         "h-2 rounded-full transition-all duration-300",
-                        i === current ? "w-6 bg-indigo-400" : "w-2 bg-white/20"
+                        i === current ? "w-6 bg-indigo-400" : "w-2 bg-foreground/20"
                     )}
                 />
             ))}

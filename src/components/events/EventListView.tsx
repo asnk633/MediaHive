@@ -32,11 +32,11 @@ export function EventListView({ events, onEventClick, showCurrentYearOnly = fals
     if (events.length === 0) {
         return (
             <div className="flex flex-col items-center justify-center py-20 text-center event-surface">
-                <div className="w-16 h-16 bg-white/5 rounded-full flex items-center justify-center mb-4">
-                    <Calendar className="text-white/20" size={32} />
+                <div className="w-16 h-16 bg-foreground/5 rounded-full flex items-center justify-center mb-4">
+                    <Calendar className="text-foreground/80" size={32} />
                 </div>
-                <h3 className="text-lg font-bold text-white">Agenda is clear</h3>
-                <p className="text-white/40 text-sm">Create an event to get started.</p>
+                <h3 className="text-lg font-bold text-foreground">Agenda is clear</h3>
+                <p className="text-foreground/80 text-sm">Create an event to get started.</p>
             </div>
         );
     }
@@ -77,10 +77,10 @@ export function EventListView({ events, onEventClick, showCurrentYearOnly = fals
     if (sortedYears.length === 0) {
         return (
             <div className="flex flex-col items-center justify-center py-20 text-center event-surface opacity-70">
-                <div className="w-12 h-12 bg-white/5 rounded-full flex items-center justify-center mb-3">
-                    <Calendar className="text-white/20" size={24} />
+                <div className="w-12 h-12 bg-foreground/5 rounded-full flex items-center justify-center mb-3">
+                    <Calendar className="text-foreground/80" size={24} />
                 </div>
-                <p className="text-white/40 text-sm">No upcoming events found for this period.</p>
+                <p className="text-foreground/80 text-sm">No upcoming events found for this period.</p>
             </div>
         );
     }
@@ -106,19 +106,19 @@ export function EventListView({ events, onEventClick, showCurrentYearOnly = fals
                         >
                             <h2 className={cn(
                                 "text-5xl font-black tracking-tighter transition-all",
-                                year === currentYear ? 'text-white' : 'text-white/20 group-hover:text-white/40'
+                                year === currentYear ? 'text-foreground' : 'text-foreground/80 group-hover:text-foreground/80'
                             )}>
                                 {year}
                             </h2>
 
-                            <div className="h-px flex-1 bg-white/5" />
+                            <div className="h-px flex-1 bg-foreground/5" />
 
                             {!showCurrentYearOnly && (
                                 <div className="flex items-center gap-4">
-                                    <span className="bg-white/5 text-white/40 text-[10px] font-bold uppercase tracking-widest px-4 py-1.5 rounded-full border border-white/5">
+                                    <span className="bg-foreground/5 text-foreground/80 text-[10px] font-bold uppercase tracking-widest px-4 py-1.5 rounded-full border border-foreground/5">
                                         {Object.values(yearGroup.months).reduce((sum, m) => sum + m.events.length, 0)} Events
                                     </span>
-                                    <div className="text-white/20 group-hover:text-white transition-colors">
+                                    <div className="text-foreground/80 group-hover:text-foreground transition-colors">
                                         {isExpanded ? <ChevronDown size={28} /> : <ChevronRight size={28} />}
                                     </div>
                                 </div>

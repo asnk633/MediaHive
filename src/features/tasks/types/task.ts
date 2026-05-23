@@ -38,7 +38,7 @@ export interface Task {
     description: string;
     status: 'pending' | 'todo' | 'in_progress' | 'on_hold' | 'review' | 'done';
     approval_status?: 'pending' | 'approved' | 'correction_requested';
-    priority: 'low' | 'medium' | 'high' | 'urgent';
+    priority: 'low' | 'medium' | 'high';
     due_date: any; // ISO String / Supabase Timestamptz
     dueDate?: any; // Legacy alias for due_date
     institution_id?: string | number;

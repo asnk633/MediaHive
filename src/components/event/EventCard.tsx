@@ -36,7 +36,7 @@ export function EventCard({ event, onClick, className, href }: EventCardProps) {
 
             <div className="flex flex-col gap-1">
                 <div className="flex items-start justify-between gap-2">
-                    <h3 className="text-sm font-bold text-white tracking-wide truncate group-hover:text-blue-400 transition-colors">
+                    <h3 className="text-sm font-bold text-foreground tracking-wide truncate group-hover:text-blue-400 transition-colors">
                         {event.title}
                     </h3>
                     <div className="flex items-center gap-1 shrink-0">
@@ -51,7 +51,7 @@ export function EventCard({ event, onClick, className, href }: EventCardProps) {
                     </div>
                 </div>
 
-                <div className="flex items-center gap-3 text-[11px] text-white/50">
+                <div className="flex items-center gap-3 text-[11px] text-foreground/70">
                     <div className="flex items-center gap-1.5">
                         <Clock className="h-3 w-3 text-blue-400/70" />
                         <span>

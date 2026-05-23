@@ -36,8 +36,8 @@ export const MemberRequestSummaryWidget = ({ allowEmpty = true }: { allowEmpty?:
     if (!myStats) return null;
 
     const items: { label: string; value: number; icon: any; color: string; bg: string }[] = [
-        { label: 'Pending', value: myStats.todo, icon: Clock, color: 'text-amber-400', bg: 'bg-amber-400/10' },
-        { label: 'In Progress', value: myStats.inProgress, icon: Activity, color: 'text-blue-400', bg: 'bg-blue-400/10' },
+        { label: 'Pending', value: myStats.todo, icon: Clock, color: 'text-blue-400', bg: 'bg-blue-400/10' },
+        { label: 'In Progress', value: myStats.inProgress, icon: Activity, color: 'text-primary', bg: 'bg-primary/10' },
         { label: 'In Review', value: myStats.review, icon: Search, color: 'text-purple-400', bg: 'bg-purple-400/10' },
         { label: 'Completed', value: myStats.done, icon: CheckCircle, color: 'text-emerald-400', bg: 'bg-emerald-400/10' },
     ];
@@ -46,12 +46,12 @@ export const MemberRequestSummaryWidget = ({ allowEmpty = true }: { allowEmpty?:
         <div className="space-y-4 animate-in fade-in slide-in-from-bottom-4 duration-700">
             <div className="flex flex-col gap-1">
                 <div className="flex items-baseline justify-between">
-                    <h2 className="text-xl font-bold tracking-tight text-white/90">My Requests</h2>
-                    <span className="text-xs font-bold text-white/50 uppercase tracking-widest">Personal Summary</span>
+                    <h2 className="text-xl font-bold tracking-tight text-foreground/90">My Requests</h2>
+                    <span className="text-xs font-bold text-foreground/70 uppercase tracking-widest">Personal Summary</span>
                 </div>
                 <div className="flex items-center gap-2">
-                    <ClipboardList size={14} className="text-blue-400" />
-                    <span className="text-[13px] text-white opacity-75">{myStats.total} Total Requests</span>
+                    <ClipboardList size={14} className="text-primary" />
+                    <span className="text-[13px] text-foreground opacity-75">{myStats.total} Total Requests</span>
                 </div>
             </div>
 
@@ -60,15 +60,15 @@ export const MemberRequestSummaryWidget = ({ allowEmpty = true }: { allowEmpty?:
                 {items.map((item: any, idx: number) => (
                     <ReactiveCard 
                         key={idx} 
-                        className="p-[18px] cursor-default dashboard-card-primary card-hover-elevation flex flex-col items-center justify-center text-center transition-all h-full min-h-[110px]"
+                        className="p-[18px] cursor-default glass-card rounded-[24px] flex flex-col items-center justify-center text-center transition-all h-full min-h-[110px]"
                     >
                         <div className={cn("mb-1.5 p-1.5 rounded-[12px] flex items-center justify-center", item.bg, item.color)}>
                             <item.icon size={16} />
                         </div>
-                        <p className="text-[26px] font-semibold text-white/90 leading-none tracking-tight">
+                        <p className="text-[26px] font-semibold text-foreground/90 leading-none tracking-tight">
                             {item.value}
                         </p>
-                        <p className="text-[10px] font-bold text-white/50 uppercase tracking-[0.05em] mt-1.5 shrink-0">
+                        <p className="text-[10px] font-bold text-foreground/70 uppercase tracking-[0.05em] mt-1.5 shrink-0">
                             {item.label}
                         </p>
                     </ReactiveCard>
@@ -76,21 +76,23 @@ export const MemberRequestSummaryWidget = ({ allowEmpty = true }: { allowEmpty?:
             </div>
 
             {/* Overall Progress */}
-            <ReactiveCard className="p-[18px] dashboard-card-primary card-hover-elevation transition-all flex flex-col justify-center">
+            <ReactiveCard className="p-[18px] glass-card rounded-[24px] transition-all flex flex-col justify-center mt-4">
                 <div className="flex justify-between items-end mb-[14px]">
                     <div>
-                        <p className="text-sm font-medium text-white/85 mb-1">Request Progress</p>
-                        <p className="text-sm font-medium text-white/60">
+                        <p className="text-sm font-medium text-foreground/85 mb-1">Request Progress</p>
+                        <p className="text-sm font-medium text-foreground/80">
                             {myStats.done} of {myStats.total} requests fulfilled
                         </p>
                     </div>
-                    <span className="text-2xl font-black tracking-tighter text-blue-400">{myStats.progress}%</span>
+                    <span className="text-2xl font-black tracking-tight text-primary">{Math.round(myStats.progress)}%</span>
                 </div>
-                <div className="h-3 w-full bg-white/5 rounded-full overflow-hidden">
-                    <div 
-                        className="h-full bg-gradient-to-r from-blue-600 to-indigo-500 shadow-[0_0_10px_rgba(59,130,246,0.3)] transition-all duration-1000 ease-out" 
+                <div className="h-2 w-full bg-black/40 rounded-full overflow-hidden shadow-inner">
+                    <div
+                        className="h-full bg-primary rounded-full relative"
                         style={{ width: `${myStats.progress}%` }}
-                    />
+                    >
+                        <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/20 to-transparent" />
+                    </div>
                 </div>
             </ReactiveCard>
         </div>

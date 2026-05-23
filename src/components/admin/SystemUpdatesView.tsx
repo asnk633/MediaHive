@@ -94,15 +94,15 @@ export const SystemUpdatesView = () => {
                     <Megaphone className="w-8 h-8 text-indigo-400" />
                 </div>
                 <div>
-                    <h1 className="text-2xl font-bold text-white">System Updates Manager</h1>
-                    <p className="text-slate-400">Broadcast announcements to the entire organization.</p>
+                    <h1 className="text-2xl font-bold text-foreground">System Updates Manager</h1>
+                    <p className="text-muted-foreground">Broadcast announcements to the entire organization.</p>
                 </div>
             </div>
 
             <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
                 {/* Compose Form */}
                 <div className="lg:col-span-1 space-y-6">
-                    <Card className="bg-slate-950/40 border-slate-800">
+                    <Card className="bg-card border-border shadow-sm">
                         <CardHeader>
                             <CardTitle className="text-lg">Compose Update</CardTitle>
                         </CardHeader>
@@ -113,14 +113,14 @@ export const SystemUpdatesView = () => {
                                     value={title}
                                     onChange={e => setTitle(e.target.value)}
                                     placeholder="e.g. New Feature: Inventory Tracking"
-                                    className="bg-slate-900 border-slate-700"
+                                    className="bg-background border-input"
                                 />
                             </div>
 
                             <div className="space-y-2">
                                 <Label>Severity</Label>
                                 <Select value={severity} onValueChange={(v: any) => setSeverity(v)}>
-                                    <SelectTrigger className="bg-slate-900 border-slate-700">
+                                    <SelectTrigger className="bg-background border-input">
                                         <SelectValue />
                                     </SelectTrigger>
                                     <SelectContent>
@@ -137,19 +137,19 @@ export const SystemUpdatesView = () => {
                                     value={body}
                                     onChange={e => setBody(e.target.value)}
                                     placeholder="Details about the update..."
-                                    className="bg-slate-900 border-slate-700 min-h-[150px]"
+                                    className="bg-background border-input min-h-[150px]"
                                 />
                             </div>
 
                             <Button
                                 onClick={handlePublish}
                                 disabled={isSubmitting}
-                                className="w-full bg-indigo-600 hover:bg-indigo-700 text-white"
+                                className="w-full bg-indigo-600 hover:bg-indigo-700 text-foreground"
                             >
                                 {isSubmitting ? 'Publishing...' : 'Publish Update'}
                             </Button>
 
-                            <p className="text-xs text-slate-500 text-center">
+                            <p className="text-xs text-muted-foreground text-center">
                                 This will notify all opted-in users immediately.
                             </p>
                         </CardContent>
@@ -158,11 +158,11 @@ export const SystemUpdatesView = () => {
 
                 {/* History List */}
                 <div className="lg:col-span-2">
-                    <Card className="bg-slate-950/40 border-slate-800 h-full">
+                    <Card className="bg-card border-border shadow-sm h-full">
                         <CardHeader>
                             <CardTitle className="text-lg flex justify-between items-center">
                                 Published History
-                                <span className="text-sm font-normal text-slate-500">
+                                <span className="text-sm font-normal text-muted-foreground">
                                     {history.length} updates
                                 </span>
                             </CardTitle>
@@ -170,26 +170,26 @@ export const SystemUpdatesView = () => {
                         <CardContent>
                             <div className="space-y-4 max-h-[600px] overflow-y-auto pr-2">
                                 {loadingHistory ? (
-                                    <p className="text-slate-500 text-center py-8">Loading history...</p>
+                                    <p className="text-muted-foreground text-center py-8">Loading history...</p>
                                 ) : history.length === 0 ? (
-                                    <p className="text-slate-500 text-center py-8">No updates published yet.</p>
+                                    <p className="text-muted-foreground text-center py-8">No updates published yet.</p>
                                 ) : (
                                     history.map(update => (
-                                        <div key={update.id} className="p-4 rounded-lg bg-slate-900/50 border border-slate-800 flex flex-col gap-2">
+                                        <div key={update.id} className="p-4 rounded-lg bg-foreground/[0.02] border border-border flex flex-col gap-2">
                                             <div className="flex justify-between items-start">
                                                 <div className="flex items-center gap-2">
                                                     <span className={`px-2 py-0.5 rounded text-[10px] uppercase font-bold border ${getSeverityColor(update.severity)}`}>
                                                         {update.severity}
                                                     </span>
-                                                    <h3 className="font-semibold text-slate-200">{update.title}</h3>
+                                                    <h3 className="font-semibold text-foreground">{update.title}</h3>
                                                 </div>
-                                                <span className="text-xs text-slate-500">
+                                                <span className="text-xs text-muted-foreground">
                                                     {update.created_at ? formatDistanceToNow(new Date(update.created_at), { addSuffix: true }) : 'Unknown'}
                                                 </span>
                                             </div>
-                                            <p className="text-sm text-slate-400 whitespace-pre-wrap pl-1">{update.body}</p>
+                                            <p className="text-sm text-muted-foreground whitespace-pre-wrap pl-1">{update.body}</p>
                                             <div className="flex justify-end items-center gap-2 mt-2">
-                                                <span className="text-[10px] text-slate-600">
+                                                <span className="text-[10px] text-muted-foreground/70">
                                                     By {update.created_by?.name || 'Admin'}
                                                 </span>
                                             </div>

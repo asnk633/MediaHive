@@ -40,6 +40,7 @@ import {
     DropdownMenuItem,
     DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
+import { useTheme } from '@/contexts/ThemeContext';
 
 
 import { WorkspaceSwitcher } from "@/components/layout/WorkspaceSwitcher";
@@ -55,6 +56,7 @@ export default function DesktopSideNav() {
     const [mounted, setMounted] = useState(false);
     const { role: currentRole, canReadReports } = usePermissions();
     const { currentWorkspace, tenantSettings } = useWorkspace();
+    const { theme } = useTheme();
     const isAdminRoute = pathname.startsWith('/admin');
 
     const updateWidthVar = (collapsed: boolean) => {
@@ -172,11 +174,11 @@ export default function DesktopSideNav() {
         if (authLoading || !mounted) {
             return (
                 <div className={cn("flex items-center", isCollapsed ? "justify-center" : "gap-3")}>
-                    <div className="w-9 h-9 rounded-full bg-white/5 animate-pulse shrink-0" />
+                    <div className="w-9 h-9 rounded-full bg-foreground/5 animate-pulse shrink-0" />
                     {!isCollapsed && (
                         <div className="flex flex-col gap-1">
-                            <div className="h-3 w-24 bg-white/10 animate-pulse rounded" />
-                            <div className="h-2 w-14 bg-white/5 animate-pulse rounded" />
+                            <div className="h-3 w-24 bg-foreground/10 animate-pulse rounded" />
+                            <div className="h-2 w-14 bg-foreground/5 animate-pulse rounded" />
                         </div>
                     )}
                 </div>
@@ -187,29 +189,29 @@ export default function DesktopSideNav() {
             <DropdownMenu>
                 <DropdownMenuTrigger asChild>
                     <button className={cn(
-                        "group relative w-full flex items-center h-12 px-0 rounded-[18px] transition-all duration-300 outline-none hover:bg-white/[0.03]",
+                        "group relative w-full flex items-center h-12 px-0 rounded-[18px] transition-all duration-300 outline-none hover:bg-foreground/[0.03]",
                         isCollapsed ? "justify-center" : ""
                     )}>
                         <div className="grid grid-cols-[40px_1fr] items-center w-full">
                             <div className="relative shrink-0">
-                                <div className="w-10 h-10 rounded-xl overflow-hidden bg-white/10 ring-1 ring-white/20 shadow-lg group-hover:ring-indigo-500/50 transition-all duration-300">
+                                <div className="w-10 h-10 rounded-xl overflow-hidden bg-foreground/10 ring-1 ring-foreground/20 shadow-lg group-hover:ring-indigo-500/50 transition-all duration-300">
                                     {(user?.avatar_url || user?.photoURL) ? (
                                         <img src={getDriveImageUrl(user.avatar_url || user.photoURL, user.avatar_drive_id)} alt="Avatar" className="w-full h-full object-cover" />
                                     ) : (
-                                        <span className="w-full h-full flex items-center justify-center text-xs font-bold text-white/40 uppercase">
+                                        <span className="w-full h-full flex items-center justify-center text-xs font-bold text-foreground/80 uppercase">
                                             {user?.email?.[0] || 'U'}
                                         </span>
                                     )}
                                 </div>
-                                <div className="absolute -bottom-0.5 -right-0.5 w-2.5 h-2.5 bg-emerald-500 border-2 border-[#09090b] rounded-full shadow-sm" />
+                                <div className="absolute -bottom-0.5 -right-0.5 w-2.5 h-2.5 bg-emerald-500 border-2 border-background rounded-full shadow-sm" />
                             </div>
                             {!isCollapsed && (
                                 <div className="flex flex-col overflow-hidden text-left ml-4">
-                                    <span className="text-sm font-bold text-white truncate group-hover:text-indigo-400 transition-colors tracking-tight leading-none mb-1">
+                                    <span className="text-sm font-bold text-foreground truncate group-hover:text-primary transition-colors tracking-tight leading-none mb-1">
                                         {user?.name || 'Authorized User'}
                                     </span>
                                     <div className="flex items-center">
-                                        <span className="text-[10px] text-white/40 font-black uppercase tracking-[0.2em] leading-none">
+                                        <span className="text-[10px] text-foreground/80 font-black uppercase tracking-[0.2em] leading-none">
                                             {currentRole || 'Member'}
                                         </span>
                                     </div>
@@ -221,34 +223,34 @@ export default function DesktopSideNav() {
                 <DropdownMenuContent 
                     align="start" 
                     sideOffset={12} 
-                    className="w-72 bg-[#0c0c0e] border-white/10 p-0 overflow-hidden shadow-[0_30px_60px_-12px_rgba(0,0,0,0.9)] ring-1 ring-white/5 animate-in fade-in zoom-in-95 duration-200 rounded-[24px]"
+                    className="w-72 bg-popover border-foreground/10 p-0 overflow-hidden shadow-[0_30px_60px_-12px_rgba(0,0,0,0.9)] ring-1 ring-foreground/5 animate-in fade-in zoom-in-95 duration-200 rounded-[24px]"
                 >
                     {/* Header Section */}
                     <div className="relative px-5 py-6 bg-gradient-to-br from-indigo-500/10 via-transparent to-transparent">
                         <div className="text-[10px] font-black text-indigo-400 uppercase tracking-[0.25em] mb-2.5">Active Session</div>
                         <div className="flex flex-col gap-0.5">
-                            <div className="text-sm font-bold text-white tracking-tight truncate">{user?.name || 'Authorized User'}</div>
-                            <div className="text-[11px] text-white/60 font-medium truncate">{user?.email}</div>
+                            <div className="text-sm font-bold text-foreground tracking-tight truncate">{user?.name || 'Authorized User'}</div>
+                            <div className="text-[11px] text-foreground/80 font-medium truncate">{user?.email}</div>
                         </div>
                     </div>
                     
-                    <div className="h-px bg-white/5" />
+                    <div className="h-px bg-foreground/5" />
 
                     <div className="p-2 space-y-1">
                         <DropdownMenuItem 
-                            className="flex items-center gap-3 px-4 py-3 rounded-2xl cursor-pointer hover:bg-white/[0.03] focus:bg-white/[0.03] text-white/70 hover:text-white transition-all group border-none outline-none"
+                            className="flex items-center gap-3 px-4 py-3 rounded-2xl cursor-pointer hover:bg-foreground/[0.03] focus:bg-foreground/[0.03] text-foreground/70 hover:text-foreground transition-all group border-none outline-none"
                             onClick={() => nativeNavigate('/settings', router, 'Profile')}
                         >
-                            <div className="w-9 h-9 rounded-xl bg-white/5 flex items-center justify-center text-white/40 group-hover:text-indigo-400 group-hover:bg-indigo-500/10 transition-all">
+                            <div className="w-9 h-9 rounded-xl bg-foreground/5 flex items-center justify-center text-foreground/80 group-hover:text-primary group-hover:bg-primary/10 transition-all">
                                 <Settings size={18} />
                             </div>
                             <div className="flex flex-col">
                                 <span className="text-sm font-bold tracking-tight">Profile Settings</span>
-                                <span className="text-[10px] text-white/30 font-medium uppercase tracking-wider">Identity & Preferences</span>
+                                <span className="text-[10px] text-foreground/70 font-medium uppercase tracking-wider">Identity & Preferences</span>
                             </div>
                         </DropdownMenuItem>
 
-                        <div className="h-px bg-white/5 my-1 mx-2" />
+                        <div className="h-px bg-foreground/5 my-1 mx-2" />
 
                         <DropdownMenuItem 
                             className="flex items-center gap-3 px-4 py-3 rounded-2xl cursor-pointer hover:bg-rose-500/10 focus:bg-rose-500/10 text-rose-400/70 hover:text-rose-400 transition-all group border-none outline-none"
@@ -278,22 +280,22 @@ export default function DesktopSideNav() {
             }}
             className={cn(
                 "fixed top-1/2 -translate-y-1/2 z-[60] hidden lg:flex flex-col select-none overflow-hidden h-fit max-h-[calc(100vh-3rem)] rounded-[32px]",
-                "glass-liquid border-white/10 shadow-[0_32px_64px_-16px_rgba(0,0,0,0.6)]"
+                "glass-liquid border-foreground/10 shadow-[0_32px_64px_-16px_rgba(0,0,0,0.6)]"
             )}
         >
             {/* 1. Brand Header */}
             <div className={cn(
-                "h-[80px] flex items-center transition-all duration-300 border-b border-white/[0.03] px-4",
+                "h-[80px] flex items-center transition-all duration-300 border-b border-foreground/[0.03] px-4",
                 isCollapsed ? "justify-center" : ""
             )}>
                 <div className="flex items-center w-full">
                     <div className="relative group cursor-pointer shrink-0" onClick={() => router.push('/home')}>
                         <img
-                            src="/mediahive-icon.png"
+                            src={theme === 'midnight' ? '/mediahive-midnight-logo.png' : '/mediahive-honey-logo.png'}
                             alt="MH"
                             className="w-10 h-10 rounded-xl shrink-0 shadow-2xl transition-all duration-500 group-hover:scale-110 group-hover:rotate-3"
                         />
-                        <div className="absolute inset-0 bg-indigo-500/20 blur-xl opacity-0 group-hover:opacity-100 transition-opacity" />
+                        <div className="absolute inset-0 bg-primary/20 blur-xl opacity-0 group-hover:opacity-100 transition-opacity" />
                     </div>
 
                     <AnimatePresence mode="wait">
@@ -305,12 +307,22 @@ export default function DesktopSideNav() {
                                 transition={{ duration: 0.3, ease: "easeOut" }}
                                 className="flex flex-col ml-4"
                             >
-                                <span className="text-xl font-black text-white tracking-tighter text-premium-gradient leading-none mb-0.5">
+                                <span 
+                                    className="text-2xl tracking-wider leading-none mb-1 font-normal"
+                                    style={{ 
+                                        fontFamily: 'BavistaSoulvare', 
+                                        color: '#E59312',
+                                        textShadow: '0 0 12px rgba(229, 147, 18, 0.3)'
+                                    }}
+                                >
                                     MediaHive
                                 </span>
-                                <span className="text-[10px] font-bold text-white/20 uppercase tracking-[0.2em] leading-none">
-                                    Intelligence
-                                </span>
+                                <div className="flex items-center gap-1.5">
+                                    <div className="w-1.5 h-1.5 rounded-full bg-primary shadow-[0_0_8px_var(--accent-primary)]" />
+                                    <span className="text-[10px] font-bold text-primary uppercase tracking-[0.2em] leading-none">
+                                        Operational
+                                    </span>
+                                </div>
                             </motion.div>
                         )}
                     </AnimatePresence>
@@ -331,7 +343,7 @@ export default function DesktopSideNav() {
 
                     {/* Alerts / Team Updates */}
                     <div className={cn(
-                        "group relative w-full flex items-center h-12 px-0 rounded-[18px] transition-all duration-300 hover:bg-white/[0.03]",
+                        "group relative w-full flex items-center h-12 px-0 rounded-[18px] transition-all duration-300 hover:bg-foreground/[0.03]",
                         isCollapsed ? "justify-center" : ""
                     )}>
                         <div className="grid grid-cols-[40px_1fr] items-center w-full">
@@ -340,8 +352,8 @@ export default function DesktopSideNav() {
                             </div>
                             {!isCollapsed && (
                                 <div className="flex flex-col overflow-hidden ml-4">
-                                    <span className="text-[9px] font-black text-white/20 uppercase tracking-[0.2em] leading-none mb-1">Status</span>
-                                    <span className="text-sm font-bold text-white/60 truncate">Team Updates</span>
+                                    <span className="text-[9px] font-black text-foreground/80 uppercase tracking-[0.2em] leading-none mb-1">Status</span>
+                                    <span className="text-sm font-bold text-foreground/80 truncate">Team Updates</span>
                                 </div>
                             )}
                         </div>
@@ -353,7 +365,7 @@ export default function DesktopSideNav() {
                     </div>
                 </div>
 
-                <div className="h-px bg-white/[0.03] mx-6 mb-8" />
+                <div className="h-px bg-foreground/[0.03] mx-6 mb-8" />
 
                 {/* Main Navigation */}
                 <div className="px-4 space-y-9">
@@ -361,7 +373,7 @@ export default function DesktopSideNav() {
                         <div key={group.id} className="space-y-4">
                             {!isCollapsed && (
                                 <motion.h3
-                                    className="pl-[56px] text-[10px] font-black text-white/20 uppercase tracking-[0.3em] whitespace-nowrap"
+                                    className="pl-[56px] text-[10px] font-black text-foreground/80 uppercase tracking-[0.3em] whitespace-nowrap"
                                 >
                                     {group.label}
                                 </motion.h3>
@@ -376,8 +388,8 @@ export default function DesktopSideNav() {
                                             className={cn(
                                                 "group relative w-full flex items-center h-12 px-0 rounded-[18px] transition-all duration-300 ease-out active:scale-[0.97] sidebar-item overflow-hidden",
                                                 isActive
-                                                    ? "bg-white/[0.06] shadow-[0_4px_12px_rgba(0,0,0,0.1),inset_0_1px_1px_rgba(255,255,255,0.05)]"
-                                                    : "hover:bg-white/[0.03] text-white/40"
+                                                    ? "bg-foreground/[0.06] shadow-[0_4px_12px_rgba(0,0,0,0.1),inset_0_1px_1px_rgba(255,255,255,0.05)]"
+                                                    : "hover:bg-foreground/[0.03] text-foreground/80"
                                             )}
                                             title={isCollapsed ? item.label : undefined}
                                         >
@@ -386,7 +398,7 @@ export default function DesktopSideNav() {
                                                 <motion.div 
                                                     layoutId="active-pill"
                                                     transition={{ type: "spring", stiffness: 300, damping: 30 }}
-                                                    className="absolute left-0 w-1 h-6 bg-indigo-500 rounded-r-full shadow-[0_0_15px_rgba(99,102,241,0.8)]"
+                                                    className="absolute left-0 w-1 h-6 bg-primary rounded-r-full shadow-[0_0_15px_rgba(var(--accent-primary-rgb),0.8)]"
                                                 />
                                             )}
 
@@ -398,8 +410,8 @@ export default function DesktopSideNav() {
                                                         className={cn(
                                                             "transition-all duration-300",
                                                             isActive
-                                                                ? "text-indigo-400 drop-shadow-[0_0_10px_rgba(129,140,248,0.5)]"
-                                                                : "text-inherit group-hover:text-white"
+                                                                ? "text-primary drop-shadow-[0_0_10px_rgba(var(--accent-primary-rgb),0.5)]"
+                                                                : "text-inherit group-hover:text-foreground"
                                                         )}
                                                     />
                                                 </div>
@@ -408,7 +420,7 @@ export default function DesktopSideNav() {
                                                     <span
                                                         className={cn(
                                                             "ml-4 text-sm font-bold tracking-tight transition-colors duration-300 truncate text-left",
-                                                            isActive ? "text-white" : "text-inherit group-hover:text-white"
+                                                            isActive ? "text-foreground" : "text-inherit group-hover:text-foreground"
                                                         )}
                                                     >
                                                         {item.label}
@@ -425,17 +437,17 @@ export default function DesktopSideNav() {
             </div>
 
             {/* 4. Footer / Collapse Trigger */}
-            <div className="p-4 mt-auto border-t border-white/[0.03]">
+            <div className="p-4 mt-auto border-t border-foreground/[0.03]">
                 <button
                     onClick={toggleCollapse}
-                    className="w-full flex items-center justify-center h-12 rounded-xl hover:bg-white/5 transition-all group text-white/40 hover:text-white active:scale-95"
+                    className="w-full flex items-center justify-center h-12 rounded-xl hover:bg-foreground/5 transition-all group text-foreground/80 hover:text-foreground active:scale-95"
                 >
                     {isCollapsed ? (
-                        <div className="w-10 h-10 flex items-center justify-center bg-white/5 rounded-xl group-hover:bg-indigo-500/10 group-hover:text-indigo-400 transition-all">
+                        <div className="w-10 h-10 flex items-center justify-center bg-foreground/5 rounded-xl group-hover:bg-primary/10 group-hover:text-primary transition-all">
                             <ChevronRight size={18} />
                         </div>
                     ) : (
-                        <div className="flex items-center gap-2 px-4 h-9 bg-white/[0.03] rounded-xl group-hover:bg-white/10 transition-all">
+                        <div className="flex items-center gap-2 px-4 h-9 bg-foreground/[0.03] rounded-xl group-hover:bg-foreground/10 transition-all">
                             <ChevronLeft size={16} />
                             <span className="text-[10px] font-black uppercase tracking-[0.2em]">Collapse</span>
                         </div>

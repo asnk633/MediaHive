@@ -136,7 +136,7 @@ export const MyFocusWidget = () => {
                     <CheckSquare size={20} />
                 </div>
                 <div>
-                    <h3 className="text-base font-semibold text-white">No tasks scheduled for now</h3>
+                    <h3 className="text-base font-semibold text-foreground">No tasks scheduled for now</h3>
                     <p className="text-sm text-text-secondary mt-1">
                         Today's schedule is clear.
                     </p>
@@ -146,7 +146,7 @@ export const MyFocusWidget = () => {
     }
 
     return (
-        <div className="overflow-hidden glass-card rounded-[16px] border border-white/5">
+        <div className="overflow-hidden glass-card rounded-[16px] border border-foreground/5">
             <div className="divide-y divide-white/5">
                 {displayTasks.map((task, index) => (
                     <HomeTaskRow

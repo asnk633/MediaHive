@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:lucide_icons/lucide_icons.dart';
 import 'package:intl/intl.dart';
+import 'package:go_router/go_router.dart';
+import 'package:supabase_flutter/supabase_flutter.dart';
 import '../../../../../core/theme/app_colors.dart';
 import '../../../../../core/theme/app_spacing.dart';
 import '../../../../../core/theme/app_typography.dart';
@@ -12,7 +14,13 @@ import '../providers/events_provider.dart';
 import '../../../../../shared/widgets/mh_button.dart';
 import '../../../../../shared/widgets/mh_skeleton.dart';
 import '../../../../../shared/widgets/mh_empty_state.dart';
+import '../../../../../shared/widgets/mh_refresh_indicator.dart';
 import '../../domain/models/event.dart';
+import '../../../../core/services/workflow_service.dart';
+import '../../../tasks/presentation/providers/tasks_provider.dart';
+import '../../../../presentation/providers/navigation_provider.dart';
+import '../../../../../core/providers/user_provider.dart';
+import '../../../../core/theme_provider.dart';
 
 class CalendarScreen extends ConsumerWidget {
   const CalendarScreen({super.key});
@@ -25,82 +33,66 @@ class CalendarScreen extends ConsumerWidget {
     final eventsAsync = ref.watch(eventListProvider);
     final currentView = ref.watch(calendarViewProvider);
     final networkStatus = ref.watch(networkStatusProvider).valueOrNull ?? NetworkStatus.online;
+    final isOffline = networkStatus == NetworkStatus.offline;
+    final colors = ref.watch(themeColorsProvider);
 
     return Scaffold(
-      backgroundColor: AppColors.backgroundPrimary,
+      backgroundColor: colors.backgroundPrimary,
       body: Container(
-        decoration: const BoxDecoration(
-          gradient: AppColors.darkGradient,
-        ),
-        child: Column(
-          children: [
-            if (networkStatus == NetworkStatus.offline)
-              _buildOfflineBanner(),
-            Expanded(
-              child: eventsAsync.when(
-                data: (events) => _buildContent(context, ref, events, currentView),
-                loading: () => _buildLoadingState(),
-                error: (e, _) => _buildErrorState(ref, e),
-              ),
-            ),
-          ],
-        ),
-      ),
-    );
-  }
-
-  Widget _buildOfflineBanner() {
-    return Container(
-      width: double.infinity,
-      padding: const EdgeInsets.symmetric(vertical: AppSpacing.xs),
-      color: AppColors.warning.withOpacity(0.8),
-      child: Row(
-        mainAxisAlignment: MainAxisAlignment.center,
-        children: [
-          const Icon(LucideIcons.wifiOff, size: 14, color: Colors.white),
-          const SizedBox(width: AppSpacing.s),
-          Text(
-            'OFFLINE MODE — CALENDAR CHANGES WILL SYNC LATER',
-            style: AppTypography.caption.copyWith(color: Colors.white, fontWeight: FontWeight.bold),
+        decoration: BoxDecoration(
+          gradient: LinearGradient(
+            colors: [
+              colors.backgroundSecondary,
+              colors.backgroundPrimary,
+            ],
+            begin: Alignment.topCenter,
+            end: Alignment.bottomCenter,
           ),
-        ],
-      ),
-    );
-  }
-
-  Widget _buildContent(BuildContext context, WidgetRef ref, List<Event> events, String currentView) {
-    return RefreshIndicator(
-      onRefresh: () => ref.refresh(eventListProvider.future),
-      color: AppColors.honey,
-      backgroundColor: AppColors.surface,
-      child: ListView(
-        padding: const EdgeInsets.only(
-          left: AppSpacing.l, 
-          right: AppSpacing.l, 
-          top: 140, 
-          bottom: 120,
         ),
-        children: [
-          _buildPageHeader(context, ref),
-          const SizedBox(height: AppSpacing.xxl),
-          _buildViewSwitcher(ref, currentView),
-          const SizedBox(height: AppSpacing.m),
-          if (currentView == 'MONTH') 
-            _buildMonthView(events)
-          else if (currentView == 'WEEK')
-            _buildWeekView(events, ref)
-          else if (currentView == 'TIMELINE')
-            _buildTimelineView(events)
-          else if (currentView == 'LIST')
-            _buildListView(events)
-          else
-            _buildListView(events),
-        ],
+        child: MhRefreshIndicator(
+          edgeOffset: 140,
+          onRefresh: () async {
+            ref.invalidate(eventListProvider);
+            await Future.delayed(const Duration(milliseconds: 500));
+          },
+          child: eventsAsync.when(
+            data: (events) => _buildContent(context, ref, events, currentView, isOffline, colors),
+            loading: () => _buildLoadingState(colors),
+            error: (e, _) => _buildErrorState(ref, e, colors),
+          ),
+        ),
       ),
     );
   }
 
-  Widget _buildLoadingState() {
+  Widget _buildContent(BuildContext context, WidgetRef ref, List<Event> events, String currentView, bool isOffline, ThemeColors colors) {
+    return ListView(
+      padding: const EdgeInsets.only(
+        left: AppSpacing.l, 
+        right: AppSpacing.l, 
+        top: 140, 
+        bottom: 120,
+      ),
+      children: [
+        _buildPageHeader(context, ref, isOffline, colors),
+        const SizedBox(height: AppSpacing.xxl),
+        _buildViewSwitcher(ref, currentView, colors),
+        const SizedBox(height: AppSpacing.m),
+        if (currentView == 'MONTH') 
+          _buildMonthView(context, ref, events, colors)
+        else if (currentView == 'WEEK')
+          _buildWeekView(context, ref, events, colors)
+        else if (currentView == 'TIMELINE')
+          _buildTimelineView(context, ref, events, colors)
+        else if (currentView == 'LIST')
+          _buildListView(context, ref, events, colors)
+        else
+          _buildListView(context, ref, events, colors),
+      ],
+    );
+  }
+
+  Widget _buildLoadingState(ThemeColors colors) {
     return ListView(
       padding: const EdgeInsets.only(left: AppSpacing.l, right: AppSpacing.l, top: 140),
       children: [
@@ -111,14 +103,14 @@ class CalendarScreen extends ConsumerWidget {
     );
   }
 
-  Widget _buildErrorState(WidgetRef ref, Object error) {
+  Widget _buildErrorState(WidgetRef ref, Object error, ThemeColors colors) {
     return Center(
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
-          const Icon(LucideIcons.alertCircle, color: AppColors.error, size: 48),
+          Icon(LucideIcons.alertCircle, color: colors.error, size: 48),
           const SizedBox(height: AppSpacing.m),
-          Text('Failed to load events', style: AppTypography.h3),
+          Text('Failed to load events', style: AppTypography.h3.copyWith(color: colors.textPrimary)),
           const SizedBox(height: AppSpacing.s),
           MhButton(
             label: 'Try Again',
@@ -130,7 +122,7 @@ class CalendarScreen extends ConsumerWidget {
     );
   }
 
-  Widget _buildPageHeader(BuildContext context, WidgetRef ref) {
+  Widget _buildPageHeader(BuildContext context, WidgetRef ref, bool isOffline, ThemeColors colors) {
     return Row(
       mainAxisAlignment: MainAxisAlignment.spaceBetween,
       children: [
@@ -138,32 +130,29 @@ class CalendarScreen extends ConsumerWidget {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Text('EVENTS', style: AppTypography.h1),
+              Text('EVENTS', style: AppTypography.h1.copyWith(color: colors.textPrimary)),
               const SizedBox(height: AppSpacing.xxs),
               Text(
                 'VIEW AND MANAGE INSTITUTIONAL EVENTS',
-                style: AppTypography.caption.copyWith(fontWeight: FontWeight.bold),
+                style: AppTypography.caption.copyWith(
+                  fontWeight: FontWeight.bold,
+                  color: colors.textSecondary.withOpacity(0.8),
+                ),
               ),
-              const SizedBox(height: AppSpacing.xxs),
-              Consumer(builder: (context, ref, _) {
-                final pendingCount = ref.watch(pendingSyncCountProvider).valueOrNull ?? 0;
-                if (pendingCount == 0) return const SizedBox.shrink();
-                return Text('SYNCING $pendingCount CHANGES...', style: AppTypography.caption.copyWith(color: AppColors.info, fontSize: 8));
-              }),
             ],
           ),
         ),
         MhButton(
-          label: 'New Event',
-          onTap: () {},
+          label: 'Add Event',
+          onTap: isOffline ? null : () => context.push('/create-event'),
           height: 40,
-          type: MhButtonType.primary,
+          type: isOffline ? MhButtonType.secondary : MhButtonType.primary,
         ),
       ],
     );
   }
 
-  Widget _buildViewSwitcher(WidgetRef ref, String currentView) {
+  Widget _buildViewSwitcher(WidgetRef ref, String currentView, ThemeColors colors) {
     final views = [
       {'label': 'MONTH', 'icon': LucideIcons.calendar},
       {'label': 'WEEK', 'icon': LucideIcons.calendarDays},
@@ -174,9 +163,9 @@ class CalendarScreen extends ConsumerWidget {
     return Container(
       padding: const EdgeInsets.all(6),
       decoration: BoxDecoration(
-        color: AppColors.surface,
+        color: colors.surface.withOpacity(0.5),
         borderRadius: BorderRadius.circular(16),
-        border: Border.all(color: AppColors.border),
+        border: Border.all(color: colors.border),
       ),
       child: Row(
         children: views.map((view) {
@@ -185,11 +174,21 @@ class CalendarScreen extends ConsumerWidget {
           return Expanded(
             child: GestureDetector(
               onTap: () => ref.read(calendarViewProvider.notifier).setView(label),
-              child: Container(
+              child: AnimatedContainer(
+                duration: const Duration(milliseconds: 200),
                 padding: const EdgeInsets.symmetric(vertical: 10),
                 decoration: BoxDecoration(
-                  color: isSelected ? AppColors.info : Colors.transparent,
+                  color: isSelected ? colors.indigo : Colors.transparent,
                   borderRadius: BorderRadius.circular(12),
+                  boxShadow: isSelected
+                      ? [
+                          BoxShadow(
+                            color: colors.indigo.withOpacity(0.3),
+                            blurRadius: 10,
+                            offset: const Offset(0, 2),
+                          )
+                        ]
+                      : null,
                 ),
                 child: Row(
                   mainAxisAlignment: MainAxisAlignment.center,
@@ -197,7 +196,7 @@ class CalendarScreen extends ConsumerWidget {
                     Icon(
                       view['icon'] as IconData, 
                       size: 14, 
-                      color: isSelected ? Colors.white : AppColors.textSecondary.withOpacity(0.4)
+                      color: isSelected ? Colors.white : colors.textSecondary.withOpacity(0.4)
                     ),
                     const SizedBox(width: 6),
                     Text(
@@ -205,7 +204,7 @@ class CalendarScreen extends ConsumerWidget {
                       style: AppTypography.caption.copyWith(
                         fontSize: 8, 
                         fontWeight: FontWeight.w900, 
-                        color: isSelected ? Colors.white : AppColors.textSecondary.withOpacity(0.4),
+                        color: isSelected ? Colors.white : colors.textSecondary.withOpacity(0.4),
                       ),
                     ),
                   ],
@@ -218,41 +217,127 @@ class CalendarScreen extends ConsumerWidget {
     );
   }
 
-  Widget _buildMonthView(List<Event> events) {
+  Widget _buildMonthView(BuildContext context, WidgetRef ref, List<Event> events, ThemeColors colors) {
     return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        _buildMonthHeader(),
+        _buildMonthHeader(colors),
         const SizedBox(height: AppSpacing.m),
-        _buildCalendarGrid(events),
+        _buildCalendarGrid(events, colors),
+        const SizedBox(height: AppSpacing.xl),
+        _buildUpcomingAgenda(context, ref, events, colors),
       ],
     );
   }
 
-  Widget _buildMonthHeader() {
+  Widget _buildUpcomingAgenda(BuildContext context, WidgetRef ref, List<Event> events, ThemeColors colors) {
+    final now = DateTime.now();
+    final upcomingEvents = events.where((e) {
+      final date = DateTime.parse(e.date);
+      return date.isAfter(now.subtract(const Duration(days: 1)));
+    }).toList()
+      ..sort((a, b) => a.date.compareTo(b.date));
+
+    final displayEvents = upcomingEvents.take(3).toList();
+
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Row(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          children: [
+            Text(
+              'UPCOMING EVENTS', 
+              style: AppTypography.caption.copyWith(
+                fontWeight: FontWeight.w900, 
+                letterSpacing: 1.2,
+                color: colors.textSecondary,
+              ),
+            ),
+            if (upcomingEvents.length > 3)
+              Text(
+                '${upcomingEvents.length} TOTAL', 
+                style: AppTypography.caption.copyWith(
+                  fontSize: 8, 
+                  color: colors.indigo,
+                ),
+              ),
+          ],
+        ),
+        const SizedBox(height: AppSpacing.m),
+        if (displayEvents.isEmpty)
+          Container(
+            padding: const EdgeInsets.all(AppSpacing.xl),
+            decoration: BoxDecoration(
+              color: colors.surface.withOpacity(0.5),
+              borderRadius: BorderRadius.circular(20),
+              border: Border.all(color: colors.border.withOpacity(0.5)),
+            ),
+            child: Center(
+              child: Column(
+                children: [
+                  Icon(LucideIcons.calendarCheck, color: colors.textSecondary.withOpacity(0.2), size: 32),
+                  const SizedBox(height: AppSpacing.s),
+                  Text('No upcoming events scheduled', style: AppTypography.caption.copyWith(color: colors.textSecondary)),
+                ],
+              ),
+            ),
+          )
+        else
+          ...displayEvents.map((event) => _buildEventCard(context, ref, event, colors)),
+      ],
+    );
+  }
+
+  Widget _buildMonthHeader(ThemeColors colors) {
     final now = DateTime.now();
     final monthName = DateFormat('MMMM').format(now);
     final year = DateFormat('yyyy').format(now);
 
     return Row(
       children: [
-        Text('$monthName ', style: AppTypography.h3),
-        Text(year, style: AppTypography.h3.copyWith(color: AppColors.info)),
+        Text('$monthName ', style: AppTypography.h3.copyWith(color: colors.textPrimary)),
+        Text(year, style: AppTypography.h3.copyWith(color: colors.indigo)),
         const Spacer(),
-        const Icon(LucideIcons.chevronLeft, color: AppColors.textSecondary, size: 20),
-        const SizedBox(width: 24),
-        const Icon(LucideIcons.chevronRight, color: AppColors.textSecondary, size: 20),
+        _buildCircleNavButton(LucideIcons.chevronLeft, () {}, colors),
+        const SizedBox(width: 12),
+        _buildCircleNavButton(LucideIcons.chevronRight, () {}, colors),
       ],
     );
   }
 
-  Widget _buildCalendarGrid(List<Event> events) {
+  Widget _buildCircleNavButton(IconData icon, VoidCallback onTap, ThemeColors colors) {
+    return Container(
+      padding: const EdgeInsets.all(8),
+      decoration: BoxDecoration(
+        color: colors.surface,
+        shape: BoxShape.circle,
+        border: Border.all(color: colors.border),
+      ),
+      child: Icon(icon, color: colors.textPrimary, size: 16),
+    );
+  }
+
+  Widget _buildCalendarGrid(List<Event> events, ThemeColors colors) {
     final weekdays = ['SUN', 'MON', 'TUE', 'WED', 'THU', 'FRI', 'SAT'];
+    final now = DateTime.now();
     
     return Container(
       decoration: BoxDecoration(
-        color: AppColors.surface,
+        color: colors.isDark ? colors.surface : Colors.white,
         borderRadius: BorderRadius.circular(24),
-        border: Border.all(color: AppColors.border),
+        border: Border.all(
+          color: colors.isDark 
+              ? colors.border 
+              : colors.border.withOpacity(0.12),
+        ),
+        boxShadow: [
+          BoxShadow(
+            color: colors.border.withOpacity(0.05),
+            blurRadius: 20,
+            offset: const Offset(0, 10),
+          ),
+        ],
       ),
       child: Column(
         children: [
@@ -263,23 +348,26 @@ class CalendarScreen extends ConsumerWidget {
               child: Text(
                 day, 
                 textAlign: TextAlign.center,
-                style: AppTypography.caption.copyWith(fontWeight: FontWeight.bold),
+                style: AppTypography.caption.copyWith(
+                  fontSize: 8,
+                  fontWeight: FontWeight.w900,
+                  color: colors.textSecondary.withOpacity(0.6),
+                ),
               ),
             )).toList(),
           ),
-          const SizedBox(height: 16),
+          const SizedBox(height: 12),
           Container(
-            height: 380,
+            height: 340,
             padding: const EdgeInsets.only(left: 8, right: 8, bottom: 16),
             child: GridView.builder(
               physics: const NeverScrollableScrollPhysics(),
               gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
                 crossAxisCount: 7,
-                childAspectRatio: 0.8,
+                childAspectRatio: 0.85,
               ),
               itemCount: 35,
               itemBuilder: (context, index) {
-                final now = DateTime.now();
                 final firstDayOfMonth = DateTime(now.year, now.month, 1);
                 final startOffset = firstDayOfMonth.weekday % 7;
                 
@@ -293,40 +381,64 @@ class CalendarScreen extends ConsumerWidget {
                         : dayNumber - DateTime(now.year, now.month + 1, 0).day);
                 
                 final isToday = isCurrentMonth && dayNumber == now.day;
+                final currentDate = DateTime(now.year, now.month, dayNumber);
+                
+                // Check for events on this day
+                final hasEvents = isCurrentMonth && events.any((e) {
+                  final eDate = DateTime.parse(e.date);
+                  return eDate.year == currentDate.year && 
+                         eDate.month == currentDate.month && 
+                         eDate.day == currentDate.day;
+                });
                 
                 return Container(
                   decoration: BoxDecoration(
-                    border: Border.all(color: AppColors.border.withOpacity(0.1), width: 0.5),
+                    border: Border.all(
+                      color: colors.border.withOpacity(colors.isDark ? 0.05 : 0.03), 
+                      width: 0.5,
+                    ),
                   ),
                   child: Stack(
+                    alignment: Alignment.center,
                     children: [
-                      if (!isToday)
-                        Padding(
-                          padding: const EdgeInsets.all(8),
-                          child: Text(
-                            '$displayDay',
-                            style: AppTypography.caption.copyWith(
-                              color: isCurrentMonth ? AppColors.textPrimary : AppColors.textSecondary.withOpacity(0.2),
-                            ),
+                      if (isToday)
+                        Container(
+                          width: 32,
+                          height: 32,
+                          decoration: BoxDecoration(
+                            color: colors.indigo.withOpacity(0.1),
+                            shape: BoxShape.circle,
+                            border: Border.all(color: colors.indigo.withOpacity(0.3)),
                           ),
                         ),
-                      if (isToday)
-                        Center(
-                          child: Container(
-                            width: 28,
-                            height: 28,
-                            decoration: const BoxDecoration(
-                              color: AppColors.info,
-                              shape: BoxShape.circle,
+                      Column(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          Text(
+                            '$displayDay',
+                            style: AppTypography.bodyM.copyWith(
+                              fontSize: 14,
+                              fontWeight: isToday ? FontWeight.w900 : FontWeight.w600,
+                              color: isToday 
+                                ? colors.indigo 
+                                : (isCurrentMonth 
+                                    ? colors.textPrimary 
+                                    : colors.textSecondary.withOpacity(0.2)),
                             ),
-                            child: Center(
-                              child: Text(
-                                '$displayDay',
-                                style: const TextStyle(fontSize: 12, fontWeight: FontWeight.bold, color: Colors.white),
+                          ),
+                          if (hasEvents) ...[
+                            const SizedBox(height: 4),
+                            Container(
+                              width: 4,
+                              height: 4,
+                              decoration: BoxDecoration(
+                                color: colors.indigo,
+                                shape: BoxShape.circle,
                               ),
                             ),
-                          ),
-                        ),
+                          ],
+                        ],
+                      ),
                     ],
                   ),
                 );
@@ -338,7 +450,7 @@ class CalendarScreen extends ConsumerWidget {
     );
   }
 
-  Widget _buildWeekView(List<Event> events, WidgetRef ref) {
+  Widget _buildWeekView(BuildContext context, WidgetRef ref, List<Event> events, ThemeColors colors) {
     final selectedDate = ref.watch(selectedDateProvider);
     final now = DateTime.now();
     
@@ -363,11 +475,30 @@ class CalendarScreen extends ConsumerWidget {
                   padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 20),
                   decoration: BoxDecoration(
                     gradient: isSelected ? AppColors.primaryGradient : null,
-                    color: isSelected ? null : AppColors.surface,
+                    color: isSelected ? null : (colors.isDark ? colors.surface : Colors.white),
                     borderRadius: BorderRadius.circular(20),
                     border: Border.all(
-                      color: isSelected ? Colors.transparent : (isToday ? AppColors.info.withOpacity(0.5) : AppColors.border),
+                      color: isSelected 
+                          ? Colors.transparent 
+                          : (isToday 
+                              ? colors.indigo.withOpacity(0.5) 
+                              : colors.border.withOpacity(colors.isDark ? 1 : 0.12)),
                     ),
+                    boxShadow: isSelected
+                        ? [
+                            BoxShadow(
+                              color: colors.honey.withOpacity(0.3),
+                              blurRadius: 10,
+                              offset: const Offset(0, 4),
+                            )
+                          ]
+                        : [
+                            BoxShadow(
+                              color: colors.border.withOpacity(0.03),
+                              blurRadius: 10,
+                              offset: const Offset(0, 4),
+                            )
+                          ],
                   ),
                   child: Column(
                     children: [
@@ -375,14 +506,14 @@ class CalendarScreen extends ConsumerWidget {
                         DateFormat('E').format(date).toUpperCase(),
                         style: AppTypography.caption.copyWith(
                           fontWeight: FontWeight.bold,
-                          color: isSelected ? Colors.white70 : AppColors.textSecondary,
+                          color: isSelected ? Colors.black.withOpacity(0.8) : colors.textSecondary,
                         ),
                       ),
                       const SizedBox(height: 8),
                       Text(
                         date.day.toString(),
                         style: AppTypography.h3.copyWith(
-                          color: isSelected ? Colors.white : AppColors.textPrimary,
+                          color: isSelected ? Colors.black : colors.textPrimary,
                         ),
                       ),
                     ],
@@ -394,7 +525,11 @@ class CalendarScreen extends ConsumerWidget {
         ),
         const SizedBox(height: 32),
         Text('SCHEDULE FOR ${DateFormat('MMMM d').format(DateTime(now.year, now.month, int.parse(selectedDate)))}', 
-          style: AppTypography.caption.copyWith(fontWeight: FontWeight.w900, letterSpacing: 1.2)),
+          style: AppTypography.caption.copyWith(
+            fontWeight: FontWeight.w900, 
+            letterSpacing: 1.2,
+            color: colors.textSecondary,
+          )),
         const SizedBox(height: 16),
         ...events.where((e) {
           final eventDate = DateTime.parse(e.date);
@@ -402,7 +537,7 @@ class CalendarScreen extends ConsumerWidget {
           return eventDate.year == selectedDateTime.year && 
                  eventDate.month == selectedDateTime.month && 
                  eventDate.day == selectedDateTime.day;
-        }).map((event) => _buildEventCard(event)),
+        }).map((event) => _buildEventCard(context, ref, event, colors)),
         if (events.where((e) {
           final eventDate = DateTime.parse(e.date);
           final selectedDateTime = DateTime(now.year, now.month, int.parse(selectedDate));
@@ -413,14 +548,14 @@ class CalendarScreen extends ConsumerWidget {
           Center(
             child: Padding(
               padding: const EdgeInsets.only(top: 40),
-              child: Text('NO EVENTS FOR THIS DAY', style: AppTypography.caption),
+              child: Text('NO EVENTS FOR THIS DAY', style: AppTypography.caption.copyWith(color: colors.textSecondary)),
             ),
           ),
       ],
     );
   }
 
-  Widget _buildTimelineView(List<Event> events) {
+  Widget _buildTimelineView(BuildContext context, WidgetRef ref, List<Event> events, ThemeColors colors) {
     if (events.isEmpty) {
       return const MhEmptyState(
         title: 'No Events',
@@ -439,9 +574,15 @@ class CalendarScreen extends ConsumerWidget {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Text('CHRONOLOGICAL TIMELINE', style: AppTypography.caption.copyWith(fontWeight: FontWeight.w900)),
-        const SizedBox(height: 24),
+        Text(
+          'CHRONOLOGICAL TIMELINE', 
+          style: AppTypography.caption.copyWith(
+            fontWeight: FontWeight.w900,
+            color: colors.textSecondary,
+          )),
+        const SizedBox(height: 12),
         ListView.builder(
+          padding: EdgeInsets.zero,
           shrinkWrap: true,
           physics: const NeverScrollableScrollPhysics(),
           itemCount: sortedEvents.length,
@@ -469,8 +610,8 @@ class CalendarScreen extends ConsumerWidget {
                   Padding(
                     padding: const EdgeInsets.only(left: 12, bottom: 16),
                     child: Text(
-                      DateFormat('MMMM d, yyyy').format(DateTime.parse(event.date)),
-                      style: AppTypography.bodyM.copyWith(fontWeight: FontWeight.w900, color: AppColors.info),
+                      DateFormat('dd-MM-yyyy').format(DateTime.parse(event.date)),
+                      style: AppTypography.bodyM.copyWith(fontWeight: FontWeight.w900, color: colors.indigo),
                     ),
                   ),
                 ],
@@ -484,7 +625,7 @@ class CalendarScreen extends ConsumerWidget {
                             Expanded(
                               child: Container(
                                 width: 2,
-                                color: isFirst && showHeader ? Colors.transparent : AppColors.border,
+                                color: isFirst && showHeader ? Colors.transparent : colors.border,
                               ),
                             ),
                             Container(
@@ -493,7 +634,7 @@ class CalendarScreen extends ConsumerWidget {
                               decoration: BoxDecoration(
                                 color: Color(event.colorValue),
                                 shape: BoxShape.circle,
-                                border: Border.all(color: AppColors.backgroundPrimary, width: 2),
+                                border: Border.all(color: colors.backgroundPrimary, width: 2),
                                 boxShadow: [
                                   BoxShadow(
                                     color: Color(event.colorValue).withOpacity(0.4),
@@ -505,7 +646,7 @@ class CalendarScreen extends ConsumerWidget {
                             Expanded(
                               child: Container(
                                 width: 2,
-                                color: isLast ? Colors.transparent : AppColors.border,
+                                color: isLast ? Colors.transparent : colors.border,
                               ),
                             ),
                           ],
@@ -514,7 +655,7 @@ class CalendarScreen extends ConsumerWidget {
                       Expanded(
                         child: Padding(
                           padding: const EdgeInsets.only(bottom: 16),
-                          child: _buildEventCard(event),
+                          child: _buildEventCard(context, ref, event, colors),
                         ),
                       ),
                     ],
@@ -528,7 +669,7 @@ class CalendarScreen extends ConsumerWidget {
     );
   }
 
-  Widget _buildListView(List<Event> events) {
+  Widget _buildListView(BuildContext context, WidgetRef ref, List<Event> events, ThemeColors colors) {
     if (events.isEmpty) {
       return const MhEmptyState(
         title: 'No Events',
@@ -560,72 +701,745 @@ class CalendarScreen extends ConsumerWidget {
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         if (thisWeekEvents.isNotEmpty) ...[
-          Text('THIS WEEK', style: AppTypography.caption.copyWith(fontWeight: FontWeight.w900, letterSpacing: 1.1)),
+          Text(
+            'THIS WEEK', 
+            style: AppTypography.caption.copyWith(
+              fontWeight: FontWeight.w900, 
+              letterSpacing: 1.1,
+              color: colors.textSecondary,
+            ),
+          ),
           const SizedBox(height: 16),
-          ...thisWeekEvents.map((event) => _buildEventCard(event)),
+          ...thisWeekEvents.map((event) => _buildEventCard(context, ref, event, colors)),
           const SizedBox(height: 24),
         ],
         if (nextWeekEvents.isNotEmpty) ...[
-          Text('NEXT WEEK', style: AppTypography.caption.copyWith(fontWeight: FontWeight.w900, letterSpacing: 1.1)),
+          Text(
+            'NEXT WEEK', 
+            style: AppTypography.caption.copyWith(
+              fontWeight: FontWeight.w900, 
+              letterSpacing: 1.1,
+              color: colors.textSecondary,
+            ),
+          ),
           const SizedBox(height: 16),
-          ...nextWeekEvents.map((event) => _buildEventCard(event)),
+          ...nextWeekEvents.map((event) => _buildEventCard(context, ref, event, colors)),
           const SizedBox(height: 24),
         ],
         if (laterEvents.isNotEmpty) ...[
-          Text('LATER', style: AppTypography.caption.copyWith(fontWeight: FontWeight.w900, letterSpacing: 1.1)),
+          Text(
+            'LATER', 
+            style: AppTypography.caption.copyWith(
+              fontWeight: FontWeight.w900, 
+              letterSpacing: 1.1,
+              color: colors.textSecondary,
+            ),
+          ),
           const SizedBox(height: 16),
-          ...laterEvents.map((event) => _buildEventCard(event)),
+          ...laterEvents.map((event) => _buildEventCard(context, ref, event, colors)),
         ],
       ],
     );
   }
 
-  Widget _buildEventCard(Event event) {
-    return Container(
-      margin: const EdgeInsets.only(bottom: AppSpacing.s),
-      padding: const EdgeInsets.all(AppSpacing.m),
-      decoration: BoxDecoration(
-        color: AppColors.surface,
-        borderRadius: BorderRadius.circular(16),
-        border: Border.all(color: AppColors.border),
-      ),
-      child: Row(
-        children: [
-          Container(
-            width: 4,
-            height: 40,
-            decoration: BoxDecoration(
-              color: Color(event.colorValue),
-              borderRadius: BorderRadius.circular(2),
-            ),
+  Widget _buildEventCard(BuildContext context, WidgetRef ref, Event event, ThemeColors colors) {
+    final color = Color(event.colorValue);
+
+    // Calculate tag text: change UPCOMING to PAST if the event date/time is in the past
+    String tagText = event.type.toUpperCase();
+    if (tagText == 'UPCOMING') {
+      try {
+        final now = DateTime.now();
+        final eventDateTime = DateTime.parse('${event.date}T${event.time}:00');
+        if (now.isAfter(eventDateTime)) {
+          tagText = 'PAST';
+        }
+      } catch (_) {
+        try {
+          final now = DateTime.now();
+          final eventDate = DateTime.parse(event.date);
+          final today = DateTime(now.year, now.month, now.day);
+          if (eventDate.isBefore(today)) {
+            tagText = 'PAST';
+          }
+        } catch (_) {}
+      }
+    }
+
+    // Resolve the org label:
+    String? orgLabel;
+    
+    final departments = ref.watch(departmentsProvider).valueOrNull ?? [];
+    final institutions = ref.watch(institutionsProvider).valueOrNull ?? [];
+
+    if (event.onBehalfOf != null && event.onBehalfOf!.isNotEmpty) {
+      final deptName = event.onBehalfOf!['department_name']?.toString();
+      final instName = event.onBehalfOf!['institution_name']?.toString();
+      
+      if (deptName != null && deptName.isNotEmpty) {
+        orgLabel = deptName;
+      } else if (instName != null && instName.isNotEmpty) {
+        orgLabel = instName;
+      } else {
+        // Fallback to checking IDs inside the map
+        final deptId = event.onBehalfOf!['department_id']?.toString();
+        final instId = event.onBehalfOf!['institution_id']?.toString();
+        
+        if (deptId != null) {
+          final dept = departments.cast<dynamic>().firstWhere(
+            (d) => d.id.toString() == deptId,
+            orElse: () => null,
+          );
+          if (dept != null) orgLabel = dept.name as String?;
+        }
+        if (orgLabel == null && instId != null) {
+          final inst = institutions.cast<dynamic>().firstWhere(
+            (i) => i.id.toString() == instId,
+            orElse: () => null,
+          );
+          if (inst != null) orgLabel = inst.name as String?;
+        }
+      }
+    } else {
+      // Show department or institution of the user who created the event
+      if (event.createdBy != null) {
+        final allUsers = ref.watch(allUsersProvider).valueOrNull ?? [];
+        final creator = allUsers.cast<dynamic>().firstWhere(
+          (u) => u['id']?.toString() == event.createdBy,
+          orElse: () => null,
+        );
+        
+        if (creator != null) {
+          final creatorDeptId = creator['department_id']?.toString();
+          final creatorInstId = creator['institution_id']?.toString();
+          
+          if (creatorDeptId != null) {
+            final dept = departments.cast<dynamic>().firstWhere(
+              (d) => d.id.toString() == creatorDeptId,
+              orElse: () => null,
+            );
+            if (dept != null) orgLabel = dept.name as String?;
+          }
+          if (orgLabel == null && creatorInstId != null) {
+            final inst = institutions.cast<dynamic>().firstWhere(
+              (i) => i.id.toString() == creatorInstId,
+              orElse: () => null,
+            );
+            if (inst != null) orgLabel = inst.name as String?;
+          }
+        }
+      }
+      
+      // Ultimate fallback: if still null, check if the event itself has a departmentId
+      if ((orgLabel == null || orgLabel.isEmpty) && event.departmentId != null) {
+        final dept = departments.cast<dynamic>().firstWhere(
+          (d) => d.id.toString() == event.departmentId.toString(),
+          orElse: () => null,
+        );
+        if (dept != null) orgLabel = dept.name as String?;
+      }
+    }
+    
+    return GestureDetector(
+      onTap: () => _showEventDetails(context, ref, event, colors),
+      child: Container(
+        margin: const EdgeInsets.only(bottom: 12),
+        decoration: BoxDecoration(
+          color: colors.isDark ? colors.surface : Colors.white,
+          borderRadius: BorderRadius.circular(20),
+          border: Border.all(
+            color: colors.isDark 
+                ? colors.border 
+                : colors.border.withOpacity(0.12),
           ),
-          const SizedBox(width: 16),
-          Expanded(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
+          boxShadow: [
+            BoxShadow(
+              color: colors.border.withOpacity(0.05),
+              blurRadius: 10,
+              offset: const Offset(0, 4),
+            ),
+          ],
+        ),
+        child: ClipRRect(
+          borderRadius: BorderRadius.circular(20),
+          child: IntrinsicHeight(
+            child: Row(
               children: [
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
-                    Expanded(
-                      child: Text(
-                        event.title,
-                        style: AppTypography.bodyM.copyWith(fontWeight: FontWeight.bold),
-                        maxLines: 1,
-                        overflow: TextOverflow.ellipsis,
-                      ),
-                    ),
-                    const SizedBox(width: 8),
-                    Text(event.time, style: AppTypography.caption),
-                  ],
+                Container(
+                  width: 6,
+                  color: color,
                 ),
-                const SizedBox(height: 4),
-                Text(event.type, style: AppTypography.caption.copyWith(color: Color(event.colorValue))),
+                Expanded(
+                  child: Padding(
+                    padding: const EdgeInsets.all(16),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          children: [
+                            Expanded(
+                              child: Text(
+                                event.title,
+                                style: AppTypography.bodyM.copyWith(
+                                  fontWeight: FontWeight.w900,
+                                  fontSize: 14,
+                                  color: colors.textPrimary,
+                                ),
+                                maxLines: 1,
+                                overflow: TextOverflow.ellipsis,
+                              ),
+                            ),
+                            const SizedBox(width: 12),
+                            Container(
+                              padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                              decoration: BoxDecoration(
+                                color: color.withOpacity(0.1),
+                                borderRadius: BorderRadius.circular(8),
+                              ),
+                              child: Text(
+                                event.time,
+                                style: AppTypography.caption.copyWith(
+                                  color: color,
+                                  fontWeight: FontWeight.w900,
+                                  fontSize: 10,
+                                ),
+                              ),
+                            ),
+                          ],
+                        ),
+                        const SizedBox(height: 8),
+                        Row(
+                          children: [
+                            Container(
+                              padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
+                              decoration: BoxDecoration(
+                                color: colors.surface,
+                                borderRadius: BorderRadius.circular(4),
+                                border: Border.all(color: colors.border),
+                              ),
+                              child: Text(
+                                tagText,
+                                style: AppTypography.caption.copyWith(
+                                  fontSize: 8,
+                                  fontWeight: FontWeight.w900,
+                                  color: colors.textSecondary.withOpacity(0.6),
+                                  letterSpacing: 0.5,
+                                ),
+                              ),
+                            ),
+                            if (event.location != null && event.location!.isNotEmpty) ...[
+                              const SizedBox(width: 8),
+                              Icon(LucideIcons.mapPin, size: 10, color: colors.textSecondary.withOpacity(0.4)),
+                              const SizedBox(width: 4),
+                              Expanded(
+                                child: Text(
+                                  event.location!,
+                                  style: AppTypography.caption.copyWith(
+                                    fontSize: 10,
+                                    color: colors.textSecondary.withOpacity(0.6),
+                                  ),
+                                  maxLines: 1,
+                                  overflow: TextOverflow.ellipsis,
+                                ),
+                              ),
+                            ],
+                          ],
+                        ),
+                        // Org / department label
+                        if (orgLabel != null && orgLabel.isNotEmpty) ...[
+                          const SizedBox(height: 6),
+                          Row(
+                            children: [
+                              Icon(LucideIcons.building2, size: 10, color: colors.indigo.withOpacity(0.6)),
+                              const SizedBox(width: 4),
+                              Expanded(
+                                child: Text(
+                                  orgLabel,
+                                  style: AppTypography.caption.copyWith(
+                                    fontSize: 10,
+                                    color: colors.indigo.withOpacity(0.8),
+                                    fontWeight: FontWeight.w600,
+                                  ),
+                                  maxLines: 1,
+                                  overflow: TextOverflow.ellipsis,
+                                ),
+                              ),
+                            ],
+                          ),
+                        ],
+                        const SizedBox(height: 12),
+                        _buildReadinessIndicator(context, ref, event, colors),
+                      ],
+                    ),
+                  ),
+                ),
               ],
             ),
           ),
+        ),
+      ),
+    );
+  }
+
+  void _showEventDetails(BuildContext context, WidgetRef ref, Event event, ThemeColors colors) {
+    final color = Color(event.colorValue);
+    final workflowService = ref.read(workflowServiceProvider);
+    final linkedTasks = workflowService.getTasksForEvent(event.id);
+
+    // RBAC: admins/managers can edit any event; team/member only their own
+    final profile = ref.read(currentUserProfileProvider).valueOrNull;
+    final currentUserId = Supabase.instance.client.auth.currentUser?.id;
+    final role = profile?['role']?.toString().toLowerCase() ?? 'member';
+    final isElevated = role == 'admin' || role == 'manager';
+    final isOwner = event.createdBy != null && event.createdBy == currentUserId;
+    final canModify = isElevated || isOwner;
+
+    // Hide bottom navigation bar
+    ref.read(bottomNavVisibleProvider.notifier).state = false;
+
+    showModalBottomSheet(
+      context: context,
+      backgroundColor: colors.backgroundPrimary,
+      isScrollControlled: true,
+      useRootNavigator: true, // renders above the shell nav bar
+      shape: const RoundedRectangleBorder(borderRadius: BorderRadius.vertical(top: Radius.circular(32))),
+      builder: (ctx) => Container(
+        padding: EdgeInsets.fromLTRB(32, 32, 32, 32 + MediaQuery.of(ctx).padding.bottom),
+        constraints: BoxConstraints(maxHeight: MediaQuery.of(ctx).size.height * 0.82),
+        child: SingleChildScrollView(
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              // Header
+              Row(
+                children: [
+                  Container(
+                    width: 40,
+                    height: 40,
+                    decoration: BoxDecoration(color: color.withOpacity(0.1), shape: BoxShape.circle),
+                    child: Icon(LucideIcons.calendar, color: color, size: 20),
+                  ),
+                  const SizedBox(width: 16),
+                  Expanded(
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(event.title, style: AppTypography.h3.copyWith(color: colors.textPrimary)),
+                        Text(
+                          '${event.date} @ ${event.time}',
+                          style: AppTypography.caption.copyWith(color: colors.textSecondary),
+                        ),
+                      ],
+                    ),
+                  ),
+                ],
+              ),
+              const SizedBox(height: 32),
+              Text(
+                'OPERATIONAL READINESS',
+                style: AppTypography.caption.copyWith(
+                  fontWeight: FontWeight.w900, 
+                  letterSpacing: 1.5,
+                  color: colors.textSecondary,
+                ),
+              ),
+              const SizedBox(height: 16),
+              _buildReadinessIndicator(context, ref, event, colors),
+              const SizedBox(height: 32),
+              Text(
+                'LINKED PREPARATION TASKS',
+                style: AppTypography.caption.copyWith(
+                  fontWeight: FontWeight.w900, 
+                  letterSpacing: 1.5,
+                  color: colors.textSecondary,
+                ),
+              ),
+              const SizedBox(height: 16),
+              if (linkedTasks.isEmpty)
+                Text(
+                  'No tasks linked to this event.',
+                  style: AppTypography.bodyS.copyWith(color: colors.textSecondary),
+                )
+              else
+                ...linkedTasks.take(3).map((task) {
+                  final isDone = task.status.toLowerCase() == 'done';
+                  return Container(
+                    margin: const EdgeInsets.only(bottom: 8),
+                    padding: const EdgeInsets.all(12),
+                    decoration: BoxDecoration(
+                      color: colors.isDark ? colors.surface : Colors.white,
+                      borderRadius: BorderRadius.circular(12),
+                      border: Border.all(
+                        color: colors.isDark 
+                            ? colors.border.withOpacity(0.5) 
+                            : colors.border.withOpacity(0.12),
+                      ),
+                    ),
+                    child: Row(
+                      children: [
+                        Icon(
+                          isDone ? LucideIcons.checkCircle2 : LucideIcons.circle, 
+                          size: 14, 
+                          color: isDone ? colors.emerald : colors.textSecondary,
+                        ),
+                        const SizedBox(width: 12),
+                        Expanded(
+                          child: Text(
+                            task.title, 
+                            style: AppTypography.bodyS.copyWith(
+                              fontSize: 12, 
+                              color: isDone ? colors.textSecondary : colors.textPrimary,
+                            ),
+                          ),
+                        ),
+                      ],
+                    ),
+                  );
+                }).toList(),
+              const SizedBox(height: 24),
+              Text(
+                'EQUIPMENT READY',
+                style: AppTypography.caption.copyWith(
+                  fontWeight: FontWeight.w900, 
+                  letterSpacing: 1.5,
+                  color: colors.textSecondary,
+                ),
+              ),
+              const SizedBox(height: 16),
+              if (event.linkedInventoryIds.isEmpty)
+                Text(
+                  'No equipment linked.',
+                  style: AppTypography.bodyS.copyWith(color: colors.textSecondary),
+                )
+              else
+                Row(
+                  children: [
+                    Icon(LucideIcons.packageCheck, size: 16, color: colors.emerald),
+                    const SizedBox(width: 12),
+                    Text(
+                      'All linked assets are ready.', 
+                      style: TextStyle(color: colors.emerald, fontSize: 12),
+                    ),
+                  ],
+                ),
+
+              // Requested Media Coverage
+              const SizedBox(height: 24),
+              Text(
+                'REQUESTED MEDIA SERVICES',
+                style: AppTypography.caption.copyWith(
+                  fontWeight: FontWeight.w900, 
+                  letterSpacing: 1.5,
+                  color: colors.textSecondary,
+                ),
+              ),
+              const SizedBox(height: 16),
+              if (event.mediaCoverage.isEmpty)
+                Text(
+                  'No media services requested.',
+                  style: AppTypography.bodyS.copyWith(color: colors.textSecondary),
+                )
+              else
+                Wrap(
+                  spacing: 8,
+                  runSpacing: 8,
+                  children: event.mediaCoverage.map((service) => Container(
+                    padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+                    decoration: BoxDecoration(
+                      color: colors.indigo.withOpacity(0.08),
+                      borderRadius: BorderRadius.circular(20),
+                      border: Border.all(color: colors.indigo.withOpacity(0.3)),
+                    ),
+                    child: Row(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        Icon(LucideIcons.camera, size: 12, color: colors.indigo),
+                        const SizedBox(width: 6),
+                        Text(
+                          service,
+                          style: AppTypography.bodyS.copyWith(
+                            color: colors.indigo,
+                            fontWeight: FontWeight.w600,
+                            fontSize: 11,
+                          ),
+                        ),
+                      ],
+                    ),
+                  )).toList(),
+                ),
+
+              // Assigned Crew
+              const SizedBox(height: 24),
+              Text(
+                'ASSIGNED CREW',
+                style: AppTypography.caption.copyWith(
+                  fontWeight: FontWeight.w900, 
+                  letterSpacing: 1.5,
+                  color: colors.textSecondary,
+                ),
+              ),
+              const SizedBox(height: 16),
+              if (event.assignedCrew.isEmpty)
+                Text(
+                  'No crew members assigned.',
+                  style: AppTypography.bodyS.copyWith(color: colors.textSecondary),
+                )
+              else
+                Wrap(
+                  spacing: 8,
+                  runSpacing: 8,
+                  children: event.assignedCrew.map((crew) {
+                    final fullName = crew['full_name'] ?? crew['email'] ?? 'Unknown User';
+                    final role = crew['role'] ?? 'member';
+                    final avatarUrl = crew['avatar_url'] as String?;
+                    final initials = fullName.isNotEmpty ? fullName.substring(0, 1).toUpperCase() : '?';
+
+                    return Container(
+                      padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
+                      decoration: BoxDecoration(
+                        color: colors.isDark ? colors.surface : Colors.white,
+                        borderRadius: BorderRadius.circular(20),
+                        border: Border.all(
+                          color: colors.isDark 
+                              ? colors.border 
+                              : colors.border.withOpacity(0.12),
+                        ),
+                        boxShadow: colors.isDark
+                            ? []
+                            : [
+                                BoxShadow(
+                                  color: colors.border.withOpacity(0.03),
+                                  blurRadius: 5,
+                                ),
+                              ],
+                      ),
+                      child: Row(
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          if (avatarUrl != null && avatarUrl.isNotEmpty)
+                            CircleAvatar(
+                              radius: 10,
+                              backgroundImage: NetworkImage(avatarUrl),
+                            )
+                          else
+                            CircleAvatar(
+                              radius: 10,
+                              backgroundColor: colors.honey.withOpacity(0.2),
+                              child: Text(
+                                initials,
+                                style: TextStyle(
+                                  fontSize: 8, 
+                                  fontWeight: FontWeight.bold, 
+                                  color: colors.honey,
+                                ),
+                              ),
+                            ),
+                          const SizedBox(width: 8),
+                          Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            mainAxisSize: MainAxisSize.min,
+                            children: [
+                              Text(
+                                fullName,
+                                style: AppTypography.bodyS.copyWith(
+                                  fontWeight: FontWeight.w600,
+                                  fontSize: 11,
+                                  color: colors.textPrimary,
+                                ),
+                              ),
+                              Text(
+                                role.toUpperCase(),
+                                style: AppTypography.caption.copyWith(
+                                  fontSize: 8,
+                                  color: colors.textSecondary,
+                                ),
+                              ),
+                            ],
+                          ),
+                        ],
+                      ),
+                    );
+                  }).toList(),
+                ),
+
+              // Edit / Delete — only visible when user has permission
+              if (canModify) ...[
+                const SizedBox(height: 32),
+                Divider(color: colors.border, height: 1),
+                const SizedBox(height: 20),
+                Row(
+                  children: [
+                    // Edit
+                    Expanded(
+                      child: GestureDetector(
+                        onTap: () {
+                          Navigator.of(ctx).pop();
+                          context.push('/create-event', extra: event);
+                        },
+                        child: Container(
+                          padding: const EdgeInsets.symmetric(vertical: 14),
+                          decoration: BoxDecoration(
+                            color: colors.indigo.withOpacity(0.08),
+                            borderRadius: BorderRadius.circular(16),
+                            border: Border.all(color: colors.indigo.withOpacity(0.3)),
+                          ),
+                          child: Row(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: [
+                              Icon(LucideIcons.pencil, size: 15, color: colors.indigo),
+                              const SizedBox(width: 8),
+                              Text(
+                                'Edit Event',
+                                style: AppTypography.bodyS.copyWith(
+                                  color: colors.indigo,
+                                  fontWeight: FontWeight.w700,
+                                  fontSize: 13,
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
+                      ),
+                    ),
+                    const SizedBox(width: 12),
+                    // Delete
+                    Expanded(
+                      child: GestureDetector(
+                        onTap: () {
+                          Navigator.of(ctx).pop();
+                          _confirmDeleteEvent(context, ref, event, colors);
+                        },
+                        child: Container(
+                          padding: const EdgeInsets.symmetric(vertical: 14),
+                          decoration: BoxDecoration(
+                            color: colors.error.withOpacity(0.08),
+                            borderRadius: BorderRadius.circular(16),
+                            border: Border.all(color: colors.error.withOpacity(0.3)),
+                          ),
+                          child: Row(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: [
+                              Icon(LucideIcons.trash2, size: 15, color: colors.error),
+                              const SizedBox(width: 8),
+                              Text(
+                                'Delete',
+                                style: AppTypography.bodyS.copyWith(
+                                  color: colors.error,
+                                  fontWeight: FontWeight.w700,
+                                  fontSize: 13,
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+                const SizedBox(height: 8),
+              ],
+            ],
+          ),
+        ),
+      ),
+    ).then((_) {
+      ref.read(bottomNavVisibleProvider.notifier).state = true;
+    });
+  }
+
+  void _confirmDeleteEvent(BuildContext context, WidgetRef ref, Event event, ThemeColors colors) {
+    showDialog(
+      context: context,
+      builder: (ctx) => AlertDialog(
+        backgroundColor: colors.surface,
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(24)),
+        title: Text('Delete Event', style: AppTypography.h3.copyWith(color: colors.textPrimary)),
+        content: Text(
+          'Are you sure you want to delete "${event.title}"? This cannot be undone.',
+          style: AppTypography.bodyS.copyWith(color: colors.textSecondary),
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.of(ctx).pop(),
+            child: Text('Cancel', style: TextStyle(color: colors.textSecondary)),
+          ),
+          TextButton(
+            onPressed: () async {
+              Navigator.of(ctx).pop();
+              final result = await ref.read(eventRepositoryProvider).deleteEvent(event.id);
+              result.fold(
+                (failure) {
+                  if (context.mounted) {
+                    ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+                      content: Text('Failed to delete: ${failure.message}'),
+                      backgroundColor: colors.error,
+                    ));
+                  }
+                },
+                (_) {
+                  ref.invalidate(eventListProvider);
+                  if (context.mounted) {
+                    ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
+                      content: Text('Event deleted successfully'),
+                      backgroundColor: AppColors.success,
+                    ));
+                  }
+                },
+              );
+            },
+            child: Text('Delete', style: TextStyle(color: colors.error, fontWeight: FontWeight.w700)),
+          ),
         ],
       ),
+    );
+  }
+
+  Widget _buildReadinessIndicator(BuildContext context, WidgetRef ref, Event event, ThemeColors colors) {
+    final workflowService = ref.watch(workflowServiceProvider);
+    final readiness = workflowService.getEventReadiness(event.id);
+    final linkedTasks = workflowService.getTasksForEvent(event.id);
+    
+    if (linkedTasks.isEmpty) return const SizedBox.shrink();
+
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Row(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          children: [
+            Text(
+              'READINESS',
+              style: AppTypography.caption.copyWith(
+                fontSize: 7, 
+                fontWeight: FontWeight.w900, 
+                letterSpacing: 1.0,
+                color: colors.textSecondary,
+              ),
+            ),
+            Text(
+              '${(readiness * 100).toInt()}%',
+              style: AppTypography.caption.copyWith(
+                fontSize: 8, 
+                fontWeight: FontWeight.w900, 
+                color: readiness == 1.0 ? colors.emerald : colors.indigo
+              ),
+            ),
+          ],
+        ),
+        const SizedBox(height: 4),
+        ClipRRect(
+          borderRadius: BorderRadius.circular(2),
+          child: LinearProgressIndicator(
+            value: readiness,
+            minHeight: 2,
+            backgroundColor: colors.border.withOpacity(0.5),
+            valueColor: AlwaysStoppedAnimation<Color>(
+              readiness == 1.0 ? colors.emerald : colors.indigo
+            ),
+          ),
+        ),
+      ],
     );
   }
 }

@@ -65,7 +65,7 @@ export const tasks = sqliteTable('tasks', {
   title: text('title').notNull(),
   description: text('description'),
   status: text('status').notNull(), // 'todo', 'in_progress', 'review', 'done'
-  priority: text('priority').notNull(), // 'low', 'medium', 'high', 'urgent'
+  priority: text('priority').notNull(), // 'low', 'medium', 'high'
   assignedToId: integer('assigned_to_id').references(() => users.id),
   createdById: integer('created_by_id').notNull().references(() => users.id),
   institution_id: integer('institution_id').notNull().references(() => institutions.id),

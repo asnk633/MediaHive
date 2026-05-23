@@ -14,7 +14,7 @@ export default function EditEventModalAdmin({ open, onClose }: { open: boolean; 
     <ModalBase open={open} onClose={onClose}>
       <header className="mb-3 flex items-center justify-between">
         <h3 className="text-lg font-bold">Edit Event</h3>
-        <button onClick={onClose} className="text-white/70 hover:text-white">✕</button>
+        <button onClick={onClose} className="text-foreground/70 hover:text-foreground">✕</button>
       </header>
       <div className="space-y-6">
         <section className="rounded-lg bg-[#2c2c2c] p-4 shadow-lg">
@@ -87,7 +87,7 @@ export default function EditEventModalAdmin({ open, onClose }: { open: boolean; 
         </section>
         <div className="flex flex-col gap-3 pt-2 sm:flex-row">
           <button className="h-12 flex-1 rounded-lg bg-[#00BFA6] font-bold text-black">Save Changes</button>
-          <button onClick={onClose} className="h-12 flex-1 rounded-lg border border-white/30">Cancel</button>
+          <button onClick={onClose} className="h-12 flex-1 rounded-lg border border-foreground/30">Cancel</button>
         </div>
       </div>
     </ModalBase>

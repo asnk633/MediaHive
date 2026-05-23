@@ -38,15 +38,15 @@ export function EventHoverTooltip({ event, anchorRect, isVisible }: EventHoverTo
                 zIndex: 10000,
                 pointerEvents: 'none'
             }}
-            className="bg-[#1a2235]/95 backdrop-blur-xl border border-white/20 rounded-xl shadow-2xl p-4 flex flex-col gap-2"
+            className="bg-[#1a2235]/95 backdrop-blur-xl border border-foreground/20 rounded-xl shadow-2xl p-4 flex flex-col gap-2"
         >
             <div className="flex items-center gap-2">
                 <div className={`w-2 h-2 rounded-full ${event.is_system_event ? 'bg-amber-500' : 'bg-blue-500'}`} />
-                <h4 className="text-xs font-bold text-white truncate">{event.title}</h4>
+                <h4 className="text-xs font-bold text-foreground truncate">{event.title}</h4>
             </div>
 
             <div className="flex flex-col gap-1.5 mt-1">
-                <div className="flex items-center gap-2 text-[10px] text-white/60">
+                <div className="flex items-center gap-2 text-[10px] text-foreground/80">
                     <Clock size={12} className="text-blue-400" />
                     <span>
                         {(() => {
@@ -63,13 +63,13 @@ export function EventHoverTooltip({ event, anchorRect, isVisible }: EventHoverTo
                 </div>
                 
                 {event.location && (
-                    <div className="flex items-center gap-2 text-[10px] text-white/60">
+                    <div className="flex items-center gap-2 text-[10px] text-foreground/80">
                          <Users size={12} className="text-blue-400" />
                          <span className="truncate">{event.location}</span>
                     </div>
                 )}
 
-                <div className="flex items-center gap-2 text-[10px] text-white/40 font-mono uppercase tracking-tighter">
+                <div className="flex items-center gap-2 text-[10px] text-foreground/80 font-mono uppercase tracking-tighter">
                     <CheckSquare size={12} />
                     <span>Quick Preview Enabled</span>
                 </div>

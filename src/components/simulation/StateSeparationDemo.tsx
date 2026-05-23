@@ -75,7 +75,7 @@ export function StateSeparationDemo({ taskId }: StateSeparationDemoProps) {
       <div className="bg-green-900/10 border border-green-800/30 rounded-xl p-6">
         <div className="flex items-center gap-3 mb-4">
           <Activity className="h-6 w-6 text-green-400" />
-          <h2 className="text-2xl font-bold text-white">Live System State</h2>
+          <h2 className="text-2xl font-bold text-foreground">Live System State</h2>
           <div className="bg-green-900/30 px-3 py-1 rounded-full">
             <span className="text-green-300 text-sm font-medium">ACTIVE</span>
           </div>
@@ -84,17 +84,17 @@ export function StateSeparationDemo({ taskId }: StateSeparationDemoProps) {
         <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
           <div className="bg-green-900/20 p-4 rounded-lg">
             <h3 className="text-green-300 font-medium mb-2">Connection Status</h3>
-            <p className="text-white">{liveState.isOnline ? 'Online' : 'Offline'}</p>
+            <p className="text-foreground">{liveState.isOnline ? 'Online' : 'Offline'}</p>
           </div>
           
           <div className="bg-green-900/20 p-4 rounded-lg">
             <h3 className="text-green-300 font-medium mb-2">Task Status</h3>
-            <p className="text-white capitalize">{liveState.taskStatus}</p>
+            <p className="text-foreground capitalize">{liveState.taskStatus}</p>
           </div>
           
           <div className="bg-green-900/20 p-4 rounded-lg">
             <h3 className="text-green-300 font-medium mb-2">Last Updated</h3>
-            <p className="text-white">{liveState.lastUpdated}</p>
+            <p className="text-foreground">{liveState.lastUpdated}</p>
           </div>
         </div>
         
@@ -122,7 +122,7 @@ export function StateSeparationDemo({ taskId }: StateSeparationDemoProps) {
       <div className="bg-blue-900/10 border border-blue-800/30 rounded-xl p-6">
         <div className="flex items-center gap-3 mb-4">
           <Play className="h-6 w-6 text-blue-400" />
-          <h2 className="text-2xl font-bold text-white">Simulation Controls</h2>
+          <h2 className="text-2xl font-bold text-foreground">Simulation Controls</h2>
         </div>
         
         <div className="bg-blue-900/20 border border-blue-800/50 rounded-lg p-6 mb-6">
@@ -130,7 +130,7 @@ export function StateSeparationDemo({ taskId }: StateSeparationDemoProps) {
             <button
               onClick={handleSimulate}
               disabled={!simulation.canSimulate}
-              className="px-6 py-3 bg-blue-600 hover:bg-blue-500 disabled:bg-gray-700 disabled:cursor-not-allowed text-white rounded-lg transition-colors flex items-center gap-2"
+              className="px-6 py-3 bg-blue-600 hover:bg-blue-500 disabled:bg-gray-700 disabled:cursor-not-allowed text-foreground rounded-lg transition-colors flex items-center gap-2"
             >
               <Play className="h-4 w-4" />
               Run Simulation
@@ -175,13 +175,13 @@ export function StateSeparationDemo({ taskId }: StateSeparationDemoProps) {
 
       {/* Verification Checklist */}
       <div className="bg-gray-900 border border-gray-700 rounded-xl p-6">
-        <h3 className="text-xl font-bold text-white mb-4">Phase 12 UX Verification</h3>
+        <h3 className="text-xl font-bold text-foreground mb-4">Phase 12 UX Verification</h3>
         
         <div className="space-y-3">
           <div className="flex items-start gap-3">
             <div className="w-2 h-2 bg-green-500 rounded-full mt-2 flex-shrink-0"></div>
             <div>
-              <p className="text-white font-medium">Persistent Visual Indicator</p>
+              <p className="text-foreground font-medium">Persistent Visual Indicator</p>
               <p className="text-gray-400 text-sm">"This is a preview. Nothing will be saved or applied." clearly displayed</p>
             </div>
           </div>
@@ -189,7 +189,7 @@ export function StateSeparationDemo({ taskId }: StateSeparationDemoProps) {
           <div className="flex items-start gap-3">
             <div className="w-2 h-2 bg-green-500 rounded-full mt-2 flex-shrink-0"></div>
             <div>
-              <p className="text-white font-medium">Structural Visual Separation</p>
+              <p className="text-foreground font-medium">Structural Visual Separation</p>
               <p className="text-gray-400 text-sm">Clear boundary between Live State and Simulation State sections</p>
             </div>
           </div>
@@ -197,7 +197,7 @@ export function StateSeparationDemo({ taskId }: StateSeparationDemoProps) {
           <div className="flex items-start gap-3">
             <div className="w-2 h-2 bg-green-500 rounded-full mt-2 flex-shrink-0"></div>
             <div>
-              <p className="text-white font-medium">Required Controls Exist</p>
+              <p className="text-foreground font-medium">Required Controls Exist</p>
               <p className="text-gray-400 text-sm">"Close Preview" and "Back to Current State" buttons present</p>
             </div>
           </div>
@@ -205,7 +205,7 @@ export function StateSeparationDemo({ taskId }: StateSeparationDemoProps) {
           <div className="flex items-start gap-3">
             <div className="w-2 h-2 bg-green-500 rounded-full mt-2 flex-shrink-0"></div>
             <div>
-              <p className="text-white font-medium">No Visual Highlighting</p>
+              <p className="text-foreground font-medium">No Visual Highlighting</p>
               <p className="text-gray-400 text-sm">All simulation outcomes presented equally without preference</p>
             </div>
           </div>
@@ -213,7 +213,7 @@ export function StateSeparationDemo({ taskId }: StateSeparationDemoProps) {
           <div className="flex items-start gap-3">
             <div className="w-2 h-2 bg-green-500 rounded-full mt-2 flex-shrink-0"></div>
             <div>
-              <p className="text-white font-medium">No Default Selection</p>
+              <p className="text-foreground font-medium">No Default Selection</p>
               <p className="text-gray-400 text-sm">No pre-selected options or directional framing</p>
             </div>
           </div>
@@ -221,7 +221,7 @@ export function StateSeparationDemo({ taskId }: StateSeparationDemoProps) {
           <div className="flex items-start gap-3">
             <div className="w-2 h-2 bg-green-500 rounded-full mt-2 flex-shrink-0"></div>
             <div>
-              <p className="text-white font-medium">No Directional Framing</p>
+              <p className="text-foreground font-medium">No Directional Framing</p>
               <p className="text-gray-400 text-sm">Neutral presentation without suggestive language</p>
             </div>
           </div>

@@ -12,7 +12,7 @@ export default function PeoplePicker({
   value,
   onSelect,
   anchorClass = "relative inline-block",
-  buttonClass = "rounded-md bg-white/10 px-3 py-1.5 text-sm hover:bg-white/15",
+  buttonClass = "rounded-md bg-foreground/10 px-3 py-1.5 text-sm hover:bg-foreground/15",
 }: {
   value?: string | null;
   onSelect: (personId: string | null, personName?: string) => void;
@@ -66,24 +66,24 @@ export default function PeoplePicker({
               <button
                 key={p.id}
                 onClick={() => { onSelect(p.id, p.name); setOpen(false); }}
-                className="flex w-full items-center justify-between rounded-md px-2 py-2 text-left hover:bg-white/10"
+                className="flex w-full items-center justify-between rounded-md px-2 py-2 text-left hover:bg-foreground/10"
               >
                 <span>{p.name}</span>
                 <span className={cn("text-[10px] px-1.5 py-0.5 rounded-full border bg-opacity-10", getRoleBadgeColors(p.role))}>{p.role}</span>
               </button>
             ))}
-            {list.length === 0 && <div className="px-2 py-2 text-sm text-white/60">No results</div>}
+            {list.length === 0 && <div className="px-2 py-2 text-sm text-foreground/80">No results</div>}
           </div>
           <div className="mt-2 flex justify-between">
             <button
               onClick={() => { onSelect(null); setOpen(false); }}
-              className="rounded-md bg-white/10 px-3 py-1.5 text-sm hover:bg-white/15"
+              className="rounded-md bg-foreground/10 px-3 py-1.5 text-sm hover:bg-foreground/15"
             >
               Clear assignee
             </button>
             <button
               onClick={() => setOpen(false)}
-              className="rounded-md bg-white/10 px-3 py-1.5 text-sm hover:bg-white/15"
+              className="rounded-md bg-foreground/10 px-3 py-1.5 text-sm hover:bg-foreground/15"
             >
               Close
             </button>

@@ -103,7 +103,7 @@ export default function FeaturePermissionsClient() {
                             variant="ghost"
                             onClick={fetchOverrides}
                             disabled={loading || saving}
-                            className="text-white/60 hover:text-white"
+                            className="text-foreground/80 hover:text-foreground"
                         >
                             <RefreshCcw size={16} className={`mr-2 ${loading ? 'animate-spin' : ''}`} />
                             Refresh
@@ -111,7 +111,7 @@ export default function FeaturePermissionsClient() {
                         <Button 
                             onClick={handleSave} 
                             disabled={loading || saving}
-                            className="bg-indigo-600 hover:bg-indigo-500 text-white"
+                            className="bg-indigo-600 hover:bg-indigo-500 text-foreground"
                         >
                             <Save size={16} className="mr-2" />
                             {saving ? 'Saving...' : 'Save Changes'}
@@ -121,15 +121,15 @@ export default function FeaturePermissionsClient() {
             />
             <div className="max-w-[1200px] mx-auto pt-6">
                 
-                <div className="bg-[#0c0c0e] border border-white/10 rounded-[24px] overflow-hidden shadow-2xl">
-                    <div className="p-6 border-b border-white/5 bg-white/[0.02]">
+                <div className="bg-popover border border-foreground/10 rounded-[24px] overflow-hidden shadow-2xl">
+                    <div className="p-6 border-b border-foreground/5 bg-foreground/[0.02]">
                         <div className="flex items-start gap-4">
                             <div className="w-10 h-10 rounded-2xl bg-amber-500/10 flex items-center justify-center text-amber-400 shrink-0 mt-1">
                                 <ShieldAlert size={20} />
                             </div>
                             <div>
-                                <h2 className="text-lg font-bold text-white tracking-tight">Global Overrides</h2>
-                                <p className="text-sm text-white/50 mt-1 leading-relaxed">
+                                <h2 className="text-lg font-bold text-foreground tracking-tight">Global Overrides</h2>
+                                <p className="text-sm text-foreground/70 mt-1 leading-relaxed">
                                     Adjusting these settings will immediately affect all users within this tenant. 
                                     Setting a feature to a higher role (e.g., Admin) will instantly hide it from lower roles.
                                 </p>
@@ -140,17 +140,17 @@ export default function FeaturePermissionsClient() {
                     <div className="overflow-x-auto">
                         <table className="w-full text-left border-collapse">
                             <thead>
-                                <tr className="border-b border-white/5 bg-white/[0.01]">
-                                    <th className="px-6 py-4 text-xs font-black text-white/30 uppercase tracking-[0.2em]">Module / Feature</th>
-                                    <th className="px-6 py-4 text-xs font-black text-white/30 uppercase tracking-[0.2em]">Default Required Role</th>
-                                    <th className="px-6 py-4 text-xs font-black text-white/30 uppercase tracking-[0.2em]">Current Override</th>
-                                    <th className="px-6 py-4 text-xs font-black text-white/30 uppercase tracking-[0.2em] text-right">Actions</th>
+                                <tr className="border-b border-foreground/5 bg-foreground/[0.01]">
+                                    <th className="px-6 py-4 text-xs font-black text-foreground/70 uppercase tracking-[0.2em]">Module / Feature</th>
+                                    <th className="px-6 py-4 text-xs font-black text-foreground/70 uppercase tracking-[0.2em]">Default Required Role</th>
+                                    <th className="px-6 py-4 text-xs font-black text-foreground/70 uppercase tracking-[0.2em]">Current Override</th>
+                                    <th className="px-6 py-4 text-xs font-black text-foreground/70 uppercase tracking-[0.2em] text-right">Actions</th>
                                 </tr>
                             </thead>
-                            <tbody className="divide-y divide-white/5">
+                            <tbody className="divide-y divide-foreground/5">
                                 {loading ? (
                                     <tr>
-                                        <td colSpan={4} className="px-6 py-12 text-center text-white/40 text-sm font-medium">
+                                        <td colSpan={4} className="px-6 py-12 text-center text-foreground/80 text-sm font-medium">
                                             Loading configurations...
                                         </td>
                                     </tr>
@@ -161,10 +161,10 @@ export default function FeaturePermissionsClient() {
                                     const activeRole = currentOverride || defaultRole;
 
                                     return (
-                                        <tr key={feature.id} className="hover:bg-white/[0.02] transition-colors group">
+                                        <tr key={feature.id} className="hover:bg-foreground/[0.02] transition-colors group">
                                             <td className="px-6 py-4">
                                                 <div className="flex items-center gap-3">
-                                                    <span className="text-sm font-bold text-white capitalize">
+                                                    <span className="text-sm font-bold text-foreground capitalize">
                                                         {feature.id.replace(/([A-Z])/g, ' $1').trim()}
                                                     </span>
                                                     {feature.isLabs && (
@@ -180,7 +180,7 @@ export default function FeaturePermissionsClient() {
                                                 </div>
                                             </td>
                                             <td className="px-6 py-4">
-                                                <span className="text-sm font-medium text-white/40 capitalize">
+                                                <span className="text-sm font-medium text-foreground/80 capitalize">
                                                     {defaultRole}
                                                 </span>
                                             </td>
@@ -188,12 +188,12 @@ export default function FeaturePermissionsClient() {
                                                 <select
                                                     value={activeRole}
                                                     onChange={(e) => handleOverrideChange(feature.id, e.target.value)}
-                                                    className={`bg-black border rounded-xl px-3 py-2 text-sm font-semibold capitalize outline-none focus:ring-2 focus:ring-indigo-500/50 transition-all ${
-                                                        isOverridden ? 'border-amber-500/30 text-amber-100 bg-amber-500/5' : 'border-white/10 text-white/90'
+                                                    className={`bg-popover border rounded-xl px-3 py-2 text-sm font-semibold capitalize outline-none focus:ring-2 focus:ring-indigo-500/50 transition-all ${
+                                                        isOverridden ? 'border-amber-500/30 text-amber-600 dark:text-amber-100 bg-amber-500/5' : 'border-foreground/10 text-foreground/90'
                                                     }`}
                                                 >
                                                     {ROLES.map(role => (
-                                                        <option key={role} value={role} className="bg-black text-white">
+                                                        <option key={role} value={role} className="bg-popover text-foreground">
                                                             {role} {role === defaultRole ? '(Default)' : ''}
                                                         </option>
                                                     ))}
@@ -205,7 +205,7 @@ export default function FeaturePermissionsClient() {
                                                     size="sm"
                                                     disabled={!isOverridden}
                                                     onClick={() => handleReset(feature.id)}
-                                                    className={`text-xs ${isOverridden ? 'text-rose-400 hover:text-rose-300 hover:bg-rose-500/10' : 'text-white/10'}`}
+                                                    className={`text-xs ${isOverridden ? 'text-rose-400 hover:text-rose-300 hover:bg-rose-500/10' : 'text-foreground/70'}`}
                                                 >
                                                     Reset to Default
                                                 </Button>

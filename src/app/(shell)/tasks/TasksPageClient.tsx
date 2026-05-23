@@ -23,7 +23,7 @@ import dynamic from 'next/dynamic';
 
 // Dynamic imports for heavy components
 const TaskListView = dynamic(() => import("@/components/tasks/TaskListView").then(mod => mod.TaskListView), {
-    loading: () => <div className="p-6 space-y-4 min-h-[400px]"><div className="h-12 w-full bg-white/5 animate-pulse rounded-xl" /><div className="h-64 w-full bg-white/5 animate-pulse rounded-xl" /></div>
+    loading: () => <div className="p-6 space-y-4 min-h-[400px]"><div className="h-12 w-full bg-foreground/5 animate-pulse rounded-xl" /><div className="h-64 w-full bg-foreground/5 animate-pulse rounded-xl" /></div>
 });
 const TaskDetailModalV2 = dynamic(() => import("@/components/tasks/TaskDetailModalV2").then(mod => mod.TaskDetailModalV2));
 const EditTaskDialog = dynamic(() => import("@/components/tasks/EditTaskDialog").then(mod => mod.EditTaskDialog));
@@ -88,7 +88,8 @@ export default function TasksPageClient() {
                 role,
                 userId: user?.uid,
                 institutionId: currentWorkspaceId,
-                includeDemoData: true
+                includeDemoData: true,
+                includeAllHistory: true
             },
             (fetchedTasks) => {
                 syncRemoteTasks(fetchedTasks, user);
@@ -183,16 +184,15 @@ export default function TasksPageClient() {
                 description="Accountability-focused task management."
                 actions={
                     <div className="flex items-center gap-3">
-                        <ConflictAwarenessBadge />
 
                         {/* Phase 14: Dev Only Stress Seeder Removed */}
 
                         <AppLink href="/tasks/new">
                             <button
                                 aria-label="New Task"
-                                className="flex items-center gap-2 px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-xl shadow-lg dark:shadow-blue-900/50 light:shadow-blue-200 transition-all active:scale-95 text-sm font-semibold"
+                                className="flex items-center gap-2 px-4 py-2 bg-primary/10 hover:bg-primary/20 text-primary border border-primary/30 rounded-xl transition-all active:scale-95 text-sm font-bold tracking-wide"
                             >
-                                <Plus size={18} />
+                                <Plus size={18} className="drop-shadow-[0_0_8px_rgba(255,184,0,0.5)]" />
                                 <span className="hidden sm:inline">New Task</span>
                             </button>
                         </AppLink>
@@ -232,15 +232,6 @@ export default function TasksPageClient() {
                     />
                 )
             }
-
-            <ConflictResolutionPanel
-                isOpen={isConflictPanelOpen}
-                onClose={() => setIsConflictPanelOpen(false)}
-                conflictBuffer={conflictBuffer}
-                onResolve={resolveConflict}
-                tasks={displayTasks}
-                user={user}
-            />
 
         </PageLayout >
     );

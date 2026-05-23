@@ -85,12 +85,12 @@ export default function AdminLeaveRequestsPage() {
                 <div className="flex items-center gap-4">
                     <button
                         onClick={() => router.back()}
-                        className="p-2 bg-white/5 hover:bg-white/10 text-white/70 hover:text-white rounded-xl transition-colors"
+                        className="p-2 bg-foreground/5 hover:bg-foreground/10 text-foreground/70 hover:text-foreground rounded-xl transition-colors"
                     >
                         <ChevronLeft size={20} />
                     </button>
                     <div>
-                        <h1 className="text-3xl font-display font-bold text-white tracking-tight">
+                        <h1 className="text-3xl font-display font-bold text-foreground tracking-tight">
                             Leave Requests Management
                         </h1>
                         <p className="text-[var(--color-text-secondary)]">
@@ -109,7 +109,7 @@ export default function AdminLeaveRequestsPage() {
                 )}
 
                 {/* Content */}
-                <div className="bg-[#0f172a] border border-white/5 rounded-3xl p-6 shadow-2xl min-h-[400px]">
+                <div className="bg-[var(--glass-liquid-bg)] border border-foreground/5 rounded-3xl p-6 shadow-2xl min-h-[400px]">
                     {loading ? (
                         <div className="flex items-center justify-center h-64">
                             <Loader2 size={32} className="animate-spin text-blue-400" />
@@ -117,10 +117,10 @@ export default function AdminLeaveRequestsPage() {
                     ) : requests.length === 0 ? (
                         <div className="flex flex-col items-center justify-center h-64 text-center">
                             <div className="text-6xl mb-4">✅</div>
-                            <h3 className="text-xl font-bold text-white mb-2">
+                            <h3 className="text-xl font-bold text-foreground mb-2">
                                 All Caught Up!
                             </h3>
-                            <p className="text-white/50">
+                            <p className="text-foreground/70">
                                 No pending leave requests to review
                             </p>
                         </div>

@@ -14,6 +14,7 @@ const LEAVE_ICONS: Record<LeaveType, React.ElementType> = {
     casual: Umbrella,
     sick: Stethoscope,
     planned: Plane,
+    unpaid: Clock,
     emergency: Siren,
     other: HelpCircle,
 };
@@ -100,14 +101,14 @@ export const LeaveRequestForm: React.FC<LeaveRequestFormProps> = ({ onSuccess, o
         }
     };
 
-    const labelClasses = "text-[10px] font-black text-white/30 uppercase tracking-[0.2em] mb-3 block ml-1";
+    const labelClasses = "text-[10px] font-black text-foreground/70 uppercase tracking-[0.2em] mb-3 block ml-1";
 
     return (
         <form onSubmit={handleSubmit} className="space-y-10">
             {/* Balance Overview */}
             <div className="space-y-4">
                 <label className={labelClasses}>Current Allocation Status</label>
-                <div className="bg-white/[0.03] border border-white/5 rounded-3xl p-6 backdrop-blur-sm">
+                <div className="bg-foreground/[0.03] border border-foreground/5 rounded-3xl p-6 backdrop-blur-sm">
                     <LeaveBalanceDisplay compact />
                 </div>
             </div>
@@ -130,18 +131,18 @@ export const LeaveRequestForm: React.FC<LeaveRequestFormProps> = ({ onSuccess, o
                                     "relative flex flex-col items-center justify-center p-5 rounded-2xl border transition-all duration-300 gap-3 group",
                                     isSelected
                                         ? "bg-blue-500/10 border-blue-500/40 shadow-[0_0_25px_rgba(59,130,246,0.1)]"
-                                        : "bg-white/5 border-white/5 hover:bg-white/10 hover:border-white/20"
+                                        : "bg-foreground/5 border-foreground/5 hover:bg-foreground/10 hover:border-foreground/20"
                                 )}
                             >
                                 <div className={cn(
                                     "w-10 h-10 rounded-xl flex items-center justify-center transition-all duration-300",
-                                    isSelected ? "bg-blue-500 text-white" : "bg-white/5 text-white/40 group-hover:text-white/60"
+                                    isSelected ? "bg-blue-500 text-foreground" : "bg-foreground/5 text-foreground/80 group-hover:text-foreground/80"
                                 )}>
                                     <Icon size={20} />
                                 </div>
                                 <span className={cn(
                                     "text-sm font-bold tracking-tight transition-colors",
-                                    isSelected ? "text-white" : "text-white/50 group-hover:text-white/80"
+                                    isSelected ? "text-foreground" : "text-foreground/70 group-hover:text-foreground/80"
                                 )}>
                                     {LEAVE_TYPE_LABELS[type]}
                                 </span>
@@ -162,7 +163,7 @@ export const LeaveRequestForm: React.FC<LeaveRequestFormProps> = ({ onSuccess, o
             {/* Date Range Selection */}
             <div className="space-y-4">
                 <label className={labelClasses}>Duration & Schedule *</label>
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-6 bg-white/[0.02] border border-white/5 p-6 rounded-3xl">
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-6 bg-foreground/[0.02] border border-foreground/5 p-6 rounded-3xl">
                     <div className="space-y-2">
                         <DateSelector 
                             label="Start Date"
@@ -197,7 +198,7 @@ export const LeaveRequestForm: React.FC<LeaveRequestFormProps> = ({ onSuccess, o
                         >
                             <Clock size={18} className="text-indigo-400" />
                             <p className="text-sm font-bold text-indigo-100">
-                                Requested duration: <span className="text-white text-base ml-1">{totalDays} working days</span>
+                                Requested duration: <span className="text-foreground text-base ml-1">{totalDays} working days</span>
                             </p>
                         </motion.div>
                     )}
@@ -220,21 +221,21 @@ export const LeaveRequestForm: React.FC<LeaveRequestFormProps> = ({ onSuccess, o
             <div className="space-y-4">
                 <label className={labelClasses}>Business Justification / Reason *</label>
                 <div className="relative group">
-                    <AlignLeft size={20} className="absolute left-5 top-5 text-white/20 group-focus-within:text-blue-400 transition-colors" />
+                    <AlignLeft size={20} className="absolute left-5 top-5 text-foreground/80 group-focus-within:text-blue-400 transition-colors" />
                     <textarea
                         required
                         value={reason}
                         onChange={(e) => setReason(e.target.value)}
                         rows={5}
                         placeholder="Please provide context for your leave request..."
-                        className="w-full bg-[#0a0c10] text-white placeholder:text-white/20 border border-white/5 rounded-[28px] py-5 pl-14 pr-6 outline-none transition-all duration-300 focus:border-blue-500/40 focus:ring-8 focus:ring-blue-500/5 hover:border-white/10 resize-none text-sm leading-relaxed"
+                        className="w-full bg-foreground/[0.02] text-foreground placeholder:text-foreground/80 border border-foreground/5 rounded-[28px] py-5 pl-14 pr-6 outline-none transition-all duration-300 focus:border-blue-500/40 focus:ring-8 focus:ring-blue-500/5 hover:border-foreground/10 resize-none text-sm leading-relaxed"
                     />
                 </div>
                 <div className="flex items-center justify-between px-2">
-                    <p className="text-[10px] font-bold text-white/20 uppercase tracking-widest">
+                    <p className="text-[10px] font-bold text-foreground/80 uppercase tracking-widest">
                         {reason.length < 10 ? `${10 - reason.length} more characters required` : 'Requirement met'}
                     </p>
-                    <p className="text-[10px] font-bold text-white/20 uppercase tracking-widest">
+                    <p className="text-[10px] font-bold text-foreground/80 uppercase tracking-widest">
                         {reason.length} / 500
                     </p>
                 </div>
@@ -246,7 +247,7 @@ export const LeaveRequestForm: React.FC<LeaveRequestFormProps> = ({ onSuccess, o
                     <button
                         type="button"
                         onClick={onCancel}
-                        className="flex-1 py-4 text-sm font-black text-white/40 hover:text-white hover:bg-white/5 rounded-2xl transition-all uppercase tracking-widest active:scale-95 border border-transparent hover:border-white/5"
+                        className="flex-1 py-4 text-sm font-black text-foreground/80 hover:text-foreground hover:bg-foreground/5 rounded-2xl transition-all uppercase tracking-widest active:scale-95 border border-transparent hover:border-foreground/5"
                     >
                         Dismiss
                     </button>

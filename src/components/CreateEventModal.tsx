@@ -63,9 +63,9 @@ export default function CreateEventModal({ open, role, onClose }: { open: boolea
           <h3 className="text-lg font-bold">Create New Event</h3>
           <DraftIndicator isSaved={isDraftSaved} />
         </div>
-        <button onClick={onClose} className="text-white/70 hover:text-white">✕</button>
+        <button onClick={onClose} className="text-foreground/70 hover:text-foreground">✕</button>
       </header>
-      <p className="mb-3 rounded-lg bg-white/5 p-3 text-sm text-white/80">{hint}</p>
+      <p className="mb-3 rounded-lg bg-foreground/5 p-3 text-sm text-foreground/80">{hint}</p>
       <div className="space-y-4">
         <label className="block">
           <p className="pb-2">Event Title</p>
@@ -137,7 +137,7 @@ export default function CreateEventModal({ open, role, onClose }: { open: boolea
         </label>
       </div>
       <div className="mt-5 flex justify-end gap-2">
-        <button onClick={onClose} disabled={isSubmitting} className="rounded-md bg-white/10 px-4 py-2 disabled:opacity-50">Cancel</button>
+        <button onClick={onClose} disabled={isSubmitting} className="rounded-md bg-foreground/10 px-4 py-2 disabled:opacity-50">Cancel</button>
         <button onClick={submit} disabled={isSubmitting} className="rounded-md bg-[#00BFA6] px-4 py-2 font-semibold text-black flex items-center gap-2 disabled:opacity-50">
             {isSubmitting && <div className="w-4 h-4 rounded-full border-2 border-black/30 border-t-black animate-spin" />}
             {role === "member" ? "Submit for Review" : "Create Event"}

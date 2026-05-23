@@ -54,17 +54,17 @@ export default function CampaignNewClient() {
     };
 
     return (
-        <div className="min-h-screen bg-[#0f172a] p-4 pb-20 md:p-8">
+        <div className="min-h-screen bg-[var(--glass-liquid-bg)] p-4 pb-20 md:p-8">
             <div className="max-w-3xl mx-auto space-y-8">
                 {/* Header */}
                 <div>
                     <button
                         onClick={() => router.back()}
-                        className="flex items-center gap-2 text-gray-400 hover:text-white transition-colors mb-4 text-sm"
+                        className="flex items-center gap-2 text-gray-400 hover:text-foreground transition-colors mb-4 text-sm"
                     >
                         <ArrowLeft size={16} /> Back
                     </button>
-                    <h1 className="text-3xl font-bold text-white tracking-tight flex items-center gap-3">
+                    <h1 className="text-3xl font-bold text-foreground tracking-tight flex items-center gap-3">
                         <Layout className="text-blue-500" />
                         Create New Campaign
                     </h1>
@@ -72,7 +72,7 @@ export default function CampaignNewClient() {
                 </div>
 
                 {/* Form Card */}
-                <form onSubmit={handleSubmit} className="bg-white/5 border border-[#ffffff1a] rounded-3xl p-6 md:p-8 space-y-6 shadow-2xl">
+                <form onSubmit={handleSubmit} className="bg-foreground/5 border border-[#ffffff1a] rounded-3xl p-6 md:p-8 space-y-6 shadow-2xl">
                     <div className="space-y-4">
                         {/* Name */}
                         <div className="space-y-2">
@@ -85,7 +85,7 @@ export default function CampaignNewClient() {
                                 placeholder="E.g. Summer Festival 2026"
                                 value={formData.name}
                                 onChange={(e) => setFormData({ ...formData, name: e.target.value })}
-                                className="w-full bg-[#1e293b] border border-[#ffffff1a] rounded-xl px-4 py-3 text-white placeholder:text-gray-600 focus:outline-none focus:ring-2 focus:ring-blue-500/50 transition-all"
+                                className="w-full bg-[#1e293b] border border-[#ffffff1a] rounded-xl px-4 py-3 text-foreground placeholder:text-gray-600 focus:outline-none focus:ring-2 focus:ring-blue-500/50 transition-all"
                                 required
                             />
                         </div>
@@ -100,7 +100,7 @@ export default function CampaignNewClient() {
                                 placeholder="Describe the goals and scope of this campaign..."
                                 value={formData.description}
                                 onChange={(e) => setFormData({ ...formData, description: e.target.value })}
-                                className="w-full bg-[#1e293b] border border-[#ffffff1a] rounded-xl px-4 py-3 text-white placeholder:text-gray-600 focus:outline-none focus:ring-2 focus:ring-blue-500/50 transition-all min-h-[120px]"
+                                className="w-full bg-[#1e293b] border border-[#ffffff1a] rounded-xl px-4 py-3 text-foreground placeholder:text-gray-600 focus:outline-none focus:ring-2 focus:ring-blue-500/50 transition-all min-h-[120px]"
                             />
                         </div>
 
@@ -127,18 +127,18 @@ export default function CampaignNewClient() {
                         <button
                             type="button"
                             onClick={() => router.back()}
-                            className="px-6 py-3 text-gray-400 font-semibold hover:text-white transition-colors"
+                            className="px-6 py-3 text-gray-400 font-semibold hover:text-foreground transition-colors"
                         >
                             Cancel
                         </button>
                         <button
                             type="submit"
                             disabled={submitting}
-                            className="px-8 py-3 bg-blue-600 hover:bg-blue-500 disabled:bg-blue-800 disabled:opacity-50 text-white rounded-xl font-bold shadow-xl shadow-blue-900/40 transition-all hover:scale-[1.02] flex items-center gap-2"
+                            className="px-8 py-3 bg-blue-600 hover:bg-blue-500 disabled:bg-blue-800 disabled:opacity-50 text-foreground rounded-xl font-bold shadow-xl shadow-blue-900/40 transition-all hover:scale-[1.02] flex items-center gap-2"
                         >
                             {submitting ? (
                                 <>
-                                    <div className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin" />
+                                    <div className="w-4 h-4 border-2 border-foreground/30 border-t-white rounded-full animate-spin" />
                                     Initializing...
                                 </>
                             ) : (

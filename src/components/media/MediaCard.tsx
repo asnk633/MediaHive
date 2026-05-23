@@ -58,7 +58,7 @@ export function MediaCard({ file, onClick }: MediaCardProps) {
           // For images, videos, and PDFs, show a thumbnail preview
           <div className="w-full h-full relative">
             <Image
-              src={`/api/drive/image/${file.driveFileId}?thumbnail=true`}
+              src={file.previewLink && !file.driveFileId ? file.previewLink : `/api/drive/image/${file.driveFileId}?thumbnail=true`}
               alt={file.name}
               fill
               unoptimized={true} // Google thumbnails are pre-optimized and don't need Next.js re-processing
@@ -72,7 +72,7 @@ export function MediaCard({ file, onClick }: MediaCardProps) {
             {isVideo && (
               <div className="absolute inset-0 flex items-center justify-center bg-black/20 group-hover:bg-transparent transition-colors">
                 <div className="bg-black/50 rounded-full p-3 group-hover:bg-indigo-500/80 transition-colors">
-                  <Play size={20} className="text-white fill-white" />
+                  <Play size={20} className="text-foreground fill-white" />
                 </div>
               </div>
             )}
@@ -80,11 +80,11 @@ export function MediaCard({ file, onClick }: MediaCardProps) {
             {isPdf && (
               <div className="absolute inset-0 flex items-center justify-center">
                 <div className="absolute top-3 left-3 flex items-center gap-1.5 px-2 py-1 bg-red-600 rounded-md shadow-lg border border-red-500/50 z-10">
-                  <FileText size={12} className="text-white" />
-                  <span className="text-[10px] font-bold text-white uppercase">PDF</span>
+                  <FileText size={12} className="text-foreground" />
+                  <span className="text-[10px] font-bold text-foreground uppercase">PDF</span>
                 </div>
-                <div className="w-12 h-12 rounded-xl bg-black/30 backdrop-blur-md flex items-center justify-center border border-white/10 opacity-0 group-hover:opacity-100 transition-opacity">
-                  <FileText size={24} className="text-white" />
+                <div className="w-12 h-12 rounded-xl bg-black/30 backdrop-blur-md flex items-center justify-center border border-foreground/10 opacity-0 group-hover:opacity-100 transition-opacity">
+                  <FileText size={24} className="text-foreground" />
                 </div>
               </div>
             )}
@@ -97,7 +97,7 @@ export function MediaCard({ file, onClick }: MediaCardProps) {
               <div className="relative">
                 <FileIcon size={32} strokeWidth={1.5} />
                 {isPdf && (
-                  <div className="absolute -top-1 -right-1 px-1.5 py-0.5 bg-red-600 rounded text-[8px] font-bold text-white shadow-sm">
+                  <div className="absolute -top-1 -right-1 px-1.5 py-0.5 bg-red-600 rounded text-[8px] font-bold text-foreground shadow-sm">
                     PDF
                   </div>
                 )}
@@ -113,37 +113,37 @@ export function MediaCard({ file, onClick }: MediaCardProps) {
       {/* Overlay Metadata */}
       <div className="absolute inset-0 bg-gradient-to-t from-black/70 to-transparent opacity-0 group-hover:opacity-100 transition-opacity flex flex-col justify-end p-3">
         <div className="flex justify-between items-start">
-          <h3 className="text-white text-sm font-medium truncate flex-1 mr-2">
+          <h3 className="text-foreground text-sm font-medium truncate flex-1 mr-2">
             {file.name}
           </h3>
           <div className="flex items-center gap-1">
             {/* Context icon */}
             <div className="p-1 rounded bg-black/30">
-              <ContextIcon size={14} className="text-white" />
+              <ContextIcon size={14} className="text-foreground" />
             </div>
 
             {/* Version badge */}
             {file.versionNumber && (
-              <div className="px-1.5 py-0.5 rounded bg-indigo-500 text-white text-xs font-medium">
+              <div className="px-1.5 py-0.5 rounded bg-indigo-500 text-foreground text-xs font-medium">
                 V{file.versionNumber}
               </div>
             )}
 
             {/* Video duration badge (if applicable) */}
             {isVideo && (
-              <div className="px-1.5 py-0.5 rounded bg-black/50 text-white text-xs font-medium">
+              <div className="px-1.5 py-0.5 rounded bg-black/50 text-foreground text-xs font-medium">
                 0:00
               </div>
             )}
           </div>
         </div>
-        <div className="text-white/80 text-xs mt-1">
+        <div className="text-foreground/80 text-xs mt-1">
           {formatDate(file.created_at)}
         </div>
       </div>
       {/* Always visible file name at bottom */}
       <div className="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-black/80 to-transparent p-3 pt-8">
-        <h3 className="text-white text-sm font-medium truncate">
+        <h3 className="text-foreground text-sm font-medium truncate">
           {file.name}
         </h3>
       </div>

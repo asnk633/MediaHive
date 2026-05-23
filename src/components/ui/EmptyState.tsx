@@ -26,20 +26,20 @@ export default function EmptyState({
             className
         )}>
             <div className={cn(
-                "rounded-full bg-white/[0.02] border border-white/5 flex items-center justify-center mb-4 transition-transform hover:scale-105 duration-300",
+                "rounded-full bg-foreground/[0.02] border border-foreground/5 flex items-center justify-center mb-4 transition-transform hover:scale-105 duration-300",
                 compact ? "w-12 h-12" : "w-16 h-16"
             )}>
-                <Icon className={cn("text-white/20", compact ? "w-6 h-6" : "w-8 h-8")} />
+                <Icon className={cn("text-foreground/80", compact ? "w-6 h-6" : "w-8 h-8")} />
             </div>
             <h3 className={cn(
-                "font-bold text-white/60 tracking-tight",
+                "font-bold text-foreground/80 tracking-tight",
                 compact ? "text-base" : "text-lg"
             )}>
                 {title}
             </h3>
             {description && (
                 <p className={cn(
-                    "text-white/50 font-medium max-w-[280px] mx-auto mt-1 leading-relaxed",
+                    "text-foreground/70 font-medium max-w-[280px] mx-auto mt-1 leading-relaxed",
                     compact ? "text-[11px]" : "text-sm"
                 )}>
                     {description}

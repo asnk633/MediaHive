@@ -24,6 +24,7 @@ class AuthService {
       if (event == AuthChangeEvent.signedIn) {
         _logger.info('User signed in: ${session?.user.email}');
         _ref.read(fcmServiceProvider).initialize();
+        _ref.read(fcmServiceProvider).uploadTokenForCurrentUser();
       } else if (event == AuthChangeEvent.signedOut) {
         _logger.info('User signed out');
         _ref.read(fcmServiceProvider).deregisterToken();

@@ -36,7 +36,7 @@ export const FAB = () => {
 
             <div className="fixed bottom-10 left-1/2 -translate-x-1/2 z-50 flex flex-col-reverse items-center gap-4">
                 <motion.button
-                    className="w-16 h-16 rounded-full bg-gradient-to-br from-[#0096FF] to-[#00C2FF] text-white shadow-xl shadow-blue-500/30 flex items-center justify-center relative z-20"
+                    className="w-16 h-16 rounded-full bg-gradient-to-br from-[#0096FF] to-[#00C2FF] text-foreground shadow-xl shadow-blue-500/30 flex items-center justify-center relative z-20"
                     onClick={() => setIsOpen(!isOpen)}
                     whileTap={{ scale: 0.9 }}
                     animate={{ rotate: isOpen ? 135 : 0 }}
@@ -56,7 +56,7 @@ export const FAB = () => {
                                     transition={{ delay: action.delay }}
                                     className="flex items-center gap-3"
                                 >
-                                    <span className="bg-black/80 backdrop-blur-md border border-[#ffffff1a] text-white text-xs font-bold px-3 py-1.5 rounded-xl shadow-lg">
+                                    <span className="bg-black/80 backdrop-blur-md border border-[#ffffff1a] text-foreground text-xs font-bold px-3 py-1.5 rounded-xl shadow-lg">
                                         {action.label}
                                     </span>
                                     <button
@@ -64,7 +64,7 @@ export const FAB = () => {
                                             action.onClick();
                                             setIsOpen(false);
                                         }}
-                                        className={`w-12 h-12 rounded-full bg-black/40 backdrop-blur-md border border-[#ffffff1a] shadow-lg flex items-center justify-center hover:scale-110 hover:bg-white/10 transition-all ${action.color}`}
+                                        className={`w-12 h-12 rounded-full bg-black/40 backdrop-blur-md border border-[#ffffff1a] shadow-lg flex items-center justify-center hover:scale-110 hover:bg-foreground/10 transition-all ${action.color}`}
                                     >
                                         <action.icon size={20} />
                                     </button>

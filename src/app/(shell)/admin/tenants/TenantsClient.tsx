@@ -123,7 +123,7 @@ export default function TenantsClient() {
                 <h1 className="text-2xl font-bold">Tenant Management</h1>
                 <button
                     onClick={() => setShowCreateForm(!showCreateForm)}
-                    className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded"
+                    className="bg-blue-500 hover:bg-blue-700 text-foreground font-bold py-2 px-4 rounded"
                 >
                     {showCreateForm ? 'Cancel' : 'Create New Tenant'}
                 </button>
@@ -182,13 +182,13 @@ export default function TenantsClient() {
                             <button
                                 type="button"
                                 onClick={resetForm}
-                                className="bg-gray-500 hover:bg-gray-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline"
+                                className="bg-gray-500 hover:bg-gray-700 text-foreground font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline"
                             >
                                 Cancel
                             </button>
                             <button
                                 type="submit"
-                                className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline"
+                                className="bg-blue-500 hover:bg-blue-700 text-foreground font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline"
                             >
                                 {editingTenant ? 'Update Tenant' : 'Create Tenant'}
                             </button>

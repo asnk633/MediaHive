@@ -22,7 +22,7 @@ export function AccountSnapshot({ user }: AccountSnapshotProps) {
     // Determine Account Type
     const getAccountType = (user: AuthUser | null) => {
         if (user?.is_super_admin) return 'Root Administrator';
-        if (user?.role === 'member') return 'Office / Unit Account';
+        if (user?.role === 'member') return 'Department / Institution Account';
         if (user?.institution_id) return 'Institution Account';
         return 'Standard Account';
     };

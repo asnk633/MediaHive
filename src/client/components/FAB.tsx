@@ -278,7 +278,7 @@ export default function FAB({ onMainClick }: FABProps) {
     return (
       <button 
         onClick={() => router.push('/home')}
-        className="fab fixed left-1/2 bottom-8 -translate-x-1/2 w-16 h-16 rounded-full bg-slate-800 text-white flex flex-col items-center justify-center shadow-lg z-[110] border border-white/10"
+        className="fab fixed left-1/2 bottom-8 -translate-x-1/2 w-16 h-16 rounded-full bg-slate-800 text-foreground flex flex-col items-center justify-center shadow-lg z-[110] border border-foreground/10"
       >
         <Plus size={24} className="rotate-45" />
         <span className="text-[8px] font-bold uppercase mt-1">Try Again</span>
@@ -323,10 +323,10 @@ export default function FAB({ onMainClick }: FABProps) {
                 opacity: { duration: 0.15 },
                 y: { duration: 0.15 },
               }}
-              className="absolute bottom-20 px-4 py-2 rounded-2xl bg-indigo-600/90 text-white/90 text-xs font-bold shadow-2xl border border-white/20 whitespace-nowrap z-50 backdrop-blur-md"
+              className="absolute bottom-20 px-4 py-2 rounded-2xl bg-indigo-600/90 text-foreground/90 text-xs font-bold shadow-2xl border border-foreground/20 whitespace-nowrap z-50 backdrop-blur-md"
             >
               {currentConfig.label}
-              <div className="absolute bottom-[-6px] left-1/2 -translate-x-1/2 w-3 h-3 bg-indigo-600/90 rotate-45 border-r border-b border-white/20" />
+              <div className="absolute bottom-[-6px] left-1/2 -translate-x-1/2 w-3 h-3 bg-indigo-600/90 rotate-45 border-r border-b border-foreground/20" />
             </motion.div>
           )}
 
@@ -336,10 +336,10 @@ export default function FAB({ onMainClick }: FABProps) {
               initial={{ opacity: 0, y: 10, scale: 0.9 }}
               animate={{ opacity: 1, y: -8, scale: 1 }}
               exit={{ opacity: 0, y: -10, scale: 0.9 }}
-              className="absolute bottom-20 px-4 py-2 rounded-2xl bg-indigo-600 text-white text-xs font-bold shadow-2xl border border-white/20 max-w-[180px] text-center z-50 backdrop-blur-md leading-tight"
+              className="absolute bottom-20 px-4 py-2 rounded-2xl bg-indigo-600 text-foreground text-xs font-bold shadow-2xl border border-foreground/20 max-w-[180px] text-center z-50 backdrop-blur-md leading-tight"
             >
               Create your first {currentConfig.label.split(' ')[1] || 'item'}
-              <div className="absolute bottom-[-6px] left-1/2 -translate-x-1/2 w-3 h-3 bg-indigo-600 rotate-45 border-r border-b border-white/20" />
+              <div className="absolute bottom-[-6px] left-1/2 -translate-x-1/2 w-3 h-3 bg-indigo-600 rotate-45 border-r border-b border-foreground/20" />
             </motion.div>
           )}
         </AnimatePresence>
@@ -347,7 +347,7 @@ export default function FAB({ onMainClick }: FABProps) {
         <motion.button
           id="fab-main-action"
           className={cn(
-            "w-16 h-16 rounded-full flex items-center justify-center relative z-20 fab-surface border border-white/10 backdrop-blur-xl transition-all duration-300",
+            "w-16 h-16 rounded-full flex items-center justify-center relative z-20 fab-surface border border-foreground/10 backdrop-blur-xl transition-all duration-300",
             "animate-fab-breathing",
             isAnimationPaused && "is-paused",
             visualState === 'guidance' && "ring-4 ring-indigo-500/50 scale-105"
@@ -372,9 +372,9 @@ export default function FAB({ onMainClick }: FABProps) {
               transition={{ duration: 0.18, ease: "easeOut" }}
             >
               {isOpen ? (
-                <Plus size={32} strokeWidth={2.8} className="text-white" />
+                <Plus size={32} strokeWidth={2.8} className="text-foreground" />
               ) : (
-                <ContextIcon size={32} strokeWidth={2.8} className="text-white opacity-95" />
+                <ContextIcon size={32} strokeWidth={2.8} className="text-foreground opacity-95" />
               )}
             </motion.div>
           </AnimatePresence>
@@ -385,11 +385,11 @@ export default function FAB({ onMainClick }: FABProps) {
               {actions.map((action) => (
                 <AppLink key={action.label} href={action.href} onClick={() => setIsOpen(false)}>
                   <motion.div initial={{ opacity: 0, y: 20, scale: 0.8 }} animate={{ opacity: 1, y: 0, scale: 1 }} exit={{ opacity: 0, y: 10, scale: 0.8 }} transition={{ delay: action.delay }} className="flex flex-col items-center gap-2 group">
-                    <div className="w-12 h-12 rounded-full premium-card flex items-center justify-center transition-all duration-300 group-hover:scale-110 shadow-[0_0_20px_rgba(99,102,241,0.3)] relative overflow-hidden text-white">
+                    <div className="w-12 h-12 rounded-full premium-card flex items-center justify-center transition-all duration-300 group-hover:scale-110 shadow-[0_0_20px_rgba(99,102,241,0.3)] relative overflow-hidden text-foreground">
                       <action.icon size={20} strokeWidth={2} />
                     </div>
                     {/* Clean Label */}
-                    <span className="text-white text-[10px] font-bold uppercase tracking-widest px-3 py-1 rounded-lg premium-card">{action.label}</span>
+                    <span className="text-foreground text-[10px] font-bold uppercase tracking-widest px-3 py-1 rounded-lg premium-card">{action.label}</span>
                   </motion.div>
                 </AppLink>
               ))}

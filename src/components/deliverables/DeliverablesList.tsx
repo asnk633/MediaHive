@@ -32,7 +32,7 @@ export const DeliverablesList: React.FC<DeliverablesListProps> = ({ taskId, refr
 
     if (deliverables.length === 0) {
         return (
-            <div className="flex flex-col items-center justify-center py-8 px-4 border-2 border-dashed border-[#ffffff1a] rounded-xl bg-white/5">
+            <div className="flex flex-col items-center justify-center py-8 px-4 border-2 border-dashed border-[#ffffff1a] rounded-xl bg-foreground/5">
                 <FileText className="text-gray-500 mb-2" size={24} />
                 <p className="text-sm text-gray-400 font-medium">No deliverables yet</p>
                 <p className="text-xs text-gray-500 mt-1">Upload a file to complete this task</p>
@@ -51,12 +51,12 @@ export const DeliverablesList: React.FC<DeliverablesListProps> = ({ taskId, refr
                             relative rounded-xl border p-4 transition-all
                             ${isLatest
                                 ? 'bg-blue-500/10 border-blue-500/30 shadow-lg shadow-blue-900/10'
-                                : 'bg-white/5 border-[#ffffff1a] opacity-70 hover:opacity-100'
+                                : 'bg-foreground/5 border-[#ffffff1a] opacity-70 hover:opacity-100'
                             }
                         `}
                     >
                         {isLatest && (
-                            <div className="absolute -top-2 -right-2 bg-blue-500 text-white text-[10px] font-bold px-2 py-0.5 rounded-full shadow-sm border border-blue-400">
+                            <div className="absolute -top-2 -right-2 bg-blue-500 text-foreground text-[10px] font-bold px-2 py-0.5 rounded-full shadow-sm border border-blue-400">
                                 LATEST
                             </div>
                         )}
@@ -109,7 +109,7 @@ export const DeliverablesList: React.FC<DeliverablesListProps> = ({ taskId, refr
                                         href={item.downloadUrl}
                                         target="_blank"
                                         rel="noopener noreferrer"
-                                        className="p-2 rounded-lg bg-white/5 hover:bg-white/10 text-blue-400 transition-colors border border-white/5"
+                                        className="p-2 rounded-lg bg-foreground/5 hover:bg-foreground/10 text-blue-400 transition-colors border border-foreground/5"
                                         title="Download / Open"
                                     >
                                         <Download size={16} />

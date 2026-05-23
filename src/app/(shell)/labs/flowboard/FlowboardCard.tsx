@@ -14,11 +14,11 @@ interface FlowboardCardProps {
 
 export const FlowboardCard: React.FC<FlowboardCardProps> = ({ task, smartData, onClick }) => {
     const priorityColor = {
-        urgent: 'bg-rose-500',
+        urgent: 'bg-orange-500',
         high: 'bg-orange-500',
         medium: 'bg-blue-500',
         low: 'bg-slate-500'
-    }[task.priority] || 'bg-slate-500';
+    }[task.priority as string] || 'bg-slate-500';
 
     return (
         <div
@@ -49,8 +49,8 @@ export const FlowboardCard: React.FC<FlowboardCardProps> = ({ task, smartData, o
                                 <span>{format(new Date(task.dueDate), 'MMM d')}</span>
                             </div>
                         )}
-                        {task.priority === 'urgent' && (
-                            <AlertCircle size={12} className="text-rose-500" />
+                        {task.priority === 'high' && (
+                            <AlertCircle size={12} className="text-orange-500" />
                         )}
                     </div>
 

@@ -37,9 +37,9 @@ export function ConfirmationDialog({
 }: ConfirmationDialogProps) {
     return (
         <AlertDialog open={open} onOpenChange={onOpenChange}>
-            <AlertDialogContent className="bg-slate-950/90 backdrop-blur-xl border-white/10">
+            <AlertDialogContent className="bg-slate-950/90 backdrop-blur-xl border-foreground/10">
                 <AlertDialogHeader>
-                    <AlertDialogTitle className="text-white flex items-center gap-2">
+                    <AlertDialogTitle className="text-foreground flex items-center gap-2">
                         {variant === 'danger' ? (
                             <AlertTriangle className="text-rose-500" size={20} />
                         ) : (
@@ -52,7 +52,7 @@ export function ConfirmationDialog({
                     </AlertDialogDescription>
                 </AlertDialogHeader>
                 <AlertDialogFooter>
-                    <AlertDialogCancel className="bg-white/5 border-white/10 text-white hover:bg-white/10 hover:text-white">
+                    <AlertDialogCancel className="bg-foreground/5 border-foreground/10 text-foreground hover:bg-foreground/10 hover:text-foreground">
                         {cancelText}
                     </AlertDialogCancel>
                     <AlertDialogAction 
@@ -60,8 +60,8 @@ export function ConfirmationDialog({
                         className={cn(
                             "font-bold",
                             variant === 'danger' 
-                                ? "bg-rose-500 hover:bg-rose-600 text-white" 
-                                : "bg-blue-600 hover:bg-blue-700 text-white"
+                                ? "bg-rose-500 hover:bg-rose-600 text-foreground" 
+                                : "bg-blue-600 hover:bg-blue-700 text-foreground"
                         )}
                     >
                         {confirmText}

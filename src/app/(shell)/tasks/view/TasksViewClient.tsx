@@ -217,10 +217,10 @@ function TaskViewContent() {
 
     const getPriorityColor = (p: string) => {
         switch (p?.toLowerCase()) {
-            case 'urgent': return 'bg-red-500 text-white border-red-400';
-            case 'high': return 'bg-orange-500 text-white border-orange-400';
+            case 'urgent':
+            case 'high': return 'bg-orange-500 text-foreground border-orange-400';
             case 'medium': return 'bg-yellow-500 text-black border-yellow-400';
-            case 'low': return 'bg-blue-500 text-white border-blue-400';
+            case 'low': return 'bg-blue-500 text-foreground border-blue-400';
             default: return 'bg-gray-700 text-gray-300';
         }
     };
@@ -254,7 +254,7 @@ function TaskViewContent() {
         <div className="flex h-[calc(100vh-theme(spacing.16))] items-center justify-center flex-col gap-4">
             <AlertCircle className="h-12 w-12 text-red-500/50" />
             <div className="text-center">
-                <h3 className="text-lg font-semibold text-white">Task Not Found</h3>
+                <h3 className="text-lg font-semibold text-foreground">Task Not Found</h3>
                 <p className="text-muted-foreground">{error || "The task you requested does not exist or you lack permission."}</p>
             </div>
             <Button variant="outline" onClick={() => nativeNavigate('/tasks', router, 'TasksView (NotFound Back)')}>
@@ -268,14 +268,14 @@ function TaskViewContent() {
     const canEdit = isAdmin || isOwner || user?.role === 'manager' || user?.role === 'member';
 
     return (
-        <div className="flex flex-col h-full bg-[#0a0c10] text-white">
-            <div className="sticky top-0 z-10 border-b border-white/5 bg-[#0a0c10]/80 backdrop-blur-xl supports-[backdrop-filter]:bg-[#0a0c10]/60">
+        <div className="flex flex-col h-full bg-[#0a0c10] text-foreground">
+            <div className="sticky top-0 z-10 border-b border-foreground/5 bg-[#0a0c10]/80 backdrop-blur-xl supports-[backdrop-filter]:bg-[#0a0c10]/60">
                 <div className="flex items-center justify-between p-4 max-w-7xl mx-auto w-full">
                     <div className="flex items-center gap-4">
                         <Button
                             variant="ghost"
                             size="icon"
-                            className="h-9 w-9 text-muted-foreground hover:text-white hover:bg-white/5 rounded-full -ml-2"
+                            className="h-9 w-9 text-muted-foreground hover:text-foreground hover:bg-foreground/5 rounded-full -ml-2"
                             onClick={() => router.back()}
                         >
                             <ArrowLeft className="h-5 w-5" />
@@ -302,7 +302,7 @@ function TaskViewContent() {
                             <Button
                                 variant="outline"
                                 size="sm"
-                                className="hidden sm:flex h-9 border-white/10 bg-white/5 hover:bg-white/10 text-white"
+                                className="hidden sm:flex h-9 border-foreground/10 bg-foreground/5 hover:bg-foreground/10 text-foreground"
                                 onClick={() => setIsEditOpen(true)}
                             >
                                 <Edit3 className="mr-2 h-4 w-4" />
@@ -312,11 +312,11 @@ function TaskViewContent() {
 
                         <DropdownMenu>
                             <DropdownMenuTrigger asChild>
-                                <Button variant="ghost" size="icon" className="h-9 w-9 text-muted-foreground hover:text-white hover:bg-white/5 rounded-full">
+                                <Button variant="ghost" size="icon" className="h-9 w-9 text-muted-foreground hover:text-foreground hover:bg-foreground/5 rounded-full">
                                     <MoreHorizontal className="h-5 w-5" />
                                 </Button>
                             </DropdownMenuTrigger>
-                            <DropdownMenuContent align="end" className="w-48 bg-[#10111a] border-[#ffffff1a] text-white">
+                            <DropdownMenuContent align="end" className="w-48 bg-[#10111a] border-[#ffffff1a] text-foreground">
                                 <DropdownMenuLabel>Actions</DropdownMenuLabel>
                                 <DropdownMenuItem onClick={() => {
                                     navigator.clipboard.writeText(window.location.href);
@@ -329,7 +329,7 @@ function TaskViewContent() {
                                 </DropdownMenuItem>
                                 {isAdmin && (
                                     <>
-                                        <DropdownMenuSeparator className="bg-white/10" />
+                                        <DropdownMenuSeparator className="bg-foreground/10" />
                                         <DropdownMenuItem
                                             className="text-red-400 focus:text-red-400 focus:bg-red-400/10"
                                             onClick={handleDeleteTask}
@@ -347,7 +347,7 @@ function TaskViewContent() {
             <ScrollArea className="flex-1">
                 <div className="max-w-7xl mx-auto p-4 lg:p-8 space-y-8">
 
-                    <div className="flex flex-wrap items-center gap-4 bg-[#10111a] p-4 rounded-2xl border border-white/5 shadow-sm">
+                    <div className="flex flex-wrap items-center gap-4 bg-[#10111a] p-4 rounded-2xl border border-foreground/5 shadow-sm">
                         <DropdownMenu>
                             <DropdownMenuTrigger asChild disabled={!canEdit}>
                                 <Button
@@ -358,7 +358,7 @@ function TaskViewContent() {
                                     {task.status?.replace('_', ' ').toUpperCase()}
                                 </Button>
                             </DropdownMenuTrigger>
-                            <DropdownMenuContent align="start" className="bg-[#10111a] border-[#ffffff1a] text-white">
+                            <DropdownMenuContent align="start" className="bg-[#10111a] border-[#ffffff1a] text-foreground">
                                 {['pending', 'in_progress', 'review', 'completed', 'blocked'].map(s => (
                                     <DropdownMenuItem key={s} onClick={() => handleStatusChange(s)}>
                                         <span className={cn("capitalize", task.status === s && "font-bold text-blue-400")}>
@@ -399,7 +399,7 @@ function TaskViewContent() {
                                 <h3 className="text-lg font-semibold flex items-center gap-2">
                                     <FileText className="h-5 w-5 text-blue-500" /> Description
                                 </h3>
-                                <div className="prose prose-invert max-w-none text-gray-300 leading-relaxed bg-[#10111a] p-6 rounded-2xl border border-white/5">
+                                <div className="prose prose-invert max-w-none text-gray-300 leading-relaxed bg-[#10111a] p-6 rounded-2xl border border-foreground/5">
                                     {task.description ? (
                                         <p className="whitespace-pre-wrap">{task.description}</p>
                                     ) : (
@@ -408,7 +408,7 @@ function TaskViewContent() {
                                 </div>
                             </div>
 
-                            <Separator className="bg-white/5" />
+                            <Separator className="bg-foreground/5" />
 
                             <div className="space-y-4">
                                 <div className="flex items-center justify-between">
@@ -417,7 +417,7 @@ function TaskViewContent() {
                                     </h3>
                                 </div>
 
-                                <div className="bg-[#10111a] p-6 rounded-2xl border border-white/5">
+                                <div className="bg-[#10111a] p-6 rounded-2xl border border-foreground/5">
                                     <AttachmentSection
                                         task={task}
                                         onUpdate={() => loadTask()}
@@ -429,7 +429,7 @@ function TaskViewContent() {
 
                         <div className="space-y-6">
 
-                            <Card className="bg-[#10111a] border-white/5 shadow-none">
+                            <Card className="bg-[#10111a] border-foreground/5 shadow-none">
                                 <CardHeader>
                                     <CardTitle className="text-sm font-medium text-gray-400 uppercase tracking-widest">Details</CardTitle>
                                 </CardHeader>
@@ -455,15 +455,15 @@ function TaskViewContent() {
                                 <h3 className="text-lg font-semibold flex items-center gap-2">
                                     <MessageSquare className="h-5 w-5 text-green-500" /> Discussion
                                 </h3>
-                                <div className="bg-[#10111a] rounded-2xl border border-white/5 overflow-hidden">
+                                <div className="bg-[#10111a] rounded-2xl border border-foreground/5 overflow-hidden">
                                     <div className="p-4 space-y-4">
                                         <div className="text-center py-8 text-gray-600 text-sm">
                                             No recent activity.
                                         </div>
                                     </div>
-                                    <div className="p-4 bg-white/5 border-t border-white/5 flex gap-2">
+                                    <div className="p-4 bg-foreground/5 border-t border-foreground/5 flex gap-2">
                                         <Input
-                                            className="bg-transparent border-0 focus-visible:ring-0 text-white placeholder:text-gray-600"
+                                            className="bg-transparent border-0 focus-visible:ring-0 text-foreground placeholder:text-gray-600"
                                             placeholder="Write a comment..."
                                             value={newComment}
                                             onChange={(e) => setNewComment(e.target.value)}

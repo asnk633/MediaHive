@@ -60,7 +60,7 @@ export default function CampaignsListClient() {
                 actions={
                     <Button
                         onClick={() => nativeNavigate('/campaigns/new', router, 'Campaigns (New)')}
-                        className="bg-blue-600 hover:bg-blue-700 text-white gap-2"
+                        className="bg-blue-600 hover:bg-blue-700 text-foreground gap-2"
                     >
                         <Plus className="h-4 w-4" />
                         New Campaign
@@ -87,8 +87,8 @@ export default function CampaignsListClient() {
                             className={cn(
                                 'px-3 py-1.5 rounded-lg text-xs font-semibold capitalize transition-all border',
                                 phaseFilter === phase
-                                    ? 'bg-blue-600 text-white border-blue-600'
-                                    : 'border-white/10 text-white/40 hover:text-white hover:border-white/20'
+                                    ? 'bg-blue-600 text-foreground border-blue-600'
+                                    : 'border-foreground/10 text-foreground/80 hover:text-foreground hover:border-foreground/20'
                             )}
                         >
                             {phase}
@@ -103,12 +103,12 @@ export default function CampaignsListClient() {
                     <Loader2 className="h-8 w-8 animate-spin text-blue-500" />
                 </div>
             ) : filtered.length === 0 ? (
-                <div className="flex flex-col items-center justify-center py-24 text-center rounded-2xl border border-dashed border-white/10">
-                    <LayoutGrid className="h-12 w-12 text-white/20 mb-4" />
-                    <h3 className="text-white font-semibold text-lg">
+                <div className="flex flex-col items-center justify-center py-24 text-center rounded-2xl border border-dashed border-foreground/10">
+                    <LayoutGrid className="h-12 w-12 text-foreground/80 mb-4" />
+                    <h3 className="text-foreground font-semibold text-lg">
                         {search || phaseFilter !== 'all' ? 'No matching campaigns' : 'No campaigns yet'}
                     </h3>
-                    <p className="text-white/40 text-sm mt-1 max-w-xs">
+                    <p className="text-foreground/80 text-sm mt-1 max-w-xs">
                         {search || phaseFilter !== 'all'
                             ? 'Try adjusting your filters.'
                             : 'Create your first campaign to start organizing media production.'}
@@ -116,7 +116,7 @@ export default function CampaignsListClient() {
                     {!search && phaseFilter === 'all' && (
                         <Button
                             onClick={() => nativeNavigate('/campaigns/new', router, 'Campaigns (Empty New)')}
-                            className="mt-6 bg-blue-600 hover:bg-blue-700 text-white gap-2"
+                            className="mt-6 bg-blue-600 hover:bg-blue-700 text-foreground gap-2"
                         >
                             <Plus className="h-4 w-4" />
                             Create Campaign
@@ -140,7 +140,7 @@ export default function CampaignsListClient() {
                                 <div className="flex items-center justify-between mb-4">
                                     <span className={cn(
                                         'px-2.5 py-1 rounded-full text-[11px] font-bold uppercase tracking-wider border',
-                                        PHASE_STYLES[campaign.phase] || 'bg-white/10 text-white/60 border-white/10'
+                                        PHASE_STYLES[campaign.phase] || 'bg-foreground/10 text-foreground/80 border-foreground/10'
                                     )}>
                                         {campaign.phase}
                                     </span>
@@ -150,20 +150,20 @@ export default function CampaignsListClient() {
                                 </div>
 
                                 {/* Title */}
-                                <h3 className="font-bold text-white text-lg leading-snug group-hover:text-blue-400 transition-colors mb-1 pr-6">
+                                <h3 className="font-bold text-foreground text-lg leading-snug group-hover:text-blue-400 transition-colors mb-1 pr-6">
                                     {campaign.name}
                                 </h3>
-                                <p className="text-sm text-white/40 line-clamp-2 mb-4">
+                                <p className="text-sm text-foreground/80 line-clamp-2 mb-4">
                                     {campaign.description || 'No description provided.'}
                                 </p>
 
                                 {/* Meta */}
-                                <div className="flex items-center justify-between text-xs text-white/40 border-t border-white/5 pt-3">
+                                <div className="flex items-center justify-between text-xs text-foreground/80 border-t border-foreground/5 pt-3">
                                     <span className="flex items-center gap-1.5">
                                         <Calendar className="h-3.5 w-3.5" />
                                         {format(start, 'MMM d')} – {format(end, 'MMM d, yyyy')}
                                     </span>
-                                    <ChevronRight className="h-4 w-4 text-white/20 group-hover:text-blue-400 group-hover:translate-x-0.5 transition-all" />
+                                    <ChevronRight className="h-4 w-4 text-foreground/80 group-hover:text-blue-400 group-hover:translate-x-0.5 transition-all" />
                                 </div>
                             </div>
                         );

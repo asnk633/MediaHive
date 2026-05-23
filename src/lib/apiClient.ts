@@ -236,7 +236,7 @@ export const apiClient = async <T = any>(endpoint: string, options: ApiOptions =
           title: 'Immediate Production Review',
           description: 'Review final edits for the upcoming product launch.',
           status: 'in_progress',
-          priority: 'urgent',
+          priority: 'high',
           due_date: now.toISOString(),
           assigned_to: [{ uid: 'dev-mock-admin', name: 'Local Admin' }],
           created_by: { uid: 'dev-mock-admin', name: 'Local Admin', role: 'admin' },

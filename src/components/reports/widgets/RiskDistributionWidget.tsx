@@ -18,7 +18,7 @@ export const RiskDistributionWidget: React.FC<RiskDistributionProps> = ({ riskCo
             <CardContent className="space-y-6">
                 <div className="flex items-end justify-between">
                     <div>
-                        <span className="text-3xl font-bold text-white">{riskCount}</span>
+                        <span className="text-3xl font-bold text-foreground">{riskCount}</span>
                         <span className="text-sm text-slate-500 ml-2">At Risk</span>
                     </div>
                     <div className="text-right">

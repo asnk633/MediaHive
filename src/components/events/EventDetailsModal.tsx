@@ -188,7 +188,7 @@ export const EventDetailsModal: React.FC<EventDetailsModalProps> = ({ event, isO
                     type="button"
                     onClick={onClose}
                     disabled={isDeleting || isDeleteOpen}
-                    className="absolute top-4 right-4 p-2 bg-black/20 hover:bg-black/40 text-white rounded-full transition-all z-50 backdrop-blur-md border-none disabled:opacity-50 disabled:cursor-not-allowed cursor-pointer"
+                    className="absolute top-4 right-4 p-2 bg-black/20 hover:bg-black/40 text-foreground rounded-full transition-all z-50 backdrop-blur-md border-none disabled:opacity-50 disabled:cursor-not-allowed cursor-pointer"
                 >
                     <X size={20} />
                 </button>
@@ -234,7 +234,7 @@ export const EventDetailsModal: React.FC<EventDetailsModalProps> = ({ event, isO
                                     <button
                                         onClick={onEdit}
                                         disabled={isDeleting || isDeleteOpen}
-                                        className="flex items-center gap-2 px-5 py-2.5 bg-blue-600 hover:bg-blue-500 text-white rounded-xl shadow-lg shadow-blue-600/20 transition-all font-bold text-sm disabled:opacity-50"
+                                        className="flex items-center gap-2 px-5 py-2.5 bg-blue-600 hover:bg-blue-500 text-foreground rounded-xl shadow-lg shadow-blue-600/20 transition-all font-bold text-sm disabled:opacity-50"
                                     >
                                         <Edit2 size={16} /> Edit
                                     </button>
@@ -266,7 +266,7 @@ export const EventDetailsModal: React.FC<EventDetailsModalProps> = ({ event, isO
                                     </h3>
                                     <div className="flex flex-wrap gap-3">
                                         {event.media_coverage.map((item, i) => (
-                                            <div key={i} className="flex items-center gap-3 text-white/70 text-sm py-2 px-3 bg-surface rounded-lg whitespace-nowrap">
+                                            <div key={i} className="flex items-center gap-3 text-foreground/70 text-sm py-2 px-3 bg-surface rounded-lg whitespace-nowrap">
                                                 <CheckCircle2 size={16} className="text-emerald-500 shrink-0" />
                                                 {item}
                                             </div>
@@ -288,8 +288,8 @@ export const EventDetailsModal: React.FC<EventDetailsModalProps> = ({ event, isO
                                                     {assignment.profile?.full_name?.charAt(0) || 'U'}
                                                 </div>
                                                 <div className="flex-1 min-w-0">
-                                                    <p className="text-sm font-medium text-white truncate">{assignment.profile?.full_name || 'Team Member'}</p>
-                                                    <p className="text-[10px] text-white/40 uppercase tracking-wider">{assignment.role || 'Production Crew'}</p>
+                                                    <p className="text-sm font-medium text-foreground truncate">{assignment.profile?.full_name || 'Team Member'}</p>
+                                                    <p className="text-[10px] text-foreground/80 uppercase tracking-wider">{assignment.role || 'Production Crew'}</p>
                                                 </div>
                                             </div>
                                         ))}
@@ -310,9 +310,9 @@ export const EventDetailsModal: React.FC<EventDetailsModalProps> = ({ event, isO
                                                     <Camera size={20} />
                                                 </div>
                                                 <div className="flex-1">
-                                                    <p className="text-sm font-medium text-white">{res.inventory?.name || 'Equipment'}</p>
+                                                    <p className="text-sm font-medium text-foreground">{res.inventory?.name || 'Equipment'}</p>
                                                     <div className="flex gap-4 mt-1">
-                                                        <div className="flex items-center gap-1.5 text-[10px] text-white/40">
+                                                        <div className="flex items-center gap-1.5 text-[10px] text-foreground/80">
                                                             <Clock size={10} />
                                                             {format(toJSDate(res.reserved_from), 'HH:mm')} - {format(toJSDate(res.reserved_to), 'HH:mm')}
                                                         </div>
@@ -336,7 +336,7 @@ export const EventDetailsModal: React.FC<EventDetailsModalProps> = ({ event, isO
                                         {relatedTasks.map((task, i) => (
                                             <div key={i} className="flex items-center justify-between p-4 bg-surface border border-soft rounded-xl group hover:border-primary/50 transition-all">
                                                 <div className="flex-1 min-w-0">
-                                                    <p className="text-sm font-medium text-white truncate">{task.title}</p>
+                                                    <p className="text-sm font-medium text-foreground truncate">{task.title}</p>
                                                     <div className="flex items-center gap-2 mt-1">
                                                         <span className={cn(
                                                             "px-2 py-0.5 rounded text-[8px] font-bold uppercase",
@@ -346,14 +346,14 @@ export const EventDetailsModal: React.FC<EventDetailsModalProps> = ({ event, isO
                                                         )}>
                                                             {task.status}
                                                         </span>
-                                                        {task.priority === 'high' || task.priority === 'urgent' && (
-                                                            <span className="text-[8px] font-bold text-red-400 uppercase">
-                                                                {task.priority}
+                                                        {(task.priority === 'high' || task.priority === 'urgent') && (
+                                                            <span className="text-[8px] font-bold text-orange-400 uppercase">
+                                                                {task.priority === 'urgent' ? 'high' : task.priority}
                                                             </span>
                                                         )}
                                                     </div>
                                                 </div>
-                                                <div className="text-[10px] text-white/20 group-hover:text-primary transition-colors">
+                                                <div className="text-[10px] text-foreground/80 group-hover:text-primary transition-colors">
                                                     View Task →
                                                 </div>
                                             </div>
@@ -412,7 +412,7 @@ export const EventDetailsModal: React.FC<EventDetailsModalProps> = ({ event, isO
                                         <Briefcase size={20} />
                                     </div>
                                     <div className="flex-1 min-w-0">
-                                        <p className="text-[10px] uppercase font-bold text-muted tracking-wider">Office / Unit</p>
+                                        <p className="text-[10px] uppercase font-bold text-muted tracking-wider">Department / Institution</p>
                                         <p className="text-sm font-semibold text-foreground break-words">
                                             {/* Priority: On Behalf Of Name -> Department Field -> General */}
                                             {event.on_behalf_of?.name || event.department || 'General'}
@@ -440,7 +440,7 @@ export const EventDetailsModal: React.FC<EventDetailsModalProps> = ({ event, isO
                                     <User size={12} /> {(event.on_behalf_of || event.institution_id || event.department_id || event.department) ? 'Requested On behalf of' : (event.created_by?.role === 'member' ? 'Requested By' : 'Organizer')}
                                 </h3>
                                 <div className="flex items-center gap-3">
-                                    <div className="w-10 h-10 rounded-full bg-gradient-to-br from-blue-600 to-indigo-600 flex items-center justify-center text-white font-bold shadow-lg">
+                                    <div className="w-10 h-10 rounded-full bg-gradient-to-br from-blue-600 to-indigo-600 flex items-center justify-center text-foreground font-bold shadow-lg">
                                         {/* Avatar Initials logic */}
                                         {(() => {
                                             if (event.on_behalf_of?.name) return event.on_behalf_of.name.charAt(0);
@@ -497,7 +497,7 @@ export const EventDetailsModal: React.FC<EventDetailsModalProps> = ({ event, isO
                                         <Trash2 size={18} />
                                     </button>
                                 </AlertDialogTrigger>
-                                <AlertDialogContent className="max-w-[440px] bg-[#0F1218]/95 backdrop-blur-2xl border border-white/10 text-foreground z-[120] rounded-[2.5rem] p-0 overflow-hidden shadow-2xl shadow-black/50">
+                                <AlertDialogContent className="max-w-[440px] bg-[#0F1218]/95 backdrop-blur-2xl border border-foreground/10 text-foreground z-[120] rounded-[2.5rem] p-0 overflow-hidden shadow-2xl shadow-black/50">
                                     <div className="p-8 flex flex-col items-center text-center">
                                         {/* Danger Icon */}
                                         <div className="w-20 h-20 rounded-3xl bg-red-500/10 flex items-center justify-center text-red-500 mb-6 rotate-3">
@@ -506,18 +506,18 @@ export const EventDetailsModal: React.FC<EventDetailsModalProps> = ({ event, isO
 
                                         <AlertDialogHeader className="space-y-3">
                                             <AlertDialogTitle className="text-2xl font-bold tracking-tight">Delete Event?</AlertDialogTitle>
-                                            <AlertDialogDescription className="text-white/50 text-sm leading-relaxed px-4">
+                                            <AlertDialogDescription className="text-foreground/70 text-sm leading-relaxed px-4">
                                                 {event.is_recurring || (event as any).is_recurring_instance ? (
                                                     <div className="space-y-4 py-2">
-                                                        <p className="text-white/70 font-medium">This is a recurring event. How would you like to proceed?</p>
+                                                        <p className="text-foreground/70 font-medium">This is a recurring event. How would you like to proceed?</p>
                                                         <div className="flex flex-col gap-3">
                                                             <label className={cn(
                                                                 "flex items-center gap-4 p-4 rounded-2xl border transition-all cursor-pointer group",
-                                                                deleteMode === 'single' ? "bg-red-500/10 border-red-500/30 ring-1 ring-red-500/30" : "bg-white/5 border-white/10 hover:bg-white/10"
+                                                                deleteMode === 'single' ? "bg-red-500/10 border-red-500/30 ring-1 ring-red-500/30" : "bg-foreground/5 border-foreground/10 hover:bg-foreground/10"
                                                             )}>
                                                                 <div className={cn(
                                                                     "w-5 h-5 rounded-full border-2 flex items-center justify-center shrink-0 transition-all",
-                                                                    deleteMode === 'single' ? "border-red-500" : "border-white/20"
+                                                                    deleteMode === 'single' ? "border-red-500" : "border-foreground/20"
                                                                 )}>
                                                                     {deleteMode === 'single' && <div className="w-2 h-2 rounded-full bg-red-500" />}
                                                                 </div>
@@ -530,18 +530,18 @@ export const EventDetailsModal: React.FC<EventDetailsModalProps> = ({ event, isO
                                                                     className="hidden"
                                                                 />
                                                                 <div className="text-left">
-                                                                    <div className={cn("text-sm font-bold", deleteMode === 'single' ? "text-red-400" : "text-white")}>Just this instance</div>
-                                                                    <div className="text-[10px] text-white/40">Other occurrences will remain.</div>
+                                                                    <div className={cn("text-sm font-bold", deleteMode === 'single' ? "text-red-400" : "text-foreground")}>Just this instance</div>
+                                                                    <div className="text-[10px] text-foreground/80">Other occurrences will remain.</div>
                                                                 </div>
                                                             </label>
 
                                                             <label className={cn(
                                                                 "flex items-center gap-4 p-4 rounded-2xl border transition-all cursor-pointer group",
-                                                                deleteMode === 'series' ? "bg-red-500/10 border-red-500/30 ring-1 ring-red-500/30" : "bg-white/5 border-white/10 hover:bg-white/10"
+                                                                deleteMode === 'series' ? "bg-red-500/10 border-red-500/30 ring-1 ring-red-500/30" : "bg-foreground/5 border-foreground/10 hover:bg-foreground/10"
                                                             )}>
                                                                 <div className={cn(
                                                                     "w-5 h-5 rounded-full border-2 flex items-center justify-center shrink-0 transition-all",
-                                                                    deleteMode === 'series' ? "border-red-500" : "border-white/20"
+                                                                    deleteMode === 'series' ? "border-red-500" : "border-foreground/20"
                                                                 )}>
                                                                     {deleteMode === 'series' && <div className="w-2 h-2 rounded-full bg-red-500" />}
                                                                 </div>
@@ -554,8 +554,8 @@ export const EventDetailsModal: React.FC<EventDetailsModalProps> = ({ event, isO
                                                                     className="hidden"
                                                                 />
                                                                 <div className="text-left">
-                                                                    <div className={cn("text-sm font-bold", deleteMode === 'series' ? "text-red-400" : "text-white")}>All events in series</div>
-                                                                    <div className="text-[10px] text-white/40">Removes the entire recurring pattern.</div>
+                                                                    <div className={cn("text-sm font-bold", deleteMode === 'series' ? "text-red-400" : "text-foreground")}>All events in series</div>
+                                                                    <div className="text-[10px] text-foreground/80">Removes the entire recurring pattern.</div>
                                                                 </div>
                                                             </label>
                                                         </div>
@@ -569,14 +569,14 @@ export const EventDetailsModal: React.FC<EventDetailsModalProps> = ({ event, isO
                                         <AlertDialogFooter className="w-full flex flex-col sm:flex-row gap-3 pt-8">
                                             <AlertDialogCancel
                                                 onClick={() => setIsDeleteOpen(false)}
-                                                className="flex-1 h-12 rounded-2xl bg-white/5 border-white/10 text-white font-bold hover:bg-white/10 hover:text-white transition-all border-0"
+                                                className="flex-1 h-12 rounded-2xl bg-foreground/5 border-foreground/10 text-foreground font-bold hover:bg-foreground/10 hover:text-foreground transition-all border-0"
                                             >
                                                 Cancel
                                             </AlertDialogCancel>
                                             <AlertDialogAction
                                                 onClick={confirmDelete}
                                                 disabled={isDeleting}
-                                                className="flex-1 h-12 rounded-2xl bg-red-600 hover:bg-red-500 text-white font-bold shadow-lg shadow-red-600/20 border-0 transition-all active:scale-95 disabled:opacity-50"
+                                                className="flex-1 h-12 rounded-2xl bg-red-600 hover:bg-red-500 text-foreground font-bold shadow-lg shadow-red-600/20 border-0 transition-all active:scale-95 disabled:opacity-50"
                                             >
                                                 {isDeleting ? 'Deleting...' : 'Delete Event'}
                                             </AlertDialogAction>

@@ -14,10 +14,10 @@ export function WorkspaceSwitcher({ isCollapsed }: WorkspaceSwitcherProps) {
 
     if (loading) {
         return (
-            <div className="flex items-center h-12 px-0 bg-white/5 rounded-[18px] animate-pulse">
+            <div className="flex items-center h-12 px-0 bg-foreground/5 rounded-[18px] animate-pulse">
                 <div className="grid grid-cols-[40px_1fr] items-center w-full">
-                    <div className="w-10 h-10 rounded-xl bg-white/10 shrink-0" />
-                    {!isCollapsed && <div className="ml-4 w-24 h-4 bg-white/10 rounded" />}
+                    <div className="w-10 h-10 rounded-xl bg-foreground/10 shrink-0" />
+                    {!isCollapsed && <div className="ml-4 w-24 h-4 bg-foreground/10 rounded" />}
                 </div>
             </div>
         );
@@ -38,23 +38,21 @@ export function WorkspaceSwitcher({ isCollapsed }: WorkspaceSwitcherProps) {
             <div className="grid grid-cols-[40px_1fr] items-center w-full">
                 <div className={cn(
                     "w-10 h-10 rounded-xl border flex items-center justify-center shrink-0 transition-all shadow-lg",
-                    currentWorkspace.type === 'department'
-                        ? "bg-amber-500/10 border-amber-500/20 text-amber-400"
-                        : "bg-indigo-500/10 border-indigo-500/20 text-indigo-400"
+                    "bg-primary/10 border-primary/20 text-primary"
                 )}>
                     <Icon size={16} />
                 </div>
                 {!isCollapsed && (
                     <div className="flex flex-col overflow-hidden ml-4">
-                        <span className="text-sm font-bold text-white tracking-tight truncate leading-tight">
+                        <span className="text-sm font-bold text-foreground tracking-tight truncate leading-tight">
                             {currentWorkspace.name}
                         </span>
                         <div className="flex items-center gap-1.5 mt-0.5">
-                            <span className="text-[9px] text-white/40 font-black uppercase tracking-[0.2em]">
+                            <span className="text-[9px] text-foreground/80 font-black uppercase tracking-[0.2em]">
                                 {secondaryLabel}
                             </span>
-                            <span className="w-1 h-1 rounded-full bg-white/10" />
-                            <span className="text-[9px] text-white/20 font-bold uppercase tracking-wider">
+                            <span className="w-1 h-1 rounded-full bg-foreground/10" />
+                            <span className="text-[9px] text-foreground/80 font-bold uppercase tracking-wider">
                                 {secondaryType}
                             </span>
                         </div>

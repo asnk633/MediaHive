@@ -229,7 +229,7 @@ export default function ImageCropper({ imageUrl, onCropComplete, onCancel }: Ima
                     </button>
                     <button
                         onClick={handleCrop}
-                        className="flex-1 py-2.5 rounded-xl bg-blue-600 hover:bg-blue-700 text-white font-medium text-sm transition-colors shadow-lg shadow-blue-500/20"
+                        className="flex-1 py-2.5 rounded-xl bg-blue-600 hover:bg-blue-700 text-foreground font-medium text-sm transition-colors shadow-lg shadow-blue-500/20"
                     >
                         Apply
                     </button>

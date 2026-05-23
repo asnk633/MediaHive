@@ -120,7 +120,7 @@ export default function InventoryView() {
         // Derive Status
         const itemsWithDerivedStatus = items.map(item => {
             if (issuedItemIds.has(item.id)) {
-                return { ...item, status: 'in_use' };
+                return { ...item, status: 'In Use' };
             }
             return item;
         });
@@ -130,16 +130,53 @@ export default function InventoryView() {
                 item.category.toLowerCase().includes(search.toLowerCase()) ||
                 (item.serialNumber && item.serialNumber.toLowerCase().includes(search.toLowerCase()));
             const matchesCategory = category ? item.category === category : true;
-            return matchesSearch && matchesCategory;
+            
+            if (!matchesSearch || !matchesCategory) return false;
+
+            if (sortBy.startsWith('status_')) {
+                const targetStatus = sortBy.substring(7); // "available", "in_use", "maintenance", "retired"
+                const itemStatus = (item.status || '').toLowerCase();
+                
+                if (targetStatus === 'available') {
+                    return itemStatus === 'available';
+                } else if (targetStatus === 'in_use') {
+                    return itemStatus === 'in use' || itemStatus === 'in_use';
+                } else if (targetStatus === 'maintenance') {
+                    return itemStatus === 'under repair' || itemStatus === 'under_repair' || itemStatus === 'maintenance';
+                } else if (targetStatus === 'retired') {
+                    return itemStatus === 'disposed' || itemStatus === 'retired';
+                }
+                return true;
+            }
+
+            if (sortBy.startsWith('condition_')) {
+                const targetCondition = sortBy.substring(10); // "good", "fair", "poor", "damaged"
+                const itemCondition = (item.condition || '').toLowerCase();
+                
+                if (targetCondition === 'good') {
+                    return itemCondition === 'good' || itemCondition === 'excellent' || itemCondition === 'new';
+                } else if (targetCondition === 'fair') {
+                    return itemCondition === 'fair' || itemCondition === 'need repair' || itemCondition === 'need_repair';
+                } else if (targetCondition === 'poor') {
+                    return itemCondition === 'poor' || itemCondition === 'damaged';
+                } else if (targetCondition === 'damaged') {
+                    return itemCondition === 'damaged' || itemCondition === 'poor';
+                }
+                return true;
+            }
+
+            return true;
         });
 
         // Sorting
         result.sort((a, b) => {
+            if (sortBy.startsWith('status_') || sortBy.startsWith('condition_')) {
+                return a.name.localeCompare(b.name);
+            }
             switch (sortBy) {
                 case 'name_asc': return a.name.localeCompare(b.name);
                 case 'name_desc': return b.name.localeCompare(a.name);
                 case 'category': return a.category.localeCompare(b.category);
-                case 'status': return (a.status || '').localeCompare(b.status || '');
                 case 'date_newest':
                     return new Date(b.purchaseDate || 0).getTime() - new Date(a.purchaseDate || 0).getTime();
                 case 'date_oldest':
@@ -199,7 +236,7 @@ export default function InventoryView() {
                         <Button
                             variant="ghost"
                             onClick={() => nativeNavigate('/inventory/requests', router, 'InventoryView (Requests)')}
-                            className="text-slate-300 hover:text-white hover:bg-white/10"
+                            className="text-slate-300 hover:text-foreground hover:bg-foreground/10"
                         >
                             <Clock className="w-4 h-4 mr-2" />
                             {['admin', 'manager'].includes(currentRole) ? 'Requests' : 'My Requests'}
@@ -223,14 +260,14 @@ export default function InventoryView() {
                                         }));
                                         import('@/utils/export').then(mod => mod.downloadCSV(exportData, `inventory_${new Date().toISOString().split('T')[0]}.csv`));
                                     }}
-                                    className="text-slate-300 hover:text-white hover:bg-white/10 hidden sm:flex"
+                                    className="text-slate-300 hover:text-foreground hover:bg-foreground/10 hidden sm:flex"
                                 >
                                     <FileDown className="w-4 h-4 mr-2" />
                                     Export
                                 </Button>
                                 <Button
                                     onClick={() => nativeNavigate('/inventory/add', router, 'InventoryView (Add Asset)')}
-                                    className="bg-blue-600 hover:bg-blue-500 text-white shadow-lg shadow-blue-900/20"
+                                    className="bg-blue-600 hover:bg-blue-500 text-foreground shadow-lg shadow-blue-900/20"
                                 >
                                     <Plus size={18} className="mr-2" /> Add Asset
                                 </Button>
@@ -241,8 +278,8 @@ export default function InventoryView() {
             />
 
             {/* Categorization Guide */}
-            <Collapsible open={isGuideOpen} onOpenChange={setIsGuideOpen} className="border border-white/5 bg-slate-900/30 rounded-xl overflow-hidden">
-                <CollapsibleTrigger className="flex items-center justify-between w-full px-4 py-3 text-sm font-medium text-slate-400 hover:text-white hover:bg-white/5 transition-colors">
+            <Collapsible open={isGuideOpen} onOpenChange={setIsGuideOpen} className="border border-foreground/5 bg-surface rounded-xl overflow-hidden">
+                <CollapsibleTrigger className="flex items-center justify-between w-full px-4 py-3 text-sm font-medium text-slate-400 hover:text-foreground hover:bg-foreground/5 transition-colors">
                     <div className="flex items-center gap-2">
                         <Info className="w-4 h-4 text-blue-400" />
                         Media Inventory Categorization Guide
@@ -250,10 +287,10 @@ export default function InventoryView() {
                     {isGuideOpen ? <ChevronUp className="w-4 h-4" /> : <ChevronDown className="w-4 h-4" />}
                 </CollapsibleTrigger>
                 <CollapsibleContent>
-                    <div className="px-4 pb-4 pt-1 grid grid-cols-1 md:grid-cols-2 gap-x-8 gap-y-2 text-xs text-secondary border-t border-white/5 bg-black/20">
+                    <div className="px-4 pb-4 pt-1 grid grid-cols-1 md:grid-cols-2 gap-x-8 gap-y-2 text-xs text-secondary border-t border-foreground/5 bg-foreground/[0.02]">
                         {Object.entries(INVENTORY_GUIDE).map(([cat, desc]) => (
                             <div key={cat} className="py-1">
-                                <span className="text-white font-semibold">{cat}:</span> <span className="text-secondary">{desc}</span>
+                                <span className="text-foreground font-semibold">{cat}:</span> <span className="text-secondary">{desc}</span>
                             </div>
                         ))}
                     </div>
@@ -262,13 +299,13 @@ export default function InventoryView() {
 
             {/* Navigation Tabs */}
             {['admin', 'manager', 'team'].includes(currentRole) && (
-                <div className="flex items-center gap-1 p-1 bg-white/5 border border-white/10 rounded-xl w-fit">
+                <div className="flex items-center gap-1 p-1 bg-foreground/5 border border-foreground/10 rounded-xl w-fit">
                     <button
                         onClick={() => setActiveTab('items')}
                         className={`px-6 py-2 text-sm font-semibold rounded-lg transition-all ${
                             activeTab === 'items' 
-                            ? 'bg-blue-600 text-white shadow-lg shadow-blue-900/40' 
-                            : 'text-slate-400 hover:text-white hover:bg-white/5'
+                            ? 'bg-blue-600 text-foreground shadow-lg shadow-blue-900/40' 
+                            : 'text-slate-400 hover:text-foreground hover:bg-foreground/5'
                         }`}
                     >
                         Equipment Items
@@ -277,8 +314,8 @@ export default function InventoryView() {
                         onClick={() => setActiveTab('schedule')}
                         className={`px-6 py-2 text-sm font-semibold rounded-lg transition-all ${
                             activeTab === 'schedule' 
-                            ? 'bg-blue-600 text-white shadow-lg shadow-blue-900/40' 
-                            : 'text-slate-400 hover:text-white hover:bg-white/5'
+                            ? 'bg-blue-600 text-foreground shadow-lg shadow-blue-900/40' 
+                            : 'text-slate-400 hover:text-foreground hover:bg-foreground/5'
                         }`}
                     >
                         Booking Schedule
@@ -342,7 +379,7 @@ export default function InventoryView() {
                     <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                         <div className="bg-glass border-soft p-4 rounded-xl">
                             <h4 className="text-[10px] uppercase font-bold text-slate-500 mb-1">Active Bookings</h4>
-                            <p className="text-2xl font-bold text-white">{activeIssues.length}</p>
+                            <p className="text-2xl font-bold text-foreground">{activeIssues.length}</p>
                         </div>
                         {/* More summary cards... */}
                     </div>
@@ -358,6 +395,10 @@ export default function InventoryView() {
                 onEdit={['admin', 'manager'].includes(currentRole) ? (item) => {
                     setViewItem(null); // Close view
                     handleEdit(item);
+                } : undefined}
+                onDelete={['admin', 'manager'].includes(currentRole) ? (item) => {
+                    setViewItem(null); // Close view
+                    handleDelete(item);
                 } : undefined}
                 onRequest={(item) => {
                     setViewItem(null);

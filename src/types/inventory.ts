@@ -1,54 +1,28 @@
 
 import { TimestampLike } from '@/types/timestamp';
 
-export type InventoryCondition = 'good' | 'needs_repair' | 'broken' | 'lost' | 'retired';
+export type InventoryCondition = 'Good' | 'Fair' | 'Poor' | 'Damaged' | string;
 
 // Status for availability tracking
 // Status for availability tracking (Legacy/Asset)
-export type InventoryAssetStatus = 'available' | 'in_use' | 'maintenance' | 'retired';
+export type InventoryAssetStatus = 'Available' | 'In Use' | 'Maintenance' | 'Retired' | string;
 
 export const INVENTORY_CATEGORIES = [
-    'Camera',
-    'Audio',
-    'Lights',
-    'Cables',
-    'Lens',
-    'IT',
-    'Furniture',
-    'Decoration',
-    'Camera Support & Stabilization',
-    'Lenses & Optics',
-    'Grip & Rigging',
-    'Power & Batteries',
-    'Media & Storage',
-    'Computing & Monitoring',
-    'Production Consumables',
-    'Transport & Cases',
-    'Studio Infrastructure',
-    'Other'
+    'Cameras & Accessories',
+    'Networking & Power Cables',
+    'Audio & Sound Systems',
+    'Office & Studio Gear',
+    'General Asset'
 ] as const;
 
 export type InventoryCategory = typeof INVENTORY_CATEGORIES[number];
 
 export const INVENTORY_GUIDE: Record<InventoryCategory, string> = {
-    'Camera': 'Camera bodies, action cameras (GoPro), drones, camcorders.',
-    'Audio': 'Microphones (lavalier, shotgun, handheld), audio recorders, mixers, headphones.',
-    'Lights': 'LED panels, COB lights, tube lights, softboxes, ring lights.',
-    'Cables': 'Video (HDMI, SDI), Audio (XLR, AUX), Data (USB, Thunderbolt), Power (Extension cords).',
-    'Lens': 'Prime lenses, zoom lenses, macro lenses, and lens adapters.',
-    'IT': 'Laptops, tablets, networking equipment, and software licenses.',
-    'Furniture': 'Studio chairs, desks, posing stools, and production tables.',
-    'Decoration': 'Props, artificial plants, rugs, and background decorative elements.',
-    'Camera Support & Stabilization': 'Tripods, monopods, fluid heads, gimbals, shoulder rigs, sliders.',
-    'Lenses & Optics': 'Specialized optics, ND filters, lens cleaning kits, and glass filters.',
-    'Grip & Rigging': 'Light stands, C-stands, clamps, sandbags, apple boxes, frames/flags.',
-    'Power & Batteries': 'Camera batteries, V-mount/Gold mount bricks, AA/AAA batteries, chargers, AC adapters.',
-    'Media & Storage': 'SD cards, CFexpress cards, external SSDs, hard drives, card readers.',
-    'Computing & Monitoring': 'Field monitors, wireless video transmitters, laptops, iPads.',
-    'Production Consumables': 'Gaffer tape, gels, canned air, lens wipes.',
-    'Transport & Cases': 'Hard cases (Pelican), soft bags, backpacks, equipment carts.',
-    'Studio Infrastructure': 'Backdrops (paper/muslin), green screens, sound blankets, studio furniture.',
-    'Other': 'Any miscellaneous items that do not fit into the above categories.'
+    'Cameras & Accessories': 'Camera bodies, action cameras (GoPro), drones, lenses, filters, lens adapters, lens cleaning kits.',
+    'Networking & Power Cables': 'Data cables (HDMI, USB, RJ45), power strips, routers, switches, battery bricks, V-mount, extension cords.',
+    'Audio & Sound Systems': 'Microphones (lavalier, shotgun, wireless), audio recorders, speakers, headphones, audio mixers.',
+    'Office & Studio Gear': 'Keyboards, mice, monitors, stands, studio backdrops, apple boxes, production tables, transport cases.',
+    'General Asset': 'Any general equipment, consumables, or miscellaneous tools.'
 };
 
 // Legacy Asset Interface (for Device Requests)

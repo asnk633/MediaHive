@@ -38,8 +38,8 @@ function EditInventoryContent() {
     const [formData, setFormData] = useState({
         name: "",
         category: "",
-        condition: "good" as InventoryCondition,
-        status: "available" as InventoryAssetStatus,
+        condition: "Good" as InventoryCondition,
+        status: "Available" as InventoryAssetStatus,
         purchaseDate: new Date(),
         purchasePrice: "",
         unit: "1",
@@ -69,11 +69,25 @@ function EditInventoryContent() {
                     return;
                 }
 
+                let uiCondition: any = 'Good';
+                const condDb = (item.condition || '').toUpperCase();
+                if (condDb === 'GOOD') uiCondition = 'Good';
+                else if (condDb === 'NEED REPAIR' || condDb === 'NEED_REPAIR' || condDb === 'FAIR') uiCondition = 'Fair';
+                else if (condDb === 'POOR') uiCondition = 'Poor';
+                else if (condDb === 'DAMAGED') uiCondition = 'Damaged';
+
+                let uiStatus: any = 'Available';
+                const statusDb = (item.assetStatus || item.status || '').toUpperCase();
+                if (statusDb === 'AVAILABLE') uiStatus = 'Available';
+                else if (statusDb === 'IN USE' || statusDb === 'IN_USE') uiStatus = 'In Use';
+                else if (statusDb === 'UNDER REPAIR' || statusDb === 'UNDER_REPAIR' || statusDb === 'MAINTENANCE') uiStatus = 'Maintenance';
+                else if (statusDb === 'DISPOSED' || statusDb === 'RETIRED') uiStatus = 'Retired';
+
                 setFormData({
                     name: item.name,
                     category: item.category,
-                    condition: (item.condition || "good") as InventoryCondition,
-                    status: (item.assetStatus || item.status || "available") as InventoryAssetStatus,
+                    condition: uiCondition,
+                    status: uiStatus,
                     purchaseDate: item.purchaseDate ? new Date(item.purchaseDate) : new Date(),
                     purchasePrice: item.purchasePrice?.toString() || "",
                     unit: item.unit || "1",
@@ -187,13 +201,25 @@ function EditInventoryContent() {
 
         try {
             setLoading(true);
+            let dbCondition = formData.condition;
+            if (formData.condition === 'Good') dbCondition = 'Good';
+            else if (formData.condition === 'Fair') dbCondition = 'Need Repair';
+            else if (formData.condition === 'Poor' || formData.condition === 'Damaged') dbCondition = 'Damaged';
+
+            let dbStatus = formData.status;
+            if (formData.status === 'Available') dbStatus = 'Available';
+            else if (formData.status === 'In Use') dbStatus = 'In Use';
+            else if (formData.status === 'Maintenance') dbStatus = 'Under Repair';
+            else if (formData.status === 'Retired') dbStatus = 'Disposed';
+
             const payload = {
                 name: formData.name,
                 category: formData.category,
                 quantity: Number(formData.unit) || 1,
                 unit: formData.unit,
+                status: dbStatus,
                 assetStatus: formData.status,
-                condition: formData.condition,
+                condition: dbCondition,
                 serialNumber: formData.serialNumber,
                 remarks: formData.remarks,
                 purchaseDate: formData.purchaseDate.toISOString(),
@@ -217,18 +243,17 @@ function EditInventoryContent() {
     };
 
     const CONDITIONS = [
-        { value: "good", label: "Good" },
-        { value: "needs_repair", label: "Needs Repair" },
-        { value: "broken", label: "Broken" },
-        { value: "lost", label: "Lost" },
-        { value: "retired", label: "Retired" },
+        { value: "Good", label: "Good" },
+        { value: "Fair", label: "Fair" },
+        { value: "Poor", label: "Poor" },
+        { value: "Damaged", label: "Damaged" },
     ];
 
     const STATUSES = [
-        { value: "available", label: "Available" },
-        { value: "in_use", label: "In Use" },
-        { value: "maintenance", label: "Maintenance" },
-        { value: "retired", label: "Retired" },
+        { value: "Available", label: "Available" },
+        { value: "In Use", label: "In Use" },
+        { value: "Maintenance", label: "Maintenance" },
+        { value: "Retired", label: "Retired" },
     ];
 
     const inputClasses = "bg-background border-soft focus:border-primary/50 rounded-xl text-foreground placeholder:text-muted hover:border-muted transition-colors";
@@ -272,7 +297,7 @@ function EditInventoryContent() {
                                             <button
                                                 type="button"
                                                 onClick={() => handleMainImageSet(img)}
-                                                className="text-[10px] bg-blue-600/20 text-blue-400 hover:bg-blue-600 hover:text-white px-2 py-1 rounded-full transition-colors"
+                                                className="text-[10px] bg-blue-600/20 text-blue-400 hover:bg-blue-600 hover:text-foreground px-2 py-1 rounded-full transition-colors"
                                             >
                                                 Make Cover
                                             </button>
@@ -280,13 +305,13 @@ function EditInventoryContent() {
                                         <button
                                             type="button"
                                             onClick={() => handleRemoveImage(idx)}
-                                            className="text-red-400 hover:text-white p-1.5 rounded-full hover:bg-red-500/20 transition-colors"
+                                            className="text-red-400 hover:text-foreground p-1.5 rounded-full hover:bg-red-500/20 transition-colors"
                                         >
                                             <X size={16} />
                                         </button>
                                     </div>
                                     {formData.imageUrl === img.url && (
-                                        <div className="absolute top-2 left-2 bg-blue-600 text-white text-[10px] font-bold px-2 py-0.5 rounded-full shadow-lg">
+                                        <div className="absolute top-2 left-2 bg-blue-600 text-foreground text-[10px] font-bold px-2 py-0.5 rounded-full shadow-lg">
                                             Cover
                                         </div>
                                     )}
@@ -531,7 +556,7 @@ function EditInventoryContent() {
 
                 {cropperOpen && selectedImageSrc && (
                     <div className="fixed inset-0 z-50 bg-black/80 flex items-center justify-center p-4">
-                        <div className="bg-[#0f172a] rounded-2xl overflow-hidden max-w-lg w-full">
+                        <div className="bg-[var(--glass-liquid-bg)] rounded-2xl overflow-hidden max-w-lg w-full">
                             <ImageCropper
                                 imageSrc={selectedImageSrc}
                                 onCropComplete={handleCropComplete}

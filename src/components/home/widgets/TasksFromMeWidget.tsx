@@ -80,7 +80,7 @@ export const TasksFromMeWidget = ({ tasks, userId, title = "Tasks from Me" }: Ta
                     return (
                         <div key={task.id} className={`group flex items-center justify-between p-4 bg-surface backdrop-blur-md rounded-2xl shadow-sm hover:bg-surface/80 hover:shadow-md transition-all duration-300 ${isDone ? 'opacity-50 grayscale' : ''}`}>
                             <div className="flex-1 min-w-0 mr-4">
-                                <p className={`text-sm font-semibold truncate ${isDone ? 'text-gray-500 line-through' : 'text-gray-200 group-hover:text-white'}`}>
+                                <p className={`text-sm font-semibold truncate ${isDone ? 'text-gray-500 line-through' : 'text-gray-200 group-hover:text-foreground'}`}>
                                     {task.title}
                                 </p>
                                 {getTaskHint(task) && !isDone && (

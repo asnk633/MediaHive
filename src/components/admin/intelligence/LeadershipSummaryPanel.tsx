@@ -70,8 +70,8 @@ export function LeadershipSummaryPanel() {
     if (loading) {
         return (
             <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
-                <Skeleton className="h-48 rounded-2xl bg-white/5 col-span-2" />
-                <Skeleton className="h-48 rounded-2xl bg-white/5" />
+                <Skeleton className="h-48 rounded-2xl bg-foreground/5 col-span-2" />
+                <Skeleton className="h-48 rounded-2xl bg-foreground/5" />
             </div>
         );
     }
@@ -99,9 +99,9 @@ export function LeadershipSummaryPanel() {
             <div className="grid grid-cols-1 md:grid-cols-12 gap-6">
 
                 {/* 1. Executive Narrative (Left - Wide) */}
-                <div className="col-span-12 md:col-span-7 lg:col-span-8 bg-[#0f172a] border border-[#ffffff1a] rounded-2xl p-6 shadow-2xl relative overflow-hidden group">
+                <div className="col-span-12 md:col-span-7 lg:col-span-8 bg-[var(--glass-liquid-bg)] border border-[#ffffff1a] rounded-2xl p-6 shadow-2xl relative overflow-hidden group">
                     <div className="absolute top-0 right-0 p-4 opacity-10 group-hover:opacity-20 transition-opacity">
-                        <BrainCircuit size={120} className="text-white" />
+                        <BrainCircuit size={120} className="text-foreground" />
                     </div>
 
                     <div className="relative z-10">
@@ -109,12 +109,12 @@ export function LeadershipSummaryPanel() {
                             <div className="p-2 bg-blue-500/10 rounded-lg border border-blue-500/20">
                                 <Activity size={20} className="text-blue-400" />
                             </div>
-                            <h2 className="text-lg font-bold text-white tracking-wide">Executive Briefing</h2>
+                            <h2 className="text-lg font-bold text-foreground tracking-wide">Executive Briefing</h2>
                         </div>
 
                         <div className="space-y-3">
                             {narrative.map((text, idx) => (
-                                <div key={idx} className="flex gap-3 text-sm text-gray-300 leading-relaxed bg-black/20 p-3 rounded-lg border border-white/5">
+                                <div key={idx} className="flex gap-3 text-sm text-gray-300 leading-relaxed bg-black/20 p-3 rounded-lg border border-foreground/5">
                                     <div className="shrink-0 mt-1.5 w-1.5 h-1.5 rounded-full bg-blue-400 shadow-[0_0_8px_rgba(96,165,250,0.6)]" />
                                     {text}
                                 </div>
@@ -123,9 +123,9 @@ export function LeadershipSummaryPanel() {
 
                         {/* Quick Stats Row */}
                         <div className="mt-6 flex flex-wrap gap-4">
-                            <div className="px-4 py-2 bg-white/5 rounded-lg border border-white/5">
+                            <div className="px-4 py-2 bg-foreground/5 rounded-lg border border-foreground/5">
                                 <span className="text-xs text-gray-500 uppercase font-bold tracking-wider">Interventions</span>
-                                <div className="text-xl font-mono font-bold text-white mt-1">
+                                <div className="text-xl font-mono font-bold text-foreground mt-1">
                                     {data.interventions.count} <span className="text-xs text-gray-600 font-sans font-normal">this period</span>
                                 </div>
                             </div>
@@ -137,16 +137,16 @@ export function LeadershipSummaryPanel() {
                 <div className="col-span-12 md:col-span-5 lg:col-span-4 flex flex-col gap-6">
 
                     {/* Health Score */}
-                    <div className="flex-1 bg-[#0f172a] border border-[#ffffff1a] rounded-2xl p-6 shadow-xl flex flex-col justify-between">
+                    <div className="flex-1 bg-[var(--glass-liquid-bg)] border border-[#ffffff1a] rounded-2xl p-6 shadow-xl flex flex-col justify-between">
                         <div className="flex justify-between items-start">
                             <div>
-                                <h3 className="text-xs font-bold text-white/40 uppercase tracking-widest">Office / Unit Health</h3>
+                                <h3 className="text-xs font-bold text-foreground/80 uppercase tracking-widest">Department / Institution Health</h3>
                                 <div className={cn("text-4xl font-bold mt-2 font-mono tracking-tighter shadow-glow", getScoreColor(departmentHealth.score))}>
                                     {departmentHealth.score}
                                 </div>
                             </div>
                             <div className="flex flex-col items-end">
-                                <div className="flex items-center gap-1.5 px-2 py-1 bg-white/5 rounded text-xs font-medium text-white/80 border border-[#ffffff1a]">
+                                <div className="flex items-center gap-1.5 px-2 py-1 bg-foreground/5 rounded text-xs font-medium text-foreground/80 border border-[#ffffff1a]">
                                     {getTrendIcon(departmentHealth.trend)}
                                     <span className="uppercase">{departmentHealth.trend}</span>
                                 </div>
@@ -157,10 +157,10 @@ export function LeadershipSummaryPanel() {
                         </div>
 
                         {/* Risk Bar */}
-                        <div className="mt-6 pt-6 border-t border-white/5">
-                            <h4 className="text-xs font-bold text-white/40 uppercase tracking-widest mb-3">Workforce Risk Distribution</h4>
+                        <div className="mt-6 pt-6 border-t border-foreground/5">
+                            <h4 className="text-xs font-bold text-foreground/80 uppercase tracking-widest mb-3">Workforce Risk Distribution</h4>
 
-                            <div className="h-4 w-full bg-white/5 rounded-full overflow-hidden flex">
+                            <div className="h-4 w-full bg-foreground/5 rounded-full overflow-hidden flex">
                                 <div style={{ width: `${(riskDistribution.performing / riskDistribution.total) * 100}%` }} className="bg-emerald-500/80 hover:bg-emerald-400 transition-colors" title={`Performing: ${riskDistribution.performing}`} />
                                 <div style={{ width: `${(riskDistribution.atRisk / riskDistribution.total) * 100}%` }} className="bg-yellow-500/80 hover:bg-yellow-400 transition-colors" title={`At Risk: ${riskDistribution.atRisk}`} />
                                 <div style={{ width: `${(riskDistribution.underperforming / riskDistribution.total) * 100}%` }} className="bg-red-500/80 hover:bg-red-400 transition-colors" title={`Underperforming: ${riskDistribution.underperforming}`} />
@@ -176,15 +176,15 @@ export function LeadershipSummaryPanel() {
             </div>
 
             {/* 3. Automation Readiness (Preview) */}
-            <div className="bg-[#0f172a] border border-[#ffffff1a] rounded-xl p-4 flex flex-col md:flex-row items-center gap-6 shadow-lg relative overflow-hidden">
+            <div className="bg-[var(--glass-liquid-bg)] border border-[#ffffff1a] rounded-xl p-4 flex flex-col md:flex-row items-center gap-6 shadow-lg relative overflow-hidden">
                 <div className="absolute left-0 top-0 bottom-0 w-1 bg-amber-500/50" />
 
                 <div className="shrink-0 flex items-center gap-4">
-                    <div className="p-3 bg-white/5 rounded-lg">
+                    <div className="p-3 bg-foreground/5 rounded-lg">
                         <ShieldAlert className="text-amber-500" size={24} />
                     </div>
                     <div>
-                        <h3 className="text-sm font-bold text-white uppercase tracking-wider flex items-center gap-2">
+                        <h3 className="text-sm font-bold text-foreground uppercase tracking-wider flex items-center gap-2">
                             Automation Readiness
                             <span className="px-1.5 py-0.5 rounded bg-gray-700 text-[10px] text-gray-300 border border-gray-600">DISABLED</span>
                         </h3>
@@ -192,12 +192,12 @@ export function LeadershipSummaryPanel() {
                     </div>
                 </div>
 
-                <div className="hidden md:block w-px h-10 bg-white/10" />
+                <div className="hidden md:block w-px h-10 bg-foreground/10" />
 
                 <div className="flex-1 grid grid-cols-2 gap-4 w-full md:w-auto">
                     <div>
                         <div className="text-[10px] text-gray-500 uppercase font-bold">Hypothetical Triggers</div>
-                        <div className="text-white text-sm font-medium mt-0.5">
+                        <div className="text-foreground text-sm font-medium mt-0.5">
                             <span className="text-amber-400 font-bold">{automationPreview.hypotheticalTriggers.sustainedUnderperformance}</span> Sustained Underperf.
                         </div>
                     </div>

@@ -67,7 +67,7 @@ export const ResolvedStructureName: React.FC<ResolvedStructureNameProps> = ({ id
         }
         // While loading or if failed to resolve after load
         // We show a placeholder to avoid flashing legacy text
-        return <span className="text-white/20 text-xs animate-pulse">Loading...</span>;
+        return <span className="text-foreground/80 text-xs animate-pulse">Loading...</span>;
     }
 
     // Only if ID is missing do we use the fallback
@@ -75,5 +75,5 @@ export const ResolvedStructureName: React.FC<ResolvedStructureNameProps> = ({ id
         return <>{fallback}</>;
     }
 
-    return <span className="text-white/20 italic">Not specified</span>;
+    return <span className="text-foreground/80 italic">Not specified</span>;
 };

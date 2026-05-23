@@ -5,7 +5,7 @@ export const TaskSchema = z.object({
     title: z.string(),
     description: z.string().optional().nullable(),
     status: z.enum(['pending', 'todo', 'in_progress', 'on_hold', 'review', 'done']).optional().nullable(),
-    priority: z.enum(['low', 'medium', 'high', 'urgent']).optional().nullable(),
+    priority: z.enum(['low', 'medium', 'high']).optional().nullable(),
     dueDate: z.string().optional().nullable(),
     due_date: z.string().optional().nullable(),
     institutionId: z.string().optional().nullable(),

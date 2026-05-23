@@ -54,11 +54,11 @@ export const MediaTeamOverview = ({ performance: propPerformance }: MediaTeamOve
                     >
                         <div className="flex items-start justify-between">
                             <div className="flex-1">
-                                <p className="text-sm font-medium text-white/85 mb-4">{stat.label}</p>
-                                <p className="text-4xl font-extrabold text-white tracking-tighter mb-1">
+                                <p className="text-sm font-medium text-foreground/85 mb-4">{stat.label}</p>
+                                <p className="text-4xl font-extrabold text-foreground tracking-tighter mb-1">
                                     {stat.value}
                                 </p>
-                                <p className="text-xs text-white/20 font-medium">
+                                <p className="text-xs text-foreground/80 font-medium">
                                     {stat.subValue}
                                 </p>
                             </div>
@@ -80,29 +80,29 @@ export const MediaTeamOverview = ({ performance: propPerformance }: MediaTeamOve
                     <div className="flex items-center justify-between mb-6">
                         <div className="flex items-center gap-3">
                             <Users className="text-blue-400" size={18} />
-                            <h3 className="text-sm font-medium text-white/85">Team Assignment Distribution</h3>
+                            <h3 className="text-sm font-medium text-foreground/85">Team Assignment Distribution</h3>
                         </div>
-                        <span className="text-[10px] text-white/20 font-bold uppercase tracking-widest">Total Tasks</span>
+                        <span className="text-[10px] text-foreground/80 font-bold uppercase tracking-widest">Total Tasks</span>
                     </div>
                     
                     <div className="space-y-6">
                         {members.length > 0 ? members.map(([name, count], idx) => (
                             <div key={idx} className="flex items-center gap-4">
-                                <div className="min-w-[120px] text-xs font-semibold text-white/60 truncate">
+                                <div className="min-w-[120px] text-xs font-semibold text-foreground/80 truncate">
                                     {name}
                                 </div>
-                                <div className="flex-1 h-2 bg-white/5 rounded-full overflow-hidden">
+                                <div className="flex-1 h-2 bg-foreground/5 rounded-full overflow-hidden">
                                     <div 
                                         className="h-full bg-premium-gradient rounded-full transition-all duration-1000"
                                         style={{ width: `${Math.min((count / 10) * 100, 100)}%` }}
                                     />
                                 </div>
-                                <div className="text-xs font-bold text-white/40 min-w-[30px] text-right">
+                                <div className="text-xs font-bold text-foreground/80 min-w-[30px] text-right">
                                     {count}
                                 </div>
                             </div>
                         )) : (
-                            <p className="text-xs text-white/20 italic italic py-4">No active assignments to display.</p>
+                            <p className="text-xs text-foreground/80 italic italic py-4">No active assignments to display.</p>
                         )}
                     </div>
                 </ReactiveCard>
@@ -111,7 +111,7 @@ export const MediaTeamOverview = ({ performance: propPerformance }: MediaTeamOve
                 <ReactiveCard className="dashboard-card-safe-padding dashboard-card-secondary">
                     <div className="flex items-center gap-3 mb-6">
                         <BarChart3 className="text-blue-400" size={18} />
-                        <h3 className="text-sm font-medium text-white/85">Productivity Trend</h3>
+                        <h3 className="text-sm font-medium text-foreground/85">Productivity Trend</h3>
                     </div>
 
                     <div className="flex items-end justify-between h-32 gap-2 mt-4">
@@ -122,7 +122,7 @@ export const MediaTeamOverview = ({ performance: propPerformance }: MediaTeamOve
                                 <div key={idx} className="flex-1 flex flex-col items-center gap-2 group">
                                     <div className="w-full relative flex flex-col justify-end h-full">
                                         <div 
-                                            className="w-full bg-white/10 rounded-t-lg group-hover:bg-amber-400 transition-all duration-500 relative"
+                                            className="w-full bg-foreground/10 rounded-t-lg group-hover:bg-amber-400 transition-all duration-500 relative"
                                             style={{ height: `${Math.max(height, 5)}%` }}
                                         >
                                             {day.count > 0 && (
@@ -132,19 +132,19 @@ export const MediaTeamOverview = ({ performance: propPerformance }: MediaTeamOve
                                             )}
                                         </div>
                                     </div>
-                                    <span className="text-[8px] font-black text-white/20 uppercase whitespace-nowrap">
+                                    <span className="text-[8px] font-black text-foreground/80 uppercase whitespace-nowrap">
                                         {day.date}
                                     </span>
                                 </div>
                             );
                         })}
                     </div>
-                    <div className="mt-4 pt-4 border-t border-white/5 flex items-center justify-between">
+                    <div className="mt-4 pt-4 border-t border-foreground/5 flex items-center justify-between">
                         <div className="flex items-center gap-1.5">
                             <ChevronUp className="text-emerald-400" size={12} />
                             <span className="text-[10px] font-bold text-emerald-400">+12% vs LY</span>
                         </div>
-                        <span className="text-[10px] text-white/20 font-medium italic">7-day rolling window</span>
+                        <span className="text-[10px] text-foreground/80 font-medium italic">7-day rolling window</span>
                     </div>
                 </ReactiveCard>
             </div>

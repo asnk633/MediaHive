@@ -28,20 +28,20 @@ export const CollapsibleSectionHeader: React.FC<CollapsibleSectionHeaderProps> =
             aria-label={ariaLabel || `${isExpanded ? 'Collapse' : 'Expand'} ${title}`}
             className={cn(
                 "w-full flex items-center justify-between group/header select-none transition-all duration-200", 
-                "h-[46px] rounded-[18px] hover:bg-white/[0.03] hover:px-4 ml-2 w-[calc(100%-16px)] px-4 active:scale-[0.99]",
+                "h-[46px] rounded-[18px] hover:bg-foreground/[0.03] hover:px-4 ml-2 w-[calc(100%-16px)] px-4 active:scale-[0.99]",
                 className
             )}
         >
             <div className="flex items-baseline gap-[10px]">
-                {icon && <div className="text-white/40 transition-colors group-hover/header:text-blue-400/60 flex items-center">{icon}</div>}
-                <h2 className="text-sm font-bold tracking-tight text-white/90">
+                {icon && <div className="text-foreground/80 transition-colors group-hover/header:text-blue-400/60 flex items-center">{icon}</div>}
+                <h2 className="text-sm font-bold tracking-tight text-foreground/90">
                     {title}
                 </h2>
             </div>
 
             <div className={cn(
                 "p-1.5 rounded-[18px] transition-colors duration-200",
-                "text-white/20 group-hover/header:text-white/60",
+                "text-foreground/80 group-hover/header:text-foreground/80",
             )}>
                 <ChevronRight 
                     size={18} 

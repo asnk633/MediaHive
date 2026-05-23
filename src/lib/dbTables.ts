@@ -15,7 +15,7 @@ export const TABLES = {
   TENANTS: "tenants",
   
   // Resources
-  INVENTORY: "inventory",
+  INVENTORY: "inventory_items",
   EQUIPMENT_BOOKINGS: "equipment_bookings",
   INVENTORY_REQUESTS: "inventory_requests",
   INVENTORY_ISSUES: "inventory_issues",

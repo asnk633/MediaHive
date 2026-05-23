@@ -12,6 +12,7 @@ import { DropdownSelector } from '@/components/ui/selectors/DropdownSelector';
 import { useFormState } from '@/hooks/useFormState';
 import { useFormSubmit } from '@/hooks/useFormSubmit';
 import { DraftIndicator } from '@/components/ui/DraftIndicator';
+import { MultiSelect } from '@/components/ui/selectors/MultiSelect';
 
 import { supabase } from '@/lib/supabaseClient';
 import { v4 as uuidv4 } from 'uuid';
@@ -148,20 +149,26 @@ export default function TasksNewClient() {
             const contextId = currentWorkspaceId;
             const members = await UserService.getTeamMembers(contextId, user.uid, { forceMediaIT: true });
 
+            const isManagerLocal = currentRole?.toLowerCase() === 'manager';
+            const isAdminLocal = currentRole?.toLowerCase() === 'admin';
+            const isTeamLocal = currentRole?.toLowerCase() === 'team';
+            const canAssignOthers = isAdminLocal || isManagerLocal;
+
             // Context-Aware Filter
             const filtered = members.filter(m => {
                 const role = (m as any).role?.toLowerCase().trim();
-                const isCreator = m.uid === user?.uid;
+                const isSelf = m.uid === user?.uid;
                 const isMediaAdmin = m.name === 'Media Admin';
                 
-                // Allow standard non-admin roles for assignment
-                const isValidRole = ['manager', 'team', 'member'].includes(role);
+                // Allow standard operational roles for assignment
+                const isValidRole = ['manager', 'team'].includes(role);
 
-                // Role and System exclusion
-                return (
-                    isValidRole &&
-                    !isMediaAdmin
-                );
+                if (!isValidRole || isMediaAdmin) return false;
+
+                if (canAssignOthers) return true;
+                if (isTeamLocal && isSelf) return true;
+                
+                return false;
             });
             
             setTeamMembers(filtered);
@@ -428,9 +435,9 @@ export default function TasksNewClient() {
             <div className="flex flex-col items-center">
                 {/* Centered Card */}
                 <div className="w-full max-w-xl">
-                    <div className="glass-card rounded-3xl p-6 sm:p-8 shadow-2xl ring-1 ring-white/5">
+                    <div className="glass-liquid rounded-[32px] p-6 sm:p-8 shadow-[0_32px_64px_-16px_rgba(0,0,0,0.8)] border border-foreground/5">
                         {/* Header */}
-                        <div className="flex items-center justify-between mb-8 pb-4 border-b border-white/5">
+                        <div className="flex items-center justify-between mb-8 pb-4 border-b border-foreground/5">
                             <button
                                 onClick={() => {
                                     const returnTo = searchParams.get('returnTo');
@@ -440,11 +447,11 @@ export default function TasksNewClient() {
                                         router.push('/tasks');
                                     }
                                 }}
-                                className="text-red-400/80 font-medium hover:text-red-300 transition-colors text-sm hover:bg-white/5 px-3 py-1.5 rounded-full"
+                                className="text-red-400/80 font-medium hover:text-red-300 transition-colors text-sm hover:bg-foreground/5 px-3 py-1.5 rounded-full"
                             >
                                 {COPY.actions.cancel}
                             </button>
-                            <h1 className="text-lg font-bold text-white tracking-wide">New Task</h1>
+                            <h1 className="text-lg font-bold text-foreground tracking-wide">New Task</h1>
                             <DraftIndicator isSaved={isDraftSaved} className="w-[80px] justify-end" />
                         </div>
  
@@ -455,7 +462,7 @@ export default function TasksNewClient() {
                                 </div>
                                 <div>
                                     <p className="text-xs text-blue-300 font-semibold uppercase tracking-wider">Attached to Campaign</p>
-                                    <p className="text-sm text-white font-bold">{campaignName}</p>
+                                    <p className="text-sm text-foreground font-bold">{campaignName}</p>
                                 </div>
                             </div>
                         )}
@@ -467,24 +474,26 @@ export default function TasksNewClient() {
                             {/* Title & Desc Group */}
                             <div className="space-y-5">
                                 <div className="space-y-2">
-                                    <label className="block text-sm font-medium text-white/70 mb-2">Task Title</label>
+                                    <label className="block text-sm font-medium text-foreground/70 mb-2">Task Title</label>
                                     <input
                                         type="text"
                                         value={title}
                                         onChange={e => setTitle(e.target.value)}
                                         placeholder={COPY.placeholders.taskTitle}
-                                        className="w-full bg-black/20 backdrop-blur-sm p-4 rounded-2xl border border-white/5 shadow-inner focus:bg-black/40 focus:ring-2 focus:ring-blue-500/30 focus:border-blue-500/50 outline-none transition-all placeholder:text-gray-700 font-medium text-white text-lg"
+                                        spellCheck={true}
+                                        className="w-full bg-black/20 backdrop-blur-sm p-4 rounded-2xl border border-foreground/5 shadow-inner focus:bg-black/40 focus:ring-2 focus:ring-primary/30 focus:border-primary/50 outline-none transition-all placeholder:text-gray-700 font-medium text-foreground text-lg"
                                     />
                                 </div>
  
                                 <div className="space-y-2">
-                                    <label className="block text-sm font-medium text-white/70 mb-2">{COPY.labels.description}</label>
+                                    <label className="block text-sm font-medium text-foreground/70 mb-2">{COPY.labels.description}</label>
                                     <textarea
                                         value={description}
                                         onChange={e => setDescription(e.target.value)}
                                         placeholder={COPY.placeholders.taskDescription}
                                         rows={4}
-                                        className="w-full bg-black/20 backdrop-blur-sm p-4 rounded-2xl border border-white/5 shadow-inner focus:bg-black/40 focus:ring-2 focus:ring-blue-500/30 focus:border-blue-500/50 outline-none transition-all placeholder:text-gray-700 resize-none text-white/90 leading-relaxed"
+                                        spellCheck={true}
+                                        className="w-full bg-black/20 backdrop-blur-sm p-4 rounded-2xl border border-foreground/5 shadow-inner focus:bg-black/40 focus:ring-2 focus:ring-primary/30 focus:border-primary/50 outline-none transition-all placeholder:text-gray-700 resize-none text-foreground/90 leading-relaxed"
                                         tabIndex={2}
                                     />
                                 </div>
@@ -505,7 +514,7 @@ export default function TasksNewClient() {
                                     {(formData.selectedInstitutionId || canCreateOnBehalf) && (
                                         <div className="space-y-2">
                                             <div className="flex items-center justify-between">
-                                                <label className="block text-sm font-medium text-white/70">Institution</label>
+                                                <label className="block text-sm font-medium text-foreground/70">Institution</label>
                                                 {canCreateOnBehalf && !formData.isDelegating && (
                                                     <button 
                                                         type="button"
@@ -531,7 +540,7 @@ export default function TasksNewClient() {
 
                                     {(formData.selectedDepartmentId || canCreateOnBehalf) && (
                                         <div className="space-y-2">
-                                            <label className="block text-sm font-medium text-white/70">Department</label>
+                                            <label className="block text-sm font-medium text-foreground/70">Department</label>
                                             <DropdownSelector 
                                                 label=""
                                                 value={formData.selectedDepartmentId}
@@ -553,7 +562,7 @@ export default function TasksNewClient() {
                                                 setSelectedInstitutionId(String(user.institution_id || ''));
                                                 setSelectedDepartmentId(String(user.department_id || ''));
                                             }}
-                                            className="w-full py-2 text-[10px] uppercase tracking-wider text-blue-400/60 hover:text-blue-400 font-bold transition-colors text-center border border-dashed border-white/10 rounded-xl mt-2"
+                                            className="w-full py-2 text-[10px] uppercase tracking-wider text-blue-400/60 hover:text-blue-400 font-bold transition-colors text-center border border-dashed border-foreground/10 rounded-xl mt-2"
                                         >
                                             Reset to My Defaults
                                         </button>
@@ -563,8 +572,8 @@ export default function TasksNewClient() {
 
                             {/* Priority - Admin, Manager, and Team */}
                             {(isAdmin || isTeam) && (
-                                <div className="space-y-3 pt-4 border-t border-white/5">
-                                    <label className="block text-sm font-medium text-white/70 mb-2">
+                                <div className="space-y-3 pt-4 border-t border-foreground/5">
+                                    <label className="block text-sm font-medium text-foreground/70 mb-2">
                                         Priority
                                     </label>
                                     <div className="grid grid-cols-3 gap-2">
@@ -577,7 +586,7 @@ export default function TasksNewClient() {
                                                     ? p === 'high' ? 'bg-gradient-to-br from-red-500/20 to-red-600/10 border border-red-500/30 text-red-300 shadow-[0_0_15px_rgba(239,68,68,0.2)]' :
                                                         p === 'medium' ? 'bg-gradient-to-br from-orange-500/20 to-orange-600/10 border border-orange-500/30 text-orange-300 shadow-[0_0_15px_rgba(249,115,22,0.2)]' :
                                                             'bg-gradient-to-br from-blue-500/20 to-blue-600/10 border border-blue-500/30 text-blue-300 shadow-[0_0_15px_rgba(59,130,246,0.2)]'
-                                                    : 'bg-white/5 border border-white/5 text-gray-500 hover:bg-white/10 hover:text-gray-400'
+                                                    : 'bg-foreground/5 border border-foreground/5 text-gray-500 hover:bg-foreground/10 hover:text-gray-400'
                                                     }`}
                                             >
                                                 {p.charAt(0).toUpperCase() + p.slice(1)}
@@ -590,56 +599,25 @@ export default function TasksNewClient() {
                             {/* Assigned To - Admin, Manager, and Team Only */}
                             {(isAdmin || isTeam) && (
                                 <div className="space-y-3 pt-2">
-                                    <label className="block text-sm font-medium text-white/70 mb-2">
+                                    <label className="block text-sm font-medium text-foreground/70 mb-2">
                                         Assign To Team Members
                                     </label>
-                                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
-
-                                        {teamMembers.length > 0 ? (
-                                            teamMembers.map(m => (
-                                                <label
-                                                    key={m.uid}
-                                                    className={`group flex items-center p-3 rounded-xl border cursor-pointer transition-all duration-300 ${assignedToIds.includes(m.uid)
-                                                        ? 'bg-gradient-to-r from-blue-500/20 to-indigo-500/10 border-blue-500/30 shadow-[0_0_10px_rgba(59,130,246,0.1)]'
-                                                        : 'bg-white/5 border-white/5 hover:bg-white/10'
-                                                        }`}
-                                                >
-                                                    <div className={`w-5 h-5 rounded-full flex items-center justify-center border transition-colors ${assignedToIds.includes(m.uid) ? 'border-blue-400 bg-blue-500' : 'border-gray-600 bg-transparent group-hover:border-gray-500'
-                                                        }`}>
-                                                        {assignedToIds.includes(m.uid) && <div className="w-1.5 h-1.5 bg-white rounded-full" />}
-                                                    </div>
-                                                    <input
-                                                        type="checkbox"
-                                                        className="hidden"
-                                                        checked={assignedToIds.includes(m.uid)}
-                                                        onChange={(e) => {
-                                                            if (e.target.checked) {
-                                                                setAssignedToIds([...assignedToIds, m.uid]);
-                                                            } else {
-                                                                setAssignedToIds(assignedToIds.filter(id => id !== m.uid));
-                                                            }
-                                                        }}
-                                                    />
-                                                    <span className={`ml-3 text-sm font-medium transition-colors ${assignedToIds.includes(m.uid) ? 'text-blue-100' : 'text-gray-400 group-hover:text-gray-300'}`}>
-                                                        {m.name}
-                                                    </span>
-                                                </label>
-                                            ))
-                                        ) : (
-                                            <div className="col-span-full py-4 px-4 bg-white/5 border border-dashed border-white/10 rounded-xl text-center text-xs text-gray-500">
-                                                No other team members found in this workspace.
-                                            </div>
-                                        )}
-                                    </div>
+                                    <MultiSelect
+                                        placeholder="Add assignees..."
+                                        options={teamMembers.map(m => ({ id: m.uid, label: m.name }))}
+                                        selected={assignedToIds}
+                                        onChange={setAssignedToIds}
+                                        className="w-full"
+                                    />
                                 </div>
                             )}
 
                             {/* Attachments Section */}
-                            <div className="space-y-3 pt-4 border-t border-white/5">
-                                <label className="block text-sm font-medium text-white/70 mb-2">
-                                    Attachments <span className="text-white/40 text-xs">(Optional)</span>
+                            <div className="space-y-3 pt-4 border-t border-foreground/5">
+                                <label className="block text-sm font-medium text-foreground/70 mb-2">
+                                    Attachments <span className="text-foreground/80 text-xs">(Optional)</span>
                                 </label>
-                                <div className="bg-white/5 rounded-2xl border border-dashed border-white/10 p-6 text-center hover:bg-white/10 transition-colors relative group">
+                                <div className="bg-foreground/5 rounded-2xl border border-dashed border-foreground/10 p-6 text-center hover:bg-foreground/10 transition-colors relative group">
                                     <input
                                         type="file"
                                         multiple
@@ -663,7 +641,7 @@ export default function TasksNewClient() {
                                 {files.length > 0 && (
                                     <div className="space-y-2 mt-2">
                                         {files.map((file, i) => (
-                                            <div key={i} className="flex items-center justify-between p-2 bg-white/5 rounded-lg border border-white/5">
+                                            <div key={i} className="flex items-center justify-between p-2 bg-foreground/5 rounded-lg border border-foreground/5">
                                                 <span className="text-xs text-gray-300 truncate max-w-[200px]">{file.name}</span>
                                                 <button
                                                     type="button"
@@ -679,9 +657,9 @@ export default function TasksNewClient() {
                             </div>
 
                             {/* Read Only Info */}
-                            <div className="pt-6 mt-2 border-t border-white/5 flex items-center justify-between opacity-60">
+                            <div className="pt-6 mt-2 border-t border-foreground/5 flex items-center justify-between opacity-60">
                                 <div className="flex items-center gap-3">
-                                    <div className="w-8 h-8 rounded-full bg-white/5 flex items-center justify-center text-xs font-bold text-gray-500">
+                                    <div className="w-8 h-8 rounded-full bg-foreground/5 flex items-center justify-center text-xs font-bold text-gray-500">
                                         {(user.name || 'U').charAt(0)}
                                     </div>
                                     <div className="text-xs text-gray-500">
@@ -717,27 +695,26 @@ export default function TasksNewClient() {
                             {error && (
                                 <div className="flex items-center justify-center gap-3 py-2 animate-in fade-in slide-in-from-bottom-2">
                                     <span className="text-sm text-red-400 font-medium">{error}</span>
-                                    <div className="w-1 h-1 bg-white/10 rounded-full" />
+                                    <div className="w-1 h-1 bg-foreground/10 rounded-full" />
                                     <button
                                         type="button"
                                         onClick={handleRetry}
-                                        className="text-xs font-bold text-white/50 uppercase tracking-widest hover:text-white transition-colors"
+                                        className="text-xs font-bold text-foreground/70 uppercase tracking-widest hover:text-foreground transition-colors"
                                     >
                                         Edit & Retry
                                     </button>
                                 </div>
                             )}
 
-                            {/* Submit Button */}
                             <button
                                 type="submit"
                                 disabled={isSubmitting}
                                 tabIndex={3}
-                                className="w-full bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-500 hover:to-indigo-500 text-white font-bold text-lg py-4 rounded-2xl shadow-lg shadow-blue-900/20 hover:shadow-blue-900/40 hover-sheen active:scale-[0.98] transition-all disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
+                                className="w-full bg-primary hover:bg-primary/90 text-foreground font-extrabold text-lg py-4 rounded-2xl shadow-[0_0_20px_rgba(var(--accent-primary-rgb),0.3)] hover:shadow-[0_0_30px_rgba(var(--accent-primary-rgb),0.5)] active:scale-[0.98] transition-all disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
                             >
                                 {isSubmitting ? (
                                     <>
-                                        <div className="animate-spin rounded-full h-5 w-5 border-2 border-white/30 border-t-white" />
+                                        <div className="animate-spin rounded-full h-5 w-5 border-2 border-black/30 border-t-black" />
                                         <span>Creating...</span>
                                         {uploadProgress && <span className="text-xs font-normal opacity-70 ml-1">({uploadProgress})</span>}
                                     </>

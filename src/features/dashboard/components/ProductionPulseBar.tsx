@@ -32,7 +32,7 @@ export const ProductionPulseBar: React.FC = () => {
 
     if (isLoading) {
         return (
-            <div className="w-full h-10 rounded-[12px] bg-white/[0.03] border border-white/5 animate-pulse" />
+            <div className="w-full h-10 rounded-[12px] bg-foreground/[0.03] border border-foreground/5 animate-pulse" />
         );
     }
 
@@ -46,7 +46,7 @@ export const ProductionPulseBar: React.FC = () => {
     const isActive = eventsCount > 0 || tasksInProgress > 0 || crewCount > 0 || equipmentCount > 0;
 
     return (
-        <div className="w-full flex flex-col md:flex-row md:items-center justify-between px-6 py-4 glass-card border-white/10 rounded-2xl overflow-hidden shadow-2xl gap-4 md:gap-0">
+        <div className="w-full flex flex-col md:flex-row md:items-center justify-between px-6 py-4 glass-card border-foreground/10 rounded-2xl overflow-hidden shadow-2xl gap-4 md:gap-0">
             
             {/* Status Indicator */}
             <div className="flex items-center gap-3 min-w-fit">
@@ -57,12 +57,12 @@ export const ProductionPulseBar: React.FC = () => {
                             <span className="relative inline-flex rounded-full h-2.5 w-2.5 bg-emerald-400 shadow-[0_0_12px_rgba(52,211,153,0.8)]"></span>
                         </>
                     ) : (
-                        <span className="relative inline-flex rounded-full h-2.5 w-2.5 bg-white/10"></span>
+                        <span className="relative inline-flex rounded-full h-2.5 w-2.5 bg-foreground/10"></span>
                     )}
                 </div>
                 <span className={cn(
                     "text-[10px] font-black uppercase tracking-[0.2em] transition-colors duration-500",
-                    isActive ? "text-emerald-400" : "text-white/50"
+                    isActive ? "text-emerald-400" : "text-foreground/70"
                 )}>
                     {isActive ? "Production Live" : "Standby Mode"}
                 </span>
@@ -75,34 +75,34 @@ export const ProductionPulseBar: React.FC = () => {
                         <div className="p-1.5 rounded-lg bg-blue-500/10 border border-blue-500/20 group-hover:bg-blue-500/20 transition-colors">
                             <Calendar size={14} className="text-blue-400" />
                         </div>
-                        <span className="text-sm font-bold text-white">{eventsCount} <span className="text-[10px] font-black uppercase tracking-wider text-white/50 ml-1">Events</span></span>
+                        <span className="text-sm font-bold text-foreground">{eventsCount} <span className="text-[10px] font-black uppercase tracking-wider text-foreground/70 ml-1">Events</span></span>
                     </div>
                     
-                    <div className="w-px h-4 bg-white/10 shrink-0" />
+                    <div className="w-px h-4 bg-foreground/10 shrink-0" />
                     
                     <div className="flex items-center gap-2.5 shrink-0 group cursor-default">
                         <div className="p-1.5 rounded-lg bg-indigo-500/10 border border-indigo-500/20 group-hover:bg-indigo-500/20 transition-colors">
                             <CheckSquare size={14} className="text-indigo-400" />
                         </div>
-                        <span className="text-sm font-bold text-white">{tasksInProgress} <span className="text-[10px] font-black uppercase tracking-wider text-white/50 ml-1">Tasks</span></span>
+                        <span className="text-sm font-bold text-foreground">{tasksInProgress} <span className="text-[10px] font-black uppercase tracking-wider text-foreground/70 ml-1">Tasks</span></span>
                     </div>
 
-                    <div className="w-px h-4 bg-white/10 shrink-0" />
+                    <div className="w-px h-4 bg-foreground/10 shrink-0" />
 
                     <div className="flex items-center gap-2.5 shrink-0 group cursor-default">
                         <div className="p-1.5 rounded-lg bg-purple-500/10 border border-purple-500/20 group-hover:bg-purple-500/20 transition-colors">
                             <Users size={14} className="text-purple-400" />
                         </div>
-                        <span className="text-sm font-bold text-white">{crewCount} <span className="text-[10px] font-black uppercase tracking-wider text-white/50 ml-1">Crew</span></span>
+                        <span className="text-sm font-bold text-foreground">{crewCount} <span className="text-[10px] font-black uppercase tracking-wider text-foreground/70 ml-1">Crew</span></span>
                     </div>
 
-                    <div className="w-px h-4 bg-white/10 shrink-0" />
+                    <div className="w-px h-4 bg-foreground/10 shrink-0" />
 
                     <div className="flex items-center gap-2.5 shrink-0 group cursor-default">
                         <div className="p-1.5 rounded-lg bg-amber-500/10 border border-amber-500/20 group-hover:bg-amber-500/20 transition-colors">
                             <Wrench size={14} className="text-amber-400" />
                         </div>
-                        <span className="text-sm font-bold text-white">{equipmentCount} <span className="text-[10px] font-black uppercase tracking-wider text-white/50 ml-1">Equipment</span></span>
+                        <span className="text-sm font-bold text-foreground">{equipmentCount} <span className="text-[10px] font-black uppercase tracking-wider text-foreground/70 ml-1">Equipment</span></span>
                     </div>
                 </div>
             )}

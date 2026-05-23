@@ -1,8 +1,8 @@
 import 'package:supabase_flutter/supabase_flutter.dart';
 import '../../../../core/services/sync_service.dart';
+import '../../../../core/services/realtime_service.dart';
 import '../../data/datasources/event_local_datasource.dart';
 import '../../data/repositories/supabase_event_repository.dart';
-import '../../data/sync/event_sync_delegate.dart';
 import '../../domain/models/event.dart';
 import '../../domain/repositories/event_repository.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
@@ -15,8 +15,6 @@ EventRepository eventRepository(EventRepositoryRef ref) {
   final localDataSource = HiveEventLocalDataSource();
   final syncService = ref.watch(syncServiceProvider);
   
-  // Register Delegate
-  syncService.registerDelegate('calendar', EventSyncDelegate(supabaseClient));
   
   return SupabaseEventRepository(
     supabaseClient,
@@ -30,6 +28,12 @@ class EventList extends _$EventList {
   @override
   Future<List<Event>> build() async {
     final repository = ref.watch(eventRepositoryProvider);
+    
+    // Listen for realtime updates via centralized service
+    ref.listen(tableUpdateProvider('events'), (_, __) {
+      ref.invalidateSelf();
+    });
+
     final result = await repository.getEvents();
     return result.fold(
       (failure) => throw failure,

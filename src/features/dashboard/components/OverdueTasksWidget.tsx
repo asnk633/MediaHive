@@ -46,20 +46,20 @@ export const OverdueTasksWidget = () => {
                     </div>
                     <div>
                         <h4 className="text-sm font-medium text-red-400/80 mb-1">Attention Required</h4>
-                        <p className="text-xl font-bold text-white/90">{overdueCount} Overdue {overdueCount === 1 ? 'Task' : 'Tasks'}</p>
+                        <p className="text-xl font-bold text-foreground/90">{overdueCount} Overdue {overdueCount === 1 ? 'Task' : 'Tasks'}</p>
                     </div>
                 </div>
-                <div className="p-2 rounded-lg bg-white/5 group-hover:bg-red-500/10 transition-colors relative">
-                    <ArrowRight size={16} className="text-white/20 group-hover:text-red-400 group-hover:translate-x-0.5 transition-all" />
+                <div className="p-2 rounded-lg bg-foreground/5 group-hover:bg-red-500/10 transition-colors relative">
+                    <ArrowRight size={16} className="text-foreground/80 group-hover:text-red-400 group-hover:translate-x-0.5 transition-all" />
                 </div>
             </div>
 
             <div className="space-y-3 px-6 pb-6">
                 {recentOverdue.map((task, idx) => (
-                    <div key={task.id} className="flex items-center justify-between py-2 border-b border-white/5 last:border-0 border-dashed px-2">
+                    <div key={task.id} className="flex items-center justify-between py-2 border-b border-foreground/5 last:border-0 border-dashed px-2">
                         <div className="flex items-center gap-2 min-w-0">
                             <Clock size={12} className="text-red-400/50 shrink-0" />
-                            <span className="text-sm text-white/60 truncate">{task.title}</span>
+                            <span className="text-sm text-foreground/80 truncate">{task.title}</span>
                         </div>
                         <span className="text-[10px] font-bold text-red-400/40 uppercase whitespace-nowrap ml-4">
                             {task.priority || 'Medium'}
@@ -69,7 +69,7 @@ export const OverdueTasksWidget = () => {
             </div>
 
             {overdueCount > 3 && (
-                <p className="mt-4 text-[10px] font-bold text-white/20 uppercase tracking-widest text-center group-hover:text-red-400/60 transition-colors">
+                <p className="mt-4 text-[10px] font-bold text-foreground/80 uppercase tracking-widest text-center group-hover:text-red-400/60 transition-colors">
                     View {overdueCount - 3} more overdue items
                 </p>
             )}

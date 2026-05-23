@@ -54,7 +54,7 @@ export function MemberWelcomeModal({ onOpenGuide }: MemberWelcomeModalProps) {
                     </li>
                     <li className="flex gap-3 text-sm text-foreground/90">
                         <span className="text-blue-400 font-bold">•</span>
-                        Requests are submitted for your Institution / Office / Unit
+                        Requests are submitted for your Department / Institution
                     </li>
                     <li className="flex gap-3 text-sm text-foreground/90">
                         <span className="text-blue-400 font-bold">•</span>
@@ -202,7 +202,7 @@ export function MemberWelcomeModal({ onOpenGuide }: MemberWelcomeModalProps) {
  
                         <button
                             onClick={handleOpenGuide}
-                            className="w-full py-3 rounded-xl bg-transparent hover:bg-white/5 text-muted-foreground hover:text-foreground text-sm font-medium transition-colors flex items-center justify-center gap-2"
+                            className="w-full py-3 rounded-xl bg-transparent hover:bg-foreground/5 text-muted-foreground hover:text-foreground text-sm font-medium transition-colors flex items-center justify-center gap-2"
                         >
                             <BookOpen size={16} />
                             View Full Member Guide

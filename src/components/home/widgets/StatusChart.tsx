@@ -38,7 +38,7 @@ export const StatusChart = ({ stats }: StatusChartProps) => {
 
     return (
         <div className="bg-surface backdrop-blur-md rounded-2xl p-5 shadow-xl flex flex-col h-[350px]">
-            <h3 className="text-lg font-bold text-white mb-4">Task Status Distribution</h3>
+            <h3 className="text-lg font-bold text-foreground mb-4">Task Status Distribution</h3>
             <div className="flex-1 w-full min-h-0">
                 <SafeResponsiveContainer width="100%" height="100%">
                     <PieChart>

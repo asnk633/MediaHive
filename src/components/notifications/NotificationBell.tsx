@@ -236,13 +236,13 @@ export const NotificationBell = () => {
                 onClick={() => setIsOpen(!isOpen)}
                 title="Notifications"
                 className={cn(
-                    "relative p-2 rounded-full hover:bg-white/5 transition-all text-white/70 button-micro",
+                    "relative p-2 rounded-full hover:bg-foreground/5 transition-all text-foreground/70 button-micro",
                     isPulsing && "animate-bell"
                 )}
             >
-                <Bell size={20} className={cn("transition-colors", unreadCount > 0 ? "text-indigo-400" : "text-white/40")} />
+                <Bell size={20} className={cn("transition-colors", unreadCount > 0 ? "text-indigo-400" : "text-foreground/80")} />
                 {unreadCount > 0 && (
-                    <span className="absolute top-1 right-1 w-4 h-4 bg-indigo-500 text-white text-[10px] font-bold flex items-center justify-center rounded-full ring-2 ring-slate-950 shadow-[0_0_10px_rgba(99,102,241,0.5)]">
+                    <span className="absolute top-1 right-1 w-4 h-4 bg-indigo-500 text-foreground text-[10px] font-bold flex items-center justify-center rounded-full ring-2 ring-[var(--popover-bg)] shadow-[0_0_10px_rgba(99,102,241,0.5)]">
                         {unreadCount > 9 ? '9+' : unreadCount}
                     </span>
                 )}
@@ -259,7 +259,7 @@ export const NotificationBell = () => {
                     {/* Dropdown */}
                     <div
                         ref={dropdownRef}
-                        className="fixed z-[9999] w-[360px] max-md:left-3 max-md:right-3 max-md:w-auto bg-slate-950/80 backdrop-blur-xl border border-white/10 rounded-2xl shadow-2xl overflow-hidden text-left ring-1 ring-white/5 animate-in fade-in zoom-in-95 duration-200"
+                        className="fixed z-[9999] w-[360px] max-md:left-3 max-md:right-3 max-md:w-auto bg-[var(--glass-liquid-bg)] backdrop-blur-2xl border border-[var(--glass-liquid-border)] rounded-2xl shadow-2xl overflow-hidden text-left ring-1 ring-foreground/5 animate-in fade-in zoom-in-95 duration-200"
                         style={{
                             top: `${dropdownPosition.top}px`,
                             // Only apply left on desktop; mobile uses Tailwind classes
@@ -308,13 +308,13 @@ export const NotificationBell = () => {
                                                     </div>
                                                 </div>
                                                 <div className="flex-1 min-w-0">
-                                                    <p className="text-sm font-medium text-muted-foreground group-hover:text-foreground transition-colors">
+                                                    <p className="text-sm font-medium text-foreground/90 group-hover:text-foreground transition-colors">
                                                         {item.count} updates on <span className="font-bold text-foreground">'{entityName}'</span>
                                                     </p>
-                                                    <p className="text-xs text-muted-foreground/70 mt-1">
+                                                    <p className="text-xs text-foreground/80 mt-1">
                                                         Click to view all
                                                     </p>
-                                                    <p className="text-[10px] text-muted-foreground/60 mt-2 font-medium uppercase tracking-wider">
+                                                    <p className="text-[10px] text-foreground/70 mt-2 font-medium uppercase tracking-wider">
                                                         {typeof item.latestCreatedAt === 'string'
                                                             ? formatDistanceToNow(new Date(item.latestCreatedAt), { addSuffix: true })
                                                             : item.latestCreatedAt?.seconds
@@ -338,14 +338,14 @@ export const NotificationBell = () => {
                                         );
                                     }
                                 })
-                            ) : (
-                                <div className="flex flex-col items-center justify-center h-64 text-muted-foreground">
-                                    <div className="p-4 bg-muted/10 rounded-full mb-4">
+                             ) : (
+                                <div className="flex flex-col items-center justify-center h-64 text-foreground/85">
+                                    <div className="p-4 bg-foreground/5 rounded-full mb-4">
                                         <Layers size={32} className="opacity-40" />
                                     </div>
                                     <p className="text-sm font-medium">No notifications yet</p>
                                 </div>
-                            )}
+                             )}
                         </div>
                         <div className="p-3 border-t border-border bg-popover text-center flex flex-col gap-2">
                             <button
@@ -354,7 +354,7 @@ export const NotificationBell = () => {
                             >
                                 View Full Inbox
                             </button>
-                            <small className="text-[10px] text-muted-foreground font-medium uppercase tracking-widest">Notifications are stored for 30 days</small>
+                            <small className="text-[10px] text-foreground/75 font-semibold uppercase tracking-widest">Notifications are stored for 30 days</small>
                         </div>
                     </div>
                 </>,

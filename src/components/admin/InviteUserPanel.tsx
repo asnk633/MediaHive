@@ -122,11 +122,11 @@ export const InviteUserPanel: React.FC<InviteUserPanelProps> = ({ institution_id
   }
 
   return (
-    <Card className="bg-white/5 backdrop-blur-md border border-[#ffffff1a]">
+    <Card className="bg-foreground/5 backdrop-blur-md border border-[#ffffff1a]">
       <CardHeader>
         <div className="flex items-center gap-2">
           <UserPlus className="w-5 h-5 text-blue-400" />
-          <CardTitle className="text-white">Invite Users</CardTitle>
+          <CardTitle className="text-foreground">Invite Users</CardTitle>
         </div>
       </CardHeader>
       <CardContent>
@@ -138,15 +138,15 @@ export const InviteUserPanel: React.FC<InviteUserPanelProps> = ({ institution_id
                 placeholder="user@example.com"
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
-                className="bg-black/20 border-white/20 text-white placeholder:text-gray-400"
+                className="bg-black/20 border-foreground/20 text-foreground placeholder:text-gray-400"
               />
             </div>
             <div>
               <Select value={role} onValueChange={(value: 'admin' | 'manager' | 'team' | 'member') => setRole(value)}>
-                <SelectTrigger className="bg-black/20 border-white/20 text-white">
+                <SelectTrigger className="bg-black/20 border-foreground/20 text-foreground">
                   <SelectValue placeholder="Select role" />
                 </SelectTrigger>
-                <SelectContent className="bg-gray-800 border-white/20 text-white">
+                <SelectContent className="bg-gray-800 border-foreground/20 text-foreground">
                   <SelectItem value="admin">Admin</SelectItem>
                   <SelectItem value="manager">Manager</SelectItem>
                   <SelectItem value="team">Team</SelectItem>
@@ -157,7 +157,7 @@ export const InviteUserPanel: React.FC<InviteUserPanelProps> = ({ institution_id
             <div>
               <Button
                 type="submit"
-                className="w-full bg-blue-600 hover:bg-blue-500 text-white"
+                className="w-full bg-blue-600 hover:bg-blue-500 text-foreground"
                 disabled={isLoading}
               >
                 {isLoading ? (
@@ -180,7 +180,7 @@ export const InviteUserPanel: React.FC<InviteUserPanelProps> = ({ institution_id
         </form>
 
         <div className="border-t border-[#ffffff1a] pt-6">
-          <h3 className="text-lg font-medium text-white mb-4">Pending Invites</h3>
+          <h3 className="text-lg font-medium text-foreground mb-4">Pending Invites</h3>
 
           {loadingInvites ? (
             <div className="flex items-center justify-center h-20">
@@ -199,7 +199,7 @@ export const InviteUserPanel: React.FC<InviteUserPanelProps> = ({ institution_id
                 >
                   <div className="flex-1">
                     <div className="flex items-center gap-2">
-                      <span className="font-medium text-white">{invite.email}</span>
+                      <span className="font-medium text-foreground">{invite.email}</span>
                       <span className={`px-2 py-1 rounded-full text-xs ${invite.role === 'admin'
                         ? 'bg-red-500/20 text-red-300'
                         : (invite.role === 'manager' || invite.role === 'member')

@@ -17,7 +17,7 @@ import {
     Table as TableIcon
 } from 'lucide-react';
 import { apiClient } from '@/lib/apiClient';
-import { TaskService } from '@/services/tasks';
+import { CanonicalDataService } from '@/services/canonicalDataService';
 import { Task } from '@/features/tasks/types/task';
 import { FileService } from '@/services/fileService';
 import { DriveFile } from '@/types/file';
@@ -37,12 +37,12 @@ type DataSource = 'tasks' | 'media_assets' | 'equipment';
 export default function ReportsCustomClient() {
     const router = useRouter();
     const { user } = useAuth();
-    const [loading, setLoading] = useState(true);
     const [tasks, setTasks] = useState<Task[]>([]);
     const [files, setFiles] = useState<DriveFile[]>([]);
     const [equipment, setEquipment] = useState<EquipmentItem[]>([]);
     const [institutions, setInstitutions] = useState<Institution[]>([]);
     const [departments, setDepartments] = useState<Department[]>([]);
+    const [loading, setLoading] = useState(true);
 
     // Filter State
     const [source, setSource] = useState<DataSource>('tasks');
@@ -57,11 +57,18 @@ export default function ReportsCustomClient() {
         loadAllData();
     }, [user]);
 
+    // Reset specific filters when source changes
+    useEffect(() => {
+        setStatusFilter([]);
+        setPriorityFilter([]);
+        setSearchQuery('');
+    }, [source]);
+
     const loadAllData = async () => {
         setLoading(true);
         try {
             const [taskData, fileData, equipmentData, instData, deptData] = await Promise.all([
-                TaskService.getTasks(),
+                CanonicalDataService.getTasks({ role: user!.role, userId: user!.uid, includeAllHistory: true }),
                 FileService.getFiles(user!.role, user!.department_id, user!.institution_id),
                 inventoryService.getEquipment(),
                 StructureService.getInstitutions(),
@@ -92,18 +99,34 @@ export default function ReportsCustomClient() {
     const filteredData = useMemo(() => {
         if (source === 'tasks') {
             return tasks.filter(t => {
-                const matchesStatus = statusFilter.length === 0 || statusFilter.includes(t.status);
-                const matchesPriority = priorityFilter.length === 0 || priorityFilter.includes(t.priority);
+                const matchesStatus = statusFilter.length === 0 || statusFilter.includes(t.status?.toLowerCase() || t.status);
+                const matchesPriority = priorityFilter.length === 0 || priorityFilter.includes(t.priority?.toLowerCase() || t.priority);
                 
-                // Attribution Logic (Matches ReportsPerformanceClient logic)
-                const taskInstId = t.on_behalf_of?.type === 'institution' ? t.on_behalf_of.id : (t.institution_id || t.institutionId || t.created_by?.institution_id);
-                const matchesInst = entityFilter.length === 0 || entityFilter.includes(String(taskInstId));
+                // Attribution Logic (Prioritize where the task is assigned/working)
+                let taskInstId = t.institution_id || t.institutionId || t.created_by?.institution_id;
+                let taskDeptId = t.department_id || t.departmentId || t.created_by?.department_id;
                 
-                const taskDeptId = t.on_behalf_of?.type === 'department' ? t.on_behalf_of.id : (t.department_id || t.departmentId || t.created_by?.department_id);
-                const matchesDept = deptFilter.length === 0 || deptFilter.includes(String(taskDeptId));
+                // Extract from varied on_behalf_of formats safely
+                let obo = t.on_behalf_of;
+                if (typeof obo === 'string') {
+                    try { obo = JSON.parse(obo); } catch (e) {}
+                }
+                if (obo) {
+                    if (obo.type === 'department' && obo.id) taskDeptId = obo.id;
+                    else if (obo.type === 'institution' && obo.id) taskInstId = obo.id;
+                    else {
+                        if (obo.department?.id) taskDeptId = obo.department.id;
+                        if (obo.institution?.id) taskInstId = obo.institution.id;
+                        if (obo.department_id) taskDeptId = obo.department_id;
+                        if (obo.institution_id) taskInstId = obo.institution_id;
+                    }
+                }
+
+                const matchesInst = entityFilter.length === 0 || (taskInstId && entityFilter.includes(String(taskInstId)));
+                const matchesDept = deptFilter.length === 0 || (taskDeptId && deptFilter.includes(String(taskDeptId)));
                 
                 const matchesSearch = !searchQuery || 
-                    t.title.toLowerCase().includes(searchQuery.toLowerCase()) || 
+                    t.title?.toLowerCase().includes(searchQuery.toLowerCase()) || 
                     t.description?.toLowerCase().includes(searchQuery.toLowerCase());
                     
                 return matchesStatus && matchesPriority && matchesInst && matchesDept && matchesSearch;
@@ -111,7 +134,7 @@ export default function ReportsCustomClient() {
         } else if (source === 'media_assets') {
             return files.filter(f => {
                 const matchesType = statusFilter.length === 0 || statusFilter.includes(f.type);
-                const matchesSearch = !searchQuery || f.name.toLowerCase().includes(searchQuery.toLowerCase());
+                const matchesSearch = !searchQuery || f.name?.toLowerCase().includes(searchQuery.toLowerCase());
                 
                 // File-level organizational filtering
                 const fileInsts = f.visibility?.institutions || [];
@@ -126,7 +149,7 @@ export default function ReportsCustomClient() {
                     statusFilter.includes(e.status) || 
                     (e.assetStatus && statusFilter.includes(e.assetStatus));
                 const matchesSearch = !searchQuery || 
-                    e.name.toLowerCase().includes(searchQuery.toLowerCase()) || 
+                    e.name?.toLowerCase().includes(searchQuery.toLowerCase()) || 
                     (e.brand && e.brand.toLowerCase().includes(searchQuery.toLowerCase())) ||
                     (e.model && e.model.toLowerCase().includes(searchQuery.toLowerCase()));
                 
@@ -145,25 +168,25 @@ export default function ReportsCustomClient() {
     };
 
     return (
-        <PageLayout mode="plain" className="max-w-7xl mx-auto">
+        <PageLayout mode="plain" className="max-w-[1600px] mx-auto">
             <div className="flex flex-col gap-8">
                 {/* Header Section */}
                 <div className="flex flex-col md:flex-row md:items-end justify-between gap-6">
                     <div className="space-y-1">
                         <button
                             onClick={() => router.back()}
-                            className="flex items-center gap-2 text-white/40 hover:text-white transition-colors text-xs font-bold uppercase tracking-widest mb-4 group"
+                            className="flex items-center gap-2 text-foreground/80 hover:text-foreground transition-colors text-xs font-bold uppercase tracking-widest mb-4 group"
                         >
                             <ArrowLeft size={14} className="group-hover:-translate-x-1 transition-transform" /> Back to reports
                         </button>
-                        <h1 className="text-4xl font-bold text-white tracking-tight">Custom Report Builder</h1>
-                        <p className="text-white/40 font-medium">Generate granular data exports based on institutional parameters.</p>
+                        <h1 className="text-4xl font-bold text-foreground tracking-tight">Custom Report Builder</h1>
+                        <p className="text-foreground/80 font-medium">Generate granular data exports based on institutional parameters.</p>
                     </div>
 
                     <div className="flex items-center gap-3">
                         <button
                             onClick={() => handleExport('csv')}
-                            className="flex items-center gap-2 px-4 py-2 rounded-xl bg-white/5 border border-white/5 text-[10px] font-bold text-white hover:bg-white/10 transition-all uppercase tracking-widest"
+                            className="flex items-center gap-2 px-4 py-2 rounded-xl bg-foreground/5 border border-foreground/5 text-[10px] font-bold text-foreground hover:bg-foreground/10 transition-all uppercase tracking-widest"
                         >
                             <Download size={14} /> Export CSV
                         </button>
@@ -181,18 +204,18 @@ export default function ReportsCustomClient() {
                     <div className="lg:col-span-1 space-y-8">
                         {/* Mode Switcher */}
                         <div className="space-y-4">
-                            <h3 className="text-[10px] font-bold text-white/20 uppercase tracking-[0.2em]">Select Report Mode</h3>
+                            <h3 className="text-[10px] font-bold text-foreground/80 uppercase tracking-[0.2em]">Select Report Mode</h3>
                             <div className="flex flex-col gap-2">
                                 <button
                                     onClick={() => setSource('tasks')}
                                     className={cn(
                                         "w-full flex items-center justify-start gap-3 px-4 py-4 rounded-xl border transition-all text-left",
                                         source === 'tasks'
-                                            ? "bg-white/10 border-white/10 text-white shadow-xl"
-                                            : "bg-white/[0.02] border-white/5 text-white/20 hover:text-white/40 hover:bg-white/[0.04]"
+                                            ? "bg-foreground/10 border-foreground/10 text-foreground shadow-xl"
+                                            : "bg-foreground/[0.02] border-foreground/5 text-foreground/80 hover:text-foreground/80 hover:bg-foreground/[0.04]"
                                     )}
                                 >
-                                    <div className={cn("p-2 rounded-lg", source === 'tasks' ? "bg-white/10 text-white" : "bg-white/5 text-white/20")}>
+                                    <div className={cn("p-2 rounded-lg", source === 'tasks' ? "bg-foreground/10 text-foreground" : "bg-foreground/5 text-foreground/80")}>
                                         <CheckSquare size={16} />
                                     </div>
                                     <div className="flex flex-col">
@@ -207,10 +230,10 @@ export default function ReportsCustomClient() {
                                         "w-full flex items-center justify-start gap-3 px-4 py-4 rounded-xl border transition-all text-left",
                                         source === 'media_assets'
                                             ? "bg-indigo-500/10 border-indigo-500/20 text-indigo-400 shadow-xl"
-                                            : "bg-white/[0.02] border-white/5 text-white/20 hover:text-white/40 hover:bg-white/[0.04]"
+                                            : "bg-foreground/[0.02] border-foreground/5 text-foreground/80 hover:text-foreground/80 hover:bg-foreground/[0.04]"
                                     )}
                                 >
-                                    <div className={cn("p-2 rounded-lg", source === 'media_assets' ? "bg-indigo-500/10 text-indigo-400" : "bg-white/5 text-white/20")}>
+                                    <div className={cn("p-2 rounded-lg", source === 'media_assets' ? "bg-indigo-500/10 text-indigo-400" : "bg-foreground/5 text-foreground/80")}>
                                         <Database size={16} />
                                     </div>
                                     <div className="flex flex-col">
@@ -225,10 +248,10 @@ export default function ReportsCustomClient() {
                                         "w-full flex items-center justify-start gap-3 px-4 py-4 rounded-xl border transition-all text-left",
                                         source === 'equipment'
                                             ? "bg-emerald-500/10 border-emerald-500/20 text-emerald-400 shadow-xl"
-                                            : "bg-white/[0.02] border-white/5 text-white/20 hover:text-white/40 hover:bg-white/[0.04]"
+                                            : "bg-foreground/[0.02] border-foreground/5 text-foreground/80 hover:text-foreground/80 hover:bg-foreground/[0.04]"
                                     )}
                                 >
-                                    <div className={cn("p-2 rounded-lg", source === 'equipment' ? "bg-emerald-500/10 text-emerald-400" : "bg-white/5 text-white/20")}>
+                                    <div className={cn("p-2 rounded-lg", source === 'equipment' ? "bg-emerald-500/10 text-emerald-400" : "bg-foreground/5 text-foreground/80")}>
                                         <Database size={16} />
                                     </div>
                                     <div className="flex flex-col">
@@ -241,15 +264,15 @@ export default function ReportsCustomClient() {
 
                         {/* Search */}
                         <div className="space-y-4">
-                            <h3 className="text-[10px] font-bold text-white/20 uppercase tracking-[0.2em]">Keywords</h3>
+                            <h3 className="text-[10px] font-bold text-foreground/80 uppercase tracking-[0.2em]">Keywords</h3>
                             <div className="relative">
-                                <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-white/20" size={16} />
+                                <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-foreground/80" size={16} />
                                 <input
                                     type="text"
                                     placeholder="Search entries..."
                                     value={searchQuery}
                                     onChange={(e) => setSearchQuery(e.target.value)}
-                                    className="w-full bg-white/[0.02] border border-white/5 rounded-xl py-2.5 pl-10 pr-4 text-sm text-white focus:outline-none focus:ring-1 focus:ring-white/10 transition-all placeholder:text-white/10"
+                                    className="w-full bg-foreground/[0.02] border border-foreground/5 rounded-xl py-2.5 pl-10 pr-4 text-sm text-foreground focus:outline-none focus:ring-1 focus:ring-foreground/10 transition-all placeholder:text-foreground/70"
                                 />
                             </div>
                         </div>
@@ -259,7 +282,7 @@ export default function ReportsCustomClient() {
                                 {/* Status Filters */}
                                 <div className="space-y-4">
                                     <div className="flex items-center justify-between">
-                                        <h3 className="text-[10px] font-bold text-white/20 uppercase tracking-[0.2em]">Status</h3>
+                                        <h3 className="text-[10px] font-bold text-foreground/80 uppercase tracking-[0.2em]">Status</h3>
                                         {statusFilter.length > 0 && (
                                             <button onClick={() => setStatusFilter([])} className="text-[10px] font-bold text-indigo-400 hover:text-indigo-300 transition-colors uppercase">Clear</button>
                                         )}
@@ -272,8 +295,8 @@ export default function ReportsCustomClient() {
                                                 className={cn(
                                                     "px-3 py-1.5 rounded-lg text-[10px] font-bold uppercase transition-all border",
                                                     statusFilter.includes(s)
-                                                        ? "bg-white/10 border-white/20 text-white"
-                                                        : "bg-white/[0.02] border-white/5 text-white/20 hover:text-white/40"
+                                                        ? "bg-foreground/10 border-foreground/20 text-foreground"
+                                                        : "bg-foreground/[0.02] border-foreground/5 text-foreground/80 hover:text-foreground/80"
                                                 )}
                                             >
                                                 {s.replace('_', ' ')}
@@ -285,21 +308,21 @@ export default function ReportsCustomClient() {
                                 {/* Priority Filters */}
                                 <div className="space-y-4">
                                     <div className="flex items-center justify-between">
-                                        <h3 className="text-[10px] font-bold text-white/20 uppercase tracking-[0.2em]">Priority</h3>
+                                        <h3 className="text-[10px] font-bold text-foreground/80 uppercase tracking-[0.2em]">Priority</h3>
                                         {priorityFilter.length > 0 && (
                                             <button onClick={() => setPriorityFilter([])} className="text-[10px] font-bold text-indigo-400 hover:text-indigo-300 transition-colors uppercase">Clear</button>
                                         )}
                                     </div>
                                     <div className="flex flex-wrap gap-2">
-                                        {['low', 'medium', 'high', 'urgent'].map(p => (
+                                        {['low', 'medium', 'high'].map(p => (
                                             <button
                                                 key={p}
                                                 onClick={() => toggleFilter(setPriorityFilter, p)}
                                                 className={cn(
                                                     "px-3 py-1.5 rounded-lg text-[10px] font-bold uppercase transition-all border",
                                                     priorityFilter.includes(p)
-                                                        ? "bg-white/10 border-white/20 text-white"
-                                                        : "bg-white/[0.02] border-white/5 text-white/20 hover:text-white/40"
+                                                        ? "bg-foreground/10 border-foreground/20 text-foreground"
+                                                        : "bg-foreground/[0.02] border-foreground/5 text-foreground/80 hover:text-foreground/80"
                                                 )}
                                             >
                                                 {p}
@@ -311,7 +334,7 @@ export default function ReportsCustomClient() {
                                 {/* Institution Filters */}
                                 <div className="space-y-4">
                                     <div className="flex items-center justify-between">
-                                        <h3 className="text-[10px] font-bold text-white/20 uppercase tracking-[0.2em]">Institutional Hub</h3>
+                                        <h3 className="text-[10px] font-bold text-foreground/80 uppercase tracking-[0.2em]">Institutional Hub</h3>
                                         {entityFilter.length > 0 && (
                                             <button onClick={() => setEntityFilter([])} className="text-[10px] font-bold text-indigo-400 hover:text-indigo-300 transition-colors uppercase">Clear</button>
                                         )}
@@ -324,16 +347,16 @@ export default function ReportsCustomClient() {
                                                 className={cn(
                                                     "w-full flex items-center justify-start gap-3 px-3 py-3 rounded-lg text-[10px] font-bold uppercase transition-all border text-left",
                                                     entityFilter.includes(String(inst.id))
-                                                        ? "bg-white/10 border-white/20 text-white"
-                                                        : "bg-white/[0.02] border-white/5 text-white/20 hover:text-white/40"
+                                                        ? "bg-foreground/10 border-foreground/20 text-foreground"
+                                                        : "bg-foreground/[0.02] border-foreground/5 text-foreground/80 hover:text-foreground/80"
                                                 )}
                                             >
-                                                <div className={cn("w-1.5 h-1.5 rounded-full", entityFilter.includes(String(inst.id)) ? "bg-indigo-400" : "bg-white/10")} />
+                                                <div className={cn("w-1.5 h-1.5 rounded-full", entityFilter.includes(String(inst.id)) ? "bg-indigo-400" : "bg-foreground/10")} />
                                                 <span className="truncate">{inst.name}</span>
                                             </button>
                                         ))}
                                         {institutions.length === 0 && (
-                                            <span className="text-[10px] text-white/10 italic">No institutions identified</span>
+                                            <span className="text-[10px] text-foreground/70 italic">No institutions identified</span>
                                         )}
                                     </div>
                                 </div>
@@ -341,7 +364,7 @@ export default function ReportsCustomClient() {
                                 {/* Department Filters */}
                                 <div className="space-y-4">
                                     <div className="flex items-center justify-between">
-                                        <h3 className="text-[10px] font-bold text-white/20 uppercase tracking-[0.2em]">Departmental Context</h3>
+                                        <h3 className="text-[10px] font-bold text-foreground/80 uppercase tracking-[0.2em]">Departmental Context</h3>
                                         {deptFilter.length > 0 && (
                                             <button onClick={() => setDeptFilter([])} className="text-[10px] font-bold text-indigo-400 hover:text-indigo-300 transition-colors uppercase">Clear</button>
                                         )}
@@ -354,16 +377,16 @@ export default function ReportsCustomClient() {
                                                 className={cn(
                                                     "w-full flex items-center justify-start gap-3 px-3 py-3 rounded-lg text-[10px] font-bold uppercase transition-all border text-left",
                                                     deptFilter.includes(String(dept.id))
-                                                        ? "bg-white/10 border-white/20 text-white"
-                                                        : "bg-white/[0.02] border-white/5 text-white/20 hover:text-white/40"
+                                                        ? "bg-foreground/10 border-foreground/20 text-foreground"
+                                                        : "bg-foreground/[0.02] border-foreground/5 text-foreground/80 hover:text-foreground/80"
                                                 )}
                                             >
-                                                <div className={cn("w-1.5 h-1.5 rounded-full", deptFilter.includes(String(dept.id)) ? "bg-emerald-400" : "bg-white/10")} />
+                                                <div className={cn("w-1.5 h-1.5 rounded-full", deptFilter.includes(String(dept.id)) ? "bg-emerald-400" : "bg-foreground/10")} />
                                                 <span className="truncate">{dept.name}</span>
                                             </button>
                                         ))}
                                         {departments.length === 0 && (
-                                            <span className="text-[10px] text-white/10 italic">No departments identified</span>
+                                            <span className="text-[10px] text-foreground/70 italic">No departments identified</span>
                                         )}
                                     </div>
                                 </div>
@@ -372,7 +395,7 @@ export default function ReportsCustomClient() {
 
                         {source !== 'tasks' && (
                             <div className="space-y-4">
-                                <h3 className="text-[10px] font-bold text-white/20 uppercase tracking-[0.2em]">
+                                <h3 className="text-[10px] font-bold text-foreground/80 uppercase tracking-[0.2em]">
                                     {source === 'equipment' ? 'Equipment Status' : 'Asset Type'}
                                 </h3>
                                 <div className="flex flex-wrap gap-2">
@@ -383,8 +406,8 @@ export default function ReportsCustomClient() {
                                             className={cn(
                                                 "px-3 py-1.5 rounded-lg text-[10px] font-bold uppercase transition-all border",
                                                 statusFilter.includes(t)
-                                                    ? (source === 'equipment' ? "bg-emerald-500/10 border-emerald-500/20 text-emerald-400" : "bg-indigo-500/10 border-indigo-500/20 text-indigo-400")
-                                                    : "bg-white/[0.02] border-white/5 text-white/20 hover:text-white/40"
+                                                    ? "bg-foreground/10 border-foreground/20 text-foreground shadow-sm"
+                                                    : "bg-foreground/[0.02] border-foreground/5 text-foreground/80 hover:text-foreground/80"
                                             )}
                                         >
                                             {t.replace('_', ' ')}
@@ -396,12 +419,12 @@ export default function ReportsCustomClient() {
                     </div>
 
                     {/* Results Table */}
-                    <div className="lg:col-span-3">
-                        <div className="glass-card rounded-2xl border border-white/5 bg-white/[0.01] shadow-2xl overflow-hidden min-h-[600px] flex flex-col">
-                            <div className="px-8 py-6 border-b border-white/5 flex items-center justify-between bg-white/[0.02]">
+                    <div className="lg:col-span-3 min-w-0">
+                        <div className="glass-card rounded-2xl border border-foreground/5 bg-foreground/[0.01] shadow-2xl overflow-hidden min-h-[600px] flex flex-col">
+                            <div className="px-8 py-6 border-b border-foreground/5 flex items-center justify-between bg-foreground/[0.02]">
                                 <div className="flex items-center gap-3">
-                                    <SlidersHorizontal size={18} className="text-white/40" />
-                                    <h2 className="text-lg font-bold text-white">Results <span className="text-white/20 ml-1">({filteredData.length})</span></h2>
+                                    <SlidersHorizontal size={18} className="text-foreground/80" />
+                                    <h2 className="text-lg font-bold text-foreground">Results <span className="text-foreground/80 ml-1">({filteredData.length})</span></h2>
                                 </div>
                                 <div className="flex items-center gap-2">
                                     <span className="text-[10px] font-bold text-emerald-500 bg-emerald-500/10 px-2 py-1 rounded border border-emerald-500/20 uppercase">Real-time Sychronized</span>
@@ -409,26 +432,26 @@ export default function ReportsCustomClient() {
                             </div>
 
                             <div className="flex-1 overflow-x-auto">
-                                <table className="w-full text-left table-auto">
-                                    <thead className="bg-[#0f172a] border-b border-white/5">
+                                <table className="w-full text-left table-fixed">
+                                    <thead className="bg-foreground/[0.02] border-b border-foreground/5">
                                         <tr>
-                                            <th className="px-8 py-4 text-[10px] font-bold text-white/20 uppercase tracking-widest">
+                                            <th className="px-8 py-4 w-[40%] text-[10px] font-bold text-foreground/80 uppercase tracking-widest">
                                                 {source === 'tasks' ? 'Task Descriptor' : source === 'equipment' ? 'Equipment Spec' : 'Asset Descriptor'}
                                             </th>
-                                            <th className="px-8 py-4 text-[10px] font-bold text-white/20 uppercase tracking-widest">
+                                            <th className="px-8 py-4 w-[25%] text-[10px] font-bold text-foreground/80 uppercase tracking-widest">
                                                 {source === 'tasks' ? 'Institutional Hub' : source === 'equipment' ? 'Inventory Path' : 'Source Entity'}
                                             </th>
-                                            <th className="px-8 py-4 text-[10px] font-bold text-white/20 uppercase tracking-widest">
+                                            <th className="px-8 py-4 w-[15%] text-[10px] font-bold text-foreground/80 uppercase tracking-widest">
                                                 {source === 'tasks' ? 'Operational Rank' : source === 'equipment' ? 'Asset Health' : 'Resource Details'}
                                             </th>
-                                            <th className="px-8 py-4 text-[10px] font-bold text-white/20 uppercase tracking-widest text-right">
+                                            <th className="px-8 py-4 w-[20%] text-[10px] font-bold text-foreground/80 uppercase tracking-widest text-right">
                                                 {source === 'tasks' ? 'Timeline' : 'Expansion Date'}
                                             </th>
                                         </tr>
                                     </thead>
                                     <tbody className="divide-y divide-white/5">
                                         {loading ? (
-                                            [1, 2, 3, 4, 5].map(i => <tr key={i}><td colSpan={3} className="px-8 py-6"><Skeleton className="h-4 w-full bg-white/5" /></td></tr>)
+                                            [1, 2, 3, 4, 5].map(i => <tr key={i}><td colSpan={3} className="px-8 py-6"><Skeleton className="h-4 w-full bg-foreground/5" /></td></tr>)
                                         ) : filteredData.length === 0 ? (
                                             <tr>
                                                 <td colSpan={3} className="px-8 py-40">
@@ -443,19 +466,19 @@ export default function ReportsCustomClient() {
                                             </tr>
                                         ) : (
                                             filteredData.map((item: any) => (
-                                                <tr key={item.id} className="hover:bg-white/[0.01] transition-colors group">
+                                                <tr key={item.id} className="hover:bg-foreground/[0.01] transition-colors group">
                                                     <td className="px-8 py-6">
                                                         <div className="flex flex-col">
-                                                            <span className="text-sm font-bold text-white group-hover:text-indigo-400 transition-colors uppercase tracking-tight">
+                                                            <span className="text-sm font-bold text-foreground group-hover:text-indigo-400 transition-colors uppercase tracking-tight break-all">
                                                                 {source === 'tasks' ? item.title : item.name}
                                                             </span>
-                                                            <span className="text-[10px] text-white/20 font-medium mt-1 uppercase">
+                                                            <span className="text-[10px] text-foreground/80 font-medium mt-1 uppercase">
                                                                 {source === 'equipment' ? `${item.brand} ${item.model}` : `ID: ${item.id.slice(0, 8)}`}
                                                             </span>
                                                         </div>
                                                     </td>
                                                     <td className="px-8 py-6">
-                                                        <span className="text-xs font-bold text-white/40 uppercase tracking-wider">
+                                                        <span className="text-xs font-bold text-foreground/80 uppercase tracking-wider">
                                                             {source === 'tasks' 
                                                                 ? (item.on_behalf_of?.name || item.created_by?.institution_name || 'Media & IT') 
                                                                 : source === 'equipment' ? (item.category || 'General Equipment') : (item.department || 'Creative Library')}
@@ -465,32 +488,32 @@ export default function ReportsCustomClient() {
                                                         {source === 'tasks' ? (
                                                             <span className={cn(
                                                                 "inline-flex px-2 py-1 rounded text-[10px] font-bold uppercase tracking-widest border",
-                                                                item.priority === 'urgent' ? "bg-red-500/10 text-red-500 border-red-500/20" :
-                                                                    item.priority === 'high' ? "bg-amber-500/10 text-amber-500 border-amber-500/20" :
+                                                                item.priority === 'high' || item.priority === 'urgent' ? "bg-amber-500/10 text-amber-500 border-amber-500/20" :
+                                                                    item.priority === 'medium' ? "bg-yellow-500/10 text-yellow-500 border-yellow-500/20" :
                                                                         "bg-blue-500/10 text-blue-500 border-blue-500/20"
                                                             )}>
-                                                                {item.priority}
+                                                                {item.priority === 'urgent' ? 'high' : item.priority}
                                                             </span>
                                                         ) : source === 'equipment' ? (
                                                             <span className={cn(
                                                                 "inline-flex px-2 py-1 rounded text-[10px] font-bold uppercase tracking-widest border",
                                                                 item.status === 'available' ? "bg-emerald-500/10 text-emerald-500 border-emerald-500/20" :
                                                                     item.status === 'maintenance' ? "bg-amber-500/10 text-amber-500 border-amber-500/20" :
-                                                                        "bg-white/5 text-white/40 border-white/10"
+                                                                        "bg-foreground/5 text-foreground/80 border-foreground/10"
                                                             )}>
                                                                 {item.status}
                                                             </span>
                                                         ) : (
                                                             <div className="flex flex-col">
-                                                                <span className="text-[10px] font-bold text-white uppercase">{item.type || 'Media'}</span>
-                                                                <span className="text-[10px] text-white/20 uppercase tracking-widest mt-1">
+                                                                <span className="text-[10px] font-bold text-foreground uppercase">{item.type || 'Media'}</span>
+                                                                <span className="text-[10px] text-foreground/80 uppercase tracking-widest mt-1">
                                                                     {item.mimeType?.split('/')[1] || 'Asset'}
                                                                 </span>
                                                             </div>
                                                         )}
                                                     </td>
                                                     <td className="px-8 py-6 text-right">
-                                                        <span className="text-[10px] font-bold text-white/20 uppercase">
+                                                        <span className="text-[10px] font-bold text-foreground/80 uppercase">
                                                             {item.created_at || item.createdAt ? format(
                                                                 (item.created_at?.seconds || item.createdAt?.seconds) 
                                                                     ? new Date((item.created_at?.seconds || item.createdAt?.seconds) * 1000) 

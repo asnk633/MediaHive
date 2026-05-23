@@ -65,27 +65,6 @@ class MhRoleGuard extends ConsumerWidget {
   }
 
   Widget _buildUnauthorized() {
-    return Center(
-      child: Padding(
-        padding: const EdgeInsets.all(24.0),
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            const Icon(Icons.lock_outline, size: 48, color: AppColors.error),
-            const SizedBox(height: 16),
-            Text(
-              'ACCESS RESTRICTED',
-              style: AppTypography.h3.copyWith(color: AppColors.error),
-            ),
-            const SizedBox(height: 8),
-            Text(
-              'You do not have permission to view this section.',
-              textAlign: TextAlign.center,
-              style: AppTypography.caption,
-            ),
-          ],
-        ),
-      ),
-    );
+    return const SizedBox.shrink();
   }
 }

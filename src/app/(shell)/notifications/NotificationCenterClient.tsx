@@ -143,10 +143,10 @@ export default function NotificationCenterClient() {
                         {/* Header Row */}
                         <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-6">
                             <div>
-                                <h1 className="text-2xl font-semibold text-white tracking-tight">
+                                <h1 className="text-2xl font-semibold text-foreground tracking-tight">
                                     Notification Center
                                 </h1>
-                                <p className="text-sm text-gray-400 mt-1">
+                                <p className="text-sm text-foreground/85 mt-1 font-medium">
                                     {processedNotifications.length} {filters.status === 'unread' ? 'unread' : ''} messages
                                 </p>
                             </div>
@@ -154,35 +154,35 @@ export default function NotificationCenterClient() {
                             <div className="flex flex-col sm:flex-row gap-3">
                                 {/* Search */}
                                 <div className="relative">
-                                    <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-500" />
+                                    <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-foreground/75" />
                                     <input
                                         type="text"
                                         placeholder="Search..."
                                         value={filters.search}
                                         onChange={(e) => setFilters(prev => ({ ...prev, search: e.target.value }))}
-                                        className="pl-9 pr-4 py-2 text-sm border border-white/10 rounded-lg w-full sm:w-64 bg-white/5 text-gray-300 placeholder-gray-500 focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                                        className="pl-9 pr-4 py-2 text-sm border border-foreground/10 rounded-lg w-full sm:w-64 bg-foreground/5 text-foreground placeholder-foreground/65 focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                                     />
                                 </div>
 
                                 {/* Sort */}
-                                <div className="flex items-center gap-2 border border-white/10 rounded-lg p-1 bg-white/5">
+                                <div className="flex items-center gap-2 border border-foreground/10 rounded-lg p-1 bg-foreground/5">
                                     <button
                                         onClick={() => setSortMode('priority')}
-                                        className={`p-1.5 rounded transition-colors ${sortMode === 'priority' ? 'bg-white/10 text-blue-400' : 'text-gray-500 hover:text-gray-300'}`}
+                                        className={`p-1.5 rounded transition-colors ${sortMode === 'priority' ? 'bg-foreground/10 text-primary' : 'text-foreground/75 hover:text-foreground'}`}
                                         title="Sort by Priority"
                                     >
                                         <ArrowUpNarrowWide className="w-4 h-4" />
                                     </button>
                                     <button
                                         onClick={() => setSortMode('newest')}
-                                        className={`p-1.5 rounded transition-colors ${sortMode === 'newest' ? 'bg-white/10 text-blue-400' : 'text-gray-500 hover:text-gray-300'}`}
+                                        className={`p-1.5 rounded transition-colors ${sortMode === 'newest' ? 'bg-foreground/10 text-primary' : 'text-foreground/75 hover:text-foreground'}`}
                                         title="Newest First"
                                     >
                                         <SortDesc className="w-4 h-4" />
                                     </button>
                                     <button
                                         onClick={() => setSortMode('oldest')}
-                                        className={`p-1.5 rounded transition-colors ${sortMode === 'oldest' ? 'bg-white/10 text-blue-400' : 'text-gray-500 hover:text-gray-300'}`}
+                                        className={`p-1.5 rounded transition-colors ${sortMode === 'oldest' ? 'bg-foreground/10 text-primary' : 'text-foreground/75 hover:text-foreground'}`}
                                         title="Oldest First"
                                     >
                                         <SortAsc className="w-4 h-4" />
@@ -193,7 +193,7 @@ export default function NotificationCenterClient() {
                                 <button
                                     onClick={handleMarkAllRead}
                                     disabled={processedNotifications.filter(n => !n.read).length === 0}
-                                    className="flex items-center gap-2 px-4 py-2 text-sm font-medium text-white bg-blue-600 hover:bg-blue-700 rounded-lg disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+                                    className="flex items-center gap-2 px-4 py-2 text-sm font-semibold text-white bg-blue-600 hover:bg-blue-700 rounded-lg disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
                                 >
                                     <CheckCheck className="w-4 h-4" />
                                     <span className="hidden sm:inline">Mark All Read</span>
@@ -214,12 +214,12 @@ export default function NotificationCenterClient() {
                                 ))
                             ) : (
                                 <div className="flex flex-col items-center justify-center py-20 text-center">
-                                    <Bell className="w-12 h-12 text-gray-500 mb-4" />
-                                    <p className="text-gray-400 text-lg">You're all caught up.</p>
+                                    <Bell className="w-12 h-12 text-foreground/70 mb-4" />
+                                    <p className="text-foreground/85 text-lg font-medium">You're all caught up.</p>
                                     {filters.status !== 'all' && (
                                         <button
                                             onClick={() => setFilters(prev => ({ ...prev, status: 'all' }))}
-                                            className="mt-4 text-sm text-blue-400 hover:text-blue-300 transition-colors"
+                                            className="mt-4 text-sm text-primary hover:opacity-80 transition-colors font-semibold"
                                         >
                                             View all notifications
                                         </button>

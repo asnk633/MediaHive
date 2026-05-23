@@ -115,13 +115,13 @@ export const InstitutionManagement = () => {
         <div className="max-w-4xl mx-auto">
             <div className="mb-6 flex justify-between items-center">
                 <div>
-                    <h2 className="text-xl font-semibold text-white">Departments / Institutions</h2>
+                    <h2 className="text-xl font-semibold text-foreground">Departments / Institutions</h2>
                     <p className="text-sm text-[var(--color-text-secondary)]">Manage organization departments and institutions</p>
                 </div>
                 {!isCreating && (
                     <button
                         onClick={() => setIsCreating(true)}
-                        className="flex items-center gap-2 bg-indigo-600 hover:bg-indigo-700 text-white px-4 py-2 rounded-lg transition-colors"
+                        className="flex items-center gap-2 bg-indigo-600 hover:bg-indigo-700 text-foreground px-4 py-2 rounded-lg transition-colors"
                     >
                         <Plus size={18} />
                         Add Department / Institution
@@ -146,20 +146,20 @@ export const InstitutionManagement = () => {
                                 value={createName}
                                 onChange={(e) => setCreateName(e.target.value)}
                                 placeholder="Enter institution name..."
-                                className="flex-1 bg-transparent border-none text-white focus:outline-none focus:ring-0 placeholder-white/30 text-lg font-medium"
+                                className="flex-1 bg-transparent border-none text-foreground focus:outline-none focus:ring-0 placeholder-white/30 text-lg font-medium"
                             />
                             <div className="flex gap-2">
                                 <button
                                     type="button"
                                     onClick={() => setIsCreating(false)}
-                                    className="px-3 py-1.5 text-sm rounded-lg hover:bg-white/10 text-white/70 transition-colors"
+                                    className="px-3 py-1.5 text-sm rounded-lg hover:bg-foreground/10 text-foreground/70 transition-colors"
                                 >
                                     Cancel
                                 </button>
                                 <button
                                     type="submit"
                                     disabled={saving === 'creating'}
-                                    className="px-4 py-1.5 text-sm bg-indigo-600 hover:bg-indigo-500 text-white rounded-lg font-medium disabled:opacity-50"
+                                    className="px-4 py-1.5 text-sm bg-indigo-600 hover:bg-indigo-500 text-foreground rounded-lg font-medium disabled:opacity-50"
                                 >
                                     {saving === 'creating' ? 'Creating...' : 'Create'}
                                 </button>
@@ -169,7 +169,7 @@ export const InstitutionManagement = () => {
                 )}
 
                 {loading ? (
-                    <div className="text-white text-center py-8">Loading institutions...</div>
+                    <div className="text-foreground text-center py-8">Loading institutions...</div>
                 ) : institutions.length === 0 && !isCreating ? (
                     <div className="text-center py-12 text-[var(--color-text-secondary)] bg-[var(--color-bg-surface)] rounded-[20px] border border-[var(--color-border)]">
                         <Building className="mx-auto mb-4" size={48} />
@@ -196,7 +196,7 @@ export const InstitutionManagement = () => {
                                             autoFocus
                                             value={editName}
                                             onChange={(e) => setEditName(e.target.value)}
-                                            className="flex-1 bg-white/5 border border-[#ffffff1a] rounded-lg px-3 py-2 text-white focus:outline-none focus:border-blue-500 transition-colors"
+                                            className="flex-1 bg-foreground/5 border border-[#ffffff1a] rounded-lg px-3 py-2 text-foreground focus:outline-none focus:border-blue-500 transition-colors"
                                             placeholder="Institution Name"
                                             onKeyDown={(e) => {
                                                 if (e.key === 'Enter') handleUpdate(inst.id);
@@ -206,14 +206,14 @@ export const InstitutionManagement = () => {
                                         <div className="flex gap-2 shrink-0">
                                             <button
                                                 onClick={() => setEditingId(null)}
-                                                className="px-3 py-2 text-sm rounded-lg hover:bg-white/10 text-white/70 transition-colors"
+                                                className="px-3 py-2 text-sm rounded-lg hover:bg-foreground/10 text-foreground/70 transition-colors"
                                             >
                                                 Cancel
                                             </button>
                                             <button
                                                 onClick={() => handleUpdate(inst.id)}
                                                 disabled={saving === inst.id}
-                                                className="px-4 py-2 text-sm bg-blue-600 hover:bg-blue-500 text-white rounded-lg font-medium disabled:opacity-50"
+                                                className="px-4 py-2 text-sm bg-blue-600 hover:bg-blue-500 text-foreground rounded-lg font-medium disabled:opacity-50"
                                             >
                                                 {saving === inst.id ? 'Saving...' : 'Save'}
                                             </button>
@@ -224,11 +224,11 @@ export const InstitutionManagement = () => {
                                 /* View Mode */
                                 <>
                                     <div className="flex items-center gap-4">
-                                        <div className="w-12 h-12 rounded-full bg-gradient-to-br from-blue-500 to-cyan-500 flex items-center justify-center text-white font-bold shrink-0">
+                                        <div className="w-12 h-12 rounded-full bg-gradient-to-br from-blue-500 to-cyan-500 flex items-center justify-center text-foreground font-bold shrink-0">
                                             <Building size={20} />
                                         </div>
                                         <div>
-                                            <h3 className="text-white font-semibold text-lg">{inst.name}</h3>
+                                            <h3 className="text-foreground font-semibold text-lg">{inst.name}</h3>
                                             <p className="text-sm text-[var(--color-text-secondary)]">
                                                 Created: {inst.created_at ? new Date(inst.created_at).toLocaleDateString('en-GB') : 'N/A'}
                                             </p>
@@ -238,7 +238,7 @@ export const InstitutionManagement = () => {
                                     <div className="flex items-center gap-2">
                                         <button
                                             onClick={() => startEdit(inst)}
-                                            className="p-2 text-[var(--color-text-secondary)] hover:text-white hover:bg-[var(--color-bg-subtle)] rounded-lg transition-colors"
+                                            className="p-2 text-[var(--color-text-secondary)] hover:text-foreground hover:bg-[var(--color-bg-subtle)] rounded-lg transition-colors"
                                             title="Edit"
                                         >
                                             <Edit size={18} />
@@ -264,7 +264,7 @@ export const InstitutionManagement = () => {
             </div>
 
             <AlertDialog open={!!deleteConfirmId} onOpenChange={(open) => !open && setDeleteConfirmId(null)}>
-                <AlertDialogContent className="bg-[#1e293b] border-[#ffffff1a] text-white">
+                <AlertDialogContent className="bg-[#1e293b] border-[#ffffff1a] text-foreground">
                     <AlertDialogHeader>
                         <AlertDialogTitle>Are you absolutely sure?</AlertDialogTitle>
                         <AlertDialogDescription className="text-slate-400">
@@ -273,8 +273,8 @@ export const InstitutionManagement = () => {
                         </AlertDialogDescription>
                     </AlertDialogHeader>
                     <AlertDialogFooter>
-                        <AlertDialogCancel className="bg-transparent text-white border-[#ffffff1a] hover:bg-white/5 hover:text-white">Cancel</AlertDialogCancel>
-                        <AlertDialogAction onClick={confirmDelete} className="bg-red-600 hover:bg-red-700 text-white border-none">
+                        <AlertDialogCancel className="bg-transparent text-foreground border-[#ffffff1a] hover:bg-foreground/5 hover:text-foreground">Cancel</AlertDialogCancel>
+                        <AlertDialogAction onClick={confirmDelete} className="bg-red-600 hover:bg-red-700 text-foreground border-none">
                             Delete
                         </AlertDialogAction>
                     </AlertDialogFooter>

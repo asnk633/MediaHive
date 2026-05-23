@@ -29,7 +29,7 @@ export function MissingApiBanner() {
     if (!visible) return null;
 
     return (
-        <div className="bg-red-600 text-white px-4 py-2 text-sm font-bold flex items-center justify-center gap-2 shadow-lg z-[100] relative">
+        <div className="bg-red-600 text-foreground px-4 py-2 text-sm font-bold flex items-center justify-center gap-2 shadow-lg z-[100] relative">
             <AlertTriangle size={16} className="shrink-0" />
             <span>
                 CRITICAL Configuration Missing: Live Backend active but NEXT_PUBLIC_API_URL is undefined.

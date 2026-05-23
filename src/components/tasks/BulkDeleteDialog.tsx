@@ -91,7 +91,7 @@ export const BulkDeleteDialog: React.FC<BulkDeleteDialogProps> = ({
                         animate={{ scale: 1, opacity: 1, y: 0 }}
                         exit={{ scale: 0.94, opacity: 0, y: 8 }}
                         transition={{ type: 'spring', stiffness: 420, damping: 34 }}
-                        className="w-full max-w-sm bg-[#0D111A] border border-white/10 rounded-2xl shadow-[0_32px_64px_rgba(0,0,0,0.8)] overflow-hidden"
+                        className="w-full max-w-sm bg-[#0D111A] border border-foreground/10 rounded-2xl shadow-[0_32px_64px_rgba(0,0,0,0.8)] overflow-hidden"
                         onKeyDown={handleKeyDown}
                         aria-hidden="false"
                         tabIndex={-1}
@@ -108,15 +108,15 @@ export const BulkDeleteDialog: React.FC<BulkDeleteDialogProps> = ({
                                 <div>
                                     <h2
                                         id="bulk-delete-title"
-                                        className="text-sm font-bold text-white leading-tight"
+                                        className="text-sm font-bold text-foreground leading-tight"
                                     >
                                         Delete selected {taskWord}?
                                     </h2>
                                     <p
                                         id="bulk-delete-desc"
-                                        className="mt-1.5 text-[13px] text-white/50 leading-relaxed"
+                                        className="mt-1.5 text-[13px] text-foreground/70 leading-relaxed"
                                     >
-                                        You are about to delete <span className="text-white/80 font-semibold">{count} {taskWord}</span>.
+                                        You are about to delete <span className="text-foreground/80 font-semibold">{count} {taskWord}</span>.
                                         {' '}This action cannot be undone.
                                     </p>
                                 </div>
@@ -136,7 +136,7 @@ export const BulkDeleteDialog: React.FC<BulkDeleteDialogProps> = ({
                                     ref={cancelRef}
                                     onClick={onCancel}
                                     disabled={isLoading}
-                                    className="flex-1 py-2.5 rounded-xl border border-white/10 bg-white/[0.03] text-[12px] font-semibold text-white/50 hover:text-white hover:bg-white/[0.08] transition-all focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white/30 disabled:opacity-40 disabled:cursor-not-allowed"
+                                    className="flex-1 py-2.5 rounded-xl border border-foreground/10 bg-foreground/[0.03] text-[12px] font-semibold text-foreground/70 hover:text-foreground hover:bg-foreground/[0.08] transition-all focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-foreground/30 disabled:opacity-40 disabled:cursor-not-allowed"
                                 >
                                     Cancel
                                 </button>
@@ -144,7 +144,7 @@ export const BulkDeleteDialog: React.FC<BulkDeleteDialogProps> = ({
                                     ref={confirmRef}
                                     onClick={onConfirm}
                                     disabled={isLoading}
-                                    className="flex-1 py-2.5 rounded-xl bg-red-600 hover:bg-red-500 text-[12px] font-semibold text-white transition-all shadow-[0_4px_16px_rgba(220,38,38,0.4)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-red-400 disabled:opacity-50 disabled:cursor-not-allowed"
+                                    className="flex-1 py-2.5 rounded-xl bg-red-600 hover:bg-red-500 text-[12px] font-semibold text-foreground transition-all shadow-[0_4px_16px_rgba(220,38,38,0.4)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-red-400 disabled:opacity-50 disabled:cursor-not-allowed"
                                     aria-live="polite"
                                 >
                                     {isLoading ? 'Deleting…' : `Delete ${count} ${taskWord}`}

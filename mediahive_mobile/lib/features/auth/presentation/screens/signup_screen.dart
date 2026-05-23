@@ -156,30 +156,48 @@ class _SignUpScreenState extends ConsumerState<SignUpScreen> {
                               const SizedBox(height: AppSpacing.xxl),
                               
                               const Divider(color: Colors.white24),
-                              const SizedBox(height: AppSpacing.xl),
+                              const SizedBox(height: AppSpacing.m),
+                              Text(
+                                'Select either an Institution or a Department (not both)',
+                                style: AppTypography.caption.copyWith(
+                                  color: Colors.white.withOpacity(0.5),
+                                  fontStyle: FontStyle.italic,
+                                ),
+                              ),
+                              const SizedBox(height: AppSpacing.l),
                               
-                              _buildLabel('Main Institution (Context)'),
+                              _buildLabel('Institution'),
                               const SizedBox(height: AppSpacing.s),
                               instsAsync.when(
                                 data: (insts) => _buildDropdown<Institution>(
                                   value: _selectedInstitution,
                                   items: insts,
                                   hint: 'Select Institution',
-                                  onChanged: (val) => setState(() => _selectedInstitution = val),
+                                  onChanged: (val) => setState(() {
+                                    _selectedInstitution = val;
+                                    if (val != null) {
+                                      _selectedDepartment = null;
+                                    }
+                                  }),
                                 ),
                                 loading: () => _buildLoadingField(),
                                 error: (e, _) => _buildErrorField(),
                               ),
                               const SizedBox(height: AppSpacing.xl),
                               
-                              _buildLabel('Department / Sub-Context'),
+                              _buildLabel('Department'),
                               const SizedBox(height: AppSpacing.s),
                               deptsAsync.when(
                                 data: (depts) => _buildDropdown<Department>(
                                   value: _selectedDepartment,
                                   items: depts,
                                   hint: 'Select Department',
-                                  onChanged: (val) => setState(() => _selectedDepartment = val),
+                                  onChanged: (val) => setState(() {
+                                    _selectedDepartment = val;
+                                    if (val != null) {
+                                      _selectedInstitution = null;
+                                    }
+                                  }),
                                 ),
                                 loading: () => _buildLoadingField(),
                                 error: (e, _) => _buildErrorField(),

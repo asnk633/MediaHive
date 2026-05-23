@@ -128,7 +128,7 @@ export const TodayFocusPanel: React.FC<TodayFocusPanelProps> = ({
                 id: 'all-clear',
                 type: 'all-clear',
                 icon: CheckCircle2,
-                message: 'No urgent items today. Great job!',
+                message: 'No high-priority items today. Great job!',
                 colorClass: 'text-emerald-400',
                 bgClass: 'bg-emerald-400/10',
                 borderColor: 'border-emerald-500/20'
@@ -140,12 +140,12 @@ export const TodayFocusPanel: React.FC<TodayFocusPanelProps> = ({
 
     if (isLoading) {
         return (
-            <div className="w-full h-[88px] rounded-[18px] bg-white/[0.02] border border-white/5 animate-pulse" />
+            <div className="w-full h-[88px] rounded-[18px] bg-foreground/[0.02] border border-foreground/5 animate-pulse" />
         );
     }
 
     return (
-        <ReactiveCard className="w-full bg-white/[0.04] border-white/[0.08] rounded-[18px] p-5 lg:px-6 shadow-[0_10px_40px_rgba(99,102,241,0.08)]">
+        <ReactiveCard className="w-full bg-foreground/[0.04] border-foreground/[0.08] rounded-[18px] p-5 lg:px-6 shadow-[0_10px_40px_rgba(99,102,241,0.08)]">
             <div className="flex flex-col md:flex-row md:items-center justify-between gap-6">
                 <div className="flex flex-col gap-4 flex-1">
                     {focusItems.map((item) => (
@@ -154,7 +154,7 @@ export const TodayFocusPanel: React.FC<TodayFocusPanelProps> = ({
                                 <div className={cn("p-2 rounded-lg", item.bgClass)}>
                                     <item.icon size={18} className={item.colorClass} />
                                 </div>
-                                <span className="text-sm font-bold text-white/80 group-hover/item:text-white transition-colors">
+                                <span className="text-sm font-bold text-foreground/80 group-hover/item:text-foreground transition-colors">
                                     {item.message}
                                 </span>
                             </div>
@@ -164,7 +164,7 @@ export const TodayFocusPanel: React.FC<TodayFocusPanelProps> = ({
                                     onClick={() => nativeNavigate(item.actionRoute!, router, `FocusAction:${item.type}`)}
                                     className={cn(
                                         "flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-[11px] font-black uppercase tracking-widest transition-all",
-                                        "bg-white/5 border border-white/10 hover:bg-white/10 hover:border-white/20 text-white/40 hover:text-white"
+                                        "bg-foreground/5 border border-foreground/10 hover:bg-foreground/10 hover:border-foreground/20 text-foreground/80 hover:text-foreground"
                                     )}
                                 >
                                     {item.actionLabel || 'View'}

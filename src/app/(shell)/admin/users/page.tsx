@@ -306,7 +306,7 @@ export default function AdminUsersPage() {
                 actions={
                     <button 
                         onClick={() => setIsInviteModalOpen(true)}
-                        className="h-10 px-4 rounded-xl bg-indigo-500 text-white text-sm font-bold flex items-center gap-2 hover:bg-indigo-400 transition-colors"
+                        className="h-10 px-4 rounded-xl bg-indigo-500 text-foreground text-sm font-bold flex items-center gap-2 hover:bg-indigo-400 transition-colors"
                     >
                         <Plus size={16} /> Invite User
                     </button>
@@ -316,12 +316,12 @@ export default function AdminUsersPage() {
             <div className="flex flex-col lg:flex-row gap-8 h-auto lg:h-[calc(100vh-16rem)] min-h-[500px]">
                 {/* Left Panel: User List / Invite List */}
                 <div className="w-full lg:w-[380px] flex flex-col gap-4">
-                    <div className="flex bg-white/5 p-1 rounded-2xl">
+                    <div className="flex bg-foreground/5 p-1 rounded-2xl">
                         <button 
                             onClick={() => setViewMode('users')}
                             className={cn(
                                 "flex-1 py-2.5 text-[10px] font-black uppercase tracking-widest rounded-xl transition-all",
-                                viewMode === 'users' ? "bg-white/10 text-white shadow-lg" : "text-white/30 hover:text-white/50"
+                                viewMode === 'users' ? "bg-foreground/10 text-foreground shadow-lg" : "text-foreground/70 hover:text-foreground/70"
                             )}
                         >
                             Active Users
@@ -330,7 +330,7 @@ export default function AdminUsersPage() {
                             onClick={() => setViewMode('invites')}
                             className={cn(
                                 "flex-1 py-2.5 text-[10px] font-black uppercase tracking-widest rounded-xl transition-all relative",
-                                viewMode === 'invites' ? "bg-white/10 text-white shadow-lg" : "text-white/30 hover:text-white/50"
+                                viewMode === 'invites' ? "bg-foreground/10 text-foreground shadow-lg" : "text-foreground/70 hover:text-foreground/70"
                             )}
                         >
                             Invitations
@@ -341,10 +341,10 @@ export default function AdminUsersPage() {
                     </div>
 
                     <div className="relative">
-                        <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-white/20" size={16} />
+                        <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-foreground/80" size={16} />
                         <input
                             placeholder={viewMode === 'users' ? "Search users..." : "Search invites..."}
-                            className="w-full h-11 pl-10 pr-4 bg-white/5 border border-white/5 rounded-2xl text-sm text-white placeholder:text-white/20 focus:outline-none focus:border-indigo-500/50 transition-colors"
+                            className="w-full h-11 pl-10 pr-4 bg-foreground/5 border border-foreground/5 rounded-2xl text-sm text-foreground placeholder:text-foreground/80 focus:outline-none focus:border-indigo-500/50 transition-colors"
                             value={search}
                             onChange={(e) => setSearch(e.target.value)}
                         />
@@ -352,7 +352,7 @@ export default function AdminUsersPage() {
 
                     <div className="flex-1 overflow-y-auto pr-2 space-y-2 no-scrollbar max-h-[400px] lg:max-h-none">
                         {loading ? (
-                            <div className="flex justify-center py-12"><Loader2 className="animate-spin text-white/20" /></div>
+                            <div className="flex justify-center py-12"><Loader2 className="animate-spin text-foreground/80" /></div>
                         ) : viewMode === 'users' ? (
                             filteredUsers.map(user => (
                                 <button
@@ -361,25 +361,25 @@ export default function AdminUsersPage() {
                                     className={cn(
                                         "w-full p-4 rounded-3xl flex items-center gap-4 border transition-all text-left group",
                                         selectedUserId === user.uid 
-                                            ? "bg-white/10 border-white/10 shadow-lg" 
-                                            : "bg-transparent border-transparent hover:bg-white/5"
+                                            ? "bg-foreground/10 border-foreground/10 shadow-lg" 
+                                            : "bg-transparent border-transparent hover:bg-foreground/5"
                                     )}
                                 >
-                                    <Avatar className="h-10 w-10 border border-white/10">
+                                    <Avatar className="h-10 w-10 border border-foreground/10">
                                         <AvatarImage src={user.avatar_url || user.photoURL} />
                                         <AvatarFallback className="bg-indigo-500/10 text-indigo-400 font-bold">
                                             {user.name?.[0] || 'U'}
                                         </AvatarFallback>
                                     </Avatar>
                                     <div className="flex-1 min-w-0">
-                                        <h4 className={cn("text-sm font-bold truncate", selectedUserId === user.uid ? "text-white" : "text-white/60")}>
+                                        <h4 className={cn("text-sm font-bold truncate", selectedUserId === user.uid ? "text-foreground" : "text-foreground/80")}>
                                             {user.name || 'Anonymous'}
                                         </h4>
-                                        <p className="text-[10px] text-white/30 font-medium truncate uppercase tracking-widest">
+                                        <p className="text-[10px] text-foreground/70 font-medium truncate uppercase tracking-widest">
                                             {user.role} • {user.email}
                                         </p>
                                     </div>
-                                    <ChevronRight size={14} className={cn("transition-transform", selectedUserId === user.uid ? "text-indigo-400 translate-x-0" : "text-white/10 -translate-x-2 opacity-0 group-hover:opacity-100 group-hover:translate-x-0")} />
+                                    <ChevronRight size={14} className={cn("transition-transform", selectedUserId === user.uid ? "text-indigo-400 translate-x-0" : "text-foreground/70 -translate-x-2 opacity-0 group-hover:opacity-100 group-hover:translate-x-0")} />
                                 </button>
                             ))
                         ) : (
@@ -390,8 +390,8 @@ export default function AdminUsersPage() {
                                     className={cn(
                                         "w-full p-4 rounded-3xl flex items-center gap-4 border transition-all text-left group",
                                         selectedInviteId === invite.id 
-                                            ? "bg-white/10 border-white/10 shadow-lg" 
-                                            : "bg-transparent border-transparent hover:bg-white/5"
+                                            ? "bg-foreground/10 border-foreground/10 shadow-lg" 
+                                            : "bg-transparent border-transparent hover:bg-foreground/5"
                                     )}
                                 >
                                     <div className={cn(
@@ -403,7 +403,7 @@ export default function AdminUsersPage() {
                                         <Mail size={18} />
                                     </div>
                                     <div className="flex-1 min-w-0">
-                                        <h4 className={cn("text-sm font-bold truncate", selectedInviteId === invite.id ? "text-white" : "text-white/60")}>
+                                        <h4 className={cn("text-sm font-bold truncate", selectedInviteId === invite.id ? "text-foreground" : "text-foreground/80")}>
                                             {invite.email}
                                         </h4>
                                         <div className="flex items-center gap-2">
@@ -415,12 +415,12 @@ export default function AdminUsersPage() {
                                             )}>
                                                 {invite.status}
                                             </span>
-                                            <p className="text-[9px] text-white/20 font-medium truncate uppercase tracking-widest">
+                                            <p className="text-[9px] text-foreground/80 font-medium truncate uppercase tracking-widest">
                                                 {new Date(invite.created_at).toLocaleDateString()}
                                             </p>
                                         </div>
                                     </div>
-                                    <ChevronRight size={14} className={cn("transition-transform", selectedInviteId === invite.id ? "text-indigo-400 translate-x-0" : "text-white/10 -translate-x-2 opacity-0 group-hover:opacity-100 group-hover:translate-x-0")} />
+                                    <ChevronRight size={14} className={cn("transition-transform", selectedInviteId === invite.id ? "text-indigo-400 translate-x-0" : "text-foreground/70 -translate-x-2 opacity-0 group-hover:opacity-100 group-hover:translate-x-0")} />
                                 </button>
                             ))
                         )}
@@ -428,7 +428,7 @@ export default function AdminUsersPage() {
                 </div>
 
                 {/* Right Panel: Detail View */}
-                <div className="flex-1 flex flex-col rounded-[40px] glass-liquid border-white/5 overflow-hidden min-h-[600px] lg:min-h-0">
+                <div className="flex-1 flex flex-col rounded-[40px] glass-liquid border-foreground/5 overflow-hidden min-h-[600px] lg:min-h-0">
                     <AnimatePresence mode="wait">
                         {viewMode === 'users' && selectedUserId && selectedUser ? (
                             <motion.div 
@@ -442,20 +442,20 @@ export default function AdminUsersPage() {
                                 <div className="flex items-start justify-between mb-8">
                                     <div className="flex items-center gap-6">
                                         <div className="relative">
-                                            <Avatar className="h-24 w-24 border-2 border-white/10 shadow-2xl">
+                                            <Avatar className="h-24 w-24 border-2 border-foreground/10 shadow-2xl">
                                                 <AvatarImage src={selectedUser.avatar_url || selectedUser.photoURL} />
                                                 <AvatarFallback className="text-3xl font-black bg-indigo-500/10 text-indigo-400">
                                                     {selectedUser.name?.[0]}
                                                 </AvatarFallback>
                                             </Avatar>
-                                            <div className="absolute -bottom-1 -right-1 w-8 h-8 rounded-xl bg-indigo-500 flex items-center justify-center text-white shadow-lg border-4 border-[#09090b]">
+                                            <div className="absolute -bottom-1 -right-1 w-8 h-8 rounded-xl bg-indigo-500 flex items-center justify-center text-foreground shadow-lg border-4 border-background">
                                                 <ShieldCheck size={16} />
                                             </div>
                                         </div>
                                         <div>
-                                            <h2 className="text-2xl font-black text-white tracking-tight mb-1">{selectedUser.name}</h2>
+                                            <h2 className="text-2xl font-black text-foreground tracking-tight mb-1">{selectedUser.name}</h2>
                                             <div className="flex flex-wrap gap-3">
-                                                <div className="px-3 py-1 rounded-lg bg-white/5 border border-white/5 flex items-center gap-2 text-[10px] font-black text-white/40 uppercase tracking-widest">
+                                                <div className="px-3 py-1 rounded-lg bg-foreground/5 border border-foreground/5 flex items-center gap-2 text-[10px] font-black text-foreground/80 uppercase tracking-widest">
                                                     <Mail size={12} /> {selectedUser.email}
                                                 </div>
                                                 <DropdownMenu>
@@ -464,14 +464,14 @@ export default function AdminUsersPage() {
                                                             <Shield size={12} /> Global {selectedUser.role}
                                                         </button>
                                                     </DropdownMenuTrigger>
-                                                    <DropdownMenuContent align="start" className="bg-[#09090b] border-white/10 text-white min-w-[140px]">
+                                                    <DropdownMenuContent align="start" className="bg-popover border-border text-foreground min-w-[140px]">
                                                         {['admin', 'manager', 'team', 'member'].map((r) => (
                                                             <DropdownMenuItem 
                                                                 key={r}
                                                                 onClick={() => handleUpdateGlobalRole(r)}
                                                                 className={cn(
                                                                     "text-[10px] font-black uppercase tracking-widest cursor-pointer",
-                                                                    selectedUser.role === r ? "text-indigo-400 bg-indigo-500/10" : "text-white/60"
+                                                                    selectedUser.role === r ? "text-indigo-400 bg-indigo-500/10" : "text-foreground/80"
                                                                 )}
                                                             >
                                                                 {r}
@@ -491,7 +491,7 @@ export default function AdminUsersPage() {
                                     <div className="flex gap-2">
                                         <button 
                                             onClick={handleDeactivate}
-                                            className="h-10 px-4 rounded-xl border border-white/10 text-xs font-bold text-white/60 hover:bg-white/5 transition-colors"
+                                            className="h-10 px-4 rounded-xl border border-foreground/10 text-xs font-bold text-foreground/80 hover:bg-foreground/5 transition-colors"
                                         >
                                             Deactivate
                                         </button>
@@ -525,7 +525,7 @@ export default function AdminUsersPage() {
                                 {/* Workspace Access Section */}
                                 <div className="space-y-6">
                                     <div className="flex items-center justify-between">
-                                        <h3 className="text-sm font-black text-white/40 uppercase tracking-widest flex items-center gap-2">
+                                        <h3 className="text-sm font-black text-foreground/80 uppercase tracking-widest flex items-center gap-2">
                                             <Building2 size={14} /> Workspace Access Control
                                         </h3>
                                         <button 
@@ -538,12 +538,12 @@ export default function AdminUsersPage() {
 
                                     <div className="space-y-3">
                                         {loadingAccess ? (
-                                            <div className="py-12 flex justify-center"><Loader2 className="animate-spin text-white/10" /></div>
+                                            <div className="py-12 flex justify-center"><Loader2 className="animate-spin text-foreground/70" /></div>
                                         ) : (workspaceAccess.length === 0 && !selectedUser.department_id) ? (
-                                            <div className="p-12 rounded-[32px] border-2 border-dashed border-white/5 flex flex-col items-center justify-center text-center">
-                                                <MapPin className="text-white/10 mb-4" size={40} />
-                                                <p className="text-sm font-bold text-white/40">No access granted</p>
-                                                <p className="text-xs text-white/20 mt-1">This user can only access global resources.</p>
+                                            <div className="p-12 rounded-[32px] border-2 border-dashed border-foreground/5 flex flex-col items-center justify-center text-center">
+                                                <MapPin className="text-foreground/70 mb-4" size={40} />
+                                                <p className="text-sm font-bold text-foreground/80">No access granted</p>
+                                                <p className="text-xs text-foreground/80 mt-1">This user can only access global resources.</p>
                                             </div>
                                         ) : (
                                             <>
@@ -555,7 +555,7 @@ export default function AdminUsersPage() {
                                                                 <MapPin size={18} />
                                                             </div>
                                                             <div>
-                                                                <h4 className="text-sm font-bold text-white">
+                                                                <h4 className="text-sm font-bold text-foreground">
                                                                     {departments.find(d => String(d.id) === String(selectedUser.department_id))?.name || 'Unknown Department'}
                                                                 </h4>
                                                                 <p className="text-[10px] text-emerald-400/40 font-medium uppercase tracking-widest">Primary Department</p>
@@ -563,12 +563,12 @@ export default function AdminUsersPage() {
                                                         </div>
 
                                                         <div className="flex items-center gap-4">
-                                                            <div className="px-3 py-1.5 rounded-lg bg-emerald-500 text-white text-[10px] font-black uppercase tracking-widest shadow-lg">
+                                                            <div className="px-3 py-1.5 rounded-lg bg-emerald-500 text-foreground text-[10px] font-black uppercase tracking-widest shadow-lg">
                                                                 Assignee
                                                             </div>
                                                             <button 
                                                                 onClick={handleRemoveDepartment}
-                                                                className="w-8 h-8 rounded-lg text-white/10 hover:text-rose-400 hover:bg-rose-500/10 flex items-center justify-center transition-all"
+                                                                className="w-8 h-8 rounded-lg text-foreground/70 hover:text-rose-400 hover:bg-rose-500/10 flex items-center justify-center transition-all"
                                                             >
                                                                 <Trash2 size={14} />
                                                             </button>
@@ -578,14 +578,14 @@ export default function AdminUsersPage() {
 
                                                 {/* Institution Access */}
                                                 {workspaceAccess.map(access => (
-                                                    <div key={access.id} className="p-5 rounded-[28px] bg-white/5 border border-white/5 flex items-center justify-between group hover:bg-white/[0.07] transition-all">
+                                                    <div key={access.id} className="p-5 rounded-[28px] bg-foreground/5 border border-foreground/5 flex items-center justify-between group hover:bg-foreground/[0.07] transition-all">
                                                         <div className="flex items-center gap-4">
                                                             <div className="w-10 h-10 rounded-xl bg-indigo-500/10 flex items-center justify-center text-indigo-400">
                                                                 <Building2 size={18} />
                                                             </div>
                                                             <div>
-                                                                <h4 className="text-sm font-bold text-white">{access.institutions?.name}</h4>
-                                                                <p className="text-[10px] text-white/20 font-medium uppercase tracking-widest">Workspace Access</p>
+                                                                <h4 className="text-sm font-bold text-foreground">{access.institutions?.name}</h4>
+                                                                <p className="text-[10px] text-foreground/80 font-medium uppercase tracking-widest">Workspace Access</p>
                                                             </div>
                                                         </div>
 
@@ -598,8 +598,8 @@ export default function AdminUsersPage() {
                                                                         className={cn(
                                                                             "px-3 py-1.5 rounded-lg text-[10px] font-black uppercase tracking-widest transition-all",
                                                                             access.role === r 
-                                                                                ? "bg-indigo-500 text-white shadow-lg" 
-                                                                                : "text-white/20 hover:text-white/40"
+                                                                                ? "bg-indigo-500 text-foreground shadow-lg" 
+                                                                                : "text-foreground/80 hover:text-foreground/80"
                                                                         )}
                                                                     >
                                                                         {r}
@@ -608,7 +608,7 @@ export default function AdminUsersPage() {
                                                             </div>
                                                             <button 
                                                                 onClick={() => handleRemoveAccess(access.institution_id)}
-                                                                className="w-8 h-8 rounded-lg text-white/10 hover:text-rose-400 hover:bg-rose-500/10 flex items-center justify-center transition-all"
+                                                                className="w-8 h-8 rounded-lg text-foreground/70 hover:text-rose-400 hover:bg-rose-500/10 flex items-center justify-center transition-all"
                                                             >
                                                                 <Trash2 size={14} />
                                                             </button>
@@ -634,7 +634,7 @@ export default function AdminUsersPage() {
                                             <Mail size={40} />
                                         </div>
                                         <div>
-                                            <h2 className="text-2xl font-black text-white tracking-tight mb-1">{selectedInvite.email}</h2>
+                                            <h2 className="text-2xl font-black text-foreground tracking-tight mb-1">{selectedInvite.email}</h2>
                                             <div className="flex flex-wrap gap-3">
                                                 <div className={cn(
                                                     "px-3 py-1 rounded-lg border flex items-center gap-2 text-[10px] font-black uppercase tracking-widest",
@@ -644,7 +644,7 @@ export default function AdminUsersPage() {
                                                 )}>
                                                     {selectedInvite.status}
                                                 </div>
-                                                <div className="px-3 py-1 rounded-lg bg-white/5 border border-white/5 flex items-center gap-2 text-[10px] font-black text-white/40 uppercase tracking-widest">
+                                                <div className="px-3 py-1 rounded-lg bg-foreground/5 border border-foreground/5 flex items-center gap-2 text-[10px] font-black text-foreground/80 uppercase tracking-widest">
                                                     Expires: {new Date(selectedInvite.expires_at).toLocaleDateString()}
                                                 </div>
                                             </div>
@@ -663,7 +663,7 @@ export default function AdminUsersPage() {
                                 </div>
 
                                 <div className="space-y-6">
-                                    <h3 className="text-sm font-black text-white/40 uppercase tracking-widest flex items-center gap-2">
+                                    <h3 className="text-sm font-black text-foreground/80 uppercase tracking-widest flex items-center gap-2">
                                         <Building2 size={14} /> Invited Workspace Access
                                     </h3>
                                     
@@ -671,14 +671,14 @@ export default function AdminUsersPage() {
                                         {Object.entries(selectedInvite.metadata?.invited_workspaces || {}).map(([id, role]: [any, any]) => {
                                             const inst = institutions.find(i => i.id === id);
                                             return (
-                                                <div key={id} className="p-4 rounded-2xl bg-white/[0.03] border border-white/5 flex items-center justify-between">
+                                                <div key={id} className="p-4 rounded-2xl bg-foreground/[0.03] border border-foreground/5 flex items-center justify-between">
                                                     <div className="flex items-center gap-4">
-                                                        <div className="w-8 h-8 rounded-lg bg-white/5 flex items-center justify-center text-white/40">
+                                                        <div className="w-8 h-8 rounded-lg bg-foreground/5 flex items-center justify-center text-foreground/80">
                                                             <Building2 size={16} />
                                                         </div>
                                                         <div>
-                                                            <p className="text-xs font-bold text-white">{inst?.name || 'Unknown Workspace'}</p>
-                                                            <p className="text-[9px] text-white/30 uppercase tracking-widest font-black">{id}</p>
+                                                            <p className="text-xs font-bold text-foreground">{inst?.name || 'Unknown Workspace'}</p>
+                                                            <p className="text-[9px] text-foreground/70 uppercase tracking-widest font-black">{id}</p>
                                                         </div>
                                                     </div>
                                                     <div className="px-3 py-1 rounded-lg bg-blue-500/10 text-blue-400 text-[10px] font-black uppercase tracking-widest">
@@ -695,14 +695,14 @@ export default function AdminUsersPage() {
                                             <input 
                                                 readOnly
                                                 value={`${window.location.origin}/accept-invite?token=${selectedInvite.token}`}
-                                                className="flex-1 bg-black/40 border border-white/5 rounded-xl px-4 py-2 text-xs text-white/60 focus:outline-none"
+                                                className="flex-1 bg-black/40 border border-foreground/5 rounded-xl px-4 py-2 text-xs text-foreground/80 focus:outline-none"
                                             />
                                             <button 
                                                 onClick={() => {
                                                     navigator.clipboard.writeText(`${window.location.origin}/accept-invite?token=${selectedInvite.token}`);
                                                     toast.success("Link copied to clipboard");
                                                 }}
-                                                className="px-4 bg-indigo-500 hover:bg-indigo-400 text-white rounded-xl text-xs font-bold transition-colors"
+                                                className="px-4 bg-indigo-500 hover:bg-indigo-400 text-foreground rounded-xl text-xs font-bold transition-colors"
                                             >
                                                 Copy
                                             </button>
@@ -712,11 +712,11 @@ export default function AdminUsersPage() {
                             </motion.div>
                         ) : (
                             <div className="flex-1 flex flex-col items-center justify-center text-center p-12">
-                                <UserCircle size={64} className="text-white/5 mb-6" />
-                                <h3 className="text-xl font-black text-white/20 uppercase tracking-tighter">
+                                <UserCircle size={64} className="text-foreground/5 mb-6" />
+                                <h3 className="text-xl font-black text-foreground/80 uppercase tracking-tighter">
                                     {viewMode === 'users' ? 'Select a user to manage' : 'Select an invitation to track'}
                                 </h3>
-                                <p className="text-sm text-white/10 mt-2 max-w-xs">
+                                <p className="text-sm text-foreground/70 mt-2 max-w-xs">
                                     {viewMode === 'users' 
                                         ? 'Adjust global roles or assign specific institutional permissions.'
                                         : 'View pending access requests and copy secure invitation links.'}
@@ -742,19 +742,19 @@ export default function AdminUsersPage() {
                 onConfirm={confirmConfig.action}
             />
             <Dialog open={isAddWorkspaceOpen} onOpenChange={setIsAddWorkspaceOpen}>
-                <DialogContent className="p-0 bg-[#09090b] border-white/10 overflow-hidden max-w-md shadow-2xl">
+                <DialogContent className="p-0 bg-background border-border overflow-hidden max-w-md shadow-2xl">
                     <DialogHeader className="p-6 pb-2">
-                        <DialogTitle className="text-white text-xl font-black uppercase tracking-widest">Add Workspace</DialogTitle>
-                        <DialogDescription className="text-white/40 text-xs font-medium uppercase tracking-widest">Select an institution to grant access.</DialogDescription>
+                        <DialogTitle className="text-foreground text-xl font-black uppercase tracking-widest">Add Workspace</DialogTitle>
+                        <DialogDescription className="text-foreground/80 text-xs font-medium uppercase tracking-widest">Select an institution to grant access.</DialogDescription>
                     </DialogHeader>
                     
                     <Command className="bg-transparent border-none">
                         <CommandInput 
                             placeholder="Search workspaces..." 
-                            className="text-white border-white/5 h-14"
+                            className="text-foreground border-foreground/5 h-14"
                         />
-                        <CommandList className="max-h-[400px] border-white/5 scrollbar-thin scrollbar-thumb-white/10">
-                            <CommandEmpty className="py-10 text-white/40 text-[10px] uppercase tracking-widest font-black text-center">No workspaces found.</CommandEmpty>
+                        <CommandList className="max-h-[400px] border-foreground/5 scrollbar-thin scrollbar-thumb-white/10">
+                            <CommandEmpty className="py-10 text-foreground/80 text-[10px] uppercase tracking-widest font-black text-center">No workspaces found.</CommandEmpty>
                             
                             <CommandGroup heading="Departments" className="px-2 pb-2 text-[10px] font-black uppercase tracking-widest text-emerald-400/40">
                                 {departments
@@ -765,13 +765,13 @@ export default function AdminUsersPage() {
                                             onSelect={() => handleAddAccess(String(dept.id), 'department')}
                                             className="flex flex-col items-start gap-1 py-3 px-4 rounded-xl data-[selected=true]:bg-emerald-500/10 cursor-pointer transition-all"
                                         >
-                                            <span className="text-sm font-bold text-white tracking-tight">{dept.name}</span>
+                                            <span className="text-sm font-bold text-foreground tracking-tight">{dept.name}</span>
                                             <span className="text-[9px] text-emerald-400/40 font-medium uppercase tracking-widest">Organizational Unit</span>
                                         </CommandItem>
                                     ))}
                             </CommandGroup>
 
-                            <CommandGroup heading="Institutions" className="px-2 pb-4 text-[10px] font-black uppercase tracking-widest text-indigo-400/40 border-t border-white/5 mt-2 pt-2">
+                            <CommandGroup heading="Institutions" className="px-2 pb-4 text-[10px] font-black uppercase tracking-widest text-indigo-400/40 border-t border-foreground/5 mt-2 pt-2">
                                 {institutions
                                     .filter(inst => !workspaceAccess.some(acc => acc.institution_id === inst.id))
                                     .map(inst => (
@@ -780,7 +780,7 @@ export default function AdminUsersPage() {
                                             onSelect={() => handleAddAccess(inst.id, 'institution')}
                                             className="flex flex-col items-start gap-1 py-3 px-4 rounded-xl data-[selected=true]:bg-indigo-500/10 cursor-pointer transition-all"
                                         >
-                                            <span className="text-sm font-bold text-white tracking-tight">{inst.name}</span>
+                                            <span className="text-sm font-bold text-foreground tracking-tight">{inst.name}</span>
                                             <span className="text-[9px] text-indigo-400/40 font-medium uppercase tracking-widest">Physical Workspace</span>
                                         </CommandItem>
                                     ))}

@@ -100,10 +100,10 @@ export const PermanentDeleteDialog: React.FC<PermanentDeleteDialogProps> = ({
                                     <Trash2 size={20} className="text-red-500" />
                                 </div>
                                 <div>
-                                    <h2 id="perm-del-title" className="text-base font-bold text-white leading-tight">
+                                    <h2 id="perm-del-title" className="text-base font-bold text-foreground leading-tight">
                                         Delete {count} {noun} forever?
                                     </h2>
-                                    <p className="text-[11px] text-white/40 mt-0.5 uppercase tracking-wider font-medium">
+                                    <p className="text-[11px] text-foreground/80 mt-0.5 uppercase tracking-wider font-medium">
                                         Permanent — cannot be undone
                                     </p>
                                 </div>
@@ -132,7 +132,7 @@ export const PermanentDeleteDialog: React.FC<PermanentDeleteDialogProps> = ({
                                     ref={cancelRef}
                                     onClick={onCancel}
                                     disabled={isLoading}
-                                    className="flex-1 py-2.5 rounded-xl text-sm font-semibold text-white/60 border border-white/10 hover:bg-white/5 hover:text-white transition-colors disabled:opacity-40"
+                                    className="flex-1 py-2.5 rounded-xl text-sm font-semibold text-foreground/80 border border-foreground/10 hover:bg-foreground/5 hover:text-foreground transition-colors disabled:opacity-40"
                                 >
                                     Cancel
                                 </button>
@@ -140,7 +140,7 @@ export const PermanentDeleteDialog: React.FC<PermanentDeleteDialogProps> = ({
                                     ref={confirmRef}
                                     onClick={onConfirm}
                                     disabled={isLoading}
-                                    className="flex-1 py-2.5 rounded-xl text-sm font-bold text-white bg-red-700 hover:bg-red-600 border border-red-600/50 transition-colors disabled:opacity-50 flex items-center justify-center gap-2 shadow-[0_0_20px_rgba(220,38,38,0.3)]"
+                                    className="flex-1 py-2.5 rounded-xl text-sm font-bold text-foreground bg-red-700 hover:bg-red-600 border border-red-600/50 transition-colors disabled:opacity-50 flex items-center justify-center gap-2 shadow-[0_0_20px_rgba(220,38,38,0.3)]"
                                 >
                                     {isLoading ? (
                                         <><div className="w-3.5 h-3.5 rounded-full border-2 border-red-300/30 border-t-white animate-spin" /> Deleting...</>

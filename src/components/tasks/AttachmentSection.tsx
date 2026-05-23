@@ -124,8 +124,8 @@ export const AttachmentSection: React.FC<AttachmentSectionProps> = ({ task, onUp
     const FileList = ({ files, canDelete, showToggle }: { files: TaskFile[], canDelete: boolean, showToggle?: boolean }) => (
         <div className="space-y-2 mt-3">
             {files.length === 0 && (
-                <div className="text-center py-6 border border-dashed border-white/10 rounded-xl bg-white/5">
-                    <p className="text-sm text-white/40">No files</p>
+                <div className="text-center py-6 border border-dashed border-foreground/10 rounded-xl bg-foreground/5">
+                    <p className="text-sm text-foreground/80">No files</p>
                 </div>
             )}
             {files.map(file => (
@@ -136,18 +136,18 @@ export const AttachmentSection: React.FC<AttachmentSectionProps> = ({ task, onUp
                         </div>
                         <div className="min-w-0">
                             <div className="flex items-center gap-2">
-                                <a href={file.url} target="_blank" rel="noreferrer" className="text-sm font-medium text-white truncate hover:underline hover:text-blue-300 block max-w-[150px] sm:max-w-xs">{file.name}</a>
+                                <a href={file.url} target="_blank" rel="noreferrer" className="text-sm font-medium text-foreground truncate hover:underline hover:text-blue-300 block max-w-[150px] sm:max-w-xs">{file.name}</a>
                                 {file.show_in_downloads ? (
                                     <Badge variant="neutral" className="text-[9px] h-4 bg-green-500/20 text-green-300 border-0 px-1 hidden sm:inline-flex gap-1 items-center">
                                         <Eye size={8} /> Public
                                     </Badge>
                                 ) : (
-                                    <Badge variant="neutral" className="text-[9px] h-4 bg-white/5 text-white/50 border-0 px-1 hidden sm:inline-flex gap-1 items-center">
+                                    <Badge variant="neutral" className="text-[9px] h-4 bg-foreground/5 text-foreground/70 border-0 px-1 hidden sm:inline-flex gap-1 items-center">
                                         <Lock size={8} /> Private
                                     </Badge>
                                 )}
                             </div>
-                            <div className="text-xs text-white/40 flex items-center gap-2">
+                            <div className="text-xs text-foreground/80 flex items-center gap-2">
                                 <span>{file.uploaded_by?.name || 'Unknown'}</span>
                                 <span>•</span>
                                 <span>{format(new Date(file.uploaded_at), 'MMM dd')}</span>
@@ -156,8 +156,8 @@ export const AttachmentSection: React.FC<AttachmentSectionProps> = ({ task, onUp
                     </div>
                     <div className="flex items-center gap-2">
                         {showToggle && canUploadTeam && (
-                            <div className="flex items-center gap-2 mr-2 border-r border-white/10 pr-2">
-                                <span className={`text-[10px] font-medium uppercase ${file.show_in_downloads ? 'text-green-400' : 'text-white/50'}`}>
+                            <div className="flex items-center gap-2 mr-2 border-r border-foreground/10 pr-2">
+                                <span className={`text-[10px] font-medium uppercase ${file.show_in_downloads ? 'text-green-400' : 'text-foreground/70'}`}>
                                     {file.show_in_downloads ? 'Public' : 'Private'}
                                 </span>
                                 <Switch
@@ -172,7 +172,7 @@ export const AttachmentSection: React.FC<AttachmentSectionProps> = ({ task, onUp
                             href={file.url}
                             target="_blank"
                             rel="noreferrer"
-                            className="p-2 text-white/60 hover:text-white hover:bg-white/10 rounded-lg transition-colors"
+                            className="p-2 text-foreground/80 hover:text-foreground hover:bg-foreground/10 rounded-lg transition-colors"
                             title="Download / View"
                         >
                             <Download size={16} />
@@ -197,12 +197,12 @@ export const AttachmentSection: React.FC<AttachmentSectionProps> = ({ task, onUp
             <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 mt-6">
 
                 {/* 1. Requester Inputs */}
-                <Card className="border-none bg-gradient-to-b from-[#141e30] to-[#1e2a3b] shadow-lg rounded-[15px] text-white">
-                    <CardHeader className="pb-2 border-b border-white/5">
+                <Card className="border-none bg-gradient-to-b from-[#141e30] to-[#1e2a3b] shadow-lg rounded-[15px] text-foreground">
+                    <CardHeader className="pb-2 border-b border-foreground/5">
                         <div className="flex items-center justify-between">
                             <CardTitle className="text-xs font-bold uppercase tracking-wider text-blue-300/80 flex items-center gap-2">
                                 Requester Inputs
-                                <Badge className="bg-white/10 text-white border-0 text-[10px] h-5">{inputs.length}</Badge>
+                                <Badge className="bg-foreground/10 text-foreground border-0 text-[10px] h-5">{inputs.length}</Badge>
                             </CardTitle>
                             {canUploadInputs && (
                                 <div className="relative">
@@ -215,7 +215,7 @@ export const AttachmentSection: React.FC<AttachmentSectionProps> = ({ task, onUp
                                     />
                                     <label
                                         htmlFor="upload-inputs"
-                                        className={`p-1.5 bg-blue-600/20 hover:bg-blue-600 text-blue-200 hover:text-white rounded-lg cursor-pointer transition-all ${uploading ? 'opacity-50' : ''}`}
+                                        className={`p-1.5 bg-blue-600/20 hover:bg-blue-600 text-blue-200 hover:text-foreground rounded-lg cursor-pointer transition-all ${uploading ? 'opacity-50' : ''}`}
                                         title="Upload Input"
                                     >
                                         <UploadCloud size={16} />
@@ -230,8 +230,8 @@ export const AttachmentSection: React.FC<AttachmentSectionProps> = ({ task, onUp
                 </Card>
 
                 {/* 2. Team Working Files */}
-                <Card className="border-none bg-gradient-to-b from-[#1e293b] to-[#0f172a] shadow-lg rounded-[15px] text-white">
-                    <CardHeader className="pb-2 border-b border-white/5">
+                <Card className="border-none bg-gradient-to-b from-[#1e293b] to-[#0f172a] shadow-lg rounded-[15px] text-foreground">
+                    <CardHeader className="pb-2 border-b border-foreground/5">
                         <div className="flex items-center justify-between">
                             <CardTitle className="text-xs font-bold uppercase tracking-wider text-slate-300/80 flex items-center gap-2">
                                 Internal / Working
@@ -248,13 +248,13 @@ export const AttachmentSection: React.FC<AttachmentSectionProps> = ({ task, onUp
                                     />
                                     <label
                                         htmlFor="upload-working"
-                                        className={`p-1.5 bg-slate-600/20 hover:bg-slate-600 text-slate-300 hover:text-white rounded-lg cursor-pointer transition-all ${uploading ? 'opacity-50' : ''}`}
+                                        className={`p-1.5 bg-slate-600/20 hover:bg-slate-600 text-slate-300 hover:text-foreground rounded-lg cursor-pointer transition-all ${uploading ? 'opacity-50' : ''}`}
                                         title="Upload Working File"
                                     >
                                         <UploadCloud size={16} />
                                     </label>
                                 </div>
-                            ) : <Lock size={14} className="text-white/20" />}
+                            ) : <Lock size={14} className="text-foreground/80" />}
                         </div>
                     </CardHeader>
                     <CardContent>
@@ -263,10 +263,10 @@ export const AttachmentSection: React.FC<AttachmentSectionProps> = ({ task, onUp
                 </Card>
 
                 {/* 3. Final Deliverables */}
-                <Card className="border-none bg-gradient-to-b from-[#064e3b] to-[#022c22] shadow-lg rounded-[15px] text-white relative overflow-hidden ring-1 ring-green-500/20">
+                <Card className="border-none bg-gradient-to-b from-[#064e3b] to-[#022c22] shadow-lg rounded-[15px] text-foreground relative overflow-hidden ring-1 ring-green-500/20">
                     <div className="absolute top-0 right-0 w-32 h-32 bg-green-500/10 rounded-full blur-3xl -translate-y-16 translate-x-16 pointer-events-none" />
 
-                    <CardHeader className="pb-2 border-b border-white/5 relative z-10">
+                    <CardHeader className="pb-2 border-b border-foreground/5 relative z-10">
                         <div className="flex items-center justify-between">
                             <CardTitle className="text-xs font-bold uppercase tracking-wider text-green-300/90 flex items-center gap-2">
                                 Final Deliverables
@@ -283,7 +283,7 @@ export const AttachmentSection: React.FC<AttachmentSectionProps> = ({ task, onUp
                                     />
                                     <label
                                         htmlFor="upload-final"
-                                        className={`p-1.5 bg-green-500 hover:bg-green-400 text-white rounded-lg cursor-pointer transition-all shadow-lg hover:shadow-green-500/25 ${uploading ? 'opacity-50' : ''}`}
+                                        className={`p-1.5 bg-green-500 hover:bg-green-400 text-foreground rounded-lg cursor-pointer transition-all shadow-lg hover:shadow-green-500/25 ${uploading ? 'opacity-50' : ''}`}
                                         title="Upload Final Deliverable"
                                     >
                                         <UploadCloud size={16} />
@@ -304,7 +304,7 @@ export const AttachmentSection: React.FC<AttachmentSectionProps> = ({ task, onUp
 
             {/* Final Upload Confirmation Dialog */}
             <Dialog open={!!pendingFinalFile} onOpenChange={(open) => !open && setPendingFinalFile(null)}>
-                <DialogContent className="bg-[#1e293b] border-white/10 text-white">
+                <DialogContent className="bg-[#1e293b] border-foreground/10 text-foreground">
                     <DialogHeader>
                         <DialogTitle>Confirm Final Deliverable</DialogTitle>
                         <DialogDescription className="text-slate-400">
@@ -313,7 +313,7 @@ export const AttachmentSection: React.FC<AttachmentSectionProps> = ({ task, onUp
                     </DialogHeader>
 
                     <div className="py-4">
-                        <label className="flex items-center gap-3 p-4 border border-white/10 rounded-xl bg-white/5 cursor-pointer hover:bg-white/10 transition-colors">
+                        <label className="flex items-center gap-3 p-4 border border-foreground/10 rounded-xl bg-foreground/5 cursor-pointer hover:bg-foreground/10 transition-colors">
                             <input
                                 type="checkbox"
                                 checked={show_in_downloads}
@@ -321,15 +321,15 @@ export const AttachmentSection: React.FC<AttachmentSectionProps> = ({ task, onUp
                                 className="w-5 h-5 rounded border-gray-500 text-green-600 focus:ring-green-500 focus:ring-offset-gray-900"
                             />
                             <div>
-                                <div className="font-medium text-white">Show in Downloads Page</div>
+                                <div className="font-medium text-foreground">Show in Downloads Page</div>
                                 <div className="text-xs text-slate-400">Make this file available in the public downloads area.</div>
                             </div>
                         </label>
                     </div>
 
                     <DialogFooter>
-                        <Button variant="ghost" onClick={() => setPendingFinalFile(null)} className="text-slate-400 hover:text-white hover:bg-white/10">Cancel</Button>
-                        <Button onClick={confirmFinalUpload} className="bg-green-600 hover:bg-green-500 text-white" disabled={uploading}>
+                        <Button variant="ghost" onClick={() => setPendingFinalFile(null)} className="text-slate-400 hover:text-foreground hover:bg-foreground/10">Cancel</Button>
+                        <Button onClick={confirmFinalUpload} className="bg-green-600 hover:bg-green-500 text-foreground" disabled={uploading}>
                             {uploading ? 'Uploading...' : 'Confirm Upload'}
                         </Button>
                     </DialogFooter>

@@ -7,7 +7,7 @@ part of 'inventory_provider.dart';
 // **************************************************************************
 
 String _$inventoryRepositoryHash() =>
-    r'27a915e52204416c2ff648bbdd4d15b671f4f757';
+    r'a180a3d565df40cb46adc8dc746f55b31bf2b4bc';
 
 /// See also [inventoryRepository].
 @ProviderFor(inventoryRepository)
@@ -38,7 +38,25 @@ final bookingListProvider = AutoDisposeAsyncNotifierProvider<BookingList,
 );
 
 typedef _$BookingList = AutoDisposeAsyncNotifier<List<EquipmentBooking>>;
-String _$inventoryListHash() => r'3d48711f112003c05a5e47fd02c980ad02f4f6ad';
+String _$inventoryRequestListHash() =>
+    r'831430fece6347b0f1c463fe0919c556c6fbf096';
+
+/// See also [InventoryRequestList].
+@ProviderFor(InventoryRequestList)
+final inventoryRequestListProvider = AutoDisposeAsyncNotifierProvider<
+    InventoryRequestList, List<InventoryRequest>>.internal(
+  InventoryRequestList.new,
+  name: r'inventoryRequestListProvider',
+  debugGetCreateSourceHash: const bool.fromEnvironment('dart.vm.product')
+      ? null
+      : _$inventoryRequestListHash,
+  dependencies: null,
+  allTransitiveDependencies: null,
+);
+
+typedef _$InventoryRequestList
+    = AutoDisposeAsyncNotifier<List<InventoryRequest>>;
+String _$inventoryListHash() => r'32b7f36928fdee2873e3fd8e98d9ff798d32a271';
 
 /// See also [InventoryList].
 @ProviderFor(InventoryList)

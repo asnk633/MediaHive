@@ -64,7 +64,7 @@ export default function SecurityRulesPage() {
                 title="Security Rules"
                 description="Manage system access policies and protection rules."
                 actions={
-                    <Button variant="ghost" onClick={() => nativeNavigate('/admin', router, 'SecurityRules (Back)')} className="gap-2 text-slate-400 hover:text-white">
+                    <Button variant="ghost" onClick={() => nativeNavigate('/admin', router, 'SecurityRules (Back)')} className="gap-2 text-slate-400 hover:text-foreground">
                         <ArrowLeft size={16} />
                         Back to Command Center
                     </Button>
@@ -74,7 +74,7 @@ export default function SecurityRulesPage() {
             <div className="max-w-5xl mx-auto pb-20 space-y-8">
 
                 {/* Section 1: Read-Only Overview */}
-                <Card className="bg-white/5 border-white/5">
+                <Card className="bg-foreground/5 border-foreground/5">
                     <CardHeader>
                         <CardTitle className="flex items-center gap-2">
                             <Shield className="w-5 h-5 text-blue-400" />
@@ -121,7 +121,7 @@ export default function SecurityRulesPage() {
  
                 {/* Section 2: Active Controls */}
                 <div className="space-y-4">
-                    <h2 className="text-xl font-semibold text-white flex items-center gap-2">
+                    <h2 className="text-xl font-semibold text-foreground flex items-center gap-2">
                         <Globe className="w-5 h-5 text-amber-400" />
                         Active Security Controls
                     </h2>
@@ -179,12 +179,12 @@ function RoleBadge({ role, access, color }: { role: string, access: string, colo
 
 function SecurityToggle({ label, description, checked, onChange, icon, loading }: any) {
     return (
-        <div className="bg-white/5 border border-white/5 p-4 rounded-xl flex flex-col justify-between gap-4">
+        <div className="bg-foreground/5 border border-foreground/5 p-4 rounded-xl flex flex-col justify-between gap-4">
             <div className="flex items-start justify-between">
                 <div className="flex items-center gap-3">
-                    <div className="p-2 bg-white/5 rounded-lg">{icon}</div>
+                    <div className="p-2 bg-foreground/5 rounded-lg">{icon}</div>
                     <div>
-                        <h4 className="font-medium text-white">{label}</h4>
+                        <h4 className="font-medium text-foreground">{label}</h4>
                     </div>
                 </div>
                 <Switch checked={checked} onCheckedChange={onChange} disabled={loading} />

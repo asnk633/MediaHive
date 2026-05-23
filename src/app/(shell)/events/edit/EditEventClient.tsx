@@ -45,21 +45,21 @@ export default function EditEventClient() {
 
     if (loading) {
         return (
-            <div className="min-h-screen bg-night-sky text-white flex flex-col items-center justify-center gap-4">
-                <Loader2 className="w-8 h-8 animate-spin text-primary" />
-                <div className="text-white/30 font-mono text-xs uppercase tracking-widest">Loading Event Details...</div>
+            <div className="min-h-screen bg-transparent text-foreground flex flex-col items-center justify-center gap-4">
+                <div className="w-8 h-8 rounded-full border-2 border-primary border-t-transparent animate-spin" />
+                <div className="text-foreground/70 font-mono text-xs uppercase tracking-widest">Loading Event Details...</div>
             </div>
         );
     }
 
     if (error || !event) {
         return (
-            <div className="min-h-screen bg-night-sky text-white flex flex-col items-center justify-center gap-6 p-4">
-                <div className="text-center space-y-2">
+            <div className="min-h-screen bg-transparent text-foreground flex flex-col items-center justify-center gap-6 p-4">
+                <div className="w-16 h-16 rounded-2xl bg-red-500/10 flex items-center justify-center text-red-500">
                     <h2 className="text-xl font-bold text-red-400">Error</h2>
-                    <p className="text-white/60">{error || "Something went wrong"}</p>
+                    <p className="text-foreground/80">{error || "Something went wrong"}</p>
                 </div>
-                <Button onClick={() => router.back()} variant="outline" className="border-white/10 hover:bg-white/5">
+                <Button onClick={() => router.back()} variant="outline" className="border-foreground/10 hover:bg-foreground/5">
                     Go Back
                 </Button>
             </div>
@@ -67,7 +67,7 @@ export default function EditEventClient() {
     }
 
     return (
-        <div className="min-h-screen bg-night-sky text-white p-4 lg:p-8 flex justify-center">
+        <div className="min-h-screen bg-transparent text-foreground p-4 lg:p-8 flex justify-center">
             <div className="w-full max-w-4xl space-y-6">
 
                 {/* Header with Back Button */}
@@ -76,18 +76,18 @@ export default function EditEventClient() {
                         variant="ghost"
                         size="icon"
                         onClick={() => router.back()}
-                        className="rounded-full hover:bg-white/10"
+                        className="rounded-full hover:bg-foreground/10"
                     >
                         <ChevronLeft className="w-5 h-5" />
                     </Button>
                     <div>
                         <h1 className="text-2xl font-bold tracking-tight">Edit Event</h1>
-                        <p className="text-white/60 text-sm">Update the details for "{event.title}"</p>
+                        <p className="text-foreground/80 text-sm">Update the details for "{event.title}"</p>
                     </div>
                 </div>
 
                 {/* Form Container */}
-                <div className="bg-[#10111a] border border-white/5 rounded-2xl p-6 lg:p-8 shadow-xl backdrop-blur-sm">
+                <div className="bg-card border border-border rounded-2xl p-6 lg:p-8 shadow-xl backdrop-blur-sm">
                     <CreateEventForm 
                         initialEvent={event}
                         onSuccess={() => {

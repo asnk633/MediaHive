@@ -35,6 +35,7 @@ export interface TaskFilters {
   assignedTo?: string;
   createdBy?: string;
   signal?: AbortSignal;
+  includeAllHistory?: boolean; // Bypass 7-day retention filter (for reports)
 }
 
 export interface EventFilters {
@@ -153,12 +154,15 @@ export class CanonicalDataService {
     const assignmentField = fields.assigned_to || fields.assignedTo;
     if ((entityType === 'task' || table === TABLES.TASKS) && assignmentField) {
       try {
-        const currentTask = await db.tasks.get(id);
-        // Normalize previous and new IDs
-        const previousIds = (currentTask?.assigned_to || currentTask?.assignedTo || [])
-          .map((u: any) => typeof u === 'string' ? u : u.uid);
-        const newIds = (assignmentField || [])
-          .map((u: any) => typeof u === 'string' ? u : u.uid);
+        let previousIds: string[] = [];
+        if (typeof navigator !== 'undefined' && navigator.onLine) {
+          const { data } = await supabase.from(TABLES.TASK_ASSIGNMENTS).select('user_id').eq('task_id', id);
+          if (data) previousIds = data.map((d: any) => d.user_id);
+        } else {
+          const currentTask = await db.tasks.get(id);
+          previousIds = (currentTask?.assigned_to || currentTask?.assignedTo || []).map((u: any) => typeof u === 'string' ? u : u.uid);
+        }
+        const newIds = (assignmentField || []).map((u: any) => typeof u === 'string' ? u : u.uid);
 
         const { syncEngine } = require('@/lib/offline/queueManager');
 
@@ -166,11 +170,14 @@ export class CanonicalDataService {
         const toAssign = newIds.filter((uid: string) => !previousIds.includes(uid));
         const toUnassign = previousIds.filter((uid: string) => !newIds.includes(uid));
 
-        for (const uid of toAssign) {
-          await syncEngine.enqueueMutation('ASSIGN_USER', { task_id: id, user_id: uid, tenant_id: tenantId });
-        }
-        for (const uid of toUnassign) {
-          await syncEngine.enqueueMutation('UNASSIGN_USER', { task_id: id, user_id: uid, tenant_id: tenantId });
+        if (typeof navigator !== 'undefined' && navigator.onLine) {
+          if (toAssign.length > 0) {
+            const inserts = toAssign.map((uid: string) => ({ task_id: id, user_id: uid, tenant_id: tenantId, role: 'assignee' }));
+            await supabase.from(TABLES.TASK_ASSIGNMENTS).insert(inserts);
+          }
+          if (toUnassign.length > 0) {
+            await supabase.from(TABLES.TASK_ASSIGNMENTS).delete().eq('task_id', id).in('user_id', toUnassign);
+          }
         }
 
         // We KEEP assigned_to in the payload so the legacy trigger sync_task_assignments_trigger 
@@ -197,15 +204,19 @@ export class CanonicalDataService {
     if (typeof navigator !== 'undefined' && navigator.onLine) {
         try {
             console.log(`[CanonicalDataService] 🌐 Attempting direct patch for ${table}/${id}...`);
-            // Implement timeout for direct patch (5s)
-            const timeoutPromise = new Promise((_, reject) => setTimeout(() => reject(new Error('MUTATION_TIMEOUT')), 5000));
+            let timeoutId: NodeJS.Timeout;
+            const timeoutPromise = new Promise((_, reject) => {
+                timeoutId = setTimeout(() => reject(new Error('MUTATION_TIMEOUT')), 5000);
+            });
+            timeoutPromise.catch(() => {}); // prevent unhandled rejection
+
             const mutationPromise = supabase
                 .from(table)
                 .update(finalPayload)
                 .eq('id', id)
                 .eq('tenant_id', tenantId);
 
-            const { error: directError } = await Promise.race([mutationPromise, timeoutPromise]) as any;
+            const { error: directError } = await Promise.race([mutationPromise, timeoutPromise]).finally(() => clearTimeout(timeoutId)) as any;
             
             if (directError) throw directError;
             
@@ -336,11 +347,15 @@ export class CanonicalDataService {
 
     if (typeof navigator !== 'undefined' && navigator.onLine) {
         try {
-            // Implement timeout for direct insert (5s)
-            const timeoutPromise = new Promise((_, reject) => setTimeout(() => reject(new Error('MUTATION_TIMEOUT')), 5000));
-            const mutationPromise = supabase.from(table).insert([finalPayload]);
+            let timeoutId: NodeJS.Timeout;
+            const timeoutPromise = new Promise((_, reject) => {
+                timeoutId = setTimeout(() => reject(new Error('MUTATION_TIMEOUT')), 5000);
+            });
+            timeoutPromise.catch(() => {}); // prevent unhandled rejection
+
+            const mutationPromise = supabase.from(table).insert([finalPayload]).select().single();
+            const { error: directError } = await Promise.race([mutationPromise, timeoutPromise]).finally(() => clearTimeout(timeoutId)) as any;
             
-            const { error: directError } = await Promise.race([mutationPromise, timeoutPromise]) as any;
             if (directError) throw directError;
             
             directSuccess = true;
@@ -364,9 +379,9 @@ export class CanonicalDataService {
     // Relational assignments AFTER task creation to satisfy FK constraints
     if ((entityType === 'task' || table === TABLES.TASKS) && assignmentField) {
       const uids = (assignmentField || []).map((u: any) => typeof u === 'string' ? u : u.uid);
-      for (const uid of uids) {
-        // Assignments are typically fast, but we still queue them for consistency
-        await syncEngine.enqueueMutation('ASSIGN_USER', { task_id: finalId, user_id: uid, tenant_id: tenantId });
+      if (typeof navigator !== 'undefined' && navigator.onLine && uids.length > 0) {
+        const inserts = uids.map((uid: string) => ({ task_id: finalId, user_id: uid, tenant_id: tenantId, role: 'assignee' }));
+        await supabase.from(TABLES.TASK_ASSIGNMENTS).insert(inserts);
       }
     }
 
@@ -390,13 +405,7 @@ export class CanonicalDataService {
 
       if (error) {
           // 1. Try offline fallback first
-          if (typeof window !== 'undefined') {
-              const tableObj = (db as any)[table];
-              if (tableObj) {
-                  const cached = await tableObj.get(id);
-                  if (cached) return { data: cached, error: null };
-              }
-          }
+          
           
           // 2. If truly not found on server, return null gracefully
           if (error.code === 'PGRST116') return { data: null, error: null };
@@ -469,15 +478,7 @@ export class CanonicalDataService {
   static async getTasks(filters: TaskFilters = {}): Promise<Task[]> {
     if (healthManager.shouldPauseActivities()) {
       console.warn('[CanonicalDataService] System pulse DEAD. Attempting cached tasks fallback.');
-      if (typeof window !== 'undefined') {
-        try {
-          const cached = await db.tasks.toArray();
-          if (cached.length > 0) {
-            toast('Offline - Showing last known data', { id: 'stale-tasks-toast', icon: '📡' });
-            return cached;
-          }
-        } catch (e) {}
-      }
+      
       return [];
     }
 
@@ -522,16 +523,18 @@ export class CanonicalDataService {
       // filtering on joined table columns. Filtering should be done client-side or 
       // via specialized relational queries.
 
+      const fetchLimit = filters.includeAllHistory ? 10000 : TASK_FETCH_LIMIT;
+
       const { data: tasks, error } = await safeQuery(() => query
         .order('created_at', { ascending: false })
-        .limit(TASK_FETCH_LIMIT + 1)
+        .limit(fetchLimit + 1)
       ) as { data: any[]; error: any };
 
       if (error) throw error;
 
       console.log(`[BOOT][DONE] Tasks fetched in ${Date.now() - fetchStart}ms`);
 
-      const isCapped = ((tasks as any[])?.length || 0) > TASK_FETCH_LIMIT;
+      const isCapped = !filters.includeAllHistory && ((tasks as any[])?.length || 0) > TASK_FETCH_LIMIT;
       const finalTasks = isCapped ? (tasks as any[]).slice(0, TASK_FETCH_LIMIT) : (tasks || []);
 
       const now = new Date();
@@ -549,7 +552,7 @@ export class CanonicalDataService {
 
           if (task.is_archived) return false;
 
-          if (task.status === 'done') {
+          if (!filters.includeAllHistory && task.status === 'done') {
             const dateStr = task.updated_at || task.created_at;
             const date = dateStr ? new Date(dateStr) : null;
             if (date && date < sevenDaysAgo) return false;
@@ -568,14 +571,7 @@ export class CanonicalDataService {
         console.warn(`[DEGRADATION] Tasks capped at ${TASK_FETCH_LIMIT}. Showing partial results.`);
       }
 
-      if (typeof window !== 'undefined') {
-        try {
-          // Clear old tasks from this tenant/institution if needed, or just bulkPut
-          // Since we might have multiple institutions, we might want to be selective.
-          // For now, bulkPut is safe as IDs are unique.
-          await db.tasks.bulkPut(processedTasks);
-        } catch (e) { /* ignore IndexedDB errors */ }
-      }
+      
 
       if (processedTasks.length === 0) {
         console.warn(`[CanonicalDataService] No tasks returned for tenant: ${tenantId.slice(0, 8)}... (Filters: ${JSON.stringify(filters)})`);
@@ -648,15 +644,7 @@ export class CanonicalDataService {
   static async getEvents(filters: EventFilters = {}): Promise<Event[]> {
     if (healthManager.shouldPauseActivities()) {
       console.warn('[CanonicalDataService] System pulse DEAD. Attempting cached events fallback.');
-      if (typeof window !== 'undefined') {
-        try {
-          const cached = await offlineDB.getCache('mediahive_cache_events');
-          if (cached) {
-            toast('Offline - Showing last known data', { id: 'stale-events-toast', icon: '📡' });
-            return cached;
-          }
-        } catch (e) {}
-      }
+      
       return [];
     }
 
@@ -724,11 +712,7 @@ export class CanonicalDataService {
         const allEvents = [...mappedUserEvents, ...formattedSystemEvents];
         (allEvents as any).__meta = { total: finalEvents.length, isCapped, limit: EVENT_FETCH_LIMIT };
 
-        if (typeof window !== 'undefined') {
-          try {
-            await db.events.bulkPut(allEvents);
-          } catch (e) {}
-        }
+        
 
         console.log(`[CanonicalDataService] Successfully fetched ${allEvents.length} events (including system events)`);
         return allEvents as Event[];
@@ -928,7 +912,7 @@ export class CanonicalDataService {
               ),
               equipment:event_equipment(
                 *,
-                inventory:${TABLES.INVENTORY}(id, name)
+                inventory:inventory(id, name)
               )
             `)
             .eq('tenant_id', tenantId)
@@ -996,8 +980,16 @@ export class CanonicalDataService {
         crew,
         equipment
       };
-    } catch (error) {
-      console.error('[CanonicalDataService] Error fetching operational summary:', error);
+    } catch (error: any) {
+      const errorDetails = {
+        message: error?.message || (typeof error === 'string' ? error : 'Unknown error'),
+        details: error?.details || null,
+        hint: error?.hint || null,
+        code: error?.code || null,
+        status: error?.status || null,
+        name: error?.name || 'Error'
+      };
+      console.error('[CanonicalDataService] Error fetching operational summary:', JSON.stringify(errorDetails, null, 2));
       return { events: [], tasks: [], crew: [], equipment: [] };
     }
   }
@@ -1128,9 +1120,7 @@ export class CanonicalDataService {
           let q = supabase
             .from(TABLES.INVENTORY)
             .select('*')
-            .eq('tenant_id', tenantId)
-            .ilike('name', searchTerm);
-          if (institutionId) q = q.eq('institution_id', institutionId);
+            .ilike('item_name', searchTerm);
           return q.limit(5);
         })
       ]);

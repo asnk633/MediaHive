@@ -69,7 +69,7 @@ export const TaskIntelligenceWidget: React.FC = () => {
                     onClick={() => handleNavigate(metric.filter)}
                     className={cn(
                         "relative group cursor-pointer p-5 lg:px-6 rounded-[16px] border transition-all duration-300",
-                        "bg-white/[0.02] hover:bg-white/[0.04]",
+                        "bg-foreground/[0.02] hover:bg-foreground/[0.04]",
                         metric.border
                     )}
                 >
@@ -78,18 +78,18 @@ export const TaskIntelligenceWidget: React.FC = () => {
                             <metric.icon size={20} className={metric.color} />
                         </div>
                         <div className="opacity-0 group-hover:opacity-100 transition-opacity -mr-2 -mt-2">
-                            <ArrowRight size={16} className="text-white/40" />
+                            <ArrowRight size={16} className="text-foreground/80" />
                         </div>
                     </div>
 
                     <div className="space-y-1">
-                        <h3 className="text-2xl font-bold text-white tracking-tight">{metric.count}</h3>
+                        <h3 className="text-2xl font-bold text-foreground tracking-tight">{metric.count}</h3>
                         <p className={cn("text-xs font-bold uppercase tracking-wider", metric.color)}>
                             {metric.label}
                         </p>
                     </div>
 
-                    <p className="absolute bottom-5 right-5 text-[10px] font-medium text-white/20 uppercase tracking-widest opacity-0 group-hover:opacity-100 transition-opacity translate-y-2 group-hover:translate-y-0">
+                    <p className="absolute bottom-5 right-5 text-[10px] font-medium text-foreground/80 uppercase tracking-widest opacity-0 group-hover:opacity-100 transition-opacity translate-y-2 group-hover:translate-y-0">
                         View List
                     </p>
                 </div>

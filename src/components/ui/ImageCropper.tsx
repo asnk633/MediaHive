@@ -190,10 +190,10 @@ export function ImageCropper({ imageSrc, onCropComplete, onCancel }: ImageCroppe
 
     return (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/80 backdrop-blur-sm px-4">
-            <div className="bg-[#0f172a] border border-[#ffffff1a] rounded-2xl p-6 w-full max-w-md shadow-2xl flex flex-col gap-6 max-h-[90vh] overflow-y-auto custom-scrollbar">
+            <div className="bg-[var(--glass-liquid-bg)] border border-[#ffffff1a] rounded-2xl p-6 w-full max-w-md shadow-2xl flex flex-col gap-6 max-h-[90vh] overflow-y-auto custom-scrollbar">
                 <div className="flex justify-between items-center">
-                    <h3 className="text-xl font-bold text-white">Adjust Image</h3>
-                    <Button type="button" variant="ghost" size="icon" onClick={onCancel} className="bg-white/5 hover:bg-white/10 text-white rounded-full h-8 w-8">
+                    <h3 className="text-xl font-bold text-foreground">Adjust Image</h3>
+                    <Button type="button" variant="ghost" size="icon" onClick={onCancel} className="bg-foreground/5 hover:bg-foreground/10 text-foreground rounded-full h-8 w-8">
                         <X size={16} />
                     </Button>
                 </div>
@@ -209,7 +209,7 @@ export function ImageCropper({ imageSrc, onCropComplete, onCancel }: ImageCroppe
                                 "flex flex-col items-center gap-1.5 p-2 rounded-xl transition-all min-w-[60px]",
                                 aspectRatio === ratio.value
                                     ? "bg-blue-600/20 text-blue-400 border border-blue-500/50"
-                                    : "bg-white/5 text-slate-400 hover:bg-white/10 hover:text-white border border-transparent"
+                                    : "bg-foreground/5 text-slate-400 hover:bg-foreground/10 hover:text-foreground border border-transparent"
                             )}
                         >
                             <ratio.icon size={20} />
@@ -235,21 +235,21 @@ export function ImageCropper({ imageSrc, onCropComplete, onCancel }: ImageCroppe
                             className="w-full h-full object-contain pointer-events-none"
                         />
                         {/* Grid Overlay */}
-                        <div className="absolute inset-0 pointer-events-none border border-white/30">
-                            <div className="absolute top-1/3 left-0 right-0 h-px bg-white/20" />
-                            <div className="absolute top-2/3 left-0 right-0 h-px bg-white/20" />
-                            <div className="absolute left-1/3 top-0 bottom-0 w-px bg-white/20" />
-                            <div className="absolute left-2/3 top-0 bottom-0 w-px bg-white/20" />
+                        <div className="absolute inset-0 pointer-events-none border border-foreground/30">
+                            <div className="absolute top-1/3 left-0 right-0 h-px bg-foreground/20" />
+                            <div className="absolute top-2/3 left-0 right-0 h-px bg-foreground/20" />
+                            <div className="absolute left-1/3 top-0 bottom-0 w-px bg-foreground/20" />
+                            <div className="absolute left-2/3 top-0 bottom-0 w-px bg-foreground/20" />
                         </div>
                         <div className="absolute inset-0 pointer-events-none flex items-center justify-center opacity-0 hover:opacity-100 transition-opacity duration-700">
-                            <Move className="text-white/50 drop-shadow-md" size={32} />
+                            <Move className="text-foreground/70 drop-shadow-md" size={32} />
                         </div>
                     </div>
                 </div>
 
                 <div className="space-y-4">
                     <div className="flex items-center gap-4 px-2">
-                        <ZoomOut size={16} className="text-white/50" />
+                        <ZoomOut size={16} className="text-foreground/70" />
                         <Slider
                             value={[zoom]}
                             min={0.5}
@@ -258,7 +258,7 @@ export function ImageCropper({ imageSrc, onCropComplete, onCancel }: ImageCroppe
                             onValueChange={(val) => setZoom(val[0])}
                             className="flex-1"
                         />
-                        <ZoomIn size={16} className="text-white/50" />
+                        <ZoomIn size={16} className="text-foreground/70" />
                     </div>
 
                     <div className="grid grid-cols-2 gap-4">
@@ -266,14 +266,14 @@ export function ImageCropper({ imageSrc, onCropComplete, onCancel }: ImageCroppe
                             type="button"
                             variant="outline"
                             onClick={onCancel}
-                            className="bg-white/5 border-[#ffffff1a] text-white hover:bg-white/10"
+                            className="bg-foreground/5 border-[#ffffff1a] text-foreground hover:bg-foreground/10"
                         >
                             Cancel
                         </Button>
                         <Button
                             type="button"
                             onClick={handleSave}
-                            className="bg-blue-600 hover:bg-blue-500 text-white"
+                            className="bg-blue-600 hover:bg-blue-500 text-foreground"
                         >
                             <Check size={18} className="mr-2" />
                             Use Photo

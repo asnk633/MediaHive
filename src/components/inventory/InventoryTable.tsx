@@ -84,7 +84,7 @@ export default function InventoryTable() {
                     <TableBody>
                         {loading ? (
                             Array.from({ length: 5 }).map((_, i) => (
-                                <TableRow key={i} className="border-white/5">
+                                <TableRow key={i} className="border-foreground/5">
                                     <TableCell><Skeleton className="h-4 w-32 bg-slate-800" /></TableCell>
                                     <TableCell><Skeleton className="h-4 w-24 bg-slate-800" /></TableCell>
                                     <TableCell><Skeleton className="h-4 w-16 bg-slate-800" /></TableCell>
@@ -179,7 +179,7 @@ function CreateItemDialog({ onSuccess }: { onSuccess: () => void }) {
     return (
         <Dialog open={open} onOpenChange={setOpen}>
             <DialogTrigger asChild>
-                <Button className="bg-blue-600 hover:bg-blue-500 text-white">
+                <Button className="bg-blue-600 hover:bg-blue-500 text-foreground">
                     <Plus size={16} className="mr-2" /> Add Item
                 </Button>
             </DialogTrigger>
@@ -223,7 +223,7 @@ function CreateItemDialog({ onSuccess }: { onSuccess: () => void }) {
                         </div>
                     </div>
                     <div className="pt-2 flex justify-end">
-                        <Button type="submit" disabled={submitting} className="bg-blue-600 hover:bg-blue-500 text-white">
+                        <Button type="submit" disabled={submitting} className="bg-blue-600 hover:bg-blue-500 text-foreground">
                             {submitting ? 'Saving...' : 'Create Item'}
                         </Button>
                     </div>
@@ -283,7 +283,7 @@ function EditItemDialog({ item, onSuccess }: { item: InventoryItem, onSuccess: (
                         </div>
                     </div>
                     <div className="pt-2 flex justify-end">
-                        <Button type="submit" disabled={submitting} className="bg-blue-600 hover:bg-blue-500 text-white">
+                        <Button type="submit" disabled={submitting} className="bg-blue-600 hover:bg-blue-500 text-foreground">
                             {submitting ? 'Updating...' : 'Update Stock'}
                         </Button>
                     </div>

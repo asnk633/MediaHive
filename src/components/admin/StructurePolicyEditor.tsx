@@ -177,7 +177,7 @@ export const StructurePolicyEditor: React.FC<StructurePolicyEditorProps> = ({ sc
                                     <Button
                                         variant="ghost"
                                         size="icon"
-                                        className="h-8 w-8 text-slate-500 hover:text-white"
+                                        className="h-8 w-8 text-slate-500 hover:text-foreground"
                                         onClick={() => revertToInherited(eventType)}
                                         title="Revert to Inherited"
                                     >

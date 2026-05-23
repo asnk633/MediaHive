@@ -53,9 +53,9 @@ const ROLES = [
         id: 'member',
         label: 'Member',
         icon: User,
-        color: 'text-white/40',
-        bg: 'bg-white/5',
-        border: 'border-white/10',
+        color: 'text-foreground/80',
+        bg: 'bg-foreground/5',
+        border: 'border-foreground/10',
         capabilities: [
             { label: 'View Published Data', enabled: true },
             { label: 'Resolve Conflicts', enabled: false },
@@ -70,8 +70,8 @@ export const RoleAuthorityMap: React.FC = () => {
     return (
         <div className="space-y-6">
             <div className="flex flex-col gap-1">
-                <h3 className="text-xl font-bold text-white">Role Authority Map</h3>
-                <p className="text-sm text-white/40 font-medium tracking-tight leading-relaxed">
+                <h3 className="text-xl font-bold text-foreground">Role Authority Map</h3>
+                <p className="text-sm text-foreground/80 font-medium tracking-tight leading-relaxed">
                     Visual breakdown of system-wide permissions and decision hierarchy.
                 </p>
             </div>
@@ -83,22 +83,22 @@ export const RoleAuthorityMap: React.FC = () => {
                         className={`p-6 rounded-[32px] border ${role.border} ${role.bg} transition-all duration-300 hover:scale-[1.02] shadow-xl`}
                     >
                         <div className="flex items-center gap-4 mb-6">
-                            <div className={`p-3 rounded-2xl ${role.color} bg-black/20 border border-white/5`}>
+                            <div className={`p-3 rounded-2xl ${role.color} bg-black/20 border border-foreground/5`}>
                                 <role.icon size={24} />
                             </div>
-                            <span className="text-lg font-bold text-white">{role.label}</span>
+                            <span className="text-lg font-bold text-foreground">{role.label}</span>
                         </div>
 
                         <div className="space-y-4">
                             {role.capabilities.map((cap, idx) => (
                                 <div key={idx} className="flex items-center justify-between gap-3">
-                                    <span className={`text-xs font-medium ${cap.enabled ? 'text-white/70' : 'text-white/20'}`}>
+                                    <span className={`text-xs font-medium ${cap.enabled ? 'text-foreground/70' : 'text-foreground/80'}`}>
                                         {cap.label}
                                     </span>
                                     {cap.enabled ? (
                                         <CheckCircle2 size={16} className="text-blue-400 shrink-0" />
                                     ) : (
-                                        <XCircle size={16} className="text-white/10 shrink-0" />
+                                        <XCircle size={16} className="text-foreground/70 shrink-0" />
                                     )}
                                 </div>
                             ))}

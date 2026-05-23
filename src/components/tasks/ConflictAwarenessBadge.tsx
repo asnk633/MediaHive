@@ -25,7 +25,7 @@ export const ConflictAwarenessBadge: React.FC = () => {
             >
                 <AlertTriangle size={16} className="text-red-500" />
                 <span className="hidden sm:inline text-red-300">Conflicts</span>
-                <div className="absolute -top-2 -right-2 bg-red-600 text-white text-[10px] w-5 h-5 flex items-center justify-center rounded-full font-black shadow-lg shadow-red-900/50">
+                <div className="absolute -top-2 -right-2 bg-red-600 text-foreground text-[10px] w-5 h-5 flex items-center justify-center rounded-full font-black shadow-lg shadow-red-900/50">
                     {conflictCount}
                 </div>
             </button>

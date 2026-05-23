@@ -25,7 +25,7 @@ export default function StructurePage() {
 
             <PageHeader
                 title="Organization Structure"
-                description="Manage global institutions and offices / units."
+                description="Manage global institutions and departments / institutions."
             />
 
             <div className="mt-6">
@@ -35,7 +35,7 @@ export default function StructurePage() {
                             Institutions
                         </TabsTrigger>
                         <TabsTrigger value="departments" className="rounded-lg data-[state=active]:bg-primary data-[state=active]:text-primary-foreground">
-                            Offices / Units
+                            Departments / Institutions
                         </TabsTrigger>
                     </TabsList>
 

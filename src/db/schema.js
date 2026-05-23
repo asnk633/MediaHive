@@ -38,7 +38,7 @@ exports.tasks = (0, sqlite_core_1.sqliteTable)('tasks', {
     title: (0, sqlite_core_1.text)('title').notNull(),
     description: (0, sqlite_core_1.text)('description'),
     status: (0, sqlite_core_1.text)('status').notNull(), // 'todo', 'in_progress', 'review', 'done'
-    priority: (0, sqlite_core_1.text)('priority').notNull(), // 'low', 'medium', 'high', 'urgent'
+    priority: (0, sqlite_core_1.text)('priority').notNull(), // 'low', 'medium', 'high'
     assignedToId: (0, sqlite_core_1.integer)('assigned_to_id').references(function () { return exports.users.id; }),
     createdById: (0, sqlite_core_1.integer)('created_by_id').notNull().references(function () { return exports.users.id; }),
     institution_id: (0, sqlite_core_1.integer)('institution_id').notNull().references(function () { return exports.institutions.id; }),

@@ -90,11 +90,11 @@ const AdminConfidencePanel: React.FC<AdminConfidencePanelProps> = ({ tasks, even
   }).slice(0, 3);
 
   return (
-    <div className="bg-white/5 backdrop-blur-md border border-[#ffffff1a] rounded-xl p-4 mb-4">
+    <div className="bg-foreground/5 backdrop-blur-md border border-[#ffffff1a] rounded-xl p-4 mb-4">
       <div className="flex items-center justify-between gap-2 mb-4">
         <div className="flex items-center gap-2">
           <TrendingUp className="w-5 h-5 text-green-400" />
-          <h3 className="text-lg font-semibold text-white">Admin Confidence Panel</h3>
+          <h3 className="text-lg font-semibold text-foreground">Admin Confidence Panel</h3>
         </div>
         <DemoDataButton />
       </div>
@@ -104,13 +104,13 @@ const AdminConfidencePanel: React.FC<AdminConfidencePanelProps> = ({ tasks, even
         <div className="bg-red-500/10 border border-red-500/20 rounded-lg p-4">
           <div className="flex items-center gap-2 mb-3">
             <AlertTriangle className="w-5 h-5 text-red-400" />
-            <h4 className="font-medium text-white">Blocked on Media</h4>
+            <h4 className="font-medium text-foreground">Blocked on Media</h4>
             <Badge className="bg-red-500/20 text-red-300 ml-auto">{tasksBlockedOnMedia}</Badge>
           </div>
           <div className="space-y-2">
             {blockedTasks.length > 0 ? (
               blockedTasks.map(task => (
-                <div key={task.id} className="text-sm p-2 bg-black/10 rounded border border-white/5">
+                <div key={task.id} className="text-sm p-2 bg-black/10 rounded border border-foreground/5">
                   <Button
                     variant="link"
                     className="p-0 h-auto text-left text-blue-300 hover:text-blue-200"
@@ -140,13 +140,13 @@ const AdminConfidencePanel: React.FC<AdminConfidencePanelProps> = ({ tasks, even
         <div className="bg-green-500/10 border border-green-500/20 rounded-lg p-4">
           <div className="flex items-center gap-2 mb-3">
             <CheckCircle className="w-5 h-5 text-green-400" />
-            <h4 className="font-medium text-white">Ready for Completion</h4>
+            <h4 className="font-medium text-foreground">Ready for Completion</h4>
             <Badge className="bg-green-500/20 text-green-300 ml-auto">{tasksReadyForCompletion}</Badge>
           </div>
           <div className="space-y-2">
             {readyTasks.length > 0 ? (
               readyTasks.map(task => (
-                <div key={task.id} className="text-sm p-2 bg-black/10 rounded border border-white/5">
+                <div key={task.id} className="text-sm p-2 bg-black/10 rounded border border-foreground/5">
                   <Button
                     variant="link"
                     className="p-0 h-auto text-left text-blue-300 hover:text-blue-200"
@@ -176,13 +176,13 @@ const AdminConfidencePanel: React.FC<AdminConfidencePanelProps> = ({ tasks, even
         <div className="bg-blue-500/10 border border-blue-500/20 rounded-lg p-4">
           <div className="flex items-center gap-2 mb-3">
             <FileText className="w-5 h-5 text-blue-400" />
-            <h4 className="font-medium text-white">Recently Approved</h4>
+            <h4 className="font-medium text-foreground">Recently Approved</h4>
             <Badge className="bg-blue-500/20 text-blue-300 ml-auto">{recentlyApprovedMediaCount}</Badge>
           </div>
           <div className="space-y-2">
             {approvedTasks.length > 0 ? (
               approvedTasks.map(task => (
-                <div key={task.id} className="text-sm p-2 bg-black/10 rounded border border-white/5">
+                <div key={task.id} className="text-sm p-2 bg-black/10 rounded border border-foreground/5">
                   <Button
                     variant="link"
                     className="p-0 h-auto text-left text-blue-300 hover:text-blue-200"
@@ -212,13 +212,13 @@ const AdminConfidencePanel: React.FC<AdminConfidencePanelProps> = ({ tasks, even
         <div className="bg-yellow-500/10 border border-yellow-500/20 rounded-lg p-4">
           <div className="flex items-center gap-2 mb-3">
             <Clock className="w-5 h-5 text-yellow-400" />
-            <h4 className="font-medium text-white">Stale Tasks</h4>
+            <h4 className="font-medium text-foreground">Stale Tasks</h4>
             <Badge className="bg-yellow-500/20 text-yellow-300 ml-auto">{staleTasks}</Badge>
           </div>
           <div className="space-y-2">
             {staleTaskSamples.length > 0 ? (
               staleTaskSamples.map(task => (
-                <div key={task.id} className="text-sm p-2 bg-black/10 rounded border border-white/5">
+                <div key={task.id} className="text-sm p-2 bg-black/10 rounded border border-foreground/5">
                   <Button
                     variant="link"
                     className="p-0 h-auto text-left text-blue-300 hover:text-blue-200"

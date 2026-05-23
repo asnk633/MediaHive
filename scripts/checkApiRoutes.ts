@@ -18,7 +18,6 @@ const SKIP_PATTERNS = [
     /^_helpers$/,
     /^_middleware$/,
     /^middleware$/,
-    /^\[/,  // Dynamic segment – may delegate to parent
 ];
 
 interface MissingRoute {

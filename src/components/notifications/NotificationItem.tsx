@@ -64,12 +64,12 @@ export function NotificationItem({
             selected={selected}
             onSelectToggle={onSelectToggle}
             onClick={() => !read && onRead(id)}
-            className="relative group rounded-xl border border-white/5 bg-white/[0.02] hover:bg-white/[0.05] transition-all duration-200 cursor-pointer"
+            className="relative group rounded-xl border border-foreground/5 bg-foreground/[0.02] hover:bg-foreground/[0.05] transition-all duration-200 cursor-pointer"
         >
             {/* Priority Accent Strip */}
             <div className={`absolute left-0 top-0 bottom-0 w-1 rounded-l-xl ${priorityAccent[priority] ?? 'bg-blue-500'}`} />
 
-            <div className={`flex gap-4 pl-3 flex-1 min-w-0 ${read ? 'opacity-60' : 'opacity-100'}`}>
+            <div className={`flex gap-4 pl-3 flex-1 min-w-0 ${read ? 'opacity-90' : 'opacity-100'}`}>
                 {/* Icon Column */}
                 <div className="mt-1 flex-shrink-0">
                     {getTypeIcon()}
@@ -78,15 +78,15 @@ export function NotificationItem({
                 {/* Content Column */}
                 <div className="flex-1 min-w-0">
                     <div className="flex justify-between items-start">
-                        <h4 className={`text-sm font-semibold truncate ${read ? 'text-gray-400' : 'text-white'}`}>
+                        <h4 className={`text-sm truncate ${read ? 'text-foreground/80 font-semibold' : 'text-foreground font-bold'}`}>
                             {title}
                         </h4>
-                        <span className="text-xs text-gray-500 whitespace-nowrap ml-2">
+                        <span className="text-xs text-foreground/75 whitespace-nowrap ml-2">
                             {timeAgo}
                         </span>
                     </div>
 
-                    <p className="text-sm text-gray-300 mt-1 break-words line-clamp-2">
+                    <p className={`text-sm mt-1 break-words line-clamp-2 ${read ? 'text-foreground/75' : 'text-foreground/95'}`}>
                         {message}
                     </p>
 
@@ -96,7 +96,7 @@ export function NotificationItem({
                             <Link
                                 href={action_url}
                                 onClick={() => !read && onRead(id)}
-                                className="inline-flex items-center text-xs font-medium text-blue-400 hover:text-blue-300 transition-colors"
+                                className="inline-flex items-center text-xs font-medium text-primary hover:opacity-80 transition-colors"
                             >
                                 View Details <ExternalLink className="w-3 h-3 ml-1" />
                             </Link>
@@ -107,7 +107,7 @@ export function NotificationItem({
                         {!read && (
                             <button
                                 onClick={(e) => { e.stopPropagation(); onRead(id); }}
-                                className="p-1 rounded-full hover:bg-white/10 text-gray-400 hover:text-green-400 transition-colors"
+                                className="p-1 rounded-full hover:bg-foreground/10 text-muted-foreground hover:text-green-400 transition-colors"
                                 title="Mark as Read"
                             >
                                 <Check className="w-4 h-4" />
@@ -116,7 +116,7 @@ export function NotificationItem({
 
                         <button
                             onClick={(e) => { e.stopPropagation(); onArchive(id); }}
-                            className="p-1 rounded-full hover:bg-white/10 text-gray-400 hover:text-gray-300 transition-colors"
+                            className="p-1 rounded-full hover:bg-foreground/10 text-muted-foreground hover:text-foreground transition-colors"
                             title="Delete"
                         >
                             <Archive className="w-4 h-4" />

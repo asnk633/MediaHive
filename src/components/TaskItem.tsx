@@ -30,15 +30,15 @@ export default function TaskItem({ task, className = "", onEdit, onDelete }: Pro
   const canDelete = can('delete:tasks');
 
   const priorityColor =
-    task.priority === 'urgent' ? 'text-red-400 bg-red-500/10' :
-      task.priority === 'high' ? 'text-orange-400 bg-orange-500/10' :
+    (task.priority === 'high' || task.priority === 'urgent') ? 'text-orange-400 bg-orange-500/10' :
+      task.priority === 'medium' ? 'text-yellow-400 bg-yellow-500/10' :
         'text-primary bg-primary/10';
 
   return (
     <article
       role="article"
       className={cn(
-        "group relative overflow-hidden rounded-xl border border-white/5 bg-surface/40 p-4 transition-all hover:bg-surface/60 hover:shadow-lg hover:shadow-primary/5 backdrop-blur-sm",
+        "group relative overflow-hidden rounded-xl border border-foreground/5 bg-surface/40 p-4 transition-all hover:bg-surface/60 hover:shadow-lg hover:shadow-primary/5 backdrop-blur-sm",
         className
       )}
       data-task-id={String(task.id)}
@@ -64,7 +64,7 @@ export default function TaskItem({ task, className = "", onEdit, onDelete }: Pro
 
           <div className={cn("flex items-center gap-1.5 rounded-full px-2 py-1", priorityColor)}>
             <Flag className="h-3 w-3" />
-            <span className="uppercase font-bold text-[10px]">{task.priority ?? "Normal"}</span>
+            <span className="uppercase font-bold text-[10px]">{task.priority === 'urgent' ? 'high' : (task.priority ?? "Normal")}</span>
           </div>
 
           {task.due_date && (
@@ -105,7 +105,7 @@ export default function TaskItem({ task, className = "", onEdit, onDelete }: Pro
         {canEdit && onEdit && (
           <button
             onClick={(e) => { e.stopPropagation(); onEdit(task); }}
-            className="p-1.5 rounded-lg bg-surface hover:bg-accent hover:text-white text-text-muted transition-colors focus:outline-none focus:ring-2 focus:ring-accent"
+            className="p-1.5 rounded-lg bg-surface hover:bg-accent hover:text-foreground text-text-muted transition-colors focus:outline-none focus:ring-2 focus:ring-accent"
             aria-label="Edit task"
           >
             <Edit2 className="w-3.5 h-3.5" />
@@ -114,7 +114,7 @@ export default function TaskItem({ task, className = "", onEdit, onDelete }: Pro
         {canDelete && onDelete && (
           <button
             onClick={(e) => { e.stopPropagation(); onDelete(String(task.id)); }}
-            className="p-1.5 rounded-lg bg-surface hover:bg-red-500 hover:text-white text-text-muted transition-colors focus:outline-none focus:ring-2 focus:ring-red-500"
+            className="p-1.5 rounded-lg bg-surface hover:bg-red-500 hover:text-foreground text-text-muted transition-colors focus:outline-none focus:ring-2 focus:ring-red-500"
             aria-label="Delete task"
           >
             <Trash2 className="w-3.5 h-3.5" />

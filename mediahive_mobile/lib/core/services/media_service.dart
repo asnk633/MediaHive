@@ -7,6 +7,7 @@ import 'package:path/path.dart' as p;
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'logger_service.dart';
 
+import 'package:file_picker/file_picker.dart';
 import 'package:image_cropper/image_cropper.dart';
 import 'package:flutter/material.dart';
 import '../../core/theme/app_colors.dart';
@@ -16,6 +17,45 @@ class MediaService {
   final LoggerService _logger;
 
   MediaService(this._logger);
+
+  Future<File?> pickDocument() async {
+    try {
+      _logger.info('📂 Opening document picker...');
+      final result = await FilePicker.platform.pickFiles(
+        type: FileType.any,
+        allowMultiple: false,
+      );
+      if (result != null && result.files.single.path != null) {
+        final pickedFile = File(result.files.single.path!);
+        _logger.info('✅ Document picked: ${pickedFile.path}');
+        return pickedFile;
+      }
+    } catch (e) {
+      _logger.error('❌ Error picking document: $e');
+    }
+    return null;
+  }
+
+  Future<List<File>> pickMultipleFiles() async {
+    try {
+      _logger.info('📂 Opening multiple documents picker...');
+      final result = await FilePicker.platform.pickFiles(
+        type: FileType.any,
+        allowMultiple: true,
+      );
+      if (result != null && result.paths.isNotEmpty) {
+        final files = result.paths
+            .where((path) => path != null)
+            .map((path) => File(path!))
+            .toList();
+        _logger.info('✅ Total files picked: ${files.length}');
+        return files;
+      }
+    } catch (e) {
+      _logger.error('❌ Error picking multiple files: $e');
+    }
+    return [];
+  }
 
   Future<File?> cropImage(File file, {CropStyle cropStyle = CropStyle.rectangle}) async {
     _logger.info('✂️ Opening image cropper: ${file.path}');
@@ -66,6 +106,12 @@ class MediaService {
 
   Future<File?> pickImage() async {
     final XFile? image = await _picker.pickImage(source: ImageSource.gallery);
+    if (image == null) return null;
+    return File(image.path);
+  }
+
+  Future<File?> capturePhoto() async {
+    final XFile? image = await _picker.pickImage(source: ImageSource.camera);
     if (image == null) return null;
     return File(image.path);
   }

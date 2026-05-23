@@ -165,7 +165,7 @@ export default function DeviceRequestForm() {
                     </div>
                     <div>
                         <p className="text-xs text-slate-400 uppercase tracking-wider font-bold">{targetItem.category}</p>
-                        <p className="font-semibold text-white text-lg">{targetItem.name}</p>
+                        <p className="font-semibold text-foreground text-lg">{targetItem.name}</p>
                     </div>
                 </div>
             ) : (

@@ -73,6 +73,12 @@ export default function DownloadsClient() {
             f.name.toLowerCase().includes(search.toLowerCase())
         );
 
+        // Filter out inventory asset images to match mobile app behavior
+        result = result.filter(f => 
+            f.uploadContext !== 'inventory_asset' && 
+            !f.name.startsWith('INV_')
+        );
+
         if (category === 'photos') {
             result = result.filter(f => f.mimeType?.startsWith('image/'));
         } else if (category === 'videos') {
@@ -105,7 +111,7 @@ export default function DownloadsClient() {
                                         "flex items-center gap-2 px-3 py-1.5 rounded-lg text-sm font-medium transition-all",
                                         viewMode === 'files'
                                             ? "bg-indigo-500/10 text-indigo-500"
-                                            : "text-[var(--text-secondary)] hover:text-[var(--text-primary)] hover:bg-white/5"
+                                            : "text-[var(--text-secondary)] hover:text-[var(--text-primary)] hover:bg-foreground/5"
                                     )}
                                 >
                                     <Download size={16} />
@@ -117,7 +123,7 @@ export default function DownloadsClient() {
                                         "flex items-center gap-2 px-3 py-1.5 rounded-lg text-sm font-medium transition-all",
                                         viewMode === 'queue'
                                             ? "bg-emerald-500/10 text-emerald-500"
-                                            : "text-[var(--text-secondary)] hover:text-[var(--text-primary)] hover:bg-white/5"
+                                            : "text-[var(--text-secondary)] hover:text-[var(--text-primary)] hover:bg-foreground/5"
                                     )}
                                 >
                                     <HardDrive size={16} />
@@ -161,8 +167,8 @@ export default function DownloadsClient() {
                                     className={cn(
                                         "flex items-center gap-2 px-4 py-1.5 rounded-lg text-sm font-medium whitespace-nowrap transition-all",
                                         category === cat.id
-                                            ? "bg-white/10 text-white"
-                                            : "text-[var(--text-secondary)] hover:text-[var(--text-primary)] hover:bg-white/5"
+                                            ? "bg-foreground/10 text-foreground"
+                                            : "text-[var(--text-secondary)] hover:text-[var(--text-primary)] hover:bg-foreground/5"
                                     )}
                                 >
                                     <cat.icon size={14} />
@@ -190,7 +196,7 @@ export default function DownloadsClient() {
                                     onClick={() => setLayout('gallery')}
                                     className={cn(
                                         "p-1.5 rounded-md transition-all",
-                                        layout === 'gallery' ? "bg-white/10 text-white" : "text-[var(--text-secondary)] hover:text-white"
+                                        layout === 'gallery' ? "bg-foreground/10 text-foreground" : "text-[var(--text-secondary)] hover:text-foreground"
                                     )}
                                     title="Gallery View"
                                 >
@@ -200,7 +206,7 @@ export default function DownloadsClient() {
                                     onClick={() => setLayout('grid')}
                                     className={cn(
                                         "p-1.5 rounded-md transition-all",
-                                        layout === 'grid' ? "bg-white/10 text-white" : "text-[var(--text-secondary)] hover:text-white"
+                                        layout === 'grid' ? "bg-foreground/10 text-foreground" : "text-[var(--text-secondary)] hover:text-foreground"
                                     )}
                                     title="List View"
                                 >

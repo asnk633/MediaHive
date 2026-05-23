@@ -74,9 +74,9 @@ export function HealthIndicator() {
     <TooltipProvider>
       <Tooltip>
         <TooltipTrigger asChild>
-          <div className="flex items-center gap-2 cursor-help group bg-white/5 px-2.5 py-1.5 rounded-full border border-white/5 hover:border-white/10 transition-all">
+          <div className="flex items-center gap-2 cursor-help group bg-foreground/5 px-2.5 py-1.5 rounded-full border border-foreground/5 hover:border-foreground/10 transition-all">
             <div className={`h-1.5 w-1.5 rounded-full ${getStatusColor()} shadow-[0_0_8px_rgba(0,0,0,0.1)] group-hover:scale-125 transition-transform animate-pulse`} />
-            <span className="text-[9px] font-black uppercase tracking-[0.15em] text-white/70">
+            <span className="text-[9px] font-black uppercase tracking-[0.15em] text-foreground/70">
               {getStatusLabel()}
             </span>
           </div>

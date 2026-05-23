@@ -109,15 +109,19 @@ export async function safeQuery<T>(
   try {
     while (attempt <= retries) {
       try {
-        // Implement timeout protection
-        const timeoutPromise = new Promise((_, reject) => 
-            setTimeout(() => reject(new Error('QUERY_TIMEOUT')), options.timeout || 15000)
-        );
+        // Implement timeout protection with proper cleanup
+        let timeoutId: NodeJS.Timeout;
+        const timeoutPromise = new Promise((_, reject) => {
+            timeoutId = setTimeout(() => reject(new Error('QUERY_TIMEOUT')), options.timeout || 15000);
+        });
+
+        // Add a catch handler to prevent unhandled rejection when the race is won by queryFn
+        timeoutPromise.catch(() => {});
 
         const result = await Promise.race([
             queryFn(),
             timeoutPromise
-        ]) as PostgrestResponse<T> | PostgrestSingleResponse<T>;
+        ]).finally(() => clearTimeout(timeoutId)) as PostgrestResponse<T> | PostgrestSingleResponse<T>;
         
         // Sync time from server headers
         if (result && (result as any).headers?.date) {

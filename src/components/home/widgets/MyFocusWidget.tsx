@@ -130,7 +130,7 @@ export const MyFocusWidget = ({ tasks, userId, error, onRetry, todayOnly, maxIte
                     <AlertCircle size={18} />
                 </div>
                 <div>
-                    <h3 className="text-sm font-semibold text-white">Focus Unavailable</h3>
+                    <h3 className="text-sm font-semibold text-foreground">Focus Unavailable</h3>
                     <p className="text-xs text-text-muted mt-1 mb-3">
                         We couldn't load your focus items.
                     </p>
@@ -152,7 +152,7 @@ export const MyFocusWidget = ({ tasks, userId, error, onRetry, todayOnly, maxIte
                     <CheckSquare size={20} />
                 </div>
                 <div>
-                    <h3 className="text-base font-semibold text-white">No tasks scheduled for now</h3>
+                    <h3 className="text-base font-semibold text-foreground">No tasks scheduled for now</h3>
                     <p className="text-sm text-text-secondary mt-1">
                         Today's schedule is clear.
                     </p>
@@ -162,7 +162,7 @@ export const MyFocusWidget = ({ tasks, userId, error, onRetry, todayOnly, maxIte
     }
 
     return (
-        <div className="overflow-hidden glass-card rounded-2xl border border-white/5">
+        <div className="overflow-hidden glass-card rounded-2xl border border-foreground/5">
             <div className="divide-y divide-white/5">
                 {displayTasks.map((task, index) => (
                     <HomeTaskRow

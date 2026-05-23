@@ -16,7 +16,7 @@ export default function InventoryRequestsClient() {
                 description="Track status of equipment and device requests."
                 actions={
                     <AppLink href="/inventory">
-                        <Button variant="ghost" className="gap-2 text-slate-400 hover:text-white">
+                        <Button variant="ghost" className="gap-2 text-slate-400 hover:text-foreground">
                             <ArrowLeft size={16} />
                             Back to Inventory
                         </Button>

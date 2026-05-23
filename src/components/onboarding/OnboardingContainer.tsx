@@ -14,7 +14,7 @@ const STEPS = [
     },
     {
         title: "Prioritise What Really Matters",
-        description: "Focus on urgent shoots, live streams, and design tasks with a clear view of today, this week, and upcoming work.",
+        description: "Focus on high-priority shoots, live streams, and design tasks with a clear view of today, this week, and upcoming work.",
     },
     {
         title: "Stay Organised & Sync",
@@ -87,7 +87,7 @@ export function OnboardingContainer() {
                                     <div className="space-y-4 w-full">
                                         <button
                                             onClick={() => finishOnboarding('create')}
-                                            className="w-full py-4 btn-premium text-white rounded-2xl font-bold text-lg"
+                                            className="w-full py-4 btn-premium text-foreground rounded-2xl font-bold text-lg"
                                         >
                                             Create First Task
                                         </button>

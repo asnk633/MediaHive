@@ -1,5 +1,6 @@
 import 'dart:ui';
 import 'package:flutter/material.dart';
+import 'package:go_router/go_router.dart';
 import 'package:lucide_icons/lucide_icons.dart';
 import 'package:flutter_animate/flutter_animate.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -13,8 +14,13 @@ import '../../../tasks/presentation/providers/tasks_provider.dart';
 import '../providers/dashboard_providers.dart';
 import '../../../../core/theme/app_typography.dart';
 import 'package:intl/intl.dart';
+import '../../../../core/theme/app_colors.dart';
+import '../../../tasks/domain/models/task.dart';
 import '../../../calendar/presentation/providers/events_provider.dart';
 import '../../../calendar/presentation/screens/create_event_screen.dart';
+import '../../../../shared/widgets/mh_refresh_indicator.dart';
+import '../../../../shared/widgets/mh_role_guard.dart';
+import '../../../../shared/widgets/mh_role_guard.dart' show UserRole;
 
 class DashboardScreen extends ConsumerWidget {
   const DashboardScreen({super.key});
@@ -22,11 +28,13 @@ class DashboardScreen extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final colors = ref.watch(themeColorsProvider);
+    final metrics = ref.watch(dashboardMetricsProvider);
+    final isAdmin = metrics['isAdmin'] as bool? ?? false;
 
     return Scaffold(
       backgroundColor: colors.backgroundPrimary,
       body: SafeArea(
-        top: false, // Keep gradient under status bar
+        top: false,
         child: Container(
           decoration: BoxDecoration(
             gradient: LinearGradient(
@@ -38,28 +46,22 @@ class DashboardScreen extends ConsumerWidget {
               end: Alignment.bottomCenter,
             ),
           ),
-          child: RefreshIndicator(
+          child: MhRefreshIndicator(
+            edgeOffset: 140,
             onRefresh: () async {
-              // Refresh all relevant providers
               ref.invalidate(dashboardMetricsProvider);
               ref.invalidate(eventListProvider);
               ref.invalidate(tasksListProvider);
               ref.invalidate(currentUserProfileProvider);
-              
-              // Wait for them to complete (optional, invalidate is usually enough)
               await Future.delayed(const Duration(milliseconds: 500));
             },
-            backgroundColor: colors.surface,
-            color: const Color(0xFF6366F1),
             child: CustomScrollView(
               physics: const AlwaysScrollableScrollPhysics(parent: BouncingScrollPhysics()),
               slivers: [
-                // Premium App Bar (Floating effect)
                 _buildSliverHeader(colors),
-      
                 SliverToBoxAdapter(
                   child: Padding(
-                  padding: const EdgeInsets.fromLTRB(20, 120, 20, 120),
+                    padding: const EdgeInsets.fromLTRB(20, 120, 20, 80),
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
@@ -68,29 +70,40 @@ class DashboardScreen extends ConsumerWidget {
                         
                         _buildQuickActions(context, ref, colors),
                         const SizedBox(height: 32),
-  
+
                         _buildPulseSection(colors),
                         const SizedBox(height: 32),
-                        
+
                         _buildSystemStatus(colors, ref),
                         const SizedBox(height: 32),
-  
-                        _buildCompletionProgress(colors, ref),
+
+                         _buildCompletionProgress(colors, ref),
+                        const SizedBox(height: 40),
+
+                        _buildTasksSectionHeader(colors, ref),
+                        const SizedBox(height: 16),
+                        _buildPrioritiesList(
+                          context, 
+                          colors, 
+                          ref, 
+                          isAdmin 
+                            ? ((metrics['admin'] as Map<String, dynamic>?)?['priorities'] as List<Task>? ?? [])
+                            : ((metrics['team'] as Map<String, dynamic>?)?['myPriorities'] as List<Task>? ?? [])
+                        ),
                         const SizedBox(height: 32),
-  
+
                         _buildEventsSectionHeader(colors, ref),
                         const SizedBox(height: 16),
                         _buildEventsList(colors, ref),
-                        const SizedBox(height: 32),
-  
-                        _buildTasksSectionHeader(colors, ref),
-                        const SizedBox(height: 16),
-                        _buildTasksList(colors, ref),
-                        const SizedBox(height: 32),
-  
+                        const SizedBox(height: 40),
+
                         _buildRequestsSection(colors, ref),
                         const SizedBox(height: 32),
+
                         _buildRequestProgress(colors, ref),
+                        const SizedBox(height: 40),
+                        
+                        _buildSystemFooter(colors),
                       ],
                     ),
                   ),
@@ -99,6 +112,236 @@ class DashboardScreen extends ConsumerWidget {
             ),
           ),
         ),
+      ),
+    );
+  }
+
+  Widget _buildAdminDashboard(BuildContext context, ThemeColors colors, WidgetRef ref, Map<String, dynamic> metrics) {
+    final admin = metrics['admin'] as Map<String, dynamic>?;
+    if (admin == null) return const SizedBox.shrink();
+
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        _buildSectionHeader(colors, 'INSTITUTIONAL OVERVIEW'),
+        const SizedBox(height: 16),
+        Row(
+          children: [
+            Expanded(child: _buildMetricCard(colors, '${admin['institutionalHealth']}%', 'HEALTH', LucideIcons.activity, AppColors.success)),
+            const SizedBox(width: 12),
+            Expanded(child: _buildMetricCard(colors, '${admin['overdueCount']}', 'OVERDUE', LucideIcons.alertCircle, AppColors.error)),
+            const SizedBox(width: 12),
+            Expanded(child: _buildMetricCard(colors, '${admin['pressurePoints']}', 'PRESSURE', LucideIcons.zap, AppColors.honey)),
+          ],
+        ),
+        const SizedBox(height: 32),
+        
+        if (admin['alerts'].isNotEmpty) ...[
+          _buildAlertsSection(colors, admin['alerts'] as List<dynamic>),
+          const SizedBox(height: 32),
+        ],
+
+        _buildSystemStatus(colors, ref),
+        const SizedBox(height: 32),
+
+        _buildCompletionProgress(colors, ref),
+        const SizedBox(height: 32),
+
+        _buildWorkloadSection(colors, admin['workload'] as Map<String, int>, admin['bottlenecks'] as List<dynamic>),
+        const SizedBox(height: 32),
+
+        _buildEventsSectionHeader(colors, ref),
+        const SizedBox(height: 16),
+        _buildEventsList(colors, ref),
+      ],
+    ).animate().fadeIn(duration: 600.ms);
+  }
+
+  Widget _buildTeamDashboard(BuildContext context, ThemeColors colors, WidgetRef ref, Map<String, dynamic> metrics) {
+    final team = metrics['team'] as Map<String, dynamic>?;
+    if (team == null) return const SizedBox.shrink();
+
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        _buildSectionHeader(colors, 'MY OPERATIONS'),
+        const SizedBox(height: 16),
+        Row(
+          children: [
+            Expanded(child: _buildMetricCard(colors, '${team['myPendingCount']}', 'PENDING', LucideIcons.checkSquare, AppColors.info)),
+            const SizedBox(width: 12),
+            Expanded(child: _buildMetricCard(colors, '${team['myPrioritiesCount']}', 'PRIORITY', LucideIcons.alertCircle, AppColors.error)),
+            const SizedBox(width: 12),
+            Expanded(child: _buildMetricCard(colors, '${team['productivity']}%', 'PRODUCTIVITY', LucideIcons.trendingUp, AppColors.success)),
+          ],
+        ),
+        const SizedBox(height: 32),
+
+        _buildTasksSectionHeader(colors, ref),
+        const SizedBox(height: 16),
+        _buildPrioritiesList(context, colors, ref, team['myPriorities'] as List<Task>),
+        const SizedBox(height: 32),
+
+        _buildEventsSectionHeader(colors, ref),
+        const SizedBox(height: 16),
+        _buildEventsList(colors, ref),
+      ],
+    ).animate().fadeIn(duration: 600.ms);
+  }
+
+  Widget _buildMetricCard(ThemeColors colors, String value, String label, IconData icon, Color accentColor) {
+    return Container(
+      padding: const EdgeInsets.symmetric(vertical: 20, horizontal: 12),
+      decoration: BoxDecoration(
+        color: colors.surface,
+        borderRadius: BorderRadius.circular(20),
+        border: Border.all(color: colors.border.withOpacity(0.5)),
+        boxShadow: [
+          BoxShadow(
+            color: colors.isDark ? Colors.black.withOpacity(0.2) : colors.border.withOpacity(0.05),
+            blurRadius: 10,
+            offset: const Offset(0, 4),
+          ),
+        ],
+      ),
+      child: Column(
+        children: [
+          Icon(icon, size: 20, color: accentColor.withOpacity(0.8)),
+          const SizedBox(height: 12),
+          Text(
+            value,
+            style: AppTypography.h2.copyWith(
+              fontSize: 24,
+              color: colors.isDark ? Colors.white : colors.textPrimary,
+              letterSpacing: -1,
+            ),
+          ),
+          const SizedBox(height: 4),
+          Text(
+            label,
+            style: AppTypography.caption.copyWith(
+              fontSize: 8,
+              fontWeight: FontWeight.w900,
+              color: colors.textSecondary.withOpacity(0.4),
+              letterSpacing: 1.0,
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildAlertsSection(ThemeColors colors, List<dynamic> alerts) {
+    return Container(
+      padding: const EdgeInsets.all(16),
+      decoration: BoxDecoration(
+        color: AppColors.error.withOpacity(0.05),
+        borderRadius: BorderRadius.circular(16),
+        border: Border.all(color: AppColors.error.withOpacity(0.1)),
+      ),
+      child: Column(
+        children: alerts.map((alert) => Padding(
+          padding: const EdgeInsets.symmetric(vertical: 4),
+          child: Row(
+            children: [
+              const Icon(LucideIcons.alertCircle, size: 14, color: AppColors.error),
+              const SizedBox(width: 12),
+              Text(
+                alert.toString(),
+                style: AppTypography.caption.copyWith(color: AppColors.error.withOpacity(0.8), fontWeight: FontWeight.bold),
+              ),
+            ],
+          ),
+        )).toList(),
+      ),
+    );
+  }
+
+  Widget _buildWorkloadSection(ThemeColors colors, Map<String, int> workload, List<dynamic> bottlenecks) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        _buildSectionHeader(colors, 'TEAM WORKLOAD'),
+        const SizedBox(height: 16),
+        Container(
+          padding: const EdgeInsets.all(16),
+          decoration: BoxDecoration(
+            color: colors.surface,
+            borderRadius: BorderRadius.circular(16),
+            border: Border.all(color: colors.border),
+          ),
+          child: Column(
+            children: workload.entries.map((e) {
+              final isBottleneck = bottlenecks.contains(e.key);
+              return Padding(
+                padding: const EdgeInsets.symmetric(vertical: 8),
+                child: Row(
+                  children: [
+                    Expanded(
+                      flex: 3,
+                      child: Text(
+                        e.key, 
+                        style: AppTypography.bodyS.copyWith(
+                          fontWeight: FontWeight.bold,
+                          color: isBottleneck ? AppColors.error : colors.textPrimary,
+                        )
+                      ),
+                    ),
+                    Expanded(
+                      flex: 7,
+                      child: Stack(
+                        children: [
+                          Container(
+                            height: 8,
+                            decoration: BoxDecoration(color: colors.backgroundPrimary, borderRadius: BorderRadius.circular(4)),
+                          ),
+                          FractionallySizedBox(
+                            widthFactor: (e.value / 10).clamp(0, 1).toDouble(),
+                            child: Container(
+                              height: 8,
+                              decoration: BoxDecoration(
+                                gradient: isBottleneck ? AppColors.errorGradient : AppColors.primaryGradient,
+                                borderRadius: BorderRadius.circular(4),
+                              ),
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                    const SizedBox(width: 12),
+                    Text(
+                      '${e.value}', 
+                      style: AppTypography.caption.copyWith(
+                        fontWeight: FontWeight.bold,
+                        color: isBottleneck ? AppColors.error : colors.textSecondary,
+                      )
+                    ),
+                  ],
+                ),
+              );
+            }).toList(),
+          ),
+        ),
+      ],
+    );
+  }
+
+  Widget _buildSystemFooter(ThemeColors colors) {
+    return Center(
+      child: Column(
+        children: [
+          Icon(LucideIcons.shieldCheck, size: 16, color: colors.textSecondary.withOpacity(0.2)),
+          const SizedBox(height: 8),
+          Text(
+            'MEDIAHIVE SECURE OPS CORE',
+            style: AppTypography.caption.copyWith(
+              fontSize: 8,
+              letterSpacing: 2.0,
+              color: colors.textSecondary.withOpacity(0.2),
+              fontWeight: FontWeight.w900,
+            ),
+          ),
+        ],
       ),
     );
   }
@@ -114,6 +357,111 @@ class DashboardScreen extends ConsumerWidget {
     );
   }
 
+  Widget _buildPrioritiesList(BuildContext context, ThemeColors colors, WidgetRef ref, List<Task> priorities) {
+    if (priorities.isEmpty) {
+      return Container(
+        padding: const EdgeInsets.all(24),
+        decoration: BoxDecoration(
+          color: colors.surface,
+          borderRadius: BorderRadius.circular(20),
+          border: Border.all(color: colors.border),
+        ),
+        child: Center(
+          child: Column(
+            children: [
+              Icon(LucideIcons.checkCircle2, color: AppColors.success.withOpacity(0.2), size: 32),
+              const SizedBox(height: 12),
+              Text(
+                'ALL CLEAR',
+                style: AppTypography.caption.copyWith(fontWeight: FontWeight.w900, letterSpacing: 1.5),
+              ),
+              const SizedBox(height: 4),
+              Text(
+                'No immediate priorities found',
+                style: AppTypography.caption.copyWith(color: colors.textSecondary.withOpacity(0.5)),
+              ),
+            ],
+          ),
+        ),
+      );
+    }
+
+    return Column(
+      children: priorities.take(3).map((task) => _buildTaskItem(context, ref, task, colors)).toList(),
+    );
+  }
+
+  Widget _buildTaskItem(BuildContext context, WidgetRef ref, Task task, ThemeColors colors) {
+    final isDone = task.status.toLowerCase() == 'done';
+    
+    // Urgency Logic
+    final now = DateTime.now();
+    final today = DateTime(now.year, now.month, now.day);
+    DateTime? dueDate;
+    try {
+      dueDate = DateTime.parse(task.dueDate);
+    } catch (_) {}
+    final isOverdue = !isDone && dueDate != null && dueDate.isBefore(today);
+
+    return GestureDetector(
+      onTap: () => context.push('/task-details', extra: task),
+      child: Container(
+        margin: const EdgeInsets.only(bottom: 12),
+        padding: const EdgeInsets.all(16),
+        decoration: BoxDecoration(
+          color: colors.surface,
+          borderRadius: BorderRadius.circular(20),
+          border: Border.all(
+            color: isOverdue ? AppColors.error.withOpacity(0.5) : colors.border.withOpacity(0.5),
+          ),
+        ),
+        child: Row(
+          children: [
+            Container(
+              width: 32,
+              height: 32,
+              decoration: BoxDecoration(
+                color: (isOverdue ? AppColors.error : AppColors.info).withOpacity(0.1),
+                shape: BoxShape.circle,
+              ),
+              child: Icon(
+                isOverdue ? LucideIcons.alertTriangle : LucideIcons.clock,
+                size: 14,
+                color: isOverdue ? AppColors.error : AppColors.info,
+              ),
+            ),
+            const SizedBox(width: 16),
+            Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    task.title,
+                    maxLines: 1,
+                    overflow: TextOverflow.ellipsis,
+                    style: AppTypography.bodyS.copyWith(
+                      fontWeight: FontWeight.w900,
+                      color: isOverdue ? AppColors.error : colors.textPrimary,
+                    ),
+                  ),
+                  Text(
+                    'DUE ${task.dueDate}',
+                    style: AppTypography.caption.copyWith(
+                      fontSize: 8,
+                      fontWeight: FontWeight.bold,
+                      color: colors.textSecondary.withOpacity(0.5),
+                    ),
+                  ),
+                ],
+              ),
+            ),
+            Icon(LucideIcons.chevronRight, size: 14, color: colors.textSecondary.withOpacity(0.3)),
+          ],
+        ),
+      ),
+    );
+  }
+
   Widget _buildGreeting(ThemeColors colors, WidgetRef ref) {
     final profileAsync = ref.watch(currentUserProfileProvider);
     
@@ -125,34 +473,28 @@ class DashboardScreen extends ConsumerWidget {
         final user = auth.currentUser;
         final metadata = user?.userMetadata ?? {};
 
-        final fullName = profile?['full_name'] as String? ?? metadata['full_name'] as String? ?? 'Unknown User';
-        final rawRole = profile?['role'] as String? ?? metadata['role'] as String? ?? 'Member';
+        final fullName = profile?['full_name'] as String? ?? metadata['full_name'] as String? ?? 'Unknown';
+        final roleRaw = (profile?['role']?.toString() ?? 'member').toLowerCase();
+        // Robust check: handles 'manager', 'UserRole.manager', 'global_manager' etc.
+        final isAdminOrManager = roleRaw.contains('admin') || roleRaw.contains('manager');
         
         // Dynamic Greeting & Motivation
         final hour = DateTime.now().hour;
         String greeting;
-        IconData timeIcon;
-        Color iconColor;
         String motivation;
 
         if (hour < 12) {
           greeting = 'Good Morning';
-          timeIcon = LucideIcons.sun;
-          iconColor = Colors.orangeAccent;
           motivation = 'Start your day with purpose.';
         } else if (hour < 17) {
           greeting = 'Good Afternoon';
-          timeIcon = LucideIcons.sun;
-          iconColor = Colors.orange;
           motivation = 'Your oversight ensures the team stays on track.';
         } else {
           greeting = 'Good Evening';
-          timeIcon = LucideIcons.moon;
-          iconColor = Colors.indigoAccent;
           motivation = 'Reviewing today\'s wins.';
         }
 
-        return _buildGreetingContent(colors, fullName, rawRole, motivation, greeting: greeting, timeIcon: timeIcon, iconColor: iconColor);
+        return _buildGreetingContent(colors, fullName, roleRaw, motivation, greeting: greeting);
       },
     );
   }
@@ -163,65 +505,40 @@ class DashboardScreen extends ConsumerWidget {
     String role, 
     String motivation, {
     String greeting = 'Hello', 
-    IconData timeIcon = LucideIcons.sun,
-    Color iconColor = Colors.orange,
   }) {
-    // Dynamic Emoji based on greeting
-    String emoji = '☀️';
-    if (greeting.contains('Morning')) emoji = '🌅';
-    if (greeting.contains('Evening') || greeting.contains('Night')) emoji = '🌙';
-
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Row(
-          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Expanded(
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text(
-                    greeting,
-                    style: AppTypography.h1.copyWith(
-                      fontSize: 32,
-                      fontWeight: FontWeight.bold,
-                      color: Colors.white,
-                    ),
-                  ),
-                  Text(
-                    name,
-                    style: AppTypography.h1.copyWith(
-                      fontSize: 32,
-                      fontWeight: FontWeight.bold,
-                      color: Colors.white,
-                      height: 1.0,
-                    ),
-                  ),
-                ],
-              ),
-            ),
-            const SizedBox(width: 12),
-            Text(
-              emoji,
-              style: const TextStyle(fontSize: 36),
-            ).animate(onPlay: (controller) => controller.repeat(reverse: true))
-              .scale(begin: const Offset(0.9, 0.9), end: const Offset(1.1, 1.1), duration: 3.seconds),
-          ],
+        Text(
+          greeting.toUpperCase(),
+          style: AppTypography.caption.copyWith(
+            color: AppColors.info,
+            fontWeight: FontWeight.w900,
+            letterSpacing: 1.5,
+          ),
         ),
-        const SizedBox(height: 16),
+        const SizedBox(height: 4),
+        Text(
+          name,
+          style: AppTypography.h1.copyWith(
+            fontSize: 32,
+            fontWeight: FontWeight.w900,
+            color: colors.isDark ? Colors.white : colors.textPrimary,
+            height: 1.1,
+          ),
+        ),
+        const SizedBox(height: 8),
         Text(
           motivation,
           style: TextStyle(
             fontSize: 14,
-            color: colors.textSecondary.withOpacity(0.7),
-            fontWeight: FontWeight.w400,
+            color: colors.textSecondary.withOpacity(0.5),
+            fontWeight: FontWeight.w500,
             fontStyle: FontStyle.italic,
           ),
         ),
       ],
-    ).animate().fadeIn(duration: 800.ms).slideY(begin: 0.1, end: 0);
+    );
   }
 
   Widget _buildGreetingPlaceholder(ThemeColors colors) {
@@ -267,6 +584,18 @@ class DashboardScreen extends ConsumerWidget {
   }
 
   Widget _buildQuickActions(BuildContext context, WidgetRef ref, ThemeColors colors) {
+    final profileAsync = ref.watch(currentUserProfileProvider);
+    
+    // Only show administrative actions if we are certain of the role.
+    // Defaulting to false while loading is safer and prevents unauthorized UI flickers.
+    final isAdminOrManager = profileAsync.maybeWhen(
+      data: (profile) {
+        final roleRaw = (profile?['role']?.toString() ?? 'member').toLowerCase().trim();
+        return roleRaw.contains('admin') || roleRaw.contains('manager');
+      },
+      orElse: () => false,
+    );
+
     return Column(
       children: [
         Row(
@@ -276,8 +605,7 @@ class DashboardScreen extends ConsumerWidget {
                 colors,
                 'New Task',
                 LucideIcons.clipboardCheck,
-                const LinearGradient(colors: [Color(0xFF8B5CF6), Color(0xFF7C3AED)]),
-                onTap: () => Navigator.push(context, MaterialPageRoute(builder: (context) => const CreateTaskScreen())),
+                onTap: () => context.push('/create-task'),
               ),
             ),
             const SizedBox(width: 12),
@@ -286,8 +614,7 @@ class DashboardScreen extends ConsumerWidget {
                 colors,
                 'New Event',
                 LucideIcons.calendar,
-                const LinearGradient(colors: [Color(0xFF3B82F6), Color(0xFF2563EB)]),
-                onTap: () => Navigator.push(context, MaterialPageRoute(builder: (context) => const CreateEventScreen())),
+                onTap: () => context.push('/create-event'),
               ),
             ),
           ],
@@ -300,8 +627,7 @@ class DashboardScreen extends ConsumerWidget {
                 colors,
                 'New Campaign',
                 LucideIcons.layers,
-                null,
-                onTap: () {},
+                onTap: () => context.push('/campaigns/create'),
               ),
             ),
             const SizedBox(width: 12),
@@ -310,8 +636,37 @@ class DashboardScreen extends ConsumerWidget {
                 colors,
                 'Notify Team',
                 LucideIcons.bell,
-                null,
-                onTap: () {},
+                onTap: () {
+                  if (isAdminOrManager) {
+                    context.push('/notifications/create');
+                  } else {
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      SnackBar(
+                        backgroundColor: colors.surface,
+                        behavior: SnackBarBehavior.floating,
+                        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+                        content: Row(
+                          children: [
+                            const Icon(LucideIcons.shieldAlert, color: Colors.orangeAccent, size: 20),
+                            const SizedBox(width: 12),
+                            Expanded(
+                              child: Text(
+                                'ACCESS RESTRICTED: ADMINS & MANAGERS ONLY',
+                                style: TextStyle(
+                                  color: colors.textPrimary,
+                                  fontSize: 10,
+                                  fontWeight: FontWeight.bold,
+                                  letterSpacing: 0.5,
+                                ),
+                              ),
+                            ),
+                          ],
+                        ),
+                        duration: const Duration(seconds: 3),
+                      ),
+                    );
+                  }
+                },
               ),
             ),
           ],
@@ -323,45 +678,83 @@ class DashboardScreen extends ConsumerWidget {
   Widget _buildActionCard(
     ThemeColors colors,
     String label,
-    IconData icon,
-    Gradient? gradient, {
+    IconData icon, {
     required VoidCallback onTap,
   }) {
-    final bool isDark = gradient == null;
     return GestureDetector(
       onTap: onTap,
       child: Container(
         height: 60,
         decoration: BoxDecoration(
-          gradient: gradient,
-          color: isDark ? colors.surface : null,
+          gradient: colors.isDark
+              ? const LinearGradient(
+                  colors: [
+                    Color(0xFF1E293B),
+                    Color(0xFF0F172A),
+                  ],
+                  begin: Alignment.topLeft,
+                  end: Alignment.bottomRight,
+                )
+              : LinearGradient(
+                  colors: [
+                    Colors.white,
+                    const Color(0xFFFBFBEE),
+                  ],
+                  begin: Alignment.topLeft,
+                  end: Alignment.bottomRight,
+                ),
           borderRadius: BorderRadius.circular(16),
-          border: isDark ? Border.all(color: colors.border) : null,
-          boxShadow: gradient != null ? [
-            BoxShadow(
-              color: (gradient as LinearGradient).colors.first.withOpacity(0.3),
-              blurRadius: 12,
-              offset: const Offset(0, 4),
-            ),
-          ] : null,
+          border: Border.all(
+            color: colors.isDark 
+                ? Colors.white.withOpacity(0.08) 
+                : colors.border.withOpacity(0.12),
+          ),
+          boxShadow: colors.isDark
+              ? [
+                  BoxShadow(
+                    color: Colors.black.withOpacity(0.3),
+                    blurRadius: 12,
+                    offset: const Offset(0, 4),
+                  ),
+                ]
+              : [
+                  BoxShadow(
+                    color: colors.border.withOpacity(0.08),
+                    blurRadius: 12,
+                    offset: const Offset(0, 4),
+                  ),
+                ],
         ),
         child: Row(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            Icon(icon, color: Colors.white, size: 20),
+            Container(
+              padding: const EdgeInsets.all(8),
+              decoration: BoxDecoration(
+                color: colors.honey.withOpacity(colors.isDark ? 0.1 : 0.15),
+                shape: BoxShape.circle,
+              ),
+              child: Icon(icon, color: colors.honey, size: 16),
+            ),
             const SizedBox(width: 12),
             Text(
-              label,
-              style: const TextStyle(
-                color: Colors.white,
-                fontWeight: FontWeight.bold,
-                fontSize: 14,
+              label.toUpperCase(),
+              style: AppTypography.caption.copyWith(
+                color: colors.isDark ? Colors.white : colors.textPrimary,
+                fontWeight: FontWeight.w900,
+                letterSpacing: 0.8,
+                fontSize: 10,
               ),
             ),
           ],
         ),
       ),
-    );
+    ).animate().scale(
+        begin: const Offset(0.98, 0.98),
+        end: const Offset(1, 1),
+        duration: 400.ms,
+        curve: Curves.easeOutBack,
+      );
   }
 
   Widget _buildPulseSection(ThemeColors colors) {
@@ -450,19 +843,52 @@ class DashboardScreen extends ConsumerWidget {
     return Container(
       padding: const EdgeInsets.symmetric(vertical: 16),
       decoration: BoxDecoration(
-        color: colors.surface,
-        borderRadius: BorderRadius.circular(12),
-        border: Border.all(color: colors.border),
+        color: colors.isDark ? Colors.white.withOpacity(0.05) : Colors.white,
+        borderRadius: BorderRadius.circular(16),
+        border: Border.all(
+          color: colors.isDark 
+              ? colors.border.withOpacity(0.5) 
+              : colors.border.withOpacity(0.12),
+        ),
+        boxShadow: colors.isDark
+            ? []
+            : [
+                BoxShadow(
+                  color: colors.border.withOpacity(0.05),
+                  blurRadius: 10,
+                  offset: const Offset(0, 4),
+                ),
+              ],
       ),
       child: Column(
         children: [
-          Icon(icon, size: 20, color: color),
+          Container(
+            padding: const EdgeInsets.all(8),
+            decoration: BoxDecoration(
+              color: color.withOpacity(colors.isDark ? 0.1 : 0.15),
+              shape: BoxShape.circle,
+            ),
+            child: Icon(icon, size: 18, color: color),
+          ),
           const SizedBox(height: 12),
-          Text(value, style: const TextStyle(fontSize: 20, fontWeight: FontWeight.bold, color: Colors.white)),
+          Text(
+            value,
+            style: TextStyle(
+              fontSize: 22,
+              fontWeight: FontWeight.w900,
+              color: colors.isDark ? Colors.white : colors.textPrimary,
+              letterSpacing: -0.5,
+            ),
+          ),
           const SizedBox(height: 4),
           Text(
             label,
-            style: const TextStyle(fontSize: 8, fontWeight: FontWeight.bold, color: Colors.white38),
+            style: TextStyle(
+              fontSize: 8,
+              fontWeight: FontWeight.w800,
+              color: colors.textSecondary.withOpacity(0.5),
+              letterSpacing: 1.0,
+            ),
             textAlign: TextAlign.center,
           ),
         ],
@@ -546,13 +972,13 @@ class DashboardScreen extends ConsumerWidget {
         const SizedBox(height: 20),
         Row(
           children: [
-            Expanded(child: _buildStatusCard(colors, requests['pending'], 'PENDING', LucideIcons.clock, Colors.orange)),
+            Expanded(child: _buildStatusCard(colors, requests['pending'].toString(), 'PENDING', LucideIcons.clock, Colors.orange)),
             const SizedBox(width: 8),
-            Expanded(child: _buildStatusCard(colors, requests['inProgress'], 'IN PROGRESS', LucideIcons.activity, Colors.blue)),
+            Expanded(child: _buildStatusCard(colors, requests['inProgress'].toString(), 'IN PROGRESS', LucideIcons.activity, Colors.blue)),
             const SizedBox(width: 8),
-            Expanded(child: _buildStatusCard(colors, requests['inReview'], 'IN REVIEW', LucideIcons.search, Colors.purple)),
+            Expanded(child: _buildStatusCard(colors, requests['inReview'].toString(), 'IN REVIEW', LucideIcons.search, Colors.purple)),
             const SizedBox(width: 8),
-            Expanded(child: _buildStatusCard(colors, requests['completed'], 'COMPLETED', LucideIcons.checkCircle, Colors.green)),
+            Expanded(child: _buildStatusCard(colors, requests['completed'].toString(), 'COMPLETED', LucideIcons.checkCircle, Colors.green)),
           ],
         ),
       ],
@@ -725,10 +1151,10 @@ class DashboardScreen extends ConsumerWidget {
               children: [
                 Text(
                   event.title,
-                  style: const TextStyle(
+                  style: TextStyle(
                     fontSize: 14,
                     fontWeight: FontWeight.bold,
-                    color: Colors.white,
+                    color: colors.textPrimary,
                   ),
                 ),
                 const SizedBox(height: 4),
@@ -756,7 +1182,7 @@ class DashboardScreen extends ConsumerWidget {
             ),
             child: Text(
               event.type.toUpperCase(),
-              style: const TextStyle(fontSize: 8, fontWeight: FontWeight.bold, color: Colors.white38),
+              style: TextStyle(fontSize: 8, fontWeight: FontWeight.bold, color: colors.textSecondary.withOpacity(0.6)),
             ),
           ),
         ],
@@ -812,7 +1238,7 @@ class DashboardScreen extends ConsumerWidget {
     );
   }
 
-  Widget _buildTasksList(ThemeColors colors, WidgetRef ref) {
+  Widget _buildTasksList(BuildContext context, ThemeColors colors, WidgetRef ref) {
     final tasksAsync = ref.watch(tasksListProvider);
     final today = DateFormat('yyyy-MM-dd').format(DateTime.now());
 
@@ -827,13 +1253,13 @@ class DashboardScreen extends ConsumerWidget {
         }
 
         return Column(
-          children: todayTasks.map((task) => _buildTaskCard(colors, task)).toList(),
+          children: todayTasks.map((task) => _buildTaskCard(context, ref, colors, task)).toList(),
         );
       },
     );
   }
 
-  Widget _buildTaskCard(ThemeColors colors, dynamic task) {
+  Widget _buildTaskCard(BuildContext context, WidgetRef ref, ThemeColors colors, Task task) {
     return Container(
       margin: const EdgeInsets.only(bottom: 12),
       padding: const EdgeInsets.all(16),
@@ -848,38 +1274,35 @@ class DashboardScreen extends ConsumerWidget {
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
-              Row(
-                children: [
-                  Container(
-                    width: 8,
-                    height: 8,
-                    decoration: BoxDecoration(
-                      color: colors.textSecondary.withOpacity(0.3),
-                      shape: BoxShape.circle,
+              Expanded(
+                child: Row(
+                  children: [
+                    Container(
+                      width: 8,
+                      height: 8,
+                      decoration: BoxDecoration(
+                        color: _getStatusColor(task.status).withOpacity(0.8),
+                        shape: BoxShape.circle,
+                      ),
                     ),
-                  ),
-                  const SizedBox(width: 12),
-                  Text(
-                    task.title,
-                    style: const TextStyle(
-                      fontSize: 14,
-                      fontWeight: FontWeight.bold,
-                      color: Colors.white,
+                    const SizedBox(width: 12),
+                    Expanded(
+                      child: Text(
+                        task.title,
+                        style: TextStyle(
+                          fontSize: 14,
+                          fontWeight: FontWeight.bold,
+                          color: colors.textPrimary,
+                        ),
+                        maxLines: 1,
+                        overflow: TextOverflow.ellipsis,
+                      ),
                     ),
-                  ),
-                ],
-              ),
-              Container(
-                padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
-                decoration: BoxDecoration(
-                  color: colors.backgroundSecondary,
-                  borderRadius: BorderRadius.circular(6),
-                ),
-                child: const Text(
-                  'TODO',
-                  style: TextStyle(fontSize: 10, fontWeight: FontWeight.bold, color: Colors.white38),
+                  ],
                 ),
               ),
+              const SizedBox(width: 8),
+              _buildStatusBadge(context, ref, colors, task),
             ],
           ),
           const SizedBox(height: 12),
@@ -893,11 +1316,11 @@ class DashboardScreen extends ConsumerWidget {
                 ),
                 child: Row(
                   children: [
-                    const Icon(LucideIcons.user, size: 10, color: Colors.white38),
+                    Icon(LucideIcons.user, size: 10, color: colors.textSecondary.withOpacity(0.6)),
                     const SizedBox(width: 4),
                     Text(
-                      'UNASSIGNED',
-                      style: const TextStyle(fontSize: 10, fontWeight: FontWeight.bold, color: Colors.white38),
+                      task.assignee.toUpperCase(),
+                      style: TextStyle(fontSize: 10, fontWeight: FontWeight.bold, color: colors.textSecondary.withOpacity(0.6)),
                     ),
                   ],
                 ),
@@ -911,10 +1334,125 @@ class DashboardScreen extends ConsumerWidget {
     );
   }
 
+  Color _getStatusColor(String status) {
+    final s = status.toLowerCase();
+    if (s == 'done') return AppColors.success;
+    if (s == 'in_progress') return AppColors.info;
+    if (s == 'review') return AppColors.warning;
+    return AppColors.textSecondary;
+  }
+
+  Widget _buildStatusBadge(BuildContext context, WidgetRef ref, ThemeColors colors, Task task) {
+    final color = _getStatusColor(task.status);
+    
+    return GestureDetector(
+      onTap: () => _showStatusPicker(context, ref, colors, task),
+      child: Container(
+        padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+        decoration: BoxDecoration(
+          color: color.withOpacity(0.1),
+          borderRadius: BorderRadius.circular(6),
+          border: Border.all(color: color.withOpacity(0.2)),
+        ),
+        child: Text(
+          task.status.toUpperCase(),
+          style: TextStyle(
+            fontSize: 9, 
+            fontWeight: FontWeight.w900, 
+            color: color,
+            letterSpacing: 0.5,
+          ),
+        ),
+      ),
+    );
+  }
+
+  void _showStatusPicker(BuildContext context, WidgetRef ref, ThemeColors colors, Task task) {
+    // Values use canonical lowercase form matching DB schema
+    final statuses = [
+      {'label': 'TO DO', 'value': 'todo', 'color': colors.textSecondary, 'icon': LucideIcons.circle},
+      {'label': 'IN PROGRESS', 'value': 'in_progress', 'color': colors.indigo, 'icon': LucideIcons.playCircle},
+      {'label': 'REVIEW', 'value': 'review', 'color': colors.honey, 'icon': LucideIcons.helpCircle},
+      {'label': 'DONE', 'value': 'done', 'color': colors.emerald, 'icon': LucideIcons.checkCircle2},
+    ];
+
+    showModalBottomSheet(
+      context: context,
+      useRootNavigator: true,
+      backgroundColor: Colors.transparent,
+      builder: (context) => Container(
+        decoration: BoxDecoration(
+          color: colors.backgroundPrimary,
+          borderRadius: const BorderRadius.vertical(top: Radius.circular(24)),
+          border: Border.all(color: colors.border),
+        ),
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            const SizedBox(height: 12),
+            Container(
+              width: 40, height: 4,
+              decoration: BoxDecoration(color: colors.textSecondary.withOpacity(0.1), borderRadius: BorderRadius.circular(2)),
+            ),
+            const SizedBox(height: 20),
+            Text(
+              'UPDATE STATUS',
+              style: AppTypography.caption.copyWith(
+                fontWeight: FontWeight.w900,
+                letterSpacing: 2.0,
+                color: colors.textSecondary,
+              ),
+            ),
+            const SizedBox(height: 24),
+            ...statuses.map((s) {
+              // Normalise comparison to handle any legacy mixed-case values from DB
+              final isSelected = task.status.toLowerCase().replaceAll(' ', '_') == s['value'];
+              final color = s['color'] as Color;
+              
+              return ListTile(
+                onTap: () {
+                  final updatedTask = task.copyWith(status: s['value'] as String);
+                  ref.read(tasksListProvider.notifier).updateTask(updatedTask);
+                  Navigator.pop(context);
+                },
+                leading: Icon(s['icon'] as IconData, color: isSelected ? color : color.withOpacity(0.3)),
+                title: Text(
+                  s['label'] as String,
+                  style: TextStyle(
+                    color: isSelected ? colors.textPrimary : colors.textSecondary, 
+                    fontWeight: isSelected ? FontWeight.bold : FontWeight.normal, 
+                    fontSize: 14,
+                  ),
+                ),
+                trailing: isSelected ? Icon(LucideIcons.check, color: color, size: 18) : null,
+              );
+            }).toList(),
+            const SizedBox(height: 32),
+          ],
+        ),
+      ),
+    );
+  }
+
+
   Widget _buildPriorityBadge(String priority) {
-    Color color = Colors.blue;
-    if (priority.toUpperCase() == 'URGENT') color = Colors.red;
-    if (priority.toUpperCase() == 'HIGH') color = Colors.orange;
+    final p = priority.toLowerCase();
+    final String displayPriority = priority.toUpperCase();
+
+    Color color;
+    switch (p) {
+      case 'urgent':
+        color = Colors.red;
+        break;
+      case 'high':
+        color = Colors.orange;
+        break;
+      case 'medium':
+        color = Colors.amber;
+        break;
+      default:
+        color = Colors.blue;
+    }
 
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
@@ -923,7 +1461,7 @@ class DashboardScreen extends ConsumerWidget {
         borderRadius: BorderRadius.circular(6),
       ),
       child: Text(
-        priority.toUpperCase(),
+        displayPriority,
         style: TextStyle(fontSize: 10, fontWeight: FontWeight.bold, color: color),
       ),
     );
@@ -933,9 +1471,9 @@ class DashboardScreen extends ConsumerWidget {
     return Container(
       padding: const EdgeInsets.all(20),
       decoration: BoxDecoration(
-        color: const Color(0xFF0F172A),
+        color: colors.isDark ? const Color(0xFF0F172A) : colors.surface,
         borderRadius: BorderRadius.circular(24),
-        border: Border.all(color: Colors.white.withOpacity(0.05)),
+        border: Border.all(color: colors.border.withOpacity(0.2)),
       ),
       child: Column(
         children: [
@@ -956,16 +1494,16 @@ class DashboardScreen extends ConsumerWidget {
                   ),
                 ],
               ),
-              const Icon(LucideIcons.chevronRight, size: 16, color: Colors.white24),
+              Icon(LucideIcons.chevronRight, size: 16, color: colors.textSecondary.withOpacity(0.3)),
             ],
           ),
           const SizedBox(height: 20),
           Row(
             children: [
-              Expanded(child: _buildMiniIndicator('DB', true)),
-              Expanded(child: _buildMiniIndicator('AUTH', true)),
-              Expanded(child: _buildMiniIndicator('SYNC', true)),
-              Expanded(child: _buildMiniIndicator('STORAGE', true)),
+              Expanded(child: _buildMiniIndicator(colors, 'DB', true)),
+              Expanded(child: _buildMiniIndicator(colors, 'AUTH', true)),
+              Expanded(child: _buildMiniIndicator(colors, 'SYNC', true)),
+              Expanded(child: _buildMiniIndicator(colors, 'STORAGE', true)),
             ],
           ),
         ],
@@ -973,7 +1511,7 @@ class DashboardScreen extends ConsumerWidget {
     );
   }
 
-  Widget _buildMiniIndicator(String label, bool active) {
+  Widget _buildMiniIndicator(ThemeColors colors, String label, bool active) {
     return Column(
       children: [
         Container(
@@ -995,10 +1533,10 @@ class DashboardScreen extends ConsumerWidget {
         const SizedBox(height: 8),
         Text(
           label,
-          style: const TextStyle(
+          style: TextStyle(
             fontSize: 8,
             fontWeight: FontWeight.bold,
-            color: Colors.white38,
+            color: colors.textSecondary.withOpacity(0.6),
           ),
         ),
       ],

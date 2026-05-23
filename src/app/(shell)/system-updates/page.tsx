@@ -49,7 +49,7 @@ export default function SystemUpdatesFeedPage() {
                     <Megaphone className="w-8 h-8 text-indigo-400" />
                 </div>
                 <div>
-                    <h1 className="text-2xl font-bold text-white">System Updates</h1>
+                    <h1 className="text-2xl font-bold text-foreground">System Updates</h1>
                     <p className="text-slate-400">Latest news and announcements.</p>
                 </div>
             </div>
@@ -62,7 +62,7 @@ export default function SystemUpdatesFeedPage() {
                 <div className="grid gap-4">
                     {updates.map(update => (
                         <AppLink href={`/system-updates/${update.id}`} key={update.id}>
-                            <Card className="bg-white/5 border-white/5 hover:bg-white/10 transition-colors cursor-pointer group">
+                            <Card className="bg-foreground/5 border-foreground/5 hover:bg-foreground/10 transition-colors cursor-pointer group">
                                 <CardContent className="p-6">
                                     <div className="flex justify-between items-start gap-4">
                                         <div className="space-y-2 flex-1">

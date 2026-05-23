@@ -7,10 +7,15 @@ import '../../../../core/theme/app_colors.dart';
 import '../../../../core/theme/app_spacing.dart';
 import '../../../../core/theme/app_typography.dart';
 import '../../../../shared/widgets/mh_button.dart';
+import '../../../../shared/widgets/mh_refresh_indicator.dart';
 import '../../../../core/theme_provider.dart';
 import '../../../../core/providers/user_provider.dart';
 import '../providers/files_provider.dart';
+import '../widgets/file_detail_modal.dart';
+import '../widgets/upload_file_modal.dart';
 import '../../domain/models/file_asset.dart';
+import '../../../../core/utils/url_helpers.dart';
+import '../../../../presentation/providers/navigation_provider.dart';
 
 class DownloadsScreen extends ConsumerStatefulWidget {
   const DownloadsScreen({super.key});
@@ -21,7 +26,7 @@ class DownloadsScreen extends ConsumerStatefulWidget {
 
 class _DownloadsScreenState extends ConsumerState<DownloadsScreen> {
   String _searchQuery = '';
-  String _selectedCategory = 'all';
+  String? _selectedCategory;
   bool _isGridView = true;
   final TextEditingController _searchController = TextEditingController();
 
@@ -34,14 +39,15 @@ class _DownloadsScreenState extends ConsumerState<DownloadsScreen> {
 
   List<FileAsset> _filterFiles(List<FileAsset> files) {
     return files.where((file) {
-      final matchesSearch = file.name.toLowerCase().contains(_searchQuery.toLowerCase());
+      final matchesSearch = file.name.toLowerCase().contains(_searchQuery.toLowerCase()) || 
+                           file.path.toLowerCase().contains(_searchQuery.toLowerCase());
       
       bool matchesCategory = true;
-      if (_selectedCategory == 'photos') {
+      if (_selectedCategory == 'image') {
         matchesCategory = file.mimeType.startsWith('image/');
-      } else if (_selectedCategory == 'videos') {
+      } else if (_selectedCategory == 'video') {
         matchesCategory = file.mimeType.startsWith('video/');
-      } else if (_selectedCategory == 'docs') {
+      } else if (_selectedCategory == 'document') {
         matchesCategory = !file.mimeType.startsWith('image/') && !file.mimeType.startsWith('video/');
       }
 
@@ -64,7 +70,8 @@ class _DownloadsScreenState extends ConsumerState<DownloadsScreen> {
             end: Alignment.bottomCenter,
           ),
         ),
-        child: RefreshIndicator(
+        child: MhRefreshIndicator(
+          edgeOffset: 140,
           onRefresh: () => ref.refresh(filesListProvider.future),
           child: CustomScrollView(
             physics: const AlwaysScrollableScrollPhysics(),
@@ -104,6 +111,7 @@ class _DownloadsScreenState extends ConsumerState<DownloadsScreen> {
                       const SizedBox(height: 24),
                       _buildCategoryTabs(colors),
                       const SizedBox(height: 24),
+                      
                       _buildViewToggle(colors),
                       const SizedBox(height: 24),
                     ],
@@ -116,6 +124,16 @@ class _DownloadsScreenState extends ConsumerState<DownloadsScreen> {
                 loading: () => const SliverFillRemaining(child: Center(child: CircularProgressIndicator())),
                 error: (e, _) => SliverFillRemaining(child: Center(child: Text('Error: $e', style: TextStyle(color: colors.textSecondary)))),
                 data: (files) {
+                  // Special handling for Folder category
+                  if (_selectedCategory == 'folder') {
+                    final albums = _groupFilesByAlbum(files);
+                    if (albums.isEmpty) return SliverToBoxAdapter(child: _buildEmptyState(colors));
+                    return SliverPadding(
+                      padding: const EdgeInsets.symmetric(horizontal: 24),
+                      sliver: _buildFolderGrid(colors, albums),
+                    );
+                  }
+
                   final filtered = _filterFiles(files);
                   if (filtered.isEmpty) {
                     return SliverToBoxAdapter(child: _buildEmptyState(colors));
@@ -137,330 +155,102 @@ class _DownloadsScreenState extends ConsumerState<DownloadsScreen> {
       ),
     );
   }
+  Map<String, List<FileAsset>> _groupFilesByAlbum(List<FileAsset> files) {
+    final Map<String, List<FileAsset>> groups = {};
+    for (var file in files) {
+      // Ensure all files are visible by mapping placeholder paths to 'Uncategorized'
+      final album = (file.path.isEmpty || file.path == 'Auto-detect (Smart)') ? 'Uncategorized' : file.path;
+      groups.putIfAbsent(album, () => []).add(file);
+    }
+    return groups;
+  }
 
+  Widget _buildSectionLabel(String text, ThemeColors colors) {
+    return Text(
+      text,
+      style: TextStyle(
+        color: colors.textSecondary,
+        fontSize: 10,
+        fontWeight: FontWeight.w900,
+        letterSpacing: 1.2,
+      ),
+    );
+  }
 
-  void _showUploadDialog(ThemeColors colors) {
-    String visibility = 'All Users';
-    bool isInstitution = false;
-    String selectedOrg = 'Select Office / Unit';
-    String storageLocation = 'Auto-detect (Smart)';
+  Widget _buildAlbumsRow(Map<String, List<FileAsset>> albums, ThemeColors colors) {
+    final albumList = albums.entries.toList();
+    
+    return SizedBox(
+      height: 100,
+      child: ListView.builder(
+        scrollDirection: Axis.horizontal,
+        itemCount: albumList.length,
+        itemBuilder: (context, index) {
+          final album = albumList[index];
+          final hasPreview = album.value.any((f) => f.thumbnailLink != null);
+          final previewUrl = hasPreview ? album.value.firstWhere((f) => f.thumbnailLink != null).thumbnailLink : null;
 
-    showDialog(
-      context: context,
-      builder: (context) => StatefulBuilder(
-        builder: (context, setDialogState) => Dialog(
-          backgroundColor: Colors.transparent,
-          child: Container(
-            width: double.infinity,
-            padding: const EdgeInsets.all(24),
-            decoration: BoxDecoration(
-              color: colors.backgroundSecondary,
-              borderRadius: BorderRadius.circular(28),
-              border: Border.all(color: colors.border),
-              boxShadow: [
-                BoxShadow(color: Colors.black.withOpacity(0.5), blurRadius: 40, spreadRadius: 10),
-              ],
-            ),
-            child: SingleChildScrollView(
-              child: Column(
-                mainAxisSize: MainAxisSize.min,
-                crossAxisAlignment: CrossAxisAlignment.start,
+          return GestureDetector(
+            onTap: () {
+              setState(() {
+                _searchController.text = album.key;
+                _searchQuery = album.key;
+                _selectedCategory = null;
+              });
+            },
+            child: Container(
+              width: 140,
+              margin: const EdgeInsets.only(right: 16),
+              decoration: BoxDecoration(
+                color: colors.surface,
+                borderRadius: BorderRadius.circular(16),
+                border: Border.all(color: colors.border),
+                boxShadow: colors.cardShadow,
+              ),
+              clipBehavior: Clip.antiAlias,
+              child: Stack(
                 children: [
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: [
-                      Row(
-                        children: [
-                          Container(
-                            padding: const EdgeInsets.all(10),
-                            decoration: BoxDecoration(
-                              color: const Color(0xFF3B82F6).withOpacity(0.1),
-                              shape: BoxShape.circle,
-                            ),
-                            child: const Icon(LucideIcons.uploadCloud, color: Color(0xFF3B82F6), size: 20),
-                          ),
-                          const SizedBox(width: 16),
-                          Text('Upload File', style: TextStyle(color: colors.textPrimary, fontSize: 20, fontWeight: FontWeight.bold)),
-                        ],
+                  if (previewUrl != null)
+                    Positioned.fill(
+                      child: Opacity(
+                        opacity: 0.3,
+                        child: Image.network(previewUrl, fit: BoxFit.cover),
                       ),
-                      IconButton(
-                        onPressed: () => Navigator.pop(context),
-                        icon: Icon(LucideIcons.x, color: colors.textSecondary, size: 20),
-                      ),
-                    ],
-                  ),
-                  const SizedBox(height: 24),
-                  _buildDialogLabel('FILE SELECTION', colors),
-                  const SizedBox(height: 8),
-                  _buildFilePickerField(colors),
-                  const SizedBox(height: 20),
-                  _buildDialogLabel('DISPLAY NAME (OPTIONAL)', colors),
-                  const SizedBox(height: 8),
-                  _buildDialogTextField('e.g. Annual Report 2024', colors),
-                  
-                  const Divider(height: 40, thickness: 0.5, color: Colors.white10),
-                  
-                  _buildDialogLabel('VISIBILITY SETTINGS', colors),
-                  const SizedBox(height: 8),
-                  _buildDialogDropdown(
-                    visibility, 
-                    LucideIcons.chevronDown, 
-                    colors,
-                    onTap: () => _showSimplePicker(
-                      context, 
-                      'Visibility', 
-                      ['All Users', 'Managers Only', 'Private'],
-                      (val) => setDialogState(() => visibility = val),
-                      colors,
                     ),
-                  ),
-                  
-                  const SizedBox(height: 20),
-                  _buildDialogLabel('ORGANIZATION', colors),
-                  const SizedBox(height: 12),
-                  _buildOrganizationToggle(
-                    colors, 
-                    isInstitution, 
-                    (val) => setDialogState(() {
-                      isInstitution = val;
-                      selectedOrg = val ? 'Select Institution' : 'Select Office / Unit';
-                    }),
-                  ),
-                  const SizedBox(height: 12),
-                  _buildDialogDropdown(
-                    selectedOrg, 
-                    LucideIcons.chevronDown, 
-                    colors,
-                    onTap: () => _showSimplePicker(
-                      context, 
-                      isInstitution ? 'Institution' : 'Office / Unit', 
-                      isInstitution 
-                        ? ['Main Campus', 'City Center', 'Global Reach']
-                        : ['Admin Office', 'Creative Studio', 'Media Lab', 'Tech Center'],
-                      (val) => setDialogState(() => selectedOrg = val),
-                      colors,
-                    ),
-                  ),
-                  
-                  const SizedBox(height: 20),
-                  _buildDialogLabel('STORAGE LOCATION', colors),
-                  const SizedBox(height: 8),
-                  _buildDialogDropdown(
-                    storageLocation, 
-                    LucideIcons.chevronDown, 
-                    colors, 
-                    icon: LucideIcons.sparkles,
-                    onTap: () => _showSimplePicker(
-                      context, 
-                      'Storage Location', 
-                      ['Auto-detect (Smart)', 'Google Drive', 'Supabase Cloud', 'Local Server'],
-                      (val) => setDialogState(() => storageLocation = val),
-                      colors,
-                    ),
-                  ),
-                  
-                  const SizedBox(height: 40),
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.end,
-                    children: [
-                      TextButton(
-                        onPressed: () => Navigator.pop(context),
-                        child: Text('Cancel', style: TextStyle(color: colors.textSecondary, fontWeight: FontWeight.bold)),
-                      ),
-                      const SizedBox(width: 16),
-                      ElevatedButton(
-                        onPressed: () {
-                          Navigator.pop(context);
-                          ScaffoldMessenger.of(context).showSnackBar(
-                            SnackBar(
-                              content: Text('Uploading to $storageLocation...'), 
-                              backgroundColor: const Color(0xFF3B82F6)
-                            ),
-                          );
-                        },
-                        style: ElevatedButton.styleFrom(
-                          backgroundColor: const Color(0xFF3B82F6),
-                          foregroundColor: Colors.white,
-                          padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 16),
-                          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
-                          elevation: 0,
+                  Padding(
+                    padding: const EdgeInsets.all(12),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      mainAxisAlignment: MainAxisAlignment.end,
+                      children: [
+                        const Icon(LucideIcons.folder, color: Color(0xFF3B82F6), size: 20),
+                        const SizedBox(height: 8),
+                        Text(
+                          album.key,
+                          style: TextStyle(color: colors.textPrimary, fontSize: 11, fontWeight: FontWeight.bold),
+                          maxLines: 1,
+                          overflow: TextOverflow.ellipsis,
                         ),
-                        child: const Text('Upload File', style: TextStyle(fontWeight: FontWeight.bold)),
-                      ),
-                    ],
+                        Text(
+                          '${album.value.length} items',
+                          style: TextStyle(color: colors.textSecondary, fontSize: 9),
+                        ),
+                      ],
+                    ),
                   ),
                 ],
               ),
             ),
-          ),
-        ),
+          );
+        },
       ),
     );
   }
 
-  void _showSimplePicker(BuildContext context, String title, List<String> options, Function(String) onSelect, ThemeColors colors) {
-    showModalBottomSheet(
+  void _showUploadDialog(ThemeColors colors) {
+    showDialog(
       context: context,
-      backgroundColor: Colors.transparent,
-      builder: (context) => Container(
-        decoration: BoxDecoration(
-          color: colors.backgroundSecondary,
-          borderRadius: const BorderRadius.vertical(top: Radius.circular(24)),
-          border: Border.all(color: colors.border),
-        ),
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            const SizedBox(height: 12),
-            Container(width: 40, height: 4, decoration: BoxDecoration(color: colors.textSecondary.withOpacity(0.2), borderRadius: BorderRadius.circular(2))),
-            Padding(
-              padding: const EdgeInsets.all(24),
-              child: Text(title, style: TextStyle(color: colors.textPrimary, fontSize: 18, fontWeight: FontWeight.bold)),
-            ),
-            ...options.map((opt) => InkWell(
-              onTap: () {
-                onSelect(opt);
-                Navigator.pop(context);
-              },
-              child: Container(
-                width: double.infinity,
-                padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 16),
-                child: Text(opt, style: TextStyle(color: colors.textPrimary, fontSize: 16)),
-              ),
-            )).toList(),
-            const SizedBox(height: 24),
-          ],
-        ),
-      ),
-    );
-  }
-
-  Widget _buildOrganizationToggle(ThemeColors colors, bool isInstitution, Function(bool) onToggle) {
-    return Container(
-      decoration: BoxDecoration(
-        color: colors.surface.withOpacity(0.5),
-        borderRadius: BorderRadius.circular(12),
-        border: Border.all(color: colors.border),
-      ),
-      child: Row(
-        children: [
-          Expanded(
-            child: GestureDetector(
-              onTap: () => onToggle(false),
-              child: Container(
-                padding: const EdgeInsets.symmetric(vertical: 12),
-                decoration: BoxDecoration(
-                  color: !isInstitution ? const Color(0xFF3B82F6) : Colors.transparent,
-                  borderRadius: BorderRadius.circular(10),
-                ),
-                child: Center(
-                  child: Text('Office / Unit', 
-                    style: TextStyle(
-                      color: !isInstitution ? Colors.white : colors.textSecondary, 
-                      fontWeight: FontWeight.bold, 
-                      fontSize: 12
-                    )
-                  )
-                ),
-              ),
-            ),
-          ),
-          Expanded(
-            child: GestureDetector(
-              onTap: () => onToggle(true),
-              child: Container(
-                padding: const EdgeInsets.symmetric(vertical: 12),
-                decoration: BoxDecoration(
-                  color: isInstitution ? const Color(0xFF3B82F6) : Colors.transparent,
-                  borderRadius: BorderRadius.circular(10),
-                ),
-                child: Center(
-                  child: Text('Institution', 
-                    style: TextStyle(
-                      color: isInstitution ? Colors.white : colors.textSecondary, 
-                      fontWeight: FontWeight.bold, 
-                      fontSize: 12
-                    )
-                  )
-                ),
-              ),
-            ),
-          ),
-        ],
-      ),
-    );
-  }
-
-  Widget _buildDialogDropdown(String text, IconData trailing, ThemeColors colors, {IconData? icon, VoidCallback? onTap}) {
-    return InkWell(
-      onTap: onTap,
-      borderRadius: BorderRadius.circular(16),
-      child: Container(
-        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 15),
-        decoration: BoxDecoration(
-          color: colors.surface.withOpacity(0.5),
-          borderRadius: BorderRadius.circular(16),
-          border: Border.all(color: colors.border),
-        ),
-        child: Row(
-          children: [
-            if (icon != null) ...[
-              Icon(icon, color: const Color(0xFFFDBA74), size: 16),
-              const SizedBox(width: 12),
-            ],
-            Expanded(child: Text(text, style: TextStyle(color: colors.textPrimary, fontSize: 14))),
-            Icon(trailing, color: colors.textSecondary, size: 16),
-          ],
-        ),
-      ),
-    );
-  }
-
-  Widget _buildDialogLabel(String text, ThemeColors colors) {
-    return Text(text, style: TextStyle(color: colors.textSecondary, fontSize: 10, fontWeight: FontWeight.w900, letterSpacing: 1.2));
-  }
-
-  Widget _buildFilePickerField(ThemeColors colors) {
-    return Container(
-      padding: const EdgeInsets.all(12),
-      decoration: BoxDecoration(
-        color: colors.surface.withOpacity(0.5),
-        borderRadius: BorderRadius.circular(16),
-        border: Border.all(color: colors.border),
-      ),
-      child: Row(
-        children: [
-          Container(
-            padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-            decoration: BoxDecoration(
-              color: colors.textPrimary.withOpacity(0.1),
-              borderRadius: BorderRadius.circular(8),
-            ),
-            child: Text('Choose File', style: TextStyle(color: colors.textPrimary, fontSize: 12, fontWeight: FontWeight.bold)),
-          ),
-          const SizedBox(width: 12),
-          Text('No file chosen', style: TextStyle(color: colors.textSecondary, fontSize: 12)),
-        ],
-      ),
-    );
-  }
-
-  Widget _buildDialogTextField(String hint, ThemeColors colors) {
-    return Container(
-      decoration: BoxDecoration(
-        color: colors.surface.withOpacity(0.5),
-        borderRadius: BorderRadius.circular(16),
-        border: Border.all(color: colors.border),
-      ),
-      child: TextField(
-        style: TextStyle(color: colors.textPrimary, fontSize: 14),
-        decoration: InputDecoration(
-          hintText: hint,
-          hintStyle: TextStyle(color: colors.textSecondary.withOpacity(0.3)),
-          border: InputBorder.none,
-          contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 15),
-        ),
-      ),
+      builder: (context) => const UploadFileModal(),
     );
   }
 
@@ -488,10 +278,11 @@ class _DownloadsScreenState extends ConsumerState<DownloadsScreen> {
 
   Widget _buildCategoryTabs(ThemeColors colors) {
     final categories = [
-      {'id': 'all', 'label': 'All Assets', 'icon': LucideIcons.layoutGrid},
-      {'id': 'docs', 'label': 'Docs', 'icon': LucideIcons.fileText},
-      {'id': 'photos', 'label': 'Photos', 'icon': LucideIcons.image},
-      {'id': 'videos', 'label': 'Videos', 'icon': LucideIcons.video},
+      {'id': null, 'label': 'All Assets', 'icon': LucideIcons.layoutGrid},
+      {'id': 'folder', 'label': 'Folders', 'icon': LucideIcons.folder},
+      {'id': 'document', 'label': 'Docs', 'icon': LucideIcons.fileText},
+      {'id': 'image', 'label': 'Photos', 'icon': LucideIcons.image},
+      {'id': 'video', 'label': 'Videos', 'icon': LucideIcons.video},
     ];
 
     return SingleChildScrollView(
@@ -500,9 +291,9 @@ class _DownloadsScreenState extends ConsumerState<DownloadsScreen> {
         children: categories.map((cat) {
           final isSelected = _selectedCategory == cat['id'];
           return Padding(
-            padding: const EdgeInsets.only(right: 8),
+            padding: const EdgeInsets.only(right: 12),
             child: InkWell(
-              onTap: () => setState(() => _selectedCategory = cat['id'] as String),
+              onTap: () => setState(() => _selectedCategory = cat['id'] as String?),
               borderRadius: BorderRadius.circular(12),
               child: Container(
                 padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
@@ -513,8 +304,10 @@ class _DownloadsScreenState extends ConsumerState<DownloadsScreen> {
                 ),
                 child: Row(
                   children: [
-                    Icon(cat['icon'] as IconData, size: 14, color: isSelected ? colors.textPrimary : colors.textSecondary),
-                    const SizedBox(width: 8),
+                    if (cat['icon'] != null) ...[
+                      Icon(cat['icon'] as IconData, size: 14, color: isSelected ? colors.textPrimary : colors.textSecondary),
+                      const SizedBox(width: 8),
+                    ],
                     Text(cat['label'] as String, 
                       style: TextStyle(
                         fontSize: 12, 
@@ -532,12 +325,91 @@ class _DownloadsScreenState extends ConsumerState<DownloadsScreen> {
     );
   }
 
+  Widget _buildFolderGrid(ThemeColors colors, Map<String, List<FileAsset>> albums) {
+    final albumList = albums.entries.toList();
+    
+    return SliverGrid(
+      gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+        crossAxisCount: 2,
+        mainAxisSpacing: 16,
+        crossAxisSpacing: 16,
+        childAspectRatio: 1.4,
+      ),
+      delegate: SliverChildBuilderDelegate(
+        (context, index) {
+          final album = albumList[index];
+          final hasPreview = album.value.any((f) => f.thumbnailLink != null);
+          final previewUrl = hasPreview ? album.value.firstWhere((f) => f.thumbnailLink != null).thumbnailLink : null;
+
+          return GestureDetector(
+            onTap: () {
+              setState(() {
+                _searchController.text = album.key;
+                _searchQuery = album.key;
+                _selectedCategory = null; 
+              });
+            },
+            child: Container(
+              decoration: BoxDecoration(
+                color: colors.surface,
+                borderRadius: BorderRadius.circular(20),
+                border: Border.all(color: colors.border),
+                boxShadow: colors.cardShadow,
+              ),
+              clipBehavior: Clip.antiAlias,
+              child: Stack(
+                children: [
+                  if (previewUrl != null)
+                    Positioned.fill(
+                      child: Opacity(
+                        opacity: 0.3,
+                        child: Image.network(previewUrl, fit: BoxFit.cover),
+                      ),
+                    ),
+                  Padding(
+                    padding: const EdgeInsets.all(16),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      mainAxisAlignment: MainAxisAlignment.end,
+                      children: [
+                        Container(
+                          padding: const EdgeInsets.all(8),
+                          decoration: BoxDecoration(
+                            color: const Color(0xFF3B82F6).withOpacity(0.1),
+                            borderRadius: BorderRadius.circular(10),
+                          ),
+                          child: const Icon(LucideIcons.folder, color: Color(0xFF3B82F6), size: 24),
+                        ),
+                        const SizedBox(height: 12),
+                        Text(
+                          album.key,
+                          style: TextStyle(color: colors.textPrimary, fontSize: 13, fontWeight: FontWeight.bold),
+                          maxLines: 1,
+                          overflow: TextOverflow.ellipsis,
+                        ),
+                        const SizedBox(height: 4),
+                        Text(
+                          '${album.value.length} assets',
+                          style: TextStyle(color: colors.textSecondary, fontSize: 11),
+                        ),
+                      ],
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          );
+        },
+        childCount: albumList.length,
+      ),
+    );
+  }
   Widget _buildViewToggle(ThemeColors colors) {
     return Row(
       mainAxisAlignment: MainAxisAlignment.spaceBetween,
       children: [
         Text(
-          '${_selectedCategory.toUpperCase()} ASSETS',
+          '${(_selectedCategory ?? 'all').toUpperCase()} ASSETS',
           style: TextStyle(fontSize: 10, fontWeight: FontWeight.bold, color: colors.textSecondary, letterSpacing: 1.5),
         ),
         Container(
@@ -573,6 +445,18 @@ class _DownloadsScreenState extends ConsumerState<DownloadsScreen> {
   }
 
   Widget _buildAssetGrid(ThemeColors colors, List<FileAsset> files) {
+    void showFileDetails(FileAsset asset) {
+      ref.read(bottomNavVisibleProvider.notifier).state = false;
+      showModalBottomSheet(
+        context: context,
+        isScrollControlled: true,
+        backgroundColor: Colors.transparent,
+        builder: (context) => FileDetailModal(asset: asset),
+      ).then((_) {
+        ref.read(bottomNavVisibleProvider.notifier).state = true;
+      });
+    }
+
     return SliverGrid(
       gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
         crossAxisCount: 2,
@@ -587,85 +471,88 @@ class _DownloadsScreenState extends ConsumerState<DownloadsScreen> {
           final isImage = file.mimeType.startsWith('image/');
           final isPdf = file.mimeType.contains('pdf');
           
-          return Container(
-            decoration: BoxDecoration(
-              color: colors.surface,
-              borderRadius: BorderRadius.circular(24),
-              border: Border.all(color: colors.border),
-              boxShadow: colors.cardShadow,
-            ),
-            clipBehavior: Clip.antiAlias,
-            child: Stack(
-              fit: StackFit.expand,
-              children: [
-                // Preview
-                if ((isImage || isVideo) && file.thumbnailLink != null)
-                  _buildPreviewImage(file.thumbnailLink!, colors, file)
-                else
-                  _buildFileIcon(file, colors),
-                
-                // Badges
-                Positioned(
-                  top: 12,
-                  left: 12,
-                  child: Container(
-                    padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
-                    decoration: BoxDecoration(
-                      color: isPdf ? Colors.red.withOpacity(0.8) : (isVideo ? const Color(0xFF3B82F6).withOpacity(0.8) : Colors.black.withOpacity(0.5)),
-                      borderRadius: BorderRadius.circular(8),
-                    ),
-                    child: Text(
-                      isPdf ? 'PDF' : (isVideo ? 'VIDEO' : (isImage ? 'IMG' : 'FILE')),
-                      style: const TextStyle(color: Colors.white, fontSize: 8, fontWeight: FontWeight.bold),
-                    ),
-                  ),
-                ),
-
-                // Play icon for videos
-                if (isVideo)
-                  Center(child: Container(
-                    padding: const EdgeInsets.all(8),
-                    decoration: BoxDecoration(color: Colors.black.withOpacity(0.4), shape: BoxShape.circle),
-                    child: const Icon(LucideIcons.play, color: Colors.white, size: 20),
-                  )),
-
-                // Gradient Overlay
-                Positioned.fill(
-                  child: DecoratedBox(
-                    decoration: BoxDecoration(
-                      gradient: LinearGradient(
-                        begin: Alignment.topCenter,
-                        end: Alignment.bottomCenter,
-                        colors: [Colors.transparent, Colors.black.withOpacity(0.8)],
-                        stops: const [0.5, 1.0],
+          return GestureDetector(
+            onTap: () => showFileDetails(file),
+            child: Container(
+              decoration: BoxDecoration(
+                color: colors.surface,
+                borderRadius: BorderRadius.circular(24),
+                border: Border.all(color: colors.border),
+                boxShadow: colors.cardShadow,
+              ),
+              clipBehavior: Clip.antiAlias,
+              child: Stack(
+                fit: StackFit.expand,
+                children: [
+                  // Preview
+                  if ((isImage || isVideo || isPdf) && file.thumbnailLink != null)
+                    _buildPreviewImage(file.thumbnailLink!, colors, file)
+                  else
+                    _buildFileIcon(file, colors),
+                  
+                  // Badges
+                  Positioned(
+                    top: 12,
+                    left: 12,
+                    child: Container(
+                      padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                      decoration: BoxDecoration(
+                        color: isPdf ? Colors.red.withOpacity(0.8) : (isVideo ? const Color(0xFF3B82F6).withOpacity(0.8) : Colors.black.withOpacity(0.5)),
+                        borderRadius: BorderRadius.circular(8),
+                      ),
+                      child: Text(
+                        isPdf ? 'PDF' : (isVideo ? 'VIDEO' : (isImage ? 'IMG' : 'FILE')),
+                        style: const TextStyle(color: Colors.white, fontSize: 8, fontWeight: FontWeight.bold),
                       ),
                     ),
                   ),
-                ),
-
-                // Name
-                Positioned(
-                  bottom: 12,
-                  left: 12,
-                  right: 12,
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Text(
-                        file.name,
-                        style: const TextStyle(color: Colors.white, fontSize: 11, fontWeight: FontWeight.bold),
-                        maxLines: 1,
-                        overflow: TextOverflow.ellipsis,
+  
+                  // Play icon for videos
+                  if (isVideo)
+                    Center(child: Container(
+                      padding: const EdgeInsets.all(8),
+                      decoration: BoxDecoration(color: Colors.black.withOpacity(0.4), shape: BoxShape.circle),
+                      child: const Icon(LucideIcons.play, color: Colors.white, size: 20),
+                    )),
+  
+                  // Gradient Overlay
+                  Positioned.fill(
+                    child: DecoratedBox(
+                      decoration: BoxDecoration(
+                        gradient: LinearGradient(
+                          begin: Alignment.topCenter,
+                          end: Alignment.bottomCenter,
+                          colors: [Colors.transparent, Colors.black.withOpacity(0.8)],
+                          stops: const [0.5, 1.0],
+                        ),
                       ),
-                      const SizedBox(height: 2),
-                      Text(
-                        _formatSize(file.size),
-                        style: TextStyle(color: Colors.white.withOpacity(0.6), fontSize: 9),
-                      ),
-                    ],
+                    ),
                   ),
-                ),
-              ],
+  
+                  // Name
+                  Positioned(
+                    bottom: 12,
+                    left: 12,
+                    right: 12,
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(
+                          file.name,
+                          style: const TextStyle(color: Colors.white, fontSize: 11, fontWeight: FontWeight.bold),
+                          maxLines: 1,
+                          overflow: TextOverflow.ellipsis,
+                        ),
+                        const SizedBox(height: 2),
+                        Text(
+                          _formatSize(file.size),
+                          style: TextStyle(color: Colors.white.withOpacity(0.6), fontSize: 9),
+                        ),
+                      ],
+                    ),
+                  ),
+                ],
+              ),
             ),
           );
         },
@@ -675,6 +562,18 @@ class _DownloadsScreenState extends ConsumerState<DownloadsScreen> {
   }
 
   Widget _buildAssetList(ThemeColors colors, List<FileAsset> files) {
+    void showFileDetails(FileAsset asset) {
+      ref.read(bottomNavVisibleProvider.notifier).state = false;
+      showModalBottomSheet(
+        context: context,
+        isScrollControlled: true,
+        backgroundColor: Colors.transparent,
+        builder: (context) => FileDetailModal(asset: asset),
+      ).then((_) {
+        ref.read(bottomNavVisibleProvider.notifier).state = true;
+      });
+    }
+
     return SliverList(
       delegate: SliverChildBuilderDelegate(
         (context, index) {
@@ -682,50 +581,81 @@ class _DownloadsScreenState extends ConsumerState<DownloadsScreen> {
           final isVideo = file.mimeType.contains('video');
           final isImage = file.mimeType.contains('image');
           
-          return Container(
-            margin: const EdgeInsets.only(bottom: 12),
-            padding: const EdgeInsets.all(16),
-            decoration: BoxDecoration(
-              color: colors.surface,
-              borderRadius: BorderRadius.circular(16),
-              border: Border.all(color: colors.border),
-              boxShadow: colors.cardShadow,
-            ),
-            child: Row(
-              children: [
-                Container(
-                  padding: const EdgeInsets.all(10),
-                  decoration: BoxDecoration(
-                    color: colors.textPrimary.withOpacity(0.05),
-                    borderRadius: BorderRadius.circular(10),
+          return GestureDetector(
+            onTap: () => showFileDetails(file),
+            child: Container(
+              margin: const EdgeInsets.only(bottom: 12),
+              padding: const EdgeInsets.all(16),
+              decoration: BoxDecoration(
+                color: colors.surface,
+                borderRadius: BorderRadius.circular(16),
+                border: Border.all(color: colors.border),
+                boxShadow: colors.cardShadow,
+              ),
+              child: Row(
+                children: [
+                  Container(
+                    width: 44,
+                    height: 44,
+                    decoration: BoxDecoration(
+                      color: colors.textPrimary.withOpacity(0.05),
+                      borderRadius: BorderRadius.circular(10),
+                    ),
+                    clipBehavior: Clip.antiAlias,
+                    child: Builder(
+                      builder: (context) {
+                        final isPdf = file.mimeType.contains('pdf');
+                        final thumbUrl = UrlHelpers.getDirectImageUrl(file.thumbnailLink, driveFileId: file.driveFileId, mimeType: file.mimeType);
+                        
+                        if (thumbUrl != null && (isImage || isVideo || isPdf)) {
+                          return Image.network(
+                            thumbUrl, 
+                            fit: BoxFit.cover,
+                            errorBuilder: (context, error, stackTrace) {
+                              print('[DOWNLOADS] Thumb error: $error for $thumbUrl');
+                              return Center(
+                                child: Icon(
+                                  isVideo ? LucideIcons.fileVideo : (isPdf ? LucideIcons.fileText : LucideIcons.image),
+                                  color: colors.textSecondary.withOpacity(0.5),
+                                  size: 20,
+                                ),
+                              );
+                            },
+                          );
+                        }
+                        
+                        return Center(
+                          child: Icon(
+                            isVideo ? LucideIcons.fileVideo : (isPdf ? LucideIcons.fileText : LucideIcons.image),
+                            color: colors.textSecondary.withOpacity(0.5),
+                            size: 20,
+                          ),
+                        );
+                      }
+                    ),
                   ),
-                  child: Icon(
-                    isVideo ? LucideIcons.fileVideo : (isImage ? LucideIcons.image : LucideIcons.fileText),
-                    size: 18,
-                    color: const Color(0xFF3B82F6),
+                  const SizedBox(width: 16),
+                  Expanded(
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(
+                          file.name,
+                          style: TextStyle(fontSize: 14, fontWeight: FontWeight.bold, color: colors.textPrimary),
+                          maxLines: 1,
+                          overflow: TextOverflow.ellipsis,
+                        ),
+                        const SizedBox(height: 4),
+                        Text(
+                          '${DateFormat('dd-MM-yyyy').format(file.createdAt)} • ${_formatSize(file.size)}',
+                          style: TextStyle(fontSize: 10, color: colors.textSecondary, fontWeight: FontWeight.bold),
+                        ),
+                      ],
+                    ),
                   ),
-                ),
-                const SizedBox(width: 16),
-                Expanded(
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Text(
-                        file.name,
-                        style: TextStyle(fontSize: 14, fontWeight: FontWeight.bold, color: colors.textPrimary),
-                        maxLines: 1,
-                        overflow: TextOverflow.ellipsis,
-                      ),
-                      const SizedBox(height: 4),
-                      Text(
-                        '${DateFormat('MMM dd').format(file.createdAt).toUpperCase()} • ${_formatSize(file.size)}',
-                        style: TextStyle(fontSize: 10, color: colors.textSecondary, fontWeight: FontWeight.bold),
-                      ),
-                    ],
-                  ),
-                ),
-                Icon(LucideIcons.moreVertical, size: 16, color: colors.textSecondary),
-              ],
+                  Icon(LucideIcons.moreVertical, size: 16, color: colors.textSecondary),
+                ],
+              ),
             ),
           );
         },

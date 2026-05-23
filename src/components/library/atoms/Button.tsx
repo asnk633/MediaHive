@@ -18,7 +18,7 @@ const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(
         const baseStyles = "inline-flex items-center justify-center rounded-xl font-semibold transition-all focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 disabled:pointer-events-none disabled:opacity-50 active:scale-[0.98]";
 
         const variants = {
-            primary: "bg-gradient-to-r from-[var(--color-primary-start)] to-[var(--color-primary-end)] text-white shadow-lg shadow-blue-500/25 hover:shadow-blue-500/40 hover:-translate-y-0.5 border border-transparent",
+            primary: "bg-gradient-to-r from-[var(--color-primary-start)] to-[var(--color-primary-end)] text-foreground shadow-lg shadow-blue-500/25 hover:shadow-blue-500/40 hover:-translate-y-0.5 border border-transparent",
             secondary: "bg-white border border-[var(--color-border)] text-[var(--color-text-secondary)] hover:bg-gray-50 hover:text-[var(--color-text-primary)] hover:border-gray-300",
             ghost: "bg-transparent text-[var(--color-primary-start)] hover:bg-blue-50",
             danger: "bg-red-50 text-red-600 hover:bg-red-100 border border-transparent",

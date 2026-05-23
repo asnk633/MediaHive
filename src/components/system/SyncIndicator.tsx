@@ -38,7 +38,7 @@ export function SyncIndicator() {
         
         <button
           onClick={() => syncEngine.clearQueue()}
-          className="text-[10px] text-white/40 hover:text-red-400 transition-colors flex items-center gap-1 pr-2"
+          className="text-[10px] text-foreground/80 hover:text-red-400 transition-colors flex items-center gap-1 pr-2"
         >
           Discard pending changes
         </button>
@@ -49,9 +49,9 @@ export function SyncIndicator() {
   // Sync progress indicator
   if (isSyncing && progress.total > 1) {
     return (
-      <div className="fixed bottom-28 right-4 z-[999] flex items-center gap-3 bg-black/80 backdrop-blur border border-white/10 px-4 py-2.5 rounded-full shadow-lg pointer-events-none animate-in fade-in slide-in-from-bottom-2">
+      <div className="fixed bottom-28 right-4 z-[999] flex items-center gap-3 bg-black/80 backdrop-blur border border-foreground/10 px-4 py-2.5 rounded-full shadow-lg pointer-events-none animate-in fade-in slide-in-from-bottom-2">
         <RefreshCcw className="w-4 h-4 text-blue-400 animate-spin shrink-0" />
-        <span className="text-sm font-medium text-white/90">
+        <span className="text-sm font-medium text-foreground/90">
           Syncing {progress.current} / {progress.total}…
         </span>
       </div>

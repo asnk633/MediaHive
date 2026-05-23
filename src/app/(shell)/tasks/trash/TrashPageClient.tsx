@@ -12,7 +12,7 @@ import dynamic from 'next/dynamic';
 import { toast } from 'sonner';
 
 const TaskListView = dynamic(() => import("@/components/tasks/TaskListView").then(mod => mod.TaskListView), {
-    loading: () => <div className="p-6 space-y-4"><div className="h-12 w-full bg-white/5 animate-pulse rounded" /></div>
+    loading: () => <div className="p-6 space-y-4"><div className="h-12 w-full bg-foreground/5 animate-pulse rounded" /></div>
 });
 
 export default function TrashPageClient() {

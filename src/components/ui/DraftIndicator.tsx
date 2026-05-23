@@ -12,7 +12,7 @@ export function DraftIndicator({ isSaved, className }: DraftIndicatorProps) {
     <div
       className={cn(
         "flex items-center gap-1.5 text-[10px] font-medium tracking-wide transition-opacity duration-500",
-        isSaved ? "opacity-100 text-emerald-500" : "opacity-0 text-white/40",
+        isSaved ? "opacity-100 text-emerald-500" : "opacity-0 text-foreground/80",
         className
       )}
     >

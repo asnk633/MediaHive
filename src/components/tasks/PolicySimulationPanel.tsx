@@ -65,20 +65,20 @@ export const PolicySimulationPanel: React.FC<PolicySimulationPanelProps> = ({
                         initial={{ y: '100%' }}
                         animate={{ y: 0 }}
                         exit={{ y: '100%' }}
-                        className="fixed inset-x-0 bottom-0 top-20 bg-[#0B0E14] border-t border-white/10 shadow-2xl z-[111] flex flex-col md:max-w-4xl md:mx-auto md:rounded-t-3xl"
+                        className="fixed inset-x-0 bottom-0 top-20 bg-[#0B0E14] border-t border-foreground/10 shadow-2xl z-[111] flex flex-col md:max-w-4xl md:mx-auto md:rounded-t-3xl"
                     >
                 {/* Header */}
-                <div className="flex items-center justify-between px-8 py-6 border-b border-white/10 shrink-0 bg-blue-500/5">
+                <div className="flex items-center justify-between px-8 py-6 border-b border-foreground/10 shrink-0 bg-blue-500/5">
                     <div className="flex items-center gap-4">
                         <div className="w-12 h-12 rounded-2xl bg-blue-500/10 border border-blue-500/20 flex items-center justify-center">
                             <Box className="w-6 h-6 text-blue-400" />
                         </div>
                         <div>
-                            <h2 className="text-xl font-bold text-white">Policy Simulation Sandbox</h2>
+                            <h2 className="text-xl font-bold text-foreground">Policy Simulation Sandbox</h2>
                             <p className="text-sm text-blue-400/60 font-medium">Safe environment to test conflict logic</p>
                         </div>
                     </div>
-                    <button onClick={onClose} className="p-3 text-white/40 hover:text-white rounded-xl hover:bg-white/5 transition-all">
+                    <button onClick={onClose} className="p-3 text-foreground/80 hover:text-foreground rounded-xl hover:bg-foreground/5 transition-all">
                         <X size={24} />
                     </button>
                 </div>
@@ -87,7 +87,7 @@ export const PolicySimulationPanel: React.FC<PolicySimulationPanelProps> = ({
                     {/* Left: Inputs */}
                     <div className="space-y-8">
                         <div>
-                            <h3 className="text-xs font-bold uppercase tracking-widest text-white/50 mb-4">Conflict Scenario</h3>
+                            <h3 className="text-xs font-bold uppercase tracking-widest text-foreground/70 mb-4">Conflict Scenario</h3>
                             <div className="space-y-5">
                                 <div className="grid grid-cols-2 gap-4">
                                     <div className="space-y-0.5">
@@ -119,21 +119,21 @@ export const PolicySimulationPanel: React.FC<PolicySimulationPanelProps> = ({
 
                                 <div className="grid grid-cols-2 gap-4">
                                     <div className="space-y-2">
-                                        <label className="text-[10px] uppercase font-bold text-white/40 ml-1">Your Value</label>
+                                        <label className="text-[10px] uppercase font-bold text-foreground/80 ml-1">Your Value</label>
                                         <input
                                             type="text"
                                             value={localValue}
                                             onChange={(e) => setLocalValue(e.target.value)}
-                                            className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-2.5 text-sm text-white placeholder:text-white/20 focus:border-blue-500/50 outline-none transition-all"
+                                            className="w-full bg-foreground/5 border border-foreground/10 rounded-xl px-4 py-2.5 text-sm text-foreground placeholder:text-foreground/80 focus:border-blue-500/50 outline-none transition-all"
                                         />
                                     </div>
                                     <div className="space-y-2">
-                                        <label className="text-[10px] uppercase font-bold text-white/40 ml-1">Server Value</label>
+                                        <label className="text-[10px] uppercase font-bold text-foreground/80 ml-1">Server Value</label>
                                         <input
                                             type="text"
                                             value={serverValue}
                                             onChange={(e) => setServerValue(e.target.value)}
-                                            className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-2.5 text-sm text-white placeholder:text-white/20 focus:border-blue-500/50 outline-none transition-all"
+                                            className="w-full bg-foreground/5 border border-foreground/10 rounded-xl px-4 py-2.5 text-sm text-foreground placeholder:text-foreground/80 focus:border-blue-500/50 outline-none transition-all"
                                         />
                                     </div>
                                 </div>
@@ -142,7 +142,7 @@ export const PolicySimulationPanel: React.FC<PolicySimulationPanelProps> = ({
 
                         <button
                             onClick={runSimulation}
-                            className="w-full flex items-center justify-center gap-3 py-4 bg-blue-600 hover:bg-blue-500 text-white rounded-2xl font-bold shadow-lg shadow-blue-900/40 transition-all active:scale-95"
+                            className="w-full flex items-center justify-center gap-3 py-4 bg-blue-600 hover:bg-blue-500 text-foreground rounded-2xl font-bold shadow-lg shadow-blue-900/40 transition-all active:scale-95"
                         >
                             <Play size={20} fill="currentColor" />
                             Evaluate Policy logic
@@ -152,9 +152,9 @@ export const PolicySimulationPanel: React.FC<PolicySimulationPanelProps> = ({
                     {/* Right: Results */}
                     <div className="space-y-8">
                         <div>
-                            <h3 className="text-xs font-bold uppercase tracking-widest text-white/50 mb-4">Evaluation Result</h3>
+                            <h3 className="text-xs font-bold uppercase tracking-widest text-foreground/70 mb-4">Evaluation Result</h3>
                             {!result ? (
-                                <div className="h-64 rounded-3xl border-2 border-dashed border-white/5 flex flex-col items-center justify-center text-white/20 gap-4">
+                                <div className="h-64 rounded-3xl border-2 border-dashed border-foreground/5 flex flex-col items-center justify-center text-foreground/80 gap-4">
                                     <Box size={40} className="opacity-20" />
                                     <p className="text-sm">Configure a scenario and run simulation</p>
                                 </div>
@@ -162,18 +162,18 @@ export const PolicySimulationPanel: React.FC<PolicySimulationPanelProps> = ({
                                 <div className="space-y-6">
                                     <div className={`p-6 rounded-3xl border ${result.suggestedAction === 'local' ? 'bg-blue-500/10 border-blue-500/30' :
                                             result.suggestedAction === 'server' ? 'bg-amber-500/10 border-amber-500/30' :
-                                                'bg-white/5 border-white/10'
+                                                'bg-foreground/5 border-foreground/10'
                                         }`}>
                                         <div className="flex items-center justify-between mb-4">
                                             <span className="text-[10px] uppercase font-black tracking-widest opacity-50">Suggestion</span>
-                                            <div className={`px-3 py-1 rounded-full text-[10px] font-black uppercase tracking-widest ${result.suggestedAction === 'local' ? 'bg-blue-500 text-white' :
+                                            <div className={`px-3 py-1 rounded-full text-[10px] font-black uppercase tracking-widest ${result.suggestedAction === 'local' ? 'bg-blue-500 text-foreground' :
                                                     result.suggestedAction === 'server' ? 'bg-amber-500 text-black' :
-                                                        'bg-white/20 text-white/60'
+                                                        'bg-foreground/20 text-foreground/80'
                                                 }`}>
                                                 {result.suggestedAction === 'none' ? 'Manual Review' : result.suggestedAction === 'local' ? 'Keep Mine' : 'Use Theirs'}
                                             </div>
                                         </div>
-                                        <div className="text-lg font-bold text-white mb-2 leading-tight">
+                                        <div className="text-lg font-bold text-foreground mb-2 leading-tight">
                                             {result.reason}
                                         </div>
                                         {result.blockOverride && (
@@ -184,12 +184,12 @@ export const PolicySimulationPanel: React.FC<PolicySimulationPanelProps> = ({
                                         )}
                                     </div>
 
-                                    <div className="bg-white/5 rounded-3xl p-6 border border-white/10">
-                                        <div className="flex items-center gap-2 text-white/40 mb-4">
+                                    <div className="bg-foreground/5 rounded-3xl p-6 border border-foreground/10">
+                                        <div className="flex items-center gap-2 text-foreground/80 mb-4">
                                             <Info size={16} />
                                             <span className="text-xs font-bold uppercase tracking-widest">Sandbox Safety Note</span>
                                         </div>
-                                        <p className="text-sm text-white/60 leading-relaxed">
+                                        <p className="text-sm text-foreground/80 leading-relaxed">
                                             This simulation is strictly isolated. No mutations will be fired to the server, and no entries will be added to the Activity History. This is for logic verification only.
                                         </p>
                                     </div>

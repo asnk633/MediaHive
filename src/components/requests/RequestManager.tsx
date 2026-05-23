@@ -67,7 +67,7 @@ export default function RequestManager() {
     return (
         <div className="space-y-8">
             <section>
-                <h3 className="text-lg font-semibold text-white mb-4 border-b border-[#ffffff1a] pb-2">Active & Pending</h3>
+                <h3 className="text-lg font-semibold text-foreground mb-4 border-b border-[#ffffff1a] pb-2">Active & Pending</h3>
                 <div className="space-y-4">
                     {pendingRequests.length === 0 && activeRequests.length === 0 && (
                         <div className="text-slate-500 italic">No active requests.</div>
@@ -86,7 +86,7 @@ export default function RequestManager() {
             </section>
 
             <section>
-                <h3 className="text-lg font-semibold text-white mb-4 border-b border-[#ffffff1a] pb-2">History</h3>
+                <h3 className="text-lg font-semibold text-foreground mb-4 border-b border-[#ffffff1a] pb-2">History</h3>
                 <div className="space-y-4 opacity-75">
                     {historyRequests.length === 0 && (
                         <div className="text-slate-500 italic">No history.</div>
@@ -169,7 +169,7 @@ function RequestCard({ request, isAdmin, onRefresh }: { request: DeviceRequest, 
                         {format(start, 'MMM d, h:mm a')} - {format(end, 'MMM d, h:mm a')}
                     </span>
                 </div>
-                <h4 className="font-semibold text-white text-lg">{request.description}</h4>
+                <h4 className="font-semibold text-foreground text-lg">{request.description}</h4>
                 <div className="flex gap-2 items-center mb-1">
                     <span className="text-xs font-medium px-2 py-0.5 rounded bg-slate-700 text-slate-300 border border-slate-600">
                         {request.itemCategory}
@@ -205,29 +205,29 @@ function RequestCard({ request, isAdmin, onRefresh }: { request: DeviceRequest, 
                                         </Button>
                                         <Button
                                             size="sm"
-                                            className="bg-blue-600 hover:bg-blue-500 text-white"
+                                            className="bg-blue-600 hover:bg-blue-500 text-foreground"
                                             onClick={() => handleAction('approve')}
                                             disabled={!!isActionLoading}
                                         >
                                             {isActionLoading === 'approve' ? (
                                                 <>
-                                                    <div className="animate-spin rounded-full h-3.5 w-3.5 border-2 border-white/30 border-t-white mr-2" />
+                                                    <div className="animate-spin rounded-full h-3.5 w-3.5 border-2 border-foreground/30 border-t-white mr-2" />
                                                     Approving...
                                                 </>
                                             ) : 'Approve'}
                                         </Button>
-                                        <div className="h-4 w-px bg-white/10 mx-1" />
+                                        <div className="h-4 w-px bg-foreground/10 mx-1" />
                                     </>
                                 )}
                                 <Button
                                     size="sm"
-                                    className="bg-green-600 hover:bg-green-500 text-white gap-2"
+                                    className="bg-green-600 hover:bg-green-500 text-foreground gap-2"
                                     onClick={() => setShowIssueDialog(true)}
                                     disabled={!!isActionLoading}
                                 >
                                     {isActionLoading === 'issue' ? (
                                         <>
-                                            <div className="animate-spin rounded-full h-3.5 w-3.5 border-2 border-white/30 border-t-white" />
+                                            <div className="animate-spin rounded-full h-3.5 w-3.5 border-2 border-foreground/30 border-t-white" />
                                             Issuing...
                                         </>
                                     ) : (
@@ -334,16 +334,16 @@ function IssueDialog({ request, onIssue, open, onOpenChange, isActionLoading }: 
                     <div className="space-y-4 my-4">
                         <div className="p-4 bg-green-500/10 border border-green-500/20 rounded-lg text-center">
                             <Package className="mx-auto text-green-400 mb-2" size={32} />
-                            <h3 className="text-white font-semibold text-lg">Ready to Issue</h3>
+                            <h3 className="text-foreground font-semibold text-lg">Ready to Issue</h3>
                             <p className="text-slate-300 mt-1">
-                                Confirm handing over <span className="font-bold text-white">{request.description}</span>?
+                                Confirm handing over <span className="font-bold text-foreground">{request.description}</span>?
                             </p>
                         </div>
                     </div>
                 ) : (
                     <div className="space-y-4 my-4">
                         <div className="p-3 bg-blue-500/10 border border-blue-500/20 rounded-lg text-sm text-blue-200">
-                            Requesting: <span className="font-bold text-white">{request.description}</span>
+                            Requesting: <span className="font-bold text-foreground">{request.description}</span>
                         </div>
                         <div className="space-y-2">
                             <Label>Select Asset to Link</Label>
@@ -394,7 +394,7 @@ function ReturnDialog({ request, onReturn }: { request: DeviceRequest, onReturn:
     return (
         <Dialog>
             <DialogTrigger asChild>
-                <Button size="sm" variant={isInspection ? "default" : "outline"} className={isInspection ? "bg-purple-600 hover:bg-purple-500 text-white gap-2 border-none animate-pulse" : "border-[#ffffff1a] bg-slate-800 text-slate-300 gap-2"}>
+                <Button size="sm" variant={isInspection ? "default" : "outline"} className={isInspection ? "bg-purple-600 hover:bg-purple-500 text-foreground gap-2 border-none animate-pulse" : "border-[#ffffff1a] bg-slate-800 text-slate-300 gap-2"}>
                     {isInspection ? <AlertTriangle size={16} /> : <CornerDownLeft size={16} />}
                     {isInspection ? "Inspect & Restock" : "Restock Device"}
                 </Button>
@@ -406,7 +406,7 @@ function ReturnDialog({ request, onReturn }: { request: DeviceRequest, onReturn:
                 <div className="space-y-4 my-4">
                     <div className="p-3 bg-slate-800 rounded-lg flex justify-between">
                         <span className="text-slate-400">Item:</span>
-                        <span className="font-bold text-white">{itemName || 'Loading...'}</span>
+                        <span className="font-bold text-foreground">{itemName || 'Loading...'}</span>
                     </div>
                     <div className="space-y-2">
                         <Label>Condition on Return</Label>
@@ -429,7 +429,7 @@ function ReturnDialog({ request, onReturn }: { request: DeviceRequest, onReturn:
                     </div>
                 </div>
                 <DialogFooter>
-                    <Button onClick={() => onReturn(condition, notes)} className="bg-green-600 hover:bg-green-500 text-white w-full sm:w-auto">
+                    <Button onClick={() => onReturn(condition, notes)} className="bg-green-600 hover:bg-green-500 text-foreground w-full sm:w-auto">
                         {isInspection ? "Confirm & Restock" : "Complete Return"}
                     </Button>
                 </DialogFooter>

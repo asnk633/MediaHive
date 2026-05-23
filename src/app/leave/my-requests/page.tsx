@@ -61,12 +61,12 @@ export default function MyRequestsPage() {
                     <div className="flex items-center gap-4">
                         <button
                             onClick={() => router.back()}
-                            className="p-2 bg-white/5 hover:bg-white/10 text-white/70 hover:text-white rounded-xl transition-colors"
+                            className="p-2 bg-foreground/5 hover:bg-foreground/10 text-foreground/70 hover:text-foreground rounded-xl transition-colors"
                         >
                             <ChevronLeft size={20} />
                         </button>
                         <div>
-                            <h1 className="text-3xl font-display font-bold text-white tracking-tight">
+                            <h1 className="text-3xl font-display font-bold text-foreground tracking-tight">
                                 My Leave Requests
                             </h1>
                             <p className="text-[var(--color-text-secondary)]">
@@ -76,7 +76,7 @@ export default function MyRequestsPage() {
                     </div>
                     <button
                         onClick={() => nativeNavigate('/leave/request', router, 'MyRequests (New Request)')}
-                        className="flex items-center gap-2 px-4 py-2 bg-blue-600 hover:bg-blue-500 text-white text-sm font-bold rounded-lg transition-colors"
+                        className="flex items-center gap-2 px-4 py-2 bg-blue-600 hover:bg-blue-500 text-foreground text-sm font-bold rounded-lg transition-colors"
                     >
                         <Plus size={16} />
                         New Request
@@ -92,14 +92,14 @@ export default function MyRequestsPage() {
                             className={`
                                 px-4 py-2 rounded-lg text-sm font-medium whitespace-nowrap transition-all
                                 ${filter === tab.value
-                                    ? 'bg-blue-600 text-white'
-                                    : 'bg-white/5 text-white/60 hover:bg-white/10 hover:text-white'
+                                    ? 'bg-blue-600 text-foreground'
+                                    : 'bg-foreground/5 text-foreground/80 hover:bg-foreground/10 hover:text-foreground'
                                 }
                             `}
                         >
                             {tab.label}
                             {tab.count !== undefined && (
-                                <span className={`ml-2 px-1.5 py-0.5 rounded text-xs ${filter === tab.value ? 'bg-white/20' : 'bg-white/10'}`}>
+                                <span className={`ml-2 px-1.5 py-0.5 rounded text-xs ${filter === tab.value ? 'bg-foreground/20' : 'bg-foreground/10'}`}>
                                     {tab.count}
                                 </span>
                             )}
@@ -108,7 +108,7 @@ export default function MyRequestsPage() {
                 </div>
 
                 {/* Content */}
-                <div className="bg-[#0f172a] border border-white/5 rounded-3xl p-6 shadow-2xl min-h-[400px]">
+                <div className="bg-[var(--glass-liquid-bg)] border border-foreground/5 rounded-3xl p-6 shadow-2xl min-h-[400px]">
                     {loading ? (
                         <div className="flex items-center justify-center h-64">
                             <Loader2 size={32} className="animate-spin text-blue-400" />
@@ -116,10 +116,10 @@ export default function MyRequestsPage() {
                     ) : filteredRequests.length === 0 ? (
                         <div className="flex flex-col items-center justify-center h-64 text-center">
                             <div className="text-6xl mb-4">📅</div>
-                            <h3 className="text-xl font-bold text-white mb-2">
+                            <h3 className="text-xl font-bold text-foreground mb-2">
                                 {filter === 'all' ? 'No Leave Requests' : `No ${filter} Requests`}
                             </h3>
-                            <p className="text-white/50 mb-6">
+                            <p className="text-foreground/70 mb-6">
                                 {filter === 'all'
                                     ? "You haven't submitted any leave requests yet"
                                     : `You don't have any ${filter} leave requests`
@@ -128,7 +128,7 @@ export default function MyRequestsPage() {
                             {filter === 'all' && (
                                 <button
                                     onClick={() => nativeNavigate('/leave/request', router, 'MyRequests (Submit First)')}
-                                    className="px-6 py-3 bg-blue-600 hover:bg-blue-500 text-white font-bold rounded-lg transition-colors"
+                                    className="px-6 py-3 bg-blue-600 hover:bg-blue-500 text-foreground font-bold rounded-lg transition-colors"
                                 >
                                     Submit Your First Request
                                 </button>

@@ -24,9 +24,9 @@ export async function GET(request: NextRequest) {
 
         // Parallel Aggregation Queries (Efficient)
         const [totalRes, inUseRes, unavailableRes] = await Promise.all([
-            withTenant(supabase.from('inventory').select('*', { count: 'exact', head: true }), tenantId),
-            withTenant(supabase.from('inventory').select('*', { count: 'exact', head: true }).eq('status', 'in_use'), tenantId),
-            withTenant(supabase.from('inventory').select('*', { count: 'exact', head: true }).in('status', ['broken', 'lost', 'out']), tenantId)
+            supabase.from('inventory_items').select('*', { count: 'exact', head: true }),
+            supabase.from('inventory_items').select('*', { count: 'exact', head: true }).or('status.eq.In Use,status.eq.in_use,status.eq.In use'),
+            supabase.from('inventory_items').select('*', { count: 'exact', head: true }).or('status.eq.Maintenance,status.eq.maintenance,status.eq.Retired,status.eq.retired')
         ]);
 
         if (totalRes.error) throw totalRes.error;

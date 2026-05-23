@@ -20,7 +20,7 @@ export function NotificationFilters({ filters, onChange, onClear }: Notification
     return (
         <Surface className="sticky top-4 h-fit p-6">
             <div className="flex items-center justify-between mb-5">
-                <h2 className="text-lg font-semibold text-white flex items-center gap-2">
+                <h2 className="text-lg font-semibold text-foreground flex items-center gap-2">
                     <Filter className="w-5 h-5" /> Filters
                 </h2>
                 {(filters.priority !== 'all' || filters.type !== 'all' || filters.status !== 'all') && (
@@ -37,7 +37,7 @@ export function NotificationFilters({ filters, onChange, onClear }: Notification
 
                 {/* Status Filter */}
                 <div>
-                    <label className="text-xs font-semibold text-gray-500 uppercase tracking-wider mb-3 block">
+                    <label className="text-xs font-bold text-foreground/70 uppercase tracking-wider mb-3 block">
                         Status
                     </label>
                     <div className="space-y-2">
@@ -48,9 +48,9 @@ export function NotificationFilters({ filters, onChange, onClear }: Notification
                                     name="status"
                                     checked={filters.status === status}
                                     onChange={() => updateFilter('status', status)}
-                                    className="rounded-full text-blue-500 focus:ring-blue-500 bg-white/5 border-white/10"
+                                    className="rounded-full text-blue-500 focus:ring-blue-500 bg-foreground/5 border-foreground/10"
                                 />
-                                <span className="text-sm capitalize text-gray-300 group-hover:text-white transition-colors">{status}</span>
+                                <span className="text-sm capitalize text-foreground/80 group-hover:text-foreground transition-colors">{status}</span>
                             </label>
                         ))}
                     </div>
@@ -58,7 +58,7 @@ export function NotificationFilters({ filters, onChange, onClear }: Notification
 
                 {/* Priority Filter */}
                 <div>
-                    <label className="text-xs font-semibold text-gray-500 uppercase tracking-wider mb-3 block">
+                    <label className="text-xs font-bold text-foreground/70 uppercase tracking-wider mb-3 block">
                         Priority
                     </label>
                     <div className="space-y-2">
@@ -69,9 +69,9 @@ export function NotificationFilters({ filters, onChange, onClear }: Notification
                                     name="priority"
                                     checked={filters.priority === p}
                                     onChange={() => updateFilter('priority', p)}
-                                    className="rounded-full text-blue-500 focus:ring-blue-500 bg-white/5 border-white/10"
+                                    className="rounded-full text-blue-500 focus:ring-blue-500 bg-foreground/5 border-foreground/10"
                                 />
-                                <span className="text-sm capitalize text-gray-300 group-hover:text-white transition-colors">{p}</span>
+                                <span className="text-sm capitalize text-foreground/80 group-hover:text-foreground transition-colors">{p}</span>
                             </label>
                         ))}
                     </div>

@@ -28,7 +28,7 @@ export const EventsNext7DaysWidget = ({ loading = false }: { loading?: boolean }
         return (
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
                 {[1, 2, 3].map(i => (
-                    <div key={i} className="h-40 rounded-[18px] bg-white/[0.02] border border-white/5 animate-pulse" />
+                    <div key={i} className="h-40 rounded-[18px] bg-foreground/[0.02] border border-foreground/5 animate-pulse" />
                 ))}
             </div>
         );
@@ -36,12 +36,12 @@ export const EventsNext7DaysWidget = ({ loading = false }: { loading?: boolean }
 
     if (upcomingEvents.length === 0) {
         return (
-            <div className="flex flex-col items-center justify-center py-12 px-4 border border-dashed border-white/10 rounded-[18px] bg-white/[0.02] animate-in fade-in duration-700">
-                <div className="w-12 h-12 rounded-full bg-white/5 flex items-center justify-center mb-4 text-white/20">
+            <div className="flex flex-col items-center justify-center py-12 px-4 border border-dashed border-foreground/10 rounded-[18px] bg-foreground/[0.02] animate-in fade-in duration-700">
+                <div className="w-12 h-12 rounded-full bg-foreground/5 flex items-center justify-center mb-4 text-foreground/80">
                     <Calendar size={24} />
                 </div>
-                <h3 className="text-sm font-bold text-white/40 uppercase tracking-widest">No upcoming events scheduled</h3>
-                <p className="text-[10px] text-white/20 mt-1">Add an event to keep your team aligned.</p>
+                <h3 className="text-sm font-bold text-foreground/80 uppercase tracking-widest">No upcoming events scheduled</h3>
+                <p className="text-[10px] text-foreground/80 mt-1">Add an event to keep your team aligned.</p>
             </div>
         );
     }
@@ -66,7 +66,7 @@ export const EventsNext7DaysWidget = ({ loading = false }: { loading?: boolean }
                             "absolute top-0 left-0 w-full h-[3px] opacity-20 group-hover:opacity-100 transition-opacity duration-500",
                             isSystem ? "bg-blue-500 shadow-[0_0_15px_rgba(59,130,246,0.2)]" :
                                 isInstitution ? "bg-purple-500 shadow-[0_0_15px_rgba(168,85,247,0.2)]" :
-                                    "bg-white/10"
+                                    "bg-foreground/10"
                         )} />
 
                         {/* Top Section: Date & Badge Row */}
@@ -75,7 +75,7 @@ export const EventsNext7DaysWidget = ({ loading = false }: { loading?: boolean }
                                 "flex flex-col items-center justify-center w-12 h-12 rounded-xl border transition-all duration-300",
                                 isToday(eventDate)
                                     ? "bg-emerald-500/10 text-emerald-400 border-emerald-500/30 shadow-[0_0_10px_rgba(16,185,129,0.1)]"
-                                    : "bg-white/5 text-blue-400 border-white/10 group-hover:border-blue-500/30 group-hover:bg-blue-500/5"
+                                    : "bg-foreground/5 text-blue-400 border-foreground/10 group-hover:border-blue-500/30 group-hover:bg-blue-500/5"
                             )}>
                                 <span className="text-[10px] font-black uppercase leading-none opacity-50 tracking-tighter">
                                     {format(eventDate, 'MMM')}
@@ -101,18 +101,18 @@ export const EventsNext7DaysWidget = ({ loading = false }: { loading?: boolean }
 
                         {/* Middle Section: Identity & Location */}
                         <div className="space-y-1.5 mb-6 ml-[-28px] w-[calc(100%+28px)]">
-                            <h4 className="text-sm font-bold text-white/60 group-hover:text-white transition-all duration-300 line-clamp-2 leading-snug">
+                            <h4 className="text-sm font-bold text-foreground/80 group-hover:text-foreground transition-all duration-300 line-clamp-2 leading-snug">
                                 {event.title}
                             </h4>
-                            <div className="flex items-center gap-1.5 text-xs text-white/50 group-hover:text-white/50 transition-colors bg-white/[0.02] w-fit px-2 py-0.5 rounded-lg border border-white/5">
+                            <div className="flex items-center gap-1.5 text-xs text-foreground/70 group-hover:text-foreground/70 transition-colors bg-foreground/[0.02] w-fit px-2 py-0.5 rounded-lg border border-foreground/5">
                                 <MapPin size={10} className="shrink-0 text-blue-400/50" />
                                 <span className="truncate max-w-[150px]">{event.location || 'Meeting Room'}</span>
                             </div>
                         </div>
 
                         {/* Bottom Section: Timing & Mini-Action */}
-                        <div className="flex items-center justify-between pt-4 border-t border-white/5">
-                            <div className="flex items-center gap-2 text-[10px] font-black text-white/20 group-hover:text-white/40 uppercase tracking-[0.15em] transition-colors">
+                        <div className="flex items-center justify-between pt-4 border-t border-foreground/5">
+                            <div className="flex items-center gap-2 text-[10px] font-black text-foreground/80 group-hover:text-foreground/80 uppercase tracking-[0.15em] transition-colors">
                                 <Clock size={10} className="text-blue-500/40 group-hover:text-blue-500/60" />
                                 <span>{format(eventDate, 'h:mm a')}</span>
                             </div>

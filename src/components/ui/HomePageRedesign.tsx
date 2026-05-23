@@ -23,7 +23,7 @@ export default function HomePageRedesign() {
         <PageSection title="Priority Items">
           <div className="grid gap-4">
             {/* Card 1: Observational, not urgent */}
-            <div className="p-6 rounded-2xl bg-white/[0.03] border border-white/[0.05] flex justify-between items-center group hover:bg-white/[0.05] transition-colors">
+            <div className="p-6 rounded-2xl bg-foreground/[0.03] border border-foreground/[0.05] flex justify-between items-center group hover:bg-foreground/[0.05] transition-colors">
               <div>
                 <div className="bg-blue-500/10 text-blue-400 text-xs font-medium px-2 py-1 rounded w-fit mb-2">Review Required</div>
                 <div className="text-slate-300 font-normal">Monthly Performance Report</div>
@@ -32,7 +32,7 @@ export default function HomePageRedesign() {
             </div>
 
             {/* Card 2 */}
-            <div className="p-6 rounded-2xl bg-white/[0.03] border border-white/[0.05] flex justify-between items-center group hover:bg-white/[0.05] transition-colors">
+            <div className="p-6 rounded-2xl bg-foreground/[0.03] border border-foreground/[0.05] flex justify-between items-center group hover:bg-foreground/[0.05] transition-colors">
               <div>
                 <div className="bg-emerald-500/10 text-emerald-400 text-xs font-medium px-2 py-1 rounded w-fit mb-2">Scheduled</div>
                 <div className="text-slate-300 font-normal">Inventory Audit</div>

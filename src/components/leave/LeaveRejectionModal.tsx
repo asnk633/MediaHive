@@ -54,11 +54,11 @@ export const LeaveRejectionModal: React.FC<LeaveRejectionModalProps> = ({
                         <div className="p-2 bg-red-500/10 rounded-xl">
                             <AlertCircle size={20} className="text-red-400" />
                         </div>
-                        <h2 className="text-xl font-bold text-white">Reject Leave Request</h2>
+                        <h2 className="text-xl font-bold text-foreground">Reject Leave Request</h2>
                     </div>
                     <button
                         onClick={onClose}
-                        className="p-2 hover:bg-white/10 rounded-full transition-colors text-white/50 hover:text-white"
+                        className="p-2 hover:bg-foreground/10 rounded-full transition-colors text-foreground/70 hover:text-foreground"
                     >
                         <X size={20} />
                     </button>
@@ -66,13 +66,13 @@ export const LeaveRejectionModal: React.FC<LeaveRejectionModalProps> = ({
 
                 {/* Content */}
                 <form onSubmit={handleSubmit} className="space-y-4">
-                    <p className="text-sm text-white/60">
-                        You are rejecting <span className="font-semibold text-white">{requesterName}'s</span> leave request.
+                    <p className="text-sm text-foreground/80">
+                        You are rejecting <span className="font-semibold text-foreground">{requesterName}'s</span> leave request.
                         Please provide a clear reason for the rejection.
                     </p>
 
                     <div>
-                        <label className="block text-xs font-bold text-white/50 uppercase tracking-wider mb-2">
+                        <label className="block text-xs font-bold text-foreground/70 uppercase tracking-wider mb-2">
                             Rejection Reason *
                         </label>
                         <textarea
@@ -81,9 +81,9 @@ export const LeaveRejectionModal: React.FC<LeaveRejectionModalProps> = ({
                             onChange={(e) => setReason(e.target.value)}
                             rows={4}
                             placeholder="e.g., Insufficient notice, overlapping with critical project deadline..."
-                            className="w-full bg-[#0a0c10] text-white placeholder:text-white/50 border border-[#ffffff1a] rounded-xl py-3 px-4 outline-none transition-all focus:border-red-500/50 focus:ring-4 focus:ring-red-500/10 resize-none"
+                            className="w-full bg-[#0a0c10] text-foreground placeholder:text-foreground/70 border border-[#ffffff1a] rounded-xl py-3 px-4 outline-none transition-all focus:border-red-500/50 focus:ring-4 focus:ring-red-500/10 resize-none"
                         />
-                        <p className="text-xs text-white/50 mt-1">
+                        <p className="text-xs text-foreground/70 mt-1">
                             {reason.length}/10 characters minimum
                         </p>
                     </div>
@@ -93,14 +93,14 @@ export const LeaveRejectionModal: React.FC<LeaveRejectionModalProps> = ({
                         <button
                             type="button"
                             onClick={onClose}
-                            className="flex-1 py-3 text-sm font-bold text-gray-300 bg-white/5 hover:bg-white/10 rounded-xl transition-colors"
+                            className="flex-1 py-3 text-sm font-bold text-gray-300 bg-foreground/5 hover:bg-foreground/10 rounded-xl transition-colors"
                         >
                             Cancel
                         </button>
                         <button
                             type="submit"
                             disabled={loading || reason.length < 10}
-                            className="flex-1 py-3 bg-red-600 hover:bg-red-500 text-white font-bold text-sm rounded-xl transition-all disabled:opacity-50 disabled:cursor-not-allowed"
+                            className="flex-1 py-3 bg-red-600 hover:bg-red-500 text-foreground font-bold text-sm rounded-xl transition-all disabled:opacity-50 disabled:cursor-not-allowed"
                         >
                             {loading ? 'Rejecting...' : 'Confirm Rejection'}
                         </button>

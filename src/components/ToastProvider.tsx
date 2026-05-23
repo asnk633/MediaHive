@@ -34,8 +34,8 @@ export function ToastProvider({ children }: { children: React.ReactNode }) {
               t.variant === "success"
                 ? "bg-emerald-600 text-black"
                 : t.variant === "error"
-                ? "bg-red-600 text-white"
-                : "bg-white/90 text-black"
+                ? "bg-red-600 text-foreground"
+                : "bg-foreground/90 text-black"
             }`}
           >
             {t.title}

@@ -92,7 +92,7 @@ export function InstitutionsTab() {
                 <h3 className="text-lg font-medium text-slate-200">All Departments / Institutions</h3>
                 <Dialog open={createOpen} onOpenChange={setCreateOpen}>
                     <DialogTrigger asChild>
-                        <Button className="bg-blue-600 hover:bg-blue-500 text-white">
+                        <Button className="bg-blue-600 hover:bg-blue-500 text-foreground">
                             <Plus className="w-4 h-4 mr-2" /> Add Department / Institution
                         </Button>
                     </DialogTrigger>
@@ -129,14 +129,14 @@ export function InstitutionsTab() {
             ) : (
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
                     {institutions.map(inst => (
-                        <div key={inst.id} className="p-4 rounded-xl bg-white/5 border border-white/5 flex flex-col justify-between gap-4 hover:border-white/10 transition-colors">
+                        <div key={inst.id} className="p-4 rounded-xl bg-foreground/5 border border-foreground/5 flex flex-col justify-between gap-4 hover:border-foreground/10 transition-colors">
                             <div className="flex items-start justify-between">
                                 <div className="flex items-center gap-3">
                                     <div className="w-10 h-10 rounded-lg bg-blue-500/10 flex items-center justify-center text-blue-400">
                                         <Building className="w-5 h-5" />
                                     </div>
                                     <div>
-                                        <h4 className="text-white font-medium">{inst.name}</h4>
+                                        <h4 className="text-foreground font-medium">{inst.name}</h4>
                                         <div className={`text-xs mt-1 inline-flex items-center px-2 py-0.5 rounded-full ${inst.status === 'active' ? 'bg-green-500/10 text-green-400' : 'bg-red-500/10 text-red-400'}`}>
                                             {inst.status}
                                         </div>
@@ -144,7 +144,7 @@ export function InstitutionsTab() {
                                 </div>
                             </div>
 
-                            <div className="flex justify-end pt-2 border-t border-white/5 gap-2">
+                            <div className="flex justify-end pt-2 border-t border-foreground/5 gap-2">
                                 <Button
                                     variant="ghost"
                                     size="sm"
@@ -153,7 +153,7 @@ export function InstitutionsTab() {
                                         setEditName(inst.name);
                                         setEditOpen(true);
                                     }}
-                                    className="text-slate-400 hover:text-white hover:bg-white/5"
+                                    className="text-slate-400 hover:text-foreground hover:bg-foreground/5"
                                 >
                                     <Edit2 className="w-4 h-4 mr-2" />
                                     Edit
@@ -171,7 +171,7 @@ export function InstitutionsTab() {
                         </div>
                     ))}
                     {institutions.length === 0 && (
-                        <div className="col-span-full flex flex-col items-center justify-center py-16 text-center border border-dashed border-white/10 rounded-xl bg-white/5">
+                        <div className="col-span-full flex flex-col items-center justify-center py-16 text-center border border-dashed border-foreground/10 rounded-xl bg-foreground/5">
                             <Building className="w-12 h-12 text-slate-600 mb-4" />
                             <h3 className="text-lg font-medium text-slate-400">No entities found</h3>
                             <p className="text-sm text-slate-500 max-w-sm mt-2">
@@ -184,9 +184,9 @@ export function InstitutionsTab() {
 
             {/* Edit Dialog */}
             <Dialog open={editOpen} onOpenChange={setEditOpen}>
-                <DialogContent className="bg-slate-950/90 backdrop-blur-xl border-white/10">
+                <DialogContent className="bg-slate-950/90 backdrop-blur-xl border-foreground/10">
                     <DialogHeader>
-                        <DialogTitle className="text-white">Edit Department / Institution</DialogTitle>
+                        <DialogTitle className="text-foreground">Edit Department / Institution</DialogTitle>
                         <DialogDescription className="text-slate-400">
                             Update the display name. Changes will propagate globally.
                         </DialogDescription>
@@ -198,7 +198,7 @@ export function InstitutionsTab() {
                                 value={editName}
                                 onChange={e => setEditName(e.target.value)}
                                 placeholder="e.g. Media & IT Department"
-                                className="bg-slate-800 border-white/10 text-white"
+                                className="bg-slate-800 border-foreground/10 text-foreground"
                             />
                         </div>
                         <Button type="submit" disabled={saving} className="w-full bg-blue-600 hover:bg-blue-500">

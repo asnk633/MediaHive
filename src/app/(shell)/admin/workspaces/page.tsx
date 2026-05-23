@@ -271,7 +271,7 @@ export default function WorkspacesPage() {
                 actions={
                     <Dialog open={createOpen} onOpenChange={setCreateOpen}>
                         <DialogTrigger asChild>
-                            <button className="h-10 px-4 rounded-xl bg-indigo-500 text-white text-sm font-bold flex items-center gap-2 hover:bg-indigo-400 transition-colors">
+                            <button className="h-10 px-4 rounded-xl bg-indigo-500 text-foreground text-sm font-bold flex items-center gap-2 hover:bg-indigo-400 transition-colors">
                                 <Plus size={16} /> New Department / Institution
                             </button>
                         </DialogTrigger>
@@ -284,12 +284,12 @@ export default function WorkspacesPage() {
                             </DialogHeader>
                             <form onSubmit={handleCreate} className="space-y-6 pt-6">
                                 <div className="space-y-2">
-                                    <Label className="text-xs font-bold uppercase tracking-widest text-white/40">Display Name</Label>
+                                    <Label className="text-xs font-bold uppercase tracking-widest text-foreground/80">Display Name</Label>
                                     <Input
                                         value={newName}
                                         onChange={e => setNewName(e.target.value)}
                                         placeholder="e.g. Media & IT Department"
-                                        className="h-12 bg-white/5 border-white/10 text-white rounded-xl"
+                                        className="h-12 bg-foreground/5 border-foreground/10 text-foreground rounded-xl"
                                         autoFocus
                                     />
                                 </div>
@@ -299,14 +299,14 @@ export default function WorkspacesPage() {
                                         variant="ghost" 
                                         onClick={() => setCreateOpen(false)} 
                                         disabled={creating}
-                                        className="h-12 px-6 rounded-xl text-white/60 hover:text-white hover:bg-white/5"
+                                        className="h-12 px-6 rounded-xl text-foreground/80 hover:text-foreground hover:bg-foreground/5"
                                     >
                                         Cancel
                                     </Button>
                                     <Button 
                                         type="submit" 
                                         disabled={creating || !newName.trim()} 
-                                        className="h-12 px-8 rounded-xl bg-indigo-500 hover:bg-indigo-400 text-white font-bold transition-all shadow-lg shadow-indigo-500/20"
+                                        className="h-12 px-8 rounded-xl bg-indigo-500 hover:bg-indigo-400 text-foreground font-bold transition-all shadow-lg shadow-indigo-500/20"
                                     >
                                         {creating ? (
                                             <div className="flex items-center gap-2">
@@ -327,10 +327,10 @@ export default function WorkspacesPage() {
                 <div className="w-full lg:w-[320px] flex flex-col gap-4">
                     <div className="flex items-center justify-between">
                         <div className="relative flex-1">
-                            <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-white/20" size={16} />
+                            <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-foreground/80" size={16} />
                             <input
                                 placeholder="Search departments & institutions..."
-                                className="w-full h-11 pl-10 pr-4 bg-white/5 border border-white/5 rounded-2xl text-sm text-white placeholder:text-white/20 focus:outline-none focus:border-indigo-500/50 transition-colors"
+                                className="w-full h-11 pl-10 pr-4 bg-foreground/5 border border-foreground/5 rounded-2xl text-sm text-foreground placeholder:text-foreground/80 focus:outline-none focus:border-indigo-500/50 transition-colors"
                                 value={search}
                                 onChange={(e) => setSearch(e.target.value)}
                             />
@@ -341,7 +341,7 @@ export default function WorkspacesPage() {
                                 "ml-3 h-11 px-4 rounded-2xl border transition-all text-[10px] font-black uppercase tracking-widest",
                                 showArchived 
                                     ? "bg-indigo-500/20 border-indigo-500/40 text-indigo-400" 
-                                    : "bg-white/5 border-white/5 text-white/40 hover:text-white/60"
+                                    : "bg-foreground/5 border-foreground/5 text-foreground/80 hover:text-foreground/80"
                             )}
                         >
                             {showArchived ? "Hide Archived" : "Show Archived"}
@@ -350,7 +350,7 @@ export default function WorkspacesPage() {
 
                     <div className="flex-1 overflow-y-auto pr-2 space-y-2 no-scrollbar max-h-[400px] lg:max-h-none">
                         {loading ? (
-                            <div className="flex justify-center py-12"><Loader2 className="animate-spin text-white/20" /></div>
+                            <div className="flex justify-center py-12"><Loader2 className="animate-spin text-foreground/80" /></div>
                         ) : filteredWorkspaces.map(workspace => (
                             <button
                                 key={workspace.id}
@@ -358,8 +358,8 @@ export default function WorkspacesPage() {
                                 className={cn(
                                     "w-full p-5 rounded-[28px] flex items-center gap-4 border transition-all text-left group",
                                     selectedId === workspace.id 
-                                        ? "bg-white/10 border-white/10 shadow-lg" 
-                                        : "bg-transparent border-transparent hover:bg-white/5"
+                                        ? "bg-foreground/10 border-foreground/10 shadow-lg" 
+                                        : "bg-transparent border-transparent hover:bg-foreground/5"
                                 )}
                             >
                                 <div className="w-12 h-12 rounded-2xl bg-indigo-500/10 flex items-center justify-center text-indigo-400">
@@ -367,7 +367,7 @@ export default function WorkspacesPage() {
                                 </div>
                                 <div className="flex-1 min-w-0">
                                     <div className="flex items-center gap-2">
-                                        <h4 className={cn("text-sm font-bold truncate", selectedId === workspace.id ? "text-white" : "text-white/60")}>
+                                        <h4 className={cn("text-sm font-bold truncate", selectedId === workspace.id ? "text-foreground" : "text-foreground/80")}>
                                             {workspace.name}
                                         </h4>
                                         <div className="flex gap-1">
@@ -384,18 +384,18 @@ export default function WorkspacesPage() {
                                             )}
                                         </div>
                                     </div>
-                                    <div className="flex items-center gap-2 text-[10px] text-white/30 font-medium uppercase tracking-widest mt-0.5">
+                                    <div className="flex items-center gap-2 text-[10px] text-foreground/70 font-medium uppercase tracking-widest mt-0.5">
                                         <Users size={10} /> {workspace.userCount || 0} Members
                                     </div>
                                 </div>
-                                <ChevronRight size={14} className={cn("transition-transform", selectedId === workspace.id ? "text-indigo-400 translate-x-0" : "text-white/10 -translate-x-2 opacity-0 group-hover:opacity-100 group-hover:translate-x-0")} />
+                                <ChevronRight size={14} className={cn("transition-transform", selectedId === workspace.id ? "text-indigo-400 translate-x-0" : "text-foreground/70 -translate-x-2 opacity-0 group-hover:opacity-100 group-hover:translate-x-0")} />
                             </button>
                         ))}
                     </div>
                 </div>
 
                 {/* Right Panel: Feature Toggles */}
-                <div className="flex-1 flex flex-col rounded-[40px] glass-liquid border-white/5 overflow-hidden min-h-[600px] lg:min-h-0">
+                <div className="flex-1 flex flex-col rounded-[40px] glass-liquid border-foreground/5 overflow-hidden min-h-[600px] lg:min-h-0">
                     <AnimatePresence mode="wait">
                         {selectedId && selectedWorkspace ? (
                             <motion.div 
@@ -411,7 +411,7 @@ export default function WorkspacesPage() {
                                             <Building2 size={40} />
                                         </div>
                                         <div>
-                                            <h2 className="text-3xl font-black text-white tracking-tighter mb-1">{selectedWorkspace.name}</h2>
+                                            <h2 className="text-3xl font-black text-foreground tracking-tighter mb-1">{selectedWorkspace.name}</h2>
                                             <div className="flex gap-3">
                                                 <div className={cn(
                                                     "px-3 py-1 rounded-lg border text-[10px] font-black uppercase tracking-widest",
@@ -427,7 +427,7 @@ export default function WorkspacesPage() {
                                                 )}>
                                                     Status: {selectedWorkspace.status}
                                                 </div>
-                                                <div className="px-3 py-1 rounded-lg bg-white/5 border border-white/5 text-[10px] font-black text-white/40 uppercase tracking-widest">
+                                                <div className="px-3 py-1 rounded-lg bg-foreground/5 border border-foreground/5 text-[10px] font-black text-foreground/80 uppercase tracking-widest">
                                                     ID: {selectedWorkspace.id}
                                                 </div>
                                             </div>
@@ -456,10 +456,10 @@ export default function WorkspacesPage() {
 
                                 <div className="space-y-8">
                                     <div className="flex items-center justify-between px-2">
-                                        <h3 className="text-sm font-black text-white/40 uppercase tracking-widest flex items-center gap-2">
+                                        <h3 className="text-sm font-black text-foreground/80 uppercase tracking-widest flex items-center gap-2">
                                             <Zap size={14} /> Feature Control Center
                                         </h3>
-                                        <p className="text-[10px] font-bold text-white/20 uppercase tracking-widest">Changes take effect immediately</p>
+                                        <p className="text-[10px] font-bold text-foreground/80 uppercase tracking-widest">Changes take effect immediately</p>
                                     </div>
 
                                     <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -473,22 +473,22 @@ export default function WorkspacesPage() {
                                                     className={cn(
                                                         "p-6 rounded-[32px] border transition-all text-left flex items-start gap-5 group",
                                                         isEnabled 
-                                                            ? "bg-white/[0.04] border-indigo-500/20" 
-                                                            : "bg-transparent border-white/5 opacity-50 grayscale"
+                                                            ? "bg-foreground/[0.04] border-indigo-500/20" 
+                                                            : "bg-transparent border-foreground/5 opacity-50 grayscale"
                                                     )}
                                                 >
                                                     <div className={cn(
                                                         "w-12 h-12 rounded-2xl flex items-center justify-center transition-all",
-                                                        isEnabled ? "bg-indigo-500 text-white" : "bg-white/5 text-white/20"
+                                                        isEnabled ? "bg-indigo-500 text-foreground" : "bg-foreground/5 text-foreground/80"
                                                     )}>
                                                         <Settings2 size={24} />
                                                     </div>
                                                     <div className="flex-1">
                                                         <div className="flex items-center justify-between mb-1">
-                                                            <h4 className="text-sm font-bold text-white uppercase tracking-wider">{module.label}</h4>
-                                                            {isEnabled ? <CheckCircle2 size={16} className="text-emerald-400" /> : <XCircle size={16} className="text-white/20" />}
+                                                            <h4 className="text-sm font-bold text-foreground uppercase tracking-wider">{module.label}</h4>
+                                                            {isEnabled ? <CheckCircle2 size={16} className="text-emerald-400" /> : <XCircle size={16} className="text-foreground/80" />}
                                                         </div>
-                                                        <p className="text-xs text-white/40 font-medium leading-relaxed">{module.desc}</p>
+                                                        <p className="text-xs text-foreground/80 font-medium leading-relaxed">{module.desc}</p>
                                                     </div>
                                                 </button>
                                             );
@@ -508,9 +508,9 @@ export default function WorkspacesPage() {
                             </motion.div>
                         ) : (
                             <div className="flex-1 flex flex-col items-center justify-center text-center p-12">
-                                <Building2 size={64} className="text-white/5 mb-6" />
-                                <h3 className="text-xl font-black text-white/20 uppercase tracking-tighter">Select a Department / Institution</h3>
-                                <p className="text-sm text-white/10 mt-2 max-w-xs">Manage institutional settings and feature availability.</p>
+                                <Building2 size={64} className="text-foreground/5 mb-6" />
+                                <h3 className="text-xl font-black text-foreground/80 uppercase tracking-tighter">Select a Department / Institution</h3>
+                                <p className="text-sm text-foreground/70 mt-2 max-w-xs">Manage institutional settings and feature availability.</p>
                             </div>
                         )}
                     </AnimatePresence>
@@ -528,15 +528,15 @@ export default function WorkspacesPage() {
                     </DialogHeader>
                     <form onSubmit={handleUpdate} className="space-y-6 pt-6">
                         <div className="space-y-2">
-                            <Label className="text-xs font-bold uppercase tracking-widest text-white/40">Display Name</Label>
+                            <Label className="text-xs font-bold uppercase tracking-widest text-foreground/80">Display Name</Label>
                             <Input
                                 value={editName}
                                 onChange={e => setEditName(e.target.value)}
-                                className="h-12 bg-white/5 border-white/10 text-white rounded-xl"
+                                className="h-12 bg-foreground/5 border-foreground/10 text-foreground rounded-xl"
                             />
                         </div>
 
-                        <div className="flex justify-between items-center pt-4 border-t border-white/5 mt-6">
+                        <div className="flex justify-between items-center pt-4 border-t border-foreground/5 mt-6">
                             <button 
                                 type="button"
                                 onClick={() => setDeleteConfirmOpen(true)}
@@ -553,14 +553,14 @@ export default function WorkspacesPage() {
                                     variant="ghost" 
                                     onClick={() => setEditOpen(false)} 
                                     disabled={updating}
-                                    className="h-12 px-6 rounded-xl text-white/60 hover:text-white hover:bg-white/5"
+                                    className="h-12 px-6 rounded-xl text-foreground/80 hover:text-foreground hover:bg-foreground/5"
                                 >
                                     Cancel
                                 </Button>
                                 <Button 
                                     type="submit" 
                                     disabled={updating || !editName.trim()} 
-                                    className="h-12 px-8 rounded-xl bg-indigo-500 hover:bg-indigo-400 text-white font-bold transition-all shadow-lg shadow-indigo-500/20"
+                                    className="h-12 px-8 rounded-xl bg-indigo-500 hover:bg-indigo-400 text-foreground font-bold transition-all shadow-lg shadow-indigo-500/20"
                                 >
                                     {updating ? <Loader2 className="w-4 h-4 animate-spin" /> : "Save Changes"}
                                 </Button>
@@ -584,7 +584,7 @@ export default function WorkspacesPage() {
                             onClick={handleDelete}
                             disabled={deleting}
                             variant="secondary"
-                            className="h-12 w-full rounded-xl bg-white/5 hover:bg-white/10 text-white font-medium transition-all"
+                            className="h-12 w-full rounded-xl bg-foreground/5 hover:bg-foreground/10 text-foreground font-medium transition-all"
                         >
                             {deleting ? "Processing..." : "Archive Entity (Safe)"}
                         </Button>
@@ -592,7 +592,7 @@ export default function WorkspacesPage() {
                         <Button 
                             onClick={handlePermanentDelete}
                             disabled={deleting}
-                            className="h-12 w-full rounded-xl bg-red-500 hover:bg-red-400 text-white font-bold transition-all shadow-lg shadow-red-500/20"
+                            className="h-12 w-full rounded-xl bg-red-500 hover:bg-red-400 text-foreground font-bold transition-all shadow-lg shadow-red-500/20"
                         >
                             {deleting ? "Deleting..." : "Permanently Delete"}
                         </Button>
@@ -602,7 +602,7 @@ export default function WorkspacesPage() {
                             variant="ghost" 
                             onClick={() => setDeleteConfirmOpen(false)} 
                             disabled={deleting}
-                            className="h-12 w-full rounded-xl text-white/40 hover:text-white hover:bg-white/5"
+                            className="h-12 w-full rounded-xl text-foreground/80 hover:text-foreground hover:bg-foreground/5"
                         >
                             Cancel
                         </Button>

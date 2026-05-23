@@ -89,19 +89,19 @@ export function ExportModal({ isOpen, onClose, availableUsers }: ExportModalProp
                     className="bg-[#0a0c10] border border-[#ffffff1a] rounded-2xl shadow-2xl w-full max-w-md overflow-hidden"
                 >
                     {/* Header */}
-                    <div className="flex items-center justify-between p-6 border-b border-[#ffffff1a] bg-white/5">
+                    <div className="flex items-center justify-between p-6 border-b border-[#ffffff1a] bg-foreground/5">
                         <div className="flex items-center gap-3">
                             <div className="p-2 bg-indigo-500/20 rounded-lg">
                                 <Download size={20} className="text-indigo-400" />
                             </div>
                             <div>
-                                <h2 className="text-lg font-bold text-white">Export Data</h2>
+                                <h2 className="text-lg font-bold text-foreground">Export Data</h2>
                                 <p className="text-xs text-gray-400">Secure, audited data export</p>
                             </div>
                         </div>
                         <button
                             onClick={onClose}
-                            className="p-2 rounded-lg hover:bg-white/10 text-gray-400 hover:text-white transition-colors"
+                            className="p-2 rounded-lg hover:bg-foreground/10 text-gray-400 hover:text-foreground transition-colors"
                         >
                             <X size={20} />
                         </button>
@@ -120,18 +120,18 @@ export function ExportModal({ isOpen, onClose, availableUsers }: ExportModalProp
                                     <button
                                         onClick={() => setExportType('department')}
                                         className={`flex flex-col items-center justify-center p-3 rounded-xl border transition-all ${exportType === 'department'
-                                            ? 'bg-indigo-600 border-indigo-500 text-white shadow-lg shadow-indigo-900/20'
-                                            : 'bg-white/5 border-[#ffffff1a] text-gray-400 hover:bg-white/10'
+                                            ? 'bg-indigo-600 border-indigo-500 text-foreground shadow-lg shadow-indigo-900/20'
+                                            : 'bg-foreground/5 border-[#ffffff1a] text-gray-400 hover:bg-foreground/10'
                                             }`}
                                     >
                                         <Building size={20} className="mb-2" />
-                                        <span className="text-xs font-medium">Office / Unit</span>
+                                        <span className="text-xs font-medium">Department / Institution</span>
                                     </button>
                                     <button
                                         onClick={() => setExportType('attendance')}
                                         className={`flex flex-col items-center justify-center p-3 rounded-xl border transition-all ${exportType === 'attendance'
-                                            ? 'bg-indigo-600 border-indigo-500 text-white shadow-lg shadow-indigo-900/20'
-                                            : 'bg-white/5 border-[#ffffff1a] text-gray-400 hover:bg-white/10'
+                                            ? 'bg-indigo-600 border-indigo-500 text-foreground shadow-lg shadow-indigo-900/20'
+                                            : 'bg-foreground/5 border-[#ffffff1a] text-gray-400 hover:bg-foreground/10'
                                             }`}
                                     >
                                         <Users size={20} className="mb-2" />
@@ -140,8 +140,8 @@ export function ExportModal({ isOpen, onClose, availableUsers }: ExportModalProp
                                     <button
                                         onClick={() => setExportType('user')}
                                         className={`flex flex-col items-center justify-center p-3 rounded-xl border transition-all ${exportType === 'user'
-                                            ? 'bg-indigo-600 border-indigo-500 text-white shadow-lg shadow-indigo-900/20'
-                                            : 'bg-white/5 border-[#ffffff1a] text-gray-400 hover:bg-white/10'
+                                            ? 'bg-indigo-600 border-indigo-500 text-foreground shadow-lg shadow-indigo-900/20'
+                                            : 'bg-foreground/5 border-[#ffffff1a] text-gray-400 hover:bg-foreground/10'
                                             }`}
                                     >
                                         <FileText size={20} className="mb-2" />
@@ -159,14 +159,14 @@ export function ExportModal({ isOpen, onClose, availableUsers }: ExportModalProp
                                     <div className="flex bg-black/20 p-1 rounded-lg border border-[#ffffff1a]">
                                         <button
                                             onClick={() => setFormat('csv')}
-                                            className={`flex-1 py-1.5 text-xs font-medium rounded-md transition-all ${format === 'csv' ? 'bg-white/10 text-white' : 'text-gray-500 hover:text-gray-300'
+                                            className={`flex-1 py-1.5 text-xs font-medium rounded-md transition-all ${format === 'csv' ? 'bg-foreground/10 text-foreground' : 'text-gray-500 hover:text-gray-300'
                                                 }`}
                                         >
                                             CSV (Excel)
                                         </button>
                                         <button
                                             onClick={() => setFormat('json')}
-                                            className={`flex-1 py-1.5 text-xs font-medium rounded-md transition-all ${format === 'json' ? 'bg-white/10 text-white' : 'text-gray-500 hover:text-gray-300'
+                                            className={`flex-1 py-1.5 text-xs font-medium rounded-md transition-all ${format === 'json' ? 'bg-foreground/10 text-foreground' : 'text-gray-500 hover:text-gray-300'
                                                 }`}
                                         >
                                             JSON (Raw)
@@ -175,7 +175,7 @@ export function ExportModal({ isOpen, onClose, availableUsers }: ExportModalProp
                                 </div>
 
                                 {/* Filters */}
-                                <div className="bg-white/5 rounded-xl p-4 border border-[#ffffff1a] space-y-4">
+                                <div className="bg-foreground/5 rounded-xl p-4 border border-[#ffffff1a] space-y-4">
 
                                     {exportType === 'attendance' ? (
                                         <div className="grid grid-cols-2 gap-3">
@@ -241,7 +241,7 @@ export function ExportModal({ isOpen, onClose, availableUsers }: ExportModalProp
                                 <div className="mx-auto w-12 h-12 bg-blue-500/20 rounded-full flex items-center justify-center text-blue-400">
                                     <ShieldAlert size={24} />
                                 </div>
-                                <h3 className="text-white font-bold text-lg">Institutional Compliance Required</h3>
+                                <h3 className="text-foreground font-bold text-lg">Institutional Compliance Required</h3>
                                 <p className="text-sm text-gray-400 leading-relaxed">
                                     This system enforces strict accountability constraints. All data exports are:
                                 </p>
@@ -252,24 +252,24 @@ export function ExportModal({ isOpen, onClose, availableUsers }: ExportModalProp
                                 </ul>
                                 <button
                                     onClick={handleAcknowledge}
-                                    className="w-full py-3 bg-blue-600 hover:bg-blue-500 text-white font-bold rounded-lg transition-colors shadow-lg shadow-blue-900/20"
+                                    className="w-full py-3 bg-blue-600 hover:bg-blue-500 text-foreground font-bold rounded-lg transition-colors shadow-lg shadow-blue-900/20"
                                 >
                                     I Acknowledge & Agree
                                 </button>
                             </div>
                         </div>
                     ) : (
-                        <div className="p-6 border-t border-[#ffffff1a] flex justify-end gap-3 bg-white/5">
+                        <div className="p-6 border-t border-[#ffffff1a] flex justify-end gap-3 bg-foreground/5">
                             <button
                                 onClick={onClose}
-                                className="px-4 py-2 text-sm font-medium text-gray-400 hover:text-white transition-colors"
+                                className="px-4 py-2 text-sm font-medium text-gray-400 hover:text-foreground transition-colors"
                             >
                                 Cancel
                             </button>
                             <button
                                 onClick={handleExport}
                                 disabled={loading || (exportType === 'user' && !selectedUserId)}
-                                className="flex items-center gap-2 px-6 py-2 bg-indigo-600 hover:bg-indigo-500 text-white text-sm font-medium rounded-lg transition-colors shadow-lg shadow-indigo-900/20 disabled:opacity-50 disabled:cursor-not-allowed"
+                                className="flex items-center gap-2 px-6 py-2 bg-indigo-600 hover:bg-indigo-500 text-foreground text-sm font-medium rounded-lg transition-colors shadow-lg shadow-indigo-900/20 disabled:opacity-50 disabled:cursor-not-allowed"
                             >
                                 {loading ? (
                                     <>Processing...</>

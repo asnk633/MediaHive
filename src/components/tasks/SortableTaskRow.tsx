@@ -37,15 +37,16 @@ import {
 // --- Reused Sub-components (Ideally these should be exported from TaskListView or a separate file, but inline for now to ensure compatibility) ---
 
 const PriorityBadge = ({ priority, className }: any) => {
+    const displayPriority = priority === 'urgent' ? 'high' : priority;
     const styles: any = {
-        urgent: 'bg-red-500/10 text-red-500 border-red-500/20',
+        urgent: 'bg-orange-500/10 text-orange-500 border-orange-500/20',
         high: 'bg-orange-500/10 text-orange-500 border-orange-500/20',
-        medium: 'bg-yellow-500/10 text-yellow-500 border-yellow-500/20',
+        medium: 'bg-blue-500/10 text-blue-400 border-blue-500/20',
         low: 'bg-slate-500/10 text-slate-400 border-slate-500/20'
     };
     return (
-        <span className={cn("px-2 py-0.5 rounded text-[10px] uppercase font-bold tracking-wider border cursor-pointer hover:bg-white/5 transition-colors", styles[priority || 'low'] || styles.low, className)}>
-            {priority}
+        <span className={cn("px-2 py-0.5 rounded text-[10px] uppercase font-bold tracking-wider border cursor-pointer hover:bg-foreground/5 transition-colors", styles[displayPriority || 'low'] || styles.low, className)}>
+            {displayPriority}
         </span>
     );
 };
@@ -62,12 +63,12 @@ const StatusPill = ({ status, className, onClick }: any) => {
     const colorStyles: any = {
         emerald: "bg-emerald-500/10 text-emerald-400 border-emerald-500/20",
         blue: "bg-blue-500/10 text-blue-400 border-blue-500/20",
-        amber: "bg-amber-500/10 text-amber-400 border-amber-500/20",
+        amber: "bg-violet-500/10 text-violet-400 border-violet-500/20",
         slate: "bg-slate-500/10 text-slate-400 border-slate-500/20"
     };
 
     return (
-        <span onClick={onClick} className={cn("px-2.5 py-1 rounded text-xs font-semibold border flex items-center gap-1.5 transition-all select-none w-fit cursor-pointer hover:bg-white/5 active:scale-95", colorStyles[color], className)}>
+        <span onClick={onClick} className={cn("px-2.5 py-1 rounded text-xs font-semibold border flex items-center gap-1.5 transition-all select-none w-fit cursor-pointer hover:bg-foreground/5 active:scale-95", colorStyles[color], className)}>
             <Icon size={12} />
             {label}
         </span>
@@ -157,7 +158,7 @@ export const SortableTaskRow = memo(({
     const allowedToEdit = canEdit(task);
     const isCreator = (typeof task.created_by === 'string' ? task.created_by : task.created_by?.uid) === currentUser?.uid;
     const canRestoreTask = ['admin', 'manager', 'member', 'team'].includes(userRole);
-    const canSoftDelete = allowedToEdit || isCreator; // Match backend logic
+    const canSoftDelete = allowedToEdit || isCreator || ['admin', 'manager'].includes(userRole); // Admin/manager always can soft-delete
 
     // Phase 8: Multi-user real-time awareness indicators
     const isRecentlyUpdatedByOther = task.updatedBy &&
@@ -176,12 +177,12 @@ export const SortableTaskRow = memo(({
                 id={`nav-item-${task.id}`}
                 data-active={activeId === task.id}
                 className={cn(
-                    "grid grid-cols-[auto_1fr_auto] md:grid-cols-[28px_minmax(0,10fr)_minmax(0,4fr)_70px_45px_70px_100px_90px_80px] gap-x-2 px-1.5 items-center border-l-[3px] transition-all duration-200 cursor-default focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-blue-500/50 hover:bg-white/[0.025]",
+                    "grid grid-cols-[auto_1fr_auto] md:grid-cols-[44px_minmax(0,10fr)_minmax(0,4fr)_65px_45px_65px_90px_75px_95px] gap-x-2 pl-1.5 pr-3 items-center border-l-[3px] transition-all duration-200 cursor-default focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-blue-500/50 hover:bg-foreground/[0.025]",
                     density === 'compact' ? "py-1.5" : "py-2.5",
                     isSelected
-                        ? "bg-blue-500/[0.06] ring-1 ring-inset ring-blue-500/20"
-                        : "bg-white/[0.01] hover:bg-white/[0.02]",
-                    activeId === task.id && "bg-blue-500/[0.08] ring-1 ring-inset ring-blue-500/30 z-10",
+                        ? "bg-primary/[0.1] ring-1 ring-inset ring-primary/30"
+                        : "bg-foreground/[0.02] backdrop-blur-md border border-foreground/[0.05]",
+                    activeId === task.id && "bg-primary/[0.15] ring-1 ring-inset ring-primary/40 z-10",
                     (() => {
                         // 1. Completed state (Green)
                         if (task.status === 'done') {
@@ -190,21 +191,20 @@ export const SortableTaskRow = memo(({
 
                         // 2. Urgency Flags (Active Tasks Only)
                         if (task.isOverdue || overdue) return "border-l-red-500 bg-red-500/[0.02]";
-                        if (task.isDueToday || today) return "border-l-blue-500 bg-blue-500/[0.05] shadow-[inset_2px_0_10px_rgba(59,130,246,0.1)]"; // Glowing Blue
+                        if (task.isDueToday || today) return "border-l-primary bg-primary/[0.05] shadow-[inset_2px_0_10px_rgba(var(--accent-primary-rgb),0.15)]"; // Themed Accent
                         if (task.isUpcoming) return "border-l-yellow-500/50"; // Soft Yellow
 
                         // 3. Priority Base Colors (Fallback for other active tasks)
                         switch (task.priority) {
-                            case 'urgent': return "border-l-red-500";
                             case 'high': return "border-l-orange-500";
-                            case 'medium': return "border-l-yellow-500";
+                            case 'medium': return "border-l-blue-500";
                             case 'low': return "border-l-slate-500";
                             default: return "border-l-slate-600";
                         }
                     })(),
-                    isDragging && "bg-blue-500/10 border-blue-500 ring-2 ring-blue-500/40",
+                    isDragging && "bg-primary/10 border-primary ring-2 ring-primary/40",
                     (task as any).isOptimistic && !(task as any).isPendingSync && "opacity-70 transition-opacity duration-300",
-                    (task as any).isPendingSync && "border-dashed border-white/20 opacity-80"
+                    (task as any).isPendingSync && "border-dashed border-foreground/20 opacity-80"
                 )}
             >
                 {/* Expander / Drag Handle */}
@@ -214,7 +214,7 @@ export const SortableTaskRow = memo(({
                         {...attributes}
                         {...listeners}
                         onClick={(e) => e.stopPropagation()}
-                        className="p-1.5 mr-1 text-muted hover:text-white cursor-grab active:cursor-grabbing opacity-0 group-hover:opacity-100 transition-opacity"
+                        className="p-1.5 mr-1 text-muted hover:text-foreground cursor-grab active:cursor-grabbing opacity-0 group-hover:opacity-100 transition-opacity"
                     >
                         <GripVertical size={14} />
                     </div>
@@ -222,7 +222,8 @@ export const SortableTaskRow = memo(({
                     <button
                         type="button"
                         onClick={(e) => { e.stopPropagation(); toggleExpand(task.id); }}
-                        className="text-muted hover:text-white transition-colors p-1 rounded hover:bg-white/10"
+                        className="text-muted hover:text-foreground transition-colors p-1 rounded hover:bg-foreground/10 min-w-0 min-h-0 w-6 h-6 flex items-center justify-center"
+                        style={{ minWidth: 0, minHeight: 0 }}
                     >
                         {expanded ? <ChevronDown size={16} /> : <ChevronRight size={16} />}
                     </button>
@@ -234,7 +235,7 @@ export const SortableTaskRow = memo(({
                         {/* Checkbox — visible to all roles; members can select for visual reference */}
 
                         <div className="flex flex-col flex-1 min-w-0">
-                            <span className={cn("text-[13px] font-medium truncate transition-colors duration-200", task.status === 'done' ? "text-white/35 line-through" : "text-white/90 group-hover:text-white")}>
+                            <span className={cn("text-[13px] font-medium truncate transition-colors duration-200", task.status === 'done' ? "text-foreground/35 line-through" : "text-foreground/90 group-hover:text-foreground")}>
                                 {task.title}
                                 {task.is_demo_data && (
                                     <span className="ml-2 inline-flex items-center text-[9px] uppercase font-bold text-amber-500 bg-amber-500/10 border border-amber-500/20 rounded px-1.5 py-0.5 tracking-[0.05em]" title="Test / Demo Data">
@@ -259,7 +260,7 @@ export const SortableTaskRow = memo(({
                                 )}
                             </span>
                             {isRecentlyUpdatedByOther && !(task as any).hasExternalChangePending && (
-                                <span className="text-[10px] text-white/40 italic flex items-center gap-1 mt-0.5">
+                                <span className="text-[10px] text-foreground/80 italic flex items-center gap-1 mt-0.5">
                                     <Activity size={10} className="text-blue-400 animate-pulse" />
                                     Updated by {task.updatedBy?.name?.split(' ')[0]} · just now
                                 </span>
@@ -277,7 +278,7 @@ export const SortableTaskRow = memo(({
                 {/* Desktop Columns - Reordered per Request: Priority -> Assigned -> Due -> Completed -> Status */}
 
                 {/* Requested By */}
-                <div className="hidden md:flex items-center text-white/50 text-xs truncate">
+                <div className="hidden md:flex items-center text-foreground/70 text-xs truncate min-w-0">
                     {task.on_behalf_of?.name ? (
                         <span className="text-blue-400/80 font-bold tracking-tight">
                             {task.on_behalf_of.name}
@@ -295,16 +296,27 @@ export const SortableTaskRow = memo(({
                 <div className="hidden md:flex items-center justify-center"><PriorityBadge priority={task.priority} /></div>
 
                 {/* Assigned */}
-                <div className="hidden md:flex items-center gap-2">
+                <div className="hidden md:flex items-center">
                     {task.assignedTo && task.assignedTo.length > 0 ? (
-                        <SafeAvatar
-                            size={22}
-                            src={task.assignedTo[0].avatarUrl}
-                            alt={task.assignedTo[0].name || 'Assignee'}
-                            name={task.assignedTo[0].name}
-                        />
+                        <div className="flex items-center -space-x-1.5">
+                            {task.assignedTo.slice(0, 3).map((assignee: any, i: number) => (
+                                <div key={assignee.uid || i} className="rounded-full ring-2 ring-background relative" style={{ zIndex: 3 - i }}>
+                                    <SafeAvatar
+                                        size={22}
+                                        src={assignee.avatarUrl}
+                                        alt={assignee.name || 'Assignee'}
+                                        name={assignee.name}
+                                    />
+                                </div>
+                            ))}
+                            {task.assignedTo.length > 3 && (
+                                <div className="flex items-center justify-center w-[22px] h-[22px] rounded-full bg-foreground/10 ring-2 ring-background text-[9px] font-bold text-foreground/70 z-0 relative">
+                                    +{task.assignedTo.length - 3}
+                                </div>
+                            )}
+                        </div>
                     ) : (
-                        <span className="text-xs text-white/25 italic">—</span>
+                        <span className="text-xs text-foreground/25 italic">—</span>
                     )}
                 </div>
 
@@ -314,9 +326,9 @@ export const SortableTaskRow = memo(({
                         (task as any).isOverdue || overdue ? "text-red-400 font-semibold" :
                             (task as any).isDueToday || today ? "text-blue-400 font-semibold" :
                                 (task as any).isUpcoming ? "text-yellow-400/80" :
-                                    "text-white/35"
+                                    "text-foreground/35"
                     )}>
-                        {(task as any).isDueToday || today ? "Today" : dueDate ? format(dueDate, 'MMM d') : <span className="text-white/15">—</span>}
+                        {(task as any).isDueToday || today ? "Today" : dueDate ? format(dueDate, 'MMM d') : <span className="text-foreground/15">—</span>}
                     </span>
                 </div>
 
@@ -328,17 +340,17 @@ export const SortableTaskRow = memo(({
                                 <DropdownMenuTrigger className="outline-none">
                                     <StatusPill status={task.status || 'todo'} />
                                 </DropdownMenuTrigger>
-                                <DropdownMenuContent align="end" className="w-[140px] bg-slate-900 border-white/10">
-                                    <DropdownMenuItem onClick={() => onStatusChange('todo')} className="text-white/70 hover:text-white hover:bg-white/5">
+                                <DropdownMenuContent align="end" className="w-[140px] bg-slate-900 border-foreground/10">
+                                    <DropdownMenuItem onClick={() => onStatusChange('todo')} className="text-foreground/70 hover:text-foreground hover:bg-foreground/5">
                                         <Circle size={14} className="mr-2" /> To Do
                                     </DropdownMenuItem>
-                                    <DropdownMenuItem onClick={() => onStatusChange('in_progress')} className="text-white/70 hover:text-white hover:bg-white/5">
+                                    <DropdownMenuItem onClick={() => onStatusChange('in_progress')} className="text-foreground/70 hover:text-foreground hover:bg-foreground/5">
                                         <Clock size={14} className="mr-2" /> Working
                                     </DropdownMenuItem>
-                                    <DropdownMenuItem onClick={() => onStatusChange('review')} className="text-white/70 hover:text-white hover:bg-white/5">
+                                    <DropdownMenuItem onClick={() => onStatusChange('review')} className="text-foreground/70 hover:text-foreground hover:bg-foreground/5">
                                         <AlertCircle size={14} className="mr-2" /> On Hold
                                     </DropdownMenuItem>
-                                    <DropdownMenuItem onClick={() => onStatusChange('done')} className="text-white/70 hover:text-white hover:bg-white/5">
+                                    <DropdownMenuItem onClick={() => onStatusChange('done')} className="text-foreground/70 hover:text-foreground hover:bg-foreground/5">
                                         <CheckCircle2 size={14} className="mr-2 text-emerald-500" /> Done
                                     </DropdownMenuItem>
                                 </DropdownMenuContent>
@@ -348,31 +360,32 @@ export const SortableTaskRow = memo(({
                 </div>
 
                 {/* Completed Date Column */}
-                <div className="hidden md:flex items-center justify-end">
-                    <span className="text-xs text-white/35 tabular-nums">
+                <div className="hidden md:flex items-center justify-center">
+                    <span className="text-xs text-foreground/35 tabular-nums">
                         {task.status === 'done' && task.completedAt ? (
                             format(safeDate(task.completedAt)!, 'd MMM yyyy')
                         ) : (
-                            <span className="text-white/15">—</span>
+                            <span className="text-foreground/15">—</span>
                         )}
                     </span>
                 </div>
 
                 {/* Quick Actions Column */}
-                <div className="hidden md:flex items-center justify-center gap-1.5">
+                <div className="hidden md:flex items-center justify-center gap-1 opacity-40 group-hover:opacity-100 transition-opacity duration-200">
                     {mode === 'default' && (
                         <>
                             <TooltipProvider>
                                 <Tooltip>
                                     <TooltipTrigger asChild>
-                                            <button
-                                                onClick={(e) => { e.stopPropagation(); onTaskClick(task); }}
-                                                className="p-0.5 rounded text-white/30 hover:text-blue-400 hover:bg-blue-500/10 transition-all opacity-0 group-hover:opacity-100"
-                                            >
-                                                <Eye size={12} />
-                                            </button>
+                                        <button
+                                            onClick={(e) => { e.stopPropagation(); onTaskClick(task); }}
+                                            className="text-foreground/60 hover:text-blue-400 hover:scale-110 transition-all duration-150 w-6 h-6 flex items-center justify-center p-0 min-w-0 min-h-0"
+                                            style={{ minWidth: 0, minHeight: 0 }}
+                                        >
+                                            <Eye size={14} />
+                                        </button>
                                     </TooltipTrigger>
-                                    <TooltipContent className="bg-slate-900 border-white/10 text-[10px] font-bold uppercase tracking-widest py-1 px-2">View</TooltipContent>
+                                    <TooltipContent className="bg-slate-900 border-foreground/10 text-[9px] font-bold uppercase tracking-wider py-1 px-2">View</TooltipContent>
                                 </Tooltip>
                             </TooltipProvider>
 
@@ -382,12 +395,13 @@ export const SortableTaskRow = memo(({
                                         <TooltipTrigger asChild>
                                             <button
                                                 onClick={(e) => { e.stopPropagation(); onEditTask?.(task); }}
-                                                className="p-0.5 rounded text-white/30 hover:text-amber-400 hover:bg-amber-500/10 transition-all opacity-0 group-hover:opacity-100"
+                                                className="text-foreground/60 hover:text-amber-400 hover:scale-110 transition-all duration-150 w-6 h-6 flex items-center justify-center p-0 min-w-0 min-h-0"
+                                                style={{ minWidth: 0, minHeight: 0 }}
                                             >
-                                                <Edit3 size={12} />
+                                                <Edit3 size={14} />
                                             </button>
                                         </TooltipTrigger>
-                                        <TooltipContent className="bg-slate-900 border-white/10 text-[10px] font-bold uppercase tracking-widest py-1 px-2">Edit</TooltipContent>
+                                        <TooltipContent className="bg-slate-900 border-foreground/10 text-[9px] font-bold uppercase tracking-wider py-1 px-2">Edit</TooltipContent>
                                     </Tooltip>
                                 </TooltipProvider>
                             )}
@@ -398,12 +412,13 @@ export const SortableTaskRow = memo(({
                                         <TooltipTrigger asChild>
                                             <button
                                                 onClick={(e) => { e.stopPropagation(); onSoftDelete?.(task.id); }}
-                                                className="p-0.5 rounded text-white/30 hover:text-red-400 hover:bg-red-500/10 transition-all opacity-0 group-hover:opacity-100"
+                                                className="text-foreground/60 hover:text-red-400 hover:scale-110 transition-all duration-150 w-6 h-6 flex items-center justify-center p-0 min-w-0 min-h-0"
+                                                style={{ minWidth: 0, minHeight: 0 }}
                                             >
-                                                <Trash2 size={12} />
+                                                <Trash2 size={14} />
                                             </button>
                                         </TooltipTrigger>
-                                        <TooltipContent className="bg-slate-900 border-white/10 text-[10px] font-bold uppercase tracking-widest py-1 px-2">Trash</TooltipContent>
+                                        <TooltipContent className="bg-slate-900 border-foreground/10 text-[9px] font-bold uppercase tracking-wider py-1 px-2">Trash</TooltipContent>
                                     </Tooltip>
                                 </TooltipProvider>
                             )}
@@ -411,11 +426,12 @@ export const SortableTaskRow = memo(({
                     )}
 
                     {mode === 'trash' && (
-                        <div className="flex items-center gap-1.5">
+                        <>
                             {canRestoreTask && (
                                 <button
                                     onClick={(e) => { e.stopPropagation(); onRestore?.(task.id); }}
-                                    className="p-2 rounded-lg text-emerald-400 hover:bg-emerald-500/10 transition-colors"
+                                    className="text-emerald-400/70 hover:text-emerald-400 hover:scale-110 transition-all duration-200 w-6 h-6 flex items-center justify-center p-0 min-w-0 min-h-0"
+                                    style={{ minWidth: 0, minHeight: 0 }}
                                 >
                                     <RotateCcw size={14} />
                                 </button>
@@ -423,12 +439,13 @@ export const SortableTaskRow = memo(({
                             {canPermDelete && (
                                 <button
                                     onClick={(e) => { e.stopPropagation(); onPermanentDelete?.(task.id); }}
-                                    className="p-2 rounded-lg text-red-400 hover:bg-red-500/10 transition-colors"
+                                    className="text-red-400/70 hover:text-red-400 hover:scale-110 transition-all duration-200 w-6 h-6 flex items-center justify-center p-0 min-w-0 min-h-0"
+                                    style={{ minWidth: 0, minHeight: 0 }}
                                 >
                                     <Trash2 size={14} />
                                 </button>
                             )}
-                        </div>
+                        </>
                     )}
                 </div>
 
@@ -441,20 +458,20 @@ export const SortableTaskRow = memo(({
                         initial={{ height: 0, opacity: 0 }}
                         animate={{ height: "auto", opacity: 1 }}
                         exit={{ height: 0, opacity: 0 }}
-                        className="overflow-hidden bg-[#0F1218] border-b border-soft"
+                        className="overflow-hidden bg-card border-b border-soft"
                     >
                         <div className="p-6 grid grid-cols-2 gap-8 text-sm">
                             {/* Content identical to previous */}
                             <div className="space-y-4">
                                 <div>
                                     <label className="text-[10px] uppercase text-muted tracking-wider font-bold">Description</label>
-                                    <p className="text-white/70 mt-1 leading-relaxed">{task.description || "No description provided."}</p>
+                                    <p className="text-foreground/70 mt-1 leading-relaxed">{task.description || "No description provided."}</p>
                                 </div>
                             </div>
                             {/* ... truncated for brevity in this rewrite, but I should copy mostly everything ... */}
                             {/* Actually, for the sake of the task, I will include the Open Full Modal button */}
                             <div className="flex justify-end items-end h-full">
-                                <Link href={`/tasks/${task.id}`} className="text-blue-400 hover:text-white text-xs font-bold uppercase flex items-center gap-1 transition-colors">
+                                <Link href={`/tasks/${task.id}`} className="text-blue-400 hover:text-foreground text-xs font-bold uppercase flex items-center gap-1 transition-colors">
                                     Open Details <Edit3 size={12} />
                                 </Link>
                             </div>

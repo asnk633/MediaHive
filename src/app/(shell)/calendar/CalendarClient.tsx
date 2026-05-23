@@ -249,8 +249,8 @@ export default function CalendarClient() {
                                 }}
                                 className="p-4"
                                 modifiersClassNames={{
-                                    today: 'bg-[var(--accent)] text-white',
-                                    selected: 'bg-[var(--accent-2)] text-white',
+                                    today: 'bg-[var(--accent)] text-foreground',
+                                    selected: 'bg-[var(--accent-2)] text-foreground',
                                 }}
                                 showOutsideDays={true}
                                 captionLayout="dropdown"
@@ -289,10 +289,9 @@ function TaskCard({ task }: { task: TaskLite }) {
                 </h3>
                 <span className={cn(
                     "shrink-0 rounded-full px-2 py-0.5 text-[10px] font-bold uppercase tracking-wider",
-                    task.priority === 'urgent' ? 'bg-[var(--danger)]/20 text-[var(--danger)]' :
-                        task.priority === 'high' ? 'bg-[var(--danger)]/20 text-[var(--danger)]' :
-                            task.priority === 'medium' ? 'bg-yellow-500/20 text-yellow-400' :
-                                'bg-[var(--accent-2)]/20 text-[var(--accent-2)]'
+                    task.priority === 'high' ? 'bg-[var(--danger)]/20 text-[var(--danger)]' :
+                        task.priority === 'medium' ? 'bg-yellow-500/20 text-yellow-400' :
+                            'bg-[var(--accent-2)]/20 text-[var(--accent-2)]'
                 )}>
                     {task.priority}
                 </span>

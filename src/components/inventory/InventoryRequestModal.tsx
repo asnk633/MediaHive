@@ -56,14 +56,14 @@ export function InventoryRequestModal({ isOpen, onClose }: InventoryRequestModal
                         initial={{ opacity: 0, scale: 0.95 }}
                         animate={{ opacity: 1, scale: 1 }}
                         exit={{ opacity: 0, scale: 0.95 }}
-                        className="fixed left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 w-full max-w-lg bg-[#0f172a] border border-[#ffffff1a] rounded-2xl shadow-2xl z-[70] p-6"
+                        className="fixed left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 w-full max-w-lg bg-[var(--glass-liquid-bg)] border border-[#ffffff1a] rounded-2xl shadow-2xl z-[70] p-6"
                     >
                         <div className="flex justify-between items-center mb-6">
-                            <h2 className="text-xl font-bold text-white flex items-center gap-2">
+                            <h2 className="text-xl font-bold text-foreground flex items-center gap-2">
                                 <Package className="text-blue-400" size={24} />
                                 Request Equipment
                             </h2>
-                            <button onClick={onClose} className="text-gray-400 hover:text-white transition-colors">
+                            <button onClick={onClose} className="text-gray-400 hover:text-foreground transition-colors">
                                 <X size={24} />
                             </button>
                         </div>
@@ -98,7 +98,7 @@ export function InventoryRequestModal({ isOpen, onClose }: InventoryRequestModal
                                         placeholder="e.g. Sony A7IV"
                                         value={formData.description}
                                         onChange={e => setFormData({ ...formData, description: e.target.value })}
-                                        className="w-full bg-slate-800/50 border border-slate-700 rounded-lg px-3 py-2 text-white outline-none focus:border-blue-500"
+                                        className="w-full bg-slate-800/50 border border-slate-700 rounded-lg px-3 py-2 text-foreground outline-none focus:border-blue-500"
                                     />
                                 </div>
                             </div>
@@ -133,7 +133,7 @@ export function InventoryRequestModal({ isOpen, onClose }: InventoryRequestModal
                                     placeholder="Briefly describe why you need this..."
                                     value={formData.purpose}
                                     onChange={e => setFormData({ ...formData, purpose: e.target.value })}
-                                    className="w-full bg-slate-800/50 border border-slate-700 rounded-lg px-3 py-2 text-white outline-none focus:border-blue-500 resize-none"
+                                    className="w-full bg-slate-800/50 border border-slate-700 rounded-lg px-3 py-2 text-foreground outline-none focus:border-blue-500 resize-none"
                                 />
                             </div>
 
@@ -142,14 +142,14 @@ export function InventoryRequestModal({ isOpen, onClose }: InventoryRequestModal
                                 <button
                                     type="button"
                                     onClick={onClose}
-                                    className="px-4 py-2 text-sm font-medium text-gray-400 hover:text-white transition-colors"
+                                    className="px-4 py-2 text-sm font-medium text-gray-400 hover:text-foreground transition-colors"
                                 >
                                     Cancel
                                 </button>
                                 <button
                                     type="submit"
                                     disabled={loading}
-                                    className="flex items-center gap-2 px-6 py-2 bg-blue-600 hover:bg-blue-500 text-white rounded-lg font-medium transition-colors shadow-lg shadow-blue-500/20 disabled:opacity-50 disabled:cursor-not-allowed"
+                                    className="flex items-center gap-2 px-6 py-2 bg-blue-600 hover:bg-blue-500 text-foreground rounded-lg font-medium transition-colors shadow-lg shadow-blue-500/20 disabled:opacity-50 disabled:cursor-not-allowed"
                                 >
                                     {loading ? 'Submitting...' : (
                                         <>

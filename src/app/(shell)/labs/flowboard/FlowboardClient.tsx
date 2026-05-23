@@ -91,7 +91,7 @@ export default function FlowboardClient() {
                                         inferredStage: 'general' as const,
                                         isStale: false,
                                         daysInStatus: 0,
-                                        urgencyScore: t.priority === 'urgent' ? 100 : 0,
+                                        urgencyScore: t.priority === 'high' ? 100 : 0,
                                         normalizedProvenance: 'System',
                                         needsAttention: false,
                                         isBlocked: false,

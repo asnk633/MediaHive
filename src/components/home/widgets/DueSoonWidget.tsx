@@ -35,7 +35,7 @@ export const DueSoonWidget = ({ tasks, userRole }: DueSoonWidgetProps) => {
             <div className="flex items-center justify-between mb-6 pb-4 border-b border-border-soft">
                 <div className="flex items-center gap-2">
                     <Clock size={16} className="text-accent-primary" />
-                    <h3 className="text-sm font-semibold text-white">
+                    <h3 className="text-sm font-semibold text-foreground">
                         Due Soon
                     </h3>
                 </div>
@@ -52,7 +52,7 @@ export const DueSoonWidget = ({ tasks, userRole }: DueSoonWidgetProps) => {
                         className="group flex flex-col gap-2 p-3 rounded-md hover:bg-surface cursor-pointer transition-colors border border-transparent hover:border-border-soft"
                     >
                         <div className="flex items-center justify-between">
-                            <span className="text-sm font-medium text-text-primary group-hover:text-white truncate max-w-[200px]">
+                            <span className="text-sm font-medium text-text-primary group-hover:text-foreground truncate max-w-[200px]">
                                 {task.title}
                             </span>
                             <span className="text-xs font-medium text-accent-primary">

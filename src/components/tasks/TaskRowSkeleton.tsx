@@ -5,7 +5,7 @@ import { cn } from "@/lib/utils";
 export function TaskRowSkeleton({ density = 'comfortable' }: { density?: 'comfortable' | 'compact' }) {
     return (
         <div className={cn(
-            "grid grid-cols-[auto_1fr_auto] md:grid-cols-[28px_minmax(0,10fr)_minmax(0,4fr)_70px_45px_70px_100px_90px_80px] gap-x-2 px-1.5 items-center border-l-[3px] border-l-transparent bg-white/[0.01]",
+            "grid grid-cols-[auto_1fr_auto] md:grid-cols-[44px_minmax(0,10fr)_minmax(0,4fr)_65px_45px_65px_90px_75px_95px] gap-x-2 pl-1.5 pr-3 items-center border-l-[3px] border-l-transparent bg-foreground/[0.01]",
             density === 'compact' ? "py-1.5" : "py-2.5"
         )}>
             {/* Expander Placeholder */}
@@ -26,39 +26,39 @@ export function TaskRowSkeleton({ density = 'comfortable' }: { density?: 'comfor
 
             {/* Requested By */}
             <div className="hidden md:block">
-                <Skeleton className="h-3 w-full max-w-[120px] bg-white/5" />
+                <Skeleton className="h-3 w-full max-w-[120px] bg-foreground/5" />
             </div>
 
             {/* Priority */}
             <div className="hidden md:flex justify-center">
-                <Skeleton className="h-4 w-12 rounded bg-white/5" />
+                <Skeleton className="h-4 w-12 rounded bg-foreground/5" />
             </div>
 
             {/* Assignee */}
             <div className="hidden md:flex items-center justify-center">
-                <Skeleton className="w-6 h-6 rounded-full bg-white/5" />
+                <Skeleton className="w-6 h-6 rounded-full bg-foreground/5" />
             </div>
 
             {/* Due Date */}
             <div className="hidden md:flex justify-end">
-                <Skeleton className="h-3 w-10 bg-white/5" />
+                <Skeleton className="h-3 w-10 bg-foreground/5" />
             </div>
 
             {/* Status */}
             <div className="hidden md:block">
-                <Skeleton className="h-6 w-20 rounded-full bg-white/5" />
+                <Skeleton className="h-6 w-20 rounded-full bg-foreground/5" />
             </div>
 
             {/* Completed Date */}
-            <div className="hidden md:flex justify-end">
-                <Skeleton className="h-3 w-16 bg-white/5" />
+            <div className="hidden md:flex justify-center">
+                <Skeleton className="h-3 w-16 bg-foreground/5" />
             </div>
 
             {/* Ops / Quick Actions */}
             <div className="hidden md:flex justify-center gap-1.5">
-                <Skeleton className="w-4 h-4 rounded bg-white/5" />
-                <Skeleton className="w-4 h-4 rounded bg-white/5" />
-                <Skeleton className="w-4 h-4 rounded bg-white/5" />
+                <Skeleton className="w-3.5 h-3.5 rounded-sm bg-foreground/5" />
+                <Skeleton className="w-3.5 h-3.5 rounded-sm bg-foreground/5" />
+                <Skeleton className="w-3.5 h-3.5 rounded-sm bg-foreground/5" />
             </div>
         </div>
     );

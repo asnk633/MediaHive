@@ -369,7 +369,7 @@ export const BulkActionBar: React.FC<BulkActionBarProps> = ({
                     role="toolbar"
                     aria-label={`Bulk actions for ${selectedCount} selected tasks`}
                 >
-                    <div className="bg-[#0B0E14]/90 backdrop-blur-xl border border-white/10 rounded-2xl shadow-[0_20px_50px_rgba(0,0,0,0.6)] overflow-hidden">
+                    <div className="bg-[#0B0E14]/90 backdrop-blur-xl border border-foreground/10 rounded-2xl shadow-[0_20px_50px_rgba(0,0,0,0.6)] overflow-hidden">
                         {/* 4.1 — Bulk Action Progress Feedback (UI-P1) */}
                         <AnimatePresence>
                             {isLoading && (
@@ -392,7 +392,7 @@ export const BulkActionBar: React.FC<BulkActionBarProps> = ({
                                 {selectedCount} Selected
                             </div>
 
-                            <div className="w-px h-5 bg-white/5 mx-1 shrink-0" />
+                            <div className="w-px h-5 bg-foreground/5 mx-1 shrink-0" />
 
                             {mode === 'trash' ? (
                                 <>
@@ -421,7 +421,7 @@ export const BulkActionBar: React.FC<BulkActionBarProps> = ({
                                             <DropdownMenuTrigger asChild>
                                                 <button
                                                     disabled={isLoading}
-                                                    className="flex items-center gap-1.5 px-3 py-2 bg-white/[0.03] hover:bg-white/10 text-white/50 hover:text-white rounded-xl transition-all text-[10px] font-bold uppercase tracking-widest border border-white/5 disabled:opacity-40 disabled:cursor-not-allowed"
+                                                    className="flex items-center gap-1.5 px-3 py-2 bg-foreground/[0.03] hover:bg-foreground/10 text-foreground/70 hover:text-foreground rounded-xl transition-all text-[10px] font-bold uppercase tracking-widest border border-foreground/5 disabled:opacity-40 disabled:cursor-not-allowed"
                                                     aria-label="Bulk change status"
                                                 >
                                                     <CheckCircle2 className="w-3.5 h-3.5" />
@@ -430,7 +430,7 @@ export const BulkActionBar: React.FC<BulkActionBarProps> = ({
                                                 </button>
                                             </DropdownMenuTrigger>
                                             <DropdownMenuContent align="end" className="w-[160px]">
-                                                <DropdownMenuLabel className="text-[9px] uppercase tracking-widest text-white/50">Set status to</DropdownMenuLabel>
+                                                <DropdownMenuLabel className="text-[9px] uppercase tracking-widest text-foreground/70">Set status to</DropdownMenuLabel>
                                                 <DropdownMenuSeparator />
                                                 <DropdownMenuItem onClick={() => runOperation('changeStatus', 'todo')}>
                                                     <Circle size={13} className="mr-2 text-slate-400" /> To Do
@@ -454,7 +454,7 @@ export const BulkActionBar: React.FC<BulkActionBarProps> = ({
                                             <DropdownMenuTrigger asChild>
                                                 <button
                                                     disabled={isLoading}
-                                                    className="flex items-center gap-1.5 px-3 py-2 bg-white/[0.03] hover:bg-white/10 text-white/50 hover:text-white rounded-xl transition-all text-[10px] font-bold uppercase tracking-widest border border-white/5 disabled:opacity-40 disabled:cursor-not-allowed"
+                                                    className="flex items-center gap-1.5 px-3 py-2 bg-foreground/[0.03] hover:bg-foreground/10 text-foreground/70 hover:text-foreground rounded-xl transition-all text-[10px] font-bold uppercase tracking-widest border border-foreground/5 disabled:opacity-40 disabled:cursor-not-allowed"
                                                     aria-label="Bulk change priority"
                                                 >
                                                     <Flag className="w-3.5 h-3.5" />
@@ -463,11 +463,8 @@ export const BulkActionBar: React.FC<BulkActionBarProps> = ({
                                                 </button>
                                             </DropdownMenuTrigger>
                                             <DropdownMenuContent align="end" className="w-[140px]">
-                                                <DropdownMenuLabel className="text-[9px] uppercase tracking-widest text-white/50">Set priority to</DropdownMenuLabel>
+                                                <DropdownMenuLabel className="text-[9px] uppercase tracking-widest text-foreground/70">Set priority to</DropdownMenuLabel>
                                                 <DropdownMenuSeparator />
-                                                <DropdownMenuItem onClick={() => runOperation('changePriority', 'urgent')}>
-                                                    <span className="w-2 h-2 rounded-full bg-red-500 mr-2" /> Urgent
-                                                </DropdownMenuItem>
                                                 <DropdownMenuItem onClick={() => runOperation('changePriority', 'high')}>
                                                     <span className="w-2 h-2 rounded-full bg-orange-500 mr-2" /> High
                                                 </DropdownMenuItem>
@@ -487,7 +484,7 @@ export const BulkActionBar: React.FC<BulkActionBarProps> = ({
                                             <DropdownMenuTrigger asChild>
                                                 <button
                                                     disabled={isLoading}
-                                                    className="flex items-center gap-1.5 px-3 py-2 bg-white/[0.03] hover:bg-white/10 text-white/50 hover:text-white rounded-xl transition-all text-[10px] font-bold uppercase tracking-widest border border-white/5 disabled:opacity-40 disabled:cursor-not-allowed"
+                                                    className="flex items-center gap-1.5 px-3 py-2 bg-foreground/[0.03] hover:bg-foreground/10 text-foreground/70 hover:text-foreground rounded-xl transition-all text-[10px] font-bold uppercase tracking-widest border border-foreground/5 disabled:opacity-40 disabled:cursor-not-allowed"
                                                     aria-label="Bulk assign team member"
                                                 >
                                                     <Users className="w-3.5 h-3.5" />
@@ -496,7 +493,7 @@ export const BulkActionBar: React.FC<BulkActionBarProps> = ({
                                                 </button>
                                             </DropdownMenuTrigger>
                                             <DropdownMenuContent align="end" className="w-[180px] max-h-[200px] overflow-y-auto">
-                                                <DropdownMenuLabel className="text-[9px] uppercase tracking-widest text-white/50">Assign to</DropdownMenuLabel>
+                                                <DropdownMenuLabel className="text-[9px] uppercase tracking-widest text-foreground/70">Assign to</DropdownMenuLabel>
                                                 <DropdownMenuSeparator />
                                                 {membersLoading ? (
                                                     <DropdownMenuItem disabled>Loading...</DropdownMenuItem>
@@ -519,7 +516,7 @@ export const BulkActionBar: React.FC<BulkActionBarProps> = ({
                                     {/* Delete action (admin only) */}
                                     {canDelete && (
                                         <>
-                                            <div className="w-px h-5 bg-white/5 mx-1 shrink-0" />
+                                            <div className="w-px h-5 bg-foreground/5 mx-1 shrink-0" />
                                             <button
                                                 onClick={() => setActiveOp('delete')}
                                                 disabled={isLoading}
@@ -534,13 +531,13 @@ export const BulkActionBar: React.FC<BulkActionBarProps> = ({
                                 </>
                             )}
 
-                            <div className="w-px h-5 bg-white/5 mx-1 shrink-0" />
+                            <div className="w-px h-5 bg-foreground/5 mx-1 shrink-0" />
 
                             {/* Clear selection */}
                             <button
                                 onClick={onClear}
                                 disabled={isLoading}
-                                className="p-2 text-white/20 hover:text-white/60 hover:bg-white/5 rounded-lg transition-all"
+                                className="p-2 text-foreground/80 hover:text-foreground/80 hover:bg-foreground/5 rounded-lg transition-all"
                                 aria-label="Clear selection"
                             >
                                 <X className="w-4 h-4" />

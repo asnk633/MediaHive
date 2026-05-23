@@ -486,6 +486,13 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     useEffect(() => {
         if (user && !loading) {
             prefetchDashboardData();
+            
+            // Lazy load and register Web FCM token
+            import("@/services/fcmService").then(({ initFcm }) => {
+                initFcm(user.uid).catch(err => {
+                    console.error("[FCM] Push initialization failed:", err);
+                });
+            });
         } else if (!user) {
             prefetchedRef.current = false; // Reset on logout
         }

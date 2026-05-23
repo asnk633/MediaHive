@@ -14,7 +14,7 @@ export const ExecutiveBriefingWidget: React.FC<ExecutiveBriefingProps> = ({ poin
                 <div className="p-2 bg-blue-500/10 rounded-lg">
                     <Sparkles size={16} className="text-blue-400" />
                 </div>
-                <CardTitle className="text-lg font-medium text-white">Executive Briefing</CardTitle>
+                <CardTitle className="text-lg font-medium text-foreground">Executive Briefing</CardTitle>
             </CardHeader>
             <CardContent className="space-y-3">
                 {loading ? (
@@ -25,7 +25,7 @@ export const ExecutiveBriefingWidget: React.FC<ExecutiveBriefingProps> = ({ poin
                     </div>
                 ) : (
                     points.map((point, idx) => (
-                        <div key={idx} className="group flex items-start gap-3 p-3 rounded-lg hover:bg-white/5 transition-colors border border-transparent hover:border-white/5">
+                        <div key={idx} className="group flex items-start gap-3 p-3 rounded-lg hover:bg-foreground/5 transition-colors border border-transparent hover:border-foreground/5">
                             <div className="mt-1.5 w-1.5 h-1.5 rounded-full bg-blue-500 shrink-0" />
                             <p className="text-sm text-slate-300 leading-relaxed">
                                 {point}

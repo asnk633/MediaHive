@@ -111,7 +111,7 @@ export function SecurityCard() {
                             size="sm" 
                             onClick={handleUpdate}
                             disabled={loading}
-                            className="h-9 bg-primary hover:bg-primary/90 text-white font-bold px-6 rounded-xl transition-all shadow-md active:scale-95"
+                            className="h-9 bg-primary hover:bg-primary/90 text-foreground font-bold px-6 rounded-xl transition-all shadow-md active:scale-95"
                         >
                             {loading ? <Loader2 className="w-3.5 h-3.5 animate-spin" /> : 'Update Password'}
                         </Button>

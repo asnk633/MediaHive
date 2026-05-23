@@ -116,9 +116,15 @@ export function MediaLightbox({ file, files, loading = false, onClose, onNavigat
   const isImage = file.mimeType?.startsWith('image/') || false;
   const isVideo = file.mimeType?.startsWith('video/') || false;
 
-
-
   const FileIcon = getFileIcon(file.mimeType);
+  
+  let imgSrc = '';
+  if (isImage) {
+    imgSrc = getDriveImageUrl(file.viewLink, file.driveFileId);
+    if (!imgSrc) {
+      imgSrc = file.previewLink || file.downloadLink || '';
+    }
+  }
 
   // Handle adding a new comment
   const handleAddComment = async (e: React.FormEvent) => {
@@ -294,7 +300,7 @@ export function MediaLightbox({ file, files, loading = false, onClose, onNavigat
       {/* Close button */}
       <button
         onClick={onClose}
-        className="absolute top-4 right-4 p-2 rounded-full bg-black/30 hover:bg-black/50 text-white transition-colors"
+        className="absolute top-4 right-4 p-2 rounded-full bg-black/30 hover:bg-black/50 text-foreground transition-colors"
         aria-label="Close"
       >
         <X size={24} />
@@ -314,18 +320,25 @@ export function MediaLightbox({ file, files, loading = false, onClose, onNavigat
           ) : isImage ? (
             <div className="w-full h-full flex items-center justify-center p-4">
               <div className="relative w-full h-full max-h-[70vh] aspect-video">
-                <Image
-                  src={getDriveImageUrl(file.viewLink)}
-                  alt={file.name}
-                  fill
-                  className="object-contain"
-                  priority
-                />
+                {imgSrc ? (
+                  <Image
+                    src={imgSrc}
+                    alt={file.name}
+                    fill
+                    className="object-contain"
+                    priority
+                  />
+                ) : (
+                  <div className="w-full h-full flex flex-col items-center justify-center rounded-xl">
+                    <ImageIcon size={48} className="text-gray-500 mb-2" />
+                    <span className="text-gray-400 text-sm">Image unavailable</span>
+                  </div>
+                )}
               </div>
             </div>
           ) : isVideo ? (
             <div className="w-full h-full flex items-center justify-center p-4">
-              <div className="relative w-full max-h-[70vh] aspect-video bg-black rounded-xl overflow-hidden border border-white/10 shadow-2xl">
+              <div className="relative w-full max-h-[70vh] aspect-video bg-black rounded-xl overflow-hidden border border-foreground/10 shadow-2xl">
                 <video
                   src={file.viewLink?.replace('/view', '/preview')}
                   controls
@@ -339,7 +352,7 @@ export function MediaLightbox({ file, files, loading = false, onClose, onNavigat
               <div className="p-6 rounded-2xl bg-indigo-500/10 text-indigo-400 mb-6">
                 <FileIcon size={64} />
               </div>
-              <h3 className="text-2xl font-bold text-white mb-2">{file.name}</h3>
+              <h3 className="text-2xl font-bold text-foreground mb-2">{file.name}</h3>
               <p className="text-gray-400 mb-6">Preview not available for this file type</p>
               <Button
                 onClick={() => window.open(file.downloadLink, '_blank')}
@@ -357,7 +370,7 @@ export function MediaLightbox({ file, files, loading = false, onClose, onNavigat
               <button
                 onClick={navigateToPrevious}
                 disabled={currentIndex === 0}
-                className="absolute left-4 top-1/2 -translate-y-1/2 p-3 rounded-full bg-black/30 hover:bg-black/50 text-white disabled:opacity-30 disabled:cursor-not-allowed transition-colors"
+                className="absolute left-4 top-1/2 -translate-y-1/2 p-3 rounded-full bg-black/30 hover:bg-black/50 text-foreground disabled:opacity-30 disabled:cursor-not-allowed transition-colors"
                 aria-label="Previous"
               >
                 <ChevronLeft size={24} />
@@ -365,7 +378,7 @@ export function MediaLightbox({ file, files, loading = false, onClose, onNavigat
               <button
                 onClick={navigateToNext}
                 disabled={currentIndex === files.length - 1}
-                className="absolute right-4 top-1/2 -translate-y-1/2 p-3 rounded-full bg-black/30 hover:bg-black/50 text-white disabled:opacity-30 disabled:cursor-not-allowed transition-colors"
+                className="absolute right-4 top-1/2 -translate-y-1/2 p-3 rounded-full bg-black/30 hover:bg-black/50 text-foreground disabled:opacity-30 disabled:cursor-not-allowed transition-colors"
                 aria-label="Next"
               >
                 <ChevronRight size={24} />
@@ -549,7 +562,7 @@ export function MediaLightbox({ file, files, loading = false, onClose, onNavigat
                         >
                           {isActionLoading && file.proofingStatus !== 'approved' ? (
                             <>
-                              <div className="animate-spin rounded-full h-3.5 w-3.5 border-2 border-white/30 border-t-white" />
+                              <div className="animate-spin rounded-full h-3.5 w-3.5 border-2 border-foreground/30 border-t-white" />
                               <span>Approving...</span>
                             </>
                           ) : (

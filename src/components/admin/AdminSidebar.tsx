@@ -74,7 +74,7 @@ export default function AdminSidebar() {
             initial={false}
             animate={{ width: isCollapsed ? '88px' : '260px' }}
             transition={{ duration: 0.4, ease: [0.16, 1, 0.3, 1] }}
-            className="fixed left-6 top-1/2 -translate-y-1/2 z-[70] hidden lg:flex flex-col h-fit max-h-[calc(100vh-6rem)] rounded-[36px] glass-liquid border-white/10 shadow-2xl overflow-hidden backdrop-blur-xl"
+            className="fixed left-6 top-1/2 -translate-y-1/2 z-[70] hidden lg:flex flex-col h-fit max-h-[calc(100vh-6rem)] rounded-[36px] glass-liquid border-foreground/10 shadow-2xl overflow-hidden backdrop-blur-xl"
         >
             <div className="p-4 space-y-6 flex-1 flex flex-col">
                 <div className={cn("px-2 py-3 flex items-center gap-3", isCollapsed ? "justify-center" : "")}>
@@ -89,8 +89,8 @@ export default function AdminSidebar() {
                                 exit={{ opacity: 0, x: -10 }}
                                 transition={{ duration: 0.2 }}
                             >
-                                <h2 className="text-sm font-black text-white tracking-tight">Admin Panel</h2>
-                                <p className="text-[10px] font-bold text-white/30 uppercase tracking-[0.2em]">Global Control</p>
+                                <h2 className="text-sm font-black text-foreground tracking-tight">Admin Panel</h2>
+                                <p className="text-[10px] font-bold text-foreground/70 uppercase tracking-[0.2em]">Global Control</p>
                             </motion.div>
                         )}
                     </AnimatePresence>
@@ -107,8 +107,8 @@ export default function AdminSidebar() {
                                 className={cn(
                                     "group relative w-full flex items-center gap-3 p-3.5 rounded-2xl transition-all duration-300",
                                     isActive 
-                                        ? "bg-white/10 text-white shadow-xl shadow-black/20" 
-                                        : "text-white/40 hover:bg-white/5 hover:text-white",
+                                        ? "bg-foreground/10 text-foreground shadow-xl shadow-black/20" 
+                                        : "text-foreground/80 hover:bg-foreground/5 hover:text-foreground",
                                     isCollapsed ? "justify-center" : ""
                                 )}
                             >
@@ -138,10 +138,10 @@ export default function AdminSidebar() {
                     })}
                 </nav>
 
-                <div className="pt-4 border-t border-white/5 space-y-2">
+                <div className="pt-4 border-t border-foreground/5 space-y-2">
                     <button 
                         onClick={() => router.push('/home')}
-                        className={cn("group w-full flex items-center gap-3 p-3.5 rounded-2xl text-white/40 hover:bg-white/5 hover:text-white transition-all", isCollapsed ? "justify-center" : "")}
+                        className={cn("group w-full flex items-center gap-3 p-3.5 rounded-2xl text-foreground/80 hover:bg-foreground/5 hover:text-foreground transition-all", isCollapsed ? "justify-center" : "")}
                         title={isCollapsed ? "Exit Admin" : undefined}
                     >
                         <ChevronLeft size={20} className="shrink-0 transition-transform group-hover:-translate-x-1" />
@@ -150,7 +150,7 @@ export default function AdminSidebar() {
                     
                     <button 
                         onClick={toggleCollapse}
-                        className={cn("w-full flex items-center gap-3 p-3.5 rounded-2xl text-white/20 hover:bg-white/5 hover:text-white/60 transition-all", isCollapsed ? "justify-center" : "")}
+                        className={cn("w-full flex items-center gap-3 p-3.5 rounded-2xl text-foreground/80 hover:bg-foreground/5 hover:text-foreground/80 transition-all", isCollapsed ? "justify-center" : "")}
                     >
                         {isCollapsed ? <ChevronRight size={20} className="animate-pulse" /> : (
                             <div className="flex items-center gap-3 w-full">

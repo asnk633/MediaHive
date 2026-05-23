@@ -46,11 +46,11 @@ export default function CreateTaskModalMember({ open, onClose }: { open: boolean
       overlayClass="fixed inset-0 z-[60] bg-black/60 backdrop-blur-md"
     >
       <div className="w-full max-w-lg overflow-hidden rounded-2xl border border-[#ffffff1a] bg-[#102220]/90 shadow-2xl backdrop-blur-xl ring-1 ring-black/5">
-        <header className="flex items-center justify-between border-b border-white/5 bg-white/5 px-6 py-4">
-          <h3 className="text-lg font-semibold text-white">New Request</h3>
+        <header className="flex items-center justify-between border-b border-foreground/5 bg-foreground/5 px-6 py-4">
+          <h3 className="text-lg font-semibold text-foreground">New Request</h3>
           <button
             onClick={onClose}
-            className="rounded-full p-1 text-white/50 transition-colors hover:bg-white/10 hover:text-white"
+            className="rounded-full p-1 text-foreground/70 transition-colors hover:bg-foreground/10 hover:text-foreground"
           >
             <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M18 6 6 18" /><path d="m6 6 18 18" /></svg>
           </button>
@@ -69,7 +69,7 @@ export default function CreateTaskModalMember({ open, onClose }: { open: boolean
                 if (error) setError("");
               }}
               placeholder="e.g., Fix leaking tap in Room 101"
-              className={`w-full rounded-xl border bg-black/20 px-4 py-3 text-white placeholder-white/30 transition-all focus:border-emerald-500 focus:outline-none focus:ring-2 focus:ring-emerald-500/20 ${error ? "border-red-500/50" : "border-[#ffffff1a]"}`}
+              className={`w-full rounded-xl border bg-black/20 px-4 py-3 text-foreground placeholder-white/30 transition-all focus:border-emerald-500 focus:outline-none focus:ring-2 focus:ring-emerald-500/20 ${error ? "border-red-500/50" : "border-[#ffffff1a]"}`}
               autoFocus
             />
             {error && <p className="text-sm text-red-400">{error}</p>}
@@ -84,7 +84,7 @@ export default function CreateTaskModalMember({ open, onClose }: { open: boolean
               value={description}
               onChange={(e) => setDescription(e.target.value)}
               placeholder="Provide more context..."
-              className="min-h-[120px] w-full resize-none rounded-xl border border-[#ffffff1a] bg-black/20 px-4 py-3 text-white placeholder-white/30 transition-all focus:border-emerald-500 focus:outline-none focus:ring-2 focus:ring-emerald-500/20"
+              className="min-h-[120px] w-full resize-none rounded-xl border border-[#ffffff1a] bg-black/20 px-4 py-3 text-foreground placeholder-white/30 transition-all focus:border-emerald-500 focus:outline-none focus:ring-2 focus:ring-emerald-500/20"
             />
           </div>
 

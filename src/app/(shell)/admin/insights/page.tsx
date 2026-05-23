@@ -195,7 +195,7 @@ const getPerformanceAnomaliesData = async (tenantId: string, period: string) => 
       {
         id: 1,
         type: 'spike',
-        description: 'Spike in urgent tasks from TG Antla this week',
+        description: 'Spike in high-priority tasks from TG Antla this week',
         severity: 'high',
         timestamp: new Date().toISOString()
       },
@@ -307,7 +307,7 @@ export default function InsightsPage() {
             {
               id: 1,
               type: 'spike',
-              description: 'Spike in urgent tasks from TG Antla this week',
+              description: 'Spike in high-priority tasks from TG Antla this week',
               severity: 'high',
               timestamp: new Date().toISOString()
             },
@@ -409,19 +409,19 @@ export default function InsightsPage() {
           </div>
           <button
             onClick={() => exportData('pdf')}
-            className="bg-red-500 hover:bg-red-700 text-white px-3 py-2 rounded"
+            className="bg-red-500 hover:bg-red-700 text-foreground px-3 py-2 rounded"
           >
             Export PDF
           </button>
           <button
             onClick={() => exportData('csv')}
-            className="bg-green-500 hover:bg-green-700 text-white px-3 py-2 rounded"
+            className="bg-green-500 hover:bg-green-700 text-foreground px-3 py-2 rounded"
           >
             Export CSV
           </button>
           <button
             onClick={sendEmailSummary}
-            className="bg-blue-500 hover:bg-blue-700 text-white px-3 py-2 rounded"
+            className="bg-blue-500 hover:bg-blue-700 text-foreground px-3 py-2 rounded"
           >
             Email Summary
           </button>
@@ -510,7 +510,7 @@ export default function InsightsPage() {
               <div key={index} className="text-center">
                 <div className="text-xs text-gray-500">{day.day}</div>
                 <div
-                  className="w-8 h-8 rounded flex items-center justify-center text-white text-xs font-bold mt-1"
+                  className="w-8 h-8 rounded flex items-center justify-center text-foreground text-xs font-bold mt-1"
                   style={{
                     backgroundColor: `rgba(59, 130, 246, ${day.count / 25})`
                   }}
@@ -546,7 +546,7 @@ export default function InsightsPage() {
           <div className="space-y-3">
             {dashboardData.teamActivity.map((team, index) => (
               <div key={index} className="flex items-center">
-                <div className="w-8 h-8 rounded-full bg-blue-500 text-white flex items-center justify-center text-sm font-bold mr-3">
+                <div className="w-8 h-8 rounded-full bg-blue-500 text-foreground flex items-center justify-center text-sm font-bold mr-3">
                   {index + 1}
                 </div>
                 <div className="flex-1">

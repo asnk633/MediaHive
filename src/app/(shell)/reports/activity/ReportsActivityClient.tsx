@@ -17,6 +17,7 @@ import { apiClient } from '@/lib/apiClient';
 import { supabase } from '@/lib/supabaseClient';
 import { Task } from '@/features/tasks/types/task';
 import { StructureService } from '@/services/structureService';
+import { TaskService } from '@/services/tasks';
 import { format, subMonths, isSameMonth } from 'date-fns';
 import { PageLayout } from '@/components/ui/layout/PageLayout';
 import { PageHeader } from '@/components/ui/layout/PageHeader';
@@ -51,8 +52,7 @@ export default function ReportsActivityClient() {
     const fetchTasks = async () => {
         setLoading(true);
         try {
-            const { data, error } = await supabase.from('tasks').select('*');
-            if (error) throw error;
+            const data = await TaskService.getTasks();
             setTasks(data);
         } catch (error) {
             console.error("Failed to fetch tasks:", error);
@@ -91,15 +91,40 @@ export default function ReportsActivityClient() {
         return format(date, 'MMM d, yyyy');
     };
 
+    const formatDateTime = (dateVal: any) => {
+        if (!dateVal) return '-';
+        const date = dateVal.seconds ? new Date(dateVal.seconds * 1000) : new Date(dateVal);
+        if (isNaN(date.getTime())) return '-';
+        return format(date, 'MMM d, yyyy h:mm a');
+    };
+
     const getStatusBadge = (task: Task) => {
         if (task.status === 'done') {
+            let obo = task.on_behalf_of;
+            if (typeof obo === 'string') {
+                try { obo = JSON.parse(obo); } catch (e) {}
+            }
+            
+            // Extract assignee names from mapped assignedTo array
+            const assigneeNames = Array.isArray(task.assignedTo) && task.assignedTo.length > 0
+                ? task.assignedTo.map((a: any) => a.name).join(', ')
+                : '';
+
+            const completedByName = obo?.completed_by_name 
+                || task.completed_by?.name 
+                || task.updated_by?.name 
+                || task.updatedBy?.name 
+                || task.created_by?.name 
+                || assigneeNames 
+                || 'Media Team';
+
             return (
                 <div className="flex flex-col items-end">
                     <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-lg text-[10px] font-bold bg-emerald-500/10 text-emerald-500 border border-emerald-500/20 mb-1 uppercase tracking-wider">
                         <CheckCircle2 size={12} /> Completed
                     </span>
-                    <span className="text-[10px] text-white/40 font-medium">
-                        by {task.completed_by?.name || 'Media Team'}
+                    <span className="text-[10px] text-foreground/80 font-medium max-w-[200px] text-right">
+                        Marked Completed by {completedByName} at {formatDateTime(task.completed_at || task.completedAt)}
                     </span>
                 </div>
             );
@@ -130,16 +155,16 @@ export default function ReportsActivityClient() {
                     <div className="space-y-1">
                         <button
                             onClick={() => router.back()}
-                            className="flex items-center gap-2 text-white/40 hover:text-white transition-colors text-xs font-bold uppercase tracking-widest mb-4 group"
+                            className="flex items-center gap-2 text-foreground/80 hover:text-foreground transition-colors text-xs font-bold uppercase tracking-widest mb-4 group"
                         >
                             <ArrowLeft size={14} className="group-hover:-translate-x-1 transition-transform" /> Back to reports
                         </button>
-                        <h1 className="text-4xl font-bold text-white tracking-tight">Activity Report</h1>
-                        <p className="text-white/40 font-medium">Monthly institutional task requests and throughput.</p>
+                        <h1 className="text-4xl font-bold text-foreground tracking-tight">Activity Report</h1>
+                        <p className="text-foreground/80 font-medium">Monthly institutional task requests and throughput.</p>
                     </div>
 
                     {/* Month Select */}
-                    <div className="flex bg-white/5 p-1 rounded-xl border border-white/5 backdrop-blur-md">
+                    <div className="flex bg-foreground/5 p-1 rounded-xl border border-foreground/5 backdrop-blur-md">
                         {availableMonths.map((date, idx) => (
                             <button
                                 key={idx}
@@ -147,8 +172,8 @@ export default function ReportsActivityClient() {
                                 className={cn(
                                     "px-4 py-2 rounded-lg text-[10px] font-bold uppercase tracking-widest transition-all",
                                     isSameMonth(date, selectedMonth)
-                                        ? "bg-white/10 text-white shadow-xl ring-1 ring-white/10"
-                                        : "text-white/30 hover:text-white/60 hover:bg-white/[0.02]"
+                                        ? "bg-foreground/10 text-foreground shadow-xl ring-1 ring-foreground/10"
+                                        : "text-foreground/70 hover:text-foreground/80 hover:bg-foreground/[0.02]"
                                 )}
                             >
                                 {format(date, 'MMMM')}
@@ -165,28 +190,28 @@ export default function ReportsActivityClient() {
                         { label: 'Completion Rate', value: `${metrics.rate}%`, icon: TrendingUp, color: 'text-indigo-400', bg: 'bg-indigo-400/10' },
                         { label: 'Active/Pending', value: metrics.pending, icon: CheckSquare, color: 'text-amber-400', bg: 'bg-amber-400/10' },
                     ].map((m, i) => (
-                        <div key={i} className="glass-card p-6 rounded-2xl border border-white/5 bg-white/[0.01] flex flex-col gap-1">
+                        <div key={i} className="glass-card p-6 rounded-2xl border border-foreground/5 bg-foreground/[0.01] flex flex-col gap-1">
                             <div className="flex justify-between items-start mb-2">
-                                <span className="text-[10px] font-bold text-white/20 uppercase tracking-[0.2em]">{m.label}</span>
+                                <span className="text-[10px] font-bold text-foreground/80 uppercase tracking-[0.2em]">{m.label}</span>
                                 <div className={cn("p-1.5 rounded-lg", m.bg)}>
                                     <m.icon size={14} className={m.color} />
                                 </div>
                             </div>
-                            <span className="text-2xl font-bold text-white tracking-tight">{loading ? '...' : m.value}</span>
+                            <span className="text-2xl font-bold text-foreground tracking-tight">{loading ? '...' : m.value}</span>
                         </div>
                     ))}
                 </div>
 
                 {/* Table Section */}
-                <div className="glass-card rounded-2xl border border-white/5 bg-white/[0.01] overflow-hidden shadow-2xl">
+                <div className="glass-card rounded-2xl border border-foreground/5 bg-foreground/[0.01] overflow-hidden shadow-2xl">
                     <div className="overflow-x-auto">
                         <table className="w-full text-left">
-                            <thead className="bg-white/[0.02] border-b border-white/5">
+                            <thead className="bg-foreground/[0.02] border-b border-foreground/5">
                                 <tr>
-                                    <th className="px-8 py-5 text-[10px] font-bold text-white/20 uppercase tracking-widest">Identification / Title</th>
-                                    <th className="px-8 py-5 text-[10px] font-bold text-white/20 uppercase tracking-widest">Initiated</th>
-                                    <th className="px-8 py-5 text-[10px] font-bold text-white/20 uppercase tracking-widest">Requirement Date</th>
-                                    <th className="px-8 py-5 text-[10px] font-bold text-white/20 uppercase tracking-widest text-right">Operational Status</th>
+                                    <th className="px-8 py-5 text-[10px] font-bold text-foreground/80 uppercase tracking-widest">Identification / Title</th>
+                                    <th className="px-8 py-5 text-[10px] font-bold text-foreground/80 uppercase tracking-widest">Initiated</th>
+                                    <th className="px-8 py-5 text-[10px] font-bold text-foreground/80 uppercase tracking-widest">Requirement Date</th>
+                                    <th className="px-8 py-5 text-[10px] font-bold text-foreground/80 uppercase tracking-widest text-right">Operational Status</th>
                                 </tr>
                             </thead>
                             <tbody className="divide-y divide-white/5">
@@ -194,7 +219,7 @@ export default function ReportsActivityClient() {
                                     [1, 2, 3, 4, 5].map(i => (
                                         <tr key={i}>
                                             <td colSpan={4} className="px-8 py-6">
-                                                <Skeleton className="h-4 w-full bg-white/5" />
+                                                <Skeleton className="h-4 w-full bg-foreground/5" />
                                             </td>
                                         </tr>
                                     ))
@@ -209,7 +234,7 @@ export default function ReportsActivityClient() {
                                     </tr>
                                 ) : (
                                     filteredTasks.map((task) => (
-                                        <tr key={task.id} className="group hover:bg-white/[0.02] transition-colors">
+                                        <tr key={task.id} className="group hover:bg-foreground/[0.02] transition-colors">
                                             <td className="px-8 py-6">
                                                 <div className="flex flex-col">
                                                     <div className="flex items-center gap-2 mb-1">
@@ -217,20 +242,20 @@ export default function ReportsActivityClient() {
                                                             {institutions.find(inst => String(inst.id) === String(task.institution_id || (task as any).institutionId))?.name || 'Global'}
                                                         </span>
                                                     </div>
-                                                    <span className="text-sm font-bold text-white group-hover:text-blue-400 transition-colors">
+                                                    <span className="text-sm font-bold text-foreground group-hover:text-blue-400 transition-colors">
                                                         {task.title}
                                                     </span>
                                                     {task.description && (
-                                                        <span className="text-[11px] text-white/20 font-medium mt-1 line-clamp-1">
+                                                        <span className="text-[11px] text-foreground/80 font-medium mt-1 line-clamp-1">
                                                             {task.description}
                                                         </span>
                                                     )}
                                                 </div>
                                             </td>
-                                            <td className="px-8 py-6 text-xs font-medium text-white/40">
+                                            <td className="px-8 py-6 text-xs font-medium text-foreground/80">
                                                 {formatDate(task.created_at)}
                                             </td>
-                                            <td className="px-8 py-6 text-xs font-medium text-white/40">
+                                            <td className="px-8 py-6 text-xs font-medium text-foreground/80">
                                                 {formatDate(task.due_date)}
                                             </td>
                                             <td className="px-8 py-6 text-right">

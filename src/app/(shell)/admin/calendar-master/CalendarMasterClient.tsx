@@ -23,7 +23,7 @@ export default function CalendarMasterClient() {
     }
 
     if (!user || user.role !== 'admin') {
-        return <div className="min-h-screen bg-[var(--color-bg-primary)] flex items-center justify-center text-white">Access Denied</div>;
+        return <div className="min-h-screen bg-[var(--color-bg-primary)] flex items-center justify-center text-foreground">Access Denied</div>;
     }
 
     return (
@@ -35,12 +35,12 @@ export default function CalendarMasterClient() {
                         variant="ghost"
                         size="icon"
                         onClick={() => router.back()}
-                        className="bg-white/5 hover:bg-white/10 text-white/70 hover:text-white rounded-xl"
+                        className="bg-foreground/5 hover:bg-foreground/10 text-foreground/70 hover:text-foreground rounded-xl"
                     >
                         <ChevronLeft size={20} />
                     </Button>
                     <div>
-                        <h1 className="text-3xl font-display font-bold text-white tracking-tight">
+                        <h1 className="text-3xl font-display font-bold text-foreground tracking-tight">
                             Calendar Master List
                         </h1>
                         <p className="text-[var(--color-text-secondary)]">
@@ -50,7 +50,7 @@ export default function CalendarMasterClient() {
                 </div>
 
                 {/* Main Content */}
-                <div className="bg-[#0f172a] border border-white/5 rounded-3xl overflow-hidden shadow-2xl">
+                <div className="bg-[var(--glass-liquid-bg)] border border-foreground/5 rounded-3xl overflow-hidden shadow-2xl">
                     <CalendarMasterList />
                 </div>
             </div>

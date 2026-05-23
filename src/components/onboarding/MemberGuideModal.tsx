@@ -43,7 +43,7 @@ export function MemberGuideModal({ open, onClose }: MemberGuideModalProps) {
                                     <li><strong>Select Your Context (Crucial):</strong>
                                         <ul className="list-disc pl-5 mt-1 space-y-1">
                                             <li><strong>Institution:</strong> Select your main institution.</li>
-                                            <li><strong>Office / Unit:</strong> Select the specific department or unit you represent (e.g., "Office", "Primary Section").</li>
+                                            <li><strong>Department / Institution:</strong> Select the specific department or unit you represent (e.g., "Office", "Primary Section").</li>
                                             <li><em className="text-foreground/80">Note: All tasks you submit will be officially recorded in the system under the selected Unit.</em></li>
                                         </ul>
                                     </li>

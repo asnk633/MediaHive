@@ -161,10 +161,15 @@ export default function LoginClient() {
                     <HaloLogo size={80} />
                 </div>
 
-                {/* Branding Section */}
                 <div className="text-center mb-8 space-y-2">
-                    <h1 className="text-3xl font-extrabold tracking-tight text-white drop-shadow-sm">
-                        Thaiba MediaHive
+                    <h1 
+                        className="text-5xl tracking-wider text-[#E59312] drop-shadow-md font-normal"
+                        style={{ 
+                            fontFamily: 'BavistaSoulvare',
+                            textShadow: '0 0 16px rgba(229, 147, 18, 0.25)'
+                        }}
+                    >
+                        MediaHive
                     </h1>
                     <p className="text-slate-400 font-medium">
                         {isRecoveryMode ? 'Set your new password' : 'Welcome back, please login.'}
@@ -172,7 +177,7 @@ export default function LoginClient() {
                 </div>
 
                 {/* Main Card */}
-                <div className="w-full backdrop-blur-xl bg-gradient-to-b from-white/10 to-white/5 border border-white/10 shadow-2xl rounded-2xl overflow-hidden mb-8">
+                <div className="w-full backdrop-blur-xl bg-gradient-to-b from-white/10 to-white/5 border border-foreground/10 shadow-2xl rounded-2xl overflow-hidden mb-8">
                     <div className="p-10">
                         {isRecoveryMode ? (
                             <div className="space-y-6">
@@ -188,7 +193,7 @@ export default function LoginClient() {
                                                 <AlertCircle className="w-8 h-8 text-red-500" />
                                             </div>
                                             <div className="space-y-2">
-                                                <h3 className="text-xl font-bold text-white">Link Invalid or Expired</h3>
+                                                <h3 className="text-xl font-bold text-foreground">Link Invalid or Expired</h3>
                                                 <p className="text-slate-400 text-sm">
                                                     Your recovery session could not be verified. This happens if the link was already used or has expired.
                                                 </p>
@@ -198,14 +203,14 @@ export default function LoginClient() {
                                                     setIsRecoveryMode(false);
                                                     setShowResetModal(true);
                                                 }}
-                                                className="w-full h-11 bg-primary text-white font-bold rounded-full"
+                                                className="w-full h-11 bg-primary text-foreground font-bold rounded-full"
                                             >
                                                 Request New Link
                                             </Button>
                                             <button 
                                                 type="button"
                                                 onClick={() => setIsRecoveryMode(false)}
-                                                className="text-sm font-medium text-slate-500 hover:text-white transition-colors"
+                                                className="text-sm font-medium text-slate-500 hover:text-foreground transition-colors"
                                             >
                                                 Back to Login
                                             </button>
@@ -237,12 +242,12 @@ export default function LoginClient() {
                                                         value={newPassword}
                                                         onChange={(e) => setNewPassword(e.target.value)}
                                                         placeholder="••••••••••••"
-                                                        className="w-full h-12 bg-white/5 border border-white/10 rounded-full pl-11 pr-12 text-white placeholder:text-slate-600 focus:outline-none focus:ring-2 focus:ring-primary/40 focus:bg-white/10 transition-all text-sm"
+                                                        className="w-full h-12 bg-foreground/5 border border-foreground/10 rounded-full pl-11 pr-12 text-foreground placeholder:text-slate-600 focus:outline-none focus:ring-2 focus:ring-primary/40 focus:bg-foreground/10 transition-all text-sm"
                                                     />
                                                     <button
                                                         type="button"
                                                         onClick={() => setShowNewPassword(!showNewPassword)}
-                                                        className="absolute right-3 top-1/2 -translate-y-1/2 p-2 text-slate-400 hover:text-white transition-all z-50 cursor-pointer flex items-center justify-center"
+                                                        className="absolute right-3 top-1/2 -translate-y-1/2 p-2 text-slate-400 hover:text-foreground transition-all z-50 cursor-pointer flex items-center justify-center"
                                                         title={showNewPassword ? "Hide password" : "Show password"}
                                                     >
                                                         {showNewPassword ? <EyeOff className="w-5 h-5" /> : <Eye className="w-5 h-5" />}
@@ -262,12 +267,12 @@ export default function LoginClient() {
                                                         value={confirmNewPassword}
                                                         onChange={(e) => setConfirmNewPassword(e.target.value)}
                                                         placeholder="••••••••••••"
-                                                        className="w-full h-12 bg-white/5 border border-white/10 rounded-full pl-11 pr-12 text-white placeholder:text-slate-600 focus:outline-none focus:ring-2 focus:ring-primary/40 focus:bg-white/10 transition-all text-sm"
+                                                        className="w-full h-12 bg-foreground/5 border border-foreground/10 rounded-full pl-11 pr-12 text-foreground placeholder:text-slate-600 focus:outline-none focus:ring-2 focus:ring-primary/40 focus:bg-foreground/10 transition-all text-sm"
                                                     />
                                                     <button
                                                         type="button"
                                                         onClick={() => setShowConfirmNewPassword(!showConfirmNewPassword)}
-                                                        className="absolute right-3 top-1/2 -translate-y-1/2 p-2 text-slate-400 hover:text-white transition-all z-50 cursor-pointer flex items-center justify-center"
+                                                        className="absolute right-3 top-1/2 -translate-y-1/2 p-2 text-slate-400 hover:text-foreground transition-all z-50 cursor-pointer flex items-center justify-center"
                                                         title={showConfirmNewPassword ? "Hide password" : "Show password"}
                                                     >
                                                         {showConfirmNewPassword ? <EyeOff className="w-5 h-5" /> : <Eye className="w-5 h-5" />}
@@ -278,7 +283,7 @@ export default function LoginClient() {
                                             <button
                                                 type="submit"
                                                 disabled={loading || authLoading}
-                                                className="w-full h-12 bg-primary hover:bg-primary/90 text-white font-bold rounded-full shadow-lg transition-all flex items-center justify-center text-sm"
+                                                className="w-full h-12 bg-primary hover:bg-primary/90 text-foreground font-bold rounded-full shadow-lg transition-all flex items-center justify-center text-sm"
                                             >
                                                 {loading ? <Loader2 className="w-4 h-4 animate-spin" /> : 'Update Password'}
                                             </button>
@@ -287,7 +292,7 @@ export default function LoginClient() {
                                                 <button 
                                                     type="button"
                                                     onClick={() => setIsRecoveryMode(false)}
-                                                    className="text-sm font-medium text-slate-500 hover:text-white transition-colors"
+                                                    className="text-sm font-medium text-slate-500 hover:text-foreground transition-colors"
                                                 >
                                                     Cancel
                                                 </button>
@@ -324,7 +329,7 @@ export default function LoginClient() {
                                             value={email}
                                             onChange={(e) => setEmail(e.target.value)}
                                             placeholder="media@thaibagarden.com"
-                                            className="w-full h-12 bg-white/5 border border-white/10 rounded-full pl-11 pr-6 text-white placeholder:text-slate-600 focus:outline-none focus:ring-2 focus:ring-primary/40 focus:bg-white/10 transition-all text-sm"
+                                            className="w-full h-12 bg-foreground/5 border border-foreground/10 rounded-full pl-11 pr-6 text-foreground placeholder:text-slate-600 focus:outline-none focus:ring-2 focus:ring-primary/40 focus:bg-foreground/10 transition-all text-sm"
                                         />
                                     </div>
                                 </div>
@@ -341,12 +346,12 @@ export default function LoginClient() {
                                             value={password}
                                             onChange={(e) => setPassword(e.target.value)}
                                             placeholder="••••••••••••"
-                                            className="w-full h-12 bg-white/5 border border-white/10 rounded-full pl-11 pr-12 text-white placeholder:text-slate-600 focus:outline-none focus:ring-2 focus:ring-primary/40 focus:bg-white/10 transition-all text-sm"
+                                            className="w-full h-12 bg-foreground/5 border border-foreground/10 rounded-full pl-11 pr-12 text-foreground placeholder:text-slate-600 focus:outline-none focus:ring-2 focus:ring-primary/40 focus:bg-foreground/10 transition-all text-sm"
                                         />
                                         <button
                                             type="button"
                                             onClick={() => setShowPassword(!showPassword)}
-                                            className="absolute right-3 top-1/2 -translate-y-1/2 p-2 text-slate-400 hover:text-white transition-all z-50 cursor-pointer flex items-center justify-center"
+                                            className="absolute right-3 top-1/2 -translate-y-1/2 p-2 text-slate-400 hover:text-foreground transition-all z-50 cursor-pointer flex items-center justify-center"
                                             title={showPassword ? "Hide password" : "Show password"}
                                         >
                                             {showPassword ? <EyeOff className="w-5 h-5" /> : <Eye className="w-5 h-5" />}
@@ -368,7 +373,7 @@ export default function LoginClient() {
                                         <input
                                             type="checkbox"
                                             id="remember"
-                                            className="h-4 w-4 rounded border-white/10 bg-white/5 text-primary focus:ring-primary/40 transition-all cursor-pointer"
+                                            className="h-4 w-4 rounded border-foreground/10 bg-foreground/5 text-primary focus:ring-primary/40 transition-all cursor-pointer"
                                         />
                                     </div>
                                     <label htmlFor="remember" className="text-sm font-medium text-slate-400 cursor-pointer select-none">
@@ -379,7 +384,7 @@ export default function LoginClient() {
                                 <button
                                     type="submit"
                                     disabled={loading}
-                                    className="w-full h-12 bg-primary hover:bg-primary/90 text-white font-bold rounded-full shadow-lg transition-all flex items-center justify-center text-sm"
+                                    className="w-full h-12 bg-primary hover:bg-primary/90 text-foreground font-bold rounded-full shadow-lg transition-all flex items-center justify-center text-sm"
                                 >
                                     {loading ? <Loader2 className="w-4 h-4 animate-spin" /> : 'Login'}
                                 </button>
@@ -420,7 +425,7 @@ export default function LoginClient() {
                             initial={{ scale: 0.9, opacity: 0, y: 20 }}
                             animate={{ scale: 1, opacity: 1, y: 0 }}
                             exit={{ scale: 0.9, opacity: 0, y: 20 }}
-                            className="relative w-full max-w-sm bg-slate-900 border border-white/10 rounded-2xl shadow-2xl p-8 overflow-hidden"
+                            className="relative w-full max-w-sm bg-slate-900 border border-foreground/10 rounded-2xl shadow-2xl p-8 overflow-hidden"
                         >
                             <div className="absolute top-0 inset-x-0 h-1 bg-gradient-to-r from-transparent via-primary to-transparent" />
                             
@@ -429,13 +434,13 @@ export default function LoginClient() {
                                     <div className="w-16 h-16 bg-green-500/10 rounded-full flex items-center justify-center mx-auto border border-green-500/20">
                                         <CheckCircle2 className="w-8 h-8 text-green-500" />
                                     </div>
-                                    <h3 className="text-xl font-bold text-white">Check Your Inbox</h3>
+                                    <h3 className="text-xl font-bold text-foreground">Check Your Inbox</h3>
                                     <p className="text-slate-400 text-sm">
-                                        If an account exists for <span className="text-white font-medium">{email}</span>, you will receive a reset link shortly.
+                                        If an account exists for <span className="text-foreground font-medium">{email}</span>, you will receive a reset link shortly.
                                     </p>
                                     <Button 
                                         onClick={() => setShowResetModal(false)}
-                                        className="w-full h-11 bg-primary text-white font-bold rounded-full"
+                                        className="w-full h-11 bg-primary text-foreground font-bold rounded-full"
                                     >
                                         Close
                                     </Button>
@@ -443,7 +448,7 @@ export default function LoginClient() {
                             ) : (
                                 <div className="space-y-6">
                                     <div className="space-y-2 text-center">
-                                        <h3 className="text-xl font-bold text-white">Reset Password</h3>
+                                        <h3 className="text-xl font-bold text-foreground">Reset Password</h3>
                                         <p className="text-slate-400 text-sm">Enter your email to receive a recovery link.</p>
                                     </div>
                                     
@@ -470,7 +475,7 @@ export default function LoginClient() {
                                                     value={email}
                                                     onChange={(e) => setEmail(e.target.value)}
                                                     placeholder="media@thaibagarden.com"
-                                                    className="w-full h-11 bg-white/5 border border-white/10 rounded-full pl-11 pr-6 text-white placeholder:text-slate-600 focus:outline-none focus:ring-2 focus:ring-primary/40 transition-all text-sm"
+                                                    className="w-full h-11 bg-foreground/5 border border-foreground/10 rounded-full pl-11 pr-6 text-foreground placeholder:text-slate-600 focus:outline-none focus:ring-2 focus:ring-primary/40 transition-all text-sm"
                                                 />
                                             </div>
                                         </div>
@@ -479,14 +484,14 @@ export default function LoginClient() {
                                             <Button 
                                                 type="submit"
                                                 disabled={resetLoading || !email}
-                                                className="w-full h-11 bg-primary hover:bg-primary/90 text-white font-bold rounded-full transition-all"
+                                                className="w-full h-11 bg-primary hover:bg-primary/90 text-foreground font-bold rounded-full transition-all"
                                             >
                                                 {resetLoading ? <Loader2 className="w-4 h-4 animate-spin" /> : 'Send Reset Link'}
                                             </Button>
                                             <button 
                                                 type="button"
                                                 onClick={() => setShowResetModal(false)}
-                                                className="text-sm font-medium text-slate-500 hover:text-white transition-colors py-1"
+                                                className="text-sm font-medium text-slate-500 hover:text-foreground transition-colors py-1"
                                             >
                                                 Cancel
                                             </button>

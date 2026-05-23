@@ -26,15 +26,15 @@ import { Label } from '@/components/ui/label';
 import { DropdownSelector } from '@/components/ui/selectors/DropdownSelector';
 
 const StatCard = ({ label, value, icon: Icon, colorClass, subtext }: { label: string, value: number, icon: any, colorClass: string, subtext?: string }) => (
-    <div className="bg-white/5 border border-white/5 rounded-xl p-4 flex flex-col gap-2">
+    <div className="bg-foreground/5 border border-foreground/5 rounded-xl p-4 flex flex-col gap-2">
         <div className="flex items-center gap-3">
-            <div className={`p-2 rounded-lg bg-white/5 ${colorClass}`}>
+            <div className={`p-2 rounded-lg bg-foreground/5 ${colorClass}`}>
                 <Icon size={20} />
             </div>
             <span className="text-sm font-medium text-gray-400">{label}</span>
         </div>
         <div>
-            <div className="text-2xl font-bold text-white">{value}</div>
+            <div className="text-2xl font-bold text-foreground">{value}</div>
             {subtext && <div className="text-xs text-gray-500 mt-1">{subtext}</div>}
         </div>
     </div>
@@ -92,19 +92,19 @@ export function OverviewDashboard() {
 
     return (
         <div className="space-y-6">
-            <div className="flex flex-wrap items-center gap-4 bg-white/5 p-4 rounded-xl border border-white/5">
-                <div className="flex items-center gap-2 text-white/80 font-medium">
+            <div className="flex flex-wrap items-center gap-4 bg-foreground/5 p-4 rounded-xl border border-foreground/5">
+                <div className="flex items-center gap-2 text-foreground/80 font-medium">
                     <Filter size={18} /> Filters:
                 </div>
 
 
                 <div className="flex flex-col gap-2">
                     <DropdownSelector 
-                        label="Offices / Units"
+                        label="Departments / Institutions"
                         value={filters.department || ''}
                         onChange={val => setFilters({ ...filters, department: val, institution: val ? '' : filters.institution })}
                         options={[
-                            { id: '', label: 'All Offices / Units' },
+                            { id: '', label: 'All Departments / Institutions' },
                             ...departmentsList.map(dept => ({ id: dept, label: dept }))
                         ]}
                     />
@@ -157,7 +157,7 @@ export function OverviewDashboard() {
             {/* TASK OVERVIEW */}
             < section >
                 <div className="flex items-center gap-2 mb-4">
-                    <h2 className="text-xl font-bold text-white tracking-tight">Task Overview</h2>
+                    <h2 className="text-xl font-bold text-foreground tracking-tight">Task Overview</h2>
                 </div>
                 <div className="grid grid-cols-2 md:grid-cols-5 gap-4">
                     <StatCard
@@ -202,7 +202,7 @@ export function OverviewDashboard() {
             {/* EVENT OVERVIEW */}
             < section >
                 <div className="flex items-center gap-2 mb-4">
-                    <h2 className="text-xl font-bold text-white tracking-tight">Event Overview</h2>
+                    <h2 className="text-xl font-bold text-foreground tracking-tight">Event Overview</h2>
                 </div>
                 <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
                     <StatCard
@@ -264,12 +264,12 @@ function ReportDownloadButton() {
         <Dialog>
             <DialogTrigger asChild>
                 <button
-                    className="flex items-center gap-2 px-3 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg text-sm font-medium transition-colors shadow-lg shadow-blue-900/20"
+                    className="flex items-center gap-2 px-3 py-2 bg-blue-600 hover:bg-blue-700 text-foreground rounded-lg text-sm font-medium transition-colors shadow-lg shadow-blue-900/20"
                 >
                     <Download size={16} /> Report
                 </button>
             </DialogTrigger>
-            <DialogContent className="sm:max-w-md bg-[#1a1f2e] border-[#ffffff1a] text-white">
+            <DialogContent className="sm:max-w-md bg-[#1a1f2e] border-[#ffffff1a] text-foreground">
                 <DialogHeader>
                     <DialogTitle>Download Monthly Report</DialogTitle>
                     <DialogDescription className="text-gray-400 mt-2">

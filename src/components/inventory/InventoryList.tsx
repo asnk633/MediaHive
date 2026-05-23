@@ -67,10 +67,10 @@ export const InventoryList: React.FC<InventoryListProps> = ({
 
     if (loading) {
         return (
-            <div className="rounded-xl border border-white/5 bg-slate-900/20 overflow-hidden">
+            <div className="rounded-xl border border-foreground/5 bg-slate-900/20 overflow-hidden">
                 <Table>
-                    <TableHeader className="bg-white/5">
-                        <TableRow className="border-white/5 hover:bg-transparent">
+                    <TableHeader className="bg-foreground/5">
+                        <TableRow className="border-foreground/5 hover:bg-transparent">
                             <TableHead className="w-[300px]">Item</TableHead>
                             <TableHead>Category</TableHead>
                             <TableHead>Status</TableHead>
@@ -80,12 +80,12 @@ export const InventoryList: React.FC<InventoryListProps> = ({
                     </TableHeader>
                     <TableBody>
                         {Array.from({ length: 10 }).map((_, i) => (
-                            <TableRow key={i} className="border-white/5">
-                                <TableCell><div className="h-4 w-40 bg-white/5 animate-pulse rounded" /></TableCell>
-                                <TableCell><div className="h-4 w-24 bg-white/5 animate-pulse rounded" /></TableCell>
-                                <TableCell><div className="h-6 w-20 bg-white/5 animate-pulse rounded-full" /></TableCell>
-                                <TableCell><div className="h-4 w-16 bg-white/5 animate-pulse rounded" /></TableCell>
-                                <TableCell className="text-right"><div className="h-8 w-8 bg-white/5 animate-pulse rounded ml-auto" /></TableCell>
+                            <TableRow key={i} className="border-foreground/5">
+                                <TableCell><div className="h-4 w-40 bg-foreground/5 animate-pulse rounded" /></TableCell>
+                                <TableCell><div className="h-4 w-24 bg-foreground/5 animate-pulse rounded" /></TableCell>
+                                <TableCell><div className="h-6 w-20 bg-foreground/5 animate-pulse rounded-full" /></TableCell>
+                                <TableCell><div className="h-4 w-16 bg-foreground/5 animate-pulse rounded" /></TableCell>
+                                <TableCell className="text-right"><div className="h-8 w-8 bg-foreground/5 animate-pulse rounded ml-auto" /></TableCell>
                             </TableRow>
                         ))}
                     </TableBody>
@@ -96,9 +96,9 @@ export const InventoryList: React.FC<InventoryListProps> = ({
 
     if (items.length === 0) {
         return (
-            <div className="flex flex-col items-center justify-center py-20 text-center rounded-2xl bg-glass backdrop-blur-sm border border-white/5">
-                <Package className="text-white/10 mb-4" size={48} />
-                <h3 className="text-xl font-bold text-white/70 mb-2">No items found</h3>
+            <div className="flex flex-col items-center justify-center py-20 text-center rounded-2xl bg-glass backdrop-blur-sm border border-foreground/5">
+                <Package className="text-foreground/70 mb-4" size={48} />
+                <h3 className="text-xl font-bold text-foreground/70 mb-2">No items found</h3>
                 <p className="text-slate-400 max-w-sm text-sm">
                     Try adjusting your filters or search terms.
                 </p>
@@ -109,10 +109,10 @@ export const InventoryList: React.FC<InventoryListProps> = ({
     const canManage = role === 'admin' || role === 'manager' || role === 'team';
 
     return (
-        <div className="rounded-xl border border-white/10 bg-slate-900/40 backdrop-blur-md overflow-hidden animate-in fade-in duration-500">
+        <div className="rounded-xl border border-foreground/10 bg-card backdrop-blur-md overflow-hidden animate-in fade-in duration-500">
             <Table>
-                <TableHeader className="bg-white/[0.03]">
-                    <TableRow className="border-white/10 hover:bg-transparent">
+                <TableHeader className="bg-foreground/[0.03]">
+                    <TableRow className="border-foreground/10 hover:bg-transparent">
                         <TableHead className="text-slate-400 font-bold uppercase tracking-widest text-[10px] h-12">Asset Name</TableHead>
                         <TableHead className="text-slate-400 font-bold uppercase tracking-widest text-[10px] h-12">Category</TableHead>
                         <TableHead className="text-slate-400 font-bold uppercase tracking-widest text-[10px] h-12">Availability</TableHead>
@@ -136,12 +136,12 @@ export const InventoryList: React.FC<InventoryListProps> = ({
                         return (
                             <TableRow 
                                 key={item.id} 
-                                className="border-white/5 hover:bg-white/[0.02] group transition-colors cursor-pointer"
+                                className="border-foreground/5 hover:bg-foreground/[0.02] group transition-colors cursor-pointer"
                                 onClick={() => onView?.(item)}
                             >
                                 <TableCell className="py-4">
                                     <div className="flex flex-col">
-                                        <span className="font-semibold text-white group-hover:text-blue-400 transition-colors">
+                                        <span className="font-semibold text-foreground group-hover:text-blue-400 transition-colors">
                                             {item.name}
                                         </span>
                                         {item.serialNumber && (
@@ -150,7 +150,7 @@ export const InventoryList: React.FC<InventoryListProps> = ({
                                     </div>
                                 </TableCell>
                                 <TableCell>
-                                    <Badge variant="neutral" className="bg-white/5 border-white/10 text-slate-400 font-normal">
+                                    <Badge variant="neutral" className="bg-foreground/5 border-foreground/10 text-slate-400 font-normal">
                                         {item.category}
                                     </Badge>
                                 </TableCell>
@@ -233,22 +233,22 @@ export const InventoryList: React.FC<InventoryListProps> = ({
 
                                         <DropdownMenu>
                                             <DropdownMenuTrigger asChild>
-                                                <Button variant="ghost" className="h-8 w-8 p-0 text-slate-400 hover:text-white hover:bg-white/10">
+                                                <Button variant="ghost" className="h-8 w-8 p-0 text-slate-400 hover:text-foreground hover:bg-foreground/10">
                                                     <MoreVertical size={14} />
                                                 </Button>
                                             </DropdownMenuTrigger>
-                                            <DropdownMenuContent align="end" className="w-40 bg-slate-900 border-white/10 text-white">
-                                                <DropdownMenuItem onClick={() => onView?.(item)} className="focus:bg-white/5 cursor-pointer">
+                                            <DropdownMenuContent align="end" className="w-40 bg-popover border-foreground/10 text-foreground">
+                                                <DropdownMenuItem onClick={() => onView?.(item)} className="focus:bg-foreground/5 cursor-pointer">
                                                     <Eye size={14} className="mr-2" /> View Details
                                                 </DropdownMenuItem>
                                                 {canManage && onEdit && (
-                                                    <DropdownMenuItem onClick={() => onEdit(item)} className="focus:bg-white/5 cursor-pointer">
+                                                    <DropdownMenuItem onClick={() => onEdit(item)} className="focus:bg-foreground/5 cursor-pointer">
                                                         <Edit2 size={14} className="mr-2" /> Edit Asset
                                                     </DropdownMenuItem>
                                                 )}
-                                                <DropdownMenuSeparator className="bg-white/5" />
+                                                <DropdownMenuSeparator className="bg-foreground/5" />
                                                 {isOk && onBook && (
-                                                    <DropdownMenuItem onClick={() => onBook(item)} className="focus:bg-white/5 cursor-pointer text-blue-400">
+                                                    <DropdownMenuItem onClick={() => onBook(item)} className="focus:bg-foreground/5 cursor-pointer text-blue-400">
                                                         <Calendar size={14} className="mr-2" /> Book Schedule
                                                     </DropdownMenuItem>
                                                 )}

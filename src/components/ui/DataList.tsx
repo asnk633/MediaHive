@@ -64,9 +64,9 @@ export function DataList({
                 <div
                     role="listitem"
                     className={cn(
-                        "flex items-center w-full border-b border-white/5",
+                        "flex items-center w-full border-b border-foreground/5",
                         "h-[var(--mh-row-height)] px-[var(--mh-cell-padding)]",
-                        "bg-white/[0.01]",
+                        "bg-foreground/[0.01]",
                     )}
                 >
                     {/* Master checkbox — 32px column matching DataRow checkbox col */}
@@ -78,14 +78,14 @@ export function DataList({
                             onChange={handleMasterChange}
                             aria-label={selectionLabel}
                             className={cn(
-                                "w-4 h-4 rounded border border-white/20 bg-transparent",
-                                "checked:bg-white/20 checked:border-white/40",
+                                "w-4 h-4 rounded border border-foreground/20 bg-transparent",
+                                "checked:bg-foreground/20 checked:border-foreground/40",
                                 "cursor-pointer transition-all duration-150",
                                 "accent-white/80",
                             )}
                         />
                     </div>
-                    <span className="text-[10px] font-semibold uppercase tracking-widest text-white/50 ml-2 select-none">
+                    <span className="text-[10px] font-semibold uppercase tracking-widest text-foreground/70 ml-2 select-none">
                         {isAllSelected
                             ? "All selected"
                             : isIndeterminate

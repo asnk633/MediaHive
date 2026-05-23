@@ -111,7 +111,7 @@ export default function ReportPreviewClient() {
                     <button onClick={handleDownloadCSV} className="flex items-center gap-2 px-3 py-1.5 bg-gray-100 rounded hover:bg-gray-200 text-sm font-medium transition-colors">
                         <Download size={16} /> <span className="hidden sm:inline">CSV</span>
                     </button>
-                    <button onClick={handlePrint} className="flex items-center gap-2 px-3 py-1.5 bg-blue-600 text-white rounded hover:bg-blue-700 text-sm font-medium transition-colors">
+                    <button onClick={handlePrint} className="flex items-center gap-2 px-3 py-1.5 bg-blue-600 text-foreground rounded hover:bg-blue-700 text-sm font-medium transition-colors">
                         <Printer size={16} /> <span className="hidden sm:inline">Print / PDF</span>
                     </button>
                 </div>

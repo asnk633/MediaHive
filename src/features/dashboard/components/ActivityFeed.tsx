@@ -58,14 +58,14 @@ export const ActivityFeed = ({ tasks }: ActivityFeedProps) => {
         <div className="bg-surface backdrop-blur-md rounded-[18px] p-5 shadow-xl">
             <div className="flex items-center gap-2 mb-4">
                 <Activity className="w-5 h-5 text-blue-400" />
-                <h3 className="text-lg font-bold text-white">Recent Updates</h3>
+                <h3 className="text-lg font-bold text-foreground">Recent Updates</h3>
             </div>
 
             <div className="space-y-4">
                 {activities.map((act) => (
                     <div key={`${act.id}-${act.type}`} className="flex gap-3 relative pb-4 last:pb-0">
                         {/* Timeline Line */}
-                        <div className="absolute left-[9px] top-8 bottom-0 w-px bg-white/10 last:hidden" />
+                        <div className="absolute left-[9px] top-8 bottom-0 w-px bg-foreground/10 last:hidden" />
 
                         <div className={cn("mt-1 h-5 w-5 rounded-full flex items-center justify-center shadow-lg border border-[#ffffff1a] shrink-0",
                             act.type === 'created' ? "bg-blue-500/20 text-blue-400" : "bg-green-500/20 text-green-400"
@@ -80,7 +80,7 @@ export const ActivityFeed = ({ tasks }: ActivityFeedProps) => {
                                         (act.role === 'manager' || act.role === 'member') ? "bg-blue-500/10 text-blue-400 border-blue-500/20" :
                                             "bg-gray-500/10 text-gray-400 border-gray-500/20"
                                 )}>{act.role}</span>
-                                <span className="font-semibold text-white text-sm">{act.user || 'User'}</span>
+                                <span className="font-semibold text-foreground text-sm">{act.user || 'User'}</span>
                             </div>
 
                             <p className="text-sm text-gray-300 leading-snug">

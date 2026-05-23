@@ -112,17 +112,17 @@ export function UploadModal({ open, onClose, onSuccess, event_id, taskId }: Uplo
     };
 
     // Styles matching CreateEventForm "Night Sky" theme
-    const inputClasses = "bg-[#0a0c10] border-[#ffffff1a] text-white placeholder:text-white/50 focus:border-blue-500/50 focus:ring-blue-500/10 transition-all rounded-xl h-11 file:text-white file:bg-white/10 file:border-0 file:rounded-lg file:mr-4 file:px-3 file:py-1 file:hover:bg-white/20 cursor-pointer";
-    const labelClasses = "uppercase text-[10px] font-bold tracking-widest text-white/50 mb-1.5 block";
-    const selectTriggerClasses = "bg-[#0a0c10] border-[#ffffff1a] text-white focus:ring-blue-500/10 h-11 rounded-xl";
-    const selectContentClasses = "bg-[#0a0c10] border-[#ffffff1a] text-white";
-    const selectItemClasses = "hover:bg-white/5 text-white focus:bg-white/5 focus:text-white cursor-pointer";
+    const inputClasses = "bg-[#0a0c10] border-[#ffffff1a] text-foreground placeholder:text-foreground/70 focus:border-blue-500/50 focus:ring-blue-500/10 transition-all rounded-xl h-11 file:text-foreground file:bg-foreground/10 file:border-0 file:rounded-lg file:mr-4 file:px-3 file:py-1 file:hover:bg-foreground/20 cursor-pointer";
+    const labelClasses = "uppercase text-[10px] font-bold tracking-widest text-foreground/70 mb-1.5 block";
+    const selectTriggerClasses = "bg-[#0a0c10] border-[#ffffff1a] text-foreground focus:ring-blue-500/10 h-11 rounded-xl";
+    const selectContentClasses = "bg-[#0a0c10] border-[#ffffff1a] text-foreground";
+    const selectItemClasses = "hover:bg-foreground/5 text-foreground focus:bg-foreground/5 focus:text-foreground cursor-pointer";
 
     return (
         <Dialog open={open} onOpenChange={onClose}>
-            <DialogContent aria-describedby={undefined} className="sm:max-w-md bg-[#10111a] text-white border-[#ffffff1a] shadow-[0_0_50px_-12px_rgba(0,0,0,0.5)] p-6 rounded-[24px]">
+            <DialogContent aria-describedby={undefined} className="sm:max-w-md bg-[#10111a] text-foreground border-[#ffffff1a] shadow-[0_0_50px_-12px_rgba(0,0,0,0.5)] p-6 rounded-[24px]">
                 <DialogHeader className="mb-4">
-                    <DialogTitle className="text-xl font-bold tracking-tight text-white flex items-center gap-3">
+                    <DialogTitle className="text-xl font-bold tracking-tight text-foreground flex items-center gap-3">
                         <div className="p-2.5 rounded-xl bg-blue-600/10 text-blue-500">
                             <UploadCloud size={24} />
                         </div>
@@ -165,7 +165,7 @@ export function UploadModal({ open, onClose, onSuccess, event_id, taskId }: Uplo
                                 {visibilityMode !== 'all' && (
                                     <div className="grid grid-cols-2 gap-3 animate-in fade-in pt-2">
                                         <div className="space-y-1">
-                                            <Label className={labelClasses}>Offices / Units</Label>
+                                            <Label className={labelClasses}>Departments / Institutions</Label>
                                             <Input placeholder="Comma separated" {...register('departments')} className={inputClasses} />
                                         </div>
                                         <div className="space-y-1">
@@ -189,13 +189,13 @@ export function UploadModal({ open, onClose, onSuccess, event_id, taskId }: Uplo
                                     <TabsList className="grid w-full grid-cols-2 bg-[#0a0c10] border border-[#ffffff1a] rounded-xl p-1 h-auto">
                                         <TabsTrigger
                                             value="department"
-                                            className="data-[state=active]:bg-blue-600 data-[state=active]:text-white data-[state=active]:shadow-lg text-gray-400 rounded-lg py-2 transition-all"
+                                            className="data-[state=active]:bg-blue-600 data-[state=active]:text-foreground data-[state=active]:shadow-lg text-gray-400 rounded-lg py-2 transition-all"
                                         >
-                                            Office / Unit
+                                            Department / Institution
                                         </TabsTrigger>
                                         <TabsTrigger
                                             value="institution"
-                                            className="data-[state=active]:bg-blue-600 data-[state=active]:text-white data-[state=active]:shadow-lg text-gray-400 rounded-lg py-2 transition-all"
+                                            className="data-[state=active]:bg-blue-600 data-[state=active]:text-foreground data-[state=active]:shadow-lg text-gray-400 rounded-lg py-2 transition-all"
                                         >
                                             Institution
                                         </TabsTrigger>
@@ -203,7 +203,7 @@ export function UploadModal({ open, onClose, onSuccess, event_id, taskId }: Uplo
                                     <TabsContent value="department" className="mt-3">
                                         <Select onValueChange={(v) => setValue('department', v)}>
                                             <SelectTrigger className={selectTriggerClasses}>
-                                                <SelectValue placeholder="Select Office / Unit" />
+                                                <SelectValue placeholder="Select Department / Institution" />
                                             </SelectTrigger>
                                             <SelectContent className={selectContentClasses}>
                                                 <SelectItem value="General" className={selectItemClasses}>General</SelectItem>
@@ -274,20 +274,20 @@ export function UploadModal({ open, onClose, onSuccess, event_id, taskId }: Uplo
                     )
                     }
 
-                    <div className="flex justify-end gap-3 pt-6 border-t border-white/5">
+                    <div className="flex justify-end gap-3 pt-6 border-t border-foreground/5">
                         <Button
                             type="button"
                             variant="ghost"
                             onClick={onClose}
                             disabled={uploading}
-                            className="text-gray-400 hover:text-white hover:bg-white/5 rounded-xl text-sm font-semibold h-11 px-6"
+                            className="text-gray-400 hover:text-foreground hover:bg-foreground/5 rounded-xl text-sm font-semibold h-11 px-6"
                         >
                             Cancel
                         </Button>
                         <Button
                             type="submit"
                             disabled={uploading || loading}
-                            className="bg-blue-600 hover:bg-blue-500 text-white rounded-xl text-sm font-semibold h-11 px-8 shadow-lg shadow-blue-500/20"
+                            className="bg-blue-600 hover:bg-blue-500 text-foreground rounded-xl text-sm font-semibold h-11 px-8 shadow-lg shadow-blue-500/20"
                         >
                             {(uploading || loading) && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
                             {loading ? 'Auth Loading...' : (uploading ? 'Uploading...' : 'Upload File')}

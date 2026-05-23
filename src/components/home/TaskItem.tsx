@@ -46,13 +46,13 @@ export function TaskItem({ title, date, icon: Icon, isCompleted: initialComplete
                         "w-11 h-11 rounded-2xl flex items-center justify-center transition-all duration-normal border shadow-soft",
                         disableCompletion && "cursor-not-allowed opacity-20",
                         isCompleted
-                            ? "bg-[#242427] border-white/5 text-accent-primary shadow-neumorphic-inset"
-                            : "bg-[#242427] border-white/5 text-[#71717A] hover:text-accent-primary shadow-neumorphic-raised"
+                            ? "bg-[#242427] border-foreground/5 text-accent-primary shadow-neumorphic-inset"
+                            : "bg-[#242427] border-foreground/5 text-[#71717A] hover:text-accent-primary shadow-neumorphic-raised"
                     )}
                 >
                     {Icon ? <Icon size={20} strokeWidth={2.5} /> : (
                         <div className={cn("w-4 h-4 rounded-md border-2 transition-all",
-                            isCompleted ? "border-accent-primary bg-accent-primary scale-90" : "border-white/10 group-hover:border-accent-primary/40 bg-transparent")}
+                            isCompleted ? "border-accent-primary bg-accent-primary scale-90" : "border-foreground/10 group-hover:border-accent-primary/40 bg-transparent")}
                         >
                             {isCompleted && <CheckSquare size={14} className="text-[#18181B] -ml-[2px] -mt-[2px]" />}
                         </div>
@@ -80,7 +80,7 @@ export function TaskItem({ title, date, icon: Icon, isCompleted: initialComplete
             </div>
 
             <div className="opacity-0 group-hover:opacity-100 transition-all duration-normal transform translate-x-3 group-hover:translate-x-0 relative z-10">
-                <button className="w-9 h-9 flex items-center justify-center text-[#71717A] hover:text-white bg-[#242427] border border-white/5 rounded-xl shadow-neumorphic-raised hover:bg-[#323236] transition-all">
+                <button className="w-9 h-9 flex items-center justify-center text-[#71717A] hover:text-foreground bg-[#242427] border border-foreground/5 rounded-xl shadow-neumorphic-raised hover:bg-[#323236] transition-all">
                     <MoreHorizontal size={18} />
                 </button>
             </div>

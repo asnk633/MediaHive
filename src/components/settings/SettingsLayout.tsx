@@ -40,7 +40,7 @@ export const SettingsLayout: React.FC<SettingsLayoutProps> = ({
                                 "w-full justify-start gap-3 rounded-lg px-3 py-2 text-sm transition-all duration-200",
                                 activeTab === item.id
                                     ? "bg-blue-600/10 text-blue-400 font-medium"
-                                    : "text-slate-400 hover:text-white hover:bg-white/5"
+                                    : "text-slate-400 hover:text-foreground hover:bg-foreground/5"
                             )}
                             onClick={() => onTabChange(item.id)}
                         >
@@ -52,7 +52,7 @@ export const SettingsLayout: React.FC<SettingsLayoutProps> = ({
             </aside>
 
             {/* Content Area */}
-            <main className="flex-1 rounded-xl bg-slate-900/30 border border-white/5 p-6 md:p-8 animate-in fade-in zoom-in-95 duration-300">
+            <main className="flex-1 rounded-xl bg-slate-900/30 border border-foreground/5 p-6 md:p-8 animate-in fade-in zoom-in-95 duration-300">
                 {children}
             </main>
         </div>

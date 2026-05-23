@@ -126,13 +126,13 @@ export default function LabsPage() {
             {/* Featured Section */}
             <div className="relative group">
                 <div className="absolute -inset-1 bg-gradient-to-r from-amber-500/20 via-indigo-500/20 to-purple-500/20 rounded-[32px] blur-2xl opacity-50 group-hover:opacity-100 transition duration-1000 group-hover:duration-200"></div>
-                <div className="relative glass-dark rounded-[32px] border border-white/10 p-8 flex flex-col md:flex-row items-center gap-8 overflow-hidden">
+                <div className="relative glass-dark rounded-[32px] border border-foreground/10 p-8 flex flex-col md:flex-row items-center gap-8 overflow-hidden">
                     <div className="flex-1 space-y-4">
                         <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-amber-500/10 border border-amber-500/20 text-amber-500 text-[10px] font-black uppercase tracking-[0.2em]">
                             <Sparkles size={12} />
                             Featured Innovation
                         </div>
-                        <h2 className="text-3xl font-black text-white tracking-tight">The Future of Media Management</h2>
+                        <h2 className="text-3xl font-black text-foreground tracking-tight">The Future of Media Management</h2>
                         <p className="text-slate-400 text-lg leading-relaxed max-w-2xl">
                             MediaHive Labs is where we experiment with next-generation tools. These features are in various stages of development and may change frequently as we refine the experience.
                         </p>
@@ -173,8 +173,8 @@ export default function LabsPage() {
                             className={cn(
                                 "group relative overflow-hidden rounded-[28px] border p-6 transition-all duration-500 h-full flex flex-col",
                                 hasAccess 
-                                    ? "bg-white/[0.02] border-white/10 cursor-pointer hover:bg-white/[0.04] hover:border-white/20 hover:shadow-2xl hover:shadow-black/50" 
-                                    : "bg-black/20 border-white/5 opacity-60 cursor-not-allowed grayscale"
+                                    ? "bg-foreground/[0.02] border-foreground/10 cursor-pointer hover:bg-foreground/[0.04] hover:border-foreground/20 hover:shadow-2xl hover:shadow-black/50" 
+                                    : "bg-black/20 border-foreground/5 opacity-60 cursor-not-allowed grayscale"
                             )}
                         >
                             {/* Status Badge */}
@@ -184,7 +184,7 @@ export default function LabsPage() {
                                     feature.color,
                                     hasAccess ? "shadow-black/20" : "grayscale opacity-50 shadow-none"
                                 )}>
-                                    <feature.icon className="text-white" size={24} />
+                                    <feature.icon className="text-foreground" size={24} />
                                 </div>
                                 <div className="flex flex-col items-end gap-2">
                                     {!hasAccess ? (
@@ -207,19 +207,19 @@ export default function LabsPage() {
 
                             {/* Content */}
                             <div className="flex-1 space-y-3">
-                                <h3 className="text-xl font-bold text-white group-hover:text-premium-gradient transition-all">{feature.label}</h3>
+                                <h3 className="text-xl font-bold text-foreground group-hover:text-premium-gradient transition-all">{feature.label}</h3>
                                 <p className="text-slate-400 text-sm leading-relaxed font-medium">
                                     {feature.description}
                                 </p>
                             </div>
 
                             {/* Footer */}
-                            <div className="mt-8 flex items-center justify-between border-t border-white/5 pt-4 group-hover:border-white/10 transition-colors">
-                                <span className="text-[10px] font-black text-white/20 uppercase tracking-[0.2em] group-hover:text-white/40 transition-colors">
+                            <div className="mt-8 flex items-center justify-between border-t border-foreground/5 pt-4 group-hover:border-foreground/10 transition-colors">
+                                <span className="text-[10px] font-black text-foreground/80 uppercase tracking-[0.2em] group-hover:text-foreground/80 transition-colors">
                                     {hasAccess ? "Access Module" : "Upgrade Required"}
                                 </span>
                                 {hasAccess && (
-                                    <ArrowUpRight size={16} className="text-white/20 group-hover:text-white group-hover:translate-x-0.5 group-hover:-translate-y-0.5 transition-all" />
+                                    <ArrowUpRight size={16} className="text-foreground/80 group-hover:text-foreground group-hover:translate-x-0.5 group-hover:-translate-y-0.5 transition-all" />
                                 )}
                             </div>
                             
@@ -235,29 +235,29 @@ export default function LabsPage() {
 
             {/* Quick Tips */}
             <div className="grid grid-cols-1 md:grid-cols-3 gap-6 pt-6">
-                <div className="p-6 rounded-2xl bg-white/[0.01] border border-white/5 space-y-3">
+                <div className="p-6 rounded-2xl bg-foreground/[0.01] border border-foreground/5 space-y-3">
                     <div className="w-10 h-10 rounded-xl bg-indigo-500/10 flex items-center justify-center text-indigo-400">
                         <Zap size={20} />
                     </div>
-                    <h4 className="text-sm font-bold text-white">Rapid Prototyping</h4>
+                    <h4 className="text-sm font-bold text-foreground">Rapid Prototyping</h4>
                     <p className="text-xs text-slate-500 leading-relaxed">
                         These tools are built for speed. We prioritize functionality over polish to gather early feedback.
                     </p>
                 </div>
-                <div className="p-6 rounded-2xl bg-white/[0.01] border border-white/5 space-y-3">
+                <div className="p-6 rounded-2xl bg-foreground/[0.01] border border-foreground/5 space-y-3">
                     <div className="w-10 h-10 rounded-xl bg-emerald-500/10 flex items-center justify-center text-emerald-400">
                         <Target size={20} />
                     </div>
-                    <h4 className="text-sm font-bold text-white">Continuous Feedback</h4>
+                    <h4 className="text-sm font-bold text-foreground">Continuous Feedback</h4>
                     <p className="text-xs text-slate-500 leading-relaxed">
                         Your usage and feedback directly shape which features make it to the main dashboard.
                     </p>
                 </div>
-                <div className="p-6 rounded-2xl bg-white/[0.01] border border-white/5 space-y-3">
+                <div className="p-6 rounded-2xl bg-foreground/[0.01] border border-foreground/5 space-y-3">
                     <div className="w-10 h-10 rounded-xl bg-purple-500/10 flex items-center justify-center text-purple-400">
                         <Clapperboard size={20} />
                     </div>
-                    <h4 className="text-sm font-bold text-white">Project-First</h4>
+                    <h4 className="text-sm font-bold text-foreground">Project-First</h4>
                     <p className="text-xs text-slate-500 leading-relaxed">
                         Every tool in Labs is designed to solve a specific bottleneck in the media production cycle.
                     </p>

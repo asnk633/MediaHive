@@ -16,8 +16,8 @@ export const TaskSummaryWidget = ({ tasks }: TaskSummaryWidgetProps) => {
             label: 'Total Tasks', 
             value: tasks.length, 
             icon: CheckSquare, 
-            color: 'text-blue-400', 
-            bg: 'bg-blue-400/10' 
+            color: 'text-primary', 
+            bg: 'bg-primary/10' 
         },
         { 
             label: 'Due Today', 
@@ -30,8 +30,8 @@ export const TaskSummaryWidget = ({ tasks }: TaskSummaryWidgetProps) => {
             label: 'In Progress', 
             value: tasks.filter(t => t.status === 'in_progress').length, 
             icon: Activity, 
-            color: 'text-indigo-400', 
-            bg: 'bg-indigo-400/10' 
+            color: 'text-yellow-400', 
+            bg: 'bg-yellow-400/10' 
         },
         { 
             label: 'On Hold', 
@@ -54,15 +54,15 @@ export const TaskSummaryWidget = ({ tasks }: TaskSummaryWidgetProps) => {
             {stats.map((stat, idx) => (
                 <ReactiveCard 
                     key={idx} 
-                    className="p-5 cursor-default card-gradient-border card-hover-elevation backdrop-blur-xl rounded-[18px] flex flex-col items-center text-center bg-white/[0.01] shadow-sm group transition-all"
+                    className="p-5 cursor-default glass-liquid rounded-[24px] flex flex-col items-center text-center shadow-sm group transition-all"
                 >
                     <div className={cn("mb-1.5 p-1.5 rounded-[18px] flex items-center justify-center transition-transform group-hover:scale-105", stat.bg, stat.color)}>
                         <stat.icon size={16} />
                     </div>
-                    <p className="text-[26px] font-semibold text-white/90 leading-none tracking-tight">
+                    <p className="text-[26px] font-semibold text-foreground/90 leading-none tracking-tight">
                         {stat.value}
                     </p>
-                    <p className="text-[10px] font-bold text-white/50 uppercase tracking-[0.05em] mt-1 shrink-0">
+                    <p className="text-[10px] font-bold text-foreground/70 uppercase tracking-[0.05em] mt-1 shrink-0">
                         {stat.label}
                     </p>
                 </ReactiveCard>

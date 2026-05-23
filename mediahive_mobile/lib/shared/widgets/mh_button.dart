@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import '../../core/theme/app_colors.dart';
 import '../../core/theme/app_spacing.dart';
 import '../../core/theme/app_typography.dart';
+import '../../core/design_tokens.dart';
 
 enum MhButtonType { primary, secondary, outline, ghost }
 
@@ -24,7 +25,7 @@ class MhButton extends StatelessWidget {
     this.isDisabled = false,
     this.icon,
     this.width,
-    this.height = 56.0, // Standard production height
+    this.height = 56.0,
   });
 
   @override
@@ -33,26 +34,23 @@ class MhButton extends StatelessWidget {
     
     return MouseRegion(
       cursor: effectiveDisabled ? SystemMouseCursors.basic : SystemMouseCursors.click,
-      child: GestureDetector(
+      child: _MhButtonPressable(
         onTap: effectiveDisabled ? null : onTap,
-        child: AnimatedOpacity(
-          duration: const Duration(milliseconds: 150),
-          opacity: effectiveDisabled ? 0.6 : 1.0,
-          child: Container(
-            width: width,
-            height: height,
-            constraints: const BoxConstraints(minWidth: 48, minHeight: 32),
-            padding: EdgeInsets.symmetric(
-              horizontal: (width != null && width! < 60) || height < 48 
-                  ? AppSpacing.s 
-                  : AppSpacing.m,
-            ),
-            decoration: _getDecoration(effectiveDisabled),
-            child: Center(
-              child: isLoading
-                  ? _buildLoader()
-                  : _buildContent(),
-            ),
+        isDisabled: effectiveDisabled,
+        child: Container(
+          width: width,
+          height: height,
+          constraints: const BoxConstraints(minWidth: 48, minHeight: 32),
+          padding: EdgeInsets.symmetric(
+            horizontal: (width != null && width! < 60) || height < 48 
+                ? AppSpacing.s 
+                : AppSpacing.m,
+          ),
+          decoration: _getDecoration(effectiveDisabled),
+          child: Center(
+            child: isLoading
+                ? _buildLoader()
+                : _buildContent(),
           ),
         ),
       ),
@@ -139,5 +137,64 @@ class MhButton extends StatelessWidget {
       case MhButtonType.outline:
         return AppColors.honey;
     }
+  }
+}
+
+class _MhButtonPressable extends StatefulWidget {
+  final Widget child;
+  final VoidCallback? onTap;
+  final bool isDisabled;
+
+  const _MhButtonPressable({
+    required this.child,
+    this.onTap,
+    required this.isDisabled,
+  });
+
+  @override
+  State<_MhButtonPressable> createState() => _MhButtonPressableState();
+}
+
+class _MhButtonPressableState extends State<_MhButtonPressable> with SingleTickerProviderStateMixin {
+  late AnimationController _controller;
+  late Animation<double> _scaleAnimation;
+
+  @override
+  void initState() {
+    super.initState();
+    _controller = AnimationController(
+      vsync: this,
+      duration: const Duration(milliseconds: 100),
+    );
+    _scaleAnimation = Tween<double>(begin: 1.0, end: 0.95).animate(
+      CurvedAnimation(parent: _controller, curve: Curves.easeInOut),
+    );
+  }
+
+  @override
+  void dispose() {
+    _controller.dispose();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return GestureDetector(
+      onTapDown: (_) => widget.isDisabled ? null : _controller.forward(),
+      onTapUp: (_) => widget.isDisabled ? null : _controller.reverse(),
+      onTapCancel: () => widget.isDisabled ? null : _controller.reverse(),
+      onTap: widget.onTap,
+      child: AnimatedBuilder(
+        animation: _scaleAnimation,
+        builder: (context, child) => Transform.scale(
+          scale: _scaleAnimation.value,
+          child: AnimatedOpacity(
+            duration: const Duration(milliseconds: 150),
+            opacity: widget.isDisabled ? 0.6 : 1.0,
+            child: widget.child,
+          ),
+        ),
+      ),
+    );
   }
 }

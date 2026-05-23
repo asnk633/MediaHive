@@ -82,7 +82,7 @@ const EmailVerificationGate = ({
             <button
               onClick={handleResendVerification}
               disabled={isResending}
-              className="inline-flex justify-center px-4 py-3 text-sm font-bold text-white uppercase tracking-widest bg-blue-600 border border-transparent rounded-xl hover:bg-blue-700 transition-colors focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 disabled:opacity-50"
+              className="inline-flex justify-center px-4 py-3 text-sm font-bold text-foreground uppercase tracking-widest bg-blue-600 border border-transparent rounded-xl hover:bg-blue-700 transition-colors focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 disabled:opacity-50"
             >
               {isResending ? 'Sending...' : 'Resend Email'}
             </button>

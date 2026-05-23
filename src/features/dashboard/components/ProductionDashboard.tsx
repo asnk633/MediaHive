@@ -99,17 +99,17 @@ export const ProductionDashboard: React.FC = () => {
             </div>
 
             {/* Footer Summary */}
-            <div className="p-4 rounded-[18px] bg-white/[0.02] border border-white/5 flex items-center justify-between">
+            <div className="p-4 rounded-[18px] bg-foreground/[0.02] border border-foreground/5 flex items-center justify-between">
                 <div className="flex items-center gap-3">
                     <Zap size={14} className="text-amber-400" />
-                    <span className="text-[11px] font-bold text-white/40 uppercase tracking-widest">
+                    <span className="text-[11px] font-bold text-foreground/80 uppercase tracking-widest">
                         Live monitoring active for {user?.name || user?.fullName || 'Production'}
                     </span>
                 </div>
                 <div className="flex items-center gap-4">
                     <div className="flex items-center gap-1.5">
                         <div className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse" />
-                        <span className="text-[10px] font-bold text-white/20 uppercase tracking-widest">Connected</span>
+                        <span className="text-[10px] font-bold text-foreground/80 uppercase tracking-widest">Connected</span>
                     </div>
                 </div>
             </div>

@@ -20,7 +20,7 @@ export const HaloLogo = ({ size = 110, className }: HaloLogoProps) => {
             
             {/* Circular Glass Container */}
             <div 
-                className="absolute flex items-center justify-center bg-white/5 backdrop-blur-md border border-white/10 rounded-full shadow-2xl" 
+                className="absolute flex items-center justify-center bg-foreground/5 backdrop-blur-md border border-foreground/10 rounded-full shadow-2xl" 
                 style={{ width: size, height: size }}
             >
                 <img

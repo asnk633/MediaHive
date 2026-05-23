@@ -23,11 +23,11 @@ export default function CreateEventModalMember({ open, onClose }: { open: boolea
         <div className="space-y-4">
           <label className="block">
             <p className="pb-2 text-gray-300">Event Title</p>
-            <input className="h-12 w-full rounded-lg border border-gray-700 bg-[#1e1e1e] px-4 text-white focus:outline-none focus:ring-2 focus:ring-[#00BFA6]/50" />
+            <input className="h-12 w-full rounded-lg border border-gray-700 bg-[#1e1e1e] px-4 text-foreground focus:outline-none focus:ring-2 focus:ring-[#00BFA6]/50" />
           </label>
           <label className="block">
             <p className="pb-2 text-gray-300">Description</p>
-            <textarea className="min-h-28 w-full rounded-lg border border-gray-700 bg-[#1e1e1e] p-4 text-white focus:outline-none focus:ring-2 focus:ring-[#00BFA6]/50" />
+            <textarea className="min-h-28 w-full rounded-lg border border-gray-700 bg-[#1e1e1e] p-4 text-foreground focus:outline-none focus:ring-2 focus:ring-[#00BFA6]/50" />
           </label>
 
           <div className="grid gap-5 sm:grid-cols-2">
@@ -89,7 +89,7 @@ export default function CreateEventModalMember({ open, onClose }: { open: boolea
         </div>
 
         <div className="mt-5 flex justify-end gap-2">
-          <button onClick={onClose} className="rounded-md bg-white/10 px-4 py-2">Cancel</button>
+          <button onClick={onClose} className="rounded-md bg-foreground/10 px-4 py-2">Cancel</button>
           <button className="rounded-md bg-[#00BFA6] px-4 py-2 font-semibold text-black">Submit</button>
         </div>
       </div>

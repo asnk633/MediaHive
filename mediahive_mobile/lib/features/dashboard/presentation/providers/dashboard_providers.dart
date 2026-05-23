@@ -11,75 +11,140 @@ final dashboardMetricsProvider = Provider((ref) {
   final eventsAsync = ref.watch(eventListProvider);
   final profileAsync = ref.watch(currentUserProfileProvider);
 
-  final today = DateFormat('yyyy-MM-dd').format(DateTime.now());
-  final currentUserId = profileAsync.maybeWhen(data: (p) => p?['id'] as String?, orElse: () => null);
-
   return tasksAsync.maybeWhen(
     data: (tasks) {
+      final inventory = inventoryAsync.valueOrNull ?? [];
       final profile = profileAsync.valueOrNull;
       final fullName = profile?['full_name'] as String?;
+      final role = (profile?['role']?.toString() ?? 'member').toLowerCase();
+      final isAdmin = role.contains('admin') || role.contains('manager');
 
-      // System Status (Team Today)
-      final today = DateFormat('yyyy-MM-dd').format(DateTime.now());
-      final teamTodayTasks = tasks.where((t) => t.dueDate == today).toList();
-
-      final dueToday = teamTodayTasks.where((t) => t.status == 'todo').length;
-      final inProgress = teamTodayTasks.where((t) => t.status == 'in_progress').length;
-      final inReview = teamTodayTasks.where((t) => t.status == 'review').length;
-      final completedToday = teamTodayTasks.where((t) => t.status == 'done').length;
-
-      // Completion Progress
-      final totalToday = teamTodayTasks.length;
-      final doneToday = completedToday;
-      final completionPercentage = totalToday > 0 ? (doneToday / totalToday * 100).toInt() : 0;
-
-      // My Requests
-      final myTasks = tasks.where((t) => t.requester == fullName).toList();
-      final myPendingCount = myTasks.where((t) => t.status == 'todo').length;
-      final myInProgressCount = myTasks.where((t) => t.status == 'in_progress').length;
-      final myInReviewCount = myTasks.where((t) => t.status == 'review').length;
-      final myCompletedCount = myTasks.where((t) => t.status == 'done').length;
-      final myTotal = myTasks.length;
+      // 1. Common Data
+      final now = DateTime.now();
+      final todayStr = DateFormat('yyyy-MM-dd').format(now);
+      final tomorrow = now.add(const Duration(days: 1));
+      final tomorrowStr = DateFormat('yyyy-MM-dd').format(tomorrow);
       
-      final requestProgressPercentage = myTotal > 0 ? (myCompletedCount / myTotal * 100).toInt() : 0;
+      final teamTodayTasks = tasks.where((t) => t.dueDate == todayStr).toList();
+      final events = eventsAsync.valueOrNull ?? [];
+
+      // 2. Admin Metrics (Bottleneck Detection)
+      Map<String, dynamic>? adminMetrics;
+      if (isAdmin) {
+        final totalTasks = tasks.length;
+        final pendingTasks = tasks.where((t) => t.status != 'done').toList();
+        final completedTasks = totalTasks - pendingTasks.length;
+        
+        // Overdue count
+        final overdueCount = pendingTasks.where((t) {
+          try {
+            final d = DateTime.parse(t.dueDate);
+            return d.isBefore(DateTime(now.year, now.month, now.day));
+          } catch (_) { return false; }
+        }).length;
+
+        // Workload & Bottlenecks
+        final Map<String, int> workload = {};
+        for (var t in pendingTasks) {
+          workload[t.assignee] = (workload[t.assignee] ?? 0) + 1;
+        }
+        
+        final bottlenecks = workload.entries
+            .where((e) => e.value >= 5)
+            .map((e) => e.key)
+            .toList();
+
+        // Institutional Pressure Points (Events in next 48h)
+        final pressurePoints = events.where((e) {
+          try {
+            final d = DateTime.parse(e.date);
+            return d.isBefore(now.add(const Duration(hours: 48))) && d.isAfter(now.subtract(const Duration(hours: 1)));
+          } catch (_) { return false; }
+        }).length;
+
+        // Inventory Alerts
+        final lowStockCount = inventory.where((i) => i.quantity <= i.minStockLevel).length;
+
+        adminMetrics = {
+          'institutionalHealth': totalTasks > 0 ? (completedTasks / totalTasks * 100).toInt() : 0,
+          'lowStockCount': lowStockCount,
+          'workload': workload,
+          'bottlenecks': bottlenecks,
+          'pressurePoints': pressurePoints,
+          'overdueCount': overdueCount,
+          'alerts': [
+            if (overdueCount > 0) '$overdueCount tasks are currently overdue',
+            if (lowStockCount > 0) '$lowStockCount items require restocking',
+            if (bottlenecks.isNotEmpty) '${bottlenecks.length} team members overloaded',
+          ],
+        };
+      }
+
+      // 3. Team Metrics (Immediate Priorities)
+      final myTasks = tasks.where((t) => t.assignee == fullName || t.requester == fullName).toList();
+      final myPending = myTasks.where((t) => t.status != 'done').toList();
+      
+      final myPriorities = myPending.where((t) {
+        if (t.isBlocked) return true;
+        try {
+          final d = DateTime.parse(t.dueDate);
+          return d.isBefore(tomorrow);
+        } catch (_) { return false; }
+      }).toList();
+      
+      final teamMetrics = {
+        'myPendingCount': myPending.length,
+        'myPrioritiesCount': myPriorities.length,
+        'myPriorities': myPriorities,
+        'productivity': myTasks.isNotEmpty 
+            ? (myTasks.where((t) => t.status == 'done').length / myTasks.length * 100).toInt() 
+            : 0,
+      };
+
+      final requestsList = tasks.where((t) => t.requester == fullName).toList();
+      final myRequestsMetrics = {
+        'total': requestsList.length,
+        'pending': requestsList.where((t) => t.status == 'todo').length,
+        'inProgress': requestsList.where((t) => t.status == 'in_progress').length,
+        'inReview': requestsList.where((t) => t.status == 'review').length,
+        'completed': requestsList.where((t) => t.status == 'done').length,
+        'fulfilled': requestsList.where((t) => t.status == 'done').length,
+        'progress': requestsList.isNotEmpty ? (requestsList.where((t) => t.status == 'done').length / requestsList.length * 100).toInt() : 0,
+      };
 
       return {
+        'isAdmin': isAdmin,
+        'admin': adminMetrics,
+        'team': teamMetrics,
+        'myRequests': myRequestsMetrics,
         'systemStatus': {
-          'dueToday': dueToday.toString(),
-          'inProgress': inProgress.toString(),
-          'onHold': inReview.toString(), // Mapping 'review' to 'onHold' for UI slots if needed, or just use it
-          'completed': completedToday.toString(),
-          'totalTodayCount': totalToday,
+          'dueToday': teamTodayTasks.where((t) => t.status != 'done').length.toString(),
+          'inProgress': teamTodayTasks.where((t) => t.status == 'in_progress').length.toString(),
+          'onHold': teamTodayTasks.where((t) => t.status == 'review' || t.isBlocked).length.toString(),
+          'completed': teamTodayTasks.where((t) => t.status == 'done').length.toString(),
+          'totalTodayCount': teamTodayTasks.length,
         },
         'completion': {
-          'percentage': completionPercentage,
-          'label': '$doneToday of $totalToday tasks completed',
+          'percentage': teamTodayTasks.isNotEmpty 
+              ? (teamTodayTasks.where((t) => t.status == 'done').length / teamTodayTasks.length * 100).toInt() 
+              : 0,
+          'label': '${teamTodayTasks.where((t) => t.status == 'done').length} of ${teamTodayTasks.length} today tasks completed',
         },
-        'myRequests': {
-          'total': myTotal.toString(),
-          'pending': myPendingCount.toString(),
-          'inProgress': myInProgressCount.toString(),
-          'inReview': myInReviewCount.toString(),
-          'completed': myCompletedCount.toString(),
-          'fulfilled': myCompletedCount.toString(),
-          'progress': requestProgressPercentage,
-        },
-        'inventoryCount': inventoryAsync.maybeWhen(data: (items) => items.length.toString(), orElse: () => '0'),
       };
     },
     orElse: () => {
-      'systemStatus': {'dueToday': '0', 'inProgress': '0', 'onHold': '0', 'completed': '0', 'totalTodayCount': 0},
-      'completion': {'percentage': 0, 'label': '0 of 0 tasks completed'},
+      'isAdmin': false,
       'myRequests': {
-        'total': '0', 
-        'pending': '0', 
-        'inProgress': '0', 
-        'inReview': '0', 
-        'completed': '0',
-        'fulfilled': '0',
+        'total': 0,
+        'pending': 0,
+        'inProgress': 0,
+        'inReview': 0,
+        'completed': 0,
+        'fulfilled': 0,
         'progress': 0,
       },
-      'inventoryCount': '0',
+      'systemStatus': {'dueToday': '0', 'inProgress': '0', 'onHold': '0', 'completed': '0', 'totalTodayCount': 0},
+      'completion': {'percentage': 0, 'label': 'No tasks today'},
     },
   );
 });

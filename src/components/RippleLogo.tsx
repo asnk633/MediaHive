@@ -18,7 +18,7 @@ export const RippleLogo = ({ size = 200, className }: RippleLogoProps) => {
             {[1, 2, 3].map((i) => (
                 <motion.div
                     key={i}
-                    className="absolute rounded-full bg-white/10"
+                    className="absolute rounded-full bg-foreground/10"
                     style={{ width: '100%', height: '100%' }}
                     animate={{
                         scale: [1, 1.5, 1],

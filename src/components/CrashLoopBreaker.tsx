@@ -50,7 +50,7 @@ export function CrashLoopBreaker({ children }: { children: React.ReactNode }) {
 
     if (isSafeMode) {
         return (
-            <div className="flex items-center justify-center min-h-screen bg-[#0a0c10] text-white p-6">
+            <div className="flex items-center justify-center min-h-screen bg-[#0a0c10] text-foreground p-6">
                 <div className="max-w-md w-full p-8 bg-red-950/20 border border-red-500/30 rounded-3xl text-center space-y-6">
                     <div className="w-16 h-16 bg-red-500/20 rounded-full flex items-center justify-center mx-auto">
                         <svg className="w-8 h-8 text-red-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">

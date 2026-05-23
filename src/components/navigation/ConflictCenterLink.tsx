@@ -26,7 +26,7 @@ export const ConflictCenterLink: React.FC = () => {
             <AlertTriangle size={16} className="text-gray-400" />
             <span className="hidden sm:inline text-gray-300">Conflicts</span>
             {conflictCount > 0 && (
-                <div className="absolute -top-2 -right-2 bg-gray-600 text-white text-[10px] w-5 h-5 flex items-center justify-center rounded-full font-black">
+                <div className="absolute -top-2 -right-2 bg-gray-600 text-foreground text-[10px] w-5 h-5 flex items-center justify-center rounded-full font-black">
                     {conflictCount}
                 </div>
             )}

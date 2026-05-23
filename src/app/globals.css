@@ -1,3 +1,11 @@
+@font-face {
+  font-family: 'BavistaSoulvare';
+  src: url('/BavistaSoulvare.ttf') format('truetype');
+  font-weight: normal;
+  font-style: normal;
+  font-display: swap;
+}
+
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
@@ -23,6 +31,7 @@
     /* Role: Grouping sections (Sidebar, Lists). Subtle depth. */
     --tier2-panel: linear-gradient(180deg, #262628 0%, #232325 100%);
     --shadow-tier2: 0 1px 2px rgba(0, 0, 0, 0.4);
+    --popover-bg: #262628;
 
     /* --- TIER 3: SURFACE (Primary / Interactive) --- */
     /* Role: Focus & Action (Stats, Key Widgets). "Lifted" look. */
@@ -45,16 +54,44 @@
     --font-sans: var(--font-sans), system-ui, sans-serif;
 
     /* Text Colors (Muted via opacity/color, not size) */
-    --text-primary: #ffffff;
-    --text-secondary: #d4d4d8;
+    --text-primary: 255 255 255;
+    --text-secondary: #d4d4d8;         /* FIX: valid hex (was 212 212 216 = invalid CSS color) */
     /* Zinc-300 (Higher contrast than Zinc-400) */
-    --text-muted: #a1a1aa;
+    --text-muted: 161 161 170;
     /* Zinc-400 (Higher contrast than Zinc-500) */
 
-    /* Accent (Indigo - Control only) */
+    /* Direct-use color variables (valid CSS colors for components using var() directly) */
+    --color-text-primary: #ffffff;
+    --color-text-secondary: #d4d4d8;
+    --color-text-muted: #a1a1aa;
+    --color-border: rgba(255, 255, 255, 0.08);
+    --color-bg-surface: rgba(255, 255, 255, 0.03);
+    --color-bg-subtle: rgba(255, 255, 255, 0.02);
+
+    /* Legacy theme variables referenced by some components */
+    --text: #ffffff;
+    --panel-strong: rgba(255, 255, 255, 0.08);
+    --bg-hover: rgba(255, 255, 255, 0.05);
+    --accent: #6366f1;
+
+    /* Accent (Theme Dynamic) */
     --accent-primary: #6366f1;
     --accent-primary-rgb: 99, 102, 241;
     --accent-primary-soft: rgba(99, 102, 241, 0.15);
+
+    /* Theme Engine Variables (Default: Midnight) */
+    --app-bg: linear-gradient(180deg, #02040a 0%, #050816 40%, #0c0b25 100%);
+    --bg-glow-1: rgba(99, 102, 241, 0.12);
+    --bg-glow-2: rgba(59, 130, 246, 0.1);
+    --bg-glow-3: rgba(168, 85, 247, 0.08);
+    
+    --glass-card-bg: rgba(2, 6, 23, 0.46);
+    --glass-card-border: rgba(255, 255, 255, 0.06);
+    --glass-card-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.04);
+    
+    --glass-liquid-bg: rgba(2, 6, 23, 0.58);
+    --glass-liquid-border: rgba(255, 255, 255, 0.08);
+    --glass-liquid-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.06);
 
     /* Borders (Low Contrast) */
     --border-subtle: rgba(255, 255, 255, 0.08);
@@ -98,11 +135,110 @@
     background-image: url("/noise.png");
   }
 
-  /* RESET: No light theme allowed */
-  html[data-theme="light"] {
-    --tier1-canvas: linear-gradient(180deg, #1b1b1d 0%, #222226 100%);
-    --text-primary: #ffffff;
+  /* THEME OVERRIDES */
+  [data-theme="midnight"] {
+    --app-bg: linear-gradient(180deg, #02040a 0%, #050816 40%, #0c0b25 100%);
+    --bg-glow-1: rgba(99, 102, 241, 0.12);
+    --bg-glow-2: rgba(59, 130, 246, 0.1);
+    --bg-glow-3: rgba(168, 85, 247, 0.08);
+
+    --accent-primary: #6366f1;
+    --accent-primary-rgb: 99, 102, 241;
+    --accent-primary-soft: rgba(99, 102, 241, 0.15);
+
+    --glass-card-bg: rgba(2, 6, 23, 0.46);
+    --glass-card-border: rgba(255, 255, 255, 0.06);
+    --glass-card-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.04);
+
+    --glass-liquid-bg: rgba(2, 6, 23, 0.58);
+    --glass-liquid-border: rgba(255, 255, 255, 0.08);
+    --glass-liquid-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.06);
+
+    --text-primary: 255 255 255;
+    --text-secondary: #d4d4d8;         /* FIX: valid hex (was 212 212 216 = invalid CSS color) */
+    --text-muted: 161 161 170;
+    --border-subtle: rgba(255, 255, 255, 0.08);
+
+    /* Direct-use color variables (valid CSS colors for components using var() directly) */
+    --color-text-primary: #ffffff;
+    --color-text-secondary: #d4d4d8;
+    --color-text-muted: #a1a1aa;
+    --color-border: rgba(255, 255, 255, 0.08);
+    --color-bg-surface: rgba(255, 255, 255, 0.03);
+    --color-bg-subtle: rgba(255, 255, 255, 0.02);
+
+    /* Legacy theme variables referenced by some components */
+    --text: #ffffff;
+    --panel-strong: rgba(255, 255, 255, 0.08);
+    --bg-hover: rgba(255, 255, 255, 0.05);
+    --accent: #6366f1;
   }
+
+  [data-theme="golden"] {
+    --app-bg: linear-gradient(180deg, #02040a 0%, #0a0a05 40%, #151100 100%);
+    --bg-glow-1: rgba(255, 184, 0, 0.12);
+    --bg-glow-2: rgba(251, 191, 36, 0.1);
+    --bg-glow-3: rgba(245, 158, 11, 0.08);
+    
+    --accent-primary: #FFB800;
+    --accent-primary-rgb: 255, 184, 0;
+    --accent-primary-soft: rgba(255, 184, 0, 0.15);
+    
+    --glass-card-bg: rgba(255, 255, 255, 0.03);
+    --glass-card-border: rgba(255, 255, 255, 0.08);
+    --glass-card-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.1);
+    
+    --glass-liquid-bg: rgba(255, 255, 255, 0.05);
+    --glass-liquid-border: rgba(255, 255, 255, 0.12);
+    --glass-liquid-shadow: inset 0 1px 1px rgba(255, 255, 255, 0.15);
+
+    --text-primary: 255 255 255;
+    --text-secondary: #e4e4e7;
+    --text-muted: 161 161 170;
+    
+    --border-subtle: rgba(255, 255, 255, 0.08);
+  }
+
+  [data-theme="luminous"] {
+    --app-bg: linear-gradient(180deg, #f8fafc 0%, #f1f5f9 40%, #e2e8f0 100%);
+    --bg-glow-1: rgba(56, 189, 248, 0.2);
+    --bg-glow-2: rgba(14, 165, 233, 0.15);
+    --bg-glow-3: rgba(2, 132, 199, 0.1);
+    
+    --accent-primary: #0284c7;
+    --accent-primary-rgb: 2, 132, 199;
+    --accent-primary-soft: rgba(2, 132, 199, 0.15);
+    
+    --glass-card-bg: rgba(255, 255, 255, 0.7);
+    --glass-card-border: rgba(0, 0, 0, 0.05);
+    --glass-card-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.5);
+    
+    --glass-liquid-bg: rgba(255, 255, 255, 0.85);
+    --glass-liquid-border: rgba(0, 0, 0, 0.08);
+    --glass-liquid-shadow: inset 0 1px 1px rgba(255, 255, 255, 0.7);
+
+    --text-primary: 15 23 42;
+    --text-secondary: 51 65 85;
+    --text-muted: 100 116 139;
+    
+    --border-subtle: rgba(0, 0, 0, 0.08);
+    --popover-bg: #ffffff;
+    --bg-root-fallback: #f8fafc;
+  }
+}
+
+/* Logo tinting per theme - filter shifts the golden PNG to match theme accent */
+[data-theme="midnight"] .theme-logo,
+:root:not([data-theme]) .theme-logo {
+  filter: none;
+}
+
+[data-theme="golden"] .theme-logo {
+  filter: none;
+}
+
+[data-theme="luminous"] .theme-logo {
+  filter: hue-rotate(190deg) saturate(80%) brightness(0.9);
 }
 
 @layer base {
@@ -120,7 +256,7 @@
 
   body {
     background: transparent;
-    color: var(--text-primary);
+    color: rgb(var(--text-primary));  /* FIX: was var(--text-primary) — space-separated values are invalid as CSS color, rgb() wrapper makes it valid */
     font-family: var(--font-body);
     min-height: 100vh;
     width: 100%;
@@ -139,7 +275,7 @@
     min-height: 100vh;
     width: 100vw;
     overflow: hidden;
-    background: linear-gradient(180deg, #02040a 0%, #050816 40%, #0c0b25 100%);
+    background: var(--app-bg);
   }
 
   #app-canvas::before {
@@ -150,9 +286,9 @@
     height: 140%;
     z-index: -1;
     background:
-      radial-gradient(1000px 600px at 50% 10%, rgba(99, 102, 241, 0.12), transparent 70%),
-      radial-gradient(1200px 800px at 10% 20%, rgba(59, 130, 246, 0.1), transparent 60%),
-      radial-gradient(800px 600px at 90% 80%, rgba(168, 85, 247, 0.08), transparent 65%);
+      radial-gradient(1000px 600px at 50% 10%, var(--bg-glow-1), transparent 70%),
+      radial-gradient(1200px 800px at 10% 20%, var(--bg-glow-2), transparent 60%),
+      radial-gradient(800px 600px at 90% 80%, var(--bg-glow-3), transparent 65%);
     background-size: cover;
     animation: canvasDrift 80s ease-in-out infinite;
     will-change: transform;
@@ -232,24 +368,24 @@
 
   /* TIER: GLASS CARD (Standard) */
   .glass-card {
-    background: rgba(2, 6, 23, 0.46);
+    background: var(--glass-card-bg);
     backdrop-filter: blur(14px);
     -webkit-backdrop-filter: blur(14px);
-    border: 1px solid rgba(255, 255, 255, 0.06);
+    border: 1px solid var(--glass-card-border);
     box-shadow:
       0 12px 32px rgba(0, 0, 0, 0.55),
-      inset 0 1px 0 rgba(255, 255, 255, 0.04);
+      var(--glass-card-shadow);
   }
 
-  /* TIER: GLASS LIQUID (Premium / Floating) */
+  /* TIER: GLASS LIQUID (High prominence, active state) */
   .glass-liquid {
-    background: rgba(2, 6, 23, 0.58);
-    backdrop-filter: blur(18px) saturate(1.15);
-    -webkit-backdrop-filter: blur(18px) saturate(1.15);
-    border: 1px solid rgba(255, 255, 255, 0.08);
+    background: var(--glass-liquid-bg);
+    backdrop-filter: blur(24px) saturate(140%);
+    -webkit-backdrop-filter: blur(24px) saturate(140%);
+    border: 1px solid var(--glass-liquid-border);
     box-shadow:
-      0 20px 50px rgba(0, 0, 0, 0.65),
-      inset 0 1px 0 rgba(255, 255, 255, 0.06);
+      0 24px 48px rgba(0, 0, 0, 0.6),
+      var(--glass-liquid-shadow);
   }
 
   /* TIER: GLASS MEDIUM (Sidebar / Navigation - Inherit Liquid) */
@@ -400,4 +536,52 @@
   .switch-apple-thumb[data-state="checked"] {
     transform: translateX(25px);
   }
+}
+
+/* ==========================================================================
+   MIDNIGHT / DEFAULT THEME — Text colour class overrides
+   These fix Tailwind class names that have no generated CSS (not in config)
+   or CSS variables that resolve to invalid colour values on dark backgrounds.
+   ========================================================================== */
+
+/* .text-secondary is not in the Tailwind colour config → no style generated */
+[data-theme="midnight"] .text-secondary,
+:root:not([data-theme]) .text-secondary {
+  color: #d4d4d8;  /* Zinc-300 — light enough for dark backgrounds */
+}
+
+/* .text-text-secondary is not in the Tailwind colour config → no style generated */
+[data-theme="midnight"] .text-text-secondary,
+:root:not([data-theme]) .text-text-secondary {
+  color: #a1a1aa;  /* Zinc-400 — muted but readable on dark backgrounds */
+}
+
+/* .text-muted is not in the Tailwind colour config → no style generated */
+[data-theme="midnight"] .text-muted,
+:root:not([data-theme]) .text-muted {
+  color: #a1a1aa;  /* Zinc-400 — muted but readable on dark backgrounds */
+}
+
+/* .bg-glass is referenced by components but undefined — give it a glass surface */
+[data-theme="midnight"] .bg-glass,
+:root:not([data-theme]) .bg-glass {
+  background: rgba(255, 255, 255, 0.04);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+}
+
+/* Redesigned Reports transition fade-in effect */
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(6px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.animate-fadeIn {
+  animation: fadeIn 0.3s cubic-bezier(0.16, 1, 0.3, 1) forwards;
 }

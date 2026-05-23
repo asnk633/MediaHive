@@ -6,7 +6,7 @@ part of 'tasks_provider.dart';
 // RiverpodGenerator
 // **************************************************************************
 
-String _$taskRepositoryHash() => r'e3e681642985cec8f8f63f2613e066b03544091e';
+String _$taskRepositoryHash() => r'dfe73bf14db4edd4a9ccdf2ced7d378f310130d3';
 
 /// See also [taskRepository].
 @ProviderFor(taskRepository)
@@ -21,7 +21,7 @@ final taskRepositoryProvider = AutoDisposeProvider<TaskRepository>.internal(
 );
 
 typedef TaskRepositoryRef = AutoDisposeProviderRef<TaskRepository>;
-String _$tasksListHash() => r'792761218e716364744023ea77f1f9fe58a21c51';
+String _$tasksListHash() => r'6799b22dd1efb70bba6058c97b86c8ed0c224b60';
 
 /// See also [TasksList].
 @ProviderFor(TasksList)

@@ -7,10 +7,10 @@ export const TopBar = ({ user }: { user?: { name: string, avatar: string } }) =>
     const userAvatar = user?.avatar || "/default-avatar.png";
 
     return (
-        <header className="fixed top-0 left-0 right-0 h-[72px] bg-white/80 backdrop-blur-md border-b border-[var(--color-border)] z-30 flex items-center justify-between px-4 lg:px-8 transition-all">
+        <header className="fixed top-0 left-0 right-0 h-[72px] bg-foreground/80 backdrop-blur-md border-b border-[var(--color-border)] z-30 flex items-center justify-between px-4 lg:px-8 transition-all">
             {/* Brand */}
             <div className="flex items-center gap-3">
-                <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-[#0096FF] to-[#00C2FF] flex items-center justify-center text-white font-bold">
+                <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-[#0096FF] to-[#00C2FF] flex items-center justify-center text-foreground font-bold">
                     TG
                 </div>
                 <span className="font-bold text-lg text-[var(--color-text-primary)] hidden sm:block">Thaiba Garden</span>

@@ -329,8 +329,8 @@ export function DriveQueueView() {
         <div className="space-y-6">
             <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
                 <div>
-                    <h2 className="text-xl font-bold text-white mb-1">Detected from Drive</h2>
-                    <p className="text-sm text-white/50">
+                    <h2 className="text-xl font-bold text-foreground mb-1">Detected from Drive</h2>
+                    <p className="text-sm text-foreground/70">
                         Review and approve files uploaded to {folderInfo?.webViewLink ? (
                             <a
                                 href={folderInfo.webViewLink}
@@ -343,14 +343,14 @@ export function DriveQueueView() {
                                 <ExternalLink size={10} />
                             </a>
                         ) : (
-                            <span className="font-mono text-xs bg-white/10 px-1 py-0.5 rounded">MediaHive/Incoming</span>
+                            <span className="font-mono text-xs bg-foreground/10 px-1 py-0.5 rounded">MediaHive/Incoming</span>
                         )}.
                     </p>
                 </div>
                 <button
                     onClick={handleScan}
                     disabled={scanning || !!processingId}
-                    className="flex items-center justify-center gap-2 px-4 py-2 bg-indigo-600 hover:bg-indigo-700 disabled:opacity-50 disabled:cursor-not-allowed text-white rounded-xl font-bold shadow-lg shadow-indigo-500/20 transition-all"
+                    className="flex items-center justify-center gap-2 px-4 py-2 bg-indigo-600 hover:bg-indigo-700 disabled:opacity-50 disabled:cursor-not-allowed text-foreground rounded-xl font-bold shadow-lg shadow-indigo-500/20 transition-all"
                 >
                     <RefreshCw size={20} className={scanning ? 'animate-spin' : ''} />
                     {scanning ? 'Scanning...' : 'Scan Now'}
@@ -358,25 +358,25 @@ export function DriveQueueView() {
             </div>
 
             {loading ? (
-                <div className="text-center py-12 text-white/50 animate-pulse">Loading queue...</div>
+                <div className="text-center py-12 text-foreground/70 animate-pulse">Loading queue...</div>
             ) : items.length === 0 ? (
                 <div className="space-y-4">
                     <div className="flex flex-col items-center justify-center py-20 text-center border border-dashed border-[#ffffff1a] rounded-xl bg-slate-900/20">
-                        <div className="w-16 h-16 bg-white/5 rounded-full flex items-center justify-center mb-4">
-                            <HardDrive className="text-white/20" size={32} />
+                        <div className="w-16 h-16 bg-foreground/5 rounded-full flex items-center justify-center mb-4">
+                            <HardDrive className="text-foreground/80" size={32} />
                         </div>
-                        <h3 className="text-xl font-medium text-white/40 mb-2">Queue is empty</h3>
-                        <p className="text-white/20 max-w-sm mx-auto">
+                        <h3 className="text-xl font-medium text-foreground/80 mb-2">Queue is empty</h3>
+                        <p className="text-foreground/80 max-w-sm mx-auto">
                             Upload files to the Incoming folder and click Scan.
                         </p>
                     </div>
 
                     {scanLogs.length > 0 && (
-                        <div className="mt-4 p-4 rounded-xl bg-black/40 border border-white/5">
-                            <h4 className="text-xs font-mono text-white/50 mb-2 uppercase tracking-wide">Last Scan Debug Log</h4>
-                            <div className="font-mono text-xs text-white/60 space-y-1 max-h-40 overflow-y-auto">
+                        <div className="mt-4 p-4 rounded-xl bg-black/40 border border-foreground/5">
+                            <h4 className="text-xs font-mono text-foreground/70 mb-2 uppercase tracking-wide">Last Scan Debug Log</h4>
+                            <div className="font-mono text-xs text-foreground/80 space-y-1 max-h-40 overflow-y-auto">
                                 {scanLogs.map((log, i) => (
-                                    <div key={i} className="whitespace-pre-wrap border-b border-white/5 pb-1 last:border-0">{log}</div>
+                                    <div key={i} className="whitespace-pre-wrap border-b border-foreground/5 pb-1 last:border-0">{log}</div>
                                 ))}
                             </div>
                         </div>
@@ -385,14 +385,14 @@ export function DriveQueueView() {
             ) : (
                 <div className="space-y-4">
                     {/* Bulk Selection Toolbar */}
-                    <div className="flex items-center justify-between bg-white/5 border border-white/10 rounded-xl px-4 py-3 sticky top-0 z-10 backdrop-blur-md">
+                    <div className="flex items-center justify-between bg-foreground/5 border border-foreground/10 rounded-xl px-4 py-3 sticky top-0 z-10 backdrop-blur-md">
                         <div className="flex items-center gap-3">
                             <Checkbox
                                 id="select-all"
                                 checked={items.length > 0 && selectedIds.size === items.length}
                                 onCheckedChange={toggleAll}
                             />
-                            <label htmlFor="select-all" className="text-sm font-medium text-white cursor-pointer select-none">
+                            <label htmlFor="select-all" className="text-sm font-medium text-foreground cursor-pointer select-none">
                                 {selectedIds.size > 0 ? `${selectedIds.size} Selected` : 'Select All'}
                             </label>
                         </div>
@@ -411,7 +411,7 @@ export function DriveQueueView() {
                                 <Button
                                     variant="default" // Using default (primary) for Approve
                                     size="sm"
-                                    className="bg-emerald-600 hover:bg-emerald-500 text-white border-0"
+                                    className="bg-emerald-600 hover:bg-emerald-500 text-foreground border-0"
                                     onClick={() => initiateBulkAction('approve')}
                                     disabled={!!processingId}
                                 >
@@ -439,25 +439,25 @@ export function DriveQueueView() {
                                 </div>
 
                                 {/* Thumbnail / Icon */}
-                                <div className="w-12 h-12 rounded-lg bg-white/5 flex items-center justify-center shrink-0 overflow-hidden">
+                                <div className="w-12 h-12 rounded-lg bg-foreground/5 flex items-center justify-center shrink-0 overflow-hidden">
                                     {item.thumbnailLink ? (
                                         <img src={item.thumbnailLink} alt="" className="w-full h-full object-cover" />
                                     ) : (
-                                        <HardDrive size={24} className="text-white/40" />
+                                        <HardDrive size={24} className="text-foreground/80" />
                                     )}
                                 </div>
 
                                 {/* Info */}
                                 <div className="flex-1 min-w-0">
                                     <div className="flex items-center gap-2 mb-1">
-                                        <h4 className="font-medium text-white truncate text-lg">{item.name}</h4>
+                                        <h4 className="font-medium text-foreground truncate text-lg">{item.name}</h4>
                                         <span className="inline-flex items-center gap-1 px-1.5 py-0.5 rounded text-[10px] font-medium bg-blue-500/10 text-blue-400 border border-blue-500/20 opacity-75">
                                             <HardDrive size={10} />
                                             Detected from Drive
                                         </span>
                                     </div>
-                                    <div className="flex flex-wrap items-center gap-3 text-sm text-white/50 mt-1">
-                                        <span className="bg-white/5 px-2 py-0.5 rounded text-xs uppercase tracking-wide">{item.mimeType.split('/').pop()}</span>
+                                    <div className="flex flex-wrap items-center gap-3 text-sm text-foreground/70 mt-1">
+                                        <span className="bg-foreground/5 px-2 py-0.5 rounded text-xs uppercase tracking-wide">{item.mimeType.split('/').pop()}</span>
                                         <span>•</span>
                                         <span>{(item.size / 1024 / 1024).toFixed(2)} MB</span>
                                         <span>•</span>
@@ -478,13 +478,13 @@ export function DriveQueueView() {
                                         href={item.webViewLink}
                                         target="_blank"
                                         rel="noopener noreferrer"
-                                        className="h-10 w-10 flex items-center justify-center rounded-lg hover:bg-white/5 text-white/70 transition-colors"
+                                        className="h-10 w-10 flex items-center justify-center rounded-lg hover:bg-foreground/5 text-foreground/70 transition-colors"
                                         title="Preview in Drive"
                                     >
                                         <ExternalLink size={20} />
                                     </a>
 
-                                    <div className="h-6 w-px bg-white/10 mx-1 hidden md:block"></div>
+                                    <div className="h-6 w-px bg-foreground/10 mx-1 hidden md:block"></div>
 
                                     <button
                                         onClick={() => initiateSingleAction(item, 'reject')}
@@ -499,10 +499,10 @@ export function DriveQueueView() {
                                     <button
                                         onClick={() => initiateSingleAction(item, 'approve')}
                                         disabled={!!processingId || selectedIds.has(item.id)}
-                                        className="flex-1 md:flex-none h-10 px-6 flex items-center justify-center gap-2 rounded-lg bg-emerald-600 hover:bg-emerald-500 text-white shadow-lg shadow-emerald-500/20 transition-all font-medium hover:scale-[1.02] active:scale-95 disabled:opacity-50 disabled:pointer-events-none"
+                                        className="flex-1 md:flex-none h-10 px-6 flex items-center justify-center gap-2 rounded-lg bg-emerald-600 hover:bg-emerald-500 text-foreground shadow-lg shadow-emerald-500/20 transition-all font-medium hover:scale-[1.02] active:scale-95 disabled:opacity-50 disabled:pointer-events-none"
                                     >
                                         {processingId === item.id ? (
-                                            <div className="w-5 h-5 border-2 border-white/30 border-t-white rounded-full animate-spin" />
+                                            <div className="w-5 h-5 border-2 border-foreground/30 border-t-white rounded-full animate-spin" />
                                         ) : (
                                             <>
                                                 <Check size={18} />
@@ -653,7 +653,7 @@ export function DriveQueueView() {
 
                     <DialogFooter>
                         <Button variant="outline" onClick={() => setModalOpen(false)}>Cancel</Button>
-                        <Button onClick={confirmModal} className="bg-emerald-600 hover:bg-emerald-500 text-white">
+                        <Button onClick={confirmModal} className="bg-emerald-600 hover:bg-emerald-500 text-foreground">
                             Publish {targetId ? 'File' : 'Files'}
                         </Button>
                     </DialogFooter>

@@ -11,7 +11,7 @@ export default function TestThemeComponent() {
       <p className="mb-2">Current theme: {theme}</p>
       <button 
         onClick={toggle}
-        className="px-4 py-2 rounded bg-[var(--accent)] text-white"
+        className="px-4 py-2 rounded bg-[var(--accent)] text-foreground"
       >
         Toggle Theme
       </button>

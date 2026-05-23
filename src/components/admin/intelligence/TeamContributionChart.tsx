@@ -12,7 +12,7 @@ const COLORS = ['#6366f1', '#8b5cf6', '#ec4899', '#f43f5e', '#f97316', '#eab308'
 
 export function TeamContributionChart({ data }: { data: DataItem[] }) {
     if (!data || data.length === 0) {
-        return <div className="text-white/50 text-center py-12">No data available</div>;
+        return <div className="text-foreground/70 text-center py-12">No data available</div>;
     }
 
     return (

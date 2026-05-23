@@ -18,7 +18,7 @@ export default function NotificationsNewClient() {
 
             {/* Centered Glass Card */}
             <div className="w-full max-w-xl relative z-10 animate-in fade-in zoom-in-95 duration-500">
-                <div className="glass-liquid rounded-[32px] p-6 sm:p-10 shadow-2xl ring-1 ring-white/10 overflow-hidden relative">
+                <div className="glass-liquid rounded-[32px] p-6 sm:p-10 shadow-2xl ring-1 ring-foreground/10 overflow-hidden relative">
                     {/* Top Glow Accent */}
                     <div className="absolute top-0 left-0 right-0 h-px bg-gradient-to-r from-transparent via-blue-400/30 to-transparent" />
 
@@ -26,17 +26,17 @@ export default function NotificationsNewClient() {
                     <div className="flex items-center justify-between mb-10">
                         <button
                             onClick={() => router.back()}
-                            className="text-white/40 hover:text-white font-bold tracking-tight transition-all text-xs hover:bg-white/5 px-4 py-2 rounded-xl flex items-center gap-2 group"
+                            className="text-foreground/80 hover:text-foreground font-bold tracking-tight transition-all text-xs hover:bg-foreground/5 px-4 py-2 rounded-xl flex items-center gap-2 group"
                         >
                             <span className="group-hover:-translate-x-0.5 transition-transform">←</span>
                             Cancel
                         </button>
                         
                         <div className="text-center flex-1">
-                            <h1 className="text-xl font-black text-white tracking-tight">
+                            <h1 className="text-xl font-black text-foreground tracking-tight">
                                 New <span className="text-blue-400">Notification</span>
                             </h1>
-                            <p className="text-[10px] uppercase tracking-[0.2em] font-black text-white/30 mt-1">
+                            <p className="text-[10px] uppercase tracking-[0.2em] font-black text-foreground/70 mt-1">
                                 Broadcast Intelligence
                             </p>
                         </div>

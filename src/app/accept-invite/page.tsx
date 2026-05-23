@@ -96,15 +96,15 @@ export default function AcceptInvitePage() {
     if (error) {
         return (
             <div className="min-h-screen bg-[#050505] flex items-center justify-center p-4">
-                <div className="max-w-md w-full bg-white/[0.03] border border-white/5 rounded-[32px] p-8 text-center space-y-6">
+                <div className="max-w-md w-full bg-foreground/[0.03] border border-foreground/5 rounded-[32px] p-8 text-center space-y-6">
                     <div className="w-16 h-16 bg-rose-500/10 rounded-full flex items-center justify-center mx-auto border border-rose-500/20">
                         <AlertCircle className="text-rose-500" size={32} />
                     </div>
-                    <h1 className="text-2xl font-black text-white tracking-tight">Oops! Something's wrong</h1>
-                    <p className="text-white/40 text-sm leading-relaxed">{error}</p>
+                    <h1 className="text-2xl font-black text-foreground tracking-tight">Oops! Something's wrong</h1>
+                    <p className="text-foreground/80 text-sm leading-relaxed">{error}</p>
                     <button 
                         onClick={() => router.push('/login')}
-                        className="w-full py-4 bg-white/5 hover:bg-white/10 text-white font-bold rounded-2xl transition-colors"
+                        className="w-full py-4 bg-foreground/5 hover:bg-foreground/10 text-foreground font-bold rounded-2xl transition-colors"
                     >
                         Return to Login
                     </button>
@@ -122,7 +122,7 @@ export default function AcceptInvitePage() {
                         initial={{ opacity: 0, scale: 0.95 }}
                         animate={{ opacity: 1, scale: 1 }}
                         exit={{ opacity: 0, scale: 1.05 }}
-                        className="max-w-md w-full bg-white/[0.03] border border-white/5 rounded-[40px] p-8 relative overflow-hidden"
+                        className="max-w-md w-full bg-foreground/[0.03] border border-foreground/5 rounded-[40px] p-8 relative overflow-hidden"
                     >
                         <div className="absolute top-0 right-0 p-8 opacity-5">
                             <Shield size={120} />
@@ -130,51 +130,51 @@ export default function AcceptInvitePage() {
 
                         <div className="space-y-6 relative z-10">
                             <div>
-                                <h1 className="text-3xl font-black text-white tracking-tighter leading-none mb-2">Welcome!</h1>
-                                <p className="text-white/40 text-sm">You've been invited to join <b>MediaHive</b> as <span className="text-blue-400 font-bold">{invite.email}</span></p>
+                                <h1 className="text-3xl font-black text-foreground tracking-tighter leading-none mb-2">Welcome!</h1>
+                                <p className="text-foreground/80 text-sm">You've been invited to join <b>MediaHive</b> as <span className="text-blue-400 font-bold">{invite.email}</span></p>
                             </div>
 
                             <form onSubmit={handleSubmit} className="space-y-4">
                                 <div className="space-y-2">
-                                    <label className="text-[10px] font-black uppercase tracking-widest text-white/30 ml-1">Your Full Name</label>
+                                    <label className="text-[10px] font-black uppercase tracking-widest text-foreground/70 ml-1">Your Full Name</label>
                                     <div className="relative">
-                                        <User className="absolute left-4 top-1/2 -translate-y-1/2 text-white/20" size={18} />
+                                        <User className="absolute left-4 top-1/2 -translate-y-1/2 text-foreground/80" size={18} />
                                         <input
                                             type="text"
                                             value={name}
                                             onChange={(e) => setName(e.target.value)}
                                             placeholder="Anas Mohamed"
-                                            className="w-full bg-white/[0.03] border border-white/10 rounded-2xl py-4 pl-12 pr-4 text-white focus:outline-none focus:border-blue-500/50 transition-colors"
+                                            className="w-full bg-foreground/[0.03] border border-foreground/10 rounded-2xl py-4 pl-12 pr-4 text-foreground focus:outline-none focus:border-blue-500/50 transition-colors"
                                             required
                                         />
                                     </div>
                                 </div>
 
                                 <div className="space-y-2">
-                                    <label className="text-[10px] font-black uppercase tracking-widest text-white/30 ml-1">Create Password</label>
+                                    <label className="text-[10px] font-black uppercase tracking-widest text-foreground/70 ml-1">Create Password</label>
                                     <div className="relative">
-                                        <Lock className="absolute left-4 top-1/2 -translate-y-1/2 text-white/20" size={18} />
+                                        <Lock className="absolute left-4 top-1/2 -translate-y-1/2 text-foreground/80" size={18} />
                                         <input
                                             type="password"
                                             value={password}
                                             onChange={(e) => setPassword(e.target.value)}
                                             placeholder="••••••••"
-                                            className="w-full bg-white/[0.03] border border-white/10 rounded-2xl py-4 pl-12 pr-4 text-white focus:outline-none focus:border-blue-500/50 transition-colors"
+                                            className="w-full bg-foreground/[0.03] border border-foreground/10 rounded-2xl py-4 pl-12 pr-4 text-foreground focus:outline-none focus:border-blue-500/50 transition-colors"
                                             required
                                         />
                                     </div>
                                 </div>
 
                                 <div className="space-y-2">
-                                    <label className="text-[10px] font-black uppercase tracking-widest text-white/30 ml-1">Confirm Password</label>
+                                    <label className="text-[10px] font-black uppercase tracking-widest text-foreground/70 ml-1">Confirm Password</label>
                                     <div className="relative">
-                                        <Lock className="absolute left-4 top-1/2 -translate-y-1/2 text-white/20" size={18} />
+                                        <Lock className="absolute left-4 top-1/2 -translate-y-1/2 text-foreground/80" size={18} />
                                         <input
                                             type="password"
                                             value={confirmPassword}
                                             onChange={(e) => setConfirmPassword(e.target.value)}
                                             placeholder="••••••••"
-                                            className="w-full bg-white/[0.03] border border-white/10 rounded-2xl py-4 pl-12 pr-4 text-white focus:outline-none focus:border-blue-500/50 transition-colors"
+                                            className="w-full bg-foreground/[0.03] border border-foreground/10 rounded-2xl py-4 pl-12 pr-4 text-foreground focus:outline-none focus:border-blue-500/50 transition-colors"
                                             required
                                         />
                                     </div>
@@ -187,12 +187,12 @@ export default function AcceptInvitePage() {
                                     <div className="flex flex-wrap gap-2">
                                         {resolvedWorkspaces.length > 0 ? (
                                             resolvedWorkspaces.map(ws => (
-                                                <span key={ws.id} className="px-2 py-0.5 rounded-md bg-white/5 border border-white/5 text-[9px] font-bold text-white/50 uppercase tracking-tight">
+                                                <span key={ws.id} className="px-2 py-0.5 rounded-md bg-foreground/5 border border-foreground/5 text-[9px] font-bold text-foreground/70 uppercase tracking-tight">
                                                     {ws.name}
                                                 </span>
                                             ))
                                         ) : (
-                                            <span className="text-[10px] text-white/20 italic">Global Access Only</span>
+                                            <span className="text-[10px] text-foreground/80 italic">Global Access Only</span>
                                         )}
                                     </div>
                                 </div>
@@ -200,7 +200,7 @@ export default function AcceptInvitePage() {
                                 <button
                                     type="submit"
                                     disabled={submitting}
-                                    className="w-full py-5 bg-blue-500 hover:bg-blue-600 disabled:opacity-50 text-white font-black text-sm uppercase tracking-widest rounded-2xl shadow-xl shadow-blue-500/20 flex items-center justify-center gap-2 transition-all transform active:scale-[0.98] mt-4"
+                                    className="w-full py-5 bg-blue-500 hover:bg-blue-600 disabled:opacity-50 text-foreground font-black text-sm uppercase tracking-widest rounded-2xl shadow-xl shadow-blue-500/20 flex items-center justify-center gap-2 transition-all transform active:scale-[0.98] mt-4"
                                 >
                                     {submitting ? (
                                         <Loader2 className="animate-spin" size={20} />

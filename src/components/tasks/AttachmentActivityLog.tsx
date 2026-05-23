@@ -46,11 +46,11 @@ export const AttachmentActivityLog: React.FC<AttachmentActivityLogProps> = ({ ta
 
     if (!expanded) {
         return (
-            <div className="mt-6 border-t border-white/5 pt-4">
+            <div className="mt-6 border-t border-foreground/5 pt-4">
                 <Button
                     variant="ghost"
                     onClick={() => setExpanded(true)}
-                    className="w-full justify-start text-white/40 hover:text-white hover:bg-white/5 text-xs font-medium uppercase tracking-wider flex items-center gap-2"
+                    className="w-full justify-start text-foreground/80 hover:text-foreground hover:bg-foreground/5 text-xs font-medium uppercase tracking-wider flex items-center gap-2"
                 >
                     <Activity size={14} />
                     View Activity Log
@@ -61,9 +61,9 @@ export const AttachmentActivityLog: React.FC<AttachmentActivityLogProps> = ({ ta
     }
 
     return (
-        <div className="mt-6 border-t border-white/5 pt-4">
+        <div className="mt-6 border-t border-foreground/5 pt-4">
             <div className="flex items-center justify-between mb-4">
-                <div className="flex items-center gap-2 text-white/50 text-xs font-bold uppercase tracking-wider">
+                <div className="flex items-center gap-2 text-foreground/70 text-xs font-bold uppercase tracking-wider">
                     <Activity size={14} />
                     Attachment Activity
                 </div>
@@ -71,19 +71,19 @@ export const AttachmentActivityLog: React.FC<AttachmentActivityLogProps> = ({ ta
                     variant="ghost"
                     size="sm"
                     onClick={() => fetchLogs()}
-                    className="h-6 w-6 p-0 text-white/20 hover:text-white"
+                    className="h-6 w-6 p-0 text-foreground/80 hover:text-foreground"
                     title="Refresh"
                 >
                     <Loader2 size={12} className={cn(loading && "animate-spin")} />
                 </Button>
             </div>
 
-            <div className="space-y-3 max-h-60 overflow-y-auto pr-2 custom-scrollbar bg-[#0a0c10]/30 rounded-xl p-4 border border-white/5">
+            <div className="space-y-3 max-h-60 overflow-y-auto pr-2 custom-scrollbar bg-[#0a0c10]/30 rounded-xl p-4 border border-foreground/5">
                 {loading && !hasLoaded && (
-                    <div className="text-center py-4 text-white/50 text-xs">Loading activity...</div>
+                    <div className="text-center py-4 text-foreground/70 text-xs">Loading activity...</div>
                 )}
                 {!loading && logs.length === 0 && (
-                    <div className="text-center py-4 text-white/50 text-xs">No activity recorded.</div>
+                    <div className="text-center py-4 text-foreground/70 text-xs">No activity recorded.</div>
                 )}
 
                 {logs.map(log => (
@@ -96,7 +96,7 @@ export const AttachmentActivityLog: React.FC<AttachmentActivityLogProps> = ({ ta
                         </div>
                         <div className="min-w-0">
                             <div className="flex flex-wrap items-baseline gap-1">
-                                <span className="text-white font-medium">{log.performed_by.name}</span>
+                                <span className="text-foreground font-medium">{log.performed_by.name}</span>
                                 <span className="text-slate-500">
                                     {log.action === 'upload' && 'uploaded'}
                                     {log.action === 'delete' && 'deleted'}
@@ -118,7 +118,7 @@ export const AttachmentActivityLog: React.FC<AttachmentActivityLogProps> = ({ ta
                 <Button
                     variant="link"
                     onClick={() => setExpanded(false)}
-                    className="text-[10px] text-white/20 hover:text-white"
+                    className="text-[10px] text-foreground/80 hover:text-foreground"
                 >
                     Hide Activity
                 </Button>

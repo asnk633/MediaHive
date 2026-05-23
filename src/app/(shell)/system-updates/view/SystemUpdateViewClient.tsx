@@ -57,7 +57,7 @@ function SystemUpdateContent() {
 
     return (
         <div className="max-w-3xl mx-auto p-6 space-y-6">
-            <Button variant="ghost" onClick={() => router.back()} className="text-slate-400 hover:text-white pl-0 gap-2">
+            <Button variant="ghost" onClick={() => router.back()} className="text-slate-400 hover:text-foreground pl-0 gap-2">
                 <ArrowLeft size={16} /> Back to Updates
             </Button>
 
@@ -72,7 +72,7 @@ function SystemUpdateContent() {
                     </div>
                 </div>
 
-                <h1 className="text-3xl font-bold text-white leading-tight">
+                <h1 className="text-3xl font-bold text-foreground leading-tight">
                     {update.title}
                 </h1>
 

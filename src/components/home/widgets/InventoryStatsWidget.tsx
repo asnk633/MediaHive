@@ -40,7 +40,7 @@ export const InventoryStatsWidget = () => {
         fetchStats();
     }, []);
 
-    if (loading) return <div className="h-32 animate-pulse bg-white/5 rounded-xl" />;
+    if (loading) return <div className="h-32 animate-pulse bg-foreground/5 rounded-xl" />;
 
     return (
         <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-8">

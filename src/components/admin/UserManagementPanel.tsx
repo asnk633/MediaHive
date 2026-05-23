@@ -192,11 +192,11 @@ export const UserManagementPanel: React.FC<UserManagementPanelProps> = ({ instit
   }
 
   return (
-    <Card className="bg-white/5 backdrop-blur-md border border-[#ffffff1a]">
+    <Card className="bg-foreground/5 backdrop-blur-md border border-[#ffffff1a]">
       <CardHeader>
         <div className="flex items-center gap-2">
           <Users className="w-5 h-5 text-blue-400" />
-          <CardTitle className="text-white">User Management</CardTitle>
+          <CardTitle className="text-foreground">User Management</CardTitle>
         </div>
       </CardHeader>
       <CardContent>
@@ -230,7 +230,7 @@ export const UserManagementPanel: React.FC<UserManagementPanelProps> = ({ instit
                   )}
 
                   <div>
-                    <div className="font-medium text-white">{user.name || user.email}</div>
+                    <div className="font-medium text-foreground">{user.name || user.email}</div>
                     <div className="text-sm text-gray-400">{user.email}</div>
                     <div className="flex items-center gap-2 mt-1">
                       <Badge
@@ -239,8 +239,8 @@ export const UserManagementPanel: React.FC<UserManagementPanelProps> = ({ instit
                       >
                         {user.role}
                       </Badge>
-                      {/* Show Office / Unit / Institution if available */}
-                      <Badge variant="neutral" className="bg-white/5 text-white/60">
+                      {/* Show Department / Institution if available */}
+                      <Badge variant="neutral" className="bg-foreground/5 text-foreground/80">
                         {departments.find(d => d.id === user.department_id || d.name === user.department_id)?.name || user.department_id}
                       </Badge>
                     </div>
@@ -254,7 +254,7 @@ export const UserManagementPanel: React.FC<UserManagementPanelProps> = ({ instit
                       variant="ghost"
                       size="sm"
                       onClick={() => handleEditUser(user)}
-                      className="text-white/60 hover:text-white"
+                      className="text-foreground/80 hover:text-foreground"
                     >
                       Edit
                     </Button>
@@ -302,24 +302,24 @@ export const UserManagementPanel: React.FC<UserManagementPanelProps> = ({ instit
         {editingUser && (
           <div className="fixed inset-0 bg-black/70 backdrop-blur-sm flex items-center justify-center z-50 p-4">
             <div className="bg-gray-800 border border-gray-700 rounded-xl w-full max-w-md p-6 space-y-4">
-              <h3 className="text-xl font-bold text-white">Edit User</h3>
+              <h3 className="text-xl font-bold text-foreground">Edit User</h3>
 
               <div className="space-y-2">
                 <label className="text-xs text-gray-400">Full Name</label>
                 <input
                   value={editingUser.official_name}
                   onChange={e => setEditingUser({ ...editingUser, official_name: e.target.value })}
-                  className="w-full bg-black/20 border border-[#ffffff1a] rounded-md p-2 text-white"
+                  className="w-full bg-black/20 border border-[#ffffff1a] rounded-md p-2 text-foreground"
                 />
               </div>
 
               <div className="space-y-2">
                 <label className="text-xs text-gray-400">Role</label>
                 <Select value={editingUser.role} onValueChange={v => setEditingUser({ ...editingUser, role: v })}>
-                  <SelectTrigger className="bg-black/20 border-[#ffffff1a] text-white">
+                  <SelectTrigger className="bg-black/20 border-[#ffffff1a] text-foreground">
                     <SelectValue placeholder="Select Role" />
                   </SelectTrigger>
-                  <SelectContent className="bg-gray-800 border-[#ffffff1a] text-white">
+                  <SelectContent className="bg-gray-800 border-[#ffffff1a] text-foreground">
                     <SelectItem value="admin">Admin</SelectItem>
                     <SelectItem value="manager">Manager</SelectItem>
                     <SelectItem value="team">Team</SelectItem>
@@ -329,12 +329,15 @@ export const UserManagementPanel: React.FC<UserManagementPanelProps> = ({ instit
               </div>
 
               <div className="space-y-2">
-                <label className="text-xs text-gray-400">Office / Unit</label>
-                <Select value={editingUser.department_id} onValueChange={v => setEditingUser({ ...editingUser, department_id: v })}>
-                  <SelectTrigger className="bg-black/20 border-[#ffffff1a] text-white">
-                    <SelectValue placeholder="Select Office / Unit" />
+                <label className="text-xs text-gray-400">Department / Institution</label>
+                <Select
+                  value={String(editingUser.department_id || '')}
+                  onValueChange={v => setEditingUser({ ...editingUser, department_id: v })}
+                >
+                  <SelectTrigger className="bg-black/20 border-[#ffffff1a] text-foreground">
+                    <SelectValue placeholder="Select Department / Institution" />
                   </SelectTrigger>
-                  <SelectContent className="bg-gray-800 border-[#ffffff1a] text-white">
+                  <SelectContent className="bg-gray-800 border-[#ffffff1a] text-foreground">
                     {departments.map(d => (
                       <SelectItem key={d.id} value={d.id}>{d.name}</SelectItem>
                     ))}
@@ -345,10 +348,10 @@ export const UserManagementPanel: React.FC<UserManagementPanelProps> = ({ instit
               <div className="space-y-2">
                 <label className="text-xs text-gray-400">Institution</label>
                 <Select value={editingUser.institution_id} onValueChange={v => setEditingUser({ ...editingUser, institution_id: v })}>
-                  <SelectTrigger className="bg-black/20 border-[#ffffff1a] text-white">
+                  <SelectTrigger className="bg-black/20 border-[#ffffff1a] text-foreground">
                     <SelectValue placeholder="Select Institution" />
                   </SelectTrigger>
-                  <SelectContent className="bg-gray-800 border-[#ffffff1a] text-white">
+                  <SelectContent className="bg-gray-800 border-[#ffffff1a] text-foreground">
                     {institutions.map(i => (
                       <SelectItem key={i.id} value={i.id}>{i.name}</SelectItem>
                     ))}
@@ -357,7 +360,7 @@ export const UserManagementPanel: React.FC<UserManagementPanelProps> = ({ instit
               </div>
 
               <div className="flex gap-2 pt-2">
-                <Button variant="ghost" className="flex-1 text-white/50" onClick={() => setEditingUser(null)}>Cancel</Button>
+                <Button variant="ghost" className="flex-1 text-foreground/70" onClick={() => setEditingUser(null)}>Cancel</Button>
                 <Button className="flex-1 bg-blue-600 hover:bg-blue-500" onClick={handleSaveUser}>Save Changes</Button>
               </div>
             </div>
@@ -368,7 +371,7 @@ export const UserManagementPanel: React.FC<UserManagementPanelProps> = ({ instit
         {showReassignment && selectedUser && (
           <div className="fixed inset-0 bg-black/70 backdrop-blur-sm flex items-center justify-center z-50 p-4">
             <div className="bg-gray-800 border border-gray-700 rounded-xl w-full max-w-md p-6">
-              <h3 className="text-xl font-bold text-white mb-4">
+              <h3 className="text-xl font-bold text-foreground mb-4">
                 Reassign Items from {selectedUser.name || selectedUser.email}
               </h3>
 
@@ -395,10 +398,10 @@ export const UserManagementPanel: React.FC<UserManagementPanelProps> = ({ instit
                   Reassign to user:
                 </label>
                 <Select value={targetUser} onValueChange={setTargetUser}>
-                  <SelectTrigger className="bg-black/20 border-white/20 text-white">
+                  <SelectTrigger className="bg-black/20 border-foreground/20 text-foreground">
                     <SelectValue placeholder="Select a user" />
                   </SelectTrigger>
-                  <SelectContent className="bg-gray-800 border-white/20 text-white">
+                  <SelectContent className="bg-gray-800 border-foreground/20 text-foreground">
                     {users
                       .filter(u => u.uid !== selectedUser.uid && u.status === 'active')
                       .map((user, index) => (
@@ -420,7 +423,7 @@ export const UserManagementPanel: React.FC<UserManagementPanelProps> = ({ instit
                 </Button>
                 <Button
                   onClick={handleReassignItems}
-                  className="flex-1 bg-blue-600 hover:bg-blue-500 text-white"
+                  className="flex-1 bg-blue-600 hover:bg-blue-500 text-foreground"
                   disabled={!targetUser}
                 >
                   Reassign Items

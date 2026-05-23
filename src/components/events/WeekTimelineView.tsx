@@ -274,32 +274,32 @@ export function WeekTimelineView({
     return (
         <div className="space-y-4">
             {/* Header Controls */}
-            <div className="flex items-center justify-between p-6 bg-white/[0.02] border border-white/5 rounded-2xl mb-4">
+            <div className="flex items-center justify-between p-6 bg-foreground/[0.02] border border-foreground/5 rounded-2xl mb-4">
                 <div className="flex flex-col gap-1">
-                    <h2 className="text-2xl font-black tracking-tighter text-white">
+                    <h2 className="text-2xl font-black tracking-tighter text-foreground">
                         {format(weekDays[0], 'MMM dd')}
                         <span className="text-blue-500/50 mx-2">—</span>
                         {format(weekDays[6], 'MMM dd')}
-                        <span className="text-white/20 ml-2">{format(weekDays[6], 'yyyy')}</span>
+                        <span className="text-foreground/80 ml-2">{format(weekDays[6], 'yyyy')}</span>
                     </h2>
-                    <p className="text-[10px] font-bold text-white/50 uppercase tracking-[0.2em]">Operational Schedule</p>
+                    <p className="text-[10px] font-bold text-foreground/70 uppercase tracking-[0.2em]">Operational Schedule</p>
                 </div>
                 <div className="flex items-center gap-3">
                     <button
                         onClick={navigatePrev}
-                        className="p-3 bg-white/5 border border-white/10 hover:bg-white/10 rounded-xl transition-all text-white/40 hover:text-white"
+                        className="p-3 bg-foreground/5 border border-foreground/10 hover:bg-foreground/10 rounded-xl transition-all text-foreground/80 hover:text-foreground"
                     >
                         <ChevronLeft size={20} />
                     </button>
                     <button
                         onClick={navigateToday}
-                        className="px-6 py-3 bg-white/5 border border-white/10 hover:bg-white/10 rounded-xl transition-all text-[10px] font-black uppercase tracking-widest text-white/40 hover:text-white"
+                        className="px-6 py-3 bg-foreground/5 border border-foreground/10 hover:bg-foreground/10 rounded-xl transition-all text-[10px] font-black uppercase tracking-widest text-foreground/80 hover:text-foreground"
                     >
                         Today
                     </button>
                     <button
                         onClick={navigateNext}
-                        className="p-3 bg-white/5 border border-white/10 hover:bg-white/10 rounded-xl transition-all text-white/40 hover:text-white"
+                        className="p-3 bg-foreground/5 border border-foreground/10 hover:bg-foreground/10 rounded-xl transition-all text-foreground/80 hover:text-foreground"
                     >
                         <ChevronRight size={20} />
                     </button>

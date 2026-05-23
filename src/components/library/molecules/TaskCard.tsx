@@ -28,7 +28,7 @@ export const TaskCard = ({ title, time, priority = 'medium', completed, onToggle
             {/* Checkbox */}
             <button
                 onClick={onToggle}
-                className={`w-6 h-6 rounded-full border-2 flex items-center justify-center transition-colors ${completed ? 'bg-blue-500 border-blue-500 text-white' : 'border-gray-300 hover:border-blue-400'}`}
+                className={`w-6 h-6 rounded-full border-2 flex items-center justify-center transition-colors ${completed ? 'bg-blue-500 border-blue-500 text-foreground' : 'border-gray-300 hover:border-blue-400'}`}
             >
                 {completed && <CheckSquare size={14} />}
             </button>

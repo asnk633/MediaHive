@@ -13,33 +13,34 @@ import { CanonicalDataService } from '@/services/canonicalDataService';
 function mapEquipment(row: any): EquipmentItem {
     const item = {
         id: row.id,
-        name: row.name,
-        category: row.category,
+        assetId: row.asset_id || null,
+        name: row.item_name || row.name || 'Unnamed Asset',
+        category: row.category || 'General',
         quantity: row.quantity ?? 1,
-        status: row.status || 'unknown',
-        institutionId: row.institution_id,
+        status: row.status || 'Available',
+        institutionId: row.institution_id || null,
         unit: row.unit || 'unit',
         isRentable: row.is_rentable ?? false,
         rentalRatePerDay: row.rental_rate_per_day ?? 0,
-        serialNumber: row.serial_number,
-        purchaseDate: row.purchase_date,
-        purchasePrice: row.purchase_price,
-        condition: row.condition,
-        locationStr: row.location_str,
-        description: row.description,
-        brand: row.brand,
-        model: row.model,
-        notes: row.notes,
-        remarks: row.remarks,
-        imageUrl: row.image_url,
-        driveFileId: row.drive_file_id,
-        images: row.images,
+        serialNumber: row.serial_number || null,
+        purchaseDate: row.purchase_date || null,
+        purchasePrice: row.purchase_amount ?? row.purchase_price ?? 0,
+        condition: row.condition || 'Good',
+        locationStr: row.location || row.location_str || '',
+        description: row.description || '',
+        brand: row.brand || '',
+        model: row.model || '',
+        notes: row.notes || '',
+        remarks: row.remarks || '',
+        imageUrl: row.image_url || null,
+        driveFileId: row.drive_file_id || null,
+        images: row.images || [],
         threshold: row.threshold ?? 0,
-        assetStatus: row.asset_status,
-        tenantId: row.tenant_id,
-        createdAt: row.created_at,
-        updatedAt: row.updated_at,
-        createdBy: row.created_by
+        assetStatus: row.asset_status || null,
+        tenantId: row.tenant_id || null,
+        createdAt: row.created_at || new Date().toISOString(),
+        updatedAt: row.updated_at || new Date().toISOString(),
+        createdBy: row.created_by || null
     };
     const result = EquipmentItemSchema.safeParse(item);
     if (!result.success) {
@@ -70,17 +71,33 @@ function mapBooking(row: any): EquipmentBooking {
 // Row Mappers (CamelCase -> SnakeCase)
 function mapEquipToRow(data: Partial<EquipmentItem>): any {
     const row: any = {};
-    if (data.name !== undefined) row.name = data.name;
+    if (data.assetId !== undefined) {
+        row.asset_id = data.assetId;
+    }
+    if (data.name !== undefined) {
+        row.item_name = data.name;
+        row.name = data.name;
+    }
     if (data.category !== undefined) row.category = data.category;
-    if (data.quantity !== undefined) row.quantity = data.quantity;
+    if (data.quantity !== undefined) {
+        row.quantity = data.quantity;
+        row.available_quantity = data.quantity;
+    }
     if (data.status !== undefined) row.status = data.status;
     if (data.unit !== undefined) row.unit = data.unit;
     if (data.isRentable !== undefined) row.is_rentable = data.isRentable;
     if (data.rentalRatePerDay !== undefined) row.rental_rate_per_day = data.rentalRatePerDay;
     if (data.serialNumber !== undefined) row.serial_number = data.serialNumber;
     if (data.purchaseDate !== undefined) row.purchase_date = data.purchaseDate;
-    if (data.purchasePrice !== undefined) row.purchase_price = data.purchasePrice;
+    if (data.purchasePrice !== undefined) {
+        row.purchase_amount = data.purchasePrice;
+        row.purchase_price = data.purchasePrice;
+    }
     if (data.condition !== undefined) row.condition = data.condition;
+    if (data.locationStr !== undefined) {
+        row.location = data.locationStr;
+        row.location_str = data.locationStr;
+    }
     if (data.imageUrl !== undefined) row.image_url = data.imageUrl;
     if (data.driveFileId !== undefined) row.drive_file_id = data.driveFileId;
     if (data.images !== undefined) row.images = data.images;
@@ -106,22 +123,13 @@ function mapBookingToRow(data: Partial<EquipmentBooking>): any {
 export const inventoryService = {
     // READ: Get all items
     async getEquipment(params: { limit?: number; category?: string; institutionId?: string } = {}): Promise<EquipmentItem[]> {
-        const { tenantId } = await tenantContext();
-
         let query = supabase
             .from(TABLES.INVENTORY)
             .select('*')
-            .eq('tenant_id', tenantId)
-            .or('deleted.is.null,deleted.eq.false');
+            .order('item_name', { ascending: true });
 
         if (params.limit) query = query.limit(params.limit);
         if (params.category) query = query.eq('category', params.category);
-        if (params.institutionId && /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(params.institutionId)) {
-            console.log(`[InventoryService] Filtering equipment by institution: ${params.institutionId}`);
-            query = query.eq('institution_id', params.institutionId);
-        } else if (params.institutionId) {
-            console.warn(`[InventoryService] Skipping invalid institution filter: ${params.institutionId}`);
-        }
 
         const { data, error } = await safeQuery(() => query) as { data: any[]; error: any };
         const cacheKey = params.institutionId ? `inventory:${params.institutionId}` : 'inventory';
@@ -146,13 +154,10 @@ export const inventoryService = {
 
     async getById(id: string): Promise<EquipmentItem | null> {
         try {
-            const { tenantId } = await tenantContext();
-
             const { data, error } = await safeQuery(() => supabase
                 .from(TABLES.INVENTORY)
                 .select('*')
                 .eq('id', id)
-                .eq('tenant_id', tenantId)
                 .single()
             ) as { data: any; error: any };
 

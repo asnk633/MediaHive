@@ -36,10 +36,10 @@ export const TaskRatingComponent = ({ task, onRatingSubmitted }: TaskRatingProps
     // View Mode (Already Rated)
     if (existingRating) {
         return (
-            <div className="bg-white/5 border border-[#ffffff1a] rounded-xl p-4 mt-4">
+            <div className="bg-foreground/5 border border-[#ffffff1a] rounded-xl p-4 mt-4">
                 <div className="flex items-center justify-between mb-2">
-                    <h4 className="text-sm font-bold text-white uppercase tracking-wider">Feedback</h4>
-                    <span className="text-xs text-white/40">
+                    <h4 className="text-sm font-bold text-foreground uppercase tracking-wider">Feedback</h4>
+                    <span className="text-xs text-foreground/80">
                         by {existingRating.rated_by.name}
                     </span>
                 </div>
@@ -48,12 +48,12 @@ export const TaskRatingComponent = ({ task, onRatingSubmitted }: TaskRatingProps
                         <Star
                             key={star}
                             size={18}
-                            className={`${star <= existingRating.stars ? 'max-w-fit fill-yellow-400 text-yellow-400' : 'text-white/20'}`}
+                            className={`${star <= existingRating.stars ? 'max-w-fit fill-yellow-400 text-yellow-400' : 'text-foreground/80'}`}
                         />
                     ))}
                 </div>
                 {existingRating.comment && (
-                    <p className="text-sm text-white/70 italic">"{existingRating.comment}"</p>
+                    <p className="text-sm text-foreground/70 italic">"{existingRating.comment}"</p>
                 )}
             </div>
         );
@@ -70,7 +70,7 @@ export const TaskRatingComponent = ({ task, onRatingSubmitted }: TaskRatingProps
                     <Check size={24} />
                     <span className="font-bold text-lg">Rating Submitted!</span>
                 </div>
-                <p className="text-sm text-white/60">Thank you for your feedback.</p>
+                <p className="text-sm text-foreground/80">Thank you for your feedback.</p>
             </div>
         );
     }
@@ -115,8 +115,8 @@ export const TaskRatingComponent = ({ task, onRatingSubmitted }: TaskRatingProps
 
     return (
         <div className="bg-gradient-to-r from-blue-500/10 to-purple-500/10 border border-blue-500/20 rounded-xl p-6 mt-6 animate-fade-in">
-            <h4 className="text-base font-bold text-white mb-1">Task Completed</h4>
-            <p className="text-sm text-white/50 mb-4">How was the work delivered?</p>
+            <h4 className="text-base font-bold text-foreground mb-1">Task Completed</h4>
+            <p className="text-sm text-foreground/70 mb-4">How was the work delivered?</p>
 
             <div className="flex items-center gap-2 mb-4">
                 {[1, 2, 3, 4, 5].map((star) => (
@@ -135,7 +135,7 @@ export const TaskRatingComponent = ({ task, onRatingSubmitted }: TaskRatingProps
                             size={28}
                             className={`transition-colors ${star <= (hoverStars || selectedStars)
                                 ? 'fill-yellow-400 text-yellow-400 drop-shadow-[0_0_8px_rgba(250,204,21,0.4)]'
-                                : 'text-white/20'
+                                : 'text-foreground/80'
                                 }`}
                         />
                     </button>
@@ -149,19 +149,19 @@ export const TaskRatingComponent = ({ task, onRatingSubmitted }: TaskRatingProps
                         onChange={(e) => setComment(e.target.value)}
                         placeholder="Add a comment (optional)..."
                         rows={2}
-                        className="w-full bg-black/20 border border-[#ffffff1a] rounded-lg p-3 text-sm text-white placeholder:text-white/50 focus:border-blue-500/50 outline-none resize-none"
+                        className="w-full bg-black/20 border border-[#ffffff1a] rounded-lg p-3 text-sm text-foreground placeholder:text-foreground/70 focus:border-blue-500/50 outline-none resize-none"
                     />
                     <div className="flex justify-end gap-2">
                         <button
                             onClick={() => setIsExpanded(false)}
-                            className="px-3 py-1.5 text-xs font-medium text-white/50 hover:text-white hover:bg-white/5 rounded-lg transition-colors"
+                            className="px-3 py-1.5 text-xs font-medium text-foreground/70 hover:text-foreground hover:bg-foreground/5 rounded-lg transition-colors"
                         >
                             Cancel
                         </button>
                         <button
                             onClick={handleSubmit}
                             disabled={isSubmitting || selectedStars === 0}
-                            className="px-4 py-1.5 bg-blue-600 hover:bg-blue-500 text-white text-xs font-bold rounded-lg transition-colors disabled:opacity-50"
+                            className="px-4 py-1.5 bg-blue-600 hover:bg-blue-500 text-foreground text-xs font-bold rounded-lg transition-colors disabled:opacity-50"
                         >
                             {isSubmitting ? 'Submitting...' : 'Submit Rating'}
                         </button>

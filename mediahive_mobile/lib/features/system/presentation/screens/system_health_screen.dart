@@ -11,6 +11,9 @@ import '../../../../../core/testing/chaos_controller.dart';
 import '../../../../../shared/widgets/mh_button.dart';
 import '../../../tasks/domain/models/task.dart';
 import '../../../tasks/presentation/providers/tasks_provider.dart';
+import '../../../../../core/services/notification_service.dart';
+import '../../../../../core/services/sound_service.dart';
+import '../../../../../core/theme_provider.dart';
 
 class SystemHealthScreen extends ConsumerWidget {
   const SystemHealthScreen({super.key});
@@ -18,14 +21,23 @@ class SystemHealthScreen extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final logs = ref.watch(loggerProvider);
-    final pendingCount = ref.watch(pendingSyncCountProvider).valueOrNull ?? 0;
     final networkStatus = ref.watch(networkStatusProvider).valueOrNull ?? NetworkStatus.online;
     final chaos = ref.watch(chaosProvider);
+    final colors = ref.watch(themeColorsProvider);
 
     return Scaffold(
-      backgroundColor: AppColors.backgroundPrimary,
+      backgroundColor: colors.backgroundPrimary,
       body: Container(
-        decoration: const BoxDecoration(gradient: AppColors.darkGradient),
+        decoration: BoxDecoration(
+          gradient: LinearGradient(
+            colors: [
+              colors.backgroundSecondary,
+              colors.backgroundPrimary,
+            ],
+            begin: Alignment.topCenter,
+            end: Alignment.bottomCenter,
+          ),
+        ),
         child: SingleChildScrollView(
           padding: const EdgeInsets.only(
             left: AppSpacing.l, 
@@ -36,51 +48,45 @@ class SystemHealthScreen extends ConsumerWidget {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              _buildPageHeader(),
+              _buildPageHeader(colors),
               const SizedBox(height: 32),
-              _buildSectionTitle('OPERATIONAL STATUS'),
+              _buildSectionTitle(colors, 'OPERATIONAL STATUS'),
               const SizedBox(height: AppSpacing.m),
               _buildStatusCard(
+                colors,
                 'Network Status',
-                networkStatus == NetworkStatus.online ? 'ONLINE' : 'OFFLINE',
+                networkStatus == NetworkStatus.online ? 'CONNECTED' : 'DISCONNECTED',
                 networkStatus == NetworkStatus.online ? LucideIcons.wifi : LucideIcons.wifiOff,
-                networkStatus == NetworkStatus.online ? AppColors.success : AppColors.error,
-              ),
-              const SizedBox(height: AppSpacing.s),
-              _buildStatusCard(
-                'Sync Queue',
-                '$pendingCount Pending Mutations',
-                LucideIcons.refreshCw,
-                pendingCount == 0 ? AppColors.textSecondary : AppColors.info,
+                networkStatus == NetworkStatus.online ? colors.emerald : colors.error,
               ),
               const SizedBox(height: AppSpacing.xl),
               
-              _buildSectionTitle('CHAOS ENGINEERING'),
+              _buildSectionTitle(colors, 'CHAOS ENGINEERING'),
               const SizedBox(height: AppSpacing.m),
               _buildChaosControl(
+                colors,
                 ref,
                 'Simulate Network Loss',
                 chaos.isForcedOffline,
                 (val) => ref.read(chaosProvider.notifier).toggleForcedOffline(val),
               ),
               _buildChaosControl(
+                colors,
                 ref,
                 'Inject Failures',
                 chaos.shouldInjectFailures,
                 (val) => ref.read(chaosProvider.notifier).toggleInjectedFailures(val),
               ),
-              const SizedBox(height: AppSpacing.m),
-              MhButton(
-                label: 'STRESS TEST: 1000 TASKS',
-                onTap: () => _performStressTest(context, ref),
-                type: MhButtonType.secondary,
-                width: double.infinity,
-              ),
               const SizedBox(height: AppSpacing.xl),
               
-              _buildSectionTitle('LOGS & TELEMETRY'),
+              _buildSectionTitle(colors, 'SOUNDS & NOTIFICATIONS'),
               const SizedBox(height: AppSpacing.m),
-              _buildLogBuffer(ref, logs),
+              _buildNotificationSoundTestPanel(context, ref, colors),
+              const SizedBox(height: AppSpacing.xl),
+              
+              _buildSectionTitle(colors, 'LOGS & TELEMETRY'),
+              const SizedBox(height: AppSpacing.m),
+              _buildLogBuffer(colors, ref, logs),
             ],
           ),
         ),
@@ -88,34 +94,53 @@ class SystemHealthScreen extends ConsumerWidget {
     );
   }
 
-  Widget _buildPageHeader() {
+  Widget _buildPageHeader(ThemeColors colors) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Text('SYSTEM HEALTH', style: AppTypography.h1),
+        Text(
+          'SYSTEM HEALTH', 
+          style: AppTypography.h1.copyWith(color: colors.textPrimary),
+        ),
         const SizedBox(height: 8),
         Text(
           'DIAGNOSTICS, LOGS & CHAOS CONTROL.',
-          style: AppTypography.caption.copyWith(fontWeight: FontWeight.bold, letterSpacing: 1.2),
+          style: AppTypography.caption.copyWith(
+            fontWeight: FontWeight.bold, 
+            letterSpacing: 1.2,
+            color: colors.textSecondary.withOpacity(0.8),
+          ),
         ),
       ],
     );
   }
 
-  Widget _buildSectionTitle(String title) {
+  Widget _buildSectionTitle(ThemeColors colors, String title) {
     return Text(
       title,
-      style: AppTypography.caption.copyWith(fontWeight: FontWeight.w900, color: AppColors.textSecondary),
+      style: AppTypography.caption.copyWith(
+        fontWeight: FontWeight.w900, 
+        color: colors.textSecondary,
+      ),
     );
   }
 
-  Widget _buildStatusCard(String label, String value, IconData icon, Color color) {
+  Widget _buildStatusCard(ThemeColors colors, String label, String value, IconData icon, Color color) {
     return Container(
       padding: const EdgeInsets.all(AppSpacing.m),
       decoration: BoxDecoration(
-        color: AppColors.surface,
+        color: colors.surface,
         borderRadius: BorderRadius.circular(AppRadius.m),
-        border: Border.all(color: AppColors.border),
+        border: Border.all(color: colors.border.withOpacity(0.5)),
+        boxShadow: colors.isDark
+            ? []
+            : [
+                BoxShadow(
+                  color: colors.border.withOpacity(0.05),
+                  blurRadius: 10,
+                  offset: const Offset(0, 4),
+                ),
+              ],
       ),
       child: Row(
         children: [
@@ -124,8 +149,17 @@ class SystemHealthScreen extends ConsumerWidget {
           Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Text(label, style: AppTypography.caption),
-              Text(value, style: AppTypography.bodyM.copyWith(fontWeight: FontWeight.bold, color: color)),
+              Text(
+                label, 
+                style: AppTypography.caption.copyWith(color: colors.textSecondary),
+              ),
+              Text(
+                value, 
+                style: AppTypography.bodyM.copyWith(
+                  fontWeight: FontWeight.bold, 
+                  color: color,
+                ),
+              ),
             ],
           ),
         ],
@@ -133,35 +167,47 @@ class SystemHealthScreen extends ConsumerWidget {
     );
   }
 
-  Widget _buildChaosControl(WidgetRef ref, String label, bool value, Function(bool) onChanged) {
+  Widget _buildChaosControl(ThemeColors colors, WidgetRef ref, String label, bool value, Function(bool) onChanged) {
     return ListTile(
       contentPadding: EdgeInsets.zero,
-      title: Text(label, style: AppTypography.bodyM),
+      title: Text(
+        label, 
+        style: AppTypography.bodyM.copyWith(color: colors.textPrimary),
+      ),
       trailing: Switch(
         value: value,
         onChanged: onChanged,
-        activeColor: AppColors.honey,
+        activeColor: colors.honey,
       ),
     );
   }
 
-  Widget _buildLogBuffer(WidgetRef ref, List<LogEntry> logs) {
+  Widget _buildLogBuffer(ThemeColors colors, WidgetRef ref, List<LogEntry> logs) {
     return Container(
       height: 300,
       decoration: BoxDecoration(
-        color: Colors.black45,
+        color: colors.isDark ? Colors.black45 : Colors.white.withOpacity(0.9),
         borderRadius: BorderRadius.circular(AppRadius.m),
-        border: Border.all(color: AppColors.border),
+        border: Border.all(color: colors.border),
+        boxShadow: colors.isDark
+            ? []
+            : [
+                BoxShadow(
+                  color: colors.border.withOpacity(0.05),
+                  blurRadius: 10,
+                  offset: const Offset(0, 4),
+                ),
+              ],
       ),
       child: ListView.builder(
         padding: const EdgeInsets.all(AppSpacing.s),
         itemCount: logs.length,
         itemBuilder: (context, index) {
           final log = logs[index];
-          Color color = Colors.white70;
-          if (log.level == LogLevel.error) color = AppColors.error;
-          if (log.level == LogLevel.sync) color = AppColors.info;
-          if (log.level == LogLevel.warning) color = AppColors.warning;
+          Color color = colors.isDark ? Colors.white70 : colors.textPrimary.withOpacity(0.7);
+          if (log.level == LogLevel.error) color = colors.error;
+          if (log.level == LogLevel.sync) color = colors.indigo;
+          if (log.level == LogLevel.warning) color = colors.honey;
 
           return Padding(
             padding: const EdgeInsets.only(bottom: 4),
@@ -179,49 +225,146 @@ class SystemHealthScreen extends ConsumerWidget {
     );
   }
 
-  Future<void> _performStressTest(BuildContext context, WidgetRef ref) async {
-    final confirmed = await showDialog<bool>(
-      context: context,
-      builder: (context) => AlertDialog(
-        backgroundColor: AppColors.surface,
-        title: Text('START STRESS TEST?', style: AppTypography.h3),
-        content: const Text('This will queue 1000 tasks and may impact app performance during processing.'),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.pop(context, false),
-            child: const Text('CANCEL'),
+  Widget _buildNotificationSoundTestPanel(BuildContext context, WidgetRef ref, ThemeColors colors) {
+    final sound = ref.read(soundServiceProvider);
+    final notification = ref.read(notificationServiceProvider);
+
+    return Container(
+      padding: const EdgeInsets.all(AppSpacing.m),
+      decoration: BoxDecoration(
+        color: colors.surface,
+        borderRadius: BorderRadius.circular(16),
+        border: Border.all(color: colors.border.withOpacity(0.5)),
+        boxShadow: colors.isDark
+            ? []
+            : [
+                BoxShadow(
+                  color: colors.border.withOpacity(0.05),
+                  blurRadius: 10,
+                  offset: const Offset(0, 4),
+                ),
+              ],
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Text(
+            'IN-APP SOUND TESTING',
+            style: AppTypography.caption.copyWith(fontWeight: FontWeight.bold, color: colors.honey),
           ),
-          TextButton(
-            onPressed: () => Navigator.pop(context, true),
-            child: const Text('START', style: TextStyle(color: AppColors.error)),
+          const SizedBox(height: AppSpacing.s),
+          Wrap(
+            spacing: 8,
+            runSpacing: 8,
+            children: [
+              ActionChip(
+                backgroundColor: colors.border.withOpacity(0.1),
+                side: BorderSide.none,
+                label: Text('Task Sound', style: TextStyle(fontSize: 11, color: colors.textPrimary)),
+                onPressed: () => sound.playTaskAdded(),
+              ),
+              ActionChip(
+                backgroundColor: colors.border.withOpacity(0.1),
+                side: BorderSide.none,
+                label: Text('Event Sound', style: TextStyle(fontSize: 11, color: colors.textPrimary)),
+                onPressed: () => sound.playEventAlert(),
+              ),
+              ActionChip(
+                backgroundColor: colors.border.withOpacity(0.1),
+                side: BorderSide.none,
+                label: Text('Success Sound', style: TextStyle(fontSize: 11, color: colors.textPrimary)),
+                onPressed: () => sound.playSuccess(),
+              ),
+              ActionChip(
+                backgroundColor: colors.border.withOpacity(0.1),
+                side: BorderSide.none,
+                label: Text('Warning Sound', style: TextStyle(fontSize: 11, color: colors.textPrimary)),
+                onPressed: () => sound.playWarning(),
+              ),
+              ActionChip(
+                backgroundColor: colors.border.withOpacity(0.1),
+                side: BorderSide.none,
+                label: Text('Upload Sound', style: TextStyle(fontSize: 11, color: colors.textPrimary)),
+                onPressed: () => sound.playUploadComplete(),
+              ),
+            ],
+          ),
+          const SizedBox(height: AppSpacing.m),
+          Divider(color: colors.border.withOpacity(0.3)),
+          const SizedBox(height: AppSpacing.s),
+          Text(
+            'NATIVE PUSH NOTIFICATION TESTING',
+            style: AppTypography.caption.copyWith(fontWeight: FontWeight.bold, color: colors.honey),
+          ),
+          const SizedBox(height: AppSpacing.s),
+          Column(
+            children: [
+              _buildNotificationTestRow(
+                context,
+                colors,
+                title: 'Test Task Notification',
+                subtitle: "Triggers native 'task_added' notification sound",
+                icon: LucideIcons.checkSquare,
+                onTap: () => notification.showTaskNotification(
+                  'Task Assigned',
+                  'New task assigned: "Restock Honeybee Batteries"'
+                ),
+              ),
+              const SizedBox(height: AppSpacing.s),
+              _buildNotificationTestRow(
+                context,
+                colors,
+                title: 'Test Event Notification',
+                subtitle: "Triggers native 'event_alert' notification sound",
+                icon: LucideIcons.calendar,
+                onTap: () => notification.showEventNotification(
+                  'Media Briefing',
+                  'Urgent briefing starting in 10 minutes at Studio A.'
+                ),
+              ),
+              const SizedBox(height: AppSpacing.s),
+              _buildNotificationTestRow(
+                context,
+                colors,
+                title: 'Test System Warning',
+                subtitle: "Triggers native 'warning' notification sound",
+                icon: LucideIcons.alertTriangle,
+                onTap: () => notification.showSystemNotification(
+                  'Critical Warning',
+                  'Storage capacity reached 95%. Cleanup immediately.'
+                ),
+              ),
+            ],
           ),
         ],
       ),
     );
+  }
 
-    if (confirmed != true) return;
-
-    final notifier = ref.read(tasksListProvider.notifier);
-    final logger = ref.read(loggerProvider.notifier);
-    
-    logger.info('Starting 1000 Tasks Stress Test');
-    
-    // Perform in batches to avoid blocking UI too much
-    for (int batch = 0; batch < 10; batch++) {
-      await Future.delayed(const Duration(milliseconds: 100));
-      for (int i = 0; i < 100; i++) {
-        final id = 'stress_${batch}_$i';
-        notifier.addTask(Task(
-          id: id,
-          title: 'Stress Task $id',
-          status: 'To Do',
-          priority: 'Medium',
-          requester: 'Stress Test',
-          assignee: 'System',
-          dueDate: '2026-12-31',
-        ));
-      }
-    }
-    logger.info('Stress Test Queued Successfully');
+  Widget _buildNotificationTestRow(
+    BuildContext context,
+    ThemeColors colors, {
+    required String title,
+    required String subtitle,
+    required IconData icon,
+    required VoidCallback onTap,
+  }) {
+    return ListTile(
+      contentPadding: EdgeInsets.zero,
+      leading: Container(
+        padding: const EdgeInsets.all(AppSpacing.s),
+        decoration: BoxDecoration(
+          color: colors.textSecondary.withOpacity(0.1),
+          shape: BoxShape.circle,
+        ),
+        child: Icon(icon, color: colors.honey, size: 18),
+      ),
+      title: Text(title, style: AppTypography.bodyM.copyWith(fontWeight: FontWeight.bold, color: colors.textPrimary)),
+      subtitle: Text(subtitle, style: AppTypography.bodyS.copyWith(color: colors.textSecondary.withOpacity(0.8), fontSize: 10)),
+      trailing: IconButton(
+        icon: Icon(LucideIcons.bellRing, color: colors.honey, size: 18),
+        onPressed: onTap,
+      ),
+    );
   }
 }

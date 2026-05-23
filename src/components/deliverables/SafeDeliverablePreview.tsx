@@ -33,7 +33,7 @@ export const SafeDeliverablePreview: React.FC<SafeDeliverablePreviewProps> = ({
                         href={url}
                         target="_blank"
                         rel="noopener noreferrer"
-                        className="p-2 bg-white/10 hover:bg-white/20 rounded-full text-white backdrop-blur-sm transition-colors"
+                        className="p-2 bg-foreground/10 hover:bg-foreground/20 rounded-full text-foreground backdrop-blur-sm transition-colors"
                         title="Open full size"
                     >
                         <ExternalLink size={16} />
@@ -52,7 +52,7 @@ export const SafeDeliverablePreview: React.FC<SafeDeliverablePreviewProps> = ({
                     controls={false} // Don't show controls in preview, just a thumbnail roughly
                 />
                 <div className="absolute inset-0 flex items-center justify-center bg-black/20">
-                    <Film size={24} className="text-white/70" />
+                    <Film size={24} className="text-foreground/70" />
                 </div>
                 <a
                     href={url}
@@ -67,8 +67,8 @@ export const SafeDeliverablePreview: React.FC<SafeDeliverablePreviewProps> = ({
 
     // Generic File Fallback
     return (
-        <div className={`flex flex-col items-center justify-center p-4 bg-white/5 border border-[#ffffff1a] rounded-lg ${className}`}>
-            <div className="p-3 bg-white/5 rounded-full mb-2">
+        <div className={`flex flex-col items-center justify-center p-4 bg-foreground/5 border border-[#ffffff1a] rounded-lg ${className}`}>
+            <div className="p-3 bg-foreground/5 rounded-full mb-2">
                 <FileText size={24} className="text-blue-400" />
             </div>
             <span className="text-xs text-center text-gray-400 font-medium truncate w-full px-2" title={file_name}>

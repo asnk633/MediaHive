@@ -42,7 +42,7 @@ function buildSeedTasks(): EmulatorTask[] {
             title: 'Immediate Production Review',
             description: 'Review final edits for the upcoming product launch.',
             status: 'in_progress',
-            priority: 'urgent',
+            priority: 'high',
             due_date: now.toISOString(),
             assigned_to: assignee,
             created_by: creator,

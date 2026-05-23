@@ -79,13 +79,13 @@ export const DeliverablePreviewModal: React.FC<DeliverablePreviewModalProps> = (
                         onClick={e => e.stopPropagation()}
                     >
                         {/* Header */}
-                        <div className="flex items-center justify-between px-6 py-4 border-b border-white/5 bg-[#1e293b]/50">
+                        <div className="flex items-center justify-between px-6 py-4 border-b border-foreground/5 bg-[#1e293b]/50">
                             <div className="flex items-center gap-4 min-w-0">
                                 <div className="w-10 h-10 rounded-lg bg-blue-500/10 border border-blue-500/20 flex items-center justify-center text-blue-400 shrink-0">
                                     <FileText size={20} />
                                 </div>
                                 <div className="min-w-0">
-                                    <h3 className="text-lg font-semibold text-white truncate pr-4">
+                                    <h3 className="text-lg font-semibold text-foreground truncate pr-4">
                                         {deliverable.file_name}
                                     </h3>
                                     <p className="text-xs text-blue-300 font-medium">
@@ -95,7 +95,7 @@ export const DeliverablePreviewModal: React.FC<DeliverablePreviewModalProps> = (
                             </div>
                             <button
                                 onClick={onClose}
-                                className="p-2 rounded-lg hover:bg-white/10 text-white/50 hover:text-white transition-colors"
+                                className="p-2 rounded-lg hover:bg-foreground/10 text-foreground/70 hover:text-foreground transition-colors"
                             >
                                 <X size={20} />
                             </button>
@@ -108,14 +108,14 @@ export const DeliverablePreviewModal: React.FC<DeliverablePreviewModalProps> = (
                                 <button
                                     onClick={() => onNavigate('prev')}
                                     disabled={versionIndex >= totalVersions - 1} // Can't go older if at end
-                                    className="pointer-events-auto p-3 rounded-full bg-black/50 border border-[#ffffff1a] text-white hover:bg-black/80 hover:scale-110 disabled:opacity-0 disabled:pointer-events-none transition-all"
+                                    className="pointer-events-auto p-3 rounded-full bg-black/50 border border-[#ffffff1a] text-foreground hover:bg-black/80 hover:scale-110 disabled:opacity-0 disabled:pointer-events-none transition-all"
                                 >
                                     <ChevronLeft size={24} />
                                 </button>
                                 <button
                                     onClick={() => onNavigate('next')}
                                     disabled={versionIndex <= 0} // Can't go newer if at 0
-                                    className="pointer-events-auto p-3 rounded-full bg-black/50 border border-[#ffffff1a] text-white hover:bg-black/80 hover:scale-110 disabled:opacity-0 disabled:pointer-events-none transition-all"
+                                    className="pointer-events-auto p-3 rounded-full bg-black/50 border border-[#ffffff1a] text-foreground hover:bg-black/80 hover:scale-110 disabled:opacity-0 disabled:pointer-events-none transition-all"
                                 >
                                     <ChevronRight size={24} />
                                 </button>
@@ -131,15 +131,15 @@ export const DeliverablePreviewModal: React.FC<DeliverablePreviewModalProps> = (
                         </div>
 
                         {/* Footer */}
-                        <div className="px-6 py-4 border-t border-white/5 bg-[#1e293b]/50 flex items-center justify-between">
+                        <div className="px-6 py-4 border-t border-foreground/5 bg-[#1e293b]/50 flex items-center justify-between">
                             <div className="flex items-center gap-4 text-sm text-gray-400">
                                 <div className="flex items-center gap-2">
-                                    <span className="w-6 h-6 rounded-full bg-white/10 flex items-center justify-center text-[10px] font-bold">
+                                    <span className="w-6 h-6 rounded-full bg-foreground/10 flex items-center justify-center text-[10px] font-bold">
                                         {deliverable.uploaded_by.name?.charAt(0) || 'U'}
                                     </span>
-                                    <span>Uploaded by <span className="text-white">{deliverable.uploaded_by.name}</span></span>
+                                    <span>Uploaded by <span className="text-foreground">{deliverable.uploaded_by.name}</span></span>
                                 </div>
-                                <span className="w-1 h-1 rounded-full bg-white/20" />
+                                <span className="w-1 h-1 rounded-full bg-foreground/20" />
                                 <span>
                                     {deliverable.created_at ? format(new Date((typeof deliverable.created_at === 'object' && 'seconds' in deliverable.created_at) ? (deliverable.created_at as any).seconds * 1000 : deliverable.created_at), 'MMM d, yyyy h:mm a') : ''}
                                 </span>

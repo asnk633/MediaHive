@@ -1,191 +1,177 @@
-"use client";
-
-import React, { useState, useEffect } from "react";
-import { InventoryRequest } from "@/types/inventory";
-import { inventoryRequestService } from '@/services/inventory/inventoryRequestService';
-import { useAuth } from "@/contexts/AuthContextProvider";
-import { toast } from "sonner";
-import { format } from "date-fns";
-import { Check, X, Clock, Loader2, Package } from "lucide-react";
+import React, { useState, useEffect } from 'react';
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { IssueItemDialog } from "./IssueItemDialog";
-import { inventoryService } from '@/services/inventory/inventoryService';
-import { EquipmentItem } from "@/services/inventory/inventoryContract";
+import { InventoryRequest } from '@/services/inventory/inventoryContract';
+import { inventoryRequestService } from '@/services/inventory/inventoryRequestService';
+import { useAuth } from '@/contexts/AuthContextProvider';
+import { useWorkspace } from '@/system/workspace/WorkspaceProvider';
+import { format } from 'date-fns';
+import { toast } from 'sonner';
+import { Loader2, Check, X, Clock, AlertCircle } from 'lucide-react';
 
 export default function RequestList() {
     const { user } = useAuth();
+    const { currentWorkspaceId } = useWorkspace();
     const [requests, setRequests] = useState<InventoryRequest[]>([]);
     const [loading, setLoading] = useState(true);
-    const [issuingRequest, setIssuingRequest] = useState<InventoryRequest | null>(null);
-    const [issuingItem, setIssuingItem] = useState<EquipmentItem | null>(null);
 
-    const isAdmin = user?.role === 'admin';
+    const isAdmin = user?.role === 'admin' || user?.role === 'manager';
 
     useEffect(() => {
-        loadData();
-    }, [user]);
+        if (user) {
+            loadData();
+        }
+    }, [user, currentWorkspaceId]);
 
     const loadData = async () => {
         if (!user) return;
         setLoading(true);
         try {
             let data: InventoryRequest[] = [];
-            if (!user.institution_id) {
-                console.error("User missing institution_id");
-                return;
+            
+            const isUUID = (str: any) => /^[0-9a-f]{8}-[0-9a-f]{4}-[0-5][0-9a-f]{3}-[089ab][0-9a-f]{3}-[0-9a-f]{12}$/i.test(String(str));
+
+            // Priority: 1. Workspace ID (if it's a UUID), 2. User Profile Institution ID (Only for non-admins)
+            let institutionId: string | null = null;
+            
+            if (currentWorkspaceId && isUUID(currentWorkspaceId)) {
+                institutionId = String(currentWorkspaceId);
+            } else if (user.role !== 'admin' && user.role !== 'manager') {
+                // Non-admins/managers fallback to their profile institution to limit visibility
+                if (user.institution_id && isUUID(user.institution_id)) {
+                    institutionId = String(user.institution_id);
+                }
+            }
+            
+            // For Admins/Managers: If institutionId is null here, service will fetch ALL tenant requests
+            // For Members/Guests: We still want to try filtering by their profile ID if available
+            
+            if (isAdmin) {
+                console.log("[RequestList] Fetching ALL for admin, scoped to institution:", institutionId);
+                data = await inventoryRequestService.getAll(institutionId || undefined);
+            } else {
+                console.log("[RequestList] Fetching MY requests, scoped to institution:", institutionId);
+                data = await inventoryRequestService.getMyRequests(user.uid, institutionId || undefined);
             }
 
-            if (isAdmin) {
-                data = await inventoryRequestService.getAll(user.institution_id) as unknown as InventoryRequest[];
-            } else {
-                data = await inventoryRequestService.getMyRequests(user.uid, user.institution_id) as unknown as InventoryRequest[];
-            }
             setRequests(data);
-        } catch (error) {
-            console.error(error);
-            toast.error("Failed to load requests");
+        } catch (error: any) {
+            console.error("[RequestList] Load failed:", {
+                message: error.message,
+                code: error.code,
+                details: error.details,
+                full: JSON.stringify(error, null, 2),
+                error
+            });
+            toast.error(error.message || "Failed to load requests");
         } finally {
             setLoading(false);
         }
     };
 
-    const handleApprove = async (req: InventoryRequest) => {
+    const handleAction = async (id: string | number, action: 'approve' | 'reject') => {
         try {
-            await inventoryRequestService.approve(req.id, user!.uid);
-            toast.success("Request approved");
-            loadData();
-        } catch (e) {
-            console.error(e);
-            toast.error("Failed to approve");
-        }
-    };
-
-    const handleReject = async (req: InventoryRequest) => {
-        // Simple prompt for now
-        const reason = prompt("Enter rejection reason:");
-        if (!reason) return;
-
-        try {
-            await inventoryRequestService.reject(req.id, reason);
-            toast.success("Request rejected");
-            loadData();
-        } catch (e) {
-            console.error(e);
-            toast.error("Failed to reject");
-        }
-    };
-
-    const handleIssueClick = async (req: InventoryRequest) => {
-        // Fetch the item details to pass to dialog
-        try {
-            const item = await inventoryService.getById(String(req.itemId));
-            if (!item) {
-                toast.error("Item not found (might be deleted)");
-                return;
+            if (action === 'approve') {
+                await inventoryRequestService.approve(id, user!.uid);
+                toast.success("Request approved");
+            } else {
+                const reason = window.prompt("Reason for rejection:");
+                if (reason === null) return;
+                await inventoryRequestService.reject(id, reason);
+                toast.success("Request rejected");
             }
-            setIssuingItem(item);
-            setIssuingRequest(req);
-        } catch (e) {
-            console.error(e);
-            toast.error("Failed to load item for issuing");
+            loadData();
+        } catch (err) {
+            toast.error("Action failed");
+        }
+    };
+
+    const getStatusBadge = (status: string) => {
+        switch (status) {
+            case 'pending': return <Badge variant="warning" className="bg-amber-500/10 text-amber-500 border-amber-500/20"><Clock className="w-3 h-3 mr-1" /> Pending</Badge>;
+            case 'approved': return <Badge variant="success" className="bg-emerald-500/10 text-emerald-500 border-emerald-500/20"><Check className="w-3 h-3 mr-1" /> Approved</Badge>;
+            case 'rejected': return <Badge variant="danger" className="bg-red-500/10 text-red-500 border-red-500/20"><X className="w-3 h-3 mr-1" /> Rejected</Badge>;
+            case 'issued': return <Badge variant="info" className="bg-blue-500/10 text-blue-400 border-blue-500/20">Issued</Badge>;
+            default: return <Badge variant="neutral">{status}</Badge>;
         }
     };
 
     if (loading) {
         return (
-            <div className="space-y-4">
-                {Array.from({ length: 5 }).map((_, i) => (
-                    <div key={i} className="bg-slate-900/50 border border-white/5 rounded-xl p-4 flex flex-col md:flex-row gap-4 items-start md:items-center justify-between">
-                        <div className="space-y-2 w-full">
-                            <div className="flex items-center gap-2">
-                                <div className="h-4 w-16 bg-white/5 rounded animate-pulse" />
-                                <div className="h-3 w-24 bg-white/5 rounded animate-pulse" />
-                            </div>
-                            <div className="h-5 w-1/3 bg-white/5 rounded animate-pulse" />
-                            <div className="h-4 w-1/2 bg-white/5 rounded animate-pulse" />
-                        </div>
-                        <div className="flex gap-2">
-                            <div className="h-8 w-20 bg-white/5 rounded animate-pulse" />
-                            <div className="h-8 w-20 bg-white/5 rounded animate-pulse" />
-                        </div>
-                    </div>
-                ))}
+            <div className="flex items-center justify-center h-64">
+                <Loader2 className="w-8 h-8 animate-spin text-blue-500" />
+            </div>
+        );
+    }
+
+    if (requests.length === 0) {
+        return (
+            <div className="flex flex-col items-center justify-center h-64 text-slate-400 gap-4">
+                <AlertCircle className="w-12 h-12 opacity-20" />
+                <p>No inventory requests found.</p>
             </div>
         );
     }
 
     return (
-        <div className="space-y-4">
-            {requests.length === 0 && (
-                <div className="text-center p-8 text-slate-500 bg-slate-900/50 rounded-xl border border-white/5">
-                    No requests found.
-                </div>
-            )}
+        <div className="grid gap-4">
+            {requests.map((request) => (
+                <Card key={request.id} className="bg-slate-900/50 border-foreground/5 hover:border-foreground/10 transition-all overflow-hidden group">
+                    <CardContent className="p-4">
+                        <div className="flex items-start justify-between">
+                            <div className="space-y-1">
+                                <div className="flex items-center gap-3">
+                                    <h3 className="font-bold text-foreground text-lg">{request.itemName}</h3>
+                                    {getStatusBadge(request.status)}
+                                </div>
+                                <p className="text-sm text-slate-400">
+                                    Requested by: <span className="text-slate-200 font-medium">User {request.requestedBy}</span>
+                                </p>
+                                <div className="text-xs text-slate-500 flex items-center gap-2 mt-2">
+                                    <Clock className="w-3 h-3" />
+                                    {request.createdAt ? format(new Date(request.createdAt), 'MMM d, h:mm a') : 'Unknown Date'}
+                                </div>
+                            </div>
 
-            {requests.map(req => (
-                <div key={req.id} className="bg-slate-900/50 border border-white/5 rounded-xl p-4 flex flex-col md:flex-row gap-4 items-start md:items-center justify-between hover:border-white/10 transition-colors">
-                    <div className="space-y-1">
-                        <div className="flex items-center gap-2">
-                            <StatusBadge status={req.status} />
-                            <span className="text-xs text-slate-500">{format(new Date(req.createdAt || Date.now()), 'MMM d, h:mm a')}</span>
+                            {isAdmin && request.status === 'pending' && (
+                                <div className="flex gap-2 opacity-0 group-hover:opacity-100 transition-opacity">
+                                    <Button 
+                                        size="sm" 
+                                        variant="ghost" 
+                                        className="h-8 text-emerald-400 hover:text-emerald-300 hover:bg-emerald-500/10"
+                                        onClick={() => handleAction(request.id, 'approve')}
+                                    >
+                                        Approve
+                                    </Button>
+                                    <Button 
+                                        size="sm" 
+                                        variant="ghost" 
+                                        className="h-8 text-red-400 hover:text-red-300 hover:bg-red-500/10"
+                                        onClick={() => handleAction(request.id, 'reject')}
+                                    >
+                                        Reject
+                                    </Button>
+                                </div>
+                            )}
                         </div>
-                        <h4 className="font-semibold text-white">{req.itemName}</h4>
-                        <p className="text-sm text-slate-400">"{req.purpose}"</p>
-                        {isAdmin && (
-                            <div className="text-xs text-slate-500 mt-1">Requested by: <span className="text-slate-300">{req.requestedBy}</span></div> // Replace with Name if possible (needs user map)
-                        )}
-                        {req.rejectionReason && <div className="text-xs text-red-400 mt-1">Reason: {req.rejectionReason}</div>}
-                    </div>
 
-                    <div className="flex items-center gap-2">
-                        {isAdmin && req.status === 'pending' && (
-                            <>
-                                <Button size="sm" variant="ghost" className="text-red-400 hover:bg-red-500/10 hover:text-red-300" onClick={() => handleReject(req)}>
-                                    Reject
-                                </Button>
-                                <Button size="sm" className="bg-blue-600 hover:bg-blue-500 text-white" onClick={() => handleApprove(req)}>
-                                    Approve
-                                </Button>
-                            </>
+                        {(request.purpose || request.notes) && (
+                            <div className="mt-4 p-3 bg-black/20 rounded-lg border border-foreground/5 text-sm text-slate-300">
+                                <span className="text-slate-500 font-medium text-xs block mb-1 uppercase tracking-wider">Purpose:</span>
+                                {request.purpose || request.notes}
+                            </div>
                         )}
 
-                        {isAdmin && req.status === 'approved' && (
-                            <Button size="sm" className="bg-green-600 hover:bg-green-500 text-white gap-2" onClick={() => handleIssueClick(req)}>
-                                <Package size={16} /> Issue
-                            </Button>
+                        {request.status === 'rejected' && request.rejectReason && (
+                            <div className="mt-2 p-3 bg-red-500/5 rounded-lg border border-red-500/10 text-sm text-red-400">
+                                <span className="text-red-500/50 font-medium text-xs block mb-1 uppercase tracking-wider">Rejection Feedback:</span>
+                                {request.rejectReason}
+                            </div>
                         )}
-                    </div>
-                </div>
+                    </CardContent>
+                </Card>
             ))}
-
-            {issuingRequest && issuingItem && (
-                <IssueItemDialog
-                    open={!!issuingRequest}
-                    onOpenChange={(open) => {
-                        if (!open) {
-                            setIssuingRequest(null);
-                            setIssuingItem(null);
-                            loadData(); // Refresh to reflect potentially issued state (though issue doesn't change request status? Actually request stays 'approved'. Issue is separate. Maybe we should link them? Rules don't enforce it, but logical.)
-                        }
-                    }}
-                    request={issuingRequest}
-                    item={issuingItem}
-                />
-            )}
         </div>
-    );
-}
-
-function StatusBadge({ status }: { status: InventoryRequest['status'] }) {
-    const styles = {
-        pending: "bg-yellow-500/10 text-yellow-400 border-yellow-500/20",
-        approved: "bg-green-500/10 text-green-400 border-green-500/20",
-        rejected: "bg-red-500/10 text-red-400 border-red-500/20",
-        issued: "bg-purple-500/10 text-purple-400 border-purple-500/20",
-    };
-    return (
-        <span className={`px-2 py-0.5 rounded text-[10px] uppercase font-bold border ${styles[status]}`}>
-            {status}
-        </span>
     );
 }

@@ -101,7 +101,7 @@ export const createTaskSchema = z.object({
   title: nameSchema,
   description: z.string().max(1000, 'Description must be at most 1000 characters').optional(),
   status: z.enum(['todo', 'in_progress', 'review', 'done']).default('todo'),
-  priority: z.enum(['low', 'medium', 'high', 'urgent']).default('medium'),
+  priority: z.enum(['low', 'medium', 'high']).default('medium'),
   assignedToId: optionalIdSchema,
   due_date: dateStringSchema.optional(),
 });
@@ -110,7 +110,7 @@ export const updateTaskSchema = z.object({
   title: nameSchema.optional(),
   description: z.string().max(1000, 'Description must be at most 1000 characters').optional(),
   status: z.enum(['todo', 'in_progress', 'review', 'done']).optional(),
-  priority: z.enum(['low', 'medium', 'high', 'urgent']).optional(),
+  priority: z.enum(['low', 'medium', 'high']).optional(),
   assignedToId: optionalIdSchema,
   due_date: dateStringSchema.optional(),
 });

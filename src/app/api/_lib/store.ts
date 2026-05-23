@@ -10,7 +10,7 @@ export type Task = {
   title: string;
   description?: string;
   status?: "pending" | "working" | "completed" | "on_hold";
-  priority?: "low" | "medium" | "high" | "urgent";
+  priority?: "low" | "medium" | "high";
   due_date?: string | null; // ISO
   assigned_to?: string | null; // for now store a name or user id string
   assigned_by?: string | null;

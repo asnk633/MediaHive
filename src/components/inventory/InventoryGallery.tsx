@@ -64,7 +64,7 @@ function ImageCard({ src, alt, className, priority }: { src: string; alt: string
                         referrerPolicy="no-referrer"
                     />
                     <div className="absolute inset-0 bg-black/0 group-hover:bg-black/20 transition-colors flex items-center justify-center">
-                        <ZoomIn className="text-white opacity-0 group-hover:opacity-100 transition-opacity transform scale-75 group-hover:scale-100" />
+                        <ZoomIn className="text-foreground opacity-0 group-hover:opacity-100 transition-opacity transform scale-75 group-hover:scale-100" />
                     </div>
                 </div>
             </DialogTrigger>

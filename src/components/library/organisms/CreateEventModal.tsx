@@ -39,12 +39,12 @@ export const CreateEventModal = ({ isOpen, onClose, isMobile = true, initialDate
         }}>
             <div className={modalClasses} onClick={e => e.stopPropagation()}>
                 {/* Mobile Pull Handle */}
-                {isMobile && <div className="w-12 h-1.5 bg-white/10 rounded-full mx-auto mb-6" />}
+                {isMobile && <div className="w-12 h-1.5 bg-foreground/10 rounded-full mx-auto mb-6" />}
 
                 {/* Header */}
                 <div className="flex items-center justify-between mb-6">
-                    <h2 className="text-xl font-bold text-white">Create New Event</h2>
-                    <button onClick={onClose} className="p-2 -mr-2 text-white/50 hover:bg-white/10 hover:text-white rounded-full transition-colors">
+                    <h2 className="text-xl font-bold text-foreground">Create New Event</h2>
+                    <button onClick={onClose} className="p-2 -mr-2 text-foreground/70 hover:bg-foreground/10 hover:text-foreground rounded-full transition-colors">
                         <X size={20} />
                     </button>
                 </div>

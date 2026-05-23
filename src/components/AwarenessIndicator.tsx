@@ -86,7 +86,7 @@ export function AwarenessIndicator() {
           
           <div className="flex-1 min-w-0">
             <div className="flex items-center justify-between">
-              <h3 className="text-sm font-medium text-gray-900 dark:text-white">
+              <h3 className="text-sm font-medium text-gray-900 dark:text-foreground">
                 Activity Update
               </h3>
               <button

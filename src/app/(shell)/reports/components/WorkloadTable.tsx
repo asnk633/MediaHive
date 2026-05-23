@@ -39,7 +39,7 @@ export const WorkloadTable: React.FC<WorkloadTableProps> = ({ data }) => {
                         {sorted.map(user => (
                             <tr key={user.uid} className="hover:bg-primary/5 transition-colors group">
                                 <td className="px-6 py-4 font-medium text-foreground flex items-center gap-3">
-                                    <div className="w-9 h-9 rounded-full bg-gradient-to-br from-indigo-500/80 to-purple-500/80 text-white flex items-center justify-center font-bold text-xs shadow-inner">
+                                    <div className="w-9 h-9 rounded-full bg-gradient-to-br from-indigo-500/80 to-purple-500/80 text-foreground flex items-center justify-center font-bold text-xs shadow-inner">
                                         {user.name.charAt(0).toUpperCase()}
                                     </div>
                                     <div>

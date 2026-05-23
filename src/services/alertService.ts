@@ -174,53 +174,34 @@ export class AlertService {
         created_at: new Date().toISOString()
       };
 
-      const { data, error } = await fromTable(TABLES.NOTIFICATIONS)
-        .insert([finalParams])
-        .select()
-        .single();
+      const { data, error } = await supabase.functions.invoke('dispatch-notification', {
+        body: finalParams
+      });
 
       if (error) {
         console.error('[AlertService] ❌ Notification creation error:', JSON.stringify(error, null, 2));
         throw error;
       }
 
-      return data?.id || null;
+      return data?.notification?.id || null;
     } catch (error) {
       console.error('[AlertService] ❌ Error in createNotification:', JSON.stringify(error, null, 2));
       throw error;
     }
   }
 
-  /**
-   * Create notifications for multiple users (batch)
-   */
   static async createBatchNotifications(userIds: string[], params: Omit<CreateNotificationParams, 'user_id'>): Promise<void> {
     try {
-      const { tenantId } = await tenantContext();
-
-      const notifications = userIds
+      const promises = userIds
         .filter(id => id && this.isValidUUID(id))
-        .map(userId => {
-          const { message, ...cleanParams } = params;
-          return {
-            ...cleanParams,
-            user_id: userId,
-            body: params.body || params.message,
-            tenant_id: tenantId,
-            read: false,
-            created_at: new Date().toISOString()
-          };
+        .map(recipientId => {
+          return this.createNotification({
+            ...params,
+            user_id: recipientId
+          });
         });
 
-      if (notifications.length === 0) {
-        console.warn('[AlertService] No valid recipients for batch notification');
-        return;
-      }
-
-      const { error } = await fromTable(TABLES.NOTIFICATIONS)
-        .insert(notifications);
-
-      if (error) throw error;
+      await Promise.all(promises);
     } catch (error) {
       console.error('[AlertService] ❌ Error batch creating notifications:', error);
       throw error;

@@ -42,7 +42,7 @@ interface EditTaskDialogProps {
         id: string;
         title: string;
         description?: string;
-        priority: "low" | "medium" | "high" | "urgent";
+        priority: "low" | "medium" | "high";
         due_date?: any;
         status: string;
         campaign_id?: string;
@@ -58,11 +58,10 @@ const PRIORITY_OPTIONS = [
     { value: 'low', label: 'Low', color: 'text-green-400', activeClass: 'bg-green-500/20 border-green-500/50 text-green-300' },
     { value: 'medium', label: 'Medium', color: 'text-amber-400', activeClass: 'bg-amber-500/20 border-amber-500/50 text-amber-300' },
     { value: 'high', label: 'High', color: 'text-orange-400', activeClass: 'bg-orange-500/20 border-orange-500/50 text-orange-300' },
-    { value: 'urgent', label: 'Urgent', color: 'text-red-400', activeClass: 'bg-red-500/20 border-red-500/50 text-red-300' },
 ];
 
 const STATUS_OPTIONS = [
-    { value: 'todo', label: 'To Do', icon: Circle, activeClass: 'bg-white/10 border-white/30 text-white' },
+    { value: 'todo', label: 'To Do', icon: Circle, activeClass: 'bg-foreground/10 border-foreground/30 text-foreground' },
     { value: 'in_progress', label: 'In Progress', icon: Clock, activeClass: 'bg-blue-500/20 border-blue-500/50 text-blue-300' },
     { value: 'review', label: 'On Hold', icon: AlertCircle, activeClass: 'bg-amber-500/20 border-amber-500/50 text-amber-300' },
     { value: 'done', label: 'Completed', icon: CheckCircle2, activeClass: 'bg-emerald-500/20 border-emerald-500/50 text-emerald-300' },
@@ -124,11 +123,15 @@ export function EditTaskDialog({ open, onOpenChange, task, onUpdate }: EditTaskD
     const isAssignee = assignedArray.some((u: any) => (typeof u === 'string' ? u : (u.uid || u.userId)) === user?.uid);
 
     // Permission Logic
-    const canEditContent = isAdmin || isSuperAdmin || isManager || isMember || isCreator;
-    const canEditPriority = isAdmin || isSuperAdmin || isManager;
-    const canEditStatus = isAdmin || isSuperAdmin || isManager || isAssignee;
-    const canEditDueDate = isAdmin || isSuperAdmin || isManager || isMember;
-    const canAssign = true; // Always allow visibility; UserService handles filtering of eligible assignees
+    const isEditingAllowed = isAdmin || isSuperAdmin || isManager || isCreator;
+    const canAssignOthers = isAdmin || isSuperAdmin || isManager;
+    const canAssignSelf = isAdmin || isSuperAdmin || isManager || (isTeam && isCreator);
+
+    const canEditContent = isEditingAllowed;
+    const canEditPriority = isEditingAllowed;
+    const canEditStatus = isEditingAllowed || isAssignee; // Assignees must be able to update status
+    const canEditDueDate = isEditingAllowed;
+    const canAssign = canAssignOthers || canAssignSelf;
     
     const canSave = canEditContent || canEditPriority || canEditStatus || canEditDueDate;
 
@@ -170,10 +173,19 @@ export function EditTaskDialog({ open, onOpenChange, task, onUpdate }: EditTaskD
                 const filtered = members.filter(m => {
                     const role = (m as any).role?.toLowerCase().trim();
                     const name = m.name?.toLowerCase() || '';
+                    const isSelf = m.uid === user?.uid;
                     // Exclude generic system/admin accounts from the selection list, but keep real users
                     const isGenericAdmin = name.includes('admin user') || name === 'admin' || name === 'super admin';
                     const isSystem = name.includes('system');
-                    return !isGenericAdmin && !isSystem && role !== 'superadmin';
+                    
+                    const isValidRole = ['manager', 'team'].includes(role);
+                    
+                    if (!isValidRole || isGenericAdmin || isSystem || role === 'superadmin') return false;
+                    
+                    if (canAssignOthers) return true;
+                    if (isTeam && isSelf) return true;
+                    
+                    return false;
                 });
                 setTeamMembers(filtered);
             }).catch(err => {
@@ -247,25 +259,25 @@ export function EditTaskDialog({ open, onOpenChange, task, onUpdate }: EditTaskD
     };
 
     // Shared style tokens
-    const labelCls = "text-[10px] font-bold uppercase tracking-widest text-white/40 mb-2 block";
-    const inputCls = "bg-white/[0.04] border border-white/[0.08] text-white placeholder:text-white/25 focus:border-blue-500/40 focus:ring-0 focus:bg-white/[0.06] transition-all rounded-xl h-11 disabled:opacity-40 disabled:cursor-not-allowed";
+    const labelCls = "text-[10px] font-bold uppercase tracking-widest text-foreground/80 mb-2 block";
+    const inputCls = "bg-foreground/[0.04] border border-foreground/[0.08] text-foreground placeholder:text-foreground/25 focus:border-blue-500/40 focus:ring-0 focus:bg-foreground/[0.06] transition-all rounded-xl h-11 disabled:opacity-40 disabled:cursor-not-allowed";
 
     return (
         <Dialog open={open} onOpenChange={onOpenChange}>
             <DialogContent
                 overlayClassName="z-[150]"
-                className="z-[150] sm:max-w-[640px] bg-[#0d0e17] text-white border border-white/[0.07] shadow-[0_32px_80px_-16px_rgba(0,0,0,0.7)] p-0 rounded-[28px] overflow-hidden"
+                className="z-[150] sm:max-w-[640px] bg-[#0d0e17] text-foreground border border-foreground/[0.07] shadow-[0_32px_80px_-16px_rgba(0,0,0,0.7)] p-0 rounded-[28px] overflow-hidden"
             >
                 {/* Header */}
-                <div className="flex items-center justify-between px-7 pt-6 pb-5 border-b border-white/[0.06] bg-white/[0.01]">
+                <div className="flex items-center justify-between px-7 pt-6 pb-5 border-b border-foreground/[0.06] bg-foreground/[0.01]">
                     <div className="flex items-center gap-3">
-                        <div className={cn("p-2.5 rounded-xl", canSave ? "bg-blue-500/10 text-blue-400" : "bg-white/5 text-white/40")}>
+                        <div className={cn("p-2.5 rounded-xl", canSave ? "bg-blue-500/10 text-blue-400" : "bg-foreground/5 text-foreground/80")}>
                             <Edit3 size={18} />
                         </div>
                         <div>
                             <div className="flex items-center gap-2.5">
                                 <DialogHeader className="flex-1">
-                                    <DialogTitle className="text-base font-bold text-white tracking-tight">
+                                    <DialogTitle className="text-base font-bold text-foreground tracking-tight">
                                         {canSave ? "Edit Task" : "Task Details"}
                                     </DialogTitle>
                                 </DialogHeader>
@@ -289,7 +301,7 @@ export function EditTaskDialog({ open, onOpenChange, task, onUpdate }: EditTaskD
                                         onOpenChange(false);
                                     }
                                 }}
-                                className="p-2 text-white/20 hover:text-red-400 hover:bg-red-500/10 rounded-lg transition-all"
+                                className="p-2 text-foreground/80 hover:text-red-400 hover:bg-red-500/10 rounded-lg transition-all"
                                 title="Move to Trash"
                             >
                                 <Trash2 size={18} />
@@ -304,9 +316,9 @@ export function EditTaskDialog({ open, onOpenChange, task, onUpdate }: EditTaskD
 
                     {/* Section 1: General Info */}
                     <div className="space-y-5">
-                        <div className="flex items-center gap-2 pb-2 border-b border-white/5">
+                        <div className="flex items-center gap-2 pb-2 border-b border-foreground/5">
                             <div className="w-1.5 h-1.5 rounded-full bg-blue-500/50" />
-                            <span className="text-[10px] font-bold uppercase tracking-widest text-white/30">General Information</span>
+                            <span className="text-[10px] font-bold uppercase tracking-widest text-foreground/70">General Information</span>
                         </div>
                         
                         {/* Task Title */}
@@ -343,7 +355,7 @@ export function EditTaskDialog({ open, onOpenChange, task, onUpdate }: EditTaskD
                                 onChange={e => { setDescription(e.target.value); collab.onTyping('description', true); }}
                                 onFocus={() => collab.onFieldFocus('description')}
                                 onBlur={() => collab.onFieldBlur('description')}
-                                className="bg-white/[0.03] border border-white/[0.07] text-white placeholder:text-white/25 focus:border-blue-500/40 focus:ring-0 focus:bg-white/[0.05] transition-all rounded-xl min-h-[120px] p-4 text-sm leading-relaxed resize-none disabled:opacity-40 disabled:cursor-not-allowed"
+                                className="bg-foreground/[0.03] border border-foreground/[0.07] text-foreground placeholder:text-foreground/25 focus:border-blue-500/40 focus:ring-0 focus:bg-foreground/[0.05] transition-all rounded-xl min-h-[120px] p-4 text-sm leading-relaxed resize-none disabled:opacity-40 disabled:cursor-not-allowed"
                                 placeholder="Add more context, requirements, or links..."
                                 disabled={!canEditContent}
                             />
@@ -352,9 +364,9 @@ export function EditTaskDialog({ open, onOpenChange, task, onUpdate }: EditTaskD
 
                     {/* Section 2: Timeline & Context */}
                     <div className="space-y-5">
-                        <div className="flex items-center gap-2 pb-2 border-b border-white/5">
+                        <div className="flex items-center gap-2 pb-2 border-b border-foreground/5">
                             <div className="w-1.5 h-1.5 rounded-full bg-amber-500/50" />
-                            <span className="text-[10px] font-bold uppercase tracking-widest text-white/30">Timeline & Context</span>
+                            <span className="text-[10px] font-bold uppercase tracking-widest text-foreground/70">Timeline & Context</span>
                         </div>
 
                         <div className="grid grid-cols-2 gap-5">
@@ -368,29 +380,29 @@ export function EditTaskDialog({ open, onOpenChange, task, onUpdate }: EditTaskD
                                             disabled={!canEditDueDate}
                                             className={cn(
                                                 "w-full h-11 flex items-center gap-2.5 px-3.5 rounded-xl border text-sm transition-all",
-                                                "bg-white/[0.03] border-white/[0.07] text-white hover:bg-white/[0.05]",
+                                                "bg-foreground/[0.03] border-foreground/[0.07] text-foreground hover:bg-foreground/[0.05]",
                                                 "disabled:opacity-40 disabled:cursor-not-allowed shadow-inner",
-                                                !due_date && "text-white/30"
+                                                !due_date && "text-foreground/70"
                                             )}
                                         >
-                                            <CalendarIcon size={15} className="text-white/40 shrink-0" />
+                                            <CalendarIcon size={15} className="text-foreground/80 shrink-0" />
                                             {due_date ? format(due_date, "MMM d, yyyy") : "Select date"}
                                         </button>
                                     </PopoverTrigger>
-                                    <PopoverContent className="w-auto p-0 bg-[#0d0e17] border border-white/[0.1] text-white z-[200] shadow-2xl rounded-2xl overflow-hidden" align="start">
+                                    <PopoverContent className="w-auto p-0 bg-[#0d0e17] border border-foreground/[0.1] text-foreground z-[200] shadow-2xl rounded-2xl overflow-hidden" align="start">
                                         <Calendar
                                             mode="single"
                                             selected={due_date}
                                             onSelect={(d) => { setDueDate(d); setCalOpen(false); }}
                                             initialFocus
-                                            className="bg-transparent text-white p-4"
+                                            className="bg-transparent text-foreground p-4"
                                             classNames={{
-                                                day_selected: "bg-blue-600 text-white rounded-xl shadow-lg shadow-blue-500/20",
-                                                day_today: "bg-white/10 text-white rounded-xl font-bold border border-white/20",
-                                                day: "text-white hover:bg-white/10 rounded-xl w-10 h-10 p-0 font-normal transition-colors",
-                                                head_cell: "text-white/40 w-10 font-bold text-[10px] uppercase tracking-widest",
+                                                day_selected: "bg-blue-600 text-foreground rounded-xl shadow-lg shadow-blue-500/20",
+                                                day_today: "bg-foreground/10 text-foreground rounded-xl font-bold border border-foreground/20",
+                                                day: "text-foreground hover:bg-foreground/10 rounded-xl w-10 h-10 p-0 font-normal transition-colors",
+                                                head_cell: "text-foreground/80 w-10 font-bold text-[10px] uppercase tracking-widest",
                                                 caption_label: "text-sm font-bold tracking-tight px-2",
-                                                nav_button: "text-white/60 hover:text-white hover:bg-white/10 rounded-lg w-8 h-8 flex items-center justify-center transition-colors",
+                                                nav_button: "text-foreground/80 hover:text-foreground hover:bg-foreground/10 rounded-lg w-8 h-8 flex items-center justify-center transition-colors",
                                             }}
                                         />
                                     </PopoverContent>
@@ -401,14 +413,14 @@ export function EditTaskDialog({ open, onOpenChange, task, onUpdate }: EditTaskD
                             <div>
                                 <label className={labelCls}>Campaign</label>
                                 <Select value={campaign_id} onValueChange={setCampaignId} disabled={!canEditContent}>
-                                    <SelectTrigger className="bg-white/[0.03] border border-white/[0.07] text-white h-11 rounded-xl focus:ring-0 disabled:opacity-40 shadow-inner">
+                                    <SelectTrigger className="bg-foreground/[0.03] border border-foreground/[0.07] text-foreground h-11 rounded-xl focus:ring-0 disabled:opacity-40 shadow-inner">
                                         <div className="flex items-center gap-2 min-w-0">
-                                            <Layers size={13} className="text-white/40 shrink-0" />
+                                            <Layers size={13} className="text-foreground/80 shrink-0" />
                                             <SelectValue placeholder="No Campaign" />
                                         </div>
                                     </SelectTrigger>
-                                    <SelectContent className="bg-[#0d0e17] border border-white/[0.1] text-white z-[200] rounded-xl shadow-2xl">
-                                        <SelectItem value="none" className="text-white/40 italic py-2.5">No Campaign</SelectItem>
+                                    <SelectContent className="bg-[#0d0e17] border border-foreground/[0.1] text-foreground z-[200] rounded-xl shadow-2xl">
+                                        <SelectItem value="none" className="text-foreground/80 italic py-2.5">No Campaign</SelectItem>
                                         {campaigns.map(c => (
                                             <SelectItem key={c.id} value={c.id} className="py-2.5 focus:bg-blue-500/10 focus:text-blue-200">{c.name}</SelectItem>
                                         ))}
@@ -420,9 +432,9 @@ export function EditTaskDialog({ open, onOpenChange, task, onUpdate }: EditTaskD
 
                     {/* Section 3: Governance */}
                     <div className="space-y-6">
-                        <div className="flex items-center gap-2 pb-2 border-b border-white/5">
+                        <div className="flex items-center gap-2 pb-2 border-b border-foreground/5">
                             <div className="w-1.5 h-1.5 rounded-full bg-emerald-500/50" />
-                            <span className="text-[10px] font-bold uppercase tracking-widest text-white/30">Governance</span>
+                            <span className="text-[10px] font-bold uppercase tracking-widest text-foreground/70">Governance</span>
                         </div>
 
                         {/* Priority Toggle Buttons */}
@@ -440,7 +452,7 @@ export function EditTaskDialog({ open, onOpenChange, task, onUpdate }: EditTaskD
                                             "disabled:opacity-40 disabled:cursor-not-allowed",
                                             priority === opt.value
                                                 ? opt.activeClass + " shadow-lg"
-                                                : "bg-white/[0.02] border-white/[0.06] text-white/30 hover:bg-white/[0.05] hover:text-white/50"
+                                                : "bg-foreground/[0.02] border-foreground/[0.06] text-foreground/70 hover:bg-foreground/[0.05] hover:text-foreground/70"
                                         )}
                                     >
                                         {opt.label}
@@ -466,7 +478,7 @@ export function EditTaskDialog({ open, onOpenChange, task, onUpdate }: EditTaskD
                                                 "disabled:opacity-40 disabled:cursor-not-allowed",
                                                 status === opt.value
                                                     ? opt.activeClass + " shadow-lg"
-                                                    : "bg-white/[0.02] border-white/[0.06] text-white/30 hover:bg-white/[0.05] hover:text-white/50"
+                                                    : "bg-foreground/[0.02] border-foreground/[0.06] text-foreground/70 hover:bg-foreground/[0.05] hover:text-foreground/70"
                                             )}
                                         >
                                             <Icon size={14} />
@@ -514,11 +526,11 @@ export function EditTaskDialog({ open, onOpenChange, task, onUpdate }: EditTaskD
                     </div>
 
                     {/* Attachments / Deliverables */}
-                    <div className="pt-7 border-t border-white/[0.06] space-y-4">
+                    <div className="pt-7 border-t border-foreground/[0.06] space-y-4">
                         <div className="flex items-center justify-between">
                             <div className="flex items-center gap-2">
                                 <div className="w-1.5 h-1.5 rounded-full bg-purple-500/50" />
-                                <span className="text-[10px] font-bold uppercase tracking-widest text-white/30">Attachments & Deliverables</span>
+                                <span className="text-[10px] font-bold uppercase tracking-widest text-foreground/70">Attachments & Deliverables</span>
                             </div>
                             <button
                                 type="button"
@@ -529,7 +541,7 @@ export function EditTaskDialog({ open, onOpenChange, task, onUpdate }: EditTaskD
                                 Upload File
                             </button>
                         </div>
-                        <div className="bg-white/[0.01] border border-white/[0.06] rounded-2xl p-5 min-h-[100px] max-h-[300px] overflow-y-auto custom-scrollbar shadow-inner">
+                        <div className="bg-foreground/[0.01] border border-foreground/[0.06] rounded-2xl p-5 min-h-[100px] max-h-[300px] overflow-y-auto custom-scrollbar shadow-inner">
                             <AttachmentSection
                                 task={fullTask}
                                 onUpdate={() => {
@@ -565,13 +577,13 @@ export function EditTaskDialog({ open, onOpenChange, task, onUpdate }: EditTaskD
                     </AnimatePresence>
 
                     {/* Footer Actions */}
-                    <div className="flex justify-end gap-3 pt-5 border-t border-white/[0.06]">
+                    <div className="flex justify-end gap-3 pt-5 border-t border-foreground/[0.06]">
                         <Button
                             type="button"
                             variant="ghost"
                             onClick={() => onOpenChange(false)}
                             disabled={isSubmitting}
-                            className="text-white/40 hover:text-white hover:bg-white/[0.05] rounded-xl h-12 px-6 text-xs font-bold uppercase tracking-widest transition-all"
+                            className="text-foreground/80 hover:text-foreground hover:bg-foreground/[0.05] rounded-xl h-12 px-6 text-xs font-bold uppercase tracking-widest transition-all"
                         >
                             {canSave ? "Discard" : "Close"}
                         </Button>
@@ -579,7 +591,7 @@ export function EditTaskDialog({ open, onOpenChange, task, onUpdate }: EditTaskD
                             <Button
                                 type="submit"
                                 disabled={isSubmitting}
-                                className="bg-blue-600 hover:bg-blue-500 text-white rounded-xl h-12 px-10 text-xs font-bold uppercase tracking-widest shadow-xl shadow-blue-600/20 transition-all active:scale-95"
+                                className="bg-blue-600 hover:bg-blue-500 text-foreground rounded-xl h-12 px-10 text-xs font-bold uppercase tracking-widest shadow-xl shadow-blue-600/20 transition-all active:scale-95"
                             >
                                 {isSubmitting ? (
                                     <Loader2 className="h-4 w-4 animate-spin" />

@@ -99,14 +99,14 @@ export const InviteUserModal: React.FC<InviteUserModalProps> = ({ isOpen, onClos
                 initial={{ opacity: 0, scale: 0.95, y: 20 }}
                 animate={{ opacity: 1, scale: 1, y: 0 }}
                 exit={{ opacity: 0, scale: 0.95, y: 20 }}
-                className="relative w-full max-w-lg bg-[#0B0E14]/90 backdrop-blur-xl border border-white/10 rounded-2xl shadow-2xl overflow-hidden"
+                className="relative w-full max-w-lg bg-[#0B0E14]/90 backdrop-blur-xl border border-foreground/10 rounded-2xl shadow-2xl overflow-hidden"
             >
-                <div className="p-6 border-b border-white/5 flex items-center justify-between">
+                <div className="p-6 border-b border-foreground/5 flex items-center justify-between">
                     <div>
-                        <h2 className="text-xl font-bold text-white">Invite New User</h2>
-                        <p className="text-sm text-white/50">Grant access to multiple departments</p>
+                        <h2 className="text-xl font-bold text-foreground">Invite New User</h2>
+                        <p className="text-sm text-foreground/70">Grant access to multiple departments</p>
                     </div>
-                    <button onClick={onClose} className="p-2 hover:bg-white/5 rounded-full text-white/40 hover:text-white transition-colors">
+                    <button onClick={onClose} className="p-2 hover:bg-foreground/5 rounded-full text-foreground/80 hover:text-foreground transition-colors">
                         <X size={20} />
                     </button>
                 </div>
@@ -117,21 +117,21 @@ export const InviteUserModal: React.FC<InviteUserModalProps> = ({ isOpen, onClos
                             <Check className="text-emerald-400" size={32} />
                         </div>
                         <div>
-                            <h3 className="text-lg font-bold text-white">Invitation Ready</h3>
-                            <p className="text-sm text-white/50 mt-1">Copy this link and send it to {email}</p>
+                            <h3 className="text-lg font-bold text-foreground">Invitation Ready</h3>
+                            <p className="text-sm text-foreground/70 mt-1">Copy this link and send it to {email}</p>
                         </div>
-                        <div className="bg-black/40 border border-white/10 rounded-xl p-3 flex items-center gap-3">
+                        <div className="bg-black/40 border border-foreground/10 rounded-xl p-3 flex items-center gap-3">
                             <code className="text-xs text-blue-400 truncate flex-1 text-left">{inviteLink}</code>
                             <button 
                                 onClick={copyLink}
-                                className="px-3 py-1.5 bg-blue-500 hover:bg-blue-600 text-white text-[10px] font-bold uppercase rounded-lg transition-colors"
+                                className="px-3 py-1.5 bg-blue-500 hover:bg-blue-600 text-foreground text-[10px] font-bold uppercase rounded-lg transition-colors"
                             >
                                 Copy
                             </button>
                         </div>
                         <button 
                             onClick={() => { onSuccess(); onClose(); }}
-                            className="w-full py-3 bg-white/5 hover:bg-white/10 text-white font-bold rounded-xl transition-colors"
+                            className="w-full py-3 bg-foreground/5 hover:bg-foreground/10 text-foreground font-bold rounded-xl transition-colors"
                         >
                             Done
                         </button>
@@ -139,26 +139,26 @@ export const InviteUserModal: React.FC<InviteUserModalProps> = ({ isOpen, onClos
                 ) : (
                     <form onSubmit={handleSubmit} className="p-6 space-y-6">
                         <div className="space-y-2">
-                            <label className="text-[10px] font-bold uppercase tracking-widest text-white/40 ml-1">Recipient Email</label>
+                            <label className="text-[10px] font-bold uppercase tracking-widest text-foreground/80 ml-1">Recipient Email</label>
                             <div className="relative">
-                                <Mail className="absolute left-4 top-1/2 -translate-y-1/2 text-white/20" size={18} />
+                                <Mail className="absolute left-4 top-1/2 -translate-y-1/2 text-foreground/80" size={18} />
                                 <input
                                     type="email"
                                     value={email}
                                     onChange={(e) => setEmail(e.target.value)}
                                     placeholder="anas@thaiba.com"
-                                    className="w-full bg-white/[0.03] border border-white/10 rounded-xl py-3 pl-12 pr-4 text-white focus:outline-none focus:border-blue-500/50 transition-colors"
+                                    className="w-full bg-foreground/[0.03] border border-foreground/10 rounded-xl py-3 pl-12 pr-4 text-foreground focus:outline-none focus:border-blue-500/50 transition-colors"
                                     required
                                 />
                             </div>
                         </div>
 
                         <div className="space-y-4">
-                            <label className="text-[10px] font-bold uppercase tracking-widest text-white/40 ml-1">Department Access</label>
+                            <label className="text-[10px] font-bold uppercase tracking-widest text-foreground/80 ml-1">Department Access</label>
                             <div className="max-h-[300px] overflow-y-auto space-y-2 pr-2 custom-scrollbar">
                                 {fetchingWorkspaces ? (
                                     <div className="flex items-center justify-center py-8">
-                                        <Loader2 className="animate-spin text-white/20" size={24} />
+                                        <Loader2 className="animate-spin text-foreground/80" size={24} />
                                     </div>
                                 ) : (
                                     workspaces.map(inst => (
@@ -168,18 +168,18 @@ export const InviteUserModal: React.FC<InviteUserModalProps> = ({ isOpen, onClos
                                                 "flex items-center justify-between p-3 rounded-xl border transition-all cursor-pointer",
                                                 selectedWorkspaces[inst.id] 
                                                     ? "bg-blue-500/10 border-blue-500/30 ring-1 ring-blue-500/20" 
-                                                    : "bg-white/[0.02] border-white/5 hover:border-white/10"
+                                                    : "bg-foreground/[0.02] border-foreground/5 hover:border-foreground/10"
                                             )}
                                             onClick={() => toggleWorkspace(inst.id)}
                                         >
                                             <div className="flex items-center gap-3">
                                                 <div className={cn(
                                                     "w-5 h-5 rounded border flex items-center justify-center transition-colors",
-                                                    selectedWorkspaces[inst.id] ? "bg-blue-500 border-blue-500" : "border-white/20"
+                                                    selectedWorkspaces[inst.id] ? "bg-blue-500 border-blue-500" : "border-foreground/20"
                                                 )}>
-                                                    {selectedWorkspaces[inst.id] && <Check size={12} className="text-white" />}
+                                                    {selectedWorkspaces[inst.id] && <Check size={12} className="text-foreground" />}
                                                 </div>
-                                                <span className="text-sm font-medium text-white">{inst.name}</span>
+                                                <span className="text-sm font-medium text-foreground">{inst.name}</span>
                                             </div>
 
                                             {selectedWorkspaces[inst.id] && (
@@ -190,7 +190,7 @@ export const InviteUserModal: React.FC<InviteUserModalProps> = ({ isOpen, onClos
                                                         updateRole(inst.id, e.target.value);
                                                     }}
                                                     onClick={(e) => e.stopPropagation()}
-                                                    className="bg-[#0B0E14] border border-white/10 rounded-lg px-2 py-1 text-[10px] font-bold uppercase text-blue-400 outline-none"
+                                                    className="bg-[#0B0E14] border border-foreground/10 rounded-lg px-2 py-1 text-[10px] font-bold uppercase text-blue-400 outline-none"
                                                 >
                                                     <option value="admin">Admin</option>
                                                     <option value="manager">Manager</option>
@@ -207,7 +207,7 @@ export const InviteUserModal: React.FC<InviteUserModalProps> = ({ isOpen, onClos
                         <button
                             type="submit"
                             disabled={loading || fetchingWorkspaces}
-                            className="w-full py-4 bg-blue-500 hover:bg-blue-600 disabled:opacity-50 text-white font-bold rounded-xl shadow-lg shadow-blue-500/20 flex items-center justify-center gap-2 transition-all transform active:scale-[0.98]"
+                            className="w-full py-4 bg-blue-500 hover:bg-blue-600 disabled:opacity-50 text-foreground font-bold rounded-xl shadow-lg shadow-blue-500/20 flex items-center justify-center gap-2 transition-all transform active:scale-[0.98]"
                         >
                             {loading ? (
                                 <Loader2 className="animate-spin" size={20} />

@@ -63,8 +63,8 @@ export const AvatarUploadModal: React.FC<AvatarUploadModalProps> = ({
 
     return (
         <Dialog open={isOpen} onOpenChange={onClose}>
-            <DialogContent className="sm:max-w-xl bg-[#0f172a] border border-white/10 text-white shadow-2xl p-0 overflow-hidden">
-                <div className="p-6 border-b border-white/5 bg-slate-900/50">
+            <DialogContent className="sm:max-w-xl bg-[var(--glass-liquid-bg)] border border-foreground/10 text-foreground shadow-2xl p-0 overflow-hidden">
+                <div className="p-6 border-b border-foreground/5 bg-slate-900/50">
                     <DialogHeader>
                         <DialogTitle className="flex items-center gap-3 text-lg font-semibold tracking-tight">
                             <div className="p-2 bg-blue-500/10 rounded-lg">
@@ -76,7 +76,7 @@ export const AvatarUploadModal: React.FC<AvatarUploadModalProps> = ({
                 </div>
 
                 <div className="p-6 space-y-8">
-                    <div className="relative w-full h-80 bg-black/40 rounded-2xl overflow-hidden border border-white/5 shadow-inner">
+                    <div className="relative w-full h-80 bg-black/40 rounded-2xl overflow-hidden border border-foreground/5 shadow-inner">
                         {imageSrc && (
                             <Cropper
                                 image={imageSrc}
@@ -147,23 +147,23 @@ export const AvatarUploadModal: React.FC<AvatarUploadModalProps> = ({
                     </div>
                 </div>
 
-                <div className="p-6 bg-slate-900/50 border-t border-white/5 flex gap-3">
+                <div className="p-6 bg-slate-900/50 border-t border-foreground/5 flex gap-3">
                     <Button
                         variant="ghost"
                         onClick={onClose}
-                        className="flex-1 border-white/5 text-slate-400 hover:text-white hover:bg-white/5 font-medium transition-all"
+                        className="flex-1 border-foreground/5 text-slate-400 hover:text-foreground hover:bg-foreground/5 font-medium transition-all"
                         disabled={isUploading}
                     >
                         Cancel
                     </Button>
                     <Button
                         onClick={handleSave}
-                        className="flex-1 bg-blue-600 hover:bg-blue-500 text-white font-semibold shadow-lg shadow-blue-600/20 transition-all active:scale-[0.98]"
+                        className="flex-1 bg-blue-600 hover:bg-blue-500 text-foreground font-semibold shadow-lg shadow-blue-600/20 transition-all active:scale-[0.98]"
                         disabled={isUploading || !imageSrc}
                     >
                         {isUploading ? (
                             <div className="flex items-center gap-2">
-                                <div className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin" />
+                                <div className="w-4 h-4 border-2 border-foreground/30 border-t-white rounded-full animate-spin" />
                                 Applying...
                             </div>
                         ) : (

@@ -93,7 +93,7 @@ export default function ReportsPerformanceClient() {
         const avgLeadTimeDays = (avgLeadTimeHours / 24).toFixed(1);
 
         // Leaderboard & Department mapping
-        const entityMap = new Map<string, { name: string; completed: number; total: number; tasks: Task[]; isInternal: boolean }>();
+        const entityMap = new Map<string, { id: string; name: string; completed: number; total: number; tasks: Task[]; isInternal: boolean }>();
         const workloadMap: Record<string, number> = {};
 
         // Helper to resolve entity info from task
@@ -155,11 +155,14 @@ export default function ReportsPerformanceClient() {
         // Productivity Metrics - Tracked by Requesting Entity
         const { id: entityId, name: entityName, isInternal } = getEntityInfo(task);
         
-        if (!entityMap.has(entityId)) {
-            entityMap.set(entityId, { name: entityName, completed: 0, total: 0, tasks: [], isInternal });
+        // Group by normalized name to prevent duplicate entries caused by ID mismatches (e.g. UUID in on_behalf_of vs integer ID in tables)
+        const groupKey = entityName.trim().toLowerCase();
+        
+        if (!entityMap.has(groupKey)) {
+            entityMap.set(groupKey, { id: entityId, name: entityName, completed: 0, total: 0, tasks: [], isInternal });
         }
         
-        const stats = entityMap.get(entityId)!;
+        const stats = entityMap.get(groupKey)!;
         stats.total++;
         
         if (task.status === 'done') {
@@ -197,6 +200,7 @@ export default function ReportsPerformanceClient() {
         // Prepare Turnaround Data (from entityMap)
         const depts = Array.from(entityMap.values())
             .map(e => ({ 
+                id: e.id,
                 name: e.name, 
                 count: e.total,
                 completed: e.completed
@@ -225,16 +229,16 @@ export default function ReportsPerformanceClient() {
                     <div className="space-y-1">
                         <button
                             onClick={() => router.back()}
-                            className="flex items-center gap-2 text-white/40 hover:text-white transition-colors text-xs font-bold uppercase tracking-widest mb-4 group"
+                            className="flex items-center gap-2 text-foreground/80 hover:text-foreground transition-colors text-xs font-bold uppercase tracking-widest mb-4 group"
                         >
                             <ArrowLeft size={14} className="group-hover:-translate-x-1 transition-transform" /> Back to reports
                         </button>
-                        <h1 className="text-4xl font-bold text-white tracking-tight">Performance Metrics</h1>
-                        <p className="text-white/40 font-medium">Team throughput, turnaround times, and institutional efficiency.</p>
+                        <h1 className="text-4xl font-bold text-foreground tracking-tight">Performance Metrics</h1>
+                        <p className="text-foreground/80 font-medium">Team throughput, turnaround times, and institutional efficiency.</p>
                     </div>
 
                     {/* Month Select */}
-                    <div className="flex bg-white/5 p-1 rounded-xl border border-white/5 backdrop-blur-md">
+                    <div className="flex bg-foreground/5 p-1 rounded-xl border border-foreground/5 backdrop-blur-md">
                         {availableMonths.map((date, idx) => (
                             <button
                                 key={idx}
@@ -242,8 +246,8 @@ export default function ReportsPerformanceClient() {
                                 className={cn(
                                     "px-4 py-2 rounded-lg text-[10px] font-bold uppercase tracking-widest transition-all",
                                     isSameMonth(date, selectedMonth)
-                                        ? "bg-white/10 text-white shadow-xl ring-1 ring-white/10"
-                                        : "text-white/30 hover:text-white/60 hover:bg-white/[0.02]"
+                                        ? "bg-foreground/10 text-foreground shadow-xl ring-1 ring-foreground/10"
+                                        : "text-foreground/70 hover:text-foreground/80 hover:bg-foreground/[0.02]"
                                 )}
                             >
                                 {format(date, 'MMMM')}
@@ -255,63 +259,63 @@ export default function ReportsPerformanceClient() {
                 {/* Content Sections */}
                 {loading ? (
                     <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
-                        {[1, 2, 3, 4].map(i => <Skeleton key={i} className="h-32 w-full bg-white/5 rounded-2xl" />)}
+                        {[1, 2, 3, 4].map(i => <Skeleton key={i} className="h-32 w-full bg-foreground/5 rounded-2xl" />)}
                     </div>
                 ) : (
                     <MediaTeamOverview performance={performanceData} />
                 )}
 
                 <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-                    {/* Leaderboard Card */}
-                    <div className="lg:col-span-2 dashboard-card-primary p-8">
+                    {/* Leaderboard - Left Side */}
+                    <div className="lg:col-span-2 glass-card rounded-[24px] p-8">
                         <div className="flex items-center justify-between mb-8">
                             <div className="flex items-center gap-3">
                                 <div className="p-2 bg-amber-500/10 rounded-xl">
                                     <Trophy size={18} className="text-amber-500" />
                                 </div>
                                 <div className="space-y-0.5">
-                                    <h2 className="text-xl font-bold text-white tracking-tight">Top Departments</h2>
-                                    <p className="text-[10px] text-white/20 font-medium">Requesting entities with highest completions.</p>
+                                    <h2 className="text-xl font-bold text-foreground tracking-tight">Top Departments</h2>
+                                    <p className="text-[10px] text-foreground/80 font-medium">Requesting entities with highest completions.</p>
                                 </div>
                             </div>
                             <div className="flex flex-col items-end">
-                                <span className="text-[10px] font-black text-white/20 uppercase tracking-[0.2em]">Throughput</span>
-                                <span className="text-[8px] text-white/10 font-bold uppercase mt-0.5">By completions</span>
+                                <span className="text-[10px] font-black text-foreground/80 uppercase tracking-[0.2em]">Throughput</span>
+                                <span className="text-[8px] text-foreground/70 font-bold uppercase mt-0.5">By completions</span>
                             </div>
                         </div>
 
                         <div className="space-y-6">
                             {loading ? (
-                                [1, 2, 3].map(i => <Skeleton key={i} className="h-16 w-full bg-white/5 rounded-xl" />)
+                                [1, 2, 3].map(i => <Skeleton key={i} className="h-16 w-full bg-foreground/5 rounded-xl" />)
                             ) : performanceData.leaderboard.length === 0 ? (
                                 <div className="py-20 text-center space-y-2">
-                                    <div className="text-white/20 font-medium text-sm">No external requesting entities found.</div>
-                                    <div className="text-[10px] text-white/10 uppercase tracking-widest">Tasks without 'On Behalf Of' are categorized as internal.</div>
+                                    <div className="text-foreground/80 font-medium text-sm">No external requesting entities found.</div>
+                                    <div className="text-[10px] text-foreground/70 uppercase tracking-widest">Tasks without 'On Behalf Of' are categorized as internal.</div>
                                 </div>
                             ) : (
                                 performanceData.leaderboard.map((user, idx) => (
-                                    <div key={user.name} className="flex items-center gap-4 group">
-                                        <div className="w-8 text-xs font-bold text-white/20">#{idx + 1}</div>
+                                    <div key={user.id} className="flex items-center gap-4 group">
+                                        <div className="w-8 text-xs font-bold text-foreground/80">#{idx + 1}</div>
                                         <div className="flex-1">
                                             <div className="flex justify-between items-end mb-2">
                                                 <div className="flex items-center gap-2">
-                                                    <span className="text-sm font-bold text-white group-hover:text-amber-400 transition-colors">{user.name}</span>
+                                                    <span className="text-sm font-bold text-foreground group-hover:text-amber-400 transition-colors">{user.name}</span>
                                                     {user.isInternal ? (
-                                                        <span className="text-[8px] font-bold text-white/20 bg-white/5 px-1.5 py-0.5 rounded uppercase tracking-wider">Internal</span>
+                                                        <span className="text-[8px] font-bold text-foreground/80 bg-foreground/5 px-1.5 py-0.5 rounded uppercase tracking-wider">Internal</span>
                                                     ) : (
                                                         <span className="text-[8px] font-bold text-amber-500/40 bg-amber-500/5 px-1.5 py-0.5 rounded border border-amber-500/10 uppercase tracking-wider">Requested</span>
                                                     )}
                                                 </div>
-                                                <span className="text-xs font-bold text-white tracking-tight">{user.total}</span>
+                                                <span className="text-xs font-bold text-foreground tracking-tight">{user.total}</span>
                                             </div>
-                                            <div className="h-2 w-full bg-white/5 rounded-full overflow-hidden">
+                                            <div className="h-2 w-full bg-foreground/5 rounded-full overflow-hidden">
                                                 <div 
                                                     className="h-full bg-premium-gradient rounded-full transition-all duration-1000"
                                                     style={{ width: `${(user.total / (performanceData.leaderboard[0].total || 1)) * 100}%` }}
                                                 />
                                             </div>
                                             <div className="flex justify-between mt-1">
-                                                <span className="text-[8px] text-white/20 font-bold uppercase tracking-wider">Total Requests</span>
+                                                <span className="text-[8px] text-foreground/80 font-bold uppercase tracking-wider">Total Requests</span>
                                                 <span className="text-[8px] text-emerald-400/60 font-bold uppercase tracking-wider">{user.completed} Done</span>
                                             </div>
                                         </div>
@@ -321,13 +325,13 @@ export default function ReportsPerformanceClient() {
                         </div>
                     </div>
 
-                    {/* Efficiency / Target Card */}
-                    <div className="dashboard-card-primary p-8 flex flex-col h-full">
+                    {/* Lead Time & Velocity - Right Side */}
+                    <div className="glass-card rounded-[24px] p-8 flex flex-col h-full">
                         <div className="flex items-center gap-3 mb-8">
                             <div className="p-2 bg-indigo-500/10 rounded-xl">
                                 <Target size={18} className="text-indigo-500" />
                             </div>
-                            <h2 className="text-xl font-bold text-white">Efficiency Target</h2>
+                            <h2 className="text-xl font-bold text-foreground">Efficiency Target</h2>
                         </div>
 
                         <div className="flex-1 flex flex-col items-center justify-center space-y-6">
@@ -341,7 +345,7 @@ export default function ReportsPerformanceClient() {
                                         stroke="currentColor"
                                         strokeWidth="8"
                                         fill="transparent"
-                                        className="text-white/5"
+                                        className="text-foreground/5"
                                     />
                                     <circle
                                         cx="80"
@@ -357,11 +361,11 @@ export default function ReportsPerformanceClient() {
                                     />
                                 </svg>
                                 <div className="absolute inset-0 flex flex-col items-center justify-center">
-                                    <span className="text-4xl font-bold text-white tracking-tighter">{performanceData.throughput}%</span>
-                                    <span className="text-[10px] font-bold text-white/20 uppercase tracking-widest">On Track</span>
+                                    <span className="text-4xl font-bold text-foreground tracking-tighter">{performanceData.throughput}%</span>
+                                    <span className="text-[10px] font-bold text-foreground/80 uppercase tracking-widest">On Track</span>
                                 </div>
                             </div>
-                            <p className="text-xs text-white/40 text-center leading-relaxed">
+                            <p className="text-xs text-foreground/80 text-center leading-relaxed">
                                 Current throughput is based on {performanceData.totalCompleted} completed items out of {filteredTasks.length} total institutional requests.
                             </p>
                         </div>
@@ -369,37 +373,37 @@ export default function ReportsPerformanceClient() {
                 </div>
 
                 {/* Turnaround Table */}
-                <div className="dashboard-card-secondary border border-white/5 rounded-3xl overflow-hidden shadow-[0_32px_64px_-16px_rgba(0,0,0,0.5)]">
-                    <div className="px-8 py-8 border-b border-white/5 flex items-center justify-between bg-white/[0.01]">
+                <div className="dashboard-card-secondary border border-foreground/5 rounded-3xl overflow-hidden shadow-[0_32px_64px_-16px_rgba(0,0,0,0.5)]">
+                    <div className="px-8 py-8 border-b border-foreground/5 flex items-center justify-between bg-foreground/[0.01]">
                         <div className="space-y-1">
-                            <h2 className="text-2xl font-bold text-white tracking-tight">Institutional Distribution</h2>
-                            <p className="text-xs text-white/30 font-medium">Detailed breakdown of task volume and throughput share.</p>
+                            <h2 className="text-2xl font-bold text-foreground tracking-tight">Institutional Distribution</h2>
+                            <p className="text-xs text-foreground/70 font-medium">Detailed breakdown of task volume and throughput share.</p>
                         </div>
-                        <div className="px-4 py-2 bg-white/5 rounded-xl border border-white/5">
-                            <span className="text-[10px] font-black text-white/40 uppercase tracking-[0.2em]">Lead Time Analysis</span>
+                        <div className="px-4 py-2 bg-foreground/5 rounded-xl border border-foreground/5">
+                            <span className="text-[10px] font-black text-foreground/80 uppercase tracking-[0.2em]">Lead Time Analysis</span>
                         </div>
                     </div>
                     <div className="overflow-x-auto">
                         <table className="w-full text-left">
                             <thead>
-                                <tr className="bg-white/[0.02]">
-                                    <th className="px-8 py-6 text-[10px] font-black text-white/20 uppercase tracking-[0.2em]">Institution / Department</th>
-                                    <th className="px-8 py-6 text-[10px] font-black text-white/20 uppercase tracking-[0.2em]">Requests</th>
-                                    <th className="px-8 py-6 text-[10px] font-black text-white/20 uppercase tracking-[0.2em] text-right">Throughput Share</th>
+                                <tr className="bg-foreground/[0.02]">
+                                    <th className="px-8 py-6 text-[10px] font-black text-foreground/80 uppercase tracking-[0.2em]">Institution / Department</th>
+                                    <th className="px-8 py-6 text-[10px] font-black text-foreground/80 uppercase tracking-[0.2em]">Requests</th>
+                                    <th className="px-8 py-6 text-[10px] font-black text-foreground/80 uppercase tracking-[0.2em] text-right">Throughput Share</th>
                                 </tr>
                             </thead>
                             <tbody className="divide-y divide-white/5">
                                 {loading ? (
-                                    [1, 2, 3].map(i => <tr key={i}><td colSpan={3} className="px-8 py-4"><Skeleton className="h-4 w-full bg-white/5" /></td></tr>)
+                                    [1, 2, 3].map(i => <tr key={i}><td colSpan={3} className="px-8 py-4"><Skeleton className="h-4 w-full bg-foreground/5" /></td></tr>)
                                 ) : performanceData.depts.length === 0 ? (
-                                    <tr><td colSpan={3} className="px-8 py-10 text-center text-white/20 text-xs">No department data found.</td></tr>
+                                    <tr><td colSpan={3} className="px-8 py-10 text-center text-foreground/80 text-xs">No department data found.</td></tr>
                                 ) : (
                                     performanceData.depts.map((dept) => (
-                                        <tr key={dept.name} className="hover:bg-white/[0.01] transition-colors">
+                                        <tr key={dept.id} className="hover:bg-foreground/[0.01] transition-colors">
                                             <td className="px-8 py-4">
-                                                <span className="text-sm font-bold text-white">{dept.name === 'undefined' ? 'General' : dept.name}</span>
+                                                <span className="text-sm font-bold text-foreground">{dept.name === 'undefined' ? 'General' : dept.name}</span>
                                             </td>
-                                            <td className="px-8 py-4 text-xs font-medium text-white/40">
+                                            <td className="px-8 py-4 text-xs font-medium text-foreground/80">
                                                 {dept.count} Requests
                                             </td>
                                             <td className="px-8 py-4 text-right">

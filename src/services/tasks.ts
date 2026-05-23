@@ -95,9 +95,9 @@ export const TaskService = {
                         role,
                         profiles(id, full_name, avatar_url)
                     ),
-                    creator:profiles!tasks_created_by_fkey(id, full_name, avatar_url, role, institution_id, department_id, institutions(name), departments(name)),
-                    updater:profiles!tasks_updated_by_fkey(id, full_name, avatar_url, role, institution_id, department_id, institutions(name), departments(name)),
-                    assigner:profiles!tasks_assigned_by_fkey(id, full_name, avatar_url, role, institution_id, department_id, institutions(name), departments(name))
+                    creator:profiles!tasks_created_by_fkey(id, full_name, avatar_url, role, institution_id, department_id),
+                    updater:profiles!tasks_updated_by_fkey(id, full_name, avatar_url, role, institution_id, department_id),
+                    assigner:profiles!tasks_assigned_by_fkey(id, full_name, avatar_url, role, institution_id, department_id)
                 `)
                 .eq('deleted', false);
             
@@ -143,9 +143,9 @@ export const TaskService = {
                         role,
                         profiles(id, full_name, avatar_url)
                     ),
-                    creator:profiles!tasks_created_by_fkey(id, full_name, avatar_url, role, institution_id, department_id, institutions(name)),
-                    updater:profiles!tasks_updated_by_fkey(id, full_name, avatar_url, role, institution_id, department_id, institutions(name)),
-                    assigner:profiles!tasks_assigned_by_fkey(id, full_name, avatar_url, role, institution_id, department_id, institutions(name))
+                    creator:profiles!tasks_created_by_fkey(id, full_name, avatar_url, role, institution_id, department_id),
+                    updater:profiles!tasks_updated_by_fkey(id, full_name, avatar_url, role, institution_id, department_id),
+                    assigner:profiles!tasks_assigned_by_fkey(id, full_name, avatar_url, role, institution_id, department_id)
                 `)
                 .eq('id', id)
                 .single();
@@ -190,6 +190,25 @@ export const TaskService = {
         let taskInfo = null;
         if (updates.status === 'done') {
             taskInfo = await this.getTaskById(id);
+            
+            if (user) {
+                let obo = updates.on_behalf_of || taskInfo?.on_behalf_of || {};
+                if (typeof obo === 'string') {
+                    try {
+                        obo = JSON.parse(obo);
+                    } catch (e) {}
+                }
+                if (obo && typeof obo === 'object') {
+                    obo = { ...obo, completed_by_name: user.full_name || 'Media Team' };
+                } else {
+                    obo = { completed_by_name: user.full_name || 'Media Team' };
+                }
+                updates.on_behalf_of = obo;
+            }
+
+            if (!updates.completed_at && !updates.completedAt) {
+                updates.completed_at = new Date().toISOString();
+            }
         }
 
         const success = await CanonicalDataService.patchFields('tasks', id, updates, 'task', baseUpdatedAt, baseVersion);
@@ -235,19 +254,6 @@ export const TaskService = {
      * Legacy compatibility method with event bus integration
      */
     async updateTaskStatus(taskId: string, status: string): Promise<any> {
-        const { eventBus } = await import('@/system/events/eventSystem');
-        const { getCurrentUser } = await import('@/lib/auth/verifyUser');
-        const user = await getCurrentUser();
-
-        const success = await CanonicalDataService.patchFields('tasks', taskId, { status }, 'task');
-        if (!success) throw new Error('Failed to update task status');
-
-        // Emit events
-        eventBus.emit('task.updated', { taskId, changes: { status } });
-        if (status === 'done') {
-            eventBus.emit('task.completed', { taskId, userId: user?.id || 'unknown' });
-        }
-
-        return { id: taskId, status };
+        return this.updateTask(taskId, { status: status as any });
     }
 };

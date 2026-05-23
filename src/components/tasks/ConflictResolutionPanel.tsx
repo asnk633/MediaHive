@@ -52,23 +52,23 @@ export const ConflictResolutionPanel: React.FC<ConflictResolutionPanelProps> = (
                 animate={{ x: 0 }}
                 exit={{ x: '100%' }}
                 transition={{ type: 'spring', stiffness: 300, damping: 30 }}
-                className="fixed inset-y-0 right-0 w-full max-w-md bg-[#0B0E14] border-l border-white/10 shadow-2xl z-[101] flex flex-col"
+                className="fixed inset-y-0 right-0 w-full max-w-md bg-[#0B0E14] border-l border-foreground/10 shadow-2xl z-[101] flex flex-col"
             >
                 {/* Header */}
-                <div className="flex items-center justify-between px-6 py-5 border-b border-white/10 shrink-0 bg-surface/30">
+                <div className="flex items-center justify-between px-6 py-5 border-b border-foreground/10 shrink-0 bg-surface/30">
                     <div className="flex items-center gap-3">
                         <div className="w-10 h-10 rounded-xl bg-amber-500/10 border border-amber-500/20 flex items-center justify-center">
                             <AlertCircle className="w-5 h-5 text-amber-500" />
                         </div>
                         <div>
-                            <h2 className="text-lg font-bold text-white">Needs Review</h2>
-                            <p className="text-xs text-white/40">These changes conflicted with others.</p>
+                            <h2 className="text-lg font-bold text-foreground">Needs Review</h2>
+                            <p className="text-xs text-foreground/80">These changes conflicted with others.</p>
                         </div>
                     </div>
                     <button
                         onClick={onClose}
                         autoFocus
-                        className="p-2 text-white/40 hover:text-white rounded-lg hover:bg-white/5 transition-colors focus:ring-2 focus:ring-blue-500 outline-none"
+                        className="p-2 text-foreground/80 hover:text-foreground rounded-lg hover:bg-foreground/5 transition-colors focus:ring-2 focus:ring-blue-500 outline-none"
                     >
                         <X size={20} />
                     </button>
@@ -83,9 +83,9 @@ export const ConflictResolutionPanel: React.FC<ConflictResolutionPanelProps> = (
                         const taskName = tasks.find(t => t.id === taskId)?.title || 'Unknown Task';
 
                         return (
-                            <div key={taskId} className="bg-white/[0.02] border border-white/5 rounded-2xl overflow-hidden">
-                                <div className="px-4 py-3 bg-white/[0.02] border-b border-white/5 shadow-sm">
-                                    <h3 className="text-sm font-bold text-white truncate">{taskName}</h3>
+                            <div key={taskId} className="bg-foreground/[0.02] border border-foreground/5 rounded-2xl overflow-hidden">
+                                <div className="px-4 py-3 bg-foreground/[0.02] border-b border-foreground/5 shadow-sm">
+                                    <h3 className="text-sm font-bold text-foreground truncate">{taskName}</h3>
                                 </div>
 
                                 <div className="p-4 space-y-5">
@@ -103,8 +103,8 @@ export const ConflictResolutionPanel: React.FC<ConflictResolutionPanelProps> = (
                                         return (
                                             <div key={conflict.field} className="space-y-4">
                                                 <div className="flex items-center justify-between">
-                                                    <span className="text-xs font-bold uppercase tracking-widest text-white/50">{conflict.field}</span>
-                                                    <span className="text-[10px] text-white/50 italic">
+                                                    <span className="text-xs font-bold uppercase tracking-widest text-foreground/70">{conflict.field}</span>
+                                                    <span className="text-[10px] text-foreground/70 italic">
                                                         by {conflict.remoteActor} {conflict.remoteActorRole ? `(${conflict.remoteActorRole})` : ''}
                                                     </span>
                                                 </div>
@@ -120,12 +120,12 @@ export const ConflictResolutionPanel: React.FC<ConflictResolutionPanelProps> = (
                                                         onMouseLeave={() => setPreviewSource(null)}
                                                     >
                                                         {isLocalSuggested && (
-                                                            <div className="absolute -top-2.5 left-1/2 -translate-x-1/2 bg-blue-500 text-white text-[9px] font-bold uppercase tracking-widest px-2 py-0.5 rounded-full shadow-lg whitespace-nowrap">
+                                                            <div className="absolute -top-2.5 left-1/2 -translate-x-1/2 bg-blue-500 text-foreground text-[9px] font-bold uppercase tracking-widest px-2 py-0.5 rounded-full shadow-lg whitespace-nowrap">
                                                                 Suggested
                                                             </div>
                                                         )}
                                                         <div className="text-[10px] uppercase font-bold tracking-widest text-blue-400 mt-1">Your Change</div>
-                                                        <div className={`text-sm font-medium break-all flex-1 ${disableLocal ? 'text-white/50' : 'text-white'}`}>
+                                                        <div className={`text-sm font-medium break-all flex-1 ${disableLocal ? 'text-foreground/70' : 'text-foreground'}`}>
                                                             {JSON.stringify(conflict.localValue).replace(/"/g, '')}
                                                         </div>
                                                         <button
@@ -133,22 +133,22 @@ export const ConflictResolutionPanel: React.FC<ConflictResolutionPanelProps> = (
                                                             disabled={disableLocal}
                                                             className={`mt-2 w-full flex items-center justify-center gap-1.5 py-1.5 px-3 rounded-lg transition-colors text-xs font-bold
                                                                 ${disableLocal
-                                                                    ? 'bg-white/5 text-white/20 cursor-not-allowed'
-                                                                    : 'bg-blue-500/20 hover:bg-blue-500 text-blue-400 hover:text-white'}`}
+                                                                    ? 'bg-foreground/5 text-foreground/80 cursor-not-allowed'
+                                                                    : 'bg-blue-500/20 hover:bg-blue-500 text-blue-400 hover:text-foreground'}`}
                                                         >
                                                             <ShieldCheck size={14} /> Keep Mine
                                                         </button>
                                                     </div>
 
                                                     <div className="flex items-center justify-center">
-                                                        <ArrowRight className="text-white/20 w-4 h-4" />
+                                                        <ArrowRight className="text-foreground/80 w-4 h-4" />
                                                     </div>
 
                                                     {/* Server Value */}
                                                     <div
                                                         className={`flex flex-col gap-2 p-3 rounded-xl border relative transition-colors ${isServerSuggested ? 'bg-amber-500/10 border-amber-500/30 ring-1 ring-amber-500/20' :
                                                                 previewSource === 'server' ? 'bg-amber-500/5 border-amber-500/20' :
-                                                                    'bg-white/[0.03] border-white/10'
+                                                                    'bg-foreground/[0.03] border-foreground/10'
                                                             }`}
                                                         onMouseEnter={() => setPreviewSource('server')}
                                                         onMouseLeave={() => setPreviewSource(null)}
@@ -158,8 +158,8 @@ export const ConflictResolutionPanel: React.FC<ConflictResolutionPanelProps> = (
                                                                 Suggested
                                                             </div>
                                                         )}
-                                                        <div className="text-[10px] uppercase font-bold tracking-widest text-white/50 mt-1">Server Change</div>
-                                                        <div className={`text-sm font-medium break-all flex-1 ${disableServer ? 'text-white/50' : 'text-white'}`}>
+                                                        <div className="text-[10px] uppercase font-bold tracking-widest text-foreground/70 mt-1">Server Change</div>
+                                                        <div className={`text-sm font-medium break-all flex-1 ${disableServer ? 'text-foreground/70' : 'text-foreground'}`}>
                                                             {JSON.stringify(conflict.serverValue).replace(/"/g, '')}
                                                         </div>
                                                         <button
@@ -167,8 +167,8 @@ export const ConflictResolutionPanel: React.FC<ConflictResolutionPanelProps> = (
                                                             disabled={disableServer}
                                                             className={`mt-2 w-full flex items-center justify-center gap-1.5 py-1.5 px-3 rounded-lg transition-colors text-xs font-bold
                                                                 ${disableServer
-                                                                    ? 'bg-white/5 text-white/20 cursor-not-allowed'
-                                                                    : 'bg-white/5 hover:bg-white/10 border border-white/5 text-white/60 hover:text-white'}`}
+                                                                    ? 'bg-foreground/5 text-foreground/80 cursor-not-allowed'
+                                                                    : 'bg-foreground/5 hover:bg-foreground/10 border border-foreground/5 text-foreground/80 hover:text-foreground'}`}
                                                         >
                                                             <DownloadCloud size={14} /> Use Theirs
                                                         </button>
@@ -176,7 +176,7 @@ export const ConflictResolutionPanel: React.FC<ConflictResolutionPanelProps> = (
                                                 </div>
 
                                                 {(guidance || previewSource) && (
-                                                    <div className="flex items-start gap-2 text-[11px] text-white/50 bg-white/5 p-2 rounded-lg mt-2 transition-all duration-300">
+                                                    <div className="flex items-start gap-2 text-[11px] text-foreground/70 bg-foreground/5 p-2 rounded-lg mt-2 transition-all duration-300">
                                                         <AlertCircle size={14} className={`shrink-0 mt-0.5 ${previewSource ? 'text-blue-400 animate-pulse' : 'text-blue-400/70'}`} />
                                                         <div className="flex-1">
                                                             {previewSource ? (
@@ -199,8 +199,8 @@ export const ConflictResolutionPanel: React.FC<ConflictResolutionPanelProps> = (
                 </div>
 
                 {/* Footer */}
-                <div className="p-6 border-t border-white/10 bg-surface/30 shrink-0">
-                    <p className="text-[11px] text-center text-white/40 leading-relaxed">
+                <div className="p-6 border-t border-foreground/10 bg-surface/30 shrink-0">
+                    <p className="text-[11px] text-center text-foreground/80 leading-relaxed">
                         Conflicts occur when another user changes the same field while you are editing it. Your changes are safe until you resolve the conflict.
                     </p>
                 </div>

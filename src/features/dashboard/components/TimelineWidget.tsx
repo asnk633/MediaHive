@@ -68,7 +68,7 @@ export const TimelineWidget = () => {
 
                 {/* Content */}
                 <div className="flex-1 min-w-0">
-                    <p className={`text-sm font-semibold truncate ${isPast ? 'text-text-muted line-through' : 'text-white'}`}>
+                    <p className={`text-sm font-semibold truncate ${isPast ? 'text-text-muted line-through' : 'text-foreground'}`}>
                         {isTask ? item.data.title : item.data.title}
                     </p>
                     <div className="flex items-center gap-3 mt-1">

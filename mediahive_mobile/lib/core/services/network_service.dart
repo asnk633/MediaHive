@@ -9,23 +9,25 @@ class NetworkService {
   final Connectivity _connectivity = Connectivity();
   final _controller = StreamController<NetworkStatus>.broadcast();
 
-  Stream<NetworkStatus> get statusStream => _controller.stream;
-
   NetworkService() {
     _connectivity.onConnectivityChanged.listen(_updateStatus);
   }
 
   void _updateStatus(ConnectivityResult result) {
-    if (result == ConnectivityResult.none) {
-      _controller.add(NetworkStatus.offline);
-    } else {
-      _controller.add(NetworkStatus.online);
-    }
+    _controller.add(result == ConnectivityResult.none ? NetworkStatus.offline : NetworkStatus.online);
   }
 
   Future<bool> get isConnected async {
     final result = await _connectivity.checkConnectivity();
     return result != ConnectivityResult.none;
+  }
+
+  Stream<NetworkStatus> get statusStream async* {
+    // Yield current status first
+    final result = await _connectivity.checkConnectivity();
+    yield result == ConnectivityResult.none ? NetworkStatus.offline : NetworkStatus.online;
+    // Then yield from controller
+    yield* _controller.stream;
   }
 
   void dispose() {

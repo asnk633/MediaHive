@@ -50,7 +50,7 @@ export function OverdueAlertsWidget() {
                 <div className="p-2 bg-red-500/20 rounded-lg animate-pulse">
                     <AlertTriangle size={24} />
                 </div>
-                <h2 className="text-xl font-bold text-white">Attention: Overdue Equipment</h2>
+                <h2 className="text-xl font-bold text-foreground">Attention: Overdue Equipment</h2>
             </div>
 
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
@@ -59,7 +59,7 @@ export function OverdueAlertsWidget() {
                     return (
                         <div key={req.id} className="bg-surface rounded-[18px] p-4 transition-colors shadow-sm hover:shadow-md">
                             <div className="flex justify-between items-start mb-2">
-                                <h3 className="font-semibold text-white">{req.assignedItemName || req.itemCategory}</h3>
+                                <h3 className="font-semibold text-foreground">{req.assignedItemName || req.itemCategory}</h3>
                                 <span className="text-xs font-bold text-red-400 bg-red-500/10 px-2 py-1 rounded-full">
                                     {daysOverdue} days overdue
                                 </span>
@@ -68,7 +68,7 @@ export function OverdueAlertsWidget() {
                             <div className="space-y-2 text-sm text-slate-400">
                                 <div className="flex items-center gap-2">
                                     <User size={14} />
-                                    <span className="text-white">{req.requester.name}</span>
+                                    <span className="text-foreground">{req.requester.name}</span>
                                 </div>
                                 <div className="flex items-center gap-2">
                                     <Calendar size={14} />

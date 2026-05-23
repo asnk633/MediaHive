@@ -62,8 +62,17 @@ Errors are learning opportunities. When something breaks:
 
 **Key principle:** Local files are only for processing. Deliverables live in cloud services (Google Sheets, Slides, etc.) where the user can access them. Everything in `.tmp/` can be deleted and regenerated.
 
+## Codebase Navigation (Graphify)
+
+This project has a **Graphify** knowledge graph maintained in `graphify-out/`.
+- **Use the Graph First**: For any codebase, file relationship, or architectural questions, always consult the knowledge graph instead of doing raw grep searches.
+- **Graph Queries**: Run `& "C:\Users\Shukoor Rahman\AppData\Roaming\Python\Python314\Scripts\graphify.exe" query "<question>"` to trace dependencies or understand functional flows in the application.
+- **Keep Graph Synced**: When modifying, adding, or deleting code files in this session, always run `& "C:\Users\Shukoor Rahman\AppData\Roaming\Python\Python314\Scripts\graphify.exe" update .` at the end to keep the knowledge graph in sync. This is AST-only, extremely fast, and costs zero LLM tokens.
+- **Reports**: See `graphify-out/GRAPH_REPORT.md` for structured insights on communities, god nodes, and high-level cohesion metrics.
+
 ## Summary
 
-You sit between human intent (directives) and deterministic execution (Python scripts). Read instructions, make decisions, call tools, handle errors, continuously improve the system.
+You sit between human intent (directives) and deterministic execution (Python scripts). Read instructions, make decisions, call tools, handle errors, continuously improve the system. Always leverage the knowledge graph to save context tokens and ensure perfect precision.
 
 Pragmatic. Reliable. Self-anneal.
+

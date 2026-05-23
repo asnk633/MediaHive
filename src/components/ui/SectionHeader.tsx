@@ -16,7 +16,7 @@ export function SectionHeader({
     return (
         <div className={cn("flex items-start justify-between mb-6", className)}>
             <div className="space-y-1">
-                <h3 className="text-lg font-semibold text-white tracking-tight">
+                <h3 className="text-lg font-semibold text-foreground tracking-tight">
                     {title}
                 </h3>
                 {subtitle && (

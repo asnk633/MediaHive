@@ -60,7 +60,7 @@ export function DropdownSelector({
   return (
     <div className={cn("space-y-2", className)}>
       {label && (
-        <label className="text-[10px] font-black uppercase tracking-widest text-white/50 px-1">
+        <label className="text-[10px] font-black uppercase tracking-widest text-foreground/70 px-1">
           {label}
         </label>
       )}
@@ -71,8 +71,8 @@ export function DropdownSelector({
             disabled={disabled}
             className={cn(
               "w-full justify-between text-left font-bold text-sm h-11 px-4 rounded-[14px]",
-              "bg-white/[0.03] border border-white/10 text-white/90",
-              "hover:bg-white/[0.08] hover:border-white/20 hover:shadow-[0_0_20px_rgba(255,255,255,0.05)]",
+              "bg-foreground/[0.03] border border-foreground/10 text-foreground/90",
+              "hover:bg-foreground/[0.08] hover:border-foreground/20 hover:shadow-[0_0_20px_rgba(255,255,255,0.05)]",
               "transition-all duration-300 group",
               "disabled:opacity-50 disabled:cursor-not-allowed",
               triggerClassName
@@ -100,13 +100,13 @@ export function DropdownSelector({
           sideOffset={8}
           style={{ width: "var(--radix-popover-trigger-width)" }}
         >
-          <div className="bg-[#0b1220]/95 backdrop-blur-2xl border border-white/10 rounded-[20px] shadow-2xl overflow-hidden animate-in fade-in zoom-in-95 duration-200">
+          <div className="bg-[var(--glass-liquid-bg)] backdrop-blur-2xl border border-border rounded-[20px] shadow-2xl overflow-hidden animate-in fade-in zoom-in-95 duration-200">
             {searchable && (
-              <div className="p-2 border-b border-white/5">
+              <div className="p-2 border-b border-foreground/5">
                 <div className="relative">
-                  <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-3.5 w-3.5 text-white/30" />
+                  <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-3.5 w-3.5 text-foreground/70" />
                   <input
-                    className="w-full bg-white/5 border-none focus:ring-0 text-sm h-9 pl-9 pr-4 rounded-lg text-white/90 placeholder:text-white/20 font-medium"
+                    className="w-full bg-foreground/5 border-none focus:ring-0 text-sm h-9 pl-9 pr-4 rounded-lg text-foreground/90 placeholder:text-foreground/80 font-medium"
                     placeholder="Search..."
                     value={searchQuery}
                     onChange={(e) => setSearchQuery(e.target.value)}
@@ -129,15 +129,15 @@ export function DropdownSelector({
                         "w-full px-3 py-2.5 rounded-xl flex items-center justify-between transition-all text-left",
                         "text-sm font-bold",
                         value === option.id
-                          ? "bg-blue-600 text-white shadow-lg shadow-blue-600/20"
-                          : "text-white/40 hover:bg-white/5 hover:text-white"
+                          ? "bg-blue-600 text-foreground shadow-lg shadow-blue-600/20"
+                          : "text-foreground/70 hover:bg-foreground/5 hover:text-foreground"
                       )}
                     >
                       <div className="flex items-center gap-3 truncate">
                         {option.icon && (
                            <span className={cn(
                              "h-4 w-4 shrink-0",
-                             value === option.id ? "text-white" : "text-white/50"
+                             value === option.id ? "text-foreground" : "text-foreground/70"
                            )}>
                               {option.icon}
                            </span>
@@ -148,7 +148,7 @@ export function DropdownSelector({
                     </button>
                   ))
                 ) : (
-                  <div className="py-6 text-center text-xs font-bold text-white/20 uppercase tracking-widest">
+                  <div className="py-6 text-center text-xs font-bold text-foreground/80 uppercase tracking-widest">
                     No results found
                   </div>
                 )}

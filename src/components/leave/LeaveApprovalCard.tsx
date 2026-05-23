@@ -46,7 +46,7 @@ export const LeaveApprovalCard: React.FC<LeaveApprovalCardProps> = ({
     }, [request]);
 
     return (
-        <div className="bg-white/5 border border-[#ffffff1a] rounded-2xl p-6 hover:bg-white/[0.07] transition-all">
+        <div className="bg-foreground/5 border border-[#ffffff1a] rounded-2xl p-6 hover:bg-foreground/[0.07] transition-all">
             {/* User Info */}
             <div className="flex items-start gap-4 mb-4">
                 <SafeAvatar
@@ -56,16 +56,16 @@ export const LeaveApprovalCard: React.FC<LeaveApprovalCardProps> = ({
                     className="flex-shrink-0"
                 />
                 <div className="flex-1">
-                    <h3 className="text-lg font-bold text-white mb-0.5">
+                    <h3 className="text-lg font-bold text-foreground mb-0.5">
                         {request.requestedBy.name}
                     </h3>
-                    <p className="text-sm text-white/50">
+                    <p className="text-sm text-foreground/70">
                         {request.requestedBy.department}
                     </p>
                 </div>
                 <div className="text-right">
-                    <div className="text-xs text-white/40 mb-1">Requested</div>
-                    <div className="text-sm text-white/60 font-medium">
+                    <div className="text-xs text-foreground/80 mb-1">Requested</div>
+                    <div className="text-sm text-foreground/80 font-medium">
                         {format(getSafeDate(request.requestedAt), 'MMM dd, yyyy')}
                     </div>
                 </div>
@@ -94,35 +94,35 @@ export const LeaveApprovalCard: React.FC<LeaveApprovalCardProps> = ({
                     )}
                 </div>
 
-                <div className="flex items-center gap-2 text-white/70">
+                <div className="flex items-center gap-2 text-foreground/70">
                     <Calendar size={16} className="text-blue-400" />
                     <span className="text-sm">
                         {format(getSafeDate(request.startDate), 'MMM dd, yyyy')} - {format(getSafeDate(request.endDate), 'MMM dd, yyyy')}
                     </span>
-                    <span className="text-white/50">•</span>
-                    <span className="text-sm font-medium text-white/80">
+                    <span className="text-foreground/70">•</span>
+                    <span className="text-sm font-medium text-foreground/80">
                         {request.totalDays} day{request.totalDays > 1 ? 's' : ''}
                     </span>
                 </div>
 
-                <div className="flex items-start gap-2 p-3 bg-white/5 rounded-xl">
-                    <MessageSquare size={14} className="text-white/40 mt-0.5 flex-shrink-0" />
-                    <p className="text-sm text-white/70 italic">"{request.reason}"</p>
+                <div className="flex items-start gap-2 p-3 bg-foreground/5 rounded-xl">
+                    <MessageSquare size={14} className="text-foreground/80 mt-0.5 flex-shrink-0" />
+                    <p className="text-sm text-foreground/70 italic">"{request.reason}"</p>
                 </div>
             </div>
 
             {/* Actions */}
-            <div className="flex gap-3 pt-4 border-t border-white/5">
+            <div className="flex gap-3 pt-4 border-t border-foreground/5">
                 <button
                     onClick={() => onApprove(request.id)}
-                    className="flex-1 flex items-center justify-center gap-2 px-4 py-3 bg-emerald-600 hover:bg-emerald-500 text-white font-bold text-sm rounded-xl transition-all active:scale-95"
+                    className="flex-1 flex items-center justify-center gap-2 px-4 py-3 bg-emerald-600 hover:bg-emerald-500 text-foreground font-bold text-sm rounded-xl transition-all active:scale-95"
                 >
                     <Check size={16} />
                     Approve
                 </button>
                 <button
                     onClick={() => onReject(request.id)}
-                    className="flex-1 flex items-center justify-center gap-2 px-4 py-3 bg-red-600 hover:bg-red-500 text-white font-bold text-sm rounded-xl transition-all active:scale-95"
+                    className="flex-1 flex items-center justify-center gap-2 px-4 py-3 bg-red-600 hover:bg-red-500 text-foreground font-bold text-sm rounded-xl transition-all active:scale-95"
                 >
                     <X size={16} />
                     Reject

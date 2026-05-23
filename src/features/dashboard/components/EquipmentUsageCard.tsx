@@ -14,13 +14,13 @@ interface EquipmentUsageCardProps {
 
 export const EquipmentUsageCard: React.FC<EquipmentUsageCardProps> = ({ equipment, isLoading }) => {
     return (
-        <ReactiveCard className="p-5 bg-white/[0.03] border border-white/[0.06] rounded-[16px] transition-all h-full flex flex-col">
+        <ReactiveCard className="p-5 bg-foreground/[0.03] border border-foreground/[0.06] rounded-[16px] transition-all h-full flex flex-col">
             <div className="flex items-center justify-between mb-4">
                 <div className="flex items-center gap-2">
                     <div className="p-2 rounded-lg bg-blue-500/10 text-blue-400">
                         <Briefcase size={18} />
                     </div>
-                    <h3 className="text-sm font-medium text-white/85 pl-[6px]">Equipment Usage</h3>
+                    <h3 className="text-sm font-medium text-foreground/85 pl-[6px]">Equipment Usage</h3>
                 </div>
             </div>
 
@@ -28,16 +28,16 @@ export const EquipmentUsageCard: React.FC<EquipmentUsageCardProps> = ({ equipmen
                 {isLoading ? (
                     Array(3).fill(0).map((_, i) => (
                         <div key={i} className="flex gap-4 items-center">
-                            <Skeleton className="h-10 w-10 rounded-lg bg-white/10" />
+                            <Skeleton className="h-10 w-10 rounded-lg bg-foreground/10" />
                             <div className="space-y-2 flex-1">
-                                <Skeleton className="h-4 w-1/3 bg-white/10" />
-                                <Skeleton className="h-3 w-1/2 bg-white/5" />
+                                <Skeleton className="h-4 w-1/3 bg-foreground/10" />
+                                <Skeleton className="h-3 w-1/2 bg-foreground/5" />
                             </div>
                         </div>
                     ))
                 ) : equipment.length > 0 ? (
                     equipment.map((item, idx) => (
-                        <div key={`${item.id}-${idx}`} className="flex items-center gap-4 p-2 rounded-[18px] hover:bg-white/[0.01] transition-colors">
+                        <div key={`${item.id}-${idx}`} className="flex items-center gap-4 p-2 rounded-[18px] hover:bg-foreground/[0.01] transition-colors">
                             <div className="w-10 h-10 rounded-lg bg-blue-500/10 border border-blue-500/20 flex items-center justify-center p-1 overflow-hidden">
                                 {item.inventory?.image_url ? (
                                     <img 
@@ -51,11 +51,11 @@ export const EquipmentUsageCard: React.FC<EquipmentUsageCardProps> = ({ equipmen
                             </div>
                             
                             <div className="min-w-0 flex-1">
-                                <h4 className="text-sm font-semibold text-white/90 truncate">
+                                <h4 className="text-sm font-semibold text-foreground/90 truncate">
                                     {item.inventory?.name || 'Equipment'}
                                 </h4>
                                 <div className="flex items-center justify-between mt-1">
-                                    <span className="text-[10px] text-white/40 truncate pr-2">
+                                    <span className="text-[10px] text-foreground/80 truncate pr-2">
                                         {item.event_title}
                                     </span>
                                     {(() => {
@@ -77,8 +77,8 @@ export const EquipmentUsageCard: React.FC<EquipmentUsageCardProps> = ({ equipmen
                     ))
                 ) : (
                     <div className="flex flex-col items-center justify-center py-12 text-center">
-                        <Briefcase size={32} className="text-white/5 mb-3" />
-                        <p className="text-xs text-white/50 font-medium">No equipment entries for today.</p>
+                        <Briefcase size={32} className="text-foreground/5 mb-3" />
+                        <p className="text-xs text-foreground/70 font-medium">No equipment entries for today.</p>
                     </div>
                 )}
             </div>

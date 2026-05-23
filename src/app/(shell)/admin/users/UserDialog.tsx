@@ -145,9 +145,9 @@ export function UserDialog({ open, onOpenChange, user, onSave, institutions, dep
  
     return (
         <Dialog open={open} onOpenChange={onOpenChange}>
-            <DialogContent className="bg-slate-950/90 backdrop-blur-xl border-white/10 sm:max-w-[500px]">
+            <DialogContent className="bg-slate-950/90 backdrop-blur-xl border-foreground/10 sm:max-w-[500px]">
                 <DialogHeader>
-                    <DialogTitle className="text-white">
+                    <DialogTitle className="text-foreground">
                         {user ? `Edit User: ${user.name || 'User'}` : 'Invite User'}
                     </DialogTitle>
                     <DialogDescription className="text-slate-400">
@@ -158,10 +158,10 @@ export function UserDialog({ open, onOpenChange, user, onSave, institutions, dep
                 <div className="space-y-6 pt-4">
                     {/* Name Input (Optional for Invite, Editable for User) */}
                     <div className="space-y-2">
-                        <Label className="text-sm font-medium text-white/70">Full Name <span className="text-red-400">*</span></Label>
+                        <Label className="text-sm font-medium text-foreground/70">Full Name <span className="text-red-400">*</span></Label>
                         <Input
                             placeholder="John Doe"
-                            className="bg-slate-800 border-white/10 text-white"
+                            className="bg-slate-800 border-foreground/10 text-foreground"
                             id="user-name"
                             defaultValue={user?.official_name || user?.name || ''}
                         />
@@ -170,10 +170,10 @@ export function UserDialog({ open, onOpenChange, user, onSave, institutions, dep
                     {/* Email Input (Create Mode Only) */}
                     {!user && (
                         <div className="space-y-2">
-                            <Label className="text-sm font-medium text-white/70">Email Address <span className="text-red-400">*</span></Label>
+                            <Label className="text-sm font-medium text-foreground/70">Email Address <span className="text-red-400">*</span></Label>
                             <Input
                                 placeholder="colleague@thaiba.com"
-                                className="bg-slate-800 border-white/10 text-white"
+                                className="bg-slate-800 border-foreground/10 text-foreground"
                                 id="user-email"
                             />
                         </div>
@@ -181,12 +181,12 @@ export function UserDialog({ open, onOpenChange, user, onSave, institutions, dep
  
                     {/* Role Selection */}
                     <div className="space-y-2">
-                        <Label className="text-sm font-medium text-white/70">Role</Label>
+                        <Label className="text-sm font-medium text-foreground/70">Role</Label>
                         <Select value={role} onValueChange={setRole}>
-                            <SelectTrigger className="bg-slate-800 border-white/10 text-white">
+                            <SelectTrigger className="bg-slate-800 border-foreground/10 text-foreground">
                                 <SelectValue />
                             </SelectTrigger>
-                            <SelectContent className="bg-slate-800 border-white/10">
+                            <SelectContent className="bg-slate-800 border-foreground/10">
                                 <SelectItem value="admin">Admin</SelectItem>
                                 <SelectItem value="manager">Manager</SelectItem>
                                 <SelectItem value="team">Team Member</SelectItem>
@@ -197,25 +197,25 @@ export function UserDialog({ open, onOpenChange, user, onSave, institutions, dep
 
                     {/* Affiliation Switch */}
                     <div className="space-y-2">
-                        <Label className="text-sm font-medium text-white/70">Affiliation</Label>
+                        <Label className="text-sm font-medium text-foreground/70">Affiliation</Label>
                         <Tabs
                             value={affiliationType}
                             onValueChange={(v) => setAffiliationType(v as any)}
                             className="w-full"
                         >
-                            <TabsList className="bg-slate-800 border border-white/5 w-full">
+                            <TabsList className="bg-slate-800 border border-foreground/5 w-full">
                                 <TabsTrigger value="institution" className="flex-1">Institution</TabsTrigger>
                                 <TabsTrigger value="department" className="flex-1">Department</TabsTrigger>
                             </TabsList>
 
-                            <div className="mt-4 p-4 bg-slate-800/50 rounded-xl border border-white/5">
+                            <div className="mt-4 p-4 bg-slate-800/50 rounded-xl border border-foreground/5">
                                 <TabsContent value="institution" className="mt-0">
-                                    <Label className="text-xs text-white/50 mb-2 block">Select Institution</Label>
+                                    <Label className="text-xs text-foreground/70 mb-2 block">Select Institution</Label>
                                     <Select value={String(selectedInstitution)} onValueChange={setSelectedInstitution}>
-                                        <SelectTrigger className="bg-white/5 border-white/10 text-white">
+                                        <SelectTrigger className="bg-foreground/5 border-foreground/10 text-foreground">
                                             <SelectValue placeholder="Choose Institution..." />
                                         </SelectTrigger>
-                                        <SelectContent className="bg-slate-950/90 backdrop-blur-xl border-white/10">
+                                        <SelectContent className="bg-slate-950/90 backdrop-blur-xl border-foreground/10">
                                             {institutions.map(inst => (
                                                 <SelectItem key={inst.id} value={String(inst.id)}>
                                                     {inst.name}
@@ -226,12 +226,12 @@ export function UserDialog({ open, onOpenChange, user, onSave, institutions, dep
                                 </TabsContent>
 
                                 <TabsContent value="department" className="mt-0">
-                                    <Label className="text-xs text-white/50 mb-2 block">Select Department</Label>
+                                    <Label className="text-xs text-foreground/70 mb-2 block">Select Department</Label>
                                     <Select value={String(selectedDepartment)} onValueChange={setSelectedDepartment}>
-                                        <SelectTrigger className="bg-white/5 border-white/10 text-white">
+                                        <SelectTrigger className="bg-foreground/5 border-foreground/10 text-foreground">
                                             <SelectValue placeholder="Choose Department..." />
                                         </SelectTrigger>
-                                        <SelectContent className="bg-slate-950/90 backdrop-blur-xl border-white/10">
+                                        <SelectContent className="bg-slate-950/90 backdrop-blur-xl border-foreground/10">
                                             {departments.map(dept => (
                                                 <SelectItem key={dept.id} value={String(dept.id)}>
                                                     {dept.name}
@@ -245,9 +245,9 @@ export function UserDialog({ open, onOpenChange, user, onSave, institutions, dep
                     </div>
 
                     {/* Active Status Switch */}
-                    <div className="flex items-center justify-between p-4 rounded-xl bg-slate-800/50 border border-white/5">
+                    <div className="flex items-center justify-between p-4 rounded-xl bg-slate-800/50 border border-foreground/5">
                         <div className="space-y-0.5">
-                            <Label className="text-sm font-medium text-white/70">Account Status</Label>
+                            <Label className="text-sm font-medium text-foreground/70">Account Status</Label>
                             <div className="text-xs text-slate-400">
                                 {isActive ? 'User can access the system' : 'User access is suspended'}
                             </div>
@@ -266,7 +266,7 @@ export function UserDialog({ open, onOpenChange, user, onSave, institutions, dep
                         <Button
                             onClick={handleSave}
                             disabled={loading}
-                            className="bg-blue-600 hover:bg-blue-500 text-white"
+                            className="bg-blue-600 hover:bg-blue-500 text-foreground"
                         >
                             {loading ? <Loader2 className="w-4 h-4 animate-spin" /> : "Save Changes"}
                         </Button>

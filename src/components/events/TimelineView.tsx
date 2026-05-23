@@ -98,7 +98,7 @@ export function TimelineView({ events, tasks, loading, onCreateEvent, filter }: 
         <div className="space-y-8 relative">
             <AnimatePresence mode="popLayout">
                 {/* Continuous Vertical Line Background */}
-                <div className="absolute left-[24px] top-0 bottom-0 w-px bg-white/10 z-0" />
+                <div className="absolute left-[24px] top-0 bottom-0 w-px bg-foreground/10 z-0" />
 
                 {groupedItems.length === 0 ? (
                     <motion.div
@@ -106,12 +106,12 @@ export function TimelineView({ events, tasks, loading, onCreateEvent, filter }: 
                         initial={{ opacity: 0, scale: 0.9 }}
                         animate={{ opacity: 1, scale: 1 }}
                         exit={{ opacity: 0, scale: 0.9 }}
-                        className="flex flex-col items-center justify-center py-20 text-center text-white/40 relative z-10"
+                        className="flex flex-col items-center justify-center py-20 text-center text-foreground/80 relative z-10"
                     >
-                        <div className="h-20 w-20 rounded-full bg-white/5 flex items-center justify-center mb-6 border border-white/10">
-                            <CalendarIcon className={cn("h-10 w-10 opacity-40 text-white/40", loading && "animate-pulse")} />
+                        <div className="h-20 w-20 rounded-full bg-foreground/5 flex items-center justify-center mb-6 border border-foreground/10">
+                            <CalendarIcon className={cn("h-10 w-10 opacity-40 text-foreground/80", loading && "animate-pulse")} />
                         </div>
-                        <h3 className="text-lg font-medium text-white mb-2">
+                        <h3 className="text-lg font-medium text-foreground mb-2">
                             {loading ? "Syncing your schedule..." : "No upcoming items"}
                         </h3>
                         <p className="max-w-xs mx-auto mb-6 text-sm">
@@ -133,21 +133,21 @@ export function TimelineView({ events, tasks, loading, onCreateEvent, filter }: 
                             className="relative z-10"
                         >
                             {/* Sticky Date Header */}
-                            <div className="sticky top-0 z-20 mb-8 flex items-center gap-6 bg-[#0a1426]/80 py-4 backdrop-blur-md -mx-4 px-6 border-b border-white/5">
+                            <div className="sticky top-0 z-20 mb-8 flex items-center gap-6 bg-background/80 py-4 backdrop-blur-md -mx-4 px-6 border-b border-foreground/5">
                                 <div className="event-date-badge shadow-lg">
                                     <span className="text-[10px] font-bold uppercase tracking-widest text-blue-400 mb-0.5">{format(group.date, "MMM")}</span>
-                                    <span className="text-xl font-bold text-white leading-none">{format(group.date, "d")}</span>
+                                    <span className="text-xl font-bold text-foreground leading-none">{format(group.date, "d")}</span>
                                 </div>
                                 <div className="flex flex-col">
-                                    <h2 className={cn("text-xl font-bold tracking-tight", isToday(group.date) ? "text-blue-400" : "text-white")}>
+                                    <h2 className={cn("text-xl font-bold tracking-tight", isToday(group.date) ? "text-blue-400" : "text-foreground")}>
                                         {isToday(group.date) ? "Today" : isTomorrow(group.date) ? "Tomorrow" : format(group.date, "EEEE")}
                                     </h2>
-                                    <span className="text-xs font-medium text-white/40 uppercase tracking-widest">
+                                    <span className="text-xs font-medium text-foreground/80 uppercase tracking-widest">
                                         {format(group.date, "MMMM yyyy")}
                                     </span>
                                 </div>
                                 <div className="ml-auto flex items-center gap-2">
-                                    <span className="bg-white/5 border border-white/10 rounded-full px-3 py-1 text-[10px] font-bold text-white/50 uppercase tracking-wider">
+                                    <span className="bg-foreground/5 border border-foreground/10 rounded-full px-3 py-1 text-[10px] font-bold text-foreground/70 uppercase tracking-wider">
                                         {group.items.length} Items
                                     </span>
                                 </div>
@@ -171,23 +171,23 @@ export function TimelineView({ events, tasks, loading, onCreateEvent, filter }: 
                                             <div className="space-y-4">
                                                 <EventCard 
                                                     event={item.data} 
-                                                    className="event-surface !p-4 border-white/5 hover:bg-blue-500/5 transition-all duration-300" 
+                                                    className="event-surface !p-4 border-foreground/5 hover:bg-blue-500/5 transition-all duration-300" 
                                                 />
                                                 
                                                 {/* Nested Tasks */}
                                                 {item.tasks && item.tasks.length > 0 && (
                                                     <div className="ml-8 space-y-3 relative">
                                                         {/* Vertical line connector */}
-                                                        <div className="absolute left-[-20px] top-[-10px] bottom-6 w-px bg-white/10" />
+                                                        <div className="absolute left-[-20px] top-[-10px] bottom-6 w-px bg-foreground/10" />
                                                         
                                                         {item.tasks.map((task) => (
                                                             <div key={task.id} className="relative flex items-center">
                                                                 {/* Horizontal connector line */}
-                                                                <div className="absolute left-[-20px] top-1/2 w-4 h-[1px] bg-white/10" />
+                                                                <div className="absolute left-[-20px] top-1/2 w-4 h-[1px] bg-foreground/10" />
                                                                 
                                                                 <div className={cn(
-                                                                    "flex-1 flex items-center justify-between gap-4 bg-white/[0.03] p-3 rounded-xl border border-white/5 hover:bg-white/[0.06] transition-all group/task",
-                                                                    task.status === 'Done' && "opacity-40"
+                                                                    "flex-1 flex items-center justify-between gap-4 bg-foreground/[0.03] p-3 rounded-xl border border-foreground/5 hover:bg-foreground/[0.06] transition-all group/task",
+                                                                    task.status === 'Done' && "opacity-60"
                                                                 )}>
                                                                     <div className="flex items-center gap-3 min-w-0">
                                                                         <div className={cn(
@@ -196,7 +196,7 @@ export function TimelineView({ events, tasks, loading, onCreateEvent, filter }: 
                                                                         )} />
                                                                         <p className={cn(
                                                                             "text-xs font-medium truncate",
-                                                                            task.status === 'Done' ? "text-white/40 line-through" : "text-white/80"
+                                                                            task.status === 'Done' ? "text-foreground/80 line-through" : "text-foreground/90"
                                                                         )}>
                                                                             {task.title}
                                                                         </p>
@@ -205,7 +205,7 @@ export function TimelineView({ events, tasks, loading, onCreateEvent, filter }: 
                                                                         {task.priority && (
                                                                             <span className={cn(
                                                                                 "text-[8px] font-bold uppercase tracking-widest px-1.5 py-0.5 rounded",
-                                                                                (task.priority === 'urgent' || task.priority === 'high') ? "bg-red-500/10 text-red-400" : "bg-white/5 text-white/40"
+                                                                                 task.priority === 'high' ? "bg-orange-500/10 text-orange-400" : "bg-foreground/5 text-foreground/80"
                                                                             )}>
                                                                                 {task.priority}
                                                                             </span>
@@ -221,23 +221,23 @@ export function TimelineView({ events, tasks, loading, onCreateEvent, filter }: 
                                         ) : (
                                             <div className={cn(
                                                 "event-card-base p-4 flex items-center justify-between group/task",
-                                                item.data.status === 'Done' && "opacity-40"
+                                                item.data.status === 'Done' && "opacity-60"
                                             )}>
                                                 <div className="flex items-center gap-4">
                                                     <div className={cn(
                                                         "w-10 h-10 rounded-lg flex items-center justify-center bg-emerald-500/10 border border-emerald-500/20",
-                                                        item.data.status === 'Done' && "bg-white/5 border-white/10"
+                                                        item.data.status === 'Done' && "bg-foreground/5 border-foreground/10"
                                                     )}>
-                                                        <CheckCircle2 className={cn("h-5 w-5", item.data.status === 'Done' ? "text-white/20" : "text-emerald-500")} />
+                                                        <CheckCircle2 className={cn("h-5 w-5", item.data.status === 'Done' ? "text-foreground/80" : "text-emerald-500")} />
                                                     </div>
                                                     <div>
-                                                        <h3 className={cn("text-sm font-bold", item.data.status === 'Done' ? "text-white/40 line-through" : "text-white")}>
+                                                        <h3 className={cn("text-sm font-bold", item.data.status === 'Done' ? "text-foreground/80 line-through" : "text-foreground")}>
                                                             {item.data.title}
                                                         </h3>
                                                         <div className="flex items-center gap-2 mt-0.5">
                                                             <span className="text-[10px] font-bold uppercase tracking-wider text-emerald-500/70">Task</span>
                                                             {item.data.priority && (
-                                                                <span className="text-[10px] text-white/20 uppercase tracking-tighter">• {item.data.priority}</span>
+                                                                <span className="text-[10px] text-foreground/80 uppercase tracking-tighter">• {item.data.priority}</span>
                                                             )}
                                                         </div>
                                                     </div>

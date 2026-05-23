@@ -1,17 +1,13 @@
-"use client";
-
-import React, { useState } from "react";
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from "@/components/ui/dialog";
+import React, { useState } from 'react';
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, DialogFooter } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
-import { Label } from "@/components/ui/label";
-import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
-import { InventoryItem } from "@/types/inventory";
-import { EquipmentItem } from "@/services/inventory/inventoryContract";
+import { Label } from "@/components/ui/label";
+import { EquipmentItem } from '@/services/inventory/inventoryContract';
 import { inventoryRequestService } from '@/services/inventory/inventoryRequestService';
-import { useAuth } from "@/contexts/AuthContextProvider";
-import { toast } from "sonner";
-import { Loader2 } from "lucide-react";
+import { useAuth } from '@/contexts/AuthContextProvider';
+import { useWorkspace } from '@/system/workspace/WorkspaceProvider';
+import { toast } from 'sonner';
 
 interface InventoryRequestDialogProps {
     item: EquipmentItem | null;
@@ -21,77 +17,93 @@ interface InventoryRequestDialogProps {
 
 export function InventoryRequestDialog({ item, open, onOpenChange }: InventoryRequestDialogProps) {
     const { user } = useAuth();
-    const [purpose, setPurpose] = useState("");
-    const [loading, setLoading] = useState(false);
+    const { currentWorkspaceId } = useWorkspace();
+    const [purpose, setPurpose] = useState('');
+    const [isSubmitting, setIsSubmitting] = useState(false);
 
-    const handleSubmit = async (e: React.FormEvent) => {
-        e.preventDefault();
-        if (!item || !user) return;
-        if (!purpose.trim()) {
-            toast.error("Purpose is required");
+    if (!item || !user) return null;
+
+    const handleSubmit = async () => {
+        if (!purpose) {
+            toast.error("Please provide a purpose for the request");
             return;
         }
 
+        setIsSubmitting(true);
         try {
-            setLoading(true);
+            const isUUID = (str: any) => /^[0-9a-f]{8}-[0-9a-f]{4}-[0-5][0-9a-f]{3}-[089ab][0-9a-f]{3}-[0-9a-f]{12}$/i.test(String(str));
+
+            // Priority: 1. Workspace ID (if it's a UUID), 2. User Profile Institution ID
+            let institutionId: string | null = null;
+            if (currentWorkspaceId && isUUID(currentWorkspaceId)) {
+                institutionId = String(currentWorkspaceId);
+            } else if (user?.institution_id && isUUID(user.institution_id)) {
+                institutionId = String(user.institution_id);
+            }
+
+            if (!institutionId) {
+                throw new Error("No valid institution context found for this request.");
+            }
+
             await inventoryRequestService.create({
                 itemId: item.id,
                 itemName: item.name,
                 requestedBy: user.uid,
-                requestedByRole: 'member',
+                requestedByRole: (user.role || 'member') as any,
                 purpose,
-                institution_id: user.institution_id || '', // Fallback or strict? Rules check this.
+                institution_id: institutionId,
             });
+
             toast.success("Request submitted successfully");
             onOpenChange(false);
-            setPurpose("");
-        } catch (error) {
-            console.error(error);
-            toast.error("Failed to submit request");
+            setPurpose('');
+        } catch (error: any) {
+            console.error("Failed to submit request:", error);
+            toast.error(error.message || "Failed to submit request");
         } finally {
-            setLoading(false);
+            setIsSubmitting(false);
         }
     };
 
-    if (!item) return null;
-
     return (
         <Dialog open={open} onOpenChange={onOpenChange}>
-            <DialogContent className="bg-slate-900 border-[#ffffff1a] text-slate-200">
+            <DialogContent className="bg-slate-900 border-foreground/10 text-foreground sm:max-w-[425px]">
                 <DialogHeader>
-                    <DialogTitle>Request {item.name}</DialogTitle>
+                    <DialogTitle>Request Item</DialogTitle>
+                    <DialogDescription className="text-slate-400">
+                        Requesting {item.name}. Provide a brief reason for your request.
+                    </DialogDescription>
                 </DialogHeader>
-                <form onSubmit={handleSubmit} className="space-y-4">
-                    <div className="p-4 bg-slate-800/50 rounded-lg border border-white/5 space-y-2">
-                        <div className="flex justify-between text-sm">
-                            <span className="text-slate-400">Category</span>
-                            <span className="text-white">{item.category}</span>
-                        </div>
-                        <div className="flex justify-between text-sm">
-                            <span className="text-slate-400">Condition</span>
-                            <span className="capitalize text-white">{item.condition}</span>
-                        </div>
-                    </div>
 
-                    <div className="space-y-2">
-                        <Label>Purpose of use <span className="text-red-400">*</span></Label>
+                <div className="grid gap-4 py-4">
+                    <div className="grid gap-2">
+                        <Label htmlFor="purpose" className="text-slate-200">Purpose / Duration</Label>
                         <Textarea
+                            id="purpose"
+                            placeholder="e.g. For shooting at the new campus event on Friday."
                             value={purpose}
-                            onChange={e => setPurpose(e.target.value)}
-                            placeholder="Describe why you need this item..."
-                            className="bg-slate-950/50 border-white/10"
-                            required
+                            onChange={(e) => setPurpose(e.target.value)}
+                            className="bg-black/20 border-foreground/10 text-foreground min-h-[100px]"
                         />
                     </div>
+                </div>
 
-                    <DialogFooter>
-                        <Button type="button" variant="ghost" onClick={() => onOpenChange(false)}>Cancel</Button>
-                        <Button type="submit" className="bg-blue-600 hover:bg-blue-500 text-white" disabled={loading}>
-                            {loading && <Loader2 className="w-4 h-4 mr-2 animate-spin" />}
-                            Submit Request
-                        </Button>
-                    </DialogFooter>
-                </form>
+                <DialogFooter>
+                    <Button
+                        variant="ghost"
+                        onClick={() => onOpenChange(false)}
+                        className="text-slate-300 hover:text-foreground hover:bg-foreground/5"
+                    >
+                        Cancel
+                    </Button>
+                    <Button
+                        onClick={handleSubmit}
+                        disabled={isSubmitting}
+                        className="bg-blue-600 hover:bg-blue-500 text-foreground"
+                    >
+                        {isSubmitting ? "Submitting..." : "Submit Request"}
+                    </Button>
+                </DialogFooter>
             </DialogContent>
         </Dialog>
     );

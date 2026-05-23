@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'dart:ui';
 
 class DesignTokens {
   // Colors (Premium Dark Theme)
@@ -55,4 +56,58 @@ class DesignTokens {
       spreadRadius: 2,
     ),
   ];
+
+  static List<BoxShadow> glowHoney = [
+    BoxShadow(
+      color: const Color(0xFFFFB300).withOpacity(0.25),
+      blurRadius: 20,
+      spreadRadius: 2,
+    ),
+  ];
+
+  // Glassmorphism
+  static BoxDecoration glassDecoration({
+    double opacity = 0.1,
+    double blur = 10.0,
+    double borderRadius = 16.0,
+    Color? borderColor,
+  }) {
+    return BoxDecoration(
+      color: Colors.white.withOpacity(opacity),
+      borderRadius: BorderRadius.circular(borderRadius),
+      border: Border.all(
+        color: borderColor ?? Colors.white.withOpacity(0.1),
+        width: 1.0,
+      ),
+    );
+  }
+
+  static Widget glassMorphicContainer({
+    required Widget child,
+    double opacity = 0.05,
+    double blur = 15.0,
+    double borderRadius = 20.0,
+    Color? borderColor,
+    EdgeInsetsGeometry? padding,
+    double? width,
+    double? height,
+  }) {
+    return ClipRRect(
+      borderRadius: BorderRadius.circular(borderRadius),
+      child: BackdropFilter(
+        filter: ImageFilter.blur(sigmaX: blur, sigmaY: blur),
+        child: Container(
+          width: width,
+          height: height,
+          padding: padding,
+          decoration: glassDecoration(
+            opacity: opacity,
+            borderRadius: borderRadius,
+            borderColor: borderColor,
+          ),
+          child: child,
+        ),
+      ),
+    );
+  }
 }

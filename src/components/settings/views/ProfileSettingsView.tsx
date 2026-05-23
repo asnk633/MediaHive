@@ -61,19 +61,19 @@ export const ProfileSettingsView = () => {
     return (
         <div className="space-y-8 max-w-2xl">
             <div className="space-y-1">
-                <h3 className="text-lg font-medium text-white">Public Profile</h3>
+                <h3 className="text-lg font-medium text-foreground">Public Profile</h3>
                 <p className="text-sm text-slate-400">
                     This information will be displayed publicly to other team members.
                 </p>
             </div>
 
             {/* Theme Selector */}
-            <div className="space-y-4 pb-6 border-b border-white/5">
+            <div className="space-y-4 pb-6 border-b border-foreground/5">
                 <h4 className="text-sm font-medium text-slate-300">Appearance</h4>
                 <ThemeSelector />
             </div>
 
-            <div className="flex items-center gap-6 pb-6 border-b border-white/5">
+            <div className="flex items-center gap-6 pb-6 border-b border-foreground/5">
                 <input
                     type="file"
                     ref={fileInputRef}
@@ -91,7 +91,7 @@ export const ProfileSettingsView = () => {
                 <div className="space-y-2">
                     <Button
                         variant="outline"
-                        className="border-[#ffffff1a] text-slate-300 hover:text-white hover:bg-white/5"
+                        className="border-[#ffffff1a] text-slate-300 hover:text-foreground hover:bg-foreground/5"
                         onClick={() => fileInputRef.current?.click()}
                     >
                         Change Avatar
@@ -118,7 +118,7 @@ export const ProfileSettingsView = () => {
                     <Input
                         value={name}
                         onChange={(e) => setName(e.target.value)}
-                        className="bg-slate-950/50 border-[#ffffff1a] text-white focus:border-blue-500 transition-colors"
+                        className="bg-slate-950/50 border-[#ffffff1a] text-foreground focus:border-blue-500 transition-colors"
                     />
                     <p className="text-[10px] text-slate-500 uppercase tracking-wider font-bold">Editable Public Identity</p>
                 </div>
@@ -142,11 +142,11 @@ export const ProfileSettingsView = () => {
                 </div>
             </div>
 
-            <div className="pt-4 border-t border-white/5">
+            <div className="pt-4 border-t border-foreground/5">
                 <Button 
                     onClick={handleSave} 
                     disabled={isSaving || name === user?.name}
-                    className="bg-blue-600 hover:bg-blue-500 text-white shadow-lg shadow-blue-900/20 px-8"
+                    className="bg-blue-600 hover:bg-blue-500 text-foreground shadow-lg shadow-blue-900/20 px-8"
                 >
                     {isSaving ? 'Saving...' : 'Save Changes'}
                 </Button>

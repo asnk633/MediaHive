@@ -134,9 +134,9 @@ export function PerformanceHistoryModal({
                 className="max-w-4xl w-full max-h-[90vh] overflow-hidden bg-gradient-to-br from-[#1a2639] to-[#0f172a] border-[#ffffff1a] p-0 gap-0 rounded-2xl shadow-2xl"
             >
                 {/* Header */}
-                <div className="flex items-center justify-between p-6 border-b border-[#ffffff1a] bg-white/5 shrink-0">
+                <div className="flex items-center justify-between p-6 border-b border-[#ffffff1a] bg-foreground/5 shrink-0">
                     <div className="flex items-center gap-4">
-                        <div className="w-12 h-12 rounded-full overflow-hidden bg-white/10 ring-2 ring-white/10">
+                        <div className="w-12 h-12 rounded-full overflow-hidden bg-foreground/10 ring-2 ring-foreground/10">
                             <SafeAvatar
                                 src={avatar_url}
                                 alt={userName}
@@ -145,7 +145,7 @@ export function PerformanceHistoryModal({
                             />
                         </div>
                         <div>
-                            <DialogTitle className="text-xl font-bold text-white flex items-center gap-3">
+                            <DialogTitle className="text-xl font-bold text-foreground flex items-center gap-3">
                                 {userName}
                                 {trend !== 'Insufficient Data' && (
                                     <TrendBadge trend={trend} delta={delta} />
@@ -161,7 +161,7 @@ export function PerformanceHistoryModal({
                     </div>
                     <button
                         onClick={onClose}
-                        className="p-2 rounded-full hover:bg-white/10 transition-colors text-white/50 hover:text-white"
+                        className="p-2 rounded-full hover:bg-foreground/10 transition-colors text-foreground/70 hover:text-foreground"
                         aria-label="Close"
                     >
                         <X size={24} />
@@ -180,13 +180,13 @@ export function PerformanceHistoryModal({
                         </div>
                     ) : history.length < 3 ? (
                         <div className="text-center py-20">
-                            <div className="w-20 h-20 bg-white/5 rounded-full flex items-center justify-center mx-auto mb-6">
-                                <TrendingUp size={40} className="text-white/20" />
+                            <div className="w-20 h-20 bg-foreground/5 rounded-full flex items-center justify-center mx-auto mb-6">
+                                <TrendingUp size={40} className="text-foreground/80" />
                             </div>
-                            <h3 className="text-lg font-semibold text-white mb-2">
+                            <h3 className="text-lg font-semibold text-foreground mb-2">
                                 Not enough historical data yet
                             </h3>
-                            <p className="text-white/40">
+                            <p className="text-foreground/80">
                                 Performance history will appear after 3 months of snapshots
                             </p>
                         </div>
@@ -194,10 +194,10 @@ export function PerformanceHistoryModal({
                         <div className="space-y-8">
                             {/* Chart Section */}
                             <div>
-                                <h3 className="text-xs font-bold text-white/40 uppercase tracking-widest mb-6 px-1">
+                                <h3 className="text-xs font-bold text-foreground/80 uppercase tracking-widest mb-6 px-1">
                                     Performance Trend (Last {history.length} Months)
                                 </h3>
-                                <div className="bg-black/20 rounded-2xl p-4 border border-white/5 shadow-inner">
+                                <div className="bg-black/20 rounded-2xl p-4 border border-foreground/5 shadow-inner">
                                     <PerformanceChart data={history} />
                                 </div>
 
@@ -225,22 +225,22 @@ export function PerformanceHistoryModal({
                                         <div className="p-2 rounded-lg bg-indigo-500/10 text-indigo-400">
                                             <Users size={18} />
                                         </div>
-                                        <h4 className="text-sm font-bold text-white uppercase tracking-wider">Team Context</h4>
+                                        <h4 className="text-sm font-bold text-foreground uppercase tracking-wider">Team Context</h4>
                                     </div>
 
                                     <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
-                                        <div className="bg-white/5 rounded-xl p-5 border border-[#ffffff1a] hover:bg-white/10 transition-colors group">
-                                            <p className="text-[10px] uppercase font-bold text-white/40 mb-2 group-hover:text-white/60 transition-colors">Team Median</p>
-                                            <p className="text-3xl font-bold text-white font-[gill-sans-mt,sans-serif]">{benchmark.teamMedian}</p>
+                                        <div className="bg-foreground/5 rounded-xl p-5 border border-[#ffffff1a] hover:bg-foreground/10 transition-colors group">
+                                            <p className="text-[10px] uppercase font-bold text-foreground/80 mb-2 group-hover:text-foreground/80 transition-colors">Team Median</p>
+                                            <p className="text-3xl font-bold text-foreground font-[gill-sans-mt,sans-serif]">{benchmark.teamMedian}</p>
                                         </div>
 
-                                        <div className="bg-white/5 rounded-xl p-5 border border-[#ffffff1a] hover:bg-white/10 transition-colors group">
-                                            <p className="text-[10px] uppercase font-bold text-white/40 mb-2 group-hover:text-white/60 transition-colors">Your Percentile</p>
-                                            <p className="text-3xl font-bold text-white font-[gill-sans-mt,sans-serif]">{benchmark.percentile}<span className="text-lg text-white/40 ml-1">th</span></p>
+                                        <div className="bg-foreground/5 rounded-xl p-5 border border-[#ffffff1a] hover:bg-foreground/10 transition-colors group">
+                                            <p className="text-[10px] uppercase font-bold text-foreground/80 mb-2 group-hover:text-foreground/80 transition-colors">Your Percentile</p>
+                                            <p className="text-3xl font-bold text-foreground font-[gill-sans-mt,sans-serif]">{benchmark.percentile}<span className="text-lg text-foreground/80 ml-1">th</span></p>
                                         </div>
 
-                                        <div className="bg-white/5 rounded-xl p-5 border border-[#ffffff1a] hover:bg-white/10 transition-colors group">
-                                            <p className="text-[10px] uppercase font-bold text-white/40 mb-2 group-hover:text-white/60 transition-colors">Relative Position</p>
+                                        <div className="bg-foreground/5 rounded-xl p-5 border border-[#ffffff1a] hover:bg-foreground/10 transition-colors group">
+                                            <p className="text-[10px] uppercase font-bold text-foreground/80 mb-2 group-hover:text-foreground/80 transition-colors">Relative Position</p>
                                             <RelativeStatusBadge status={benchmark.relativeStatus} />
                                         </div>
                                     </div>
@@ -253,20 +253,20 @@ export function PerformanceHistoryModal({
                                     <div className="p-2 rounded-lg bg-blue-500/10 text-blue-400">
                                         <Shield size={18} />
                                     </div>
-                                    <h4 className="text-sm font-bold text-white uppercase tracking-wider">Admin Review</h4>
+                                    <h4 className="text-sm font-bold text-foreground uppercase tracking-wider">Admin Review</h4>
                                 </div>
 
-                                <div className="bg-white/5 rounded-2xl border border-[#ffffff1a] p-5 overflow-hidden relative">
+                                <div className="bg-foreground/5 rounded-2xl border border-[#ffffff1a] p-5 overflow-hidden relative">
                                     <div className="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-blue-500 to-indigo-500 opacity-50" />
 
                                     <div className="flex flex-col md:flex-row gap-5">
                                         <div className="flex-1">
-                                            <label className="block text-xs font-bold text-white/40 uppercase tracking-wider mb-2">Observation / Note</label>
+                                            <label className="block text-xs font-bold text-foreground/80 uppercase tracking-wider mb-2">Observation / Note</label>
                                             <textarea
                                                 value={note}
                                                 onChange={(e) => setNote(e.target.value)}
                                                 placeholder="Record your observation or decision..."
-                                                className="w-full bg-black/20 border border-[#ffffff1a] rounded-xl p-4 text-sm text-white focus:outline-none focus:ring-2 focus:ring-blue-500/50 focus:border-transparent min-h-[100px] placeholder:text-white/20 transition-all resize-none"
+                                                className="w-full bg-black/20 border border-[#ffffff1a] rounded-xl p-4 text-sm text-foreground focus:outline-none focus:ring-2 focus:ring-blue-500/50 focus:border-transparent min-h-[100px] placeholder:text-foreground/80 transition-all resize-none"
                                             />
                                         </div>
                                         <div className="w-full md:w-1/3 space-y-4">
@@ -287,7 +287,7 @@ export function PerformanceHistoryModal({
                                             <button
                                                 onClick={handleSaveIntervention}
                                                 disabled={submitting || !note.trim()}
-                                                className="w-full py-3 px-4 bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-500 hover:to-indigo-500 disabled:opacity-50 disabled:cursor-not-allowed text-white rounded-xl text-sm font-bold shadow-lg shadow-blue-500/20 transition-all transform active:scale-95"
+                                                className="w-full py-3 px-4 bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-500 hover:to-indigo-500 disabled:opacity-50 disabled:cursor-not-allowed text-foreground rounded-xl text-sm font-bold shadow-lg shadow-blue-500/20 transition-all transform active:scale-95"
                                             >
                                                 {submitting ? 'Saving...' : 'Save Note'}
                                             </button>
@@ -303,11 +303,11 @@ export function PerformanceHistoryModal({
                                         <div className="p-2 rounded-lg bg-emerald-500/10 text-emerald-400">
                                             <MessageSquare size={18} />
                                         </div>
-                                        <h4 className="text-sm font-bold text-white uppercase tracking-wider">Associate History</h4>
+                                        <h4 className="text-sm font-bold text-foreground uppercase tracking-wider">Associate History</h4>
                                     </div>
                                     <div className="space-y-6 pl-2">
                                         {interventions.map((item) => (
-                                            <div key={item.id} className="relative pl-8 border-l-2 border-white/5 last:border-0 pb-2">
+                                            <div key={item.id} className="relative pl-8 border-l-2 border-foreground/5 last:border-0 pb-2">
                                                 <div className="absolute -left-[5px] top-1.5 w-2.5 h-2.5 rounded-full bg-[#1a2639] border-2 border-indigo-500 ring-4 ring-[#1a2639]" />
                                                 <div className="flex items-center justify-between mb-2">
                                                     <span className="text-xs font-bold text-indigo-300 bg-indigo-500/10 px-2 py-0.5 rounded border border-indigo-500/20">{item.period}</span>
@@ -318,25 +318,25 @@ export function PerformanceHistoryModal({
                                                         {item.riskLevelAtTime} Risk
                                                     </span>
                                                 </div>
-                                                <div className="bg-white/5 rounded-2xl p-4 border border-white/5 hover:border-[#ffffff1a] transition-colors">
-                                                    <div className="flex items-center justify-between mb-3 border-b border-white/5 pb-3">
-                                                        <span className="text-sm font-bold text-white">{item.actionType}</span>
-                                                        <span className="text-[10px] font-medium text-white/40">
+                                                <div className="bg-foreground/5 rounded-2xl p-4 border border-foreground/5 hover:border-[#ffffff1a] transition-colors">
+                                                    <div className="flex items-center justify-between mb-3 border-b border-foreground/5 pb-3">
+                                                        <span className="text-sm font-bold text-foreground">{item.actionType}</span>
+                                                        <span className="text-[10px] font-medium text-foreground/80">
                                                             {new Date(item.created_at).toLocaleDateString()}
                                                         </span>
                                                     </div>
-                                                    <p className="text-sm text-white/70 leading-relaxed">{item.note}</p>
-                                                    <div className="mt-4 flex items-center gap-2 pt-3 border-t border-white/5">
-                                                        <div className="w-5 h-5 rounded-full overflow-hidden bg-white/10 ring-1 ring-white/10">
+                                                    <p className="text-sm text-foreground/70 leading-relaxed">{item.note}</p>
+                                                    <div className="mt-4 flex items-center gap-2 pt-3 border-t border-foreground/5">
+                                                        <div className="w-5 h-5 rounded-full overflow-hidden bg-foreground/10 ring-1 ring-foreground/10">
                                                             {item.adminAvatar ? (
                                                                 <img src={item.adminAvatar} alt={item.adminName} className="w-full h-full object-cover" />
                                                             ) : (
-                                                                <div className="w-full h-full bg-gradient-to-br from-indigo-500 to-purple-500 flex items-center justify-center text-[8px] text-white font-bold">
+                                                                <div className="w-full h-full bg-gradient-to-br from-indigo-500 to-purple-500 flex items-center justify-center text-[8px] text-foreground font-bold">
                                                                     {item.adminName?.[0] || 'A'}
                                                                 </div>
                                                             )}
                                                         </div>
-                                                        <span className="text-xs text-white/40 font-medium">Recorded by <span className="text-white/60">{item.adminName}</span></span>
+                                                        <span className="text-xs text-foreground/80 font-medium">Recorded by <span className="text-foreground/80">{item.adminName}</span></span>
                                                     </div>
                                                 </div>
                                             </div>

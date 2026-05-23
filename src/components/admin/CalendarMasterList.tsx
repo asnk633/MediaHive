@@ -177,24 +177,24 @@ export function CalendarMasterList() {
         <div className="w-full">
             {/* Toolbar */}
             <div className="p-4 border-b border-[#ffffff1a] flex flex-wrap gap-4 items-center justify-between bg-black/20">
-                <div className="flex items-center gap-3 bg-white/5 rounded-xl px-3 py-2 border border-[#ffffff1a] w-full sm:w-auto">
-                    <Search size={18} className="text-white/40" />
+                <div className="flex items-center gap-3 bg-foreground/5 rounded-xl px-3 py-2 border border-[#ffffff1a] w-full sm:w-auto">
+                    <Search size={18} className="text-foreground/80" />
                     <input
                         type="text"
                         placeholder="Search events..."
                         value={searchQuery}
                         onChange={(e) => setSearchQuery(e.target.value)}
-                        className="bg-transparent border-none outline-none text-white text-sm w-48 placeholder:text-white/20"
+                        className="bg-transparent border-none outline-none text-foreground text-sm w-48 placeholder:text-foreground/80"
                     />
                 </div>
 
                 <div className="flex items-center gap-4">
-                    <label className="flex items-center gap-2 text-sm text-white/50 hover:text-white cursor-pointer select-none">
+                    <label className="flex items-center gap-2 text-sm text-foreground/70 hover:text-foreground cursor-pointer select-none">
                         <input
                             type="checkbox"
                             checked={showDisabled}
                             onChange={e => setShowDisabled(e.target.checked)}
-                            className="rounded bg-white/5 border-[#ffffff1a]"
+                            className="rounded bg-foreground/5 border-[#ffffff1a]"
                         />
                         Show Disabled
                     </label>
@@ -214,7 +214,7 @@ export function CalendarMasterList() {
 
                     <button
                         onClick={() => setIsCreateOpen(true)}
-                        className="bg-blue-600 hover:bg-blue-500 text-white text-sm font-bold px-4 py-2 rounded-lg transition-colors"
+                        className="bg-blue-600 hover:bg-blue-500 text-foreground text-sm font-bold px-4 py-2 rounded-lg transition-colors"
                     >
                         + Add Holiday / Event
                     </button>
@@ -224,11 +224,11 @@ export function CalendarMasterList() {
             {/* List Content */}
             <div className="overflow-x-auto min-h-[500px]">
                 {loading ? (
-                    <div className="flex items-center justify-center h-64 text-white/40">Loading Master List...</div>
+                    <div className="flex items-center justify-center h-64 text-foreground/80">Loading Master List...</div>
                 ) : (
                     <table className="w-full text-left border-collapse">
                         <thead>
-                            <tr className="bg-white/5 text-white/40 text-[10px] uppercase font-bold tracking-wider">
+                            <tr className="bg-foreground/5 text-foreground/80 text-[10px] uppercase font-bold tracking-wider">
                                 <th className="p-4 w-32">Date</th>
                                 <th className="p-4">Event Name</th>
                                 <th className="p-4 w-32">Type</th>
@@ -240,21 +240,21 @@ export function CalendarMasterList() {
                         <tbody className="divide-y divide-white/5">
                             {Object.keys(groupedEvents).map(month => (
                                 <React.Fragment key={month}>
-                                    <tr className="bg-white/[0.02]">
+                                    <tr className="bg-foreground/[0.02]">
                                         <td colSpan={6} className="px-4 py-2 text-xs font-bold text-blue-400 uppercase tracking-widest">
                                             {month}
                                         </td>
                                     </tr>
                                     {groupedEvents[month].map(event => (
-                                        <tr key={event.id} className="hover:bg-white/[0.02] group transition-colors">
+                                        <tr key={event.id} className="hover:bg-foreground/[0.02] group transition-colors">
                                             {/* Date */}
-                                            <td className="p-4 text-white/70 font-mono text-xs">
+                                            <td className="p-4 text-foreground/70 font-mono text-xs">
                                                 {event.date ? format(getSafeDate(event.date), 'dd MMM, EEE') : 'N/A'}
                                             </td>
 
                                             {/* Name */}
                                             <td className="p-4">
-                                                <div className="font-medium text-white text-sm">{event.title}</div>
+                                                <div className="font-medium text-foreground text-sm">{event.title}</div>
                                             </td>
 
                                             {/* Type */}
@@ -263,7 +263,7 @@ export function CalendarMasterList() {
                                                     px-2 py-0.5 rounded text-[10px] font-bold uppercase border
                                                     ${event.type === 'holiday' ? 'bg-red-500/10 text-red-400 border-red-500/20' :
                                                         event.type === 'company' ? 'bg-blue-500/10 text-blue-400 border-blue-500/20' :
-                                                            'bg-white/5 text-white/60 border-[#ffffff1a]'
+                                                            'bg-foreground/5 text-foreground/80 border-[#ffffff1a]'
                                                     }
                                                 `}>
                                                     {event.type}
@@ -277,7 +277,7 @@ export function CalendarMasterList() {
                                                         <XCircle size={12} /> OFF
                                                     </span>
                                                 ) : (
-                                                    <span className="text-white/20">-</span>
+                                                    <span className="text-foreground/80">-</span>
                                                 )}
                                             </td>
 
@@ -294,8 +294,8 @@ export function CalendarMasterList() {
                                                                 className={`
                                                                     w-6 h-6 flex items-center justify-center rounded text-[10px] font-bold border transition-all
                                                                     ${isEnabled
-                                                                        ? 'bg-blue-500 text-white border-blue-500'
-                                                                        : 'bg-transparent text-white/20 border-[#ffffff1a] hover:border-white/30'
+                                                                        ? 'bg-blue-500 text-foreground border-blue-500'
+                                                                        : 'bg-transparent text-foreground/80 border-[#ffffff1a] hover:border-foreground/30'
                                                                     }
                                                                 `}
                                                             >
@@ -321,20 +321,20 @@ export function CalendarMasterList() {
                                                                 toast.success(`Event ${newStatus === 'active' ? 'Enabled' : 'Disabled'}`);
                                                             } catch (e) { toast.error("Update failed"); }
                                                         }}
-                                                        className={`p-1.5 rounded transition-colors ${event.status === 'disabled' ? 'text-yellow-500 hover:bg-yellow-500/10' : 'text-white/50 hover:text-yellow-400 hover:bg-yellow-500/10'}`}
+                                                        className={`p-1.5 rounded transition-colors ${event.status === 'disabled' ? 'text-yellow-500 hover:bg-yellow-500/10' : 'text-foreground/70 hover:text-yellow-400 hover:bg-yellow-500/10'}`}
                                                         title={event.status === 'disabled' ? "Enable Event" : "Disable Event"}
                                                     >
                                                         <Archive size={14} />
                                                     </button>
                                                     <button
                                                         onClick={() => openEdit(event)}
-                                                        className="p-1.5 text-white/50 hover:text-blue-400 hover:bg-blue-500/10 rounded transition-colors"
+                                                        className="p-1.5 text-foreground/70 hover:text-blue-400 hover:bg-blue-500/10 rounded transition-colors"
                                                     >
                                                         <Edit2 size={14} />
                                                     </button>
                                                     <button
                                                         onClick={() => handleDelete(event.id)}
-                                                        className="p-1.5 text-white/50 hover:text-red-400 hover:bg-red-500/10 rounded transition-colors"
+                                                        className="p-1.5 text-foreground/70 hover:text-red-400 hover:bg-red-500/10 rounded transition-colors"
                                                     >
                                                         <Trash2 size={14} />
                                                     </button>
@@ -347,7 +347,7 @@ export function CalendarMasterList() {
 
                             {filteredEvents.length === 0 && (
                                 <tr>
-                                    <td colSpan={6} className="p-8 text-center text-white/50 italic">
+                                    <td colSpan={6} className="p-8 text-center text-foreground/70 italic">
                                         No events found for {selectedYear}
                                     </td>
                                 </tr>

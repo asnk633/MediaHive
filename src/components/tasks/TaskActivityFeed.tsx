@@ -15,7 +15,7 @@ const ACTION_ICONS: Record<string, React.ReactNode> = {
     status_changed: <CheckCircle2 size={13} className="text-blue-400" />,
     priority_changed: <Flag size={13} className="text-amber-400" />,
     assigned: <Users size={13} className="text-purple-400" />,
-    unassigned: <Users size={13} className="text-white/50" />,
+    unassigned: <Users size={13} className="text-foreground/70" />,
     deleted: <Trash2 size={13} className="text-red-400" />,
     restored: <Undo2 size={13} className="text-emerald-400" />,
     conflict_resolved: <ShieldCheck size={13} className="text-blue-500" />,
@@ -90,7 +90,7 @@ export const TaskActivityFeed: React.FC<TaskActivityFeedProps> = ({ taskId, user
 
     if (loading) {
         return (
-            <div className="flex items-center gap-2 py-3 text-white/40">
+            <div className="flex items-center gap-2 py-3 text-foreground/80">
                 <RefreshCw size={14} className="shrink-0 animate-spin" />
                 <span className="text-[11px]">Loading activity...</span>
             </div>
@@ -99,7 +99,7 @@ export const TaskActivityFeed: React.FC<TaskActivityFeedProps> = ({ taskId, user
 
     if (entries.length === 0) {
         return (
-            <div className="flex items-center gap-2 py-3 text-white/40">
+            <div className="flex items-center gap-2 py-3 text-foreground/80">
                 <History size={14} className="shrink-0" />
                 <span className="text-[11px]">No recent activity</span>
             </div>
@@ -121,20 +121,20 @@ export const TaskActivityFeed: React.FC<TaskActivityFeedProps> = ({ taskId, user
                     >
                         {/* Connecting Line */}
                         {idx !== entries.length - 1 && (
-                            <div className="absolute left-3 top-7 bottom-0 w-[1px] -translate-x-[0.5px] bg-white/[0.05]" />
+                            <div className="absolute left-3 top-7 bottom-0 w-[1px] -translate-x-[0.5px] bg-foreground/[0.05]" />
                         )}
 
                         {/* Icon / Avatar placeholder */}
-                        <div className="shrink-0 w-6 h-6 rounded-full bg-white/[0.04] border border-white/5 flex items-center justify-center z-10">
+                        <div className="shrink-0 w-6 h-6 rounded-full bg-foreground/[0.04] border border-foreground/5 flex items-center justify-center z-10">
                             {icon}
                         </div>
 
                         {/* Text */}
                         <div className="flex-1 min-w-0 pb-1">
-                            <p className="text-[13px] text-white/80 leading-snug">
+                            <p className="text-[13px] text-foreground/80 leading-snug">
                                 {resolveActionLabel(entry, user.uid)}
                             </p>
-                            <p className="text-[11px] text-white/40 mt-0.5">
+                            <p className="text-[11px] text-foreground/80 mt-0.5">
                                 {formatDisplayTime(entry.timestamp)}
                             </p>
                         </div>

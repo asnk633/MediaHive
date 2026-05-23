@@ -50,16 +50,16 @@ export const InventoryCard = React.memo<InventoryCardProps>(({
 
     // Consolidate images for display
     const images = (item as any).images && (item as any).images.length > 0
-        ? (item as any).images.map((img: any) => ({ ...img, url: getDriveImageUrl(img.url, img.file_id) }))
+        ? (item as any).images.map((img: any) => ({ ...img, url: getDriveImageUrl(img.url, img.file_id, true) }))
         : ((item as any).imageUrl || (item as any).driveFileId) 
-            ? [{ url: getDriveImageUrl((item as any).imageUrl, (item as any).driveFileId), file_id: (item as any).driveFileId || '' }] 
+            ? [{ url: getDriveImageUrl((item as any).imageUrl, (item as any).driveFileId, true), file_id: (item as any).driveFileId || '' }] 
             : [];
 
     return (
         <Link
             href={`/inventory/${item.id}`}
             className={cn(
-                "group relative overflow-hidden bg-glass border border-white/10 rounded-xl transition-all duration-300 backdrop-blur-md cursor-pointer block",
+                "group relative overflow-hidden bg-glass border border-foreground/10 rounded-xl transition-all duration-300 backdrop-blur-md cursor-pointer block",
                 isOverdue ? 'border-destructive/50 shadow-lg shadow-destructive/20' : 'hover:border-primary/30 hover:shadow-md'
             )}
         >
@@ -102,11 +102,11 @@ export const InventoryCard = React.memo<InventoryCardProps>(({
                             </CarouselContent>
                             <div onClick={(e) => e.stopPropagation()}>
                                 <CarouselPrevious
-                                    className="left-2 bg-black/50 border-white/10 opacity-0 group-hover:opacity-100 transition-opacity focus-visible:opacity-100 focus-visible:ring-2 focus-visible:ring-primary"
+                                    className="left-2 bg-black/50 border-foreground/10 opacity-0 group-hover:opacity-100 transition-opacity focus-visible:opacity-100 focus-visible:ring-2 focus-visible:ring-primary"
                                     aria-label="Previous image"
                                 />
                                 <CarouselNext
-                                    className="right-2 bg-black/50 border-white/10 opacity-0 group-hover:opacity-100 transition-opacity focus-visible:opacity-100 focus-visible:ring-2 focus-visible:ring-primary"
+                                    className="right-2 bg-black/50 border-foreground/10 opacity-0 group-hover:opacity-100 transition-opacity focus-visible:opacity-100 focus-visible:ring-2 focus-visible:ring-primary"
                                     aria-label="Next image"
                                 />
                             </div>
@@ -114,7 +114,7 @@ export const InventoryCard = React.memo<InventoryCardProps>(({
                             {/* Pagination Dots Indicator */}
                             <div className="absolute bottom-2 left-0 right-0 flex justify-center gap-1">
                                 {images.map((_: any, i: number) => (
-                                    <div key={i} className="w-1 h-1 rounded-full bg-white/40 shadow-sm" />
+                                    <div key={i} className="w-1 h-1 rounded-full bg-foreground/40 shadow-sm" />
                                 ))}
                             </div>
                         </Carousel>
@@ -139,7 +139,7 @@ export const InventoryCard = React.memo<InventoryCardProps>(({
             <div className="p-5 space-y-4">
                 <div>
                     <div className="flex justify-between items-start mb-1">
-                        <h3 className="font-semibold text-lg text-white truncate pr-2" title={item.name}>
+                        <h3 className="font-semibold text-lg text-foreground truncate pr-2" title={item.name}>
                             {item.name}
                         </h3>
                     </div>
@@ -150,7 +150,7 @@ export const InventoryCard = React.memo<InventoryCardProps>(({
                 </div>
 
                 {/* Meta Grid */}
-                <div className="grid grid-cols-2 gap-2 text-sm bg-slate-950/30 p-3 rounded-lg border border-white/5">
+                <div className="grid grid-cols-2 gap-2 text-sm bg-slate-950/30 p-3 rounded-lg border border-foreground/5">
                     {activeIssue ? (
                         <>
                             <div className="space-y-1 col-span-2">
@@ -179,7 +179,7 @@ export const InventoryCard = React.memo<InventoryCardProps>(({
                             </div>
 
                             {/* Price & Date Row */}
-                            <div className="col-span-2 grid grid-cols-2 gap-2 pt-2 mt-2 border-t border-white/5">
+                            <div className="col-span-2 grid grid-cols-2 gap-2 pt-2 mt-2 border-t border-foreground/5">
                                 <div className="space-y-1">
                                     <span className="text-slate-400 text-[10px] uppercase tracking-wider">Purchased</span>
                                     <div className="text-slate-300 text-xs">
@@ -203,7 +203,7 @@ export const InventoryCard = React.memo<InventoryCardProps>(({
                     {role === 'admin' && onEdit && (
                         <Button
                             variant="outline"
-                            className="flex-1 border-[#ffffff1a] text-slate-300 hover:text-white hover:bg-white/5"
+                            className="flex-1 border-[#ffffff1a] text-slate-300 hover:text-foreground hover:bg-foreground/5"
                             onClick={(e) => {
                                 e.preventDefault();
                                 e.stopPropagation();
@@ -217,7 +217,7 @@ export const InventoryCard = React.memo<InventoryCardProps>(({
                     {(role === 'admin' || role === 'manager') && onDelete && (
                         <Button
                             variant="ghost"
-                            className="w-10 h-10 p-0 text-red-500 hover:text-white hover:bg-red-500/20 border-white/5"
+                            className="w-10 h-10 p-0 text-red-500 hover:text-foreground hover:bg-red-500/20 border-foreground/5"
                             onClick={(e) => {
                                 e.preventDefault();
                                 e.stopPropagation();
@@ -233,7 +233,7 @@ export const InventoryCard = React.memo<InventoryCardProps>(({
                     {/* Return Action (Admin/Team on In-Use items) */}
                     {canManage && isInUse && onReturn ? (
                         <Button
-                            className={`flex-1 text-white shadow-lg ${isOverdue ? 'bg-red-600 hover:bg-red-500 shadow-red-900/20' : 'bg-purple-600 hover:bg-purple-500 shadow-purple-900/20'}`}
+                            className={`flex-1 text-foreground shadow-lg ${isOverdue ? 'bg-red-600 hover:bg-red-500 shadow-red-900/20' : 'bg-purple-600 hover:bg-purple-500 shadow-purple-900/20'}`}
                             onClick={() => onReturn(item)}
                         >
                             {isOverdue ? 'Return Overdue' : 'Return'}
@@ -242,7 +242,7 @@ export const InventoryCard = React.memo<InventoryCardProps>(({
                         /* Request Action (Default) */
                         onRequest && (
                             <Button
-                                className={`flex-1 text-white shadow-lg h-11 sm:h-10 ${hasPendingRequest ? 'bg-slate-700/50 text-slate-400 cursor-not-allowed' : 'bg-blue-600 hover:bg-blue-500 shadow-blue-900/20'}`}
+                                className={`flex-1 text-foreground shadow-lg h-11 sm:h-10 ${hasPendingRequest ? 'bg-slate-700/50 text-slate-400 cursor-not-allowed' : 'bg-blue-600 hover:bg-blue-500 shadow-blue-900/20'}`}
                                 disabled={isOut || isInUse || hasPendingRequest}
                                 onClick={(e) => {
                                     e.stopPropagation();
@@ -258,7 +258,7 @@ export const InventoryCard = React.memo<InventoryCardProps>(({
                     {onBook && isOk && (
                         <Button
                             variant="outline"
-                            className="bg-blue-600 hover:bg-blue-500 text-white border-transparent"
+                            className="bg-blue-600 hover:bg-blue-500 text-foreground border-transparent"
                             onClick={(e) => {
                                 e.stopPropagation();
                                 onBook(item);

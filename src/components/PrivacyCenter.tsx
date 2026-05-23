@@ -92,10 +92,10 @@ export function PrivacyCenter() {
             </div>
 
             <div className="grid gap-4">
-                <div className="p-5 bg-white/5 border border-white/10 rounded-2xl flex items-center justify-between">
+                <div className="p-5 bg-foreground/5 border border-foreground/10 rounded-2xl flex items-center justify-between">
                     <div className="space-y-1">
                         <div className="flex items-center gap-2">
-                            <h3 className="font-semibold text-white">Anonymous Telemetry</h3>
+                            <h3 className="font-semibold text-foreground">Anonymous Telemetry</h3>
                             <Info size={14} className="text-gray-500" />
                         </div>
                         <p className="text-xs text-gray-400">Help us improve by sending anonymous performance metrics.</p>
@@ -106,16 +106,16 @@ export function PrivacyCenter() {
                     />
                 </div>
 
-                <div className="p-5 bg-white/5 border border-white/10 rounded-2xl space-y-4">
+                <div className="p-5 bg-foreground/5 border border-foreground/10 rounded-2xl space-y-4">
                     <div className="space-y-1">
-                        <h3 className="font-semibold text-white">Data Portability (GDPR)</h3>
+                        <h3 className="font-semibold text-foreground">Data Portability (GDPR)</h3>
                         <p className="text-xs text-gray-400">Request a copy of all your operational data in JSON format.</p>
                     </div>
                     <Button
                         onClick={handleDataExport}
                         disabled={isExporting}
                         variant="outline"
-                        className="w-full border-white/10 bg-white/5 hover:bg-white/10 text-white gap-2"
+                        className="w-full border-foreground/10 bg-foreground/5 hover:bg-foreground/10 text-foreground gap-2"
                     >
                         <Download size={16} />
                         {isExporting ? "Preparing Export..." : "Export My Data"}

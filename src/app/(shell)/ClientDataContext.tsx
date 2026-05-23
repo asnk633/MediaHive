@@ -21,7 +21,7 @@ export type TaskLite = {
   due_date?: string | null;
   dueDate?: string | null; // Alias
   status?: UiStatus;
-  priority?: "low" | "medium" | "high" | "urgent";
+  priority?: "low" | "medium" | "high";
   assigned_to?: string | null;
   event_id?: string | null;
 };

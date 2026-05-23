@@ -214,7 +214,7 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                 label: 'EMAIL ADDRESS',
                 controller: _emailController,
                 icon: LucideIcons.mail,
-                hint: 'admin@mediahive.pro',
+                hint: 'user@email.com',
               ),
               const SizedBox(height: 24),
               _buildCustomInput(
@@ -332,12 +332,14 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
         ),
         const SizedBox(height: 40),
         Text(
-          'POWERED BY THAIBA GARDEN ECOSYSTEM',
+          'POWERED BY THAIBA GARDEN\nMEDIA & IT DEPARTMENT',
+          textAlign: TextAlign.center,
           style: TextStyle(
             fontSize: 8,
             fontWeight: FontWeight.bold,
             color: Colors.white.withOpacity(0.2),
             letterSpacing: 2,
+            height: 1.5,
           ),
         ),
       ],

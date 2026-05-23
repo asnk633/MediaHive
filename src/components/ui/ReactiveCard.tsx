@@ -13,7 +13,7 @@ interface ReactiveCardProps {
 export const ReactiveCard: React.FC<ReactiveCardProps> = ({ 
     children, 
     className,
-    glowColor = 'rgba(99, 102, 241, 0.15)',
+    glowColor = 'rgba(255, 184, 0, 0.15)',
     onClick
 }) => {
     const cardRef = useRef<HTMLDivElement>(null);

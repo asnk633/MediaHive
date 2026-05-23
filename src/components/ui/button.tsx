@@ -14,11 +14,11 @@ export const buttonVariants = ({
   className
 }: Partial<ButtonProps> = {}) => {
   const variants = {
-    primary: "bg-blue-600 hover:bg-blue-500 text-white shadow-lg shadow-blue-900/20",
-    default: "bg-blue-600 hover:bg-blue-500 text-white shadow-lg shadow-blue-900/20", // Alias
-    secondary: "mh-surface hover:mh-surface-strong text-white",
-    outline: "border border-white/10 hover:bg-white/5 text-gray-300", // Restored outline
-    ghost: "bg-transparent hover:bg-white/5 text-gray-400 hover:text-white",
+    primary: "bg-blue-600 hover:bg-blue-500 text-foreground shadow-lg shadow-blue-900/20",
+    default: "bg-blue-600 hover:bg-blue-500 text-foreground shadow-lg shadow-blue-900/20", // Alias
+    secondary: "mh-surface hover:mh-surface-strong text-foreground",
+    outline: "border border-foreground/10 hover:bg-foreground/5 text-gray-300", // Restored outline
+    ghost: "bg-transparent hover:bg-foreground/5 text-gray-400 hover:text-foreground",
     link: "text-blue-400 hover:underline underline-offset-4 bg-transparent", // Restored link
     danger: "bg-red-500/10 text-red-400 hover:bg-red-500/20 border border-red-500/20",
     destructive: "bg-red-500/10 text-red-400 hover:bg-red-500/20 border border-red-500/20", // Alias

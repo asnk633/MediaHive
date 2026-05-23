@@ -65,7 +65,7 @@ export const SafeAvatar: React.FC<SafeAvatarProps> = ({
 
     return (
         <div
-            className={`relative rounded-full overflow-hidden bg-white/10 flex items-center justify-center shrink-0 border border-[#ffffff1a] ${sizeClasses} ${className}`}
+            className={`relative rounded-full overflow-hidden bg-foreground/10 flex items-center justify-center shrink-0 border border-[#ffffff1a] ${sizeClasses} ${className}`}
             style={!className.includes('w-') ? containerStyle : undefined}
             title={name || alt}
         >
@@ -83,9 +83,9 @@ export const SafeAvatar: React.FC<SafeAvatarProps> = ({
 
             {/* Fallback View (Initials or Icon) */}
             {showFallback && (
-                <div className="absolute inset-0 flex items-center justify-center bg-gradient-to-br from-blue-500/20 to-purple-500/20 text-white/50">
+                <div className="absolute inset-0 flex items-center justify-center bg-gradient-to-br from-blue-500/20 to-purple-500/20 text-foreground/70">
                     {displayInitials !== '??' ? (
-                        <span className="font-bold text-white/80 uppercase" style={{ fontSize: pxSize * 0.4 }}>
+                        <span className="font-bold text-foreground/80 uppercase" style={{ fontSize: pxSize * 0.4 }}>
                             {displayInitials}
                         </span>
                     ) : (
@@ -96,7 +96,7 @@ export const SafeAvatar: React.FC<SafeAvatarProps> = ({
 
             {/* Loading Skeleton (only visible if loading and not errored yet) */}
             {loading && !error && src && (
-                <div className="absolute inset-0 bg-white/5 animate-pulse" />
+                <div className="absolute inset-0 bg-foreground/5 animate-pulse" />
             )}
         </div>
     );

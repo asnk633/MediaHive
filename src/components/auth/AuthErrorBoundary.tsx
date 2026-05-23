@@ -60,7 +60,7 @@ export class AuthErrorBoundary extends Component<Props, State> {
                         </div>
                     </div>
 
-                    <h2 className="text-3xl font-extrabold text-white mb-3 tracking-tight">Authentication Error</h2>
+                    <h2 className="text-3xl font-extrabold text-foreground mb-3 tracking-tight">Authentication Error</h2>
                     <p className="text-slate-400 max-w-md mb-10 leading-relaxed font-medium">
                         A critical error occurred while initializing the authentication service. This prevents the application from loading securely.
                     </p>
@@ -68,14 +68,14 @@ export class AuthErrorBoundary extends Component<Props, State> {
                     <div className="flex flex-col w-full max-w-sm gap-4">
                         <Button
                             onClick={this.handleReload}
-                            className="bg-blue-600 hover:bg-blue-500 text-white gap-3 h-14 text-lg font-bold shadow-lg shadow-blue-900/20 transition-all active:scale-95"
+                            className="bg-blue-600 hover:bg-blue-500 text-foreground gap-3 h-14 text-lg font-bold shadow-lg shadow-blue-900/20 transition-all active:scale-95"
                         >
                             <RefreshCw size={22} className={this.state.hasError ? "animate-spin-slow" : ""} />
                             Reload Application
                         </Button>
                     </div>
 
-                    <div className="mt-12 pt-8 border-t border-white/5 w-full max-w-xs">
+                    <div className="mt-12 pt-8 border-t border-foreground/5 w-full max-w-xs">
                         <p className="text-[10px] font-bold uppercase tracking-[0.3em] text-slate-600">
                             Resilience Subsystem Active
                         </p>

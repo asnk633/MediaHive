@@ -136,28 +136,28 @@ export const AdminOversightWidget = () => {
                         >
 
                             <div className="flex justify-between items-baseline mb-4">
-                                <h4 className="text-sm font-medium text-white/85 group-hover:text-white transition-colors ml-1.5">
+                                <h4 className="text-sm font-medium text-foreground/85 group-hover:text-foreground transition-colors ml-1.5">
                                     {card.title}
                                 </h4>
-                                <card.icon size={14} className={cn("transition-colors", severity !== 'neutral' ? "text-white/50" : "text-white/20")} />
+                                <card.icon size={14} className={cn("transition-colors", severity !== 'neutral' ? "text-foreground/70" : "text-foreground/80")} />
                             </div>
 
                             <div className="mt-auto">
                                 {card.value !== null && card.value > 0 ? (
                                     <div className="flex flex-col">
-                                        <p className="text-3xl font-bold text-white/80 group-hover:text-white transition-colors tracking-tight">
+                                        <p className="text-3xl font-bold text-foreground/80 group-hover:text-foreground transition-colors tracking-tight">
                                             {card.value}
                                         </p>
-                                        <span className="text-[9px] font-medium text-white/50 italic tracking-tight mt-1">
+                                        <span className="text-[9px] font-medium text-foreground/70 italic tracking-tight mt-1">
                                             As of today
                                         </span>
                                     </div>
                                 ) : (
                                     <div className="flex flex-col">
-                                        <p className="text-[10px] font-bold text-white/20 uppercase tracking-widest py-1">
+                                        <p className="text-[10px] font-bold text-foreground/80 uppercase tracking-widest py-1">
                                             {card.empty}
                                         </p>
-                                        <span className="text-[9px] font-medium text-white/10 italic tracking-tight mt-1">
+                                        <span className="text-[9px] font-medium text-foreground/70 italic tracking-tight mt-1">
                                             Synced moments ago
                                         </span>
                                     </div>

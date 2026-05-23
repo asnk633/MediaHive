@@ -94,7 +94,7 @@ export function evaluatePolicyImplications(context: PolicyEvaluationContext): Po
   
   // Priority field policy: Priority changes have implications
   if (field === 'priority') {
-    const priorityValues = { low: 1, medium: 2, high: 3, urgent: 4 };
+    const priorityValues = { low: 1, medium: 2, high: 3 };
     const localPriority = priorityValues[localValue as keyof typeof priorityValues] || 0;
     const remotePriority = priorityValues[remoteValue as keyof typeof priorityValues] || 0;
     

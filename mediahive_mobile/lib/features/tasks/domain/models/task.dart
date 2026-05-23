@@ -13,10 +13,18 @@ class Task with _$Task {
     required String requester,
     required String assignee,
     required String dueDate,
+    String? createdBy,
+    String? createdAt,
     String? completionDate,
     String? description,
     String? onBehalfOf,
+    String? completedByName,
     @Default([]) List<String> attachments,
+    String? eventId,
+    @Default(false) bool isBlocked,
+    String? blockedBy,
+    @Default(false) bool requiresReview,
+    String? department,
   }) = _Task;
 
   factory Task.fromJson(Map<String, dynamic> json) => _$TaskFromJson(json);

@@ -1,6 +1,6 @@
 import { TimestampLike } from '@/types/timestamp';
 
-export type LeaveType = 'casual' | 'sick' | 'planned' | 'emergency' | 'other';
+export type LeaveType = 'casual' | 'sick' | 'planned' | 'unpaid' | 'emergency' | 'other';
 export type LeaveStatus = 'pending' | 'approved' | 'rejected' | 'cancelled' | 'archived';
 
 export interface LeaveRequest {
@@ -60,9 +60,10 @@ export interface RejectLeaveData {
 
 // Leave type display names
 export const LEAVE_TYPE_LABELS: Record<LeaveType, string> = {
-    casual: 'Casual Leave',
+    planned: 'Paid Leave',
+    unpaid: 'Unpaid Leave',
     sick: 'Sick Leave',
-    planned: 'Planned Leave',
+    casual: 'Casual Leave',
     emergency: 'Emergency Leave',
     other: 'Other'
 };
@@ -78,9 +79,10 @@ export const LEAVE_STATUS_CONFIG: Record<LeaveStatus, { label: string; color: st
 
 // Minimum notice periods (in days)
 export const MINIMUM_NOTICE: Record<LeaveType, number> = {
-    casual: 3,
-    sick: 0, // Can be same day
     planned: 30,
+    unpaid: 30,
+    sick: 0,
+    casual: 3,
     emergency: 0,
     other: 1
 };

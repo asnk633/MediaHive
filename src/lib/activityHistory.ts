@@ -72,7 +72,7 @@ const STATUS_LABELS: Record<string, string> = {
 };
 
 const PRIORITY_LABELS: Record<string, string> = {
-    urgent: 'Urgent',
+    urgent: 'High',
     high: 'High',
     medium: 'Medium',
     low: 'Low',

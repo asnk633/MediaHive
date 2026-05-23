@@ -46,7 +46,7 @@ export function EquipmentScheduleWidget() {
 
     return (
         <Card className="bg-glass border-soft overflow-hidden backdrop-blur-md">
-            <div className="p-4 border-b border-white/5 flex items-center justify-between">
+            <div className="p-4 border-b border-foreground/5 flex items-center justify-between">
                 <div className="flex items-center gap-2">
                     <Calendar className="w-4 h-4 text-blue-400" />
                     <h3 className="text-sm font-semibold text-slate-200 uppercase tracking-wider">Equipment Schedule</h3>
@@ -68,7 +68,7 @@ export function EquipmentScheduleWidget() {
                                 onClick={() => setSelectedDay(date)}
                                 className={cn(
                                     "flex-1 min-w-[50px] flex flex-col items-center gap-1.5 p-2 rounded-lg transition-all relative group",
-                                    isSelected ? "bg-blue-600/20 text-blue-400 ring-1 ring-blue-500/30" : "hover:bg-white/5 text-slate-500"
+                                    isSelected ? "bg-blue-600/20 text-blue-400 ring-1 ring-blue-500/30" : "hover:bg-foreground/5 text-slate-500"
                                 )}
                             >
                                 <span className="text-[10px] uppercase font-bold tracking-tighter opacity-60">
@@ -76,7 +76,7 @@ export function EquipmentScheduleWidget() {
                                 </span>
                                 <span className={cn(
                                     "text-sm font-bold",
-                                    isSelected ? "text-white" : "group-hover:text-slate-200"
+                                    isSelected ? "text-foreground" : "group-hover:text-slate-200"
                                 )}>
                                     {format(date, 'd')}
                                 </span>
@@ -103,8 +103,8 @@ export function EquipmentScheduleWidget() {
                                 initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
                                 className="space-y-3"
                             >
-                                <Skeleton className="h-12 w-full bg-white/5 rounded-lg" />
-                                <Skeleton className="h-12 w-full bg-white/5 rounded-lg" />
+                                <Skeleton className="h-12 w-full bg-foreground/5 rounded-lg" />
+                                <Skeleton className="h-12 w-full bg-foreground/5 rounded-lg" />
                             </motion.div>
                         ) : activeBookings.length > 0 ? (
                             <motion.div 
@@ -116,7 +116,7 @@ export function EquipmentScheduleWidget() {
                                 {activeBookings.map((b, idx) => (
                                     <div 
                                         key={idx} 
-                                        className="group flex items-center justify-between p-3 rounded-lg bg-surface/40 border border-white/5 hover:border-white/10 transition-colors"
+                                        className="group flex items-center justify-between p-3 rounded-lg bg-surface/40 border border-foreground/5 hover:border-foreground/10 transition-colors"
                                     >
                                         <div className="flex items-center gap-3">
                                             <div className="w-8 h-8 rounded bg-blue-500/10 flex items-center justify-center">
@@ -143,7 +143,7 @@ export function EquipmentScheduleWidget() {
                                 animate={{ opacity: 1 }}
                                 className="flex flex-col items-center justify-center py-8 text-center"
                             >
-                                <div className="p-3 rounded-full bg-white/5 mb-3">
+                                <div className="p-3 rounded-full bg-foreground/5 mb-3">
                                     <Info size={20} className="text-slate-600" />
                                 </div>
                                 <div className="text-sm font-medium text-slate-400">No bookings for this day</div>

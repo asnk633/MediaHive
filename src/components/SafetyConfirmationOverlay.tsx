@@ -27,11 +27,11 @@ export function SafetyConfirmationOverlay({ title, description, onConfirm, onCan
                 </div>
 
                 <div className="text-center space-y-2">
-                    <h2 className="text-xl font-bold text-white">{title}</h2>
+                    <h2 className="text-xl font-bold text-foreground">{title}</h2>
                     <p className="text-sm text-gray-400">{description}</p>
                 </div>
 
-                <div className="flex items-start gap-3 p-4 bg-white/5 rounded-2xl border border-white/10 transition-all hover:bg-white/10 group cursor-pointer" onClick={() => setConfirmed(!confirmed)}>
+                <div className="flex items-start gap-3 p-4 bg-foreground/5 rounded-2xl border border-foreground/10 transition-all hover:bg-foreground/10 group cursor-pointer" onClick={() => setConfirmed(!confirmed)}>
                     <Checkbox
                         checked={confirmed}
                         onCheckedChange={(c) => setConfirmed(c === true)}
@@ -43,13 +43,13 @@ export function SafetyConfirmationOverlay({ title, description, onConfirm, onCan
                 </div>
 
                 <div className="grid grid-cols-2 gap-3">
-                    <Button variant="ghost" onClick={onCancel} className="rounded-xl border border-white/5 hover:bg-white/5 text-gray-400">
+                    <Button variant="ghost" onClick={onCancel} className="rounded-xl border border-foreground/5 hover:bg-foreground/5 text-gray-400">
                         Cancel
                     </Button>
                     <Button
                         disabled={!confirmed}
                         onClick={onConfirm}
-                        className="rounded-xl bg-orange-600 hover:bg-orange-500 text-white font-bold transition-all disabled:opacity-30 disabled:grayscale"
+                        className="rounded-xl bg-orange-600 hover:bg-orange-500 text-foreground font-bold transition-all disabled:opacity-30 disabled:grayscale"
                     >
                         Authorize Action
                     </Button>

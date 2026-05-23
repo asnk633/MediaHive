@@ -28,8 +28,10 @@ class LoggerService extends StateNotifier<List<LogEntry>> {
 
   LoggerService() : super([]);
 
+  void debug(String message) => _log(LogLevel.info, '[DEBUG] $message');
   void info(String message) => _log(LogLevel.info, message);
   void warning(String message) => _log(LogLevel.warning, message);
+  void warn(String message) => warning(message);
   void error(String message, [Object? error, StackTrace? stackTrace]) => 
       _log(LogLevel.error, message, error?.toString(), stackTrace?.toString());
   void sync(String message) => _log(LogLevel.sync, message);
@@ -59,4 +61,8 @@ class LoggerService extends StateNotifier<List<LogEntry>> {
 
 final loggerProvider = StateNotifierProvider<LoggerService, List<LogEntry>>((ref) {
   return LoggerService();
+});
+
+final loggerServiceProvider = Provider<LoggerService>((ref) {
+  return ref.watch(loggerProvider.notifier);
 });

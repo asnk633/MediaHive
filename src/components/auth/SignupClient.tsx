@@ -105,19 +105,19 @@ export default function SignupClient() {
         return (
             <div className="relative min-h-screen flex items-center justify-center overflow-hidden bg-gradient-to-br from-[#050816] via-[#0B1026] to-[#1A1443]">
                 <div className="w-full max-w-md relative z-10 flex flex-col items-center p-4">
-                    <div className="w-full backdrop-blur-xl bg-gradient-to-b from-white/10 to-white/5 border border-white/10 shadow-[0_20px_80px_rgba(0,0,0,0.7),0_0_0_1px_rgba(255,255,255,0.05)] rounded-2xl p-10 text-center space-y-6">
+                    <div className="w-full backdrop-blur-xl bg-gradient-to-b from-white/10 to-white/5 border border-foreground/10 shadow-[0_20px_80px_rgba(0,0,0,0.7),0_0_0_1px_rgba(255,255,255,0.05)] rounded-2xl p-10 text-center space-y-6">
                         <div className="flex justify-center">
                             <div className="w-20 h-20 bg-green-500/20 rounded-full flex items-center justify-center border border-green-500/30">
                                 <CheckCircle2 className="w-10 h-10 text-green-500" />
                             </div>
                         </div>
-                        <h2 className="text-3xl font-bold text-white">Check Your Email</h2>
+                        <h2 className="text-3xl font-bold text-foreground">Check Your Email</h2>
                         <p className="text-slate-400">
-                            We've sent a confirmation link to <span className="text-white font-medium">{email}</span>. Please verify your email to activate your account.
+                            We've sent a confirmation link to <span className="text-foreground font-medium">{email}</span>. Please verify your email to activate your account.
                         </p>
                         <button
                             onClick={() => nativeNavigate('/login', router, 'Signup-Success')}
-                            className="w-full h-12 bg-primary hover:bg-primary/90 text-white font-bold rounded-full transition-all"
+                            className="w-full h-12 bg-primary hover:bg-primary/90 text-foreground font-bold rounded-full transition-all"
                         >
                             Return to Login
                         </button>
@@ -142,15 +142,21 @@ export default function SignupClient() {
                 </div>
 
                 <div className="text-center mb-6 space-y-2">
-                    <h1 className="text-3xl font-extrabold tracking-tight text-white">
-                        Join MediaHive
+                    <h1 
+                        className="text-5xl tracking-wider text-[#E59312] drop-shadow-md font-normal"
+                        style={{ 
+                            fontFamily: 'BavistaSoulvare',
+                            textShadow: '0 0 16px rgba(229, 147, 18, 0.25)'
+                        }}
+                    >
+                        MediaHive
                     </h1>
                     <p className="text-slate-400 font-medium">
                         Create your production account.
                     </p>
                 </div>
 
-                <div className="w-full backdrop-blur-xl bg-gradient-to-b from-white/10 to-white/5 border border-white/10 shadow-2xl rounded-2xl overflow-hidden mb-8">
+                <div className="w-full backdrop-blur-xl bg-gradient-to-b from-white/10 to-white/5 border border-foreground/10 shadow-2xl rounded-2xl overflow-hidden mb-8">
                     <div className="p-8">
                         <form onSubmit={handleSignup} className="space-y-6">
                             <AnimatePresence>
@@ -180,7 +186,7 @@ export default function SignupClient() {
                                             value={fullName}
                                             onChange={(e) => setFullName(e.target.value)}
                                             placeholder="Your Name"
-                                            className="w-full h-11 bg-white/5 border border-white/10 rounded-full pl-11 pr-6 text-white placeholder:text-slate-600 focus:outline-none focus:ring-2 focus:ring-primary/40 focus:bg-white/10 transition-all text-sm"
+                                            className="w-full h-11 bg-foreground/5 border border-foreground/10 rounded-full pl-11 pr-6 text-foreground placeholder:text-slate-600 focus:outline-none focus:ring-2 focus:ring-primary/40 focus:bg-foreground/10 transition-all text-sm"
                                             suppressHydrationWarning
                                         />
                                     </div>
@@ -195,12 +201,12 @@ export default function SignupClient() {
                                         <select
                                             value={institutionId}
                                             onChange={(e) => setInstitutionId(e.target.value)}
-                                            className="w-full h-11 bg-white/5 border border-white/10 rounded-full pl-11 pr-6 text-white appearance-none focus:outline-none focus:ring-2 focus:ring-primary/40 focus:bg-[#0f172a] transition-all text-sm cursor-pointer"
+                                            className="w-full h-11 bg-foreground/5 border border-foreground/10 rounded-full pl-11 pr-6 text-foreground appearance-none focus:outline-none focus:ring-2 focus:ring-primary/40 focus:bg-[var(--glass-liquid-bg)] transition-all text-sm cursor-pointer"
                                             suppressHydrationWarning
                                         >
-                                            <option value="" className="bg-[#0f172a]">None / Select Institution</option>
+                                            <option value="" className="bg-[var(--glass-liquid-bg)]">None / Select Institution</option>
                                             {institutions.map(inst => (
-                                                <option key={inst.id} value={inst.id} className="bg-[#0f172a]">
+                                                <option key={inst.id} value={inst.id} className="bg-[var(--glass-liquid-bg)]">
                                                     {inst.name}
                                                 </option>
                                             ))}
@@ -217,12 +223,12 @@ export default function SignupClient() {
                                         <select
                                             value={departmentId}
                                             onChange={(e) => setDepartmentId(e.target.value)}
-                                            className="w-full h-11 bg-white/5 border border-white/10 rounded-full pl-11 pr-6 text-white appearance-none focus:outline-none focus:ring-2 focus:ring-primary/40 focus:bg-[#0f172a] transition-all text-sm cursor-pointer"
+                                            className="w-full h-11 bg-foreground/5 border border-foreground/10 rounded-full pl-11 pr-6 text-foreground appearance-none focus:outline-none focus:ring-2 focus:ring-primary/40 focus:bg-[var(--glass-liquid-bg)] transition-all text-sm cursor-pointer"
                                             suppressHydrationWarning
                                         >
-                                            <option value="" className="bg-[#0f172a]">None / Select Department</option>
+                                            <option value="" className="bg-[var(--glass-liquid-bg)]">None / Select Department</option>
                                             {departments.map(dept => (
-                                                <option key={dept.id} value={dept.id} className="bg-[#0f172a]">
+                                                <option key={dept.id} value={dept.id} className="bg-[var(--glass-liquid-bg)]">
                                                     {dept.name}
                                                 </option>
                                             ))}
@@ -243,7 +249,7 @@ export default function SignupClient() {
                                         value={email}
                                         onChange={(e) => setEmail(e.target.value)}
                                         placeholder="your@email.com"
-                                        className="w-full h-11 bg-white/5 border border-white/10 rounded-full pl-11 pr-6 text-white placeholder:text-slate-600 focus:outline-none focus:ring-2 focus:ring-primary/40 focus:bg-white/10 transition-all text-sm"
+                                        className="w-full h-11 bg-foreground/5 border border-foreground/10 rounded-full pl-11 pr-6 text-foreground placeholder:text-slate-600 focus:outline-none focus:ring-2 focus:ring-primary/40 focus:bg-foreground/10 transition-all text-sm"
                                         suppressHydrationWarning
                                     />
                                 </div>
@@ -262,13 +268,13 @@ export default function SignupClient() {
                                             value={password}
                                             onChange={(e) => setPassword(e.target.value)}
                                             placeholder="••••••••••••"
-                                            className="w-full h-11 bg-white/5 border border-white/10 rounded-full pl-11 pr-12 text-white placeholder:text-slate-600 focus:outline-none focus:ring-2 focus:ring-primary/40 focus:bg-white/10 transition-all text-sm"
+                                            className="w-full h-11 bg-foreground/5 border border-foreground/10 rounded-full pl-11 pr-12 text-foreground placeholder:text-slate-600 focus:outline-none focus:ring-2 focus:ring-primary/40 focus:bg-foreground/10 transition-all text-sm"
                                             suppressHydrationWarning
                                         />
                                         <button
                                             type="button"
                                             onClick={() => setShowPassword(!showPassword)}
-                                            className="absolute right-3 top-1/2 -translate-y-1/2 p-2 text-slate-400 hover:text-white transition-all z-50 cursor-pointer flex items-center justify-center"
+                                            className="absolute right-3 top-1/2 -translate-y-1/2 p-2 text-slate-400 hover:text-foreground transition-all z-50 cursor-pointer flex items-center justify-center"
                                             title={showPassword ? "Hide password" : "Show password"}
                                         >
                                             {showPassword ? <EyeOff className="w-5 h-5" /> : <Eye className="w-5 h-5" />}
@@ -288,13 +294,13 @@ export default function SignupClient() {
                                             value={confirmPassword}
                                             onChange={(e) => setConfirmPassword(e.target.value)}
                                             placeholder="••••••••••••"
-                                            className="w-full h-11 bg-white/5 border border-white/10 rounded-full pl-11 pr-12 text-white placeholder:text-slate-600 focus:outline-none focus:ring-2 focus:ring-primary/40 focus:bg-white/10 transition-all text-sm"
+                                            className="w-full h-11 bg-foreground/5 border border-foreground/10 rounded-full pl-11 pr-12 text-foreground placeholder:text-slate-600 focus:outline-none focus:ring-2 focus:ring-primary/40 focus:bg-foreground/10 transition-all text-sm"
                                             suppressHydrationWarning
                                         />
                                         <button
                                             type="button"
                                             onClick={() => setShowConfirmPassword(!showConfirmPassword)}
-                                            className="absolute right-3 top-1/2 -translate-y-1/2 p-2 text-slate-400 hover:text-white transition-all z-50 cursor-pointer flex items-center justify-center"
+                                            className="absolute right-3 top-1/2 -translate-y-1/2 p-2 text-slate-400 hover:text-foreground transition-all z-50 cursor-pointer flex items-center justify-center"
                                             title={showConfirmPassword ? "Hide password" : "Show password"}
                                         >
                                             {showConfirmPassword ? <EyeOff className="w-5 h-5" /> : <Eye className="w-5 h-5" />}
@@ -306,7 +312,7 @@ export default function SignupClient() {
                             <button
                                 type="submit"
                                 disabled={loading}
-                                className="w-full h-12 bg-primary hover:bg-primary/90 text-white font-bold rounded-full shadow-lg shadow-primary/20 transition-all duration-300 hover:shadow-[0_0_25px_rgba(99,102,241,0.6)] hover:scale-[1.02] active:scale-[0.98] disabled:opacity-50 flex items-center justify-center text-sm"
+                                className="w-full h-12 bg-primary hover:bg-primary/90 text-foreground font-bold rounded-full shadow-lg shadow-primary/20 transition-all duration-300 hover:shadow-[0_0_25px_rgba(99,102,241,0.6)] hover:scale-[1.02] active:scale-[0.98] disabled:opacity-50 flex items-center justify-center text-sm"
                             >
                                 {loading ? (
                                     <div className="flex items-center justify-center gap-2">

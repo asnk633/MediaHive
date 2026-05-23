@@ -40,7 +40,7 @@ export function HomeTaskRow({ task, timeContext, isFirst, isActive, onClick, onC
     const swipeBackground = offset > 50 ? "bg-emerald-500/20" : offset < -50 ? "bg-amber-500/20" : "bg-transparent";
 
     return (
-        <div className="relative overflow-hidden bg-white/[0.02]">
+        <div className="relative overflow-hidden bg-foreground/[0.02]">
             {/* Swipe Backdrops */}
             <div className={cn("absolute inset-0 flex items-center justify-between px-6 transition-colors duration-200", swipeBackground)}>
                 <div className={cn("flex items-center gap-2 text-emerald-400 transition-opacity", offset > 50 ? "opacity-100" : "opacity-0")}>
@@ -62,14 +62,14 @@ export function HomeTaskRow({ task, timeContext, isFirst, isActive, onClick, onC
                 data-active={isActive}
                 onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); onClick?.(); } }}
                 className={cn(
-                    "group relative flex items-center justify-between px-6 bg-white/[0.02] transition-all duration-200 ease-out cursor-pointer overflow-hidden border-b border-white/5 last:border-0 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-500/50",
+                    "group relative flex items-center justify-between px-6 bg-foreground/[0.02] transition-all duration-200 ease-out cursor-pointer overflow-hidden border-b border-foreground/5 last:border-0 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-500/50",
                     density === 'compact' ? "min-h-[48px] py-2" : "min-h-[64px] max-h-[88px] py-5",
-                    "hover:bg-white/[0.06] hover:brightness-[1.1] hover:scale-[1.002] active:scale-[0.98]",
+                    "hover:bg-foreground/[0.06] hover:brightness-[1.1] hover:scale-[1.002] active:scale-[0.98]",
                     "hover:shadow-[0_4px_20px_-8px_rgba(0,0,0,0.5)] z-0 hover:z-10",
-                    isActive && "bg-white/[0.08] ring-1 ring-inset ring-blue-500/50 z-10 scale-[1.002]", // Phase 36-B Active State
+                    isActive && "bg-foreground/[0.08] ring-1 ring-inset ring-blue-500/50 z-10 scale-[1.002]", // Phase 36-B Active State
                     isOverdue && "border-l-2 border-l-amber-500/50",
                     // Fix B1: Removed opacity-60 from container. Will handle via children classes.
-                    isTomorrow && "bg-white/[0.01]"
+                    isTomorrow && "bg-foreground/[0.01]"
                 )}
             >
                 {/* IN PROGRESS INDICATOR (Top Line) */}
@@ -82,9 +82,9 @@ export function HomeTaskRow({ task, timeContext, isFirst, isActive, onClick, onC
                 <div className="flex flex-col gap-1 max-w-[80%]">
                     <span className={cn(
                         "text-base font-semibold tracking-tight line-clamp-2 leading-[1.3] transition-colors",
-                        isFirst ? "text-white" : "text-white/92",
+                        isFirst ? "text-foreground" : "text-foreground/92",
                         isFirst && "group-hover:text-blue-400/90",
-                        isTomorrow && "text-white/50"
+                        isTomorrow && "text-foreground/70"
                     )}>
                         {task.title}
                     </span>
@@ -94,7 +94,7 @@ export function HomeTaskRow({ task, timeContext, isFirst, isActive, onClick, onC
                         {isToday && !isOverdue && (
                             <div className="w-1.5 h-1.5 rounded-full bg-blue-400 shadow-[0_0_8px_rgba(96,165,250,0.5)]" />
                         )}
-                        <span className="text-[12px] font-medium text-white/55">
+                        <span className="text-[12px] font-medium text-foreground/55">
                             {timeContext}
                         </span>
                     </div>
@@ -104,7 +104,7 @@ export function HomeTaskRow({ task, timeContext, isFirst, isActive, onClick, onC
                     {/* STATUS ICONS */}
                     <div className="flex items-center justify-end w-6">
                         {isPendingReview && (
-                            <Clock size={16} className="text-white/40" />
+                            <Clock size={16} className="text-foreground/80" />
                         )}
                         {isDone && (
                             <Check size={16} className="text-blue-400" />
@@ -114,7 +114,7 @@ export function HomeTaskRow({ task, timeContext, isFirst, isActive, onClick, onC
                     {/* HOVER CHEVRON */}
                     <ChevronRight
                         size={16}
-                        className="text-white/20 opacity-0 group-hover:opacity-100 transition-all translate-x-2 group-hover:translate-x-0"
+                        className="text-foreground/80 opacity-0 group-hover:opacity-100 transition-all translate-x-2 group-hover:translate-x-0"
                     />
                 </div>
 

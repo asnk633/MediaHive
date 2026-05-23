@@ -105,7 +105,7 @@ export const SystemHealthPanel: React.FC<SystemHealthPanelProps> = ({
   return (
     <div className="bg-gray-800/50 border border-gray-700 rounded-xl p-6 backdrop-blur-sm">
       <div className="flex items-center justify-between mb-6">
-        <h2 className="text-xl font-bold text-white flex items-center gap-2">
+        <h2 className="text-xl font-bold text-foreground flex items-center gap-2">
           <Info className="w-5 h-5 text-blue-400" />
           System Health Overview
         </h2>
@@ -142,7 +142,7 @@ export const SystemHealthPanel: React.FC<SystemHealthPanelProps> = ({
       <div className="space-y-6">
         {/* Demo Data Section */}
         <div className="bg-gray-900/30 p-4 rounded-lg border border-gray-700">
-          <h3 className="text-lg font-semibold text-white mb-3 flex items-center gap-2">
+          <h3 className="text-lg font-semibold text-foreground mb-3 flex items-center gap-2">
             <Info className="w-5 h-5 text-yellow-400" />
             Demo Data
           </h3>
@@ -192,7 +192,7 @@ export const SystemHealthPanel: React.FC<SystemHealthPanelProps> = ({
 
         {/* Orphaned Tasks */}
         <div className="bg-gray-900/30 p-4 rounded-lg border border-gray-700">
-          <h3 className="text-lg font-semibold text-white mb-3 flex items-center gap-2">
+          <h3 className="text-lg font-semibold text-foreground mb-3 flex items-center gap-2">
             <AlertTriangle className="w-5 h-5 text-orange-400" />
             Orphaned Tasks
             <span className="ml-2 bg-orange-900/30 text-orange-300 px-2 py-1 rounded-full text-sm">
@@ -225,7 +225,7 @@ export const SystemHealthPanel: React.FC<SystemHealthPanelProps> = ({
 
         {/* Orphaned Media */}
         <div className="bg-gray-900/30 p-4 rounded-lg border border-gray-700">
-          <h3 className="text-lg font-semibold text-white mb-3 flex items-center gap-2">
+          <h3 className="text-lg font-semibold text-foreground mb-3 flex items-center gap-2">
             <AlertTriangle className="w-5 h-5 text-orange-400" />
             Orphaned Media
             <span className="ml-2 bg-orange-900/30 text-orange-300 px-2 py-1 rounded-full text-sm">
@@ -258,7 +258,7 @@ export const SystemHealthPanel: React.FC<SystemHealthPanelProps> = ({
 
         {/* Deleted User References */}
         <div className="bg-gray-900/30 p-4 rounded-lg border border-gray-700">
-          <h3 className="text-lg font-semibold text-white mb-3 flex items-center gap-2">
+          <h3 className="text-lg font-semibold text-foreground mb-3 flex items-center gap-2">
             <AlertTriangle className="w-5 h-5 text-orange-400" />
             Deleted User References
             <span className="ml-2 bg-orange-900/30 text-orange-300 px-2 py-1 rounded-full text-sm">
@@ -288,7 +288,7 @@ export const SystemHealthPanel: React.FC<SystemHealthPanelProps> = ({
 
         {/* Invalid References */}
         <div className="bg-gray-900/30 p-4 rounded-lg border border-gray-700">
-          <h3 className="text-lg font-semibold text-white mb-3 flex items-center gap-2">
+          <h3 className="text-lg font-semibold text-foreground mb-3 flex items-center gap-2">
             <AlertTriangle className="w-5 h-5 text-red-400" />
             Invalid References
             <span className="ml-2 bg-red-900/30 text-red-300 px-2 py-1 rounded-full text-sm">

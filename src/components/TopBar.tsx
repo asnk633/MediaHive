@@ -48,10 +48,17 @@ export default function TopBar({ title = "MediaHive" }: { title?: string }) {
 
       {/* 1. Mobile Branding (Strictly Mobile Only) */}
       <div className="flex items-center gap-3 lg:hidden">
-        <div className="w-8 h-8 rounded bg-accent-primary flex items-center justify-center text-white text-xs font-bold">
+        <div className="w-8 h-8 rounded flex items-center justify-center text-foreground text-xs font-bold" style={{ backgroundColor: '#E59312' }}>
           MH
         </div>
-        <h1 className="text-sm font-semibold text-white uppercase tracking-tight">
+        <h1 
+          className="text-base font-normal tracking-wider"
+          style={{ 
+            fontFamily: 'BavistaSoulvare',
+            color: '#E59312',
+            textShadow: '0 0 8px rgba(229, 147, 18, 0.2)'
+          }}
+        >
           {title}
         </h1>
       </div>
@@ -70,14 +77,14 @@ export default function TopBar({ title = "MediaHive" }: { title?: string }) {
                   disabled={isProcessing}
                   className={cn(
                     "relative h-10 w-10 rounded-full transition-all duration-300",
-                    "hover:bg-white/5 group",
+                    "hover:bg-foreground/5 group",
                     !isOnline || pendingSyncCount > 0 || isProcessing ? "opacity-100" : "opacity-50"
                   )}
                 >
                   <RefreshCw 
                     size={18} 
                     className={cn(
-                      "text-white transition-colors",
+                      "text-foreground transition-colors",
                       isProcessing && "animate-spin"
                     )} 
                   />
@@ -85,13 +92,13 @@ export default function TopBar({ title = "MediaHive" }: { title?: string }) {
                     <span className="absolute top-2.5 right-2.5 w-2 h-2 rounded-full bg-amber-500 border border-sidebar shadow-[0_0_8px_rgba(245,158,11,0.6)]" />
                   )}
                   {pendingSyncCount > 0 && !isProcessing && (
-                    <span className="absolute -top-0.5 -right-0.5 min-w-[14px] h-3.5 px-1 rounded-full bg-indigo-500 text-[8px] font-bold flex items-center justify-center text-white border border-sidebar shadow-lg">
+                    <span className="absolute -top-0.5 -right-0.5 min-w-[14px] h-3.5 px-1 rounded-full bg-indigo-500 text-[8px] font-bold flex items-center justify-center text-foreground border border-sidebar shadow-lg">
                       {pendingSyncCount}
                     </span>
                   )}
                 </Button>
               </TooltipTrigger>
-              <TooltipContent side="bottom" className="bg-slate-900 border-white/10 text-[10px] font-bold uppercase tracking-widest px-3 py-1.5 rounded-lg shadow-2xl">
+              <TooltipContent side="bottom" className="bg-slate-900 border-foreground/10 text-[10px] font-bold uppercase tracking-widest px-3 py-1.5 rounded-lg shadow-2xl">
                 {isOnline ? (pendingSyncCount > 0 ? `Sync ${pendingSyncCount} Pending` : 'System Up to Date') : 'Offline (Changes Saved)'}
               </TooltipContent>
             </Tooltip>
@@ -125,16 +132,16 @@ export default function TopBar({ title = "MediaHive" }: { title?: string }) {
                 </div>
               </Button>
             </DropdownMenuTrigger>
-            <DropdownMenuContent align="end" className="w-56 bg-slate-950/80 backdrop-blur-xl border border-white/10 rounded-2xl shadow-2xl p-1 mt-2 ring-1 ring-white/5 animate-in fade-in zoom-in-95 duration-200">
-              <div className="px-3 py-2 border-b border-white/5 mb-1">
-                <p className="text-sm font-medium text-white">{user?.name || 'User'}</p>
+            <DropdownMenuContent align="end" className="w-56 bg-slate-950/80 backdrop-blur-xl border border-foreground/10 rounded-2xl shadow-2xl p-1 mt-2 ring-1 ring-foreground/5 animate-in fade-in zoom-in-95 duration-200">
+              <div className="px-3 py-2 border-b border-foreground/5 mb-1">
+                <p className="text-sm font-medium text-foreground">{user?.name || 'User'}</p>
                 <p className="text-[10px] font-black uppercase tracking-widest text-indigo-400 mt-0.5">{currentRole || 'Member'}</p>
                 <p className="text-xs text-slate-400 truncate mt-1">{user?.email}</p>
               </div>
-              <DropdownMenuItem onClick={() => nativeNavigate('/profile', router, 'TopBar:Profile')} className="text-sm py-2 cursor-pointer focus:bg-surface focus:text-white rounded-sm">
+              <DropdownMenuItem onClick={() => nativeNavigate('/profile', router, 'TopBar:Profile')} className="text-sm py-2 cursor-pointer focus:bg-surface focus:text-foreground rounded-sm">
                 <User size={16} className="mr-2 text-text-muted" /> Profile
               </DropdownMenuItem>
-              <DropdownMenuItem onClick={() => nativeNavigate('/settings', router, 'TopBar:Settings')} className="text-sm py-2 cursor-pointer focus:bg-surface focus:text-white rounded-sm">
+              <DropdownMenuItem onClick={() => nativeNavigate('/settings', router, 'TopBar:Settings')} className="text-sm py-2 cursor-pointer focus:bg-surface focus:text-foreground rounded-sm">
                 <Settings size={16} className="mr-2 text-text-muted" /> Settings
               </DropdownMenuItem>
               <DropdownMenuSeparator className="bg-border-soft mx-1" />

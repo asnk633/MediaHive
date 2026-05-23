@@ -39,13 +39,13 @@ export function PresencePile({ users, maxUsers = 4 }: PresencePileProps) {
             <Tooltip key={user.id}>
               <TooltipTrigger asChild>
                 <div
-                  className="flex items-center justify-center w-8 h-8 rounded-full border-2 border-[#10111a] bg-blue-600 text-[10px] font-bold text-white shadow-sm ring-2 ring-transparent transition-all hover:z-10 hover:ring-blue-400"
+                  className="flex items-center justify-center w-8 h-8 rounded-full border-2 border-[#10111a] bg-blue-600 text-[10px] font-bold text-foreground shadow-sm ring-2 ring-transparent transition-all hover:z-10 hover:ring-blue-400"
                   style={{ zIndex: displayUsers.length - index }}
                 >
                   {initials}
                 </div>
               </TooltipTrigger>
-              <TooltipContent className="bg-[#10111a] border border-[#ffffff1a] text-white">
+              <TooltipContent className="bg-[#10111a] border border-[#ffffff1a] text-foreground">
                 <p className="text-xs">{user.name}</p>
               </TooltipContent>
             </Tooltip>
@@ -56,13 +56,13 @@ export function PresencePile({ users, maxUsers = 4 }: PresencePileProps) {
           <Tooltip>
             <TooltipTrigger asChild>
               <div
-                className="flex items-center justify-center w-8 h-8 rounded-full border-2 border-[#10111a] bg-white/10 text-[10px] font-bold text-white/70 shadow-sm"
+                className="flex items-center justify-center w-8 h-8 rounded-full border-2 border-[#10111a] bg-foreground/10 text-[10px] font-bold text-foreground/70 shadow-sm"
                 style={{ zIndex: 0 }}
               >
                 +{remaining}
               </div>
             </TooltipTrigger>
-            <TooltipContent className="bg-[#10111a] border border-[#ffffff1a] text-white">
+            <TooltipContent className="bg-[#10111a] border border-[#ffffff1a] text-foreground">
               <p className="text-xs">{remaining} more users viewing</p>
             </TooltipContent>
           </Tooltip>

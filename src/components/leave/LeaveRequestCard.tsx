@@ -27,25 +27,25 @@ export const LeaveRequestCard: React.FC<LeaveRequestCardProps> = ({
     };
 
     return (
-        <div className="bg-white/5 border border-[#ffffff1a] rounded-2xl p-5 hover:bg-white/[0.07] transition-all">
+        <div className="bg-foreground/5 border border-[#ffffff1a] rounded-2xl p-5 hover:bg-foreground/[0.07] transition-all">
             {/* Header */}
             <div className="flex items-start justify-between mb-4">
                 <div className="flex-1">
                     <div className="flex items-center gap-2 mb-1">
-                        <span className="text-lg font-bold text-white">
+                        <span className="text-lg font-bold text-foreground">
                             {LEAVE_TYPE_LABELS[request.type]}
                         </span>
                         <span className={`px-2 py-0.5 rounded-full text-[10px] font-bold uppercase border ${statusConfig.color}`}>
                             {statusConfig.icon} {statusConfig.label}
                         </span>
                     </div>
-                    <div className="flex items-center gap-2 text-sm text-white/50">
+                    <div className="flex items-center gap-2 text-sm text-foreground/70">
                         <Calendar size={14} />
                         <span>
                             {format(getSafeDate(request.startDate), 'MMM dd, yyyy')} - {format(getSafeDate(request.endDate), 'MMM dd, yyyy')}
                         </span>
-                        <span className="text-white/50">•</span>
-                        <span className="font-medium text-white/60">{request.totalDays} day{request.totalDays > 1 ? 's' : ''}</span>
+                        <span className="text-foreground/70">•</span>
+                        <span className="font-medium text-foreground/80">{request.totalDays} day{request.totalDays > 1 ? 's' : ''}</span>
                     </div>
                 </div>
             </div>
@@ -53,13 +53,13 @@ export const LeaveRequestCard: React.FC<LeaveRequestCardProps> = ({
             {/* Reason */}
             <div className="mb-4">
                 <div className="flex items-start gap-2 text-sm">
-                    <MessageSquare size={14} className="text-white/40 mt-0.5 flex-shrink-0" />
-                    <p className="text-white/70 italic">"{request.reason}"</p>
+                    <MessageSquare size={14} className="text-foreground/80 mt-0.5 flex-shrink-0" />
+                    <p className="text-foreground/70 italic">"{request.reason}"</p>
                 </div>
             </div>
 
             {/* Metadata */}
-            <div className="flex items-center justify-between text-xs text-white/40 pt-3 border-t border-white/5">
+            <div className="flex items-center justify-between text-xs text-foreground/80 pt-3 border-t border-foreground/5">
                 <div className="flex items-center gap-1">
                     <User size={12} />
                     <span>Requested {format(getSafeDate(request.requestedAt), 'MMM dd, yyyy')}</span>
@@ -82,7 +82,7 @@ export const LeaveRequestCard: React.FC<LeaveRequestCardProps> = ({
 
             {/* Actions */}
             {canCancel && (
-                <div className="mt-4 pt-3 border-t border-white/5">
+                <div className="mt-4 pt-3 border-t border-foreground/5">
                     <button
                         onClick={() => onCancel(request.id)}
                         className="flex items-center gap-2 px-4 py-2 text-sm font-medium text-red-400 hover:text-red-300 bg-red-500/10 hover:bg-red-500/20 border border-red-500/20 rounded-lg transition-colors"

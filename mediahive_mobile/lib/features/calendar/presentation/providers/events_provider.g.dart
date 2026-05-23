@@ -6,7 +6,7 @@ part of 'events_provider.dart';
 // RiverpodGenerator
 // **************************************************************************
 
-String _$eventRepositoryHash() => r'73ff5e19de237fcb718c1be1ac931bbb08044850';
+String _$eventRepositoryHash() => r'a48e20350d50865a129c0d05d3ee943f5c57a722';
 
 /// See also [eventRepository].
 @ProviderFor(eventRepository)
@@ -21,7 +21,7 @@ final eventRepositoryProvider = AutoDisposeProvider<EventRepository>.internal(
 );
 
 typedef EventRepositoryRef = AutoDisposeProviderRef<EventRepository>;
-String _$eventListHash() => r'4b1595530a629b39a33db893d71fdeb49d6bd2c9';
+String _$eventListHash() => r'3c8690c6bb228f7615d1d5cd6a9d0c129aa6edff';
 
 /// See also [EventList].
 @ProviderFor(EventList)

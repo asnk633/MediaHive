@@ -44,11 +44,11 @@ export function UpcomingEventsStrip({ events, onEventClick }: UpcomingEventsStri
     if (upcomingEvents.length === 0) {
         return (
             <div className="w-full mb-8">
-                <h3 className="text-xs font-bold text-white/50 uppercase tracking-widest mb-3 pl-1 flex items-center gap-2">
+                <h3 className="text-xs font-bold text-foreground/70 uppercase tracking-widest mb-3 pl-1 flex items-center gap-2">
                     Events in next 7 days
                 </h3>
                 <div className="w-full bg-glass rounded-xl p-6 text-center flex flex-col items-center justify-center gap-2 shadow-sm">
-                    <div className="w-10 h-10 rounded-full bg-white/5 flex items-center justify-center text-white/20 mb-1">
+                    <div className="w-10 h-10 rounded-full bg-foreground/5 flex items-center justify-center text-foreground/80 mb-1">
                         <PartyPopper size={20} />
                     </div>
                     <p className="text-sm text-muted font-medium">No events in the next 7 days</p>
@@ -149,7 +149,7 @@ export function UpcomingEventsStrip({ events, onEventClick }: UpcomingEventsStri
                             flex flex-col items-center justify-center gap-2 text-muted hover:text-foreground
                         "
                     >
-                        <div className="w-10 h-10 rounded-full bg-white/10 flex items-center justify-center">
+                        <div className="w-10 h-10 rounded-full bg-foreground/10 flex items-center justify-center">
                             <ArrowRight size={20} />
                         </div>
                         <span className="text-xs font-bold">View all events</span>

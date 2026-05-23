@@ -67,7 +67,7 @@ export default function EditEventModalAdmin({
             <h3 className="text-lg font-bold">Edit Event</h3>
             <DraftIndicator isSaved={isDraftSaved} />
           </div>
-          <button onClick={onClose} className="text-white/70 hover:text-white">✕</button>
+          <button onClick={onClose} className="text-foreground/70 hover:text-foreground">✕</button>
         </header>
 
         <div className="space-y-6">
@@ -181,7 +181,7 @@ export default function EditEventModalAdmin({
                 {isSubmitting && <div className="w-4 h-4 rounded-full border-2 border-black/30 border-t-black animate-spin" />}
                 Save Changes
             </button>
-            <button onClick={onClose} disabled={isSubmitting} className="h-12 flex-1 rounded-lg border border-white/30 disabled:opacity-50">Cancel</button>
+            <button onClick={onClose} disabled={isSubmitting} className="h-12 flex-1 rounded-lg border border-foreground/30 disabled:opacity-50">Cancel</button>
           </div>
         </div>
       </div>

@@ -129,6 +129,7 @@
     "embla-carousel-autoplay": "^8.6.0",
     "embla-carousel-react": "^8.6.0",
     "estree-walker": "2.0.2",
+    "firebase": "^12.13.0",
     "flubber": "^0.4.2",
     "framer-motion": "^12.23.22",
     "get-port": "^7.1.0",

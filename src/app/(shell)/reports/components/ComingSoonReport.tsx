@@ -20,21 +20,21 @@ export function ComingSoonReport({ title, description }: ComingSoonReportProps) 
                     <div className="flex justify-center mb-8">
                         <button
                             onClick={() => router.back()}
-                            className="flex items-center gap-2 text-white/40 hover:text-white transition-colors text-xs font-bold uppercase tracking-widest group"
+                            className="flex items-center gap-2 text-foreground/80 hover:text-foreground transition-colors text-xs font-bold uppercase tracking-widest group"
                         >
                             <ArrowLeft size={14} className="group-hover:-translate-x-1 transition-transform" /> Back to reports
                         </button>
                     </div>
 
-                    <div className="w-20 h-20 rounded-full bg-white/5 flex items-center justify-center mx-auto mb-6 border border-white/10 shadow-2xl">
+                    <div className="w-20 h-20 rounded-full bg-foreground/5 flex items-center justify-center mx-auto mb-6 border border-foreground/10 shadow-2xl">
                         <Construction size={32} className="text-amber-500/60" />
                     </div>
 
-                    <h1 className="text-3xl font-bold text-white tracking-tight">{title}</h1>
-                    <p className="text-white/40 font-medium">{description}</p>
+                    <h1 className="text-3xl font-bold text-foreground tracking-tight">{title}</h1>
+                    <p className="text-foreground/80 font-medium">{description}</p>
 
                     <div className="pt-8">
-                        <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-white/5 border border-white/5 text-[10px] font-bold text-white/20 uppercase tracking-[0.2em]">
+                        <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-foreground/5 border border-foreground/5 text-[10px] font-bold text-foreground/80 uppercase tracking-[0.2em]">
                             <Clock size={12} /> Optimization in progress
                         </div>
                     </div>

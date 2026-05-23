@@ -103,7 +103,7 @@ export function CalendarView({ currentDate, onDateChange, events, onDateClick, o
             event-surface
             rounded-2xl
             overflow-hidden
-            text-white
+            text-foreground
             relative
             select-none
         ">
@@ -131,13 +131,13 @@ export function CalendarView({ currentDate, onDateChange, events, onDateClick, o
             </AnimatePresence>
 
             {/* Header */}
-            <div className="flex items-center justify-between p-8 border-b border-white/5">
+            <div className="flex items-center justify-between p-8 border-b border-foreground/5">
                 <div className="flex flex-col gap-1">
-                    <h2 className="text-2xl font-black tracking-tighter text-white">
+                    <h2 className="text-2xl font-black tracking-tighter text-foreground">
                         {format(currentDate, 'MMMM')}
                         <span className="text-blue-500/50 ml-2">{format(currentDate, 'yyyy')}</span>
                     </h2>
-                    <p className="text-[10px] font-bold text-white/50 uppercase tracking-[0.2em]">Institutional Scheduler</p>
+                    <p className="text-[10px] font-bold text-foreground/70 uppercase tracking-[0.2em]">Institutional Scheduler</p>
                 </div>
                 <div className="flex gap-3">
                     <button
@@ -158,10 +158,10 @@ export function CalendarView({ currentDate, onDateChange, events, onDateClick, o
             </div>
 
             {/* Grid Header */}
-            <div className="grid grid-cols-7 bg-white/[0.02] border-b border-white/5">
+            <div className="grid grid-cols-7 bg-foreground/[0.02] border-b border-foreground/5">
                 {
                     weekDays.map(day => (
-                        <div key={day} className="py-4 text-center text-[10px] font-black text-white/50 uppercase tracking-[0.3em]">
+                        <div key={day} className="py-4 text-center text-[10px] font-black text-foreground/70 uppercase tracking-[0.3em]">
                             {day}
                         </div>
                     ))
@@ -169,7 +169,7 @@ export function CalendarView({ currentDate, onDateChange, events, onDateClick, o
             </div>
 
             {/* Days Grid */}
-            <div className="flex flex-col gap-px bg-white/5">
+            <div className="flex flex-col gap-px bg-foreground/5">
                 {
                     // Chunk days into weeks (7 days each)
                     Array.from({ length: Math.ceil(days.length / 7) }, (_, i) => days.slice(i * 7, i * 7 + 7)).map((week, weekIdx) => (
@@ -223,7 +223,7 @@ export function CalendarView({ currentDate, onDateChange, events, onDateClick, o
                                         }}
                                         className={cn(
                                             "group relative p-4 cursor-pointer transition-all duration-300 outline-none flex flex-col min-h-[130px] sm:min-h-[150px]",
-                                            !isCurrentMonth ? "bg-black/40 text-white/10" : "bg-[#0a1426]/40 text-white/70 hover:bg-white/[0.04]",
+                                            !isCurrentMonth ? "bg-foreground/[0.03] text-foreground/70" : "bg-foreground/[0.08] text-foreground/70 hover:bg-foreground/[0.04]",
                                             isToday && "bg-blue-500/10 ring-1 ring-inset ring-blue-500/20",
                                             isInDragRange && "bg-blue-500/20 ring-1 ring-inset ring-blue-500/40 z-10"
                                         )}
@@ -231,7 +231,7 @@ export function CalendarView({ currentDate, onDateChange, events, onDateClick, o
                                         <div className="flex justify-between items-start mb-3">
                                             <span className={cn(
                                                 "w-8 h-8 flex items-center justify-center rounded-xl text-sm font-bold transition-all",
-                                                isToday ? "bg-blue-600 text-white shadow-lg shadow-blue-500/20" : "text-white/40 group-hover:text-white"
+                                                isToday ? "bg-blue-600 text-foreground shadow-lg shadow-blue-500/20" : "text-foreground/80 group-hover:text-foreground"
                                             )}>
                                                 {format(day, 'd')}
                                             </span>
@@ -268,7 +268,7 @@ export function CalendarView({ currentDate, onDateChange, events, onDateClick, o
                                         </div>
 
                                         {dayEvents.length > 3 && (
-                                            <div className="mt-2 text-[9px] font-black text-white/20 uppercase tracking-widest pl-1">
+                                            <div className="mt-2 text-[9px] font-black text-foreground/80 uppercase tracking-widest pl-1">
                                                 +{dayEvents.length - 3} more
                                             </div>
                                         )}

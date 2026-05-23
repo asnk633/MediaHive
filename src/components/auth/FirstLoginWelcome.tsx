@@ -128,7 +128,7 @@ export const FirstLoginWelcome: React.FC<FirstLoginWelcomeProps> = ({ userRole, 
           <div className="flex justify-center mb-2">
             {welcomeContent.icon}
           </div>
-          <CardTitle className="text-xl font-bold text-white">
+          <CardTitle className="text-xl font-bold text-foreground">
             {welcomeContent.title}
           </CardTitle>
           <div className="mt-2">
@@ -168,7 +168,7 @@ export const FirstLoginWelcome: React.FC<FirstLoginWelcomeProps> = ({ userRole, 
             </Button>
             <Button
               onClick={handleContinue}
-              className="flex-1 bg-blue-600 hover:bg-blue-500 text-white"
+              className="flex-1 bg-blue-600 hover:bg-blue-500 text-foreground"
             >
               Continue to Dashboard
             </Button>

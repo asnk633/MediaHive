@@ -62,6 +62,15 @@ export default function InventoryStandalonePage() {
                 onOpenChange={(open) => !open && router.push('/inventory')}
                 role={role}
                 onEdit={['admin', 'manager'].includes(role) ? (i) => router.push(`/inventory/edit?id=${i.id}`) : undefined}
+                onDelete={['admin', 'manager'].includes(role) ? async (i) => {
+                    try {
+                        await inventoryService.delete(String(i.id));
+                        toast.success("Item moved to trash");
+                        router.push('/inventory');
+                    } catch (error) {
+                        toast.error("Failed to delete item");
+                    }
+                } : undefined}
             />
         </PageLayout>
     );

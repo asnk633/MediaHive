@@ -47,7 +47,7 @@ function CustomTooltip({ active, payload }: any) {
 
     return (
         <div className="bg-[#1a2639]/95 border border-[#ffffff1a] rounded-xl p-4 shadow-xl backdrop-blur-md">
-            <p className="text-white font-bold mb-2 uppercase tracking-wider text-xs border-b border-[#ffffff1a] pb-2">{data.period}</p>
+            <p className="text-foreground font-bold mb-2 uppercase tracking-wider text-xs border-b border-[#ffffff1a] pb-2">{data.period}</p>
             <div className="space-y-2">
                 <div className="flex justify-between items-center gap-8">
                     <span className="text-gray-400 text-xs">IPS Score</span>
@@ -57,7 +57,7 @@ function CustomTooltip({ active, payload }: any) {
                 </div>
                 <div className="flex justify-between items-center gap-8">
                     <span className="text-gray-400 text-xs">Tasks Completed</span>
-                    <span className="text-sm font-semibold text-white">{data.completedTasks}<span className="text-white/40">/{data.assignedTasks}</span></span>
+                    <span className="text-sm font-semibold text-foreground">{data.completedTasks}<span className="text-foreground/80">/{data.assignedTasks}</span></span>
                 </div>
                 {data.overdueTasks > 0 && (
                     <div className="flex justify-between items-center gap-8">
@@ -65,7 +65,7 @@ function CustomTooltip({ active, payload }: any) {
                         <span className="text-sm font-bold text-red-400">{data.overdueTasks}</span>
                     </div>
                 )}
-                <div className="flex justify-between items-center gap-8 pt-2 border-t border-white/5 mt-1">
+                <div className="flex justify-between items-center gap-8 pt-2 border-t border-foreground/5 mt-1">
                     <span className="text-gray-400 text-xs">Avg Hours/Day</span>
                     <span className="text-sm font-mono text-blue-300">{data.avgDailyHours.toFixed(1)}h</span>
                 </div>

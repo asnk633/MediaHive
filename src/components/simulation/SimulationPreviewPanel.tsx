@@ -40,7 +40,7 @@ export function SimulationPreviewPanel({
         <div className="bg-gray-800 border-b border-gray-700 px-4 py-3 flex items-center justify-between">
           <div className="flex items-center gap-2">
             <Eye className="h-4 w-4 text-blue-400" />
-            <h2 className="font-medium text-white text-sm">
+            <h2 className="font-medium text-foreground text-sm">
               Simulation Preview
             </h2>
           </div>
@@ -127,7 +127,7 @@ function SingleScenarioView({
   return (
     <div className="space-y-6">
       <div className="bg-gray-800/30 border border-gray-700 rounded-lg p-4">
-        <h3 className="text-lg font-medium text-white mb-3">
+        <h3 className="text-lg font-medium text-foreground mb-3">
           Selected Scenario: {result.choice.description}
         </h3>
         
@@ -189,7 +189,7 @@ function ComparisonView({
   return (
     <div className="space-y-6">
       <div className="text-center py-4">
-        <h3 className="text-lg font-medium text-white">
+        <h3 className="text-lg font-medium text-foreground">
           Compare Resolution Scenarios
         </h3>
         <p className="text-gray-400 text-sm mt-1">
@@ -228,7 +228,7 @@ function ScenarioCard({
   return (
     <div className="bg-gray-800/30 border border-gray-700 rounded-lg p-4">
       <div className="flex items-center justify-between mb-3">
-        <h4 className="font-medium text-white">
+        <h4 className="font-medium text-foreground">
           Option {position}: {result.choice.description}
         </h4>
         {isActive && (

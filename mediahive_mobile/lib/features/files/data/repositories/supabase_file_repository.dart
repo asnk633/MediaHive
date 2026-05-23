@@ -12,21 +12,28 @@ class SupabaseFileRepository implements FileRepository {
   @override
   Future<Either<Failure, List<FileAsset>>> getFiles() async {
     try {
+      print('[FILE_REPO] Fetching files from remote...');
       final response = await _supabaseClient
           .from('files')
           .select()
-          .or('upload_context.is.null,upload_context.neq.inventory_asset')
           .order('created_at', ascending: false);
+      
+      print('[FILE_REPO] Received response from Supabase. Count: ${(response as List).length}');
       
       final files = (response as List).map((json) {
         return FileAsset.fromJson({
           ...json,
           // Handle the messy column names in DB
           'mimeType': json['mimeType'] ?? json['mime_type'] ?? 'application/octet-stream',
-          'downloadLink': json['downloadLink'] ?? json['download_link'] ?? '',
+          'downloadLink': json['downloadLink'] ?? json['download_link'],
           'size': int.tryParse(json['size']?.toString() ?? '0') ?? 0,
           'createdAt': json['created_at'],
         });
+      }).where((file) {
+        // Filter out inventory asset images
+        final isInventory = file.uploadContext == 'inventory_asset' || 
+                            file.name.startsWith('INV_');
+        return !isInventory;
       }).toList();
       
       return Right(files);

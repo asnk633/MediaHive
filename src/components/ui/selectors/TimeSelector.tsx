@@ -54,7 +54,7 @@ export function TimeSelector({
   return (
     <div className={cn("space-y-2", className)}>
       {label && (
-        <label className="text-[10px] font-black uppercase tracking-widest text-white/50 px-1">
+        <label className="text-[10px] font-black uppercase tracking-widest text-foreground/70 px-1">
           {label}
         </label>
       )}
@@ -64,8 +64,8 @@ export function TimeSelector({
             variant="ghost"
             className={cn(
               "w-full justify-start text-left font-bold text-sm h-11 px-4 rounded-[14px]",
-              "bg-white/[0.03] border border-white/10 text-white/90",
-              "hover:bg-white/[0.08] hover:border-white/20 hover:shadow-[0_0_20px_rgba(255,255,255,0.05)]",
+              "bg-foreground/[0.03] border border-foreground/10 text-foreground/90",
+              "hover:bg-foreground/[0.08] hover:border-foreground/20 hover:shadow-[0_0_20px_rgba(255,255,255,0.05)]",
               "transition-all duration-300 group"
             )}
           >
@@ -78,11 +78,11 @@ export function TimeSelector({
           align="start"
           sideOffset={8}
         >
-          <div className="bg-[#0b1220]/95 backdrop-blur-2xl border border-white/10 rounded-[24px] shadow-2xl overflow-hidden animate-in fade-in zoom-in-95 duration-200">
+          <div className="bg-[var(--glass-liquid-bg)] backdrop-blur-2xl border border-border rounded-[24px] shadow-2xl overflow-hidden animate-in fade-in zoom-in-95 duration-200">
             <div className="flex h-[240px]">
               {/* Hours */}
               <div className="flex-1 flex flex-col pt-3">
-                <div className="text-[9px] font-black text-white/20 uppercase tracking-widest text-center mb-2">Hour</div>
+                <div className="text-[9px] font-black text-foreground/80 uppercase tracking-widest text-center mb-2">Hour</div>
                 <ScrollArea className="flex-1 px-2 pb-3">
                   <div className="space-y-1">
                     {hours.map((h) => (
@@ -92,8 +92,8 @@ export function TimeSelector({
                         className={cn(
                           "w-full h-10 flex items-center justify-center rounded-xl font-bold text-sm transition-all",
                           selectedHour === h
-                            ? "bg-blue-600 text-white shadow-lg shadow-blue-600/20"
-                            : "text-white/40 hover:bg-white/5 hover:text-white"
+                            ? "bg-blue-600 text-foreground shadow-lg shadow-blue-600/20"
+                            : "text-foreground/70 hover:bg-foreground/5 hover:text-foreground"
                         )}
                       >
                         {h}
@@ -104,8 +104,8 @@ export function TimeSelector({
               </div>
 
               {/* Minutes */}
-              <div className="flex-1 flex flex-col pt-3 border-l border-white/5">
-                <div className="text-[9px] font-black text-white/20 uppercase tracking-widest text-center mb-2">Min</div>
+              <div className="flex-1 flex flex-col pt-3 border-l border-foreground/5">
+                <div className="text-[9px] font-black text-foreground/80 uppercase tracking-widest text-center mb-2">Min</div>
                 <ScrollArea className="flex-1 px-2 pb-3">
                   <div className="space-y-1">
                     {minutes.map((m) => (
@@ -115,8 +115,8 @@ export function TimeSelector({
                         className={cn(
                           "w-full h-10 flex items-center justify-center rounded-xl font-bold text-sm transition-all",
                           selectedMinute === m
-                            ? "bg-blue-600 text-white shadow-lg shadow-blue-600/20"
-                            : "text-white/40 hover:bg-white/5 hover:text-white"
+                            ? "bg-blue-600 text-foreground shadow-lg shadow-blue-600/20"
+                            : "text-foreground/70 hover:bg-foreground/5 hover:text-foreground"
                         )}
                       >
                         {m.toString().padStart(2, "0")}
@@ -127,7 +127,7 @@ export function TimeSelector({
               </div>
 
               {/* AM/PM */}
-              <div className="w-[70px] flex flex-col p-2 space-y-2 justify-center bg-white/[0.02] border-l border-white/5">
+              <div className="w-[70px] flex flex-col p-2 space-y-2 justify-center bg-foreground/[0.02] border-l border-foreground/5">
                 {["AM", "PM"].map((p) => (
                   <button
                     key={p}
@@ -135,8 +135,8 @@ export function TimeSelector({
                     className={cn(
                       "flex-1 rounded-xl font-black text-xs transition-all",
                       period === p
-                        ? "bg-blue-600 text-white shadow-lg shadow-blue-600/20"
-                        : "text-white/20 hover:bg-white/5 hover:text-white"
+                        ? "bg-blue-600 text-foreground shadow-lg shadow-blue-600/20"
+                        : "text-foreground/80 hover:bg-foreground/5 hover:text-foreground"
                     )}
                   >
                     {p}

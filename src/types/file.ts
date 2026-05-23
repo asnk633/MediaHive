@@ -23,7 +23,7 @@ export interface DriveFile {
     department?: string;
 
     // Authorization Context (Strict Downloads Scope)
-    uploadContext?: 'task_attachment' | 'task_final' | 'downloads_direct';
+    uploadContext?: 'task_attachment' | 'task_final' | 'downloads_direct' | 'inventory_asset';
     isFinal?: boolean; // Derived from uploadContext (optional helper)
 
     // Proofing & Versions

@@ -8,6 +8,7 @@ const coerceNumber = z.preprocess(
 
 export const EquipmentItemSchema = z.object({
     id: z.union([z.string(), z.number()]),
+    assetId: z.string().optional().nullable(),
     name: z.string(),
     category: z.string(),
     quantity: coerceNumber.transform((v) => v ?? 0),
@@ -56,18 +57,22 @@ export type EquipmentBooking = z.infer<typeof EquipmentBookingSchema>;
 
 export const InventoryRequestSchema = z.object({
     id: z.union([z.string(), z.number()]),
-    itemId: z.union([z.string(), z.number()]),
+    itemId: z.union([z.string(), z.number()]).optional().nullable(),
     itemName: z.string(),
-    requestedBy: z.string(),
-    requestedByRole: z.string(),
-    purpose: z.string(),
+    requestedBy: z.string().optional().nullable(),
+    requestedByRole: z.string().optional().nullable(),
+    purpose: z.string().optional().nullable(),
+    notes: z.string().optional().nullable(),
     institutionId: z.union([z.string(), z.number()]).optional().nullable(),
     status: z.string(),
+    rejectReason: z.string().optional().nullable(),
+    issueId: z.union([z.string(), z.number()]).optional().nullable(),
     tenantId: z.string().optional().nullable(),
-    createdAt: z.string(),
+    createdAt: z.any(),
 });
 
 export type InventoryRequestClean = z.infer<typeof InventoryRequestSchema>;
+export type InventoryRequest = InventoryRequestClean;
 
 export const InventoryIssueSchema = z.object({
     id: z.union([z.string(), z.number()]),
@@ -88,6 +93,7 @@ export const InventoryIssueSchema = z.object({
 });
 
 export type InventoryIssueClean = z.infer<typeof InventoryIssueSchema>;
+export type InventoryIssue = InventoryIssueClean;
 
 export interface AvailabilityInfo {
     available: number;

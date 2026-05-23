@@ -291,7 +291,7 @@ const config: Config = {
       colors: {
         // v3 Semantic Mappings
         background: "var(--bg-root-fallback)",
-        foreground: "var(--text-primary)",
+        foreground: "rgb(var(--text-primary) / <alpha-value>)",
 
         // Tier System
         tier2: "var(--tier2-panel)",
@@ -302,17 +302,17 @@ const config: Config = {
 
         card: {
           DEFAULT: "transparent",
-          foreground: "var(--text-primary)",
+          foreground: "rgb(var(--text-primary) / <alpha-value>)",
         },
         popover: {
-          DEFAULT: "#262628", // Matches Tier 2 base
-          foreground: "var(--text-primary)",
+          DEFAULT: "var(--popover-bg)", // Matches Tier 2 base
+          foreground: "rgb(var(--text-primary) / <alpha-value>)",
         },
 
         // Brand / Action
         primary: {
           DEFAULT: "var(--accent-primary)",
-          foreground: "var(--text-primary)",
+          foreground: "rgb(var(--text-primary) / <alpha-value>)",
           soft: "var(--accent-primary-soft)",
         },
         destructive: {
@@ -322,8 +322,8 @@ const config: Config = {
 
         // Text
         muted: {
-          DEFAULT: "#262628",
-          foreground: "var(--text-muted)",
+          DEFAULT: "var(--popover-bg)",
+          foreground: "rgb(var(--text-muted) / <alpha-value>)",
         },
 
         // Borders

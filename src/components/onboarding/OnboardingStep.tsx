@@ -40,7 +40,7 @@ export function OnboardingStep({
             )}
 
             <div className="space-y-4 mb-12">
-                <h1 className="text-3xl font-semibold text-white tracking-tight text-premium-gradient">
+                <h1 className="text-3xl font-semibold text-foreground tracking-tight text-premium-gradient">
                     {title}
                 </h1>
                 {subtitle && (
@@ -61,7 +61,7 @@ export function OnboardingStep({
                 ) : (
                     <button
                         onClick={onNext}
-                        className="w-full py-4 btn-premium button-micro text-white rounded-2xl font-bold text-lg"
+                        className="w-full py-4 btn-premium button-micro text-foreground rounded-2xl font-bold text-lg"
                     >
                         {nextLabel}
                     </button>
@@ -70,7 +70,7 @@ export function OnboardingStep({
                 {onSkip && (
                     <button 
                         onClick={onSkip} 
-                        className="text-white/40 hover:text-white font-medium text-sm transition-colors py-2 bg-white/5 rounded-xl px-4 border border-white/10 backdrop-blur-md button-micro"
+                        className="text-foreground/80 hover:text-foreground font-medium text-sm transition-colors py-2 bg-foreground/5 rounded-xl px-4 border border-foreground/10 backdrop-blur-md button-micro"
                     >
                         Skip for Now
                     </button>

@@ -85,10 +85,10 @@ class EventDetailScreen extends ConsumerWidget {
                         child: Container(
                           padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
                           decoration: BoxDecoration(
-                            color: const Color(0xFF2563EB),
+                            color: colors.indigo,
                             borderRadius: BorderRadius.circular(12),
                             boxShadow: [
-                              BoxShadow(color: const Color(0xFF2563EB).withOpacity(0.3), blurRadius: 10, offset: const Offset(0, 4)),
+                              BoxShadow(color: colors.indigo.withOpacity(0.3), blurRadius: 10, offset: const Offset(0, 4)),
                             ],
                           ),
                           child: const Row(
@@ -127,11 +127,11 @@ class EventDetailScreen extends ConsumerWidget {
                       children: [
                         Row(
                           children: [
-                            Icon(LucideIcons.video, size: 18, color: Colors.blue[400]),
+                            Icon(LucideIcons.video, size: 18, color: colors.indigo),
                             const SizedBox(width: 12),
                             Text(
                               'Media Coverage Requested',
-                              style: TextStyle(fontSize: 14, fontWeight: FontWeight.bold, color: Colors.blue[400]),
+                              style: TextStyle(fontSize: 14, fontWeight: FontWeight.bold, color: colors.indigo),
                             ),
                           ],
                         ),
@@ -171,7 +171,7 @@ class EventDetailScreen extends ConsumerWidget {
                                 overflow: TextOverflow.ellipsis,
                                 style: TextStyle(fontSize: 13, fontWeight: FontWeight.bold, color: colors.textPrimary)),
                               const SizedBox(height: 4),
-                              _buildStatusTag(colors, 'DONE', DesignTokens.success),
+                              _buildStatusTag(colors, 'DONE', colors.emerald),
                             ],
                           ),
                         ),
@@ -215,7 +215,7 @@ class EventDetailScreen extends ConsumerWidget {
                       Container(
                         width: 40,
                         height: 40,
-                        decoration: const BoxDecoration(color: Color(0xFF2563EB), shape: BoxShape.circle),
+                        decoration: BoxDecoration(color: colors.indigo, shape: BoxShape.circle),
                         child: Center(child: Text(requestedBy!, style: const TextStyle(color: Colors.white, fontWeight: FontWeight.bold))),
                       ),
                       const SizedBox(width: 16),
@@ -258,7 +258,7 @@ https://mediahive.app/events/detail?title=${Uri.encodeComponent(title)}
                           SnackBar(
                             content: const Text('Event link copied to clipboard!', 
                               style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold)),
-                            backgroundColor: const Color(0xFF2563EB),
+                            backgroundColor: colors.indigo,
                             behavior: SnackBarBehavior.floating,
                             shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
                           ),
@@ -270,7 +270,7 @@ https://mediahive.app/events/detail?title=${Uri.encodeComponent(title)}
                   const Spacer(),
                   GestureDetector(
                     onTap: () => _showDeleteConfirmation(context, ref, colors),
-                    child: Icon(LucideIcons.trash2, color: Colors.red[400], size: 20),
+                    child: Icon(LucideIcons.trash2, color: colors.error, size: 20),
                   ),
                 ],
               ),
@@ -315,7 +315,7 @@ https://mediahive.app/events/detail?title=${Uri.encodeComponent(title)}
           Container(
             margin: const EdgeInsets.only(left: 8),
             decoration: BoxDecoration(
-              color: Colors.red[400],
+              color: colors.error,
               borderRadius: BorderRadius.circular(12),
             ),
             child: TextButton(
@@ -345,7 +345,7 @@ https://mediahive.app/events/detail?title=${Uri.encodeComponent(title)}
   Widget _buildCoverageItem(ThemeColors colors, String label, bool checked) {
     return Row(
       children: [
-        Icon(checked ? LucideIcons.checkCircle2 : LucideIcons.circle, size: 16, color: DesignTokens.success),
+        Icon(checked ? LucideIcons.checkCircle2 : LucideIcons.circle, size: 16, color: colors.emerald),
         const SizedBox(width: 12),
         Text(label, style: TextStyle(fontSize: 13, color: colors.textPrimary)),
       ],
@@ -360,7 +360,7 @@ https://mediahive.app/events/detail?title=${Uri.encodeComponent(title)}
           Container(
             padding: const EdgeInsets.all(10),
             decoration: BoxDecoration(color: colors.surface, borderRadius: BorderRadius.circular(12)),
-            child: Icon(icon, size: 18, color: colors.isDark ? Colors.blue[400] : colors.textPrimary),
+            child: Icon(icon, size: 18, color: colors.indigo),
           ),
           const SizedBox(width: 16),
           Expanded(

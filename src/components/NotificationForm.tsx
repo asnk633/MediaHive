@@ -193,7 +193,7 @@ export function NotificationForm({ initialData, onSubmitSuccess, onCancel }: Not
     }
   };
 
-  const labelClasses = "text-[10px] font-black uppercase tracking-[0.2em] text-white/40 px-1 mb-2 flex items-center gap-2";
+  const labelClasses = "text-[10px] font-black uppercase tracking-[0.2em] text-foreground/80 px-1 mb-2 flex items-center gap-2";
 
   return (
     <>
@@ -207,7 +207,7 @@ export function NotificationForm({ initialData, onSubmitSuccess, onCancel }: Not
             <Input 
               {...register('title')} 
               placeholder="e.g. System Maintenance Update" 
-              className="h-12 bg-white/[0.03] border-white/10 rounded-2xl focus:bg-white/[0.08] transition-all"
+              className="h-12 bg-foreground/[0.03] border-foreground/10 rounded-2xl focus:bg-foreground/[0.08] transition-all"
               error={errors.title?.message}
             />
           </div>
@@ -220,7 +220,7 @@ export function NotificationForm({ initialData, onSubmitSuccess, onCancel }: Not
             <Textarea 
               {...register('body')} 
               placeholder="Type your message here..." 
-              className="min-h-[120px] bg-white/[0.03] border-white/10 rounded-2xl focus:bg-white/[0.08] transition-all resize-none p-4"
+              className="min-h-[120px] bg-foreground/[0.03] border-foreground/10 rounded-2xl focus:bg-foreground/[0.08] transition-all resize-none p-4"
             />
             {errors.body && <p className="text-red-400 text-xs mt-1.5 ml-1">{errors.body.message}</p>}
           </div>
@@ -234,7 +234,7 @@ export function NotificationForm({ initialData, onSubmitSuccess, onCancel }: Not
               type="single" 
               value={audienceMode} 
               onValueChange={(val) => val && setAudienceMode(val as any)}
-              className="bg-white/[0.03] p-1 rounded-2xl border border-white/10 w-full flex-wrap gap-1"
+              className="bg-foreground/[0.03] p-1 rounded-2xl border border-foreground/10 w-full flex-wrap gap-1"
             >
               {[
                 { id: 'broadcast', label: 'Broadcast' },
@@ -246,7 +246,7 @@ export function NotificationForm({ initialData, onSubmitSuccess, onCancel }: Not
                 <ToggleGroupItem 
                   key={mode.id}
                   value={mode.id} 
-                  className="flex-1 rounded-xl data-[state=on]:bg-blue-600 data-[state=on]:text-white transition-all py-6 text-[10px] font-black uppercase tracking-widest"
+                  className="flex-1 rounded-xl data-[state=on]:bg-blue-600 data-[state=on]:text-foreground transition-all py-6 text-[10px] font-black uppercase tracking-widest"
                 >
                   {mode.label}
                 </ToggleGroupItem>
@@ -333,16 +333,16 @@ export function NotificationForm({ initialData, onSubmitSuccess, onCancel }: Not
                   "border-2 border-dashed rounded-2xl p-4 flex flex-col items-center justify-center gap-2 cursor-pointer transition-all",
                   selectedFile 
                     ? "border-blue-500/50 bg-blue-500/5" 
-                    : "border-white/10 bg-white/[0.02] hover:border-white/20 hover:bg-white/[0.04]"
+                    : "border-foreground/10 bg-foreground/[0.02] hover:border-foreground/20 hover:bg-foreground/[0.04]"
                 )}
               >
                 {!selectedFile ? (
                   <>
-                    <div className="w-10 h-10 rounded-full bg-white/5 flex items-center justify-center text-white/40">
+                    <div className="w-10 h-10 rounded-full bg-foreground/5 flex items-center justify-center text-foreground/80">
                       <Paperclip size={20} />
                     </div>
-                    <span className="text-sm font-bold text-white/60">Upload Assets</span>
-                    <span className="text-[10px] text-white/30 uppercase tracking-wider">PNG, JPG or PDF</span>
+                    <span className="text-sm font-bold text-foreground/80">Upload Assets</span>
+                    <span className="text-[10px] text-foreground/70 uppercase tracking-wider">PNG, JPG or PDF</span>
                   </>
                 ) : (
                   <div className="flex items-center justify-between w-full px-2">
@@ -351,10 +351,10 @@ export function NotificationForm({ initialData, onSubmitSuccess, onCancel }: Not
                         <Paperclip size={20} />
                       </div>
                       <div className="flex flex-col">
-                        <span className="text-sm font-bold text-white/90 truncate max-w-[200px]">
+                        <span className="text-sm font-bold text-foreground/90 truncate max-w-[200px]">
                           {selectedFile.name}
                         </span>
-                        <span className="text-[10px] text-white/40 uppercase tracking-tight">
+                        <span className="text-[10px] text-foreground/80 uppercase tracking-tight">
                           {(selectedFile.size / 1024).toFixed(1)} KB
                         </span>
                       </div>
@@ -362,7 +362,7 @@ export function NotificationForm({ initialData, onSubmitSuccess, onCancel }: Not
                     <button 
                       type="button" 
                       onClick={(e) => { e.stopPropagation(); handleRemoveAttachment(); }}
-                      className="p-2 hover:bg-white/10 rounded-full text-white/40 hover:text-red-400 transition-colors"
+                      className="p-2 hover:bg-foreground/10 rounded-full text-foreground/80 hover:text-red-400 transition-colors"
                     >
                       <X size={18} />
                     </button>
@@ -374,15 +374,15 @@ export function NotificationForm({ initialData, onSubmitSuccess, onCancel }: Not
           </div>
         </div>
 
-        <div className="pt-6 border-t border-white/5 flex items-center justify-between">
-          <p className="text-[10px] text-white/20 font-medium max-w-[200px]">
+        <div className="pt-6 border-t border-foreground/5 flex items-center justify-between">
+          <p className="text-[10px] text-foreground/80 font-medium max-w-[200px]">
             By clicking send, you agree to broadcast this message to the selected audience.
           </p>
           <div className="flex gap-4">
             <Button 
               type="submit" 
               isLoading={isSending} 
-              className="min-w-[160px] rounded-2xl h-14 font-black uppercase tracking-widest bg-blue-600 hover:bg-blue-500 shadow-[0_0_30px_rgba(37,99,235,0.3)] border-t border-white/20"
+              className="min-w-[160px] rounded-2xl h-14 font-black uppercase tracking-widest bg-blue-600 hover:bg-blue-500 shadow-[0_0_30px_rgba(37,99,235,0.3)] border-t border-foreground/20"
             >
               {!isSending && <Send size={16} className="mr-2" />}
               Send Broadcast

@@ -14,7 +14,7 @@ export const Input = forwardRef<HTMLInputElement, InputProps>(
   ({ className, label, error, description, variant = "default", fullWidth = true, ...props }, ref) => {
 
     const variants = {
-      default: "border-white/10 focus:border-blue-500/50 focus:ring-blue-500/20",
+      default: "border-foreground/10 focus:border-blue-500/50 focus:ring-blue-500/20",
       error: "mh-alert-error focus:ring-red-500/20 placeholder:text-red-500/40", // Uses shared alert style for border/bg consistency
       success: "mh-alert-success focus:ring-green-500/20",
     };
@@ -30,11 +30,12 @@ export const Input = forwardRef<HTMLInputElement, InputProps>(
         <div className="relative">
           <input
             ref={ref}
+            spellCheck={props.type !== "password" && props.type !== "email"}
             className={cn(
-              "flex h-10 w-full rounded-lg bg-white/5 px-3 py-2 text-sm text-white",
+              "flex h-10 w-full rounded-lg bg-foreground/5 px-3 py-2 text-sm text-foreground",
               "border outline-none mh-transition-fast", // Standardized motion
               "placeholder:text-gray-500",
-              "focus:ring-4 focus:bg-white/[0.07]",
+              "focus:ring-4 focus:bg-foreground/[0.07]",
               "disabled:cursor-not-allowed disabled:opacity-50",
               variants[variant],
               className

@@ -24,7 +24,7 @@ export function FieldPresence({ users, field }: FieldPresenceProps) {
             {activeHere.map((user) => (
                 <div
                     key={user.id}
-                    className="w-4 h-4 rounded-full border border-surface flex items-center justify-center text-[6px] font-bold text-white shadow-sm"
+                    className="w-4 h-4 rounded-full border border-surface flex items-center justify-center text-[6px] font-bold text-foreground shadow-sm"
                     style={{ backgroundColor: user.color || '#3B82F6' }}
                     title={`${user.name} is editing...`}
                 >

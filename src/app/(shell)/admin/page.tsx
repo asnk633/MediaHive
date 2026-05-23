@@ -55,14 +55,14 @@ export default function AdminDashboardPage() {
                             initial={{ opacity: 0, y: 20 }}
                             animate={{ opacity: 1, y: 0 }}
                             transition={{ delay: i * 0.1 }}
-                            className="p-6 rounded-[24px] glass-liquid border-white/5 space-y-4"
+                            className="p-6 rounded-[24px] glass-liquid border-foreground/5 space-y-4"
                         >
                             <div className={`w-12 h-12 rounded-2xl ${stat.bg} ${stat.color} flex items-center justify-center`}>
                                 <stat.icon size={24} />
                             </div>
                             <div>
-                                <p className="text-[10px] font-black text-white/20 uppercase tracking-widest">{stat.label}</p>
-                                <h3 className="text-3xl font-black text-white">{loading ? '...' : stat.value}</h3>
+                                <p className="text-[10px] font-black text-foreground/80 uppercase tracking-widest">{stat.label}</p>
+                                <h3 className="text-3xl font-black text-foreground">{loading ? '...' : stat.value}</h3>
                             </div>
                         </motion.div>
                     ))}
@@ -72,7 +72,7 @@ export default function AdminDashboardPage() {
                     {/* Recent Activity */}
                     <div className="space-y-4">
                         <div className="flex items-center justify-between px-2">
-                            <h3 className="text-sm font-black text-white/40 uppercase tracking-widest flex items-center gap-2">
+                            <h3 className="text-sm font-black text-foreground/80 uppercase tracking-widest flex items-center gap-2">
                                 <Activity size={14} /> Recent System Activity
                             </h3>
                             <button className="text-[10px] font-bold text-indigo-400 hover:text-indigo-300 transition-colors uppercase tracking-widest flex items-center gap-1">
@@ -80,19 +80,19 @@ export default function AdminDashboardPage() {
                             </button>
                         </div>
                         
-                        <div className="rounded-[32px] glass-liquid border-white/5 overflow-hidden">
+                        <div className="rounded-[32px] glass-liquid border-foreground/5 overflow-hidden">
                             {[1, 2, 3, 4].map((item, i) => (
-                                <div key={i} className="p-5 flex items-center justify-between border-b border-white/5 last:border-0 hover:bg-white/5 transition-colors group">
+                                <div key={i} className="p-5 flex items-center justify-between border-b border-foreground/5 last:border-0 hover:bg-foreground/5 transition-colors group">
                                     <div className="flex items-center gap-4">
-                                        <div className="w-10 h-10 rounded-xl bg-white/5 flex items-center justify-center text-white/40 group-hover:text-indigo-400 transition-colors">
+                                        <div className="w-10 h-10 rounded-xl bg-foreground/5 flex items-center justify-center text-foreground/80 group-hover:text-indigo-400 transition-colors">
                                             <ShieldAlert size={18} />
                                         </div>
                                         <div>
-                                            <p className="text-sm font-bold text-white">Security policy updated</p>
-                                            <p className="text-[10px] text-white/30 font-medium uppercase tracking-wider">By Admin • 2 hours ago</p>
+                                            <p className="text-sm font-bold text-foreground">Security policy updated</p>
+                                            <p className="text-[10px] text-foreground/70 font-medium uppercase tracking-wider">By Admin • 2 hours ago</p>
                                         </div>
                                     </div>
-                                    <ChevronRight size={16} className="text-white/20 group-hover:text-white transition-colors" />
+                                    <ChevronRight size={16} className="text-foreground/80 group-hover:text-foreground transition-colors" />
                                 </div>
                             ))}
                         </div>
@@ -100,7 +100,7 @@ export default function AdminDashboardPage() {
 
                     {/* Quick Actions */}
                     <div className="space-y-4">
-                        <h3 className="text-sm font-black text-white/40 uppercase tracking-widest flex items-center gap-2 px-2">
+                        <h3 className="text-sm font-black text-foreground/80 uppercase tracking-widest flex items-center gap-2 px-2">
                             <Zap size={14} /> Critical Actions
                         </h3>
                         
@@ -158,12 +158,12 @@ function QuickActionCard({ icon: Icon, title, desc, href, color }: any) {
     };
 
     return (
-        <AppLink href={href} className="group p-6 rounded-[28px] glass-liquid border-white/5 hover:bg-white/5 transition-all active:scale-95 text-left">
+        <AppLink href={href} className="group p-6 rounded-[28px] glass-liquid border-foreground/5 hover:bg-foreground/5 transition-all active:scale-95 text-left">
             <div className={`w-12 h-12 rounded-2xl flex items-center justify-center mb-4 transition-transform group-hover:scale-110 ${colors[color]}`}>
                 <Icon size={24} />
             </div>
-            <h4 className="text-sm font-black text-white group-hover:text-indigo-400 transition-colors uppercase tracking-wider">{title}</h4>
-            <p className="text-xs text-white/40 font-medium">{desc}</p>
+            <h4 className="text-sm font-black text-foreground group-hover:text-indigo-400 transition-colors uppercase tracking-wider">{title}</h4>
+            <p className="text-xs text-foreground/80 font-medium">{desc}</p>
         </AppLink>
     );
 }

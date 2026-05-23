@@ -18,16 +18,16 @@ interface TodayEventsCardProps {
 
 export const TodayEventsCard: React.FC<TodayEventsCardProps> = ({ events, tasks = [], isLoading, onViewEvent }) => {
     return (
-        <ReactiveCard className="dashboard-card-primary card-hover-elevation h-full flex flex-col pt-6">
+        <ReactiveCard className="glass-card rounded-[24px] h-full flex flex-col pt-6">
             <div className="flex items-baseline justify-between dashboard-card-header-spacing px-6">
                 <div className="flex items-center gap-2">
                     <div className="p-2 rounded-lg bg-blue-500/10 text-blue-400">
                         <Calendar size={18} />
                     </div>
-                    <h3 className="text-sm font-medium text-white/85">Today's Events</h3>
+                    <h3 className="text-sm font-medium text-foreground/85">Today's Events</h3>
                 </div>
                 {!isLoading && events.length > 0 && (
-                    <span className="text-[10px] font-bold text-white/50 bg-white/5 px-2 py-1 rounded-full uppercase tracking-widest">
+                    <span className="text-[10px] font-bold text-foreground/70 bg-foreground/5 px-2 py-1 rounded-full uppercase tracking-widest">
                         {events.length} {events.length === 1 ? 'Event' : 'Events'}
                     </span>
                 )}
@@ -36,9 +36,9 @@ export const TodayEventsCard: React.FC<TodayEventsCardProps> = ({ events, tasks 
             <div className="flex-1 space-y-4 overflow-y-auto no-scrollbar max-h-[320px]">
                 {isLoading ? (
                     Array(3).fill(0).map((_, i) => (
-                        <div key={i} className="p-4 rounded-[18px] bg-white/[0.02] border border-white/5 space-y-3">
-                            <Skeleton className="h-5 w-3/4 bg-white/10" />
-                            <Skeleton className="h-4 w-1/2 bg-white/5" />
+                        <div key={i} className="p-4 rounded-[18px] bg-foreground/[0.02] border border-foreground/5 space-y-3">
+                            <Skeleton className="h-5 w-3/4 bg-foreground/10" />
+                            <Skeleton className="h-4 w-1/2 bg-foreground/5" />
                         </div>
                     ))
                 ) : events.length > 0 ? (
@@ -46,28 +46,28 @@ export const TodayEventsCard: React.FC<TodayEventsCardProps> = ({ events, tasks 
                         <Link 
                             href={`/events/${event.id}`}
                             key={event.id}
-                            className="group p-4 mx-4 rounded-[18px] bg-white/[0.02] border border-white/[0.05] hover:bg-white/[0.04] hover:border-blue-500/30 transition-all cursor-pointer block no-underline"
+                            className="group p-4 mx-4 rounded-[18px] bg-foreground/[0.02] border border-foreground/[0.05] hover:bg-foreground/[0.04] hover:border-blue-500/30 transition-all cursor-pointer block no-underline"
                         >
                             <div className="flex items-start justify-between mb-2">
-                                <h4 className="text-sm font-semibold text-white/90 group-hover:text-blue-400 transition-colors">
+                                <h4 className="text-sm font-semibold text-foreground/90 group-hover:text-blue-400 transition-colors">
                                     {event.title}
                                 </h4>
-                                <ExternalLink size={12} className="text-white/10 group-hover:text-blue-400 opacity-0 group-hover:opacity-100 transition-all" />
+                                <ExternalLink size={12} className="text-foreground/70 group-hover:text-blue-400 opacity-0 group-hover:opacity-100 transition-all" />
                             </div>
                             
                             <div className="flex flex-wrap items-center gap-4 mb-3">
-                                <div className="flex items-center gap-1.5 text-[11px] text-white/40">
+                                <div className="flex items-center gap-1.5 text-[11px] text-foreground/80">
                                     <Clock size={12} />
                                     <span>
                                         {event.start_at ? format(new Date(event.start_at), 'HH:mm') : '--:--'} – 
                                         {event.end_at ? format(new Date(event.end_at), 'HH:mm') : '--:--'}
                                     </span>
                                 </div>
-                                <div className="flex items-center gap-1.5 text-[11px] text-white/40">
+                                <div className="flex items-center gap-1.5 text-[11px] text-foreground/80">
                                     <Users size={12} />
                                     <span>{event.crew?.length || 0} Crew</span>
                                 </div>
-                                <div className="flex items-center gap-1.5 text-[11px] text-white/40">
+                                <div className="flex items-center gap-1.5 text-[11px] text-foreground/80">
                                     <Briefcase size={12} />
                                     <span>{event.equipment?.length || 0} Eq.</span>
                                 </div>
@@ -80,8 +80,8 @@ export const TodayEventsCard: React.FC<TodayEventsCardProps> = ({ events, tasks 
 
                                 if (total === 0) {
                                     return (
-                                        <div className="mt-3 pt-3 border-t border-white/5">
-                                            <p className="text-[10px] text-white/50 italic">No tasks linked to this event</p>
+                                        <div className="mt-3 pt-3 border-t border-foreground/5">
+                                            <p className="text-[10px] text-foreground/70 italic">No tasks linked to this event</p>
                                         </div>
                                     );
                                 }
@@ -90,14 +90,14 @@ export const TodayEventsCard: React.FC<TodayEventsCardProps> = ({ events, tasks 
                                 const progress = Math.round((completed / total) * 100);
                                 
                                 return (
-                                    <div className="mt-3 pt-3 border-t border-white/5">
+                                    <div className="mt-3 pt-3 border-t border-foreground/5">
                                         <div className="flex justify-between items-center mb-1.5">
-                                            <span className="text-[10px] text-white/50 font-medium">
-                                                Tasks: <span className="text-white/80 font-bold">{completed} / {total}</span> completed
+                                            <span className="text-[10px] text-foreground/70 font-medium">
+                                                Tasks: <span className="text-foreground/80 font-bold">{completed} / {total}</span> completed
                                             </span>
-                                            <span className="text-[10px] text-white/80 font-bold">{progress}%</span>
+                                            <span className="text-[10px] text-foreground/80 font-bold">{progress}%</span>
                                         </div>
-                                        <div className="h-1.5 w-full bg-white/5 rounded-full overflow-hidden shadow-inner">
+                                        <div className="h-1.5 w-full bg-foreground/5 rounded-full overflow-hidden shadow-inner">
                                             <div 
                                                 className={cn(
                                                     "h-full rounded-full transition-all duration-1000",
@@ -113,8 +113,8 @@ export const TodayEventsCard: React.FC<TodayEventsCardProps> = ({ events, tasks 
                     ))
                 ) : (
                     <div className="flex flex-col items-center justify-center py-12 text-center">
-                        <Calendar size={32} className="text-white/5 mb-3" />
-                        <p className="text-xs text-white/50 font-medium">No events scheduled for today.</p>
+                        <Calendar size={32} className="text-foreground/5 mb-3" />
+                        <p className="text-xs text-foreground/70 font-medium">No events scheduled for today.</p>
                     </div>
                 )}
             </div>

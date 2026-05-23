@@ -53,7 +53,7 @@ export function PersonalDashboard() {
         );
     }
 
-    if (!data) return <div className="text-center p-8 text-white/50">Failed to load dashboard data.</div>;
+    if (!data) return <div className="text-center p-8 text-foreground/70">Failed to load dashboard data.</div>;
 
     const { stats, chartData, recentActivity } = data;
 
@@ -61,8 +61,8 @@ export function PersonalDashboard() {
         <div className="space-y-8 animate-in fade-in duration-500">
             {/* Header */}
             <div>
-                <h2 className="text-2xl font-bold text-white mb-2">My Dashboard</h2>
-                <p className="text-white/50 text-sm">Personal performance and workload overview.</p>
+                <h2 className="text-2xl font-bold text-foreground mb-2">My Dashboard</h2>
+                <p className="text-foreground/70 text-sm">Personal performance and workload overview.</p>
             </div>
 
             {/* Stats Grid */}
@@ -104,9 +104,9 @@ export function PersonalDashboard() {
 
             <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
                 {/* Chart Section */}
-                <Card className="lg:col-span-2 bg-[#0f172a] border-[#ffffff1a]">
-                    <CardHeader className="border-b border-white/5 pb-4">
-                        <CardTitle className="text-lg font-medium text-white flex items-center gap-2">
+                <Card className="lg:col-span-2 bg-[var(--glass-liquid-bg)] border-[#ffffff1a]">
+                    <CardHeader className="border-b border-foreground/5 pb-4">
+                        <CardTitle className="text-lg font-medium text-foreground flex items-center gap-2">
                             <Activity className="w-5 h-5 text-indigo-400" />
                             Weekly Productivity
                         </CardTitle>
@@ -150,26 +150,26 @@ export function PersonalDashboard() {
                 </Card>
 
                 {/* Recent Activity */}
-                <Card className="bg-[#0f172a] border-[#ffffff1a]">
-                    <CardHeader className="border-b border-white/5 pb-4">
-                        <CardTitle className="text-lg font-medium text-white flex items-center gap-2">
+                <Card className="bg-[var(--glass-liquid-bg)] border-[#ffffff1a]">
+                    <CardHeader className="border-b border-foreground/5 pb-4">
+                        <CardTitle className="text-lg font-medium text-foreground flex items-center gap-2">
                             <CheckCircle2 className="w-5 h-5 text-green-400" />
                             Recent Achievements
                         </CardTitle>
                     </CardHeader>
                     <CardContent className="pt-6">
                         {recentActivity.length === 0 ? (
-                            <p className="text-white/50 text-center py-8 text-sm">No recently completed tasks.</p>
+                            <p className="text-foreground/70 text-center py-8 text-sm">No recently completed tasks.</p>
                         ) : (
                             <div className="space-y-4">
                                 {recentActivity.map((task) => (
                                     <div key={task.id} className="flex gap-3 items-start group">
                                         <div className="mt-1 w-2 h-2 rounded-full bg-green-500/50 shadow-[0_0_8px_rgba(34,197,94,0.4)] group-hover:bg-green-400 transition-colors" />
                                         <div>
-                                            <p className="text-sm text-white/90 font-medium line-clamp-1 group-hover:text-blue-200 transition-colors">
+                                            <p className="text-sm text-foreground/90 font-medium line-clamp-1 group-hover:text-blue-200 transition-colors">
                                                 {task.title}
                                             </p>
-                                            <p className="text-xs text-white/40 mt-1">
+                                            <p className="text-xs text-foreground/80 mt-1">
                                                 Completed {format(new Date(task.completed_at), 'MMM d, h:mm a')}
                                             </p>
                                         </div>
@@ -186,14 +186,14 @@ export function PersonalDashboard() {
 
 function StatCard({ label, value, icon: Icon, color, bg, border, alert }: any) {
     return (
-        <Card className={`bg-white/5 backdrop-blur-sm border ${alert ? 'border-red-500/50 animate-pulse' : 'border-[#ffffff1a]'} hover:bg-white/10 transition-colors`}>
+        <Card className={`bg-foreground/5 backdrop-blur-sm border ${alert ? 'border-red-500/50 animate-pulse' : 'border-[#ffffff1a]'} hover:bg-foreground/10 transition-colors`}>
             <CardContent className="p-6 flex items-center gap-4">
                 <div className={`p-3 rounded-lg ${bg} ${border} border`}>
                     <Icon className={`w-6 h-6 ${color}`} />
                 </div>
                 <div>
-                    <p className="text-white/50 text-xs uppercase font-bold tracking-wider mb-1">{label}</p>
-                    <p className={`text-2xl font-black ${alert ? 'text-red-400' : 'text-white'}`}>{value}</p>
+                    <p className="text-foreground/70 text-xs uppercase font-bold tracking-wider mb-1">{label}</p>
+                    <p className={`text-2xl font-black ${alert ? 'text-red-400' : 'text-foreground'}`}>{value}</p>
                 </div>
             </CardContent>
         </Card>

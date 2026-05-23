@@ -112,7 +112,7 @@ describe('Governance Engine Tests', () => {
         condition: 'Sensitive field update',
         target: 'task_priority',
         action: 'update',
-        parameters: { field: 'priority', value: 'urgent' }
+        parameters: { field: 'priority', value: 'high' }
       },
       enforcementType: EnforcementType.REQUIRES_APPROVAL,
       version: '1.0.0',
@@ -136,7 +136,7 @@ describe('Governance Engine Tests', () => {
       action: 'update',
       resourceType: 'task',
       field: 'priority',
-      newValue: 'urgent',
+      newValue: 'high',
       oldValue: 'medium',
       timestamp: Date.now()
     };

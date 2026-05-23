@@ -228,25 +228,25 @@ export async function GET(req: NextRequest) {
     // 8. Performance Anomalies
     const performanceAnomalies = [];
     
-    // Check for spike in urgent tasks
-    const urgentTasksQuery = db
+    // Check for spike in high-priority tasks
+    const highPriorityTasksQuery = db
       .select({ count: count(tasks.id) })
       .from(tasks)
       .where(and(
         tenantCondition ? eq(tasks.tenantId, parseInt(tenantId)) : undefined,
-        eq(tasks.priority, 'urgent'),
+        eq(tasks.priority, 'high'),
         gte(tasks.created_at, startDate),
         lte(tasks.created_at, endDate)
       ));
 
-    const urgentTasksResult = await urgentTasksQuery;
-    const urgentTaskCount = urgentTasksResult[0]?.count || 0;
+    const highPriorityTasksResult = await highPriorityTasksQuery;
+    const highPriorityTaskCount = highPriorityTasksResult[0]?.count || 0;
     
-    if (urgentTaskCount > 10) {
+    if (highPriorityTaskCount > 10) {
       performanceAnomalies.push({
         id: 1,
         type: 'spike',
-        description: `Spike in urgent tasks (${urgentTaskCount} this period)`,
+        description: `Spike in high-priority tasks (${highPriorityTaskCount} this period)`,
         severity: 'high',
         timestamp: new Date().toISOString()
       });

@@ -139,7 +139,7 @@ export const NotificationInbox: React.FC = () => {
     return (
         <div className="max-w-4xl mx-auto space-y-6">
             {/* Toolbar */}
-            <div className="flex flex-col sm:flex-row gap-4 justify-between items-center bg-white/5 p-4 rounded-2xl border border-white/10 backdrop-blur-sm">
+            <div className="flex flex-col sm:flex-row gap-4 justify-between items-center bg-foreground/5 p-4 rounded-2xl border border-foreground/10 backdrop-blur-sm">
                 <div className="flex items-center gap-2 p-1 bg-surface rounded-xl border border-soft">
                     {(['all', 'unread', 'mentions'] as FilterType[]).map((f) => (
                         <button
@@ -148,8 +148,8 @@ export const NotificationInbox: React.FC = () => {
                             className={`
                                 px-4 py-1.5 rounded-lg text-xs font-bold uppercase tracking-wider transition-all
                                 ${filter === f
-                                    ? 'bg-primary text-white shadow-md'
-                                    : 'text-muted-foreground hover:text-foreground hover:bg-white/5'
+                                    ? 'bg-primary text-foreground shadow-md font-extrabold'
+                                    : 'text-foreground/75 hover:text-foreground hover:bg-foreground/5 font-semibold'
                                 }
                             `}
                         >
@@ -161,7 +161,7 @@ export const NotificationInbox: React.FC = () => {
                 <div className="flex items-center gap-3">
                     {/* Selection count badge */}
                     {sel.selectedIds.size > 0 && (
-                        <span className="text-xs font-semibold text-white/50 tabular-nums">
+                        <span className="text-xs font-semibold text-foreground/85 tabular-nums">
                             {sel.selectedIds.size} selected
                         </span>
                     )}
@@ -178,7 +178,7 @@ export const NotificationInbox: React.FC = () => {
             </div>
 
             {/* List */}
-            <div className="bg-white/5 rounded-2xl border border-white/10 overflow-hidden shadow-sm">
+            <div className="bg-foreground/5 rounded-2xl border border-foreground/10 overflow-hidden shadow-sm">
                 {filteredNotifications.length > 0 ? (
                     <DataList
                         selectable
@@ -201,12 +201,12 @@ export const NotificationInbox: React.FC = () => {
                         ))}
                     </DataList>
                 ) : (
-                    <div className="py-20 flex flex-col items-center justify-center text-center opacity-60">
+                    <div className="py-20 flex flex-col items-center justify-center text-center opacity-90">
                         <div className="w-16 h-16 bg-surface rounded-full flex items-center justify-center mb-4">
-                            <CheckCheck size={32} className="text-muted-foreground" />
+                            <CheckCheck size={32} className="text-foreground/70" />
                         </div>
                         <h3 className="text-lg font-bold text-foreground">All caught up!</h3>
-                        <p className="text-sm text-muted-foreground mt-1">
+                        <p className="text-sm text-foreground/75 mt-1">
                             {filter === 'all'
                                 ? "You have no notifications."
                                 : `No ${filter} notifications found.`}

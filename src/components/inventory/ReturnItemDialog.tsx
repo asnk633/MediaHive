@@ -60,21 +60,21 @@ export function ReturnItemDialog({ issue, open, onOpenChange, onReturnComplete }
                 </DialogHeader>
                 <form onSubmit={handleSubmit} className="space-y-4">
 
-                    <div className="p-3 bg-slate-800/50 rounded-lg border border-white/5 space-y-1 text-sm">
+                    <div className="p-3 bg-slate-800/50 rounded-lg border border-foreground/5 space-y-1 text-sm">
                         <div className="flex justify-between">
                             <span className="text-slate-400">Issued To</span>
-                            <span className="text-white font-mono">{issue.issuedToUserId}</span>
+                            <span className="text-foreground font-mono">{issue.issuedToUserId}</span>
                         </div>
                         <div className="flex justify-between">
                             <span className="text-slate-400">Condition Out</span>
-                            <span className="capitalize text-white">{issue.conditionOut}</span>
+                            <span className="capitalize text-foreground">{issue.conditionOut}</span>
                         </div>
                     </div>
 
                     <div className="space-y-2">
                         <Label>Condition In <span className="text-red-400">*</span></Label>
                         <Select value={conditionIn} onValueChange={(v) => setConditionIn(v as InventoryCondition)}>
-                            <SelectTrigger className="bg-slate-950/50 border-white/10">
+                            <SelectTrigger className="bg-slate-950/50 border-foreground/10">
                                 <SelectValue />
                             </SelectTrigger>
                             <SelectContent>
@@ -91,7 +91,7 @@ export function ReturnItemDialog({ issue, open, onOpenChange, onReturnComplete }
                         <div className="space-y-2 animate-in fade-in slide-in-from-top-1">
                             <Label>Remarks <span className="text-red-400">*</span></Label>
                             <textarea
-                                className="flex min-h-[80px] w-full rounded-md border border-white/10 bg-slate-950/50 px-3 py-2 text-sm ring-offset-background placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
+                                className="flex min-h-[80px] w-full rounded-md border border-foreground/10 bg-slate-950/50 px-3 py-2 text-sm ring-offset-background placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
                                 placeholder="Please explain the damage or loss..."
                                 value={remarks}
                                 onChange={(e) => setRemarks(e.target.value)}
@@ -102,7 +102,7 @@ export function ReturnItemDialog({ issue, open, onOpenChange, onReturnComplete }
 
                     <DialogFooter>
                         <Button type="button" variant="ghost" onClick={() => onOpenChange(false)}>Cancel</Button>
-                        <Button type="submit" className="bg-blue-600 hover:bg-blue-500 text-white" disabled={loading}>
+                        <Button type="submit" className="bg-blue-600 hover:bg-blue-500 text-foreground" disabled={loading}>
                             {loading && <Loader2 className="w-4 h-4 mr-2 animate-spin" />}
                             Confirm Return
                         </Button>

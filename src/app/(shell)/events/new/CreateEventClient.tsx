@@ -31,7 +31,7 @@ export default function CreateEventClient() {
     }, [searchParams]);
 
     return (
-        <div className="min-h-screen bg-night-sky text-white p-4 lg:p-8 flex justify-center">
+        <div className="min-h-screen bg-transparent text-foreground p-4 lg:p-8 flex justify-center">
             <div className="w-full max-w-4xl space-y-6">
 
                 {/* Header with Back Button */}
@@ -40,18 +40,18 @@ export default function CreateEventClient() {
                         variant="ghost"
                         size="icon"
                         onClick={() => router.back()}
-                        className="rounded-full hover:bg-white/10"
+                        className="rounded-full hover:bg-foreground/10"
                     >
                         <ChevronLeft className="w-5 h-5" />
                     </Button>
                     <div>
                         <h1 className="text-2xl font-bold tracking-tight">Create New Event</h1>
-                        <p className="text-white/60 text-sm">Schedule a new event or leave request</p>
+                        <p className="text-foreground/80 text-sm">Schedule a new event or leave request</p>
                     </div>
                 </div>
 
                 {/* Form Container */}
-                <div className="bg-[#10111a] border border-white/5 rounded-2xl p-6 lg:p-8 shadow-xl backdrop-blur-sm">
+                <div className="bg-card border border-border rounded-2xl p-6 lg:p-8 shadow-xl backdrop-blur-sm">
                     <CreateEventForm 
                         initialDate={initialDate}
                         initialEndDate={initialEndDate}

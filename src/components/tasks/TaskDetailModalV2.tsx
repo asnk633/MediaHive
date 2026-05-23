@@ -52,7 +52,7 @@ const statusIcons = {
 
 const priorityColors = {
     high: 'text-red-400 border-red-400/30 bg-red-400/15',
-    urgent: 'text-red-600 border-red-600/30 bg-red-600/15',
+    urgent: 'text-red-400 border-red-400/30 bg-red-400/15',
     medium: 'text-orange-400 border-orange-400/30 bg-orange-400/15',
     low: 'text-blue-400 border-blue-400/30 bg-blue-400/15',
 };
@@ -406,7 +406,7 @@ export const TaskDetailModalV2: React.FC<TaskDetailsModalProps> = ({ task, isOpe
                         animate={{ scale: 1, opacity: 1 }}
                         exit={{ scale: 0.98, opacity: 0 }}
                         transition={{ duration: 0.2 }}
-                        className="relative w-full max-w-2xl rounded-2xl overflow-hidden border border-white/10 flex flex-col max-h-[90vh] bg-[#0B0E14] shadow-[0_20px_50px_rgba(0,0,0,0.5)] outline-none"
+                        className="relative w-full max-w-2xl rounded-2xl overflow-hidden border border-foreground/10 flex flex-col max-h-[90vh] bg-[#0B0E14] shadow-[0_20px_50px_rgba(0,0,0,0.5)] outline-none"
                         style={{}}
                         role="dialog"
                         aria-modal="true"
@@ -415,7 +415,7 @@ export const TaskDetailModalV2: React.FC<TaskDetailsModalProps> = ({ task, isOpe
                         {/* 3px Status-colored Accent Strip */}
                         <div className={cn(
                             "absolute top-0 left-0 w-full h-[3px] z-30",
-                            getSeverityColor(getAdminSeverity(task.priority === 'urgent' ? 6 : task.priority === 'high' ? 4 : 2))
+                            getSeverityColor(getAdminSeverity((task.priority === 'urgent' || task.priority === 'high') ? 4 : task.priority === 'medium' ? 2 : 1))
                         )} />
                         {/* HEADER BLOCK - Identity, Authoritative, 180px */}
                         <div
@@ -427,7 +427,7 @@ export const TaskDetailModalV2: React.FC<TaskDetailsModalProps> = ({ task, isOpe
                              {/* Action Buttons - Top Right, Minimal */}
                              <div className="absolute top-6 right-6 flex items-center gap-4 z-20">
                                  <PresencePile users={activeUsers} />
-                                 <div className="h-6 w-px bg-white/10 hidden sm:block" />
+                                 <div className="h-6 w-px bg-foreground/10 hidden sm:block" />
                                  <div className="flex items-center gap-2">
                                      {(user?.role === 'admin' || (user?.role === 'manager' || user?.role === 'member') || user?.uid === task?.createdBy?.uid) && (
                                          <>
@@ -468,7 +468,7 @@ export const TaskDetailModalV2: React.FC<TaskDetailsModalProps> = ({ task, isOpe
                                 {/* Badges - Small, Subordinate */}
                                 <div className="flex items-center gap-3 mb-4">
                                     <span className={`px-2.5 py-1 rounded-md text-[10px] font-bold tracking-widest uppercase border ${priorityColors[task.priority!] || priorityColors.low}`}>
-                                        {task.priority || 'low'}
+                                        {task.priority === 'urgent' ? 'high' : (task.priority || 'low')}
                                     </span>
                                     <div className="flex items-center gap-1.5 px-2.5 py-1 rounded-md bg-surface border border-soft text-[10px] font-bold uppercase tracking-widest text-muted-foreground">
                                         {statusIcons[task.status]}
@@ -501,23 +501,23 @@ export const TaskDetailModalV2: React.FC<TaskDetailsModalProps> = ({ task, isOpe
                                 </div>
 
                                 {/* Title - Large, Bold, Centered */}
-                                <h2 className="text-2xl font-bold text-white text-center leading-tight tracking-tight">
+                                <h2 className="text-2xl font-bold text-foreground text-center leading-tight tracking-tight">
                                     {fullTask.title || 'Untitled Task'}
                                 </h2>
 
                                 {/* Temporal Context Micro-label */}
                                 <div className="flex flex-col items-center justify-center gap-1 mt-2">
                                     <div className="flex items-center justify-center gap-2">
-                                        <span className="text-[9px] font-bold text-white/20 uppercase tracking-[0.15em] italic">
+                                        <span className="text-[9px] font-bold text-foreground/80 uppercase tracking-[0.15em] italic">
                                             Synced moments ago
                                         </span>
-                                        <div className="w-1 h-1 rounded-full bg-white/5" />
-                                        <span className="text-[9px] font-bold text-white/10 uppercase tracking-[0.15em]">
+                                        <div className="w-1 h-1 rounded-full bg-foreground/5" />
+                                        <span className="text-[9px] font-bold text-foreground/70 uppercase tracking-[0.15em]">
                                             Institutional Record
                                         </span>
                                     </div>
                                     {isRecentlyUpdatedByOther && !(task as any)?.hasExternalChangePending && (
-                                        <div className="flex items-center justify-center gap-1 text-[10px] text-white/40 italic mt-0.5">
+                                        <div className="flex items-center justify-center gap-1 text-[10px] text-foreground/80 italic mt-0.5">
                                             <Activity size={10} className="text-blue-400 animate-pulse" />
                                             <span>Updated by {fullTask.updated_by!.name.split(' ')[0]} · just now</span>
                                         </div>
@@ -551,7 +551,7 @@ export const TaskDetailModalV2: React.FC<TaskDetailsModalProps> = ({ task, isOpe
                                         <div className="w-1 h-1 bg-red-400/30 rounded-full" />
                                         <button
                                             onClick={() => setError(null)}
-                                            className="text-[10px] font-bold text-white/50 hover:text-white uppercase tracking-widest transition-colors"
+                                            className="text-[10px] font-bold text-foreground/70 hover:text-foreground uppercase tracking-widest transition-colors"
                                         >
                                             Dismiss
                                         </button>
@@ -573,13 +573,13 @@ export const TaskDetailModalV2: React.FC<TaskDetailsModalProps> = ({ task, isOpe
                             <div className="mb-8">
                                 <div className="flex items-center gap-2 mb-4">
                                     <div className="w-1.5 h-1.5 rounded-full bg-blue-500/50" />
-                                    <span className="text-[10px] font-bold uppercase tracking-widest text-white/30">Perspective & Description</span>
+                                    <span className="text-[10px] font-bold uppercase tracking-widest text-foreground/70">Perspective & Description</span>
                                 </div>
                                 <div
-                                    className="text-sm text-white/70 leading-relaxed max-w-prose bg-white/[0.02] border border-white/[0.05] p-5 rounded-2xl"
+                                    className="text-sm text-foreground/70 leading-relaxed max-w-prose bg-foreground/[0.02] border border-foreground/[0.05] p-5 rounded-2xl"
                                     style={{ lineHeight: '1.8' }}
                                 >
-                                    {task.description || <span className="italic text-white/20">No institutional description provided.</span>}
+                                    {task.description || <span className="italic text-foreground/80">No institutional description provided.</span>}
                                 </div>
                             </div>
 
@@ -587,19 +587,19 @@ export const TaskDetailModalV2: React.FC<TaskDetailsModalProps> = ({ task, isOpe
                             <div className="mb-8">
                                 <div className="flex items-center gap-2 mb-4">
                                     <div className="w-1.5 h-1.5 rounded-full bg-emerald-500/50" />
-                                    <span className="text-[10px] font-bold uppercase tracking-widest text-white/30">Request Context</span>
+                                    <span className="text-[10px] font-bold uppercase tracking-widest text-foreground/70">Request Context</span>
                                 </div>
                                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                                    <div className="p-5 bg-white/[0.02] border border-white/[0.05] rounded-2xl group hover:bg-white/[0.04] transition-all">
+                                    <div className="p-5 bg-foreground/[0.02] border border-foreground/[0.05] rounded-2xl group hover:bg-foreground/[0.04] transition-all">
                                         <div className="flex items-start gap-4">
                                             <div className="w-10 h-10 rounded-xl bg-blue-500/10 flex items-center justify-center text-blue-400 shrink-0">
                                                 <User size={20} />
                                             </div>
                                             <div className="flex-1 min-w-0">
-                                                <p className="text-[10px] uppercase tracking-wider font-bold text-white/30 mb-1">
+                                                <p className="text-[10px] uppercase tracking-wider font-bold text-foreground/70 mb-1">
                                                     {(task.on_behalf_of || task.departmentId || task.institutionId || linkedEvent?.on_behalf_of || linkedEvent?.department_id || linkedEvent?.institution_id) ? 'Requested On behalf of' : 'Requested By'}
                                                 </p>
-                                                <p className="text-sm font-semibold text-white/90 truncate">
+                                                <p className="text-sm font-semibold text-foreground/90 truncate">
                                                     {task.on_behalf_of?.name ? task.on_behalf_of.name : 
                                                      linkedEvent?.on_behalf_of?.name ? linkedEvent.on_behalf_of.name : (
                                                         <ResolvedStructureName
@@ -614,15 +614,15 @@ export const TaskDetailModalV2: React.FC<TaskDetailsModalProps> = ({ task, isOpe
                                     </div>
 
                                     {linkedEvent && (
-                                        <div className="p-5 bg-white/[0.02] border border-white/[0.05] rounded-2xl group hover:bg-white/[0.04] transition-all">
+                                        <div className="p-5 bg-foreground/[0.02] border border-foreground/[0.05] rounded-2xl group hover:bg-foreground/[0.04] transition-all">
                                             <div className="flex items-start gap-4">
                                                 <div className="w-10 h-10 rounded-xl bg-amber-500/10 flex items-center justify-center text-amber-400 shrink-0">
                                                     <Calendar size={20} />
                                                 </div>
                                                 <div className="flex-1 min-w-0">
-                                                    <p className="text-[10px] uppercase tracking-wider font-bold text-white/30 mb-1">Timeline Context</p>
+                                                    <p className="text-[10px] uppercase tracking-wider font-bold text-foreground/70 mb-1">Timeline Context</p>
                                                     <div className="flex items-center justify-between">
-                                                        <p className="text-sm font-semibold text-white/90 truncate">{linkedEvent.title}</p>
+                                                        <p className="text-sm font-semibold text-foreground/90 truncate">{linkedEvent.title}</p>
                                                         <button 
                                                             onClick={() => router.push(`/events?id=${linkedEvent.id}`)}
                                                             className="text-[9px] font-bold text-blue-400 hover:text-blue-300 transition-colors uppercase tracking-widest flex items-center gap-1 shrink-0"
@@ -641,16 +641,16 @@ export const TaskDetailModalV2: React.FC<TaskDetailsModalProps> = ({ task, isOpe
                             <div className="mb-8">
                                 <div className="flex items-center gap-2 mb-4">
                                     <div className="w-1.5 h-1.5 rounded-full bg-purple-500/50" />
-                                    <span className="text-[10px] font-bold uppercase tracking-widest text-white/30">Task Assignment</span>
+                                    <span className="text-[10px] font-bold uppercase tracking-widest text-foreground/70">Task Assignment</span>
                                 </div>
-                                <div className="p-5 bg-white/[0.02] border border-white/[0.05] rounded-2xl group hover:bg-white/[0.04] transition-all">
+                                <div className="p-5 bg-foreground/[0.02] border border-foreground/[0.05] rounded-2xl group hover:bg-foreground/[0.04] transition-all">
                                     <div className="flex items-start gap-4">
                                         <div className="w-10 h-10 rounded-xl bg-purple-500/10 flex items-center justify-center text-purple-400 shrink-0">
                                             <Users size={20} />
                                         </div>
                                         <div className="flex-1 min-w-0">
                                             <div className="flex items-center justify-between mb-2">
-                                                <p className="text-[10px] uppercase tracking-wider font-bold text-white/30">Assigned Team Members</p>
+                                                <p className="text-[10px] uppercase tracking-wider font-bold text-foreground/70">Assigned Team Members</p>
                                                 {(user?.role === 'admin') && (
                                                     <Popover>
                                                         <PopoverTrigger asChild>
@@ -658,8 +658,8 @@ export const TaskDetailModalV2: React.FC<TaskDetailsModalProps> = ({ task, isOpe
                                                                 Manage Team
                                                             </button>
                                                         </PopoverTrigger>
-                                                        <PopoverContent className="w-56 p-2 bg-[#0d0e17] border border-white/10 text-white z-[110] shadow-2xl rounded-xl" align="end" side="bottom">
-                                                            <div className="text-[9px] font-bold text-white/30 px-2 py-1 mb-1 tracking-widest uppercase">SELECT MEMBER</div>
+                                                        <PopoverContent className="w-56 p-2 bg-[#0d0e17] border border-foreground/10 text-foreground z-[110] shadow-2xl rounded-xl" align="end" side="bottom">
+                                                            <div className="text-[9px] font-bold text-foreground/70 px-2 py-1 mb-1 tracking-widest uppercase">SELECT MEMBER</div>
                                                             <div className="max-h-60 overflow-y-auto custom-scrollbar">
                                                                 {teamMembers.map((m) => {
                                                                     const isAssigned = Array.isArray(task.assignedTo) && task.assignedTo.some(current => (current as any).uid === m.uid);
@@ -669,14 +669,14 @@ export const TaskDetailModalV2: React.FC<TaskDetailsModalProps> = ({ task, isOpe
                                                                             onClick={() => handleToggleAssign(m)}
                                                                             className={cn(
                                                                                 "flex items-center gap-2 px-2 py-2 rounded-lg cursor-pointer text-sm transition-all",
-                                                                                isAssigned ? 'bg-blue-500/10 text-blue-400' : 'hover:bg-white/5 text-white/60'
+                                                                                isAssigned ? 'bg-blue-500/10 text-blue-400' : 'hover:bg-foreground/5 text-foreground/80'
                                                                             )}
                                                                         >
                                                                             <div className={cn(
                                                                                 "w-4 h-4 rounded border flex items-center justify-center transition-all",
-                                                                                isAssigned ? 'bg-blue-500 border-blue-500' : 'border-white/20'
+                                                                                isAssigned ? 'bg-blue-500 border-blue-500' : 'border-foreground/20'
                                                                             )}>
-                                                                                {isAssigned && <CheckCircle2 size={10} className="text-white" />}
+                                                                                {isAssigned && <CheckCircle2 size={10} className="text-foreground" />}
                                                                             </div>
                                                                             <span className="truncate text-xs font-medium">{m.name}</span>
                                                                         </div>
@@ -690,19 +690,19 @@ export const TaskDetailModalV2: React.FC<TaskDetailsModalProps> = ({ task, isOpe
                                             <div className="flex flex-wrap gap-2">
                                                 {Array.isArray(task.assignedTo) && task.assignedTo.length > 0 ? (
                                                     task.assignedTo.map((assignee: any, i) => (
-                                                        <div key={i} className="flex items-center gap-2 bg-white/[0.05] px-3 py-1.5 rounded-xl border border-white/[0.05] hover:bg-white/[0.1] transition-all">
+                                                        <div key={i} className="flex items-center gap-2 bg-foreground/[0.05] px-3 py-1.5 rounded-xl border border-foreground/[0.05] hover:bg-foreground/[0.1] transition-all">
                                                             <SafeAvatar
                                                                 src={assignee.avatarUrl}
                                                                 name={assignee.name}
                                                                 size={18}
                                                             />
-                                                            <span className="text-xs text-white/80 font-medium">{assignee.name}</span>
+                                                            <span className="text-xs text-foreground/80 font-medium">{assignee.name}</span>
                                                         </div>
                                                     ))
                                                 ) : (
-                                                    <div className="flex flex-col items-center justify-center py-4 w-full bg-white/[0.01] border border-dashed border-white/10 rounded-xl">
-                                                        <UserPlus size={20} className="text-white/10 mb-2" />
-                                                        <p className="text-[10px] text-white/20 uppercase tracking-widest font-bold">No Team Assigned</p>
+                                                    <div className="flex flex-col items-center justify-center py-4 w-full bg-foreground/[0.01] border border-dashed border-foreground/10 rounded-xl">
+                                                        <UserPlus size={20} className="text-foreground/70 mb-2" />
+                                                        <p className="text-[10px] text-foreground/80 uppercase tracking-widest font-bold">No Team Assigned</p>
                                                     </div>
                                                 )}
                                             </div>
@@ -753,7 +753,7 @@ export const TaskDetailModalV2: React.FC<TaskDetailsModalProps> = ({ task, isOpe
 
                             {/* Phase-12: Task History Section */}
                             <div className="pt-6 mt-8 -mx-8 px-8 pb-8 border-t border-soft bg-muted/5">
-                                <h3 className="text-sm font-bold text-white mb-4 flex items-center gap-2">
+                                <h3 className="text-sm font-bold text-foreground mb-4 flex items-center gap-2">
                                     <Clock size={16} className="text-muted-foreground" />
                                     Recent Activity
                                 </h3>
@@ -763,8 +763,8 @@ export const TaskDetailModalV2: React.FC<TaskDetailsModalProps> = ({ task, isOpe
                                 </div>
                                 {/* Server-side audit log (admin/team) */}
                                 {(user?.role === 'admin' || (user?.role === 'manager' || user?.role === 'member')) && (
-                                    <div className="pl-2 mt-4 pt-4 border-t border-white/5">
-                                        <p className="text-[10px] font-bold text-white/20 uppercase tracking-widest mb-3">System Log</p>
+                                    <div className="pl-2 mt-4 pt-4 border-t border-foreground/5">
+                                        <p className="text-[10px] font-bold text-foreground/80 uppercase tracking-widest mb-3">System Log</p>
                                         <AuditTimeline logs={historyLogs} isLoading={isLoadingHistory} />
                                     </div>
                                 )}

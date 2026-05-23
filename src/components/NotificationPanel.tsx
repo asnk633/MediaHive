@@ -97,9 +97,9 @@ export const NotificationPanel = () => {
     const displayList = groupNotifications(notifications);
 
     return (
-        <div className="bg-[#0f172a] border border-white/20 rounded-2xl shadow-2xl text-left w-full max-w-sm sm:max-w-md md:max-w-xl mx-auto overflow-hidden ring-1 ring-black/50">
-            <div className="p-4 border-b border-[#ffffff1a] flex justify-between items-center bg-white/5">
-                <h3 className="font-bold text-white text-sm tracking-wide uppercase">Notifications</h3>
+        <div className="bg-popover border border-foreground/20 rounded-2xl shadow-2xl text-left w-full max-w-sm sm:max-w-md md:max-w-xl mx-auto overflow-hidden ring-1 ring-black/5">
+            <div className="p-4 border-b border-foreground/10 flex justify-between items-center bg-foreground/5">
+                <h3 className="font-bold text-foreground text-sm tracking-wide uppercase">Notifications</h3>
                 {notifications.some(n => !n.read) && (
                     <button
                         onClick={handleMarkAllRead}
@@ -122,7 +122,7 @@ export const NotificationPanel = () => {
                                 <div
                                     key={item.id}
                                     onClick={() => handleNotificationClick(item)}
-                                    className="flex items-start gap-4 p-4 cursor-pointer transition-colors border-b border-white/5 hover:bg-white/5 group"
+                                    className="flex items-start gap-4 p-4 cursor-pointer transition-colors border-b border-foreground/5 hover:bg-foreground/5 group"
                                 >
                                     <div className="mt-1 flex-shrink-0">
                                         <div className="w-10 h-10 bg-blue-500/20 rounded-xl flex items-center justify-center border border-blue-500/30 group-hover:border-blue-500/50 transition-colors">
@@ -130,13 +130,13 @@ export const NotificationPanel = () => {
                                         </div>
                                     </div>
                                     <div className="flex-1 min-w-0">
-                                        <p className="text-sm font-medium text-gray-200 group-hover:text-white transition-colors">
-                                            {item.count} updates on <span className="font-bold text-white">'{entityName}'</span>
+                                        <p className="text-sm font-medium text-foreground/90 group-hover:text-foreground transition-colors">
+                                            {item.count} updates on <span className="font-bold text-foreground">'{entityName}'</span>
                                         </p>
-                                        <p className="text-xs text-gray-500 mt-1">
+                                        <p className="text-xs text-foreground/80 mt-1">
                                             Click to view all activities
                                         </p>
-                                        <p className="text-[10px] text-gray-600 mt-2 font-medium uppercase tracking-wider">
+                                        <p className="text-[10px] text-foreground/75 mt-2 font-medium uppercase tracking-wider">
                                             {typeof item.latestCreatedAt === 'string'
                                                 ? formatDistanceToNow(new Date(item.latestCreatedAt), { addSuffix: true })
                                                 : (item.latestCreatedAt as any)?.seconds
@@ -153,7 +153,7 @@ export const NotificationPanel = () => {
                             return (
                                 <div
                                     key={item.id}
-                                    className="border-b border-white/5 last:border-0 hover:bg-white/5 transition-colors cursor-pointer"
+                                    className="border-b border-foreground/5 last:border-0 hover:bg-foreground/5 transition-colors cursor-pointer"
                                     onClick={() => handleNotificationClick(item)}
                                 >
                                     <NotificationItem
@@ -166,17 +166,17 @@ export const NotificationPanel = () => {
                         }
                     })
                 ) : (
-                    <div className="flex flex-col items-center justify-center h-64 text-gray-500">
-                        <div className="p-4 bg-white/5 rounded-full mb-4">
+                    <div className="flex flex-col items-center justify-center h-64 text-foreground/85">
+                        <div className="p-4 bg-foreground/5 rounded-full mb-4">
                             <Layers size={32} className="opacity-40" />
                         </div>
                         <p className="text-sm font-medium">No notifications yet</p>
-                        <p className="text-xs opacity-60 mt-1">We'll notify you when something happens.</p>
+                        <p className="text-xs text-foreground/70 mt-1">We'll notify you when something happens.</p>
                     </div>
                 )}
             </div>
-            <div className="p-3 border-t border-[#ffffff1a] bg-[#0f172a] text-center">
-                <small className="text-[10px] text-gray-600 font-medium uppercase tracking-widest">Notifications are stored for 30 days</small>
+            <div className="p-3 border-t border-foreground/10 bg-foreground/5 text-center">
+                <small className="text-[10px] text-foreground/80 font-semibold uppercase tracking-widest">Notifications are stored for 30 days</small>
             </div>
         </div>
     );

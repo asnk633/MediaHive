@@ -32,7 +32,7 @@ const TaskConfidenceViewComponent: React.FC<TaskConfidenceViewProps> = ({ tasks,
 
     if (loading) {
         return (
-            <div className="bg-white/5 backdrop-blur-md border border-white/5 rounded-2xl overflow-hidden shadow-sm p-6">
+            <div className="bg-foreground/5 backdrop-blur-md border border-foreground/5 rounded-2xl overflow-hidden shadow-sm p-6">
                 <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-500 mx-auto" />
             </div>
         );
@@ -40,14 +40,14 @@ const TaskConfidenceViewComponent: React.FC<TaskConfidenceViewProps> = ({ tasks,
 
     if (user?.role !== 'admin') {
         return (
-            <div className="bg-white/5 backdrop-blur-md border border-white/5 rounded-2xl overflow-hidden shadow-sm p-6 text-center">
+            <div className="bg-foreground/5 backdrop-blur-md border border-foreground/5 rounded-2xl overflow-hidden shadow-sm p-6 text-center">
                 <p className="text-gray-400">Access denied. Admin privileges required.</p>
             </div>
         );
     }
 
     return (
-        <div className="bg-white/5 backdrop-blur-md border border-white/5 rounded-2xl overflow-hidden shadow-sm h-full" style={{ minHeight: '400px' }}>
+        <div className="bg-foreground/5 backdrop-blur-md border border-foreground/5 rounded-2xl overflow-hidden shadow-sm h-full" style={{ minHeight: '400px' }}>
             <AdminConfidencePanel
                 tasks={adminData.tasks}
                 events={adminData.events}

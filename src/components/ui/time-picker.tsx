@@ -33,10 +33,10 @@ export function TimePicker({ value, onChange }: TimePickerProps) {
     const minutes = [0, 15, 30, 45]; // 15 min intervals
 
     return (
-        <div className="flex bg-[#141e30] border border-[#ffffff1a] rounded-xl overflow-hidden shadow-2xl w-[320px]">
+        <div className="flex bg-[var(--glass-liquid-bg)] backdrop-blur-2xl border border-border rounded-xl overflow-hidden shadow-2xl w-[320px]">
             {/* Hours Column */}
-            <div className="flex-1 border-r border-[#ffffff0d]">
-                <div className="h-10 flex items-center justify-center bg-white/5 text-xs font-bold text-white/50 uppercase tracking-widest border-b border-[#ffffff0d]">
+            <div className="flex-1 border-r border-border">
+                <div className="h-10 flex items-center justify-center bg-foreground/5 text-xs font-bold text-foreground/70 uppercase tracking-widest border-b border-border">
                     Hour
                 </div>
                 <ScrollArea className="h-[200px]">
@@ -50,8 +50,8 @@ export function TimePicker({ value, onChange }: TimePickerProps) {
                                 className={cn(
                                     "w-full justify-center font-bold text-lg h-10 rounded-lg transition-all",
                                     selectedHour === h
-                                        ? "bg-blue-600 text-white shadow-lg shadow-blue-600/20"
-                                        : "text-white/40 hover:text-white hover:bg-white/10"
+                                        ? "bg-blue-600 text-foreground shadow-lg shadow-blue-600/20"
+                                        : "text-foreground/70 hover:text-foreground hover:bg-foreground/10"
                                 )}
                             >
                                 {h}
@@ -62,8 +62,8 @@ export function TimePicker({ value, onChange }: TimePickerProps) {
             </div>
 
             {/* Minutes Column */}
-            <div className="flex-1 border-r border-[#ffffff0d]">
-                <div className="h-10 flex items-center justify-center bg-white/5 text-xs font-bold text-white/50 uppercase tracking-widest border-b border-[#ffffff0d]">
+            <div className="flex-1 border-r border-border">
+                <div className="h-10 flex items-center justify-center bg-foreground/5 text-xs font-bold text-foreground/70 uppercase tracking-widest border-b border-border">
                     Min
                 </div>
                 <ScrollArea className="h-[200px]">
@@ -77,8 +77,8 @@ export function TimePicker({ value, onChange }: TimePickerProps) {
                                 className={cn(
                                     "w-full justify-center font-bold text-lg h-10 rounded-lg transition-all",
                                     selectedMinute === m
-                                        ? "bg-blue-600 text-white shadow-lg shadow-blue-600/20"
-                                        : "text-white/40 hover:text-white hover:bg-white/10"
+                                        ? "bg-blue-600 text-foreground shadow-lg shadow-blue-600/20"
+                                        : "text-foreground/70 hover:text-foreground hover:bg-foreground/10"
                                 )}
                             >
                                 {m.toString().padStart(2, '0')}
@@ -89,8 +89,8 @@ export function TimePicker({ value, onChange }: TimePickerProps) {
             </div>
 
             {/* AM/PM Column */}
-            <div className="flex-1 bg-white/[0.02]">
-                <div className="h-10 flex items-center justify-center bg-white/5 text-xs font-bold text-white/50 uppercase tracking-widest border-b border-white/5">
+            <div className="flex-1 bg-foreground/[0.02]">
+                <div className="h-10 flex items-center justify-center bg-foreground/5 text-xs font-bold text-foreground/70 uppercase tracking-widest border-b border-foreground/5">
                     Period
                 </div>
                 <div className="flex flex-col p-2 gap-2 h-[200px] justify-center">
@@ -103,8 +103,8 @@ export function TimePicker({ value, onChange }: TimePickerProps) {
                             className={cn(
                                 "w-full justify-center font-bold text-lg h-16 rounded-xl transition-all",
                                 period === p
-                                    ? "bg-blue-600 text-white shadow-lg shadow-blue-600/20 ring-1 ring-white/20"
-                                    : "text-white/50 hover:text-white hover:bg-white/10"
+                                    ? "bg-blue-600 text-foreground shadow-lg shadow-blue-600/20 ring-1 ring-foreground/20"
+                                    : "text-foreground/70 hover:text-foreground hover:bg-foreground/10"
                             )}
                         >
                             {p}

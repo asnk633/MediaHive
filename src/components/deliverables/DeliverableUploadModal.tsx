@@ -76,10 +76,10 @@ export const DeliverableUploadModal: React.FC<DeliverableUploadModalProps> = ({
         <Dialog open={isOpen} onOpenChange={(open) => !open && onClose()}>
             <DialogContent
                 overlayClassName="z-[200]"
-                className="z-[200] max-w-md bg-[#1a2639] border-[#ffffff1a] shadow-2xl p-0 overflow-hidden text-white backdrop-blur-3xl rounded-3xl"
+                className="z-[200] max-w-md bg-[#1a2639] border-[#ffffff1a] shadow-2xl p-0 overflow-hidden text-foreground backdrop-blur-3xl rounded-3xl"
             >
-                <DialogHeader className="px-6 py-4 border-b border-white/5 bg-white/5">
-                    <DialogTitle className="text-lg font-bold text-white flex items-center gap-2">
+                <DialogHeader className="px-6 py-4 border-b border-foreground/5 bg-foreground/5">
+                    <DialogTitle className="text-lg font-bold text-foreground flex items-center gap-2">
                         Upload New Version
                     </DialogTitle>
                     <DialogDescription className="sr-only">
@@ -96,30 +96,30 @@ export const DeliverableUploadModal: React.FC<DeliverableUploadModalProps> = ({
                                 border-2 border-dashed rounded-xl p-8 flex flex-col items-center justify-center text-center transition-all cursor-pointer group outline-none
                                 ${isDragActive
                                     ? 'border-blue-500 bg-blue-500/10'
-                                    : 'border-white/20 hover:bg-white/5'
+                                    : 'border-foreground/20 hover:bg-foreground/5'
                                 }
                             `}
                         >
                             <input {...getInputProps()} />
                             <div className={`
                                 w-12 h-12 rounded-full flex items-center justify-center mb-4 transition-transform group-hover:scale-110
-                                ${isDragActive ? 'bg-blue-500 text-white' : 'bg-blue-500/10 text-blue-400'}
+                                ${isDragActive ? 'bg-blue-500 text-foreground' : 'bg-blue-500/10 text-blue-400'}
                             `}>
                                 <UploadCloud size={24} />
                             </div>
-                            <p className="text-sm font-medium text-white mb-1">
+                            <p className="text-sm font-medium text-foreground mb-1">
                                 {isDragActive ? "Drop the file here" : "Click to upload or drag and drop"}
                             </p>
                             <p className="text-xs text-gray-500">Supports Images, Videos, PDFs, etc.</p>
                         </div>
                     ) : (
                         <div className="space-y-4">
-                            <div className="bg-white/5 rounded-xl p-4 border border-[#ffffff1a] flex items-center gap-3">
+                            <div className="bg-foreground/5 rounded-xl p-4 border border-[#ffffff1a] flex items-center gap-3">
                                 <div className="p-3 bg-blue-500/20 text-blue-400 rounded-lg">
                                     <FileIcon size={24} />
                                 </div>
                                 <div className="flex-1 min-w-0">
-                                    <p className="text-sm font-medium text-white truncate">{file.name}</p>
+                                    <p className="text-sm font-medium text-foreground truncate">{file.name}</p>
                                     <p className="text-xs text-gray-400">{(file.size / 1024 / 1024).toFixed(2)} MB</p>
                                 </div>
                                 <button
@@ -138,7 +138,7 @@ export const DeliverableUploadModal: React.FC<DeliverableUploadModalProps> = ({
                                     type="text"
                                     value={customName}
                                     onChange={(e) => setCustomName(e.target.value)}
-                                    className="w-full bg-white/5 border border-[#ffffff1a] rounded-lg px-3 py-2 text-sm text-white focus:outline-none focus:border-blue-500/50 focus:bg-white/10 transition-colors"
+                                    className="w-full bg-foreground/5 border border-[#ffffff1a] rounded-lg px-3 py-2 text-sm text-foreground focus:outline-none focus:border-blue-500/50 focus:bg-foreground/10 transition-colors"
                                     placeholder="Enter a custom name for this version..."
                                 />
                             </div>
@@ -175,10 +175,10 @@ export const DeliverableUploadModal: React.FC<DeliverableUploadModalProps> = ({
                 </div>
 
                 {/* Footer */}
-                <div className="px-6 py-4 bg-black/20 border-t border-white/5 flex justify-end gap-3">
+                <div className="px-6 py-4 bg-black/20 border-t border-foreground/5 flex justify-end gap-3">
                     <button
                         onClick={onClose}
-                        className="px-4 py-2 rounded-lg text-sm font-medium text-gray-400 hover:text-white hover:bg-white/5 transition-colors"
+                        className="px-4 py-2 rounded-lg text-sm font-medium text-gray-400 hover:text-foreground hover:bg-foreground/5 transition-colors"
                         disabled={uploading}
                     >
                         Cancel
@@ -186,7 +186,7 @@ export const DeliverableUploadModal: React.FC<DeliverableUploadModalProps> = ({
                     <button
                         onClick={handleUpload}
                         disabled={!file || uploading}
-                        className="px-4 py-2 rounded-lg text-sm font-bold text-white bg-blue-600 hover:bg-blue-500 disabled:opacity-50 disabled:cursor-not-allowed transition-colors flex items-center gap-2 shadow-lg shadow-blue-900/20"
+                        className="px-4 py-2 rounded-lg text-sm font-bold text-foreground bg-blue-600 hover:bg-blue-500 disabled:opacity-50 disabled:cursor-not-allowed transition-colors flex items-center gap-2 shadow-lg shadow-blue-900/20"
                     >
                         {uploading && <Loader2 size={14} className="animate-spin" />}
                         {uploading ? 'Uploading...' : 'Upload File'}

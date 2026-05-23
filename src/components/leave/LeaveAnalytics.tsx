@@ -54,11 +54,11 @@ const COLORS = ['#6366f1', '#3b82f6', '#10b981', '#f59e0b', '#ef4444'];
 const CustomTooltip = ({ active, payload, label }: any) => {
     if (active && payload && payload.length) {
         return (
-            <div className="bg-[#0f1117] border border-white/10 p-4 rounded-2xl shadow-2xl backdrop-blur-xl">
-                <p className="text-[10px] font-black text-white/30 uppercase tracking-[0.2em] mb-2">{label}</p>
+            <div className="bg-[#0f1117] border border-foreground/10 p-4 rounded-2xl shadow-2xl backdrop-blur-xl">
+                <p className="text-[10px] font-black text-foreground/70 uppercase tracking-[0.2em] mb-2">{label}</p>
                 <div className="flex items-center gap-3">
                     <div className="w-2 h-2 rounded-full" style={{ backgroundColor: payload[0].color || payload[0].fill }} />
-                    <p className="text-sm font-bold text-white">{payload[0].value} Requests</p>
+                    <p className="text-sm font-bold text-foreground">{payload[0].value} Requests</p>
                 </div>
             </div>
         );
@@ -81,7 +81,7 @@ export const LeaveAnalytics: React.FC<LeaveAnalyticsProps> = ({ data, teamBalanc
     }));
 
     const kpis = [
-        { label: 'Total Volume', value: summary.total, icon: Activity, color: 'text-white' },
+        { label: 'Total Volume', value: summary.total, icon: Activity, color: 'text-foreground' },
         { label: 'Approval Rate', value: `${summary.approvalRate}%`, icon: TrendingUp, color: 'text-emerald-400' },
         { label: 'Response Time', value: `${summary.avgProcessingTime}h`, icon: Clock, color: 'text-blue-400' },
         { label: 'Open Issues', value: summary.pending, icon: AlertCircle, color: 'text-amber-400' },
@@ -97,13 +97,13 @@ export const LeaveAnalytics: React.FC<LeaveAnalyticsProps> = ({ data, teamBalanc
                         initial={{ opacity: 0, y: 20 }}
                         animate={{ opacity: 1, y: 0 }}
                         transition={{ delay: idx * 0.1 }}
-                        className="glass-liquid border border-white/5 p-6 rounded-[28px] relative overflow-hidden group"
+                        className="glass-liquid border border-foreground/5 p-6 rounded-[28px] relative overflow-hidden group"
                     >
                         <div className="absolute top-0 right-0 p-4 opacity-10 group-hover:opacity-20 transition-opacity">
                             <kpi.icon size={48} />
                         </div>
                         <div className="relative z-10 space-y-3">
-                            <p className="text-[10px] font-black text-white/30 uppercase tracking-[0.2em]">{kpi.label}</p>
+                            <p className="text-[10px] font-black text-foreground/70 uppercase tracking-[0.2em]">{kpi.label}</p>
                             <h3 className={cn("text-3xl font-black tracking-tighter", kpi.color)}>{kpi.value}</h3>
                         </div>
                     </motion.div>
@@ -116,16 +116,16 @@ export const LeaveAnalytics: React.FC<LeaveAnalyticsProps> = ({ data, teamBalanc
                 <motion.div 
                     initial={{ opacity: 0, scale: 0.98 }}
                     animate={{ opacity: 1, scale: 1 }}
-                    className="lg:col-span-2 glass-liquid border border-white/10 rounded-[32px] p-8 space-y-6"
+                    className="lg:col-span-2 glass-liquid border border-foreground/10 rounded-[32px] p-8 space-y-6"
                 >
                     <div className="flex items-center justify-between">
                         <div className="flex items-center gap-3">
                             <div className="p-2 bg-indigo-500/10 rounded-lg">
                                 <BarChart3 size={16} className="text-indigo-400" />
                             </div>
-                            <h3 className="text-sm font-black text-white/80 uppercase tracking-widest">Temporal Trends</h3>
+                            <h3 className="text-sm font-black text-foreground/80 uppercase tracking-widest">Temporal Trends</h3>
                         </div>
-                        <p className="text-[10px] font-bold text-white/20 uppercase tracking-[0.2em]">Last 12 Months</p>
+                        <p className="text-[10px] font-bold text-foreground/80 uppercase tracking-[0.2em]">Last 12 Months</p>
                     </div>
                     <div className="h-[300px] w-full">
                         <ResponsiveContainer width="100%" height="100%">
@@ -168,13 +168,13 @@ export const LeaveAnalytics: React.FC<LeaveAnalyticsProps> = ({ data, teamBalanc
                     initial={{ opacity: 0, scale: 0.98 }}
                     animate={{ opacity: 1, scale: 1 }}
                     transition={{ delay: 0.2 }}
-                    className="glass-liquid border border-white/10 rounded-[32px] p-8 space-y-8"
+                    className="glass-liquid border border-foreground/10 rounded-[32px] p-8 space-y-8"
                 >
                     <div className="flex items-center gap-3">
                         <div className="p-2 bg-blue-500/10 rounded-lg">
                             <Activity size={16} className="text-blue-400" />
                         </div>
-                        <h3 className="text-sm font-black text-white/80 uppercase tracking-widest">Allocation Split</h3>
+                        <h3 className="text-sm font-black text-foreground/80 uppercase tracking-widest">Allocation Split</h3>
                     </div>
                     <div className="h-[240px] w-full">
                         <ResponsiveContainer width="100%" height="100%">
@@ -198,7 +198,7 @@ export const LeaveAnalytics: React.FC<LeaveAnalyticsProps> = ({ data, teamBalanc
                         {formattedTypeData.map((type, idx) => (
                             <div key={type.name} className="flex items-center gap-2">
                                 <div className="w-1.5 h-1.5 rounded-full" style={{ backgroundColor: COLORS[idx % COLORS.length] }} />
-                                <p className="text-[10px] font-bold text-white/40 truncate">{type.name}</p>
+                                <p className="text-[10px] font-bold text-foreground/80 truncate">{type.name}</p>
                             </div>
                         ))}
                     </div>
@@ -207,37 +207,37 @@ export const LeaveAnalytics: React.FC<LeaveAnalyticsProps> = ({ data, teamBalanc
 
             {/* Upcoming and Team Context */}
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
-                <div className="glass-liquid border border-white/5 rounded-[32px] overflow-hidden">
-                    <div className="p-6 border-b border-white/5 flex items-center justify-between">
+                <div className="glass-liquid border border-foreground/5 rounded-[32px] overflow-hidden">
+                    <div className="p-6 border-b border-foreground/5 flex items-center justify-between">
                         <div className="flex items-center gap-3">
                             <CalendarDays size={18} className="text-indigo-400" />
-                            <h3 className="text-sm font-black text-white/80 uppercase tracking-widest">Active Schedule</h3>
+                            <h3 className="text-sm font-black text-foreground/80 uppercase tracking-widest">Active Schedule</h3>
                         </div>
-                        <span className="text-[10px] font-bold text-white/20 uppercase tracking-widest">Next 30 Days</span>
+                        <span className="text-[10px] font-bold text-foreground/80 uppercase tracking-widest">Next 30 Days</span>
                     </div>
                     <div className="p-2">
                         {upcoming.length === 0 ? (
                             <div className="p-12 text-center">
-                                <p className="text-sm text-white/20 font-medium">No active leave schedules in this window.</p>
+                                <p className="text-sm text-foreground/80 font-medium">No active leave schedules in this window.</p>
                             </div>
                         ) : (
                             <div className="space-y-1">
                                 {upcoming.map((leave: any) => (
-                                    <div key={leave.id} className="p-4 rounded-2xl hover:bg-white/[0.03] transition-colors flex items-center justify-between group">
+                                    <div key={leave.id} className="p-4 rounded-2xl hover:bg-foreground/[0.03] transition-colors flex items-center justify-between group">
                                         <div className="flex items-center gap-4">
-                                            <div className="w-10 h-10 rounded-2xl bg-white/5 flex items-center justify-center text-white/40 font-bold text-xs group-hover:bg-indigo-500/20 group-hover:text-indigo-400 transition-all">
+                                            <div className="w-10 h-10 rounded-2xl bg-foreground/5 flex items-center justify-center text-foreground/80 font-bold text-xs group-hover:bg-indigo-500/20 group-hover:text-indigo-400 transition-all">
                                                 {leave.requestedBy.name[0]}
                                             </div>
                                             <div>
-                                                <p className="text-sm font-bold text-white">{leave.requestedBy.name}</p>
-                                                <p className="text-[10px] font-bold text-white/20 uppercase tracking-widest">{leave.requestedBy.department}</p>
+                                                <p className="text-sm font-bold text-foreground">{leave.requestedBy.name}</p>
+                                                <p className="text-[10px] font-bold text-foreground/80 uppercase tracking-widest">{leave.requestedBy.department}</p>
                                             </div>
                                         </div>
                                         <div className="text-right">
                                             <p className="text-xs font-bold text-indigo-300">
                                                 {new Date(leave.startDate).toLocaleDateString('en-US', { month: 'short', day: 'numeric' })}
                                             </p>
-                                            <p className="text-[9px] font-black text-white/20 uppercase tracking-tighter">
+                                            <p className="text-[9px] font-black text-foreground/80 uppercase tracking-tighter">
                                                 {leave.totalDays} Days • {LEAVE_TYPE_LABELS[leave.type as keyof typeof LEAVE_TYPE_LABELS]}
                                             </p>
                                         </div>
@@ -249,16 +249,16 @@ export const LeaveAnalytics: React.FC<LeaveAnalyticsProps> = ({ data, teamBalanc
                 </div>
 
                 {/* Team Saturation / Quick Summary */}
-                <div className="glass-liquid border border-white/5 rounded-[32px] p-8 flex flex-col justify-center space-y-6">
+                <div className="glass-liquid border border-foreground/5 rounded-[32px] p-8 flex flex-col justify-center space-y-6">
                     <div className="space-y-2">
-                        <h3 className="text-2xl font-black text-white tracking-tighter">Workforce Saturation</h3>
-                        <p className="text-sm text-white/40 leading-relaxed font-medium">
+                        <h3 className="text-2xl font-black text-foreground tracking-tighter">Workforce Saturation</h3>
+                        <p className="text-sm text-foreground/80 leading-relaxed font-medium">
                             Currently <span className="text-indigo-400 font-bold">{summary.approved} members</span> are on leave. 
                             The team is operating at <span className="text-emerald-400 font-bold">94% capacity</span>.
                         </p>
                     </div>
                     <div className="flex items-center gap-4">
-                        <div className="flex-1 h-2 bg-white/5 rounded-full overflow-hidden">
+                        <div className="flex-1 h-2 bg-foreground/5 rounded-full overflow-hidden">
                             <motion.div 
                                 initial={{ width: 0 }}
                                 animate={{ width: '94%' }}
@@ -266,16 +266,16 @@ export const LeaveAnalytics: React.FC<LeaveAnalyticsProps> = ({ data, teamBalanc
                                 className="h-full bg-gradient-to-r from-indigo-500 to-blue-500" 
                             />
                         </div>
-                        <span className="text-xs font-black text-white/60">94%</span>
+                        <span className="text-xs font-black text-foreground/80">94%</span>
                     </div>
-                    <div className="flex items-center gap-6 pt-4 border-t border-white/5">
+                    <div className="flex items-center gap-6 pt-4 border-t border-foreground/5">
                         <div className="flex items-center gap-2">
                             <div className="w-2 h-2 rounded-full bg-indigo-500" />
-                            <span className="text-[10px] font-black text-white/30 uppercase tracking-widest">Active</span>
+                            <span className="text-[10px] font-black text-foreground/70 uppercase tracking-widest">Active</span>
                         </div>
                         <div className="flex items-center gap-2">
-                            <div className="w-2 h-2 rounded-full bg-white/10" />
-                            <span className="text-[10px] font-black text-white/30 uppercase tracking-widest">Scheduled</span>
+                            <div className="w-2 h-2 rounded-full bg-foreground/10" />
+                            <span className="text-[10px] font-black text-foreground/70 uppercase tracking-widest">Scheduled</span>
                         </div>
                     </div>
                 </div>

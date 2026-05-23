@@ -14,7 +14,7 @@ export default function DriveQueuePage() {
     if (!user || user.role !== 'admin') {
         return (
             <PageLayout mode="plain">
-                <div className="p-8 text-center text-white/50">Unauthorized</div>
+                <div className="p-8 text-center text-foreground/70">Unauthorized</div>
             </PageLayout>
         );
     }

@@ -23,8 +23,8 @@ export default function ProductionCenterPage() {
                 >
                     <Info size={20} className="text-blue-400 shrink-0 mt-1" />
                     <div className="space-y-1">
-                        <h3 className="text-sm font-bold text-white">Laboratory Feature</h3>
-                        <p className="text-xs text-white/50 leading-relaxed uppercase tracking-wider">
+                        <h3 className="text-sm font-bold text-foreground">Laboratory Feature</h3>
+                        <p className="text-xs text-foreground/70 leading-relaxed uppercase tracking-wider">
                             The Production Center provides high-fidelity tracking for your upcoming shoots. 
                             This feature is currently in the Laboratory for further refinement of the automated crew and equipment allocation engine.
                         </p>
@@ -36,13 +36,13 @@ export default function ProductionCenterPage() {
                 </div>
                 
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-6 opacity-40 grayscale pointer-events-none select-none pt-4">
-                    <div className="p-12 rounded-[40px] border border-dashed border-white/10 flex flex-col items-center justify-center text-center bg-white/[0.01]">
-                        <span className="text-[10px] font-black uppercase tracking-[0.25em] text-white/20 mb-3">Upcoming</span>
-                        <h4 className="text-sm font-bold text-white/40 uppercase tracking-tighter">Resource Allocation Engine</h4>
+                    <div className="p-12 rounded-[40px] border border-dashed border-foreground/10 flex flex-col items-center justify-center text-center bg-foreground/[0.01]">
+                        <span className="text-[10px] font-black uppercase tracking-[0.25em] text-foreground/80 mb-3">Upcoming</span>
+                        <h4 className="text-sm font-bold text-foreground/80 uppercase tracking-tighter">Resource Allocation Engine</h4>
                     </div>
-                    <div className="p-12 rounded-[40px] border border-dashed border-white/10 flex flex-col items-center justify-center text-center bg-white/[0.01]">
-                        <span className="text-[10px] font-black uppercase tracking-[0.25em] text-white/20 mb-3">Upcoming</span>
-                        <h4 className="text-sm font-bold text-white/40 uppercase tracking-tighter">Automated Crew Sync</h4>
+                    <div className="p-12 rounded-[40px] border border-dashed border-foreground/10 flex flex-col items-center justify-center text-center bg-foreground/[0.01]">
+                        <span className="text-[10px] font-black uppercase tracking-[0.25em] text-foreground/80 mb-3">Upcoming</span>
+                        <h4 className="text-sm font-bold text-foreground/80 uppercase tracking-tighter">Automated Crew Sync</h4>
                     </div>
                 </div>
             </div>

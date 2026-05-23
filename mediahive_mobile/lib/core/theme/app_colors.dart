@@ -34,4 +34,17 @@ class AppColors {
     begin: Alignment.topCenter,
     end: Alignment.bottomCenter,
   );
+
+  static const Gradient errorGradient = LinearGradient(
+    colors: [Color(0xFFEF4444), Color(0xFFFF6B6B)],
+    begin: Alignment.topLeft,
+    end: Alignment.bottomRight,
+  );
+
+  // Glassmorphism Variations
+  static Color glassBackground(double opacity) => Colors.white.withOpacity(opacity);
+  static Color glassBorder(double opacity) => Colors.white.withOpacity(opacity);
+  
+  static const Color glassSurface = Color(0x1AFFFFFF);
+  static const Color glassBorderLight = Color(0x33FFFFFF);
 }

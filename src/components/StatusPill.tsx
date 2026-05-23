@@ -41,7 +41,7 @@ export function StatusPill({ status }: StatusPillProps) {
     const normalizedStatus = status?.toLowerCase() || 'pending';
     const cfg = map[normalizedStatus] ?? {
         label: status || 'Unknown',
-        className: 'bg-white/10 text-white/60 border-white/20'
+        className: 'bg-foreground/10 text-foreground/80 border-foreground/20'
     };
 
     return (

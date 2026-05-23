@@ -34,11 +34,11 @@ export default function UnitPoliciesContent() {
         fetchDept();
     }, [id]);
 
-    if (!id) return <div className="p-8 text-white">Missing Unit ID</div>;
+    if (!id) return <div className="p-8 text-foreground">Missing Unit ID</div>;
 
     return (
         <div className="max-w-5xl mx-auto p-6 space-y-6">
-            <Button variant="ghost" onClick={() => router.back()} className="text-slate-400 hover:text-white pl-0 gap-2">
+            <Button variant="ghost" onClick={() => router.back()} className="text-slate-400 hover:text-foreground pl-0 gap-2">
                 <ArrowLeft size={16} /> Back
             </Button>
 
@@ -47,7 +47,7 @@ export default function UnitPoliciesContent() {
                     <Layers className="w-8 h-8 text-indigo-400" />
                 </div>
                 <div>
-                    <h1 className="text-2xl font-bold text-white">Office/Unit Policies</h1>
+                    <h1 className="text-2xl font-bold text-foreground">Office/Unit Policies</h1>
                     <p className="text-slate-400">Configure automation rules for Unit: {id}</p>
                 </div>
             </div>

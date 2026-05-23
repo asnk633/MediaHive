@@ -88,7 +88,7 @@ export default function BottomNavigation() {
           ref={navRef}
           initial={{ y: 50, opacity: 0 }}
           animate={{ y: 0, opacity: 1 }}
-          className="bottom-nav w-[min(36rem,calc(100vw-2rem))] px-3 shadow-strong dock-glow pointer-events-auto overflow-hidden relative"
+          className="bottom-nav w-[min(36rem,calc(100vw-2rem))] px-3 glass-liquid rounded-[32px] pointer-events-auto overflow-hidden relative"
           style={{
             height: 'auto', // Allow content + padding to define height
             minHeight: 'var(--bottom-nav-height, 4.5rem)',
@@ -121,7 +121,7 @@ export default function BottomNavigation() {
 
                 <Icon
                   size={22}
-                  className={`transition-all duration-300 ${active ? 'text-accent-primary drop-shadow-[0_0_8px_rgba(129,140,248,0.5)] translate-y-0 opacity-100' : 'text-white/40 group-hover:text-white/70 opacity-60'}`}
+                  className={`transition-all duration-300 ${active ? 'text-accent-primary drop-shadow-[0_0_8px_rgba(129,140,248,0.5)] translate-y-0 opacity-100' : 'text-foreground/80 group-hover:text-foreground/70 opacity-60'}`}
                 />
 
                 <span

@@ -424,25 +424,25 @@ export const CreateEventForm = ({ initialDate, initialEndDate, initialEvent, onS
 
     // Modern Input Style (Semantic)
     const inputContainerClasses = "relative group";
-    const iconClasses = "absolute left-4 top-1/2 -translate-y-1/2 text-white/40 group-focus-within:text-primary transition-colors duration-200 z-10 pointer-events-none";
+    const iconClasses = "absolute left-4 top-1/2 -translate-y-1/2 text-foreground/80 group-focus-within:text-primary transition-colors duration-200 z-10 pointer-events-none";
     const inputClasses = `
         w-full 
         bg-background 
         text-foreground 
-        placeholder:text-white/40
+        placeholder:text-foreground/80
         border border-soft 
         rounded-2xl 
         py-4 pl-12 pr-4 
         outline-none 
         transition-all duration-200
         focus:border-primary/50 focus:ring-4 focus:ring-primary/10
-        hover:border-white/20
+        hover:border-foreground/20
     `;
-    const labelClasses = "block text-sm font-medium text-white/70 mb-2";
+    const labelClasses = "block text-sm font-medium text-foreground/70 mb-2";
 
     // Field State Styles (for role-based clarity)
-    const lockedFieldClasses = "bg-muted/5 border-soft text-white/60 cursor-not-allowed";
-    const derivedFieldClasses = "bg-muted/5 border-soft text-white/60 cursor-not-allowed";
+    const lockedFieldClasses = "bg-muted/5 border-soft text-foreground/80 cursor-not-allowed";
+    const derivedFieldClasses = "bg-muted/5 border-soft text-foreground/80 cursor-not-allowed";
 
     return (
         <form className="space-y-8" onSubmit={handleSubmit}>
@@ -453,7 +453,7 @@ export const CreateEventForm = ({ initialDate, initialEndDate, initialEvent, onS
                         <div className="flex items-center justify-between">
                             <div className="flex-1">
                                 <label className="text-sm font-bold text-foreground block">System Event</label>
-                                <span className="text-xs text-white/50 block mt-1">Recurring event for everyone</span>
+                                <span className="text-xs text-foreground/70 block mt-1">Recurring event for everyone</span>
                             </div>
                             <Switch
                                 id="system-event"
@@ -479,12 +479,12 @@ export const CreateEventForm = ({ initialDate, initialEndDate, initialEvent, onS
                     </div>
                 </div>
 
-                <div className="flex items-center justify-between p-4 rounded-2xl bg-white/5 border border-white/10 mt-4">
+                <div className="flex items-center justify-between p-4 rounded-2xl bg-foreground/5 border border-foreground/10 mt-4">
                     <div className="flex items-center gap-3">
-                        <Clock size={20} className="text-white/40" />
+                        <Clock size={20} className="text-foreground/80" />
                         <div>
                             <p className="text-sm font-bold text-foreground">All Day Event</p>
-                            <p className="text-xs text-white/40">Event spans the entire calendar day</p>
+                            <p className="text-xs text-foreground/80">Event spans the entire calendar day</p>
                         </div>
                     </div>
                     <Switch 
@@ -494,12 +494,12 @@ export const CreateEventForm = ({ initialDate, initialEndDate, initialEvent, onS
                 </div>
 
                 <div className="space-y-4">
-                    <div className="flex items-center justify-between p-4 rounded-2xl bg-white/5 border border-white/10">
+                    <div className="flex items-center justify-between p-4 rounded-2xl bg-foreground/5 border border-foreground/10">
                         <div className="flex items-center gap-3">
-                            <Repeat size={20} className="text-white/40" />
+                            <Repeat size={20} className="text-foreground/80" />
                             <div>
                                 <p className="text-sm font-bold text-foreground">Recurring Event</p>
-                                <p className="text-xs text-white/40">Repeat this event on a schedule</p>
+                                <p className="text-xs text-foreground/80">Repeat this event on a schedule</p>
                             </div>
                         </div>
                         <Switch 
@@ -509,7 +509,7 @@ export const CreateEventForm = ({ initialDate, initialEndDate, initialEvent, onS
                     </div>
 
                     {isRecurring && (
-                        <div className="p-4 rounded-2xl bg-white/[0.02] border border-white/5 space-y-4 animate-in fade-in slide-in-from-top-2 duration-300">
+                        <div className="p-4 rounded-2xl bg-foreground/[0.02] border border-foreground/5 space-y-4 animate-in fade-in slide-in-from-top-2 duration-300">
                             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                                 <div className="space-y-2">
                                     <label className={labelClasses}>Frequency</label>
@@ -540,14 +540,14 @@ export const CreateEventForm = ({ initialDate, initialEndDate, initialEvent, onS
                             </div>
 
                             <div className="space-y-2">
-                                <label className={labelClasses}>Repeat Until <span className="text-white/40 text-xs">(Optional)</span></label>
+                                <label className={labelClasses}>Repeat Until <span className="text-foreground/80 text-xs">(Optional)</span></label>
                                 <Popover open={recurrenceEndPopoverOpen} onOpenChange={setRecurrenceEndPopoverOpen}>
                                     <PopoverTrigger asChild>
                                         <Button
                                             variant={"outline"}
                                             className={cn(
                                                 "w-full bg-background border-soft text-foreground justify-start text-left font-normal h-11",
-                                                !recurrenceEndDate && "text-white/40"
+                                                !recurrenceEndDate && "text-foreground/80"
                                             )}
                                         >
                                             <CalendarIcon className="mr-2 h-4 w-4 opacity-50" />
@@ -611,7 +611,7 @@ export const CreateEventForm = ({ initialDate, initialEndDate, initialEvent, onS
                                 <div className="flex items-center justify-between">
                                     <div className="flex-1">
                                         <label className="text-sm font-bold text-foreground block">Create On Behalf Of</label>
-                                        <span className="text-xs text-white/50 block mt-1">
+                                        <span className="text-xs text-foreground/70 block mt-1">
                                             {createOnBehalfOf ? "Event owned by a Department / Institution" : "Event owned by you (the user)"}
                                         </span>
                                     </div>
@@ -642,13 +642,13 @@ export const CreateEventForm = ({ initialDate, initialEndDate, initialEvent, onS
                                                 </SelectTrigger>
                                                 <SelectContent className="bg-surface border-soft text-foreground max-h-80 z-[200]">
                                                     <SelectGroup>
-                                                        <SelectLabel className="text-white/50 text-xs font-bold uppercase tracking-wider px-2 py-1.5">Departments / Units</SelectLabel>
+                                                        <SelectLabel className="text-foreground/70 text-xs font-bold uppercase tracking-wider px-2 py-1.5">Departments / Units</SelectLabel>
                                                         {departmentsList.map(dept => (
                                                             <SelectItem key={`dept-${dept.id}`} value={String(dept.id)}>{dept.name}</SelectItem>
                                                         ))}
                                                     </SelectGroup>
                                                     <SelectGroup>
-                                                        <SelectLabel className="text-white/50 text-xs font-bold uppercase tracking-wider px-2 py-1.5 mt-2">Institutions</SelectLabel>
+                                                        <SelectLabel className="text-foreground/70 text-xs font-bold uppercase tracking-wider px-2 py-1.5 mt-2">Institutions</SelectLabel>
                                                         {institutionsList.map(inst => (
                                                             <SelectItem key={`inst-${inst.id}`} value={String(inst.id)}>{inst.name}</SelectItem>
                                                         ))}
@@ -678,7 +678,7 @@ export const CreateEventForm = ({ initialDate, initialEndDate, initialEvent, onS
                                         <span>{user?.official_name || user?.name || 'Current User'}</span>
                                     </div>
                                 </div>
-                                <p className="text-xs text-white/50 mt-1.5">
+                                <p className="text-xs text-foreground/70 mt-1.5">
                                     {user?.role === 'admin' ? 'Your account' : 'Auto-filled from your profile'}
                                 </p>
                             </div>
@@ -700,7 +700,7 @@ export const CreateEventForm = ({ initialDate, initialEndDate, initialEvent, onS
                                     className={cn(
                                         inputClasses,
                                         "flex items-center justify-start gap-3 pl-4 h-14 font-medium",
-                                        !date && "text-white/40 font-normal"
+                                        !date && "text-foreground/80 font-normal"
                                     )}
                                 >
                                     <CalendarIcon size={20} className="text-muted shrink-0" />
@@ -736,7 +736,7 @@ export const CreateEventForm = ({ initialDate, initialEndDate, initialEvent, onS
                                         className={cn(
                                             inputClasses,
                                             "flex items-center justify-start gap-3 pl-4 h-14 font-medium",
-                                            !time && "text-white/40 font-normal"
+                                            !time && "text-foreground/80 font-normal"
                                         )}
                                     >
                                         <Clock size={20} className="text-muted shrink-0" />
@@ -768,7 +768,7 @@ export const CreateEventForm = ({ initialDate, initialEndDate, initialEvent, onS
                                     className={cn(
                                         inputClasses,
                                         "flex items-center justify-start gap-3 pl-4 h-14 font-medium",
-                                        !endDate && "text-white/40 font-normal"
+                                        !endDate && "text-foreground/80 font-normal"
                                     )}
                                 >
                                     <CalendarIcon size={20} className="text-muted shrink-0" />
@@ -805,7 +805,7 @@ export const CreateEventForm = ({ initialDate, initialEndDate, initialEvent, onS
                                         className={cn(
                                             inputClasses,
                                             "flex items-center justify-start gap-3 pl-4 h-14 font-medium",
-                                            !endTime && "text-white/40 font-normal"
+                                            !endTime && "text-foreground/80 font-normal"
                                         )}
                                     >
                                         <Clock size={20} className="text-muted shrink-0" />
@@ -830,7 +830,7 @@ export const CreateEventForm = ({ initialDate, initialEndDate, initialEvent, onS
 
             {/* Location */}
             <div className="space-y-2">
-                <label className={labelClasses}>Location <span className="text-white/40 text-xs">(Optional)</span></label>
+                <label className={labelClasses}>Location <span className="text-foreground/80 text-xs">(Optional)</span></label>
                 <div className={inputContainerClasses}>
                     <MapPin size={20} className={iconClasses} />
                     <input
@@ -848,26 +848,26 @@ export const CreateEventForm = ({ initialDate, initialEndDate, initialEvent, onS
             {
                 !is_system_event && !createOnBehalfOf && (
                     <>
-                        {/* Department / Unit */}
+                        {/* Department / Institution */}
                         <div className="space-y-2">
-                            <label className={labelClasses}>Department / Unit</label>
+                            <label className={labelClasses}>Department / Institution</label>
                             {isPrivilegedRole ? (
                                 // Admin: Always Editable Dropdown
                                 <div className={inputContainerClasses}>
                                     <Briefcase size={20} className={iconClasses} />
                                     <Select value={department} onValueChange={setDepartment}>
                                         <SelectTrigger className="w-full bg-background border-soft text-foreground h-14 rounded-2xl pl-12">
-                                            <SelectValue placeholder="Select Office / Unit" />
+                                            <SelectValue placeholder="Select Department / Institution" />
                                         </SelectTrigger>
                                         <SelectContent className="bg-surface border-soft text-foreground max-h-80 z-[200]">
                                             <SelectGroup>
-                                                <SelectLabel className="text-white/50 text-xs font-bold uppercase tracking-wider px-2 py-1.5">Offices / Units</SelectLabel>
+                                                <SelectLabel className="text-foreground/70 text-xs font-bold uppercase tracking-wider px-2 py-1.5">Departments / Institutions</SelectLabel>
                                                 {departmentsList.map(dept => (
                                                     <SelectItem key={`dept-${dept.id}`} value={String(dept.id)}>{dept.name}</SelectItem>
                                                 ))}
                                             </SelectGroup>
                                             <SelectGroup>
-                                                <SelectLabel className="text-white/50 text-xs font-bold uppercase tracking-wider px-2 py-1.5 mt-2">Institutions</SelectLabel>
+                                                <SelectLabel className="text-foreground/70 text-xs font-bold uppercase tracking-wider px-2 py-1.5 mt-2">Institutions</SelectLabel>
                                                 {institutionsList.map(inst => (
                                                     <SelectItem key={`inst-${inst.id}`} value={String(inst.id)}>{inst.name}</SelectItem>
                                                 ))}
@@ -884,7 +884,7 @@ export const CreateEventForm = ({ initialDate, initialEndDate, initialEvent, onS
                                             <span>{department}</span>
                                         </div>
                                     </div>
-                                    <p className="text-xs text-white/50 mt-1.5">Derived from your department</p>
+                                    <p className="text-xs text-foreground/70 mt-1.5">Derived from your department</p>
                                 </>
                             )}
                         </div>
@@ -915,12 +915,12 @@ export const CreateEventForm = ({ initialDate, initialEndDate, initialEvent, onS
                                             <div className="flex items-center justify-between w-full mb-3">
                                                 <div className={`
                                                     w-5 h-5 rounded-md border flex items-center justify-center transition-all duration-300
-                                                    ${isSelected ? 'bg-primary border-primary scale-110' : 'border-white/20 bg-white/5'}
+                                                    ${isSelected ? 'bg-primary border-primary scale-110' : 'border-foreground/20 bg-foreground/5'}
                                                 `}>
                                                     {isSelected && <Check size={12} className="text-primary-foreground stroke-[3]" />}
                                                 </div>
                                             </div>
-                                            <span className={`text-xs font-bold transition-colors ${isSelected ? 'text-primary' : 'text-white/60 group-hover:text-foreground'}`}>
+                                            <span className={`text-xs font-bold transition-colors ${isSelected ? 'text-primary' : 'text-foreground/80 group-hover:text-foreground'}`}>
                                                 {option}
                                             </span>
                                             <input
@@ -941,7 +941,7 @@ export const CreateEventForm = ({ initialDate, initialEndDate, initialEvent, onS
                             <div className="flex items-center justify-between">
                                 <div className="flex-1">
                                     <label className="text-sm font-bold text-foreground block">Auto-generate Actionable Tasks</label>
-                                    <span className="text-xs text-white/50 block mt-1">
+                                    <span className="text-xs text-foreground/70 block mt-1">
                                         Creates Preparation, Execution, and Post Production tasks automatically.
                                     </span>
                                 </div>
@@ -965,21 +965,21 @@ export const CreateEventForm = ({ initialDate, initialEndDate, initialEvent, onS
                         <div className="flex-1 relative group">
                             <Popover>
                                 <PopoverTrigger asChild>
-                                    <Button variant="outline" className="w-full h-12 bg-background border-soft justify-start text-white/50">
+                                    <Button variant="outline" className="w-full h-12 bg-background border-soft justify-start text-foreground/70">
                                         + Add Team Member
                                     </Button>
                                 </PopoverTrigger>
-                                 <PopoverContent className="w-[320px] p-0 bg-[#0b1220]/95 border-white/10 shadow-2xl shadow-black/50 backdrop-blur-xl z-[205] rounded-2xl overflow-hidden">
+                                 <PopoverContent className="w-[320px] p-0 bg-[var(--glass-liquid-bg)] border-border shadow-2xl shadow-black/50 backdrop-blur-2xl z-[205] rounded-2xl overflow-hidden">
                                     <Command className="bg-transparent">
-                                        <div className="flex items-center border-b border-white/5 px-3">
+                                        <div className="flex items-center border-b border-foreground/5 px-3">
                                             <Search className="mr-2 h-4 w-4 shrink-0 opacity-50" />
                                             <CommandInput 
                                                 placeholder="Search team members..." 
-                                                className="flex h-11 w-full rounded-md bg-transparent py-3 text-sm outline-none placeholder:text-white/30 disabled:cursor-not-allowed disabled:opacity-50" 
+                                                className="flex h-11 w-full rounded-md bg-transparent py-3 text-sm outline-none placeholder:text-foreground/70 disabled:cursor-not-allowed disabled:opacity-50" 
                                             />
                                         </div>
                                         <CommandList className="max-h-[300px] overflow-y-auto scrollbar-thin scrollbar-thumb-white/10 p-1">
-                                            <CommandEmpty className="py-6 text-center text-sm text-white/30">No team member found.</CommandEmpty>
+                                            <CommandEmpty className="py-6 text-center text-sm text-foreground/70">No team member found.</CommandEmpty>
                                             <CommandGroup>
                                                 {teamMembers.map((member) => (
                                                     <CommandItem
@@ -989,7 +989,7 @@ export const CreateEventForm = ({ initialDate, initialEndDate, initialEvent, onS
                                                                 setAssignedCrew([...assignedCrew, { user_id: member.uid, name: member.name, role: '' }]);
                                                             }
                                                         }}
-                                                        className="flex items-center gap-3 px-3 py-2.5 rounded-xl text-white/70 aria-selected:bg-white/10 aria-selected:text-white cursor-pointer transition-colors"
+                                                        className="flex items-center gap-3 px-3 py-2.5 rounded-xl text-foreground/70 aria-selected:bg-foreground/10 aria-selected:text-foreground cursor-pointer transition-colors"
                                                     >
                                                         <div className="w-8 h-8 rounded-full bg-primary/20 flex items-center justify-center text-primary text-[10px] font-bold">
                                                             {member.name.split(' ').map(n => n[0]).join('').toUpperCase().substring(0, 2)}
@@ -1008,10 +1008,10 @@ export const CreateEventForm = ({ initialDate, initialEndDate, initialEvent, onS
                         {assignedCrew.map((crew, index) => (
                             <div key={crew.user_id} className="flex gap-2 items-center p-3 rounded-xl bg-surface border border-soft group">
                                 <div className="flex-1">
-                                    <div className="text-sm font-medium text-white">{crew.name}</div>
+                                    <div className="text-sm font-medium text-foreground">{crew.name}</div>
                                     <input 
                                         placeholder="Role (e.g. Camera Op)" 
-                                        className="text-xs bg-transparent border-none outline-none text-white/40 focus:text-primary p-0 h-auto"
+                                        className="text-xs bg-transparent border-none outline-none text-foreground/80 focus:text-primary p-0 h-auto"
                                         value={crew.role}
                                         onChange={(e) => {
                                             const newCrew = [...assignedCrew];
@@ -1023,7 +1023,7 @@ export const CreateEventForm = ({ initialDate, initialEndDate, initialEvent, onS
                                 <button 
                                     type="button"
                                     onClick={() => setAssignedCrew(prev => prev.filter(c => c.user_id !== crew.user_id))}
-                                    className="text-white/20 hover:text-red-400 opacity-0 group-hover:opacity-100 transition-all"
+                                    className="text-foreground/80 hover:text-red-400 opacity-0 group-hover:opacity-100 transition-all"
                                 >
                                     Remove
                                 </button>
@@ -1044,21 +1044,21 @@ export const CreateEventForm = ({ initialDate, initialEndDate, initialEvent, onS
                         <div className="flex-1 relative group">
                             <Popover>
                                 <PopoverTrigger asChild>
-                                    <Button variant="outline" className="w-full h-12 bg-background border-soft justify-start text-white/50">
+                                    <Button variant="outline" className="w-full h-12 bg-background border-soft justify-start text-foreground/70">
                                         + Reserve Equipment
                                     </Button>
                                 </PopoverTrigger>
-                                 <PopoverContent className="w-[320px] p-0 bg-[#0b1220]/95 border-white/10 shadow-2xl shadow-black/50 backdrop-blur-xl z-[205] rounded-2xl overflow-hidden">
+                                 <PopoverContent className="w-[320px] p-0 bg-[var(--glass-liquid-bg)] border-border shadow-2xl shadow-black/50 backdrop-blur-2xl z-[205] rounded-2xl overflow-hidden">
                                     <Command className="bg-transparent">
-                                        <div className="flex items-center border-b border-white/5 px-3">
+                                        <div className="flex items-center border-b border-foreground/5 px-3">
                                             <Search className="mr-2 h-4 w-4 shrink-0 opacity-50" />
                                             <CommandInput 
                                                 placeholder="Search inventory..." 
-                                                className="flex h-11 w-full rounded-md bg-transparent py-3 text-sm outline-none placeholder:text-white/30 disabled:cursor-not-allowed disabled:opacity-50" 
+                                                className="flex h-11 w-full rounded-md bg-transparent py-3 text-sm outline-none placeholder:text-foreground/70 disabled:cursor-not-allowed disabled:opacity-50" 
                                             />
                                         </div>
                                         <CommandList className="max-h-[300px] overflow-y-auto scrollbar-thin scrollbar-thumb-white/10 p-1">
-                                            <CommandEmpty className="py-6 text-center text-sm text-white/30">No equipment found.</CommandEmpty>
+                                            <CommandEmpty className="py-6 text-center text-sm text-foreground/70">No equipment found.</CommandEmpty>
                                             <CommandGroup>
                                                 {inventoryList.map((item) => (
                                                     <CommandItem
@@ -1072,14 +1072,14 @@ export const CreateEventForm = ({ initialDate, initialEndDate, initialEvent, onS
                                                                 checkConflicts([...reservedEquipment, newEntry]);
                                                             }
                                                         }}
-                                                        className="flex items-center gap-3 px-3 py-2.5 rounded-xl text-white/70 aria-selected:bg-white/10 aria-selected:text-white cursor-pointer transition-colors"
+                                                        className="flex items-center gap-3 px-3 py-2.5 rounded-xl text-foreground/70 aria-selected:bg-foreground/10 aria-selected:text-foreground cursor-pointer transition-colors"
                                                     >
                                                         <div className="w-8 h-8 rounded-lg bg-blue-500/10 flex items-center justify-center text-blue-400">
                                                             <Package size={14} />
                                                         </div>
                                                         <div className="flex-1 flex flex-col">
                                                             <span className="text-sm font-medium">{item.name}</span>
-                                                            <span className="text-[10px] text-white/30 uppercase tracking-tighter">{item.category || 'General'}</span>
+                                                            <span className="text-[10px] text-foreground/70 uppercase tracking-tighter">{item.category || 'General'}</span>
                                                         </div>
                                                     </CommandItem>
                                                 ))}
@@ -1100,11 +1100,11 @@ export const CreateEventForm = ({ initialDate, initialEndDate, initialEvent, onS
                                     hasConflict ? "border-red-500/50 bg-red-500/5" : "border-soft"
                                 )}>
                                     <div className="flex justify-between items-center w-full">
-                                        <div className="text-sm font-medium text-white">{equip.name}</div>
+                                        <div className="text-sm font-medium text-foreground">{equip.name}</div>
                                         <button 
                                             type="button"
                                             onClick={() => setReservedEquipment(prev => prev.filter(e => e.inventory_id !== equip.inventory_id))}
-                                            className="text-white/20 hover:text-red-400 opacity-0 group-hover:opacity-100 transition-all text-xs"
+                                            className="text-foreground/80 hover:text-red-400 opacity-0 group-hover:opacity-100 transition-all text-xs"
                                         >
                                             Remove
                                         </button>
@@ -1119,7 +1119,7 @@ export const CreateEventForm = ({ initialDate, initialEndDate, initialEvent, onS
                                 </div>
                             );
                         })}
-                        {isCheckingConflicts && <div className="text-[10px] text-white/50 italic">Checking availability...</div>}
+                        {isCheckingConflicts && <div className="text-[10px] text-foreground/70 italic">Checking availability...</div>}
                     </div>
                 </div>
             </div>
@@ -1132,7 +1132,7 @@ export const CreateEventForm = ({ initialDate, initialEndDate, initialEvent, onS
                     <button
                         type="button"
                         onClick={onCancel}
-                        className="flex-1 py-4 text-sm font-bold text-white/60 bg-surface hover:bg-white/5 rounded-2xl transition-colors hover:text-foreground border border-soft"
+                        className="flex-1 py-4 text-sm font-bold text-foreground/80 bg-surface hover:bg-foreground/5 rounded-2xl transition-colors hover:text-foreground border border-soft"
                     >
                         Cancel
                     </button>

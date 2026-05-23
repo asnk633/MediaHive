@@ -227,7 +227,7 @@ export default function SystemMonitoringPage() {
         <div className="space-y-3">
           {auditStats.topUsers.map((user, index) => (
             <div key={index} className="flex items-center">
-              <div className="w-8 h-8 rounded-full bg-blue-500 text-white flex items-center justify-center text-sm font-bold mr-3">
+              <div className="w-8 h-8 rounded-full bg-blue-500 text-foreground flex items-center justify-center text-sm font-bold mr-3">
                 {index + 1}
               </div>
               <div className="flex-1">

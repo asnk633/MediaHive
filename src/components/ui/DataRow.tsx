@@ -20,7 +20,7 @@ interface DataRowProps {
  * When `selectable` is true, a 32px checkbox column is prepended.
  * - Checkbox click → onSelectToggle (propagation stopped)
  * - Row click → onClick (unchanged behaviour)
- * - Selected state → subtle bg-white/[0.04] highlight, no layout shift
+ * - Selected state → subtle bg-foreground/[0.04] highlight, no layout shift
  * - The 32px column is always present when selectable=true to prevent shift
  */
 export function DataRow({
@@ -36,17 +36,17 @@ export function DataRow({
         <div
             onClick={onClick}
             className={cn(
-                "group relative flex items-center justify-between w-full border-b border-white/5",
+                "group relative flex items-center justify-between w-full border-b border-foreground/5",
                 "mh-transition cursor-default",
                 // Density tokens from parent DataList context
                 "h-[var(--mh-row-height)] px-[var(--mh-cell-padding)]",
                 // Base hover — only when not selected
-                !selected && "bg-transparent hover:bg-white/[0.02]",
+                !selected && "bg-transparent hover:bg-foreground/[0.02]",
                 // Click affordance
-                onClick && !selected && "cursor-pointer hover:bg-white/[0.04] active:bg-white/[0.06]",
-                onClick && selected && "cursor-pointer active:bg-white/[0.08]",
+                onClick && !selected && "cursor-pointer hover:bg-foreground/[0.04] active:bg-foreground/[0.06]",
+                onClick && selected && "cursor-pointer active:bg-foreground/[0.08]",
                 // Selection highlight — existing semantic opacity token, no new hex
-                selected && "bg-white/[0.04]",
+                selected && "bg-foreground/[0.04]",
                 className,
             )}
             role="listitem"
@@ -67,8 +67,8 @@ export function DataRow({
                         aria-checked={selected}
                         aria-label="Select row"
                         className={cn(
-                            "w-4 h-4 rounded border border-white/20 bg-transparent",
-                            "checked:bg-white/20 checked:border-white/40",
+                            "w-4 h-4 rounded border border-foreground/20 bg-transparent",
+                            "checked:bg-foreground/20 checked:border-foreground/40",
                             "cursor-pointer transition-all duration-150",
                             "accent-white/80",
                         )}

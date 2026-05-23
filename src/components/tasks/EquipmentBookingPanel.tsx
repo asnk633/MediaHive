@@ -120,8 +120,8 @@ export function EquipmentBookingPanel({ taskId, onBookingsChange }: EquipmentBoo
     const maxUnits = availability?.available ?? selectedItem?.quantity ?? 99;
 
     return (
-        <div className="space-y-4 rounded-xl border border-white/5 bg-white/[0.02] p-4">
-            <div className="flex items-center gap-2 text-sm font-semibold text-white/80">
+        <div className="space-y-4 rounded-xl border border-foreground/5 bg-foreground/[0.02] p-4">
+            <div className="flex items-center gap-2 text-sm font-semibold text-foreground/80">
                 <CalendarCheck className="h-4 w-4 text-amber-400" />
                 Equipment Reservation
             </div>
@@ -143,7 +143,7 @@ export function EquipmentBookingPanel({ taskId, onBookingsChange }: EquipmentBoo
                 </div>
 
                 <div className="space-y-1">
-                    <label className="text-xs text-white/40 font-medium">
+                    <label className="text-xs text-foreground/80 font-medium">
                         Units
                         {availability && (
                             <span className={`ml-2 font-semibold ${availability.available === 0 ? 'text-red-400' : 'text-emerald-400'}`}>
@@ -157,7 +157,7 @@ export function EquipmentBookingPanel({ taskId, onBookingsChange }: EquipmentBoo
                         max={maxUnits}
                         value={unitsRequested}
                         onChange={e => setUnitsRequested(Math.min(maxUnits, Math.max(1, parseInt(e.target.value) || 1)))}
-                        className="w-full bg-black/30 border border-white/10 text-white text-sm rounded-lg px-3 py-2 focus:ring-1 focus:ring-amber-500/50"
+                        className="w-full bg-black/30 border border-foreground/10 text-foreground text-sm rounded-lg px-3 py-2 focus:ring-1 focus:ring-amber-500/50"
                     />
                 </div>
             </div>
@@ -226,7 +226,7 @@ export function EquipmentBookingPanel({ taskId, onBookingsChange }: EquipmentBoo
 
             {/* Availability status pill */}
             {checking && (
-                <div className="flex items-center gap-2 text-xs text-white/40">
+                <div className="flex items-center gap-2 text-xs text-foreground/80">
                     <Loader2 className="h-3 w-3 animate-spin" /> Checking availability...
                 </div>
             )}
@@ -249,7 +249,7 @@ export function EquipmentBookingPanel({ taskId, onBookingsChange }: EquipmentBoo
             <button
                 onClick={handleBook}
                 disabled={submitting || !selectedId || !startTime || !endTime || (availability?.available ?? 1) < 1}
-                className="flex items-center gap-2 px-4 py-2 bg-amber-600 hover:bg-amber-700 text-white text-sm rounded-lg transition-all disabled:opacity-50"
+                className="flex items-center gap-2 px-4 py-2 bg-amber-600 hover:bg-amber-700 text-foreground text-sm rounded-lg transition-all disabled:opacity-50"
             >
                 {submitting ? <Loader2 className="h-4 w-4 animate-spin" /> : <CalendarCheck className="h-4 w-4" />}
                 Book {unitsRequested > 1 ? `${unitsRequested} Units` : 'Equipment'}
@@ -270,17 +270,17 @@ export function EquipmentBookingPanel({ taskId, onBookingsChange }: EquipmentBoo
 
             {/* Existing Bookings */}
             {existingBookings.length > 0 && (
-                <div className="space-y-2 pt-1 border-t border-white/5">
-                    <p className="text-xs text-white/40 font-medium uppercase tracking-wider">Booked Equipment</p>
+                <div className="space-y-2 pt-1 border-t border-foreground/5">
+                    <p className="text-xs text-foreground/80 font-medium uppercase tracking-wider">Booked Equipment</p>
                     {existingBookings.map((b, i) => {
                         const item = equipment.find(e => e.id === b.equipmentId);
                         return (
-                            <div key={b.id || i} className="flex items-center gap-2 text-sm text-white/70">
+                            <div key={b.id || i} className="flex items-center gap-2 text-sm text-foreground/70">
                                 <CheckCircle2 className="h-4 w-4 text-emerald-400 shrink-0" />
-                                <span className="font-medium text-white">{item?.name || 'Equipment'}</span>
-                                <span className="text-xs bg-white/10 rounded px-1.5 py-0.5">{b.unitsRequested || 1}×</span>
+                                <span className="font-medium text-foreground">{item?.name || 'Equipment'}</span>
+                                <span className="text-xs bg-foreground/10 rounded px-1.5 py-0.5">{b.unitsRequested || 1}×</span>
                                 {b.startTime && b.endTime && (
-                                    <span className="text-white/40">
+                                    <span className="text-foreground/80">
                                         {format(new Date(b.startTime), 'MMM d h:mm a')} → {format(new Date(b.endTime), 'h:mm a')}
                                     </span>
                                 )}

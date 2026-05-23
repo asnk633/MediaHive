@@ -48,7 +48,7 @@ export const ConflictWarningBanner: React.FC<ConflictWarningBannerProps> = ({
                         {onDismiss && (
                             <button
                                 onClick={onDismiss}
-                                className="text-white/40 hover:text-white/60 transition-colors"
+                                className="text-foreground/80 hover:text-foreground/80 transition-colors"
                                 aria-label="Dismiss"
                             >
                                 <X size={18} />
@@ -63,13 +63,13 @@ export const ConflictWarningBanner: React.FC<ConflictWarningBannerProps> = ({
                                     {getIcon(conflict.type)}
                                 </div>
                                 <div className="flex-1">
-                                    <p className="text-sm text-white font-medium">
+                                    <p className="text-sm text-foreground font-medium">
                                         {conflict.message}
                                     </p>
 
                                     {/* Conflict Details */}
                                     {conflict.type === 'user_on_leave' && conflict.details.leaveRequest && (
-                                        <p className="text-xs text-white/60 mt-1">
+                                        <p className="text-xs text-foreground/80 mt-1">
                                             Leave period: {format(conflict.details.leaveRequest.startDate, 'MMM d')} - {format(conflict.details.leaveRequest.endDate, 'MMM d, yyyy')}
                                         </p>
                                     )}
@@ -77,7 +77,7 @@ export const ConflictWarningBanner: React.FC<ConflictWarningBannerProps> = ({
                                     {conflict.type === 'pending_tasks' && conflict.details.tasks && (
                                         <div className="mt-1 space-y-1">
                                             {conflict.details.tasks.map((task, taskIndex) => (
-                                                <p key={taskIndex} className="text-xs text-white/60">
+                                                <p key={taskIndex} className="text-xs text-foreground/80">
                                                     • "{task.title}" - Due {format(task.due_date, 'MMM d, yyyy')}
                                                 </p>
                                             ))}
@@ -92,7 +92,7 @@ export const ConflictWarningBanner: React.FC<ConflictWarningBannerProps> = ({
                         <div className="mt-4 pt-3 border-t border-[#ffffff1a] flex justify-end gap-2">
                             <button
                                 onClick={onOverride}
-                                className="px-4 py-2 bg-amber-500 hover:bg-amber-600 text-white font-semibold rounded-xl transition-colors text-sm"
+                                className="px-4 py-2 bg-amber-500 hover:bg-amber-600 text-foreground font-semibold rounded-xl transition-colors text-sm"
                             >
                                 Proceed Anyway
                             </button>

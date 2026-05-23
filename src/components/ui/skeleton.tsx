@@ -5,7 +5,7 @@ function Skeleton({ className, ...props }: React.ComponentProps<"div">) {
     <div
       aria-hidden="true"
       data-slot="skeleton"
-      className={cn("bg-white/[0.03] premium-shimmer rounded-lg relative overflow-hidden", className)}
+      className={cn("bg-foreground/[0.03] premium-shimmer rounded-lg relative overflow-hidden", className)}
       {...props}
     />
   )

@@ -337,7 +337,7 @@ export const EventEditModal: React.FC<EventEditModalProps> = ({ event, isOpen, o
 
                         <div className="space-y-0.5">
                             <DropdownSelector 
-                                label="Office / Unit / Institution"
+                                label="Department / Institution"
                                 value={formData.department}
                                 onChange={val => setFormData({ ...formData, department: val })}
                                 options={[
@@ -369,7 +369,7 @@ export const EventEditModal: React.FC<EventEditModalProps> = ({ event, isOpen, o
                                                 w-4 h-4 rounded-full border flex items-center justify-center
                                                 ${isSelected ? 'bg-primary border-primary' : 'bg-transparent border-soft'}
                                             `}>
-                                                    {isSelected && <Check size={10} className="text-white" />}
+                                                    {isSelected && <Check size={10} className="text-foreground" />}
                                                 </div>
                                             </div>
                                             <span className="text-[10px] font-bold text-left">{option}</span>
@@ -450,7 +450,7 @@ export const EventEditModal: React.FC<EventEditModalProps> = ({ event, isOpen, o
                                         w-5 h-5 rounded border flex items-center justify-center transition-colors
                                         ${formData.is_media_off_day ? 'bg-red-500 border-red-500' : 'border-soft bg-transparent'}
                                     `}>
-                                            {formData.is_media_off_day && <Check size={14} className="text-white" />}
+                                            {formData.is_media_off_day && <Check size={14} className="text-foreground" />}
                                         </div>
                                         <input
                                             type="checkbox"
@@ -488,7 +488,7 @@ export const EventEditModal: React.FC<EventEditModalProps> = ({ event, isOpen, o
                         form="edit-event-form"
                         type="submit"
                         disabled={loading}
-                        className="flex items-center gap-2 px-8 py-2.5 bg-blue-600 hover:bg-blue-500 text-white rounded-xl shadow-lg shadow-blue-600/20 transition-all text-sm font-bold disabled:opacity-50"
+                        className="flex items-center gap-2 px-8 py-2.5 bg-blue-600 hover:bg-blue-500 text-foreground rounded-xl shadow-lg shadow-blue-600/20 transition-all text-sm font-bold disabled:opacity-50"
                     >
                         {loading ? (
                             <div className="animate-spin rounded-full h-4 w-4 border-2 border-primary/30 border-t-primary" />

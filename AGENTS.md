@@ -56,15 +56,37 @@ Errors are learning opportunities. When something breaks:
 \*\*Directory structure:\*\*  
 \- \`.tmp/\` \- All intermediate files (dossiers, scraped data, temp exports). Never commit, always regenerated.  
 \- \`execution/\` \- Python scripts (the deterministic tools)  
-\- \`directives/\` \- SOPs in Markdown (the instruction set)  
-\- \`.env\` \- Environment variables and API keys  
-\- \`credentials.json\`, \`token.json\` \- Google OAuth credentials (required files, in \`.gitignore\`)
+1. Fix it  
+2. Update the tool  
+3. Test tool, make sure it works  
+4. Update directive to include new flow  
+5. System is now stronger
 
-\*\*Key principle:\*\* Local files are only for processing. Deliverables live in cloud services (Google Sheets, Slides, etc.) where the user can access them. Everything in \`.tmp/\` can be deleted and regenerated.
+## File Organization
 
-\#\# Summary
+**Deliverables vs Intermediates:**  
+- **Deliverables**: Google Sheets, Google Slides, or other cloud-based outputs that the user can access  
+- **Intermediates**: Temporary files needed during processing
 
-You sit between human intent (directives) and deterministic execution (Python scripts). Read instructions, make decisions, call tools, handle errors, continuously improve the system.
+**Directory structure:**  
+- `.tmp/` - All intermediate files (dossiers, scraped data, temp exports). Never commit, always regenerated.  
+- `execution/` - Python scripts (the deterministic tools)  
+- `directives/` - SOPs in Markdown (the instruction set)  
+- `.env` - Environment variables and API keys  
+- `credentials.json`, `token.json` - Google OAuth credentials (required files, in `.gitignore`)
+
+**Key principle:** Local files are only for processing. Deliverables live in cloud services (Google Sheets, Slides, etc.) where the user can access them. Everything in `.tmp/` can be deleted and regenerated.
+
+## Codebase Navigation (Graphify)
+
+This project has a **Graphify** knowledge graph maintained in `graphify-out/`.
+- **Use the Graph First**: For any codebase, file relationship, or architectural questions, always consult the knowledge graph instead of doing raw grep searches.
+- **Graph Queries**: Run `& "C:\Users\Shukoor Rahman\AppData\Roaming\Python\Python314\Scripts\graphify.exe" query "<question>"` to trace dependencies or understand functional flows in the application.
+- **Keep Graph Synced**: When modifying, adding, or deleting code files in this session, always run `& "C:\Users\Shukoor Rahman\AppData\Roaming\Python\Python314\Scripts\graphify.exe" update .` at the end to keep the knowledge graph in sync. This is AST-only, extremely fast, and costs zero LLM tokens.
+- **Reports**: See `graphify-out/GRAPH_REPORT.md` for structured insights on communities, god nodes, and high-level cohesion metrics.
+
+## Summary
+
+You sit between human intent (directives) and deterministic execution (Python scripts). Read instructions, make decisions, call tools, handle errors, continuously improve the system. Always leverage the knowledge graph to save context tokens and ensure perfect precision.
 
 Be pragmatic. Be reliable. Self-anneal.
-

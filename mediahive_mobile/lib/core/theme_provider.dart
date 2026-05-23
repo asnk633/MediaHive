@@ -14,6 +14,9 @@ class ThemeColors {
   final List<BoxShadow> cardShadow;
   final Color iconColor;
   final Color honey;
+  final Color indigo;
+  final Color emerald;
+  final Color error;
 
   const ThemeColors({
     required this.isDark,
@@ -26,6 +29,9 @@ class ThemeColors {
     required this.cardShadow,
     required this.iconColor,
     required this.honey,
+    required this.indigo,
+    required this.emerald,
+    required this.error,
   });
 
   factory ThemeColors.dark() {
@@ -39,6 +45,9 @@ class ThemeColors {
       border: Color(0xFF1E293B),
       iconColor: Colors.white,
       honey: Color(0xFFE59312),
+      indigo: Color(0xFF6366F1),
+      emerald: Color(0xFF10B981),
+      error: Color(0xFFEF4444),
       cardShadow: [],
     );
   }
@@ -54,6 +63,9 @@ class ThemeColors {
       border: const Color(0xFF000000).withOpacity(0.3),
       iconColor: const Color(0xFF000000),
       honey: const Color(0xFFE59312),
+      indigo: const Color(0xFF6366F1),
+      emerald: const Color(0xFF10B981),
+      error: const Color(0xFFEF4444),
       cardShadow: const [
         BoxShadow(
           color: Color(0x33000000),

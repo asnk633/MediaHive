@@ -61,7 +61,7 @@ export default function EventsClient() {
                 actions={
                     <div className="flex items-center gap-3">
                         <TooltipProvider>
-                            <div className="flex bg-white/[0.04] border border-white/10 rounded-2xl p-1.5 backdrop-blur-md shadow-2xl">
+                            <div className="flex bg-foreground/[0.04] border border-foreground/10 rounded-2xl p-1.5 backdrop-blur-md shadow-2xl">
                                 {(['month', 'week', 'timeline', 'list'] as const).map((mode) => {
                                     const { icon: Icon, label, tooltip } = {
                                         month: { icon: CalendarIcon, label: 'Month', tooltip: 'Monthly overview' },
@@ -77,7 +77,7 @@ export default function EventsClient() {
                                                     onClick={() => setViewMode(mode)}
                                                     className={cn(
                                                         "nav-button-events px-4 py-2 text-[10px] font-black uppercase tracking-[0.2em] rounded-xl transition-all duration-150 flex items-center",
-                                                        viewMode === mode ? "nav-button-events-active" : "text-white/40 hover:text-white/70"
+                                                        viewMode === mode ? "nav-button-events-active" : "text-foreground/80 hover:text-foreground/70"
                                                     )}
                                                 >
                                                     <Icon 
@@ -101,7 +101,7 @@ export default function EventsClient() {
                         {canCreate && (
                             <Button
                                 onClick={() => nativeNavigate('/events/new', router, 'Events (New)')}
-                                className="bg-blue-600 hover:bg-blue-500 text-white border-none shadow-lg hover:shadow-blue-500/20 px-6 h-[46px] rounded-xl font-bold"
+                                className="bg-blue-600 hover:bg-blue-500 text-foreground border-none shadow-lg hover:shadow-blue-500/20 px-6 h-[46px] rounded-xl font-bold"
                             >
                                 <Plus size={16} className="mr-2" />
                                 New Event
@@ -113,7 +113,7 @@ export default function EventsClient() {
 
             {loading ? (
                 <div className="flex items-center justify-center h-64">
-                    <div className="text-white/30 animate-pulse font-mono text-xs">SYNCING EVENTS...</div>
+                    <div className="text-foreground/70 animate-pulse font-mono text-xs">SYNCING EVENTS...</div>
                 </div>
             ) : (
                 <div className="mt-6">

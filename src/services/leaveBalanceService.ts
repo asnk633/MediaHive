@@ -51,6 +51,7 @@ export const LeaveBalanceService = {
                 casual: { taken: 0, total: DEFAULT_LEAVE_ALLOWANCES.casual },
                 sick: { taken: 0, total: DEFAULT_LEAVE_ALLOWANCES.sick },
                 planned: { taken: 0, total: DEFAULT_LEAVE_ALLOWANCES.planned },
+                unpaid: { taken: 0, total: DEFAULT_LEAVE_ALLOWANCES.unpaid },
                 emergency: { taken: 0, total: DEFAULT_LEAVE_ALLOWANCES.emergency },
                 other: { taken: 0, total: DEFAULT_LEAVE_ALLOWANCES.other }
             },
@@ -182,7 +183,7 @@ export const LeaveBalanceService = {
                 TABLES.LEAVE_BALANCES,
                 String(balance.id),
                 { balances: newBalances, updated_at: new Date().toISOString() },
-                'UPDATE_LEAVE_ALLOCATION'
+                'LEAVE_BALANCE'
             );
             toast.success(`Updated ${type} allocation to ${totalDays} days`);
         } catch (error) {

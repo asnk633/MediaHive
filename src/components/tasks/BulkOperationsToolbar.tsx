@@ -161,7 +161,7 @@ export const BulkOperationsToolbar: React.FC<BulkOperationsToolbarProps> = ({
 
   return (
     <div className="fixed bottom-8 left-1/2 transform -translate-x-1/2 z-[60] animate-in fade-in slide-in-from-bottom-4 duration-500">
-      <div className="bg-[#0B0E14]/90 backdrop-blur-xl border border-white/10 rounded-2xl shadow-[0_20px_50px_rgba(0,0,0,0.5)] p-2 transition-all duration-300">
+      <div className="bg-[#0B0E14]/90 backdrop-blur-xl border border-foreground/10 rounded-2xl shadow-[0_20px_50px_rgba(0,0,0,0.5)] p-2 transition-all duration-300">
         {!isOpen ? (
           <div className="flex items-center gap-2 pr-1">
             <div className="bg-blue-500/10 text-blue-400 px-4 py-2 rounded-xl text-[10px] font-bold uppercase tracking-widest border border-blue-500/20 mr-2 ml-1">
@@ -171,7 +171,7 @@ export const BulkOperationsToolbar: React.FC<BulkOperationsToolbarProps> = ({
             <div className="flex gap-1">
               <button
                 onClick={() => handleOperationSelect('assign')}
-                className="flex items-center gap-2 px-4 py-2 bg-white/[0.03] hover:bg-white/10 text-white/40 hover:text-white rounded-xl transition-all text-[10px] font-bold uppercase tracking-widest border border-white/5"
+                className="flex items-center gap-2 px-4 py-2 bg-foreground/[0.03] hover:bg-foreground/10 text-foreground/80 hover:text-foreground rounded-xl transition-all text-[10px] font-bold uppercase tracking-widest border border-foreground/5"
               >
                 <Users className="w-3.5 h-3.5 opacity-40 group-hover:opacity-100" />
                 Assign
@@ -179,7 +179,7 @@ export const BulkOperationsToolbar: React.FC<BulkOperationsToolbarProps> = ({
 
               <button
                 onClick={() => handleOperationSelect('changePriority')}
-                className="flex items-center gap-2 px-4 py-2 bg-white/[0.03] hover:bg-white/10 text-white/40 hover:text-white rounded-xl transition-all text-[10px] font-bold uppercase tracking-widest border border-white/5"
+                className="flex items-center gap-2 px-4 py-2 bg-foreground/[0.03] hover:bg-foreground/10 text-foreground/80 hover:text-foreground rounded-xl transition-all text-[10px] font-bold uppercase tracking-widest border border-foreground/5"
               >
                 <Flag className="w-3.5 h-3.5 opacity-40 group-hover:opacity-100" />
                 Priority
@@ -187,17 +187,17 @@ export const BulkOperationsToolbar: React.FC<BulkOperationsToolbarProps> = ({
 
               <button
                 onClick={() => handleOperationSelect('changeStatus')}
-                className="flex items-center gap-2 px-4 py-2 bg-white/[0.03] hover:bg-white/10 text-white/40 hover:text-white rounded-xl transition-all text-[10px] font-bold uppercase tracking-widest border border-white/5"
+                className="flex items-center gap-2 px-4 py-2 bg-foreground/[0.03] hover:bg-foreground/10 text-foreground/80 hover:text-foreground rounded-xl transition-all text-[10px] font-bold uppercase tracking-widest border border-foreground/5"
               >
                 <ListChecks className="w-3.5 h-3.5 opacity-40 group-hover:opacity-100" />
                 Status
               </button>
 
-              <div className="w-px h-4 bg-white/5 mx-1" />
+              <div className="w-px h-4 bg-foreground/5 mx-1" />
 
               <button
                 onClick={() => { setOperation('extendDeadline'); setValue(''); setIsOpen(true); }}
-                className="flex items-center gap-2 px-4 py-2 bg-white/[0.03] hover:bg-white/10 text-white/40 hover:text-white rounded-xl transition-all text-[10px] font-bold uppercase tracking-widest border border-white/5"
+                className="flex items-center gap-2 px-4 py-2 bg-foreground/[0.03] hover:bg-foreground/10 text-foreground/80 hover:text-foreground rounded-xl transition-all text-[10px] font-bold uppercase tracking-widest border border-foreground/5"
               >
                 <Calendar className="w-3.5 h-3.5 opacity-40 group-hover:opacity-100" />
                 Extend
@@ -220,11 +220,11 @@ export const BulkOperationsToolbar: React.FC<BulkOperationsToolbarProps> = ({
               </button>
             </div>
 
-            <div className="w-px h-6 bg-white/5 mx-2" />
+            <div className="w-px h-6 bg-foreground/5 mx-2" />
 
             <button
               onClick={onClearSelection}
-              className="p-2 text-white/20 hover:text-white/60 hover:bg-white/5 rounded-lg transition-all"
+              className="p-2 text-foreground/80 hover:text-foreground/80 hover:bg-foreground/5 rounded-lg transition-all"
               title="Clear Selection"
             >
               <X className="w-4 h-4" />
@@ -233,7 +233,7 @@ export const BulkOperationsToolbar: React.FC<BulkOperationsToolbarProps> = ({
         ) : (
           <div className="w-80 p-4">
             <div className="flex items-center justify-between mb-6">
-              <h3 className="text-xs font-bold text-white/40 uppercase tracking-[0.2em]">
+              <h3 className="text-xs font-bold text-foreground/80 uppercase tracking-[0.2em]">
                 {operation === 'assign' && 'Institutional Assignment'}
                 {operation === 'changePriority' && 'Priority Calibration'}
                 {operation === 'changeStatus' && 'Status Override'}
@@ -243,17 +243,17 @@ export const BulkOperationsToolbar: React.FC<BulkOperationsToolbarProps> = ({
               </h3>
               <button
                 onClick={handleClose}
-                className="text-white/20 hover:text-white transition-colors"
+                className="text-foreground/80 hover:text-foreground transition-colors"
               >
                 <X className="w-4 h-4" />
               </button>
             </div>
 
             <div className="mb-6 space-y-1">
-              <p className="text-[10px] font-bold text-white uppercase tracking-widest">
+              <p className="text-[10px] font-bold text-foreground uppercase tracking-widest">
                 {getOperationSummary()}
               </p>
-              <div className="text-[9px] font-bold text-white/20 uppercase tracking-[0.15em]">
+              <div className="text-[9px] font-bold text-foreground/80 uppercase tracking-[0.15em]">
                 Targeting {selectedTaskIds.length} unit{selectedTaskIds.length !== 1 ? 's' : ''}
               </div>
             </div>
@@ -285,7 +285,7 @@ export const BulkOperationsToolbar: React.FC<BulkOperationsToolbarProps> = ({
                         "p-3 rounded-xl border text-[10px] font-bold uppercase tracking-widest transition-all",
                         value === p
                           ? 'bg-blue-500/10 border-blue-500/40 text-blue-400'
-                          : 'bg-white/[0.03] border-white/5 text-white/50 hover:bg-white/10'
+                          : 'bg-foreground/[0.03] border-foreground/5 text-foreground/70 hover:bg-foreground/10'
                       )}
                     >
                       {p}
@@ -311,7 +311,7 @@ export const BulkOperationsToolbar: React.FC<BulkOperationsToolbarProps> = ({
                           "p-3 rounded-xl border flex flex-col items-center gap-2 transition-all",
                           value === status.id
                             ? 'bg-blue-500/10 border-blue-500/40 text-blue-400'
-                            : 'bg-white/[0.03] border-white/5 text-white/50 hover:bg-white/10'
+                            : 'bg-foreground/[0.03] border-foreground/5 text-foreground/70 hover:bg-foreground/10'
                         )}
                       >
                         <Icon size={14} className="opacity-40" />
@@ -324,8 +324,8 @@ export const BulkOperationsToolbar: React.FC<BulkOperationsToolbarProps> = ({
 
               {operation === 'extendDeadline' && (
                 <div className="grid grid-cols-2 gap-2">
-                  <button onClick={() => setValue('1day')} className={cn("p-3 rounded-xl border text-[10px] font-bold uppercase tracking-widest transition-all", value === '1day' ? "bg-blue-500/10 border-blue-500 text-blue-400" : "bg-white/5 border-white/10 opacity-60 hover:opacity-100")}>+1 Day</button>
-                  <button onClick={() => setValue('1week')} className={cn("p-3 rounded-xl border text-[10px] font-bold uppercase tracking-widest transition-all", value === '1week' ? "bg-blue-500/10 border-blue-500 text-blue-400" : "bg-white/5 border-white/10 opacity-60 hover:opacity-100")}>+1 Week</button>
+                  <button onClick={() => setValue('1day')} className={cn("p-3 rounded-xl border text-[10px] font-bold uppercase tracking-widest transition-all", value === '1day' ? "bg-blue-500/10 border-blue-500 text-blue-400" : "bg-foreground/5 border-foreground/10 opacity-60 hover:opacity-100")}>+1 Day</button>
+                  <button onClick={() => setValue('1week')} className={cn("p-3 rounded-xl border text-[10px] font-bold uppercase tracking-widest transition-all", value === '1week' ? "bg-blue-500/10 border-blue-500 text-blue-400" : "bg-foreground/5 border-foreground/10 opacity-60 hover:opacity-100")}>+1 Week</button>
                 </div>
               )}
 
@@ -349,14 +349,14 @@ export const BulkOperationsToolbar: React.FC<BulkOperationsToolbarProps> = ({
             <div className="flex gap-2">
               <button
                 onClick={handleClose}
-                className="flex-1 py-3 bg-white/[0.03] border border-white/5 text-[10px] font-bold uppercase tracking-widest text-white/50 hover:text-white hover:bg-white/10 rounded-xl transition-all"
+                className="flex-1 py-3 bg-foreground/[0.03] border border-foreground/5 text-[10px] font-bold uppercase tracking-widest text-foreground/70 hover:text-foreground hover:bg-foreground/10 rounded-xl transition-all"
                 disabled={isLoading}
               >
                 Cancel
               </button>
               <button
                 onClick={handleConfirm}
-                className="flex-1 py-3 bg-blue-600 hover:bg-blue-500 text-[10px] font-bold uppercase tracking-widest text-white rounded-xl shadow-[0_10px_20px_rgba(37,99,235,0.3)] transition-all disabled:opacity-50 disabled:cursor-not-allowed active:scale-95"
+                className="flex-1 py-3 bg-blue-600 hover:bg-blue-500 text-[10px] font-bold uppercase tracking-widest text-foreground rounded-xl shadow-[0_10px_20px_rgba(37,99,235,0.3)] transition-all disabled:opacity-50 disabled:cursor-not-allowed active:scale-95"
                 disabled={isLoading || !value}
               >
                 {isLoading ? 'Processing...' : 'Verify & Apply'}

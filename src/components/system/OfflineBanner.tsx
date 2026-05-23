@@ -29,8 +29,8 @@ export function OfflineBanner() {
                 "transition-all duration-300 ease-out shadow-lg backdrop-blur-md",
                 "motion-reduce:transition-none",
                 state === "offline"
-                    ? "bg-red-500/90 text-white border-b border-red-500/50"
-                    : "bg-emerald-500/90 text-white border-b border-emerald-500/50"
+                    ? "bg-red-500/90 text-foreground border-b border-red-500/50"
+                    : "bg-emerald-500/90 text-foreground border-b border-emerald-500/50"
             )}
         >
             {copy}

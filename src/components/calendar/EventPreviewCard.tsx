@@ -48,18 +48,18 @@ export function EventPreviewCard({ events, date, anchorRect, isVisible }: EventP
                 bg-[#14192d]/90
                 backdrop-blur-xl
                 rounded-xl
-                border border-white/0.1
+                border border-foreground/0.1
                 shadow-[0_10px_30px_rgba(0,0,0,0.5)]
                 p-3.5
                 overflow-hidden
             "
         >
             <div className="flex flex-col gap-3">
-                <div className="flex justify-between items-center border-b border-white/0.05 pb-2">
+                <div className="flex justify-between items-center border-b border-foreground/0.05 pb-2">
                     <span className="text-[11px] font-bold text-indigo-400 uppercase tracking-wider">
                         Event Preview
                     </span>
-                    <span className="text-[10px] text-white/40">
+                    <span className="text-[10px] text-foreground/80">
                         {format(date, 'MMM d, yyyy')}
                     </span>
                 </div>
@@ -78,7 +78,7 @@ export function EventPreviewCard({ events, date, anchorRect, isVisible }: EventP
                                 <div className="flex items-center justify-between">
                                     <div className="flex items-center gap-2">
                                         <div className={`w-1 h-1 rounded-full ${hasConflict ? 'bg-red-500' : (ev as any).is_system_event ? 'bg-secondary' : 'bg-indigo-500'}`} />
-                                        <span className={`text-[10px] font-medium ${hasConflict ? 'text-red-300' : 'text-white/50'}`}>{timeStr}</span>
+                                        <span className={`text-[10px] font-medium ${hasConflict ? 'text-red-300' : 'text-foreground/70'}`}>{timeStr}</span>
                                     </div>
                                     {hasConflict && (
                                         <span className="text-[9px] font-bold text-red-500 uppercase tracking-tighter animate-pulse">
@@ -86,7 +86,7 @@ export function EventPreviewCard({ events, date, anchorRect, isVisible }: EventP
                                         </span>
                                     )}
                                 </div>
-                                <div className={`text-[12px] font-medium pl-3 truncate ${hasConflict ? 'text-red-100' : 'text-white/90'}`}>
+                                <div className={`text-[12px] font-medium pl-3 truncate ${hasConflict ? 'text-red-100' : 'text-foreground/90'}`}>
                                     {ev.title}
                                 </div>
                                 {hasConflict && (
@@ -100,7 +100,7 @@ export function EventPreviewCard({ events, date, anchorRect, isVisible }: EventP
                 </div>
 
                 {events.length > 3 && (
-                    <div className="pt-1 mt-1 border-t border-white/0.05">
+                    <div className="pt-1 mt-1 border-t border-foreground/0.05">
                         <span className="text-[10px] text-indigo-400/80 font-semibold italic">
                             + {events.length - 3} more events
                         </span>

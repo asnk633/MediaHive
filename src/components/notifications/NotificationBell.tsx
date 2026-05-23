@@ -12,6 +12,7 @@ import { formatDistanceToNow } from 'date-fns';
 import { apiClient } from '@/lib/apiClient';
 import { nativeNavigate, cn } from '@/lib/utils';
 import { computeBadgeCount } from '@/lib/notificationSelectors';
+import { listenNotifications } from '@/services/notificationRealtime';
 
 export const NotificationBell = () => {
     const { user, authStatus } = useAuth();
@@ -34,40 +35,17 @@ export const NotificationBell = () => {
         }
     }, [unreadCount]);
 
-    // Poll for notifications
+    // Subscribe to real-time notifications
     useEffect(() => {
         if (!user || authStatus !== 'authenticated') return;
 
-        const controller = new AbortController();
-
-        // Initial load
-        const fetchNotifications = async () => {
-            try {
-                const data = await AlertService.getUserNotifications({ signal: controller.signal });
-                setNotifications(data);
-                // Phase 14: Use new badge count logic (High + Medium unread only)
-                setUnreadCount(computeBadgeCount(data));
-            } catch (error: any) {
-                if (error.name === 'AbortError') return;
-                const msg = error.message?.toLowerCase() || '';
-                if (msg.includes('429') || msg.includes('403') || msg.includes('401') || msg.includes('unauthorized')) {
-                    return;
-                }
-                console.error('Failed to fetch notifications:', error);
-            }
-        };
-
-        fetchNotifications();
-
-        // Poll for updates every 30 seconds (Web Only)
-        let pollInterval: NodeJS.Timeout;
-        if (!Capacitor.isNativePlatform()) {
-            pollInterval = setInterval(fetchNotifications, 30000);
-        }
+        const unsubscribe = listenNotifications(String(user.id), (data) => {
+            setNotifications(data);
+            setUnreadCount(computeBadgeCount(data));
+        });
 
         return () => {
-            if (pollInterval) clearInterval(pollInterval);
-            controller.abort();
+            unsubscribe();
         };
     }, [user?.id, authStatus]);
 

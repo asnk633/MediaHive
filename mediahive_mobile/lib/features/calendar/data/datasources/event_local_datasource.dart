@@ -12,9 +12,14 @@ abstract class EventLocalDataSource {
 
 class HiveEventLocalDataSource implements EventLocalDataSource {
   static const String _boxName = 'events_cache';
+  Box? _cachedBox;
 
   Future<Box> _openBox() async {
-    return await Hive.openBox(_boxName);
+    if (_cachedBox != null && _cachedBox!.isOpen) {
+      return _cachedBox!;
+    }
+    _cachedBox = await Hive.openBox(_boxName);
+    return _cachedBox!;
   }
 
   @override

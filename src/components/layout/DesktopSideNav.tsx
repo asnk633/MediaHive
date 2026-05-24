@@ -311,8 +311,8 @@ export default function DesktopSideNav() {
                                     className="text-2xl tracking-wider leading-none mb-1 font-normal"
                                     style={{ 
                                         fontFamily: 'BavistaSoulvare', 
-                                        color: '#E59312',
-                                        textShadow: '0 0 12px rgba(229, 147, 18, 0.3)'
+                                        color: 'var(--brand-title-color)',
+                                        textShadow: 'var(--brand-title-shadow)'
                                     }}
                                 >
                                     MediaHive

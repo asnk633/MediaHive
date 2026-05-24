@@ -1,3 +1,6 @@
+@import url('https://fonts.cdnfonts.com/css/sf-pro-display');
+@import url('https://fonts.cdnfonts.com/css/sf-pro-text');
+
 @font-face {
   font-family: 'BavistaSoulvare';
   src: url('/BavistaSoulvare.ttf') format('truetype');
@@ -49,9 +52,9 @@
     --current-sidebar-width: var(--sidebar-width);
 
     /* Typography */
-    --font-heading: var(--font-heading), system-ui, sans-serif;
-    --font-body: var(--font-body), system-ui, sans-serif;
-    --font-sans: var(--font-sans), system-ui, sans-serif;
+    --font-heading: 'SF Pro Display', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+    --font-body: 'SF Pro Text', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+    --font-sans: -apple-system, BlinkMacSystemFont, sans-serif;
 
     /* Text Colors (Muted via opacity/color, not size) */
     --text-primary: 255 255 255;
@@ -78,6 +81,9 @@
     --accent-primary: #6366f1;
     --accent-primary-rgb: 99, 102, 241;
     --accent-primary-soft: rgba(99, 102, 241, 0.15);
+    --brand-title-color: #818cf8;
+    --brand-title-shadow: 0 0 12px rgba(129, 140, 248, 0.35);
+    --brand-logo-bg: #6366f1;
 
     /* Theme Engine Variables (Default: Midnight) */
     --app-bg: linear-gradient(180deg, #02040a 0%, #050816 40%, #0c0b25 100%);
@@ -138,21 +144,31 @@
   /* THEME OVERRIDES */
   [data-theme="midnight"] {
     --app-bg: linear-gradient(180deg, #02040a 0%, #050816 40%, #0c0b25 100%);
-    --bg-glow-1: rgba(99, 102, 241, 0.12);
-    --bg-glow-2: rgba(59, 130, 246, 0.1);
-    --bg-glow-3: rgba(168, 85, 247, 0.08);
+    --bg-glow-1: rgba(99, 102, 241, 0.14);
+    --bg-glow-2: rgba(59, 130, 246, 0.12);
+    --bg-glow-3: rgba(168, 85, 247, 0.10);
 
     --accent-primary: #6366f1;
     --accent-primary-rgb: 99, 102, 241;
     --accent-primary-soft: rgba(99, 102, 241, 0.15);
+    
+    --brand-title-color: #818cf8;
+    --brand-title-shadow: 0 0 12px rgba(129, 140, 248, 0.35);
+    --brand-logo-bg: #6366f1;
 
-    --glass-card-bg: rgba(2, 6, 23, 0.46);
-    --glass-card-border: rgba(255, 255, 255, 0.06);
-    --glass-card-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.04);
+    --card-shadow: 0 12px 32px rgba(0, 0, 0, 0.55);
+    --liquid-shadow: 0 24px 48px rgba(0, 0, 0, 0.6);
+    --active-pressed-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.4);
 
-    --glass-liquid-bg: rgba(2, 6, 23, 0.58);
-    --glass-liquid-border: rgba(255, 255, 255, 0.08);
-    --glass-liquid-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.06);
+    /* Premium LIQUID GLASS visual styles */
+    --glass-card-bg: rgba(10, 12, 30, 0.42); /* Deep translucent midnight indigo */
+    --glass-card-border: rgba(99, 102, 241, 0.15); /* Specular indigo edge highlight */
+    /* Red-Cyan chromatic aberration specular edge shadow */
+    --glass-card-shadow: inset 1px 1px 0px rgba(239, 68, 68, 0.12), inset -1px -1px 0px rgba(6, 182, 212, 0.15), inset 0 1px 0 rgba(255, 255, 255, 0.05);
+
+    --glass-liquid-bg: rgba(15, 18, 42, 0.52);
+    --glass-liquid-border: rgba(99, 102, 241, 0.25);
+    --glass-liquid-shadow: inset 1px 1px 0px rgba(239, 68, 68, 0.18), inset -1px -1px 0px rgba(6, 182, 212, 0.22), inset 0 1px 0 rgba(255, 255, 255, 0.08), 0 0 30px rgba(99, 102, 241, 0.1);
 
     --text-primary: 255 255 255;
     --text-secondary: #d4d4d8;         /* FIX: valid hex (was 212 212 216 = invalid CSS color) */
@@ -184,6 +200,14 @@
     --accent-primary-rgb: 255, 184, 0;
     --accent-primary-soft: rgba(255, 184, 0, 0.15);
     
+    --brand-title-color: #E59312;
+    --brand-title-shadow: 0 0 12px rgba(229, 147, 18, 0.3);
+    --brand-logo-bg: #E59312;
+
+    --card-shadow: 0 12px 32px rgba(0, 0, 0, 0.55);
+    --liquid-shadow: 0 24px 48px rgba(0, 0, 0, 0.6);
+    --active-pressed-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.4);
+    
     --glass-card-bg: rgba(255, 255, 255, 0.03);
     --glass-card-border: rgba(255, 255, 255, 0.08);
     --glass-card-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.1);
@@ -208,6 +232,14 @@
     --accent-primary: #0284c7;
     --accent-primary-rgb: 2, 132, 199;
     --accent-primary-soft: rgba(2, 132, 199, 0.15);
+    
+    --brand-title-color: #0284c7;
+    --brand-title-shadow: 0 0 12px rgba(2, 132, 199, 0.25);
+    --brand-logo-bg: #0284c7;
+
+    --card-shadow: 5px 5px 15px rgba(100, 116, 139, 0.08), -5px -5px 15px rgba(255, 255, 255, 0.95);
+    --liquid-shadow: 8px 8px 24px rgba(100, 116, 139, 0.12), -8px -8px 24px rgba(255, 255, 255, 0.98);
+    --active-pressed-shadow: inset 3px 3px 6px rgba(100, 116, 139, 0.08), inset -3px -3px 6px rgba(255, 255, 255, 0.9);
     
     --glass-card-bg: rgba(255, 255, 255, 0.7);
     --glass-card-border: rgba(0, 0, 0, 0.05);
@@ -297,8 +329,15 @@
   }
 
   @keyframes canvasDrift {
-    0%, 100% { transform: translate(0, 0) scale(1); }
-    50% { transform: translate(-2%, -2%) scale(1.05); }
+    0%, 100% {
+      transform: translate(0, 0) scale(1) rotate(0deg);
+    }
+    33% {
+      transform: translate(-3%, -2%) scale(1.08) rotate(3deg);
+    }
+    66% {
+      transform: translate(2%, 3%) scale(0.95) rotate(-3deg);
+    }
   }
 
   h1,
@@ -373,7 +412,7 @@
     -webkit-backdrop-filter: blur(14px);
     border: 1px solid var(--glass-card-border);
     box-shadow:
-      0 12px 32px rgba(0, 0, 0, 0.55),
+      var(--card-shadow),
       var(--glass-card-shadow);
   }
 
@@ -384,7 +423,7 @@
     -webkit-backdrop-filter: blur(24px) saturate(140%);
     border: 1px solid var(--glass-liquid-border);
     box-shadow:
-      0 24px 48px rgba(0, 0, 0, 0.6),
+      var(--liquid-shadow),
       var(--glass-liquid-shadow);
   }
 

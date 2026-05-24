@@ -48,15 +48,15 @@ export default function TopBar({ title = "MediaHive" }: { title?: string }) {
 
       {/* 1. Mobile Branding (Strictly Mobile Only) */}
       <div className="flex items-center gap-3 lg:hidden">
-        <div className="w-8 h-8 rounded flex items-center justify-center text-foreground text-xs font-bold" style={{ backgroundColor: '#E59312' }}>
+        <div className="w-8 h-8 rounded flex items-center justify-center text-foreground text-xs font-bold transition-all duration-300" style={{ backgroundColor: 'var(--brand-logo-bg)' }}>
           MH
         </div>
         <h1 
           className="text-base font-normal tracking-wider"
           style={{ 
             fontFamily: 'BavistaSoulvare',
-            color: '#E59312',
-            textShadow: '0 0 8px rgba(229, 147, 18, 0.2)'
+            color: 'var(--brand-title-color)',
+            textShadow: 'var(--brand-title-shadow)'
           }}
         >
           {title}

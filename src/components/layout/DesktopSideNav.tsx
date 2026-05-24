@@ -291,7 +291,13 @@ export default function DesktopSideNav() {
                 <div className="flex items-center w-full">
                     <div className="relative group cursor-pointer shrink-0" onClick={() => router.push('/home')}>
                         <img
-                            src={theme === 'midnight' ? '/mediahive-midnight-logo.png' : '/mediahive-honey-logo.png'}
+                            src={
+                                theme === 'midnight' 
+                                    ? '/media-app-logo-midnight.png' 
+                                    : theme === 'luminous' 
+                                        ? '/media-app-logo-luminous.png' 
+                                        : '/media-app-logo-golden.png'
+                            }
                             alt="MH"
                             className="w-10 h-10 rounded-xl shrink-0 shadow-2xl transition-all duration-500 group-hover:scale-110 group-hover:rotate-3"
                         />

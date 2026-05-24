@@ -26,7 +26,15 @@ export async function GET(req: Request) {
 
         // 3. Institution Filtering
         const { searchParams } = new URL(req.url);
-        const institutionId = searchParams.get('institution_id');
+        const rawInstitutionId = searchParams.get('institution_id');
+        
+        // Validate if rawInstitutionId is a valid UUID
+        const isUuid = (str: string) => /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(str);
+        const institutionId = rawInstitutionId && isUuid(rawInstitutionId) ? rawInstitutionId : null;
+
+        if (rawInstitutionId && !institutionId) {
+            console.warn(`[REPORTS] ⚠️ Invalid institution_id format (not a UUID): "${rawInstitutionId}". Ignoring filter.`);
+        }
 
         const headers = {
             'Cache-Control': 'public, s-maxage=300, stale-while-revalidate=60',
@@ -53,11 +61,28 @@ export async function GET(req: Request) {
             buildBaseQuery('inventory').eq('status', 'out')
         ]);
 
-        if (e1) return handleApiError('REP_TASKS', e1);
-        if (e2) return handleApiError('REP_EVENTS', e2);
-        if (e3) return handleApiError('REP_INV', e3);
-        if (e4) return handleApiError('REP_LOW', e4);
-        if (e5) return handleApiError('REP_OUT', e5);
+        if (e1 || e2 || e3 || e4 || e5) {
+            const firstError = e1 || e2 || e3 || e4 || e5;
+            console.error('[REPORTS] Supabase query error:', firstError);
+            if (process.env.NODE_ENV === 'development') {
+                console.warn('[REPORTS] Returning safe defaults due to Supabase error in dev mode.');
+                return NextResponse.json({
+                    overview: {
+                        totalTasks: 0,
+                        totalEvents: 0,
+                        totalInventory: 0,
+                        lowStock: 0,
+                        outOfStock: 0,
+                        generatedAt: new Date().toISOString()
+                    }
+                }, { headers });
+            }
+            if (e1) return handleApiError('REP_TASKS', e1);
+            if (e2) return handleApiError('REP_EVENTS', e2);
+            if (e3) return handleApiError('REP_INV', e3);
+            if (e4) return handleApiError('REP_LOW', e4);
+            return handleApiError('REP_OUT', e5);
+        }
 
         console.log(`[DB] query executed: fetched report overview for tenant ${tenantId}`);
 
@@ -73,6 +98,20 @@ export async function GET(req: Request) {
         }, { headers });
 
     } catch (error: any) {
+        console.error('[REPORTS] Uncaught error in route:', error);
+        if (process.env.NODE_ENV === 'development') {
+            console.warn('[REPORTS] Returning safe defaults due to uncaught error in dev mode.');
+            return NextResponse.json({
+                overview: {
+                    totalTasks: 0,
+                    totalEvents: 0,
+                    totalInventory: 0,
+                    lowStock: 0,
+                    outOfStock: 0,
+                    generatedAt: new Date().toISOString()
+                }
+            });
+        }
         return handleApiError('REPORT_OVERVIEW_ROUTE', error);
     }
 }

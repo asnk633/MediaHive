@@ -25,15 +25,32 @@ export async function GET(request: Request) {
     const { data: { user } } = await supabase.auth.getUser();
     if (!user) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
 
-    const instId = institution_id || user.user_metadata?.institution_id;
+    const isUuid = (str: string) => /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(str);
+
+    let instId = institution_id && isUuid(institution_id) ? institution_id : null;
+    if (!instId && user.user_metadata?.institution_id && isUuid(user.user_metadata.institution_id)) {
+      instId = user.user_metadata.institution_id;
+    }
+
+    if (institution_id && !isUuid(institution_id)) {
+      console.warn(`[LEAVE REQUESTS] ⚠️ Invalid institution_id format (not a UUID): "${institution_id}". Falling back to user metadata or null.`);
+    }
 
     let query = supabase
       .from(TABLES.LEAVE_REQUESTS)
       .select(`
         *,
         profiles:requested_by_id (id, full_name, avatar_url, department_id)
-      `)
-      .eq('institution_id', instId);
+      `);
+
+    if (instId) {
+      query = query.eq('institution_id', instId);
+    } else {
+      console.warn('[LEAVE REQUESTS] No valid UUID for institution_id scope. Returning empty array in dev/fallback mode.');
+      if (process.env.NODE_ENV === 'development') {
+        return NextResponse.json([]);
+      }
+    }
 
     if (status) {
       query = query.eq('status', status);

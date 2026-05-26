@@ -448,7 +448,17 @@ class _CreateEventScreenState extends ConsumerState<CreateEventScreen> {
               ),
               const SizedBox(height: 32),
 
-              _buildActionLabel(colors, LucideIcons.users, 'Crew Assignment'),
+              Consumer(builder: (context, ref, _) {
+                final profile = ref.read(currentUserProfileProvider).value;
+                final role = profile?['role']?.toString().toLowerCase() ?? 'member';
+                return _buildActionLabel(
+                  colors,
+                  LucideIcons.users,
+                  role == 'member' || role == 'guest'
+                      ? 'Propose Crew (Pending Admin Approval)'
+                      : 'Crew Assignment',
+                );
+              }),
               const SizedBox(height: 12),
               if (_assignedCrew.isNotEmpty)
                 Wrap(
@@ -492,6 +502,11 @@ class _CreateEventScreenState extends ConsumerState<CreateEventScreen> {
                       if (_canAssignOthers) return true;
                       if (_canAssignSelf) return userId == currentUserId;
                       
+                      // Allow members to propose any target team user
+                      final currentUserProfile = ref.read(currentUserProfileProvider).value;
+                      final currentUserRole = currentUserProfile?['role']?.toString().toLowerCase() ?? 'member';
+                      if (currentUserRole == 'member' || currentUserRole == 'guest') return true;
+                      
                       return false;
                     }).toList();
 
@@ -499,8 +514,7 @@ class _CreateEventScreenState extends ConsumerState<CreateEventScreen> {
                       final profile = ref.read(currentUserProfileProvider).value;
                       final role = profile?['role']?.toString().toLowerCase() ?? 'member';
                       String message = 'No team members found';
-                      if (role == 'member' || role == 'guest') message = 'Assignment restricted';
-                      else if (role == 'team' && !_canAssignSelf) message = 'Self-assign only on your events';
+                      if (role == 'team' && !_canAssignSelf) message = 'Self-assign only on your events';
                       
                       return _buildActionPlaceholder(colors, message, onTap: null);
                     }

@@ -88,7 +88,11 @@ class _CreateTaskScreenState extends ConsumerState<CreateTaskScreen> {
         if (loadedIds.isEmpty) {
           try {
             final allUsers = await ref.read(allUsersProvider.future);
-            final names = widget.taskToEdit!.assignee.split(',').map((e) => e.trim()).toList();
+            final names = widget.taskToEdit!.assignee
+                .replaceAll('Proposed: ', '')
+                .split(',')
+                .map((e) => e.trim())
+                .toList();
             for (var name in names) {
               final matchingUsers = allUsers.cast<Map<String, dynamic>?>().where(
                 (u) => u?['full_name'] == name
@@ -736,7 +740,12 @@ class _CreateTaskScreenState extends ConsumerState<CreateTaskScreen> {
               ),
               const SizedBox(height: 32),
 
-              _buildSectionLabel('Assign To Team Members', colors),
+              _buildSectionLabel(
+                role == 'member' || role == 'guest'
+                    ? 'Propose Assignee (Pending Admin Approval)'
+                    : 'Assign To Team Members',
+                colors,
+              ),
               const SizedBox(height: 12),
               _buildAssigneesList(colors),
               const SizedBox(height: 32),
@@ -1043,6 +1052,11 @@ class _CreateTaskScreenState extends ConsumerState<CreateTaskScreen> {
             if (_canAssignOthers) return true;
             if (_canAssignSelf) return userId == currentUserId;
             
+            // Allow members to propose any target team user
+            final currentUserProfile = ref.read(currentUserProfileProvider).value;
+            final currentUserRole = currentUserProfile?['role']?.toString().toLowerCase() ?? 'member';
+            if (currentUserRole == 'member' || currentUserRole == 'guest') return true;
+            
             return false;
           }).toList();
         }
@@ -1051,8 +1065,7 @@ class _CreateTaskScreenState extends ConsumerState<CreateTaskScreen> {
           final profile = ref.read(currentUserProfileProvider).value;
           final role = profile?['role']?.toString().toLowerCase() ?? 'member';
           String message = 'No team members found';
-          if (role == 'member' || role == 'guest') message = 'You do not have permission to assign team users';
-          else if (role == 'team' && !_canAssignSelf) message = 'You can only assign yourself to tasks they created';
+          if (role == 'team' && !_canAssignSelf) message = 'You can only assign yourself to tasks they created';
           
           return Text(message, style: TextStyle(color: colors.textSecondary, fontSize: 13));
         }

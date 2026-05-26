@@ -32,7 +32,7 @@ class SupabaseTaskRepository implements TaskRepository {
             .select('''
               *,
               creator:profiles!tasks_created_by_fkey(full_name),
-              assigner:profiles!tasks_assigned_by_fkey(full_name),
+              assigner:profiles!tasks_assigned_by_fkey(full_name, role),
               task_assignments(
                 profile:profiles(full_name)
               )
@@ -60,10 +60,15 @@ class SupabaseTaskRepository implements TaskRepository {
                 .toList();
             if (names.isNotEmpty) {
               assigneeName = names.join(', ');
+              
+              // If the assigner is a member/guest, prefix as 'Proposed: '
+              final assignerRole = assigner?['role']?.toString().toLowerCase() ?? '';
+              if (assignerRole == 'member' || assignerRole == 'guest') {
+                assigneeName = 'Proposed: $assigneeName';
+              }
             }
           } else {
-            // Fallback to assigned_by if no assignment found (legacy support)
-            assigneeName = assigner?['full_name'] ?? json['assigned_by'] ?? 'Unassigned';
+            assigneeName = 'Unassigned';
           }
           
           final DateTime? dueDateTime = json['due_date'] != null ? DateTime.parse(json['due_date'].toString()).toLocal() : null;

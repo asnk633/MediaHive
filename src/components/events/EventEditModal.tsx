@@ -257,7 +257,7 @@ export const EventEditModal: React.FC<EventEditModalProps> = ({ event, isOpen, o
                 {/* Header */}
                 <div className="px-6 py-4 border-b border-soft/50 flex justify-between items-center bg-surface shrink-0">
                     <DialogTitle className="text-xl font-bold text-foreground flex items-center gap-2">
-                        <AlertCircle className="text-blue-400" size={20} />
+                        <AlertCircle className="text-primary" size={20} />
                         Edit Event
                     </DialogTitle>
                     <DialogDescription className="sr-only">
@@ -488,7 +488,7 @@ export const EventEditModal: React.FC<EventEditModalProps> = ({ event, isOpen, o
                         form="edit-event-form"
                         type="submit"
                         disabled={loading}
-                        className="flex items-center gap-2 px-8 py-2.5 bg-blue-600 hover:bg-blue-500 text-foreground rounded-xl shadow-lg shadow-blue-600/20 transition-all text-sm font-bold disabled:opacity-50"
+                        className="flex items-center gap-2 px-8 py-2.5 bg-primary hover:opacity-90 text-foreground rounded-full shadow-lg shadow-primary/25 transition-all text-sm font-bold disabled:opacity-50"
                     >
                         {loading ? (
                             <div className="animate-spin rounded-full h-4 w-4 border-2 border-primary/30 border-t-primary" />

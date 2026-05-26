@@ -306,7 +306,7 @@ export default function AdminUsersPage() {
                 actions={
                     <button 
                         onClick={() => setIsInviteModalOpen(true)}
-                        className="h-10 px-4 rounded-xl bg-indigo-500 text-foreground text-sm font-bold flex items-center gap-2 hover:bg-indigo-400 transition-colors"
+                        className="h-10 px-6 rounded-full bg-primary text-primary-foreground text-sm font-bold flex items-center gap-2 hover:bg-primary/90 transition-all duration-200 active:scale-95 shadow-lg shadow-primary/20"
                     >
                         <Plus size={16} /> Invite User
                     </button>
@@ -316,12 +316,14 @@ export default function AdminUsersPage() {
             <div className="flex flex-col lg:flex-row gap-8 h-auto lg:h-[calc(100vh-16rem)] min-h-[500px]">
                 {/* Left Panel: User List / Invite List */}
                 <div className="w-full lg:w-[380px] flex flex-col gap-4">
-                    <div className="flex bg-foreground/5 p-1 rounded-2xl">
+                    <div className="flex bg-foreground/[0.03] p-1 rounded-full border border-foreground/10 backdrop-blur-md">
                         <button 
                             onClick={() => setViewMode('users')}
                             className={cn(
-                                "flex-1 py-2.5 text-[10px] font-black uppercase tracking-widest rounded-xl transition-all",
-                                viewMode === 'users' ? "bg-foreground/10 text-foreground shadow-lg" : "text-foreground/70 hover:text-foreground/70"
+                                "flex-1 py-2 text-[10px] font-black uppercase tracking-widest rounded-full transition-all border border-transparent",
+                                viewMode === 'users' 
+                                    ? "bg-primary/10 text-primary border-primary/20 shadow-sm" 
+                                    : "text-foreground/60 hover:text-foreground/90 hover:bg-foreground/5"
                             )}
                         >
                             Active Users
@@ -329,22 +331,24 @@ export default function AdminUsersPage() {
                         <button 
                             onClick={() => setViewMode('invites')}
                             className={cn(
-                                "flex-1 py-2.5 text-[10px] font-black uppercase tracking-widest rounded-xl transition-all relative",
-                                viewMode === 'invites' ? "bg-foreground/10 text-foreground shadow-lg" : "text-foreground/70 hover:text-foreground/70"
+                                "flex-1 py-2 text-[10px] font-black uppercase tracking-widest rounded-full transition-all relative border border-transparent",
+                                viewMode === 'invites' 
+                                    ? "bg-primary/10 text-primary border-primary/20 shadow-sm" 
+                                    : "text-foreground/60 hover:text-foreground/90 hover:bg-foreground/5"
                             )}
                         >
                             Invitations
                             {invites.filter(i => i.status === 'pending').length > 0 && (
-                                <span className="absolute top-2 right-4 w-1.5 h-1.5 bg-blue-500 rounded-full animate-pulse" />
+                                <span className="absolute top-2.5 right-4 w-1.5 h-1.5 bg-primary rounded-full animate-pulse shadow-[0_0_8px_var(--accent-primary)]" />
                             )}
                         </button>
                     </div>
 
                     <div className="relative">
-                        <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-foreground/80" size={16} />
+                        <Search className="absolute left-3.5 top-1/2 -translate-y-1/2 text-foreground/40" size={16} />
                         <input
                             placeholder={viewMode === 'users' ? "Search users..." : "Search invites..."}
-                            className="w-full h-11 pl-10 pr-4 bg-foreground/5 border border-foreground/5 rounded-2xl text-sm text-foreground placeholder:text-foreground/80 focus:outline-none focus:border-indigo-500/50 transition-colors"
+                            className="w-full h-11 pl-10 pr-4 bg-foreground/[0.03] border border-foreground/10 rounded-full text-sm text-foreground placeholder:text-foreground/40 focus:outline-none focus:border-primary transition-all"
                             value={search}
                             onChange={(e) => setSearch(e.target.value)}
                         />
@@ -590,16 +594,16 @@ export default function AdminUsersPage() {
                                                         </div>
 
                                                         <div className="flex items-center gap-4">
-                                                            <div className="flex bg-black/20 p-1 rounded-xl">
+                                                            <div className="flex bg-foreground/[0.03] p-1 rounded-full border border-foreground/10 backdrop-blur-md">
                                                                 {['admin', 'manager', 'team', 'member'].map(r => (
                                                                     <button
                                                                         key={r}
                                                                         onClick={() => handleUpdateRole(access.institution_id, r)}
                                                                         className={cn(
-                                                                            "px-3 py-1.5 rounded-lg text-[10px] font-black uppercase tracking-widest transition-all",
+                                                                            "px-3 py-1.5 rounded-full text-[10px] font-black uppercase tracking-widest transition-all border border-transparent",
                                                                             access.role === r 
-                                                                                ? "bg-indigo-500 text-foreground shadow-lg" 
-                                                                                : "text-foreground/80 hover:text-foreground/80"
+                                                                                ? "bg-primary/10 text-primary border-primary/20 shadow-sm" 
+                                                                                : "text-foreground/60 hover:text-foreground/80 hover:bg-foreground/5"
                                                                         )}
                                                                     >
                                                                         {r}

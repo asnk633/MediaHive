@@ -3,7 +3,7 @@
 import React, { useState, useEffect, useMemo } from 'react';
 import { useRouter } from 'next/navigation';
 import { PageLayout } from '@/components/ui/layout/PageLayout';
-import { nativeNavigate } from '@/lib/utils';
+import { nativeNavigate, cn } from '@/lib/utils';
 import { PageHeader } from '@/components/ui/layout/PageHeader';
 import { 
     FileText, 
@@ -266,16 +266,17 @@ export default function ReportsClient() {
             />
 
             {/* Time Frame Filtering Pills */}
-            <div className="flex bg-foreground/[0.01] p-1 rounded-xl border border-foreground/10 backdrop-blur-md w-fit mb-6">
+            <div className="flex bg-foreground/[0.03] p-1 rounded-full border border-foreground/10 backdrop-blur-md w-fit mb-6">
                 {( [7, 30, 90] as const ).map((range) => (
                     <button
                         key={range}
                         onClick={() => setTimeRange(range)}
-                        className={`px-5 py-2 text-[10px] font-black uppercase tracking-widest rounded-lg transition-all ${
+                        className={cn(
+                            "px-5 py-2 text-[10px] font-black uppercase tracking-[0.2em] rounded-full transition-all duration-200",
                             timeRange === range
-                                ? "bg-primary/10 text-primary border border-primary/20 shadow-sm"
-                                : "text-foreground/75 hover:text-foreground"
-                        }`}
+                                ? "bg-primary/10 text-primary border border-primary/20 shadow-sm shadow-primary/5"
+                                : "text-foreground/60 hover:text-foreground hover:bg-foreground/5"
+                        )}
                     >
                         {range} Days
                     </button>
@@ -294,11 +295,12 @@ export default function ReportsClient() {
                                 key={report.href}
                                 onClick={() => nativeNavigate(report.href, router, 'ReportsClient (Report Click)')}
                                 onMouseEnter={() => setActiveReportId(report.title)}
-                                className={`group p-6 bg-foreground/[0.01] border rounded-2xl hover:bg-foreground/[0.025] hover:-translate-y-1 hover:shadow-xl transition-all duration-300 text-left flex flex-col justify-between min-h-[210px] ${
+                                className={cn(
+                                    "group p-6 glass-card rounded-2xl hover:-translate-y-1 hover:shadow-2xl transition-all duration-300 text-left flex flex-col justify-between min-h-[210px]",
                                     isActive 
                                         ? `${colorClasses[report.color].activeBorder} ${colorClasses[report.color].activeBg}`
-                                        : `border-foreground/[0.06] ${colorClasses[report.color].border}`
-                                }`}
+                                        : colorClasses[report.color].border
+                                )}
                             >
                                 {/* Top Row: Icon and Badge */}
                                 <div className="flex items-center justify-between w-full mb-6">
@@ -336,7 +338,7 @@ export default function ReportsClient() {
 
                 {/* Right Side: Live Analytics Hub */}
                 <div className="lg:col-span-5 w-full">
-                    <div className="p-8 bg-foreground/[0.01] border border-foreground/[0.06] rounded-2xl backdrop-blur-md flex flex-col justify-between h-full min-h-[440px] relative overflow-hidden transition-all duration-500 hover:border-foreground/[0.08]">
+                    <div className="p-8 glass-card rounded-2xl flex flex-col justify-between h-full min-h-[440px] relative overflow-hidden transition-all duration-500">
                         {/* Subtle color glow at the top right */}
                         <div className={`absolute -top-24 -right-24 w-52 h-52 rounded-full blur-[80px] pointer-events-none transition-all duration-700 ${colorClasses[activeReport.color].glow}`} />
 

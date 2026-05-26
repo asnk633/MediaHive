@@ -61,7 +61,7 @@ export default function EventsClient() {
                 actions={
                     <div className="flex items-center gap-3">
                         <TooltipProvider>
-                            <div className="flex bg-foreground/[0.04] border border-foreground/10 rounded-2xl p-1.5 backdrop-blur-md shadow-2xl">
+                            <div className="flex bg-foreground/[0.03] border border-foreground/10 rounded-full p-1 backdrop-blur-md shadow-2xl">
                                 {(['month', 'week', 'timeline', 'list'] as const).map((mode) => {
                                     const { icon: Icon, label, tooltip } = {
                                         month: { icon: CalendarIcon, label: 'Month', tooltip: 'Monthly overview' },
@@ -76,15 +76,15 @@ export default function EventsClient() {
                                                 <button
                                                     onClick={() => setViewMode(mode)}
                                                     className={cn(
-                                                        "nav-button-events px-4 py-2 text-[10px] font-black uppercase tracking-[0.2em] rounded-xl transition-all duration-150 flex items-center",
-                                                        viewMode === mode ? "nav-button-events-active" : "text-foreground/80 hover:text-foreground/70"
+                                                        "px-4 py-2 text-[10px] font-black uppercase tracking-[0.2em] rounded-full transition-all duration-200 flex items-center border border-transparent",
+                                                        viewMode === mode ? "bg-primary/10 text-primary border-primary/20 shadow-sm shadow-primary/5" : "text-foreground/80 hover:text-foreground/75"
                                                     )}
                                                 >
                                                     <Icon 
                                                         size={16} 
                                                         className={cn(
-                                                            "mr-[6px] transition-all duration-150",
-                                                            viewMode === mode ? "opacity-100 text-[#3b82f6]" : "opacity-60"
+                                                            "mr-[6px] transition-all duration-200",
+                                                            viewMode === mode ? "opacity-100 text-primary" : "opacity-60"
                                                         )} 
                                                     />
                                                     {label}
@@ -101,7 +101,7 @@ export default function EventsClient() {
                         {canCreate && (
                             <Button
                                 onClick={() => nativeNavigate('/events/new', router, 'Events (New)')}
-                                className="bg-blue-600 hover:bg-blue-500 text-foreground border-none shadow-lg hover:shadow-blue-500/20 px-6 h-[46px] rounded-xl font-bold"
+                                className="bg-primary hover:opacity-90 text-foreground border-none shadow-lg shadow-primary/25 font-bold rounded-full"
                             >
                                 <Plus size={16} className="mr-2" />
                                 New Event

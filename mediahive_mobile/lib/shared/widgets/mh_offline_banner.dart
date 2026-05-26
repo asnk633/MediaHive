@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../../core/services/network_service.dart';
 import '../../../core/design_tokens.dart';
+import '../../../core/theme_provider.dart';
 
 class MhOfflineBanner extends ConsumerWidget {
   const MhOfflineBanner({super.key});
@@ -10,20 +11,31 @@ class MhOfflineBanner extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final status = ref.watch(networkStatusProvider).value ?? NetworkStatus.online;
-    
+
     if (status == NetworkStatus.online) {
       return const SizedBox.shrink();
     }
 
+    final colors = ref.watch(themeColorsProvider);
+    final isLight = !colors.isDark;
+
     return ClipRect(
       child: BackdropFilter(
-        filter: ImageFilter.blur(sigmaX: 10, sigmaY: 10),
+        filter: ImageFilter.blur(sigmaX: 12, sigmaY: 12),
         child: Container(
           width: double.infinity,
           decoration: BoxDecoration(
-            color: const Color(0xFF0F172A).withOpacity(0.8),
+            // Light: warm amber-tinted frosted glass | Dark: deep navy scrim
+            color: isLight
+                ? const Color(0xFFFFF3CD).withOpacity(0.85)
+                : const Color(0xFF0F172A).withOpacity(0.8),
             border: Border(
-              bottom: BorderSide(color: Colors.white.withOpacity(0.05)),
+              bottom: BorderSide(
+                color: isLight
+                    ? const Color(0xFFFFD600).withOpacity(0.3)
+                    : Colors.white.withOpacity(0.05),
+                width: isLight ? 0.75 : 1.0,
+              ),
             ),
           ),
           padding: const EdgeInsets.symmetric(vertical: 10, horizontal: 16),
@@ -32,16 +44,21 @@ class MhOfflineBanner extends ConsumerWidget {
             child: Row(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
-                const Icon(Icons.cloud_off, color: Colors.white60, size: 14),
+                Icon(
+                  Icons.cloud_off,
+                  color: isLight
+                      ? const Color(0xFF7A5C00)
+                      : Colors.white60,
+                  size: 14,
+                ),
                 const SizedBox(width: 12),
-                const Text(
+                Text(
                   'RECONNECTING TO MEDIAHIVE...',
                   style: TextStyle(
-                    color: Colors.white70,
+                    color: isLight ? const Color(0xFF5C4500) : Colors.white70,
                     fontSize: 9,
                     fontWeight: FontWeight.w900,
                     letterSpacing: 2.0,
-                    fontFamily: 'Inter',
                   ),
                 ),
                 const SizedBox(width: 12),
@@ -50,7 +67,11 @@ class MhOfflineBanner extends ConsumerWidget {
                   height: 10,
                   child: CircularProgressIndicator(
                     strokeWidth: 1.5,
-                    valueColor: AlwaysStoppedAnimation<Color>(Colors.white.withOpacity(0.2)),
+                    valueColor: AlwaysStoppedAnimation<Color>(
+                      isLight
+                          ? const Color(0xFF7A5C00).withOpacity(0.5)
+                          : Colors.white.withOpacity(0.2),
+                    ),
                   ),
                 ),
               ],

@@ -226,7 +226,7 @@ export default function ReportsAnalyticsClient() {
                         { label: 'Strategic Load', value: `${analytics.strategicLoad}%`, icon: ShieldAlert, color: 'text-amber-400', bg: 'bg-amber-400/10' },
                         { label: 'Linkage Rate', value: `${analytics.linkageRate}%`, icon: Share2, color: 'text-indigo-400', bg: 'bg-indigo-400/10' },
                     ].map((m, i) => (
-                        <div key={i} className="glass-card p-6 rounded-2xl border border-foreground/5 bg-foreground/[0.01] flex flex-col gap-1">
+                        <div key={i} className="glass-card p-6 rounded-2xl flex flex-col gap-1">
                             <div className="flex justify-between items-start mb-2">
                                 <span className="text-[10px] font-bold text-foreground/80 uppercase tracking-[0.2em]">{m.label}</span>
                                 <div className={cn("p-1.5 rounded-lg", m.bg)}>
@@ -240,7 +240,7 @@ export default function ReportsAnalyticsClient() {
 
                 <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
                     {/* Status Distribution Visualization */}
-                    <div className="glass-card rounded-2xl border border-foreground/5 bg-foreground/[0.01] p-8 shadow-2xl flex flex-col items-center justify-center">
+                    <div className="glass-card rounded-2xl p-8 shadow-2xl flex flex-col items-center justify-center">
                         <div className="self-start flex items-center gap-3 mb-8">
                             <div className="p-2 bg-blue-500/10 rounded-xl">
                                 <PieChart size={18} className="text-blue-500" />
@@ -290,7 +290,7 @@ export default function ReportsAnalyticsClient() {
                     </div>
 
                     {/* Growth & Trend Card */}
-                    <div className="lg:col-span-2 glass-card rounded-2xl border border-foreground/5 bg-foreground/[0.01] p-8 shadow-2xl flex flex-col justify-between">
+                    <div className="lg:col-span-2 glass-card rounded-2xl p-8 shadow-2xl flex flex-col justify-between">
                         <div>
                             <div className="flex items-center justify-between mb-8">
                                 <div className="flex items-center gap-3">
@@ -361,7 +361,7 @@ export default function ReportsAnalyticsClient() {
                 </div>
 
                 {/* System Efficiency Matrix */}
-                <div className="glass-card rounded-2xl border border-foreground/5 bg-foreground/[0.01] overflow-hidden shadow-2xl">
+                <div className="glass-card rounded-2xl overflow-hidden shadow-2xl">
                     <div className="px-8 py-6 border-b border-foreground/5 flex items-center justify-between">
                         <div className="flex items-center gap-3">
                             <div className="p-2 bg-amber-500/10 rounded-xl">

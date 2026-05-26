@@ -65,19 +65,19 @@ export default function CampaignNewClient() {
                         <ArrowLeft size={16} /> Back
                     </button>
                     <h1 className="text-3xl font-bold text-foreground tracking-tight flex items-center gap-3">
-                        <Layout className="text-blue-500" />
+                        <Layout className="text-primary" />
                         Create New Campaign
                     </h1>
                     <p className="text-gray-400 mt-2">Initialize a new media campaign for your institution.</p>
                 </div>
 
                 {/* Form Card */}
-                <form onSubmit={handleSubmit} className="bg-foreground/5 border border-[#ffffff1a] rounded-3xl p-6 md:p-8 space-y-6 shadow-2xl">
+                <form onSubmit={handleSubmit} className="bg-glass border border-soft rounded-3xl p-6 md:p-8 space-y-6 shadow-2xl">
                     <div className="space-y-4">
                         {/* Name */}
                         <div className="space-y-2">
                             <label className="text-sm font-semibold text-gray-300 flex items-center gap-2">
-                                <Layout size={14} className="text-blue-400" />
+                                <Layout size={14} className="text-primary" />
                                 Campaign Name
                             </label>
                             <input
@@ -85,7 +85,7 @@ export default function CampaignNewClient() {
                                 placeholder="E.g. Summer Festival 2026"
                                 value={formData.name}
                                 onChange={(e) => setFormData({ ...formData, name: e.target.value })}
-                                className="w-full bg-[#1e293b] border border-[#ffffff1a] rounded-xl px-4 py-3 text-foreground placeholder:text-gray-600 focus:outline-none focus:ring-2 focus:ring-blue-500/50 transition-all"
+                                className="w-full bg-background border border-soft rounded-xl px-4 py-3 text-foreground placeholder:text-gray-600 focus:outline-none focus:ring-2 focus:ring-primary/30 transition-all"
                                 required
                             />
                         </div>
@@ -93,14 +93,14 @@ export default function CampaignNewClient() {
                         {/* Description */}
                         <div className="space-y-2">
                             <label className="text-sm font-semibold text-gray-300 flex items-center gap-2">
-                                <FileText size={14} className="text-blue-400" />
+                                <FileText size={14} className="text-primary" />
                                 Description
                             </label>
                             <textarea
                                 placeholder="Describe the goals and scope of this campaign..."
                                 value={formData.description}
                                 onChange={(e) => setFormData({ ...formData, description: e.target.value })}
-                                className="w-full bg-[#1e293b] border border-[#ffffff1a] rounded-xl px-4 py-3 text-foreground placeholder:text-gray-600 focus:outline-none focus:ring-2 focus:ring-blue-500/50 transition-all min-h-[120px]"
+                                className="w-full bg-background border border-soft rounded-xl px-4 py-3 text-foreground placeholder:text-gray-600 focus:outline-none focus:ring-2 focus:ring-primary/30 transition-all min-h-[120px]"
                             />
                         </div>
 
@@ -134,7 +134,7 @@ export default function CampaignNewClient() {
                         <button
                             type="submit"
                             disabled={submitting}
-                            className="px-8 py-3 bg-blue-600 hover:bg-blue-500 disabled:bg-blue-800 disabled:opacity-50 text-foreground rounded-xl font-bold shadow-xl shadow-blue-900/40 transition-all hover:scale-[1.02] flex items-center gap-2"
+                            className="px-8 py-3 bg-primary hover:opacity-90 disabled:opacity-50 text-foreground rounded-full font-bold shadow-xl shadow-primary/25 transition-all hover:scale-[1.02] flex items-center gap-2"
                         >
                             {submitting ? (
                                 <>
@@ -152,13 +152,13 @@ export default function CampaignNewClient() {
                 </form>
 
                 {/* Footer Info */}
-                <div className="bg-blue-500/10 border border-blue-500/20 rounded-2xl p-4 flex gap-4">
-                    <div className="text-blue-400 shrink-0 mt-0.5">
+                <div className="bg-primary/10 border border-primary/20 rounded-2xl p-4 flex gap-4">
+                    <div className="text-primary shrink-0 mt-0.5">
                         <Send size={20} />
                     </div>
-                    <div className="text-sm text-blue-200/70 leading-relaxed">
-                        <span className="text-blue-300 font-bold block mb-1 uppercase text-xs tracking-wider">Note</span>
-                        New campaigns are created in the <span className="text-blue-400 font-semibold italic">Planning</span> phase by default.
+                    <div className="text-sm text-foreground/75 leading-relaxed">
+                        <span className="text-primary font-bold block mb-1 uppercase text-xs tracking-wider">Note</span>
+                        New campaigns are created in the <span className="text-primary font-semibold italic">Planning</span> phase by default.
                         You can add tasks and production milestones once the campaign is initialized.
                     </div>
                 </div>

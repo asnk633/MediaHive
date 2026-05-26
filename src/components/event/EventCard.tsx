@@ -30,18 +30,18 @@ export function EventCard({ event, onClick, className, href }: EventCardProps) {
             <div 
                 className={cn(
                     "absolute left-0 top-0 h-full w-1 transition-all duration-300 group-hover:w-1.5", 
-                    event.is_system_event ? "bg-amber-500" : "bg-blue-500"
+                    event.is_system_event ? "bg-amber-500" : "bg-primary"
                 )} 
             />
 
             <div className="flex flex-col gap-1">
                 <div className="flex items-start justify-between gap-2">
-                    <h3 className="text-sm font-bold text-foreground tracking-wide truncate group-hover:text-blue-400 transition-colors">
+                    <h3 className="text-sm font-bold text-foreground tracking-wide truncate group-hover:text-primary transition-colors">
                         {event.title}
                     </h3>
                     <div className="flex items-center gap-1 shrink-0">
                         {event.is_recurring && (
-                            <Repeat className="h-3 w-3 text-blue-400/70" />
+                            <Repeat className="h-3 w-3 text-primary/70" />
                         )}
                         {event.is_system_event && (
                             <span className="shrink-0 bg-amber-500/10 text-amber-500 border border-amber-500/20 rounded-full px-2 py-0.5 text-[9px] font-bold uppercase tracking-wider">
@@ -53,7 +53,7 @@ export function EventCard({ event, onClick, className, href }: EventCardProps) {
 
                 <div className="flex items-center gap-3 text-[11px] text-foreground/70">
                     <div className="flex items-center gap-1.5">
-                        <Clock className="h-3 w-3 text-blue-400/70" />
+                        <Clock className="h-3 w-3 text-primary/70" />
                         <span>
                             {event.is_all_day ? (
                                 "All Day"
@@ -73,7 +73,7 @@ export function EventCard({ event, onClick, className, href }: EventCardProps) {
 
                     {event.location && (
                         <div className="flex items-center gap-1.5 truncate">
-                            <MapPin className="h-3 w-3 text-blue-400/70" />
+                            <MapPin className="h-3 w-3 text-primary/70" />
                             <span className="truncate">{event.location}</span>
                         </div>
                     )}

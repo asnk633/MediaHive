@@ -103,6 +103,36 @@ class AuthService {
     }
   }
 
+  Future<void> sendPasswordResetEmail(String email) async {
+    _logger.info('Requesting password reset email for: $email');
+    try {
+      await _client.auth.resetPasswordForEmail(email);
+      _logger.info('Password reset email requested successfully');
+    } catch (e) {
+      _logger.error('Password reset email request failed', e);
+      rethrow;
+    }
+  }
+
+  Future<AuthResponse> verifyRecoveryOtp({
+    required String email,
+    required String token,
+  }) async {
+    _logger.info('Verifying recovery OTP for: $email');
+    try {
+      final response = await _client.auth.verifyOTP(
+        email: email,
+        token: token,
+        type: OtpType.recovery,
+      );
+      _logger.info('Recovery OTP verification successful');
+      return response;
+    } catch (e) {
+      _logger.error('Recovery OTP verification failed', e);
+      rethrow;
+    }
+  }
+
   void dispose() {
     _authSubscription?.cancel();
   }

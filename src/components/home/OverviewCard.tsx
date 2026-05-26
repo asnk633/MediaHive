@@ -33,12 +33,10 @@ export function OverviewCard({
             onClick={onClick}
             className={cn(
                 "relative flex flex-col p-6 rounded-[18px] transition-all duration-300 cursor-pointer overflow-hidden group hover:-translate-y-1 animate-in fade-in zoom-in-95 duration-500",
-                // Base Style (Inventory Match - Modified for Borderless)
-                "bg-surface backdrop-blur-sm shadow-sm",
-                // Hover
-                "hover:shadow-lg hover:bg-surface/80",
-                // Primary Variant (Subtle distinction instead of new gradient)
-                isPrimary && "shadow-strong bg-primary/5",
+                // Base Style - unified with premium glass-card!
+                "glass-card shadow-2xl hover:bg-white/[0.02]",
+                // Primary Variant
+                isPrimary && "glass-liquid",
                 // Indicator Glow
                 showIndicator && "shadow-destructive/10"
             )}
@@ -57,7 +55,7 @@ export function OverviewCard({
                 {/* Decorative Pill/Dot */}
                 <div className={cn("h-2 w-2 rounded-full transition-colors duration-300",
                     showIndicator ? "bg-destructive shadow-[0_0_10px_rgba(239,68,68,0.8)] animate-pulse" :
-                        isPrimary ? "bg-primary shadow-[0_0_10px_rgba(96,165,250,0.8)]" : "bg-glass group-hover:bg-primary/50"
+                        isPrimary ? "bg-primary shadow-[0_0_10px_rgba(var(--accent-primary-rgb),0.8)]" : "bg-glass group-hover:bg-primary/50"
                 )} />
             </div>
 
@@ -95,7 +93,7 @@ export function OverviewCard({
 
             {/* Subtle Gradient overlay for primary only - very soft */}
             {isPrimary && (
-                <div className="absolute inset-0 bg-blue-500/5 pointer-events-none" />
+                <div className="absolute inset-0 bg-primary/5 pointer-events-none" />
             )}
         </div>
     );

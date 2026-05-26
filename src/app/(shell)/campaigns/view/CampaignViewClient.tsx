@@ -84,7 +84,7 @@ function CampaignDashboardContent() {
                 <div className="flex items-center gap-3">
                     <button
                         onClick={() => nativeNavigate(`/tasks/new?campaign_id=${campaign.id}`, router, 'CampaignView (New Task)')}
-                        className="px-4 py-2 bg-blue-600 hover:bg-blue-500 text-foreground rounded-xl text-xs md:text-sm font-bold shadow-lg shadow-blue-900/20 transition-all hover:scale-105 flex items-center gap-2"
+                        className="px-6 py-2.5 bg-primary hover:opacity-90 text-foreground rounded-full text-xs md:text-sm font-bold shadow-lg shadow-primary/25 transition-all hover:scale-105 flex items-center gap-2"
                     >
                         <Layers size={16} />
                         New Task
@@ -93,7 +93,7 @@ function CampaignDashboardContent() {
                         {campaign.phase}
                     </div>
                     {(!canEditDetails && campaign.phase === 'planning') && (
-                        <button className="px-4 py-2 bg-foreground/10 hover:bg-foreground/20 text-foreground rounded-xl text-sm font-semibold transition-colors">
+                        <button className="px-4 py-2 bg-foreground/10 hover:bg-foreground/20 text-foreground rounded-full text-sm font-semibold transition-colors">
                             Edit Details
                         </button>
                     )}
@@ -102,8 +102,8 @@ function CampaignDashboardContent() {
 
             {/* Info Grid */}
             <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
-                <div className="bg-foreground/5 border border-[#ffffff1a] rounded-2xl p-4 flex items-center gap-4">
-                    <div className="w-10 h-10 rounded-full bg-blue-500/20 flex items-center justify-center text-blue-400">
+                <div className="bg-glass border border-soft rounded-2xl p-4 flex items-center gap-4">
+                    <div className="w-10 h-10 rounded-full bg-primary/20 flex items-center justify-center text-primary">
                         <Calendar size={20} />
                     </div>
                     <div>
@@ -114,7 +114,7 @@ function CampaignDashboardContent() {
                     </div>
                 </div>
 
-                <div className="bg-foreground/5 border border-[#ffffff1a] rounded-2xl p-4 flex items-center gap-4">
+                <div className="bg-glass border border-soft rounded-2xl p-4 flex items-center gap-4">
                     <div className="w-10 h-10 rounded-full bg-purple-500/20 flex items-center justify-center text-purple-400">
                         <Layers size={20} />
                     </div>
@@ -124,7 +124,7 @@ function CampaignDashboardContent() {
                     </div>
                 </div>
 
-                <div className="bg-foreground/5 border border-[#ffffff1a] rounded-2xl p-4 flex items-center gap-4">
+                <div className="bg-glass border border-soft rounded-2xl p-4 flex items-center gap-4">
                     <div className="w-10 h-10 rounded-full bg-green-500/20 flex items-center justify-center text-green-400">
                         <CheckCircle size={20} />
                     </div>
@@ -136,7 +136,7 @@ function CampaignDashboardContent() {
                     </div>
                 </div>
 
-                <div className="bg-foreground/5 border border-[#ffffff1a] rounded-2xl p-4 flex items-center gap-4">
+                <div className="bg-glass border border-soft rounded-2xl p-4 flex items-center gap-4">
                     <div className="w-10 h-10 rounded-full bg-orange-500/20 flex items-center justify-center text-orange-400">
                         <Clock size={20} />
                     </div>
@@ -150,16 +150,16 @@ function CampaignDashboardContent() {
             {/* Content Area */}
             <div className="space-y-6">
                 <h2 className="text-xl font-bold text-foreground flex items-center gap-2">
-                    <Layers size={20} className="text-blue-500" />
+                    <Layers size={20} className="text-primary" />
                     Campaign Tasks
                 </h2>
 
                 {tasks.length > 0 ? (
                     <div className="grid grid-cols-1 gap-3">
                         {tasks.map(task => (
-                            <div key={task.id} className="bg-foreground/5 border border-[#ffffff1a] rounded-xl p-4 hover:bg-foreground/10 transition-colors flex items-center justify-between group cursor-pointer" onClick={() => nativeNavigate(`/tasks/view?id=${task.id}`, router, 'CampaignView (Task Click)')}>
+                            <div key={task.id} className="bg-glass border border-soft rounded-xl p-4 hover:bg-foreground/10 transition-colors flex items-center justify-between group cursor-pointer" onClick={() => nativeNavigate(`/tasks/view?id=${task.id}`, router, 'CampaignView (Task Click)')}>
                                 <div>
-                                    <h3 className="text-foreground font-medium group-hover:text-blue-400 transition-colors">{task.title}</h3>
+                                    <h3 className="text-foreground font-medium group-hover:text-primary transition-colors">{task.title}</h3>
                                     <p className="text-sm text-gray-500 line-clamp-1">{task.description}</p>
                                 </div>
                                 <div className="flex items-center gap-3">
@@ -174,7 +174,7 @@ function CampaignDashboardContent() {
                         ))}
                     </div>
                 ) : (
-                    <div className="bg-foreground/5 border border-[#ffffff1a] border-dashed rounded-2xl p-12 text-center text-gray-500">
+                    <div className="bg-glass border border-soft border-dashed rounded-2xl p-12 text-center text-gray-500">
                         <div className="w-16 h-16 bg-foreground/5 rounded-full flex items-center justify-center mx-auto mb-4">
                             <Layers size={32} className="opacity-50" />
                         </div>
@@ -182,7 +182,7 @@ function CampaignDashboardContent() {
                         <p className="text-sm mt-1">Start adding tasks to this campaign to track progress.</p>
                         <button
                             onClick={() => nativeNavigate(`/tasks/new?campaign_id=${campaign.id}`, router, 'CampaignView (Empty New Task)')}
-                            className="mt-4 px-6 py-2 bg-blue-600 hover:bg-blue-500 text-foreground rounded-xl text-sm font-semibold transition-colors"
+                            className="mt-4 px-6 py-2 bg-primary hover:opacity-90 text-foreground rounded-full text-sm font-semibold transition-colors"
                         >
                             Add First Task
                         </button>

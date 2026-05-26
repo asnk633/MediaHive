@@ -142,10 +142,10 @@ export function EventListView({ events, onEventClick, showCurrentYearOnly = fals
                                                 <div key={`${year}-${monthIndex}`} className="space-y-6">
                                                     {/* Month Header */}
                                                     <div className="flex items-center gap-4">
-                                                        <h3 className="text-xs font-black text-blue-500 uppercase tracking-[0.3em] whitespace-nowrap">
+                                                        <h3 className="text-xs font-black text-primary uppercase tracking-[0.3em] whitespace-nowrap">
                                                             {monthName}
                                                         </h3>
-                                                        <div className="h-px w-8 bg-blue-500/20" />
+                                                        <div className="h-px w-8 bg-primary/20" />
                                                     </div>
 
                                                     <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
@@ -154,7 +154,7 @@ export function EventListView({ events, onEventClick, showCurrentYearOnly = fals
                                                                 <EventCard
                                                                     event={event}
                                                                     href={`/events/${event.id}`}
-                                                                    className="event-surface !p-4 border-l-4 border-l-blue-500/40 hover:border-l-blue-500 transition-all duration-300 shadow-sm hover:shadow-blue-500/10"
+                                                                    className="glass-liquid !p-4 rounded-[20px] border-l-4 border-l-primary/40 hover:border-l-primary transition-all duration-300 shadow-md hover:shadow-primary/10"
                                                                 />
                                                             </div>
                                                         ))}

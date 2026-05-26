@@ -103,7 +103,7 @@ export default function FeaturePermissionsClient() {
                             variant="ghost"
                             onClick={fetchOverrides}
                             disabled={loading || saving}
-                            className="text-foreground/80 hover:text-foreground"
+                            className="text-foreground/80 hover:text-foreground border border-foreground/10 hover:bg-foreground/5 backdrop-blur-md rounded-full px-5 py-2 transition-all duration-200 active:scale-95 text-xs font-bold"
                         >
                             <RefreshCcw size={16} className={`mr-2 ${loading ? 'animate-spin' : ''}`} />
                             Refresh
@@ -111,7 +111,7 @@ export default function FeaturePermissionsClient() {
                         <Button 
                             onClick={handleSave} 
                             disabled={loading || saving}
-                            className="bg-indigo-600 hover:bg-indigo-500 text-foreground"
+                            className="bg-primary hover:bg-primary/90 text-primary-foreground rounded-full px-6 py-2 transition-all duration-200 active:scale-95 shadow-lg shadow-primary/20 text-xs font-bold tracking-wide"
                         >
                             <Save size={16} className="mr-2" />
                             {saving ? 'Saving...' : 'Save Changes'}
@@ -121,15 +121,15 @@ export default function FeaturePermissionsClient() {
             />
             <div className="max-w-[1200px] mx-auto pt-6">
                 
-                <div className="bg-popover border border-foreground/10 rounded-[24px] overflow-hidden shadow-2xl">
+                <div className="glass-liquid border border-foreground/10 rounded-[32px] overflow-hidden shadow-2xl backdrop-blur-md">
                     <div className="p-6 border-b border-foreground/5 bg-foreground/[0.02]">
                         <div className="flex items-start gap-4">
-                            <div className="w-10 h-10 rounded-2xl bg-amber-500/10 flex items-center justify-center text-amber-400 shrink-0 mt-1">
+                            <div className="w-10 h-10 rounded-full bg-primary/10 flex items-center justify-center text-primary shrink-0 mt-1 shadow-inner">
                                 <ShieldAlert size={20} />
                             </div>
                             <div>
                                 <h2 className="text-lg font-bold text-foreground tracking-tight">Global Overrides</h2>
-                                <p className="text-sm text-foreground/70 mt-1 leading-relaxed">
+                                <p className="text-sm text-slate-400 mt-1 leading-relaxed font-medium">
                                     Adjusting these settings will immediately affect all users within this tenant. 
                                     Setting a feature to a higher role (e.g., Admin) will instantly hide it from lower roles.
                                 </p>
@@ -188,8 +188,8 @@ export default function FeaturePermissionsClient() {
                                                 <select
                                                     value={activeRole}
                                                     onChange={(e) => handleOverrideChange(feature.id, e.target.value)}
-                                                    className={`bg-popover border rounded-xl px-3 py-2 text-sm font-semibold capitalize outline-none focus:ring-2 focus:ring-indigo-500/50 transition-all ${
-                                                        isOverridden ? 'border-amber-500/30 text-amber-600 dark:text-amber-100 bg-amber-500/5' : 'border-foreground/10 text-foreground/90'
+                                                    className={`border rounded-full px-4 py-1.5 text-xs font-bold capitalize outline-none focus:ring-2 focus:ring-primary/40 transition-all ${
+                                                        isOverridden ? 'border-primary/30 text-primary bg-primary/10 shadow-sm' : 'border-foreground/10 text-foreground/90 bg-foreground/[0.03]'
                                                     }`}
                                                 >
                                                     {ROLES.map(role => (
@@ -205,7 +205,7 @@ export default function FeaturePermissionsClient() {
                                                     size="sm"
                                                     disabled={!isOverridden}
                                                     onClick={() => handleReset(feature.id)}
-                                                    className={`text-xs ${isOverridden ? 'text-rose-400 hover:text-rose-300 hover:bg-rose-500/10' : 'text-foreground/70'}`}
+                                                    className={`text-xs rounded-full ${isOverridden ? 'text-rose-400 hover:text-rose-300 hover:bg-rose-500/10' : 'text-foreground/70'}`}
                                                 >
                                                     Reset to Default
                                                 </Button>

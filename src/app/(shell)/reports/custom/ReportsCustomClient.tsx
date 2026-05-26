@@ -420,7 +420,7 @@ export default function ReportsCustomClient() {
 
                     {/* Results Table */}
                     <div className="lg:col-span-3 min-w-0">
-                        <div className="glass-card rounded-2xl border border-foreground/5 bg-foreground/[0.01] shadow-2xl overflow-hidden min-h-[600px] flex flex-col">
+                        <div className="glass-card rounded-2xl shadow-2xl overflow-hidden min-h-[600px] flex flex-col">
                             <div className="px-8 py-6 border-b border-foreground/5 flex items-center justify-between bg-foreground/[0.02]">
                                 <div className="flex items-center gap-3">
                                     <SlidersHorizontal size={18} className="text-foreground/80" />

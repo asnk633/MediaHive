@@ -162,7 +162,7 @@ export const MyFocusWidget = ({ tasks, userId, error, onRetry, todayOnly, maxIte
     }
 
     return (
-        <div className="overflow-hidden glass-card rounded-2xl border border-foreground/5">
+        <div className="overflow-hidden glass-card rounded-2xl">
             <div className="divide-y divide-white/5">
                 {displayTasks.map((task, index) => (
                     <HomeTaskRow

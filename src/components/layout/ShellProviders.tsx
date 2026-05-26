@@ -5,11 +5,8 @@ import BottomNav from "@/components/BottomNavigation";
 import TopBar from "@/components/TopBar";
 import { ToastProvider } from "@/components/ToastProvider";
 import { ClientDataProvider } from "@/app/(shell)/ClientDataContext";
-import { initPWA } from "@/lib/init-pwa";
-import { ClientOfflineStatusIndicator as OfflineStatusIndicator } from "@/components/ClientOfflineStatusIndicator";
 import { HydrationDetector } from "@/components/HydrationDetector";
 import ErrorBoundary from "@/components/ErrorBoundary";
-import { OfflineBanner } from "@/components/OfflineBanner";
 import { KeyboardNavigationDetector } from "@/components/KeyboardNavigationDetector";
 import ProtectedRoute from "@/components/ProtectedRoute";
 import { MemberOnboardingWrapper } from "@/components/onboarding/MemberOnboardingWrapper";
@@ -25,10 +22,8 @@ import DesktopSideNav from "@/components/layout/DesktopSideNav";
 export default function ShellProviders({ children }: { children: React.ReactNode }) {
     const { user } = useAuth();
  
-    // Initialize PWA and Collaboration functionality
+    // Initialize Collaboration functionality
     useEffect(() => {
-        initPWA();
-        
         if (user) {
             collabManager.init({
                 id: user.uid || user.id,
@@ -69,8 +64,7 @@ export default function ShellProviders({ children }: { children: React.ReactNode
                             {/* Keyboard Navigation Detector */}
                             <KeyboardNavigationDetector />
  
-                            {/* Offline Banner */}
-                            <OfflineBanner />
+
  
                             {/* Top Bar - Fixed height at top */}
                             <div className="print:hidden flex-none">
@@ -98,7 +92,7 @@ export default function ShellProviders({ children }: { children: React.ReactNode
  
                     {/* Offline & Hydration Indicators */}
                     <MemberOnboardingWrapper />
-                    <OfflineStatusIndicator />
+
                     <AwarenessIndicator />
                     <HydrationDetector />
 

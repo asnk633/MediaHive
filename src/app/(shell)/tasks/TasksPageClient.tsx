@@ -206,13 +206,13 @@ export default function TasksPageClient() {
                 actions={
                     <div className="flex items-center gap-3">
                         {canManageAllTasks && (
-                            <div className="flex items-center bg-foreground/5 p-1 rounded-xl border border-foreground/10 mr-2">
+                            <div className="flex items-center bg-foreground/[0.03] p-1 rounded-full border border-foreground/10 mr-2 backdrop-blur-md">
                                 <button
                                     title="List View"
                                     onClick={() => handleViewModeChange('list')}
                                     className={cn(
-                                        "p-2 rounded-lg transition-all",
-                                        viewMode === 'list' ? "bg-primary/10 text-primary border border-primary/20" : "text-foreground/60 hover:text-foreground/90"
+                                        "p-2 rounded-full transition-all duration-200 border border-transparent",
+                                        viewMode === 'list' ? "bg-primary/10 text-primary border border-primary/20 shadow-sm" : "text-foreground/60 hover:text-foreground/90"
                                     )}
                                 >
                                     <ListIcon size={16} />
@@ -221,8 +221,8 @@ export default function TasksPageClient() {
                                     title="Kanban Board"
                                     onClick={() => handleViewModeChange('kanban')}
                                     className={cn(
-                                        "p-2 rounded-lg transition-all",
-                                        viewMode === 'kanban' ? "bg-primary/10 text-primary border border-primary/20" : "text-foreground/60 hover:text-foreground/90"
+                                        "p-2 rounded-full transition-all duration-200 border border-transparent",
+                                        viewMode === 'kanban' ? "bg-primary/10 text-primary border border-primary/20 shadow-sm" : "text-foreground/60 hover:text-foreground/90"
                                     )}
                                 >
                                     <LayoutGrid size={16} />
@@ -231,8 +231,8 @@ export default function TasksPageClient() {
                                     title="Admin Confidence Panel"
                                     onClick={() => handleViewModeChange('confidence')}
                                     className={cn(
-                                        "p-2 rounded-lg transition-all",
-                                        viewMode === 'confidence' ? "bg-primary/10 text-primary border border-primary/20" : "text-foreground/60 hover:text-foreground/90"
+                                        "p-2 rounded-full transition-all duration-200 border border-transparent",
+                                        viewMode === 'confidence' ? "bg-primary/10 text-primary border border-primary/20 shadow-sm" : "text-foreground/60 hover:text-foreground/90"
                                     )}
                                 >
                                     <BarChart3 size={16} />

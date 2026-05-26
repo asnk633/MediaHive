@@ -118,7 +118,7 @@ export function TimelineView({ events, tasks, loading, onCreateEvent, filter }: 
                             {loading ? "Fetching your latest events and tasks..." : "You're all caught up! Create an event or task to get started."}
                         </p>
                         {!loading && (
-                            <Button onClick={onCreateEvent} variant="outline" className="border-blue-500/50 text-blue-400 hover:bg-blue-500/10 transition-all duration-200">
+                            <Button onClick={onCreateEvent} variant="outline" className="border-primary/50 text-primary hover:bg-primary/10 rounded-full transition-all duration-200">
                                 Schedule Event
                             </Button>
                         )}
@@ -135,11 +135,11 @@ export function TimelineView({ events, tasks, loading, onCreateEvent, filter }: 
                             {/* Sticky Date Header */}
                             <div className="sticky top-0 z-20 mb-8 flex items-center gap-6 bg-background/80 py-4 backdrop-blur-md -mx-4 px-6 border-b border-foreground/5">
                                 <div className="event-date-badge shadow-lg">
-                                    <span className="text-[10px] font-bold uppercase tracking-widest text-blue-400 mb-0.5">{format(group.date, "MMM")}</span>
+                                    <span className="text-[10px] font-bold uppercase tracking-widest text-primary mb-0.5">{format(group.date, "MMM")}</span>
                                     <span className="text-xl font-bold text-foreground leading-none">{format(group.date, "d")}</span>
                                 </div>
                                 <div className="flex flex-col">
-                                    <h2 className={cn("text-xl font-bold tracking-tight", isToday(group.date) ? "text-blue-400" : "text-foreground")}>
+                                    <h2 className={cn("text-xl font-bold tracking-tight", isToday(group.date) ? "text-primary" : "text-foreground")}>
                                         {isToday(group.date) ? "Today" : isTomorrow(group.date) ? "Tomorrow" : format(group.date, "EEEE")}
                                     </h2>
                                     <span className="text-xs font-medium text-foreground/80 uppercase tracking-widest">
@@ -163,7 +163,7 @@ export function TimelineView({ events, tasks, loading, onCreateEvent, filter }: 
                                         <div className={cn(
                                             "absolute -left-[17px] top-6 h-2 w-2 rounded-full z-10 transition-all duration-300 group-hover/item:scale-150 group-hover/item:ring-4",
                                             item.type === 'event' 
-                                                ? 'bg-blue-500 ring-blue-500/20 shadow-[0_0_12px_rgba(59,130,246,0.5)]' 
+                                                ? 'bg-primary ring-primary/20 shadow-[0_0_12px_rgba(var(--accent-primary-rgb),0.5)]' 
                                                 : 'bg-emerald-500 ring-emerald-500/20 shadow-[0_0_12px_rgba(16,185,129,0.5)]'
                                         )} />
 
@@ -171,7 +171,7 @@ export function TimelineView({ events, tasks, loading, onCreateEvent, filter }: 
                                             <div className="space-y-4">
                                                 <EventCard 
                                                     event={item.data} 
-                                                    className="event-surface !p-4 border-foreground/5 hover:bg-blue-500/5 transition-all duration-300" 
+                                                    className="glass-liquid !p-4 rounded-[20px] border border-foreground/10 hover:bg-primary/5 transition-all duration-300 shadow-md" 
                                                 />
                                                 
                                                 {/* Nested Tasks */}
@@ -192,7 +192,7 @@ export function TimelineView({ events, tasks, loading, onCreateEvent, filter }: 
                                                                     <div className="flex items-center gap-3 min-w-0">
                                                                         <div className={cn(
                                                                             "w-1.5 h-1.5 rounded-full shrink-0",
-                                                                            task.status === 'Done' ? "bg-emerald-500" : "bg-blue-500"
+                                                                            task.status === 'Done' ? "bg-emerald-500" : "bg-primary"
                                                                         )} />
                                                                         <p className={cn(
                                                                             "text-xs font-medium truncate",
@@ -220,12 +220,12 @@ export function TimelineView({ events, tasks, loading, onCreateEvent, filter }: 
                                             </div>
                                         ) : (
                                             <div className={cn(
-                                                "event-card-base p-4 flex items-center justify-between group/task",
+                                                "glass-liquid p-4 rounded-[20px] border border-foreground/10 flex items-center justify-between group/task shadow-md",
                                                 item.data.status === 'Done' && "opacity-60"
                                             )}>
                                                 <div className="flex items-center gap-4">
                                                     <div className={cn(
-                                                        "w-10 h-10 rounded-lg flex items-center justify-center bg-emerald-500/10 border border-emerald-500/20",
+                                                        "w-10 h-10 rounded-full flex items-center justify-center bg-emerald-500/10 border border-emerald-500/20",
                                                         item.data.status === 'Done' && "bg-foreground/5 border-foreground/10"
                                                     )}>
                                                         <CheckCircle2 className={cn("h-5 w-5", item.data.status === 'Done' ? "text-foreground/80" : "text-emerald-500")} />

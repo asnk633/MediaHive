@@ -177,7 +177,7 @@ export const EventDetailsModal: React.FC<EventDetailsModalProps> = ({ event, isO
                 </DialogDescription>
 
                 {/* Header Image/Pattern Area */}
-                <div className="h-32 bg-gradient-to-r from-primary/10 to-indigo-500/10 relative overflow-hidden shrink-0">
+                <div className="h-32 bg-gradient-to-r from-primary/10 to-primary/25 relative overflow-hidden shrink-0">
                     <div className="absolute inset-0 opacity-20 pointer-events-none">
                         <div className="absolute top-[-50%] left-[-20%] w-[140%] h-[200%] rotate-12 bg-[radial-gradient(circle,rgba(255,255,255,0.1)_1px,transparent_1px)] bg-[size:20px_20px]" />
                     </div>
@@ -199,7 +199,7 @@ export const EventDetailsModal: React.FC<EventDetailsModalProps> = ({ event, isO
                         <div className="flex-1">
                             <div className="flex items-center gap-3 mb-2">
                                 <span className={`px-3 py-1 rounded-full text-[10px] font-bold uppercase tracking-wider ${event.is_system_event ? 'bg-amber-500/10 text-amber-500' :
-                                    event.type === 'meeting' ? 'bg-blue-500/10 text-blue-500' :
+                                    event.type === 'meeting' ? 'bg-primary/10 text-primary' :
                                         event.type === 'workshop' ? 'bg-purple-500/10 text-purple-500' :
                                             'bg-emerald-500/10 text-emerald-500'
                                     }`}>
@@ -234,7 +234,7 @@ export const EventDetailsModal: React.FC<EventDetailsModalProps> = ({ event, isO
                                     <button
                                         onClick={onEdit}
                                         disabled={isDeleting || isDeleteOpen}
-                                        className="flex items-center gap-2 px-5 py-2.5 bg-blue-600 hover:bg-blue-500 text-foreground rounded-xl shadow-lg shadow-blue-600/20 transition-all font-bold text-sm disabled:opacity-50"
+                                        className="flex items-center gap-2 px-5 py-2.5 bg-primary hover:opacity-90 text-foreground rounded-full shadow-lg shadow-primary/25 transition-all font-bold text-sm disabled:opacity-50"
                                     >
                                         <Edit2 size={16} /> Edit
                                     </button>
@@ -260,8 +260,8 @@ export const EventDetailsModal: React.FC<EventDetailsModalProps> = ({ event, isO
 
                             {/* Media Coverage */}
                             {event.media_coverage && event.media_coverage.length > 0 && (
-                                <section className="bg-blue-500/5 border border-blue-500/10 rounded-2xl p-6">
-                                    <h3 className="text-sm font-bold text-blue-400 flex items-center gap-2 mb-4">
+                                <section className="bg-primary/5 border border-primary/10 rounded-2xl p-6">
+                                    <h3 className="text-sm font-bold text-primary flex items-center gap-2 mb-4">
                                         <Video size={18} /> Media Coverage Requested
                                     </h3>
                                     <div className="flex flex-wrap gap-3">
@@ -284,7 +284,7 @@ export const EventDetailsModal: React.FC<EventDetailsModalProps> = ({ event, isO
                                     <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                                         {event.crew.map((assignment, i) => (
                                             <div key={i} className="flex items-center gap-3 p-3 bg-surface border border-soft rounded-xl">
-                                                <div className="w-8 h-8 rounded-full bg-blue-500/10 flex items-center justify-center text-blue-400 text-xs font-bold">
+                                                <div className="w-8 h-8 rounded-full bg-primary/10 flex items-center justify-center text-primary text-xs font-bold">
                                                     {assignment.profile?.full_name?.charAt(0) || 'U'}
                                                 </div>
                                                 <div className="flex-1 min-w-0">
@@ -342,7 +342,7 @@ export const EventDetailsModal: React.FC<EventDetailsModalProps> = ({ event, isO
                                                             "px-2 py-0.5 rounded text-[8px] font-bold uppercase",
                                                             task.status === 'done' ? 'bg-emerald-500/10 text-emerald-500' :
                                                             task.status === 'review' ? 'bg-amber-500/10 text-amber-500' :
-                                                            'bg-blue-500/10 text-blue-500'
+                                                            'bg-primary/10 text-primary'
                                                         )}>
                                                             {task.status}
                                                         </span>
@@ -383,7 +383,7 @@ export const EventDetailsModal: React.FC<EventDetailsModalProps> = ({ event, isO
                                 </div>
 
                                 <div className="flex items-center gap-4">
-                                    <div className="w-10 h-10 rounded-xl bg-indigo-500/10 flex items-center justify-center text-indigo-500 shrink-0">
+                                    <div className="w-10 h-10 rounded-xl bg-primary/10 flex items-center justify-center text-primary shrink-0">
                                         <Clock size={20} />
                                     </div>
                                     <div className="flex-1 min-w-0">
@@ -396,7 +396,7 @@ export const EventDetailsModal: React.FC<EventDetailsModalProps> = ({ event, isO
                                 </div>
 
                                 <div className="flex items-center gap-4">
-                                    <div className="w-10 h-10 rounded-xl bg-emerald-500/10 flex items-center justify-center text-emerald-500 shrink-0">
+                                    <div className="w-10 h-10 rounded-xl bg-primary/10 flex items-center justify-center text-primary shrink-0">
                                         <MapPin size={20} />
                                     </div>
                                     <div className="flex-1 min-w-0">
@@ -408,7 +408,7 @@ export const EventDetailsModal: React.FC<EventDetailsModalProps> = ({ event, isO
                                 </div>
 
                                 <div className="flex items-center gap-4">
-                                    <div className="w-10 h-10 rounded-xl bg-purple-500/10 flex items-center justify-center text-purple-500 shrink-0">
+                                    <div className="w-10 h-10 rounded-xl bg-primary/10 flex items-center justify-center text-primary shrink-0">
                                         <Briefcase size={20} />
                                     </div>
                                     <div className="flex-1 min-w-0">
@@ -422,7 +422,7 @@ export const EventDetailsModal: React.FC<EventDetailsModalProps> = ({ event, isO
 
                                 {event.is_recurring && (
                                     <div className="flex items-center gap-4">
-                                        <div className="w-10 h-10 rounded-xl bg-blue-500/10 flex items-center justify-center text-blue-500 shrink-0">
+                                        <div className="w-10 h-10 rounded-xl bg-primary/10 flex items-center justify-center text-primary shrink-0">
                                             <Repeat size={20} />
                                         </div>
                                         <div className="flex-1 min-w-0">
@@ -440,7 +440,7 @@ export const EventDetailsModal: React.FC<EventDetailsModalProps> = ({ event, isO
                                     <User size={12} /> {(event.on_behalf_of || event.institution_id || event.department_id || event.department) ? 'Requested On behalf of' : (event.created_by?.role === 'member' ? 'Requested By' : 'Organizer')}
                                 </h3>
                                 <div className="flex items-center gap-3">
-                                    <div className="w-10 h-10 rounded-full bg-gradient-to-br from-blue-600 to-indigo-600 flex items-center justify-center text-foreground font-bold shadow-lg">
+                                    <div className="w-10 h-10 rounded-full bg-primary flex items-center justify-center text-foreground font-bold shadow-lg shadow-primary/25">
                                         {/* Avatar Initials logic */}
                                         {(() => {
                                             if (event.on_behalf_of?.name) return event.on_behalf_of.name.charAt(0);

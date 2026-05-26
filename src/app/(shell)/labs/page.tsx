@@ -38,16 +38,6 @@ interface LabFeature {
 
 const LAB_FEATURES: LabFeature[] = [
     {
-        id: 'flowboard',
-        key: 'flowboard',
-        label: 'Flowboard',
-        description: 'Creative visual planning and mood boards for your media projects.',
-        icon: Kanban,
-        path: '/labs/flowboard',
-        color: 'from-blue-500 to-indigo-600',
-        status: 'beta'
-    },
-    {
         id: 'ai-assistant',
         key: 'aiAssistant',
         label: 'AI Assistant',
@@ -126,7 +116,7 @@ export default function LabsPage() {
             {/* Featured Section */}
             <div className="relative group">
                 <div className="absolute -inset-1 bg-gradient-to-r from-amber-500/20 via-indigo-500/20 to-purple-500/20 rounded-[32px] blur-2xl opacity-50 group-hover:opacity-100 transition duration-1000 group-hover:duration-200"></div>
-                <div className="relative glass-dark rounded-[32px] border border-foreground/10 p-8 flex flex-col md:flex-row items-center gap-8 overflow-hidden">
+                <div className="relative glass-liquid shadow-2xl rounded-[32px] border border-foreground/10 p-8 flex flex-col md:flex-row items-center gap-8 overflow-hidden">
                     <div className="flex-1 space-y-4">
                         <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-amber-500/10 border border-amber-500/20 text-amber-500 text-[10px] font-black uppercase tracking-[0.2em]">
                             <Sparkles size={12} />
@@ -171,10 +161,10 @@ export default function LabsPage() {
                                 }
                             }}
                             className={cn(
-                                "group relative overflow-hidden rounded-[28px] border p-6 transition-all duration-500 h-full flex flex-col",
+                                "group relative overflow-hidden rounded-[28px] border p-6 transition-all duration-500 h-full flex flex-col backdrop-blur-md",
                                 hasAccess 
-                                    ? "bg-foreground/[0.02] border-foreground/10 cursor-pointer hover:bg-foreground/[0.04] hover:border-foreground/20 hover:shadow-2xl hover:shadow-black/50" 
-                                    : "bg-black/20 border-foreground/5 opacity-60 cursor-not-allowed grayscale"
+                                    ? "glass-liquid border-foreground/10 cursor-pointer hover:bg-foreground/[0.04] hover:border-foreground/20 hover:shadow-2xl hover:shadow-primary/10" 
+                                    : "bg-black/25 border-foreground/5 opacity-50 cursor-not-allowed grayscale"
                             )}
                         >
                             {/* Status Badge */}
@@ -235,8 +225,8 @@ export default function LabsPage() {
 
             {/* Quick Tips */}
             <div className="grid grid-cols-1 md:grid-cols-3 gap-6 pt-6">
-                <div className="p-6 rounded-2xl bg-foreground/[0.01] border border-foreground/5 space-y-3">
-                    <div className="w-10 h-10 rounded-xl bg-indigo-500/10 flex items-center justify-center text-indigo-400">
+                <div className="p-6 rounded-3xl glass-liquid border border-foreground/10 space-y-3">
+                    <div className="w-10 h-10 rounded-xl bg-primary/10 flex items-center justify-center text-primary">
                         <Zap size={20} />
                     </div>
                     <h4 className="text-sm font-bold text-foreground">Rapid Prototyping</h4>
@@ -244,8 +234,8 @@ export default function LabsPage() {
                         These tools are built for speed. We prioritize functionality over polish to gather early feedback.
                     </p>
                 </div>
-                <div className="p-6 rounded-2xl bg-foreground/[0.01] border border-foreground/5 space-y-3">
-                    <div className="w-10 h-10 rounded-xl bg-emerald-500/10 flex items-center justify-center text-emerald-400">
+                <div className="p-6 rounded-3xl glass-liquid border border-foreground/10 space-y-3">
+                    <div className="w-10 h-10 rounded-xl bg-primary/10 flex items-center justify-center text-primary">
                         <Target size={20} />
                     </div>
                     <h4 className="text-sm font-bold text-foreground">Continuous Feedback</h4>
@@ -253,8 +243,8 @@ export default function LabsPage() {
                         Your usage and feedback directly shape which features make it to the main dashboard.
                     </p>
                 </div>
-                <div className="p-6 rounded-2xl bg-foreground/[0.01] border border-foreground/5 space-y-3">
-                    <div className="w-10 h-10 rounded-xl bg-purple-500/10 flex items-center justify-center text-purple-400">
+                <div className="p-6 rounded-3xl glass-liquid border border-foreground/10 space-y-3">
+                    <div className="w-10 h-10 rounded-xl bg-primary/10 flex items-center justify-center text-primary">
                         <Clapperboard size={20} />
                     </div>
                     <h4 className="text-sm font-bold text-foreground">Project-First</h4>

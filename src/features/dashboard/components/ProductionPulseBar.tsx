@@ -46,7 +46,7 @@ export const ProductionPulseBar: React.FC = () => {
     const isActive = eventsCount > 0 || tasksInProgress > 0 || crewCount > 0 || equipmentCount > 0;
 
     return (
-        <div className="w-full flex flex-col md:flex-row md:items-center justify-between px-6 py-4 glass-card border-foreground/10 rounded-2xl overflow-hidden shadow-2xl gap-4 md:gap-0">
+        <div className="w-full flex flex-col md:flex-row md:items-center justify-between px-6 py-4 glass-card rounded-2xl overflow-hidden shadow-2xl gap-4 md:gap-0">
             
             {/* Status Indicator */}
             <div className="flex items-center gap-3 min-w-fit">

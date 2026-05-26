@@ -360,8 +360,8 @@ export const UserManagementPanel: React.FC<UserManagementPanelProps> = ({ instit
               </div>
 
               <div className="flex gap-2 pt-2">
-                <Button variant="ghost" className="flex-1 text-foreground/70" onClick={() => setEditingUser(null)}>Cancel</Button>
-                <Button className="flex-1 bg-blue-600 hover:bg-blue-500" onClick={handleSaveUser}>Save Changes</Button>
+                <Button variant="ghost" className="flex-1 text-foreground/70 rounded-full" onClick={() => setEditingUser(null)}>Cancel</Button>
+                <Button className="flex-1 bg-primary hover:bg-primary/90 text-primary-foreground rounded-full transition-all duration-200 active:scale-95 shadow-lg shadow-primary/20" onClick={handleSaveUser}>Save Changes</Button>
               </div>
             </div>
           </div>
@@ -417,13 +417,13 @@ export const UserManagementPanel: React.FC<UserManagementPanelProps> = ({ instit
                 <Button
                   variant="outline"
                   onClick={() => setShowReassignment(false)}
-                  className="flex-1 bg-gray-700/50 border-gray-600 text-gray-300 hover:bg-gray-600/50"
+                  className="flex-1 bg-gray-700/50 border-gray-600 text-gray-300 hover:bg-gray-600/50 rounded-full"
                 >
                   Cancel
                 </Button>
                 <Button
                   onClick={handleReassignItems}
-                  className="flex-1 bg-blue-600 hover:bg-blue-500 text-foreground"
+                  className="flex-1 bg-primary hover:bg-primary/90 text-primary-foreground rounded-full transition-all duration-200 active:scale-95 shadow-lg shadow-primary/20"
                   disabled={!targetUser}
                 >
                   Reassign Items

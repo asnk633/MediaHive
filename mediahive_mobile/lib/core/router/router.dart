@@ -5,6 +5,8 @@ import 'package:supabase_flutter/supabase_flutter.dart';
 import '../../features/auth/presentation/screens/startup_screen.dart';
 import '../../features/auth/presentation/screens/login_screen.dart';
 import '../../features/auth/presentation/screens/signup_screen.dart';
+import '../../features/auth/presentation/screens/reset_password_screen.dart';
+import '../../features/auth/presentation/screens/reset_confirmation_screen.dart';
 import '../../presentation/screens/shell_screen.dart';
 import '../../features/tasks/presentation/screens/tasks_screen.dart';
 import '../../features/inventory/presentation/screens/inventory_screen.dart';
@@ -47,6 +49,14 @@ final routerProvider = Provider<GoRouter>((ref) {
       GoRoute(
         path: '/signup',
         builder: (context, state) => const SignUpScreen(),
+      ),
+      GoRoute(
+        path: '/reset-password',
+        builder: (context, state) => const ResetPasswordScreen(),
+      ),
+      GoRoute(
+        path: '/reset-confirmation',
+        builder: (context, state) => const ResetConfirmationScreen(),
       ),
       ShellRoute(
         builder: (context, state, child) => ShellScreen(child: child),

@@ -84,7 +84,7 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
               _buildDeveloperContact(),
               const SizedBox(height: 40),
               Text(
-                'VERSION 1.1.0-BETA',
+                'VERSION 1.1.0-BETA 21',
                 style: TextStyle(fontSize: 10, color: colors.textSecondary, fontWeight: FontWeight.bold, letterSpacing: 2),
               ),
             ],
@@ -827,7 +827,7 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
             children: [
               RichText(
                 text: TextSpan(
-                  style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold, color: colors.textPrimary, fontFamily: 'Muli'),
+                  style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold, color: colors.textPrimary),
                   children: [
                     const TextSpan(text: 'Welcome to Thaiba '),
                     TextSpan(text: 'MediaHive!', style: TextStyle(color: colors.honey)),
@@ -943,7 +943,7 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
       children: [
         RichText(
           text: TextSpan(
-            style: TextStyle(fontSize: 14, fontWeight: FontWeight.bold, color: colors.textSecondary, fontFamily: 'Muli'),
+            style: TextStyle(fontSize: 14, fontWeight: FontWeight.bold, color: colors.textSecondary),
             children: [
               const TextSpan(text: 'About '),
               TextSpan(text: 'MediaHive', style: TextStyle(color: colors.honey)),
@@ -1111,7 +1111,6 @@ class _ChangePasswordSheetState extends ConsumerState<_ChangePasswordSheet> {
                             fontSize: 18,
                             fontWeight: FontWeight.bold,
                             color: colors.textPrimary,
-                            fontFamily: 'Muli',
                           ),
                         ),
                         const SizedBox(height: 2),

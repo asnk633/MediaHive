@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
-import '../../core/theme/app_colors.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import '../../core/theme_provider.dart';
+import '../../core/design_tokens.dart';
 
-class MhSkeleton extends StatefulWidget {
+class MhSkeleton extends ConsumerStatefulWidget {
   final double? width;
   final double? height;
   final double borderRadius;
@@ -14,10 +16,11 @@ class MhSkeleton extends StatefulWidget {
   });
 
   @override
-  State<MhSkeleton> createState() => _MhSkeletonState();
+  ConsumerState<MhSkeleton> createState() => _MhSkeletonState();
 }
 
-class _MhSkeletonState extends State<MhSkeleton> with SingleTickerProviderStateMixin {
+class _MhSkeletonState extends ConsumerState<MhSkeleton>
+    with SingleTickerProviderStateMixin {
   late AnimationController _controller;
   late Animation<double> _animation;
 
@@ -41,6 +44,18 @@ class _MhSkeletonState extends State<MhSkeleton> with SingleTickerProviderStateM
 
   @override
   Widget build(BuildContext context) {
+    final colors = ref.watch(themeColorsProvider);
+    final isLight = !colors.isDark;
+
+    // Light: shimmer between very-light-grey tones so it's visible on sky canvas
+    // Dark: shimmer between near-black surface tones (original behaviour)
+    final Color shimmerBase = isLight
+        ? const Color(0xFFE8ECF5)   // light grey-blue
+        : const Color(0xFF272729);
+    final Color shimmerHighlight = isLight
+        ? const Color(0xFFF5F7FF)   // lighter reflection
+        : const Color(0xFF3A3A3C);
+
     return AnimatedBuilder(
       animation: _animation,
       builder: (context, child) {
@@ -53,14 +68,14 @@ class _MhSkeletonState extends State<MhSkeleton> with SingleTickerProviderStateM
               begin: Alignment.topLeft,
               end: Alignment.bottomRight,
               stops: [
-                0.1 + _animation.value * 0.1,
-                0.3 + _animation.value * 0.1,
-                0.5 + _animation.value * 0.1,
+                (0.1 + _animation.value * 0.1).clamp(0.0, 1.0),
+                (0.3 + _animation.value * 0.1).clamp(0.0, 1.0),
+                (0.5 + _animation.value * 0.1).clamp(0.0, 1.0),
               ],
               colors: [
-                AppColors.surface.withOpacity(0.1),
-                AppColors.surface.withOpacity(0.3),
-                AppColors.surface.withOpacity(0.1),
+                shimmerBase,
+                shimmerHighlight,
+                shimmerBase,
               ],
             ),
           ),

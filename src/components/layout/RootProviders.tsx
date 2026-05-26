@@ -9,10 +9,6 @@ import { networkMonitor } from '@/utils/networkMonitor';
 import { toast } from 'sonner';
 import { MissingApiBanner } from '@/components/debug/MissingApiBanner';
 import { WorkspaceProvider } from "@/system/workspace/WorkspaceProvider";
-import { runSchemaCheck } from '@/lib/health/schemaCheck';
-import { ConflictResolutionModal } from '@/components/system/ConflictResolutionModal';
-import { SyncIndicator } from '@/components/system/SyncIndicator';
-import { SyncDevPanel } from '@/components/system/SyncDevPanel';
 import { useRouter } from 'next/navigation';
 import { App } from '@capacitor/app';
 
@@ -119,9 +115,9 @@ export default function RootProviders({ children }: { children: ReactNode }) {
     // 6. Network Monitor Notifications
     const handleNetworkChange = (isOnline: boolean) => {
       if (!isOnline) {
-        toast.error('You are currently offline. Changes will be synced later.', { id: 'offline-toast' });
+        toast.error('You are currently offline. Please check your internet connection.', { id: 'offline-toast' });
       } else {
-        toast.success('Connection restored. Syncing data...', { id: 'offline-toast' });
+        toast.success('Connection restored. You are back online.', { id: 'offline-toast' });
       }
     };
     networkMonitor.addListener(handleNetworkChange);
@@ -155,9 +151,6 @@ export default function RootProviders({ children }: { children: ReactNode }) {
         <WorkspaceProvider>
           <MissingApiBanner />
           <Diagnostics />
-          <ConflictResolutionModal />
-          <SyncIndicator />
-          <SyncDevPanel />
           <BootGate>
             {children}
           </BootGate>

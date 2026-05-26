@@ -190,7 +190,7 @@ export default function ReportsActivityClient() {
                         { label: 'Completion Rate', value: `${metrics.rate}%`, icon: TrendingUp, color: 'text-indigo-400', bg: 'bg-indigo-400/10' },
                         { label: 'Active/Pending', value: metrics.pending, icon: CheckSquare, color: 'text-amber-400', bg: 'bg-amber-400/10' },
                     ].map((m, i) => (
-                        <div key={i} className="glass-card p-6 rounded-2xl border border-foreground/5 bg-foreground/[0.01] flex flex-col gap-1">
+                        <div key={i} className="glass-card p-6 rounded-2xl flex flex-col gap-1">
                             <div className="flex justify-between items-start mb-2">
                                 <span className="text-[10px] font-bold text-foreground/80 uppercase tracking-[0.2em]">{m.label}</span>
                                 <div className={cn("p-1.5 rounded-lg", m.bg)}>
@@ -203,7 +203,7 @@ export default function ReportsActivityClient() {
                 </div>
 
                 {/* Table Section */}
-                <div className="glass-card rounded-2xl border border-foreground/5 bg-foreground/[0.01] overflow-hidden shadow-2xl">
+                <div className="glass-card rounded-2xl overflow-hidden shadow-2xl">
                     <div className="overflow-x-auto">
                         <table className="w-full text-left">
                             <thead className="bg-foreground/[0.02] border-b border-foreground/5">

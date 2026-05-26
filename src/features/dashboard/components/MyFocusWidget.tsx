@@ -146,7 +146,7 @@ export const MyFocusWidget = () => {
     }
 
     return (
-        <div className="overflow-hidden glass-card rounded-[16px] border border-foreground/5">
+        <div className="overflow-hidden glass-card rounded-[16px]">
             <div className="divide-y divide-white/5">
                 {displayTasks.map((task, index) => (
                     <HomeTaskRow

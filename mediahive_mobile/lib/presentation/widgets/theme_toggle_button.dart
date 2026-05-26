@@ -12,8 +12,7 @@ class ThemeToggleButton extends ConsumerWidget {
 
     return GestureDetector(
       onTap: () {
-        ref.read(themeModeProvider.notifier).state = 
-            isDark ? ThemeMode.light : ThemeMode.dark;
+        ref.read(themeModeProvider.notifier).toggleTheme();
       },
       child: AnimatedContainer(
         duration: const Duration(milliseconds: 400),

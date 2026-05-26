@@ -5,7 +5,7 @@ import { StructureService } from '@/services/structureService';
 import { Institution } from '@/types/structure';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
-import { Plus, Archive, Edit2, Loader2, Building, Trash2 } from 'lucide-react';
+import { Plus, Archive, Edit2, Loader2, Building } from 'lucide-react';
 import { toast } from 'sonner';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger, DialogDescription } from '@/components/ui/dialog';
 import { Label } from '@/components/ui/label';
@@ -30,11 +30,11 @@ export function InstitutionsTab() {
         setSaving(true);
         try {
             await StructureService.updateInstitution(editingInst.id, { name: editName });
-            toast.success("Department / Institution name updated");
+            toast.success("Institution name updated");
             setEditOpen(false);
             fetchInstitutions();
         } catch (error) {
-            toast.error("Failed to update Department / Institution");
+            toast.error("Failed to update Institution");
         } finally {
             setSaving(false);
         }
@@ -47,7 +47,7 @@ export function InstitutionsTab() {
             setInstitutions(data.institutions || []);
         } catch (error) {
             console.error(error);
-            toast.error("Failed to load Departments / Institutions");
+            toast.error("Failed to load Institutions");
         } finally {
             setLoading(false);
         }
@@ -64,12 +64,12 @@ export function InstitutionsTab() {
         setCreating(true);
         try {
             await StructureService.createInstitution(newName);
-            toast.success("Department / Institution created");
+            toast.success("Institution created");
             setNewName('');
             setCreateOpen(false);
             fetchInstitutions();
         } catch (error) {
-            toast.error("Failed to create Department / Institution");
+            toast.error("Failed to create Institution");
         } finally {
             setCreating(false);
         }
@@ -79,7 +79,7 @@ export function InstitutionsTab() {
         const newStatus = currentStatus === 'active' ? 'archived' : 'active';
         try {
             await StructureService.updateInstitution(id, { status: newStatus });
-            toast.success(`Department / Institution ${newStatus === 'active' ? 'activated' : 'archived'}`);
+            toast.success(`Institution ${newStatus === 'active' ? 'activated' : 'archived'}`);
             fetchInstitutions();
         } catch (error) {
             toast.error("Status update failed");
@@ -89,33 +89,33 @@ export function InstitutionsTab() {
     return (
         <div className="space-y-6">
             <div className="flex justify-between items-center">
-                <h3 className="text-lg font-medium text-slate-200">All Departments / Institutions</h3>
+                <h3 className="text-lg font-bold text-foreground">Institutions</h3>
                 <Dialog open={createOpen} onOpenChange={setCreateOpen}>
                     <DialogTrigger asChild>
-                        <Button className="bg-blue-600 hover:bg-blue-500 text-foreground">
-                            <Plus className="w-4 h-4 mr-2" /> Add Department / Institution
-                        </Button>
+                        <button className="h-10 px-6 rounded-full bg-primary text-primary-foreground text-sm font-bold flex items-center gap-2 hover:bg-primary/90 transition-all duration-200 active:scale-95 shadow-lg shadow-primary/20">
+                            <Plus className="w-4 h-4" /> Add Institution
+                        </button>
                     </DialogTrigger>
-                    <DialogContent className="bg-surface backdrop-blur-xl border-soft">
+                    <DialogContent className="glass-liquid border border-foreground/10 p-6 rounded-[32px] shadow-2xl backdrop-blur-xl max-w-md w-full">
                         <DialogHeader>
-                            <DialogTitle className="text-foreground">New Department / Institution</DialogTitle>
-                            <DialogDescription className="text-muted">
-                                Create a new department or institution to isolate resources.
+                            <DialogTitle className="text-foreground text-xl font-bold">New Institution</DialogTitle>
+                            <DialogDescription className="text-slate-400 text-sm font-medium mt-1 leading-relaxed">
+                                Create a new institution to isolate resources.
                             </DialogDescription>
                         </DialogHeader>
-                        <form onSubmit={handleCreate} className="space-y-4 pt-4">
+                        <form onSubmit={handleCreate} className="space-y-5 pt-4">
                             <div className="space-y-2">
-                                <Label className="text-muted">Name</Label>
+                                <Label className="text-slate-300 text-xs font-bold uppercase tracking-wider">Name</Label>
                                 <Input
                                     value={newName}
                                     onChange={e => setNewName(e.target.value)}
-                                    placeholder="e.g. Media & IT Department"
-                                    className="bg-background border-soft text-foreground"
+                                    placeholder="e.g. Thaiba Garden Main Campus"
+                                    className="w-full h-11 pl-4 pr-4 bg-foreground/[0.03] border border-foreground/10 rounded-full text-sm text-foreground placeholder:text-foreground/30 focus:outline-none focus:border-primary transition-all"
                                 />
                             </div>
-                            <div className="flex justify-end gap-2">
-                                <Button type="button" variant="ghost" onClick={() => setCreateOpen(false)} disabled={creating}>Cancel</Button>
-                                <Button type="submit" disabled={creating} className="bg-primary text-primary-foreground hover:bg-primary/90">
+                            <div className="flex justify-end gap-2 pt-2">
+                                <Button type="button" variant="ghost" onClick={() => setCreateOpen(false)} disabled={creating} className="rounded-full px-5 py-2 text-xs font-bold text-foreground/70 hover:bg-foreground/5 transition-all duration-200">Cancel</Button>
+                                <Button type="submit" disabled={creating} className="bg-primary text-primary-foreground hover:bg-primary/90 rounded-full px-6 py-2 transition-all duration-200 active:scale-95 shadow-lg shadow-primary/20 text-xs font-bold">
                                     {creating ? "Creating..." : "Create"}
                                 </Button>
                             </div>
@@ -125,26 +125,26 @@ export function InstitutionsTab() {
             </div>
 
             {loading ? (
-                <div className="flex justify-center p-8"><Loader2 className="w-8 h-8 text-blue-500 animate-spin" /></div>
+                <div className="flex justify-center p-12"><Loader2 className="w-8 h-8 text-primary animate-spin" /></div>
             ) : (
-                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
                     {institutions.map(inst => (
-                        <div key={inst.id} className="p-4 rounded-xl bg-foreground/5 border border-foreground/5 flex flex-col justify-between gap-4 hover:border-foreground/10 transition-colors">
+                        <div key={inst.id} className="glass-liquid border border-foreground/10 p-5 rounded-[24px] flex flex-col justify-between gap-6 shadow-lg backdrop-blur-md hover:bg-foreground/[0.03] hover:shadow-primary/5 hover:border-foreground/20 transition-all duration-300">
                             <div className="flex items-start justify-between">
-                                <div className="flex items-center gap-3">
-                                    <div className="w-10 h-10 rounded-lg bg-blue-500/10 flex items-center justify-center text-blue-400">
+                                <div className="flex items-center gap-4">
+                                    <div className="w-10 h-10 rounded-full bg-primary/10 flex items-center justify-center text-primary shadow-inner shrink-0">
                                         <Building className="w-5 h-5" />
                                     </div>
                                     <div>
-                                        <h4 className="text-foreground font-medium">{inst.name}</h4>
-                                        <div className={`text-xs mt-1 inline-flex items-center px-2 py-0.5 rounded-full ${inst.status === 'active' ? 'bg-green-500/10 text-green-400' : 'bg-red-500/10 text-red-400'}`}>
+                                        <h4 className="text-foreground font-bold text-base leading-snug">{inst.name}</h4>
+                                        <div className={`text-[10px] font-black uppercase tracking-wider mt-1.5 inline-flex items-center px-3 py-1 rounded-full ${inst.status === 'active' ? 'bg-green-500/10 border border-green-500/20 text-green-400' : 'bg-red-500/10 border border-red-500/20 text-red-400'}`}>
                                             {inst.status}
                                         </div>
                                     </div>
                                 </div>
                             </div>
 
-                            <div className="flex justify-end pt-2 border-t border-foreground/5 gap-2">
+                            <div className="flex justify-end pt-3 border-t border-foreground/5 gap-2">
                                 <Button
                                     variant="ghost"
                                     size="sm"
@@ -153,7 +153,7 @@ export function InstitutionsTab() {
                                         setEditName(inst.name);
                                         setEditOpen(true);
                                     }}
-                                    className="text-slate-400 hover:text-foreground hover:bg-foreground/5"
+                                    className="text-foreground/60 hover:text-foreground hover:bg-foreground/5 rounded-full px-4 py-1.5 transition-all text-xs font-bold"
                                 >
                                     <Edit2 className="w-4 h-4 mr-2" />
                                     Edit
@@ -162,20 +162,20 @@ export function InstitutionsTab() {
                                     variant="ghost"
                                     size="sm"
                                     onClick={() => handleStatusToggle(inst.id, inst.status)}
-                                    className={inst.status === 'active' ? "text-red-400 hover:text-red-300 hover:bg-red-500/10" : "text-green-400 hover:text-green-300 hover:bg-green-500/10"}
+                                    className={inst.status === 'active' ? "text-rose-400 hover:text-rose-300 hover:bg-rose-500/10 rounded-full px-4 py-1.5 transition-all text-xs font-bold" : "text-green-400 hover:text-green-300 hover:bg-green-500/10 rounded-full px-4 py-1.5 transition-all text-xs font-bold"}
                                 >
-                                    {inst.status === 'active' ? <Archive className="w-4 h-4 mr-2" /> : <Plus className="w-4 h-4 mr-2" />}
+                                    <Archive className="w-4 h-4 mr-2" />
                                     {inst.status === 'active' ? 'Archive' : 'Activate'}
                                 </Button>
                             </div>
                         </div>
                     ))}
                     {institutions.length === 0 && (
-                        <div className="col-span-full flex flex-col items-center justify-center py-16 text-center border border-dashed border-foreground/10 rounded-xl bg-foreground/5">
-                            <Building className="w-12 h-12 text-slate-600 mb-4" />
-                            <h3 className="text-lg font-medium text-slate-400">No entities found</h3>
-                            <p className="text-sm text-slate-500 max-w-sm mt-2">
-                                Create a department or institution to start organizing your hierarchy.
+                        <div className="col-span-full flex flex-col items-center justify-center py-16 text-center border border-dashed border-foreground/10 rounded-[28px] bg-foreground/[0.01] glass-liquid backdrop-blur-md">
+                            <Building className="w-12 h-12 text-foreground/20 mb-4" />
+                            <h3 className="text-lg font-bold text-foreground/80">No Institutions found</h3>
+                            <p className="text-sm text-slate-500 max-w-sm mt-2 font-medium">
+                                Create an institution to start organizing your hierarchy.
                             </p>
                         </div>
                     )}
@@ -184,26 +184,29 @@ export function InstitutionsTab() {
 
             {/* Edit Dialog */}
             <Dialog open={editOpen} onOpenChange={setEditOpen}>
-                <DialogContent className="bg-slate-950/90 backdrop-blur-xl border-foreground/10">
+                <DialogContent className="glass-liquid border border-foreground/10 p-6 rounded-[32px] shadow-2xl backdrop-blur-xl max-w-md w-full">
                     <DialogHeader>
-                        <DialogTitle className="text-foreground">Edit Department / Institution</DialogTitle>
-                        <DialogDescription className="text-slate-400">
+                        <DialogTitle className="text-foreground text-xl font-bold">Edit Institution</DialogTitle>
+                        <DialogDescription className="text-slate-400 text-sm font-medium mt-1 leading-relaxed">
                             Update the display name. Changes will propagate globally.
                         </DialogDescription>
                     </DialogHeader>
-                    <form onSubmit={handleUpdate} className="space-y-4 pt-4">
+                    <form onSubmit={handleUpdate} className="space-y-5 pt-4">
                         <div className="space-y-2">
-                            <Label className="text-slate-300">Display Name</Label>
+                            <Label className="text-slate-300 text-xs font-bold uppercase tracking-wider">Display Name</Label>
                             <Input
                                 value={editName}
                                 onChange={e => setEditName(e.target.value)}
-                                placeholder="e.g. Media & IT Department"
-                                className="bg-slate-800 border-foreground/10 text-foreground"
+                                placeholder="e.g. Thaiba Garden Main Campus"
+                                className="w-full h-11 pl-4 pr-4 bg-foreground/[0.03] border border-foreground/10 rounded-full text-sm text-foreground placeholder:text-foreground/30 focus:outline-none focus:border-primary transition-all"
                             />
                         </div>
-                        <Button type="submit" disabled={saving} className="w-full bg-blue-600 hover:bg-blue-500">
-                            {saving ? <Loader2 className="w-4 h-4 animate-spin" /> : "Save Changes"}
-                        </Button>
+                        <div className="flex gap-2 pt-2">
+                            <Button type="button" variant="ghost" onClick={() => setEditOpen(false)} disabled={saving} className="flex-1 rounded-full text-xs font-bold text-foreground/70 hover:bg-foreground/5 transition-all">Cancel</Button>
+                            <Button type="submit" disabled={saving} className="flex-1 bg-primary hover:bg-primary/90 text-primary-foreground rounded-full transition-all duration-200 active:scale-95 shadow-lg shadow-primary/20 text-xs font-bold">
+                                {saving ? <Loader2 className="w-4 h-4 animate-spin" /> : "Save Changes"}
+                            </Button>
+                        </div>
                     </form>
                 </DialogContent>
             </Dialog>

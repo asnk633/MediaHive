@@ -114,20 +114,114 @@ class MediaHiveApp extends ConsumerWidget {
           ],
         );
       },
+      // ── Spatial UI (VisionOS) Light Theme ─────────────────────────────────
       theme: ThemeData(
         useMaterial3: true,
         brightness: Brightness.light,
-        fontFamily: 'Muli',
-        scaffoldBackgroundColor: const Color(0xFFF8FAFC),
+        fontFamily: '.SF Pro Text',
+        // Sky-canvas background — cards float above it via depth shadows
+        scaffoldBackgroundColor: DesignTokens.lightBackground,
+        colorScheme: ColorScheme.fromSeed(
+          seedColor: DesignTokens.lightHoney,
+          brightness: Brightness.light,
+          primary: DesignTokens.lightHoney,
+          onPrimary: Colors.white,
+          secondary: const Color(0xFF5E5CE6),   // VisionOS indigo
+          onSecondary: Colors.white,
+          surface: DesignTokens.lightSurface,
+          onSurface: DesignTokens.lightTextPrimary,
+          background: DesignTokens.lightBackground,
+          onBackground: DesignTokens.lightTextPrimary,
+          error: DesignTokens.danger,
+          onError: Colors.white,
+          outline: DesignTokens.lightBorder,
+        ),
+        appBarTheme: const AppBarTheme(
+          backgroundColor: Colors.transparent,
+          foregroundColor: DesignTokens.lightTextPrimary,
+          elevation: 0,
+          scrolledUnderElevation: 0,
+          surfaceTintColor: Colors.transparent,
+        ),
+        dividerColor: DesignTokens.lightBorder,
+        snackBarTheme: SnackBarThemeData(
+          backgroundColor: DesignTokens.lightSurface.withOpacity(0.9),
+          contentTextStyle: const TextStyle(color: DesignTokens.lightTextPrimary),
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(DesignTokens.radiusM),
+          ),
+          behavior: SnackBarBehavior.floating,
+        ),
+        inputDecorationTheme: InputDecorationTheme(
+          filled: true,
+          fillColor: DesignTokens.lightSurface.withOpacity(0.7),
+          border: OutlineInputBorder(
+            borderRadius: BorderRadius.circular(DesignTokens.radiusL),
+            borderSide: const BorderSide(color: DesignTokens.lightBorder, width: 0.75),
+          ),
+          enabledBorder: OutlineInputBorder(
+            borderRadius: BorderRadius.circular(DesignTokens.radiusL),
+            borderSide: const BorderSide(color: DesignTokens.lightBorder, width: 0.75),
+          ),
+          focusedBorder: OutlineInputBorder(
+            borderRadius: BorderRadius.circular(DesignTokens.radiusL),
+            borderSide: const BorderSide(color: DesignTokens.lightHoney, width: 1.5),
+          ),
+        ),
       ),
+      // ── Dark Theme ──────────────────────────────────────────────────────────
       darkTheme: ThemeData(
         useMaterial3: true,
         brightness: Brightness.dark,
-        fontFamily: 'Muli',
+        fontFamily: '.SF Pro Text',
         scaffoldBackgroundColor: DesignTokens.backgroundPrimary,
+        colorScheme: ColorScheme.fromSeed(
+          seedColor: DesignTokens.honey,
+          brightness: Brightness.dark,
+          primary: DesignTokens.honey,       // Gold
+          onPrimary: Colors.black,
+          secondary: DesignTokens.softGold,     // Soft Gold
+          onSecondary: Colors.black,
+          surface: DesignTokens.surface,
+          onSurface: Colors.white,
+          background: DesignTokens.backgroundPrimary,
+          onBackground: Colors.white,
+          error: DesignTokens.danger,
+          onError: Colors.white,
+          outline: DesignTokens.border,
+        ),
         appBarTheme: const AppBarTheme(
           backgroundColor: Colors.transparent,
+          foregroundColor: Colors.white,
           elevation: 0,
+          scrolledUnderElevation: 0,
+          surfaceTintColor: Colors.transparent,
+        ),
+        dividerColor: DesignTokens.border,
+        snackBarTheme: SnackBarThemeData(
+          backgroundColor: DesignTokens.surface,
+          contentTextStyle: const TextStyle(color: Colors.white),
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(DesignTokens.radiusM),
+          ),
+          behavior: SnackBarBehavior.floating,
+        ),
+        inputDecorationTheme: InputDecorationTheme(
+          filled: true,
+          fillColor: DesignTokens.surface,
+          border: OutlineInputBorder(
+            borderRadius: BorderRadius.circular(DesignTokens.radiusL),
+            borderSide: const BorderSide(color: DesignTokens.border, width: 0.75),
+          ),
+          enabledBorder: OutlineInputBorder(
+            borderRadius: BorderRadius.circular(DesignTokens.radiusL),
+            borderSide: const BorderSide(color: DesignTokens.border, width: 0.75),
+          ),
+          focusedBorder: OutlineInputBorder(
+            borderRadius: BorderRadius.circular(DesignTokens.radiusL),
+            borderSide: const BorderSide(color: DesignTokens.honey, width: 1.5),
+          ),
+          labelStyle: const TextStyle(color: DesignTokens.textSecondary),
         ),
       ),
       themeMode: themeMode,

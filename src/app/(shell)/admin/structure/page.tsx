@@ -25,17 +25,23 @@ export default function StructurePage() {
 
             <PageHeader
                 title="Organization Structure"
-                description="Manage global institutions and departments / institutions."
+                description="Manage global institutions and departments."
             />
 
             <div className="mt-6">
                 <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
-                    <TabsList className="bg-surface border border-soft rounded-xl p-1">
-                        <TabsTrigger value="institutions" className="rounded-lg data-[state=active]:bg-primary data-[state=active]:text-primary-foreground">
+                    <TabsList className="bg-foreground/[0.03] border border-foreground/10 rounded-full p-1 backdrop-blur-md">
+                        <TabsTrigger 
+                            value="institutions" 
+                            className="rounded-full px-5 py-2 text-xs font-bold tracking-wide uppercase transition-all duration-200 border border-transparent data-[state=active]:bg-primary/10 data-[state=active]:text-primary data-[state=active]:border-primary/20 data-[state=active]:shadow-sm text-foreground/60 hover:text-foreground"
+                        >
                             Institutions
                         </TabsTrigger>
-                        <TabsTrigger value="departments" className="rounded-lg data-[state=active]:bg-primary data-[state=active]:text-primary-foreground">
-                            Departments / Institutions
+                        <TabsTrigger 
+                            value="departments" 
+                            className="rounded-full px-5 py-2 text-xs font-bold tracking-wide uppercase transition-all duration-200 border border-transparent data-[state=active]:bg-primary/10 data-[state=active]:text-primary data-[state=active]:border-primary/20 data-[state=active]:shadow-sm text-foreground/60 hover:text-foreground"
+                        >
+                            Departments
                         </TabsTrigger>
                     </TabsList>
 

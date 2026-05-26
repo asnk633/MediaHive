@@ -14,25 +14,25 @@ export const buttonVariants = ({
   className
 }: Partial<ButtonProps> = {}) => {
   const variants = {
-    primary: "bg-blue-600 hover:bg-blue-500 text-foreground shadow-lg shadow-blue-900/20",
-    default: "bg-blue-600 hover:bg-blue-500 text-foreground shadow-lg shadow-blue-900/20", // Alias
-    secondary: "mh-surface hover:mh-surface-strong text-foreground",
-    outline: "border border-foreground/10 hover:bg-foreground/5 text-gray-300", // Restored outline
-    ghost: "bg-transparent hover:bg-foreground/5 text-gray-400 hover:text-foreground",
-    link: "text-blue-400 hover:underline underline-offset-4 bg-transparent", // Restored link
-    danger: "bg-red-500/10 text-red-400 hover:bg-red-500/20 border border-red-500/20",
-    destructive: "bg-red-500/10 text-red-400 hover:bg-red-500/20 border border-red-500/20", // Alias
+    primary: "bg-primary text-foreground hover:opacity-90 rounded-full shadow-none border border-transparent",
+    default: "bg-primary text-foreground hover:opacity-90 rounded-full shadow-none border border-transparent", // Alias
+    secondary: "bg-foreground/5 hover:bg-foreground/10 text-foreground rounded-full border border-foreground/5",
+    outline: "border border-foreground/10 hover:bg-foreground/5 text-foreground rounded-md", // Restored outline
+    ghost: "bg-transparent hover:bg-foreground/5 text-foreground/70 hover:text-foreground rounded-md",
+    link: "text-primary hover:underline underline-offset-4 bg-transparent", // Restored link
+    danger: "bg-red-500/10 text-red-400 hover:bg-red-500/20 border border-red-500/20 rounded-md",
+    destructive: "bg-red-500/10 text-red-400 hover:bg-red-500/20 border border-red-500/20 rounded-md", // Alias
   };
 
   const sizes = {
-    sm: "h-8 px-3 text-xs",
-    md: "h-10 px-4 text-sm",
-    lg: "h-12 px-6 text-base",
-    icon: "h-10 w-10", // Added icon size for Calendar compatibility
+    sm: "h-8 px-4 text-xs", // Adjusted padding for pill look
+    md: "h-10 px-5 text-sm", // Adjusted padding for pill look
+    lg: "h-12 px-7 text-base", // Adjusted padding for pill look
+    icon: "h-10 w-10 rounded-full", // Icon buttons are circular
   };
 
   return cn(
-    "inline-flex items-center justify-center rounded-lg font-medium",
+    "inline-flex items-center justify-center font-medium",
     "disabled:opacity-50 disabled:pointer-events-none",
     "mh-transition mh-pressable", // Standardized motion
     variants[variant as keyof typeof variants] || variants.primary,

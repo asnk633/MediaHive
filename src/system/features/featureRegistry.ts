@@ -3,7 +3,6 @@ export type FeatureKey =
     | 'events'
     | 'inventory'
     | 'campaigns'
-    | 'flowboard'
     | 'automationEngine'
     | 'aiAssistant'
     | 'intelligenceDashboard'
@@ -25,7 +24,6 @@ export const FEATURE_REGISTRY: Record<FeatureKey, FeatureConfig> = {
     events: { enabled: true, minRole: 'member' },
     inventory: { enabled: true, minRole: 'member' },
     campaigns: { enabled: true, minRole: 'team' },
-    flowboard: { enabled: true, minRole: 'team', isLabs: true },
     automationEngine: { enabled: false, minRole: 'admin', isLabs: true },
     aiAssistant: { enabled: false, minRole: 'team', isLabs: true },
     intelligenceDashboard: { enabled: true, minRole: 'admin', isLabs: true },

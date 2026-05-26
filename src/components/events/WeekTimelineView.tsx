@@ -274,11 +274,11 @@ export function WeekTimelineView({
     return (
         <div className="space-y-4">
             {/* Header Controls */}
-            <div className="flex items-center justify-between p-6 bg-foreground/[0.02] border border-foreground/5 rounded-2xl mb-4">
+            <div className="flex items-center justify-between p-6 glass-liquid border border-foreground/10 rounded-[32px] mb-4 shadow-2xl backdrop-blur-md bg-foreground/[0.02]">
                 <div className="flex flex-col gap-1">
                     <h2 className="text-2xl font-black tracking-tighter text-foreground">
                         {format(weekDays[0], 'MMM dd')}
-                        <span className="text-blue-500/50 mx-2">—</span>
+                        <span className="text-primary/50 mx-2">—</span>
                         {format(weekDays[6], 'MMM dd')}
                         <span className="text-foreground/80 ml-2">{format(weekDays[6], 'yyyy')}</span>
                     </h2>
@@ -287,19 +287,19 @@ export function WeekTimelineView({
                 <div className="flex items-center gap-3">
                     <button
                         onClick={navigatePrev}
-                        className="p-3 bg-foreground/5 border border-foreground/10 hover:bg-foreground/10 rounded-xl transition-all text-foreground/80 hover:text-foreground"
+                        className="p-3 bg-foreground/5 border border-foreground/10 hover:bg-foreground/10 rounded-full transition-all text-foreground/80 hover:text-foreground"
                     >
                         <ChevronLeft size={20} />
                     </button>
                     <button
                         onClick={navigateToday}
-                        className="px-6 py-3 bg-foreground/5 border border-foreground/10 hover:bg-foreground/10 rounded-xl transition-all text-[10px] font-black uppercase tracking-widest text-foreground/80 hover:text-foreground"
+                        className="px-6 py-3 bg-primary/10 text-primary border border-primary/20 hover:bg-primary/20 shadow-sm rounded-full transition-all text-[10px] font-black uppercase tracking-widest"
                     >
                         Today
                     </button>
                     <button
                         onClick={navigateNext}
-                        className="p-3 bg-foreground/5 border border-foreground/10 hover:bg-foreground/10 rounded-xl transition-all text-foreground/80 hover:text-foreground"
+                        className="p-3 bg-foreground/5 border border-foreground/10 hover:bg-foreground/10 rounded-full transition-all text-foreground/80 hover:text-foreground"
                     >
                         <ChevronRight size={20} />
                     </button>

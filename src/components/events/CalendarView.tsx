@@ -100,7 +100,8 @@ export function CalendarView({ currentDate, onDateChange, events, onDateClick, o
 
     return (
         <div className="
-            event-surface
+            glass-card
+            shadow-2xl
             rounded-2xl
             overflow-hidden
             text-foreground
@@ -135,7 +136,7 @@ export function CalendarView({ currentDate, onDateChange, events, onDateClick, o
                 <div className="flex flex-col gap-1">
                     <h2 className="text-2xl font-black tracking-tighter text-foreground">
                         {format(currentDate, 'MMMM')}
-                        <span className="text-blue-500/50 ml-2">{format(currentDate, 'yyyy')}</span>
+                        <span className="text-primary/50 ml-2">{format(currentDate, 'yyyy')}</span>
                     </h2>
                     <p className="text-[10px] font-bold text-foreground/70 uppercase tracking-[0.2em]">Institutional Scheduler</p>
                 </div>
@@ -224,14 +225,14 @@ export function CalendarView({ currentDate, onDateChange, events, onDateClick, o
                                         className={cn(
                                             "group relative p-4 cursor-pointer transition-all duration-300 outline-none flex flex-col min-h-[130px] sm:min-h-[150px]",
                                             !isCurrentMonth ? "bg-foreground/[0.03] text-foreground/70" : "bg-foreground/[0.08] text-foreground/70 hover:bg-foreground/[0.04]",
-                                            isToday && "bg-blue-500/10 ring-1 ring-inset ring-blue-500/20",
-                                            isInDragRange && "bg-blue-500/20 ring-1 ring-inset ring-blue-500/40 z-10"
+                                            isToday && "bg-primary/10 ring-1 ring-inset ring-primary/20",
+                                            isInDragRange && "bg-primary/20 ring-1 ring-inset ring-primary/40 z-10"
                                         )}
                                     >
                                         <div className="flex justify-between items-start mb-3">
                                             <span className={cn(
                                                 "w-8 h-8 flex items-center justify-center rounded-xl text-sm font-bold transition-all",
-                                                isToday ? "bg-blue-600 text-foreground shadow-lg shadow-blue-500/20" : "text-foreground/80 group-hover:text-foreground"
+                                                isToday ? "bg-primary text-foreground shadow-lg shadow-primary/20" : "text-foreground/80 group-hover:text-foreground"
                                             )}>
                                                 {format(day, 'd')}
                                             </span>

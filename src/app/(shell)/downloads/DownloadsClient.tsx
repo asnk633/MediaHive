@@ -104,14 +104,14 @@ export default function DownloadsClient() {
                     <div className="flex items-center gap-3">
                         {/* Admin Queue Toggle */}
                         {isAdmin && (
-                            <div className="flex bg-[var(--bg-surface)] p-1 rounded-xl border border-[var(--border-subtle)] mr-2">
+                            <div className="flex bg-foreground/[0.03] p-1 rounded-full border border-foreground/10 mr-2 backdrop-blur-md">
                                 <button
                                     onClick={() => setViewMode('files')}
                                     className={cn(
-                                        "flex items-center gap-2 px-3 py-1.5 rounded-lg text-sm font-medium transition-all",
+                                        "flex items-center gap-2 px-4 py-1.5 rounded-full text-sm font-medium transition-all duration-200 border border-transparent",
                                         viewMode === 'files'
-                                            ? "bg-indigo-500/10 text-indigo-500"
-                                            : "text-[var(--text-secondary)] hover:text-[var(--text-primary)] hover:bg-foreground/5"
+                                            ? "bg-primary/10 text-primary border-primary/20 shadow-sm"
+                                            : "text-foreground/60 hover:text-foreground/90 hover:bg-foreground/5"
                                     )}
                                 >
                                     <Download size={16} />
@@ -120,10 +120,10 @@ export default function DownloadsClient() {
                                 <button
                                     onClick={() => setViewMode('queue')}
                                     className={cn(
-                                        "flex items-center gap-2 px-3 py-1.5 rounded-lg text-sm font-medium transition-all",
+                                        "flex items-center gap-2 px-4 py-1.5 rounded-full text-sm font-medium transition-all duration-200 border border-transparent",
                                         viewMode === 'queue'
-                                            ? "bg-emerald-500/10 text-emerald-500"
-                                            : "text-[var(--text-secondary)] hover:text-[var(--text-primary)] hover:bg-foreground/5"
+                                            ? "bg-primary/10 text-primary border-primary/20 shadow-sm"
+                                            : "text-foreground/60 hover:text-foreground/90 hover:bg-foreground/5"
                                     )}
                                 >
                                     <HardDrive size={16} />
@@ -135,7 +135,7 @@ export default function DownloadsClient() {
                         {canUpload && viewMode === 'files' && (
                             <button
                                 onClick={() => setUploadOpen(true)}
-                                className="flex items-center gap-2 px-4 py-2 bg-primary text-primary-foreground rounded-xl hover:bg-primary/90 transition-colors shadow-lg shadow-primary/20"
+                                className="flex items-center gap-2 px-4 py-2 bg-primary text-primary-foreground rounded-full hover:bg-primary/90 transition-all duration-200 active:scale-95 shadow-lg shadow-primary/20 text-sm font-bold tracking-wide"
                             >
                                 <Plus size={18} />
                                 Upload
@@ -154,7 +154,7 @@ export default function DownloadsClient() {
                     {/* Toolbar */}
                     <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-6">
                         {/* Category Filters */}
-                        <div className="flex items-center gap-1 bg-[var(--bg-surface)] p-1 rounded-xl border border-[var(--border-subtle)] overflow-x-auto no-scrollbar">
+                        <div className="flex items-center gap-1 bg-foreground/[0.03] p-1 rounded-full border border-foreground/10 overflow-x-auto no-scrollbar backdrop-blur-md">
                             {[
                                 { id: 'all', label: 'All Assets', icon: LayoutGrid },
                                 { id: 'documents', label: 'Docs', icon: FileText },
@@ -165,10 +165,10 @@ export default function DownloadsClient() {
                                     key={cat.id}
                                     onClick={() => setCategory(cat.id as Category)}
                                     className={cn(
-                                        "flex items-center gap-2 px-4 py-1.5 rounded-lg text-sm font-medium whitespace-nowrap transition-all",
+                                        "flex items-center gap-2 px-4 py-1.5 rounded-full text-sm font-medium whitespace-nowrap transition-all border border-transparent",
                                         category === cat.id
-                                            ? "bg-foreground/10 text-foreground"
-                                            : "text-[var(--text-secondary)] hover:text-[var(--text-primary)] hover:bg-foreground/5"
+                                            ? "bg-primary/10 text-primary border-primary/20 shadow-sm"
+                                            : "text-foreground/60 hover:text-foreground/90 hover:bg-foreground/5"
                                     )}
                                 >
                                     <cat.icon size={14} />
@@ -179,24 +179,24 @@ export default function DownloadsClient() {
 
                         <div className="flex items-center gap-3">
                             <div className="relative max-w-xs">
-                                <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-[var(--text-secondary)]" size={16} />
+                                <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-foreground/40" size={16} />
                                 <input
                                     type="text"
                                     placeholder="Search library..."
                                     value={search}
                                     onChange={(e) => setSearch(e.target.value)}
-                                    className="w-full pl-9 pr-4 py-2 rounded-xl bg-[var(--bg-surface)] border border-[var(--border-subtle)] focus:outline-none focus:border-primary transition-colors text-sm text-[var(--text-primary)]"
+                                    className="w-full pl-9 pr-4 py-2 rounded-full bg-foreground/[0.03] border border-foreground/10 focus:outline-none focus:border-primary transition-colors text-sm text-[var(--text-primary)]"
                                 />
                             </div>
 
-                            <div className="h-8 w-px bg-[var(--border-subtle)] mx-1" />
+                            <div className="h-8 w-px bg-foreground/10 mx-1" />
 
-                            <div className="flex bg-[var(--bg-surface)] p-1 rounded-lg border border-[var(--border-subtle)]">
+                            <div className="flex bg-foreground/[0.03] p-1 rounded-full border border-foreground/10 backdrop-blur-md">
                                 <button
                                     onClick={() => setLayout('gallery')}
                                     className={cn(
-                                        "p-1.5 rounded-md transition-all",
-                                        layout === 'gallery' ? "bg-foreground/10 text-foreground" : "text-[var(--text-secondary)] hover:text-foreground"
+                                        "p-1.5 rounded-full transition-all border border-transparent",
+                                        layout === 'gallery' ? "bg-primary/10 text-primary border-primary/20 shadow-sm" : "text-foreground/60 hover:text-foreground"
                                     )}
                                     title="Gallery View"
                                 >
@@ -205,8 +205,8 @@ export default function DownloadsClient() {
                                 <button
                                     onClick={() => setLayout('grid')}
                                     className={cn(
-                                        "p-1.5 rounded-md transition-all",
-                                        layout === 'grid' ? "bg-foreground/10 text-foreground" : "text-[var(--text-secondary)] hover:text-foreground"
+                                        "p-1.5 rounded-full transition-all border border-transparent",
+                                        layout === 'grid' ? "bg-primary/10 text-primary border-primary/20 shadow-sm" : "text-foreground/60 hover:text-foreground"
                                     )}
                                     title="List View"
                                 >

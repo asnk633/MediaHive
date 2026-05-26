@@ -860,7 +860,7 @@ const TaskListViewComponent: React.FC<TaskListViewProps> = ({ tasks, loading = f
             )}
 
             {/* Main Task List Console */}
-            <div className="flex-1 flex flex-col min-h-0 rounded-2xl border border-soft bg-surface shadow-sm overflow-hidden">
+            <div className="flex-1 flex flex-col min-h-0 glass-card rounded-2xl shadow-2xl overflow-hidden">
                 {/* Unified Header Row */}
                 <div className="grid grid-cols-[auto_1fr_auto] md:grid-cols-[44px_minmax(0,10fr)_minmax(0,4fr)_65px_45px_65px_90px_75px_95px] gap-x-2 pl-1.5 pr-3 py-2 border-b border-foreground/[0.05] text-[9px] font-bold text-foreground/80 uppercase tracking-widest items-center bg-black/30 sticky top-0 z-10">
                     <div className="flex items-center justify-center opacity-20">

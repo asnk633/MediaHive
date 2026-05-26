@@ -1,8 +1,10 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../core/theme/app_colors.dart';
 import '../../core/theme/app_spacing.dart';
 import '../../core/theme/app_typography.dart';
 import '../../core/design_tokens.dart';
+import '../../core/theme_provider.dart';
 
 enum MhButtonType { primary, secondary, outline, ghost }
 
@@ -31,63 +33,82 @@ class MhButton extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final bool effectiveDisabled = isDisabled || isLoading || onTap == null;
-    
-    return MouseRegion(
-      cursor: effectiveDisabled ? SystemMouseCursors.basic : SystemMouseCursors.click,
-      child: _MhButtonPressable(
-        onTap: effectiveDisabled ? null : onTap,
-        isDisabled: effectiveDisabled,
-        child: Container(
-          width: width,
-          height: height,
-          constraints: const BoxConstraints(minWidth: 48, minHeight: 32),
-          padding: EdgeInsets.symmetric(
-            horizontal: (width != null && width! < 60) || height < 48 
-                ? AppSpacing.s 
-                : AppSpacing.m,
+
+    // Read the theme so decoration can adapt to light/dark mode
+    return Consumer(
+      builder: (context, ref, _) {
+        final colors = ref.watch(themeColorsProvider);
+        return MouseRegion(
+          cursor: effectiveDisabled ? SystemMouseCursors.basic : SystemMouseCursors.click,
+          child: _MhButtonPressable(
+            onTap: effectiveDisabled ? null : onTap,
+            isDisabled: effectiveDisabled,
+            child: Container(
+              width: width,
+              height: height,
+              constraints: const BoxConstraints(minWidth: 48, minHeight: 32),
+              padding: EdgeInsets.symmetric(
+                horizontal: (width != null && width! < 60) || height < 48
+                    ? AppSpacing.s
+                    : AppSpacing.m,
+              ),
+              decoration: _getDecoration(effectiveDisabled, colors),
+              child: Center(
+                child: isLoading
+                    ? _buildLoader(colors)
+                    : _buildContent(colors),
+              ),
+            ),
           ),
-          decoration: _getDecoration(effectiveDisabled),
-          child: Center(
-            child: isLoading
-                ? _buildLoader()
-                : _buildContent(),
-          ),
-        ),
-      ),
+        );
+      },
     );
   }
 
-  BoxDecoration _getDecoration(bool disabled) {
+  BoxDecoration _getDecoration(bool disabled, ThemeColors colors) {
+    final isLight = !colors.isDark;
     switch (type) {
       case MhButtonType.primary:
         return BoxDecoration(
-          gradient: AppColors.primaryGradient,
+          // Light: vivid spatial gradient | Dark: flat solid blue
+          gradient: isLight
+              ? AppColors.lightPrimaryGradient
+              : AppColors.primaryGradient,
           borderRadius: BorderRadius.circular(AppRadius.m),
-          boxShadow: [
-            BoxShadow(
-              color: AppColors.honey.withOpacity(0.3),
-              blurRadius: 12,
-              offset: const Offset(0, 4),
-            ),
-          ],
+          boxShadow: isLight
+              ? DesignTokens.spatialGlowBlue
+              : [
+                  BoxShadow(
+                    color: AppColors.honey.withOpacity(0.3),
+                    blurRadius: 12,
+                    offset: const Offset(0, 4),
+                  ),
+                ],
         );
       case MhButtonType.secondary:
         return BoxDecoration(
-          color: AppColors.surface,
+          color: isLight ? AppColors.lightSurface : AppColors.surface,
           borderRadius: BorderRadius.circular(AppRadius.m),
-          border: Border.all(color: AppColors.border),
+          border: Border.all(
+            color: isLight ? AppColors.lightBorder : AppColors.border,
+            width: isLight ? 0.75 : 1.0,
+          ),
+          boxShadow: isLight ? DesignTokens.spatialChipShadow : [],
         );
       case MhButtonType.outline:
         return BoxDecoration(
           borderRadius: BorderRadius.circular(AppRadius.m),
-          border: Border.all(color: AppColors.honey, width: 1.5),
+          border: Border.all(
+            color: isLight ? AppColors.lightHoney : AppColors.honey,
+            width: 1.5,
+          ),
         );
       case MhButtonType.ghost:
         return const BoxDecoration();
     }
   }
 
-  Widget _buildContent() {
+  Widget _buildContent(ThemeColors colors) {
     final hasIcon = icon != null;
     final hasLabel = label.isNotEmpty;
 
@@ -96,7 +117,7 @@ class MhButton extends StatelessWidget {
       mainAxisAlignment: MainAxisAlignment.center,
       children: [
         if (hasIcon)
-          Icon(icon, size: 18, color: _getTextColor()),
+          Icon(icon, size: 18, color: _getTextColor(colors)),
         if (hasIcon && hasLabel)
           const SizedBox(width: AppSpacing.xs),
         if (hasLabel)
@@ -104,7 +125,7 @@ class MhButton extends StatelessWidget {
             child: Text(
               label,
               style: AppTypography.bodyM.copyWith(
-                color: _getTextColor(),
+                color: _getTextColor(colors),
                 fontWeight: FontWeight.w900,
                 letterSpacing: 0.5,
               ),
@@ -116,26 +137,28 @@ class MhButton extends StatelessWidget {
     );
   }
 
-  Widget _buildLoader() {
+  Widget _buildLoader(ThemeColors colors) {
     return SizedBox(
       width: 20,
       height: 20,
       child: CircularProgressIndicator(
         strokeWidth: 2,
-        valueColor: AlwaysStoppedAnimation<Color>(_getTextColor()),
+        valueColor: AlwaysStoppedAnimation<Color>(_getTextColor(colors)),
       ),
     );
   }
 
-  Color _getTextColor() {
+  Color _getTextColor(ThemeColors colors) {
+    final isLight = !colors.isDark;
     switch (type) {
       case MhButtonType.primary:
-        return Colors.black;
+        // On light: white text over vivid blue gradient
+        return isLight ? Colors.white : Colors.black;
       case MhButtonType.secondary:
       case MhButtonType.ghost:
-        return AppColors.textPrimary;
+        return colors.textPrimary;
       case MhButtonType.outline:
-        return AppColors.honey;
+        return isLight ? AppColors.lightHoney : AppColors.honey;
     }
   }
 }

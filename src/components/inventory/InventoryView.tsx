@@ -18,7 +18,7 @@ import { toast } from 'sonner';
 import { Button } from '@/components/ui/button';
 import { Clock, FileDown, Plus, Info, ChevronUp, ChevronDown } from 'lucide-react';
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from '@/components/ui/collapsible';
-import { nativeNavigate } from '@/lib/utils';
+import { nativeNavigate, cn } from '@/lib/utils';
 import { InventoryRequestDialog } from './InventoryRequestDialog';
 import { IssueItemDialog } from './IssueItemDialog';
 import { ReturnItemDialog } from './ReturnItemDialog';
@@ -267,7 +267,7 @@ export default function InventoryView() {
                                 </Button>
                                 <Button
                                     onClick={() => nativeNavigate('/inventory/add', router, 'InventoryView (Add Asset)')}
-                                    className="bg-blue-600 hover:bg-blue-500 text-foreground shadow-lg shadow-blue-900/20"
+                                    className="bg-primary hover:opacity-90 text-foreground shadow-lg shadow-primary/25 font-bold"
                                 >
                                     <Plus size={18} className="mr-2" /> Add Asset
                                 </Button>
@@ -278,7 +278,7 @@ export default function InventoryView() {
             />
 
             {/* Categorization Guide */}
-            <Collapsible open={isGuideOpen} onOpenChange={setIsGuideOpen} className="border border-foreground/5 bg-surface rounded-xl overflow-hidden">
+            <Collapsible open={isGuideOpen} onOpenChange={setIsGuideOpen} className="glass-card rounded-xl overflow-hidden shadow-lg">
                 <CollapsibleTrigger className="flex items-center justify-between w-full px-4 py-3 text-sm font-medium text-slate-400 hover:text-foreground hover:bg-foreground/5 transition-colors">
                     <div className="flex items-center gap-2">
                         <Info className="w-4 h-4 text-blue-400" />
@@ -299,24 +299,26 @@ export default function InventoryView() {
 
             {/* Navigation Tabs */}
             {['admin', 'manager', 'team'].includes(currentRole) && (
-                <div className="flex items-center gap-1 p-1 bg-foreground/5 border border-foreground/10 rounded-xl w-fit">
+                <div className="flex items-center bg-foreground/[0.03] p-1 rounded-full border border-foreground/10 backdrop-blur-md w-fit mb-6">
                     <button
                         onClick={() => setActiveTab('items')}
-                        className={`px-6 py-2 text-sm font-semibold rounded-lg transition-all ${
+                        className={cn(
+                            "px-6 py-2 text-[10px] font-black uppercase tracking-[0.2em] rounded-full transition-all duration-200",
                             activeTab === 'items' 
-                            ? 'bg-blue-600 text-foreground shadow-lg shadow-blue-900/40' 
-                            : 'text-slate-400 hover:text-foreground hover:bg-foreground/5'
-                        }`}
+                            ? 'bg-primary/10 text-primary border border-primary/20 shadow-sm shadow-primary/5' 
+                            : 'text-foreground/60 hover:text-foreground hover:bg-foreground/5 border border-transparent'
+                        )}
                     >
                         Equipment Items
                     </button>
                     <button
                         onClick={() => setActiveTab('schedule')}
-                        className={`px-6 py-2 text-sm font-semibold rounded-lg transition-all ${
+                        className={cn(
+                            "px-6 py-2 text-[10px] font-black uppercase tracking-[0.2em] rounded-full transition-all duration-200",
                             activeTab === 'schedule' 
-                            ? 'bg-blue-600 text-foreground shadow-lg shadow-blue-900/40' 
-                            : 'text-slate-400 hover:text-foreground hover:bg-foreground/5'
-                        }`}
+                            ? 'bg-primary/10 text-primary border border-primary/20 shadow-sm shadow-primary/5' 
+                            : 'text-foreground/60 hover:text-foreground hover:bg-foreground/5 border border-transparent'
+                        )}
                     >
                         Booking Schedule
                     </button>

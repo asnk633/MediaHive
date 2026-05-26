@@ -6,6 +6,7 @@ import '../../data/repositories/supabase_event_repository.dart';
 import '../../domain/models/event.dart';
 import '../../domain/repositories/event_repository.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 part 'events_provider.g.dart';
 
@@ -95,3 +96,5 @@ class SelectedDate extends _$SelectedDate {
   String build() => DateTime.now().day.toString();
   void setDate(String date) => state = date;
 }
+
+final activeMonthProvider = StateProvider<DateTime>((ref) => DateTime.now());

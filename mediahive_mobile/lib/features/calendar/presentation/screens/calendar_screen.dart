@@ -221,9 +221,9 @@ class CalendarScreen extends ConsumerWidget {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        _buildMonthHeader(colors),
+        _buildMonthHeader(ref, colors),
         const SizedBox(height: AppSpacing.m),
-        _buildCalendarGrid(events, colors),
+        _buildCalendarGrid(ref, events, colors),
         const SizedBox(height: AppSpacing.xl),
         _buildUpcomingAgenda(context, ref, events, colors),
       ],
@@ -289,38 +289,66 @@ class CalendarScreen extends ConsumerWidget {
     );
   }
 
-  Widget _buildMonthHeader(ThemeColors colors) {
-    final now = DateTime.now();
-    final monthName = DateFormat('MMMM').format(now);
-    final year = DateFormat('yyyy').format(now);
+  Widget _buildMonthHeader(WidgetRef ref, ThemeColors colors) {
+    final activeDate = ref.watch(activeMonthProvider);
+    final monthName = DateFormat('MMMM').format(activeDate);
+    final year = DateFormat('yyyy').format(activeDate);
 
     return Row(
       children: [
         Text('$monthName ', style: AppTypography.h3.copyWith(color: colors.textPrimary)),
         Text(year, style: AppTypography.h3.copyWith(color: colors.indigo)),
         const Spacer(),
-        _buildCircleNavButton(LucideIcons.chevronLeft, () {}, colors),
+        _buildCircleNavButton(
+          LucideIcons.chevronLeft,
+          () {
+            final activeDateVal = ref.read(activeMonthProvider);
+            ref.read(activeMonthProvider.notifier).state = 
+                DateTime(activeDateVal.year, activeDateVal.month - 1, 1);
+          },
+          colors,
+        ),
         const SizedBox(width: 12),
-        _buildCircleNavButton(LucideIcons.chevronRight, () {}, colors),
+        _buildCircleNavButton(
+          LucideIcons.chevronRight,
+          () {
+            final activeDateVal = ref.read(activeMonthProvider);
+            ref.read(activeMonthProvider.notifier).state = 
+                DateTime(activeDateVal.year, activeDateVal.month + 1, 1);
+          },
+          colors,
+        ),
       ],
     );
   }
 
   Widget _buildCircleNavButton(IconData icon, VoidCallback onTap, ThemeColors colors) {
-    return Container(
-      padding: const EdgeInsets.all(8),
-      decoration: BoxDecoration(
-        color: colors.surface,
-        shape: BoxShape.circle,
-        border: Border.all(color: colors.border),
+    return GestureDetector(
+      onTap: onTap,
+      behavior: HitTestBehavior.opaque,
+      child: Container(
+        padding: const EdgeInsets.all(8),
+        decoration: BoxDecoration(
+          color: colors.surface,
+          shape: BoxShape.circle,
+          border: Border.all(color: colors.border),
+        ),
+        child: Icon(icon, color: colors.textPrimary, size: 16),
       ),
-      child: Icon(icon, color: colors.textPrimary, size: 16),
     );
   }
 
-  Widget _buildCalendarGrid(List<Event> events, ThemeColors colors) {
+  Widget _buildCalendarGrid(WidgetRef ref, List<Event> events, ThemeColors colors) {
     final weekdays = ['SUN', 'MON', 'TUE', 'WED', 'THU', 'FRI', 'SAT'];
-    final now = DateTime.now();
+    final activeDate = ref.watch(activeMonthProvider);
+    
+    // Dynamically calculate the number of grid rows needed for the active month
+    final firstDayOfMonth = DateTime(activeDate.year, activeDate.month, 1);
+    final startOffset = firstDayOfMonth.weekday % 7;
+    final daysInMonth = DateTime(activeDate.year, activeDate.month + 1, 0).day;
+    final totalCells = startOffset + daysInMonth;
+    final rows = (totalCells / 7).ceil();
+    final gridItemCount = rows * 7;
     
     return Container(
       decoration: BoxDecoration(
@@ -358,30 +386,33 @@ class CalendarScreen extends ConsumerWidget {
           ),
           const SizedBox(height: 12),
           Container(
-            height: 340,
             padding: const EdgeInsets.only(left: 8, right: 8, bottom: 16),
             child: GridView.builder(
+              shrinkWrap: true,
               physics: const NeverScrollableScrollPhysics(),
               gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
                 crossAxisCount: 7,
                 childAspectRatio: 0.85,
               ),
-              itemCount: 35,
+              itemCount: gridItemCount,
               itemBuilder: (context, index) {
-                final firstDayOfMonth = DateTime(now.year, now.month, 1);
+                final firstDayOfMonth = DateTime(activeDate.year, activeDate.month, 1);
                 final startOffset = firstDayOfMonth.weekday % 7;
                 
                 final dayNumber = index - startOffset + 1;
-                final isCurrentMonth = dayNumber > 0 && dayNumber <= DateTime(now.year, now.month + 1, 0).day;
+                final isCurrentMonth = dayNumber > 0 && dayNumber <= DateTime(activeDate.year, activeDate.month + 1, 0).day;
                 
                 final displayDay = isCurrentMonth 
                     ? dayNumber 
                     : (dayNumber <= 0 
-                        ? DateTime(now.year, now.month, 0).day + dayNumber 
-                        : dayNumber - DateTime(now.year, now.month + 1, 0).day);
+                        ? DateTime(activeDate.year, activeDate.month, 0).day + dayNumber 
+                        : dayNumber - DateTime(activeDate.year, activeDate.month + 1, 0).day);
                 
-                final isToday = isCurrentMonth && dayNumber == now.day;
-                final currentDate = DateTime(now.year, now.month, dayNumber);
+                final isToday = isCurrentMonth && 
+                                dayNumber == DateTime.now().day && 
+                                activeDate.month == DateTime.now().month && 
+                                activeDate.year == DateTime.now().year;
+                final currentDate = DateTime(activeDate.year, activeDate.month, dayNumber);
                 
                 // Check for events on this day
                 final hasEvents = isCurrentMonth && events.any((e) {

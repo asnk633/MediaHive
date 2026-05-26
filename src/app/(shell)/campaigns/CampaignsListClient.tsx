@@ -60,7 +60,7 @@ export default function CampaignsListClient() {
                 actions={
                     <Button
                         onClick={() => nativeNavigate('/campaigns/new', router, 'Campaigns (New)')}
-                        className="bg-blue-600 hover:bg-blue-700 text-foreground gap-2"
+                        className="bg-primary hover:opacity-90 text-foreground gap-2 font-bold"
                     >
                         <Plus className="h-4 w-4" />
                         New Campaign
@@ -79,16 +79,16 @@ export default function CampaignsListClient() {
                         className="pl-9 bg-background border-soft"
                     />
                 </div>
-                <div className="flex items-center gap-2 flex-wrap">
+                <div className="flex items-center gap-2 flex-wrap bg-foreground/[0.03] p-1 rounded-full border border-foreground/10 backdrop-blur-md w-fit">
                     {phases.map(phase => (
                         <button
                             key={phase}
                             onClick={() => setPhaseFilter(phase)}
                             className={cn(
-                                'px-3 py-1.5 rounded-lg text-xs font-semibold capitalize transition-all border',
+                                'px-4 py-1.5 rounded-full text-xs font-semibold capitalize transition-all border border-transparent',
                                 phaseFilter === phase
-                                    ? 'bg-blue-600 text-foreground border-blue-600'
-                                    : 'border-foreground/10 text-foreground/80 hover:text-foreground hover:border-foreground/20'
+                                    ? 'bg-primary/10 text-primary border-primary/20 shadow-sm'
+                                    : 'text-foreground/80 hover:text-foreground hover:bg-foreground/5'
                             )}
                         >
                             {phase}
@@ -100,7 +100,7 @@ export default function CampaignsListClient() {
             {/* Content */}
             {loading ? (
                 <div className="flex items-center justify-center py-24">
-                    <Loader2 className="h-8 w-8 animate-spin text-blue-500" />
+                    <Loader2 className="h-8 w-8 animate-spin text-primary" />
                 </div>
             ) : filtered.length === 0 ? (
                 <div className="flex flex-col items-center justify-center py-24 text-center rounded-2xl border border-dashed border-foreground/10">
@@ -116,7 +116,7 @@ export default function CampaignsListClient() {
                     {!search && phaseFilter === 'all' && (
                         <Button
                             onClick={() => nativeNavigate('/campaigns/new', router, 'Campaigns (Empty New)')}
-                            className="mt-6 bg-blue-600 hover:bg-blue-700 text-foreground gap-2"
+                            className="mt-6 bg-primary hover:opacity-90 text-foreground gap-2 font-bold"
                         >
                             <Plus className="h-4 w-4" />
                             Create Campaign
@@ -134,7 +134,7 @@ export default function CampaignsListClient() {
                             <div
                                 key={campaign.id}
                                 onClick={() => nativeNavigate(`/campaigns/view?id=${campaign.id}`, router, 'Campaigns (View)')}
-                                className="group relative bg-glass border border-soft rounded-2xl p-5 hover:border-blue-500/30 hover:shadow-lg hover:shadow-blue-900/10 transition-all cursor-pointer"
+                                className="group relative bg-glass border border-soft rounded-2xl p-5 hover:border-primary/30 hover:shadow-lg hover:shadow-primary/10 transition-all cursor-pointer"
                             >
                                 {/* Phase Badge */}
                                 <div className="flex items-center justify-between mb-4">
@@ -150,7 +150,7 @@ export default function CampaignsListClient() {
                                 </div>
 
                                 {/* Title */}
-                                <h3 className="font-bold text-foreground text-lg leading-snug group-hover:text-blue-400 transition-colors mb-1 pr-6">
+                                <h3 className="font-bold text-foreground text-lg leading-snug group-hover:text-primary transition-colors mb-1 pr-6">
                                     {campaign.name}
                                 </h3>
                                 <p className="text-sm text-foreground/80 line-clamp-2 mb-4">
@@ -163,7 +163,7 @@ export default function CampaignsListClient() {
                                         <Calendar className="h-3.5 w-3.5" />
                                         {format(start, 'MMM d')} – {format(end, 'MMM d, yyyy')}
                                     </span>
-                                    <ChevronRight className="h-4 w-4 text-foreground/80 group-hover:text-blue-400 group-hover:translate-x-0.5 transition-all" />
+                                    <ChevronRight className="h-4 w-4 text-foreground/80 group-hover:text-primary group-hover:translate-x-0.5 transition-all" />
                                 </div>
                             </div>
                         );

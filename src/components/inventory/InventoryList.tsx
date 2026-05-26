@@ -109,7 +109,7 @@ export const InventoryList: React.FC<InventoryListProps> = ({
     const canManage = role === 'admin' || role === 'manager' || role === 'team';
 
     return (
-        <div className="rounded-xl border border-foreground/10 bg-card backdrop-blur-md overflow-hidden animate-in fade-in duration-500">
+        <div className="glass-card rounded-xl shadow-2xl overflow-hidden animate-in fade-in duration-500">
             <Table>
                 <TableHeader className="bg-foreground/[0.03]">
                     <TableRow className="border-foreground/10 hover:bg-transparent">

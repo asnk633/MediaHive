@@ -49,6 +49,9 @@ dependencies:
   syncfusion_flutter_pdfviewer: ^33.2.6
   gal: ^2.3.0
   permission_handler: ^11.3.1
+  package_info_plus: ^8.0.0
+  open_filex: ^4.5.0
+
 
 dev_dependencies:
   flutter_test:

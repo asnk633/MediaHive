@@ -25,6 +25,8 @@ import '../../features/system/presentation/providers/notifications_provider.dart
 import 'dart:io';
 
 import '../../shared/widgets/mh_loading_overlay.dart';
+import '../../core/providers/update_provider.dart';
+import '../../core/services/update_service.dart';
 
 class ShellScreen extends ConsumerStatefulWidget {
   final Widget child;
@@ -57,15 +59,42 @@ class _ShellScreenState extends ConsumerState<ShellScreen> {
 
     final shouldHideNav = isProfileRoute || isNotificationsRoute || !isBottomNavVisible;
 
+    final updateInfoAsync = ref.watch(updateInfoProvider);
+    final updateState = ref.watch(updateStateProvider);
+    final updateProgress = ref.watch(updateProgressProvider);
+
     return Scaffold(
       backgroundColor: colors.backgroundPrimary,
       extendBody: true,
       body: Stack(
         children: [
-          widget.child,
+          // Push down content when update banner is active
+          Padding(
+            padding: EdgeInsets.only(
+              top: updateInfoAsync.maybeWhen(
+                data: (info) => info.isUpdateAvailable ? 165.0 : 0.0,
+                orElse: () => 0.0,
+              ),
+            ),
+            child: widget.child,
+          ),
           
           // Persistent Header
           _buildGlobalHeader(colors, currentRoute, shouldHideNav, isProfileRoute),
+
+          // Persistent Update Banner under Header
+          updateInfoAsync.maybeWhen(
+            data: (info) {
+              if (!info.isUpdateAvailable) return const SizedBox.shrink();
+              return Positioned(
+                top: 92 + MediaQuery.of(context).padding.top,
+                left: 16,
+                right: 16,
+                child: _buildUpdateBanner(context, colors, info, updateState, updateProgress),
+              );
+            },
+            orElse: () => const SizedBox.shrink(),
+          ),
           
           // Speed Dial Overlay
           if (_isSpeedDialOpen) _buildSpeedDialOverlay(colors),
@@ -738,4 +767,170 @@ class _ShellScreenState extends ConsumerState<ShellScreen> {
       ),
     );
   }
+
+  Widget _buildUpdateBanner(
+    BuildContext context,
+    ThemeColors colors,
+    UpdateInfo info,
+    UpdateDownloadState state,
+    double progress,
+  ) {
+    final isLight = !colors.isDark;
+    final isDownloading = state == UpdateDownloadState.downloading;
+    final isDownloaded = state == UpdateDownloadState.downloaded;
+    final isInstalling = state == UpdateDownloadState.installing;
+
+    return Container(
+      padding: const EdgeInsets.all(12),
+      decoration: BoxDecoration(
+        gradient: LinearGradient(
+          colors: isLight
+              ? [const Color(0xFFFFFBEB), const Color(0xFFFEF3C7)] // Premium light amber
+              : [const Color(0xFF78350F).withOpacity(0.85), const Color(0xFF451A03).withOpacity(0.9)], // Deep warm amber
+          begin: Alignment.topLeft,
+          end: Alignment.bottomRight,
+        ),
+        borderRadius: BorderRadius.circular(DesignTokens.radiusL),
+        border: Border.all(
+          color: isLight ? const Color(0xFFFDE68A) : const Color(0xFFD97706).withOpacity(0.4),
+          width: 1,
+        ),
+        boxShadow: [
+          BoxShadow(
+            color: const Color(0xFFD97706).withOpacity(isLight ? 0.08 : 0.15),
+            blurRadius: 12,
+            offset: const Offset(0, 4),
+          ),
+        ],
+      ),
+      child: ClipRRect(
+        borderRadius: BorderRadius.circular(DesignTokens.radiusL - 1),
+        child: BackdropFilter(
+          filter: ImageFilter.blur(sigmaX: 5, sigmaY: 5),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Row(
+                children: [
+                  Container(
+                    padding: const EdgeInsets.all(8),
+                    decoration: BoxDecoration(
+                      color: const Color(0xFFF59E0B).withOpacity(isLight ? 0.15 : 0.25),
+                      shape: BoxShape.circle,
+                    ),
+                    child: const Icon(
+                      LucideIcons.rocket,
+                      color: Color(0xFFD97706),
+                      size: 18,
+                    ),
+                  ).animate(onPlay: (controller) => controller.repeat(reverse: true))
+                   .moveY(begin: -2, end: 2, duration: 1000.ms, curve: Curves.easeInOut),
+                  const SizedBox(width: 12),
+                  Expanded(
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(
+                          'Update Available — v${info.latestVersion}',
+                          style: TextStyle(
+                            color: isLight ? const Color(0xFF78350F) : Colors.white,
+                            fontSize: 13,
+                            fontWeight: FontWeight.w800,
+                          ),
+                        ),
+                        const SizedBox(height: 2),
+                        Text(
+                          isDownloading
+                              ? 'Downloading system resources...'
+                              : isDownloaded
+                                  ? 'Update downloaded successfully!'
+                                  : isInstalling
+                                      ? 'Installing update package...'
+                                      : info.releaseNotes,
+                          maxLines: 1,
+                          overflow: TextOverflow.ellipsis,
+                          style: TextStyle(
+                            color: isLight ? const Color(0xFF92400E) : const Color(0xFFFCD34D).withOpacity(0.8),
+                            fontSize: 11,
+                            fontWeight: FontWeight.w500,
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                  const SizedBox(width: 8),
+                  if (!isDownloading && !isInstalling)
+                    ElevatedButton(
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: const Color(0xFFD97706),
+                        foregroundColor: Colors.white,
+                        elevation: 0,
+                        padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 8),
+                        minimumSize: Size.zero,
+                        tapTargetSize: MaterialTapTargetSize.shrinkWrap,
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(DesignTokens.radiusM),
+                        ),
+                      ),
+                      onPressed: () {
+                        if (isDownloaded) {
+                          ref.read(updateStateProvider.notifier).installUpdate();
+                        } else {
+                          ref.read(updateStateProvider.notifier).downloadUpdate(info.downloadUrl);
+                        }
+                      },
+                      child: Text(
+                        isDownloaded ? 'INSTALL' : 'UPDATE',
+                        style: const TextStyle(
+                          fontSize: 10,
+                          fontWeight: FontWeight.w900,
+                          letterSpacing: 1.0,
+                        ),
+                      ),
+                    ),
+                  if (isDownloading)
+                    IconButton(
+                      icon: const Icon(LucideIcons.x, color: Color(0xFFD97706), size: 18),
+                      padding: EdgeInsets.zero,
+                      constraints: const BoxConstraints(),
+                      onPressed: () {
+                        ref.read(updateStateProvider.notifier).cancelDownload();
+                      },
+                    ),
+                ],
+              ),
+              if (isDownloading) ...[
+                const SizedBox(height: 10),
+                Row(
+                  children: [
+                    Expanded(
+                      child: ClipRRect(
+                        borderRadius: BorderRadius.circular(4),
+                        child: LinearProgressIndicator(
+                          value: progress,
+                          backgroundColor: const Color(0xFFD97706).withOpacity(0.15),
+                          valueColor: const AlwaysStoppedAnimation<Color>(Color(0xFFD97706)),
+                          minHeight: 5,
+                        ),
+                      ),
+                    ),
+                    const SizedBox(width: 8),
+                    Text(
+                      '${(progress * 100).toInt()}%',
+                      style: TextStyle(
+                        color: isLight ? const Color(0xFF78350F) : Colors.white,
+                        fontSize: 10,
+                        fontWeight: FontWeight.w800,
+                      ),
+                    ),
+                  ],
+                ),
+              ],
+            ],
+          ),
+        ),
+      ),
+    ).animate().fadeIn(duration: 400.ms).slideY(begin: -0.1, end: 0, curve: Curves.easeOutCubic);
+  }
 }
+

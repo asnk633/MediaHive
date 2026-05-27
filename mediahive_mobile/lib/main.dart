@@ -19,6 +19,7 @@ import 'core/services/logger_service.dart';
 import 'core/services/auth_service.dart';
 import 'core/services/notification_service.dart';
 import 'core/services/fcm_service.dart';
+import 'core/providers/update_provider.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'firebase_options.dart';
 import 'dart:ui';
@@ -78,6 +79,9 @@ void main() async {
   // Initialize Notifications & FCM
   await container.read(notificationServiceProvider).initialize();
   await container.read(fcmServiceProvider).initialize();
+
+  // Warm update check provider to check for updates on startup
+  container.read(updateInfoProvider);
 
   logger.info('APPLICATION_START: Flavor=development');
 

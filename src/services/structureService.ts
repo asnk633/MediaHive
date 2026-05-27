@@ -316,7 +316,7 @@ export const StructureService = {
                     .eq('institution_id', id);
                 
                 if (!membersErr && members && members.length > 0) {
-                    const userIds = members.map(m => m.user_id);
+                    const userIds = members.map((m: { user_id: string }) => m.user_id);
                     const { error: profileErr } = await supabase
                         .from('profiles')
                         .update({ department_id: newDept.id })

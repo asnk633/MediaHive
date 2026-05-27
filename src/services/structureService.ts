@@ -366,7 +366,7 @@ export const StructureService = {
                     .eq('department_id', id);
 
                 if (!membersErr && members && members.length > 0) {
-                    const userInstitutions = members.map(m => ({
+                    const userInstitutions = members.map((m: { id: string }) => ({
                         user_id: m.id,
                         institution_id: newInst.id,
                         tenant_id: tenantId,
@@ -379,7 +379,7 @@ export const StructureService = {
                         .insert(userInstitutions);
                     if (junctionErr) console.error("Error creating user_institutions assignments:", junctionErr);
 
-                    const userIds = members.map(m => m.id);
+                    const userIds = members.map((m: { id: string }) => m.id);
                     await supabase
                         .from('profiles')
                         .update({ department_id: null })

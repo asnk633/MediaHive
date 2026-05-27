@@ -47,7 +47,7 @@ class UpdateService {
   /// Compares version strings. Returns true if latest > current.
   /// Handles beta versions e.g. 1.1.0-beta+21 vs 1.1.1-beta+22
   bool compareVersions(String current, String latest) {
-    _logger.info('UPDATE_SERVICE', 'Comparing versions: current=$current, latest=$latest');
+    _logger.info('UPDATE_SERVICE: Comparing versions: current=$current, latest=$latest');
     if (current == latest) return false;
 
     try {
@@ -75,7 +75,7 @@ class UpdateService {
         return latestBuild > currentBuild;
       }
     } catch (e) {
-      _logger.error('UPDATE_SERVICE', 'Error comparing versions: $e');
+      _logger.error('UPDATE_SERVICE: Error comparing versions: $e');
     }
     
     // Fallback direct string comparison
@@ -84,7 +84,7 @@ class UpdateService {
 
   /// Checks system_config for update details and compares with local package version
   Future<UpdateInfo> checkForUpdate() async {
-    _logger.info('UPDATE_SERVICE', 'Checking for app updates...');
+    _logger.info('UPDATE_SERVICE: Checking for app updates...');
     try {
       final PackageInfo packageInfo = await PackageInfo.fromPlatform();
       final currentVersion = '${packageInfo.version}+${packageInfo.buildNumber}';
@@ -101,12 +101,12 @@ class UpdateService {
       final isForceUpdate = configs['app_force_update'] == 'true';
 
       if (latestVersion == null || downloadUrl == null || downloadUrl.isEmpty) {
-        _logger.warning('UPDATE_SERVICE', 'Latest version or download URL not found in system_config');
+        _logger.warning('UPDATE_SERVICE: Latest version or download URL not found in system_config');
         return UpdateInfo.noUpdate(currentVersion);
       }
 
       final hasUpdate = compareVersions(currentVersion, latestVersion);
-      _logger.info('UPDATE_SERVICE', 'App update check finished. Update available: $hasUpdate');
+      _logger.info('UPDATE_SERVICE: App update check finished. Update available: $hasUpdate');
 
       return UpdateInfo(
         isUpdateAvailable: hasUpdate,
@@ -116,8 +116,8 @@ class UpdateService {
         releaseNotes: releaseNotes,
         isForceUpdate: isForceUpdate,
       );
-    } catch (e) {
-      _logger.error('UPDATE_SERVICE', 'Failed to check for updates', e);
+    } catch (e, stack) {
+      _logger.error('UPDATE_SERVICE: Failed to check for updates', e, stack);
       try {
         final PackageInfo packageInfo = await PackageInfo.fromPlatform();
         return UpdateInfo.noUpdate('${packageInfo.version}+${packageInfo.buildNumber}');
@@ -129,7 +129,7 @@ class UpdateService {
 
   /// Downloads the APK to the local cache directory and tracks progress
   Future<String?> downloadApk(String url, Function(double) onProgress) async {
-    _logger.info('UPDATE_SERVICE', 'Starting APK download from $url');
+    _logger.info('UPDATE_SERVICE: Starting APK download from $url');
     _cancelToken = CancelToken();
 
     try {
@@ -154,13 +154,13 @@ class UpdateService {
         },
       );
 
-      _logger.info('UPDATE_SERVICE', 'APK download completed successfully: $filePath');
+      _logger.info('UPDATE_SERVICE: APK download completed successfully: $filePath');
       return filePath;
-    } catch (e) {
-      if (CancelToken.isCancel(e as DioException)) {
-        _logger.info('UPDATE_SERVICE', 'APK download was cancelled by the user');
+    } catch (e, stack) {
+      if (e is DioException && CancelToken.isCancel(e)) {
+        _logger.info('UPDATE_SERVICE: APK download was cancelled by the user');
       } else {
-        _logger.error('UPDATE_SERVICE', 'APK download failed', e);
+        _logger.error('UPDATE_SERVICE: APK download failed', e, stack);
       }
       return null;
     }
@@ -170,29 +170,29 @@ class UpdateService {
   void cancelDownload() {
     if (_cancelToken != null && !_cancelToken!.isCancelled) {
       _cancelToken!.cancel('Cancelled by user');
-      _logger.info('UPDATE_SERVICE', 'Sent cancel signal to download token');
+      _logger.info('UPDATE_SERVICE: Sent cancel signal to download token');
     }
   }
 
   /// Triggers the Android package installer to open the downloaded APK
   Future<bool> installApk(String filePath) async {
-    _logger.info('UPDATE_SERVICE', 'Triggering APK installation for path: $filePath');
+    _logger.info('UPDATE_SERVICE: Triggering APK installation for path: $filePath');
     try {
       if (Platform.isAndroid) {
         // Request install packages permission (Android 8.0+)
         final status = await Permission.requestInstallPackages.request();
         if (status.isGranted) {
           final result = await OpenFilex.open(filePath, type: 'application/vnd.android.package-archive');
-          _logger.info('UPDATE_SERVICE', 'OpenFilex result: ${result.message} (type: ${result.type})');
+          _logger.info('UPDATE_SERVICE: OpenFilex result: ${result.message} (type: ${result.type})');
           return result.type == ResultType.done;
         } else {
-          _logger.warning('UPDATE_SERVICE', 'Request install packages permission was denied');
+          _logger.warning('UPDATE_SERVICE: Request install packages permission was denied');
           return false;
         }
       }
       return false;
-    } catch (e) {
-      _logger.error('UPDATE_SERVICE', 'Failed to install APK', e);
+    } catch (e, stack) {
+      _logger.error('UPDATE_SERVICE: Failed to install APK', e, stack);
       return false;
     }
   }

@@ -34,6 +34,7 @@ import { useFormState } from '@/hooks/useFormState';
 import { useFormSubmit } from '@/hooks/useFormSubmit';
 import { DraftIndicator } from '@/components/ui/DraftIndicator';
 import { MultiSelect } from '@/components/ui/selectors/MultiSelect';
+import { canAccessFeature } from '@/system/features/featureAccess';
 
 interface EditTaskDialogProps {
     open: boolean;
@@ -504,7 +505,7 @@ export function EditTaskDialog({ open, onOpenChange, task, onUpdate }: EditTaskD
                         )}
 
                         {/* Demo Data Management */}
-                        {(isAdmin || isManager) && (
+                        {(isAdmin || isManager) && canAccessFeature('testDemoData', user?.role as any) && (
                             <div className="p-4 rounded-2xl bg-amber-500/5 border border-amber-500/10">
                                 <div className="flex items-center justify-between">
                                     <div className="flex items-center gap-3">

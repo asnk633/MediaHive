@@ -14,22 +14,17 @@ interface HaloLogoProps {
  */
 export const HaloLogo = ({ size = 110, className }: HaloLogoProps) => {
     return (
-        <div className={cn("relative flex items-center justify-center", className)} style={{ width: size * 2, height: size * 2 }}>
+        <div className={cn("relative flex items-center justify-center", className)} style={{ width: size * 1.6, height: size * 1.6 }}>
             {/* Halo Glow */}
-            <div className="absolute inset-0 bg-primary/20 blur-[60px] rounded-full animate-logo-breathing" />
+            <div className="absolute inset-0 bg-primary/25 blur-[45px] rounded-full animate-logo-breathing" />
             
-            {/* Circular Glass Container */}
-            <div 
-                className="absolute flex items-center justify-center bg-foreground/5 backdrop-blur-md border border-foreground/10 rounded-full shadow-2xl" 
+            {/* Logo Image with Rotating Animation */}
+            <img
+                src="/logo-app.png"
+                alt="Thaiba Logo"
+                className="object-contain brightness-0 invert drop-shadow-[0_0_25px_rgba(99,102,241,0.4)] z-10 animate-logo-rotate"
                 style={{ width: size, height: size }}
-            >
-                <img
-                    src="/logo-app.png"
-                    alt="Thaiba Logo"
-                    className="object-contain brightness-0 invert drop-shadow-xl z-10"
-                    style={{ width: size * 0.55, height: size * 0.55 }}
-                />
-            </div>
+            />
         </div>
     );
 };

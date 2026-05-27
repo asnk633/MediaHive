@@ -16,6 +16,7 @@ import '../../../../../core/providers/ui_providers.dart';
 import '../../../../../models/institutional_data.dart';
 import '../../domain/models/event.dart';
 import '../../../tasks/domain/models/task.dart';
+import '../../../../../core/providers/labs_provider.dart';
 import '../../../../../core/services/sound_service.dart';
 
 class CreateEventScreen extends ConsumerStatefulWidget {
@@ -156,6 +157,8 @@ class _CreateEventScreenState extends ConsumerState<CreateEventScreen> {
   Widget build(BuildContext context) {
     final colors = ref.watch(themeColorsProvider);
     final isEdit = widget.eventToEdit != null;
+    final labsState = ref.watch(labsProvider);
+    final testDemoDataEnabled = labsState['testDemoData'] ?? false;
 
     if (_pendingInstitutionId != null) {
       final instsAsync = ref.watch(institutionsProvider);
@@ -271,17 +274,19 @@ class _CreateEventScreenState extends ConsumerState<CreateEventScreen> {
                 (val) => setState(() => _isRecurring = val),
                 icon: LucideIcons.refreshCcw,
               ),
-              const SizedBox(height: 16),
-              _buildSwitchCard(
-                colors,
-                'Test / Demo Data',
-                'EXCLUDE FROM OFFICIAL REPORTS',
-                _isTestData,
-                (val) => setState(() => _isTestData = val),
-                icon: LucideIcons.edit3,
-                highlightColor: colors.honey,
-              ),
-              const SizedBox(height: 24),
+               if (testDemoDataEnabled) ...[
+                _buildSwitchCard(
+                  colors,
+                  'Test / Demo Data',
+                  'EXCLUDE FROM OFFICIAL REPORTS',
+                  _isTestData,
+                  (val) => setState(() => _isTestData = val),
+                  icon: LucideIcons.edit3,
+                  highlightColor: colors.honey,
+                ),
+                const SizedBox(height: 16),
+              ],
+              const SizedBox(height: 8),
 
               // Admin Action Box
               Container(

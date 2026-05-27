@@ -46,11 +46,13 @@ export default function WorkspacesPage() {
     // Create State
     const [createOpen, setCreateOpen] = useState(false);
     const [newName, setNewName] = useState('');
+    const [newType, setNewType] = useState<'institution' | 'department'>('institution');
     const [creating, setCreating] = useState(false);
 
     // Edit State
     const [editOpen, setEditOpen] = useState(false);
     const [editName, setEditName] = useState('');
+    const [editType, setEditType] = useState<'institution' | 'department'>('institution');
     const [editStatus, setEditStatus] = useState<'active' | 'archived'>('active');
     const [updating, setUpdating] = useState(false);
     const [deleting, setDeleting] = useState(false);
@@ -125,9 +127,11 @@ export default function WorkspacesPage() {
 
         setCreating(true);
         try {
-            // Default to Institution unless name contains "Department" or user chooses?
-            // For now, let's just make it a toggle in the UI later, but for this call:
-            await StructureService.createInstitution(newName);
+            if (newType === 'department') {
+                await StructureService.createDepartment(newName);
+            } else {
+                await StructureService.createInstitution(newName);
+            }
             toast.success("Department / Institution created");
             setNewName('');
             setCreateOpen(false);
@@ -150,6 +154,7 @@ export default function WorkspacesPage() {
         if (!selectedWorkspace) return;
         setEditName(selectedWorkspace.name);
         setEditStatus(selectedWorkspace.status as 'active' | 'archived');
+        setEditType(selectedWorkspace.type);
         setEditOpen(true);
     };
 
@@ -159,14 +164,30 @@ export default function WorkspacesPage() {
 
         setUpdating(true);
         try {
-            const updateFn = selectedWorkspace.type === 'department' 
-                ? StructureService.updateDepartment 
-                : StructureService.updateInstitution;
+            if (selectedWorkspace.type !== editType) {
+                // Perform conversion
+                const result = await (StructureService as any).convertWorkspaceType(
+                    selectedWorkspace.id,
+                    selectedWorkspace.type,
+                    editType,
+                    editName.trim(),
+                    editStatus
+                );
+                
+                // If conversion succeeds, select the new converted workspace id if returned
+                if (result && result.id) {
+                    setSelectedId(result.id);
+                }
+            } else {
+                const updateFn = selectedWorkspace.type === 'department' 
+                    ? StructureService.updateDepartment 
+                    : StructureService.updateInstitution;
 
-            await (updateFn as any)(selectedWorkspace.id, {
-                name: editName.trim(),
-                status: editStatus
-            });
+                await (updateFn as any)(selectedWorkspace.id, {
+                    name: editName.trim(),
+                    status: editStatus
+                });
+            }
             toast.success("Department / Institution updated");
             setEditOpen(false);
             await fetchData();
@@ -283,6 +304,35 @@ export default function WorkspacesPage() {
                                 </DialogDescription>
                             </DialogHeader>
                             <form onSubmit={handleCreate} className="space-y-6 pt-6">
+                                <div className="space-y-2">
+                                    <Label className="text-xs font-bold uppercase tracking-widest text-foreground/80">Entity Type</Label>
+                                    <div className="flex gap-3">
+                                        <button
+                                            type="button"
+                                            onClick={() => setNewType('institution')}
+                                            className={cn(
+                                                "flex-1 h-12 rounded-xl border text-sm font-bold transition-all uppercase tracking-widest",
+                                                newType === 'institution'
+                                                    ? "bg-indigo-500/20 border-indigo-500 text-indigo-400 font-black shadow-lg"
+                                                    : "bg-foreground/5 border-foreground/10 text-foreground/75 hover:bg-foreground/10"
+                                            )}
+                                        >
+                                            Institution
+                                        </button>
+                                        <button
+                                            type="button"
+                                            onClick={() => setNewType('department')}
+                                            className={cn(
+                                                "flex-1 h-12 rounded-xl border text-sm font-bold transition-all uppercase tracking-widest",
+                                                newType === 'department'
+                                                    ? "bg-purple-500/20 border-purple-500 text-purple-400 font-black shadow-lg"
+                                                    : "bg-foreground/5 border-foreground/10 text-foreground/75 hover:bg-foreground/10"
+                                            )}
+                                        >
+                                            Department
+                                        </button>
+                                    </div>
+                                </div>
                                 <div className="space-y-2">
                                     <Label className="text-xs font-bold uppercase tracking-widest text-foreground/80">Display Name</Label>
                                     <Input
@@ -523,10 +573,39 @@ export default function WorkspacesPage() {
                     <DialogHeader>
                         <DialogTitle className="text-foreground text-xl font-bold tracking-tight">Edit Details</DialogTitle>
                         <DialogDescription className="text-muted">
-                            Update the name or status of this entity.
+                            Update the name, type, or status of this entity.
                         </DialogDescription>
                     </DialogHeader>
                     <form onSubmit={handleUpdate} className="space-y-6 pt-6">
+                        <div className="space-y-2">
+                            <Label className="text-xs font-bold uppercase tracking-widest text-foreground/80">Entity Type</Label>
+                            <div className="flex gap-3">
+                                <button
+                                    type="button"
+                                    onClick={() => setEditType('institution')}
+                                    className={cn(
+                                        "flex-1 h-12 rounded-xl border text-sm font-bold transition-all uppercase tracking-widest",
+                                        editType === 'institution'
+                                            ? "bg-indigo-500/20 border-indigo-500 text-indigo-400 font-black shadow-lg"
+                                            : "bg-foreground/5 border-foreground/10 text-foreground/75 hover:bg-foreground/10"
+                                    )}
+                                >
+                                    Institution
+                                </button>
+                                <button
+                                    type="button"
+                                    onClick={() => setEditType('department')}
+                                    className={cn(
+                                        "flex-1 h-12 rounded-xl border text-sm font-bold transition-all uppercase tracking-widest",
+                                        editType === 'department'
+                                            ? "bg-purple-500/20 border-purple-500 text-purple-400 font-black shadow-lg"
+                                            : "bg-foreground/5 border-foreground/10 text-foreground/75 hover:bg-foreground/10"
+                                    )}
+                                >
+                                    Department
+                                </button>
+                            </div>
+                        </div>
                         <div className="space-y-2">
                             <Label className="text-xs font-bold uppercase tracking-widest text-foreground/80">Display Name</Label>
                             <Input

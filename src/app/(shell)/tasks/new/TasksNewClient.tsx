@@ -25,6 +25,7 @@ import { toast } from 'sonner';
 import { COPY } from '@/lib/copy';
 import { tenantContext } from '@/lib/auth/tenantContext';
 import { useWorkspace } from '@/system/workspace/WorkspaceProvider';
+import { canAccessFeature } from '@/system/features/featureAccess';
 
 export default function TasksNewClient() {
     const router = useRouter();
@@ -671,7 +672,7 @@ export default function TasksNewClient() {
                             </div>
 
                             {/* Demo Data Toggle */}
-                            {(isAdmin || isTeam) && (
+                            {(isAdmin || isTeam) && canAccessFeature('testDemoData', user?.role as any) && (
                                 <div className="p-4 rounded-2xl bg-amber-500/5 border border-amber-500/10 mb-4 mt-2">
                                     <div className="flex items-center justify-between">
                                         <div className="flex items-center gap-3">

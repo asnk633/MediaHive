@@ -158,27 +158,35 @@ export default function LoginClient() {
             <div className="w-full max-w-md relative z-10 flex flex-col items-center p-4">
                 {/* Logo Section */}
                 <div className="relative mb-8 flex items-center justify-center">
-                    <HaloLogo size={80} />
+                    <HaloLogo size={140} />
                 </div>
 
-                <div className="text-center mb-8 space-y-2">
+                <div className="text-center mb-8 space-y-3 px-4">
                     <h1 
-                        className="text-5xl tracking-wider text-[#E59312] drop-shadow-md font-normal"
+                        className="text-5xl md:text-6xl tracking-wider text-white drop-shadow-md font-normal"
                         style={{ 
                             fontFamily: 'BavistaSoulvare',
-                            textShadow: '0 0 16px rgba(229, 147, 18, 0.25)'
+                            textShadow: '0 0 16px rgba(255, 255, 255, 0.12)'
                         }}
                     >
                         MediaHive
                     </h1>
-                    <p className="text-slate-400 font-medium">
-                        {isRecoveryMode ? 'Set your new password' : 'Welcome back, please login.'}
+                    <p className="text-xs md:text-sm text-slate-300 font-bold uppercase tracking-wider max-w-md mx-auto">
+                        The Central Hub for Thaiba Garden Media & IT
                     </p>
                 </div>
 
                 {/* Main Card */}
                 <div className="w-full backdrop-blur-xl bg-gradient-to-b from-white/10 to-white/5 border border-foreground/10 shadow-2xl rounded-2xl overflow-hidden mb-8">
                     <div className="p-10">
+                        {!isRecoveryMode && (
+                            <div className="mb-8 space-y-2">
+                                <h2 className="text-2xl font-bold text-foreground">Welcome</h2>
+                                <p className="text-xs text-slate-400 leading-relaxed">
+                                    A unified control center to Request tasks, access assets, schedule events, and collaborate with our teams at Thaiba Garden Media and IT department.
+                                </p>
+                            </div>
+                        )}
                         {isRecoveryMode ? (
                             <div className="space-y-6">
                                 <AnimatePresence mode="wait">

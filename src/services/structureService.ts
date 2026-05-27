@@ -277,5 +277,126 @@ export const StructureService = {
         } catch {
             return String(id);
         }
+    },
+
+    convertWorkspaceType: async (id: string, currentType: 'institution' | 'department', targetType: 'institution' | 'department', name: string, status: StructureStatus) => {
+        try {
+            const { tenantId } = await tenantContext();
+
+            if (currentType === targetType) {
+                return;
+            }
+
+            if (targetType === 'department') {
+                // Convert Institution -> Department
+                const { data: inst, error: fetchErr } = await supabase
+                    .from('institutions')
+                    .select('*')
+                    .eq('id', id)
+                    .single();
+                if (fetchErr) throw fetchErr;
+
+                const { data: newDept, error: insertErr } = await supabase
+                    .from('departments')
+                    .insert([{
+                        name: name.trim(),
+                        status: status,
+                        features: inst.features || {},
+                        tenant_id: tenantId,
+                        created_at: new Date().toISOString()
+                    }])
+                    .select()
+                    .single();
+                if (insertErr) throw insertErr;
+
+                // Migrate users from user_institutions to profiles
+                const { data: members, error: membersErr } = await supabase
+                    .from('user_institutions')
+                    .select('user_id')
+                    .eq('institution_id', id);
+                
+                if (!membersErr && members && members.length > 0) {
+                    const userIds = members.map(m => m.user_id);
+                    const { error: profileErr } = await supabase
+                        .from('profiles')
+                        .update({ department_id: newDept.id })
+                        .in('id', userIds);
+                    if (profileErr) console.error("Error migrating user profiles:", profileErr);
+                }
+
+                await supabase
+                    .from('user_institutions')
+                    .delete()
+                    .eq('institution_id', id);
+
+                const { error: deleteErr } = await supabase
+                    .from('institutions')
+                    .delete()
+                    .eq('id', id);
+                if (deleteErr) throw deleteErr;
+
+                return newDept;
+            } else {
+                // Convert Department -> Institution
+                const { data: dept, error: fetchErr } = await supabase
+                    .from('departments')
+                    .select('*')
+                    .eq('id', id)
+                    .single();
+                if (fetchErr) throw fetchErr;
+
+                const { data: newInst, error: insertErr } = await supabase
+                    .from('institutions')
+                    .insert([{
+                        name: name.trim(),
+                        status: status,
+                        features: dept.features || {},
+                        tenant_id: tenantId,
+                        created_at: new Date().toISOString(),
+                        updated_at: new Date().toISOString()
+                    }])
+                    .select()
+                    .single();
+                if (insertErr) throw insertErr;
+
+                // Migrate users from profiles to user_institutions
+                const { data: members, error: membersErr } = await supabase
+                    .from('profiles')
+                    .select('id')
+                    .eq('department_id', id);
+
+                if (!membersErr && members && members.length > 0) {
+                    const userInstitutions = members.map(m => ({
+                        user_id: m.id,
+                        institution_id: newInst.id,
+                        tenant_id: tenantId,
+                        role: 'member',
+                        created_at: new Date().toISOString()
+                    }));
+
+                    const { error: junctionErr } = await supabase
+                        .from('user_institutions')
+                        .insert(userInstitutions);
+                    if (junctionErr) console.error("Error creating user_institutions assignments:", junctionErr);
+
+                    const userIds = members.map(m => m.id);
+                    await supabase
+                        .from('profiles')
+                        .update({ department_id: null })
+                        .in('id', userIds);
+                }
+
+                const { error: deleteErr } = await supabase
+                    .from('departments')
+                    .delete()
+                    .eq('id', id);
+                if (deleteErr) throw deleteErr;
+
+                return newInst;
+            }
+        } catch (error) {
+            MonitoringService.error("[StructureService] Convert workspace type failed", error, { id, currentType, targetType });
+            throw error;
+        }
     }
 };

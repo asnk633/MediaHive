@@ -122,7 +122,7 @@ export class CanonicalDataService {
     }
 
     // 🛡️ Global Guard: Strip fields from tables that don't support them
-    const tablesWithoutDeptOrUpdatedBy = [TABLES.INVENTORY, TABLES.EQUIPMENT_BOOKINGS, TABLES.INVENTORY_REQUESTS];
+    const tablesWithoutDeptOrUpdatedBy = [TABLES.INVENTORY, TABLES.EQUIPMENT_BOOKINGS, TABLES.INVENTORY_REQUESTS, TABLES.LEAVE_BALANCES];
     if (tablesWithoutDeptOrUpdatedBy.includes(table as any)) {
         delete finalPayload.department_id;
         delete finalPayload.departmentId;
@@ -200,6 +200,7 @@ export class CanonicalDataService {
     // 3. Persist: Network-First Strategy
     const finalPayload = this.sanitizeForPostgres(table, payload, entityType);
     let directSuccess = false;
+    let patchError: any = null;
 
     if (typeof navigator !== 'undefined' && navigator.onLine) {
         try {
@@ -232,14 +233,19 @@ export class CanonicalDataService {
                 }
             }
         } catch (err) {
-            console.warn(`[CanonicalDataService] ⚠️ Direct patch failed, falling back to SyncEngine:`, err);
+            console.error(`[CanonicalDataService] ❌ Direct patch failed for ${table}/${id}:`, err);
+            patchError = err;
         }
     }
 
     if (!directSuccess) {
         const { syncEngine } = require('@/lib/offline/queueManager');
         const mutationType = `UPDATE_${(entityType || table).toUpperCase()}`;
-        await syncEngine.enqueueMutation(mutationType, { id, ...finalPayload, tenant_id: tenantId }, baseUpdatedAt, baseVersion);
+        const queueResult = await syncEngine.enqueueMutation(mutationType, { id, ...finalPayload, tenant_id: tenantId }, baseUpdatedAt, baseVersion);
+        
+        if (queueResult === "disabled" && patchError) {
+            throw patchError;
+        }
     }
 
     return true;
@@ -344,6 +350,7 @@ export class CanonicalDataService {
     
     let finalId = payload.id;
     let directSuccess = false;
+    let insertError: any = null;
 
     if (typeof navigator !== 'undefined' && navigator.onLine) {
         try {
@@ -366,14 +373,19 @@ export class CanonicalDataService {
                 if (tableObj) await tableObj.put({ ...finalPayload, id: finalId });
             }
         } catch (err) {
-            console.warn(`[CanonicalDataService] ⚠️ Direct insert failed, falling back to SyncEngine:`, err);
+            console.error(`[CanonicalDataService] ❌ Direct insert failed for ${table}/${finalId}:`, err);
+            insertError = err;
         }
     }
 
     if (!directSuccess) {
         console.log(`[CanonicalDataService] 📥 Enqueueing mutation for ${table} (Offline/Retry mode)`);
         const mutationType = `CREATE_${(entityType || table).toUpperCase()}`;
-        finalId = await syncEngine.enqueueMutation(mutationType, finalPayload);
+        const queueResult = await syncEngine.enqueueMutation(mutationType, finalPayload);
+        
+        if (queueResult === "disabled" && insertError) {
+            return { data: null, error: insertError };
+        }
     }
 
     // Relational assignments AFTER task creation to satisfy FK constraints

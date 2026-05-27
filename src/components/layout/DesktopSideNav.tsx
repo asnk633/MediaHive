@@ -125,9 +125,14 @@ export default function DesktopSideNav() {
                     { id: 'admin-panel', label: 'Control Panel', icon: ShieldAlert, path: '/admin' },
                     { id: 'governance', label: 'Governance', icon: ShieldCheck, path: '/governance', feature: 'governance' as FeatureKey }
                 ] : []),
-                // Team Members: Request Leave
-                ...(currentRole !== 'member' ? [
+                // Team Users: Request Leave
+                ...(currentRole === 'team' ? [
                     { id: 'leave', label: 'Request Leave', icon: Coffee, path: '/leave/request', feature: 'leave_management' as FeatureKey }
+                ] : []),
+                // Admin & Manager: Leave Management
+                ...(currentRole === 'admin' || currentRole === 'manager' ? [
+                    { id: 'leave-requests', label: 'Leave Requests', icon: Coffee, path: '/admin/leave-requests', feature: 'leave_management' as FeatureKey },
+                    { id: 'leave-analytics', label: 'Leave Analytics', icon: BarChart3, path: '/admin/leave-analytics', feature: 'leave_management' as FeatureKey }
                 ] : []),
                 { id: 'settings', label: 'Settings', icon: Settings, path: '/settings' },
             ],

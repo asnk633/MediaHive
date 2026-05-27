@@ -20,6 +20,7 @@ import '../../../../providers/institutional_provider.dart';
 import '../../domain/models/task.dart';
 import '../../../calendar/presentation/providers/events_provider.dart';
 import '../../../calendar/domain/models/event.dart';
+import '../../../../core/providers/labs_provider.dart';
 import '../../../../core/services/sound_service.dart';
 
 
@@ -625,6 +626,8 @@ class _CreateTaskScreenState extends ConsumerState<CreateTaskScreen> {
   @override
   Widget build(BuildContext context) {
     final colors = ref.watch(themeColorsProvider);
+    final labsState = ref.watch(labsProvider);
+    final testDemoDataEnabled = labsState['testDemoData'] ?? false;
     final profile = ref.watch(currentUserProfileProvider).valueOrNull;
     final currentUserId = profile?['id'] as String?;
     final currentUserFullName = profile?['full_name'] as String?;
@@ -921,47 +924,47 @@ class _CreateTaskScreenState extends ConsumerState<CreateTaskScreen> {
                   ),
                 ],
               ),
-              const SizedBox(height: 24),
-
-              Container(
-                padding: const EdgeInsets.all(16),
-                decoration: BoxDecoration(
-                  color: colors.isDark ? colors.surface : Colors.white,
-                  borderRadius: BorderRadius.circular(16),
-                  border: Border.all(color: colors.border),
+               if (testDemoDataEnabled) ...[
+                Container(
+                  padding: const EdgeInsets.all(16),
+                  decoration: BoxDecoration(
+                    color: colors.isDark ? colors.surface : Colors.white,
+                    borderRadius: BorderRadius.circular(16),
+                    border: Border.all(color: colors.border),
+                  ),
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      Row(
+                        children: [
+                          Container(
+                            padding: const EdgeInsets.all(8),
+                            decoration: BoxDecoration(color: colors.honey.withOpacity(0.1), shape: BoxShape.circle),
+                            child: Icon(LucideIcons.penTool, color: colors.honey, size: 16),
+                          ),
+                          const SizedBox(width: 12),
+                          Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Text('Test / Demo Data', style: AppTypography.bodyM.copyWith(color: colors.textPrimary, fontWeight: FontWeight.bold)),
+                              Text('EXCLUDE FROM OFFICIAL REPORTS', style: AppTypography.caption.copyWith(color: colors.honey, fontWeight: FontWeight.w900, fontSize: 9, letterSpacing: 0.5)),
+                            ],
+                          ),
+                        ],
+                      ),
+                      Switch(
+                        value: _isDemoData,
+                        onChanged: _isEditingAllowed ? (val) => setState(() => _isDemoData = val) : null,
+                        activeColor: Colors.white,
+                        activeTrackColor: colors.honey,
+                        inactiveThumbColor: colors.textSecondary,
+                        inactiveTrackColor: colors.isDark ? colors.border : colors.border.withOpacity(0.2),
+                      ),
+                    ],
+                  ),
                 ),
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
-                    Row(
-                      children: [
-                        Container(
-                          padding: const EdgeInsets.all(8),
-                          decoration: BoxDecoration(color: colors.honey.withOpacity(0.1), shape: BoxShape.circle),
-                          child: Icon(LucideIcons.penTool, color: colors.honey, size: 16),
-                        ),
-                        const SizedBox(width: 12),
-                        Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            Text('Test / Demo Data', style: AppTypography.bodyM.copyWith(color: colors.textPrimary, fontWeight: FontWeight.bold)),
-                            Text('EXCLUDE FROM OFFICIAL REPORTS', style: AppTypography.caption.copyWith(color: colors.honey, fontWeight: FontWeight.w900, fontSize: 9, letterSpacing: 0.5)),
-                          ],
-                        ),
-                      ],
-                    ),
-                    Switch(
-                      value: _isDemoData,
-                      onChanged: _isEditingAllowed ? (val) => setState(() => _isDemoData = val) : null,
-                      activeColor: Colors.white,
-                      activeTrackColor: colors.honey,
-                      inactiveThumbColor: colors.textSecondary,
-                      inactiveTrackColor: colors.isDark ? colors.border : colors.border.withOpacity(0.2),
-                    ),
-                  ],
-                ),
-              ),
-              const SizedBox(height: 32),
+                const SizedBox(height: 32),
+              ],
 
               Container(
                 width: double.infinity,

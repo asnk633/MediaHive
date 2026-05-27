@@ -11,7 +11,7 @@ export const FAB = () => {
     const { canCreateTask, role } = usePermissions();
 
     const actions = [
-        { label: "Request Leave", icon: CalendarCheck, color: "text-amber-400", delay: 0.15, onClick: () => nativeNavigate('/leave/request', router, 'FAB (Request Leave)'), visible: true },
+        { label: "Request Leave", icon: CalendarCheck, color: "text-amber-400", delay: 0.15, onClick: () => nativeNavigate('/leave/request', router, 'FAB (Request Leave)'), visible: role === 'team' },
         { label: "New Task", icon: CheckSquare, color: "text-green-400", delay: 0.1, onClick: () => nativeNavigate('/tasks/new', router, 'FAB (New Task)'), visible: canCreateTask },
         { label: "New Event", icon: Calendar, color: "text-purple-400", delay: 0.05, onClick: () => nativeNavigate('/events/new', router, 'FAB (New Event)'), visible: ['admin', 'manager', 'member', 'team'].includes(role) },
     ];

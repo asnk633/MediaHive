@@ -14,10 +14,24 @@ export default function RequestLeavePage() {
     const { user } = useAuth();
     const { currentWorkspace } = useWorkspace();
 
+    // Role-based protection: only 'team' role can request leave here
+    React.useEffect(() => {
+        if (user && user.role !== 'team') {
+            if (user.role === 'admin' || user.role === 'manager') {
+                router.replace('/admin/leave-requests');
+            } else {
+                router.replace('/home');
+            }
+        }
+    }, [user, router]);
+
+    if (!user || user.role !== 'team') {
+        return null;
+    }
+
     // Restriction check for Media & IT
     const isMediaOrIT = currentWorkspace?.name?.toLowerCase().includes('media') || 
-                       currentWorkspace?.name?.toLowerCase().includes('it') ||
-                       user?.role === 'admin';
+                       currentWorkspace?.name?.toLowerCase().includes('it');
 
     if (!isMediaOrIT && user) {
         return (

@@ -59,12 +59,13 @@ export const LeaveBalanceService = {
         };
 
         try {
-            await CanonicalDataService.createRecord(
+            const { data, error } = await CanonicalDataService.createRecord(
                 TABLES.LEAVE_BALANCES,
                 balanceData,
                 'INITIALIZE_LEAVE_BALANCE'
             );
-            return balanceData as any as LeaveBalance;
+            if (error) throw error;
+            return data as any as LeaveBalance;
         } catch (error) {
             MonitoringService.error('[LeaveBalanceService] Failed to initialize balance', error, { uid, year });
             return balanceData as any as LeaveBalance;
@@ -162,6 +163,36 @@ export const LeaveBalanceService = {
         } catch (error) {
             MonitoringService.error('[LeaveBalanceService] Failed to fetch all balances', error, { year: targetYear });
             return [];
+        }
+    },
+
+    /**
+     * Update multiple leave allocations for a user at once (eliminates JSONB column race conditions)
+     */
+    updateUserAllocations: async (uid: string, edits: Record<string, number>): Promise<void> => {
+        const balance = await LeaveBalanceService.getUserBalance(uid);
+        if (!balance) return;
+
+        const newBalances = { ...balance.balances };
+        Object.keys(edits).forEach(type => {
+            if (newBalances[type as LeaveType]) {
+                newBalances[type as LeaveType] = {
+                    ...newBalances[type as LeaveType],
+                    total: edits[type]
+                };
+            }
+        });
+
+        try {
+            await CanonicalDataService.patchFields(
+                TABLES.LEAVE_BALANCES,
+                String(balance.id),
+                { balances: newBalances, updated_at: new Date().toISOString() },
+                'LEAVE_BALANCE'
+            );
+        } catch (error) {
+            MonitoringService.error('[LeaveBalanceService] Failed to update user allocations', error, { uid, edits });
+            throw error;
         }
     },
 

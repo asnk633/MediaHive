@@ -24,6 +24,8 @@ import { cn, nativeNavigate } from "@/lib/utils";
 import { motion } from 'framer-motion';
 import { PolicySimulationPanel } from '@/components/tasks/PolicySimulationPanel';
 import { Box } from 'lucide-react';
+import { Switch } from '@/components/ui/switch';
+import { toast } from 'sonner';
 
 interface LabFeature {
     id: string;
@@ -86,6 +88,16 @@ const LAB_FEATURES: LabFeature[] = [
         path: '#simulation',
         color: 'from-blue-400 to-indigo-500',
         status: 'stable'
+    },
+    {
+        id: 'test-demo-data',
+        key: 'testDemoData',
+        label: 'Test / Demo Data',
+        description: 'Enables creation and filtering of test/demo tasks to avoid polluting real metrics.',
+        icon: Target,
+        path: '#toggle',
+        color: 'from-amber-400 to-orange-500',
+        status: 'prototype'
     }
 ];
 
@@ -95,6 +107,19 @@ export default function LabsPage() {
     const { currentWorkspace, tenantSettings } = useWorkspace();
     const currentRole = user?.role as UserRole || 'member';
     const [isSimulationOpen, setIsSimulationOpen] = React.useState(false);
+    const [testDemoDataActive, setTestDemoDataActive] = React.useState(false);
+
+    React.useEffect(() => {
+        if (typeof window !== 'undefined') {
+            setTestDemoDataActive(localStorage.getItem('labs:testDemoData') === 'true');
+        }
+    }, []);
+
+    const handleToggleTestDemoData = (checked: boolean) => {
+        setTestDemoDataActive(checked);
+        localStorage.setItem('labs:testDemoData', checked ? 'true' : 'false');
+        toast.success(checked ? "Test / Demo Data activated in Labs!" : "Test / Demo Data deactivated.");
+    };
 
     const container = {
         hidden: { opacity: 0 },
@@ -153,6 +178,10 @@ export default function LabsPage() {
                             key={feature.id}
                             variants={item}
                             onClick={() => {
+                                if (feature.path === '#toggle') {
+                                    handleToggleTestDemoData(!testDemoDataActive);
+                                    return;
+                                }
                                 if (!hasAccess) return;
                                 if (feature.path === '#simulation') {
                                     setIsSimulationOpen(true);
@@ -162,7 +191,7 @@ export default function LabsPage() {
                             }}
                             className={cn(
                                 "group relative overflow-hidden rounded-[28px] border p-6 transition-all duration-500 h-full flex flex-col backdrop-blur-md",
-                                hasAccess 
+                                hasAccess || feature.path === '#toggle'
                                     ? "glass-liquid border-foreground/10 cursor-pointer hover:bg-foreground/[0.04] hover:border-foreground/20 hover:shadow-2xl hover:shadow-primary/10" 
                                     : "bg-black/25 border-foreground/5 opacity-50 cursor-not-allowed grayscale"
                             )}
@@ -172,12 +201,12 @@ export default function LabsPage() {
                                 <div className={cn(
                                     "p-3 rounded-2xl bg-gradient-to-br transition-all duration-500 group-hover:scale-110 group-hover:rotate-3 shadow-lg",
                                     feature.color,
-                                    hasAccess ? "shadow-black/20" : "grayscale opacity-50 shadow-none"
+                                    hasAccess || feature.path === '#toggle' ? "shadow-black/20" : "grayscale opacity-50 shadow-none"
                                 )}>
                                     <feature.icon className="text-foreground" size={24} />
                                 </div>
                                 <div className="flex flex-col items-end gap-2">
-                                    {!hasAccess ? (
+                                    {(!hasAccess && feature.path !== '#toggle') ? (
                                         <div className="px-2.5 py-1 rounded-full bg-rose-500/10 border border-rose-500/20 text-rose-500 text-[10px] font-bold uppercase tracking-wider flex items-center gap-1.5">
                                             <Lock size={10} />
                                             Restricted
@@ -206,9 +235,16 @@ export default function LabsPage() {
                             {/* Footer */}
                             <div className="mt-8 flex items-center justify-between border-t border-foreground/5 pt-4 group-hover:border-foreground/10 transition-colors">
                                 <span className="text-[10px] font-black text-foreground/80 uppercase tracking-[0.2em] group-hover:text-foreground/80 transition-colors">
-                                    {hasAccess ? "Access Module" : "Upgrade Required"}
+                                    {feature.path === '#toggle' ? (testDemoDataActive ? "Activated" : "Deactivated") : (hasAccess ? "Access Module" : "Upgrade Required")}
                                 </span>
-                                {hasAccess && (
+                                {feature.path === '#toggle' ? (
+                                    <div onClick={(e) => e.stopPropagation()}>
+                                        <Switch
+                                            checked={testDemoDataActive}
+                                            onCheckedChange={handleToggleTestDemoData}
+                                        />
+                                    </div>
+                                ) : hasAccess && (
                                     <ArrowUpRight size={16} className="text-foreground/80 group-hover:text-foreground group-hover:translate-x-0.5 group-hover:-translate-y-0.5 transition-all" />
                                 )}
                             </div>

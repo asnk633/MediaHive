@@ -14,6 +14,7 @@ import '../../../../shared/widgets/mh_role_guard.dart';
 import '../../../../shared/widgets/mh_role_guard.dart' show UserRole;
 import '../../../../core/providers/user_provider.dart';
 import '../../../../core/services/auth_service.dart';
+import '../../../../core/providers/labs_provider.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:image_cropper/image_cropper.dart';
 import '../../../../core/services/media_service.dart';
@@ -69,6 +70,8 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
               const SizedBox(height: 24),
               _buildSectionLabel(colors, 'PREFERENCES'),
               _buildThemeToggleTile(),
+              const SizedBox(height: 16),
+              _buildLabsTile(),
               const SizedBox(height: 16),
               MhRoleGuard(
                 allowedRoles: const [UserRole.admin, UserRole.manager],
@@ -683,6 +686,180 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
             icon: Icon(LucideIcons.chevronRight, size: 18, color: colors.textSecondary),
           ),
         ],
+      ),
+    );
+  }
+
+  Widget _buildLabsTile() {
+    final colors = ref.watch(themeColorsProvider);
+
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 16),
+      decoration: BoxDecoration(
+        color: colors.surface,
+        borderRadius: BorderRadius.circular(16),
+        border: Border.all(color: colors.border),
+        boxShadow: colors.cardShadow,
+      ),
+      child: Row(
+        children: [
+          Container(
+            padding: const EdgeInsets.all(8),
+            decoration: BoxDecoration(color: Colors.purple.withOpacity(0.1), borderRadius: BorderRadius.circular(8)),
+            child: const Icon(LucideIcons.flaskConical, size: 18, color: Colors.purple),
+          ),
+          const SizedBox(width: 16),
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text('Experimental Labs', style: TextStyle(fontWeight: FontWeight.bold, color: colors.textPrimary)),
+                Text('Try out upcoming features', style: TextStyle(fontSize: 11, color: colors.textSecondary)),
+              ],
+            ),
+          ),
+          IconButton(
+            onPressed: () => _showLabsBottomSheet(context),
+            icon: Icon(LucideIcons.chevronRight, size: 18, color: colors.textSecondary),
+          ),
+        ],
+      ),
+    );
+  }
+
+  void _showLabsBottomSheet(BuildContext context) {
+    final colors = ref.read(themeColorsProvider);
+
+    showModalBottomSheet(
+      context: context,
+      isScrollControlled: true,
+      backgroundColor: Colors.transparent,
+      builder: (context) => Consumer(
+        builder: (context, ref, child) {
+          final labsState = ref.watch(labsProvider);
+          final testDemoDataEnabled = labsState['testDemoData'] ?? false;
+
+          return Container(
+            decoration: BoxDecoration(
+              color: colors.backgroundPrimary,
+              borderRadius: const BorderRadius.only(
+                topLeft: Radius.circular(32),
+                topRight: Radius.circular(32),
+              ),
+              border: Border(top: BorderSide(color: colors.border)),
+            ),
+            padding: EdgeInsets.only(
+              left: 24,
+              right: 24,
+              top: 12,
+              bottom: MediaQuery.of(context).viewInsets.bottom + 24,
+            ),
+            child: SingleChildScrollView(
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                crossAxisAlignment: CrossAxisAlignment.stretch,
+                children: [
+                  Center(
+                    child: Container(
+                      width: 40,
+                      height: 4,
+                      decoration: BoxDecoration(
+                        color: colors.textSecondary.withOpacity(0.2),
+                        borderRadius: BorderRadius.circular(2),
+                      ),
+                    ),
+                  ),
+                  const SizedBox(height: 24),
+                  Row(
+                    children: [
+                      Container(
+                        padding: const EdgeInsets.all(10),
+                        decoration: BoxDecoration(
+                          color: Colors.purple.withOpacity(0.1),
+                          borderRadius: BorderRadius.circular(12),
+                        ),
+                        child: const Icon(LucideIcons.flaskConical, color: Colors.purple, size: 22),
+                      ),
+                      const SizedBox(width: 16),
+                      Expanded(
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Text(
+                              '🧪 Experimental Labs',
+                              style: TextStyle(
+                                fontSize: 18,
+                                fontWeight: FontWeight.bold,
+                                color: colors.textPrimary,
+                              ),
+                            ),
+                            const SizedBox(height: 2),
+                            Text(
+                              'Try out upcoming, experimental features.',
+                              style: TextStyle(fontSize: 12, color: colors.textSecondary),
+                            ),
+                          ],
+                        ),
+                      ),
+                    ],
+                  ),
+                  const SizedBox(height: 24),
+                  Container(
+                    padding: const EdgeInsets.all(16),
+                    decoration: BoxDecoration(
+                      color: colors.surface,
+                      borderRadius: BorderRadius.circular(20),
+                      border: Border.all(color: colors.border),
+                    ),
+                    child: Row(
+                      children: [
+                        Container(
+                          padding: const EdgeInsets.all(8),
+                          decoration: BoxDecoration(
+                            color: colors.honey.withOpacity(0.1),
+                            borderRadius: BorderRadius.circular(8),
+                          ),
+                          child: Icon(LucideIcons.edit3, size: 18, color: colors.honey),
+                        ),
+                        const SizedBox(width: 16),
+                        Expanded(
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Text(
+                                'Test / Demo Data',
+                                style: TextStyle(
+                                  fontWeight: FontWeight.bold,
+                                  color: colors.textPrimary,
+                                ),
+                              ),
+                              const SizedBox(height: 4),
+                              Text(
+                                'Enables a toggle to mark tasks and events as test/demo data, keeping them excluded from official reports.',
+                                style: TextStyle(
+                                  fontSize: 11,
+                                  color: colors.textSecondary,
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
+                        Switch.adaptive(
+                          value: testDemoDataEnabled,
+                          onChanged: (val) {
+                            ref.read(labsProvider.notifier).toggleFeature('testDemoData');
+                          },
+                          activeColor: colors.honey,
+                        ),
+                      ],
+                    ),
+                  ),
+                  const SizedBox(height: 24),
+                ],
+              ),
+            ),
+          );
+        },
       ),
     );
   }

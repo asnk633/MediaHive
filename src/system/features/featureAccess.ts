@@ -23,7 +23,14 @@ export function canAccessFeature(
     const config = FEATURE_REGISTRY[feature];
     if (!config) return false;
 
-    // 1. Role Check (Hard Gate)
+    // 1. Local Storage Labs Override
+    if (typeof window !== 'undefined') {
+        const localOverride = localStorage.getItem(`labs:${feature}`);
+        if (localOverride === 'true') return true;
+        if (localOverride === 'false') return false;
+    }
+
+    // 2. Role Check (Hard Gate)
     const userLevel = ROLE_RANK[userRole] ?? 0;
     
     // Check if there is a tenant override for the minimum role

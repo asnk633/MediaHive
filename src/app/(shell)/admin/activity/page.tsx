@@ -19,11 +19,13 @@ import {
 } from 'lucide-react';
 import { format } from 'date-fns';
 import { cn } from "@/lib/utils";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 
 export default function AdminActivityPage() {
     const [logs, setLogs] = useState<any[]>([]);
     const [loading, setLoading] = useState(true);
     const [search, setSearch] = useState('');
+    const [selectedResource, setSelectedResource] = useState('ALL');
 
     const fetchLogs = async () => {
         setLoading(true);
@@ -73,11 +75,18 @@ export default function AdminActivityPage() {
         fetchLogs();
     }, []);
 
-    const filteredLogs = logs.filter(log => 
-        log.action.toLowerCase().includes(search.toLowerCase()) ||
-        log.resource_type?.toLowerCase().includes(search.toLowerCase()) ||
-        log.profiles?.full_name?.toLowerCase().includes(search.toLowerCase())
-    );
+    const filteredLogs = logs.filter(log => {
+        const matchesSearch = log.action.toLowerCase().includes(search.toLowerCase()) ||
+            log.resource_type?.toLowerCase().includes(search.toLowerCase()) ||
+            log.profiles?.full_name?.toLowerCase().includes(search.toLowerCase());
+            
+        const matchesResource = selectedResource === 'ALL' || 
+            (log.resource_type || 'N/A') === selectedResource;
+
+        return matchesSearch && matchesResource;
+    });
+
+    const resourceTypes = ['ALL', ...Array.from(new Set(logs.map(log => log.resource_type || 'N/A').filter(Boolean)))];
 
     return (
         <PageLayout mode="standard">
@@ -102,9 +111,19 @@ export default function AdminActivityPage() {
                             onChange={(e) => setSearch(e.target.value)}
                         />
                     </div>
-                    <button className="h-11 px-4 rounded-2xl border border-foreground/5 bg-foreground/5 text-foreground/80 flex items-center gap-2 text-sm font-bold hover:text-foreground transition-colors">
-                        <Filter size={16} /> All Resources <ChevronDown size={14} />
-                    </button>
+                    <Select value={selectedResource} onValueChange={setSelectedResource}>
+                        <SelectTrigger className="h-11 px-4 rounded-2xl border border-foreground/5 bg-foreground/5 text-foreground/80 flex items-center gap-2 text-sm font-bold hover:text-foreground hover:bg-foreground/10 transition-colors w-[180px]">
+                            <Filter size={16} />
+                            <SelectValue placeholder="All Resources" />
+                        </SelectTrigger>
+                        <SelectContent className="bg-surface border-soft backdrop-blur-xl">
+                            {resourceTypes.map(type => (
+                                <SelectItem key={type} value={type} className="text-foreground uppercase tracking-widest text-[10px] font-black cursor-pointer hover:bg-foreground/5">
+                                    {type === 'ALL' ? 'All Resources' : type}
+                                </SelectItem>
+                            ))}
+                        </SelectContent>
+                    </Select>
                 </div>
 
                 <div className="rounded-[32px] glass-liquid border-foreground/5 overflow-hidden">

@@ -40,6 +40,8 @@ export default function LeaveAnalyticsPage() {
     const [analyticsData, setAnalyticsData] = useState<any>(null);
     const [teamBalances, setTeamBalances] = useState<any[]>([]);
     const [pendingRequests, setPendingRequests] = useState<any[]>([]);
+    const [pendingEdits, setPendingEdits] = useState<Record<string, Record<string, number>>>({});
+    const [savingEdits, setSavingEdits] = useState(false);
     const [searchQuery, setSearchQuery] = useState('');
 
     const fetchAllData = async () => {
@@ -117,12 +119,34 @@ export default function LeaveAnalyticsPage() {
         }
     };
 
-    const handleUpdateAllocation = async (userId: string, type: string, total: number) => {
+    const handleLocalEdit = (userId: string, type: string, total: number) => {
+        setPendingEdits(prev => ({
+            ...prev,
+            [userId]: {
+                ...prev[userId],
+                [type]: total
+            }
+        }));
+    };
+
+    const handleSaveAllocations = async () => {
+        setSavingEdits(true);
         try {
-            await LeaveBalanceService.updateAllocation(userId, type as any, total);
+            const promises: Promise<any>[] = [];
+            Object.keys(pendingEdits).forEach(userId => {
+                const userEdits = pendingEdits[userId];
+                promises.push(LeaveBalanceService.updateUserAllocations(userId, userEdits));
+            });
+
+            await Promise.all(promises);
+            toast.success("All leave allocations saved successfully");
+            setPendingEdits({});
             fetchAllData(); // Refresh
-        } catch (err) {
-            // Error handled in service
+        } catch (err: any) {
+            console.error('[LeaveAnalyticsPage] Failed to save allocations:', err);
+            toast.error(err?.message || "Failed to save some allocations");
+        } finally {
+            setSavingEdits(false);
         }
     };
 
@@ -291,15 +315,36 @@ export default function LeaveAnalyticsPage() {
                             <div className="space-y-6">
                                 <div className="flex items-center justify-between mb-4">
                                     <h2 className="text-xl font-bold text-foreground/90">Team Leave Allocations</h2>
-                                    <div className="relative group w-72">
-                                        <Search size={16} className="absolute left-4 top-1/2 -translate-y-1/2 text-foreground/80 group-focus-within:text-indigo-400 transition-colors" />
-                                        <input 
-                                            type="text" 
-                                            placeholder="Search team member..."
-                                            value={searchQuery}
-                                            onChange={(e) => setSearchQuery(e.target.value)}
-                                            className="w-full bg-foreground/[0.03] border border-foreground/5 rounded-xl py-2.5 pl-12 pr-4 text-sm text-foreground focus:outline-none focus:border-indigo-500/30 transition-all"
-                                        />
+                                    <div className="flex items-center gap-4">
+                                        {Object.keys(pendingEdits).length > 0 && (
+                                            <button 
+                                                onClick={handleSaveAllocations}
+                                                disabled={savingEdits}
+                                                className="px-5 py-2.5 bg-indigo-500 hover:bg-indigo-400 text-foreground font-bold text-xs uppercase tracking-widest rounded-xl transition-all shadow-xl shadow-indigo-500/20 active:scale-95 flex items-center gap-2 animate-in fade-in slide-in-from-right-4 duration-300"
+                                            >
+                                                {savingEdits ? (
+                                                    <>
+                                                        <Loader2 size={14} className="animate-spin" />
+                                                        Saving...
+                                                    </>
+                                                ) : (
+                                                    <>
+                                                        <ClipboardCheck size={14} />
+                                                        Save Allocations
+                                                    </>
+                                                )}
+                                            </button>
+                                        )}
+                                        <div className="relative group w-72">
+                                            <Search size={16} className="absolute left-4 top-1/2 -translate-y-1/2 text-foreground/80 group-focus-within:text-indigo-400 transition-colors" />
+                                            <input 
+                                                type="text" 
+                                                placeholder="Search team member..."
+                                                value={searchQuery}
+                                                onChange={(e) => setSearchQuery(e.target.value)}
+                                                className="w-full bg-foreground/[0.03] border border-foreground/5 rounded-xl py-2.5 pl-12 pr-4 text-sm text-foreground focus:outline-none focus:border-indigo-500/30 transition-all"
+                                            />
+                                        </div>
                                     </div>
                                 </div>
 
@@ -331,24 +376,42 @@ export default function LeaveAnalyticsPage() {
                                                             </div>
                                                         </div>
                                                     </td>
-                                                    {Object.keys(LEAVE_TYPE_LABELS).map(type => (
-                                                        <td key={type} className="px-6 py-6 text-center">
-                                                            <div className="inline-flex flex-col items-center gap-1 group/input">
-                                                                <input 
-                                                                    type="number"
-                                                                    defaultValue={item.balances?.[type]?.total || 0}
-                                                                    onBlur={(e) => {
-                                                                        const val = parseInt(e.target.value);
-                                                                        if (val !== item.balances?.[type]?.total) {
-                                                                            handleUpdateAllocation(item.user_id, type, val);
-                                                                        }
-                                                                    }}
-                                                                    className="w-16 bg-foreground/5 border border-foreground/10 rounded-lg py-1.5 text-center text-sm font-bold text-foreground focus:outline-none focus:border-indigo-500/50 transition-all hover:bg-foreground/10"
-                                                                />
-                                                                <span className="text-[9px] font-black text-foreground/80 uppercase tracking-tighter opacity-0 group-hover/input:opacity-100 transition-opacity">Edit Days</span>
-                                                            </div>
-                                                        </td>
-                                                    ))}
+                                                    {Object.keys(LEAVE_TYPE_LABELS).map(type => {
+                                                        const taken = item.balances?.[type]?.taken || 0;
+                                                        const currentTotal = pendingEdits[item.user_id]?.[type] !== undefined
+                                                            ? pendingEdits[item.user_id][type]
+                                                            : (item.balances?.[type]?.total || 0);
+                                                        const remaining = currentTotal - taken;
+                                                        
+                                                        return (
+                                                            <td key={type} className="px-6 py-6 text-center">
+                                                                <div className="inline-flex flex-col items-center gap-1 group/input">
+                                                                    <input 
+                                                                        type="number"
+                                                                        value={currentTotal}
+                                                                        onChange={(e) => {
+                                                                            const val = parseInt(e.target.value) || 0;
+                                                                            handleLocalEdit(item.user_id, type, val);
+                                                                        }}
+                                                                        className="w-16 bg-foreground/5 border border-foreground/10 rounded-lg py-1.5 text-center text-sm font-bold text-foreground focus:outline-none focus:border-indigo-500/50 transition-all hover:bg-foreground/10"
+                                                                    />
+                                                                    
+                                                                    {/* Compact Used & Left indicator */}
+                                                                    <div className="mt-1.5 flex flex-col items-center gap-0.5 text-[9px] font-black uppercase tracking-tighter">
+                                                                        <span className="text-foreground/40 leading-none">
+                                                                            Used: {taken}
+                                                                        </span>
+                                                                        <span className={cn(
+                                                                            "leading-none font-bold",
+                                                                            remaining > 0 ? "text-emerald-400" : "text-rose-400/80"
+                                                                        )}>
+                                                                            Left: {remaining}
+                                                                        </span>
+                                                                    </div>
+                                                                </div>
+                                                            </td>
+                                                        );
+                                                    })}
                                                 </tr>
                                             ))}
                                         </tbody>

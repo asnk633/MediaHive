@@ -70,6 +70,12 @@ export const LeaveAnalytics: React.FC<LeaveAnalyticsProps> = ({ data, teamBalanc
     if (!data) return null;
     const { summary, byType, byMonth, upcoming } = data;
 
+    const totalMembers = teamBalances?.length || 0;
+    const activeLeaves = summary.approved || 0;
+    const capacityPercentage = totalMembers > 0 
+        ? Math.max(0, Math.min(100, Math.round(100 - (activeLeaves / totalMembers) * 100))) 
+        : 100;
+
     const formattedMonthData = byMonth.map(item => ({
         month: new Date(item.month + '-01').toLocaleDateString('en-US', { month: 'short' }),
         count: item.count
@@ -254,19 +260,19 @@ export const LeaveAnalytics: React.FC<LeaveAnalyticsProps> = ({ data, teamBalanc
                         <h3 className="text-2xl font-black text-foreground tracking-tighter">Workforce Saturation</h3>
                         <p className="text-sm text-foreground/80 leading-relaxed font-medium">
                             Currently <span className="text-indigo-400 font-bold">{summary.approved} members</span> are on leave. 
-                            The team is operating at <span className="text-emerald-400 font-bold">94% capacity</span>.
+                            The team is operating at <span className="text-emerald-400 font-bold">{capacityPercentage}% capacity</span>.
                         </p>
                     </div>
                     <div className="flex items-center gap-4">
                         <div className="flex-1 h-2 bg-foreground/5 rounded-full overflow-hidden">
                             <motion.div 
                                 initial={{ width: 0 }}
-                                animate={{ width: '94%' }}
+                                animate={{ width: `${capacityPercentage}%` }}
                                 transition={{ duration: 1, delay: 0.5 }}
                                 className="h-full bg-gradient-to-r from-indigo-500 to-blue-500" 
                             />
                         </div>
-                        <span className="text-xs font-black text-foreground/80">94%</span>
+                        <span className="text-xs font-black text-foreground/80">{capacityPercentage}%</span>
                     </div>
                     <div className="flex items-center gap-6 pt-4 border-t border-foreground/5">
                         <div className="flex items-center gap-2">

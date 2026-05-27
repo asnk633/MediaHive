@@ -491,6 +491,19 @@
     animation: logo-breathing 4s ease-in-out infinite;
   }
 
+  @keyframes logo-rotate {
+    0% {
+      transform: rotate(0deg);
+    }
+    100% {
+      transform: rotate(360deg);
+    }
+  }
+
+  .animate-logo-rotate {
+    animation: logo-rotate 25s linear infinite;
+  }
+
   /* Intelligent Pause: Stop animation when user interacts */
   .fab-surface:hover, 
   .fab-surface:active,

@@ -138,26 +138,32 @@ export default function SignupClient() {
             <div className="w-full max-w-lg relative z-10 flex flex-col items-center p-4">
                 {/* Logo Section */}
                 <div className="relative mb-6 flex items-center justify-center">
-                    <HaloLogo size={60} />
+                    <HaloLogo size={120} />
                 </div>
 
-                <div className="text-center mb-6 space-y-2">
+                <div className="text-center mb-6 space-y-3 px-4">
                     <h1 
-                        className="text-5xl tracking-wider text-[#E59312] drop-shadow-md font-normal"
+                        className="text-5xl md:text-6xl tracking-wider text-white drop-shadow-md font-normal"
                         style={{ 
                             fontFamily: 'BavistaSoulvare',
-                            textShadow: '0 0 16px rgba(229, 147, 18, 0.25)'
+                            textShadow: '0 0 16px rgba(255, 255, 255, 0.12)'
                         }}
                     >
                         MediaHive
                     </h1>
-                    <p className="text-slate-400 font-medium">
-                        Create your production account.
+                    <p className="text-xs md:text-sm text-slate-300 font-bold uppercase tracking-wider max-w-md mx-auto">
+                        The Central Hub for Thaiba Garden Media & IT
                     </p>
                 </div>
 
                 <div className="w-full backdrop-blur-xl bg-gradient-to-b from-white/10 to-white/5 border border-foreground/10 shadow-2xl rounded-2xl overflow-hidden mb-8">
                     <div className="p-8">
+                        <div className="mb-6 space-y-2">
+                            <h2 className="text-2xl font-bold text-foreground">Create Account</h2>
+                            <p className="text-xs text-slate-400 leading-relaxed">
+                                Join the unified control center to request tasks, access assets, schedule events, and collaborate with our teams at Thaiba Garden Media and IT department.
+                            </p>
+                        </div>
                         <form onSubmit={handleSignup} className="space-y-6">
                             <AnimatePresence>
                                 {error && (

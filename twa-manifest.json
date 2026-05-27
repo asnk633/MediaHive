@@ -1,7 +1,7 @@
 {
-  "packageId": "app.vercel.thaiba_garden_media_manager.twa",
-  "host": "thaiba-garden-media-manager.vercel.app",
-  "name": "Thaiba Garden Media Manager",
+  "packageId": "app.vercel.mediahive.twa",
+  "host": "mediahive.vercel.app",
+  "name": "MediaHive",
   "launcherName": "MediaHive",
   "display": "standalone",
   "themeColor": "#0F172A",
@@ -13,7 +13,7 @@
   "backgroundColor": "#0F172A",
   "enableNotifications": true,
   "startUrl": "/",
-  "iconUrl": "https://thaiba-garden-media-manager.vercel.app/android-chrome-512x512.png",
+  "iconUrl": "https://mediahive.vercel.app/android-chrome-512x512.png",
   "splashScreenFadeOutDuration": 300,
   "signingKey": {
     "path": "/home/hukoor_ahman/orchids/android.keystore",
@@ -23,7 +23,7 @@
   "appVersionCode": 1,
   "shortcuts": [],
   "generatorApp": "bubblewrap-cli",
-  "webManifestUrl": "https://thaiba-garden-media-manager.vercel.app/manifest.webmanifest",
+  "webManifestUrl": "https://mediahive.vercel.app/manifest.webmanifest",
   "fallbackType": "customtabs",
   "features": {},
   "alphaDependencies": {
@@ -32,7 +32,7 @@
   "enableSiteSettingsShortcut": true,
   "isChromeOSOnly": false,
   "isMetaQuest": false,
-  "fullScopeUrl": "https://thaiba-garden-media-manager.vercel.app/",
+  "fullScopeUrl": "https://mediahive.vercel.app/",
   "minSdkVersion": 21,
   "orientation": "portrait",
   "fingerprints": [],

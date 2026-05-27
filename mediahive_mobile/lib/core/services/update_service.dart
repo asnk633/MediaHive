@@ -1,0 +1,199 @@
+import 'dart:io';
+import 'package:dio/dio.dart';
+import 'package:open_filex/open_filex.dart';
+import 'package:package_info_plus/package_info_plus.dart';
+import 'package:path_provider/path_provider.dart';
+import 'package:permission_handler/permission_handler.dart';
+import 'package:supabase_flutter/supabase_flutter.dart';
+import '../services/logger_service.dart';
+
+class UpdateInfo {
+  final bool isUpdateAvailable;
+  final String currentVersion;
+  final String latestVersion;
+  final String downloadUrl;
+  final String releaseNotes;
+  final bool isForceUpdate;
+
+  UpdateInfo({
+    required this.isUpdateAvailable,
+    required this.currentVersion,
+    required this.latestVersion,
+    required this.downloadUrl,
+    required this.releaseNotes,
+    required this.isForceUpdate,
+  });
+
+  factory UpdateInfo.noUpdate(String currentVersion) {
+    return UpdateInfo(
+      isUpdateAvailable: false,
+      currentVersion: currentVersion,
+      latestVersion: currentVersion,
+      downloadUrl: '',
+      releaseNotes: '',
+      isForceUpdate: false,
+    );
+  }
+}
+
+class UpdateService {
+  final SupabaseClient _client;
+  final LoggerService _logger;
+  final Dio _dio = Dio();
+  CancelToken? _cancelToken;
+
+  UpdateService(this._client, this._logger);
+
+  /// Compares version strings. Returns true if latest > current.
+  /// Handles beta versions e.g. 1.1.0-beta+21 vs 1.1.1-beta+22
+  bool compareVersions(String current, String latest) {
+    _logger.info('UPDATE_SERVICE', 'Comparing versions: current=$current, latest=$latest');
+    if (current == latest) return false;
+
+    try {
+      // Normalize version strings
+      // Strip build numbers +xx and beta/alpha tags to compare core versions first
+      final currentClean = current.split('-').first.split('+').first;
+      final latestClean = latest.split('-').first.split('+').first;
+
+      final currentParts = currentClean.split('.').map(int.parse).toList();
+      final latestParts = latestClean.split('.').map(int.parse).toList();
+
+      for (int i = 0; i < 3; i++) {
+        final currentVal = i < currentParts.length ? currentParts[i] : 0;
+        final latestVal = i < latestParts.length ? latestParts[i] : 0;
+        if (latestVal > currentVal) return true;
+        if (latestVal < currentVal) return false;
+      }
+
+      // If core versions are equal, compare build numbers if present
+      if (current.contains('+') && latest.contains('+')) {
+        final currentBuildStr = current.split('+').last;
+        final latestBuildStr = latest.split('+').last;
+        final currentBuild = int.tryParse(currentBuildStr) ?? 0;
+        final latestBuild = int.tryParse(latestBuildStr) ?? 0;
+        return latestBuild > currentBuild;
+      }
+    } catch (e) {
+      _logger.error('UPDATE_SERVICE', 'Error comparing versions: $e');
+    }
+    
+    // Fallback direct string comparison
+    return latest.compareTo(current) > 0;
+  }
+
+  /// Checks system_config for update details and compares with local package version
+  Future<UpdateInfo> checkForUpdate() async {
+    _logger.info('UPDATE_SERVICE', 'Checking for app updates...');
+    try {
+      final PackageInfo packageInfo = await PackageInfo.fromPlatform();
+      final currentVersion = '${packageInfo.version}+${packageInfo.buildNumber}';
+
+      final response = await _client
+          .from('system_config')
+          .select('key, value');
+
+      final configs = {for (var item in response) item['key'] as String: item['value'] as String};
+
+      final latestVersion = configs['app_latest_version'];
+      final downloadUrl = configs['app_download_url'];
+      final releaseNotes = configs['app_release_notes'] ?? 'General stability fixes and performance improvements.';
+      final isForceUpdate = configs['app_force_update'] == 'true';
+
+      if (latestVersion == null || downloadUrl == null || downloadUrl.isEmpty) {
+        _logger.warning('UPDATE_SERVICE', 'Latest version or download URL not found in system_config');
+        return UpdateInfo.noUpdate(currentVersion);
+      }
+
+      final hasUpdate = compareVersions(currentVersion, latestVersion);
+      _logger.info('UPDATE_SERVICE', 'App update check finished. Update available: $hasUpdate');
+
+      return UpdateInfo(
+        isUpdateAvailable: hasUpdate,
+        currentVersion: currentVersion,
+        latestVersion: latestVersion,
+        downloadUrl: downloadUrl,
+        releaseNotes: releaseNotes,
+        isForceUpdate: isForceUpdate,
+      );
+    } catch (e) {
+      _logger.error('UPDATE_SERVICE', 'Failed to check for updates', e);
+      try {
+        final PackageInfo packageInfo = await PackageInfo.fromPlatform();
+        return UpdateInfo.noUpdate('${packageInfo.version}+${packageInfo.buildNumber}');
+      } catch (_) {
+        return UpdateInfo.noUpdate('1.0.0+1');
+      }
+    }
+  }
+
+  /// Downloads the APK to the local cache directory and tracks progress
+  Future<String?> downloadApk(String url, Function(double) onProgress) async {
+    _logger.info('UPDATE_SERVICE', 'Starting APK download from $url');
+    _cancelToken = CancelToken();
+
+    try {
+      final directory = await getTemporaryDirectory();
+      final filePath = '${directory.path}/MediaHive_Update.apk';
+
+      // Delete existing download if present to avoid conflicts
+      final file = File(filePath);
+      if (await file.exists()) {
+        await file.delete();
+      }
+
+      await _dio.download(
+        url,
+        filePath,
+        cancelToken: _cancelToken,
+        onReceiveProgress: (received, total) {
+          if (total != -1) {
+            final progress = received / total;
+            onProgress(progress);
+          }
+        },
+      );
+
+      _logger.info('UPDATE_SERVICE', 'APK download completed successfully: $filePath');
+      return filePath;
+    } catch (e) {
+      if (CancelToken.isCancel(e as DioException)) {
+        _logger.info('UPDATE_SERVICE', 'APK download was cancelled by the user');
+      } else {
+        _logger.error('UPDATE_SERVICE', 'APK download failed', e);
+      }
+      return null;
+    }
+  }
+
+  /// Cancels any ongoing download process
+  void cancelDownload() {
+    if (_cancelToken != null && !_cancelToken!.isCancelled) {
+      _cancelToken!.cancel('Cancelled by user');
+      _logger.info('UPDATE_SERVICE', 'Sent cancel signal to download token');
+    }
+  }
+
+  /// Triggers the Android package installer to open the downloaded APK
+  Future<bool> installApk(String filePath) async {
+    _logger.info('UPDATE_SERVICE', 'Triggering APK installation for path: $filePath');
+    try {
+      if (Platform.isAndroid) {
+        // Request install packages permission (Android 8.0+)
+        final status = await Permission.requestInstallPackages.request();
+        if (status.isGranted) {
+          final result = await OpenFilex.open(filePath, type: 'application/vnd.android.package-archive');
+          _logger.info('UPDATE_SERVICE', 'OpenFilex result: ${result.message} (type: ${result.type})');
+          return result.type == ResultType.done;
+        } else {
+          _logger.warning('UPDATE_SERVICE', 'Request install packages permission was denied');
+          return false;
+        }
+      }
+      return false;
+    } catch (e) {
+      _logger.error('UPDATE_SERVICE', 'Failed to install APK', e);
+      return false;
+    }
+  }
+}

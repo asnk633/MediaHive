@@ -1,7 +1,7 @@
-# Thaiba Garden — Media Manager (Orchids fork)
+# MediaHive
 
-A mobile-first task & media manager built with Next.js + TypeScript, Drizzle (Turso/SQLite), and a small mobile/web UI.  
-This repository is the hybrid output generated and polished from Orchids + local edits (Kanban, file uploads, avatar uploads, Playwright tests, CI).
+A mobile-first media & task management platform built with Next.js + TypeScript, Flutter (mobile), Supabase, and Firebase.  
+Supports multi-tenant workspaces, Kanban boards, file/media management, calendar, attendance, notifications, and in-app updates via GitHub Releases.
 
 ---
 

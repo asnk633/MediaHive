@@ -2,6 +2,9 @@
   "projects": {
     "staging": "thaiba-media-staging",
     "default": "thaiba-media-staging"
+    // NOTE: Google Firebase project IDs cannot be renamed.
+    // thaiba-media-staging is the real Google-assigned project ID.
+    // To migrate to a 'mediahive' project ID, a new Firebase project must be created.
   },
   "targets": {},
   "etags": {}

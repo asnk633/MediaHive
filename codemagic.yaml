@@ -56,7 +56,7 @@ workflows:
     publishing:
       email:
         recipients:
-          - admin@thaibagarden.com # Default recipient for success/failure build notifications
+          - admin@thaibagarden.com # TODO: Update to your MediaHive admin email when ready
         notify:
           success: true
           failure: true

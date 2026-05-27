@@ -2,7 +2,7 @@ import type { CapacitorConfig } from '@capacitor/cli';
 
 const config: CapacitorConfig = {
   appId: 'com.thaibagarden.media',
-  appName: 'Thaiba Garden Media Manager',
+  appName: 'MediaHive',
   webDir: 'out',
   server: {
     // Serve from bundled app assets (file:// protocol)

@@ -76,7 +76,7 @@ class DashboardScreen extends ConsumerWidget {
                         _buildPulseSection(colors),
                         const SizedBox(height: 32),
 
-                        _buildSystemStatus(colors, ref),
+                        _buildSystemStatus(context, colors, ref),
                         const SizedBox(height: 32),
 
                          _buildCompletionProgress(colors, ref),
@@ -136,7 +136,7 @@ class DashboardScreen extends ConsumerWidget {
           const SizedBox(height: 32),
         ],
 
-        _buildSystemStatus(colors, ref),
+        _buildSystemStatus(context, colors, ref),
         const SizedBox(height: 32),
 
         _buildCompletionProgress(colors, ref),
@@ -803,7 +803,7 @@ class DashboardScreen extends ConsumerWidget {
     );
   }
 
-  Widget _buildSystemStatus(ThemeColors colors, WidgetRef ref) {
+  Widget _buildSystemStatus(BuildContext context, ThemeColors colors, WidgetRef ref) {
     final metrics = ref.watch(dashboardMetricsProvider);
     final status = metrics['systemStatus'] as Map<String, dynamic>;
 
@@ -858,38 +858,39 @@ class DashboardScreen extends ConsumerWidget {
                   ),
                 ],
         ),
-      child: Column(
-        children: [
-          Container(
-            padding: const EdgeInsets.all(8),
-            decoration: BoxDecoration(
-              color: color.withOpacity(colors.isDark ? 0.1 : 0.15),
-              shape: BoxShape.circle,
+        child: Column(
+          children: [
+            Container(
+              padding: const EdgeInsets.all(8),
+              decoration: BoxDecoration(
+                color: color.withOpacity(colors.isDark ? 0.1 : 0.15),
+                shape: BoxShape.circle,
+              ),
+              child: Icon(icon, size: 18, color: color),
             ),
-            child: Icon(icon, size: 18, color: color),
-          ),
-          const SizedBox(height: 12),
-          Text(
-            value,
-            style: TextStyle(
-              fontSize: 22,
-              fontWeight: FontWeight.w900,
-              color: colors.isDark ? Colors.white : colors.textPrimary,
-              letterSpacing: -0.5,
+            const SizedBox(height: 12),
+            Text(
+              value,
+              style: TextStyle(
+                fontSize: 22,
+                fontWeight: FontWeight.w900,
+                color: colors.isDark ? Colors.white : colors.textPrimary,
+                letterSpacing: -0.5,
+              ),
             ),
-          ),
-          const SizedBox(height: 4),
-          Text(
-            label,
-            style: TextStyle(
-              fontSize: 8,
-              fontWeight: FontWeight.w800,
-              color: colors.textSecondary.withOpacity(0.5),
-              letterSpacing: 1.0,
+            const SizedBox(height: 4),
+            Text(
+              label,
+              style: TextStyle(
+                fontSize: 8,
+                fontWeight: FontWeight.w800,
+                color: colors.textSecondary.withOpacity(0.5),
+                letterSpacing: 1.0,
+              ),
+              textAlign: TextAlign.center,
             ),
-            textAlign: TextAlign.center,
-          ),
-        ],
+          ],
+        ),
       ),
     );
   }

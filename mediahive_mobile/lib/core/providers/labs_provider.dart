@@ -31,7 +31,7 @@ class LabsNotifier extends StateNotifier<Map<String, bool>> {
     newState[featureKey] = newValue;
     state = newState;
     
-    await box.put('${_keyPrefix}$featureKey', newValue);
+    await box.put('$_keyPrefix$featureKey', newValue);
   }
 }
 

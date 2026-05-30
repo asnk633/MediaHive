@@ -1,5 +1,4 @@
 import 'dart:ui';
-import 'dart:math' as math;
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -7,25 +6,13 @@ import 'package:lucide_icons/lucide_icons.dart';
 import 'package:flutter_animate/flutter_animate.dart';
 import 'package:go_router/go_router.dart';
 import '../providers/navigation_provider.dart';
-import '../../features/dashboard/presentation/screens/dashboard_screen.dart';
-import '../../features/tasks/presentation/screens/tasks_screen.dart';
-import '../../features/inventory/presentation/screens/inventory_screen.dart';
-import '../../features/calendar/presentation/screens/calendar_screen.dart';
-import '../../features/governance/presentation/screens/governance_screen.dart';
-import '../../features/files/presentation/screens/downloads_screen.dart';
-import '../../features/auth/presentation/screens/profile_screen.dart';
-import '../../features/calendar/presentation/screens/create_event_screen.dart';
-import '../../features/tasks/presentation/screens/create_task_screen.dart';
 import '../../core/theme/app_colors.dart';
-import '../../core/theme/app_spacing.dart';
-import '../../core/theme/app_typography.dart';
 import '../../core/design_tokens.dart';
 import '../../core/theme_provider.dart';
 import '../../core/providers/user_provider.dart';
 import '../../features/system/presentation/providers/notifications_provider.dart';
 import 'dart:io';
 
-import '../../shared/widgets/mh_loading_overlay.dart';
 import '../../shared/widgets/ambient_canvas_background.dart';
 import '../../core/providers/update_provider.dart';
 import '../../core/services/update_service.dart';
@@ -235,10 +222,10 @@ class _ShellScreenState extends ConsumerState<ShellScreen> {
                                   ),
                                 ),
                                 const SizedBox(width: 6),
-                                Text(
+                                const Text(
                                   'OPERATIONAL',
                                   style: TextStyle(
-                                    color: const Color(0xFF10B981),
+                                    color: Color(0xFF10B981),
                                     fontSize: 9,
                                     fontWeight: FontWeight.w900,
                                     letterSpacing: 1.5,

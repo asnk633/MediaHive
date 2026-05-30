@@ -1,4 +1,3 @@
-import 'package:flutter/material.dart';
 
 class UrlHelpers {
   /// Converts a Google Drive sharing link to a direct thumbnail link.

@@ -15,7 +15,6 @@ import 'package:gal/gal.dart';
 import 'dart:io';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
-import '../../../../presentation/providers/navigation_provider.dart';
 import '../../../../core/theme_provider.dart';
 import '../../../../core/providers/user_provider.dart';
 import '../../domain/models/file_asset.dart';

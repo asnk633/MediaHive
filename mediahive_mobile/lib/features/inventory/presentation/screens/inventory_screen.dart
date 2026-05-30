@@ -1,5 +1,4 @@
 // DIAGNOSTIC RELOAD - Inventory Module Updated
-import 'dart:ui';
 import 'package:intl/intl.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -8,14 +7,12 @@ import 'package:go_router/go_router.dart';
 import '../../../../../core/theme/app_colors.dart';
 import '../../../../../core/theme/app_spacing.dart';
 import '../../../../../core/theme/app_typography.dart';
-import '../../../../../core/services/sync_service.dart';
 import '../../../../../core/services/analytics_service.dart';
 import 'package:mediahive_mobile/features/inventory/presentation/providers/inventory_provider.dart';
 import 'package:mediahive_mobile/features/inventory/domain/models/inventory_item.dart';
 import 'package:mediahive_mobile/features/inventory/domain/models/equipment_booking.dart';
 import 'package:mediahive_mobile/features/inventory/domain/models/inventory_request.dart';
 import '../../../../../shared/widgets/mh_button.dart';
-import '../../../../../shared/widgets/mh_skeleton.dart';
 import '../../../../../shared/widgets/mh_empty_state.dart';
 import '../../../../../shared/widgets/mh_refresh_indicator.dart';
 import 'package:mediahive_mobile/core/services/network_service.dart';
@@ -383,7 +380,7 @@ class _InventoryScreenState extends ConsumerState<InventoryScreen> {
   }
 
   Widget _buildEmptyState(ThemeColors colors) {
-    return MhEmptyState(
+    return const MhEmptyState(
       title: 'No Items Found',
       message: 'Adjust your filters or add a new asset to the studio inventory.',
       icon: LucideIcons.packageSearch,
@@ -586,7 +583,7 @@ class _InventoryScreenState extends ConsumerState<InventoryScreen> {
       final s = i.status.toLowerCase();
       return s == 'maintenance' || s == 'under repair' || s == 'under_repair';
     }).length;
-    final activeBookings = 0; // Placeholder for future bookings module
+    const activeBookings = 0; // Placeholder for future bookings module
 
     return Row(
       children: [

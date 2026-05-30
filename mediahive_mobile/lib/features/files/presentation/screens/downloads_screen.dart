@@ -3,13 +3,11 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:lucide_icons/lucide_icons.dart';
 import 'package:intl/intl.dart';
-import '../../../../core/theme/app_colors.dart';
 import '../../../../core/theme/app_spacing.dart';
 import '../../../../core/theme/app_typography.dart';
 import '../../../../shared/widgets/mh_button.dart';
 import '../../../../shared/widgets/mh_refresh_indicator.dart';
 import '../../../../core/theme_provider.dart';
-import '../../../../core/providers/user_provider.dart';
 import '../providers/files_provider.dart';
 import '../widgets/file_detail_modal.dart';
 import '../widgets/upload_file_modal.dart';
@@ -34,7 +32,7 @@ class _DownloadsScreenState extends ConsumerState<DownloadsScreen> {
     if (bytes <= 0) return "0 B";
     const suffixes = ["B", "KB", "MB", "GB", "TB"];
     var i = (math.log(bytes) / math.log(1024)).floor();
-    return ((bytes / math.pow(1024, i)).toStringAsFixed(1)) + ' ' + suffixes[i];
+    return '${(bytes / math.pow(1024, i)).toStringAsFixed(1)} ${suffixes[i]}';
   }
 
   List<FileAsset> _filterFiles(List<FileAsset> files) {
@@ -691,8 +689,9 @@ class _DownloadsScreenState extends ConsumerState<DownloadsScreen> {
 
   Widget _buildFileIcon(FileAsset file, ThemeColors colors) {
     IconData icon = LucideIcons.fileText;
-    if (file.mimeType.startsWith('image/')) icon = LucideIcons.image;
-    else if (file.mimeType.startsWith('video/')) icon = LucideIcons.video;
+    if (file.mimeType.startsWith('image/')) {
+      icon = LucideIcons.image;
+    } else if (file.mimeType.startsWith('video/')) icon = LucideIcons.video;
     
     return Container(
       color: colors.surface,

@@ -6,7 +6,6 @@ import '../../../../core/theme_provider.dart';
 import '../../../../core/theme/app_typography.dart';
 import '../../../../shared/widgets/mh_loading.dart';
 import '../../../../shared/widgets/mh_button.dart';
-import '../../../../core/providers/user_provider.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
 final userSearchQueryProvider = StateProvider<String>((ref) => '');
@@ -617,7 +616,7 @@ class UserManagementScreen extends ConsumerWidget {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Text(title, style: TextStyle(color: colors.textPrimary, fontSize: 14, fontWeight: FontWeight.bold)),
-                Text(subtitle, style: TextStyle(color: const Color(0xFF10B981), fontSize: 8, fontWeight: FontWeight.w900)),
+                Text(subtitle, style: const TextStyle(color: Color(0xFF10B981), fontSize: 8, fontWeight: FontWeight.w900)),
               ],
             ),
           ),
@@ -736,8 +735,11 @@ class _InviteUserModalState extends ConsumerState<_InviteUserModal> {
                         final isSelected = selectedInstitutions.contains(id);
                         return _buildAccessTile(name, id, isSelected, () {
                           setState(() {
-                            if (isSelected) selectedInstitutions.remove(id);
-                            else selectedInstitutions.add(id);
+                            if (isSelected) {
+                              selectedInstitutions.remove(id);
+                            } else {
+                              selectedInstitutions.add(id);
+                            }
                           });
                         }, colors);
                       },
@@ -769,8 +771,11 @@ class _InviteUserModalState extends ConsumerState<_InviteUserModal> {
                         final isSelected = selectedDepartments.contains(id);
                         return _buildAccessTile(name, id, isSelected, () {
                           setState(() {
-                            if (isSelected) selectedDepartments.remove(id);
-                            else selectedDepartments.add(id);
+                            if (isSelected) {
+                              selectedDepartments.remove(id);
+                            } else {
+                              selectedDepartments.add(id);
+                            }
                           });
                         }, colors);
                       },

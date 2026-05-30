@@ -6,9 +6,7 @@ import 'package:lucide_icons/lucide_icons.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 import 'package:uuid/uuid.dart';
 import '../../../../../core/theme_provider.dart';
-import '../../../../../core/theme/app_colors.dart';
 import '../../../../core/providers/user_provider.dart' hide departmentsProvider, institutionsProvider;
-import '../../../../../core/design_tokens.dart';
 import '../providers/events_provider.dart';
 import '../../../tasks/presentation/providers/tasks_provider.dart';
 import '../../../../../providers/institutional_provider.dart';
@@ -168,11 +166,9 @@ class _CreateEventScreenState extends ConsumerState<CreateEventScreen> {
           (i) => i.id.toString() == _pendingInstitutionId,
           orElse: () => null as dynamic,
         );
-        if (found != null) {
-          _selectedInstitution = found;
-          _pendingInstitutionId = null;
-        }
-      }
+        _selectedInstitution = found;
+        _pendingInstitutionId = null;
+            }
     }
 
     if (_pendingDepartmentId != null) {
@@ -183,11 +179,9 @@ class _CreateEventScreenState extends ConsumerState<CreateEventScreen> {
           (d) => d.id.toString() == _pendingDepartmentId,
           orElse: () => null as dynamic,
         );
-        if (found != null) {
-          _selectedDepartment = found;
-          _pendingDepartmentId = null;
-        }
-      }
+        _selectedDepartment = found;
+        _pendingDepartmentId = null;
+            }
     }
 
     if (_selectedDepartment != null && _selectedInstitution != null) {
@@ -434,8 +428,11 @@ class _CreateEventScreenState extends ConsumerState<CreateEventScreen> {
                   final isSelected = _selectedMedia.contains(label);
                   return _buildSelectableCard(colors, label, isSelected, () {
                     setState(() {
-                      if (isSelected) _selectedMedia.remove(label);
-                      else _selectedMedia.add(label);
+                      if (isSelected) {
+                        _selectedMedia.remove(label);
+                      } else {
+                        _selectedMedia.add(label);
+                      }
                     });
                   });
                 },
@@ -645,7 +642,7 @@ class _CreateEventScreenState extends ConsumerState<CreateEventScreen> {
                           requester: 'System',
                           assignee: 'Media Team',
                           dueDate: dueDateStr,
-                          description: 'Equipment prep, script review, and logistical setup for $eventTitle.' + (contextName != null ? '\nContext: $contextName' : ''),
+                          description: 'Equipment prep, script review, and logistical setup for $eventTitle.${contextName != null ? '\nContext: $contextName' : ''}',
                           attachments: [],
                           eventId: newEvent.id,
                           department: contextName,
@@ -661,7 +658,7 @@ class _CreateEventScreenState extends ConsumerState<CreateEventScreen> {
                           requester: 'System',
                           assignee: 'Media Team',
                           dueDate: dueDateStr,
-                          description: 'Live coverage, videography, and photography during the event.' + (contextName != null ? '\nContext: $contextName' : ''),
+                          description: 'Live coverage, videography, and photography during the event.${contextName != null ? '\nContext: $contextName' : ''}',
                           attachments: [],
                           eventId: newEvent.id,
                           department: contextName,
@@ -677,7 +674,7 @@ class _CreateEventScreenState extends ConsumerState<CreateEventScreen> {
                           requester: 'System',
                           assignee: 'Editing Team',
                           dueDate: dueDateStr,
-                          description: 'Editing, color grading, and final delivery of $eventTitle assets.' + (contextName != null ? '\nContext: $contextName' : ''),
+                          description: 'Editing, color grading, and final delivery of $eventTitle assets.${contextName != null ? '\nContext: $contextName' : ''}',
                           attachments: [],
                           eventId: newEvent.id,
                           department: contextName,
@@ -818,8 +815,11 @@ class _CreateEventScreenState extends ConsumerState<CreateEventScreen> {
     );
     if (picked != null) {
       setState(() {
-        if (isStart) _startTime = picked;
-        else _endTime = picked;
+        if (isStart) {
+          _startTime = picked;
+        } else {
+          _endTime = picked;
+        }
       });
     }
   }
@@ -1121,7 +1121,7 @@ class _CreateEventScreenState extends ConsumerState<CreateEventScreen> {
                 }
                 Navigator.pop(context);
               },
-            )).toList(),
+            )),
           ],
         ),
       ),

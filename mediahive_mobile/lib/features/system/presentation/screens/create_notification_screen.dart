@@ -4,15 +4,12 @@ import 'package:lucide_icons/lucide_icons.dart';
 import 'package:intl/intl.dart';
 import 'package:image_picker/image_picker.dart';
 import 'dart:io';
-import 'package:flutter_animate/flutter_animate.dart';
 import '../providers/notifications_provider.dart';
 import '../../../../core/theme_provider.dart';
-import '../../../../core/design_tokens.dart';
 import '../../../../core/providers/user_provider.dart';
 import '../../../../core/services/upload_service.dart';
 import '../../../../core/theme/app_spacing.dart';
 import '../../../../core/theme/app_colors.dart';
-import '../../../../core/theme/app_typography.dart';
 import '../../../../core/services/media_service.dart';
 
 class CreateNotificationScreen extends ConsumerStatefulWidget {
@@ -449,7 +446,7 @@ class _CreateNotificationScreenState extends ConsumerState<CreateNotificationScr
       lastDate: DateTime.now().add(const Duration(days: 365)),
       builder: (context, child) => Theme(
         data: Theme.of(context).copyWith(
-          colorScheme: ColorScheme.dark(
+          colorScheme: const ColorScheme.dark(
             primary: AppColors.honey,
             onPrimary: Colors.white,
             surface: AppColors.surface,

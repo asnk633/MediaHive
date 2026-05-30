@@ -6,7 +6,6 @@ import 'package:image_picker/image_picker.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 import '../../../../core/theme_provider.dart';
 import '../../../../core/providers/user_provider.dart';
-import '../../../../models/institutional_data.dart';
 import '../../../calendar/presentation/providers/events_provider.dart';
 import '../providers/files_provider.dart';
 import '../../../../core/services/media_service.dart';
@@ -24,7 +23,7 @@ class _UploadFileModalState extends ConsumerState<UploadFileModal> {
   String _selectedOrgId = '';
   String _selectedOrgName = 'Select Department';
   String _storageLocation = 'Auto-detect (Smart)';
-  String _albumName = '';
+  final String _albumName = '';
   String? _selectedEventId;
   String? _selectedEventTitle;
   

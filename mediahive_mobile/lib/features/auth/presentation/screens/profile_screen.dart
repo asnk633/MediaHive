@@ -2,16 +2,13 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:lucide_icons/lucide_icons.dart';
 import 'package:go_router/go_router.dart';
-import '../../../../core/design_tokens.dart';
 import '../../../../presentation/widgets/theme_toggle_button.dart';
 import '../../../../presentation/providers/navigation_provider.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 import '../../../../core/theme_provider.dart';
-import 'login_screen.dart';
 import '../../../system/presentation/screens/system_health_screen.dart';
 import '../../../../core/services/notification_service.dart';
 import '../../../../shared/widgets/mh_role_guard.dart';
-import '../../../../shared/widgets/mh_role_guard.dart' show UserRole;
 import '../../../../core/providers/user_provider.dart';
 import '../../../../core/services/auth_service.dart';
 import '../../../../core/providers/labs_provider.dart';
@@ -521,7 +518,7 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
           Switch(
             value: _pushNotifications,
             onChanged: (v) => setState(() => _pushNotifications = v),
-            activeColor: const Color(0xFF4ADE80),
+            activeThumbColor: const Color(0xFF4ADE80),
           ),
         ],
       ),
@@ -1192,7 +1189,7 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
 }
 
 class _ChangePasswordSheet extends ConsumerStatefulWidget {
-  const _ChangePasswordSheet({super.key});
+  const _ChangePasswordSheet();
 
   @override
   ConsumerState<_ChangePasswordSheet> createState() => _ChangePasswordSheetState();
@@ -1230,11 +1227,11 @@ class _ChangePasswordSheetState extends ConsumerState<_ChangePasswordSheet> {
         Navigator.pop(context);
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
-            content: Row(
+            content: const Row(
               children: [
-                const Icon(LucideIcons.checkCircle, color: Colors.white, size: 18),
-                const SizedBox(width: 8),
-                const Text('Password updated successfully!'),
+                Icon(LucideIcons.checkCircle, color: Colors.white, size: 18),
+                SizedBox(width: 8),
+                Text('Password updated successfully!'),
               ],
             ),
             backgroundColor: const Color(0xFF10B981), // Emerald green

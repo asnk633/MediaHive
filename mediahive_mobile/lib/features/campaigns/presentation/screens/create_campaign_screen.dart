@@ -5,7 +5,6 @@ import 'package:intl/intl.dart';
 import 'package:flutter_animate/flutter_animate.dart';
 import '../providers/campaigns_provider.dart';
 import '../../../../core/theme_provider.dart';
-import '../../../../core/design_tokens.dart';
 import '../../../../core/providers/user_provider.dart';
 import '../../../../core/theme/app_spacing.dart';
 import '../../../../core/theme/app_colors.dart';
@@ -387,17 +386,17 @@ class _CreateCampaignScreenState extends ConsumerState<CreateCampaignScreen> {
                 RichText(
                   text: TextSpan(
                     style: AppTypography.bodyS.copyWith(color: AppColors.textSecondary),
-                    children: [
-                      const TextSpan(text: 'New campaigns are created in the '),
+                    children: const [
+                      TextSpan(text: 'New campaigns are created in the '),
                       TextSpan(
                         text: 'Planning',
                         style: TextStyle(
-                          color: const Color(0xFF3B82F6),
+                          color: Color(0xFF3B82F6),
                           fontWeight: FontWeight.bold,
                           fontStyle: FontStyle.italic,
                         ),
                       ),
-                      const TextSpan(text: ' phase by default. You can add tasks and production milestones once the campaign is initialized.'),
+                      TextSpan(text: ' phase by default. You can add tasks and production milestones once the campaign is initialized.'),
                     ],
                   ),
                 ),

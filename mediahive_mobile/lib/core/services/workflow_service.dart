@@ -1,8 +1,6 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../features/tasks/domain/models/task.dart';
-import '../../features/calendar/domain/models/event.dart';
 import '../../features/tasks/presentation/providers/tasks_provider.dart';
-import '../../features/calendar/presentation/providers/events_provider.dart';
 
 class WorkflowService {
   final Ref _ref;

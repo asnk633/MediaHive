@@ -1,6 +1,5 @@
 import 'package:dartz/dartz.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
-import 'package:uuid/uuid.dart';
 import 'package:intl/intl.dart';
 import '../../../../../core/error/failure.dart';
 import '../../../../../core/services/sync_service.dart';

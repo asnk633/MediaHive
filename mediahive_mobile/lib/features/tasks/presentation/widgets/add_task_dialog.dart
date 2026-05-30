@@ -30,9 +30,9 @@ class _AddTaskDialogState extends ConsumerState<AddTaskDialog> {
       context: context,
       backgroundColor: Colors.transparent,
       builder: (context) => Container(
-        decoration: BoxDecoration(
+        decoration: const BoxDecoration(
           color: AppColors.surface,
-          borderRadius: const BorderRadius.vertical(top: Radius.circular(24)),
+          borderRadius: BorderRadius.vertical(top: Radius.circular(24)),
         ),
         child: Column(
           mainAxisSize: MainAxisSize.min,
@@ -226,7 +226,7 @@ class _AddTaskDialogState extends ConsumerState<AddTaskDialog> {
                                     const SizedBox(height: 4),
                                     Text(
                                       ext.toUpperCase(),
-                                      style: TextStyle(
+                                      style: const TextStyle(
                                         color: AppColors.textSecondary,
                                         fontSize: 12,
                                       ),

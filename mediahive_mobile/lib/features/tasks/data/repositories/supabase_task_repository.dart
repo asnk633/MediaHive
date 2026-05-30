@@ -1,7 +1,6 @@
 import 'dart:convert';
 import 'package:dartz/dartz.dart' hide Task;
 import 'package:supabase_flutter/supabase_flutter.dart';
-import 'package:uuid/uuid.dart';
 import 'package:intl/intl.dart';
 import '../../../../../core/error/failure.dart';
 import '../../../../../core/services/sync_service.dart';
@@ -139,7 +138,7 @@ class SupabaseTaskRepository implements TaskRepository {
         payload['tenant_id'] = userMetadata['tenant_id'] ?? '7bc0bbe7-1943-4929-a769-5fdfbc487446';
         if (payload['institution_id'] == null && currentUserId != null) {
           try {
-            final profile = await _supabaseClient.from('profiles').select('institution_id').eq('id', currentUserId!).single();
+            final profile = await _supabaseClient.from('profiles').select('institution_id').eq('id', currentUserId).single();
             payload['institution_id'] = profile['institution_id'];
           } catch (_) {
             payload['institution_id'] = userMetadata['institution_id'];

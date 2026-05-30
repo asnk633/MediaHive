@@ -1,15 +1,10 @@
-import 'dart:ui';
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:lucide_icons/lucide_icons.dart';
 import 'package:go_router/go_router.dart';
-import '../../../../core/design_tokens.dart';
-import '../../../../../core/theme/app_colors.dart';
 import '../../../../../core/theme/app_spacing.dart';
 import '../../../../../core/theme/app_typography.dart';
 import '../../../../../core/services/network_service.dart';
-import '../../../../../core/services/sync_service.dart';
 import '../../../../../core/services/analytics_service.dart';
 import '../providers/tasks_provider.dart';
 import '../../domain/models/task.dart';
@@ -17,15 +12,12 @@ import '../../../../core/providers/user_provider.dart';
 import 'package:intl/intl.dart';
 import '../../data/datasources/task_local_datasource.dart';
 import '../../../../../shared/widgets/mh_button.dart';
-import '../../../../../shared/widgets/mh_skeleton.dart';
 import '../../../../../shared/widgets/mh_empty_state.dart';
 import '../../../../../shared/widgets/mh_refresh_indicator.dart';
 import '../../../../../core/testing/chaos_controller.dart';
-import '../../../system/presentation/screens/system_health_screen.dart';
 import '../../../../shared/widgets/mh_loading.dart';
 import '../../../../core/theme_provider.dart';
 import '../../../../core/theme/elastic_scroll_physics.dart';
-import '../../../../../models/institutional_data.dart';
 
 final tasksTabProvider = StateProvider<int>((ref) => 0);
 final tasksStatusFilterProvider = StateProvider<String>((ref) => 'ALL');
@@ -266,17 +258,17 @@ class TasksScreen extends ConsumerWidget {
     
     final inProgress = tasks.where((t) => 
       (t as Task).status.toLowerCase() == 'in progress' || 
-      (t as Task).status.toLowerCase() == 'in_progress'
+      (t).status.toLowerCase() == 'in_progress'
     ).length.toString();
     
     final onHold = tasks.where((t) => 
       (t as Task).status.toLowerCase() == 'on hold' || 
-      (t as Task).status.toLowerCase() == 'on_hold'
+      (t).status.toLowerCase() == 'on_hold'
     ).length.toString();
     
     final completed = tasks.where((t) => 
       (t as Task).status.toLowerCase() == 'done' || 
-      (t as Task).status.toLowerCase() == 'completed'
+      (t).status.toLowerCase() == 'completed'
     ).length.toString();
 
     return Row(
@@ -772,8 +764,8 @@ class TasksScreen extends ConsumerWidget {
         ? statusFiltered
         : statusFiltered.where((t) {
             return t.title.toLowerCase().contains(searchQuery) ||
-                (t.assignee?.toLowerCase().contains(searchQuery) ?? false) ||
-                (t.requester?.toLowerCase().contains(searchQuery) ?? false) ||
+                (t.assignee.toLowerCase().contains(searchQuery) ?? false) ||
+                (t.requester.toLowerCase().contains(searchQuery) ?? false) ||
                 (t.department?.toLowerCase().contains(searchQuery) ?? false) ||
                 (t.description?.toLowerCase().contains(searchQuery) ?? false);
           }).toList();
@@ -1287,7 +1279,7 @@ class TasksScreen extends ConsumerWidget {
                   ? Icon(LucideIcons.check, color: color, size: 18)
                   : null,
               );
-            }).toList(),
+            }),
             const SizedBox(height: 32),
           ],
         ),

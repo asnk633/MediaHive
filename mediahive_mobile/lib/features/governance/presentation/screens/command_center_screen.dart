@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:lucide_icons/lucide_icons.dart';
-import 'user_management_screen.dart';
 import 'workspace_management_screen.dart';
 import 'leave_management_screen.dart';
 import 'package:flutter_animate/flutter_animate.dart';
@@ -10,7 +9,6 @@ import '../../../../shared/widgets/mh_refresh_indicator.dart';
 import '../../../../core/theme_provider.dart';
 import '../../../../core/theme/elastic_scroll_physics.dart';
 import '../../../../core/theme/app_typography.dart';
-import '../../../../core/design_tokens.dart';
 import '../../../dashboard/presentation/providers/dashboard_providers.dart';
 import '../providers/command_metrics_provider.dart';
 import '../../../../shared/widgets/mh_loading.dart';
@@ -204,7 +202,7 @@ class CommandCenterScreen extends ConsumerWidget {
                 colors,
                 onTap: () => Navigator.push(
                   context,
-                  MaterialPageRoute(builder: (context) => LeaveManagementScreen()),
+                  MaterialPageRoute(builder: (context) => const LeaveManagementScreen()),
                 ),
               ),
             ),

@@ -1,6 +1,5 @@
 import 'package:dartz/dartz.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
-import 'package:uuid/uuid.dart';
 import '../../../../../core/error/failure.dart';
 import '../../../../../core/services/sync_service.dart';
 import 'package:mediahive_mobile/features/inventory/domain/models/inventory_item.dart';
@@ -35,11 +34,6 @@ class SupabaseInventoryRepository implements InventoryRepository {
             .from('inventory_items')
             .select('*')
             .order('item_name');
-        
-        if (response == null) {
-          print('[INVENTORY_REPO] Received null response from Supabase');
-          return const Right([]);
-        }
 
         final List<dynamic> data = response as List<dynamic>;
         print('[INVENTORY_REPO] Received ${data.length} raw items from remote');

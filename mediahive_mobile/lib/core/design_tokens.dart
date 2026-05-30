@@ -215,11 +215,11 @@ class DesignTokens {
 
   /// Spatial UI — blue glow for interactive elements (light theme)
   static List<BoxShadow> get spatialGlowBlue => [
-    BoxShadow(
+    const BoxShadow(
       color: lightHoneyGlow,
       blurRadius: 24,
       spreadRadius: 0,
-      offset: const Offset(0, 4),
+      offset: Offset(0, 4),
     ),
   ];
 

@@ -464,9 +464,9 @@ class _CreateWorkspaceModalState extends State<_CreateWorkspaceModal> {
               ScaffoldMessenger.of(context).showSnackBar(
                 SnackBar(
                   backgroundColor: accentColor,
-                  content: Text(
+                  content: const Text(
                     'Workspace created successfully',
-                    style: const TextStyle(color: Colors.white, fontWeight: FontWeight.bold),
+                    style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold),
                   ),
                 ),
               );

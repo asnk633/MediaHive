@@ -871,7 +871,7 @@ class _CreateTaskScreenState extends ConsumerState<CreateTaskScreen> {
                                 Switch(
                                   value: _isDemoData,
                                   onChanged: _isEditingAllowed ? (val) => setState(() => _isDemoData = val) : null,
-                                  activeColor: Colors.white,
+                                  activeThumbColor: Colors.white,
                                   activeTrackColor: colors.honey,
                                   inactiveThumbColor: colors.textSecondary,
                                   inactiveTrackColor: colors.isDark ? colors.border : colors.border.withOpacity(0.2),

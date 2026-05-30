@@ -7,7 +7,6 @@ import 'package:intl/intl.dart';
 import '../providers/notifications_provider.dart';
 import '../../../../core/theme_provider.dart';
 import '../../../../core/theme/elastic_scroll_physics.dart';
-import '../../../../core/design_tokens.dart';
 import '../../../../core/services/sound_service.dart';
 import '../../../../core/providers/update_provider.dart';
 import '../../../../core/services/update_service.dart';
@@ -486,7 +485,7 @@ class NotificationCenterScreen extends ConsumerWidget {
                                 ),
                               ),
                             );
-                          }).toList(),
+                          }),
                         ],
                         const SizedBox(height: 40),
                       ],

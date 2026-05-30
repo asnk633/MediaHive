@@ -1,16 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:lucide_icons/lucide_icons.dart';
-import '../../../../../core/theme/app_colors.dart';
 import '../../../../../core/theme/app_spacing.dart';
 import '../../../../../core/theme/app_typography.dart';
 import '../../../../../core/services/logger_service.dart';
-import '../../../../../core/services/sync_service.dart';
 import '../../../../../core/services/network_service.dart';
 import '../../../../../core/testing/chaos_controller.dart';
-import '../../../../../shared/widgets/mh_button.dart';
-import '../../../tasks/domain/models/task.dart';
-import '../../../tasks/presentation/providers/tasks_provider.dart';
 import '../../../../../core/services/notification_service.dart';
 import '../../../../../core/services/sound_service.dart';
 import '../../../../../core/theme_provider.dart';
@@ -177,7 +172,7 @@ class SystemHealthScreen extends ConsumerWidget {
       trailing: Switch(
         value: value,
         onChanged: onChanged,
-        activeColor: colors.honey,
+        activeThumbColor: colors.honey,
       ),
     );
   }

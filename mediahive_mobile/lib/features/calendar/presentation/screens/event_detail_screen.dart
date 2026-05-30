@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:lucide_icons/lucide_icons.dart';
 import '../../../../core/theme_provider.dart';
-import '../../../../core/design_tokens.dart';
 import '../providers/events_provider.dart';
 import '../../domain/models/event.dart';
 import 'package:flutter/services.dart';

@@ -1,4 +1,3 @@
-import 'dart:ui';
 import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
@@ -8,10 +7,8 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../../../core/design_tokens.dart';
 import '../../../../core/theme_provider.dart';
 import '../../../../core/theme/elastic_scroll_physics.dart';
-import '../../../../presentation/providers/navigation_provider.dart';
 import '../../../../core/providers/user_provider.dart';
 import '../../../../core/services/auth_service.dart';
-import '../../../tasks/presentation/screens/create_task_screen.dart';
 import '../../../tasks/presentation/providers/tasks_provider.dart';
 import '../providers/dashboard_providers.dart';
 import '../../../../core/theme/app_typography.dart';
@@ -19,10 +16,7 @@ import 'package:intl/intl.dart';
 import '../../../../core/theme/app_colors.dart';
 import '../../../tasks/domain/models/task.dart';
 import '../../../calendar/presentation/providers/events_provider.dart';
-import '../../../calendar/presentation/screens/create_event_screen.dart';
 import '../../../../shared/widgets/mh_refresh_indicator.dart';
-import '../../../../shared/widgets/mh_role_guard.dart';
-import '../../../../shared/widgets/mh_role_guard.dart' show UserRole;
 
 class DashboardScreen extends ConsumerWidget {
   const DashboardScreen({super.key});
@@ -342,7 +336,7 @@ class DashboardScreen extends ConsumerWidget {
   }
 
   Widget _buildSliverHeader(ThemeColors colors) {
-    return SliverAppBar(
+    return const SliverAppBar(
       expandedHeight: 0,
       collapsedHeight: 0,
       toolbarHeight: 0,
@@ -691,10 +685,10 @@ class DashboardScreen extends ConsumerWidget {
                   begin: Alignment.topLeft,
                   end: Alignment.bottomRight,
                 )
-              : LinearGradient(
+              : const LinearGradient(
                   colors: [
                     Colors.white,
-                    const Color(0xFFFBFBEE),
+                    Color(0xFFFBFBEE),
                   ],
                   begin: Alignment.topLeft,
                   end: Alignment.bottomRight,
@@ -1536,7 +1530,7 @@ class DashboardScreen extends ConsumerWidget {
                 ),
                 trailing: isSelected ? Icon(LucideIcons.check, color: color, size: 18) : null,
               );
-            }).toList(),
+            }),
             const SizedBox(height: 32),
           ],
         ),

@@ -8,7 +8,6 @@ import '../../../../../core/theme/app_colors.dart';
 import '../../../../../core/theme/app_spacing.dart';
 import '../../../../../core/theme/app_typography.dart';
 import '../../../../../core/services/network_service.dart';
-import '../../../../../core/services/sync_service.dart';
 import '../../../../../core/services/analytics_service.dart';
 import '../providers/events_provider.dart';
 import '../../../../../shared/widgets/mh_button.dart';
@@ -17,7 +16,6 @@ import '../../../../../shared/widgets/mh_empty_state.dart';
 import '../../../../../shared/widgets/mh_refresh_indicator.dart';
 import '../../domain/models/event.dart';
 import '../../../../core/services/workflow_service.dart';
-import '../../../tasks/presentation/providers/tasks_provider.dart';
 import '../../../../presentation/providers/navigation_provider.dart';
 import '../../../../../core/providers/user_provider.dart';
 import '../../../../core/theme_provider.dart';
@@ -95,10 +93,10 @@ class CalendarScreen extends ConsumerWidget {
   Widget _buildLoadingState(BuildContext context, ThemeColors colors) {
     return ListView(
       padding: EdgeInsets.only(left: AppSpacing.l, right: AppSpacing.l, top: 120 + MediaQuery.of(context).padding.top),
-      children: [
-        const MhSkeleton(height: 60, width: double.infinity),
-        const SizedBox(height: AppSpacing.m),
-        const MhSkeleton(height: 400, width: double.infinity, borderRadius: 24),
+      children: const [
+        MhSkeleton(height: 60, width: double.infinity),
+        SizedBox(height: AppSpacing.m),
+        MhSkeleton(height: 400, width: double.infinity, borderRadius: 24),
       ],
     );
   }
@@ -1127,7 +1125,7 @@ class CalendarScreen extends ConsumerWidget {
                       ],
                     ),
                   );
-                }).toList(),
+                }),
               const SizedBox(height: 24),
               Text(
                 'EQUIPMENT READY',

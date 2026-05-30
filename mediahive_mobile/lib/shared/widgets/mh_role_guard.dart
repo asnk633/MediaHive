@@ -1,8 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../../core/services/auth_service.dart';
-import '../../../core/theme/app_typography.dart';
-import '../../../core/theme/app_colors.dart';
 import '../../../core/providers/user_provider.dart';
 
 enum UserRole { admin, manager, team, member }

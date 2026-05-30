@@ -58,7 +58,7 @@ class _SignUpScreenState extends ConsumerState<SignUpScreen> {
         password: _passwordController.text.trim(),
         name: _nameController.text.trim(),
         institutionId: _selectedInstitution?.id,
-        departmentId: _selectedDepartment?.id?.toString(),
+        departmentId: _selectedDepartment?.id.toString(),
       );
       
       if (mounted) {
@@ -457,8 +457,9 @@ class _SignUpScreenState extends ConsumerState<SignUpScreen> {
     final isDark = colors.isDark;
     String displayText = hint;
     if (value != null) {
-      if (value is Institution) displayText = value.name;
-      else if (value is Department) displayText = value.name;
+      if (value is Institution) {
+        displayText = value.name;
+      } else if (value is Department) displayText = value.name;
     }
 
     return GestureDetector(

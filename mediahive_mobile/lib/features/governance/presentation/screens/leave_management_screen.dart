@@ -113,7 +113,7 @@ class LeaveManagementScreen extends ConsumerWidget {
           ],
         );
       },
-      loading: () => SizedBox(height: 80, child: MhLoading()),
+      loading: () => const SizedBox(height: 80, child: MhLoading()),
       error: (_, __) => const SizedBox.shrink(),
     );
   }
@@ -230,7 +230,7 @@ class LeaveManagementScreen extends ConsumerWidget {
           itemBuilder: (context, index) => _buildLeaveCard(context, ref, filtered[index], colors),
         );
       },
-      loading: () => MhLoading(),
+      loading: () => const MhLoading(),
       error: (e, _) => Center(child: Text('Error: $e', style: const TextStyle(color: Colors.red))),
     );
   }

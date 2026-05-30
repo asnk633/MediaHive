@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:lottie/lottie.dart';
 import 'package:custom_refresh_indicator/custom_refresh_indicator.dart';
-import '../../core/theme/app_colors.dart';
 
 class MhRefreshIndicator extends StatelessWidget {
   final Widget child;

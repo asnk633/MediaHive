@@ -114,10 +114,10 @@ class _LeaveRequestScreenState extends ConsumerState<LeaveRequestScreen> {
       builder: (context, child) {
         return Theme(
           data: Theme.of(context).copyWith(
-            colorScheme: ColorScheme.dark(
-              primary: const Color(0xFF6366F1),
+            colorScheme: const ColorScheme.dark(
+              primary: Color(0xFF6366F1),
               onPrimary: Colors.white,
-              surface: const Color(0xFF1E293B),
+              surface: Color(0xFF1E293B),
               onSurface: Colors.white,
             ),
           ),
@@ -432,7 +432,7 @@ class _LeaveRequestScreenState extends ConsumerState<LeaveRequestScreen> {
             
             // Type Selector
             DropdownButtonFormField<String>(
-              value: _selectedType,
+              initialValue: _selectedType,
               dropdownColor: colors.surface,
               decoration: _inputDecoration('Leave Type', colors),
               items: _leaveTypes.map((t) => DropdownMenuItem(value: t, child: Text(t))).toList(),
@@ -508,7 +508,7 @@ class _LeaveRequestScreenState extends ConsumerState<LeaveRequestScreen> {
       labelText: label,
       labelStyle: TextStyle(color: colors.textSecondary),
       enabledBorder: OutlineInputBorder(borderRadius: BorderRadius.circular(12), borderSide: BorderSide(color: colors.border)),
-      focusedBorder: OutlineInputBorder(borderRadius: BorderRadius.circular(12), borderSide: BorderSide(color: const Color(0xFF6366F1))),
+      focusedBorder: OutlineInputBorder(borderRadius: BorderRadius.circular(12), borderSide: const BorderSide(color: Color(0xFF6366F1))),
     );
   }
 

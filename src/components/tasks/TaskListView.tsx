@@ -84,7 +84,7 @@ const PriorityBadge = React.forwardRef<HTMLSpanElement, any>(({ priority, classN
         urgent: 'bg-orange-500/10 text-orange-500 border-orange-500/20',
         high: 'bg-orange-500/10 text-orange-500 border-orange-500/20',
         medium: 'bg-yellow-500/10 text-yellow-500 border-yellow-500/20',
-        low: 'bg-slate-500/10 text-slate-400 border-slate-500/20'
+        low: 'bg-slate-500/10 text-foreground/60 border-slate-500/20'
     };
     const displayPriority = priority === 'urgent' ? 'high' : priority;
     return (
@@ -119,7 +119,7 @@ const StatusPill = React.forwardRef<HTMLSpanElement, any>(({ status, onClick, cl
         emerald: "bg-emerald-500/10 text-emerald-400 border-emerald-500/20",
         blue: "bg-blue-500/10 text-blue-400 border-blue-500/20",
         amber: "bg-amber-500/10 text-amber-400 border-amber-500/20",
-        slate: "bg-slate-500/10 text-slate-400 border-slate-500/20"
+        slate: "bg-slate-500/10 text-foreground/60 border-slate-500/20"
     };
 
     return (
@@ -308,10 +308,10 @@ const TaskListViewComponent: React.FC<TaskListViewProps> = ({ tasks, loading = f
                 // Active Tasks Logic
                 // Filter: "Today" / "Overdue" View (Applies only to Active)
                 if (view === 'today') {
-                    // Today Focus: Only show Today + Overdue from Yesterday
+                    // Today Focus: Show Today + all past Overdue tasks
                     const due = safeDate(t.dueDate);
                     if (!due) return;
-                    if (!(isToday(due) || isYesterday(due))) return;
+                    if (!(isToday(due) || isPast(due))) return;
                 } else if (view === 'overdue') {
                     const due = safeDate(t.dueDate);
                     if (!due || !isPast(due) || isToday(due)) return;
@@ -609,17 +609,45 @@ const TaskListViewComponent: React.FC<TaskListViewProps> = ({ tasks, loading = f
 
         // Handle completed_at logic securely on client for immediate feedback
         if (newStatus === 'done') {
-            updates.completed_at = new Date().toISOString(); // or new Date() depending on type, but string is safer for ISO
+            updates.completed_at = new Date().toISOString(); 
+            
+            onTaskMutate?.(
+                [taskId],
+                updates,
+                () => new Promise((resolve, reject) => {
+                    const timeoutId = setTimeout(() => {
+                        TaskService.updateTask(taskId, updates)
+                            .then(resolve)
+                            .catch(reject);
+                    }, 5000);
+                    
+                    toast.success('Task marked as completed', {
+                        action: {
+                            label: 'Undo',
+                            onClick: () => {
+                                clearTimeout(timeoutId);
+                                reject(new Error('UNDO'));
+                            }
+                        }
+                    });
+                }),
+                { serializableOp: { type: 'updateTask', args: [taskId, updates] } }
+            ).catch(err => {
+                if (err.message === 'UNDO') {
+                    toast.info('Task completion undone');
+                } else {
+                    throw err;
+                }
+            });
         } else {
             updates.completed_at = null; // Clear if re-opened
+            onTaskMutate?.(
+                [taskId],
+                updates,
+                () => TaskService.updateTask(taskId, updates),
+                { serializableOp: { type: 'updateTask', args: [taskId, updates] } }
+            );
         }
-
-        onTaskMutate?.(
-            [taskId],
-            updates,
-            () => TaskService.updateTask(taskId, updates),
-            { serializableOp: { type: 'updateTask', args: [taskId, updates] } }
-        );
     }, [onTaskMutate]);
 
     const handlePriorityUpdate = useCallback(async (taskId: string, newPriority: string) => {

@@ -109,7 +109,7 @@ const UserRoleManager = () => {
                   <span className={`px-2 py-1 rounded text-xs ${
                     user.role === 'admin' ? 'bg-red-200 text-red-800' :
                     ['manager', 'team', 'member'].includes(user.role) ? 'bg-blue-200 text-blue-800' :
-                    'bg-gray-200 text-gray-800'
+                    'bg-gray-200 text-foreground/20'
                   }`}>
                     {user.role}
                   </span>

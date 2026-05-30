@@ -31,11 +31,11 @@ const StatCard = ({ label, value, icon: Icon, colorClass, subtext }: { label: st
             <div className={`p-2 rounded-lg bg-foreground/5 ${colorClass}`}>
                 <Icon size={20} />
             </div>
-            <span className="text-sm font-medium text-gray-400">{label}</span>
+            <span className="text-sm font-medium text-foreground/60">{label}</span>
         </div>
         <div>
             <div className="text-2xl font-bold text-foreground">{value}</div>
-            {subtext && <div className="text-xs text-gray-500 mt-1">{subtext}</div>}
+            {subtext && <div className="text-xs text-foreground/50 mt-1">{subtext}</div>}
         </div>
     </div>
 );
@@ -164,7 +164,7 @@ export function OverviewDashboard() {
                         label="Total Tasks"
                         value={taskStats?.total || 0}
                         icon={Briefcase}
-                        colorClass="text-gray-500"
+                        colorClass="text-foreground/50"
                     />
                     <StatCard
                         label="Pending"
@@ -229,7 +229,7 @@ export function OverviewDashboard() {
                         label="Past Events"
                         value={eventStats?.completed || 0}
                         icon={CheckCircle}
-                        colorClass="text-gray-500"
+                        colorClass="text-foreground/50"
                     />
                 </div>
             </section >
@@ -272,7 +272,7 @@ function ReportDownloadButton() {
             <DialogContent className="sm:max-w-md bg-[#1a1f2e] border-[#ffffff1a] text-foreground">
                 <DialogHeader>
                     <DialogTitle>Download Monthly Report</DialogTitle>
-                    <DialogDescription className="text-gray-400 mt-2">
+                    <DialogDescription className="text-foreground/60 mt-2">
                         Select the month and year of the report you would like to generate.
                     </DialogDescription>
                 </DialogHeader>

@@ -26,18 +26,18 @@ export default function HomePageRedesign() {
             <div className="p-6 rounded-2xl bg-foreground/[0.03] border border-foreground/[0.05] flex justify-between items-center group hover:bg-foreground/[0.05] transition-colors">
               <div>
                 <div className="bg-blue-500/10 text-blue-400 text-xs font-medium px-2 py-1 rounded w-fit mb-2">Review Required</div>
-                <div className="text-slate-300 font-normal">Monthly Performance Report</div>
+                <div className="text-foreground font-normal">Monthly Performance Report</div>
               </div>
-              <div className="text-sm text-slate-500 group-hover:text-slate-400 transition-colors">Due Today</div>
+              <div className="text-sm text-foreground/50 group-hover:text-foreground/60 transition-colors">Due Today</div>
             </div>
 
             {/* Card 2 */}
             <div className="p-6 rounded-2xl bg-foreground/[0.03] border border-foreground/[0.05] flex justify-between items-center group hover:bg-foreground/[0.05] transition-colors">
               <div>
                 <div className="bg-emerald-500/10 text-emerald-400 text-xs font-medium px-2 py-1 rounded w-fit mb-2">Scheduled</div>
-                <div className="text-slate-300 font-normal">Inventory Audit</div>
+                <div className="text-foreground font-normal">Inventory Audit</div>
               </div>
-              <div className="text-sm text-slate-500 group-hover:text-slate-400 transition-colors">Tomorrow</div>
+              <div className="text-sm text-foreground/50 group-hover:text-foreground/60 transition-colors">Tomorrow</div>
             </div>
           </div>
         </PageSection>
@@ -45,7 +45,7 @@ export default function HomePageRedesign() {
         {/* Empty State / Calm Anchor - Refined baseline */}
         <div className="py-12 flex flex-col items-center justify-center text-center space-y-3 opacity-40">
           <div className="h-0.5 w-8 bg-slate-700/50 rounded-full"></div>
-          <p className="text-xs text-slate-500 tracking-wide">All systems nominal</p>
+          <p className="text-xs text-foreground/50 tracking-wide">All systems nominal</p>
         </div>
 
       </PageLayout>

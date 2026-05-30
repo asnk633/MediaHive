@@ -13,17 +13,17 @@ export const RiskDistributionWidget: React.FC<RiskDistributionProps> = ({ riskCo
     return (
         <Card className="bg-slate-900/30 border-[#ffffff1a] h-full">
             <CardHeader className="pb-2">
-                <CardTitle className="text-sm font-medium text-slate-400 uppercase tracking-wider">Workforce Risk Distribution</CardTitle>
+                <CardTitle className="text-sm font-medium text-foreground/60 uppercase tracking-wider">Workforce Risk Distribution</CardTitle>
             </CardHeader>
             <CardContent className="space-y-6">
                 <div className="flex items-end justify-between">
                     <div>
                         <span className="text-3xl font-bold text-foreground">{riskCount}</span>
-                        <span className="text-sm text-slate-500 ml-2">At Risk</span>
+                        <span className="text-sm text-foreground/50 ml-2">At Risk</span>
                     </div>
                     <div className="text-right">
-                        <span className="text-2xl font-bold text-slate-300">{safeCount}</span>
-                        <span className="text-sm text-slate-500 ml-2">Performing</span>
+                        <span className="text-2xl font-bold text-foreground">{safeCount}</span>
+                        <span className="text-sm text-foreground/50 ml-2">Performing</span>
                     </div>
                 </div>
 
@@ -41,7 +41,7 @@ export const RiskDistributionWidget: React.FC<RiskDistributionProps> = ({ riskCo
                     />
                 </div>
 
-                <div className="flex justify-between text-xs text-slate-500">
+                <div className="flex justify-between text-xs text-foreground/50">
                     <span className="flex items-center gap-1"><div className="w-2 h-2 rounded-full bg-emerald-500" /> Stable</span>
                     <span className="flex items-center gap-1"><div className="w-2 h-2 rounded-full bg-red-500" /> Action Required</span>
                 </div>

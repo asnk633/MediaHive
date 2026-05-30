@@ -129,7 +129,7 @@ export default function FeaturePermissionsClient() {
                             </div>
                             <div>
                                 <h2 className="text-lg font-bold text-foreground tracking-tight">Global Overrides</h2>
-                                <p className="text-sm text-slate-400 mt-1 leading-relaxed font-medium">
+                                <p className="text-sm text-foreground/60 mt-1 leading-relaxed font-medium">
                                     Adjusting these settings will immediately affect all users within this tenant. 
                                     Setting a feature to a higher role (e.g., Admin) will instantly hide it from lower roles.
                                 </p>

@@ -15,18 +15,18 @@ export default function CreateEventModalMember({ open, onClose }: { open: boolea
       <div className="fixed inset-x-0 bottom-0 z-[70] mx-auto max-w-xl rounded-t-2xl bg-[#1E1E1E] p-4">
         <header className="mb-3">
           <h3 className="text-lg font-bold">Create New Event</h3>
-          <p className="mt-1 text-sm text-gray-400">
+          <p className="mt-1 text-sm text-foreground/60">
             Admin will review and assign relevant resources/teams after submission.
           </p>
         </header>
 
         <div className="space-y-4">
           <label className="block">
-            <p className="pb-2 text-gray-300">Event Title</p>
+            <p className="pb-2 text-foreground">Event Title</p>
             <input className="h-12 w-full rounded-lg border border-gray-700 bg-[#1e1e1e] px-4 text-foreground focus:outline-none focus:ring-2 focus:ring-[#00BFA6]/50" />
           </label>
           <label className="block">
-            <p className="pb-2 text-gray-300">Description</p>
+            <p className="pb-2 text-foreground">Description</p>
             <textarea className="min-h-28 w-full rounded-lg border border-gray-700 bg-[#1e1e1e] p-4 text-foreground focus:outline-none focus:ring-2 focus:ring-[#00BFA6]/50" />
           </label>
 

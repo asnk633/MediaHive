@@ -72,10 +72,10 @@ export function MemberProfilePage() {
                         <h1 className="text-3xl font-bold text-foreground mb-2">{user.name}</h1>
                         <p className="text-blue-400 font-medium mb-4">{user.email}</p>
                         <div className="flex flex-wrap gap-3 justify-center md:justify-start">
-                            <span className="px-3 py-1 rounded-full bg-foreground/10 text-sm text-gray-300 border border-foreground/5">
+                            <span className="px-3 py-1 rounded-full bg-foreground/10 text-sm text-foreground border border-foreground/5">
                                 Member Account
                             </span>
-                            <span className="px-3 py-1 rounded-full bg-foreground/10 text-sm text-gray-300 border border-foreground/5">
+                            <span className="px-3 py-1 rounded-full bg-foreground/10 text-sm text-foreground border border-foreground/5">
                                 {user.department_id || 'General'}
                             </span>
                         </div>
@@ -103,7 +103,7 @@ export function MemberProfilePage() {
                     </div>
                     <div className="flex items-baseline gap-2">
                         <span className="text-3xl font-bold text-foreground">{loading ? '-' : activeCount}</span>
-                        <span className="text-gray-400 text-sm">in progress</span>
+                        <span className="text-foreground/60 text-sm">in progress</span>
                     </div>
                 </div>
  
@@ -116,7 +116,7 @@ export function MemberProfilePage() {
                     </div>
                     <div className="flex items-baseline gap-2">
                         <span className="text-3xl font-bold text-foreground">{loading ? '-' : completedCount}</span>
-                        <span className="text-gray-400 text-sm">delivered</span>
+                        <span className="text-foreground/60 text-sm">delivered</span>
                     </div>
                 </div>
             </div>
@@ -126,7 +126,7 @@ export function MemberProfilePage() {
                 <h3 className="text-xl font-bold text-foreground mb-6 px-2">Recent Request Activity</h3>
                 <div className="space-y-4">
                     {loading ? (
-                        <div className="text-gray-500 italic p-4">Loading activity...</div>
+                        <div className="text-foreground/50 italic p-4">Loading activity...</div>
                     ) : recentActivity.length > 0 ? (
                         recentActivity.map(task => (
                             <div key={task.id}
@@ -137,18 +137,18 @@ export function MemberProfilePage() {
                                     <div className={`w-2 h-2 rounded-full ${task.status === 'done' ? 'bg-green-500' : 'bg-blue-500'}`} />
                                     <div>
                                         <p className="text-foreground font-medium group-hover:text-blue-300 transition-colors">{task.title}</p>
-                                        <p className="text-gray-500 text-xs mt-1">
+                                        <p className="text-foreground/50 text-xs mt-1">
                                             Updated {task.updated_at?.seconds ? format(new Date(task.updated_at.seconds * 1000), 'MMM d, h:mm a') : 'Recently'}
                                         </p>
                                     </div>
                                 </div>
-                                <span className="text-xs font-bold text-gray-400 uppercase tracking-wider bg-black/20 px-2 py-1 rounded">
+                                <span className="text-xs font-bold text-foreground/60 uppercase tracking-wider bg-black/20 px-2 py-1 rounded">
                                     {task.status.replace('_', ' ')}
                                 </span>
                             </div>
                         ))
                     ) : (
-                        <div className="text-gray-500 italic p-4">No recent activity found.</div>
+                        <div className="text-foreground/50 italic p-4">No recent activity found.</div>
                     )}
                 </div>
             </div>

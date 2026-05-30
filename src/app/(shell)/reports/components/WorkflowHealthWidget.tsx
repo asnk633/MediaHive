@@ -53,7 +53,7 @@ export const WorkflowHealthWidget = ({ tasks }: WorkflowHealthWidgetProps) => {
                 </div>
                 <div>
                     <h3 className="text-lg font-bold text-foreground">Workflow Health</h3>
-                    <p className="text-xs text-gray-400">Active tasks by inferred stage</p>
+                    <p className="text-xs text-foreground/60">Active tasks by inferred stage</p>
                 </div>
             </div>
 
@@ -88,7 +88,7 @@ export const WorkflowHealthWidget = ({ tasks }: WorkflowHealthWidgetProps) => {
             <div className="grid grid-cols-4 gap-2 mt-4 pt-4 border-t border-foreground/5">
                 {data.map((item) => (
                     <div key={item.name} className="text-center">
-                        <p className="text-[10px] uppercase text-gray-500 font-bold tracking-wider">{item.name}</p>
+                        <p className="text-[10px] uppercase text-foreground/50 font-bold tracking-wider">{item.name}</p>
                         <p className="text-xl font-bold text-foreground mt-1">{item.count}</p>
                     </div>
                 ))}

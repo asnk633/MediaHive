@@ -91,10 +91,10 @@ class TasksScreen extends ConsumerWidget {
 
     return ListView(
       key: const ValueKey('tasks_content'),
-      padding: const EdgeInsets.only(
+      padding: EdgeInsets.only(
         left: AppSpacing.l, 
         right: AppSpacing.l, 
-        top: 140, 
+        top: 120 + MediaQuery.of(context).padding.top, 
         bottom: 120,
       ),
       children: [

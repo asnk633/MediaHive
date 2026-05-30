@@ -40,7 +40,7 @@ class NotificationCenterScreen extends ConsumerWidget {
             if (notifications.isEmpty) {
               return Column(
                 children: [
-                  _buildInternalHeader(colors, ref),
+                  _buildInternalHeader(context, colors, ref),
                   Expanded(child: _buildEmptyState(colors)),
                 ],
               );
@@ -54,9 +54,9 @@ class NotificationCenterScreen extends ConsumerWidget {
     );
   }
 
-  Widget _buildInternalHeader(ThemeColors colors, WidgetRef ref) {
+  Widget _buildInternalHeader(BuildContext context, ThemeColors colors, WidgetRef ref) {
     return Container(
-      margin: const EdgeInsets.only(top: 130), // Increased to ensure it clears the shell header
+      margin: EdgeInsets.only(top: 100 + MediaQuery.of(context).padding.top), // Increased to ensure it clears the shell header
       padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 16),
       child: Row(
         children: [
@@ -147,7 +147,7 @@ class NotificationCenterScreen extends ConsumerWidget {
       itemCount: notifications.length + extraItems,
       itemBuilder: (context, index) {
         if (index == 0) {
-          return _buildInternalHeader(colors, ref);
+          return _buildInternalHeader(context, colors, ref);
         }
         
         if (hasUpdate && index == 1) {

@@ -433,7 +433,7 @@ export default function CalendarClient() {
                                                     
                                                     // Task status colors mapping
                                                     const taskColors = {
-                                                        todo: 'bg-slate-500/20 text-slate-300 border-slate-500/30',
+                                                        todo: 'bg-slate-500/20 text-foreground border-slate-500/30',
                                                         in_progress: 'bg-blue-400/20 text-blue-300 border-blue-400/30',
                                                         review: 'bg-amber-400/20 text-amber-300 border-amber-400/30',
                                                         done: 'bg-emerald-500/20 text-emerald-300 border-emerald-500/30'
@@ -512,7 +512,7 @@ export default function CalendarClient() {
                                                 const isEvent = item.type === 'event';
                                                 
                                                 const taskColors = {
-                                                    todo: 'border-slate-500/30 text-slate-200 bg-slate-500/5 hover:bg-slate-500/10',
+                                                    todo: 'border-slate-500/30 text-foreground bg-slate-500/5 hover:bg-slate-500/10',
                                                     in_progress: 'border-blue-400/30 text-blue-200 bg-blue-400/5 hover:bg-blue-400/10',
                                                     review: 'border-amber-400/30 text-amber-200 bg-amber-400/5 hover:bg-amber-400/10',
                                                     done: 'border-emerald-500/30 text-emerald-200 bg-emerald-500/5 hover:bg-emerald-500/10 line-through opacity-60'
@@ -547,7 +547,7 @@ export default function CalendarClient() {
                                                                     "text-[7px] uppercase font-extrabold px-1 py-0.2 rounded border",
                                                                     item.data.priority === 'high' ? 'bg-red-500/10 text-red-400 border-red-500/25' :
                                                                     item.data.priority === 'medium' ? 'bg-yellow-500/10 text-yellow-400 border-yellow-500/25' :
-                                                                    'bg-slate-500/10 text-slate-400 border-slate-500/25'
+                                                                    'bg-slate-500/10 text-foreground/60 border-slate-500/25'
                                                                 )}>
                                                                     {item.data.priority}
                                                                 </span>
@@ -628,7 +628,7 @@ export default function CalendarClient() {
                                                         {item.type === 'task' && item.data.priority && (
                                                             <span className={cn(
                                                                 "text-[7px] uppercase font-extrabold px-1 rounded",
-                                                                item.data.priority === 'high' ? 'bg-red-500/10 text-red-400' : 'bg-slate-500/10 text-slate-400'
+                                                                item.data.priority === 'high' ? 'bg-red-500/10 text-red-400' : 'bg-slate-500/10 text-foreground/60'
                                                             )}>
                                                                 {item.data.priority}
                                                             </span>
@@ -690,7 +690,7 @@ function TaskCard({ task }: { task: TaskLite }) {
                     "shrink-0 rounded-full px-2 py-0.5 text-[8px] font-bold uppercase tracking-wider border",
                     task.priority === 'high' ? 'bg-red-500/10 text-red-400 border-red-500/20' :
                         task.priority === 'medium' ? 'bg-yellow-500/10 text-yellow-400 border-yellow-500/20' :
-                            'bg-slate-500/10 text-slate-400 border-slate-500/20'
+                            'bg-slate-500/10 text-foreground/60 border-slate-500/20'
                 )}>
                     {task.priority || 'low'}
                 </span>

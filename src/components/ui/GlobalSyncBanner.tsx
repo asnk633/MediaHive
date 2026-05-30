@@ -64,7 +64,7 @@ export function GlobalSyncBanner() {
                     isAuthPaused
                         ? "bg-amber-500/10 border-amber-500/30 text-amber-500"
                         : !isOnline
-                            ? "bg-slate-900/80 border-slate-700 text-slate-300"
+                            ? "bg-slate-900/80 border-slate-700 text-foreground"
                             : "bg-blue-500/10 border-blue-500/30 text-blue-400"
                 )}
             >

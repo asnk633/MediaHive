@@ -236,7 +236,7 @@ export default function InventoryView() {
                         <Button
                             variant="ghost"
                             onClick={() => nativeNavigate('/inventory/requests', router, 'InventoryView (Requests)')}
-                            className="text-slate-300 hover:text-foreground hover:bg-foreground/10"
+                            className="text-foreground hover:text-foreground hover:bg-foreground/10"
                         >
                             <Clock className="w-4 h-4 mr-2" />
                             {['admin', 'manager'].includes(currentRole) ? 'Requests' : 'My Requests'}
@@ -260,7 +260,7 @@ export default function InventoryView() {
                                         }));
                                         import('@/utils/export').then(mod => mod.downloadCSV(exportData, `inventory_${new Date().toISOString().split('T')[0]}.csv`));
                                     }}
-                                    className="text-slate-300 hover:text-foreground hover:bg-foreground/10 hidden sm:flex"
+                                    className="text-foreground hover:text-foreground hover:bg-foreground/10 hidden sm:flex"
                                 >
                                     <FileDown className="w-4 h-4 mr-2" />
                                     Export
@@ -279,7 +279,7 @@ export default function InventoryView() {
 
             {/* Categorization Guide */}
             <Collapsible open={isGuideOpen} onOpenChange={setIsGuideOpen} className="glass-card rounded-xl overflow-hidden shadow-lg">
-                <CollapsibleTrigger className="flex items-center justify-between w-full px-4 py-3 text-sm font-medium text-slate-400 hover:text-foreground hover:bg-foreground/5 transition-colors">
+                <CollapsibleTrigger className="flex items-center justify-between w-full px-4 py-3 text-sm font-medium text-foreground/60 hover:text-foreground hover:bg-foreground/5 transition-colors">
                     <div className="flex items-center gap-2">
                         <Info className="w-4 h-4 text-blue-400" />
                         Media Inventory Categorization Guide
@@ -380,7 +380,7 @@ export default function InventoryView() {
                     {/* Secondary Info / Summary could go here */}
                     <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                         <div className="bg-glass border-soft p-4 rounded-xl">
-                            <h4 className="text-[10px] uppercase font-bold text-slate-500 mb-1">Active Bookings</h4>
+                            <h4 className="text-[10px] uppercase font-bold text-foreground/50 mb-1">Active Bookings</h4>
                             <p className="text-2xl font-bold text-foreground">{activeIssues.length}</p>
                         </div>
                         {/* More summary cards... */}

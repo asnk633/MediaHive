@@ -296,7 +296,7 @@ export default function InventoryForm({ initialData, mode }: InventoryFormProps)
                     <AlertTriangle className="h-12 w-12 text-yellow-500" />
                 </div>
                 <h2 className="text-2xl font-bold text-foreground mb-2">Unauthorized</h2>
-                <p className="text-slate-400 mb-6">
+                <p className="text-foreground/60 mb-6">
                     You do not have permission to manage inventory assets.
                 </p>
                 <div className="flex justify-center gap-4">
@@ -315,7 +315,7 @@ export default function InventoryForm({ initialData, mode }: InventoryFormProps)
                     <button
                         type="button"
                         onClick={() => router.back()}
-                        className="p-2 rounded-full hover:bg-foreground/5 text-slate-400 transition-colors"
+                        className="p-2 rounded-full hover:bg-foreground/5 text-foreground/60 transition-colors"
                     >
                         <ArrowLeft className="w-5 h-5" />
                     </button>
@@ -323,7 +323,7 @@ export default function InventoryForm({ initialData, mode }: InventoryFormProps)
                         <h1 className="text-2xl font-bold text-foreground">
                             {mode === 'create' ? 'Add New Item' : 'Edit Item'}
                         </h1>
-                        <p className="text-slate-400 text-sm">Fill in the details for your equipment or consumable.</p>
+                        <p className="text-foreground/60 text-sm">Fill in the details for your equipment or consumable.</p>
                     </div>
                 </div>
                 <Button 
@@ -458,8 +458,8 @@ export default function InventoryForm({ initialData, mode }: InventoryFormProps)
 
                         <div className="flex items-center justify-between p-4 rounded-xl bg-blue-500/5 border border-blue-500/10">
                             <div>
-                                <Label className="text-slate-200 font-bold block">Available for External Rental</Label>
-                                <p className="text-[11px] text-slate-500 mt-0.5">Enable this to list the item as rentable to external entities.</p>
+                                <Label className="text-foreground font-bold block">Available for External Rental</Label>
+                                <p className="text-[11px] text-foreground/50 mt-0.5">Enable this to list the item as rentable to external entities.</p>
                             </div>
                             <div className="flex items-center gap-2">
                                 <label className="relative inline-flex items-center cursor-pointer">
@@ -478,7 +478,7 @@ export default function InventoryForm({ initialData, mode }: InventoryFormProps)
                             <div className="space-y-2 animate-in fade-in slide-in-from-top-2 duration-300">
                                 <Label className={labelClasses}>Daily Rental Rate (₹)</Label>
                                 <div className="relative">
-                                    <span className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-500 text-sm font-bold">₹</span>
+                                    <span className="absolute left-3 top-1/2 -translate-y-1/2 text-foreground/50 text-sm font-bold">₹</span>
                                     <Input
                                         type="number"
                                         value={(formData as any).rentalRatePerDay || 0}
@@ -500,7 +500,7 @@ export default function InventoryForm({ initialData, mode }: InventoryFormProps)
                             <div className="grid grid-cols-1 gap-4">
                                 {/* Cover Slot */}
                                 <div className="space-y-2">
-                                    <span className="text-[10px] uppercase tracking-widest text-slate-500 font-bold">Cover Photo</span>
+                                    <span className="text-[10px] uppercase tracking-widest text-foreground/50 font-bold">Cover Photo</span>
                                     <div className="aspect-video relative rounded-xl border border-dashed border-foreground/10 overflow-hidden group">
                                         {formData.images[0] ? (
                                             <>
@@ -516,7 +516,7 @@ export default function InventoryForm({ initialData, mode }: InventoryFormProps)
                                             </>
                                         ) : (
                                             <div className="absolute inset-0 flex flex-col items-center justify-center gap-2 bg-foreground/[0.02]">
-                                                <ImageIcon className="w-8 h-8 text-slate-700" />
+                                                <ImageIcon className="w-8 h-8 text-foreground/30" />
                                                 <Label className="cursor-pointer">
                                                     <span className="text-xs text-blue-400 hover:text-blue-300 transition-colors">Upload Cover</span>
                                                     <Input type="file" className="hidden" accept="image/*" onChange={(e) => handleImageSelect(e, 0)} />

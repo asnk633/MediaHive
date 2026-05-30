@@ -112,7 +112,7 @@ export default function SignupClient() {
                             </div>
                         </div>
                         <h2 className="text-3xl font-bold text-foreground">Check Your Email</h2>
-                        <p className="text-slate-400">
+                        <p className="text-foreground/60">
                             We've sent a confirmation link to <span className="text-foreground font-medium">{email}</span>. Please verify your email to activate your account.
                         </p>
                         <button
@@ -151,7 +151,7 @@ export default function SignupClient() {
                     >
                         MediaHive
                     </h1>
-                    <p className="text-xs md:text-sm text-slate-300 font-bold uppercase tracking-wider max-w-md mx-auto">
+                    <p className="text-xs md:text-sm text-foreground font-bold uppercase tracking-wider max-w-md mx-auto">
                         The Central Hub for Thaiba Garden Media & IT
                     </p>
                 </div>
@@ -160,7 +160,7 @@ export default function SignupClient() {
                     <div className="p-8">
                         <div className="mb-6 space-y-2">
                             <h2 className="text-2xl font-bold text-foreground">Create Account</h2>
-                            <p className="text-xs text-slate-400 leading-relaxed">
+                            <p className="text-xs text-foreground/60 leading-relaxed">
                                 Join the unified control center to request tasks, access assets, schedule events, and collaborate with our teams at Thaiba Garden Media and IT department.
                             </p>
                         </div>
@@ -181,29 +181,29 @@ export default function SignupClient() {
 
                             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                                 <div className="space-y-2">
-                                    <label className="text-[10px] font-bold text-slate-400 uppercase tracking-widest ml-1">
+                                    <label className="text-[10px] font-bold text-foreground/60 uppercase tracking-widest ml-1">
                                         Display Name
                                     </label>
                                     <div className="relative group">
-                                        <User className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-500 group-focus-within:text-primary transition-colors" />
+                                        <User className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-foreground/50 group-focus-within:text-primary transition-colors" />
                                         <input
                                             type="text"
                                             required
                                             value={fullName}
                                             onChange={(e) => setFullName(e.target.value)}
                                             placeholder="Your Name"
-                                            className="w-full h-11 bg-foreground/5 border border-foreground/10 rounded-full pl-11 pr-6 text-foreground placeholder:text-slate-600 focus:outline-none focus:ring-2 focus:ring-primary/40 focus:bg-foreground/10 transition-all text-sm"
+                                            className="w-full h-11 bg-foreground/5 border border-foreground/10 rounded-full pl-11 pr-6 text-foreground placeholder:text-foreground/40 focus:outline-none focus:ring-2 focus:ring-primary/40 focus:bg-foreground/10 transition-all text-sm"
                                             suppressHydrationWarning
                                         />
                                     </div>
                                 </div>
 
                                 <div className="space-y-2">
-                                    <label className="text-[10px] font-bold text-slate-400 uppercase tracking-widest ml-1">
+                                    <label className="text-[10px] font-bold text-foreground/60 uppercase tracking-widest ml-1">
                                         Institution
                                     </label>
                                     <div className="relative group">
-                                        <Building2 className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-500 group-focus-within:text-primary transition-colors" />
+                                        <Building2 className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-foreground/50 group-focus-within:text-primary transition-colors" />
                                         <select
                                             value={institutionId}
                                             onChange={(e) => setInstitutionId(e.target.value)}
@@ -221,11 +221,11 @@ export default function SignupClient() {
                                 </div>
 
                                 <div className="space-y-2">
-                                    <label className="text-[10px] font-bold text-slate-400 uppercase tracking-widest ml-1">
+                                    <label className="text-[10px] font-bold text-foreground/60 uppercase tracking-widest ml-1">
                                         Department
                                     </label>
                                     <div className="relative group">
-                                        <LayoutGrid className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-500 group-focus-within:text-primary transition-colors" />
+                                        <LayoutGrid className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-foreground/50 group-focus-within:text-primary transition-colors" />
                                         <select
                                             value={departmentId}
                                             onChange={(e) => setDepartmentId(e.target.value)}
@@ -244,18 +244,18 @@ export default function SignupClient() {
                             </div>
 
                             <div className="space-y-2">
-                                <label className="text-[10px] font-bold text-slate-400 uppercase tracking-widest ml-1">
+                                <label className="text-[10px] font-bold text-foreground/60 uppercase tracking-widest ml-1">
                                     Email Address
                                 </label>
                                 <div className="relative group">
-                                    <Mail className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-500 group-focus-within:text-primary transition-colors" />
+                                    <Mail className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-foreground/50 group-focus-within:text-primary transition-colors" />
                                     <input
                                         type="email"
                                         required
                                         value={email}
                                         onChange={(e) => setEmail(e.target.value)}
                                         placeholder="your@email.com"
-                                        className="w-full h-11 bg-foreground/5 border border-foreground/10 rounded-full pl-11 pr-6 text-foreground placeholder:text-slate-600 focus:outline-none focus:ring-2 focus:ring-primary/40 focus:bg-foreground/10 transition-all text-sm"
+                                        className="w-full h-11 bg-foreground/5 border border-foreground/10 rounded-full pl-11 pr-6 text-foreground placeholder:text-foreground/40 focus:outline-none focus:ring-2 focus:ring-primary/40 focus:bg-foreground/10 transition-all text-sm"
                                         suppressHydrationWarning
                                     />
                                 </div>
@@ -263,24 +263,24 @@ export default function SignupClient() {
 
                             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                                 <div className="space-y-2">
-                                    <label className="text-[10px] font-bold text-slate-400 uppercase tracking-widest ml-1">
+                                    <label className="text-[10px] font-bold text-foreground/60 uppercase tracking-widest ml-1">
                                         Create Password
                                     </label>
                                     <div className="relative group">
-                                        <Lock className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-500 group-focus-within:text-primary transition-colors" />
+                                        <Lock className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-foreground/50 group-focus-within:text-primary transition-colors" />
                                         <input
                                             type={showPassword ? "text" : "password"}
                                             required
                                             value={password}
                                             onChange={(e) => setPassword(e.target.value)}
                                             placeholder="••••••••••••"
-                                            className="w-full h-11 bg-foreground/5 border border-foreground/10 rounded-full pl-11 pr-12 text-foreground placeholder:text-slate-600 focus:outline-none focus:ring-2 focus:ring-primary/40 focus:bg-foreground/10 transition-all text-sm"
+                                            className="w-full h-11 bg-foreground/5 border border-foreground/10 rounded-full pl-11 pr-12 text-foreground placeholder:text-foreground/40 focus:outline-none focus:ring-2 focus:ring-primary/40 focus:bg-foreground/10 transition-all text-sm"
                                             suppressHydrationWarning
                                         />
                                         <button
                                             type="button"
                                             onClick={() => setShowPassword(!showPassword)}
-                                            className="absolute right-3 top-1/2 -translate-y-1/2 p-2 text-slate-400 hover:text-foreground transition-all z-50 cursor-pointer flex items-center justify-center"
+                                            className="absolute right-3 top-1/2 -translate-y-1/2 p-2 text-foreground/60 hover:text-foreground transition-all z-50 cursor-pointer flex items-center justify-center"
                                             title={showPassword ? "Hide password" : "Show password"}
                                         >
                                             {showPassword ? <EyeOff className="w-5 h-5" /> : <Eye className="w-5 h-5" />}
@@ -289,24 +289,24 @@ export default function SignupClient() {
                                 </div>
 
                                 <div className="space-y-2">
-                                    <label className="text-[10px] font-bold text-slate-400 uppercase tracking-widest ml-1">
+                                    <label className="text-[10px] font-bold text-foreground/60 uppercase tracking-widest ml-1">
                                         Confirm Password
                                     </label>
                                     <div className="relative group">
-                                        <Lock className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-500 group-focus-within:text-primary transition-colors" />
+                                        <Lock className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-foreground/50 group-focus-within:text-primary transition-colors" />
                                         <input
                                             type={showConfirmPassword ? "text" : "password"}
                                             required
                                             value={confirmPassword}
                                             onChange={(e) => setConfirmPassword(e.target.value)}
                                             placeholder="••••••••••••"
-                                            className="w-full h-11 bg-foreground/5 border border-foreground/10 rounded-full pl-11 pr-12 text-foreground placeholder:text-slate-600 focus:outline-none focus:ring-2 focus:ring-primary/40 focus:bg-foreground/10 transition-all text-sm"
+                                            className="w-full h-11 bg-foreground/5 border border-foreground/10 rounded-full pl-11 pr-12 text-foreground placeholder:text-foreground/40 focus:outline-none focus:ring-2 focus:ring-primary/40 focus:bg-foreground/10 transition-all text-sm"
                                             suppressHydrationWarning
                                         />
                                         <button
                                             type="button"
                                             onClick={() => setShowConfirmPassword(!showConfirmPassword)}
-                                            className="absolute right-3 top-1/2 -translate-y-1/2 p-2 text-slate-400 hover:text-foreground transition-all z-50 cursor-pointer flex items-center justify-center"
+                                            className="absolute right-3 top-1/2 -translate-y-1/2 p-2 text-foreground/60 hover:text-foreground transition-all z-50 cursor-pointer flex items-center justify-center"
                                             title={showConfirmPassword ? "Hide password" : "Show password"}
                                         >
                                             {showConfirmPassword ? <EyeOff className="w-5 h-5" /> : <Eye className="w-5 h-5" />}
@@ -331,7 +331,7 @@ export default function SignupClient() {
                             </button>
 
                             <div className="text-center pt-2">
-                                <p className="text-sm text-slate-400 font-medium">
+                                <p className="text-sm text-foreground/60 font-medium">
                                     Already have an account? <button 
                                         type="button" 
                                         onClick={() => nativeNavigate('/login', router, 'Signup-Login')}
@@ -345,7 +345,7 @@ export default function SignupClient() {
                     </div>
                 </div>
 
-                <p className="text-[11px] font-bold text-slate-500/60 uppercase tracking-[0.2em] text-center">
+                <p className="text-[11px] font-bold text-foreground/50/60 uppercase tracking-[0.2em] text-center">
                     © 2026 Thaiba Garden - Media
                 </p>
             </div>

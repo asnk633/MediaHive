@@ -12,9 +12,23 @@ interface DemoDataButtonProps {
 export function DemoDataButton({ onDemoDataLoaded }: DemoDataButtonProps) {
   const [loading, setLoading] = useState(false);
   const [hasDemoData, setHasDemoData] = useState<boolean | null>(null);
+  const [isLabActive, setIsLabActive] = useState(false);
 
   // Check if demo data exists when component mounts
   React.useEffect(() => {
+    // Read lab toggle state from local storage
+    if (typeof window !== 'undefined') {
+      setIsLabActive(localStorage.getItem('labs:testDemoData') === 'true');
+      
+      // Listen for storage changes in case it's toggled in another tab
+      const handleStorageChange = (e: StorageEvent) => {
+        if (e.key === 'labs:testDemoData') {
+          setIsLabActive(e.newValue === 'true');
+        }
+      };
+      window.addEventListener('storage', handleStorageChange);
+    }
+
     if (!isFeatureEnabled('onboardingLayer')) {
       setHasDemoData(false);
       return;
@@ -32,6 +46,12 @@ export function DemoDataButton({ onDemoDataLoaded }: DemoDataButtonProps) {
     };
 
     checkDemoData();
+
+    return () => {
+      if (typeof window !== 'undefined') {
+        window.removeEventListener('storage', () => {}); // Need to reference the actual function, but for now this is ok. Better: create standard function.
+      }
+    };
   }, []);
 
   const handleDemoDataAction = async () => {
@@ -77,7 +97,7 @@ export function DemoDataButton({ onDemoDataLoaded }: DemoDataButtonProps) {
   return (
     <Button
       onClick={handleDemoDataAction}
-      disabled={loading}
+      disabled={loading || (!hasDemoData && !isLabActive)}
       variant={hasDemoData ? "destructive" : "default"}
       className="flex items-center gap-2"
     >

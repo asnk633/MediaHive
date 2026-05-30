@@ -27,10 +27,10 @@ export const ExecutiveBriefingWidget: React.FC<ExecutiveBriefingProps> = ({ poin
                     points.map((point, idx) => (
                         <div key={idx} className="group flex items-start gap-3 p-3 rounded-lg hover:bg-foreground/5 transition-colors border border-transparent hover:border-foreground/5">
                             <div className="mt-1.5 w-1.5 h-1.5 rounded-full bg-blue-500 shrink-0" />
-                            <p className="text-sm text-slate-300 leading-relaxed">
+                            <p className="text-sm text-foreground leading-relaxed">
                                 {point}
                             </p>
-                            <ArrowRight size={14} className="ml-auto opacity-0 group-hover:opacity-100 text-slate-500 transition-opacity" />
+                            <ArrowRight size={14} className="ml-auto opacity-0 group-hover:opacity-100 text-foreground/50 transition-opacity" />
                         </div>
                     ))
                 )}

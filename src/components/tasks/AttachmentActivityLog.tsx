@@ -87,7 +87,7 @@ export const AttachmentActivityLog: React.FC<AttachmentActivityLogProps> = ({ ta
                 )}
 
                 {logs.map(log => (
-                    <div key={log.id} className="flex gap-3 text-sm text-slate-400 items-start transition-opacity animate-in fade-in slide-in-from-top-1 duration-300">
+                    <div key={log.id} className="flex gap-3 text-sm text-foreground/60 items-start transition-opacity animate-in fade-in slide-in-from-top-1 duration-300">
                         <div className="mt-1 shrink-0">
                             {log.action === 'upload' && <UploadCloud size={14} className="text-blue-400" />}
                             {log.action === 'delete' && <Trash2 size={14} className="text-red-400" />}
@@ -97,7 +97,7 @@ export const AttachmentActivityLog: React.FC<AttachmentActivityLogProps> = ({ ta
                         <div className="min-w-0">
                             <div className="flex flex-wrap items-baseline gap-1">
                                 <span className="text-foreground font-medium">{log.performed_by.name}</span>
-                                <span className="text-slate-500">
+                                <span className="text-foreground/50">
                                     {log.action === 'upload' && 'uploaded'}
                                     {log.action === 'delete' && 'deleted'}
                                     {log.action === 'visibility_public' && 'made public'}
@@ -105,7 +105,7 @@ export const AttachmentActivityLog: React.FC<AttachmentActivityLogProps> = ({ ta
                                 </span>
                                 <span className="font-medium text-blue-200/80 whitespace-pre-wrap break-all">{log.file_name}</span>
                             </div>
-                            <div className="text-[10px] text-slate-600 mt-1 flex items-center gap-2">
+                            <div className="text-[10px] text-foreground/40 mt-1 flex items-center gap-2">
                                 <Clock size={10} />
                                 {format(new Date(log.timestamp), 'MMM dd, h:mm a')}
                             </div>

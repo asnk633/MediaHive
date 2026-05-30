@@ -93,6 +93,14 @@ export const CreateEventForm = ({ initialDate, initialEndDate, initialEvent, onS
     const [autoGenerateTasks, setAutoGenerateTasks] = useState(true);
     const [isCheckingConflicts, setIsCheckingConflicts] = useState(false);
     const [is_demo_data, setIsDemoData] = useState(false);
+    
+    // Labs Feature Flag
+    const [labsDemoDataEnabled, setLabsDemoDataEnabled] = useState(false);
+    useEffect(() => {
+        if (typeof window !== 'undefined') {
+            setLabsDemoDataEnabled(localStorage.getItem('labs:testDemoData') === 'true');
+        }
+    }, []);
 
     // Popover State (to fix overlay bug)
     const [datePopoverOpen, setDatePopoverOpen] = useState(false);
@@ -573,7 +581,7 @@ export const CreateEventForm = ({ initialDate, initialEndDate, initialEvent, onS
                 </div>
 
                 {/* Demo Data Toggle */}
-                {(user?.role === 'admin' || user?.role === 'manager') && (
+                {(user?.role === 'admin' || user?.role === 'manager') && labsDemoDataEnabled && (
                     <div className="p-4 rounded-2xl bg-amber-500/5 border border-amber-500/10">
                         <div className="flex items-center justify-between">
                             <div className="flex items-center gap-3">

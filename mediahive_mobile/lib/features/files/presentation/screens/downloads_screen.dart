@@ -79,7 +79,7 @@ class _DownloadsScreenState extends ConsumerState<DownloadsScreen> {
               // Header
               SliverToBoxAdapter(
                 child: Padding(
-                  padding: const EdgeInsets.only(left: AppSpacing.l, right: AppSpacing.l, top: 140),
+                  padding: EdgeInsets.only(left: AppSpacing.l, right: AppSpacing.l, top: 120 + MediaQuery.of(context).padding.top),
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [

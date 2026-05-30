@@ -20,8 +20,8 @@ export default function TaskList({ tasks }: { tasks: any[] }) {
                 <div key={t.id} className="p-4 bg-white rounded-lg shadow-sm flex justify-between items-center">
                     <div>
                         <div className="text-lg font-medium">{t.title}</div>
-                        <div className="text-sm text-gray-600">{t.description}</div>
-                        <div className="text-xs mt-2 text-gray-500">Priority: {t.priority} • Status: {t.status}</div>
+                        <div className="text-sm text-foreground/40">{t.description}</div>
+                        <div className="text-xs mt-2 text-foreground/50">Priority: {t.priority} • Status: {t.status}</div>
                     </div>
                     <div className="flex items-center gap-2">
                         <button className="btn" onClick={() => toggleComplete(t)}>

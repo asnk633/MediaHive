@@ -73,7 +73,7 @@ export const TeamLoadWidget = ({ tasks }: TeamLoadWidgetProps) => {
 
     if (data.length === 0) {
         return (
-            <div className="bg-foreground/5 backdrop-blur-md border border-[#ffffff1a] rounded-2xl p-6 shadow-xl h-full flex flex-col items-center justify-center text-gray-500">
+            <div className="bg-foreground/5 backdrop-blur-md border border-[#ffffff1a] rounded-2xl p-6 shadow-xl h-full flex flex-col items-center justify-center text-foreground/50">
                 <Users size={48} className="opacity-20 mb-4" />
                 <p>No active team assignments found.</p>
             </div>
@@ -88,7 +88,7 @@ export const TeamLoadWidget = ({ tasks }: TeamLoadWidgetProps) => {
                 </div>
                 <div>
                     <h3 className="text-lg font-bold text-foreground">Team Load Overview</h3>
-                    <p className="text-xs text-gray-400">Active assignments by stage</p>
+                    <p className="text-xs text-foreground/60">Active assignments by stage</p>
                 </div>
             </div>
 

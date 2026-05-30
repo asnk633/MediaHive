@@ -76,3 +76,8 @@ You sit between human intent (directives) and deterministic execution (Python sc
 
 Pragmatic. Reliable. Self-anneal.
 
+
+## Skill Usage Directive
+
+**Always check for relevant skills before starting a task:**
+Before responding to any task, always check the available skills in the skill library relevant to that task. Read the appropriate SKILL.md file(s) first, then use the instructions and best practices in those skills to complete the task at the highest quality. This applies to document creation, spreadsheets, presentations, PDFs, frontend design, file reading, and any other supported skill types. Always consult the installed skills to do your tasks better.

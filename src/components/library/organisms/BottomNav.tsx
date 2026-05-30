@@ -32,7 +32,7 @@ export const BottomNav = ({ activeTab = 'home' }: { activeTab?: string }) => {
                 return (
                     <button
                         key={item.id}
-                        className={`flex flex-col items-center justify-center w-12 h-full transition-colors ${isActive ? 'text-[#0096FF]' : 'text-gray-400 hover:text-gray-600'}`}
+                        className={`flex flex-col items-center justify-center w-12 h-full transition-colors ${isActive ? 'text-[#0096FF]' : 'text-foreground/60 hover:text-foreground/40'}`}
                     >
                         <Icon size={24} className={isActive ? 'stroke-[2.5px]' : 'stroke-2'} />
                         <span className="text-[10px] font-medium mt-0.5">{item.label}</span>

@@ -96,12 +96,12 @@ export function ExportModal({ isOpen, onClose, availableUsers }: ExportModalProp
                             </div>
                             <div>
                                 <h2 className="text-lg font-bold text-foreground">Export Data</h2>
-                                <p className="text-xs text-gray-400">Secure, audited data export</p>
+                                <p className="text-xs text-foreground/60">Secure, audited data export</p>
                             </div>
                         </div>
                         <button
                             onClick={onClose}
-                            className="p-2 rounded-lg hover:bg-foreground/10 text-gray-400 hover:text-foreground transition-colors"
+                            className="p-2 rounded-lg hover:bg-foreground/10 text-foreground/60 hover:text-foreground transition-colors"
                         >
                             <X size={20} />
                         </button>
@@ -115,13 +115,13 @@ export function ExportModal({ isOpen, onClose, availableUsers }: ExportModalProp
 
                             {/* Type Selector */}
                             <div>
-                                <label className="text-xs font-semibold text-gray-400 uppercase tracking-wider mb-3 block">Export Type</label>
+                                <label className="text-xs font-semibold text-foreground/60 uppercase tracking-wider mb-3 block">Export Type</label>
                                 <div className="grid grid-cols-3 gap-2">
                                     <button
                                         onClick={() => setExportType('department')}
                                         className={`flex flex-col items-center justify-center p-3 rounded-xl border transition-all ${exportType === 'department'
                                             ? 'bg-indigo-600 border-indigo-500 text-foreground shadow-lg shadow-indigo-900/20'
-                                            : 'bg-foreground/5 border-[#ffffff1a] text-gray-400 hover:bg-foreground/10'
+                                            : 'bg-foreground/5 border-[#ffffff1a] text-foreground/60 hover:bg-foreground/10'
                                             }`}
                                     >
                                         <Building size={20} className="mb-2" />
@@ -131,7 +131,7 @@ export function ExportModal({ isOpen, onClose, availableUsers }: ExportModalProp
                                         onClick={() => setExportType('attendance')}
                                         className={`flex flex-col items-center justify-center p-3 rounded-xl border transition-all ${exportType === 'attendance'
                                             ? 'bg-indigo-600 border-indigo-500 text-foreground shadow-lg shadow-indigo-900/20'
-                                            : 'bg-foreground/5 border-[#ffffff1a] text-gray-400 hover:bg-foreground/10'
+                                            : 'bg-foreground/5 border-[#ffffff1a] text-foreground/60 hover:bg-foreground/10'
                                             }`}
                                     >
                                         <Users size={20} className="mb-2" />
@@ -141,7 +141,7 @@ export function ExportModal({ isOpen, onClose, availableUsers }: ExportModalProp
                                         onClick={() => setExportType('user')}
                                         className={`flex flex-col items-center justify-center p-3 rounded-xl border transition-all ${exportType === 'user'
                                             ? 'bg-indigo-600 border-indigo-500 text-foreground shadow-lg shadow-indigo-900/20'
-                                            : 'bg-foreground/5 border-[#ffffff1a] text-gray-400 hover:bg-foreground/10'
+                                            : 'bg-foreground/5 border-[#ffffff1a] text-foreground/60 hover:bg-foreground/10'
                                             }`}
                                     >
                                         <FileText size={20} className="mb-2" />
@@ -155,18 +155,18 @@ export function ExportModal({ isOpen, onClose, availableUsers }: ExportModalProp
 
                                 {/* Format */}
                                 <div>
-                                    <label className="text-xs text-gray-500 mb-1.5 block">Format</label>
+                                    <label className="text-xs text-foreground/50 mb-1.5 block">Format</label>
                                     <div className="flex bg-black/20 p-1 rounded-lg border border-[#ffffff1a]">
                                         <button
                                             onClick={() => setFormat('csv')}
-                                            className={`flex-1 py-1.5 text-xs font-medium rounded-md transition-all ${format === 'csv' ? 'bg-foreground/10 text-foreground' : 'text-gray-500 hover:text-gray-300'
+                                            className={`flex-1 py-1.5 text-xs font-medium rounded-md transition-all ${format === 'csv' ? 'bg-foreground/10 text-foreground' : 'text-foreground/50 hover:text-foreground'
                                                 }`}
                                         >
                                             CSV (Excel)
                                         </button>
                                         <button
                                             onClick={() => setFormat('json')}
-                                            className={`flex-1 py-1.5 text-xs font-medium rounded-md transition-all ${format === 'json' ? 'bg-foreground/10 text-foreground' : 'text-gray-500 hover:text-gray-300'
+                                            className={`flex-1 py-1.5 text-xs font-medium rounded-md transition-all ${format === 'json' ? 'bg-foreground/10 text-foreground' : 'text-foreground/50 hover:text-foreground'
                                                 }`}
                                         >
                                             JSON (Raw)
@@ -242,10 +242,10 @@ export function ExportModal({ isOpen, onClose, availableUsers }: ExportModalProp
                                     <ShieldAlert size={24} />
                                 </div>
                                 <h3 className="text-foreground font-bold text-lg">Institutional Compliance Required</h3>
-                                <p className="text-sm text-gray-400 leading-relaxed">
+                                <p className="text-sm text-foreground/60 leading-relaxed">
                                     This system enforces strict accountability constraints. All data exports are:
                                 </p>
-                                <ul className="text-sm text-left text-gray-400 space-y-2 bg-black/20 p-4 rounded-lg">
+                                <ul className="text-sm text-left text-foreground/60 space-y-2 bg-black/20 p-4 rounded-lg">
                                     <li className="flex gap-2"><div className="w-1.5 h-1.5 rounded-full bg-blue-500 mt-1.5" /> Logged in the permanent audit trail</li>
                                     <li className="flex gap-2"><div className="w-1.5 h-1.5 rounded-full bg-blue-500 mt-1.5" /> Restricted to authorized personnel only</li>
                                     <li className="flex gap-2"><div className="w-1.5 h-1.5 rounded-full bg-blue-500 mt-1.5" /> Monitored for regulatory compliance</li>
@@ -262,7 +262,7 @@ export function ExportModal({ isOpen, onClose, availableUsers }: ExportModalProp
                         <div className="p-6 border-t border-[#ffffff1a] flex justify-end gap-3 bg-foreground/5">
                             <button
                                 onClick={onClose}
-                                className="px-4 py-2 text-sm font-medium text-gray-400 hover:text-foreground transition-colors"
+                                className="px-4 py-2 text-sm font-medium text-foreground/60 hover:text-foreground transition-colors"
                             >
                                 Cancel
                             </button>

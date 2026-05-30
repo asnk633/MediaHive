@@ -53,11 +53,11 @@ export const MyWorkflowWidget = ({ tasks, userId }: MyWorkflowWidgetProps) => {
             `}
         >
             <div className={`p-2 rounded-full bg-foreground/5 mb-2 group-hover:scale-110 transition-transform`}>
-                <Icon size={20} className={count > 0 ? "text-foreground" : "text-gray-500"} />
+                <Icon size={20} className={count > 0 ? "text-foreground" : "text-foreground/50"} />
             </div>
             <span className="text-2xl font-bold text-foreground">{count}</span>
-            <span className="text-[10px] uppercase font-bold text-gray-400 tracking-wider mt-1">{label}</span>
-            {subtitle && <span className="text-[9px] text-gray-600 font-medium absolute bottom-2 opacity-0 group-hover:opacity-100 transition-opacity">{subtitle}</span>}
+            <span className="text-[10px] uppercase font-bold text-foreground/60 tracking-wider mt-1">{label}</span>
+            {subtitle && <span className="text-[9px] text-foreground/40 font-medium absolute bottom-2 opacity-0 group-hover:opacity-100 transition-opacity">{subtitle}</span>}
         </button>
     );
 
@@ -66,8 +66,8 @@ export const MyWorkflowWidget = ({ tasks, userId }: MyWorkflowWidgetProps) => {
     return (
         <div className="space-y-4">
             <div className="flex items-center gap-2 mb-2">
-                <Layers size={14} className="text-gray-400" />
-                <h3 className="text-sm font-bold text-gray-400 uppercase tracking-widest">
+                <Layers size={14} className="text-foreground/60" />
+                <h3 className="text-sm font-bold text-foreground/60 uppercase tracking-widest">
                     My Workflow
                 </h3>
             </div>

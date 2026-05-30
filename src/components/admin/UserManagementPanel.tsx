@@ -206,7 +206,7 @@ export const UserManagementPanel: React.FC<UserManagementPanelProps> = ({ instit
           </div>
         ) : users.length === 0 ? (
           <div className="text-center py-8">
-            <div className="text-gray-400">No users found</div>
+            <div className="text-foreground/60">No users found</div>
           </div>
         ) : (
           <div className="space-y-3">
@@ -231,7 +231,7 @@ export const UserManagementPanel: React.FC<UserManagementPanelProps> = ({ instit
 
                   <div>
                     <div className="font-medium text-foreground">{user.name || user.email}</div>
-                    <div className="text-sm text-gray-400">{user.email}</div>
+                    <div className="text-sm text-foreground/60">{user.email}</div>
                     <div className="flex items-center gap-2 mt-1">
                       <Badge
                         variant="neutral"
@@ -305,7 +305,7 @@ export const UserManagementPanel: React.FC<UserManagementPanelProps> = ({ instit
               <h3 className="text-xl font-bold text-foreground">Edit User</h3>
 
               <div className="space-y-2">
-                <label className="text-xs text-gray-400">Full Name</label>
+                <label className="text-xs text-foreground/60">Full Name</label>
                 <input
                   value={editingUser.official_name}
                   onChange={e => setEditingUser({ ...editingUser, official_name: e.target.value })}
@@ -314,7 +314,7 @@ export const UserManagementPanel: React.FC<UserManagementPanelProps> = ({ instit
               </div>
 
               <div className="space-y-2">
-                <label className="text-xs text-gray-400">Role</label>
+                <label className="text-xs text-foreground/60">Role</label>
                 <Select value={editingUser.role} onValueChange={v => setEditingUser({ ...editingUser, role: v })}>
                   <SelectTrigger className="bg-black/20 border-[#ffffff1a] text-foreground">
                     <SelectValue placeholder="Select Role" />
@@ -329,7 +329,7 @@ export const UserManagementPanel: React.FC<UserManagementPanelProps> = ({ instit
               </div>
 
               <div className="space-y-2">
-                <label className="text-xs text-gray-400">Department / Institution</label>
+                <label className="text-xs text-foreground/60">Department / Institution</label>
                 <Select
                   value={String(editingUser.department_id || '')}
                   onValueChange={v => setEditingUser({ ...editingUser, department_id: v })}
@@ -346,7 +346,7 @@ export const UserManagementPanel: React.FC<UserManagementPanelProps> = ({ instit
               </div>
 
               <div className="space-y-2">
-                <label className="text-xs text-gray-400">Institution</label>
+                <label className="text-xs text-foreground/60">Institution</label>
                 <Select value={editingUser.institution_id} onValueChange={v => setEditingUser({ ...editingUser, institution_id: v })}>
                   <SelectTrigger className="bg-black/20 border-[#ffffff1a] text-foreground">
                     <SelectValue placeholder="Select Institution" />
@@ -376,7 +376,7 @@ export const UserManagementPanel: React.FC<UserManagementPanelProps> = ({ instit
               </h3>
 
               <div className="mb-4">
-                <p className="text-gray-300 mb-2">Items to reassign:</p>
+                <p className="text-foreground mb-2">Items to reassign:</p>
                 <div className="space-y-1 text-sm">
                   <div className="flex justify-between">
                     <span>Tasks:</span>
@@ -394,7 +394,7 @@ export const UserManagementPanel: React.FC<UserManagementPanelProps> = ({ instit
               </div>
 
               <div className="mb-6">
-                <label className="block text-sm font-medium text-gray-300 mb-2">
+                <label className="block text-sm font-medium text-foreground mb-2">
                   Reassign to user:
                 </label>
                 <Select value={targetUser} onValueChange={setTargetUser}>
@@ -417,7 +417,7 @@ export const UserManagementPanel: React.FC<UserManagementPanelProps> = ({ instit
                 <Button
                   variant="outline"
                   onClick={() => setShowReassignment(false)}
-                  className="flex-1 bg-gray-700/50 border-gray-600 text-gray-300 hover:bg-gray-600/50 rounded-full"
+                  className="flex-1 bg-gray-700/50 border-gray-600 text-foreground hover:bg-gray-600/50 rounded-full"
                 >
                   Cancel
                 </Button>

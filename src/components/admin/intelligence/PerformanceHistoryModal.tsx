@@ -362,7 +362,7 @@ function RelativeStatusBadge({ status }: { status: string }) {
             case 'Above Team Median': return { color: 'text-blue-400', bgColor: 'bg-blue-500/10', border: 'border-blue-500/20', text: 'Above Median' };
             case 'Below Team Median': return { color: 'text-amber-400', bgColor: 'bg-amber-500/10', border: 'border-amber-500/20', text: 'Below Median' };
             case 'Bottom Quartile': return { color: 'text-red-400', bgColor: 'bg-red-500/10', border: 'border-red-500/20', text: 'Bottom 25%' };
-            default: return { color: 'text-gray-400', bgColor: 'bg-gray-500/10', border: 'border-gray-500/20', text: status };
+            default: return { color: 'text-foreground/60', bgColor: 'bg-gray-500/10', border: 'border-gray-500/20', text: status };
         }
     };
     const config = getStatusConfig();

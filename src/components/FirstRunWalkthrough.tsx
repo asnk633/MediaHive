@@ -108,14 +108,14 @@ export function FirstRunWalkthrough({ onComplete }: FirstRunWalkthroughProps) {
 
   return (
     <div className="fixed inset-0 z-[1000] bg-black/50 backdrop-blur-sm flex items-center justify-center p-4">
-      <div className="bg-foreground/90 dark:bg-gray-800/90 text-gray-900 dark:text-foreground p-6 rounded-xl shadow-2xl border border-gray-200 dark:border-gray-700 max-w-md w-full">
+      <div className="bg-foreground/90 dark:bg-gray-800/90 text-foreground/20 dark:text-foreground p-6 rounded-xl shadow-2xl border border-gray-200 dark:border-gray-700 max-w-md w-full">
         <div className="flex justify-between items-start mb-3">
           <h3 className="font-bold text-lg">{currentStepData.title}</h3>
-          <span className="text-sm text-gray-500 dark:text-gray-400">
+          <span className="text-sm text-foreground/50 dark:text-foreground/60">
             {currentStep + 1} of {totalSteps}
           </span>
         </div>
-        <p className="text-gray-700 dark:text-gray-300 mb-4">
+        <p className="text-foreground/30 dark:text-foreground mb-4">
           {currentStepData.description}
         </p>
         <div className="flex justify-between items-center">

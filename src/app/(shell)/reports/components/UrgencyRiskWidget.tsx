@@ -54,7 +54,7 @@ export const UrgencyRiskWidget = ({ tasks }: UrgencyRiskWidgetProps) => {
                 </div>
 
                 <h3 className="text-3xl font-display font-bold text-foreground tracking-tight">{count}</h3>
-                <p className="text-[10px] text-gray-400 mt-1 font-medium">{subtext}</p>
+                <p className="text-[10px] text-foreground/60 mt-1 font-medium">{subtext}</p>
             </div>
         </div>
     );

@@ -93,7 +93,7 @@ export const LeaveRejectionModal: React.FC<LeaveRejectionModalProps> = ({
                         <button
                             type="button"
                             onClick={onClose}
-                            className="flex-1 py-3 text-sm font-bold text-gray-300 bg-foreground/5 hover:bg-foreground/10 rounded-xl transition-colors"
+                            className="flex-1 py-3 text-sm font-bold text-foreground bg-foreground/5 hover:bg-foreground/10 rounded-xl transition-colors"
                         >
                             Cancel
                         </button>

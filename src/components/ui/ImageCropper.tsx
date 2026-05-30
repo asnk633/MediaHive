@@ -209,7 +209,7 @@ export function ImageCropper({ imageSrc, onCropComplete, onCancel }: ImageCroppe
                                 "flex flex-col items-center gap-1.5 p-2 rounded-xl transition-all min-w-[60px]",
                                 aspectRatio === ratio.value
                                     ? "bg-blue-600/20 text-blue-400 border border-blue-500/50"
-                                    : "bg-foreground/5 text-slate-400 hover:bg-foreground/10 hover:text-foreground border border-transparent"
+                                    : "bg-foreground/5 text-foreground/60 hover:bg-foreground/10 hover:text-foreground border border-transparent"
                             )}
                         >
                             <ratio.icon size={20} />

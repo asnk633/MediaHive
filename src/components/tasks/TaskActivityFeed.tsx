@@ -109,7 +109,7 @@ export const TaskActivityFeed: React.FC<TaskActivityFeedProps> = ({ taskId, user
     return (
         <div className="space-y-4">
             {entries.map((entry, idx) => {
-                const icon = ACTION_ICONS[entry.action] || <History size={13} className="text-gray-400" />;
+                const icon = ACTION_ICONS[entry.action] || <History size={13} className="text-foreground/60" />;
 
                 return (
                     <motion.div

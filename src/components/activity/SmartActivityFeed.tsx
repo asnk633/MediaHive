@@ -101,8 +101,8 @@ export const SmartActivityFeed: React.FC = () => {
         if (type.includes('file') || type.includes('drive')) return <FileText size={16} className="text-purple-400" />;
         if (type.includes('user')) return <User size={16} className="text-green-400" />;
         if (type.includes('inventory')) return <Package size={16} className="text-orange-400" />;
-        if (type.includes('system')) return <Shield size={16} className="text-gray-400" />;
-        return <Activity size={16} className="text-gray-400" />;
+        if (type.includes('system')) return <Shield size={16} className="text-foreground/60" />;
+        return <Activity size={16} className="text-foreground/60" />;
     };
 
     const handleItemClick = (act: SystemActivity) => {
@@ -180,7 +180,7 @@ export const SmartActivityFeed: React.FC = () => {
                                         <div className="mt-2 flex items-center gap-2">
                                             <span className={`text-[10px] font-bold uppercase px-1.5 py-0.5 rounded border tracking-wide ${act.entityType === 'task' ? 'bg-blue-500/10 text-blue-400 border-blue-500/20' :
                                                 act.entityType === 'system' ? 'bg-red-500/10 text-red-400 border-red-500/20' :
-                                                    'bg-gray-500/10 text-gray-400 border-gray-500/20'
+                                                    'bg-gray-500/10 text-foreground/60 border-gray-500/20'
                                                 }`}>
                                                 {act.entityType}
                                             </span>

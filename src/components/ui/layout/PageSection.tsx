@@ -11,7 +11,7 @@ export function PageSection({ title, children, className }: PageSectionProps) {
     return (
         <section className={cn("space-y-6", className)}>
             {title && (
-                <h2 className="text-lg font-semibold text-slate-100 tracking-wide">
+                <h2 className="text-lg font-semibold text-foreground tracking-wide">
                     {title}
                 </h2>
             )}

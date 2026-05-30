@@ -112,7 +112,7 @@ export const FirstLoginWelcome: React.FC<FirstLoginWelcomeProps> = ({ userRole, 
       default:
         return {
           title: 'Welcome!',
-          icon: <User className="w-8 h-8 text-gray-400" />,
+          icon: <User className="w-8 h-8 text-foreground/60" />,
           message: 'Welcome to Thaiba Garden Media Manager.',
           hints: ['Your role has been assigned by an administrator']
         };
@@ -147,13 +147,13 @@ export const FirstLoginWelcome: React.FC<FirstLoginWelcomeProps> = ({ userRole, 
           </div>
         </CardHeader>
         <CardContent>
-          <p className="text-gray-300 mb-4">{welcomeContent.message}</p>
+          <p className="text-foreground mb-4">{welcomeContent.message}</p>
 
           <div className="space-y-2 mb-6">
             {welcomeContent.hints.map((hint, index) => (
               <div key={index} className="flex items-start gap-2">
-                <FileText className="w-4 h-4 text-gray-400 mt-0.5 flex-shrink-0" />
-                <span className="text-sm text-gray-300">{hint}</span>
+                <FileText className="w-4 h-4 text-foreground/60 mt-0.5 flex-shrink-0" />
+                <span className="text-sm text-foreground">{hint}</span>
               </div>
             ))}
           </div>
@@ -162,7 +162,7 @@ export const FirstLoginWelcome: React.FC<FirstLoginWelcomeProps> = ({ userRole, 
             <Button
               variant="outline"
               onClick={handleDismiss}
-              className="flex-1 bg-gray-700/50 border-gray-600 text-gray-300 hover:bg-gray-600/50"
+              className="flex-1 bg-gray-700/50 border-gray-600 text-foreground hover:bg-gray-600/50"
             >
               Dismiss
             </Button>
@@ -174,7 +174,7 @@ export const FirstLoginWelcome: React.FC<FirstLoginWelcomeProps> = ({ userRole, 
             </Button>
           </div>
 
-          <div className="mt-4 text-center text-xs text-gray-500">
+          <div className="mt-4 text-center text-xs text-foreground/50">
             {userRole === 'admin' && (
               <div className="flex items-center justify-center gap-1">
                 <Users className="w-3 h-3" />

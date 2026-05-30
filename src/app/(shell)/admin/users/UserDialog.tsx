@@ -150,7 +150,7 @@ export function UserDialog({ open, onOpenChange, user, onSave, institutions, dep
                     <DialogTitle className="text-foreground">
                         {user ? `Edit User: ${user.name || 'User'}` : 'Invite User'}
                     </DialogTitle>
-                    <DialogDescription className="text-slate-400">
+                    <DialogDescription className="text-foreground/60">
                         {user ? 'Update user roles and affiliations.' : 'Invite a new member to the organization.'}
                     </DialogDescription>
                 </DialogHeader>
@@ -248,7 +248,7 @@ export function UserDialog({ open, onOpenChange, user, onSave, institutions, dep
                     <div className="flex items-center justify-between p-4 rounded-xl bg-slate-800/50 border border-foreground/5">
                         <div className="space-y-0.5">
                             <Label className="text-sm font-medium text-foreground/70">Account Status</Label>
-                            <div className="text-xs text-slate-400">
+                            <div className="text-xs text-foreground/60">
                                 {isActive ? 'User can access the system' : 'User access is suspended'}
                             </div>
                         </div>
@@ -260,7 +260,7 @@ export function UserDialog({ open, onOpenChange, user, onSave, institutions, dep
                     </div>
 
                     <div className="flex justify-end gap-3 pt-4">
-                        <Button variant="ghost" type="button" onClick={() => onOpenChange(false)} className="text-slate-400">
+                        <Button variant="ghost" type="button" onClick={() => onOpenChange(false)} className="text-foreground/60">
                             Cancel
                         </Button>
                         <Button

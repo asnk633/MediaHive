@@ -42,7 +42,7 @@ const PriorityBadge = ({ priority, className }: any) => {
         urgent: 'bg-orange-500/10 text-orange-500 border-orange-500/20',
         high: 'bg-orange-500/10 text-orange-500 border-orange-500/20',
         medium: 'bg-blue-500/10 text-blue-400 border-blue-500/20',
-        low: 'bg-slate-500/10 text-slate-400 border-slate-500/20'
+        low: 'bg-slate-500/10 text-foreground/60 border-slate-500/20'
     };
     return (
         <span className={cn("px-2 py-0.5 rounded text-[10px] uppercase font-bold tracking-wider border cursor-pointer hover:bg-foreground/5 transition-colors", styles[displayPriority || 'low'] || styles.low, className)}>
@@ -64,7 +64,7 @@ const StatusPill = ({ status, className, onClick }: any) => {
         emerald: "bg-emerald-500/10 text-emerald-400 border-emerald-500/20",
         blue: "bg-blue-500/10 text-blue-400 border-blue-500/20",
         amber: "bg-violet-500/10 text-violet-400 border-violet-500/20",
-        slate: "bg-slate-500/10 text-slate-400 border-slate-500/20"
+        slate: "bg-slate-500/10 text-foreground/60 border-slate-500/20"
     };
 
     return (
@@ -221,8 +221,9 @@ export const SortableTaskRow = memo(({
 
                     <button
                         type="button"
+                        aria-label={expanded ? "Collapse task details" : "Expand task details"}
                         onClick={(e) => { e.stopPropagation(); toggleExpand(task.id); }}
-                        className="text-muted hover:text-foreground transition-colors p-1 rounded hover:bg-foreground/10 min-w-0 min-h-0 w-6 h-6 flex items-center justify-center"
+                        className="text-muted hover:text-foreground transition-colors p-1 rounded hover:bg-foreground/10 min-w-0 min-h-0 w-6 h-6 flex items-center justify-center focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary"
                         style={{ minWidth: 0, minHeight: 0 }}
                     >
                         {expanded ? <ChevronDown size={16} /> : <ChevronRight size={16} />}
@@ -378,8 +379,9 @@ export const SortableTaskRow = memo(({
                                 <Tooltip>
                                     <TooltipTrigger asChild>
                                         <button
+                                            aria-label="View task details"
                                             onClick={(e) => { e.stopPropagation(); onTaskClick(task); }}
-                                            className="text-foreground/60 hover:text-blue-400 hover:scale-110 transition-all duration-150 w-6 h-6 flex items-center justify-center p-0 min-w-0 min-h-0"
+                                            className="text-foreground/60 hover:text-blue-400 hover:scale-110 transition-all duration-150 w-6 h-6 flex items-center justify-center p-0 min-w-0 min-h-0 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary rounded"
                                             style={{ minWidth: 0, minHeight: 0 }}
                                         >
                                             <Eye size={14} />
@@ -394,8 +396,9 @@ export const SortableTaskRow = memo(({
                                     <Tooltip>
                                         <TooltipTrigger asChild>
                                             <button
+                                                aria-label="Edit task"
                                                 onClick={(e) => { e.stopPropagation(); onEditTask?.(task); }}
-                                                className="text-foreground/60 hover:text-amber-400 hover:scale-110 transition-all duration-150 w-6 h-6 flex items-center justify-center p-0 min-w-0 min-h-0"
+                                                className="text-foreground/60 hover:text-amber-400 hover:scale-110 transition-all duration-150 w-6 h-6 flex items-center justify-center p-0 min-w-0 min-h-0 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary rounded"
                                                 style={{ minWidth: 0, minHeight: 0 }}
                                             >
                                                 <Edit3 size={14} />
@@ -411,8 +414,9 @@ export const SortableTaskRow = memo(({
                                     <Tooltip>
                                         <TooltipTrigger asChild>
                                             <button
+                                                aria-label="Move task to trash"
                                                 onClick={(e) => { e.stopPropagation(); onSoftDelete?.(task.id); }}
-                                                className="text-foreground/60 hover:text-red-400 hover:scale-110 transition-all duration-150 w-6 h-6 flex items-center justify-center p-0 min-w-0 min-h-0"
+                                                className="text-foreground/60 hover:text-red-400 hover:scale-110 transition-all duration-150 w-6 h-6 flex items-center justify-center p-0 min-w-0 min-h-0 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary rounded"
                                                 style={{ minWidth: 0, minHeight: 0 }}
                                             >
                                                 <Trash2 size={14} />
@@ -429,8 +433,9 @@ export const SortableTaskRow = memo(({
                         <>
                             {canRestoreTask && (
                                 <button
+                                    aria-label="Restore task"
                                     onClick={(e) => { e.stopPropagation(); onRestore?.(task.id); }}
-                                    className="text-emerald-400/70 hover:text-emerald-400 hover:scale-110 transition-all duration-200 w-6 h-6 flex items-center justify-center p-0 min-w-0 min-h-0"
+                                    className="text-emerald-400/70 hover:text-emerald-400 hover:scale-110 transition-all duration-200 w-6 h-6 flex items-center justify-center p-0 min-w-0 min-h-0 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary rounded"
                                     style={{ minWidth: 0, minHeight: 0 }}
                                 >
                                     <RotateCcw size={14} />
@@ -438,8 +443,9 @@ export const SortableTaskRow = memo(({
                             )}
                             {canPermDelete && (
                                 <button
+                                    aria-label="Permanently delete task"
                                     onClick={(e) => { e.stopPropagation(); onPermanentDelete?.(task.id); }}
-                                    className="text-red-400/70 hover:text-red-400 hover:scale-110 transition-all duration-200 w-6 h-6 flex items-center justify-center p-0 min-w-0 min-h-0"
+                                    className="text-red-400/70 hover:text-red-400 hover:scale-110 transition-all duration-200 w-6 h-6 flex items-center justify-center p-0 min-w-0 min-h-0 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary rounded"
                                     style={{ minWidth: 0, minHeight: 0 }}
                                 >
                                     <Trash2 size={14} />

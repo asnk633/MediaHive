@@ -40,7 +40,7 @@ export const SettingsLayout: React.FC<SettingsLayoutProps> = ({
                                 "w-full justify-start gap-3 rounded-lg px-3 py-2 text-sm transition-all duration-200",
                                 activeTab === item.id
                                     ? "bg-blue-600/10 text-blue-400 font-medium"
-                                    : "text-slate-400 hover:text-foreground hover:bg-foreground/5"
+                                    : "text-foreground/60 hover:text-foreground hover:bg-foreground/5"
                             )}
                             onClick={() => onTabChange(item.id)}
                         >

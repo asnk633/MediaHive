@@ -31,7 +31,7 @@ export const StatusChart = ({ stats }: StatusChartProps) => {
     if (activeData.length === 0) {
         return (
             <div className="bg-surface backdrop-blur-md rounded-2xl p-5 shadow-xl h-[350px] flex items-center justify-center">
-                <p className="text-gray-400 text-sm">No task data available</p>
+                <p className="text-foreground/60 text-sm">No task data available</p>
             </div>
         );
     }
@@ -65,7 +65,7 @@ export const StatusChart = ({ stats }: StatusChartProps) => {
                             verticalAlign="bottom"
                             height={36}
                             iconType="circle"
-                            formatter={(value) => <span className="text-gray-300 text-xs ml-1">{value}</span>}
+                            formatter={(value) => <span className="text-foreground text-xs ml-1">{value}</span>}
                         />
                     </PieChart>
                 </SafeResponsiveContainer>

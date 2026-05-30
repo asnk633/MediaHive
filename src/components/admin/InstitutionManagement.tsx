@@ -267,7 +267,7 @@ export const InstitutionManagement = () => {
                 <AlertDialogContent className="bg-[#1e293b] border-[#ffffff1a] text-foreground">
                     <AlertDialogHeader>
                         <AlertDialogTitle>Are you absolutely sure?</AlertDialogTitle>
-                        <AlertDialogDescription className="text-slate-400">
+                        <AlertDialogDescription className="text-foreground/60">
                             This action cannot be undone. This will permanently delete the institution
                             and remove it from our servers.
                         </AlertDialogDescription>

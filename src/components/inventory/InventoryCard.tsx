@@ -120,7 +120,7 @@ export const InventoryCard = React.memo<InventoryCardProps>(({
                         </Carousel>
                     )
                 ) : (
-                    <Box className="w-12 h-12 text-slate-700 group-hover:text-blue-500/50 transition-colors" />
+                    <Box className="w-12 h-12 text-foreground/30 group-hover:text-blue-500/50 transition-colors" />
                 )}
 
                 {/* Status Badge Over Image */}
@@ -143,7 +143,7 @@ export const InventoryCard = React.memo<InventoryCardProps>(({
                             {item.name}
                         </h3>
                     </div>
-                    <p className="text-sm text-slate-400 flex items-center gap-2">
+                    <p className="text-sm text-foreground/60 flex items-center gap-2">
                         <Layers size={14} />
                         {item.category}
                     </p>
@@ -154,41 +154,41 @@ export const InventoryCard = React.memo<InventoryCardProps>(({
                     {activeIssue ? (
                         <>
                             <div className="space-y-1 col-span-2">
-                                <span className="text-slate-400 text-xs uppercase tracking-wider flex items-center gap-1">
+                                <span className="text-foreground/60 text-xs uppercase tracking-wider flex items-center gap-1">
                                     <Calendar size={10} /> Issued Until
                                 </span>
-                                <div className={`font-medium ${isOverdue ? 'text-red-400 font-bold' : 'text-slate-200'}`}>
+                                <div className={`font-medium ${isOverdue ? 'text-red-400 font-bold' : 'text-foreground'}`}>
                                     {format(new Date(activeIssue.expectedReturnAt), 'MMM d, yyyy')}
                                 </div>
-                                <div className="text-xs text-slate-400 truncate">
-                                    To: <span className="text-slate-300">{activeIssue.issuedToUserId}</span>
+                                <div className="text-xs text-foreground/60 truncate">
+                                    To: <span className="text-foreground">{activeIssue.issuedToUserId}</span>
                                 </div>
                             </div>
                         </>
                     ) : (
                         <>
                             <div className="space-y-1">
-                                <span className="text-slate-400 text-xs uppercase tracking-wider">Unit</span>
-                                <div className="text-slate-200 font-medium">
+                                <span className="text-foreground/60 text-xs uppercase tracking-wider">Unit</span>
+                                <div className="text-foreground font-medium">
                                     {item.quantity}
                                 </div>
                             </div>
                             <div className="space-y-1">
-                                <span className="text-slate-400 text-xs uppercase tracking-wider">Condition</span>
-                                <div className="text-slate-200 font-medium capitalize">{item.condition?.replace('_', ' ') || 'N/A'}</div>
+                                <span className="text-foreground/60 text-xs uppercase tracking-wider">Condition</span>
+                                <div className="text-foreground font-medium capitalize">{item.condition?.replace('_', ' ') || 'N/A'}</div>
                             </div>
 
                             {/* Price & Date Row */}
                             <div className="col-span-2 grid grid-cols-2 gap-2 pt-2 mt-2 border-t border-foreground/5">
                                 <div className="space-y-1">
-                                    <span className="text-slate-400 text-[10px] uppercase tracking-wider">Purchased</span>
-                                    <div className="text-slate-300 text-xs">
+                                    <span className="text-foreground/60 text-[10px] uppercase tracking-wider">Purchased</span>
+                                    <div className="text-foreground text-xs">
                                         {item.purchaseDate ? format(new Date(item.purchaseDate), 'MMM d, yyyy') : '-'}
                                     </div>
                                 </div>
                                 <div className="space-y-1">
-                                    <span className="text-slate-400 text-[10px] uppercase tracking-wider">Purchased Price</span>
-                                    <div className="text-slate-300 text-xs">
+                                    <span className="text-foreground/60 text-[10px] uppercase tracking-wider">Purchased Price</span>
+                                    <div className="text-foreground text-xs">
                                         {item.purchasePrice ? `₹${item.purchasePrice.toLocaleString()}` : '-'}
                                     </div>
                                 </div>
@@ -203,7 +203,7 @@ export const InventoryCard = React.memo<InventoryCardProps>(({
                     {role === 'admin' && onEdit && (
                         <Button
                             variant="outline"
-                            className="flex-1 border-[#ffffff1a] text-slate-300 hover:text-foreground hover:bg-foreground/5"
+                            className="flex-1 border-[#ffffff1a] text-foreground hover:text-foreground hover:bg-foreground/5"
                             onClick={(e) => {
                                 e.preventDefault();
                                 e.stopPropagation();
@@ -242,7 +242,7 @@ export const InventoryCard = React.memo<InventoryCardProps>(({
                         /* Request Action (Default) */
                         onRequest && (
                             <Button
-                                className={`flex-1 text-foreground shadow-lg h-11 sm:h-10 ${hasPendingRequest ? 'bg-slate-700/50 text-slate-400 cursor-not-allowed' : 'bg-blue-600 hover:bg-blue-500 shadow-blue-900/20'}`}
+                                className={`flex-1 text-foreground shadow-lg h-11 sm:h-10 ${hasPendingRequest ? 'bg-slate-700/50 text-foreground/60 cursor-not-allowed' : 'bg-blue-600 hover:bg-blue-500 shadow-blue-900/20'}`}
                                 disabled={isOut || isInUse || hasPendingRequest}
                                 onClick={(e) => {
                                     e.stopPropagation();

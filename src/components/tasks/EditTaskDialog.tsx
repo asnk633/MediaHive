@@ -103,6 +103,8 @@ export function EditTaskDialog({ open, onOpenChange, task, onUpdate }: EditTaskD
     const [teamMembers, setTeamMembers] = useState<{ uid: string; name: string }[]>([]);
     const [campaigns, setCampaigns] = useState<Campaign[]>([]);
     const [error, setError] = useState<string | null>(null);
+    const [touchedFields, setTouchedFields] = useState<{ title?: boolean, description?: boolean }>({});
+    const [errors, setErrors] = useState<{ title?: string }>({});
     const [showUploadModal, setShowUploadModal] = useState(false);
     const [refreshTrigger, setRefreshTrigger] = useState(0);
     const [calOpen, setCalOpen] = useState(false);
@@ -333,13 +335,28 @@ export function EditTaskDialog({ open, onOpenChange, task, onUpdate }: EditTaskD
                             </div>
                             <Input
                                 value={title}
-                                onChange={e => { setTitle(e.target.value); collab.onTyping('title', true); }}
+                                onChange={e => { 
+                                    const val = e.target.value;
+                                    setTitle(val); 
+                                    collab.onTyping('title', true);
+                                    if (touchedFields.title) {
+                                        setErrors(prev => ({ ...prev, title: !val.trim() ? 'Title is required' : undefined }));
+                                    }
+                                }}
                                 onFocus={() => collab.onFieldFocus('title')}
-                                onBlur={() => collab.onFieldBlur('title')}
+                                onBlur={() => {
+                                    collab.onFieldBlur('title');
+                                    setTouchedFields(prev => ({ ...prev, title: true }));
+                                    setErrors(prev => ({ ...prev, title: !title.trim() ? 'Title is required' : undefined }));
+                                }}
                                 className={inputCls}
                                 placeholder="What needs to be done?"
                                 disabled={!canEditContent}
+                                tabIndex={1}
                             />
+                            {touchedFields.title && errors.title && (
+                                <span className="text-red-400 text-[10px] mt-1 ml-1 font-medium block">{errors.title}</span>
+                            )}
                         </div>
 
                         {/* Description */}
@@ -355,10 +372,14 @@ export function EditTaskDialog({ open, onOpenChange, task, onUpdate }: EditTaskD
                                 value={description}
                                 onChange={e => { setDescription(e.target.value); collab.onTyping('description', true); }}
                                 onFocus={() => collab.onFieldFocus('description')}
-                                onBlur={() => collab.onFieldBlur('description')}
+                                onBlur={() => {
+                                    collab.onFieldBlur('description');
+                                    setTouchedFields(prev => ({ ...prev, description: true }));
+                                }}
                                 className="bg-foreground/[0.03] border border-foreground/[0.07] text-foreground placeholder:text-foreground/25 focus:border-blue-500/40 focus:ring-0 focus:bg-foreground/[0.05] transition-all rounded-xl min-h-[120px] p-4 text-sm leading-relaxed resize-none disabled:opacity-40 disabled:cursor-not-allowed"
                                 placeholder="Add more context, requirements, or links..."
                                 disabled={!canEditContent}
+                                tabIndex={2}
                             />
                         </div>
                     </div>
@@ -379,6 +400,7 @@ export function EditTaskDialog({ open, onOpenChange, task, onUpdate }: EditTaskD
                                         <button
                                             type="button"
                                             disabled={!canEditDueDate}
+                                            tabIndex={3}
                                             className={cn(
                                                 "w-full h-11 flex items-center gap-2.5 px-3.5 rounded-xl border text-sm transition-all",
                                                 "bg-foreground/[0.03] border-foreground/[0.07] text-foreground hover:bg-foreground/[0.05]",
@@ -414,7 +436,7 @@ export function EditTaskDialog({ open, onOpenChange, task, onUpdate }: EditTaskD
                             <div>
                                 <label className={labelCls}>Campaign</label>
                                 <Select value={campaign_id} onValueChange={setCampaignId} disabled={!canEditContent}>
-                                    <SelectTrigger className="bg-foreground/[0.03] border border-foreground/[0.07] text-foreground h-11 rounded-xl focus:ring-0 disabled:opacity-40 shadow-inner">
+                                    <SelectTrigger tabIndex={4} className="bg-foreground/[0.03] border border-foreground/[0.07] text-foreground h-11 rounded-xl focus:ring-0 disabled:opacity-40 shadow-inner">
                                         <div className="flex items-center gap-2 min-w-0">
                                             <Layers size={13} className="text-foreground/80 shrink-0" />
                                             <SelectValue placeholder="No Campaign" />
@@ -447,6 +469,7 @@ export function EditTaskDialog({ open, onOpenChange, task, onUpdate }: EditTaskD
                                         key={opt.value}
                                         type="button"
                                         disabled={!canEditPriority}
+                                        tabIndex={5}
                                         onClick={() => setPriority(opt.value)}
                                         className={cn(
                                             "h-11 rounded-xl border text-[11px] font-bold uppercase tracking-wider transition-all duration-200",
@@ -473,6 +496,7 @@ export function EditTaskDialog({ open, onOpenChange, task, onUpdate }: EditTaskD
                                             key={opt.value}
                                             type="button"
                                             disabled={!canEditStatus}
+                                            tabIndex={6}
                                             onClick={() => setStatus(opt.value)}
                                             className={cn(
                                                 "h-11 rounded-xl border text-[11px] font-bold uppercase tracking-wider flex items-center justify-center gap-2 transition-all duration-200",
@@ -500,6 +524,7 @@ export function EditTaskDialog({ open, onOpenChange, task, onUpdate }: EditTaskD
                                     selected={assignedToIds}
                                     onChange={setAssignedToIds}
                                     className="w-full"
+                                    tabIndex={7}
                                 />
                             </div>
                         )}

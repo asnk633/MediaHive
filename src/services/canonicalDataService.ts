@@ -835,7 +835,42 @@ export class CanonicalDataService {
   }
 
   static async getMediaFiles(institution_id?: string) {
-    return [];
+    try {
+      const { tenantId } = await tenantContext();
+
+      let query = supabase.from(TABLES.MEDIA).select('*').eq('tenant_id', tenantId)
+        .not('upload_context', 'eq', 'avatar')
+        .not('upload_context', 'eq', 'system_default')
+        .not('upload_context', 'eq', 'inventory_asset')
+        .not('name', 'ilike', 'INV_%');
+
+      if (institution_id) {
+        query = query.eq('institution_id', institution_id);
+      }
+
+      const { data: files, error } = await safeQuery(() => query.order('created_at', { ascending: false }));
+
+      if (error) throw error;
+
+      return (files || []).map((f: any) => ({
+        ...f,
+        mimeType: f.mime_type,
+        driveFileId: f.drive_file_id,
+        viewLink: f.web_view_link,
+        downloadLink: f.download_link,
+        previewLink: f.thumbnail_link,
+        uploadedByName: f.uploaded_by_name,
+        uploadedByRole: f.uploaded_by_role,
+        folderId: f.folder_id,
+        uploadContext: f.upload_context,
+        taskId: f.task_id
+      }));
+    } catch (error: any) {
+      if (!isNetworkError(error)) {
+        console.error('Error fetching media files:', error);
+      }
+      return [];
+    }
   }
 
   static async getUsers(institution_id?: string) {

@@ -137,7 +137,7 @@ export function IssueItemDialog({ item, request, open, onOpenChange }: IssueItem
 
     return (
         <Dialog open={open} onOpenChange={onOpenChange}>
-            <DialogContent className="bg-[var(--glass-liquid-bg)] border-foreground/10 text-slate-200 max-w-md backdrop-blur-xl">
+            <DialogContent className="bg-[var(--glass-liquid-bg)] border-foreground/10 text-foreground max-w-md backdrop-blur-xl">
                 <DialogHeader>
                     <DialogTitle className="text-xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-white to-white/60">
                         Issue {item.name}
@@ -148,7 +148,7 @@ export function IssueItemDialog({ item, request, open, onOpenChange }: IssueItem
                     {/* Item Context */}
                     <div className="p-3.5 bg-foreground/[0.03] rounded-xl border border-foreground/5 text-sm">
                         <div className="flex justify-between items-center">
-                            <span className="text-slate-500 font-medium">Current Condition</span>
+                            <span className="text-foreground/50 font-medium">Current Condition</span>
                             <Badge variant="info" className="capitalize bg-blue-500/10 text-blue-400 border-blue-500/20">{item.condition}</Badge>
                         </div>
                     </div>
@@ -156,7 +156,7 @@ export function IssueItemDialog({ item, request, open, onOpenChange }: IssueItem
                     <div className="grid grid-cols-1 gap-4">
                         {/* Issued To User */}
                         <div className="space-y-2">
-                            <Label className="text-xs font-bold uppercase tracking-widest text-slate-500">Issued To User <span className="text-red-400">*</span></Label>
+                            <Label className="text-xs font-bold uppercase tracking-widest text-foreground/50">Issued To User <span className="text-red-400">*</span></Label>
                             <Popover open={userSearchOpen} onOpenChange={setUserSearchOpen}>
                                 <PopoverTrigger asChild>
                                     <Button
@@ -203,7 +203,7 @@ export function IssueItemDialog({ item, request, open, onOpenChange }: IssueItem
 
                         {/* Issued To Dept */}
                         <div className="space-y-2">
-                            <Label className="text-xs font-bold uppercase tracking-widest text-slate-500">Issued to Dept / Institution</Label>
+                            <Label className="text-xs font-bold uppercase tracking-widest text-foreground/50">Issued to Dept / Institution</Label>
                             <Popover open={deptSearchOpen} onOpenChange={setDeptSearchOpen}>
                                 <PopoverTrigger asChild>
                                     <Button
@@ -252,7 +252,7 @@ export function IssueItemDialog({ item, request, open, onOpenChange }: IssueItem
                     <div className="grid grid-cols-2 gap-4">
                          {/* Expected Return */}
                         <div className="space-y-2">
-                            <Label className="text-xs font-bold uppercase tracking-widest text-slate-500">Expected Return <span className="text-red-400">*</span></Label>
+                            <Label className="text-xs font-bold uppercase tracking-widest text-foreground/50">Expected Return <span className="text-red-400">*</span></Label>
                             <Popover>
                                 <PopoverTrigger asChild>
                                     <Button
@@ -280,7 +280,7 @@ export function IssueItemDialog({ item, request, open, onOpenChange }: IssueItem
 
                         {/* Condition Out */}
                         <div className="space-y-2">
-                            <Label className="text-xs font-bold uppercase tracking-widest text-slate-500">Condition Out <span className="text-red-400">*</span></Label>
+                            <Label className="text-xs font-bold uppercase tracking-widest text-foreground/50">Condition Out <span className="text-red-400">*</span></Label>
                             <Select value={conditionOut} onValueChange={(v) => setConditionOut(v as InventoryCondition)}>
                                 <SelectTrigger className="bg-foreground/[0.03] border-foreground/10 h-11 rounded-xl focus:ring-0 focus:border-blue-500/50">
                                     <SelectValue />
@@ -298,7 +298,7 @@ export function IssueItemDialog({ item, request, open, onOpenChange }: IssueItem
 
                     {/* Project Note */}
                     <div className="space-y-2">
-                        <Label className="text-xs font-bold uppercase tracking-widest text-slate-500">Project / Purpose</Label>
+                        <Label className="text-xs font-bold uppercase tracking-widest text-foreground/50">Project / Purpose</Label>
                         <Input
                             value={projectNote}
                             onChange={e => setProjectNote(e.target.value)}
@@ -308,7 +308,7 @@ export function IssueItemDialog({ item, request, open, onOpenChange }: IssueItem
                     </div>
 
                     <DialogFooter className="gap-2 sm:gap-0 pt-2">
-                        <Button type="button" variant="ghost" onClick={() => onOpenChange(false)} className="text-slate-400 hover:text-foreground hover:bg-foreground/5 rounded-xl px-6">
+                        <Button type="button" variant="ghost" onClick={() => onOpenChange(false)} className="text-foreground/60 hover:text-foreground hover:bg-foreground/5 rounded-xl px-6">
                             Cancel
                         </Button>
                         <Button type="submit" className="bg-blue-600 hover:bg-blue-500 text-foreground rounded-xl px-8 shadow-lg shadow-blue-900/20 transition-all font-bold" disabled={loading || isDataLoading}>

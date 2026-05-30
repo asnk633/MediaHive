@@ -114,13 +114,13 @@ export function DepartmentsTab() {
                     <DialogContent className="glass-liquid border border-foreground/10 p-6 rounded-[32px] shadow-2xl backdrop-blur-xl max-w-md w-full">
                         <DialogHeader>
                             <DialogTitle className="text-foreground text-xl font-bold">New Department</DialogTitle>
-                            <DialogDescription className="text-slate-400 text-sm font-medium mt-1 leading-relaxed">
+                            <DialogDescription className="text-foreground/60 text-sm font-medium mt-1 leading-relaxed">
                                 Create a new global department for user assignment.
                             </DialogDescription>
                         </DialogHeader>
                         <form onSubmit={handleCreate} className="space-y-5 pt-4">
                             <div className="space-y-2">
-                                <Label className="text-slate-300 text-xs font-bold uppercase tracking-wider">Name</Label>
+                                <Label className="text-foreground text-xs font-bold uppercase tracking-wider">Name</Label>
                                 <Input
                                     value={newName}
                                     onChange={e => setNewName(e.target.value)}
@@ -142,7 +142,7 @@ export function DepartmentsTab() {
             {loading ? (
                 <div className="flex justify-center p-12"><Loader2 className="w-8 h-8 text-primary animate-spin" /></div>
             ) : (
-                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
                     {departments.map(dept => (
                         <div key={dept.id} className="glass-liquid border border-foreground/10 p-5 rounded-[24px] flex flex-col justify-between gap-6 shadow-lg backdrop-blur-md hover:bg-foreground/[0.03] hover:shadow-primary/5 hover:border-foreground/20 transition-all duration-300">
                             <div className="flex items-start justify-between">
@@ -198,7 +198,7 @@ export function DepartmentsTab() {
                         <div className="col-span-full flex flex-col items-center justify-center py-16 text-center border border-dashed border-foreground/10 rounded-[28px] bg-foreground/[0.01] glass-liquid backdrop-blur-md">
                             <Users className="w-12 h-12 text-foreground/20 mb-4" />
                             <h3 className="text-lg font-bold text-foreground/80">No departments found</h3>
-                            <p className="text-sm text-slate-500 max-w-sm mt-2 font-medium">
+                            <p className="text-sm text-foreground/50 max-w-sm mt-2 font-medium">
                                 Create global departments to assign users to.
                             </p>
                         </div>
@@ -211,13 +211,13 @@ export function DepartmentsTab() {
                 <DialogContent className="glass-liquid border border-foreground/10 p-6 rounded-[32px] shadow-2xl backdrop-blur-xl max-w-md w-full">
                     <DialogHeader>
                         <DialogTitle className="text-foreground text-xl font-bold">Edit Department</DialogTitle>
-                        <DialogDescription className="text-slate-400 text-sm font-medium mt-1 leading-relaxed">
+                        <DialogDescription className="text-foreground/60 text-sm font-medium mt-1 leading-relaxed">
                             Update the display name. Changes will propagate globally.
                         </DialogDescription>
                     </DialogHeader>
                     <form onSubmit={handleUpdate} className="space-y-5 pt-4">
                         <div className="space-y-2">
-                            <Label className="text-slate-300 text-xs font-bold uppercase tracking-wider">Display Name</Label>
+                            <Label className="text-foreground text-xs font-bold uppercase tracking-wider">Display Name</Label>
                             <Input
                                 value={editName}
                                 onChange={e => setEditName(e.target.value)}

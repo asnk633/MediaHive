@@ -34,7 +34,7 @@ export const HealthScoreWidget: React.FC<HealthScoreWidgetProps> = ({ score, tre
                             stroke="currentColor"
                             strokeWidth="10"
                             fill="transparent"
-                            className="text-slate-800"
+                            className="text-foreground/20"
                         />
                         {/* Progress Circle */}
                         <circle
@@ -56,7 +56,7 @@ export const HealthScoreWidget: React.FC<HealthScoreWidgetProps> = ({ score, tre
                         <span className={cn("text-4xl font-bold tracking-tighter", colorClass.split(' ')[0])}>
                             {score}
                         </span>
-                        <span className="text-[10px] text-slate-500 font-medium uppercase tracking-wider mt-1">Health Score</span>
+                        <span className="text-[10px] text-foreground/50 font-medium uppercase tracking-wider mt-1">Health Score</span>
                     </div>
                 </div>
 

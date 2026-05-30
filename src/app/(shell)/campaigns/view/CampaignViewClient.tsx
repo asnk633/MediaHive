@@ -62,7 +62,7 @@ function CampaignDashboardContent() {
             case 'production': return 'bg-purple-500/20 text-purple-400 border-purple-500/30';
             case 'review': return 'bg-yellow-500/20 text-yellow-400 border-yellow-500/30';
             case 'completed': return 'bg-green-500/20 text-green-400 border-green-500/30';
-            default: return 'bg-gray-500/20 text-gray-400 border-gray-500/30';
+            default: return 'bg-gray-500/20 text-foreground/60 border-gray-500/30';
         }
     };
 
@@ -73,12 +73,12 @@ function CampaignDashboardContent() {
                 <div>
                     <button
                         onClick={() => router.back()}
-                        className="flex items-center gap-2 text-gray-400 hover:text-foreground transition-colors mb-2 text-sm"
+                        className="flex items-center gap-2 text-foreground/60 hover:text-foreground transition-colors mb-2 text-sm"
                     >
                         <ArrowLeft size={16} /> Back
                     </button>
                     <h1 className="text-3xl font-bold text-foreground tracking-tight">{campaign.name}</h1>
-                    <p className="text-gray-400 mt-1 max-w-2xl">{campaign.description || "No description provided."}</p>
+                    <p className="text-foreground/60 mt-1 max-w-2xl">{campaign.description || "No description provided."}</p>
                 </div>
 
                 <div className="flex items-center gap-3">
@@ -107,7 +107,7 @@ function CampaignDashboardContent() {
                         <Calendar size={20} />
                     </div>
                     <div>
-                        <p className="text-xs text-gray-400 uppercase">Timeline</p>
+                        <p className="text-xs text-foreground/60 uppercase">Timeline</p>
                         <p className="text-sm font-semibold text-foreground">
                             {format(new Date(campaign.startDate), 'MMM d')} - {format(new Date(campaign.endDate), 'MMM d, yyyy')}
                         </p>
@@ -119,7 +119,7 @@ function CampaignDashboardContent() {
                         <Layers size={20} />
                     </div>
                     <div>
-                        <p className="text-xs text-gray-400 uppercase">Tasks</p>
+                        <p className="text-xs text-foreground/60 uppercase">Tasks</p>
                         <p className="text-sm font-semibold text-foreground">{tasks.length} Items</p>
                     </div>
                 </div>
@@ -129,7 +129,7 @@ function CampaignDashboardContent() {
                         <CheckCircle size={20} />
                     </div>
                     <div>
-                        <p className="text-xs text-gray-400 uppercase">Progress</p>
+                        <p className="text-xs text-foreground/60 uppercase">Progress</p>
                         <p className="text-sm font-semibold text-foreground">
                             {Math.round((tasks.filter(t => t.status === 'done').length / (tasks.length || 1)) * 100)}% Complete
                         </p>
@@ -141,7 +141,7 @@ function CampaignDashboardContent() {
                         <Clock size={20} />
                     </div>
                     <div>
-                        <p className="text-xs text-gray-400 uppercase">Status</p>
+                        <p className="text-xs text-foreground/60 uppercase">Status</p>
                         <p className="text-sm font-semibold text-foreground">On Track</p>
                     </div>
                 </div>
@@ -160,12 +160,12 @@ function CampaignDashboardContent() {
                             <div key={task.id} className="bg-glass border border-soft rounded-xl p-4 hover:bg-foreground/10 transition-colors flex items-center justify-between group cursor-pointer" onClick={() => nativeNavigate(`/tasks/view?id=${task.id}`, router, 'CampaignView (Task Click)')}>
                                 <div>
                                     <h3 className="text-foreground font-medium group-hover:text-primary transition-colors">{task.title}</h3>
-                                    <p className="text-sm text-gray-500 line-clamp-1">{task.description}</p>
+                                    <p className="text-sm text-foreground/50 line-clamp-1">{task.description}</p>
                                 </div>
                                 <div className="flex items-center gap-3">
                                     <span className={`px-2 py-1 rounded-lg text-xs font-semibold ${task.status === 'done' ? 'bg-green-500/20 text-green-400' :
                                         task.status === 'in_progress' ? 'bg-blue-500/20 text-blue-400' :
-                                            'bg-gray-500/20 text-gray-400'
+                                            'bg-gray-500/20 text-foreground/60'
                                         }`}>
                                         {task.status.replace('_', ' ')}
                                     </span>
@@ -174,7 +174,7 @@ function CampaignDashboardContent() {
                         ))}
                     </div>
                 ) : (
-                    <div className="bg-glass border border-soft border-dashed rounded-2xl p-12 text-center text-gray-500">
+                    <div className="bg-glass border border-soft border-dashed rounded-2xl p-12 text-center text-foreground/50">
                         <div className="w-16 h-16 bg-foreground/5 rounded-full flex items-center justify-center mx-auto mb-4">
                             <Layers size={32} className="opacity-50" />
                         </div>

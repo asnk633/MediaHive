@@ -1,0 +1,1334 @@
+[
+  {
+    "asset_no": "TGMD100",
+    "asset_name": "TP-Link TL-MR3620 AC1350 3G/4G Dongle Support V",
+    "quantity": 1,
+    "location": "Thaiba Villa",
+    "condition": "Good",
+    "purchase_amount": 2730.00,
+    "purchase_date": "2018-07-14"
+  },
+  {
+    "asset_no": "TGMD101",
+    "asset_name": "Edifier R12U Stereo Computer Speakers",
+    "quantity": 1,
+    "location": "Media Room",
+    "condition": "Good",
+    "purchase_amount": 1180.00,
+    "purchase_date": "2020-01-26"
+  },
+  {
+    "asset_no": "TGMD102",
+    "asset_name": "Seagate Backup Plus Hub 10 TB External Hard Drive I",
+    "quantity": 1,
+    "location": "Media Room",
+    "condition": "Need Repair",
+    "purchase_amount": 20999.00,
+    "purchase_date": "2020-03-17"
+  },
+  {
+    "asset_no": "TGMD103",
+    "asset_name": "Camera Cleaning 6 in 1 Kit.",
+    "quantity": 1,
+    "location": "Media Room",
+    "condition": "Good",
+    "purchase_amount": 349.00,
+    "purchase_date": "2020-07-14"
+  },
+  {
+    "asset_no": "TGMD104",
+    "asset_name": "Osaka AA Battery Charger",
+    "quantity": 1,
+    "location": "Media Room",
+    "condition": "Good",
+    "purchase_amount": 1350.00,
+    "purchase_date": "2020-07-14"
+  },
+  {
+    "asset_no": "TGMD105",
+    "asset_name": "Camera lens cover pouch",
+    "quantity": 4,
+    "location": "Media Room",
+    "condition": "Good",
+    "purchase_amount": 749.00,
+    "purchase_date": "2020-07-14"
+  },
+  {
+    "asset_no": "TGMD106",
+    "asset_name": "Wrist Strap for DSLR Camera",
+    "quantity": 1,
+    "location": "Media Room",
+    "condition": "Good",
+    "purchase_amount": 220.00,
+    "purchase_date": "2020-07-14"
+  },
+  {
+    "asset_no": "TGMD107",
+    "asset_name": "Tempered Glass Screen Protector for Sony a73",
+    "quantity": 1,
+    "location": "Media Room",
+    "condition": "Good",
+    "purchase_amount": 299.00,
+    "purchase_date": "2020-07-14"
+  },
+  {
+    "asset_no": "TGMD108",
+    "asset_name": "Cosmus Essen Anti-Theft Waterproof Dark Grey DSLR",
+    "quantity": 1,
+    "location": "Media Room",
+    "condition": "Good",
+    "purchase_amount": 2099.00,
+    "purchase_date": "2020-07-14"
+  },
+  {
+    "asset_no": "TGMD109",
+    "asset_name": "Benq Monitor PD2700U",
+    "quantity": 1,
+    "location": "Media Room",
+    "condition": "Good",
+    "purchase_amount": 39990.00,
+    "purchase_date": "2020-07-23"
+  },
+  {
+    "asset_no": "TGMD110",
+    "asset_name": "WON Studio Photo_51 33 Umbrella Light Setup with E",
+    "quantity": 1,
+    "location": "Board Room",
+    "condition": "Good",
+    "purchase_amount": 1099.00,
+    "purchase_date": "2020-07-24"
+  },
+  {
+    "asset_no": "TGMD111",
+    "asset_name": "Digitek Professional DV Tripod Cum Monopod Tripod",
+    "quantity": 1,
+    "location": "Media Room",
+    "condition": "Need Repair",
+    "purchase_amount": 3927.00,
+    "purchase_date": "2020-07-30"
+  },
+  {
+    "asset_no": "TGMD112",
+    "asset_name": "Sonia Soft Box Light",
+    "quantity": 1,
+    "location": "Board Room",
+    "condition": "Good",
+    "purchase_amount": 1165.00,
+    "purchase_date": "2020-08-05"
+  },
+  {
+    "asset_no": "TGMD113",
+    "asset_name": "Simpex SI 30W Dual Color Led Video Light",
+    "quantity": 1,
+    "location": "Board Room",
+    "condition": "Good",
+    "purchase_amount": 3900.00,
+    "purchase_date": "2020-08-05"
+  },
+  {
+    "asset_no": "TGMD114",
+    "asset_name": "Ant Esports GM200W Gaming Mouse Wired",
+    "quantity": 1,
+    "location": "Media Room",
+    "condition": "Good",
+    "purchase_amount": 399.00,
+    "purchase_date": "2020-08-06"
+  },
+  {
+    "asset_no": "TGMD115",
+    "asset_name": "USB 3.0 A to Micro B High Speed Cable for Portable E",
+    "quantity": 2,
+    "location": "Media Room",
+    "condition": "Good",
+    "purchase_amount": 399.00,
+    "purchase_date": "2020-08-06"
+  },
+  {
+    "asset_no": "TGMD116",
+    "asset_name": "Redgear Blaze Semi-Mechanical wired Gaming keybo",
+    "quantity": 1,
+    "location": "Media Room",
+    "condition": "Good",
+    "purchase_amount": 999.00,
+    "purchase_date": "2020-08-07"
+  },
+  {
+    "asset_no": "TGMD117",
+    "asset_name": "Sennheiser HD 206 507364 Headphones",
+    "quantity": 1,
+    "location": "Media Room",
+    "condition": "Good",
+    "purchase_amount": 1190.00,
+    "purchase_date": "2020-08-09"
+  },
+  {
+    "asset_no": "TGMD118",
+    "asset_name": "Camera Storage box Hiniso",
+    "quantity": 1,
+    "location": "Media Room",
+    "condition": "Good",
+    "purchase_amount": 7990.00,
+    "purchase_date": "2020-08-11"
+  },
+  {
+    "asset_no": "TGMD119",
+    "asset_name": "Orchestral Notation stand",
+    "quantity": 1,
+    "location": "Main Office",
+    "condition": "Need Repair",
+    "purchase_amount": 1156.00,
+    "purchase_date": "2020-08-12"
+  },
+  {
+    "asset_no": "TGMD120",
+    "asset_name": "VRCT E27 to B22 Plastic Screw Base Socket Lamp Ho",
+    "quantity": 4,
+    "location": "Board Room",
+    "condition": "Good",
+    "purchase_amount": 288.00,
+    "purchase_date": "2020-09-01"
+  },
+  {
+    "asset_no": "TGMD121",
+    "asset_name": "HARISON Quadlux Mark II Single Studio Light",
+    "quantity": 1,
+    "location": "Board Room",
+    "condition": "Good",
+    "purchase_amount": 4699.00,
+    "purchase_date": "2020-09-01"
+  },
+  {
+    "asset_no": "TGMD122",
+    "asset_name": "Green Screen 8x10",
+    "quantity": 1,
+    "location": "Main Office",
+    "condition": "Damaged",
+    "purchase_amount": 449.00,
+    "purchase_date": "2020-09-01"
+  },
+  {
+    "asset_no": "TGMD123",
+    "asset_name": "Comica CVM-WM100 Plus Wireless Microphones 1Rx",
+    "quantity": 1,
+    "location": "Media Room",
+    "condition": "Good",
+    "purchase_amount": 21990.00,
+    "purchase_date": "2020-09-01"
+  },
+  {
+    "asset_no": "TGMD124",
+    "asset_name": "Osaka NI-MH HR06 4xAA 3000mAh Enelong Recharg",
+    "quantity": 8,
+    "location": "Main Office",
+    "condition": "Good",
+    "purchase_amount": 1312.00,
+    "purchase_date": "2020-09-07"
+  },
+  {
+    "asset_no": "TGMD125",
+    "asset_name": "Memory card Hard Case Hiffin",
+    "quantity": 1,
+    "location": "Media Room",
+    "condition": "Good",
+    "purchase_amount": 375.00,
+    "purchase_date": "2020-09-10"
+  },
+  {
+    "asset_no": "TGMD126",
+    "asset_name": "64gb Memory card SDHC v60 10 Sony",
+    "quantity": 1,
+    "location": "Media Room",
+    "condition": "Good",
+    "purchase_amount": 1599.00,
+    "purchase_date": "2020-09-10"
+  },
+  {
+    "asset_no": "TGMD127",
+    "asset_name": "Transcend Card Reader",
+    "quantity": 1,
+    "location": "Media Room",
+    "condition": "Good",
+    "purchase_amount": 1299.00,
+    "purchase_date": "2020-09-10"
+  },
+  {
+    "asset_no": "TGMD128",
+    "asset_name": "LG Monitor-27UL500",
+    "quantity": 1,
+    "location": "Media Room",
+    "condition": "Good",
+    "purchase_amount": 29502.00,
+    "purchase_date": "2020-09-11"
+  },
+  {
+    "asset_no": "TGMD129",
+    "asset_name": "Humble Universal Tripod Mount Adapter Clip with Adj",
+    "quantity": 1,
+    "location": "Media Room",
+    "condition": "Damaged",
+    "purchase_amount": 302.00,
+    "purchase_date": "2020-09-27"
+  },
+  {
+    "asset_no": "TGMD130",
+    "asset_name": "Corsair Keyboard K55",
+    "quantity": 1,
+    "location": "Media Room",
+    "condition": "Good",
+    "purchase_amount": 3799.00,
+    "purchase_date": "2020-10-12"
+  },
+  {
+    "asset_no": "TGMD131",
+    "asset_name": "Creative Desktop Sound Speaker with Subwoofer",
+    "quantity": 1,
+    "location": "Media Room",
+    "condition": "Good",
+    "purchase_amount": 2999.00,
+    "purchase_date": "2020-10-17"
+  },
+  {
+    "asset_no": "TGMD132",
+    "asset_name": "GM 3060 4+1 Power Strip.",
+    "quantity": 2,
+    "location": "Media Room & TMA",
+    "condition": "Good",
+    "purchase_amount": 786.00,
+    "purchase_date": "2020-10-17"
+  },
+  {
+    "asset_no": "TGMD133",
+    "asset_name": "Benq Monitor PD2700U",
+    "quantity": 1,
+    "location": "Media Room",
+    "condition": "Good",
+    "purchase_amount": 37490.00,
+    "purchase_date": "2020-10-20"
+  },
+  {
+    "asset_no": "TGMD134",
+    "asset_name": "TRRS 3.5mm 1male to 2 female converter",
+    "quantity": 1,
+    "location": "Media Room",
+    "condition": "Good",
+    "purchase_amount": 299.00,
+    "purchase_date": "2020-10-20"
+  },
+  {
+    "asset_no": "TGMD135",
+    "asset_name": "Kodak Pro Series 55mm 16 Layers UV Filter",
+    "quantity": 1,
+    "location": "Media Room",
+    "condition": "Good",
+    "purchase_amount": 1003.00,
+    "purchase_date": "2020-12-27"
+  },
+  {
+    "asset_no": "TGMD136",
+    "asset_name": "Callas Mesh Desk Organizer with Three Trays and 5 U",
+    "quantity": 1,
+    "location": "Project Department",
+    "condition": "Good",
+    "purchase_amount": 1332.00,
+    "purchase_date": "2021-01-07"
+  },
+  {
+    "asset_no": "TGMD137",
+    "asset_name": "RJ45 cable crimping set (Crimper, Cutter)",
+    "quantity": 1,
+    "location": "Media Room",
+    "condition": "Good",
+    "purchase_amount": 649.00,
+    "purchase_date": "2021-01-10"
+  },
+  {
+    "asset_no": "TGMD138",
+    "asset_name": "L-Bracket Shoe Mount for Camera",
+    "quantity": 1,
+    "location": "Media Room",
+    "condition": "Good",
+    "purchase_amount": 499.00,
+    "purchase_date": "2021-01-16"
+  },
+  {
+    "asset_no": "TGMD139",
+    "asset_name": "128GB SanDisk Extreme uSD,160MB/s",
+    "quantity": 1,
+    "location": "Media Room",
+    "condition": "Good",
+    "purchase_amount": 2029.00,
+    "purchase_date": "2021-05-23"
+  },
+  {
+    "asset_no": "TGMD140",
+    "asset_name": "TP-Link Omada N300 Outdoor Wireless Extender",
+    "quantity": 1,
+    "location": "Media Room",
+    "condition": "Damaged",
+    "purchase_amount": 4698.00,
+    "purchase_date": "2021-06-08"
+  },
+  {
+    "asset_no": "TGMD141",
+    "asset_name": "TP-Link TL-WA850RE N300 Wireless Range Extender",
+    "quantity": 1,
+    "location": "Media Room",
+    "condition": "Good",
+    "purchase_amount": 1399.00,
+    "purchase_date": "2021-06-08"
+  },
+  {
+    "asset_no": "TGMD142",
+    "asset_name": "RiaTech Large Size (600mm x 300mm x 2mm) Extended Mouse Pad",
+    "quantity": 1,
+    "location": "Media Room",
+    "condition": "Good",
+    "purchase_amount": 329.00,
+    "purchase_date": "2021-06-08"
+  },
+  {
+    "asset_no": "TGMD143",
+    "asset_name": "RJ45 20m Cable",
+    "quantity": 1,
+    "location": "Media Room",
+    "condition": "Good",
+    "purchase_amount": 599.00,
+    "purchase_date": "2021-06-09"
+  },
+  {
+    "asset_no": "TGMD144",
+    "asset_name": "TP-Link 8 Port 10/100Mbps Fast Ethernet Switch",
+    "quantity": 1,
+    "location": "TGCIS",
+    "condition": "Good",
+    "purchase_amount": 2699.00,
+    "purchase_date": "2021-06-13"
+  },
+  {
+    "asset_no": "TGMD145",
+    "asset_name": "58mm Multi Coated UV Filter Osaka",
+    "quantity": 1,
+    "location": "Media Room",
+    "condition": "Good",
+    "purchase_amount": 253.00,
+    "purchase_date": "2021-09-06"
+  },
+  {
+    "asset_no": "TGMD146",
+    "asset_name": "Phone Holder 360 mount for Tripod",
+    "quantity": 1,
+    "location": "Media Room",
+    "condition": "Good",
+    "purchase_amount": 247.00,
+    "purchase_date": "2021-09-19"
+  },
+  {
+    "asset_no": "TGMD147",
+    "asset_name": "Camera Shoe Pro 1/4\" Mount Adapter for Tripod",
+    "quantity": 1,
+    "location": "Media Room",
+    "condition": "Good",
+    "purchase_amount": 149.00,
+    "purchase_date": "2021-09-19"
+  },
+  {
+    "asset_no": "TGMD148",
+    "asset_name": "Ubiquiti Outdoor Networks Extender LBE-M5 1Tx 1Rx",
+    "quantity": 1,
+    "location": "Main Office Building & Thaiba",
+    "condition": "Good",
+    "purchase_amount": 9999.00,
+    "purchase_date": "2021-10-25"
+  },
+  {
+    "asset_no": "TGMD149",
+    "asset_name": "USB C to 3.5mm female Converter",
+    "quantity": 1,
+    "location": "Media Room",
+    "condition": "Good",
+    "purchase_amount": 199.00,
+    "purchase_date": "2022-03-27"
+  },
+  {
+    "asset_no": "TGMD150",
+    "asset_name": "Rode SC7 3.5mm TRS to TRSS Patch Cable",
+    "quantity": 1,
+    "location": "Media Room",
+    "condition": "Good",
+    "purchase_amount": 1074.00,
+    "purchase_date": "2022-03-27"
+  },
+  {
+    "asset_no": "TGMD151",
+    "asset_name": "Memory card pouch",
+    "quantity": 1,
+    "location": "Media Room",
+    "condition": "Good",
+    "purchase_amount": 239.00,
+    "purchase_date": "2022-04-23"
+  },
+  {
+    "asset_no": "TGMD152",
+    "asset_name": "256gb MicroSD 160mb/s",
+    "quantity": 1,
+    "location": "Media Room",
+    "condition": "Good",
+    "purchase_amount": 3069.00,
+    "purchase_date": "2022-04-27"
+  },
+  {
+    "asset_no": "TGMD153",
+    "asset_name": "Protective Frame Mount Compatible with GoPro Action Camera",
+    "quantity": 1,
+    "location": "Media Room",
+    "condition": "Good",
+    "purchase_amount": 999.00,
+    "purchase_date": "2022-04-29"
+  },
+  {
+    "asset_no": "TGMD154",
+    "asset_name": "USB A Type C USB C Female to USB Male Adapter",
+    "quantity": 2,
+    "location": "Media Room",
+    "condition": "Good",
+    "purchase_amount": 294.00,
+    "purchase_date": "2022-05-02"
+  },
+  {
+    "asset_no": "TGMD155",
+    "asset_name": "42 in 1 Action Camera Accessories Kit",
+    "quantity": 1,
+    "location": "Media Room",
+    "condition": "Need Repair",
+    "purchase_amount": 1273.00,
+    "purchase_date": "2022-05-12"
+  },
+  {
+    "asset_no": "TGMD156",
+    "asset_name": "GoPro AAMIC-001 3.5mm Mic Adapter",
+    "quantity": 1,
+    "location": "Media Room",
+    "condition": "Good",
+    "purchase_amount": 4500.00,
+    "purchase_date": "2022-05-12"
+  },
+  {
+    "asset_no": "TGMD157",
+    "asset_name": "Gopro 3 Battery Charger Box",
+    "quantity": 1,
+    "location": "TPS Jharkhand",
+    "condition": "Good",
+    "purchase_amount": 1799.00,
+    "purchase_date": "2022-05-12"
+  },
+  {
+    "asset_no": "TGMD158",
+    "asset_name": "GoPro Rechargeable Battery",
+    "quantity": 1,
+    "location": "TPS Jharkhand",
+    "condition": "Good",
+    "purchase_amount": 2100.00,
+    "purchase_date": "2022-05-12"
+  },
+  {
+    "asset_no": "TGMD159",
+    "asset_name": "Reusable Adjustable Ties Strap Wire Organizer",
+    "quantity": 50,
+    "location": "Main Office",
+    "condition": "Good",
+    "purchase_amount": 289.00,
+    "purchase_date": "2022-05-21"
+  },
+  {
+    "asset_no": "TGMD160",
+    "asset_name": "Non Adhesive Hook Tape & Non Adhesive Loop Tape",
+    "quantity": 1,
+    "location": "Main Office",
+    "condition": "Good",
+    "purchase_amount": 209.00,
+    "purchase_date": "2022-05-21"
+  },
+  {
+    "asset_no": "TGMD161",
+    "asset_name": "Fedus RJ45 8P8C Female to Female Coupler Connectors",
+    "quantity": 10,
+    "location": "Main Office",
+    "condition": "Good",
+    "purchase_amount": 299.00,
+    "purchase_date": "2022-06-02"
+  },
+  {
+    "asset_no": "TGMD162",
+    "asset_name": "Lenovo 300 FHD Flexible Mount Webcam",
+    "quantity": 1,
+    "location": "Board Room",
+    "condition": "Good",
+    "purchase_amount": 1749.00,
+    "purchase_date": "2022-07-26"
+  },
+  {
+    "asset_no": "TGMD163",
+    "asset_name": "Transcend Card Reader",
+    "quantity": 2,
+    "location": "Media Room",
+    "condition": "Good",
+    "purchase_amount": 1232.00,
+    "purchase_date": "2023-04-14"
+  },
+  {
+    "asset_no": "TGMD164",
+    "asset_name": "USB A to USB micro B 6ft cable Amazon Basics",
+    "quantity": 1,
+    "location": "Media Room",
+    "condition": "Good",
+    "purchase_amount": 199.00,
+    "purchase_date": "2023-04-14"
+  },
+  {
+    "asset_no": "TGMD165",
+    "asset_name": "HP 430 Bluetooth Mouse",
+    "quantity": 1,
+    "location": "Media Room",
+    "condition": "Good",
+    "purchase_amount": 1599.00,
+    "purchase_date": "2023-04-14"
+  },
+  {
+    "asset_no": "TGMD166",
+    "asset_name": "HDMI to HDMI 10K 3m Gold plated cable",
+    "quantity": 1,
+    "location": "Media Room",
+    "condition": "Good",
+    "purchase_amount": 1115.07,
+    "purchase_date": "2023-04-26"
+  },
+  {
+    "asset_no": "TGMD167",
+    "asset_name": "Tempered Glass Screen Protector for GoPro Hero 8",
+    "quantity": 1,
+    "location": "Media Room",
+    "condition": "Damaged",
+    "purchase_amount": 190.00,
+    "purchase_date": "2023-04-26"
+  },
+  {
+    "asset_no": "TGMD168",
+    "asset_name": "COI Note Pad/Memo Book with Sticky Notes & Clip Holder",
+    "quantity": 1,
+    "location": "Media Room",
+    "condition": "Good",
+    "purchase_amount": 197.00,
+    "purchase_date": "2023-05-15"
+  },
+  {
+    "asset_no": "TGMD169",
+    "asset_name": "RJ45 wire connection tester kit red",
+    "quantity": 1,
+    "location": "Media Room",
+    "condition": "Good",
+    "purchase_amount": null,
+    "purchase_date": "2023-07-27"
+  },
+  {
+    "asset_no": "TGMD170",
+    "asset_name": "TP-Link CPE210 2.4GHz 300Mbps Wi-Fi Outdoor CPE",
+    "quantity": 2,
+    "location": "Main Office & CIS Building",
+    "condition": "Good",
+    "purchase_amount": 3399.00,
+    "purchase_date": "2023-07-27"
+  },
+  {
+    "asset_no": "TGMD171",
+    "asset_name": "RJ45 pin male",
+    "quantity": 30,
+    "location": "Media Room",
+    "condition": "Good",
+    "purchase_amount": 549.00,
+    "purchase_date": "2023-08-04"
+  },
+  {
+    "asset_no": "TGMD172",
+    "asset_name": "RJ45 Pin protector",
+    "quantity": 7,
+    "location": "Media Room",
+    "condition": "Good",
+    "purchase_amount": 299.00,
+    "purchase_date": "2023-08-04"
+  },
+  {
+    "asset_no": "TGMD173",
+    "asset_name": "USB-C Hub Dock 8-in-1 Amazon Basics",
+    "quantity": 1,
+    "location": "Media Room",
+    "condition": "Good",
+    "purchase_amount": 1699.00,
+    "purchase_date": "2023-08-04"
+  },
+  {
+    "asset_no": "TGMD174",
+    "asset_name": "Sony NP-FV100A Battery 3410mAh",
+    "quantity": 1,
+    "location": "Media Room",
+    "condition": "Good",
+    "purchase_amount": 1699.00,
+    "purchase_date": "2023-10-08"
+  },
+  {
+    "asset_no": "TGMD175",
+    "asset_name": "Sony MDR-ZX110A Wired On Ear Headphone",
+    "quantity": 1,
+    "location": "Media Room",
+    "condition": "Good",
+    "purchase_amount": 786.00,
+    "purchase_date": "2023-10-24"
+  },
+  {
+    "asset_no": "TGMD176",
+    "asset_name": "Redgear MT02 Keyboard",
+    "quantity": 1,
+    "location": "Media Room",
+    "condition": "Good",
+    "purchase_amount": 998.00,
+    "purchase_date": "2023-10-25"
+  },
+  {
+    "asset_no": "TGMD177",
+    "asset_name": "128gb MicroSDXC UHS-1",
+    "quantity": 1,
+    "location": "TPS Jharkhand",
+    "condition": "Good",
+    "purchase_amount": 1249.00,
+    "purchase_date": "2024-02-20"
+  },
+  {
+    "asset_no": "TGMD178",
+    "asset_name": "Portable Aluminum Alloy Light Stand DIGITEK (DLS-9)",
+    "quantity": 1,
+    "location": "Board Room",
+    "condition": "Good",
+    "purchase_amount": 554.00,
+    "purchase_date": "2024-03-16"
+  },
+  {
+    "asset_no": "TGMD179",
+    "asset_name": "62mm MC UV Protection Filter HIFFIN PRO",
+    "quantity": 1,
+    "location": "Media Room",
+    "condition": "Good",
+    "purchase_amount": 660.00,
+    "purchase_date": "2024-03-27"
+  },
+  {
+    "asset_no": "TGMD180",
+    "asset_name": "Micro HDMI to HDMI cable BlueRigger",
+    "quantity": 1,
+    "location": "Media Room",
+    "condition": "Need Repair",
+    "purchase_amount": 949.00,
+    "purchase_date": "2024-05-27"
+  },
+  {
+    "asset_no": "TGMD181",
+    "asset_name": "Hoteon 5m Extension Board With Usb Slots",
+    "quantity": 1,
+    "location": "Media Room",
+    "condition": "Good",
+    "purchase_amount": 2087.00,
+    "purchase_date": "2024-06-06"
+  },
+  {
+    "asset_no": "TGMD182",
+    "asset_name": "USB C to USB/USB C to C 140W Cable Verilux",
+    "quantity": 1,
+    "location": "Media Room",
+    "condition": "Good",
+    "purchase_amount": 899.00,
+    "purchase_date": "2024-07-04"
+  },
+  {
+    "asset_no": "TGMD183",
+    "asset_name": "HDMI over RJ45 extender 70m 1Rx 1Tx EX-230C",
+    "quantity": 2,
+    "location": "Media Room",
+    "condition": "Good",
+    "purchase_amount": 3608.00,
+    "purchase_date": "2024-07-09"
+  },
+  {
+    "asset_no": "TGMD184",
+    "asset_name": "USB A Male to 5V DC Barrel Power Jack Male 5.5mm",
+    "quantity": 5,
+    "location": "Media Room",
+    "condition": "Good",
+    "purchase_amount": 399.00,
+    "purchase_date": "2024-07-09"
+  },
+  {
+    "asset_no": "TGMD185",
+    "asset_name": "Hollyland Lark M2 Wireless Mic 2Tx 3Rx",
+    "quantity": 1,
+    "location": "Media Room",
+    "condition": "Good",
+    "purchase_amount": 14990.00,
+    "purchase_date": "2024-07-12"
+  },
+  {
+    "asset_no": "TGMD186",
+    "asset_name": "HDMI 1x3 Bi-Directional 4K Splitter",
+    "quantity": 1,
+    "location": "Media Room",
+    "condition": "Good",
+    "purchase_amount": 996.55,
+    "purchase_date": "2024-08-16"
+  },
+  {
+    "asset_no": "TGMD187",
+    "asset_name": "HP 430 Bluetooth Mouse",
+    "quantity": 1,
+    "location": "Media Room",
+    "condition": "Good",
+    "purchase_amount": 1849.00,
+    "purchase_date": "2024-10-24"
+  },
+  {
+    "asset_no": "TGMD188",
+    "asset_name": "BenQ GW2780T Monitor",
+    "quantity": 1,
+    "location": "Media Room",
+    "condition": "Good",
+    "purchase_amount": 14990.00,
+    "purchase_date": "2024-10-24"
+  },
+  {
+    "asset_no": "TGMD189",
+    "asset_name": "HDMI female to USB A converter Capture Card",
+    "quantity": 1,
+    "location": "Media Room",
+    "condition": "Good",
+    "purchase_amount": 599.00,
+    "purchase_date": "2024-11-11"
+  },
+  {
+    "asset_no": "TGMD190",
+    "asset_name": "DC Female To 2 Male dc y splitter cable",
+    "quantity": 2,
+    "location": "Media Room",
+    "condition": "Good",
+    "purchase_amount": 178.00,
+    "purchase_date": "2024-12-02"
+  },
+  {
+    "asset_no": "TGMD191",
+    "asset_name": "AGARO Compressed Air Duster",
+    "quantity": 1,
+    "location": "Media Room",
+    "condition": "Good",
+    "purchase_amount": 2997.00,
+    "purchase_date": "2024-12-02"
+  },
+  {
+    "asset_no": "TGMD192",
+    "asset_name": "Oakter Mini UPS for 12V",
+    "quantity": 1,
+    "location": "Media Room",
+    "condition": "Good",
+    "purchase_amount": 1399.00,
+    "purchase_date": "2024-12-02"
+  },
+  {
+    "asset_no": "TGMD193",
+    "asset_name": "Atem Mini Pro",
+    "quantity": 1,
+    "location": "Media Room",
+    "condition": "Good",
+    "purchase_amount": null,
+    "purchase_date": null
+  },
+  {
+    "asset_no": "TGMD194",
+    "asset_name": "HP Monitor 20kd",
+    "quantity": 1,
+    "location": "Media Room",
+    "condition": "Good",
+    "purchase_amount": null,
+    "purchase_date": null
+  },
+  {
+    "asset_no": "TGMD195",
+    "asset_name": "Rode Wireless GO 2 1Rx 1Tx",
+    "quantity": 1,
+    "location": "Media Room",
+    "condition": "Good",
+    "purchase_amount": null,
+    "purchase_date": null
+  },
+  {
+    "asset_no": "TGMD196",
+    "asset_name": "Lapcare Laptop Cooler Pad",
+    "quantity": 1,
+    "location": "Media Room",
+    "condition": "Good",
+    "purchase_amount": null,
+    "purchase_date": null
+  },
+  {
+    "asset_no": "TGMD197",
+    "asset_name": "Philips Table Lamp",
+    "quantity": 1,
+    "location": "Media Room",
+    "condition": "Good",
+    "purchase_amount": null,
+    "purchase_date": null
+  },
+  {
+    "asset_no": "TGMD198",
+    "asset_name": "Logitech Mouse M720",
+    "quantity": 1,
+    "location": "Media Room",
+    "condition": "Good",
+    "purchase_amount": null,
+    "purchase_date": null
+  },
+  {
+    "asset_no": "TGMD199",
+    "asset_name": "Mi 360 Security Camera",
+    "quantity": 1,
+    "location": "Media Room",
+    "condition": "Good",
+    "purchase_amount": null,
+    "purchase_date": null
+  },
+  {
+    "asset_no": "TGMD200",
+    "asset_name": "Sennheiser Wireless Headset HD450SE",
+    "quantity": 1,
+    "location": "Media Room",
+    "condition": "Good",
+    "purchase_amount": null,
+    "purchase_date": null
+  },
+  {
+    "asset_no": "TGMD201",
+    "asset_name": "Stappler Kangaro 555 26/6-24/6",
+    "quantity": 1,
+    "location": "Media Room",
+    "condition": "Good",
+    "purchase_amount": null,
+    "purchase_date": null
+  },
+  {
+    "asset_no": "TGMD202",
+    "asset_name": "HDMI to VGA converter Zebronics",
+    "quantity": 2,
+    "location": "Media Room",
+    "condition": "Good",
+    "purchase_amount": null,
+    "purchase_date": null
+  },
+  {
+    "asset_no": "TGMD203",
+    "asset_name": "Permenent Marker pen DOMS Refilo",
+    "quantity": 1,
+    "location": "Media Room",
+    "condition": "Good",
+    "purchase_amount": null,
+    "purchase_date": null
+  },
+  {
+    "asset_no": "TGMD204",
+    "asset_name": "USB A to USB Mini B short Cable",
+    "quantity": 1,
+    "location": "Media Room",
+    "condition": "Good",
+    "purchase_amount": null,
+    "purchase_date": null
+  },
+  {
+    "asset_no": "TGMD205",
+    "asset_name": "Hole puncher Kangaro",
+    "quantity": 1,
+    "location": "Media Room",
+    "condition": "Good",
+    "purchase_amount": null,
+    "purchase_date": null
+  },
+  {
+    "asset_no": "TGMD206",
+    "asset_name": "Boya Wired Lav mic long",
+    "quantity": 1,
+    "location": "Media Room",
+    "condition": "Good",
+    "purchase_amount": null,
+    "purchase_date": null
+  },
+  {
+    "asset_no": "TGMD207",
+    "asset_name": "USB A to 3.5mm TRRS converter Cable",
+    "quantity": 1,
+    "location": "Media Room",
+    "condition": "Good",
+    "purchase_amount": null,
+    "purchase_date": null
+  },
+  {
+    "asset_no": "TGMD208",
+    "asset_name": "USB A to C Rode Cable",
+    "quantity": 2,
+    "location": "Media Room",
+    "condition": "Good",
+    "purchase_amount": null,
+    "purchase_date": null
+  },
+  {
+    "asset_no": "TGMD209",
+    "asset_name": "White ink correction pen",
+    "quantity": 1,
+    "location": "Media Room",
+    "condition": "Good",
+    "purchase_amount": null,
+    "purchase_date": null
+  },
+  {
+    "asset_no": "TGMD210",
+    "asset_name": "3pin Multi out adapter 16amp",
+    "quantity": 1,
+    "location": "Media Room",
+    "condition": "Good",
+    "purchase_amount": null,
+    "purchase_date": null
+  },
+  {
+    "asset_no": "TGMD211",
+    "asset_name": "Fevicol MR 20g bottle",
+    "quantity": 1,
+    "location": "Media Room",
+    "condition": "Good",
+    "purchase_amount": null,
+    "purchase_date": null
+  },
+  {
+    "asset_no": "TGMD212",
+    "asset_name": "Glue Stick 21g",
+    "quantity": 1,
+    "location": "Media Room",
+    "condition": "Good",
+    "purchase_amount": null,
+    "purchase_date": null
+  },
+  {
+    "asset_no": "TGMD213",
+    "asset_name": "Fevi Gum 50ml",
+    "quantity": 1,
+    "location": "Media Room",
+    "condition": "Good",
+    "purchase_amount": null,
+    "purchase_date": null
+  },
+  {
+    "asset_no": "TGMD214",
+    "asset_name": "30cm Steel Ruler Sakshi",
+    "quantity": 1,
+    "location": "Media Room",
+    "condition": "Good",
+    "purchase_amount": null,
+    "purchase_date": null
+  },
+  {
+    "asset_no": "TGMD215",
+    "asset_name": "Office Scissor Green Gorilla",
+    "quantity": 1,
+    "location": "Media Room",
+    "condition": "Good",
+    "purchase_amount": null,
+    "purchase_date": null
+  },
+  {
+    "asset_no": "TGMD216",
+    "asset_name": "Pen Blade Knife Nataraj White Big",
+    "quantity": 1,
+    "location": "Media Room",
+    "condition": "Good",
+    "purchase_amount": null,
+    "purchase_date": null
+  },
+  {
+    "asset_no": "TGMD217",
+    "asset_name": "Pen Blade Knife steel Kanex M9",
+    "quantity": 1,
+    "location": "Media Room",
+    "condition": "Good",
+    "purchase_amount": null,
+    "purchase_date": null
+  },
+  {
+    "asset_no": "TGMD218",
+    "asset_name": "Hardisk Toshiba 2TB",
+    "quantity": 1,
+    "location": "Media Room",
+    "condition": "Good",
+    "purchase_amount": null,
+    "purchase_date": null
+  },
+  {
+    "asset_no": "TGMD219",
+    "asset_name": "USB C to C cable 3m Promate",
+    "quantity": 1,
+    "location": "Media Room",
+    "condition": "Good",
+    "purchase_amount": null,
+    "purchase_date": null
+  },
+  {
+    "asset_no": "TGMD220",
+    "asset_name": "Mouse Pad with Hand cousin",
+    "quantity": 1,
+    "location": "Media Room",
+    "condition": "Damaged",
+    "purchase_amount": null,
+    "purchase_date": null
+  },
+  {
+    "asset_no": "TGMD221",
+    "asset_name": "4GB Memory card SDHC Lexar",
+    "quantity": 1,
+    "location": "Media Room",
+    "condition": "Damaged",
+    "purchase_amount": null,
+    "purchase_date": null
+  },
+  {
+    "asset_no": "TGMD222",
+    "asset_name": "32gb Memory card SDHC 10 48mb/s SanDisk",
+    "quantity": 1,
+    "location": "Media Room",
+    "condition": "Damaged",
+    "purchase_amount": null,
+    "purchase_date": null
+  },
+  {
+    "asset_no": "TGMD223",
+    "asset_name": "16g Memory card 48mb/s SDHC 10 SanDisk",
+    "quantity": 1,
+    "location": "Media Room",
+    "condition": "Damaged",
+    "purchase_amount": null,
+    "purchase_date": null
+  },
+  {
+    "asset_no": "TGMD224",
+    "asset_name": "8gb Memory card 40mb/s SDHC 10 SanDisk",
+    "quantity": 1,
+    "location": "Media Room",
+    "condition": "Damaged",
+    "purchase_amount": null,
+    "purchase_date": null
+  },
+  {
+    "asset_no": "TGMD225",
+    "asset_name": "2gb Micro SD card",
+    "quantity": 1,
+    "location": "Media Room",
+    "condition": "Damaged",
+    "purchase_amount": null,
+    "purchase_date": null
+  },
+  {
+    "asset_no": "TGMD226",
+    "asset_name": "4gb Micro SDHC card",
+    "quantity": 1,
+    "location": "Media Room",
+    "condition": "Damaged",
+    "purchase_amount": null,
+    "purchase_date": null
+  },
+  {
+    "asset_no": "TGMD227",
+    "asset_name": "128gb Memory card 200mb/s SDHC V30 SanDisk",
+    "quantity": 2,
+    "location": "Media Room",
+    "condition": "Good",
+    "purchase_amount": null,
+    "purchase_date": null
+  },
+  {
+    "asset_no": "TGMD228",
+    "asset_name": "HDMI to HDMI 10m gold plated cable",
+    "quantity": 2,
+    "location": "Media Room",
+    "condition": "Good",
+    "purchase_amount": null,
+    "purchase_date": null
+  },
+  {
+    "asset_no": "TGMD229",
+    "asset_name": "USB A to USB micro B 1m cable",
+    "quantity": 1,
+    "location": "Media Room",
+    "condition": "Good",
+    "purchase_amount": null,
+    "purchase_date": null
+  },
+  {
+    "asset_no": "TGMD230",
+    "asset_name": "Lenovo Laptop 80SX",
+    "quantity": 1,
+    "location": "Media Room",
+    "condition": "Need Repair",
+    "purchase_amount": null,
+    "purchase_date": null
+  },
+  {
+    "asset_no": "TGMD231",
+    "asset_name": "Sony pxw-z90v",
+    "quantity": 1,
+    "location": "Media Room",
+    "condition": "Good",
+    "purchase_amount": null,
+    "purchase_date": null
+  },
+  {
+    "asset_no": "TGMD232",
+    "asset_name": "Zhiyun Crane 2",
+    "quantity": 1,
+    "location": "Media Room",
+    "condition": "Damaged",
+    "purchase_amount": null,
+    "purchase_date": null
+  },
+  {
+    "asset_no": "TGMD233",
+    "asset_name": "Zhiyun Crane Battery Charger",
+    "quantity": 1,
+    "location": "Media Room",
+    "condition": "Good",
+    "purchase_amount": null,
+    "purchase_date": null
+  },
+  {
+    "asset_no": "TGMD234",
+    "asset_name": "Zhiyun Crane Battery",
+    "quantity": 6,
+    "location": "Media Room",
+    "condition": "Damaged",
+    "purchase_amount": null,
+    "purchase_date": null
+  },
+  {
+    "asset_no": "TGMD235",
+    "asset_name": "Monopod Amazon Basics",
+    "quantity": 1,
+    "location": "Media Room",
+    "condition": "Damaged",
+    "purchase_amount": null,
+    "purchase_date": null
+  },
+  {
+    "asset_no": "TGMD236",
+    "asset_name": "RJ45 wire connection tester Blue",
+    "quantity": 1,
+    "location": "Media Room",
+    "condition": "Damaged",
+    "purchase_amount": null,
+    "purchase_date": null
+  },
+  {
+    "asset_no": "TGMD237",
+    "asset_name": "HDMI to HDMI extension Cable 10m Orange Head",
+    "quantity": 1,
+    "location": "Media Room",
+    "condition": "Good",
+    "purchase_amount": null,
+    "purchase_date": null
+  },
+  {
+    "asset_no": "TGMD238",
+    "asset_name": "Sony NP-FV70A 1900mAh Battery",
+    "quantity": 1,
+    "location": "Media Room",
+    "condition": "Good",
+    "purchase_amount": null,
+    "purchase_date": null
+  },
+  {
+    "asset_no": "TGMD239",
+    "asset_name": "Sony NP-FZ100 2280mAh Battery",
+    "quantity": 2,
+    "location": "Media Room",
+    "condition": "Good",
+    "purchase_amount": null,
+    "purchase_date": null
+  },
+  {
+    "asset_no": "TGMD240",
+    "asset_name": "Sony NP-FZ100 Battery Charger",
+    "quantity": 1,
+    "location": "Media Room",
+    "condition": "Good",
+    "purchase_amount": null,
+    "purchase_date": null
+  },
+  {
+    "asset_no": "TGMD241",
+    "asset_name": "32gb SDHC 80mb/s memory card SanDisk",
+    "quantity": 1,
+    "location": "Media Room",
+    "condition": "Good",
+    "purchase_amount": null,
+    "purchase_date": null
+  },
+  {
+    "asset_no": "TGMD242",
+    "asset_name": "Sony A7M3",
+    "quantity": 1,
+    "location": "Media Room",
+    "condition": "Good",
+    "purchase_amount": null,
+    "purchase_date": null
+  },
+  {
+    "asset_no": "TGMD243",
+    "asset_name": "Media PC 1 (Shukoor)",
+    "quantity": 1,
+    "location": "Media Room",
+    "condition": "Good",
+    "purchase_amount": null,
+    "purchase_date": null
+  },
+  {
+    "asset_no": "TGMD244",
+    "asset_name": "Media PC 2 (Anwar)",
+    "quantity": 1,
+    "location": "Media Room",
+    "condition": "Good",
+    "purchase_amount": null,
+    "purchase_date": null
+  },
+  {
+    "asset_no": "TGMD245",
+    "asset_name": "Media PC 3 (Sabith)",
+    "quantity": 1,
+    "location": "Media Room",
+    "condition": "Good",
+    "purchase_amount": null,
+    "purchase_date": null
+  },
+  {
+    "asset_no": "TGMD246",
+    "asset_name": "DJI Mini 2 Drone & Remote",
+    "quantity": 1,
+    "location": "Media Room",
+    "condition": "Need Repair",
+    "purchase_amount": null,
+    "purchase_date": null
+  },
+  {
+    "asset_no": "TGMD247",
+    "asset_name": "DJI mini 2 Drone 3 Battery and Charger",
+    "quantity": 1,
+    "location": "Media Room",
+    "condition": "Need Repair",
+    "purchase_amount": null,
+    "purchase_date": null
+  }
+]

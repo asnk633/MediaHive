@@ -1,5 +1,5 @@
 // @ts-nocheck
-import React, { useMemo } from 'react';
+import React, { useMemo, useRef, useEffect, useState } from 'react';
 import { DndContext, useSensor, useSensors, PointerSensor, DragEndEvent } from '@dnd-kit/core';
 import { useDroppable, useDraggable } from '@dnd-kit/core';
 import { CSS } from '@dnd-kit/utilities';
@@ -15,6 +15,7 @@ import {
     GripVertical, User 
 } from 'lucide-react';
 import { format } from 'date-fns';
+import { CardErrorBoundary } from '@/components/system/CardErrorBoundary';
 
 interface TaskKanbanViewProps {
     tasks: Task[];
@@ -64,7 +65,7 @@ function KanbanColumn({ col, children }: { col: typeof COLUMNS[0]; children: Rea
             <div className="flex items-center justify-between mb-4 pb-2 border-b border-foreground/[0.04]">
                 <div className="flex items-center gap-2">
                     <col.icon size={14} className={cn(
-                        col.color === 'slate' && 'text-slate-400',
+                        col.color === 'slate' && 'text-foreground/60',
                         col.color === 'blue' && 'text-blue-400',
                         col.color === 'amber' && 'text-amber-400',
                         col.color === 'emerald' && 'text-emerald-400'
@@ -96,10 +97,28 @@ function KanbanCard({ task, canDrag, onClick }: { task: Task; canDrag: boolean; 
         disabled: !canDrag
     });
 
-    const style = {
+    // Track when the card's column changes for entrance animation
+    const prevStatusRef = useRef(task.status);
+    const [justMoved, setJustMoved] = useState(false);
+
+    useEffect(() => {
+        if (prevStatusRef.current !== task.status) {
+            prevStatusRef.current = task.status;
+            setJustMoved(true);
+            // Clear the entrance animation flag after it completes
+            const timer = setTimeout(() => setJustMoved(false), 350);
+            return () => clearTimeout(timer);
+        }
+    }, [task.status]);
+
+    const style: React.CSSProperties = {
         transform: CSS.Translate.toString(transform),
         opacity: isDragging ? 0.4 : undefined,
-        zIndex: isDragging ? 9999 : undefined
+        zIndex: isDragging ? 9999 : undefined,
+        // Smooth spring-eased transition for column moves — disabled during drag to avoid interference with dnd-kit
+        transition: isDragging
+            ? 'none'
+            : 'transform 0.3s cubic-bezier(0.25, 1, 0.5, 1), opacity 0.3s cubic-bezier(0.25, 1, 0.5, 1), box-shadow 0.3s cubic-bezier(0.25, 1, 0.5, 1)',
     };
 
     const safeDate = (dateVal: any): Date | null => {
@@ -117,7 +136,7 @@ function KanbanCard({ task, canDrag, onClick }: { task: Task; canDrag: boolean; 
     const priorityColors = {
         high: 'bg-red-500/15 text-red-400 border-red-500/20',
         medium: 'bg-yellow-500/15 text-yellow-400 border-yellow-500/20',
-        low: 'bg-slate-500/15 text-slate-400 border-slate-500/20'
+        low: 'bg-slate-500/15 text-foreground/60 border-slate-500/20'
     };
 
     const isOverdue = useMemo(() => {
@@ -136,7 +155,8 @@ function KanbanCard({ task, canDrag, onClick }: { task: Task; canDrag: boolean; 
             }}
             className={cn(
                 "group relative bg-foreground/[0.01] hover:bg-foreground/[0.02] border border-foreground/[0.05] hover:border-foreground/[0.08] p-4 rounded-xl shadow-sm transition-all duration-200 select-none text-left flex flex-col justify-between gap-4 cursor-pointer active:scale-[0.98]",
-                isDragging && "shadow-2xl border-primary/20 bg-background/80 cursor-grabbing"
+                isDragging && "shadow-2xl border-primary/20 bg-background/80 cursor-grabbing",
+                justMoved && "animate-kanban-card-in"
             )}
         >
             {/* Top Row: Title */}
@@ -289,19 +309,55 @@ export function TaskKanbanViewComponent({ tasks, loading = false, onTaskClick, o
 
         try {
             if (onTaskMutate) {
-                await onTaskMutate(
-                    [taskId],
-                    updates,
-                    () => TaskService.updateTask(taskId, updates),
-                    {
-                        successMessage: `Task status updated to ${newStatus === 'in_progress' ? 'Working' : newStatus === 'review' ? 'On Hold' : newStatus === 'done' ? 'Completed' : 'To Do'}`,
-                        errorMessage: 'Failed to update task status'
-                    }
-                );
+                if (newStatus === 'done') {
+                    await onTaskMutate(
+                        [taskId],
+                        updates,
+                        () => new Promise((resolve, reject) => {
+                            const timeoutId = setTimeout(() => {
+                                TaskService.updateTask(taskId, updates)
+                                    .then(resolve)
+                                    .catch(reject);
+                            }, 5000);
+                            
+                            toast.success('Task marked as completed', {
+                                action: {
+                                    label: 'Undo',
+                                    onClick: () => {
+                                        clearTimeout(timeoutId);
+                                        reject(new Error('UNDO'));
+                                    }
+                                }
+                            });
+                        }),
+                        {
+                            // Omitting successMessage because toast is handled above
+                            errorMessage: 'Failed to update task status'
+                        }
+                    ).catch(err => {
+                        if (err.message === 'UNDO') {
+                            toast.info('Task completion undone');
+                        } else {
+                            throw err;
+                        }
+                    });
+                } else {
+                    await onTaskMutate(
+                        [taskId],
+                        updates,
+                        () => TaskService.updateTask(taskId, updates),
+                        {
+                            successMessage: `Task status updated to ${newStatus === 'in_progress' ? 'Working' : newStatus === 'review' ? 'On Hold' : 'To Do'}`,
+                            errorMessage: 'Failed to update task status'
+                        }
+                    );
+                }
             }
-        } catch (error) {
-            console.error('[Kanban] Drag update failure:', error);
-            toast.error('Failed to move task. Reverting position.');
+        } catch (error: any) {
+            if (error?.message !== 'UNDO') {
+                console.error('[Kanban] Drag update failure:', error);
+                toast.error('Failed to move task. Reverting position.');
+            }
         }
     };
 
@@ -321,12 +377,13 @@ export function TaskKanbanViewComponent({ tasks, loading = false, onTaskClick, o
                 {COLUMNS.map(col => (
                     <KanbanColumn key={col.id} col={col}>
                         {tasksByColumn[col.id].map(task => (
-                            <KanbanCard
-                                key={task.id}
-                                task={task}
-                                canDrag={canDrag}
-                                onClick={() => onTaskClick?.(task)}
-                            />
+                            <CardErrorBoundary key={task.id}>
+                                <KanbanCard
+                                    task={task}
+                                    canDrag={canDrag}
+                                    onClick={() => onTaskClick?.(task)}
+                                />
+                            </CardErrorBoundary>
                         ))}
                     </KanbanColumn>
                 ))}

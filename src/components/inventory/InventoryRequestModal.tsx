@@ -63,7 +63,7 @@ export function InventoryRequestModal({ isOpen, onClose }: InventoryRequestModal
                                 <Package className="text-blue-400" size={24} />
                                 Request Equipment
                             </h2>
-                            <button onClick={onClose} className="text-gray-400 hover:text-foreground transition-colors">
+                            <button onClick={onClose} className="text-foreground/60 hover:text-foreground transition-colors">
                                 <X size={24} />
                             </button>
                         </div>
@@ -91,7 +91,7 @@ export function InventoryRequestModal({ isOpen, onClose }: InventoryRequestModal
                                     />
                                 </div>
                                 <div className="space-y-2">
-                                    <label className="text-sm font-medium text-gray-400 block">Item Name / Details</label>
+                                    <label className="text-sm font-medium text-foreground/60 block">Item Name / Details</label>
                                     <input
                                         type="text"
                                         required
@@ -124,7 +124,7 @@ export function InventoryRequestModal({ isOpen, onClose }: InventoryRequestModal
 
                             {/* Purpose */}
                             <div className="space-y-2">
-                                <label className="text-sm font-medium text-gray-400 block flex items-center gap-2">
+                                <label className="text-sm font-medium text-foreground/60 block flex items-center gap-2">
                                     <FileText size={14} /> Purpose / Notes
                                 </label>
                                 <textarea
@@ -142,7 +142,7 @@ export function InventoryRequestModal({ isOpen, onClose }: InventoryRequestModal
                                 <button
                                     type="button"
                                     onClick={onClose}
-                                    className="px-4 py-2 text-sm font-medium text-gray-400 hover:text-foreground transition-colors"
+                                    className="px-4 py-2 text-sm font-medium text-foreground/60 hover:text-foreground transition-colors"
                                 >
                                     Cancel
                                 </button>

@@ -38,7 +38,7 @@ export default function UnitPoliciesContent() {
 
     return (
         <div className="max-w-5xl mx-auto p-6 space-y-6">
-            <Button variant="ghost" onClick={() => router.back()} className="text-slate-400 hover:text-foreground pl-0 gap-2">
+            <Button variant="ghost" onClick={() => router.back()} className="text-foreground/60 hover:text-foreground pl-0 gap-2">
                 <ArrowLeft size={16} /> Back
             </Button>
 
@@ -48,7 +48,7 @@ export default function UnitPoliciesContent() {
                 </div>
                 <div>
                     <h1 className="text-2xl font-bold text-foreground">Office/Unit Policies</h1>
-                    <p className="text-slate-400">Configure automation rules for Unit: {id}</p>
+                    <p className="text-foreground/60">Configure automation rules for Unit: {id}</p>
                 </div>
             </div>
 

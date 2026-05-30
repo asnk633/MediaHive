@@ -60,7 +60,7 @@ export default function CampaignNewClient() {
                 <div>
                     <button
                         onClick={() => router.back()}
-                        className="flex items-center gap-2 text-gray-400 hover:text-foreground transition-colors mb-4 text-sm"
+                        className="flex items-center gap-2 text-foreground/60 hover:text-foreground transition-colors mb-4 text-sm"
                     >
                         <ArrowLeft size={16} /> Back
                     </button>
@@ -68,7 +68,7 @@ export default function CampaignNewClient() {
                         <Layout className="text-primary" />
                         Create New Campaign
                     </h1>
-                    <p className="text-gray-400 mt-2">Initialize a new media campaign for your institution.</p>
+                    <p className="text-foreground/60 mt-2">Initialize a new media campaign for your institution.</p>
                 </div>
 
                 {/* Form Card */}
@@ -76,7 +76,7 @@ export default function CampaignNewClient() {
                     <div className="space-y-4">
                         {/* Name */}
                         <div className="space-y-2">
-                            <label className="text-sm font-semibold text-gray-300 flex items-center gap-2">
+                            <label className="text-sm font-semibold text-foreground flex items-center gap-2">
                                 <Layout size={14} className="text-primary" />
                                 Campaign Name
                             </label>
@@ -85,14 +85,14 @@ export default function CampaignNewClient() {
                                 placeholder="E.g. Summer Festival 2026"
                                 value={formData.name}
                                 onChange={(e) => setFormData({ ...formData, name: e.target.value })}
-                                className="w-full bg-background border border-soft rounded-xl px-4 py-3 text-foreground placeholder:text-gray-600 focus:outline-none focus:ring-2 focus:ring-primary/30 transition-all"
+                                className="w-full bg-background border border-soft rounded-xl px-4 py-3 text-foreground placeholder:text-foreground/40 focus:outline-none focus:ring-2 focus:ring-primary/30 transition-all"
                                 required
                             />
                         </div>
 
                         {/* Description */}
                         <div className="space-y-2">
-                            <label className="text-sm font-semibold text-gray-300 flex items-center gap-2">
+                            <label className="text-sm font-semibold text-foreground flex items-center gap-2">
                                 <FileText size={14} className="text-primary" />
                                 Description
                             </label>
@@ -100,7 +100,7 @@ export default function CampaignNewClient() {
                                 placeholder="Describe the goals and scope of this campaign..."
                                 value={formData.description}
                                 onChange={(e) => setFormData({ ...formData, description: e.target.value })}
-                                className="w-full bg-background border border-soft rounded-xl px-4 py-3 text-foreground placeholder:text-gray-600 focus:outline-none focus:ring-2 focus:ring-primary/30 transition-all min-h-[120px]"
+                                className="w-full bg-background border border-soft rounded-xl px-4 py-3 text-foreground placeholder:text-foreground/40 focus:outline-none focus:ring-2 focus:ring-primary/30 transition-all min-h-[120px]"
                             />
                         </div>
 
@@ -127,7 +127,7 @@ export default function CampaignNewClient() {
                         <button
                             type="button"
                             onClick={() => router.back()}
-                            className="px-6 py-3 text-gray-400 font-semibold hover:text-foreground transition-colors"
+                            className="px-6 py-3 text-foreground/60 font-semibold hover:text-foreground transition-colors"
                         >
                             Cancel
                         </button>

@@ -1,5 +1,6 @@
 "use client";
 import React, { useState } from "react";
+import { useMagneticHover } from "@/hooks/useMagneticHover";
 import { motion, AnimatePresence } from "framer-motion";
 import { useAuth } from "@/contexts/AuthContextProvider";
 import { Plus, CheckSquare, Calendar, Bell, Users, Package, Download, BarChart3, ShieldCheck, User, X, CalendarPlus, PackagePlus, Upload } from "lucide-react";
@@ -79,14 +80,19 @@ export default function FAB({ onMainClick }: FABProps) {
   const [isLowPower, setIsLowPower] = useState(false);
   const [hasError, setHasError] = useState(false);
 
-  // 1. Stabilized BroadcastChannel (Safety + Throttling)
+  const isOpenRef = React.useRef(isOpen);
+  React.useEffect(() => {
+    isOpenRef.current = isOpen;
+  }, [isOpen]);
+
+  // 1. Stabilized BroadcastChannel (Safety + Throttling - run once)
   React.useEffect(() => {
     if (typeof BroadcastChannel === 'undefined') return;
     
     try {
       bc.current = new BroadcastChannel('mh_fab_state');
       const handler = (e: MessageEvent) => {
-        if (e.data === 'menu_opened' && isOpen) setIsOpen(false);
+        if (e.data === 'menu_opened' && isOpenRef.current) setIsOpen(false);
       };
       bc.current.addEventListener('message', handler);
       
@@ -101,7 +107,7 @@ export default function FAB({ onMainClick }: FABProps) {
     } catch (e) {
       console.warn('FAB Broadcast error', e);
     }
-  }, [isOpen]);
+  }, []);
 
   const broadcastThrottled = (msg: string) => {
     const now = Date.now();
@@ -118,7 +124,9 @@ export default function FAB({ onMainClick }: FABProps) {
     const now = Date.now();
     if (now - lastEvent.current < 300) return;
     lastEvent.current = now;
-    console.log(`[FAB_ANALYTICS] ${action}`, { route: pathname, state: visualState, ...metadata });
+    if (process.env.NODE_ENV !== 'production') {
+      console.log(`[FAB_ANALYTICS] ${action}`, { route: pathname, state: visualState, ...metadata });
+    }
   };
 
   const setSafeTimeout = (key: string, fn: () => void, delay: number) => {
@@ -258,7 +266,7 @@ export default function FAB({ onMainClick }: FABProps) {
     return () => observer.disconnect();
   }, []);
 
-  if (isHidden) return null;
+  if (!mounted || isHidden) return null;
 
   // Visual derived states
   const isContextual = !!currentConfig.href;
@@ -275,22 +283,24 @@ export default function FAB({ onMainClick }: FABProps) {
 
   // 7. Safety Fallback Guard (Neutral Tone)
   if (hasError) {
-    return (
+    return createPortal(
       <button 
         onClick={() => router.push('/home')}
-        className="fab fixed left-1/2 bottom-8 -translate-x-1/2 w-16 h-16 rounded-full bg-slate-800 text-foreground flex flex-col items-center justify-center shadow-lg z-[110] border border-foreground/10"
+        aria-label="Try Again"
+        className="fab fixed left-1/2 bottom-8 -translate-x-1/2 w-16 h-16 rounded-full bg-slate-800 text-foreground flex flex-col items-center justify-center shadow-lg z-[110] border border-foreground/10 lg:hidden focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary"
       >
         <Plus size={24} className="rotate-45" />
         <span className="text-[8px] font-bold uppercase mt-1">Try Again</span>
-      </button>
+      </button>,
+      document.body
     );
   }
 
-  return (
+  return createPortal(
     <>
       <AnimatePresence>
         {isOpen && (
-          <div className="fixed inset-0 z-40 overflow-hidden pointer-events-auto">
+          <div className="fixed inset-0 z-40 overflow-hidden pointer-events-auto lg:hidden">
             <motion.div
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
@@ -303,7 +313,7 @@ export default function FAB({ onMainClick }: FABProps) {
         )}
       </AnimatePresence>
       <div
-        className="fab fixed left-1/2 z-[110] flex flex-col-reverse items-center gap-4 pointer-events-auto"
+        className="fab fixed left-1/2 z-[110] flex flex-col-reverse items-center gap-4 pointer-events-auto lg:hidden"
         style={{ 
           bottom: 'calc(var(--bottom-nav-height, 4.5rem) + var(--safe-bottom, 1.5rem))',
           transform: 'translate(-50%, 50%) translateY(calc(-1 * var(--keyboard-offset, 0px))) translateY(var(--fab-optical-offset, 2px))',
@@ -344,41 +354,18 @@ export default function FAB({ onMainClick }: FABProps) {
           )}
         </AnimatePresence>
 
-        <motion.button
-          id="fab-main-action"
-          className={cn(
-            "w-16 h-16 rounded-full flex items-center justify-center relative z-20 fab-surface border border-foreground/10 backdrop-blur-xl transition-all duration-300",
-            "animate-fab-breathing",
-            isAnimationPaused && "is-paused",
-            visualState === 'guidance' && "ring-4 ring-indigo-500/50 scale-105"
-          )}
-          style={{ boxShadow: '0 6px 24px var(--fab-glow-color)' }}
-          onClick={handleClick}
-          onMouseEnter={() => setIsHovered(true)}
-          onMouseLeave={() => setIsHovered(false)}
-          onPointerDown={() => setIsPressed(true)}
-          onPointerUp={() => setIsPressed(false)}
-          aria-label={isOpen ? "Close Menu" : currentConfig.label}
-          aria-expanded={isOpen}
-          whileTap={{ scale: 0.95 }}
-          animate={{ rotate: isOpen ? 135 : 0 }}
-        >
-          <AnimatePresence mode="wait">
-            <motion.div
-              key={isOpen ? 'close' : `${pathname}-${currentConfig.label}`}
-              initial={{ opacity: 0, scale: 0.9, rotate: -15 }}
-              animate={{ opacity: 1, scale: 1, rotate: 0 }}
-              exit={{ opacity: 0, scale: 0.9, rotate: 15 }}
-              transition={{ duration: 0.18, ease: "easeOut" }}
-            >
-              {isOpen ? (
-                <Plus size={32} strokeWidth={2.8} className="text-foreground" />
-              ) : (
-                <ContextIcon size={32} strokeWidth={2.8} className="text-foreground opacity-95" />
-              )}
-            </motion.div>
-          </AnimatePresence>
-        </motion.button>
+        {/* Magnetic hover wrapper — GPU-accelerated translate, isolated from framer-motion transforms */}
+        <MagneticFABButton
+          isOpen={isOpen}
+          isAnimationPaused={isAnimationPaused}
+          visualState={visualState}
+          handleClick={handleClick}
+          setIsHovered={setIsHovered}
+          setIsPressed={setIsPressed}
+          pathname={pathname}
+          currentConfig={currentConfig}
+          ContextIcon={ContextIcon}
+        />
         <AnimatePresence>
           {isOpen && (
             <div className="absolute bottom-20 flex flex-col items-center gap-5 w-max z-[60]">
@@ -397,7 +384,61 @@ export default function FAB({ onMainClick }: FABProps) {
           )}
         </AnimatePresence>
       </div>
-    </>
+    </>,
+    document.body
   );
 }
 
+/** Extracted FAB button with magnetic hover to keep hook call at component top-level */
+function MagneticFABButton({
+  isOpen, isAnimationPaused, visualState, handleClick,
+  setIsHovered, setIsPressed, pathname, currentConfig, ContextIcon
+}: {
+  isOpen: boolean; isAnimationPaused: boolean; visualState: string;
+  handleClick: () => void; setIsHovered: (v: boolean) => void;
+  setIsPressed: (v: boolean) => void; pathname: string | null;
+  currentConfig: { label: string; href?: string; role?: string };
+  ContextIcon: any;
+}) {
+  const { ref: magneticRef, style: magneticStyle } = useMagneticHover(30, 0.35);
+
+  return (
+    <div ref={magneticRef as React.RefObject<HTMLDivElement>} style={magneticStyle}>
+      <motion.button
+        id="fab-main-action"
+        className={cn(
+          "w-16 h-16 rounded-full flex items-center justify-center relative z-20 fab-surface border border-foreground/10 backdrop-blur-xl transition-all duration-300 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary",
+          "animate-fab-breathing",
+          isAnimationPaused && "is-paused",
+          visualState === 'guidance' && "ring-4 ring-indigo-500/50 scale-105"
+        )}
+        style={{ boxShadow: '0 6px 24px var(--fab-glow-color)' }}
+        onClick={handleClick}
+        onMouseEnter={() => setIsHovered(true)}
+        onMouseLeave={() => setIsHovered(false)}
+        onPointerDown={() => setIsPressed(true)}
+        onPointerUp={() => setIsPressed(false)}
+        aria-label={isOpen ? "Close Menu" : currentConfig.label}
+        aria-expanded={isOpen}
+        whileTap={{ scale: 0.95 }}
+        animate={{ rotate: isOpen ? 135 : 0 }}
+      >
+        <AnimatePresence mode="wait">
+          <motion.div
+            key={isOpen ? 'close' : `${pathname}-${currentConfig.label}`}
+            initial={{ opacity: 0, scale: 0.9, rotate: -15 }}
+            animate={{ opacity: 1, scale: 1, rotate: 0 }}
+            exit={{ opacity: 0, scale: 0.9, rotate: 15 }}
+            transition={{ duration: 0.18, ease: "easeOut" }}
+          >
+            {isOpen ? (
+              <Plus size={32} strokeWidth={2.8} className="text-foreground" />
+            ) : (
+              <ContextIcon size={32} strokeWidth={2.8} className="text-foreground opacity-95" />
+            )}
+          </motion.div>
+        </AnimatePresence>
+      </motion.button>
+    </div>
+  );
+}

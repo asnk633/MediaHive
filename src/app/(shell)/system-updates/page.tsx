@@ -50,14 +50,14 @@ export default function SystemUpdatesFeedPage() {
                 </div>
                 <div>
                     <h1 className="text-2xl font-bold text-foreground">System Updates</h1>
-                    <p className="text-slate-400">Latest news and announcements.</p>
+                    <p className="text-foreground/60">Latest news and announcements.</p>
                 </div>
             </div>
 
             {loading ? (
-                <div className="text-center text-slate-500 py-12">Loading updates...</div>
+                <div className="text-center text-foreground/50 py-12">Loading updates...</div>
             ) : updates.length === 0 ? (
-                <div className="text-center text-slate-500 py-12">No updates yet.</div>
+                <div className="text-center text-foreground/50 py-12">No updates yet.</div>
             ) : (
                 <div className="grid gap-4">
                     {updates.map(update => (
@@ -70,14 +70,14 @@ export default function SystemUpdatesFeedPage() {
                                                 <span className={`px-2 py-0.5 rounded text-[10px] uppercase font-bold border ${getSeverityColor(update.severity)}`}>
                                                     {update.severity}
                                                 </span>
-                                                <span className="text-xs text-slate-500">
+                                                <span className="text-xs text-foreground/50">
                                                     {update.created_at ? formatDistanceToNow(new Date(update.created_at), { addSuffix: true }) : ''}
                                                 </span>
                                             </div>
-                                            <h3 className="text-lg font-semibold text-slate-200 group-hover:text-indigo-400 transition-colors">
+                                            <h3 className="text-lg font-semibold text-foreground group-hover:text-indigo-400 transition-colors">
                                                 {update.title}
                                             </h3>
-                                            <p className="text-sm text-slate-400 line-clamp-2">
+                                            <p className="text-sm text-foreground/60 line-clamp-2">
                                                 {update.body}
                                             </p>
                                         </div>

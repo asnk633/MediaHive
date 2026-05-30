@@ -72,7 +72,7 @@ export const AdminIntelligenceView: React.FC<AdminIntelligenceViewProps> = ({ ov
                 </div>
 
                 {/* Placeholders for future modules (Financials, etc.) */}
-                <div className="lg:col-span-2 bg-slate-900/20 border border-foreground/5 rounded-xl p-6 flex items-center justify-center text-slate-500 border-dashed">
+                <div className="lg:col-span-2 bg-slate-900/20 border border-foreground/5 rounded-xl p-6 flex items-center justify-center text-foreground/50 border-dashed">
                     <span className="text-sm">Additional Metrics (Financials, Task Aging) coming in Phase 4</span>
                 </div>
             </div>

@@ -86,23 +86,23 @@ export function AwarenessIndicator() {
           
           <div className="flex-1 min-w-0">
             <div className="flex items-center justify-between">
-              <h3 className="text-sm font-medium text-gray-900 dark:text-foreground">
+              <h3 className="text-sm font-medium text-foreground/20 dark:text-foreground">
                 Activity Update
               </h3>
               <button
                 onClick={handleClose}
-                className="text-gray-400 hover:text-gray-600 dark:hover:text-gray-300"
+                className="text-foreground/60 hover:text-foreground/40 dark:hover:text-foreground"
               >
                 <X className="w-4 h-4" />
               </button>
             </div>
             
-            <p className="mt-1 text-sm text-gray-600 dark:text-gray-300">
+            <p className="mt-1 text-sm text-foreground/40 dark:text-foreground">
               <span className="font-medium">{latestUpdate.updated_by.name}</span> updated "
               <span className="font-medium text-blue-600 dark:text-blue-400">{latestUpdate.title}</span>"
             </p>
             
-            <div className="mt-2 flex items-center text-xs text-gray-500 dark:text-gray-400">
+            <div className="mt-2 flex items-center text-xs text-foreground/50 dark:text-foreground/60">
               <span>{formatTimeAgo(latestUpdate.updated_at)}</span>
               {updates.length > 1 && (
                 <span className="ml-2">• {updates.length - 1} more updates</span>

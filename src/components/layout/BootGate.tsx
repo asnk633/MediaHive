@@ -16,14 +16,14 @@ const WatchdogUI = ({ onRetry }: { onRetry: () => void }) => (
             <AlertTriangle className="text-red-500 w-10 h-10" />
         </div>
         <h2 className="text-2xl font-bold text-foreground mb-2">Login Taking Too Long</h2>
-        <p className="text-slate-400 max-w-sm mb-8">
+        <p className="text-foreground/60 max-w-sm mb-8">
             The authentication service is slow to respond. This can happen due to poor network or a session sync issue.
         </p>
         <div className="flex flex-col w-full max-w-xs gap-3">
             <Button onClick={onRetry} className="bg-blue-600 hover:bg-blue-500 text-foreground gap-2 h-12 text-lg font-bold">
                 <RefreshCw size={20} /> Retry Login
             </Button>
-            <Button variant="ghost" onClick={() => window.location.reload()} className="text-slate-400 hover:text-foreground">
+            <Button variant="ghost" onClick={() => window.location.reload()} className="text-foreground/60 hover:text-foreground">
                 Reload Page
             </Button>
         </div>

@@ -189,13 +189,13 @@ export function UploadModal({ open, onClose, onSuccess, event_id, taskId }: Uplo
                                     <TabsList className="grid w-full grid-cols-2 bg-[#0a0c10] border border-[#ffffff1a] rounded-xl p-1 h-auto">
                                         <TabsTrigger
                                             value="department"
-                                            className="data-[state=active]:bg-blue-600 data-[state=active]:text-foreground data-[state=active]:shadow-lg text-gray-400 rounded-lg py-2 transition-all"
+                                            className="data-[state=active]:bg-blue-600 data-[state=active]:text-foreground data-[state=active]:shadow-lg text-foreground/60 rounded-lg py-2 transition-all"
                                         >
                                             Department / Institution
                                         </TabsTrigger>
                                         <TabsTrigger
                                             value="institution"
-                                            className="data-[state=active]:bg-blue-600 data-[state=active]:text-foreground data-[state=active]:shadow-lg text-gray-400 rounded-lg py-2 transition-all"
+                                            className="data-[state=active]:bg-blue-600 data-[state=active]:text-foreground data-[state=active]:shadow-lg text-foreground/60 rounded-lg py-2 transition-all"
                                         >
                                             Institution
                                         </TabsTrigger>
@@ -280,7 +280,7 @@ export function UploadModal({ open, onClose, onSuccess, event_id, taskId }: Uplo
                             variant="ghost"
                             onClick={onClose}
                             disabled={uploading}
-                            className="text-gray-400 hover:text-foreground hover:bg-foreground/5 rounded-xl text-sm font-semibold h-11 px-6"
+                            className="text-foreground/60 hover:text-foreground hover:bg-foreground/5 rounded-xl text-sm font-semibold h-11 px-6"
                         >
                             Cancel
                         </Button>

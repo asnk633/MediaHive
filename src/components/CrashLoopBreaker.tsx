@@ -59,7 +59,7 @@ export function CrashLoopBreaker({ children }: { children: React.ReactNode }) {
                     </div>
                     <div className="space-y-2">
                         <h1 className="text-xl font-bold">Safe Mode Initialized</h1>
-                        <p className="text-sm text-gray-400">The app has crashed multiple times during startup. Non-essential modules have been disabled to ensure stability.</p>
+                        <p className="text-sm text-foreground/60">The app has crashed multiple times during startup. Non-essential modules have been disabled to ensure stability.</p>
                     </div>
                     <button
                         onClick={() => {
@@ -70,7 +70,7 @@ export function CrashLoopBreaker({ children }: { children: React.ReactNode }) {
                     >
                         Try Normal Launch
                     </button>
-                    <p className="text-[10px] text-gray-500 uppercase tracking-widest">Error Code: PLATINUM_CRASH_LOOP_DETECTED</p>
+                    <p className="text-[10px] text-foreground/50 uppercase tracking-widest">Error Code: PLATINUM_CRASH_LOOP_DETECTED</p>
                 </div>
             </div>
         );

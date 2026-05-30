@@ -27,10 +27,10 @@ class GovernanceScreen extends ConsumerWidget {
           gradient: AppColors.darkGradient,
         ),
         child: SingleChildScrollView(
-          padding: const EdgeInsets.only(
+          padding: EdgeInsets.only(
             left: AppSpacing.l, 
             right: AppSpacing.l, 
-            top: 140, 
+            top: 120 + MediaQuery.of(context).padding.top, 
             bottom: 120,
           ),
           child: Column(

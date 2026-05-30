@@ -25,6 +25,7 @@ interface MultiSelectProps {
   label?: string;
   className?: string;
   searchable?: boolean;
+  tabIndex?: number;
 }
 
 export function MultiSelect({
@@ -35,6 +36,7 @@ export function MultiSelect({
   label,
   className,
   searchable = true,
+  tabIndex,
 }: MultiSelectProps) {
   const [open, setOpen] = React.useState(false);
   const [searchQuery, setSearchQuery] = React.useState("");
@@ -73,6 +75,7 @@ export function MultiSelect({
       <Popover open={open} onOpenChange={setOpen}>
         <PopoverTrigger asChild>
           <div
+            tabIndex={tabIndex}
             className={cn(
               "flex min-h-11 w-full flex-wrap items-center gap-2 rounded-[14px] px-3 py-2 cursor-pointer transition-all duration-300",
               "bg-foreground/[0.03] border border-foreground/10 text-foreground/90 hover:bg-foreground/[0.08] hover:border-foreground/20 hover:shadow-[0_0_20px_rgba(255,255,255,0.05)]",

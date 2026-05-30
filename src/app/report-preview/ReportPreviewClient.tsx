@@ -101,7 +101,7 @@ export default function ReportPreviewClient() {
             <div className="sticky top-0 z-50 bg-white border-b border-gray-200 px-4 py-3 flex items-center justify-between print:hidden">
                 <button
                     onClick={() => router.back()}
-                    className="flex items-center gap-2 text-gray-600 hover:text-black transition-colors"
+                    className="flex items-center gap-2 text-foreground/40 hover:text-black transition-colors"
                 >
                     <ArrowLeft size={20} />
                     <span className="font-medium">Back</span>
@@ -121,11 +121,11 @@ export default function ReportPreviewClient() {
                 <div className="flex justify-between items-center mb-8 border-b-2 border-black pb-4 print:border-black">
                     <div>
                         <h1 className="text-3xl font-bold uppercase tracking-widest text-[#1a1f2e]">Monthly Task Report</h1>
-                        <p className="text-lg text-gray-600 mt-1">{monthName} {year}</p>
+                        <p className="text-lg text-foreground/40 mt-1">{monthName} {year}</p>
                     </div>
                     {/* Logo placeholder if needed */}
                     <div className="text-right">
-                        <div className="text-sm font-bold text-gray-400 uppercase">Thaiba MediaHive</div>
+                        <div className="text-sm font-bold text-foreground/60 uppercase">Thaiba MediaHive</div>
                     </div>
                 </div>
 
@@ -134,19 +134,19 @@ export default function ReportPreviewClient() {
                     <h2 className="text-xl font-bold mb-4 uppercase border-b border-gray-300 pb-1 text-[#1a1f2e]">Executive Summary</h2>
                     <div className="grid grid-cols-4 gap-4">
                         <div className="p-4 border border-gray-200 rounded bg-gray-50">
-                            <div className="text-xs text-gray-500 uppercase font-bold tracking-wider">Total Tasks</div>
+                            <div className="text-xs text-foreground/50 uppercase font-bold tracking-wider">Total Tasks</div>
                             <div className="text-3xl font-bold text-[#1a1f2e]">{stats.total}</div>
                         </div>
                         <div className="p-4 border border-gray-200 rounded bg-gray-50">
-                            <div className="text-xs text-gray-500 uppercase font-bold tracking-wider">Completed</div>
+                            <div className="text-xs text-foreground/50 uppercase font-bold tracking-wider">Completed</div>
                             <div className="text-3xl font-bold text-green-600">{stats.completed}</div>
                         </div>
                         <div className="p-4 border border-gray-200 rounded bg-gray-50">
-                            <div className="text-xs text-gray-500 uppercase font-bold tracking-wider">Overdue</div>
+                            <div className="text-xs text-foreground/50 uppercase font-bold tracking-wider">Overdue</div>
                             <div className="text-3xl font-bold text-red-600">{stats.overdue}</div>
                         </div>
                         <div className="p-4 border border-gray-200 rounded bg-gray-50">
-                            <div className="text-xs text-gray-500 uppercase font-bold tracking-wider">Rate</div>
+                            <div className="text-xs text-foreground/50 uppercase font-bold tracking-wider">Rate</div>
                             <div className="text-3xl font-bold text-[#1a1f2e]">{stats.completionRate}%</div>
                         </div>
                     </div>
@@ -168,12 +168,12 @@ export default function ReportPreviewClient() {
                             {Object.values(workload).length > 0 ? Object.values(workload).map((w: { name: string, assigned: number, completed: number, pending: number }, i) => (
                                 <tr key={i} className="border-b border-gray-200">
                                     <td className="p-2 font-medium text-[#1a1f2e]">{w.name}</td>
-                                    <td className="p-2 text-center text-gray-700">{w.assigned}</td>
-                                    <td className="p-2 text-center text-gray-700">{w.completed}</td>
-                                    <td className="p-2 text-center text-gray-700">{w.pending}</td>
+                                    <td className="p-2 text-center text-foreground/30">{w.assigned}</td>
+                                    <td className="p-2 text-center text-foreground/30">{w.completed}</td>
+                                    <td className="p-2 text-center text-foreground/30">{w.pending}</td>
                                 </tr>
                             )) : (
-                                <tr><td colSpan={4} className="p-4 text-center text-gray-400 italic">No team activity this month</td></tr>
+                                <tr><td colSpan={4} className="p-4 text-center text-foreground/60 italic">No team activity this month</td></tr>
                             )}
                         </tbody>
                     </table>
@@ -200,31 +200,31 @@ export default function ReportPreviewClient() {
                                 {tasks.length > 0 ? tasks.map((task) => (
                                     <tr key={task.id} className="border-b border-gray-200 break-inside-avoid hover:bg-gray-50">
                                         <td className="p-2 font-medium text-[#1a1f2e]">{task.title}</td>
-                                        <td className="p-2 capitalize text-gray-700">{task.priority}</td>
-                                        <td className="p-2 capitalize text-gray-700">{task.status?.replace('_', ' ')}</td>
-                                        <td className="p-2 text-gray-700">{task.assigned_by?.name || '-'}</td>
-                                        <td className="p-2 text-gray-700">
+                                        <td className="p-2 capitalize text-foreground/30">{task.priority}</td>
+                                        <td className="p-2 capitalize text-foreground/30">{task.status?.replace('_', ' ')}</td>
+                                        <td className="p-2 text-foreground/30">{task.assigned_by?.name || '-'}</td>
+                                        <td className="p-2 text-foreground/30">
                                             {task.assigned_to?.map((a: any) => typeof a === 'string' ? 'User' : a.name).join(', ') || '-'}
                                         </td>
-                                        <td className="p-2 text-gray-700">
+                                        <td className="p-2 text-foreground/30">
                                             {task.created_at?.seconds ? format(new Date(task.created_at.seconds * 1000), 'MMM d') : '-'}
                                         </td>
-                                        <td className="p-2 text-gray-700">
+                                        <td className="p-2 text-foreground/30">
                                             {task.due_date?.seconds ? format(new Date(task.due_date.seconds * 1000), 'MMM d') : '-'}
                                         </td>
-                                        <td className="p-2 text-gray-700">
+                                        <td className="p-2 text-foreground/30">
                                             {task.completed_at?.seconds ? format(new Date(task.completed_at.seconds * 1000), 'MMM d') : '-'}
                                         </td>
                                     </tr>
                                 )) : (
-                                    <tr><td colSpan={8} className="p-8 text-center text-gray-400 italic">No tasks found for this period.</td></tr>
+                                    <tr><td colSpan={8} className="p-8 text-center text-foreground/60 italic">No tasks found for this period.</td></tr>
                                 )}
                             </tbody>
                         </table>
                     </div>
                 </section>
 
-                <div className="mt-8 text-[10px] text-gray-400 text-center print:fixed print:bottom-4 print:left-0 print:w-full">
+                <div className="mt-8 text-[10px] text-foreground/60 text-center print:fixed print:bottom-4 print:left-0 print:w-full">
                     Generated on {new Date().toLocaleDateString()} • Thaiba MediaHive Internal Report
                 </div>
             </div>

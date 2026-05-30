@@ -32,6 +32,7 @@ import { useWorkspace } from '@/system/workspace/WorkspaceProvider';
 import { canAccessFeature, UserRole } from '@/system/features/featureAccess';
 import { FeatureKey } from '@/system/features/featureRegistry';
 import { cn, nativeNavigate } from "@/lib/utils";
+import { useMagneticHover } from "@/hooks/useMagneticHover";
 import { getDriveImageUrl } from '@/lib/driveUtils';
 import { NotificationBell } from "@/components/notifications/NotificationBell";
 import {
@@ -414,7 +415,7 @@ export default function DesktopSideNav() {
                                             )}
 
                                             <div className="grid grid-cols-[40px_1fr] items-center w-full">
-                                                <div className="w-10 h-10 flex items-center justify-center shrink-0 transition-transform duration-300 group-hover:scale-110">
+                                                <MagneticNavIcon>
                                                     <item.icon
                                                         size={20}
                                                         strokeWidth={isActive ? 2.5 : 2}
@@ -425,7 +426,7 @@ export default function DesktopSideNav() {
                                                                 : "text-inherit group-hover:text-foreground"
                                                         )}
                                                     />
-                                                </div>
+                                                </MagneticNavIcon>
 
                                                 {!isCollapsed && (
                                                     <span
@@ -451,7 +452,8 @@ export default function DesktopSideNav() {
             <div className="p-4 mt-auto border-t border-foreground/[0.03]">
                 <button
                     onClick={toggleCollapse}
-                    className="w-full flex items-center justify-center h-12 rounded-xl hover:bg-foreground/5 transition-all group text-foreground/80 hover:text-foreground active:scale-95"
+                    aria-label={isCollapsed ? "Expand sidebar" : "Collapse sidebar"}
+                    className="w-full flex items-center justify-center h-12 rounded-xl hover:bg-foreground/5 transition-all group text-foreground/80 hover:text-foreground active:scale-95 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary"
                 >
                     {isCollapsed ? (
                         <div className="w-10 h-10 flex items-center justify-center bg-foreground/5 rounded-xl group-hover:bg-primary/10 group-hover:text-primary transition-all">
@@ -471,4 +473,18 @@ export default function DesktopSideNav() {
 
         </motion.aside>
     );
+}
+
+/** Magnetic hover wrapper for individual nav icons — extracted for hooks-in-loop compliance */
+function MagneticNavIcon({ children }: { children: React.ReactNode }) {
+  const { ref: magneticRef, style: magneticStyle } = useMagneticHover(20, 0.25);
+  return (
+    <div
+      ref={magneticRef as React.RefObject<HTMLDivElement>}
+      style={magneticStyle}
+      className="w-10 h-10 flex items-center justify-center shrink-0"
+    >
+      {children}
+    </div>
+  );
 }

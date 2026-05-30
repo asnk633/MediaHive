@@ -27,15 +27,15 @@ export const DeliverablesList: React.FC<DeliverablesListProps> = ({ taskId, refr
     };
 
     if (loading) {
-        return <div className="text-center py-4 text-gray-500 text-xs">Loading deliverables...</div>;
+        return <div className="text-center py-4 text-foreground/50 text-xs">Loading deliverables...</div>;
     }
 
     if (deliverables.length === 0) {
         return (
             <div className="flex flex-col items-center justify-center py-8 px-4 border-2 border-dashed border-[#ffffff1a] rounded-xl bg-foreground/5">
-                <FileText className="text-gray-500 mb-2" size={24} />
-                <p className="text-sm text-gray-400 font-medium">No deliverables yet</p>
-                <p className="text-xs text-gray-500 mt-1">Upload a file to complete this task</p>
+                <FileText className="text-foreground/50 mb-2" size={24} />
+                <p className="text-sm text-foreground/60 font-medium">No deliverables yet</p>
+                <p className="text-xs text-foreground/50 mt-1">Upload a file to complete this task</p>
             </div>
         );
     }
@@ -73,14 +73,14 @@ export const DeliverablesList: React.FC<DeliverablesListProps> = ({ taskId, refr
                             {/* Details */}
                             <div className="flex-1 min-w-0 flex flex-col justify-between">
                                 <div>
-                                    <h4 className="text-sm font-bold text-gray-200 truncate" title={item.file_name}>
+                                    <h4 className="text-sm font-bold text-foreground truncate" title={item.file_name}>
                                         {item.file_name}
                                     </h4>
                                     <div className="flex items-center gap-2 mt-1">
-                                        <span className="text-xs font-mono text-gray-500 bg-black/20 px-1.5 rounded">
+                                        <span className="text-xs font-mono text-foreground/50 bg-black/20 px-1.5 rounded">
                                             v{item.version}
                                         </span>
-                                        <span className="text-[10px] text-gray-500 uppercase tracking-wide">
+                                        <span className="text-[10px] text-foreground/50 uppercase tracking-wide">
                                             {(item.fileSize / 1024 / 1024).toFixed(2)} MB
                                         </span>
                                     </div>
@@ -94,8 +94,8 @@ export const DeliverablesList: React.FC<DeliverablesListProps> = ({ taskId, refr
                                             size={20}
                                         />
                                         <div className="flex flex-col">
-                                            <span className="text-xs text-gray-300 font-medium">{item.uploaded_by.name}</span>
-                                            <span className="text-[10px] text-gray-500 flex items-center gap-1">
+                                            <span className="text-xs text-foreground font-medium">{item.uploaded_by.name}</span>
+                                            <span className="text-[10px] text-foreground/50 flex items-center gap-1">
                                                 <Clock size={8} />
                                                 {formatDistanceToNow(
                                                     (item.created_at as any).toDate ? (item.created_at as any).toDate() : item.created_at,

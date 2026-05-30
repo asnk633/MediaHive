@@ -99,7 +99,7 @@ export const InventoryList: React.FC<InventoryListProps> = ({
             <div className="flex flex-col items-center justify-center py-20 text-center rounded-2xl bg-glass backdrop-blur-sm border border-foreground/5">
                 <Package className="text-foreground/70 mb-4" size={48} />
                 <h3 className="text-xl font-bold text-foreground/70 mb-2">No items found</h3>
-                <p className="text-slate-400 max-w-sm text-sm">
+                <p className="text-foreground/60 max-w-sm text-sm">
                     Try adjusting your filters or search terms.
                 </p>
             </div>
@@ -113,12 +113,12 @@ export const InventoryList: React.FC<InventoryListProps> = ({
             <Table>
                 <TableHeader className="bg-foreground/[0.03]">
                     <TableRow className="border-foreground/10 hover:bg-transparent">
-                        <TableHead className="text-slate-400 font-bold uppercase tracking-widest text-[10px] h-12">Asset Name</TableHead>
-                        <TableHead className="text-slate-400 font-bold uppercase tracking-widest text-[10px] h-12">Category</TableHead>
-                        <TableHead className="text-slate-400 font-bold uppercase tracking-widest text-[10px] h-12">Availability</TableHead>
-                        <TableHead className="text-slate-400 font-bold uppercase tracking-widest text-[10px] h-12 hidden md:table-cell">Condition</TableHead>
-                        <TableHead className="text-slate-400 font-bold uppercase tracking-widest text-[10px] h-12 hidden lg:table-cell">Quantity</TableHead>
-                        <TableHead className="text-right text-slate-400 font-bold uppercase tracking-widest text-[10px] h-12">Actions</TableHead>
+                        <TableHead className="text-foreground/60 font-bold uppercase tracking-widest text-[10px] h-12">Asset Name</TableHead>
+                        <TableHead className="text-foreground/60 font-bold uppercase tracking-widest text-[10px] h-12">Category</TableHead>
+                        <TableHead className="text-foreground/60 font-bold uppercase tracking-widest text-[10px] h-12">Availability</TableHead>
+                        <TableHead className="text-foreground/60 font-bold uppercase tracking-widest text-[10px] h-12 hidden md:table-cell">Condition</TableHead>
+                        <TableHead className="text-foreground/60 font-bold uppercase tracking-widest text-[10px] h-12 hidden lg:table-cell">Quantity</TableHead>
+                        <TableHead className="text-right text-foreground/60 font-bold uppercase tracking-widest text-[10px] h-12">Actions</TableHead>
                     </TableRow>
                 </TableHeader>
                 <TableBody>
@@ -145,12 +145,12 @@ export const InventoryList: React.FC<InventoryListProps> = ({
                                             {item.name}
                                         </span>
                                         {item.serialNumber && (
-                                            <span className="text-[10px] text-slate-500 font-mono">SN: {item.serialNumber}</span>
+                                            <span className="text-[10px] text-foreground/50 font-mono">SN: {item.serialNumber}</span>
                                         )}
                                     </div>
                                 </TableCell>
                                 <TableCell>
-                                    <Badge variant="neutral" className="bg-foreground/5 border-foreground/10 text-slate-400 font-normal">
+                                    <Badge variant="neutral" className="bg-foreground/5 border-foreground/10 text-foreground/60 font-normal">
                                         {item.category}
                                     </Badge>
                                 </TableCell>
@@ -166,7 +166,7 @@ export const InventoryList: React.FC<InventoryListProps> = ({
                                             isOk ? "text-emerald-400" :
                                             isLow ? "text-amber-400" :
                                             isOut ? "text-red-400" :
-                                            isInUse ? "text-blue-400" : "text-slate-400"
+                                            isInUse ? "text-blue-400" : "text-foreground/60"
                                         )}>
                                             {isOk ? 'Available' : 
                                              isLow ? 'Low Stock' : 
@@ -176,12 +176,12 @@ export const InventoryList: React.FC<InventoryListProps> = ({
                                     </div>
                                 </TableCell>
                                 <TableCell className="hidden md:table-cell">
-                                    <span className="text-xs text-slate-300 capitalize">
+                                    <span className="text-xs text-foreground capitalize">
                                         {item.condition?.replace('_', ' ') || 'N/A'}
                                     </span>
                                 </TableCell>
                                 <TableCell className="hidden lg:table-cell">
-                                    <span className="text-xs text-slate-300">
+                                    <span className="text-xs text-foreground">
                                         {item.quantity} units
                                     </span>
                                 </TableCell>
@@ -221,7 +221,7 @@ export const InventoryList: React.FC<InventoryListProps> = ({
                                                 variant="ghost" 
                                                 className={cn(
                                                     "h-8 w-8 p-0",
-                                                    hasPendingRequest ? "text-slate-500" : "text-emerald-400 hover:bg-emerald-500/10"
+                                                    hasPendingRequest ? "text-foreground/50" : "text-emerald-400 hover:bg-emerald-500/10"
                                                 )}
                                                 disabled={hasPendingRequest}
                                                 onClick={() => onRequest(item)}
@@ -233,7 +233,7 @@ export const InventoryList: React.FC<InventoryListProps> = ({
 
                                         <DropdownMenu>
                                             <DropdownMenuTrigger asChild>
-                                                <Button variant="ghost" className="h-8 w-8 p-0 text-slate-400 hover:text-foreground hover:bg-foreground/10">
+                                                <Button variant="ghost" className="h-8 w-8 p-0 text-foreground/60 hover:text-foreground hover:bg-foreground/10">
                                                     <MoreVertical size={14} />
                                                 </Button>
                                             </DropdownMenuTrigger>

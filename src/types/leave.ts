@@ -73,8 +73,8 @@ export const LEAVE_STATUS_CONFIG: Record<LeaveStatus, { label: string; color: st
     pending: { label: 'Pending', color: 'text-amber-500 bg-amber-500/10 border-amber-500/20', icon: '🟡' },
     approved: { label: 'Approved', color: 'text-emerald-500 bg-emerald-500/10 border-emerald-500/20', icon: '✅' },
     rejected: { label: 'Rejected', color: 'text-red-500 bg-red-500/10 border-red-500/20', icon: '❌' },
-    cancelled: { label: 'Cancelled', color: 'text-gray-500 bg-gray-500/10 border-gray-500/20', icon: '⚫' },
-    archived: { label: 'Archived', color: 'text-gray-400 bg-gray-400/10 border-gray-400/20', icon: '📦' }
+    cancelled: { label: 'Cancelled', color: 'text-foreground/50 bg-gray-500/10 border-gray-500/20', icon: '⚫' },
+    archived: { label: 'Archived', color: 'text-foreground/60 bg-gray-400/10 border-gray-400/20', icon: '📦' }
 };
 
 // Minimum notice periods (in days)

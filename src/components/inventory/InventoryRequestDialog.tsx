@@ -70,14 +70,14 @@ export function InventoryRequestDialog({ item, open, onOpenChange }: InventoryRe
             <DialogContent className="bg-slate-900 border-foreground/10 text-foreground sm:max-w-[425px]">
                 <DialogHeader>
                     <DialogTitle>Request Item</DialogTitle>
-                    <DialogDescription className="text-slate-400">
+                    <DialogDescription className="text-foreground/60">
                         Requesting {item.name}. Provide a brief reason for your request.
                     </DialogDescription>
                 </DialogHeader>
 
                 <div className="grid gap-4 py-4">
                     <div className="grid gap-2">
-                        <Label htmlFor="purpose" className="text-slate-200">Purpose / Duration</Label>
+                        <Label htmlFor="purpose" className="text-foreground">Purpose / Duration</Label>
                         <Textarea
                             id="purpose"
                             placeholder="e.g. For shooting at the new campus event on Friday."
@@ -92,7 +92,7 @@ export function InventoryRequestDialog({ item, open, onOpenChange }: InventoryRe
                     <Button
                         variant="ghost"
                         onClick={() => onOpenChange(false)}
-                        className="text-slate-300 hover:text-foreground hover:bg-foreground/5"
+                        className="text-foreground hover:text-foreground hover:bg-foreground/5"
                     >
                         Cancel
                     </Button>

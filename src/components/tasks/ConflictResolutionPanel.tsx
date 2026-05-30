@@ -2,7 +2,7 @@
 
 import React from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { X, AlertCircle, ArrowRight, ShieldCheck, DownloadCloud } from 'lucide-react';
+import { X, AlertCircle, ArrowRight, ShieldCheck, DownloadCloud, Info } from 'lucide-react';
 import type { ConflictCategory, TaskConflict } from '@/domain/conflicts/types';
 import { Task } from '@/features/tasks/types/task';
 
@@ -57,12 +57,12 @@ export const ConflictResolutionPanel: React.FC<ConflictResolutionPanelProps> = (
                 {/* Header */}
                 <div className="flex items-center justify-between px-6 py-5 border-b border-foreground/10 shrink-0 bg-surface/30">
                     <div className="flex items-center gap-3">
-                        <div className="w-10 h-10 rounded-xl bg-amber-500/10 border border-amber-500/20 flex items-center justify-center">
-                            <AlertCircle className="w-5 h-5 text-amber-500" />
+                        <div className="w-10 h-10 rounded-xl bg-foreground/5 border border-foreground/10 flex items-center justify-center">
+                            <Info className="w-5 h-5 text-foreground/60" />
                         </div>
                         <div>
                             <h2 className="text-lg font-bold text-foreground">Needs Review</h2>
-                            <p className="text-xs text-foreground/80">These changes conflicted with others.</p>
+                            <p className="text-xs text-foreground/60">These changes conflicted with others.</p>
                         </div>
                     </div>
                     <button
@@ -104,7 +104,7 @@ export const ConflictResolutionPanel: React.FC<ConflictResolutionPanelProps> = (
                                             <div key={conflict.field} className="space-y-4">
                                                 <div className="flex items-center justify-between">
                                                     <span className="text-xs font-bold uppercase tracking-widest text-foreground/70">{conflict.field}</span>
-                                                    <span className="text-[10px] text-foreground/70 italic">
+                                                    <span className="text-[10px] text-foreground/50 italic">
                                                         by {conflict.remoteActor} {conflict.remoteActorRole ? `(${conflict.remoteActorRole})` : ''}
                                                     </span>
                                                 </div>
@@ -112,19 +112,19 @@ export const ConflictResolutionPanel: React.FC<ConflictResolutionPanelProps> = (
                                                 <div className="grid grid-cols-[1fr_auto_1fr] items-stretch gap-2">
                                                     {/* Local Value */}
                                                     <div
-                                                        className={`flex flex-col gap-2 p-3 rounded-xl border relative transition-colors ${isLocalSuggested ? 'bg-blue-500/10 border-blue-500/30 ring-1 ring-blue-500/20' :
-                                                                previewSource === 'local' ? 'bg-blue-500/5 border-blue-500/20' :
-                                                                    'bg-blue-500/5 border-blue-500/10'
+                                                        className={`flex flex-col gap-2 p-3 rounded-xl border relative transition-colors ${isLocalSuggested ? 'bg-foreground/[0.02] border-foreground/20' :
+                                                                previewSource === 'local' ? 'bg-foreground/[0.04] border-foreground/15' :
+                                                                    'bg-foreground/[0.01] border-foreground/10'
                                                             }`}
                                                         onMouseEnter={() => setPreviewSource('local')}
                                                         onMouseLeave={() => setPreviewSource(null)}
                                                     >
                                                         {isLocalSuggested && (
-                                                            <div className="absolute -top-2.5 left-1/2 -translate-x-1/2 bg-blue-500 text-foreground text-[9px] font-bold uppercase tracking-widest px-2 py-0.5 rounded-full shadow-lg whitespace-nowrap">
-                                                                Suggested
+                                                            <div className="absolute -top-2.5 left-1/2 -translate-x-1/2 bg-foreground/10 border border-foreground/20 text-foreground/80 text-[8px] font-bold uppercase tracking-widest px-2 py-0.5 rounded-full whitespace-nowrap">
+                                                                Policy Aligned
                                                             </div>
                                                         )}
-                                                        <div className="text-[10px] uppercase font-bold tracking-widest text-blue-400 mt-1">Your Change</div>
+                                                        <div className="text-[10px] uppercase font-bold tracking-widest text-foreground/50 mt-1">Your Change</div>
                                                         <div className={`text-sm font-medium break-all flex-1 ${disableLocal ? 'text-foreground/70' : 'text-foreground'}`}>
                                                             {JSON.stringify(conflict.localValue).replace(/"/g, '')}
                                                         </div>
@@ -133,8 +133,8 @@ export const ConflictResolutionPanel: React.FC<ConflictResolutionPanelProps> = (
                                                             disabled={disableLocal}
                                                             className={`mt-2 w-full flex items-center justify-center gap-1.5 py-1.5 px-3 rounded-lg transition-colors text-xs font-bold
                                                                 ${disableLocal
-                                                                    ? 'bg-foreground/5 text-foreground/80 cursor-not-allowed'
-                                                                    : 'bg-blue-500/20 hover:bg-blue-500 text-blue-400 hover:text-foreground'}`}
+                                                                    ? 'bg-foreground/5 text-foreground/40 cursor-not-allowed'
+                                                                    : 'bg-foreground/5 hover:bg-foreground/10 border border-foreground/10 text-foreground/80 hover:text-foreground'}`}
                                                         >
                                                             <ShieldCheck size={14} /> Keep Mine
                                                         </button>
@@ -146,19 +146,19 @@ export const ConflictResolutionPanel: React.FC<ConflictResolutionPanelProps> = (
 
                                                     {/* Server Value */}
                                                     <div
-                                                        className={`flex flex-col gap-2 p-3 rounded-xl border relative transition-colors ${isServerSuggested ? 'bg-amber-500/10 border-amber-500/30 ring-1 ring-amber-500/20' :
-                                                                previewSource === 'server' ? 'bg-amber-500/5 border-amber-500/20' :
-                                                                    'bg-foreground/[0.03] border-foreground/10'
+                                                        className={`flex flex-col gap-2 p-3 rounded-xl border relative transition-colors ${isServerSuggested ? 'bg-foreground/[0.02] border-foreground/20' :
+                                                                previewSource === 'server' ? 'bg-foreground/[0.04] border-foreground/15' :
+                                                                    'bg-foreground/[0.01] border-foreground/10'
                                                             }`}
                                                         onMouseEnter={() => setPreviewSource('server')}
                                                         onMouseLeave={() => setPreviewSource(null)}
                                                     >
                                                         {isServerSuggested && (
-                                                            <div className="absolute -top-2.5 left-1/2 -translate-x-1/2 bg-amber-500 text-black text-[9px] font-bold uppercase tracking-widest px-2 py-0.5 rounded-full shadow-lg whitespace-nowrap">
-                                                                Suggested
+                                                            <div className="absolute -top-2.5 left-1/2 -translate-x-1/2 bg-foreground/10 border border-foreground/20 text-foreground/80 text-[8px] font-bold uppercase tracking-widest px-2 py-0.5 rounded-full whitespace-nowrap">
+                                                                Policy Aligned
                                                             </div>
                                                         )}
-                                                        <div className="text-[10px] uppercase font-bold tracking-widest text-foreground/70 mt-1">Server Change</div>
+                                                        <div className="text-[10px] uppercase font-bold tracking-widest text-foreground/50 mt-1">Server Change</div>
                                                         <div className={`text-sm font-medium break-all flex-1 ${disableServer ? 'text-foreground/70' : 'text-foreground'}`}>
                                                             {JSON.stringify(conflict.serverValue).replace(/"/g, '')}
                                                         </div>
@@ -167,7 +167,7 @@ export const ConflictResolutionPanel: React.FC<ConflictResolutionPanelProps> = (
                                                             disabled={disableServer}
                                                             className={`mt-2 w-full flex items-center justify-center gap-1.5 py-1.5 px-3 rounded-lg transition-colors text-xs font-bold
                                                                 ${disableServer
-                                                                    ? 'bg-foreground/5 text-foreground/80 cursor-not-allowed'
+                                                                    ? 'bg-foreground/5 text-foreground/40 cursor-not-allowed'
                                                                     : 'bg-foreground/5 hover:bg-foreground/10 border border-foreground/5 text-foreground/80 hover:text-foreground'}`}
                                                         >
                                                             <DownloadCloud size={14} /> Use Theirs

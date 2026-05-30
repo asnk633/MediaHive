@@ -164,7 +164,7 @@ export default function DeviceRequestForm() {
                         <Package className="text-blue-400" />
                     </div>
                     <div>
-                        <p className="text-xs text-slate-400 uppercase tracking-wider font-bold">{targetItem.category}</p>
+                        <p className="text-xs text-foreground/60 uppercase tracking-wider font-bold">{targetItem.category}</p>
                         <p className="font-semibold text-foreground text-lg">{targetItem.name}</p>
                     </div>
                 </div>

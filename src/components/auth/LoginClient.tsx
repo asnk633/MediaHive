@@ -171,7 +171,7 @@ export default function LoginClient() {
                     >
                         MediaHive
                     </h1>
-                    <p className="text-xs md:text-sm text-slate-300 font-bold uppercase tracking-wider max-w-md mx-auto">
+                    <p className="text-xs md:text-sm text-foreground font-bold uppercase tracking-wider max-w-md mx-auto">
                         The Central Hub for Thaiba Garden Media & IT
                     </p>
                 </div>
@@ -182,7 +182,7 @@ export default function LoginClient() {
                         {!isRecoveryMode && (
                             <div className="mb-8 space-y-2">
                                 <h2 className="text-2xl font-bold text-foreground">Welcome</h2>
-                                <p className="text-xs text-slate-400 leading-relaxed">
+                                <p className="text-xs text-foreground/60 leading-relaxed">
                                     A unified control center to Request tasks, access assets, schedule events, and collaborate with our teams at Thaiba Garden Media and IT department.
                                 </p>
                             </div>
@@ -202,7 +202,7 @@ export default function LoginClient() {
                                             </div>
                                             <div className="space-y-2">
                                                 <h3 className="text-xl font-bold text-foreground">Link Invalid or Expired</h3>
-                                                <p className="text-slate-400 text-sm">
+                                                <p className="text-foreground/60 text-sm">
                                                     Your recovery session could not be verified. This happens if the link was already used or has expired.
                                                 </p>
                                             </div>
@@ -218,7 +218,7 @@ export default function LoginClient() {
                                             <button 
                                                 type="button"
                                                 onClick={() => setIsRecoveryMode(false)}
-                                                className="text-sm font-medium text-slate-500 hover:text-foreground transition-colors"
+                                                className="text-sm font-medium text-foreground/50 hover:text-foreground transition-colors"
                                             >
                                                 Back to Login
                                             </button>
@@ -239,23 +239,23 @@ export default function LoginClient() {
                                             )}
 
                                             <div className="space-y-2">
-                                                <label className="text-[11px] font-bold text-slate-400 uppercase tracking-widest ml-1">
+                                                <label className="text-[11px] font-bold text-foreground/60 uppercase tracking-widest ml-1">
                                                     New Password
                                                 </label>
                                                 <div className="relative group">
-                                                    <Lock className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-500 group-focus-within:text-primary transition-colors" />
+                                                    <Lock className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-foreground/50 group-focus-within:text-primary transition-colors" />
                                                     <input
                                                         type={showNewPassword ? "text" : "password"}
                                                         required
                                                         value={newPassword}
                                                         onChange={(e) => setNewPassword(e.target.value)}
                                                         placeholder="••••••••••••"
-                                                        className="w-full h-12 bg-foreground/5 border border-foreground/10 rounded-full pl-11 pr-12 text-foreground placeholder:text-slate-600 focus:outline-none focus:ring-2 focus:ring-primary/40 focus:bg-foreground/10 transition-all text-sm"
+                                                        className="w-full h-12 bg-foreground/5 border border-foreground/10 rounded-full pl-11 pr-12 text-foreground placeholder:text-foreground/40 focus:outline-none focus:ring-2 focus:ring-primary/40 focus:bg-foreground/10 transition-all text-sm"
                                                     />
                                                     <button
                                                         type="button"
                                                         onClick={() => setShowNewPassword(!showNewPassword)}
-                                                        className="absolute right-3 top-1/2 -translate-y-1/2 p-2 text-slate-400 hover:text-foreground transition-all z-50 cursor-pointer flex items-center justify-center"
+                                                        className="absolute right-3 top-1/2 -translate-y-1/2 p-2 text-foreground/60 hover:text-foreground transition-all z-50 cursor-pointer flex items-center justify-center"
                                                         title={showNewPassword ? "Hide password" : "Show password"}
                                                     >
                                                         {showNewPassword ? <EyeOff className="w-5 h-5" /> : <Eye className="w-5 h-5" />}
@@ -264,23 +264,23 @@ export default function LoginClient() {
                                             </div>
 
                                             <div className="space-y-2">
-                                                <label className="text-[11px] font-bold text-slate-400 uppercase tracking-widest ml-1">
+                                                <label className="text-[11px] font-bold text-foreground/60 uppercase tracking-widest ml-1">
                                                     Confirm New Password
                                                 </label>
                                                 <div className="relative group">
-                                                    <Lock className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-500 group-focus-within:text-primary transition-colors" />
+                                                    <Lock className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-foreground/50 group-focus-within:text-primary transition-colors" />
                                                     <input
                                                         type={showConfirmNewPassword ? "text" : "password"}
                                                         required
                                                         value={confirmNewPassword}
                                                         onChange={(e) => setConfirmNewPassword(e.target.value)}
                                                         placeholder="••••••••••••"
-                                                        className="w-full h-12 bg-foreground/5 border border-foreground/10 rounded-full pl-11 pr-12 text-foreground placeholder:text-slate-600 focus:outline-none focus:ring-2 focus:ring-primary/40 focus:bg-foreground/10 transition-all text-sm"
+                                                        className="w-full h-12 bg-foreground/5 border border-foreground/10 rounded-full pl-11 pr-12 text-foreground placeholder:text-foreground/40 focus:outline-none focus:ring-2 focus:ring-primary/40 focus:bg-foreground/10 transition-all text-sm"
                                                     />
                                                     <button
                                                         type="button"
                                                         onClick={() => setShowConfirmNewPassword(!showConfirmNewPassword)}
-                                                        className="absolute right-3 top-1/2 -translate-y-1/2 p-2 text-slate-400 hover:text-foreground transition-all z-50 cursor-pointer flex items-center justify-center"
+                                                        className="absolute right-3 top-1/2 -translate-y-1/2 p-2 text-foreground/60 hover:text-foreground transition-all z-50 cursor-pointer flex items-center justify-center"
                                                         title={showConfirmNewPassword ? "Hide password" : "Show password"}
                                                     >
                                                         {showConfirmNewPassword ? <EyeOff className="w-5 h-5" /> : <Eye className="w-5 h-5" />}
@@ -300,7 +300,7 @@ export default function LoginClient() {
                                                 <button 
                                                     type="button"
                                                     onClick={() => setIsRecoveryMode(false)}
-                                                    className="text-sm font-medium text-slate-500 hover:text-foreground transition-colors"
+                                                    className="text-sm font-medium text-foreground/50 hover:text-foreground transition-colors"
                                                 >
                                                     Cancel
                                                 </button>
@@ -326,40 +326,40 @@ export default function LoginClient() {
                                 </AnimatePresence>
 
                                 <div className="space-y-2">
-                                    <label className="text-[11px] font-bold text-slate-400 uppercase tracking-widest ml-1">
+                                    <label className="text-[11px] font-bold text-foreground/60 uppercase tracking-widest ml-1">
                                         Email
                                     </label>
                                     <div className="relative group">
-                                        <Mail className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-500 group-focus-within:text-primary transition-colors" />
+                                        <Mail className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-foreground/50 group-focus-within:text-primary transition-colors" />
                                         <input
                                             type="email"
                                             required
                                             value={email}
                                             onChange={(e) => setEmail(e.target.value)}
                                             placeholder="media@thaibagarden.com"
-                                            className="w-full h-12 bg-foreground/5 border border-foreground/10 rounded-full pl-11 pr-6 text-foreground placeholder:text-slate-600 focus:outline-none focus:ring-2 focus:ring-primary/40 focus:bg-foreground/10 transition-all text-sm"
+                                            className="w-full h-12 bg-foreground/5 border border-foreground/10 rounded-full pl-11 pr-6 text-foreground placeholder:text-foreground/40 focus:outline-none focus:ring-2 focus:ring-primary/40 focus:bg-foreground/10 transition-all text-sm"
                                         />
                                     </div>
                                 </div>
 
                                 <div className="space-y-2 relative">
-                                    <label className="text-[11px] font-bold text-slate-400 uppercase tracking-widest ml-1">
+                                    <label className="text-[11px] font-bold text-foreground/60 uppercase tracking-widest ml-1">
                                         Password
                                     </label>
                                     <div className="relative group">
-                                        <Lock className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-500 group-focus-within:text-primary transition-colors" />
+                                        <Lock className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-foreground/50 group-focus-within:text-primary transition-colors" />
                                         <input
                                             type={showPassword ? "text" : "password"}
                                             required
                                             value={password}
                                             onChange={(e) => setPassword(e.target.value)}
                                             placeholder="••••••••••••"
-                                            className="w-full h-12 bg-foreground/5 border border-foreground/10 rounded-full pl-11 pr-12 text-foreground placeholder:text-slate-600 focus:outline-none focus:ring-2 focus:ring-primary/40 focus:bg-foreground/10 transition-all text-sm"
+                                            className="w-full h-12 bg-foreground/5 border border-foreground/10 rounded-full pl-11 pr-12 text-foreground placeholder:text-foreground/40 focus:outline-none focus:ring-2 focus:ring-primary/40 focus:bg-foreground/10 transition-all text-sm"
                                         />
                                         <button
                                             type="button"
                                             onClick={() => setShowPassword(!showPassword)}
-                                            className="absolute right-3 top-1/2 -translate-y-1/2 p-2 text-slate-400 hover:text-foreground transition-all z-50 cursor-pointer flex items-center justify-center"
+                                            className="absolute right-3 top-1/2 -translate-y-1/2 p-2 text-foreground/60 hover:text-foreground transition-all z-50 cursor-pointer flex items-center justify-center"
                                             title={showPassword ? "Hide password" : "Show password"}
                                         >
                                             {showPassword ? <EyeOff className="w-5 h-5" /> : <Eye className="w-5 h-5" />}
@@ -384,7 +384,7 @@ export default function LoginClient() {
                                             className="h-4 w-4 rounded border-foreground/10 bg-foreground/5 text-primary focus:ring-primary/40 transition-all cursor-pointer"
                                         />
                                     </div>
-                                    <label htmlFor="remember" className="text-sm font-medium text-slate-400 cursor-pointer select-none">
+                                    <label htmlFor="remember" className="text-sm font-medium text-foreground/60 cursor-pointer select-none">
                                         Keep me logged in
                                     </label>
                                 </div>
@@ -398,7 +398,7 @@ export default function LoginClient() {
                                 </button>
 
                                 <div className="text-center pt-2">
-                                    <p className="text-sm text-slate-400 font-medium">
+                                    <p className="text-sm text-foreground/60 font-medium">
                                         New here? <button 
                                             type="button" 
                                             onClick={() => nativeNavigate('/signup', router, 'LoginClient-Signup')}
@@ -413,7 +413,7 @@ export default function LoginClient() {
                     </div>
                 </div>
 
-                <p className="text-[11px] font-bold text-slate-500/60 uppercase tracking-[0.2em] text-center">
+                <p className="text-[11px] font-bold text-foreground/50/60 uppercase tracking-[0.2em] text-center">
                     © 2026 Thaiba Garden - Media
                 </p>
             </div>
@@ -443,7 +443,7 @@ export default function LoginClient() {
                                         <CheckCircle2 className="w-8 h-8 text-green-500" />
                                     </div>
                                     <h3 className="text-xl font-bold text-foreground">Check Your Inbox</h3>
-                                    <p className="text-slate-400 text-sm">
+                                    <p className="text-foreground/60 text-sm">
                                         If an account exists for <span className="text-foreground font-medium">{email}</span>, you will receive a reset link shortly.
                                     </p>
                                     <Button 
@@ -457,7 +457,7 @@ export default function LoginClient() {
                                 <div className="space-y-6">
                                     <div className="space-y-2 text-center">
                                         <h3 className="text-xl font-bold text-foreground">Reset Password</h3>
-                                        <p className="text-slate-400 text-sm">Enter your email to receive a recovery link.</p>
+                                        <p className="text-foreground/60 text-sm">Enter your email to receive a recovery link.</p>
                                     </div>
                                     
                                     <form onSubmit={handleResetPassword} className="space-y-6">
@@ -476,14 +476,14 @@ export default function LoginClient() {
 
                                         <div className="space-y-2">
                                             <div className="relative group">
-                                                <Mail className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-500 group-focus-within:text-primary" />
+                                                <Mail className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-foreground/50 group-focus-within:text-primary" />
                                                 <input
                                                     type="email"
                                                     required
                                                     value={email}
                                                     onChange={(e) => setEmail(e.target.value)}
                                                     placeholder="media@thaibagarden.com"
-                                                    className="w-full h-11 bg-foreground/5 border border-foreground/10 rounded-full pl-11 pr-6 text-foreground placeholder:text-slate-600 focus:outline-none focus:ring-2 focus:ring-primary/40 transition-all text-sm"
+                                                    className="w-full h-11 bg-foreground/5 border border-foreground/10 rounded-full pl-11 pr-6 text-foreground placeholder:text-foreground/40 focus:outline-none focus:ring-2 focus:ring-primary/40 transition-all text-sm"
                                                 />
                                             </div>
                                         </div>
@@ -499,7 +499,7 @@ export default function LoginClient() {
                                             <button 
                                                 type="button"
                                                 onClick={() => setShowResetModal(false)}
-                                                className="text-sm font-medium text-slate-500 hover:text-foreground transition-colors py-1"
+                                                className="text-sm font-medium text-foreground/50 hover:text-foreground transition-colors py-1"
                                             >
                                                 Cancel
                                             </button>

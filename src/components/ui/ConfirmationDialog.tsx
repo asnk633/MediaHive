@@ -47,7 +47,7 @@ export function ConfirmationDialog({
                         )}
                         {title}
                     </AlertDialogTitle>
-                    <AlertDialogDescription className="text-slate-400">
+                    <AlertDialogDescription className="text-foreground/60">
                         {description}
                     </AlertDialogDescription>
                 </AlertDialogHeader>

@@ -365,7 +365,7 @@ export default function HomeClient() {
                         </div>
 
                         {/* 2 & 3 - Today's Tasks & Today's Events */}
-                        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 animate-in fade-in slide-in-from-bottom-4 duration-800">
+                        <div className="grid grid-cols-1 md:grid-cols-2 gap-6 animate-in fade-in slide-in-from-bottom-4 duration-800">
                             <TodayTasksCard 
                                 tasks={todayTasks} 
                                 isLoading={isDataLoading} 

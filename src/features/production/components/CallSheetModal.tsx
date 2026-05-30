@@ -212,36 +212,36 @@ export const CallSheetModal: React.FC<CallSheetModalProps> = ({ isOpen, onClose,
             .font-mono-custom { font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace; }
           `}</style>
 
-          <div id="print-call-sheet" className="mx-auto w-full md:w-[210mm] bg-white text-slate-950 p-6 md:p-10 lg:p-14 space-y-12 shadow-xl print:shadow-none min-h-full">
+          <div id="print-call-sheet" className="mx-auto w-full md:w-[210mm] bg-white text-foreground/20 p-6 md:p-10 lg:p-14 space-y-12 shadow-xl print:shadow-none min-h-full">
             {/* 1. TOP PRODUCTION BAR */}
             <div className="production-bar grid grid-cols-[2fr_1fr_1fr_1fr_1fr] border-2 border-black mb-10 overflow-hidden">
               <div className="production-bar-item border-r border-black p-4 bg-slate-50">
-                <span className="text-[8px] font-black uppercase text-slate-500 block mb-1">Project</span>
-                <span className="text-xs font-bold uppercase truncate block text-slate-900">{event.title}</span>
+                <span className="text-[8px] font-black uppercase text-foreground/50 block mb-1">Project</span>
+                <span className="text-xs font-bold uppercase truncate block text-foreground/20">{event.title}</span>
               </div>
               <div className="production-bar-item border-r border-black p-4">
-                <span className="text-[8px] font-black uppercase text-slate-500 block mb-1 text-center">Date</span>
-                <span className="text-xs font-bold uppercase block text-slate-900 text-center">{format(startDate, 'MMM dd, yyyy')}</span>
+                <span className="text-[8px] font-black uppercase text-foreground/50 block mb-1 text-center">Date</span>
+                <span className="text-xs font-bold uppercase block text-foreground/20 text-center">{format(startDate, 'MMM dd, yyyy')}</span>
               </div>
               <div className="production-bar-item border-r border-black p-4">
-                <span className="text-[8px] font-black uppercase text-slate-500 block mb-1 text-center">Call Time</span>
+                <span className="text-[8px] font-black uppercase text-foreground/50 block mb-1 text-center">Call Time</span>
                 <span className="text-xs font-bold uppercase block text-blue-600 text-center">{format(startDate, 'HH:mm')}</span>
               </div>
               <div className="production-bar-item border-r border-black p-4">
-                <span className="text-[8px] font-black uppercase text-slate-500 block mb-1 text-center">Wrap</span>
-                <span className="text-xs font-bold uppercase block text-slate-900 text-center">{format(endDate, 'HH:mm')}</span>
+                <span className="text-[8px] font-black uppercase text-foreground/50 block mb-1 text-center">Wrap</span>
+                <span className="text-xs font-bold uppercase block text-foreground/20 text-center">{format(endDate, 'HH:mm')}</span>
               </div>
               <div className="production-bar-item p-4">
-                <span className="text-[8px] font-black uppercase text-slate-500 block mb-1 text-right">Location</span>
-                <span className="text-xs font-bold uppercase truncate block text-slate-900 text-right">{event.location || 'Studio A'}</span>
+                <span className="text-[8px] font-black uppercase text-foreground/50 block mb-1 text-right">Location</span>
+                <span className="text-xs font-bold uppercase truncate block text-foreground/20 text-right">{event.location || 'Studio A'}</span>
               </div>
             </div>
 
             {/* 2. HEADER BLOCK */}
             <div className="print-section border-b-2 border-slate-200 pb-10 flex justify-between items-start">
               <div className="max-w-[75%]">
-                <h1 className="text-5xl font-black text-slate-900 leading-tight uppercase tracking-tight">{event.title}</h1>
-                <div className="flex gap-8 text-sm font-bold text-slate-400 uppercase tracking-[0.2em] mt-4">
+                <h1 className="text-5xl font-black text-foreground/20 leading-tight uppercase tracking-tight">{event.title}</h1>
+                <div className="flex gap-8 text-sm font-bold text-foreground/60 uppercase tracking-[0.2em] mt-4">
                   <span>{format(startDate, 'MMMM do, yyyy')}</span>
                   <span>Call: {format(startDate, 'HH:mm')}</span>
                   <span>Wrap: {format(endDate, 'HH:mm')}</span>
@@ -249,8 +249,8 @@ export const CallSheetModal: React.FC<CallSheetModalProps> = ({ isOpen, onClose,
               </div>
               <div className="text-right">
                 <div className="p-5 border-[3px] border-slate-900 rounded-2xl shadow-sm">
-                  <span className="text-[10px] font-black uppercase block mb-1 text-slate-400">Production Ref</span>
-                  <span className="font-mono-custom font-bold text-sm uppercase text-slate-900">#{event.id.slice(0, 12)}</span>
+                  <span className="text-[10px] font-black uppercase block mb-1 text-foreground/60">Production Ref</span>
+                  <span className="font-mono-custom font-bold text-sm uppercase text-foreground/20">#{event.id.slice(0, 12)}</span>
                 </div>
               </div>
             </div>
@@ -263,10 +263,10 @@ export const CallSheetModal: React.FC<CallSheetModalProps> = ({ isOpen, onClose,
                   <MapPin size={12} className="inline mr-2" /> Shoot Location
                 </h3>
                 <div className="p-8 bg-slate-50 border border-slate-100 rounded-3xl">
-                  <p className="text-2xl font-black text-slate-900 mb-6 leading-tight">{event.location || 'Studio A / Base Location'}</p>
+                  <p className="text-2xl font-black text-foreground/20 mb-6 leading-tight">{event.location || 'Studio A / Base Location'}</p>
                   <div className="pt-6 border-t border-slate-200 flex justify-between items-baseline">
-                    <span className="text-[10px] font-black uppercase text-slate-400">Arrival Time</span>
-                    <p className="text-xl font-black text-slate-900">{format(arrivalDate, 'HH:mm')} <span className="text-sm font-bold text-slate-400">(-30m)</span></p>
+                    <span className="text-[10px] font-black uppercase text-foreground/60">Arrival Time</span>
+                    <p className="text-xl font-black text-foreground/20">{format(arrivalDate, 'HH:mm')} <span className="text-sm font-bold text-foreground/60">(-30m)</span></p>
                   </div>
                 </div>
               </div>
@@ -276,12 +276,12 @@ export const CallSheetModal: React.FC<CallSheetModalProps> = ({ isOpen, onClose,
                 <h3 className="section-title">
                   <FileText size={12} className="inline mr-2" /> Production Brief
                 </h3>
-                <div className="text-base font-medium leading-relaxed text-slate-700 min-h-[100px]">
+                <div className="text-base font-medium leading-relaxed text-foreground/30 min-h-[100px]">
                   {event.description || 'No detailed instructions provided.'}
                 </div>
                 <div className="p-5 border-l-4 border-blue-500 bg-blue-50/20 rounded-xl">
                   <h4 className="text-[10px] font-black uppercase text-blue-500 mb-2">Operational Notes</h4>
-                  <ul className="text-xs font-bold space-y-2 text-slate-600">
+                  <ul className="text-xs font-bold space-y-2 text-foreground/40">
                     <li className="flex items-center gap-2"><div className="w-1.5 h-1.5 bg-blue-500 rounded-full shrink-0"/> Confirm technical redundancy.</li>
                     <li className="flex items-center gap-2"><div className="w-1.5 h-1.5 bg-blue-500 rounded-full shrink-0"/> Battery and media clear audit.</li>
                   </ul>
@@ -299,8 +299,8 @@ export const CallSheetModal: React.FC<CallSheetModalProps> = ({ isOpen, onClose,
                 <div className="divide-y divide-slate-100">
                   {structuredCrew.map((member, idx) => (
                     <div key={idx} className="py-4 flex justify-between items-center transition-colors hover:bg-slate-50">
-                      <span className="text-[11px] font-bold uppercase text-slate-500 tracking-wider font-mono-custom">{member.role}</span>
-                      <span className="font-bold text-slate-900 text-sm">{member.name}</span>
+                      <span className="text-[11px] font-bold uppercase text-foreground/50 tracking-wider font-mono-custom">{member.role}</span>
+                      <span className="font-bold text-foreground/20 text-sm">{member.name}</span>
                     </div>
                   ))}
                 </div>
@@ -314,10 +314,10 @@ export const CallSheetModal: React.FC<CallSheetModalProps> = ({ isOpen, onClose,
                 <div className="space-y-3">
                   {equipment.length > 0 ? equipment.map(item => (
                     <div key={item.id} className="p-4 border border-slate-100 flex justify-between items-center bg-white rounded-2xl shadow-sm">
-                      <span className="text-sm font-bold text-slate-800">{item.inventory?.name}</span>
-                      <span className="text-[9px] font-black uppercase px-2 py-0.5 border border-slate-200 rounded text-slate-400">Reserved</span>
+                      <span className="text-sm font-bold text-foreground/20">{item.inventory?.name}</span>
+                      <span className="text-[9px] font-black uppercase px-2 py-0.5 border border-slate-200 rounded text-foreground/60">Reserved</span>
                     </div>
-                  )) : <div className="p-10 border-4 border-dashed border-slate-50 rounded-[40px] text-center italic text-slate-300">No hardware assigned.</div>}
+                  )) : <div className="p-10 border-4 border-dashed border-slate-50 rounded-[40px] text-center italic text-foreground">No hardware assigned.</div>}
                 </div>
               </div>
             </div>
@@ -332,8 +332,8 @@ export const CallSheetModal: React.FC<CallSheetModalProps> = ({ isOpen, onClose,
                   <div key={task.id} className="flex items-start gap-5 p-4 border border-slate-100 rounded-2xl bg-white shadow-sm">
                     <div className="mt-1 w-5 h-5 border-2 border-slate-300 rounded-lg shrink-0" />
                     <div className="space-y-1">
-                      <p className="text-base font-bold text-slate-800 leading-tight">{task.title}</p>
-                      <span className="text-[9px] font-black uppercase text-slate-400 tracking-widest">{task.production_stage}</span>
+                      <p className="text-base font-bold text-foreground/20 leading-tight">{task.title}</p>
+                      <span className="text-[9px] font-black uppercase text-foreground/60 tracking-widest">{task.production_stage}</span>
                     </div>
                   </div>
                 ))}
@@ -342,10 +342,10 @@ export const CallSheetModal: React.FC<CallSheetModalProps> = ({ isOpen, onClose,
 
             {/* 6. FOOTER */}
             <div className="print-section mt-auto pt-10 border-t-2 border-slate-100">
-              <div className="flex justify-between items-end text-[10px] font-black uppercase text-slate-400 tracking-[0.3em]">
+              <div className="flex justify-between items-end text-[10px] font-black uppercase text-foreground/60 tracking-[0.3em]">
                 <div>
                   <p>Generated by MediaHive Workflow</p>
-                  <p className="text-slate-900 font-mono-custom mt-2 tracking-tighter text-xs">P-ID: {event.id}</p>
+                  <p className="text-foreground/20 font-mono-custom mt-2 tracking-tighter text-xs">P-ID: {event.id}</p>
                 </div>
                 <div className="text-right">
                   <p>Issued: {format(new Date(), 'MMM dd, yyyy HH:mm')}</p>

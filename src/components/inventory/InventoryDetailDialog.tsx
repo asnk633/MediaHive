@@ -55,7 +55,7 @@ export const InventoryDetailDialog: React.FC<InventoryDetailDialogProps> = ({
 
     return (
         <Dialog open={open} onOpenChange={onOpenChange}>
-            <DialogContent className="max-w-[1100px] w-[95vw] h-[760px] p-0 gap-0 bg-[#0F1218] border border-foreground/5 overflow-hidden flex flex-row focus:outline-none shadow-2xl rounded-lg font-sans text-slate-400">
+            <DialogContent className="max-w-[1100px] w-[95vw] h-[760px] p-0 gap-0 bg-[#0F1218] border border-foreground/5 overflow-hidden flex flex-row focus:outline-none shadow-2xl rounded-lg font-sans text-foreground/60">
 
                 {/* LEFT: Visually blended inspection area (50%) */}
                 <div className="w-[50%] h-full p-8 flex flex-col relative bg-[#090b0f] justify-center items-center">
@@ -114,7 +114,7 @@ export const InventoryDetailDialog: React.FC<InventoryDetailDialogProps> = ({
                     {/* Header: Premium with Asset ID badge */}
                     <div className="mb-6 shrink-0 relative pr-6">
                         <div className="flex items-center gap-2 mb-1.5">
-                            <span className="text-[10px] uppercase font-bold text-slate-500 tracking-wider">Item ID</span>
+                            <span className="text-[10px] uppercase font-bold text-foreground/50 tracking-wider">Item ID</span>
                             {item.assetId && (
                                 <Badge className="bg-[#D69E2E] hover:bg-[#D69E2E] text-[#2C1D06] text-[10px] font-extrabold px-2 py-0.5 rounded-md tracking-wider">
                                     {item.assetId}
@@ -137,8 +137,8 @@ export const InventoryDetailDialog: React.FC<InventoryDetailDialogProps> = ({
                                     <Box size={18} strokeWidth={2} />
                                 </div>
                                 <div className="min-w-0">
-                                    <span className="block text-[9px] uppercase font-bold tracking-widest text-slate-500 mb-0.5">Category</span>
-                                    <span className="block text-[11px] font-extrabold text-slate-200 uppercase tracking-tight truncate max-w-[130px]" title={item.category}>
+                                    <span className="block text-[9px] uppercase font-bold tracking-widest text-foreground/50 mb-0.5">Category</span>
+                                    <span className="block text-[11px] font-extrabold text-foreground uppercase tracking-tight truncate max-w-[130px]" title={item.category}>
                                         {item.category}
                                     </span>
                                 </div>
@@ -150,8 +150,8 @@ export const InventoryDetailDialog: React.FC<InventoryDetailDialogProps> = ({
                                     <ShieldCheck size={18} strokeWidth={2} />
                                 </div>
                                 <div>
-                                    <span className="block text-[9px] uppercase font-bold tracking-widest text-slate-500 mb-0.5">Condition</span>
-                                    <span className="block text-xs font-extrabold text-slate-200 uppercase tracking-tight">
+                                    <span className="block text-[9px] uppercase font-bold tracking-widest text-foreground/50 mb-0.5">Condition</span>
+                                    <span className="block text-xs font-extrabold text-foreground uppercase tracking-tight">
                                         {item.condition?.replace('_', ' ') || 'Good'}
                                     </span>
                                 </div>
@@ -162,7 +162,7 @@ export const InventoryDetailDialog: React.FC<InventoryDetailDialogProps> = ({
                         <div className="space-y-0.5">
                             {/* STATUS */}
                             <div className="flex items-center justify-between py-3 border-b border-foreground/[0.03]">
-                                <span className="text-[10px] uppercase font-bold text-slate-500 tracking-wider">Status</span>
+                                <span className="text-[10px] uppercase font-bold text-foreground/50 tracking-wider">Status</span>
                                 <Badge className={`text-[10px] font-bold px-2 py-0.5 rounded ${
                                     item.status?.toLowerCase() === 'available' ? 'bg-emerald-500/10 text-emerald-400 border border-emerald-500/20' :
                                     item.status?.toLowerCase() === 'in use' || item.status?.toLowerCase() === 'in_use' ? 'bg-blue-500/10 text-blue-400 border border-blue-500/20' :
@@ -175,16 +175,16 @@ export const InventoryDetailDialog: React.FC<InventoryDetailDialogProps> = ({
 
                             {/* SERIAL NO. */}
                             <div className="flex items-center justify-between py-3 border-b border-foreground/[0.03]">
-                                <span className="text-[10px] uppercase font-bold text-slate-500 tracking-wider">Serial No.</span>
-                                <span className="text-sm font-semibold text-slate-300 font-mono">
+                                <span className="text-[10px] uppercase font-bold text-foreground/50 tracking-wider">Serial No.</span>
+                                <span className="text-sm font-semibold text-foreground font-mono">
                                     {item.serialNumber || '-'}
                                 </span>
                             </div>
 
                             {/* AVAILABILITY */}
                             <div className="flex items-center justify-between py-3 border-b border-foreground/[0.03]">
-                                <span className="text-[10px] uppercase font-bold text-slate-500 tracking-wider">Availability</span>
-                                <span className="text-sm font-semibold text-slate-300">
+                                <span className="text-[10px] uppercase font-bold text-foreground/50 tracking-wider">Availability</span>
+                                <span className="text-sm font-semibold text-foreground">
                                     {item.status?.toLowerCase() === 'in use' || item.status?.toLowerCase() === 'in_use' 
                                         ? `0 of ${item.quantity} Units Available` 
                                         : `${item.quantity} of ${item.quantity} Units Available`}
@@ -193,8 +193,8 @@ export const InventoryDetailDialog: React.FC<InventoryDetailDialogProps> = ({
 
                             {/* LOCATION */}
                             <div className="flex items-center justify-between py-3 border-b border-foreground/[0.03]">
-                                <span className="text-[10px] uppercase font-bold text-slate-500 tracking-wider">Location</span>
-                                <span className="text-sm font-semibold text-slate-300 truncate max-w-[200px]" title={item.locationStr || ''}>
+                                <span className="text-[10px] uppercase font-bold text-foreground/50 tracking-wider">Location</span>
+                                <span className="text-sm font-semibold text-foreground truncate max-w-[200px]" title={item.locationStr || ''}>
                                     {item.locationStr || '-'}
                                 </span>
                             </div>
@@ -202,8 +202,8 @@ export const InventoryDetailDialog: React.FC<InventoryDetailDialogProps> = ({
                             {/* PURCHASE AMOUNT (Admins / Managers only) */}
                             {['admin', 'manager'].includes(role || '') && (
                                 <div className="flex items-center justify-between py-3 border-b border-foreground/[0.03]">
-                                    <span className="text-[10px] uppercase font-bold text-slate-500 tracking-wider">Purchase Amount</span>
-                                    <span className="text-sm font-semibold text-slate-300 tabular-nums">
+                                    <span className="text-[10px] uppercase font-bold text-foreground/50 tracking-wider">Purchase Amount</span>
+                                    <span className="text-sm font-semibold text-foreground tabular-nums">
                                         {item.purchasePrice ? `₹${item.purchasePrice.toLocaleString()}` : '-'}
                                     </span>
                                 </div>
@@ -212,8 +212,8 @@ export const InventoryDetailDialog: React.FC<InventoryDetailDialogProps> = ({
                             {/* PURCHASE DATE (Admins / Managers only) */}
                             {['admin', 'manager'].includes(role || '') && (
                                 <div className="flex items-center justify-between py-3 border-b border-foreground/[0.03]">
-                                    <span className="text-[10px] uppercase font-bold text-slate-500 tracking-wider">Purchase Date</span>
-                                    <span className="text-sm font-semibold text-slate-300 tabular-nums">
+                                    <span className="text-[10px] uppercase font-bold text-foreground/50 tracking-wider">Purchase Date</span>
+                                    <span className="text-sm font-semibold text-foreground tabular-nums">
                                         {item.purchaseDate ? format(new Date(item.purchaseDate), 'dd-MM-yyyy') : '-'}
                                     </span>
                                 </div>
@@ -222,8 +222,8 @@ export const InventoryDetailDialog: React.FC<InventoryDetailDialogProps> = ({
 
                         {/* Description Section */}
                         <div>
-                            <span className="block text-[10px] uppercase font-bold text-slate-500 tracking-wider mb-2">Description</span>
-                            <p className="text-xs text-slate-400 font-normal leading-relaxed">
+                            <span className="block text-[10px] uppercase font-bold text-foreground/50 tracking-wider mb-2">Description</span>
+                            <p className="text-xs text-foreground/60 font-normal leading-relaxed">
                                 {item.description || 'No description provided.'}
                             </p>
                         </div>
@@ -256,7 +256,7 @@ export const InventoryDetailDialog: React.FC<InventoryDetailDialogProps> = ({
                                 {onEdit && (
                                     <Button
                                         onClick={() => onEdit(item)}
-                                        className="w-1/2 py-5 rounded-xl bg-[#131924] border border-foreground/[0.05] hover:bg-[#1C2434] hover:border-foreground/10 text-slate-300 font-bold text-xs shadow-md transition-all duration-200 flex items-center justify-center gap-2"
+                                        className="w-1/2 py-5 rounded-xl bg-[#131924] border border-foreground/[0.05] hover:bg-[#1C2434] hover:border-foreground/10 text-foreground font-bold text-xs shadow-md transition-all duration-200 flex items-center justify-center gap-2"
                                     >
                                         <Edit size={14} /> Edit Asset
                                     </Button>
@@ -268,7 +268,7 @@ export const InventoryDetailDialog: React.FC<InventoryDetailDialogProps> = ({
                                                 onDelete(item);
                                             }
                                         }}
-                                        className="w-1/2 py-5 rounded-xl bg-[#131924] border border-foreground/[0.05] hover:bg-[#1C2434]/50 hover:border-red-500/20 hover:text-red-400 text-slate-300 font-bold text-xs shadow-md transition-all duration-200 flex items-center justify-center gap-2"
+                                        className="w-1/2 py-5 rounded-xl bg-[#131924] border border-foreground/[0.05] hover:bg-[#1C2434]/50 hover:border-red-500/20 hover:text-red-400 text-foreground font-bold text-xs shadow-md transition-all duration-200 flex items-center justify-center gap-2"
                                     >
                                         <Trash2 size={14} /> Delete Asset
                                     </Button>

@@ -19,7 +19,7 @@ export const TopBar = ({ user }: { user?: { name: string, avatar: string } }) =>
             {/* Center Search (Hidden on small mobile) */}
             <div className="hidden md:flex flex-1 max-w-md mx-8">
                 <div className="relative w-full">
-                    <Search className="absolute left-3 top-2.5 text-gray-400" size={20} />
+                    <Search className="absolute left-3 top-2.5 text-foreground/60" size={20} />
                     <input
                         type="text"
                         placeholder="Search..."
@@ -30,19 +30,19 @@ export const TopBar = ({ user }: { user?: { name: string, avatar: string } }) =>
 
             {/* Right Actions */}
             <div className="flex items-center gap-3 sm:gap-4">
-                <button className="p-2 text-gray-500 hover:bg-gray-100 rounded-full transition-colors relative">
+                <button className="p-2 text-foreground/50 hover:bg-gray-100 rounded-full transition-colors relative">
                     <Bell size={20} />
                     <span className="absolute top-1.5 right-2 w-2 h-2 bg-red-500 rounded-full border border-white" />
                 </button>
-                <button className="p-2 text-gray-500 hover:bg-gray-100 rounded-full transition-colors hidden sm:block">
+                <button className="p-2 text-foreground/50 hover:bg-gray-100 rounded-full transition-colors hidden sm:block">
                     <Settings size={20} />
                 </button>
 
                 {/* Profile */}
                 <div className="flex items-center gap-3 pl-2 sm:border-l border-gray-200">
                     <div className="text-right hidden lg:block">
-                        <div className="text-sm font-bold text-gray-900">{userName}</div>
-                        <div className="text-xs text-gray-500">Admin</div>
+                        <div className="text-sm font-bold text-foreground/20">{userName}</div>
+                        <div className="text-xs text-foreground/50">Admin</div>
                     </div>
                     <img src={userAvatar} alt="Profile" className="w-9 h-9 rounded-full border border-gray-200 shadow-sm" />
                 </div>

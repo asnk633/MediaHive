@@ -22,7 +22,7 @@ export const Input = forwardRef<HTMLInputElement, InputProps>(
     return (
       <div className={cn("flex flex-col gap-1.5", fullWidth && "w-full")}>
         {label && (
-          <label className="text-xs font-medium text-gray-400 ml-1">
+          <label className="text-xs font-medium text-foreground/60 ml-1">
             {label}
           </label>
         )}
@@ -34,7 +34,7 @@ export const Input = forwardRef<HTMLInputElement, InputProps>(
             className={cn(
               "flex h-10 w-full rounded-lg bg-foreground/5 px-3 py-2 text-sm text-foreground",
               "border outline-none mh-transition-fast", // Standardized motion
-              "placeholder:text-gray-500",
+              "placeholder:text-foreground/50",
               "focus:ring-4 focus:bg-foreground/[0.07]",
               "disabled:cursor-not-allowed disabled:opacity-50",
               variants[variant],
@@ -59,7 +59,7 @@ export const Input = forwardRef<HTMLInputElement, InputProps>(
         )}
 
         {!error && description && (
-          <p className="text-xs text-gray-500 ml-1">
+          <p className="text-xs text-foreground/50 ml-1">
             {description}
           </p>
         )}

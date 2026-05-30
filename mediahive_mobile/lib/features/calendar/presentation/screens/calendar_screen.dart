@@ -57,7 +57,7 @@ class CalendarScreen extends ConsumerWidget {
           },
           child: eventsAsync.when(
             data: (events) => _buildContent(context, ref, events, currentView, isOffline, colors),
-            loading: () => _buildLoadingState(colors),
+            loading: () => _buildLoadingState(context, colors),
             error: (e, _) => _buildErrorState(ref, e, colors),
           ),
         ),
@@ -67,10 +67,10 @@ class CalendarScreen extends ConsumerWidget {
 
   Widget _buildContent(BuildContext context, WidgetRef ref, List<Event> events, String currentView, bool isOffline, ThemeColors colors) {
     return ListView(
-      padding: const EdgeInsets.only(
+      padding: EdgeInsets.only(
         left: AppSpacing.l, 
         right: AppSpacing.l, 
-        top: 140, 
+        top: 120 + MediaQuery.of(context).padding.top, 
         bottom: 120,
       ),
       children: [
@@ -92,9 +92,9 @@ class CalendarScreen extends ConsumerWidget {
     );
   }
 
-  Widget _buildLoadingState(ThemeColors colors) {
+  Widget _buildLoadingState(BuildContext context, ThemeColors colors) {
     return ListView(
-      padding: const EdgeInsets.only(left: AppSpacing.l, right: AppSpacing.l, top: 140),
+      padding: EdgeInsets.only(left: AppSpacing.l, right: AppSpacing.l, top: 120 + MediaQuery.of(context).padding.top),
       children: [
         const MhSkeleton(height: 60, width: double.infinity),
         const SizedBox(height: AppSpacing.m),

@@ -17,7 +17,7 @@ export function StatusPill({ status }: StatusPillProps) {
         },
         'todo': {
             label: 'To Do',
-            className: 'bg-slate-500/10 text-slate-300 border-slate-500/30',
+            className: 'bg-slate-500/10 text-foreground border-slate-500/30',
         },
         'in_progress': {
             label: 'In Progress',

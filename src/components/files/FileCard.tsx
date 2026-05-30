@@ -35,10 +35,10 @@ export function FileCard({ file, canEdit, onDelete }: FileCardProps) {
             <div className="flex-1 relative z-10">
                 <h3 className="font-semibold text-foreground truncate text-[15px] tracking-tight" title={file.name}>{file.name}</h3>
                 <div className="flex flex-col gap-0.5 mt-1.5">
-                    <p className="text-xs text-gray-400 font-medium">
+                    <p className="text-xs text-foreground/60 font-medium">
                         {format(file.created_at?.seconds ? new Date(file.created_at.seconds * 1000) : new Date(), 'MMM d, yyyy')}
                     </p>
-                    <p className="text-[10px] text-gray-500 opacity-60 uppercase tracking-wider font-bold">
+                    <p className="text-[10px] text-foreground/50 opacity-60 uppercase tracking-wider font-bold">
                         {file.uploadedByName || 'Unknown'}
                     </p>
                 </div>
@@ -49,13 +49,13 @@ export function FileCard({ file, canEdit, onDelete }: FileCardProps) {
                     href={file.viewLink}
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="flex-1 flex items-center justify-center gap-2 py-2 text-xs font-bold text-gray-300 bg-foreground/5 rounded-lg hover:bg-foreground/10 hover:text-foreground transition-all active:scale-95"
+                    className="flex-1 flex items-center justify-center gap-2 py-2 text-xs font-bold text-foreground bg-foreground/5 rounded-lg hover:bg-foreground/10 hover:text-foreground transition-all active:scale-95"
                 >
                     <Eye size={14} /> View
                 </a>
                 <a
                     href={file.downloadLink}
-                    className="flex-1 flex items-center justify-center gap-2 py-2 text-xs font-bold text-gray-300 bg-foreground/5 rounded-lg hover:bg-foreground/10 hover:text-foreground transition-all active:scale-95"
+                    className="flex-1 flex items-center justify-center gap-2 py-2 text-xs font-bold text-foreground bg-foreground/5 rounded-lg hover:bg-foreground/10 hover:text-foreground transition-all active:scale-95"
                 >
                     <Download size={14} /> Download
                 </a>

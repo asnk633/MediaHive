@@ -399,7 +399,8 @@ export const BulkActionBar: React.FC<BulkActionBarProps> = ({
                                     <button
                                         onClick={() => onRestore?.(selectedIdsArray)}
                                         disabled={isLoading}
-                                        className="flex items-center gap-1.5 px-3 py-2 bg-emerald-500/5 hover:bg-emerald-500/15 text-emerald-400/50 hover:text-emerald-400 rounded-xl transition-all text-[10px] font-bold uppercase tracking-widest border border-emerald-500/10 disabled:opacity-40"
+                                        aria-label="Restore selected tasks"
+                                        className="flex items-center gap-1.5 px-3 py-2 bg-emerald-500/5 hover:bg-emerald-500/15 text-emerald-400/50 hover:text-emerald-400 rounded-xl transition-all text-[10px] font-bold uppercase tracking-widest border border-emerald-500/10 disabled:opacity-40 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary"
                                     >
                                         <RotateCcw size={13} /> Restore
                                     </button>
@@ -407,7 +408,8 @@ export const BulkActionBar: React.FC<BulkActionBarProps> = ({
                                         <button
                                             onClick={() => onPermanentDelete?.(selectedIdsArray)}
                                             disabled={isLoading}
-                                            className="flex items-center gap-1.5 px-3 py-2 bg-red-500/5 hover:bg-red-500/15 text-red-500/50 hover:text-red-400 rounded-xl transition-all text-[10px] font-bold uppercase tracking-widest border border-red-500/10 disabled:opacity-40"
+                                            aria-label="Permanently delete selected tasks"
+                                            className="flex items-center gap-1.5 px-3 py-2 bg-red-500/5 hover:bg-red-500/15 text-red-500/50 hover:text-red-400 rounded-xl transition-all text-[10px] font-bold uppercase tracking-widest border border-red-500/10 disabled:opacity-40 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary"
                                         >
                                             <Trash2 size={13} /> Delete Forever
                                         </button>
@@ -421,7 +423,7 @@ export const BulkActionBar: React.FC<BulkActionBarProps> = ({
                                             <DropdownMenuTrigger asChild>
                                                 <button
                                                     disabled={isLoading}
-                                                    className="flex items-center gap-1.5 px-3 py-2 bg-foreground/[0.03] hover:bg-foreground/10 text-foreground/70 hover:text-foreground rounded-xl transition-all text-[10px] font-bold uppercase tracking-widest border border-foreground/5 disabled:opacity-40 disabled:cursor-not-allowed"
+                                                    className="flex items-center gap-1.5 px-3 py-2 bg-foreground/[0.03] hover:bg-foreground/10 text-foreground/70 hover:text-foreground rounded-xl transition-all text-[10px] font-bold uppercase tracking-widest border border-foreground/5 disabled:opacity-40 disabled:cursor-not-allowed focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary"
                                                     aria-label="Bulk change status"
                                                 >
                                                     <CheckCircle2 className="w-3.5 h-3.5" />
@@ -433,7 +435,7 @@ export const BulkActionBar: React.FC<BulkActionBarProps> = ({
                                                 <DropdownMenuLabel className="text-[9px] uppercase tracking-widest text-foreground/70">Set status to</DropdownMenuLabel>
                                                 <DropdownMenuSeparator />
                                                 <DropdownMenuItem onClick={() => runOperation('changeStatus', 'todo')}>
-                                                    <Circle size={13} className="mr-2 text-slate-400" /> To Do
+                                                    <Circle size={13} className="mr-2 text-foreground/60" /> To Do
                                                 </DropdownMenuItem>
                                                 <DropdownMenuItem onClick={() => runOperation('changeStatus', 'in_progress')}>
                                                     <Clock size={13} className="mr-2 text-blue-400" /> Working
@@ -454,7 +456,7 @@ export const BulkActionBar: React.FC<BulkActionBarProps> = ({
                                             <DropdownMenuTrigger asChild>
                                                 <button
                                                     disabled={isLoading}
-                                                    className="flex items-center gap-1.5 px-3 py-2 bg-foreground/[0.03] hover:bg-foreground/10 text-foreground/70 hover:text-foreground rounded-xl transition-all text-[10px] font-bold uppercase tracking-widest border border-foreground/5 disabled:opacity-40 disabled:cursor-not-allowed"
+                                                    className="flex items-center gap-1.5 px-3 py-2 bg-foreground/[0.03] hover:bg-foreground/10 text-foreground/70 hover:text-foreground rounded-xl transition-all text-[10px] font-bold uppercase tracking-widest border border-foreground/5 disabled:opacity-40 disabled:cursor-not-allowed focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary"
                                                     aria-label="Bulk change priority"
                                                 >
                                                     <Flag className="w-3.5 h-3.5" />
@@ -484,7 +486,7 @@ export const BulkActionBar: React.FC<BulkActionBarProps> = ({
                                             <DropdownMenuTrigger asChild>
                                                 <button
                                                     disabled={isLoading}
-                                                    className="flex items-center gap-1.5 px-3 py-2 bg-foreground/[0.03] hover:bg-foreground/10 text-foreground/70 hover:text-foreground rounded-xl transition-all text-[10px] font-bold uppercase tracking-widest border border-foreground/5 disabled:opacity-40 disabled:cursor-not-allowed"
+                                                    className="flex items-center gap-1.5 px-3 py-2 bg-foreground/[0.03] hover:bg-foreground/10 text-foreground/70 hover:text-foreground rounded-xl transition-all text-[10px] font-bold uppercase tracking-widest border border-foreground/5 disabled:opacity-40 disabled:cursor-not-allowed focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary"
                                                     aria-label="Bulk assign team member"
                                                 >
                                                     <Users className="w-3.5 h-3.5" />
@@ -520,7 +522,7 @@ export const BulkActionBar: React.FC<BulkActionBarProps> = ({
                                             <button
                                                 onClick={() => setActiveOp('delete')}
                                                 disabled={isLoading}
-                                                className="flex items-center gap-1.5 px-3 py-2 bg-red-500/5 hover:bg-red-500/15 text-red-500/50 hover:text-red-400 rounded-xl transition-all text-[10px] font-bold uppercase tracking-widest border border-red-500/10 disabled:opacity-40 disabled:cursor-not-allowed"
+                                                className="flex items-center gap-1.5 px-3 py-2 bg-red-500/5 hover:bg-red-500/15 text-red-500/50 hover:text-red-400 rounded-xl transition-all text-[10px] font-bold uppercase tracking-widest border border-red-500/10 disabled:opacity-40 disabled:cursor-not-allowed focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary"
                                                 aria-label="Bulk delete selected tasks"
                                             >
                                                 <Trash2 className="w-3.5 h-3.5" />
@@ -537,7 +539,7 @@ export const BulkActionBar: React.FC<BulkActionBarProps> = ({
                             <button
                                 onClick={onClear}
                                 disabled={isLoading}
-                                className="p-2 text-foreground/80 hover:text-foreground/80 hover:bg-foreground/5 rounded-lg transition-all"
+                                className="p-2 text-foreground/80 hover:text-foreground/80 hover:bg-foreground/5 rounded-lg transition-all focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary"
                                 aria-label="Clear selection"
                             >
                                 <X className="w-4 h-4" />

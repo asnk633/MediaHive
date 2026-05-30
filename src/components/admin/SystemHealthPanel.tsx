@@ -41,7 +41,7 @@ export const SystemHealthPanel: React.FC<SystemHealthPanelProps> = ({
     };
 
     checkFeature();
-  }, []);
+  }, [tasks, events, mediaFiles, users]);
 
   const analyzeHealth = async () => {
     setLoading(true);
@@ -93,7 +93,7 @@ export const SystemHealthPanel: React.FC<SystemHealthPanelProps> = ({
   if (!healthData) {
     return (
       <div className="bg-gray-800/50 border border-gray-700 rounded-xl p-6 backdrop-blur-sm">
-        <div className="text-center text-gray-400 py-8">
+        <div className="text-center text-foreground/60 py-8">
           No health data available
         </div>
       </div>
@@ -113,7 +113,7 @@ export const SystemHealthPanel: React.FC<SystemHealthPanelProps> = ({
           variant="outline"
           size="sm"
           onClick={() => setShowSensitiveData(!showSensitiveData)}
-          className="bg-gray-700/50 border-gray-600 text-gray-300 hover:bg-gray-600/50"
+          className="bg-gray-700/50 border-gray-600 text-foreground hover:bg-gray-600/50"
         >
           {showSensitiveData ? <EyeOff className="w-4 h-4 mr-2" /> : <Eye className="w-4 h-4 mr-2" />}
           {showSensitiveData ? 'Hide IDs' : 'Show IDs'}
@@ -123,20 +123,29 @@ export const SystemHealthPanel: React.FC<SystemHealthPanelProps> = ({
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
         <div className="bg-gray-900/50 p-4 rounded-lg border border-gray-700">
           <div className="text-2xl font-bold text-blue-400">{summary.totalTasks}</div>
-          <div className="text-sm text-gray-400">Total Tasks</div>
+          <div className="text-sm text-foreground/60">Total Tasks (Active & Last 7 Days)</div>
         </div>
         <div className="bg-gray-900/50 p-4 rounded-lg border border-gray-700">
           <div className="text-2xl font-bold text-green-400">{summary.totalEvents}</div>
-          <div className="text-sm text-gray-400">Total Events</div>
+          <div className="text-sm text-foreground/60">Total Events</div>
         </div>
         <div className="bg-gray-900/50 p-4 rounded-lg border border-gray-700">
           <div className="text-2xl font-bold text-purple-400">{summary.totalMedia}</div>
-          <div className="text-sm text-gray-400">Total Media</div>
+          <div className="text-sm text-foreground/60">Total Media</div>
         </div>
         <div className="bg-gray-900/50 p-4 rounded-lg border border-gray-700">
           <div className="text-2xl font-bold text-yellow-400">{summary.totalUsers}</div>
-          <div className="text-sm text-gray-400">Total Users</div>
+          <div className="text-sm text-foreground/60">Total Users</div>
         </div>
+      </div>
+
+      <div className="bg-blue-900/20 border border-blue-800 rounded-lg p-3 mb-6">
+        <p className="text-xs text-blue-300 flex gap-2">
+          <Info className="w-4 h-4 shrink-0" />
+          <span>
+            <strong>Data Scope:</strong> The System Health Overview (and the Admin Confidence Panel) operates on a highly optimized "active operational slice" of your data. Under the hood, the system is designed to automatically filter out and ignore any tasks that have been marked as "Completed" for more than 7 days.
+          </span>
+        </p>
       </div>
 
       <div className="space-y-6">
@@ -207,7 +216,7 @@ export const SystemHealthPanel: React.FC<SystemHealthPanelProps> = ({
                     <div className="text-sm font-medium text-orange-300">
                       {showSensitiveData ? task.id : `Task ${task.id.substring(0, 8)}...`}
                     </div>
-                    <div className="text-xs text-gray-400">{task.title}</div>
+                    <div className="text-xs text-foreground/60">{task.title}</div>
                   </div>
                   <div className="text-xs bg-orange-900/30 text-orange-300 px-2 py-1 rounded">
                     Missing Event
@@ -240,7 +249,7 @@ export const SystemHealthPanel: React.FC<SystemHealthPanelProps> = ({
                     <div className="text-sm font-medium text-orange-300">
                       {showSensitiveData ? media.id : `Media ${media.id.substring(0, 8)}...`}
                     </div>
-                    <div className="text-xs text-gray-400">{media.originalName}</div>
+                    <div className="text-xs text-foreground/60">{media.originalName}</div>
                   </div>
                   <div className="text-xs bg-orange-900/30 text-orange-300 px-2 py-1 rounded">
                     No Task/Event
@@ -267,10 +276,13 @@ export const SystemHealthPanel: React.FC<SystemHealthPanelProps> = ({
           </h3>
           {deletedUsers.length > 0 ? (
             <div className="space-y-2 max-h-40 overflow-y-auto">
-              {deletedUsers.map((userId: any) => (
-                <div key={userId} className="flex items-center justify-between bg-gray-800/50 p-2 rounded border border-gray-700">
-                  <div className="text-sm font-medium text-orange-300">
-                    {showSensitiveData ? userId : `User ${userId.substring(0, 8)}...`}
+              {deletedUsers.map((user: any) => (
+                <div key={user.id} className="flex items-center justify-between bg-gray-800/50 p-2 rounded border border-gray-700">
+                  <div>
+                    <div className="text-sm font-medium text-orange-300">
+                      {user.name}
+                    </div>
+                    {showSensitiveData && <div className="text-xs text-foreground/60">{user.id}</div>}
                   </div>
                   <div className="text-xs bg-orange-900/30 text-orange-300 px-2 py-1 rounded">
                     Deleted User
@@ -301,9 +313,12 @@ export const SystemHealthPanel: React.FC<SystemHealthPanelProps> = ({
                 <div key={index} className="flex items-center justify-between bg-gray-800/50 p-2 rounded border border-gray-700">
                   <div>
                     <div className="text-sm font-medium text-red-300">
-                      {showSensitiveData ? ref.id : `${ref.type} ${ref.id.substring(0, 8)}...`}
+                       {ref.title ? ref.title : (showSensitiveData ? ref.id : `${ref.type} ${ref.id.substring(0, 8)}...`)}
                     </div>
-                    <div className="text-xs text-gray-400">{ref.issue}</div>
+                    <div className="text-xs text-foreground/60">
+                      {ref.issue}
+                      {showSensitiveData && <span className="ml-2 opacity-50">({ref.id})</span>}
+                    </div>
                   </div>
                   <div className="text-xs bg-red-900/30 text-red-300 px-2 py-1 rounded capitalize">
                     {ref.type}

@@ -233,9 +233,9 @@ export const AttachmentSection: React.FC<AttachmentSectionProps> = ({ task, onUp
                 <Card className="border-none bg-gradient-to-b from-[#1e293b] to-[#0f172a] shadow-lg rounded-[15px] text-foreground">
                     <CardHeader className="pb-2 border-b border-foreground/5">
                         <div className="flex items-center justify-between">
-                            <CardTitle className="text-xs font-bold uppercase tracking-wider text-slate-300/80 flex items-center gap-2">
+                            <CardTitle className="text-xs font-bold uppercase tracking-wider text-foreground/80 flex items-center gap-2">
                                 Internal / Working
-                                <Badge className="bg-slate-500/20 text-slate-300 border-0 text-[10px] h-5">{working.length}</Badge>
+                                <Badge className="bg-slate-500/20 text-foreground border-0 text-[10px] h-5">{working.length}</Badge>
                             </CardTitle>
                             {canUploadTeam ? (
                                 <div className="relative">
@@ -248,7 +248,7 @@ export const AttachmentSection: React.FC<AttachmentSectionProps> = ({ task, onUp
                                     />
                                     <label
                                         htmlFor="upload-working"
-                                        className={`p-1.5 bg-slate-600/20 hover:bg-slate-600 text-slate-300 hover:text-foreground rounded-lg cursor-pointer transition-all ${uploading ? 'opacity-50' : ''}`}
+                                        className={`p-1.5 bg-slate-600/20 hover:bg-slate-600 text-foreground hover:text-foreground rounded-lg cursor-pointer transition-all ${uploading ? 'opacity-50' : ''}`}
                                         title="Upload Working File"
                                     >
                                         <UploadCloud size={16} />
@@ -307,7 +307,7 @@ export const AttachmentSection: React.FC<AttachmentSectionProps> = ({ task, onUp
                 <DialogContent className="bg-[#1e293b] border-foreground/10 text-foreground">
                     <DialogHeader>
                         <DialogTitle>Confirm Final Deliverable</DialogTitle>
-                        <DialogDescription className="text-slate-400">
+                        <DialogDescription className="text-foreground/60">
                             You are uploading <strong>{pendingFinalFile?.name}</strong> to Final Deliverables.
                         </DialogDescription>
                     </DialogHeader>
@@ -322,13 +322,13 @@ export const AttachmentSection: React.FC<AttachmentSectionProps> = ({ task, onUp
                             />
                             <div>
                                 <div className="font-medium text-foreground">Show in Downloads Page</div>
-                                <div className="text-xs text-slate-400">Make this file available in the public downloads area.</div>
+                                <div className="text-xs text-foreground/60">Make this file available in the public downloads area.</div>
                             </div>
                         </label>
                     </div>
 
                     <DialogFooter>
-                        <Button variant="ghost" onClick={() => setPendingFinalFile(null)} className="text-slate-400 hover:text-foreground hover:bg-foreground/10">Cancel</Button>
+                        <Button variant="ghost" onClick={() => setPendingFinalFile(null)} className="text-foreground/60 hover:text-foreground hover:bg-foreground/10">Cancel</Button>
                         <Button onClick={confirmFinalUpload} className="bg-green-600 hover:bg-green-500 text-foreground" disabled={uploading}>
                             {uploading ? 'Uploading...' : 'Confirm Upload'}
                         </Button>

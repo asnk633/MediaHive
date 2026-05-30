@@ -46,7 +46,7 @@ export default function NotificationPreviewModal({ open, onClose, data }: Notifi
             </div>
 
             <div className="bg-black/20 rounded-xl p-4 border border-foreground/5 mb-6">
-                <p className="text-sm text-gray-400 mb-2 uppercase tracking-wider font-bold">Preview</p>
+                <p className="text-sm text-foreground/60 mb-2 uppercase tracking-wider font-bold">Preview</p>
                 <div className="pointer-events-none">
                     <NotificationItem
                         notification={mockNotification as any}

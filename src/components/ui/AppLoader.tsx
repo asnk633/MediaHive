@@ -24,7 +24,7 @@ export const AppLoader = () => {
             {/* Cycling Text - "Loading [Word]" */}
             <div className="flex flex-col items-center gap-1">
                 <div className="h-6 overflow-hidden flex items-center gap-1.5 text-sm font-medium">
-                    <span className="text-slate-400">Loading</span>
+                    <span className="text-foreground/60">Loading</span>
                     <div className="flex flex-col animate-[text-cycle_2s_linear_infinite] motion-reduce:animate-none text-left">
                         <span className="h-6 flex items-center text-blue-500">Media</span>
                         <span className="h-6 flex items-center text-blue-500">Tasks</span>
@@ -34,7 +34,7 @@ export const AppLoader = () => {
                     </div>
                 </div>
                 {isLate && (
-                    <p className="text-[10px] text-slate-500 animate-in fade-in slide-in-from-top-1 duration-500">
+                    <p className="text-[10px] text-foreground/50 animate-in fade-in slide-in-from-top-1 duration-500">
                         Taking longer than usual... checking connection
                     </p>
                 )}

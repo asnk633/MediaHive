@@ -60,7 +60,7 @@ export const ActivityFeedWidget = () => {
             case 'file': return <FileText size={14} className="text-cyan-400" />;
             case 'automation_rule': return <Activity size={14} className="text-rose-400" />;
             case 'audit_log': return <ShieldAlert size={14} className="text-red-400" />;
-            default: return <Clock size={14} className="text-slate-400" />;
+            default: return <Clock size={14} className="text-foreground/60" />;
         }
     };
 

@@ -74,8 +74,8 @@ const EmailVerificationGate = ({
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
             </svg>
           </div>
-          <h3 className="mt-4 text-xl font-bold text-gray-900 border-none outline-none">Email Verification Required</h3>
-          <div className="mt-2 text-sm text-gray-500 font-medium">
+          <h3 className="mt-4 text-xl font-bold text-foreground/20 border-none outline-none">Email Verification Required</h3>
+          <div className="mt-2 text-sm text-foreground/50 font-medium">
             <p>{message}</p>
           </div>
           <div className="mt-8 flex flex-col space-y-3 max-w-xs mx-auto">
@@ -88,7 +88,7 @@ const EmailVerificationGate = ({
             </button>
             <button
               onClick={handleRefresh}
-              className="inline-flex justify-center px-4 py-3 text-sm font-bold text-gray-700 uppercase tracking-widest bg-gray-100 border border-gray-300 rounded-xl hover:bg-gray-200 transition-colors focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-gray-500"
+              className="inline-flex justify-center px-4 py-3 text-sm font-bold text-foreground/30 uppercase tracking-widest bg-gray-100 border border-gray-300 rounded-xl hover:bg-gray-200 transition-colors focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-gray-500"
             >
               I've Verified - Refresh
             </button>

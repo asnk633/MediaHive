@@ -35,7 +35,7 @@ export default class AppErrorBoundary extends React.Component<Props, State> {
                         <AlertTriangle className="text-red-500 w-8 h-8" />
                     </div>
                     <h2 className="text-xl font-bold text-foreground">Something went wrong</h2>
-                    <p className="text-slate-400 max-w-sm text-sm">
+                    <p className="text-foreground/60 max-w-sm text-sm">
                         The application encountered an unexpected error while rendering this view.
                     </p>
                     <Button

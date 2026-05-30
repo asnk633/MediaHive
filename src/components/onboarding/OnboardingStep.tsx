@@ -44,12 +44,12 @@ export function OnboardingStep({
                     {title}
                 </h1>
                 {subtitle && (
-                    <p className="text-sm text-slate-300 leading-relaxed max-w-md">
+                    <p className="text-sm text-foreground leading-relaxed max-w-md">
                         {subtitle}
                     </p>
                 )}
                 {description && (
-                    <p className="text-sm text-slate-400/80 leading-relaxed max-w-md italic">
+                    <p className="text-sm text-foreground/60/80 leading-relaxed max-w-md italic">
                         {description}
                     </p>
                 )}

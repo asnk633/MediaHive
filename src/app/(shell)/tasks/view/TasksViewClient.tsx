@@ -221,7 +221,7 @@ function TaskViewContent() {
             case 'high': return 'bg-orange-500 text-foreground border-orange-400';
             case 'medium': return 'bg-yellow-500 text-black border-yellow-400';
             case 'low': return 'bg-blue-500 text-foreground border-blue-400';
-            default: return 'bg-gray-700 text-gray-300';
+            default: return 'bg-gray-700 text-foreground';
         }
     };
 
@@ -231,7 +231,7 @@ function TaskViewContent() {
             case 'in_progress': return 'text-blue-400 bg-blue-400/10 border-blue-400/20';
             case 'review': return 'text-purple-400 bg-purple-400/10 border-purple-400/20';
             case 'blocked': return 'text-red-400 bg-red-400/10 border-red-400/20';
-            default: return 'text-gray-400 bg-gray-400/10 border-gray-400/20';
+            default: return 'text-foreground/60 bg-gray-400/10 border-gray-400/20';
         }
     };
 
@@ -244,7 +244,7 @@ function TaskViewContent() {
 
     if (loading) return (
         <div className="flex h-[calc(100vh-theme(spacing.16))] items-center justify-center">
-            <p className="text-slate-500 font-medium animate-pulse tracking-wide italic">
+            <p className="text-foreground/50 font-medium animate-pulse tracking-wide italic">
                 Retrieving task details...
             </p>
         </div>
@@ -373,8 +373,8 @@ function TaskViewContent() {
                             {task.priority || 'Normal'}
                         </Badge>
                         {task.due_date && (
-                            <div className="flex items-center gap-2 text-sm text-gray-400 ml-auto sm:ml-0">
-                                <Clock className="h-4 w-4 text-gray-500" />
+                            <div className="flex items-center gap-2 text-sm text-foreground/60 ml-auto sm:ml-0">
+                                <Clock className="h-4 w-4 text-foreground/50" />
                                 <span>Due {formatDisplayDate(task.due_date)}</span>
                             </div>
                         )}
@@ -387,7 +387,7 @@ function TaskViewContent() {
                                         </Badge>
                                     ))
                                 ) : (
-                                    <span className="text-xs text-gray-500 italic">Unassigned</span>
+                                    <span className="text-xs text-foreground/50 italic">Unassigned</span>
                                 )}
                             </div>
                         </div>
@@ -399,11 +399,11 @@ function TaskViewContent() {
                                 <h3 className="text-lg font-semibold flex items-center gap-2">
                                     <FileText className="h-5 w-5 text-blue-500" /> Description
                                 </h3>
-                                <div className="prose prose-invert max-w-none text-gray-300 leading-relaxed bg-[#10111a] p-6 rounded-2xl border border-foreground/5">
+                                <div className="prose prose-invert max-w-none text-foreground leading-relaxed bg-[#10111a] p-6 rounded-2xl border border-foreground/5">
                                     {task.description ? (
                                         <p className="whitespace-pre-wrap">{task.description}</p>
                                     ) : (
-                                        <p className="italic text-gray-600">No description provided.</p>
+                                        <p className="italic text-foreground/40">No description provided.</p>
                                     )}
                                 </div>
                             </div>
@@ -431,22 +431,22 @@ function TaskViewContent() {
 
                             <Card className="bg-[#10111a] border-foreground/5 shadow-none">
                                 <CardHeader>
-                                    <CardTitle className="text-sm font-medium text-gray-400 uppercase tracking-widest">Details</CardTitle>
+                                    <CardTitle className="text-sm font-medium text-foreground/60 uppercase tracking-widest">Details</CardTitle>
                                 </CardHeader>
                                 <CardContent className="space-y-4 text-sm">
                                     <div className="flex justify-between">
-                                        <span className="text-gray-500">Created By</span>
-                                        <span className="text-gray-200">{resolveUserName(task.created_by)}</span>
+                                        <span className="text-foreground/50">Created By</span>
+                                        <span className="text-foreground">{resolveUserName(task.created_by)}</span>
                                     </div>
                                     <div className="flex justify-between">
-                                        <span className="text-gray-500">Created On</span>
-                                        <span className="text-gray-200">
+                                        <span className="text-foreground/50">Created On</span>
+                                        <span className="text-foreground">
                                             {task.created_at?.seconds ? formatDisplayDate(task.created_at) : 'Unknown'}
                                         </span>
                                     </div>
                                     <div className="flex justify-between">
-                                        <span className="text-gray-500">Phase</span>
-                                        <span className="text-gray-200 capitalize">{task.phase || 'N/A'}</span>
+                                        <span className="text-foreground/50">Phase</span>
+                                        <span className="text-foreground capitalize">{task.phase || 'N/A'}</span>
                                     </div>
                                 </CardContent>
                             </Card>
@@ -457,13 +457,13 @@ function TaskViewContent() {
                                 </h3>
                                 <div className="bg-[#10111a] rounded-2xl border border-foreground/5 overflow-hidden">
                                     <div className="p-4 space-y-4">
-                                        <div className="text-center py-8 text-gray-600 text-sm">
+                                        <div className="text-center py-8 text-foreground/40 text-sm">
                                             No recent activity.
                                         </div>
                                     </div>
                                     <div className="p-4 bg-foreground/5 border-t border-foreground/5 flex gap-2">
                                         <Input
-                                            className="bg-transparent border-0 focus-visible:ring-0 text-foreground placeholder:text-gray-600"
+                                            className="bg-transparent border-0 focus-visible:ring-0 text-foreground placeholder:text-foreground/40"
                                             placeholder="Write a comment..."
                                             value={newComment}
                                             onChange={(e) => setNewComment(e.target.value)}

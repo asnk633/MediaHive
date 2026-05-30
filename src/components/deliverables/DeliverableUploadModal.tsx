@@ -110,7 +110,7 @@ export const DeliverableUploadModal: React.FC<DeliverableUploadModalProps> = ({
                             <p className="text-sm font-medium text-foreground mb-1">
                                 {isDragActive ? "Drop the file here" : "Click to upload or drag and drop"}
                             </p>
-                            <p className="text-xs text-gray-500">Supports Images, Videos, PDFs, etc.</p>
+                            <p className="text-xs text-foreground/50">Supports Images, Videos, PDFs, etc.</p>
                         </div>
                     ) : (
                         <div className="space-y-4">
@@ -120,18 +120,18 @@ export const DeliverableUploadModal: React.FC<DeliverableUploadModalProps> = ({
                                 </div>
                                 <div className="flex-1 min-w-0">
                                     <p className="text-sm font-medium text-foreground truncate">{file.name}</p>
-                                    <p className="text-xs text-gray-400">{(file.size / 1024 / 1024).toFixed(2)} MB</p>
+                                    <p className="text-xs text-foreground/60">{(file.size / 1024 / 1024).toFixed(2)} MB</p>
                                 </div>
                                 <button
                                     onClick={() => setFile(null)}
-                                    className="p-2 text-gray-400 hover:text-red-400 hover:bg-red-500/10 rounded-lg transition-colors"
+                                    className="p-2 text-foreground/60 hover:text-red-400 hover:bg-red-500/10 rounded-lg transition-colors"
                                 >
                                     <X size={16} />
                                 </button>
                             </div>
 
                             <div className="space-y-1">
-                                <label className="text-xs font-bold text-gray-400 uppercase tracking-widest pl-1">
+                                <label className="text-xs font-bold text-foreground/60 uppercase tracking-widest pl-1">
                                     File Name (Optional)
                                 </label>
                                 <input
@@ -178,7 +178,7 @@ export const DeliverableUploadModal: React.FC<DeliverableUploadModalProps> = ({
                 <div className="px-6 py-4 bg-black/20 border-t border-foreground/5 flex justify-end gap-3">
                     <button
                         onClick={onClose}
-                        className="px-4 py-2 rounded-lg text-sm font-medium text-gray-400 hover:text-foreground hover:bg-foreground/5 transition-colors"
+                        className="px-4 py-2 rounded-lg text-sm font-medium text-foreground/60 hover:text-foreground hover:bg-foreground/5 transition-colors"
                         disabled={uploading}
                     >
                         Cancel

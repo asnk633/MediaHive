@@ -58,7 +58,7 @@ export default function RequestManager() {
         }
     };
 
-    if (loading) return <div className="p-8 text-center text-slate-500 animate-pulse italic">Syncing requests...</div>;
+    if (loading) return <div className="p-8 text-center text-foreground/50 animate-pulse italic">Syncing requests...</div>;
 
     const pendingRequests = requests.filter(r => r.status === 'pending');
     const activeRequests = requests.filter(r => ['approved', 'issued', 'waiting_inspection'].includes(r.status));
@@ -70,7 +70,7 @@ export default function RequestManager() {
                 <h3 className="text-lg font-semibold text-foreground mb-4 border-b border-[#ffffff1a] pb-2">Active & Pending</h3>
                 <div className="space-y-4">
                     {pendingRequests.length === 0 && activeRequests.length === 0 && (
-                        <div className="text-slate-500 italic">No active requests.</div>
+                        <div className="text-foreground/50 italic">No active requests.</div>
                     )}
 
                     {/* Pending */}
@@ -89,7 +89,7 @@ export default function RequestManager() {
                 <h3 className="text-lg font-semibold text-foreground mb-4 border-b border-[#ffffff1a] pb-2">History</h3>
                 <div className="space-y-4 opacity-75">
                     {historyRequests.length === 0 && (
-                        <div className="text-slate-500 italic">No history.</div>
+                        <div className="text-foreground/50 italic">No history.</div>
                     )}
                     {historyRequests.map(req => (
                         <RequestCard key={req.id} request={req} isAdmin={user?.role === 'admin'} onRefresh={loadData} />
@@ -108,7 +108,7 @@ function RequestCard({ request, isAdmin, onRefresh }: { request: DeviceRequest, 
         pending: "bg-yellow-500/20 text-yellow-300 border-yellow-500/30",
         approved: "bg-blue-500/20 text-blue-300 border-blue-500/30",
         issued: "bg-green-500/20 text-green-300 border-green-500/30",
-        returned: "bg-slate-700/50 text-slate-400 border-slate-600/50",
+        returned: "bg-slate-700/50 text-foreground/60 border-slate-600/50",
         rejected: "bg-red-500/20 text-red-300 border-red-500/30",
         cancelled: "bg-red-500/20 text-red-300 border-red-500/30",
         waiting_inspection: "bg-purple-500/20 text-purple-300 border-purple-500/30",
@@ -165,19 +165,19 @@ function RequestCard({ request, isAdmin, onRefresh }: { request: DeviceRequest, 
                     <span className={`px-2 py-0.5 rounded text-[10px] uppercase font-bold border ${statusColors[request.status] || 'bg-slate-800'}`}>
                         {request.status.replace('_', ' ')}
                     </span>
-                    <span className="text-xs text-slate-400">
+                    <span className="text-xs text-foreground/60">
                         {format(start, 'MMM d, h:mm a')} - {format(end, 'MMM d, h:mm a')}
                     </span>
                 </div>
                 <h4 className="font-semibold text-foreground text-lg">{request.description}</h4>
                 <div className="flex gap-2 items-center mb-1">
-                    <span className="text-xs font-medium px-2 py-0.5 rounded bg-slate-700 text-slate-300 border border-slate-600">
+                    <span className="text-xs font-medium px-2 py-0.5 rounded bg-slate-700 text-foreground border border-slate-600">
                         {request.itemCategory}
                     </span>
                 </div>
 
-                <div className="flex items-center gap-2 text-xs text-slate-500 mt-2">
-                    <span className="font-medium text-slate-300">{request.requester.name}</span>
+                <div className="flex items-center gap-2 text-xs text-foreground/50 mt-2">
+                    <span className="font-medium text-foreground">{request.requester.name}</span>
                     {request.assignedItemName && (
                         <>
                             <ArrowRight size={12} />
@@ -335,7 +335,7 @@ function IssueDialog({ request, onIssue, open, onOpenChange, isActionLoading }: 
                         <div className="p-4 bg-green-500/10 border border-green-500/20 rounded-lg text-center">
                             <Package className="mx-auto text-green-400 mb-2" size={32} />
                             <h3 className="text-foreground font-semibold text-lg">Ready to Issue</h3>
-                            <p className="text-slate-300 mt-1">
+                            <p className="text-foreground mt-1">
                                 Confirm handing over <span className="font-bold text-foreground">{request.description}</span>?
                             </p>
                         </div>
@@ -394,7 +394,7 @@ function ReturnDialog({ request, onReturn }: { request: DeviceRequest, onReturn:
     return (
         <Dialog>
             <DialogTrigger asChild>
-                <Button size="sm" variant={isInspection ? "default" : "outline"} className={isInspection ? "bg-purple-600 hover:bg-purple-500 text-foreground gap-2 border-none animate-pulse" : "border-[#ffffff1a] bg-slate-800 text-slate-300 gap-2"}>
+                <Button size="sm" variant={isInspection ? "default" : "outline"} className={isInspection ? "bg-purple-600 hover:bg-purple-500 text-foreground gap-2 border-none animate-pulse" : "border-[#ffffff1a] bg-slate-800 text-foreground gap-2"}>
                     {isInspection ? <AlertTriangle size={16} /> : <CornerDownLeft size={16} />}
                     {isInspection ? "Inspect & Restock" : "Restock Device"}
                 </Button>
@@ -405,7 +405,7 @@ function ReturnDialog({ request, onReturn }: { request: DeviceRequest, onReturn:
                 </DialogHeader>
                 <div className="space-y-4 my-4">
                     <div className="p-3 bg-slate-800 rounded-lg flex justify-between">
-                        <span className="text-slate-400">Item:</span>
+                        <span className="text-foreground/60">Item:</span>
                         <span className="font-bold text-foreground">{itemName || 'Loading...'}</span>
                     </div>
                     <div className="space-y-2">

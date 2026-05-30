@@ -325,10 +325,10 @@ class _InventoryScreenState extends ConsumerState<InventoryScreen> {
         if (activeTab == 2) await ref.read(inventoryRequestListProvider.notifier).refresh();
       },
       child: ListView(
-        padding: const EdgeInsets.only(
+        padding: EdgeInsets.only(
           left: AppSpacing.l, 
           right: AppSpacing.l, 
-          top: 140, 
+          top: 120 + MediaQuery.of(context).padding.top, 
           bottom: 120,
         ),
         children: [

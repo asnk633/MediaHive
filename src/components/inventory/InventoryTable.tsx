@@ -264,7 +264,7 @@ function EditItemDialog({ item, onSuccess }: { item: InventoryItem, onSuccess: (
         <Dialog open={open} onOpenChange={setOpen}>
             <DialogTrigger asChild>
                 <Button variant="ghost" size="sm" className="h-8 w-8 p-0">
-                    <RefreshCw size={14} className="text-slate-400" />
+                    <RefreshCw size={14} className="text-foreground/60" />
                 </Button>
             </DialogTrigger>
             <DialogContent className="bg-surface border-soft text-foreground sm:max-w-[425px]">

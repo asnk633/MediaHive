@@ -27,14 +27,14 @@
     /* Role: Spatial backdrop only. Never contain content directly. */
     /* Polish: Clean Zinc Ramp (#1c1c1e -> #27272a). Removes muddy undertones. */
     /* Lighter than Sidebar (#18181b) to preserve Anchor Law. */
-    --tier1-canvas: linear-gradient(180deg, #1c1c1e 0%, #27272a 100%);
-    --bg-root-fallback: #1c1c1e;
+    --tier1-canvas: #000000;
+    --bg-root-fallback: #000000;
 
     /* --- TIER 2: PANEL (Grouping Containers) --- */
     /* Role: Grouping sections (Sidebar, Lists). Subtle depth. */
-    --tier2-panel: linear-gradient(180deg, #262628 0%, #232325 100%);
+    --tier2-panel: #0A0E21;
     --shadow-tier2: 0 1px 2px rgba(0, 0, 0, 0.4);
-    --popover-bg: #262628;
+    --popover-bg: #0A0E21;
 
     /* --- TIER 3: SURFACE (Primary / Interactive) --- */
     /* Role: Focus & Action (Stats, Key Widgets). "Lifted" look. */
@@ -45,7 +45,7 @@
 
     /* --- NAVIGATION ANCHOR --- */
     /* Role: Visual anchor. Must be darker than canvas. */
-    --nav-sidebar: #09090b;
+    --nav-sidebar: #0A0E21;
     /* Deepest Zinc, almost black */
     --sidebar-width: 240px;
     --sidebar-collapsed-width: 72px;
@@ -588,6 +588,18 @@
   .switch-apple-thumb[data-state="checked"] {
     transform: translateX(25px);
   }
+
+  /* ─── TYPOGRAPHIC SCALE — Proportional letter-spacing enforcement ─── */
+  /* T1: Display/Hero titles (≥24px). Tight tracking pulls large glyphs together. */
+  .typo-display { letter-spacing: -0.025em; /* tracking-tight */ }
+  /* T2: Section headers (18–22px). Slightly tighter than body. */
+  .typo-heading { letter-spacing: -0.015em; }
+  /* T3: Body / paragraph text. Default browser tracking is optimal here. */
+  .typo-body { letter-spacing: 0em; /* tracking-normal */ }
+  /* T4: Uppercase category labels, badges, status pills. Wide tracking for readability. */
+  .typo-label { letter-spacing: 0.12em; /* ~tracking-widest */ }
+  /* T5: Monospace/technical data (IDs, codes). Fixed-width friendly. */
+  .typo-mono { letter-spacing: 0.05em; font-feature-settings: 'tnum' 1; }
 }
 
 /* ==========================================================================
@@ -637,3 +649,70 @@
 .animate-fadeIn {
   animation: fadeIn 0.3s cubic-bezier(0.16, 1, 0.3, 1) forwards;
 }
+
+/* GPU-accelerated skeleton shimmer — transform-only animation (no layout/paint) */
+@keyframes shimmer-slide {
+  0% {
+    transform: translateX(-100%);
+  }
+  100% {
+    transform: translateX(100%);
+  }
+}
+
+.skeleton-shimmer::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  /* Diagonal gradient: transparent → subtle highlight → transparent */
+  background: linear-gradient(
+    105deg,
+    transparent 30%,
+    rgba(255, 255, 255, 0.06) 50%,
+    transparent 70%
+  );
+  animation: shimmer-slide 1.5s ease-in-out infinite;
+  will-change: transform;
+  pointer-events: none;
+}
+
+/* Respect reduced motion for shimmer */
+@media (prefers-reduced-motion: reduce) {
+  .skeleton-shimmer::after {
+    animation: none !important;
+  }
+}
+
+/* Kanban card entrance animation — GPU-accelerated scale + opacity */
+@keyframes kanban-card-in {
+  0% {
+    opacity: 0;
+    transform: scale(0.92);
+  }
+  100% {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+.animate-kanban-card-in {
+  animation: kanban-card-in 0.3s cubic-bezier(0.25, 1, 0.5, 1) forwards;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .animate-kanban-card-in {
+    animation: none !important;
+  }
+}
+
+/* ─── TYPOGRAPHIC SCALE — Proportional letter-spacing enforcement ─── */
+/* T1: Display/Hero titles (≥24px). Tight tracking pulls large glyphs together. */
+.typo-display { letter-spacing: -0.025em; /* tracking-tight */ }
+/* T2: Section headers (18–22px). Slightly tighter than body. */
+.typo-heading { letter-spacing: -0.015em; }
+/* T3: Body / paragraph text. Default browser tracking is optimal here. */
+.typo-body { letter-spacing: 0em; /* tracking-normal */ }
+/* T4: Uppercase category labels, badges, status pills. Wide tracking for readability. */
+.typo-label { letter-spacing: 0.12em; /* ~tracking-widest */ }
+/* T5: Monospace/technical data (IDs, codes). Fixed-width friendly. */
+.typo-mono { letter-spacing: 0.05em; font-feature-settings: 'tnum' 1; }

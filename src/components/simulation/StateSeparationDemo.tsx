@@ -112,7 +112,7 @@ export function StateSeparationDemo({ taskId }: StateSeparationDemoProps) {
           <div className="w-full border-t border-gray-700"></div>
         </div>
         <div className="relative flex justify-center">
-          <div className="bg-gray-900 px-4 text-gray-500 text-sm">
+          <div className="bg-gray-900 px-4 text-foreground/50 text-sm">
             SIMULATION BOUNDARY
           </div>
         </div>
@@ -136,7 +136,7 @@ export function StateSeparationDemo({ taskId }: StateSeparationDemoProps) {
               Run Simulation
             </button>
             
-            <div className="text-gray-300">
+            <div className="text-foreground">
               <span className="font-medium">Status:</span> 
               {simulation.canSimulate ? (
                 <span className="text-green-400 ml-2">Ready</span>
@@ -182,7 +182,7 @@ export function StateSeparationDemo({ taskId }: StateSeparationDemoProps) {
             <div className="w-2 h-2 bg-green-500 rounded-full mt-2 flex-shrink-0"></div>
             <div>
               <p className="text-foreground font-medium">Persistent Visual Indicator</p>
-              <p className="text-gray-400 text-sm">"This is a preview. Nothing will be saved or applied." clearly displayed</p>
+              <p className="text-foreground/60 text-sm">"This is a preview. Nothing will be saved or applied." clearly displayed</p>
             </div>
           </div>
           
@@ -190,7 +190,7 @@ export function StateSeparationDemo({ taskId }: StateSeparationDemoProps) {
             <div className="w-2 h-2 bg-green-500 rounded-full mt-2 flex-shrink-0"></div>
             <div>
               <p className="text-foreground font-medium">Structural Visual Separation</p>
-              <p className="text-gray-400 text-sm">Clear boundary between Live State and Simulation State sections</p>
+              <p className="text-foreground/60 text-sm">Clear boundary between Live State and Simulation State sections</p>
             </div>
           </div>
           
@@ -198,7 +198,7 @@ export function StateSeparationDemo({ taskId }: StateSeparationDemoProps) {
             <div className="w-2 h-2 bg-green-500 rounded-full mt-2 flex-shrink-0"></div>
             <div>
               <p className="text-foreground font-medium">Required Controls Exist</p>
-              <p className="text-gray-400 text-sm">"Close Preview" and "Back to Current State" buttons present</p>
+              <p className="text-foreground/60 text-sm">"Close Preview" and "Back to Current State" buttons present</p>
             </div>
           </div>
           
@@ -206,7 +206,7 @@ export function StateSeparationDemo({ taskId }: StateSeparationDemoProps) {
             <div className="w-2 h-2 bg-green-500 rounded-full mt-2 flex-shrink-0"></div>
             <div>
               <p className="text-foreground font-medium">No Visual Highlighting</p>
-              <p className="text-gray-400 text-sm">All simulation outcomes presented equally without preference</p>
+              <p className="text-foreground/60 text-sm">All simulation outcomes presented equally without preference</p>
             </div>
           </div>
           
@@ -214,7 +214,7 @@ export function StateSeparationDemo({ taskId }: StateSeparationDemoProps) {
             <div className="w-2 h-2 bg-green-500 rounded-full mt-2 flex-shrink-0"></div>
             <div>
               <p className="text-foreground font-medium">No Default Selection</p>
-              <p className="text-gray-400 text-sm">No pre-selected options or directional framing</p>
+              <p className="text-foreground/60 text-sm">No pre-selected options or directional framing</p>
             </div>
           </div>
           
@@ -222,7 +222,7 @@ export function StateSeparationDemo({ taskId }: StateSeparationDemoProps) {
             <div className="w-2 h-2 bg-green-500 rounded-full mt-2 flex-shrink-0"></div>
             <div>
               <p className="text-foreground font-medium">No Directional Framing</p>
-              <p className="text-gray-400 text-sm">Neutral presentation without suggestive language</p>
+              <p className="text-foreground/60 text-sm">Neutral presentation without suggestive language</p>
             </div>
           </div>
         </div>

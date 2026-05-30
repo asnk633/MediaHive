@@ -37,6 +37,7 @@ import { PolicySimulationPanel } from "@/components/tasks/PolicySimulationPanel"
 import { AlertTriangle, Box } from "lucide-react";
 import { ConflictAwarenessBadge } from "@/components/tasks/ConflictAwarenessBadge";
 import { TaskSummaryWidget } from "@/features/tasks/components/TaskSummaryWidget";
+import { Breadcrumb, BreadcrumbItem, BreadcrumbLink, BreadcrumbList, BreadcrumbPage, BreadcrumbSeparator } from "@/components/ui/breadcrumb";
 
 export default function TasksPageClient() {
     const [tasks, setTasks] = useState<Task[]>([]);
@@ -200,6 +201,19 @@ export default function TasksPageClient() {
 
     return (
         <PageLayout mode="plain">
+            <div className="px-6 pt-4 pb-2">
+                <Breadcrumb>
+                    <BreadcrumbList>
+                        <BreadcrumbItem>
+                            <BreadcrumbLink href="/home">Dashboard</BreadcrumbLink>
+                        </BreadcrumbItem>
+                        <BreadcrumbSeparator />
+                        <BreadcrumbItem>
+                            <BreadcrumbPage>Tasks</BreadcrumbPage>
+                        </BreadcrumbItem>
+                    </BreadcrumbList>
+                </Breadcrumb>
+            </div>
             <PageHeader
                 title="Tasks"
                 description="Accountability-focused task management."

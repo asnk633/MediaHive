@@ -205,7 +205,7 @@ export function InstitutionAssistant() {
                 {conversation.length > 0 && (
                   <button
                     onClick={clearConversation}
-                    className="mt-2 text-xs text-gray-500 hover:text-gray-700"
+                    className="mt-2 text-xs text-foreground/50 hover:text-foreground/30"
                   >
                     Clear conversation
                   </button>
@@ -226,7 +226,7 @@ export function InstitutionAssistant() {
                                 </span>
                               )}
                             </div>
-                            <p className="text-sm text-gray-600">{suggestion.description}</p>
+                            <p className="text-sm text-foreground/40">{suggestion.description}</p>
                             {suggestion.availability && (
                               <p className="text-xs text-blue-600">{suggestion.availability}</p>
                             )}
@@ -249,7 +249,7 @@ export function InstitutionAssistant() {
                 )}
                 
                 {suggestions.length === 0 && !loading && query && (
-                  <div className="no-suggestions mt-4 text-gray-500">
+                  <div className="no-suggestions mt-4 text-foreground/50">
                     No suggestions found. Try rephrasing your request.
                   </div>
                 )}
@@ -266,7 +266,7 @@ export function InstitutionAssistant() {
                         className={`inline-block p-2 rounded max-w-xs ${
                           message.role === 'user' 
                             ? 'bg-blue-500 text-foreground' 
-                            : 'bg-gray-200 text-gray-800'
+                            : 'bg-gray-200 text-foreground/20'
                         }`}
                       >
                         {message.content}
@@ -275,7 +275,7 @@ export function InstitutionAssistant() {
                   ))}
                   {loading && (
                     <div className="text-left">
-                      <div className="inline-block p-2 rounded bg-gray-200 text-gray-800">
+                      <div className="inline-block p-2 rounded bg-gray-200 text-foreground/20">
                         <span className="loading-dots">Thinking</span>
                       </div>
                     </div>
@@ -300,7 +300,7 @@ export function InstitutionAssistant() {
                   </button>
                 </div>
                 
-                <div className="mt-2 text-xs text-gray-500">
+                <div className="mt-2 text-xs text-foreground/50">
                   AI Assistant can help with: Task creation, Event scheduling, Team allocation, Activity summaries
                 </div>
               </>

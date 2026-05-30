@@ -124,7 +124,7 @@ export const ActiveCampaignsWidget = () => {
                             production: { label: 'Active', color: 'text-indigo-400', bg: 'bg-indigo-400/10', border: 'border-indigo-400/20', glow: 'bg-indigo-500 shadow-[0_0_15px_rgba(129,140,248,0.2)]' },
                             review: { label: 'Review', color: 'text-amber-400', bg: 'bg-amber-400/10', border: 'border-amber-400/20', glow: 'bg-amber-500 shadow-[0_0_15px_rgba(251,191,36,0.2)]' },
                             publish: { label: 'Publishing', color: 'text-emerald-400', bg: 'bg-emerald-400/10', border: 'border-emerald-400/20', glow: 'bg-emerald-500 shadow-[0_0_15px_rgba(16,185,129,0.2)]' },
-                            completed: { label: 'Completed', color: 'text-slate-400', bg: 'bg-slate-400/10', border: 'border-slate-400/20', glow: 'bg-slate-400 shadow-[0_0_15px_rgba(148,163,184,0.2)]' }
+                            completed: { label: 'Completed', color: 'text-foreground/60', bg: 'bg-slate-400/10', border: 'border-slate-400/20', glow: 'bg-slate-400 shadow-[0_0_15px_rgba(148,163,184,0.2)]' }
                         }[campaign.phase] || { label: campaign.phase, color: 'text-foreground/80', bg: 'bg-foreground/5', border: 'border-foreground/10', glow: 'bg-foreground/10' };
 
                         return (

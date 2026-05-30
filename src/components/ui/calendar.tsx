@@ -87,16 +87,16 @@ function Calendar({
         table: "w-full border-collapse",
         weekdays: cn("flex mb-2", defaultClassNames.weekdays),
         weekday: cn(
-          "text-slate-400 rounded-md flex-1 font-medium text-[0.8rem] uppercase tracking-wider select-none",
+          "text-foreground/60 rounded-md flex-1 font-medium text-[0.8rem] uppercase tracking-wider select-none",
           defaultClassNames.weekday
         ),
         week: cn("flex w-full mt-2", defaultClassNames.week),
         week_number_header: cn(
-          "select-none w-9 text-slate-500",
+          "select-none w-9 text-foreground/50",
           defaultClassNames.week_number_header
         ),
         week_number: cn(
-          "text-[0.7rem] select-none text-slate-600 font-mono",
+          "text-[0.7rem] select-none text-foreground/40 font-mono",
           defaultClassNames.week_number
         ),
         day: cn(
@@ -114,11 +114,11 @@ function Calendar({
           defaultClassNames.today
         ),
         outside: cn(
-          "text-slate-600 opacity-40 aria-selected:bg-slate-800/30 aria-selected:text-slate-400",
+          "text-foreground/40 opacity-40 aria-selected:bg-slate-800/30 aria-selected:text-foreground/60",
           defaultClassNames.outside
         ),
         disabled: cn(
-          "text-slate-700 opacity-30",
+          "text-foreground/30 opacity-30",
           defaultClassNames.disabled
         ),
         hidden: cn("invisible", defaultClassNames.hidden),
@@ -159,7 +159,7 @@ function Calendar({
         WeekNumber: ({ children, ...props }) => {
           return (
             <td {...props}>
-              <div className="flex size-(--cell-size) items-center justify-center text-center text-slate-500">
+              <div className="flex size-(--cell-size) items-center justify-center text-center text-foreground/50">
                 {children}
               </div>
             </td>

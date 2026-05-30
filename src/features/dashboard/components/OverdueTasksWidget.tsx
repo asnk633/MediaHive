@@ -18,10 +18,13 @@ export const OverdueTasksWidget = () => {
     // Get top 3 overdue tasks for quick preview
     const recentOverdue = useMemo(() => {
         if (!tasks) return [];
+        const todayStart = new Date();
+        todayStart.setHours(0, 0, 0, 0);
+
         return tasks
             .filter(t => {
                 if (t.status === 'done' || !t.due_date) return false;
-                return t.due_date < new Date();
+                return t.due_date < todayStart;
             })
             .sort((a, b) => (a.due_date?.getTime() || 0) - (b.due_date?.getTime() || 0))
             .slice(0, 3);

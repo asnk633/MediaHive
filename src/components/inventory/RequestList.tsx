@@ -107,7 +107,7 @@ export default function RequestList() {
 
     if (requests.length === 0) {
         return (
-            <div className="flex flex-col items-center justify-center h-64 text-slate-400 gap-4">
+            <div className="flex flex-col items-center justify-center h-64 text-foreground/60 gap-4">
                 <AlertCircle className="w-12 h-12 opacity-20" />
                 <p>No inventory requests found.</p>
             </div>
@@ -125,10 +125,10 @@ export default function RequestList() {
                                     <h3 className="font-bold text-foreground text-lg">{request.itemName}</h3>
                                     {getStatusBadge(request.status)}
                                 </div>
-                                <p className="text-sm text-slate-400">
-                                    Requested by: <span className="text-slate-200 font-medium">User {request.requestedBy}</span>
+                                <p className="text-sm text-foreground/60">
+                                    Requested by: <span className="text-foreground font-medium">User {request.requestedBy}</span>
                                 </p>
-                                <div className="text-xs text-slate-500 flex items-center gap-2 mt-2">
+                                <div className="text-xs text-foreground/50 flex items-center gap-2 mt-2">
                                     <Clock className="w-3 h-3" />
                                     {request.createdAt ? format(new Date(request.createdAt), 'MMM d, h:mm a') : 'Unknown Date'}
                                 </div>
@@ -157,8 +157,8 @@ export default function RequestList() {
                         </div>
 
                         {(request.purpose || request.notes) && (
-                            <div className="mt-4 p-3 bg-black/20 rounded-lg border border-foreground/5 text-sm text-slate-300">
-                                <span className="text-slate-500 font-medium text-xs block mb-1 uppercase tracking-wider">Purpose:</span>
+                            <div className="mt-4 p-3 bg-black/20 rounded-lg border border-foreground/5 text-sm text-foreground">
+                                <span className="text-foreground/50 font-medium text-xs block mb-1 uppercase tracking-wider">Purpose:</span>
                                 {request.purpose || request.notes}
                             </div>
                         )}

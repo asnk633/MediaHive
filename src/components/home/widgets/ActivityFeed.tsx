@@ -78,18 +78,18 @@ export const ActivityFeed = ({ tasks }: ActivityFeedProps) => {
                                 <span className={cn("text-[10px] font-bold uppercase px-1.5 py-0.5 rounded border tracking-wide",
                                     act.role === 'admin' ? "bg-red-500/10 text-red-400 border-red-500/20" :
                                         (act.role === 'manager' || act.role === 'member') ? "bg-blue-500/10 text-blue-400 border-blue-500/20" :
-                                            "bg-gray-500/10 text-gray-400 border-gray-500/20"
+                                            "bg-gray-500/10 text-foreground/60 border-gray-500/20"
                                 )}>{act.role}</span>
                                 <span className="font-semibold text-foreground text-sm">{act.user || 'User'}</span>
                             </div>
 
-                            <p className="text-sm text-gray-300 leading-snug">
+                            <p className="text-sm text-foreground leading-snug">
                                 {act.type === 'created' ? 'created' : 'updated'}
                                 {' '}
-                                <span className="italic text-gray-400/80">"{act.taskTitle}"</span>
+                                <span className="italic text-foreground/60/80">"{act.taskTitle}"</span>
                             </p>
 
-                            <p className="text-[10px] text-gray-600 mt-1">
+                            <p className="text-[10px] text-foreground/40 mt-1">
                                 {(() => {
                                     try {
                                         return act.time && !isNaN(act.time.getTime())

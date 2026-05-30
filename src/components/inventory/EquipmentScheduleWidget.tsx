@@ -49,9 +49,9 @@ export function EquipmentScheduleWidget() {
             <div className="p-4 border-b border-foreground/5 flex items-center justify-between">
                 <div className="flex items-center gap-2">
                     <Calendar className="w-4 h-4 text-blue-400" />
-                    <h3 className="text-sm font-semibold text-slate-200 uppercase tracking-wider">Equipment Schedule</h3>
+                    <h3 className="text-sm font-semibold text-foreground uppercase tracking-wider">Equipment Schedule</h3>
                 </div>
-                <div className="text-[10px] text-slate-500 uppercase tracking-widest font-medium">Next 7 Days</div>
+                <div className="text-[10px] text-foreground/50 uppercase tracking-widest font-medium">Next 7 Days</div>
             </div>
 
             <div className="p-4 space-y-6">
@@ -68,7 +68,7 @@ export function EquipmentScheduleWidget() {
                                 onClick={() => setSelectedDay(date)}
                                 className={cn(
                                     "flex-1 min-w-[50px] flex flex-col items-center gap-1.5 p-2 rounded-lg transition-all relative group",
-                                    isSelected ? "bg-blue-600/20 text-blue-400 ring-1 ring-blue-500/30" : "hover:bg-foreground/5 text-slate-500"
+                                    isSelected ? "bg-blue-600/20 text-blue-400 ring-1 ring-blue-500/30" : "hover:bg-foreground/5 text-foreground/50"
                                 )}
                             >
                                 <span className="text-[10px] uppercase font-bold tracking-tighter opacity-60">
@@ -76,7 +76,7 @@ export function EquipmentScheduleWidget() {
                                 </span>
                                 <span className={cn(
                                     "text-sm font-bold",
-                                    isSelected ? "text-foreground" : "group-hover:text-slate-200"
+                                    isSelected ? "text-foreground" : "group-hover:text-foreground"
                                 )}>
                                     {format(date, 'd')}
                                 </span>
@@ -123,17 +123,17 @@ export function EquipmentScheduleWidget() {
                                                 <Package size={14} className="text-blue-400" />
                                             </div>
                                             <div>
-                                                <div className="text-sm font-medium text-slate-200">
+                                                <div className="text-sm font-medium text-foreground">
                                                     {(b as any).inventory?.name || `Item #${b.equipmentId}`}
                                                 </div>
-                                                <div className="text-[11px] text-slate-500 flex items-center gap-1.5 pt-0.5">
+                                                <div className="text-[11px] text-foreground/50 flex items-center gap-1.5 pt-0.5">
                                                     <span>{b.unitsRequested} units</span>
                                                     <span>•</span>
                                                     <span>{b.bookedBy}</span>
                                                 </div>
                                             </div>
                                         </div>
-                                        <ChevronRight size={14} className="text-slate-600 opacity-0 group-hover:opacity-100 transition-opacity" />
+                                        <ChevronRight size={14} className="text-foreground/40 opacity-0 group-hover:opacity-100 transition-opacity" />
                                     </div>
                                 ))}
                             </motion.div>
@@ -144,10 +144,10 @@ export function EquipmentScheduleWidget() {
                                 className="flex flex-col items-center justify-center py-8 text-center"
                             >
                                 <div className="p-3 rounded-full bg-foreground/5 mb-3">
-                                    <Info size={20} className="text-slate-600" />
+                                    <Info size={20} className="text-foreground/40" />
                                 </div>
-                                <div className="text-sm font-medium text-slate-400">No bookings for this day</div>
-                                <div className="text-[11px] text-slate-500">Everything is available for use</div>
+                                <div className="text-sm font-medium text-foreground/60">No bookings for this day</div>
+                                <div className="text-[11px] text-foreground/50">Everything is available for use</div>
                             </motion.div>
                         )}
                     </AnimatePresence>

@@ -138,7 +138,7 @@ export const InviteUserPanel: React.FC<InviteUserPanelProps> = ({ institution_id
                 placeholder="user@example.com"
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
-                className="bg-black/20 border-foreground/20 text-foreground placeholder:text-gray-400"
+                className="bg-black/20 border-foreground/20 text-foreground placeholder:text-foreground/60"
               />
             </div>
             <div>
@@ -174,7 +174,7 @@ export const InviteUserPanel: React.FC<InviteUserPanelProps> = ({ institution_id
               </Button>
             </div>
           </div>
-          <p className="text-sm text-gray-400 mt-2">
+          <p className="text-sm text-foreground/60 mt-2">
             Invites expire in 7 days and can only be used once.
           </p>
         </form>
@@ -188,7 +188,7 @@ export const InviteUserPanel: React.FC<InviteUserPanelProps> = ({ institution_id
             </div>
           ) : invites.length === 0 ? (
             <div className="text-center py-8">
-              <div className="text-gray-400">No pending invites</div>
+              <div className="text-foreground/60">No pending invites</div>
             </div>
           ) : (
             <div className="space-y-3">
@@ -209,7 +209,7 @@ export const InviteUserPanel: React.FC<InviteUserPanelProps> = ({ institution_id
                         {invite.role}
                       </span>
                     </div>
-                    <div className="text-xs text-gray-400 mt-1">
+                    <div className="text-xs text-foreground/60 mt-1">
                       Created: {new Date(invite.created_at).toLocaleString()} |
                       Expires: {new Date(invite.expiresAt).toLocaleString()}
                     </div>
@@ -219,7 +219,7 @@ export const InviteUserPanel: React.FC<InviteUserPanelProps> = ({ institution_id
                       variant="outline"
                       size="sm"
                       onClick={() => copyInviteLink(invite.id)}
-                      className="bg-gray-700/50 border-gray-600 text-gray-300 hover:bg-gray-600/50"
+                      className="bg-gray-700/50 border-gray-600 text-foreground hover:bg-gray-600/50"
                     >
                       {copiedInviteId === invite.id ? (
                         <>

@@ -428,7 +428,7 @@ export default function InsightsPage() {
         </div>
       </div>
 
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-6">
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6 mb-6">
         {/* Task Workload by Institution */}
         <div className="bg-white shadow rounded p-4">
           <h2 className="text-lg font-bold mb-3">Task Workload by Institution</h2>
@@ -439,7 +439,7 @@ export default function InsightsPage() {
                 <span className="flex items-center">
                   {item.workload} tasks
                   <span className={`ml-2 text-xs ${item.trend === 'up' ? 'text-red-500' :
-                      item.trend === 'down' ? 'text-green-500' : 'text-gray-500'
+                      item.trend === 'down' ? 'text-green-500' : 'text-foreground/50'
                     }`}>
                     {item.trend === 'up' ? '↑' : item.trend === 'down' ? '↓' : '→'}
                   </span>
@@ -465,7 +465,7 @@ export default function InsightsPage() {
               <span>Trend:</span>
               <span className={
                 dashboardData.tatMetrics.trend === 'improving' ? 'text-green-500' :
-                  dashboardData.tatMetrics.trend === 'declining' ? 'text-red-500' : 'text-gray-500'
+                  dashboardData.tatMetrics.trend === 'declining' ? 'text-red-500' : 'text-foreground/50'
               }>
                 {dashboardData.tatMetrics.trend}
               </span>
@@ -493,7 +493,7 @@ export default function InsightsPage() {
             </div>
           </div>
           <div className="text-center mt-2">
-            <span className="text-sm text-gray-600">
+            <span className="text-sm text-foreground/40">
               {dashboardData.slaCompliance.compliant}% compliant,
               {dashboardData.slaCompliance.nonCompliant}% non-compliant
             </span>
@@ -501,14 +501,14 @@ export default function InsightsPage() {
         </div>
       </div>
 
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-6">
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6 mb-6">
         {/* Event Frequency Heatmap */}
         <div className="bg-white shadow rounded p-4">
           <h2 className="text-lg font-bold mb-3">Event Frequency (Weekly)</h2>
           <div className="flex justify-between mb-2">
             {dashboardData.eventFrequency.map((day, index) => (
               <div key={index} className="text-center">
-                <div className="text-xs text-gray-500">{day.day}</div>
+                <div className="text-xs text-foreground/50">{day.day}</div>
                 <div
                   className="w-8 h-8 rounded flex items-center justify-center text-foreground text-xs font-bold mt-1"
                   style={{
@@ -532,14 +532,14 @@ export default function InsightsPage() {
                   className="w-full bg-blue-500 rounded-t"
                   style={{ height: `${(month.count / 100) * 100}%` }}
                 ></div>
-                <div className="text-xs text-gray-500 mt-1">{month.month}</div>
+                <div className="text-xs text-foreground/50 mt-1">{month.month}</div>
               </div>
             ))}
           </div>
         </div>
       </div>
 
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
         {/* Team Activity Ranking */}
         <div className="bg-white shadow rounded p-4">
           <h2 className="text-lg font-bold mb-3">Team Activity Ranking</h2>
@@ -607,13 +607,13 @@ export default function InsightsPage() {
                     {anomaly.type.charAt(0).toUpperCase() + anomaly.type.slice(1)}
                   </div>
                   <div className="text-sm">{anomaly.description}</div>
-                  <div className="text-xs text-gray-500 mt-1">
+                  <div className="text-xs text-foreground/50 mt-1">
                     {new Date(anomaly.timestamp).toLocaleDateString()}
                   </div>
                 </div>
               ))}
               {dashboardData.performanceAnomalies.length === 0 && (
-                <div className="text-sm text-gray-500 italic">
+                <div className="text-sm text-foreground/50 italic">
                   No performance anomalies detected
                 </div>
               )}

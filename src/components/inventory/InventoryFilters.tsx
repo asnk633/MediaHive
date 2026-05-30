@@ -48,7 +48,7 @@ export const InventoryFilters: React.FC<InventoryFiltersProps> = ({
         <div className="flex flex-col xl:flex-row gap-4 mb-6 w-full items-stretch xl:items-center">
             {/* Search */}
             <div className="relative flex-1">
-                <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400" size={18} />
+                <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-foreground/60" size={18} />
                 <Input
                     placeholder="Search assets by name or serial..."
                     className="pl-10 bg-slate-900/50 border-[#ffffff1a] focus:border-blue-500/50 text-foreground h-11 rounded-xl w-full transition-all hover:bg-foreground/[0.02]"
@@ -105,7 +105,7 @@ export const InventoryFilters: React.FC<InventoryFiltersProps> = ({
                                 "p-2 rounded-lg transition-all",
                                 viewMode === 'list' 
                                 ? "bg-foreground/10 text-blue-400 shadow-sm" 
-                                : "text-slate-500 hover:text-foreground hover:bg-foreground/5"
+                                : "text-foreground/50 hover:text-foreground hover:bg-foreground/5"
                             )}
                             title="List View"
                         >
@@ -117,7 +117,7 @@ export const InventoryFilters: React.FC<InventoryFiltersProps> = ({
                                 "p-2 rounded-lg transition-all",
                                 viewMode === 'grid' 
                                 ? "bg-foreground/10 text-blue-400 shadow-sm" 
-                                : "text-slate-500 hover:text-foreground hover:bg-foreground/5"
+                                : "text-foreground/50 hover:text-foreground hover:bg-foreground/5"
                             )}
                             title="Grid View"
                         >

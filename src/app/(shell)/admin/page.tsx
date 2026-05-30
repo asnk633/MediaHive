@@ -68,7 +68,7 @@ export default function AdminDashboardPage() {
                     ))}
                 </div>
 
-                <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-8">
                     {/* Recent Activity */}
                     <div className="space-y-4">
                         <div className="flex items-center justify-between px-2">
@@ -99,12 +99,12 @@ export default function AdminDashboardPage() {
                     </div>
 
                     {/* Quick Actions */}
-                    <div className="space-y-4">
+                    <div className="space-y-4 lg:col-span-2 xl:col-span-3">
                         <h3 className="text-sm font-black text-foreground/80 uppercase tracking-widest flex items-center gap-2 px-2">
                             <Zap size={14} /> Critical Actions
                         </h3>
                         
-                        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 xl:grid-cols-4 gap-4">
                             <QuickActionCard 
                                 icon={Users} 
                                 title="Manage Users" 
@@ -158,7 +158,7 @@ function QuickActionCard({ icon: Icon, title, desc, href, color }: any) {
     };
 
     return (
-        <AppLink href={href} className="group p-6 rounded-[28px] glass-liquid border-foreground/5 hover:bg-foreground/5 transition-all active:scale-95 text-left">
+        <AppLink href={href} className="block group p-6 rounded-[28px] glass-liquid border-foreground/5 hover:bg-foreground/5 transition-all active:scale-95 text-left">
             <div className={`w-12 h-12 rounded-2xl flex items-center justify-center mb-4 transition-transform group-hover:scale-110 ${colors[color]}`}>
                 <Icon size={24} />
             </div>

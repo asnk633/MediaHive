@@ -52,12 +52,12 @@ function SystemUpdateContent() {
         }
     };
 
-    if (loading) return <div className="p-8 text-center text-slate-500">Loading...</div>;
-    if (!update) return <div className="p-8 text-center text-slate-500">Update not found.</div>;
+    if (loading) return <div className="p-8 text-center text-foreground/50">Loading...</div>;
+    if (!update) return <div className="p-8 text-center text-foreground/50">Update not found.</div>;
 
     return (
         <div className="max-w-3xl mx-auto p-6 space-y-6">
-            <Button variant="ghost" onClick={() => router.back()} className="text-slate-400 hover:text-foreground pl-0 gap-2">
+            <Button variant="ghost" onClick={() => router.back()} className="text-foreground/60 hover:text-foreground pl-0 gap-2">
                 <ArrowLeft size={16} /> Back to Updates
             </Button>
 
@@ -66,7 +66,7 @@ function SystemUpdateContent() {
                     <span className={`px-3 py-1 rounded-full text-xs font-bold border ${getSeverityColor(update.severity)}`}>
                         {update.severity.toUpperCase()}
                     </span>
-                    <div className="flex items-center gap-2 text-sm text-slate-500">
+                    <div className="flex items-center gap-2 text-sm text-foreground/50">
                         <Calendar size={14} />
                         {update.created_at ? format(new Date(update.created_at), 'PPP p') : ''}
                     </div>
@@ -76,12 +76,12 @@ function SystemUpdateContent() {
                     {update.title}
                 </h1>
 
-                <div className="flex items-center gap-2 text-sm text-slate-500 pb-6 border-b border-slate-800">
+                <div className="flex items-center gap-2 text-sm text-foreground/50 pb-6 border-b border-slate-800">
                     <User size={14} />
                     Posted by {update.created_by?.name || 'System Admin'}
                 </div>
 
-                <div className="prose prose-invert max-w-none prose-p:text-slate-300 prose-headings:text-slate-100">
+                <div className="prose prose-invert max-w-none prose-p:text-foreground prose-headings:text-foreground">
                     <p className="whitespace-pre-wrap leading-relaxed text-lg">
                         {update.body}
                     </p>

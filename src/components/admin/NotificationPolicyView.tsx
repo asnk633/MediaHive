@@ -375,7 +375,7 @@ function PolicyCard({ config, currentValue, isEnabled, onSave, isProcessing }: a
 
                     {/* Faint Synced State - Replaces Button when no changes */}
                     {!hasChanges && !isProcessing && (
-                        <div className="absolute inset-0 flex items-center justify-center gap-2 text-slate-600/40 select-none transition-all duration-500">
+                        <div className="absolute inset-0 flex items-center justify-center gap-2 text-foreground/40/40 select-none transition-all duration-500">
                             <Check className="w-3.5 h-3.5" />
                             <span className="text-xs font-semibold tracking-wider uppercase">Synced</span>
                         </div>

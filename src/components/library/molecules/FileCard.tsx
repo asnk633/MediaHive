@@ -14,7 +14,7 @@ export const FileCard = ({ name, size, type, date, variant = 'card' }: FileCardP
         pdf: { icon: FileText, color: 'text-red-500', bg: 'bg-red-50' },
         image: { icon: ImageIcon, color: 'text-blue-500', bg: 'bg-blue-50' },
         doc: { icon: FileText, color: 'text-blue-600', bg: 'bg-blue-50' },
-        other: { icon: File, color: 'text-gray-500', bg: 'bg-gray-100' }
+        other: { icon: File, color: 'text-foreground/50', bg: 'bg-gray-100' }
     };
 
     const style = icons[type] || icons.other;
@@ -27,12 +27,12 @@ export const FileCard = ({ name, size, type, date, variant = 'card' }: FileCardP
                     <Icon size={16} />
                 </div>
                 <div className="flex-1 grid grid-cols-12 gap-4 items-center">
-                    <span className="col-span-4 font-medium text-sm text-gray-900 truncate">{name}</span>
-                    <span className="col-span-3 text-xs text-gray-500">{date}</span>
-                    <span className="col-span-2 text-xs text-uppercase text-gray-500">{type}</span>
-                    <span className="col-span-2 text-xs text-gray-500">{size}</span>
+                    <span className="col-span-4 font-medium text-sm text-foreground/20 truncate">{name}</span>
+                    <span className="col-span-3 text-xs text-foreground/50">{date}</span>
+                    <span className="col-span-2 text-xs text-uppercase text-foreground/50">{type}</span>
+                    <span className="col-span-2 text-xs text-foreground/50">{size}</span>
                     <div className="col-span-1 flex justify-end">
-                        <button className="p-1.5 hover:bg-white rounded-full shadow-sm text-gray-400 hover:text-blue-500"><Download size={16} /></button>
+                        <button className="p-1.5 hover:bg-white rounded-full shadow-sm text-foreground/60 hover:text-blue-500"><Download size={16} /></button>
                     </div>
                 </div>
             </div>

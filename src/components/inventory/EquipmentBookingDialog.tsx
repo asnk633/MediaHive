@@ -119,7 +119,7 @@ export function EquipmentBookingDialog({ item, open, onOpenChange, onSuccess }: 
 
     return (
         <Dialog open={open} onOpenChange={onOpenChange}>
-            <DialogContent className="bg-slate-900 border-[#ffffff1a] text-slate-200 sm:max-w-[500px]">
+            <DialogContent className="bg-slate-900 border-[#ffffff1a] text-foreground sm:max-w-[500px]">
                 <DialogHeader>
                     <DialogTitle className="text-xl font-bold flex items-center gap-2">
                         Reserve {item.name}
@@ -130,7 +130,7 @@ export function EquipmentBookingDialog({ item, open, onOpenChange, onSuccess }: 
                     {/* Date Selection Grid */}
                     <div className="grid grid-cols-2 gap-4">
                         <div className="space-y-2">
-                            <Label className="text-slate-400">Start Date</Label>
+                            <Label className="text-foreground/60">Start Date</Label>
                             <Popover>
                                 <PopoverTrigger asChild>
                                     <Button
@@ -155,7 +155,7 @@ export function EquipmentBookingDialog({ item, open, onOpenChange, onSuccess }: 
                             </Popover>
                         </div>
                         <div className="space-y-2">
-                            <Label className="text-slate-400">End Date</Label>
+                            <Label className="text-foreground/60">End Date</Label>
                             <Popover>
                                 <PopoverTrigger asChild>
                                     <Button
@@ -185,7 +185,7 @@ export function EquipmentBookingDialog({ item, open, onOpenChange, onSuccess }: 
                     {/* Quantity & Rental Info */}
                     <div className="flex items-end gap-4">
                         <div className="flex-1 space-y-2">
-                            <Label className="text-slate-400">Units</Label>
+                            <Label className="text-foreground/60">Units</Label>
                             <Input
                                 type="number"
                                 min={1}
@@ -225,12 +225,12 @@ export function EquipmentBookingDialog({ item, open, onOpenChange, onSuccess }: 
                     {/* Links */}
                     <div className="space-y-4 pt-2 border-t border-foreground/5">
                         <div className="space-y-2">
-                            <Label className="text-slate-400">Link to Task (Optional)</Label>
+                            <Label className="text-foreground/60">Link to Task (Optional)</Label>
                             <Select value={taskId} onValueChange={setTaskId}>
                                 <SelectTrigger className="bg-slate-950/50 border-foreground/10">
                                     <SelectValue placeholder="Select a task" />
                                 </SelectTrigger>
-                                <SelectContent className="bg-slate-900 border-foreground/10 text-slate-300">
+                                <SelectContent className="bg-slate-900 border-foreground/10 text-foreground">
                                     <SelectItem value="none">No association</SelectItem>
                                     {tasks.map(t => (
                                         <SelectItem key={t.id} value={t.id}>{t.title}</SelectItem>

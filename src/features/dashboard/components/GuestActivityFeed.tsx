@@ -73,15 +73,15 @@ export const MemberActivityFeed = ({ tasks }: MemberActivityFeedProps) => {
                         </div>
 
                         <div className="flex-1 min-w-0">
-                            <p className="text-sm text-gray-200 leading-snug font-medium group-hover:text-blue-300 transition-colors">
+                            <p className="text-sm text-foreground leading-snug font-medium group-hover:text-blue-300 transition-colors">
                                 {act.action}
                             </p>
 
-                            <p className="text-xs text-gray-500 mt-0.5 truncate">
+                            <p className="text-xs text-foreground/50 mt-0.5 truncate">
                                 "{act.taskTitle}"
                             </p>
 
-                            <p className="text-[10px] text-gray-600 mt-1">
+                            <p className="text-[10px] text-foreground/40 mt-1">
                                 {(() => {
                                     try {
                                         return act.time && !isNaN(act.time.getTime())

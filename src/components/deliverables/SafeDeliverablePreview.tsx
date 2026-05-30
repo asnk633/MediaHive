@@ -71,7 +71,7 @@ export const SafeDeliverablePreview: React.FC<SafeDeliverablePreviewProps> = ({
             <div className="p-3 bg-foreground/5 rounded-full mb-2">
                 <FileText size={24} className="text-blue-400" />
             </div>
-            <span className="text-xs text-center text-gray-400 font-medium truncate w-full px-2" title={file_name}>
+            <span className="text-xs text-center text-foreground/60 font-medium truncate w-full px-2" title={file_name}>
                 {file_name}
             </span>
             <a

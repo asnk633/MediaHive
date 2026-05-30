@@ -50,13 +50,13 @@ function CustomTooltip({ active, payload }: any) {
             <p className="text-foreground font-bold mb-2 uppercase tracking-wider text-xs border-b border-[#ffffff1a] pb-2">{data.period}</p>
             <div className="space-y-2">
                 <div className="flex justify-between items-center gap-8">
-                    <span className="text-gray-400 text-xs">IPS Score</span>
+                    <span className="text-foreground/60 text-xs">IPS Score</span>
                     <span className={`text-sm font-bold ${data.ipsScore >= 80 ? 'text-green-400' :
                             data.ipsScore >= 60 ? 'text-yellow-400' : 'text-red-400'
                         }`}>{data.ipsScore}</span>
                 </div>
                 <div className="flex justify-between items-center gap-8">
-                    <span className="text-gray-400 text-xs">Tasks Completed</span>
+                    <span className="text-foreground/60 text-xs">Tasks Completed</span>
                     <span className="text-sm font-semibold text-foreground">{data.completedTasks}<span className="text-foreground/80">/{data.assignedTasks}</span></span>
                 </div>
                 {data.overdueTasks > 0 && (
@@ -66,7 +66,7 @@ function CustomTooltip({ active, payload }: any) {
                     </div>
                 )}
                 <div className="flex justify-between items-center gap-8 pt-2 border-t border-foreground/5 mt-1">
-                    <span className="text-gray-400 text-xs">Avg Hours/Day</span>
+                    <span className="text-foreground/60 text-xs">Avg Hours/Day</span>
                     <span className="text-sm font-mono text-blue-300">{data.avgDailyHours.toFixed(1)}h</span>
                 </div>
             </div>

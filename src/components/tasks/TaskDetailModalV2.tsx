@@ -43,7 +43,7 @@ import { ActivityHistory, buildActivityLabel } from '@/lib/activityHistory';
 
 const statusIcons = {
     pending: <Circle size={14} className="text-amber-500" />,
-    todo: <Circle size={14} className="text-slate-400" />,
+    todo: <Circle size={14} className="text-foreground/60" />,
     'in_progress': <Clock size={14} className="text-blue-500" />,
     on_hold: <Circle size={14} className="text-orange-500" />,
     review: <AlertCircle size={14} className="text-purple-500" />,

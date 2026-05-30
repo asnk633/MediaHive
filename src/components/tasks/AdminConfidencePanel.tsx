@@ -118,7 +118,7 @@ const AdminConfidencePanel: React.FC<AdminConfidencePanelProps> = ({ tasks, even
                   >
                     {task.title}
                   </Button>
-                  <div className="text-xs text-gray-400 mt-1">
+                  <div className="text-xs text-foreground/60 mt-1">
                     Status: {task.status?.replace('_', ' ') || 'todo'}
                   </div>
                 </div>
@@ -126,7 +126,7 @@ const AdminConfidencePanel: React.FC<AdminConfidencePanelProps> = ({ tasks, even
             ) : (
               <div className="text-center py-4">
                 <div className="text-2xl mb-1">✅</div>
-                <p className="text-sm text-gray-400">
+                <p className="text-sm text-foreground/60">
                   {isFeatureEnabled('onboardingLayer')
                     ? 'No tasks blocked on media. This shows workflow bottlenecks.'
                     : 'No tasks blocked on media'}
@@ -154,7 +154,7 @@ const AdminConfidencePanel: React.FC<AdminConfidencePanelProps> = ({ tasks, even
                   >
                     {task.title}
                   </Button>
-                  <div className="text-xs text-gray-400 mt-1">
+                  <div className="text-xs text-foreground/60 mt-1">
                     Media: {task.media_uploaded ? 'Uploaded' : 'Missing'}
                   </div>
                 </div>
@@ -162,7 +162,7 @@ const AdminConfidencePanel: React.FC<AdminConfidencePanelProps> = ({ tasks, even
             ) : (
               <div className="text-center py-4">
                 <div className="text-2xl mb-1">🎉</div>
-                <p className="text-sm text-gray-400">
+                <p className="text-sm text-foreground/60">
                   {isFeatureEnabled('onboardingLayer')
                     ? 'No tasks ready for completion. These are tasks with approved media.'
                     : 'No tasks ready for completion'}
@@ -190,7 +190,7 @@ const AdminConfidencePanel: React.FC<AdminConfidencePanelProps> = ({ tasks, even
                   >
                     {task.title}
                   </Button>
-                  <div className="text-xs text-gray-400 mt-1">
+                  <div className="text-xs text-foreground/60 mt-1">
                     Approved: {parseDate(task.media_approved_date).toLocaleDateString()}
                   </div>
                 </div>
@@ -198,7 +198,7 @@ const AdminConfidencePanel: React.FC<AdminConfidencePanelProps> = ({ tasks, even
             ) : (
               <div className="text-center py-4">
                 <div className="text-2xl mb-1">👍</div>
-                <p className="text-sm text-gray-400">
+                <p className="text-sm text-foreground/60">
                   {isFeatureEnabled('onboardingLayer')
                     ? 'No recently approved media. These are media files approved in the last 24 hours.'
                     : 'No recently approved media'}
@@ -226,7 +226,7 @@ const AdminConfidencePanel: React.FC<AdminConfidencePanelProps> = ({ tasks, even
                   >
                     {task.title}
                   </Button>
-                  <div className="text-xs text-gray-400 mt-1">
+                  <div className="text-xs text-foreground/60 mt-1">
                     Days open: {Math.floor((Date.now() - parseDate(task.created_at).getTime()) / (1000 * 3600 * 24))}
                   </div>
                 </div>
@@ -234,7 +234,7 @@ const AdminConfidencePanel: React.FC<AdminConfidencePanelProps> = ({ tasks, even
             ) : (
               <div className="text-center py-4">
                 <div className="text-2xl mb-1">⏰</div>
-                <p className="text-sm text-gray-400">
+                <p className="text-sm text-foreground/60">
                   {isFeatureEnabled('onboardingLayer')
                     ? 'No stale tasks. These are tasks open for more than 7 days.'
                     : 'No stale tasks'}

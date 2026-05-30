@@ -148,7 +148,7 @@ export default function LabsPage() {
                             Featured Innovation
                         </div>
                         <h2 className="text-3xl font-black text-foreground tracking-tight">The Future of Media Management</h2>
-                        <p className="text-slate-400 text-lg leading-relaxed max-w-2xl">
+                        <p className="text-foreground/60 text-lg leading-relaxed max-w-2xl">
                             MediaHive Labs is where we experiment with next-generation tools. These features are in various stages of development and may change frequently as we refine the experience.
                         </p>
                     </div>
@@ -164,7 +164,7 @@ export default function LabsPage() {
                 variants={container}
                 initial="hidden"
                 animate="show"
-                className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6"
+                className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6"
             >
                 {LAB_FEATURES.map((feature) => {
                     const hasAccess = canAccessFeature(
@@ -227,7 +227,7 @@ export default function LabsPage() {
                             {/* Content */}
                             <div className="flex-1 space-y-3">
                                 <h3 className="text-xl font-bold text-foreground group-hover:text-premium-gradient transition-all">{feature.label}</h3>
-                                <p className="text-slate-400 text-sm leading-relaxed font-medium">
+                                <p className="text-foreground/60 text-sm leading-relaxed font-medium">
                                     {feature.description}
                                 </p>
                             </div>
@@ -266,7 +266,7 @@ export default function LabsPage() {
                         <Zap size={20} />
                     </div>
                     <h4 className="text-sm font-bold text-foreground">Rapid Prototyping</h4>
-                    <p className="text-xs text-slate-500 leading-relaxed">
+                    <p className="text-xs text-foreground/50 leading-relaxed">
                         These tools are built for speed. We prioritize functionality over polish to gather early feedback.
                     </p>
                 </div>
@@ -275,7 +275,7 @@ export default function LabsPage() {
                         <Target size={20} />
                     </div>
                     <h4 className="text-sm font-bold text-foreground">Continuous Feedback</h4>
-                    <p className="text-xs text-slate-500 leading-relaxed">
+                    <p className="text-xs text-foreground/50 leading-relaxed">
                         Your usage and feedback directly shape which features make it to the main dashboard.
                     </p>
                 </div>
@@ -284,7 +284,7 @@ export default function LabsPage() {
                         <Clapperboard size={20} />
                     </div>
                     <h4 className="text-sm font-bold text-foreground">Project-First</h4>
-                    <p className="text-xs text-slate-500 leading-relaxed">
+                    <p className="text-xs text-foreground/50 leading-relaxed">
                         Every tool in Labs is designed to solve a specific bottleneck in the media production cycle.
                     </p>
                 </div>

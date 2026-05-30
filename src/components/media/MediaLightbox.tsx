@@ -312,7 +312,7 @@ export function MediaLightbox({ file, files, loading = false, onClose, onNavigat
           {loading ? (
             <div className="w-full h-full flex items-center justify-center p-4">
               <div className="bg-gray-200 border-2 border-dashed rounded-xl w-full h-full max-h-[70vh] flex items-center justify-center animate-pulse">
-                <div className="text-gray-500">
+                <div className="text-foreground/50">
                   <div className="w-16 h-16 mx-auto mb-4"></div>
                 </div>
               </div>
@@ -330,8 +330,8 @@ export function MediaLightbox({ file, files, loading = false, onClose, onNavigat
                   />
                 ) : (
                   <div className="w-full h-full flex flex-col items-center justify-center rounded-xl">
-                    <ImageIcon size={48} className="text-gray-500 mb-2" />
-                    <span className="text-gray-400 text-sm">Image unavailable</span>
+                    <ImageIcon size={48} className="text-foreground/50 mb-2" />
+                    <span className="text-foreground/60 text-sm">Image unavailable</span>
                   </div>
                 )}
               </div>
@@ -353,7 +353,7 @@ export function MediaLightbox({ file, files, loading = false, onClose, onNavigat
                 <FileIcon size={64} />
               </div>
               <h3 className="text-2xl font-bold text-foreground mb-2">{file.name}</h3>
-              <p className="text-gray-400 mb-6">Preview not available for this file type</p>
+              <p className="text-foreground/60 mb-6">Preview not available for this file type</p>
               <Button
                 onClick={() => window.open(file.downloadLink, '_blank')}
                 className="flex items-center gap-2 bg-indigo-600 hover:bg-indigo-500"
@@ -433,7 +433,7 @@ export function MediaLightbox({ file, files, loading = false, onClose, onNavigat
                         ? 'bg-green-100 text-green-800'
                         : file.proofingStatus === 'changes_requested'
                           ? 'bg-yellow-100 text-yellow-800'
-                          : 'bg-gray-100 text-gray-800'
+                          : 'bg-gray-100 text-foreground/20'
                         }`}>
                         {file.proofingStatus === 'approved' && <Check className="mr-1.5 h-3 w-3" />}
                         {file.proofingStatus === 'changes_requested' && <AlertCircle className="mr-1.5 h-3 w-3" />}
@@ -473,7 +473,7 @@ export function MediaLightbox({ file, files, loading = false, onClose, onNavigat
                             Version {file.versionNumber || 1} of {versions.length}
                           </span>
                           {file.isActiveVersion === false && (
-                            <span className="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-gray-100 text-gray-800">
+                            <span className="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-gray-100 text-foreground/20">
                               Inactive
                             </span>
                           )}
@@ -509,7 +509,7 @@ export function MediaLightbox({ file, files, loading = false, onClose, onNavigat
                                       {version.id === file.id && ' (Current)'}
                                     </span>
                                     {!version.isActiveVersion && (
-                                      <span className="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium bg-gray-100 text-gray-800">
+                                      <span className="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium bg-gray-100 text-foreground/20">
                                         Inactive
                                       </span>
                                     )}

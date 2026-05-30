@@ -28,7 +28,7 @@ export function SafetyConfirmationOverlay({ title, description, onConfirm, onCan
 
                 <div className="text-center space-y-2">
                     <h2 className="text-xl font-bold text-foreground">{title}</h2>
-                    <p className="text-sm text-gray-400">{description}</p>
+                    <p className="text-sm text-foreground/60">{description}</p>
                 </div>
 
                 <div className="flex items-start gap-3 p-4 bg-foreground/5 rounded-2xl border border-foreground/10 transition-all hover:bg-foreground/10 group cursor-pointer" onClick={() => setConfirmed(!confirmed)}>
@@ -37,13 +37,13 @@ export function SafetyConfirmationOverlay({ title, description, onConfirm, onCan
                         onCheckedChange={(c) => setConfirmed(c === true)}
                         className="mt-1 border-orange-500/50 data-[state=checked]:bg-orange-500 data-[state=checked]:border-orange-500"
                     />
-                    <span className="text-xs text-gray-300 select-none">
+                    <span className="text-xs text-foreground select-none">
                         I confirm that I have reviewed the operational impact of this action and take responsibility for the change.
                     </span>
                 </div>
 
                 <div className="grid grid-cols-2 gap-3">
-                    <Button variant="ghost" onClick={onCancel} className="rounded-xl border border-foreground/5 hover:bg-foreground/5 text-gray-400">
+                    <Button variant="ghost" onClick={onCancel} className="rounded-xl border border-foreground/5 hover:bg-foreground/5 text-foreground/60">
                         Cancel
                     </Button>
                     <Button
@@ -55,7 +55,7 @@ export function SafetyConfirmationOverlay({ title, description, onConfirm, onCan
                     </Button>
                 </div>
 
-                <div className="flex items-center justify-center gap-2 text-[9px] text-gray-600 uppercase tracking-widest font-bold">
+                <div className="flex items-center justify-center gap-2 text-[9px] text-foreground/40 uppercase tracking-widest font-bold">
                     <ShieldCheck size={10} />
                     SOC 2 Safety Control Active
                 </div>

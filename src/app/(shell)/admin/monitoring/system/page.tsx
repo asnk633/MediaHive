@@ -171,7 +171,7 @@ export default function SystemMonitoringPage() {
       </div>
 
       {/* Audit Log Analytics */}
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-6">
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6 mb-6">
         {/* Top Actions */}
         <div className="bg-white shadow rounded p-4">
           <h2 className="text-lg font-bold mb-3">Top Actions</h2>
@@ -213,7 +213,7 @@ export default function SystemMonitoringPage() {
                 className="w-full bg-blue-500 rounded-t"
                 style={{ height: `${(day.count / Math.max(...auditStats.dailyCounts.map(d => d.count))) * 100}%` }}
               ></div>
-              <div className="text-xs text-gray-500 mt-1">
+              <div className="text-xs text-foreground/50 mt-1">
                 {new Date(day.date).toLocaleDateString('en-US', { weekday: 'short' })}
               </div>
             </div>
@@ -232,7 +232,7 @@ export default function SystemMonitoringPage() {
               </div>
               <div className="flex-1">
                 <div className="font-medium">{user.user.fullName}</div>
-                <div className="text-sm text-gray-500">{user.user.email}</div>
+                <div className="text-sm text-foreground/50">{user.user.email}</div>
               </div>
               <div className="bg-purple-100 text-purple-800 px-3 py-1 rounded-full text-sm">
                 {user.count} actions

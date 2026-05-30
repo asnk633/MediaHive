@@ -822,7 +822,7 @@ class DashboardScreen extends ConsumerWidget {
         const SizedBox(height: 20),
         Row(
           children: [
-            Expanded(child: _buildStatusCard(colors, status['dueToday'], 'DUE TODAY', LucideIcons.clock, Colors.orange)),
+            Expanded(child: _buildStatusCard(colors, status['dueToday'], 'DUE TODAY', LucideIcons.clock, Colors.orange, onTap: () => context.go('/tasks'))),
             const SizedBox(width: 8),
             Expanded(child: _buildStatusCard(colors, status['inProgress'], 'IN PROGRESS', LucideIcons.activity, Colors.blue)),
             const SizedBox(width: 8),
@@ -835,27 +835,29 @@ class DashboardScreen extends ConsumerWidget {
     );
   }
 
-  Widget _buildStatusCard(ThemeColors colors, String value, String label, IconData icon, Color color) {
-    return Container(
-      padding: const EdgeInsets.symmetric(vertical: 16),
-      decoration: BoxDecoration(
-        color: colors.isDark ? Colors.white.withOpacity(0.05) : Colors.white,
-        borderRadius: BorderRadius.circular(16),
-        border: Border.all(
-          color: colors.isDark 
-              ? colors.border.withOpacity(0.5) 
-              : colors.border.withOpacity(0.12),
+  Widget _buildStatusCard(ThemeColors colors, String value, String label, IconData icon, Color color, {VoidCallback? onTap}) {
+    return GestureDetector(
+      onTap: onTap,
+      child: Container(
+        padding: const EdgeInsets.symmetric(vertical: 16),
+        decoration: BoxDecoration(
+          color: colors.isDark ? Colors.white.withValues(alpha: 0.05) : Colors.white,
+          borderRadius: BorderRadius.circular(16),
+          border: Border.all(
+            color: colors.isDark 
+                ? colors.border.withValues(alpha: 0.5) 
+                : colors.border.withValues(alpha: 0.12),
+          ),
+          boxShadow: colors.isDark
+              ? []
+              : [
+                  BoxShadow(
+                    color: colors.border.withValues(alpha: 0.05),
+                    blurRadius: 10,
+                    offset: const Offset(0, 4),
+                  ),
+                ],
         ),
-        boxShadow: colors.isDark
-            ? []
-            : [
-                BoxShadow(
-                  color: colors.border.withOpacity(0.05),
-                  blurRadius: 10,
-                  offset: const Offset(0, 4),
-                ),
-              ],
-      ),
       child: Column(
         children: [
           Container(
@@ -1044,10 +1046,10 @@ class DashboardScreen extends ConsumerWidget {
   }
 
   bool _isRelevantTask(Task t, String roleRaw, String? currentUserId, String? currentDepartment, String today, String? currentUserFullName) {
+    if (t.status.toLowerCase() == 'done') return false; // Remove completed tasks from the widget
+    
     if (roleRaw.contains('admin')) {
-      return t.dueDate == today || (t.dueDate.compareTo(today) < 0 && t.status.toLowerCase() != 'done');
-    } else if (roleRaw.contains('member')) {
-      return t.dueDate == today && (t.department == currentDepartment || t.createdBy == currentUserId);
+      return t.dueDate == today || (t.dueDate.compareTo(today) < 0);
     } else {
       bool isAssignedToMe = false;
       if (t.onBehalfOf != null && currentUserId != null) {
@@ -1063,19 +1065,17 @@ class DashboardScreen extends ConsumerWidget {
       if (!isAssignedToMe && currentUserFullName != null && t.assignee.isNotEmpty) {
         isAssignedToMe = t.assignee.toLowerCase().contains(currentUserFullName.toLowerCase());
       }
-      return t.dueDate == today && isAssignedToMe;
+      return (t.dueDate == today || t.dueDate.compareTo(today) < 0) && isAssignedToMe;
     }
   }
 
   String _getEventsTitle(String roleRaw) {
     if (roleRaw.contains('admin')) return 'All Events Today';
-    if (roleRaw.contains('member')) return 'Your Department\'s Events Today';
     return 'Today\'s Events For You';
   }
 
   String _getTasksTitle(String roleRaw) {
     if (roleRaw.contains('admin')) return 'Today\'s Tasks';
-    if (roleRaw.contains('member')) return 'Your Department\'s Tasks Today';
     return 'Today\'s Tasks For You';
   }
 

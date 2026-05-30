@@ -84,7 +84,7 @@ export function LeadershipSummaryPanel() {
         switch (trend) {
             case 'up': return <TrendingUp size={16} className="text-emerald-400" />;
             case 'down': return <TrendingDown size={16} className="text-red-400" />;
-            default: return <Minus size={16} className="text-gray-400" />;
+            default: return <Minus size={16} className="text-foreground/60" />;
         }
     };
 
@@ -114,7 +114,7 @@ export function LeadershipSummaryPanel() {
 
                         <div className="space-y-3">
                             {narrative.map((text, idx) => (
-                                <div key={idx} className="flex gap-3 text-sm text-gray-300 leading-relaxed bg-black/20 p-3 rounded-lg border border-foreground/5">
+                                <div key={idx} className="flex gap-3 text-sm text-foreground leading-relaxed bg-black/20 p-3 rounded-lg border border-foreground/5">
                                     <div className="shrink-0 mt-1.5 w-1.5 h-1.5 rounded-full bg-blue-400 shadow-[0_0_8px_rgba(96,165,250,0.6)]" />
                                     {text}
                                 </div>
@@ -124,9 +124,9 @@ export function LeadershipSummaryPanel() {
                         {/* Quick Stats Row */}
                         <div className="mt-6 flex flex-wrap gap-4">
                             <div className="px-4 py-2 bg-foreground/5 rounded-lg border border-foreground/5">
-                                <span className="text-xs text-gray-500 uppercase font-bold tracking-wider">Interventions</span>
+                                <span className="text-xs text-foreground/50 uppercase font-bold tracking-wider">Interventions</span>
                                 <div className="text-xl font-mono font-bold text-foreground mt-1">
-                                    {data.interventions.count} <span className="text-xs text-gray-600 font-sans font-normal">this period</span>
+                                    {data.interventions.count} <span className="text-xs text-foreground/40 font-sans font-normal">this period</span>
                                 </div>
                             </div>
                         </div>
@@ -166,7 +166,7 @@ export function LeadershipSummaryPanel() {
                                 <div style={{ width: `${(riskDistribution.underperforming / riskDistribution.total) * 100}%` }} className="bg-red-500/80 hover:bg-red-400 transition-colors" title={`Underperforming: ${riskDistribution.underperforming}`} />
                             </div>
 
-                            <div className="flex justify-between mt-2 text-[10px] text-gray-500 font-mono">
+                            <div className="flex justify-between mt-2 text-[10px] text-foreground/50 font-mono">
                                 <div className="flex items-center gap-1"><div className="w-2 h-2 rounded-full bg-emerald-500" />PERFORMING ({riskDistribution.performing})</div>
                                 <div className="flex items-center gap-1"><div className="w-2 h-2 rounded-full bg-red-500" />CRITICAL ({riskDistribution.underperforming})</div>
                             </div>
@@ -186,7 +186,7 @@ export function LeadershipSummaryPanel() {
                     <div>
                         <h3 className="text-sm font-bold text-foreground uppercase tracking-wider flex items-center gap-2">
                             Automation Readiness
-                            <span className="px-1.5 py-0.5 rounded bg-gray-700 text-[10px] text-gray-300 border border-gray-600">DISABLED</span>
+                            <span className="px-1.5 py-0.5 rounded bg-gray-700 text-[10px] text-foreground border border-gray-600">DISABLED</span>
                         </h3>
                         <p className="text-xs text-amber-500/80 mt-1 font-medium">Preview Mode Only — No Actions Taken</p>
                     </div>
@@ -196,14 +196,14 @@ export function LeadershipSummaryPanel() {
 
                 <div className="flex-1 grid grid-cols-2 gap-4 w-full md:w-auto">
                     <div>
-                        <div className="text-[10px] text-gray-500 uppercase font-bold">Hypothetical Triggers</div>
+                        <div className="text-[10px] text-foreground/50 uppercase font-bold">Hypothetical Triggers</div>
                         <div className="text-foreground text-sm font-medium mt-0.5">
                             <span className="text-amber-400 font-bold">{automationPreview.hypotheticalTriggers.sustainedUnderperformance}</span> Sustained Underperf.
                         </div>
                     </div>
                 </div>
 
-                <div className="text-xs text-gray-500 italic max-w-xs md:text-right border-l md:border-l-0 md:border-r border-[#ffffff1a] pl-4 md:pr-4 md:pl-0">
+                <div className="text-xs text-foreground/50 italic max-w-xs md:text-right border-l md:border-l-0 md:border-r border-[#ffffff1a] pl-4 md:pr-4 md:pl-0">
                     "{automationPreview.message}"
                 </div>
             </div>

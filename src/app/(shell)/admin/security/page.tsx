@@ -64,7 +64,7 @@ export default function SecurityRulesPage() {
                 title="Security Rules"
                 description="Manage system access policies and protection rules."
                 actions={
-                    <Button variant="ghost" onClick={() => nativeNavigate('/admin', router, 'SecurityRules (Back)')} className="gap-2 text-slate-400 hover:text-foreground">
+                    <Button variant="ghost" onClick={() => nativeNavigate('/admin', router, 'SecurityRules (Back)')} className="gap-2 text-foreground/60 hover:text-foreground">
                         <ArrowLeft size={16} />
                         Back to Command Center
                     </Button>
@@ -80,7 +80,7 @@ export default function SecurityRulesPage() {
                             <Shield className="w-5 h-5 text-primary" />
                             Security Overview (Read-Only)
                         </h2>
-                        <p className="text-slate-400 text-sm">
+                        <p className="text-foreground/60 text-sm">
                             Current enforcement policies hardcoded into the system core.
                         </p>
                     </div>
@@ -101,7 +101,7 @@ export default function SecurityRulesPage() {
                             <h3 className="text-sm font-black text-foreground/80 uppercase tracking-widest flex items-center gap-2">
                                 <Lock className="w-4 h-4 text-primary" /> Data Protection
                             </h3>
-                            <ul className="space-y-3 text-sm text-slate-400">
+                            <ul className="space-y-3 text-sm text-foreground/60">
                                 <li className="flex items-center gap-2.5">
                                     <Check className="w-3.5 h-3.5 text-primary" />
                                     <span>System Activity is <strong>Immutable</strong> (Append-Only)</span>
@@ -125,7 +125,7 @@ export default function SecurityRulesPage() {
                         <Globe className="w-5 h-5 text-primary" />
                         Active Security Controls
                     </h2>
-                    <p className="text-slate-400 text-sm">
+                    <p className="text-foreground/60 text-sm">
                         Toggle these rules to adjust system behavior in real-time.
                         <strong> All changes are logged as CRITICAL security events.</strong>
                     </p>
@@ -186,7 +186,7 @@ function SecurityToggle({ label, description, checked, onChange, icon, loading }
                 </div>
                 <Switch checked={checked} onCheckedChange={onChange} disabled={loading} className="data-[state=checked]:bg-primary" />
             </div>
-            <p className="text-xs text-slate-400 leading-relaxed font-medium">{description}</p>
+            <p className="text-xs text-foreground/60 leading-relaxed font-medium">{description}</p>
         </div>
     );
 }

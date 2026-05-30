@@ -132,7 +132,7 @@ export const DeliverablePreviewModal: React.FC<DeliverablePreviewModalProps> = (
 
                         {/* Footer */}
                         <div className="px-6 py-4 border-t border-foreground/5 bg-[#1e293b]/50 flex items-center justify-between">
-                            <div className="flex items-center gap-4 text-sm text-gray-400">
+                            <div className="flex items-center gap-4 text-sm text-foreground/60">
                                 <div className="flex items-center gap-2">
                                     <span className="w-6 h-6 rounded-full bg-foreground/10 flex items-center justify-center text-[10px] font-bold">
                                         {deliverable.uploaded_by.name?.charAt(0) || 'U'}

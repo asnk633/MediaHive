@@ -11,7 +11,7 @@ export function Divider({ className, label }: DividerProps) {
         <div className={cn("relative flex items-center w-full", className)}>
             <div className="flex-grow border-t border-[var(--mh-border-soft)]" />
             {label && (
-                <span className="shrink-0 px-3 text-xs font-medium text-gray-500 uppercase tracking-wider">
+                <span className="shrink-0 px-3 text-xs font-medium text-foreground/50 uppercase tracking-wider">
                     {label}
                 </span>
             )}

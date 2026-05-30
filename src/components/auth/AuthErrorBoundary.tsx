@@ -61,7 +61,7 @@ export class AuthErrorBoundary extends Component<Props, State> {
                     </div>
 
                     <h2 className="text-3xl font-extrabold text-foreground mb-3 tracking-tight">Authentication Error</h2>
-                    <p className="text-slate-400 max-w-md mb-10 leading-relaxed font-medium">
+                    <p className="text-foreground/60 max-w-md mb-10 leading-relaxed font-medium">
                         A critical error occurred while initializing the authentication service. This prevents the application from loading securely.
                     </p>
 
@@ -76,7 +76,7 @@ export class AuthErrorBoundary extends Component<Props, State> {
                     </div>
 
                     <div className="mt-12 pt-8 border-t border-foreground/5 w-full max-w-xs">
-                        <p className="text-[10px] font-bold uppercase tracking-[0.3em] text-slate-600">
+                        <p className="text-[10px] font-bold uppercase tracking-[0.3em] text-foreground/40">
                             Resilience Subsystem Active
                         </p>
                     </div>

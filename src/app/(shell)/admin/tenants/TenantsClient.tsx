@@ -136,7 +136,7 @@ export default function TenantsClient() {
                     </h2>
                     <form onSubmit={handleSaveTenant}>
                         <div className="mb-4">
-                            <label className="block text-gray-700 text-sm font-bold mb-2" htmlFor="name">
+                            <label className="block text-foreground/30 text-sm font-bold mb-2" htmlFor="name">
                                 Tenant Name
                             </label>
                             <input
@@ -144,13 +144,13 @@ export default function TenantsClient() {
                                 type="text"
                                 value={tenantForm.name}
                                 onChange={(e) => setTenantForm({ ...tenantForm, name: e.target.value })}
-                                className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
+                                className="shadow appearance-none border rounded w-full py-2 px-3 text-foreground/30 leading-tight focus:outline-none focus:shadow-outline"
                                 required
                             />
                         </div>
 
                         <div className="mb-4">
-                            <label className="block text-gray-700 text-sm font-bold mb-2" htmlFor="domain">
+                            <label className="block text-foreground/30 text-sm font-bold mb-2" htmlFor="domain">
                                 Domain
                             </label>
                             <input
@@ -158,21 +158,21 @@ export default function TenantsClient() {
                                 type="text"
                                 value={tenantForm.domain}
                                 onChange={(e) => setTenantForm({ ...tenantForm, domain: e.target.value })}
-                                className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
+                                className="shadow appearance-none border rounded w-full py-2 px-3 text-foreground/30 leading-tight focus:outline-none focus:shadow-outline"
                                 required
                             />
-                            <p className="text-gray-600 text-xs mt-1">The unique domain for this tenant (e.g., campus1.thaibagarden.edu)</p>
+                            <p className="text-foreground/40 text-xs mt-1">The unique domain for this tenant (e.g., campus1.thaibagarden.edu)</p>
                         </div>
 
                         <div className="mb-6">
-                            <label className="block text-gray-700 text-sm font-bold mb-2" htmlFor="settings">
+                            <label className="block text-foreground/30 text-sm font-bold mb-2" htmlFor="settings">
                                 Settings (JSON)
                             </label>
                             <textarea
                                 id="settings"
                                 value={tenantForm.settings}
                                 onChange={(e) => setTenantForm({ ...tenantForm, settings: e.target.value })}
-                                className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
+                                className="shadow appearance-none border rounded w-full py-2 px-3 text-foreground/30 leading-tight focus:outline-none focus:shadow-outline"
                                 rows={4}
                                 placeholder='{"branding": {"primaryColor": "#007bff"}, "features": {"notifications": true}}'
                             />
@@ -201,16 +201,16 @@ export default function TenantsClient() {
                 <table className="min-w-full">
                     <thead>
                         <tr>
-                            <th className="px-6 py-3 border-b border-gray-200 bg-gray-50 text-left text-xs leading-4 font-medium text-gray-500 uppercase tracking-wider">
+                            <th className="px-6 py-3 border-b border-gray-200 bg-gray-50 text-left text-xs leading-4 font-medium text-foreground/50 uppercase tracking-wider">
                                 Name
                             </th>
-                            <th className="px-6 py-3 border-b border-gray-200 bg-gray-50 text-left text-xs leading-4 font-medium text-gray-500 uppercase tracking-wider">
+                            <th className="px-6 py-3 border-b border-gray-200 bg-gray-50 text-left text-xs leading-4 font-medium text-foreground/50 uppercase tracking-wider">
                                 Domain
                             </th>
-                            <th className="px-6 py-3 border-b border-gray-200 bg-gray-50 text-left text-xs leading-4 font-medium text-gray-500 uppercase tracking-wider">
+                            <th className="px-6 py-3 border-b border-gray-200 bg-gray-50 text-left text-xs leading-4 font-medium text-foreground/50 uppercase tracking-wider">
                                 Created
                             </th>
-                            <th className="px-6 py-3 border-b border-gray-200 bg-gray-50 text-left text-xs leading-4 font-medium text-gray-500 uppercase tracking-wider">
+                            <th className="px-6 py-3 border-b border-gray-200 bg-gray-50 text-left text-xs leading-4 font-medium text-foreground/50 uppercase tracking-wider">
                                 Actions
                             </th>
                         </tr>
@@ -219,12 +219,12 @@ export default function TenantsClient() {
                         {tenants.map((tenant) => (
                             <tr key={tenant.id}>
                                 <td className="px-6 py-4 whitespace-no-wrap border-b border-gray-200">
-                                    <div className="text-sm leading-5 font-medium text-gray-900">{tenant.name}</div>
+                                    <div className="text-sm leading-5 font-medium text-foreground/20">{tenant.name}</div>
                                 </td>
                                 <td className="px-6 py-4 whitespace-no-wrap border-b border-gray-200">
-                                    <div className="text-sm leading-5 text-gray-900">{tenant.domain}</div>
+                                    <div className="text-sm leading-5 text-foreground/20">{tenant.domain}</div>
                                 </td>
-                                <td className="px-6 py-4 whitespace-no-wrap border-b border-gray-200 text-sm leading-5 text-gray-500">
+                                <td className="px-6 py-4 whitespace-no-wrap border-b border-gray-200 text-sm leading-5 text-foreground/50">
                                     {new Date(tenant.created_at).toLocaleDateString()}
                                 </td>
                                 <td className="px-6 py-4 whitespace-no-wrap border-b border-gray-200 text-sm leading-5 font-medium">
@@ -248,7 +248,7 @@ export default function TenantsClient() {
 
                 {tenants.length === 0 && (
                     <div className="text-center py-8">
-                        <p className="text-gray-500">No tenants found.</p>
+                        <p className="text-foreground/50">No tenants found.</p>
                     </div>
                 )}
             </div>

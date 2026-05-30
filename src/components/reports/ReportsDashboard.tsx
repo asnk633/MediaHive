@@ -164,12 +164,12 @@ export default function ReportsDashboard() {
             <Tabs defaultValue="intelligence" className="w-full space-y-6">
                 <div className="w-full overflow-x-auto pb-2 -mb-2">
                     <TabsList className="bg-slate-900/50 border border-[#ffffff1a] p-1 w-full md:w-auto inline-flex">
-                        <TabsTrigger value="intelligence" className="flex-1 md:flex-none data-[state=active]:bg-blue-600 data-[state=active]:text-foreground text-slate-400">
+                        <TabsTrigger value="intelligence" className="flex-1 md:flex-none data-[state=active]:bg-blue-600 data-[state=active]:text-foreground text-foreground/60">
                             <LayoutDashboard size={16} className="mr-2" /> Admin Intelligence
                         </TabsTrigger>
                         <TabsTrigger
                             value="activity"
-                            className="flex-1 md:flex-none data-[state=active]:bg-blue-600 data-[state=active]:text-foreground text-slate-400"
+                            className="flex-1 md:flex-none data-[state=active]:bg-blue-600 data-[state=active]:text-foreground text-foreground/60"
                             title="This is a read-only audit log. Entries cannot be edited or deleted."
                         >
                             <List size={16} className="mr-2" /> System Activity (Admin Only)
@@ -298,13 +298,13 @@ export default function ReportsDashboard() {
                                             <div className="space-y-1">
                                                 <div className="flex items-center justify-between">
                                                     <p className="font-medium text-foreground text-sm">{item.title}</p>
-                                                    <span className="text-xs text-slate-500 whitespace-nowrap">
+                                                    <span className="text-xs text-foreground/50 whitespace-nowrap">
                                                         {safeFormatDistanceToNow(item.timestamp)}
                                                     </span>
                                                 </div>
-                                                <p className="text-sm text-slate-400">{item.description}</p>
+                                                <p className="text-sm text-foreground/60">{item.description}</p>
                                                 {item.type === 'task' && item.meta?.status && (
-                                                    <Badge variant="neutral" className="text-[10px] border-[#ffffff1a] text-slate-400 mt-1">
+                                                    <Badge variant="neutral" className="text-[10px] border-[#ffffff1a] text-foreground/60 mt-1">
                                                         {item.meta.status}
                                                     </Badge>
                                                 )}

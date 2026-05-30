@@ -41,7 +41,7 @@ const TaskConfidenceViewComponent: React.FC<TaskConfidenceViewProps> = ({ tasks,
     if (user?.role !== 'admin') {
         return (
             <div className="bg-foreground/5 backdrop-blur-md border border-foreground/5 rounded-2xl overflow-hidden shadow-sm p-6 text-center">
-                <p className="text-gray-400">Access denied. Admin privileges required.</p>
+                <p className="text-foreground/60">Access denied. Admin privileges required.</p>
             </div>
         );
     }

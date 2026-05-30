@@ -19,6 +19,8 @@
 
 # production
 /build
+*.apk
+*.zip
 
 # misc
 .DS_Store

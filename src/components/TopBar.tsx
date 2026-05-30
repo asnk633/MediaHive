@@ -136,7 +136,7 @@ export default function TopBar({ title = "MediaHive" }: { title?: string }) {
               <div className="px-3 py-2 border-b border-foreground/5 mb-1">
                 <p className="text-sm font-medium text-foreground">{user?.name || 'User'}</p>
                 <p className="text-[10px] font-black uppercase tracking-widest text-indigo-400 mt-0.5">{currentRole || 'Member'}</p>
-                <p className="text-xs text-slate-400 truncate mt-1">{user?.email}</p>
+                <p className="text-xs text-foreground/60 truncate mt-1">{user?.email}</p>
               </div>
               <DropdownMenuItem onClick={() => nativeNavigate('/profile', router, 'TopBar:Profile')} className="text-sm py-2 cursor-pointer focus:bg-surface focus:text-foreground rounded-sm">
                 <User size={16} className="mr-2 text-text-muted" /> Profile

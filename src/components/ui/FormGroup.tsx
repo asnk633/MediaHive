@@ -19,7 +19,7 @@ export function FormGroup({
     return (
         <div className={cn("flex flex-col gap-1.5 w-full", className)}>
             {label && (
-                <label className="text-xs font-medium text-gray-400 ml-1">
+                <label className="text-xs font-medium text-foreground/60 ml-1">
                     {label}
                 </label>
             )}
@@ -35,7 +35,7 @@ export function FormGroup({
             )}
 
             {!error && description && (
-                <p className="text-xs text-gray-500 ml-1">
+                <p className="text-xs text-foreground/50 ml-1">
                     {description}
                 </p>
             )}

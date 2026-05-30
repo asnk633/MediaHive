@@ -62,14 +62,14 @@ export const ProfileSettingsView = () => {
         <div className="space-y-8 max-w-2xl">
             <div className="space-y-1">
                 <h3 className="text-lg font-medium text-foreground">Public Profile</h3>
-                <p className="text-sm text-slate-400">
+                <p className="text-sm text-foreground/60">
                     This information will be displayed publicly to other team members.
                 </p>
             </div>
 
             {/* Theme Selector */}
             <div className="space-y-4 pb-6 border-b border-foreground/5">
-                <h4 className="text-sm font-medium text-slate-300">Appearance</h4>
+                <h4 className="text-sm font-medium text-foreground">Appearance</h4>
                 <ThemeSelector />
             </div>
 
@@ -81,7 +81,7 @@ export const ProfileSettingsView = () => {
                     accept="image/*"
                     onChange={handleAvatarChange}
                 />
-                <div className="w-20 h-20 rounded-full bg-slate-800 flex items-center justify-center overflow-hidden text-slate-500 border border-[#ffffff1a] shrink-0">
+                <div className="w-20 h-20 rounded-full bg-slate-800 flex items-center justify-center overflow-hidden text-foreground/50 border border-[#ffffff1a] shrink-0">
                     {user?.avatar_url || user?.photoURL ? (
                         <img src={getDriveImageUrl(user.avatar_url || user.photoURL, user.avatar_drive_id)} alt="Avatar" className="w-full h-full object-cover" />
                     ) : (
@@ -91,12 +91,12 @@ export const ProfileSettingsView = () => {
                 <div className="space-y-2">
                     <Button
                         variant="outline"
-                        className="border-[#ffffff1a] text-slate-300 hover:text-foreground hover:bg-foreground/5"
+                        className="border-[#ffffff1a] text-foreground hover:text-foreground hover:bg-foreground/5"
                         onClick={() => fileInputRef.current?.click()}
                     >
                         Change Avatar
                     </Button>
-                    <p className="text-xs text-slate-500">
+                    <p className="text-xs text-foreground/50">
                         JPG, GIF or PNG. 2MB max.
                     </p>
                 </div>
@@ -120,7 +120,7 @@ export const ProfileSettingsView = () => {
                         onChange={(e) => setName(e.target.value)}
                         className="bg-slate-950/50 border-[#ffffff1a] text-foreground focus:border-blue-500 transition-colors"
                     />
-                    <p className="text-[10px] text-slate-500 uppercase tracking-wider font-bold">Editable Public Identity</p>
+                    <p className="text-[10px] text-foreground/50 uppercase tracking-wider font-bold">Editable Public Identity</p>
                 </div>
 
                 <div className="grid gap-2">
@@ -128,7 +128,7 @@ export const ProfileSettingsView = () => {
                     <Input
                         defaultValue={user?.email || ''}
                         readOnly
-                        className="bg-slate-950/50 border-[#ffffff1a] text-slate-400 cursor-not-allowed"
+                        className="bg-slate-950/50 border-[#ffffff1a] text-foreground/60 cursor-not-allowed"
                     />
                 </div>
 

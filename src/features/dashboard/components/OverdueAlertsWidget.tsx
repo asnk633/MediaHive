@@ -65,7 +65,7 @@ export function OverdueAlertsWidget() {
                                 </span>
                             </div>
 
-                            <div className="space-y-2 text-sm text-slate-400">
+                            <div className="space-y-2 text-sm text-foreground/60">
                                 <div className="flex items-center gap-2">
                                     <User size={14} />
                                     <span className="text-foreground">{req.requester.name}</span>

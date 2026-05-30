@@ -35,7 +35,7 @@ export const TaskCard = ({ title, time, priority = 'medium', completed, onToggle
 
             {/* Content */}
             <div className="flex-1 min-w-0">
-                <h4 className={`font-semibold text-[var(--color-text-primary)] truncate ${completed ? 'line-through text-gray-400' : ''}`}>
+                <h4 className={`font-semibold text-[var(--color-text-primary)] truncate ${completed ? 'line-through text-foreground/60' : ''}`}>
                     {title}
                 </h4>
                 <div className="flex items-center gap-1 text-xs text-[var(--color-text-secondary)] mt-0.5">

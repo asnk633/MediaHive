@@ -54,7 +54,7 @@ export function ReturnItemDialog({ issue, open, onOpenChange, onReturnComplete }
 
     return (
         <Dialog open={open} onOpenChange={onOpenChange}>
-            <DialogContent className="bg-slate-900 border-[#ffffff1a] text-slate-200">
+            <DialogContent className="bg-slate-900 border-[#ffffff1a] text-foreground">
                 <DialogHeader>
                     <DialogTitle>Return Item: {issue.itemName}</DialogTitle>
                 </DialogHeader>
@@ -62,11 +62,11 @@ export function ReturnItemDialog({ issue, open, onOpenChange, onReturnComplete }
 
                     <div className="p-3 bg-slate-800/50 rounded-lg border border-foreground/5 space-y-1 text-sm">
                         <div className="flex justify-between">
-                            <span className="text-slate-400">Issued To</span>
+                            <span className="text-foreground/60">Issued To</span>
                             <span className="text-foreground font-mono">{issue.issuedToUserId}</span>
                         </div>
                         <div className="flex justify-between">
-                            <span className="text-slate-400">Condition Out</span>
+                            <span className="text-foreground/60">Condition Out</span>
                             <span className="capitalize text-foreground">{issue.conditionOut}</span>
                         </div>
                     </div>

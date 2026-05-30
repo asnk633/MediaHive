@@ -3,7 +3,7 @@ import type { Config } from "tailwindcss";
 import plugin from "tailwindcss/plugin";
 const mediahive = {
   colors: {
-    canvas: "#0b1220",
+    canvas: "#000000",
 
     surface: {
       DEFAULT: "rgba(255,255,255,0.03)",
@@ -249,7 +249,7 @@ const mediahivePlugin = plugin(function ({ addBase, addComponents, addUtilities 
       transition: "transform " + mediahive.motion.duration.normal + " " + mediahive.motion.easing.standard + ", box-shadow " + mediahive.motion.duration.normal + " " + mediahive.motion.easing.standard,
       "&:hover": {
         transform: "translateY(-1px)",
-        boxShadow: "0 4px 12px rgba(0, 0, 0, 0.1)",
+        boxShadow: "0 4px 6px -1px rgba(0,0,0,0.1), 0 2px 4px -1px rgba(0,0,0,0.06)",
       },
     },
   });

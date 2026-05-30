@@ -100,7 +100,7 @@ export const AvatarUploadModal: React.FC<AvatarUploadModalProps> = ({
                         {/* Zoom Control */}
                         <div className="space-y-4">
                             <div className="flex justify-between items-center">
-                                <Label className="text-sm font-semibold text-slate-300 flex items-center gap-2.5">
+                                <Label className="text-sm font-semibold text-foreground flex items-center gap-2.5">
                                     <ZoomIn className="w-4 h-4 text-blue-400" />
                                     Scale Image
                                 </Label>
@@ -109,7 +109,7 @@ export const AvatarUploadModal: React.FC<AvatarUploadModalProps> = ({
                                 </span>
                             </div>
                             <div className="flex items-center gap-4">
-                                <ZoomOut className="w-4 h-4 text-slate-500" />
+                                <ZoomOut className="w-4 h-4 text-foreground/50" />
                                 <Slider
                                     value={[zoom]}
                                     min={1}
@@ -118,14 +118,14 @@ export const AvatarUploadModal: React.FC<AvatarUploadModalProps> = ({
                                     onValueChange={([val]) => setZoom(val)}
                                     className="flex-1"
                                 />
-                                <ZoomIn className="w-4 h-4 text-slate-500" />
+                                <ZoomIn className="w-4 h-4 text-foreground/50" />
                             </div>
                         </div>
 
                         {/* Rotation Control */}
                         <div className="space-y-4">
                             <div className="flex justify-between items-center">
-                                <Label className="text-sm font-semibold text-slate-300 flex items-center gap-2.5">
+                                <Label className="text-sm font-semibold text-foreground flex items-center gap-2.5">
                                     <RotateCw className="w-4 h-4 text-emerald-400" />
                                     Rotate
                                 </Label>
@@ -151,7 +151,7 @@ export const AvatarUploadModal: React.FC<AvatarUploadModalProps> = ({
                     <Button
                         variant="ghost"
                         onClick={onClose}
-                        className="flex-1 border-foreground/5 text-slate-400 hover:text-foreground hover:bg-foreground/5 font-medium transition-all"
+                        className="flex-1 border-foreground/5 text-foreground/60 hover:text-foreground hover:bg-foreground/5 font-medium transition-all"
                         disabled={isUploading}
                     >
                         Cancel

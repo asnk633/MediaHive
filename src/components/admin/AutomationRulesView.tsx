@@ -147,7 +147,7 @@ export default function AutomationRulesView() {
                                         <span className="flex w-3 h-3 rounded-full bg-emerald-500 shadow-[0_0_12px_rgba(16,185,129,0.8)] animate-pulse" />
                                         Active Overrides
                                     </h2>
-                                    <span className="px-2.5 py-0.5 rounded-full bg-foreground/5 text-xs text-slate-400 font-mono border border-foreground/5">{activeRules.length}</span>
+                                    <span className="px-2.5 py-0.5 rounded-full bg-foreground/5 text-xs text-foreground/60 font-mono border border-foreground/5">{activeRules.length}</span>
                                 </div>
 
                                 {activeRules.length === 0 ? (
@@ -244,7 +244,7 @@ function RuleCard({ rule, readOnly, onEdit, onClone, onActivate, variant = 'acti
     const actionColors = {
         notify: 'bg-emerald-500/10 text-emerald-400 border-emerald-500/20',
         escalate: 'bg-rose-500/10 text-rose-400 border-rose-500/20',
-        suppress: 'bg-slate-500/10 text-slate-400 border-slate-500/20',
+        suppress: 'bg-slate-500/10 text-foreground/60 border-slate-500/20',
         audit: 'bg-blue-500/10 text-blue-400 border-blue-500/20'
     };
 
@@ -269,17 +269,17 @@ function RuleCard({ rule, readOnly, onEdit, onClone, onActivate, variant = 'acti
                     <div className="flex items-center flex-wrap gap-2">
                         <div className={`
                             px-2.5 py-1 rounded text-[11px] font-bold uppercase tracking-wider border
-                            ${isLocked ? 'bg-slate-800 border-slate-700 text-slate-500' : actionColor}
+                            ${isLocked ? 'bg-slate-800 border-slate-700 text-foreground/50' : actionColor}
                         `}>
                             {rule.action}
                         </div>
 
-                        <div className="flex items-center gap-1.5 px-2 py-1 rounded bg-foreground/5 border border-foreground/5 text-xs font-mono text-slate-400">
+                        <div className="flex items-center gap-1.5 px-2 py-1 rounded bg-foreground/5 border border-foreground/5 text-xs font-mono text-foreground/60">
                             <span className={isActive ? 'text-indigo-300' : ''}>{rule.scopeType}</span>
                             {rule.scopeId !== 'global' && (
                                 <>
-                                    <span className="text-slate-600">/</span>
-                                    <span className="text-slate-300 truncate max-w-[120px]">{rule.scopeId}</span>
+                                    <span className="text-foreground/40">/</span>
+                                    <span className="text-foreground truncate max-w-[120px]">{rule.scopeId}</span>
                                 </>
                             )}
                         </div>
@@ -302,7 +302,7 @@ function RuleCard({ rule, readOnly, onEdit, onClone, onActivate, variant = 'acti
                 {/* Right: Actions */}
                 <div className="flex items-center gap-1 shrink-0">
                     {!readOnly && rule.locked && (
-                        <button onClick={() => onClone(rule)} className="p-2 text-slate-600 hover:text-foreground hover:bg-foreground/5 rounded-lg transition-colors" title="Clone as Draft">
+                        <button onClick={() => onClone(rule)} className="p-2 text-foreground/40 hover:text-foreground hover:bg-foreground/5 rounded-lg transition-colors" title="Clone as Draft">
                             <Copy className="w-4 h-4" />
                         </button>
                     )}
@@ -320,7 +320,7 @@ function RuleCard({ rule, readOnly, onEdit, onClone, onActivate, variant = 'acti
                     {/* Toggle Expand */}
                     <button
                         onClick={() => setExpanded(!expanded)}
-                        className={`p-2 rounded-lg transition-all ${expanded ? 'bg-foreground/10 text-foreground' : 'text-slate-700 hover:text-slate-400'}`}
+                        className={`p-2 rounded-lg transition-all ${expanded ? 'bg-foreground/10 text-foreground' : 'text-foreground/30 hover:text-foreground/60'}`}
                     >
                         <ChevronRight className={`w-4 h-4 transition-transform ${expanded ? 'rotate-90' : ''}`} />
                     </button>
@@ -345,12 +345,12 @@ function RuleCard({ rule, readOnly, onEdit, onClone, onActivate, variant = 'acti
                     </div>
                     {rule.eventType && (
                         <div className="flex items-center gap-2 px-2">
-                            <span className="text-[10px] uppercase tracking-wider text-slate-600">Trigger:</span>
-                            <span className="text-xs text-slate-500 font-mono">{rule.eventType}</span>
+                            <span className="text-[10px] uppercase tracking-wider text-foreground/40">Trigger:</span>
+                            <span className="text-xs text-foreground/50 font-mono">{rule.eventType}</span>
                         </div>
                     )}
                     <div className="flex justify-end pt-2">
-                        <span className="text-[10px] text-slate-700 font-mono">ID: {rule.id || 'NEW'}</span>
+                        <span className="text-[10px] text-foreground/30 font-mono">ID: {rule.id || 'NEW'}</span>
                     </div>
                 </div>
             )}

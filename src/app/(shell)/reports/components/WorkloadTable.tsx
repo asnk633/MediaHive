@@ -50,13 +50,13 @@ export const WorkloadTable: React.FC<WorkloadTableProps> = ({ data }) => {
                                 <td className="px-6 py-4 text-center font-bold text-muted">
                                     {user.totalAssigned}
                                 </td>
-                                <td className="px-6 py-4 text-center font-medium text-gray-400">
+                                <td className="px-6 py-4 text-center font-medium text-foreground/60">
                                     {user.pending > 0 ? user.pending : '-'}
                                 </td>
-                                <td className="px-6 py-4 text-center font-medium text-gray-400">
+                                <td className="px-6 py-4 text-center font-medium text-foreground/60">
                                     {user.working > 0 ? user.working : '-'}
                                 </td>
-                                <td className="px-6 py-4 text-center font-medium text-gray-400">
+                                <td className="px-6 py-4 text-center font-medium text-foreground/60">
                                     {user.completed > 0 ? user.completed : '-'}
                                 </td>
                                 <td className="px-6 py-4 text-center font-bold">
@@ -65,7 +65,7 @@ export const WorkloadTable: React.FC<WorkloadTableProps> = ({ data }) => {
                                             {user.overdue}
                                         </span>
                                     ) : (
-                                        <span className="text-gray-600">-</span>
+                                        <span className="text-foreground/40">-</span>
                                     )}
                                 </td>
                             </tr>

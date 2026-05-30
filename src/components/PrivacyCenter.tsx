@@ -96,9 +96,9 @@ export function PrivacyCenter() {
                     <div className="space-y-1">
                         <div className="flex items-center gap-2">
                             <h3 className="font-semibold text-foreground">Anonymous Telemetry</h3>
-                            <Info size={14} className="text-gray-500" />
+                            <Info size={14} className="text-foreground/50" />
                         </div>
-                        <p className="text-xs text-gray-400">Help us improve by sending anonymous performance metrics.</p>
+                        <p className="text-xs text-foreground/60">Help us improve by sending anonymous performance metrics.</p>
                     </div>
                     <Switch
                         checked={telemetryEnabled}
@@ -109,7 +109,7 @@ export function PrivacyCenter() {
                 <div className="p-5 bg-foreground/5 border border-foreground/10 rounded-2xl space-y-4">
                     <div className="space-y-1">
                         <h3 className="font-semibold text-foreground">Data Portability (GDPR)</h3>
-                        <p className="text-xs text-gray-400">Request a copy of all your operational data in JSON format.</p>
+                        <p className="text-xs text-foreground/60">Request a copy of all your operational data in JSON format.</p>
                     </div>
                     <Button
                         onClick={handleDataExport}
@@ -125,7 +125,7 @@ export function PrivacyCenter() {
                 <div className="p-5 bg-red-500/5 border border-red-500/10 rounded-2xl space-y-4">
                     <div className="space-y-1">
                         <h3 className="font-semibold text-red-400">Account Deletion</h3>
-                        <p className="text-xs text-gray-400">Permanently remove your account and all associated data from the platform.</p>
+                        <p className="text-xs text-foreground/60">Permanently remove your account and all associated data from the platform.</p>
                     </div>
                     <Button
                         variant="destructive"
@@ -138,7 +138,7 @@ export function PrivacyCenter() {
                 </div>
             </div>
 
-            <div className="pt-4 flex items-center justify-center gap-2 text-[10px] text-gray-600 uppercase tracking-widest font-bold">
+            <div className="pt-4 flex items-center justify-center gap-2 text-[10px] text-foreground/40 uppercase tracking-widest font-bold">
                 <Lock size={10} />
                 End-to-End Encryption Active
             </div>

@@ -90,7 +90,7 @@ export const RolePolicyEditor: React.FC<RolePolicyEditorProps> = ({ scopeType, s
         handleUpdate(newRules);
     };
 
-    if (loading) return <div className="p-8 text-center flex justify-center"><Loader2 className="animate-spin text-slate-500" /></div>;
+    if (loading) return <div className="p-8 text-center flex justify-center"><Loader2 className="animate-spin text-foreground/50" /></div>;
 
     return (
         <Card className="bg-slate-950/40 border-slate-800">
@@ -109,14 +109,14 @@ export const RolePolicyEditor: React.FC<RolePolicyEditorProps> = ({ scopeType, s
                         <div key={eventType} className={`flex flex-col sm:flex-row sm:items-center justify-between p-4 rounded-lg border gap-4 ${isExplicit ? 'bg-slate-900/50 border-indigo-500/30' : 'bg-slate-900/20 border-slate-800 opacity-80'}`}>
                             <div className="space-y-1">
                                 <div className="flex items-center gap-2">
-                                    <Label className="text-base font-semibold text-slate-200">
+                                    <Label className="text-base font-semibold text-foreground">
                                         {eventType}
                                     </Label>
-                                    <Badge variant="neutral" className={`text-[10px] ${isExplicit ? 'border-indigo-500 text-indigo-400' : 'border-slate-700 text-slate-500'}`}>
+                                    <Badge variant="neutral" className={`text-[10px] ${isExplicit ? 'border-indigo-500 text-indigo-400' : 'border-slate-700 text-foreground/50'}`}>
                                         {source}
                                     </Badge>
                                 </div>
-                                <p className="text-xs text-slate-500">Escalates at Level {rule.escalateAtLevel}</p>
+                                <p className="text-xs text-foreground/50">Escalates at Level {rule.escalateAtLevel}</p>
                             </div>
 
                             <div className="flex items-center gap-6">
@@ -126,7 +126,7 @@ export const RolePolicyEditor: React.FC<RolePolicyEditorProps> = ({ scopeType, s
                                         checked={rule.enabled}
                                         onCheckedChange={(c) => toggleRule(eventType, c)}
                                     />
-                                    <span className={`text-sm font-medium w-16 ${rule.enabled ? 'text-emerald-400' : 'text-slate-500'}`}>
+                                    <span className={`text-sm font-medium w-16 ${rule.enabled ? 'text-emerald-400' : 'text-foreground/50'}`}>
                                         {rule.enabled ? 'On' : 'Off'}
                                     </span>
                                 </div>
@@ -135,7 +135,7 @@ export const RolePolicyEditor: React.FC<RolePolicyEditorProps> = ({ scopeType, s
                                     <Button
                                         variant="ghost"
                                         size="icon"
-                                        className="h-8 w-8 text-slate-500 hover:text-foreground"
+                                        className="h-8 w-8 text-foreground/50 hover:text-foreground"
                                         onClick={() => revertToInherited(eventType)}
                                         title="Revert to Inherited"
                                     >

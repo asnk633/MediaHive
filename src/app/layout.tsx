@@ -9,6 +9,7 @@ import { ShellCommands } from '@/components/system/ShellCommands';
 import QueryProvider from "@/providers/QueryProvider";
 
 import { AmbientCursorLight } from '@/components/ui/AmbientCursorLight';
+import { GlobalCommandPalette } from '@/components/layout/GlobalCommandPalette';
 
 const dmSans = DM_Sans({
   subsets: ['latin'],
@@ -74,6 +75,7 @@ export default function RootLayout({ children }: { children: ReactNode }) {
             <div id="app-canvas">
               {children}
             </div>
+            <GlobalCommandPalette />
           </RootProviders>
         </QueryProvider>
       </body>

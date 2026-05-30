@@ -482,7 +482,7 @@ export default function TasksNewClient() {
                                         onChange={e => setTitle(e.target.value)}
                                         placeholder={COPY.placeholders.taskTitle}
                                         spellCheck={true}
-                                        className="w-full bg-black/20 backdrop-blur-sm p-4 rounded-2xl border border-foreground/5 shadow-inner focus:bg-black/40 focus:ring-2 focus:ring-primary/30 focus:border-primary/50 outline-none transition-all placeholder:text-gray-700 font-medium text-foreground text-lg"
+                                        className="w-full bg-black/20 backdrop-blur-sm p-4 rounded-2xl border border-foreground/5 shadow-inner focus:bg-black/40 focus:ring-2 focus:ring-primary/30 focus:border-primary/50 outline-none transition-all placeholder:text-foreground/30 font-medium text-foreground text-lg"
                                     />
                                 </div>
  
@@ -494,7 +494,7 @@ export default function TasksNewClient() {
                                         placeholder={COPY.placeholders.taskDescription}
                                         rows={4}
                                         spellCheck={true}
-                                        className="w-full bg-black/20 backdrop-blur-sm p-4 rounded-2xl border border-foreground/5 shadow-inner focus:bg-black/40 focus:ring-2 focus:ring-primary/30 focus:border-primary/50 outline-none transition-all placeholder:text-gray-700 resize-none text-foreground/90 leading-relaxed"
+                                        className="w-full bg-black/20 backdrop-blur-sm p-4 rounded-2xl border border-foreground/5 shadow-inner focus:bg-black/40 focus:ring-2 focus:ring-primary/30 focus:border-primary/50 outline-none transition-all placeholder:text-foreground/30 resize-none text-foreground/90 leading-relaxed"
                                         tabIndex={2}
                                     />
                                 </div>
@@ -587,7 +587,7 @@ export default function TasksNewClient() {
                                                     ? p === 'high' ? 'bg-gradient-to-br from-red-500/20 to-red-600/10 border border-red-500/30 text-red-300 shadow-[0_0_15px_rgba(239,68,68,0.2)]' :
                                                         p === 'medium' ? 'bg-gradient-to-br from-orange-500/20 to-orange-600/10 border border-orange-500/30 text-orange-300 shadow-[0_0_15px_rgba(249,115,22,0.2)]' :
                                                             'bg-gradient-to-br from-blue-500/20 to-blue-600/10 border border-blue-500/30 text-blue-300 shadow-[0_0_15px_rgba(59,130,246,0.2)]'
-                                                    : 'bg-foreground/5 border border-foreground/5 text-gray-500 hover:bg-foreground/10 hover:text-gray-400'
+                                                    : 'bg-foreground/5 border border-foreground/5 text-foreground/50 hover:bg-foreground/10 hover:text-foreground/60'
                                                     }`}
                                             >
                                                 {p.charAt(0).toUpperCase() + p.slice(1)}
@@ -633,7 +633,7 @@ export default function TasksNewClient() {
                                         <div className="w-10 h-10 rounded-full bg-blue-500/10 flex items-center justify-center text-blue-400 group-hover:scale-110 transition-transform">
                                             <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" /><polyline points="17 8 12 3 7 8" /><line x1="12" x2="12" y1="3" y2="15" /></svg>
                                         </div>
-                                        <p className="text-sm text-gray-400 group-hover:text-gray-300">
+                                        <p className="text-sm text-foreground/60 group-hover:text-foreground">
                                             Click or drag files here
                                         </p>
                                     </div>
@@ -643,11 +643,11 @@ export default function TasksNewClient() {
                                     <div className="space-y-2 mt-2">
                                         {files.map((file, i) => (
                                             <div key={i} className="flex items-center justify-between p-2 bg-foreground/5 rounded-lg border border-foreground/5">
-                                                <span className="text-xs text-gray-300 truncate max-w-[200px]">{file.name}</span>
+                                                <span className="text-xs text-foreground truncate max-w-[200px]">{file.name}</span>
                                                 <button
                                                     type="button"
                                                     onClick={() => setFiles(files.filter((_, idx) => idx !== i))}
-                                                    className="text-gray-500 hover:text-red-400 p-1"
+                                                    className="text-foreground/50 hover:text-red-400 p-1"
                                                 >
                                                     <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M18 6 6 18" /><path d="m6 6 12 12" /></svg>
                                                 </button>
@@ -660,11 +660,11 @@ export default function TasksNewClient() {
                             {/* Read Only Info */}
                             <div className="pt-6 mt-2 border-t border-foreground/5 flex items-center justify-between opacity-60">
                                 <div className="flex items-center gap-3">
-                                    <div className="w-8 h-8 rounded-full bg-foreground/5 flex items-center justify-center text-xs font-bold text-gray-500">
+                                    <div className="w-8 h-8 rounded-full bg-foreground/5 flex items-center justify-center text-xs font-bold text-foreground/50">
                                         {(user.name || 'U').charAt(0)}
                                     </div>
-                                    <div className="text-xs text-gray-500">
-                                        Creating as <span className="text-gray-300">
+                                    <div className="text-xs text-foreground/50">
+                                        Creating as <span className="text-foreground">
                                             {user.name || 'Unknown'}
                                         </span>
                                     </div>

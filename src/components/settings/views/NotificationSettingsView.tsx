@@ -74,14 +74,14 @@ export const NotificationSettingsView = () => {
     };
 
     if (loading) {
-        return <div className="text-slate-400">Loading settings...</div>;
+        return <div className="text-foreground/60">Loading settings...</div>;
     }
 
     return (
         <div className="space-y-6 max-w-2xl">
             <div className="space-y-1">
                 <h3 className="text-lg font-medium text-foreground">Notifications</h3>
-                <p className="text-sm text-slate-400">
+                <p className="text-sm text-foreground/60">
                     Configure how you receive alerts and updates.
                 </p>
             </div>
@@ -90,8 +90,8 @@ export const NotificationSettingsView = () => {
                 <Card className="bg-slate-950/30 border-foreground/5">
                     <CardContent className="p-4 flex items-center justify-between">
                         <div className="space-y-0.5">
-                            <Label className="text-base text-slate-200" htmlFor="notify-requests">Device Requests</Label>
-                            <p className="text-xs text-slate-500">Receive alerts when items are requested or approved.</p>
+                            <Label className="text-base text-foreground" htmlFor="notify-requests">Device Requests</Label>
+                            <p className="text-xs text-foreground/50">Receive alerts when items are requested or approved.</p>
                         </div>
                         <Switch
                             id="notify-requests"
@@ -105,8 +105,8 @@ export const NotificationSettingsView = () => {
                 <Card className="bg-slate-950/30 border-foreground/5">
                     <CardContent className="p-4 flex items-center justify-between">
                         <div className="space-y-0.5">
-                            <Label className="text-base text-slate-200" htmlFor="notify-tasks">Task Assignments</Label>
-                            <p className="text-xs text-slate-500">Get notified when tasks are assigned to you.</p>
+                            <Label className="text-base text-foreground" htmlFor="notify-tasks">Task Assignments</Label>
+                            <p className="text-xs text-foreground/50">Get notified when tasks are assigned to you.</p>
                         </div>
                         <Switch
                             id="notify-tasks"
@@ -120,8 +120,8 @@ export const NotificationSettingsView = () => {
                 <Card className="bg-slate-950/30 border-foreground/5">
                     <CardContent className="p-4 flex items-center justify-between">
                         <div className="space-y-0.5">
-                            <Label className="text-base text-slate-200" htmlFor="notify-system">System Updates</Label>
-                            <p className="text-xs text-slate-500">News about MediaHive features and updates.</p>
+                            <Label className="text-base text-foreground" htmlFor="notify-system">System Updates</Label>
+                            <p className="text-xs text-foreground/50">News about MediaHive features and updates.</p>
                         </div>
                         <Switch
                             id="notify-system"
@@ -133,7 +133,7 @@ export const NotificationSettingsView = () => {
                 </Card>
             </div>
 
-            <p className="text-xs text-slate-600 text-center pt-8">
+            <p className="text-xs text-foreground/40 text-center pt-8">
                 Changes are saved automatically.
             </p>
         </div>

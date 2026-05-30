@@ -1,11 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:google_fonts/google_fonts.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
-import 'presentation/screens/shell_screen.dart';
 import 'shared/widgets/mh_loading_overlay.dart';
-import 'features/auth/presentation/screens/startup_screen.dart';
 import 'core/design_tokens.dart';
 import 'core/router/router.dart';
 import 'package:hive_flutter/hive_flutter.dart';
@@ -48,10 +45,10 @@ void main() async {
     anonKey: config.supabaseAnonKey,
   );
 
-  print('SUPABASE_INIT: URL=${config.supabaseUrl}');
+  debugPrint('SUPABASE_INIT: URL=${config.supabaseUrl}');
   final session = Supabase.instance.client.auth.currentSession;
   final user = Supabase.instance.client.auth.currentUser;
-  print('AUTH_STATE: LoggedIn=${session != null}, UserID=${user?.id}');
+  debugPrint('AUTH_STATE: LoggedIn=${session != null}, UserID=${user?.id}');
 
   final container = ProviderContainer();
   final logger = container.read(loggerProvider.notifier);
@@ -156,8 +153,6 @@ class MediaHiveApp extends ConsumerWidget {
           onSecondary: Colors.white,
           surface: DesignTokens.lightSurface,
           onSurface: DesignTokens.lightTextPrimary,
-          background: DesignTokens.lightBackground,
-          onBackground: DesignTokens.lightTextPrimary,
           error: DesignTokens.danger,
           onError: Colors.white,
           outline: DesignTokens.lightBorder,
@@ -248,8 +243,6 @@ class MediaHiveApp extends ConsumerWidget {
           onSecondary: Colors.black,
           surface: DesignTokens.surface,
           onSurface: Colors.white,
-          background: DesignTokens.backgroundPrimary,
-          onBackground: Colors.white,
           error: DesignTokens.danger,
           onError: Colors.white,
           outline: DesignTokens.border,

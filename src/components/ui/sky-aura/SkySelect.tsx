@@ -14,7 +14,7 @@ const SkySelectTrigger = React.forwardRef<
     <SelectPrimitive.Trigger
         ref={ref}
         className={cn(
-            "flex h-10 w-full items-center justify-between rounded-xl border border-foreground/10 bg-foreground/[0.03] px-3 py-2 text-sm text-slate-200 placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-1 focus:ring-offset-slate-950 disabled:cursor-not-allowed disabled:opacity-50",
+            "flex h-10 w-full items-center justify-between rounded-xl border border-foreground/10 bg-foreground/[0.03] px-3 py-2 text-sm text-foreground placeholder:text-foreground/60 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-1 focus:ring-offset-slate-950 disabled:cursor-not-allowed disabled:opacity-50",
             "backdrop-blur-md shadow-sm transition-all duration-300 hover:bg-foreground/[0.06]",
             className
         )}
@@ -36,7 +36,7 @@ const SkySelectContent = React.forwardRef<
         <SelectPrimitive.Content
             ref={ref}
             className={cn(
-                "relative z-50 min-w-[8rem] overflow-hidden rounded-xl border border-foreground/10 bg-slate-950/90 text-slate-200 shadow-elevated animate-in fade-in-80",
+                "relative z-50 min-w-[8rem] overflow-hidden rounded-xl border border-foreground/10 bg-slate-950/90 text-foreground shadow-elevated animate-in fade-in-80",
                 "backdrop-blur-xl",
                 className
             )}

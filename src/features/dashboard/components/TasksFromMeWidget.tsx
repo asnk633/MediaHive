@@ -27,7 +27,7 @@ export const TasksFromMeWidget = ({ tasks, userId, title = "Tasks from Me" }: Ta
             case 'completed': return 'bg-green-500/20 text-green-400 border-green-500/30';
             case 'in_progress': return 'bg-blue-500/20 text-blue-400 border-blue-500/30';
             case 'review': return 'bg-yellow-500/20 text-yellow-400 border-yellow-500/30';
-            default: return 'bg-glass text-gray-400 shadow-sm';
+            default: return 'bg-glass text-foreground/60 shadow-sm';
         }
     };
 
@@ -49,12 +49,12 @@ export const TasksFromMeWidget = ({ tasks, userId, title = "Tasks from Me" }: Ta
         return (
             <div className="space-y-6">
                 <div className="flex justify-between items-end mb-2">
-                    <h3 className="text-sm font-bold text-gray-400 uppercase tracking-widest ml-1">
+                    <h3 className="text-sm font-bold text-foreground/60 uppercase tracking-widest ml-1">
                         {title}
                     </h3>
                 </div>
                 <div className="p-6 bg-surface backdrop-blur-md rounded-[18px] shadow-sm text-center">
-                    <p className="text-gray-400 text-sm">No active requests found.</p>
+                    <p className="text-foreground/60 text-sm">No active requests found.</p>
                 </div>
             </div>
         );
@@ -63,7 +63,7 @@ export const TasksFromMeWidget = ({ tasks, userId, title = "Tasks from Me" }: Ta
     return (
         <div className="space-y-6">
             <div className="flex justify-between items-end mb-2">
-                <h3 className="text-sm font-bold text-gray-400 uppercase tracking-widest ml-1">
+                <h3 className="text-sm font-bold text-foreground/60 uppercase tracking-widest ml-1">
                     {title}
                 </h3>
                 <button
@@ -80,7 +80,7 @@ export const TasksFromMeWidget = ({ tasks, userId, title = "Tasks from Me" }: Ta
                     return (
                         <div key={task.id} className={`group flex items-center justify-between p-4 bg-surface backdrop-blur-md rounded-[18px] shadow-sm hover:bg-surface/80 hover:shadow-md transition-all duration-300 ${isDone ? 'opacity-50 grayscale' : ''}`}>
                             <div className="flex-1 min-w-0 mr-4">
-                                <p className={`text-sm font-semibold truncate ${isDone ? 'text-gray-500 line-through' : 'text-gray-200 group-hover:text-foreground'}`}>
+                                <p className={`text-sm font-semibold truncate ${isDone ? 'text-foreground/50 line-through' : 'text-foreground group-hover:text-foreground'}`}>
                                     {task.title}
                                 </p>
                                 {getTaskHint(task) && !isDone && (
@@ -93,19 +93,19 @@ export const TasksFromMeWidget = ({ tasks, userId, title = "Tasks from Me" }: Ta
                                                 const name = u.name || "User";
                                                 const initial = name.charAt(0).toUpperCase();
                                                 return (
-                                                    <div key={i} className="h-5 w-5 rounded-full bg-slate-700 border border-[#1a1a1a] flex items-center justify-center text-[9px] font-bold text-gray-300" title={name}>
+                                                    <div key={i} className="h-5 w-5 rounded-full bg-slate-700 border border-[#1a1a1a] flex items-center justify-center text-[9px] font-bold text-foreground" title={name}>
                                                         {initial}
                                                     </div>
                                                 );
                                             })}
                                             {task.assignedTo.length > 3 && (
-                                                <div className="h-5 w-5 rounded-full bg-slate-800 border border-[#1a1a1a] flex items-center justify-center text-[8px] text-gray-400">
+                                                <div className="h-5 w-5 rounded-full bg-slate-800 border border-[#1a1a1a] flex items-center justify-center text-[8px] text-foreground/60">
                                                     +{task.assignedTo.length - 3}
                                                 </div>
                                             )}
                                         </div>
                                     ) : (
-                                        <span className="text-xs text-gray-600 italic">Unassigned</span>
+                                        <span className="text-xs text-foreground/40 italic">Unassigned</span>
                                     )}
                                 </div>
                             </div>

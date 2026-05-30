@@ -54,7 +54,7 @@ export const TodayTasksCard: React.FC<TodayTasksCardProps> = ({ tasks, isLoading
             </div>
 
 
-            <div className="flex-1 space-y-3 overflow-y-auto no-scrollbar max-h-[320px]">
+            <div className="flex-1 space-y-3 overflow-y-auto no-scrollbar max-h-[320px] pt-5 pb-5">
                 {isLoading ? (
                     Array(4).fill(0).map((_, i) => (
                         <div key={i} className="p-3 rounded-[18px] bg-foreground/[0.02] border border-foreground/5 flex gap-3 items-center">
@@ -67,41 +67,41 @@ export const TodayTasksCard: React.FC<TodayTasksCardProps> = ({ tasks, isLoading
                         <Link 
                             href={`/tasks/${task.id}`}
                             key={task.id}
-                            className="group py-3 px-[14px] mx-4 rounded-[18px] bg-foreground/[0.02] border border-foreground/[0.05] hover:bg-foreground/[0.04] hover:border-emerald-500/30 transition-all cursor-pointer flex items-center justify-between gap-4"
+                            className="group/card py-2.5 px-3.5 mx-3 rounded-[16px] bg-foreground/[0.02] border border-foreground/[0.05] hover:bg-foreground/[0.04] hover:border-emerald-500/30 transition-all cursor-pointer flex flex-col gap-2 overflow-hidden"
                         >
-                            <div className="flex items-center gap-3 min-w-0">
+                            <div className="flex items-center gap-2.5 w-full">
                                 <div className={cn(
                                     "w-2 h-2 rounded-full shrink-0",
                                     task.status === 'done' ? "bg-emerald-500" : task.status === 'in_progress' ? "bg-blue-500" : "bg-foreground/20"
                                 )} />
-                                <div className="min-w-0 ml-1.5">
-                                    <p className="text-sm font-medium text-foreground/90 truncate group-hover:text-emerald-400 transition-colors">
-                                        {task.title}
-                                    </p>
-                                    <div className="flex items-center gap-2 mt-1.5">
-                                        <div className="flex items-center gap-1 text-[9px] text-foreground/70 font-bold uppercase tracking-widest bg-foreground/5 px-1.5 py-0.5 rounded border border-foreground/5">
-                                            <User size={10} className="text-foreground/70" />
-                                            <span className="truncate max-w-[80px]">
-                                                {task.assigned_to?.[0]?.name || 'Unassigned'}
-                                            </span>
-                                        </div>
-                                        {task.priority && (
-                                            <div className={cn(
-                                                "text-[9px] font-black px-1.5 py-0.5 rounded border uppercase tracking-wider whitespace-nowrap",
-                                                getPriorityColor(task.priority)
-                                            )}>
-                                                {task.priority}
-                                            </div>
-                                        )}
-                                    </div>
-                                </div>
+                                <p className="text-[13px] font-medium text-foreground/90 truncate group-hover/card:text-emerald-400 transition-colors flex-1 min-w-0">
+                                    {task.title}
+                                </p>
                             </div>
                             
-                            <div className={cn(
-                                "text-[9px] font-black px-1.5 py-0.5 rounded border uppercase tracking-wider whitespace-nowrap mr-2 mt-1",
-                                getStatusColor(task.status)
-                            )}>
-                                {getStatusLabel(task.status)}
+                            <div className="flex items-center justify-between pl-[18px] w-full gap-2">
+                                <div className="flex items-center gap-1.5 min-w-0 shrink flex-wrap overflow-hidden h-[20px]">
+                                    <div className={cn(
+                                        "text-[9px] font-bold px-1.5 py-0.5 rounded border uppercase tracking-wider whitespace-nowrap shrink-0",
+                                        getStatusColor(task.status)
+                                    )}>
+                                        {getStatusLabel(task.status)}
+                                    </div>
+                                    {task.priority && (
+                                        <div className={cn(
+                                            "text-[9px] font-bold px-1.5 py-0.5 rounded border uppercase tracking-wider whitespace-nowrap shrink-0",
+                                            getPriorityColor(task.priority)
+                                        )}>
+                                            {task.priority}
+                                        </div>
+                                    )}
+                                </div>
+                                <div className="flex items-center gap-1 text-[9px] text-foreground/70 font-bold uppercase tracking-widest bg-foreground/5 px-1.5 py-0.5 rounded border border-foreground/5 shrink-0 max-w-[80px]">
+                                    <User size={10} className="text-foreground/70 shrink-0" />
+                                    <span className="truncate">
+                                        {task.assigned_to?.[0]?.name?.split(' ')[0] || 'Unassigned'}
+                                    </span>
+                                </div>
                             </div>
                         </Link>
                     ))

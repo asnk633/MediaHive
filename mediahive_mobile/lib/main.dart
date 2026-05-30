@@ -123,6 +123,28 @@ class MediaHiveApp extends ConsumerWidget {
         useMaterial3: true,
         brightness: Brightness.light,
         fontFamily: '.SF Pro Text',
+        textTheme: const TextTheme(
+          // ── Display — Hero/splash text ────────────────────────────
+          displayLarge:  TextStyle(fontSize: 34, fontWeight: FontWeight.w800, height: 1.15, letterSpacing: -0.5, color: DesignTokens.lightTextPrimary),
+          displayMedium: TextStyle(fontSize: 28, fontWeight: FontWeight.w700, height: 1.18, letterSpacing: -0.3, color: DesignTokens.lightTextPrimary),
+          displaySmall:  TextStyle(fontSize: 24, fontWeight: FontWeight.w700, height: 1.20, letterSpacing: -0.2, color: DesignTokens.lightTextPrimary),
+          // ── Headline — Section headers ────────────────────────────
+          headlineLarge:  TextStyle(fontSize: 22, fontWeight: FontWeight.w700, height: 1.22, letterSpacing: -0.15, color: DesignTokens.lightTextPrimary),
+          headlineMedium: TextStyle(fontSize: 20, fontWeight: FontWeight.w600, height: 1.25, letterSpacing: -0.1, color: DesignTokens.lightTextPrimary),
+          headlineSmall:  TextStyle(fontSize: 18, fontWeight: FontWeight.w600, height: 1.28, color: DesignTokens.lightTextPrimary),
+          // ── Title — Card/list titles ──────────────────────────────
+          titleLarge:  TextStyle(fontSize: 17, fontWeight: FontWeight.w600, height: 1.30, color: DesignTokens.lightTextPrimary),
+          titleMedium: TextStyle(fontSize: 15, fontWeight: FontWeight.w600, height: 1.35, color: DesignTokens.lightTextPrimary),
+          titleSmall:  TextStyle(fontSize: 13, fontWeight: FontWeight.w600, height: 1.35, letterSpacing: 0.1, color: DesignTokens.lightTextSecondary),
+          // ── Body — Paragraph / description text ───────────────────
+          bodyLarge:  TextStyle(fontSize: 16, fontWeight: FontWeight.w400, height: 1.50, color: DesignTokens.lightTextPrimary),
+          bodyMedium: TextStyle(fontSize: 14, fontWeight: FontWeight.w400, height: 1.50, color: DesignTokens.lightTextSecondary),
+          bodySmall:  TextStyle(fontSize: 12, fontWeight: FontWeight.w400, height: 1.45, color: DesignTokens.lightTextMuted),
+          // ── Label — Buttons, badges, uppercase category tags ──────
+          labelLarge:  TextStyle(fontSize: 14, fontWeight: FontWeight.w600, height: 1.20, letterSpacing: 0.3, color: DesignTokens.lightTextPrimary),
+          labelMedium: TextStyle(fontSize: 12, fontWeight: FontWeight.w600, height: 1.20, letterSpacing: 0.5, color: DesignTokens.lightTextSecondary),
+          labelSmall:  TextStyle(fontSize: 10, fontWeight: FontWeight.w700, height: 1.20, letterSpacing: 0.8, color: DesignTokens.lightTextMuted),
+        ),
         // Sky-canvas background — cards float above it via depth shadows
         scaffoldBackgroundColor: DesignTokens.lightBackground,
         colorScheme: ColorScheme.fromSeed(
@@ -172,12 +194,50 @@ class MediaHiveApp extends ConsumerWidget {
             borderSide: const BorderSide(color: DesignTokens.lightHoney, width: 1.5),
           ),
         ),
+        elevatedButtonTheme: ElevatedButtonThemeData(
+          style: ElevatedButton.styleFrom(
+            backgroundColor: DesignTokens.lightHoney,
+            foregroundColor: Colors.white,
+            elevation: 0,
+            shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16.0)),
+          ),
+        ),
+        outlinedButtonTheme: OutlinedButtonThemeData(
+          style: OutlinedButton.styleFrom(
+            backgroundColor: Colors.transparent,
+            foregroundColor: DesignTokens.lightTextPrimary,
+            side: BorderSide(color: DesignTokens.lightBorder.withOpacity(0.15), width: 0.75),
+            shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16.0)),
+          ),
+        ),
       ),
       // ── Dark Theme ──────────────────────────────────────────────────────────
       darkTheme: ThemeData(
         useMaterial3: true,
         brightness: Brightness.dark,
         fontFamily: '.SF Pro Text',
+        textTheme: const TextTheme(
+          // ── Display — Hero/splash text ────────────────────────────
+          displayLarge:  TextStyle(fontSize: 34, fontWeight: FontWeight.w800, height: 1.15, letterSpacing: -0.5, color: Colors.white),
+          displayMedium: TextStyle(fontSize: 28, fontWeight: FontWeight.w700, height: 1.18, letterSpacing: -0.3, color: Colors.white),
+          displaySmall:  TextStyle(fontSize: 24, fontWeight: FontWeight.w700, height: 1.20, letterSpacing: -0.2, color: Colors.white),
+          // ── Headline — Section headers ────────────────────────────
+          headlineLarge:  TextStyle(fontSize: 22, fontWeight: FontWeight.w700, height: 1.22, letterSpacing: -0.15, color: Colors.white),
+          headlineMedium: TextStyle(fontSize: 20, fontWeight: FontWeight.w600, height: 1.25, letterSpacing: -0.1, color: Colors.white),
+          headlineSmall:  TextStyle(fontSize: 18, fontWeight: FontWeight.w600, height: 1.28, color: Colors.white),
+          // ── Title — Card/list titles ──────────────────────────────
+          titleLarge:  TextStyle(fontSize: 17, fontWeight: FontWeight.w600, height: 1.30, color: Colors.white),
+          titleMedium: TextStyle(fontSize: 15, fontWeight: FontWeight.w600, height: 1.35, color: Colors.white),
+          titleSmall:  TextStyle(fontSize: 13, fontWeight: FontWeight.w600, height: 1.35, letterSpacing: 0.1, color: DesignTokens.textSecondary),
+          // ── Body — Paragraph / description text ───────────────────
+          bodyLarge:  TextStyle(fontSize: 16, fontWeight: FontWeight.w400, height: 1.50, color: Colors.white),
+          bodyMedium: TextStyle(fontSize: 14, fontWeight: FontWeight.w400, height: 1.50, color: DesignTokens.textSecondary),
+          bodySmall:  TextStyle(fontSize: 12, fontWeight: FontWeight.w400, height: 1.45, color: Color(0xFF666666)),
+          // ── Label — Buttons, badges, uppercase category tags ──────
+          labelLarge:  TextStyle(fontSize: 14, fontWeight: FontWeight.w600, height: 1.20, letterSpacing: 0.3, color: Colors.white),
+          labelMedium: TextStyle(fontSize: 12, fontWeight: FontWeight.w600, height: 1.20, letterSpacing: 0.5, color: DesignTokens.textSecondary),
+          labelSmall:  TextStyle(fontSize: 10, fontWeight: FontWeight.w700, height: 1.20, letterSpacing: 0.8, color: Color(0xFF666666)),
+        ),
         scaffoldBackgroundColor: DesignTokens.backgroundPrimary,
         colorScheme: ColorScheme.fromSeed(
           seedColor: DesignTokens.honey,
@@ -226,6 +286,22 @@ class MediaHiveApp extends ConsumerWidget {
             borderSide: const BorderSide(color: DesignTokens.honey, width: 1.5),
           ),
           labelStyle: const TextStyle(color: DesignTokens.textSecondary),
+        ),
+        elevatedButtonTheme: ElevatedButtonThemeData(
+          style: ElevatedButton.styleFrom(
+            backgroundColor: DesignTokens.honey,
+            foregroundColor: Colors.black,
+            elevation: 0,
+            shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16.0)),
+          ),
+        ),
+        outlinedButtonTheme: OutlinedButtonThemeData(
+          style: OutlinedButton.styleFrom(
+            backgroundColor: Colors.transparent,
+            foregroundColor: Colors.white,
+            side: BorderSide(color: DesignTokens.border.withOpacity(0.15), width: 0.75),
+            shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16.0)),
+          ),
         ),
       ),
       themeMode: themeMode,

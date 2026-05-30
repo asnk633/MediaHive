@@ -88,7 +88,7 @@ class DesignTokens {
   // ─── Border Radii ──────────────────────────────────────────────────────────
   static const double radiusS    = 8.0;
   static const double radiusM    = 11.0;
-  static const double radiusL    = 18.0;
+  static const double radiusL    = 16.0;
   static const double radiusXl   = 24.0;   // Spatial card radius
   static const double radiusFull = 100.0;
 

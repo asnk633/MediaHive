@@ -1,5 +1,6 @@
 import 'dart:ui';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:lucide_icons/lucide_icons.dart';
 import 'package:go_router/go_router.dart';
@@ -23,6 +24,7 @@ import '../../../../../core/testing/chaos_controller.dart';
 import '../../../system/presentation/screens/system_health_screen.dart';
 import '../../../../shared/widgets/mh_loading.dart';
 import '../../../../core/theme_provider.dart';
+import '../../../../core/theme/elastic_scroll_physics.dart';
 import '../../../../../models/institutional_data.dart';
 
 final tasksTabProvider = StateProvider<int>((ref) => 0);
@@ -62,12 +64,21 @@ class TasksScreen extends ConsumerWidget {
         child: MhRefreshIndicator(
           edgeOffset: 120,
           onRefresh: () => ref.refresh(tasksListProvider.future),
-          child: tasksAsync.when(
-            data: (tasks) => tasks.isEmpty 
-              ? _buildEmptyState(context)
-              : _buildContent(context, ref, activeTab, tasks, isOffline, colors),
-            loading: () => _buildLoadingState(),
-            error: (e, _) => _buildErrorState(ref, e, colors),
+          child: AnimatedCrossFade(
+            duration: const Duration(milliseconds: 400),
+            firstCurve: Curves.easeInOutCubic,
+            secondCurve: Curves.easeInOutCubic,
+            crossFadeState: tasksAsync.isLoading && !tasksAsync.hasValue
+                ? CrossFadeState.showFirst
+                : CrossFadeState.showSecond,
+            firstChild: _buildLoadingState(),
+            secondChild: tasksAsync.hasError
+                ? _buildErrorState(ref, tasksAsync.error!, colors)
+                : tasksAsync.hasValue
+                    ? (tasksAsync.value!.isEmpty
+                        ? _buildEmptyState(context)
+                        : _buildContent(context, ref, activeTab, tasksAsync.value!, isOffline, colors))
+                    : const SizedBox.shrink(),
           ),
         ),
       ),
@@ -79,6 +90,7 @@ class TasksScreen extends ConsumerWidget {
     final fullName = profile?['full_name'] as String?;
 
     return ListView(
+      key: const ValueKey('tasks_content'),
       padding: const EdgeInsets.only(
         left: AppSpacing.l, 
         right: AppSpacing.l, 
@@ -102,21 +114,28 @@ class TasksScreen extends ConsumerWidget {
   }
 
   Widget _buildLoadingState() {
-    return const MhLoading();
+    return const SizedBox(
+      key: ValueKey('tasks_loading'),
+      child: MhLoading(),
+    );
   }
 
   Widget _buildEmptyState(BuildContext context) {
-    return MhEmptyState(
-      title: 'No Tasks Found',
-      message: 'Clean slate! Create a new task to get started with your workflow.',
-      icon: LucideIcons.clipboardList,
-      actionLabel: 'Create Task',
-      onAction: () => context.push('/create-task'),
+    return SizedBox(
+      key: const ValueKey('tasks_empty'),
+      child: MhEmptyState(
+        title: 'No Tasks Found',
+        message: 'Clean slate! Create a new task to get started with your workflow.',
+        icon: LucideIcons.clipboardList,
+        actionLabel: 'Create Task',
+        onAction: () => context.push('/create-task'),
+      ),
     );
   }
 
   Widget _buildErrorState(WidgetRef ref, Object error, ThemeColors colors) {
     return Center(
+      key: const ValueKey('tasks_error'),
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
@@ -262,11 +281,11 @@ class TasksScreen extends ConsumerWidget {
 
     return Row(
       children: [
-        _buildStatCard(colors, 'TOTAL', total, LucideIcons.clipboardCheck, const Color(0xFF3B82F6)),
+        _buildStatCard(colors, 'TOTAL', total, LucideIcons.clipboardCheck, colors.isDark ? const Color(0xFF3B82F6) : colors.honey),
         const SizedBox(width: 6),
         _buildStatCard(colors, 'TODAY', dueToday, LucideIcons.clock, colors.honey),
         const SizedBox(width: 6),
-        _buildStatCard(colors, 'ACTIVE', inProgress, LucideIcons.activity, const Color(0xFF6366F1)),
+        _buildStatCard(colors, 'ACTIVE', inProgress, LucideIcons.activity, colors.isDark ? const Color(0xFF6366F1) : colors.indigo),
         const SizedBox(width: 6),
         _buildStatCard(colors, 'HOLD', onHold, LucideIcons.pauseCircle, colors.error),
         const SizedBox(width: 6),
@@ -398,7 +417,7 @@ class TasksScreen extends ConsumerWidget {
           child: AnimatedContainer(
             duration: const Duration(milliseconds: 220),
             curve: Curves.easeInOut,
-            height: 44,
+            constraints: const BoxConstraints(minHeight: 44),
             decoration: BoxDecoration(
               color: colors.isDark
                   ? colors.surface.withOpacity(0.6)
@@ -580,7 +599,7 @@ class TasksScreen extends ConsumerWidget {
 
     return SingleChildScrollView(
       scrollDirection: Axis.horizontal,
-      physics: const BouncingScrollPhysics(),
+      physics: const ElasticScrollPhysics(),
       child: Row(
         children: statuses.map((status) {
           final isSelected = selectedStatus == status;
@@ -723,13 +742,22 @@ class TasksScreen extends ConsumerWidget {
     // 1. Initial filter by Tab (Today, All, Requests)
     final tabFiltered = tasks.where((t) {
       if (activeTab == 0) {
-        return t.dueDate != null && t.dueDate.startsWith(todayStr);
+        final isDone = t.status.toString().toLowerCase() == 'done';
+        DateTime? dueDate;
+        if (t.dueDate != null) {
+          try {
+            dueDate = DateTime.parse(t.dueDate.toString()).toLocal();
+          } catch (_) {}
+        }
+        final isOverdue = !isDone && dueDate != null && dueDate.isBefore(today);
+        final isDueToday = t.dueDate != null && t.dueDate.toString().startsWith(todayStr);
+        return isDueToday || isOverdue;
       }
       if (activeTab == 2) return t.requester == fullName;
       return true;
     }).toList();
 
-    final baseList = (tabFiltered.isEmpty && activeTab == 0) ? tasks : tabFiltered;
+    final baseList = tabFiltered;
 
     // 2. Filter by Status
     final statusFiltered = baseList.where((t) {
@@ -903,15 +931,42 @@ class TasksScreen extends ConsumerWidget {
                        dueDate.month == today.month && 
                        dueDate.day == today.day;
 
-    return GestureDetector(
-      onTap: isOffline ? null : () => context.push('/task-details', extra: task),
-      onLongPress: isOffline ? null : () {
-        final canDelete = _canEditDelete(ref, task);
-        if (!canDelete) return; // Prevent action sheet if no permissions
-        
-        _showTaskActionSheet(context, ref, task, canDelete, colors);
+    Color dismissColor;
+    final p = task.priority.toLowerCase();
+    if (p == 'low') {
+      dismissColor = Colors.grey.shade600;
+    } else if (p == 'high') {
+      dismissColor = Colors.amber.shade700;
+    } else if (p == 'urgent') {
+      dismissColor = Colors.red.shade700;
+    } else {
+      dismissColor = colors.error;
+    }
+
+    return Dismissible(
+      key: Key(task.id),
+      direction: DismissDirection.endToStart,
+      background: Container(
+        alignment: Alignment.centerRight,
+        padding: const EdgeInsets.only(right: 20),
+        decoration: BoxDecoration(
+          color: dismissColor,
+          borderRadius: BorderRadius.circular(20),
+        ),
+        child: const Icon(LucideIcons.trash2, color: Colors.white),
+      ),
+      onDismissed: (direction) {
+        ref.read(tasksListProvider.notifier).deleteTask(task.id);
       },
-      child: AnimatedOpacity(
+      child: GestureDetector(
+        onTap: isOffline ? null : () => context.push('/task-details', extra: task),
+        onLongPress: isOffline ? null : () {
+          final canDelete = _canEditDelete(ref, task);
+          if (!canDelete) return; // Prevent action sheet if no permissions
+          
+          _showTaskActionSheet(context, ref, task, canDelete, colors);
+        },
+        child: AnimatedOpacity(
         duration: const Duration(milliseconds: 300),
         opacity: isDone ? 0.6 : 1.0,
         child: Container(
@@ -1002,31 +1057,43 @@ class TasksScreen extends ConsumerWidget {
                       spacing: 8,
                       runSpacing: 6,
                       children: [
-                        _buildMiniTag(
-                          context,
-                          _getPriorityIcon(task.priority),
-                          task.priority.toUpperCase(),
-                          _getPriorityColor(task.priority, colors),
+                        Semantics(
+                          label: 'Priority: ${task.priority}',
+                          child: _buildMiniTag(
+                            context,
+                            _getPriorityIcon(task.priority),
+                            task.priority.toUpperCase(),
+                            _getPriorityColor(task.priority, colors),
+                          ),
                         ),
-                        _buildMiniTag(
-                          context,
-                          LucideIcons.calendar,
-                          _formatDate(task.dueDate),
-                          colors.textSecondary.withOpacity(0.6),
+                        Semantics(
+                          label: 'Due Date: ${_formatDate(task.dueDate)}',
+                          child: _buildMiniTag(
+                            context,
+                            LucideIcons.calendar,
+                            _formatDate(task.dueDate),
+                            colors.textSecondary.withOpacity(0.6),
+                          ),
                         ),
                         if (task.department != null && task.department!.trim().isNotEmpty)
-                          _buildMiniTag(
-                            context,
-                            LucideIcons.building2,
-                            task.department!.toUpperCase(),
-                            colors.indigo.withOpacity(0.8),
+                          Semantics(
+                            label: 'Department: ${task.department}',
+                            child: _buildMiniTag(
+                              context,
+                              LucideIcons.building2,
+                              task.department!.toUpperCase(),
+                              colors.indigo.withOpacity(0.8),
+                            ),
                           ),
                         if (isDone && (task.completedByName != null || task.completionDate != null))
-                          _buildMiniTag(
-                            context,
-                            LucideIcons.checkCircle2,
-                            _formatCompletionInfo(task),
-                            colors.emerald.withOpacity(0.9),
+                          Semantics(
+                            label: _formatCompletionInfo(task),
+                            child: _buildMiniTag(
+                              context,
+                              LucideIcons.checkCircle2,
+                              _formatCompletionInfo(task),
+                              colors.emerald.withOpacity(0.9),
+                            ),
                           ),
                       ],
                     ),
@@ -1039,7 +1106,7 @@ class TasksScreen extends ConsumerWidget {
           ),
         ),
       ),
-    );
+    ));
   }
   String _formatCompletionInfo(Task task) {
     String name = task.completedByName ?? '';
@@ -1121,20 +1188,24 @@ class TasksScreen extends ConsumerWidget {
 
     return GestureDetector(
       onTap: (isOffline || !_canUpdateStatus(ref, task)) ? null : () => _showStatusPicker(context, ref, task, colors),
-      child: Container(
-        padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
-        decoration: BoxDecoration(
-          color: color.withOpacity(isOffline ? 0.05 : 0.1),
-          borderRadius: BorderRadius.circular(10),
-          border: Border.all(color: color.withOpacity(isOffline ? 0.1 : 0.3)),
-        ),
-        child: Text(
-          label,
-          style: TextStyle(
-            color: isOffline ? color.withOpacity(0.5) : color,
-            fontSize: 9,
-            fontWeight: FontWeight.w900,
-            letterSpacing: 0.5,
+      child: Semantics(
+        label: 'Status: $label',
+        button: !(isOffline || !_canUpdateStatus(ref, task)),
+        child: Container(
+          padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
+          decoration: BoxDecoration(
+            color: color.withOpacity(isOffline ? 0.05 : 0.1),
+            borderRadius: BorderRadius.circular(10),
+            border: Border.all(color: color.withOpacity(isOffline ? 0.1 : 0.3)),
+          ),
+          child: Text(
+            label,
+            style: TextStyle(
+              color: isOffline ? color.withOpacity(0.5) : color,
+              fontSize: 9,
+              fontWeight: FontWeight.w900,
+              letterSpacing: 0.5,
+            ),
           ),
         ),
       ),

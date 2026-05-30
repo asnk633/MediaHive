@@ -45,8 +45,7 @@ class MhButton extends StatelessWidget {
             isDisabled: effectiveDisabled,
             child: Container(
               width: width,
-              height: height,
-              constraints: const BoxConstraints(minWidth: 48, minHeight: 32),
+              constraints: BoxConstraints(minWidth: 48, minHeight: height),
               padding: EdgeInsets.symmetric(
                 horizontal: (width != null && width! < 60) || height < 48
                     ? AppSpacing.s
@@ -129,8 +128,7 @@ class MhButton extends StatelessWidget {
                 fontWeight: FontWeight.w900,
                 letterSpacing: 0.5,
               ),
-              overflow: TextOverflow.ellipsis,
-              maxLines: 1,
+              textAlign: TextAlign.center,
             ),
           ),
       ],

@@ -10,6 +10,7 @@ import 'package:mediahive_mobile/features/inventory/domain/models/inventory_item
 import 'package:mediahive_mobile/features/inventory/presentation/providers/inventory_provider.dart';
 import 'package:mediahive_mobile/core/utils/url_helpers.dart';
 import 'package:mediahive_mobile/core/theme_provider.dart';
+import 'package:mediahive_mobile/core/theme/elastic_scroll_physics.dart';
 
 class EquipmentRequestSheet extends ConsumerStatefulWidget {
   final InventoryItem item;
@@ -412,7 +413,7 @@ class _EquipmentRequestSheetState extends ConsumerState<EquipmentRequestSheet> {
       child: SafeArea(
         top: false,
         child: SingleChildScrollView(
-          physics: const BouncingScrollPhysics(),
+          physics: const ElasticScrollPhysics(),
           child: Column(
             mainAxisSize: MainAxisSize.min,
             crossAxisAlignment: CrossAxisAlignment.start,
@@ -510,7 +511,7 @@ class _EquipmentBookingSheetState extends ConsumerState<EquipmentBookingSheet> {
       child: SafeArea(
         top: false,
         child: SingleChildScrollView(
-          physics: const BouncingScrollPhysics(),
+          physics: const ElasticScrollPhysics(),
           child: Column(
             mainAxisSize: MainAxisSize.min,
             crossAxisAlignment: CrossAxisAlignment.start,
@@ -787,7 +788,7 @@ class EquipmentDetailsSheet extends ConsumerWidget {
       child: SafeArea(
         top: false,
         child: SingleChildScrollView(
-          physics: const BouncingScrollPhysics(),
+          physics: const ElasticScrollPhysics(),
           child: Column(
             mainAxisSize: MainAxisSize.min,
             crossAxisAlignment: CrossAxisAlignment.start,

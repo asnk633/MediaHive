@@ -2,6 +2,7 @@ import 'dart:io';
 import 'dart:ui';
 import 'dart:convert';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:lucide_icons/lucide_icons.dart';
 import 'package:uuid/uuid.dart';
@@ -35,6 +36,9 @@ class CreateTaskScreen extends ConsumerStatefulWidget {
 class _CreateTaskScreenState extends ConsumerState<CreateTaskScreen> {
   late TextEditingController _titleController;
   late TextEditingController _descriptionController;
+  final FocusNode _descriptionFocusNode = FocusNode();
+  final PageController _pageController = PageController();
+  int _currentPage = 0;
   DateTime? _dueDate;
   String _priority = 'Medium';
   
@@ -48,6 +52,7 @@ class _CreateTaskScreenState extends ConsumerState<CreateTaskScreen> {
   File? _selectedFile;
   bool _isCompressing = false;
   bool _isLoading = false;
+  bool _isSubmitting = false;
 
   @override
   void initState() {
@@ -212,6 +217,8 @@ class _CreateTaskScreenState extends ConsumerState<CreateTaskScreen> {
   void dispose() {
     _titleController.dispose();
     _descriptionController.dispose();
+    _descriptionFocusNode.dispose();
+    _pageController.dispose();
     super.dispose();
   }
 
@@ -303,6 +310,7 @@ class _CreateTaskScreenState extends ConsumerState<CreateTaskScreen> {
 
   Future<void> _handleSubmit() async {
     if (_titleController.text.isEmpty) {
+      HapticFeedback.vibrate();
       ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Task Title is required')));
       return;
     }
@@ -355,7 +363,10 @@ class _CreateTaskScreenState extends ConsumerState<CreateTaskScreen> {
             department: _selectedDepartment != null ? _selectedDepartment!.name : _selectedInstitution?.name,
           );
 
-    setState(() => _isLoading = true);
+    setState(() {
+      _isLoading = true;
+      _isSubmitting = true;
+    });
     ref.read(loadingMessageProvider.notifier).state = "Finalizing Task Details...";
     ref.read(globalLoadingProvider.notifier).state = true;
 
@@ -388,16 +399,22 @@ class _CreateTaskScreenState extends ConsumerState<CreateTaskScreen> {
       // Artificial delay to let the beautiful sync animation be seen
       await Future.delayed(const Duration(milliseconds: 1500));
       
+      HapticFeedback.mediumImpact();
+
       if (mounted) {
         Navigator.pop(context);
       }
     } catch (e) {
+      HapticFeedback.vibrate();
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('Error: $e')));
       }
     } finally {
       if (mounted) {
-        setState(() => _isLoading = false);
+        setState(() {
+          _isLoading = false;
+          _isSubmitting = false;
+        });
       }
       ref.read(globalLoadingProvider.notifier).state = false;
     }
@@ -690,306 +707,416 @@ class _CreateTaskScreenState extends ConsumerState<CreateTaskScreen> {
             end: Alignment.bottomCenter,
           ),
         ),
-        child: SingleChildScrollView(
-          padding: const EdgeInsets.only(top: 120, left: 24, right: 24, bottom: 40),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              _buildSectionLabel('Task Title', colors),
-              const SizedBox(height: 8),
-              _buildTextField(_titleController, 'What needs to be done?', LucideIcons.checkCircle, colors, enabled: _isEditingAllowed),
-              const SizedBox(height: 24),
-
-              _buildSectionLabel('Description', colors),
-              const SizedBox(height: 8),
-              _buildTextField(_descriptionController, 'Add details...', null, colors, maxLines: 5, enabled: _isEditingAllowed),
-              const SizedBox(height: 24),
-
-              Row(
+        child: Column(
+          children: [
+            Expanded(
+              child: PageView(
+                controller: _pageController,
+                physics: const NeverScrollableScrollPhysics(),
+                onPageChanged: (index) {
+                  setState(() => _currentPage = index);
+                },
                 children: [
-                  Expanded(
-                    child: _buildDateTimePicker(
-                      'DUE DATE', 
-                      _dueDate == null ? 'Select date' : '${_dueDate!.day.toString().padLeft(2, '0')}-${_dueDate!.month.toString().padLeft(2, '0')}-${_dueDate!.year}', 
-                      LucideIcons.calendar,
-                      colors,
-                      onTap: _isEditingAllowed ? () => _selectDate(context, colors) : null,
+                  // Page 1: General Info
+                  SingleChildScrollView(
+                    padding: const EdgeInsets.only(top: 120, left: 24, right: 24, bottom: 40),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        _buildSectionLabel('Task Title', colors),
+                        const SizedBox(height: 8),
+                        _buildTextField(
+                          _titleController,
+                          'What needs to be done?',
+                          LucideIcons.checkCircle,
+                          colors,
+                          enabled: _isEditingAllowed,
+                          textInputAction: TextInputAction.next,
+                          keyboardType: TextInputType.text,
+                          textCapitalization: TextCapitalization.sentences,
+                          onFieldSubmitted: () {
+                            _descriptionFocusNode.requestFocus();
+                          },
+                        ),
+                        const SizedBox(height: 24),
+                        _buildSectionLabel('Description', colors),
+                        const SizedBox(height: 8),
+                        _buildTextField(
+                          _descriptionController,
+                          'Add details...',
+                          null,
+                          colors,
+                          maxLines: 5,
+                          enabled: _isEditingAllowed,
+                          focusNode: _descriptionFocusNode,
+                          keyboardType: TextInputType.multiline,
+                          textInputAction: TextInputAction.newline,
+                        ),
+                      ],
                     ),
                   ),
-                ],
-              ),
-              const SizedBox(height: 24),
-
-              _buildSectionLabel('Context (Institution & Department)', colors),
-              const SizedBox(height: 8),
-              _buildInstitutionalContextSelector(colors),
-              const SizedBox(height: 24),
-
-              _buildSectionLabel('Linked Event (Institutional Roadmap)', colors),
-              const SizedBox(height: 8),
-              _buildEventSelector(colors),
-              const SizedBox(height: 24),
-
-              _buildSectionLabel('Priority', colors),
-              const SizedBox(height: 8),
-              Row(
-                children: [
-                  Expanded(child: _buildPrioritySegment('Low', colors)),
-                  const SizedBox(width: 8),
-                  Expanded(child: _buildPrioritySegment('Medium', colors)),
-                  const SizedBox(width: 8),
-                  Expanded(child: _buildPrioritySegment('High', colors)),
-                ],
-              ),
-              const SizedBox(height: 32),
-
-              _buildSectionLabel(
-                role == 'member' || role == 'guest'
-                    ? 'Propose Assignee (Pending Admin Approval)'
-                    : 'Assign To Team Members',
-                colors,
-              ),
-              const SizedBox(height: 12),
-              _buildAssigneesList(colors),
-              const SizedBox(height: 32),
-
-              _buildSectionLabel('Attachments (Optional)', colors),
-              const SizedBox(height: 8),
-              GestureDetector(
-                onTap: (_isCompressing || !_isEditingAllowed) ? null : _pickFile,
-                child: Container(
-                  height: 120,
-                  width: double.infinity,
-                  decoration: BoxDecoration(
-                    color: colors.isDark ? colors.surface.withOpacity(0.3) : Colors.white.withOpacity(0.8),
-                    borderRadius: BorderRadius.circular(16),
-                    border: Border.all(
-                      color: colors.isDark 
-                          ? colors.border.withOpacity(0.5) 
-                          : colors.border.withOpacity(0.15), 
-                      style: BorderStyle.solid,
-                    ),
-                  ),
-                  child: _selectedFile != null
-                      ? () {
-                          final ext = _selectedFile!.path.split('.').last.toLowerCase();
-                          final isImage = ['jpg', 'jpeg', 'png', 'webp', 'gif'].contains(ext);
-                          final isVideo = ['mp4', 'mov', 'avi', 'mkv', 'webm'].contains(ext);
-                          final isPdf = ext == 'pdf';
-                          final fileName = _selectedFile!.path.split(Platform.pathSeparator).last;
-
-                          if (isImage) {
-                            return Stack(
-                              fit: StackFit.expand,
-                              children: [
-                                ClipRRect(
-                                  borderRadius: BorderRadius.circular(16),
-                                  child: Image.file(_selectedFile!, fit: BoxFit.cover),
-                                ),
-                                if (_isEditingAllowed)
-                                  Positioned(
-                                    top: 8,
-                                    right: 8,
-                                    child: GestureDetector(
-                                      onTap: () {
-                                        setState(() {
-                                          _selectedFile = null;
-                                        });
-                                      },
-                                      child: Container(
-                                        padding: const EdgeInsets.all(6),
-                                        decoration: const BoxDecoration(
-                                          color: Colors.black54,
-                                          shape: BoxShape.circle,
-                                        ),
-                                        child: const Icon(LucideIcons.x, size: 14, color: Colors.white),
-                                      ),
-                                    ),
-                                  ),
-                              ],
-                            );
-                          }
-
-                          return Container(
-                            padding: const EdgeInsets.all(16),
-                            child: Row(
-                              children: [
-                                Container(
-                                  width: 48,
-                                  height: 48,
-                                  decoration: BoxDecoration(
-                                    color: colors.border.withOpacity(0.3),
-                                    borderRadius: BorderRadius.circular(8),
-                                  ),
-                                  child: Icon(
-                                    isPdf
-                                        ? LucideIcons.fileText
-                                        : isVideo
-                                            ? LucideIcons.video
-                                            : LucideIcons.file,
-                                    color: colors.indigo,
-                                    size: 24,
-                                  ),
-                                ),
-                                const SizedBox(width: 16),
-                                Expanded(
-                                  child: Column(
-                                    crossAxisAlignment: CrossAxisAlignment.start,
-                                    mainAxisAlignment: MainAxisAlignment.center,
-                                    children: [
-                                      Text(
-                                        fileName,
-                                        style: TextStyle(
-                                          color: colors.textPrimary,
-                                          fontSize: 14,
-                                          fontWeight: FontWeight.bold,
-                                        ),
-                                        maxLines: 1,
-                                        overflow: TextOverflow.ellipsis,
-                                      ),
-                                      const SizedBox(height: 4),
-                                      Text(
-                                        ext.toUpperCase(),
-                                        style: TextStyle(
-                                          color: colors.textSecondary,
-                                          fontSize: 12,
-                                        ),
-                                      ),
-                                    ],
-                                  ),
-                                ),
-                                if (_isEditingAllowed)
-                                  IconButton(
-                                    icon: Icon(LucideIcons.trash2, color: Colors.redAccent.withOpacity(0.8), size: 18),
-                                    onPressed: () {
-                                      setState(() {
-                                        _selectedFile = null;
-                                      });
-                                    },
-                                  ),
-                              ],
-                            ),
-                          );
-                        }()
-                      : Column(
-                          mainAxisAlignment: MainAxisAlignment.center,
+                  // Page 2: Timeline & Context
+                  SingleChildScrollView(
+                    padding: const EdgeInsets.only(top: 120, left: 24, right: 24, bottom: 40),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Row(
                           children: [
-                            Container(
-                              padding: const EdgeInsets.all(12),
-                              decoration: BoxDecoration(
-                                color: colors.isDark ? colors.border.withOpacity(0.3) : colors.border.withOpacity(0.08), 
-                                shape: BoxShape.circle,
+                            Expanded(
+                              child: _buildDateTimePicker(
+                                'DUE DATE', 
+                                _dueDate == null ? 'Select date' : '${_dueDate!.day.toString().padLeft(2, '0')}-${_dueDate!.month.toString().padLeft(2, '0')}-${_dueDate!.year}', 
+                                LucideIcons.calendar,
+                                colors,
+                                onTap: _isEditingAllowed ? () => _selectDate(context, colors) : null,
                               ),
-                              child: Icon(
-                                _isCompressing ? LucideIcons.loader2 : LucideIcons.paperclip,
-                                color: colors.indigo,
-                                size: 20,
-                              ),
-                            ),
-                            const SizedBox(height: 12),
-                            Text(
-                              _isCompressing ? 'Compressing...' : 'Click or tap to upload files',
-                              style: TextStyle(color: colors.textSecondary, fontSize: 13),
                             ),
                           ],
                         ),
-                ),
-              ),
-              const SizedBox(height: 32),
-
-              Row(
-                children: [
-                  Container(
-                    width: 24,
-                    height: 24,
-                    decoration: BoxDecoration(
-                      color: colors.isDark ? colors.surface : Colors.white, 
-                      shape: BoxShape.circle, 
-                      border: Border.all(color: colors.border),
-                    ),
-                    child: Center(
-                      child: Text(
-                        'S', 
-                        style: TextStyle(color: colors.textSecondary, fontSize: 10, fontWeight: FontWeight.bold),
-                      ),
+                        const SizedBox(height: 24),
+                        _buildSectionLabel('Context (Institution & Department)', colors),
+                        const SizedBox(height: 8),
+                        _buildInstitutionalContextSelector(colors),
+                        const SizedBox(height: 24),
+                        _buildSectionLabel('Linked Event (Institutional Roadmap)', colors),
+                        const SizedBox(height: 8),
+                        _buildEventSelector(colors),
+                      ],
                     ),
                   ),
-                  const SizedBox(width: 8),
-                  Consumer(
-                    builder: (context, ref, _) {
-                      final profileAsync = ref.watch(currentUserProfileProvider);
-                      final role = profileAsync.maybeWhen(data: (p) => p?['role'] as String? ?? 'Admin', orElse: () => 'Admin');
-                      return Text('Creating as $role', style: TextStyle(color: colors.textSecondary, fontSize: 12));
-                    }
+                  // Page 3: Governance
+                  SingleChildScrollView(
+                    padding: const EdgeInsets.only(top: 120, left: 24, right: 24, bottom: 40),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        _buildSectionLabel('Priority', colors),
+                        const SizedBox(height: 8),
+                        Row(
+                          children: [
+                            Expanded(child: _buildPrioritySegment('Low', colors)),
+                            const SizedBox(width: 8),
+                            Expanded(child: _buildPrioritySegment('Medium', colors)),
+                            const SizedBox(width: 8),
+                            Expanded(child: _buildPrioritySegment('High', colors)),
+                          ],
+                        ),
+                        const SizedBox(height: 32),
+                        _buildSectionLabel(
+                          role == 'member' || role == 'guest'
+                              ? 'Propose Assignee (Pending Admin Approval)'
+                              : 'Assign To Team Members',
+                          colors,
+                        ),
+                        const SizedBox(height: 12),
+                        _buildAssigneesList(colors),
+                        const SizedBox(height: 32),
+                        Row(
+                          children: [
+                            Container(
+                              width: 24,
+                              height: 24,
+                              decoration: BoxDecoration(
+                                color: colors.isDark ? colors.surface : Colors.white, 
+                                shape: BoxShape.circle, 
+                                border: Border.all(color: colors.border),
+                              ),
+                              child: Center(
+                                child: Text(
+                                  'S', 
+                                  style: TextStyle(color: colors.textSecondary, fontSize: 10, fontWeight: FontWeight.bold),
+                                ),
+                              ),
+                            ),
+                            const SizedBox(width: 8),
+                            Consumer(
+                              builder: (context, ref, _) {
+                                final profileAsync = ref.watch(currentUserProfileProvider);
+                                final pRole = profileAsync.maybeWhen(data: (p) => p?['role'] as String? ?? 'Admin', orElse: () => 'Admin');
+                                return Text('Creating as $pRole', style: TextStyle(color: colors.textSecondary, fontSize: 12));
+                              }
+                            ),
+                          ],
+                        ),
+                        if (testDemoDataEnabled) ...[
+                          const SizedBox(height: 32),
+                          Container(
+                            padding: const EdgeInsets.all(16),
+                            decoration: BoxDecoration(
+                              color: colors.isDark ? colors.surface : Colors.white,
+                              borderRadius: BorderRadius.circular(16),
+                              border: Border.all(color: colors.border),
+                            ),
+                            child: Row(
+                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                              children: [
+                                Row(
+                                  children: [
+                                    Container(
+                                      padding: const EdgeInsets.all(8),
+                                      decoration: BoxDecoration(color: colors.honey.withOpacity(0.1), shape: BoxShape.circle),
+                                      child: Icon(LucideIcons.penTool, color: colors.honey, size: 16),
+                                    ),
+                                    const SizedBox(width: 12),
+                                    Column(
+                                      crossAxisAlignment: CrossAxisAlignment.start,
+                                      children: [
+                                        Text('Test / Demo Data', style: AppTypography.bodyM.copyWith(color: colors.textPrimary, fontWeight: FontWeight.bold)),
+                                        Text('EXCLUDE FROM OFFICIAL REPORTS', style: AppTypography.caption.copyWith(color: colors.honey, fontWeight: FontWeight.w900, fontSize: 9, letterSpacing: 0.5)),
+                                      ],
+                                    ),
+                                  ],
+                                ),
+                                Switch(
+                                  value: _isDemoData,
+                                  onChanged: _isEditingAllowed ? (val) => setState(() => _isDemoData = val) : null,
+                                  activeColor: Colors.white,
+                                  activeTrackColor: colors.honey,
+                                  inactiveThumbColor: colors.textSecondary,
+                                  inactiveTrackColor: colors.isDark ? colors.border : colors.border.withOpacity(0.2),
+                                ),
+                              ],
+                            ),
+                          ),
+                        ],
+                      ],
+                    ),
+                  ),
+                  // Page 4: Attachments & Submit
+                  SingleChildScrollView(
+                    padding: const EdgeInsets.only(top: 120, left: 24, right: 24, bottom: 40),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        _buildSectionLabel('Attachments (Optional)', colors),
+                        const SizedBox(height: 8),
+                        GestureDetector(
+                          onTap: (_isCompressing || !_isEditingAllowed) ? null : _pickFile,
+                          child: Container(
+                            height: 120,
+                            width: double.infinity,
+                            decoration: BoxDecoration(
+                              color: colors.isDark ? colors.surface.withOpacity(0.3) : Colors.white.withOpacity(0.8),
+                              borderRadius: BorderRadius.circular(16),
+                              border: Border.all(
+                                color: colors.isDark 
+                                    ? colors.border.withOpacity(0.5) 
+                                    : colors.border.withOpacity(0.15), 
+                                style: BorderStyle.solid,
+                              ),
+                            ),
+                            child: _selectedFile != null
+                                ? () {
+                                    final ext = _selectedFile!.path.split('.').last.toLowerCase();
+                                    final isImage = ['jpg', 'jpeg', 'png', 'webp', 'gif'].contains(ext);
+                                    final isVideo = ['mp4', 'mov', 'avi', 'mkv', 'webm'].contains(ext);
+                                    final isPdf = ext == 'pdf';
+                                    final fileName = _selectedFile!.path.split(Platform.pathSeparator).last;
+          
+                                    if (isImage) {
+                                      return Stack(
+                                        fit: StackFit.expand,
+                                        children: [
+                                          ClipRRect(
+                                            borderRadius: BorderRadius.circular(16),
+                                            child: Image.file(_selectedFile!, fit: BoxFit.cover),
+                                          ),
+                                          if (_isEditingAllowed)
+                                            Positioned(
+                                              top: 8,
+                                              right: 8,
+                                              child: GestureDetector(
+                                                onTap: () {
+                                                  setState(() {
+                                                    _selectedFile = null;
+                                                  });
+                                                },
+                                                child: Container(
+                                                  padding: const EdgeInsets.all(6),
+                                                  decoration: const BoxDecoration(
+                                                    color: Colors.black54,
+                                                    shape: BoxShape.circle,
+                                                  ),
+                                                  child: const Icon(LucideIcons.x, size: 14, color: Colors.white),
+                                                ),
+                                              ),
+                                            ),
+                                        ],
+                                      );
+                                    }
+          
+                                    return Container(
+                                      padding: const EdgeInsets.all(16),
+                                      child: Row(
+                                        children: [
+                                          Container(
+                                            width: 48,
+                                            height: 48,
+                                            decoration: BoxDecoration(
+                                              color: colors.border.withOpacity(0.3),
+                                              borderRadius: BorderRadius.circular(8),
+                                            ),
+                                            child: Icon(
+                                              isPdf
+                                                  ? LucideIcons.fileText
+                                                  : isVideo
+                                                      ? LucideIcons.video
+                                                      : LucideIcons.file,
+                                              color: colors.indigo,
+                                              size: 24,
+                                            ),
+                                          ),
+                                          const SizedBox(width: 16),
+                                          Expanded(
+                                            child: Column(
+                                              crossAxisAlignment: CrossAxisAlignment.start,
+                                              mainAxisAlignment: MainAxisAlignment.center,
+                                              children: [
+                                                Text(
+                                                  fileName,
+                                                  style: TextStyle(
+                                                    color: colors.textPrimary,
+                                                    fontSize: 14,
+                                                    fontWeight: FontWeight.bold,
+                                                  ),
+                                                  maxLines: 1,
+                                                  overflow: TextOverflow.ellipsis,
+                                                ),
+                                                const SizedBox(height: 4),
+                                                Text(
+                                                  ext.toUpperCase(),
+                                                  style: TextStyle(
+                                                    color: colors.textSecondary,
+                                                    fontSize: 12,
+                                                  ),
+                                                ),
+                                              ],
+                                            ),
+                                          ),
+                                          if (_isEditingAllowed)
+                                            IconButton(
+                                              icon: Icon(LucideIcons.trash2, color: Colors.redAccent.withOpacity(0.8), size: 18),
+                                              onPressed: () {
+                                                setState(() {
+                                                  _selectedFile = null;
+                                                });
+                                              },
+                                            ),
+                                        ],
+                                      ),
+                                    );
+                                  }()
+                                : Column(
+                                    mainAxisAlignment: MainAxisAlignment.center,
+                                    children: [
+                                      Container(
+                                        padding: const EdgeInsets.all(12),
+                                        decoration: BoxDecoration(
+                                          color: colors.isDark ? colors.border.withOpacity(0.3) : colors.border.withOpacity(0.08), 
+                                          shape: BoxShape.circle,
+                                        ),
+                                        child: Icon(
+                                          _isCompressing ? LucideIcons.loader2 : LucideIcons.paperclip,
+                                          color: colors.indigo,
+                                          size: 20,
+                                        ),
+                                      ),
+                                      const SizedBox(height: 12),
+                                      Text(
+                                        _isCompressing ? 'Compressing...' : 'Click or tap to upload files',
+                                        style: TextStyle(color: colors.textSecondary, fontSize: 13),
+                                      ),
+                                    ],
+                                  ),
+                          ),
+                        ),
+                        const SizedBox(height: 40),
+                        Container(
+                          width: double.infinity,
+                          constraints: const BoxConstraints(minHeight: 56),
+                          decoration: BoxDecoration(
+                            gradient: LinearGradient(colors: [colors.indigo, colors.indigo.withOpacity(0.8)]),
+                            borderRadius: BorderRadius.circular(16),
+                          ),
+                          child: ElevatedButton(
+                            onPressed: (_isEditingAllowed && !_isLoading && !_isSubmitting) ? _handleSubmit : null,
+                            style: ElevatedButton.styleFrom(
+                              backgroundColor: Colors.transparent,
+                              shadowColor: Colors.transparent,
+                              disabledBackgroundColor: Colors.white12,
+                              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+                            ),
+                            child: _isSubmitting
+                                ? const SizedBox(
+                                    width: 24,
+                                    height: 24,
+                                    child: CircularProgressIndicator(
+                                      strokeWidth: 2,
+                                      valueColor: AlwaysStoppedAnimation<Color>(Colors.white),
+                                    ),
+                                  )
+                                : Text(
+                                    !_isEditingAllowed ? 'READ ONLY' : (widget.taskToEdit != null ? 'Update Task' : 'Create Task'),
+                                    style: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold, color: Colors.white),
+                                  ),
+                          ),
+                        ),
+                      ],
+                    ),
                   ),
                 ],
               ),
-               if (testDemoDataEnabled) ...[
-                Container(
-                  padding: const EdgeInsets.all(16),
-                  decoration: BoxDecoration(
-                    color: colors.isDark ? colors.surface : Colors.white,
-                    borderRadius: BorderRadius.circular(16),
-                    border: Border.all(color: colors.border),
+            ),
+            // Bottom Navigation & Progress Indicator
+            Container(
+              padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 16),
+              color: colors.backgroundPrimary,
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  if (_currentPage > 0)
+                    TextButton(
+                      onPressed: () {
+                        _pageController.previousPage(
+                          duration: const Duration(milliseconds: 300),
+                          curve: Curves.easeInOut,
+                        );
+                      },
+                      child: Text('Back', style: TextStyle(color: colors.textSecondary)),
+                    )
+                  else
+                    const SizedBox(width: 64),
+                  Row(
+                    children: List.generate(4, (index) {
+                      return AnimatedContainer(
+                        duration: const Duration(milliseconds: 300),
+                        margin: const EdgeInsets.symmetric(horizontal: 4),
+                        height: 8,
+                        width: _currentPage == index ? 24 : 8,
+                        decoration: BoxDecoration(
+                          color: _currentPage == index ? colors.indigo : colors.border,
+                          borderRadius: BorderRadius.circular(4),
+                        ),
+                      );
+                    }),
                   ),
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: [
-                      Row(
-                        children: [
-                          Container(
-                            padding: const EdgeInsets.all(8),
-                            decoration: BoxDecoration(color: colors.honey.withOpacity(0.1), shape: BoxShape.circle),
-                            child: Icon(LucideIcons.penTool, color: colors.honey, size: 16),
-                          ),
-                          const SizedBox(width: 12),
-                          Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              Text('Test / Demo Data', style: AppTypography.bodyM.copyWith(color: colors.textPrimary, fontWeight: FontWeight.bold)),
-                              Text('EXCLUDE FROM OFFICIAL REPORTS', style: AppTypography.caption.copyWith(color: colors.honey, fontWeight: FontWeight.w900, fontSize: 9, letterSpacing: 0.5)),
-                            ],
-                          ),
-                        ],
-                      ),
-                      Switch(
-                        value: _isDemoData,
-                        onChanged: _isEditingAllowed ? (val) => setState(() => _isDemoData = val) : null,
-                        activeColor: Colors.white,
-                        activeTrackColor: colors.honey,
-                        inactiveThumbColor: colors.textSecondary,
-                        inactiveTrackColor: colors.isDark ? colors.border : colors.border.withOpacity(0.2),
-                      ),
-                    ],
-                  ),
-                ),
-                const SizedBox(height: 32),
-              ],
-
-              Container(
-                width: double.infinity,
-                height: 56,
-                decoration: BoxDecoration(
-                  gradient: LinearGradient(colors: [colors.indigo, colors.indigo.withOpacity(0.8)]),
-                  borderRadius: BorderRadius.circular(16),
-                ),
-                child: ElevatedButton(
-                  onPressed: (_isEditingAllowed && !_isLoading) ? _handleSubmit : null,
-                  style: ElevatedButton.styleFrom(
-                    backgroundColor: Colors.transparent,
-                    shadowColor: Colors.transparent,
-                    disabledBackgroundColor: Colors.white12,
-                    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
-                  ),
-                  child: Text(
-                    !_isEditingAllowed ? 'READ ONLY' : (widget.taskToEdit != null ? 'Update Task' : 'Create Task'),
-                    style: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold, color: Colors.white),
-                  ),
-                ),
+                  if (_currentPage < 3)
+                    TextButton(
+                      onPressed: () {
+                        _pageController.nextPage(
+                          duration: const Duration(milliseconds: 300),
+                          curve: Curves.easeInOut,
+                        );
+                      },
+                      child: Text('Next', style: TextStyle(color: colors.indigo, fontWeight: FontWeight.bold)),
+                    )
+                  else
+                    const SizedBox(width: 64),
+                ],
               ),
-              const SizedBox(height: 40),
-            ],
-          ),
+            ),
+          ],
         ),
       ),
     );
@@ -1136,7 +1263,7 @@ class _CreateTaskScreenState extends ConsumerState<CreateTaskScreen> {
     return Text(label, style: TextStyle(fontSize: 12, fontWeight: FontWeight.bold, color: colors.textSecondary));
   }
 
-  Widget _buildTextField(TextEditingController controller, String hint, IconData? icon, ThemeColors colors, {int maxLines = 1, bool enabled = true}) {
+  Widget _buildTextField(TextEditingController controller, String hint, IconData? icon, ThemeColors colors, {int maxLines = 1, bool enabled = true, TextInputAction? textInputAction, TextInputType? keyboardType, TextCapitalization textCapitalization = TextCapitalization.none, FocusNode? focusNode, VoidCallback? onFieldSubmitted}) {
     return Container(
       decoration: BoxDecoration(
         color: colors.isDark ? colors.surface : Colors.white, 
@@ -1145,8 +1272,13 @@ class _CreateTaskScreenState extends ConsumerState<CreateTaskScreen> {
       ),
       child: TextField(
         controller: controller,
+        focusNode: focusNode,
         maxLines: maxLines,
         enabled: enabled,
+        textInputAction: textInputAction,
+        keyboardType: keyboardType,
+        textCapitalization: textCapitalization,
+        onSubmitted: onFieldSubmitted != null ? (_) => onFieldSubmitted() : null,
         spellCheckConfiguration: const SpellCheckConfiguration(),
         style: TextStyle(color: enabled ? colors.textPrimary : colors.textSecondary),
         decoration: InputDecoration(

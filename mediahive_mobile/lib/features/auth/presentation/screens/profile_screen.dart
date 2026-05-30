@@ -19,6 +19,7 @@ import 'package:image_picker/image_picker.dart';
 import 'package:image_cropper/image_cropper.dart';
 import '../../../../core/services/media_service.dart';
 import 'dart:io';
+import 'package:package_info_plus/package_info_plus.dart';
 
 class ProfileScreen extends ConsumerStatefulWidget {
   const ProfileScreen({super.key});
@@ -30,6 +31,13 @@ class ProfileScreen extends ConsumerStatefulWidget {
 class _ProfileScreenState extends ConsumerState<ProfileScreen> {
   bool _pushNotifications = true;
   final ImagePicker _picker = ImagePicker();
+  late final Future<PackageInfo> _packageInfoFuture;
+
+  @override
+  void initState() {
+    super.initState();
+    _packageInfoFuture = PackageInfo.fromPlatform();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -86,9 +94,31 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
               const SizedBox(height: 24),
               _buildDeveloperContact(),
               const SizedBox(height: 40),
-              Text(
-                'VERSION 1.1.0-BETA 21',
-                style: TextStyle(fontSize: 10, color: colors.textSecondary, fontWeight: FontWeight.bold, letterSpacing: 2),
+              FutureBuilder<PackageInfo>(
+                future: _packageInfoFuture,
+                builder: (context, snapshot) {
+                  String buildNum = '';
+                  if (snapshot.hasData) {
+                    final rawBuild = snapshot.data!.buildNumber;
+                    final code = int.tryParse(rawBuild);
+                    buildNum = (code != null && code >= 1000)
+                        ? (code % 1000).toString()
+                        : rawBuild;
+                  }
+                  
+                  final version = snapshot.hasData
+                      ? 'VERSION ${snapshot.data!.version} (BETA $buildNum)'
+                      : '';
+                  return Text(
+                    version.toUpperCase(),
+                    style: TextStyle(
+                      fontSize: 10,
+                      color: colors.textSecondary,
+                      fontWeight: FontWeight.bold,
+                      letterSpacing: 2,
+                    ),
+                  );
+                },
               ),
             ],
           ),

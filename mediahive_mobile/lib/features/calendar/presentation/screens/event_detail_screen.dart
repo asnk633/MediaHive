@@ -185,7 +185,7 @@ class EventDetailScreen extends ConsumerWidget {
                   _buildSectionHeader(colors, LucideIcons.image, 'MEDIA GALLERY'),
                   const SizedBox(height: 16),
                   Container(
-                    height: 200,
+                    constraints: const BoxConstraints(minHeight: 200),
                     width: double.infinity,
                     decoration: BoxDecoration(
                       color: colors.surface,

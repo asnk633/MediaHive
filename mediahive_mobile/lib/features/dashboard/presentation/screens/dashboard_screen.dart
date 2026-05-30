@@ -1,4 +1,5 @@
 import 'dart:ui';
+import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:lucide_icons/lucide_icons.dart';
@@ -6,6 +7,7 @@ import 'package:flutter_animate/flutter_animate.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../../../core/design_tokens.dart';
 import '../../../../core/theme_provider.dart';
+import '../../../../core/theme/elastic_scroll_physics.dart';
 import '../../../../presentation/providers/navigation_provider.dart';
 import '../../../../core/providers/user_provider.dart';
 import '../../../../core/services/auth_service.dart';
@@ -56,7 +58,7 @@ class DashboardScreen extends ConsumerWidget {
               await Future.delayed(const Duration(milliseconds: 500));
             },
             child: CustomScrollView(
-              physics: const AlwaysScrollableScrollPhysics(parent: BouncingScrollPhysics()),
+              physics: const AlwaysScrollableScrollPhysics(parent: ElasticScrollPhysics()),
               slivers: [
                 _buildSliverHeader(colors),
                 SliverToBoxAdapter(
@@ -80,16 +82,9 @@ class DashboardScreen extends ConsumerWidget {
                          _buildCompletionProgress(colors, ref),
                         const SizedBox(height: 40),
 
-                        _buildTasksSectionHeader(colors, ref),
+                        _buildTasksSectionHeader(context, colors, ref),
                         const SizedBox(height: 16),
-                        _buildPrioritiesList(
-                          context, 
-                          colors, 
-                          ref, 
-                          isAdmin 
-                            ? ((metrics['admin'] as Map<String, dynamic>?)?['priorities'] as List<Task>? ?? [])
-                            : ((metrics['team'] as Map<String, dynamic>?)?['myPriorities'] as List<Task>? ?? [])
-                        ),
+                        _buildTasksList(context, colors, ref),
                         const SizedBox(height: 32),
 
                         _buildEventsSectionHeader(colors, ref),
@@ -177,9 +172,9 @@ class DashboardScreen extends ConsumerWidget {
         ),
         const SizedBox(height: 32),
 
-        _buildTasksSectionHeader(colors, ref),
+        _buildTasksSectionHeader(context, colors, ref),
         const SizedBox(height: 16),
-        _buildPrioritiesList(context, colors, ref, team['myPriorities'] as List<Task>),
+        _buildTasksList(context, colors, ref),
         const SizedBox(height: 32),
 
         _buildEventsSectionHeader(colors, ref),
@@ -441,7 +436,8 @@ class DashboardScreen extends ConsumerWidget {
                     overflow: TextOverflow.ellipsis,
                     style: AppTypography.bodyS.copyWith(
                       fontWeight: FontWeight.w900,
-                      color: isOverdue ? AppColors.error : colors.textPrimary,
+                      color: isDone ? colors.textSecondary.withOpacity(0.5) : (isOverdue ? AppColors.error : colors.textPrimary),
+                      decoration: isDone ? TextDecoration.lineThrough : null,
                     ),
                   ),
                   Text(
@@ -1037,33 +1033,93 @@ class DashboardScreen extends ConsumerWidget {
     );
   }
 
+  bool _isRelevantEvent(dynamic e, String roleRaw, String? currentUserId, String? currentDepartment, String today) {
+    if (roleRaw.contains('admin')) {
+      return e.date == today;
+    } else if (roleRaw.contains('member')) {
+      return e.date == today && (e.departmentId?.toString() == currentDepartment || e.createdBy == currentUserId);
+    } else {
+      return e.date == today;
+    }
+  }
+
+  bool _isRelevantTask(Task t, String roleRaw, String? currentUserId, String? currentDepartment, String today, String? currentUserFullName) {
+    if (roleRaw.contains('admin')) {
+      return t.dueDate == today || (t.dueDate.compareTo(today) < 0 && t.status.toLowerCase() != 'done');
+    } else if (roleRaw.contains('member')) {
+      return t.dueDate == today && (t.department == currentDepartment || t.createdBy == currentUserId);
+    } else {
+      bool isAssignedToMe = false;
+      if (t.onBehalfOf != null && currentUserId != null) {
+        try {
+          final metadata = jsonDecode(t.onBehalfOf!);
+          if (metadata['assignee_ids'] != null) {
+            isAssignedToMe = List<String>.from(metadata['assignee_ids']).contains(currentUserId);
+          } else if (metadata['assignee_id'] != null) {
+            isAssignedToMe = metadata['assignee_id'] == currentUserId;
+          }
+        } catch (_) {}
+      }
+      if (!isAssignedToMe && currentUserFullName != null && t.assignee.isNotEmpty) {
+        isAssignedToMe = t.assignee.toLowerCase().contains(currentUserFullName.toLowerCase());
+      }
+      return t.dueDate == today && isAssignedToMe;
+    }
+  }
+
+  String _getEventsTitle(String roleRaw) {
+    if (roleRaw.contains('admin')) return 'All Events Today';
+    if (roleRaw.contains('member')) return 'Your Department\'s Events Today';
+    return 'Today\'s Events For You';
+  }
+
+  String _getTasksTitle(String roleRaw) {
+    if (roleRaw.contains('admin')) return 'Today\'s Tasks';
+    if (roleRaw.contains('member')) return 'Your Department\'s Tasks Today';
+    return 'Today\'s Tasks For You';
+  }
+
   Widget _buildEventsSectionHeader(ThemeColors colors, WidgetRef ref) {
     final eventsAsync = ref.watch(eventListProvider);
+    final profileAsync = ref.watch(currentUserProfileProvider);
     final today = DateFormat('yyyy-MM-dd').format(DateTime.now());
     
+    final roleRaw = profileAsync.maybeWhen(data: (p) => (p?['role']?.toString() ?? 'member').toLowerCase().trim(), orElse: () => 'member');
+    final currentUserId = profileAsync.maybeWhen(data: (p) => p?['id']?.toString(), orElse: () => null);
+    final currentDepartment = profileAsync.maybeWhen(data: (p) => p?['department']?.toString(), orElse: () => null);
+
     final count = eventsAsync.maybeWhen(
-      data: (events) => events.where((e) => e.date == today).length,
+      data: (events) => events.where((e) => _isRelevantEvent(e, roleRaw, currentUserId, currentDepartment, today)).length,
       orElse: () => 0,
     );
 
     return Row(
       mainAxisAlignment: MainAxisAlignment.spaceBetween,
       children: [
-        Row(
-          children: [
-            Container(
-              padding: const EdgeInsets.all(6),
-              decoration: BoxDecoration(
-                color: const Color(0xFF3B82F6).withOpacity(0.1),
-                borderRadius: BorderRadius.circular(8),
-                border: Border.all(color: const Color(0xFF3B82F6).withOpacity(0.2)),
+        Expanded(
+          child: Row(
+            children: [
+              Container(
+                padding: const EdgeInsets.all(6),
+                decoration: BoxDecoration(
+                  color: const Color(0xFF3B82F6).withOpacity(0.1),
+                  borderRadius: BorderRadius.circular(8),
+                  border: Border.all(color: const Color(0xFF3B82F6).withOpacity(0.2)),
+                ),
+                child: const Icon(LucideIcons.calendar, size: 16, color: Color(0xFF3B82F6)),
               ),
-              child: const Icon(LucideIcons.calendar, size: 16, color: Color(0xFF3B82F6)),
-            ),
-            const SizedBox(width: 12),
-            Text('Today\'s Events', style: AppTypography.h3),
-          ],
+              const SizedBox(width: 12),
+              Expanded(
+                child: Text(
+                  _getEventsTitle(roleRaw), 
+                  style: AppTypography.h3,
+                  overflow: TextOverflow.ellipsis,
+                ),
+              ),
+            ],
+          ),
         ),
+        const SizedBox(width: 12),
         Container(
           padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
           decoration: BoxDecoration(
@@ -1087,20 +1143,25 @@ class DashboardScreen extends ConsumerWidget {
 
   Widget _buildEventsList(ThemeColors colors, WidgetRef ref) {
     final eventsAsync = ref.watch(eventListProvider);
+    final profileAsync = ref.watch(currentUserProfileProvider);
     final today = DateFormat('yyyy-MM-dd').format(DateTime.now());
+    
+    final roleRaw = profileAsync.maybeWhen(data: (p) => (p?['role']?.toString() ?? 'member').toLowerCase().trim(), orElse: () => 'member');
+    final currentUserId = profileAsync.maybeWhen(data: (p) => p?['id']?.toString(), orElse: () => null);
+    final currentDepartment = profileAsync.maybeWhen(data: (p) => p?['department']?.toString(), orElse: () => null);
 
     return eventsAsync.when(
       loading: () => const Center(child: CircularProgressIndicator()),
       error: (e, _) => Center(child: Text('Error loading events', style: TextStyle(color: colors.textSecondary))),
       data: (events) {
-        final todayEvents = events.where((e) => e.date == today).toList();
+        final relevantEvents = events.where((e) => _isRelevantEvent(e, roleRaw, currentUserId, currentDepartment, today)).toList();
         
-        if (todayEvents.isEmpty) {
+        if (relevantEvents.isEmpty) {
           return Center(child: Text('NO EVENTS SCHEDULED', style: TextStyle(color: colors.textSecondary, fontSize: 10, fontWeight: FontWeight.bold)));
         }
 
         return Column(
-          children: todayEvents.map((event) => _buildEventCard(colors, event)).toList(),
+          children: relevantEvents.map((event) => _buildEventCard(colors, event)).toList(),
         );
       },
     );
@@ -1190,47 +1251,65 @@ class DashboardScreen extends ConsumerWidget {
     );
   }
 
-  Widget _buildTasksSectionHeader(ThemeColors colors, WidgetRef ref) {
+  Widget _buildTasksSectionHeader(BuildContext context, ThemeColors colors, WidgetRef ref) {
     final tasksAsync = ref.watch(tasksListProvider);
+    final profileAsync = ref.watch(currentUserProfileProvider);
     final today = DateFormat('yyyy-MM-dd').format(DateTime.now());
     
+    final roleRaw = profileAsync.maybeWhen(data: (p) => (p?['role']?.toString() ?? 'member').toLowerCase().trim(), orElse: () => 'member');
+    final currentUserId = profileAsync.maybeWhen(data: (p) => p?['id']?.toString(), orElse: () => null);
+    final currentDepartment = profileAsync.maybeWhen(data: (p) => p?['department']?.toString(), orElse: () => null);
+    final currentUserFullName = profileAsync.maybeWhen(data: (p) => p?['full_name']?.toString(), orElse: () => null);
+
     final count = tasksAsync.maybeWhen(
-      data: (tasks) => tasks.where((t) => t.dueDate == today).length,
+      data: (tasks) => tasks.where((t) => _isRelevantTask(t, roleRaw, currentUserId, currentDepartment, today, currentUserFullName)).length,
       orElse: () => 0,
     );
 
     return Row(
       mainAxisAlignment: MainAxisAlignment.spaceBetween,
       children: [
-        Row(
-          children: [
-            Container(
-              padding: const EdgeInsets.all(6),
-              decoration: BoxDecoration(
-                color: const Color(0xFF10B981).withOpacity(0.1),
-                borderRadius: BorderRadius.circular(8),
-                border: Border.all(color: const Color(0xFF10B981).withOpacity(0.2)),
+        Expanded(
+          child: Row(
+            children: [
+              Container(
+                padding: const EdgeInsets.all(6),
+                decoration: BoxDecoration(
+                  color: const Color(0xFF10B981).withOpacity(0.1),
+                  borderRadius: BorderRadius.circular(8),
+                  border: Border.all(color: const Color(0xFF10B981).withOpacity(0.2)),
+                ),
+                child: const Icon(LucideIcons.checkSquare, size: 16, color: Color(0xFF10B981)),
               ),
-              child: const Icon(LucideIcons.checkSquare, size: 16, color: Color(0xFF10B981)),
-            ),
-            const SizedBox(width: 12),
-            Text('Today\'s Tasks', style: AppTypography.h3),
-          ],
-        ),
-        Container(
-          padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
-          decoration: BoxDecoration(
-            color: colors.surface,
-            borderRadius: BorderRadius.circular(6),
-            border: Border.all(color: colors.border),
+              const SizedBox(width: 12),
+              Expanded(
+                child: Text(
+                  _getTasksTitle(roleRaw), 
+                  style: AppTypography.h3,
+                  overflow: TextOverflow.ellipsis,
+                ),
+              ),
+            ],
           ),
-          child: Text(
-            '$count TASKS',
-            style: TextStyle(
-              color: colors.textSecondary,
-              fontSize: 10,
-              fontWeight: FontWeight.bold,
-              letterSpacing: 1.0,
+        ),
+        const SizedBox(width: 12),
+        GestureDetector(
+          onTap: () => context.go('/tasks'),
+          child: Container(
+            padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+            decoration: BoxDecoration(
+              color: colors.surface,
+              borderRadius: BorderRadius.circular(6),
+              border: Border.all(color: colors.border),
+            ),
+            child: Text(
+              '$count TASKS',
+              style: TextStyle(
+                color: colors.textSecondary,
+                fontSize: 10,
+                fontWeight: FontWeight.bold,
+                letterSpacing: 1.0,
+              ),
             ),
           ),
         ),
@@ -1240,20 +1319,50 @@ class DashboardScreen extends ConsumerWidget {
 
   Widget _buildTasksList(BuildContext context, ThemeColors colors, WidgetRef ref) {
     final tasksAsync = ref.watch(tasksListProvider);
+    final profileAsync = ref.watch(currentUserProfileProvider);
     final today = DateFormat('yyyy-MM-dd').format(DateTime.now());
+    
+    final roleRaw = profileAsync.maybeWhen(data: (p) => (p?['role']?.toString() ?? 'member').toLowerCase().trim(), orElse: () => 'member');
+    final currentUserId = profileAsync.maybeWhen(data: (p) => p?['id']?.toString(), orElse: () => null);
+    final currentDepartment = profileAsync.maybeWhen(data: (p) => p?['department']?.toString(), orElse: () => null);
+    final currentUserFullName = profileAsync.maybeWhen(data: (p) => p?['full_name']?.toString(), orElse: () => null);
 
     return tasksAsync.when(
       loading: () => const Center(child: CircularProgressIndicator()),
       error: (e, _) => Center(child: Text('Error loading tasks', style: TextStyle(color: colors.textSecondary))),
       data: (tasks) {
-        final todayTasks = tasks.where((t) => t.dueDate == today).toList();
+        final relevantTasks = tasks.where((t) => _isRelevantTask(t, roleRaw, currentUserId, currentDepartment, today, currentUserFullName)).toList();
         
-        if (todayTasks.isEmpty) {
-          return Center(child: Text('NO TASKS FOR TODAY', style: TextStyle(color: colors.textSecondary, fontSize: 10, fontWeight: FontWeight.bold)));
+        if (relevantTasks.isEmpty) {
+          return Container(
+            padding: const EdgeInsets.all(24),
+            decoration: BoxDecoration(
+              color: colors.surface,
+              borderRadius: BorderRadius.circular(20),
+              border: Border.all(color: colors.border),
+            ),
+            child: Center(
+              child: Column(
+                children: [
+                  Icon(LucideIcons.checkCircle2, color: AppColors.success.withOpacity(0.2), size: 32),
+                  const SizedBox(height: 12),
+                  Text(
+                    'ALL CLEAR',
+                    style: AppTypography.caption.copyWith(fontWeight: FontWeight.w900, letterSpacing: 1.5),
+                  ),
+                  const SizedBox(height: 4),
+                  Text(
+                    'No immediate priorities found',
+                    style: AppTypography.caption.copyWith(color: colors.textSecondary.withOpacity(0.5)),
+                  ),
+                ],
+              ),
+            ),
+          );
         }
 
         return Column(
-          children: todayTasks.map((task) => _buildTaskCard(context, ref, colors, task)).toList(),
+          children: relevantTasks.map((task) => _buildTaskItem(context, ref, task, colors)).toList(),
         );
       },
     );

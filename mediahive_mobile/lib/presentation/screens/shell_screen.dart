@@ -1,6 +1,7 @@
 import 'dart:ui';
 import 'dart:math' as math;
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:lucide_icons/lucide_icons.dart';
 import 'package:flutter_animate/flutter_animate.dart';
@@ -25,6 +26,7 @@ import '../../features/system/presentation/providers/notifications_provider.dart
 import 'dart:io';
 
 import '../../shared/widgets/mh_loading_overlay.dart';
+import '../../shared/widgets/ambient_canvas_background.dart';
 import '../../core/providers/update_provider.dart';
 import '../../core/services/update_service.dart';
 
@@ -66,50 +68,74 @@ class _ShellScreenState extends ConsumerState<ShellScreen> {
     return Scaffold(
       backgroundColor: colors.backgroundPrimary,
       extendBody: true,
-      body: Stack(
-        children: [
-          // Push down content when update banner is active
-          Padding(
-            padding: EdgeInsets.only(
-              top: updateInfoAsync.maybeWhen(
-                data: (info) => info.isUpdateAvailable ? 165.0 : 0.0,
-                orElse: () => 0.0,
+      body: LayoutBuilder(
+        builder: (context, constraints) {
+          final isTablet = constraints.maxWidth >= 600;
+          return Stack(
+            children: [
+              Row(
+                children: [
+                  if (isTablet && !shouldHideNav) ...[
+                    _buildTabletNavigationRail(currentItem, colors),
+                    VerticalDivider(thickness: 1, width: 1, color: colors.border.withOpacity(0.2)),
+                  ],
+                  Expanded(
+                    child: Stack(
+                      children: [
+                        // ── Ambient canvas shader — living gradient behind all content ──
+                        Positioned.fill(
+                          child: IgnorePointer(
+                            child: AmbientCanvasBackground(isDark: colors.isDark),
+                          ),
+                        ),
+                        // Push down content when update banner is active
+                        Padding(
+                          padding: EdgeInsets.only(
+                            top: updateInfoAsync.maybeWhen(
+                              data: (info) => info.isUpdateAvailable ? 165.0 : 0.0,
+                              orElse: () => 0.0,
+                            ),
+                          ),
+                          child: widget.child,
+                        ),
+                        
+                        // Persistent Header
+                        _buildGlobalHeader(colors, currentRoute, shouldHideNav, isProfileRoute),
+
+                        // Persistent Update Banner under Header
+                        updateInfoAsync.maybeWhen(
+                          data: (info) {
+                            if (!info.isUpdateAvailable) return const SizedBox.shrink();
+                            return Positioned(
+                              top: 92 + MediaQuery.of(context).padding.top,
+                              left: 16,
+                              right: 16,
+                              child: _buildUpdateBanner(context, colors, info, updateState, updateProgress),
+                            );
+                          },
+                          orElse: () => const SizedBox.shrink(),
+                        ),
+                        
+                        // Floating Dock with Integrated FAB & Bottom Blur (Phone only)
+                        if (!shouldHideNav && !isTablet) ...[
+                          _buildBottomBlurBar(colors),
+                          Positioned(
+                            bottom: 0,
+                            left: 0,
+                            right: 0,
+                            child: _buildFloatingDock(currentItem, colors),
+                          ),
+                        ],
+                      ],
+                    ),
+                  ),
+                ],
               ),
-            ),
-            child: widget.child,
-          ),
-          
-          // Persistent Header
-          _buildGlobalHeader(colors, currentRoute, shouldHideNav, isProfileRoute),
-
-          // Persistent Update Banner under Header
-          updateInfoAsync.maybeWhen(
-            data: (info) {
-              if (!info.isUpdateAvailable) return const SizedBox.shrink();
-              return Positioned(
-                top: 92 + MediaQuery.of(context).padding.top,
-                left: 16,
-                right: 16,
-                child: _buildUpdateBanner(context, colors, info, updateState, updateProgress),
-              );
-            },
-            orElse: () => const SizedBox.shrink(),
-          ),
-          
-          // Speed Dial Overlay
-          if (_isSpeedDialOpen) _buildSpeedDialOverlay(colors),
-
-          // Floating Dock with Integrated FAB & Bottom Blur
-          if (!shouldHideNav) ...[
-            _buildBottomBlurBar(colors),
-            Positioned(
-              bottom: 0,
-              left: 0,
-              right: 0,
-              child: _buildFloatingDock(currentItem, colors),
-            ),
-          ],
-        ],
+              // Speed Dial Overlay
+              if (_isSpeedDialOpen) _buildSpeedDialOverlay(colors, isTablet),
+            ],
+          );
+        },
       ),
     );
   }
@@ -475,6 +501,118 @@ class _ShellScreenState extends ConsumerState<ShellScreen> {
     );
   }
 
+  Widget _buildTabletNavigationRail(NavItem currentItem, ThemeColors colors) {
+    final isLight = !colors.isDark;
+    
+    return NavigationRail(
+      backgroundColor: isLight ? Colors.white.withOpacity(0.8) : colors.backgroundPrimary.withOpacity(0.8),
+      selectedIndex: _getNavIndex(currentItem),
+      onDestinationSelected: (index) {
+        NavItem selectedItem;
+        switch(index) {
+          case 0: selectedItem = NavItem.dashboard; break;
+          case 1: selectedItem = NavItem.tasks; break;
+          case 2: selectedItem = NavItem.events; break;
+          case 3: selectedItem = NavItem.inventory; break;
+          case 4: selectedItem = NavItem.files; break;
+          case 5: selectedItem = NavItem.governance; break;
+          default: selectedItem = NavItem.dashboard; break;
+        }
+        ref.read(navigationProvider.notifier).state = selectedItem;
+        if (_isSpeedDialOpen) setState(() => _isSpeedDialOpen = false);
+        switch (selectedItem) {
+          case NavItem.dashboard:  context.go('/dashboard'); break;
+          case NavItem.tasks:      context.go('/tasks'); break;
+          case NavItem.events:     context.go('/calendar'); break;
+          case NavItem.inventory:  context.go('/inventory'); break;
+          case NavItem.files:      context.go('/files'); break;
+          case NavItem.governance: context.go('/governance'); break;
+        }
+      },
+      labelType: NavigationRailLabelType.all,
+      selectedIconTheme: IconThemeData(color: colors.indigo, size: 24),
+      unselectedIconTheme: IconThemeData(color: colors.textSecondary.withOpacity(isLight ? 0.5 : 0.4), size: 24),
+      selectedLabelTextStyle: TextStyle(
+        color: isLight ? DesignTokens.lightHoney : colors.textPrimary,
+        fontSize: 10,
+        fontWeight: FontWeight.bold,
+      ),
+      unselectedLabelTextStyle: TextStyle(
+        color: colors.textSecondary.withOpacity(isLight ? 0.5 : 0.4),
+        fontSize: 10,
+        fontWeight: FontWeight.w600,
+      ),
+      leading: Padding(
+        padding: const EdgeInsets.only(bottom: 24, top: 16),
+        child: _buildIntegratedFAB(colors),
+      ),
+      destinations: [
+        const NavigationRailDestination(
+          icon: Icon(LucideIcons.home),
+          label: Text('HOME'),
+        ),
+        const NavigationRailDestination(
+          icon: Icon(LucideIcons.checkSquare),
+          label: Text('TASKS'),
+        ),
+        const NavigationRailDestination(
+          icon: Icon(LucideIcons.calendar),
+          label: Text('EVENTS'),
+        ),
+        const NavigationRailDestination(
+          icon: Icon(LucideIcons.package),
+          label: Text('INVENTORY'),
+        ),
+        const NavigationRailDestination(
+          icon: Icon(LucideIcons.download),
+          label: Text('FILES'),
+        ),
+        NavigationRailDestination(
+          icon: Consumer(
+            builder: (context, ref, _) {
+              final profileAsync = ref.watch(currentUserProfileProvider);
+              return profileAsync.maybeWhen(
+                data: (profile) {
+                  final role = profile?['role'] as String? ?? 'member';
+                  IconData icon = LucideIcons.shieldCheck;
+                  if (role == 'admin' || role == 'manager') {
+                    icon = LucideIcons.command;
+                  } else if (role == 'team') {
+                    icon = LucideIcons.calendarClock;
+                  } else {
+                    icon = LucideIcons.user;
+                  }
+                  return Icon(icon);
+                },
+                orElse: () => const Icon(LucideIcons.shieldCheck),
+              );
+            },
+          ),
+          label: Consumer(
+            builder: (context, ref, _) {
+              final profileAsync = ref.watch(currentUserProfileProvider);
+              return profileAsync.maybeWhen(
+                data: (profile) {
+                  final role = profile?['role'] as String? ?? 'member';
+                  String label = 'GOV';
+                  if (role == 'admin' || role == 'manager') {
+                    label = 'ADMIN';
+                  } else if (role == 'team') {
+                    label = 'LEAVE';
+                  } else {
+                    label = 'PROFILE';
+                  }
+                  return Text(label);
+                },
+                orElse: () => const Text('GOV'),
+              );
+            }
+          ),
+        ),
+      ],
+    );
+  }
+
   Widget _buildDockItem(WidgetRef ref, IconData icon, String label, NavItem item, NavItem currentItem, ThemeColors colors) {
     final isSelected = currentItem == item;
     final isLight = !colors.isDark;
@@ -505,6 +643,7 @@ class _ShellScreenState extends ConsumerState<ShellScreen> {
       ),
       child: GestureDetector(
         onTap: () {
+          HapticFeedback.lightImpact();
           ref.read(navigationProvider.notifier).state = item;
           if (_isSpeedDialOpen) setState(() => _isSpeedDialOpen = false);
           switch (item) {
@@ -587,7 +726,7 @@ class _ShellScreenState extends ConsumerState<ShellScreen> {
     );
   }
 
-  Widget _buildSpeedDialOverlay(ThemeColors colors) {
+  Widget _buildSpeedDialOverlay(ThemeColors colors, [bool isTablet = false]) {
     final isLight = !colors.isDark;
     return Positioned.fill(
       child: GestureDetector(
@@ -616,29 +755,29 @@ class _ShellScreenState extends ConsumerState<ShellScreen> {
                   children: [
                     if (isManagerOrAdmin) ...[
                       // 4-Button Arch for Managers/Admins
-                      _buildSpeedDialItem(colors, LucideIcons.bell, 'Notify', const Offset(-160, -130), color: const Color(0xFFF59E0B), index: 0, onTap: () {
+                      _buildSpeedDialItem(colors, LucideIcons.bell, 'Notify', const Offset(-160, -130), color: const Color(0xFFF59E0B), index: 0, isTablet: isTablet, onTap: () {
                         setState(() => _isSpeedDialOpen = false);
                         context.push('/notifications/create');
                       }),
-                      _buildSpeedDialItem(colors, LucideIcons.calendar, 'Event', const Offset(-65, -240), color: const Color(0xFF10B981), index: 1, onTap: () {
+                      _buildSpeedDialItem(colors, LucideIcons.calendar, 'Event', const Offset(-65, -240), color: const Color(0xFF10B981), index: 1, isTablet: isTablet, onTap: () {
                         setState(() => _isSpeedDialOpen = false);
                         context.push('/create-event');
                       }),
-                      _buildSpeedDialItem(colors, LucideIcons.checkCircle, 'Task', const Offset(65, -240), color: const Color(0xFF3B82F6), index: 2, onTap: () {
+                      _buildSpeedDialItem(colors, LucideIcons.checkCircle, 'Task', const Offset(65, -240), color: const Color(0xFF3B82F6), index: 2, isTablet: isTablet, onTap: () {
                         setState(() => _isSpeedDialOpen = false);
                         context.push('/create-task');
                       }),
-                      _buildSpeedDialItem(colors, LucideIcons.box, 'Asset', const Offset(160, -130), color: const Color(0xFF8B5CF6), index: 3, onTap: () {
+                      _buildSpeedDialItem(colors, LucideIcons.box, 'Asset', const Offset(160, -130), color: const Color(0xFF8B5CF6), index: 3, isTablet: isTablet, onTap: () {
                         setState(() => _isSpeedDialOpen = false);
                         context.push('/inventory/create');
                       }),
                     ] else ...[
                       // 2-Button Arch for Team/Members
-                      _buildSpeedDialItem(colors, LucideIcons.calendar, 'Event', const Offset(-90, -160), color: const Color(0xFF10B981), index: 0, onTap: () {
+                      _buildSpeedDialItem(colors, LucideIcons.calendar, 'Event', const Offset(-90, -160), color: const Color(0xFF10B981), index: 0, isTablet: isTablet, onTap: () {
                         setState(() => _isSpeedDialOpen = false);
                         context.push('/create-event');
                       }),
-                      _buildSpeedDialItem(colors, LucideIcons.checkCircle, 'Task', const Offset(90, -160), color: const Color(0xFF3B82F6), index: 1, onTap: () {
+                      _buildSpeedDialItem(colors, LucideIcons.checkCircle, 'Task', const Offset(90, -160), color: const Color(0xFF3B82F6), index: 1, isTablet: isTablet, onTap: () {
                         setState(() => _isSpeedDialOpen = false);
                         context.push('/create-task');
                       }),
@@ -660,13 +799,14 @@ class _ShellScreenState extends ConsumerState<ShellScreen> {
     Offset offset, {
     required Color color,
     required int index,
+    bool isTablet = false,
     VoidCallback? onTap,
   }) {
     final isLight = !colors.isDark;
     return Align(
-      alignment: Alignment.bottomCenter,
+      alignment: isTablet ? Alignment.topLeft : Alignment.bottomCenter,
       child: Transform.translate(
-        offset: offset,
+        offset: isTablet ? Offset(90.0, 40.0 + (index * 85.0)) : offset,
         child: GestureDetector(
           onTap: onTap,
           child: Column(
@@ -757,7 +897,7 @@ class _ShellScreenState extends ConsumerState<ShellScreen> {
             curve: Curves.easeOutBack,
           )
           .move(
-            begin: Offset(-offset.dx * 0.5, -offset.dy * 0.5 + 40),
+            begin: isTablet ? const Offset(-40, 0) : Offset(-offset.dx * 0.5, -offset.dy * 0.5 + 40),
             end: Offset.zero,
             delay: (index * 40).ms,
             duration: 500.ms,

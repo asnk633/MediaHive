@@ -129,6 +129,9 @@ class _AddInventoryItemScreenState extends ConsumerState<AddInventoryItemScreen>
   bool _isUploading = false;
   bool _isSaving = false;
 
+  final PageController _pageController = PageController();
+  int _currentPage = 0;
+
   final List<String> _categories = [
     'Cameras & Accessories',
     'Networking & Power Cables',
@@ -150,6 +153,7 @@ class _AddInventoryItemScreenState extends ConsumerState<AddInventoryItemScreen>
     _modelController.dispose();
     _locationController.dispose();
     _remarksController.dispose();
+    _pageController.dispose();
     super.dispose();
   }
 
@@ -318,187 +322,273 @@ class _AddInventoryItemScreenState extends ConsumerState<AddInventoryItemScreen>
           children: [
             _buildHeader(colors),
             Expanded(
-              child: SingleChildScrollView(
-                padding: const EdgeInsets.all(AppSpacing.l),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    _buildImageSection(colors),
-                    const SizedBox(height: AppSpacing.l),
-                    MhInput(
-                      label: 'ASSET NAME *',
-                      hint: 'e.g. Sony A7 IV',
-                      controller: _nameController,
-                      prefixIcon: LucideIcons.tag,
-                    ),
-                    const SizedBox(height: AppSpacing.m),
-                    Row(
+              child: PageView(
+                controller: _pageController,
+                physics: const NeverScrollableScrollPhysics(),
+                onPageChanged: (index) {
+                  setState(() => _currentPage = index);
+                },
+                children: [
+                  // Page 1
+                  SingleChildScrollView(
+                    padding: const EdgeInsets.all(AppSpacing.l),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        Expanded(
-                          child: _buildDropdown(
-                            label: 'CATEGORY *',
-                            value: _selectedCategory,
-                            items: _categories,
-                            onChanged: (val) => setState(() => _selectedCategory = val!),
-                            colors: colors,
-                          ),
+                        _buildImageSection(colors),
+                        const SizedBox(height: AppSpacing.l),
+                        MhInput(
+                          label: 'ASSET NAME *',
+                          hint: 'e.g. Sony A7 IV',
+                          controller: _nameController,
+                          prefixIcon: LucideIcons.tag,
                         ),
-                        const SizedBox(width: AppSpacing.m),
-                        Expanded(
-                          child: _buildDropdown(
-                            label: 'CONDITION *',
-                            value: _selectedCondition,
-                            items: _conditions,
-                            onChanged: (val) => setState(() => _selectedCondition = val!),
-                            colors: colors,
-                          ),
+                        const SizedBox(height: AppSpacing.m),
+                        Row(
+                          children: [
+                            Expanded(
+                              child: _buildDropdown(
+                                label: 'CATEGORY *',
+                                value: _selectedCategory,
+                                items: _categories,
+                                onChanged: (val) => setState(() => _selectedCategory = val!),
+                                colors: colors,
+                              ),
+                            ),
+                            const SizedBox(width: AppSpacing.m),
+                            Expanded(
+                              child: _buildDropdown(
+                                label: 'CONDITION *',
+                                value: _selectedCondition,
+                                items: _conditions,
+                                onChanged: (val) => setState(() => _selectedCondition = val!),
+                                colors: colors,
+                              ),
+                            ),
+                          ],
+                        ),
+                        const SizedBox(height: AppSpacing.m),
+                        Row(
+                          children: [
+                            Expanded(
+                              child: _buildDropdown(
+                                label: 'STATUS *',
+                                value: _selectedStatus,
+                                items: _statuses,
+                                onChanged: (val) => setState(() => _selectedStatus = val!),
+                                colors: colors,
+                              ),
+                            ),
+                            const SizedBox(width: AppSpacing.m),
+                            Expanded(
+                              child: MhInput(
+                                label: 'QUANTITY *',
+                                hint: '1',
+                                controller: _quantityController,
+                                keyboardType: TextInputType.number,
+                                prefixIcon: LucideIcons.layers,
+                              ),
+                            ),
+                          ],
                         ),
                       ],
                     ),
-                    const SizedBox(height: AppSpacing.m),
-                    Row(
+                  ),
+                  
+                  // Page 2
+                  SingleChildScrollView(
+                    padding: const EdgeInsets.all(AppSpacing.l),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        Expanded(
-                          child: _buildDropdown(
-                            label: 'STATUS *',
-                            value: _selectedStatus,
-                            items: _statuses,
-                            onChanged: (val) => setState(() => _selectedStatus = val!),
-                            colors: colors,
-                          ),
+                        Row(
+                          children: [
+                            Expanded(
+                              child: MhInput(
+                                label: 'BRAND',
+                                hint: 'e.g. Sony',
+                                controller: _brandController,
+                                prefixIcon: LucideIcons.building,
+                              ),
+                            ),
+                            const SizedBox(width: AppSpacing.m),
+                            Expanded(
+                              child: MhInput(
+                                label: 'MODEL',
+                                hint: 'e.g. A7 IV',
+                                controller: _modelController,
+                                prefixIcon: LucideIcons.cpu,
+                              ),
+                            ),
+                          ],
                         ),
-                        const SizedBox(width: AppSpacing.m),
-                        Expanded(
-                          child: MhInput(
-                            label: 'QUANTITY *',
-                            hint: '1',
-                            controller: _quantityController,
-                            keyboardType: TextInputType.number,
-                            prefixIcon: LucideIcons.layers,
-                          ),
+                        const SizedBox(height: AppSpacing.m),
+                        Row(
+                          children: [
+                            Expanded(
+                              child: MhInput(
+                                label: 'PURCHASE PRICE',
+                                hint: '0.00',
+                                controller: _priceController,
+                                keyboardType: TextInputType.number,
+                                prefixIcon: LucideIcons.dollarSign,
+                              ),
+                            ),
+                            const SizedBox(width: AppSpacing.m),
+                            Expanded(
+                              child: MhInput(
+                                label: 'SERIAL NUMBER',
+                                hint: 'Optional',
+                                controller: _serialController,
+                                prefixIcon: LucideIcons.hash,
+                              ),
+                            ),
+                          ],
                         ),
-                      ],
-                    ),
-                    const SizedBox(height: AppSpacing.m),
-                    Row(
-                      children: [
-                        Expanded(
-                          child: MhInput(
-                            label: 'BRAND',
-                            hint: 'e.g. Sony',
-                            controller: _brandController,
-                            prefixIcon: LucideIcons.building,
-                          ),
-                        ),
-                        const SizedBox(width: AppSpacing.m),
-                        Expanded(
-                          child: MhInput(
-                            label: 'MODEL',
-                            hint: 'e.g. A7 IV',
-                            controller: _modelController,
-                            prefixIcon: LucideIcons.cpu,
-                          ),
-                        ),
-                      ],
-                    ),
-                    const SizedBox(height: AppSpacing.m),
-                    Row(
-                      children: [
-                        Expanded(
-                          child: MhInput(
-                            label: 'PURCHASE PRICE',
-                            hint: '0.00',
-                            controller: _priceController,
-                            keyboardType: TextInputType.number,
-                            prefixIcon: LucideIcons.dollarSign,
-                          ),
-                        ),
-                        const SizedBox(width: AppSpacing.m),
-                        Expanded(
-                          child: MhInput(
-                            label: 'SERIAL NUMBER',
-                            hint: 'Optional',
-                            controller: _serialController,
-                            prefixIcon: LucideIcons.hash,
-                          ),
-                        ),
-                      ],
-                    ),
-                    const SizedBox(height: AppSpacing.m),
-                    Row(
-                      children: [
-                        Expanded(
-                          child: MhInput(
-                            label: 'LOCATION',
-                            hint: 'e.g. Media Room',
-                            controller: _locationController,
-                            prefixIcon: LucideIcons.mapPin,
-                          ),
-                        ),
-                        const SizedBox(width: AppSpacing.m),
-                        Expanded(
-                          child: _buildDatePicker(
-                            'PURCHASE DATE',
-                            _purchaseDate == null
-                                ? 'Select date'
-                                : '${_purchaseDate!.day.toString().padLeft(2, '0')}-${_purchaseDate!.month.toString().padLeft(2, '0')}-${_purchaseDate!.year}',
-                            LucideIcons.calendar,
-                            colors,
-                            onTap: () async {
-                              final picked = await showDatePicker(
-                                context: context,
-                                initialDate: _purchaseDate ?? DateTime.now(),
-                                firstDate: DateTime(2000),
-                                lastDate: DateTime(2100),
-                                builder: (context, child) {
-                                  return Theme(
-                                    data: colors.isDark
-                                        ? ThemeData.dark().copyWith(
-                                            colorScheme: ColorScheme.dark(
-                                              primary: colors.indigo,
-                                              onPrimary: Colors.white,
-                                              surface: colors.surface,
-                                              onSurface: colors.textPrimary,
-                                            ),
-                                          )
-                                        : ThemeData.light().copyWith(
-                                            colorScheme: ColorScheme.light(
-                                              primary: colors.indigo,
-                                              onPrimary: Colors.white,
-                                              surface: Colors.white,
-                                              onSurface: colors.textPrimary,
-                                            ),
-                                          ),
-                                    child: child!,
+                        const SizedBox(height: AppSpacing.m),
+                        Row(
+                          children: [
+                            Expanded(
+                              child: MhInput(
+                                label: 'LOCATION',
+                                hint: 'e.g. Media Room',
+                                controller: _locationController,
+                                prefixIcon: LucideIcons.mapPin,
+                              ),
+                            ),
+                            const SizedBox(width: AppSpacing.m),
+                            Expanded(
+                              child: _buildDatePicker(
+                                'PURCHASE DATE',
+                                _purchaseDate == null
+                                    ? 'Select date'
+                                    : '${_purchaseDate!.day.toString().padLeft(2, '0')}-${_purchaseDate!.month.toString().padLeft(2, '0')}-${_purchaseDate!.year}',
+                                LucideIcons.calendar,
+                                colors,
+                                onTap: () async {
+                                  final picked = await showDatePicker(
+                                    context: context,
+                                    initialDate: _purchaseDate ?? DateTime.now(),
+                                    firstDate: DateTime(2000),
+                                    lastDate: DateTime(2100),
+                                    builder: (context, child) {
+                                      return Theme(
+                                        data: colors.isDark
+                                            ? ThemeData.dark().copyWith(
+                                                colorScheme: ColorScheme.dark(
+                                                  primary: colors.indigo,
+                                                  onPrimary: Colors.white,
+                                                  surface: colors.surface,
+                                                  onSurface: colors.textPrimary,
+                                                ),
+                                              )
+                                            : ThemeData.light().copyWith(
+                                                colorScheme: ColorScheme.light(
+                                                  primary: colors.indigo,
+                                                  onPrimary: Colors.white,
+                                                  surface: Colors.white,
+                                                  onSurface: colors.textPrimary,
+                                                ),
+                                              ),
+                                        child: child!,
+                                      );
+                                    },
                                   );
+                                  if (picked != null) {
+                                    setState(() => _purchaseDate = picked);
+                                  }
                                 },
-                              );
-                              if (picked != null) {
-                                setState(() => _purchaseDate = picked);
-                              }
-                            },
-                          ),
+                              ),
+                            ),
+                          ],
                         ),
+                        const SizedBox(height: AppSpacing.m),
+                        MhInput(
+                          label: 'REMARKS / DESCRIPTION',
+                          hint: 'Additional notes about the asset...',
+                          controller: _remarksController,
+                          prefixIcon: LucideIcons.fileText,
+                        ),
+                        const SizedBox(height: AppSpacing.xl),
+                        MhButton(
+                          label: _isSaving ? 'Saving...' : (widget.itemToEdit != null ? 'Save Changes' : 'Add Asset'),
+                          onTap: _isSaving ? () {} : _handleSave,
+                          isLoading: _isSaving,
+                          icon: LucideIcons.save,
+                          type: MhButtonType.primary,
+                        ),
+                        const SizedBox(height: AppSpacing.xxl),
                       ],
                     ),
-                    const SizedBox(height: AppSpacing.m),
-                    MhInput(
-                      label: 'REMARKS / DESCRIPTION',
-                      hint: 'Additional notes about the asset...',
-                      controller: _remarksController,
-                      prefixIcon: LucideIcons.fileText,
-                    ),
-                    const SizedBox(height: AppSpacing.xl),
-                    MhButton(
-                      label: _isSaving ? 'Saving...' : (widget.itemToEdit != null ? 'Save Changes' : 'Add Asset'),
-                      onTap: _isSaving ? () {} : _handleSave,
-                      isLoading: _isSaving,
-                      icon: LucideIcons.save,
-                      type: MhButtonType.primary,
-                    ),
-                    const SizedBox(height: AppSpacing.xxl),
-                  ],
-                ),
+                  ),
+                ],
+              ),
+            ),
+            
+            // Bottom Navigation & Progress Indicator
+            Container(
+              padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 16),
+              color: colors.backgroundPrimary,
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  if (_currentPage > 0)
+                    TextButton(
+                      onPressed: () {
+                        _pageController.previousPage(
+                          duration: const Duration(milliseconds: 300),
+                          curve: Curves.easeInOut,
+                        );
+                      },
+                      child: Text('Back', style: TextStyle(color: colors.textSecondary)),
+                    )
+                  else
+                    const SizedBox(width: 64),
+                  Row(
+                    children: List.generate(2, (index) {
+                      return AnimatedContainer(
+                        duration: const Duration(milliseconds: 300),
+                        margin: const EdgeInsets.symmetric(horizontal: 4),
+                        height: 8,
+                        width: _currentPage == index ? 24 : 8,
+                        decoration: BoxDecoration(
+                          color: _currentPage == index ? colors.indigo : colors.border,
+                          borderRadius: BorderRadius.circular(4),
+                        ),
+                      );
+                    }),
+                  ),
+                  if (_currentPage < 1)
+                    Row(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        if (widget.itemToEdit != null)
+                          Padding(
+                            padding: const EdgeInsets.only(right: 8.0),
+                            child: TextButton(
+                              onPressed: _isSaving ? null : _handleSave,
+                              child: _isSaving
+                                  ? SizedBox(
+                                      width: 16, height: 16,
+                                      child: CircularProgressIndicator(strokeWidth: 2, color: colors.honey),
+                                    )
+                                  : Text('Save', style: TextStyle(color: colors.honey, fontWeight: FontWeight.bold)),
+                            ),
+                          ),
+                        TextButton(
+                          onPressed: () {
+                            _pageController.nextPage(
+                              duration: const Duration(milliseconds: 300),
+                              curve: Curves.easeInOut,
+                            );
+                          },
+                          child: Text('Next', style: TextStyle(color: colors.indigo, fontWeight: FontWeight.bold)),
+                        ),
+                      ],
+                    )
+                  else
+                    const SizedBox(width: 64),
+                ],
               ),
             ),
           ],

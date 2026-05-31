@@ -223,6 +223,7 @@ class _CreateTaskScreenState extends ConsumerState<CreateTaskScreen> {
   }
 
   Future<void> _pickFile() async {
+    final colors = ref.read(themeColorsProvider);
     final mediaService = ref.read(mediaServiceProvider);
     
     await showModalBottomSheet(
@@ -230,7 +231,7 @@ class _CreateTaskScreenState extends ConsumerState<CreateTaskScreen> {
       backgroundColor: Colors.transparent,
       builder: (context) => Container(
         decoration: BoxDecoration(
-          color: ref.read(themeColorsProvider).backgroundSecondary,
+          color: colors.backgroundSecondary,
           borderRadius: const BorderRadius.vertical(top: Radius.circular(24)),
         ),
         child: Column(
@@ -238,7 +239,7 @@ class _CreateTaskScreenState extends ConsumerState<CreateTaskScreen> {
           children: [
             const SizedBox(height: 12),
             ListTile(
-              leading: const Icon(LucideIcons.camera, color: Color(0xFF3B82F6)),
+              leading: Icon(LucideIcons.camera, color: colors.indigo),
               title: const Text('Capture Photo (Camera)', style: TextStyle(color: Colors.white)),
               onTap: () async {
                 Navigator.pop(context);
@@ -257,7 +258,7 @@ class _CreateTaskScreenState extends ConsumerState<CreateTaskScreen> {
               },
             ),
             ListTile(
-              leading: const Icon(LucideIcons.image, color: Color(0xFF3B82F6)),
+              leading: Icon(LucideIcons.image, color: colors.indigo),
               title: const Text('Add Image (Compressed)', style: TextStyle(color: Colors.white)),
               onTap: () async {
                 Navigator.pop(context);
@@ -276,7 +277,7 @@ class _CreateTaskScreenState extends ConsumerState<CreateTaskScreen> {
               },
             ),
             ListTile(
-              leading: const Icon(LucideIcons.video, color: Color(0xFF3B82F6)),
+              leading: Icon(LucideIcons.video, color: colors.indigo),
               title: const Text('Add a Video', style: TextStyle(color: Colors.white)),
               onTap: () async {
                 Navigator.pop(context);
@@ -289,7 +290,7 @@ class _CreateTaskScreenState extends ConsumerState<CreateTaskScreen> {
               },
             ),
             ListTile(
-              leading: const Icon(LucideIcons.fileText, color: Color(0xFF3B82F6)),
+              leading: Icon(LucideIcons.fileText, color: colors.indigo),
               title: const Text('Add Document / Raw File', style: TextStyle(color: Colors.white)),
               onTap: () async {
                 Navigator.pop(context);
@@ -549,7 +550,7 @@ class _CreateTaskScreenState extends ConsumerState<CreateTaskScreen> {
                       hintText: 'Search ${isShowingInstitutions ? 'institutions' : 'departments'}...',
                       hintStyle: TextStyle(color: colors.textSecondary.withOpacity(0.5)),
                       prefixIcon: Icon(LucideIcons.search, size: 18, color: colors.textSecondary.withOpacity(0.5)),
-                      border: InputBorder.none,
+                      border: InputBorder.none, filled: false,
                       contentPadding: const EdgeInsets.all(16),
                     ),
                   ),
@@ -1102,14 +1103,32 @@ class _CreateTaskScreenState extends ConsumerState<CreateTaskScreen> {
                     }),
                   ),
                   if (_currentPage < 3)
-                    TextButton(
-                      onPressed: () {
-                        _pageController.nextPage(
-                          duration: const Duration(milliseconds: 300),
-                          curve: Curves.easeInOut,
-                        );
-                      },
-                      child: Text('Next', style: TextStyle(color: colors.indigo, fontWeight: FontWeight.bold)),
+                    Row(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        if (widget.taskToEdit != null)
+                          Padding(
+                            padding: const EdgeInsets.only(right: 8.0),
+                            child: TextButton(
+                              onPressed: (_isEditingAllowed && !_isLoading && !_isSubmitting) ? _handleSubmit : null,
+                              child: _isSubmitting 
+                                  ? SizedBox(
+                                      width: 16, height: 16,
+                                      child: CircularProgressIndicator(strokeWidth: 2, color: colors.honey),
+                                    )
+                                  : Text('Save', style: TextStyle(color: colors.honey, fontWeight: FontWeight.bold)),
+                            ),
+                          ),
+                        TextButton(
+                          onPressed: () {
+                            _pageController.nextPage(
+                              duration: const Duration(milliseconds: 300),
+                              curve: Curves.easeInOut,
+                            );
+                          },
+                          child: Text('Next', style: TextStyle(color: colors.indigo, fontWeight: FontWeight.bold)),
+                        ),
+                      ],
                     )
                   else
                     const SizedBox(width: 64),
@@ -1285,7 +1304,7 @@ class _CreateTaskScreenState extends ConsumerState<CreateTaskScreen> {
           hintText: hint, 
           hintStyle: TextStyle(color: colors.textSecondary.withOpacity(0.5)),
           prefixIcon: icon != null ? Icon(icon, size: 18, color: colors.textSecondary.withOpacity(0.5)) : null, 
-          border: InputBorder.none, 
+          border: InputBorder.none, filled: false, 
           contentPadding: const EdgeInsets.all(16),
         ),
       ),

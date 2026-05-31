@@ -50,7 +50,7 @@ export const MediaTeamOverview = ({ performance: propPerformance }: MediaTeamOve
                 {mainStats.map((stat, idx) => (
                     <ReactiveCard 
                         key={idx} 
-                        className="dashboard-card-safe-padding cursor-default dashboard-card-secondary"
+                        className="dashboard-card-safe-padding cursor-default dashboard-card-secondary rounded-3xl"
                     >
                         <div className="flex items-start justify-between">
                             <div className="flex-1">
@@ -76,7 +76,7 @@ export const MediaTeamOverview = ({ performance: propPerformance }: MediaTeamOve
             {/* Performance Details Grid */}
             <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
                 {/* Team Workload Distribution */}
-                <ReactiveCard className="lg:col-span-2 dashboard-card-safe-padding dashboard-card-secondary">
+                <ReactiveCard className="lg:col-span-2 dashboard-card-safe-padding dashboard-card-secondary rounded-3xl">
                     <div className="flex items-center justify-between mb-6">
                         <div className="flex items-center gap-3">
                             <Users className="text-blue-400" size={18} />
@@ -108,7 +108,7 @@ export const MediaTeamOverview = ({ performance: propPerformance }: MediaTeamOve
                 </ReactiveCard>
 
                 {/* Productivity Trend Sparkline-like View */}
-                <ReactiveCard className="dashboard-card-safe-padding dashboard-card-secondary">
+                <ReactiveCard className="dashboard-card-safe-padding dashboard-card-secondary rounded-3xl">
                     <div className="flex items-center gap-3 mb-6">
                         <BarChart3 className="text-blue-400" size={18} />
                         <h3 className="text-sm font-medium text-foreground/85">Productivity Trend</h3>

@@ -11,6 +11,7 @@ import '../../../../core/theme/elastic_scroll_physics.dart';
 import '../../../../core/theme/app_typography.dart';
 import '../../../dashboard/presentation/providers/dashboard_providers.dart';
 import '../providers/command_metrics_provider.dart';
+import '../../data/models/system_activity_log.dart';
 import '../../../../shared/widgets/mh_loading.dart';
 
 class CommandCenterScreen extends ConsumerWidget {
@@ -48,7 +49,7 @@ class CommandCenterScreen extends ConsumerWidget {
                 padding: const EdgeInsets.fromLTRB(20, 140, 20, 20),
                 sliver: SliverList(
                   delegate: SliverChildListDelegate([
-                    _buildTitleSection(colors),
+                    _buildTitleSection(context, colors),
                     const SizedBox(height: 16),
                     metricsAsync.when(
                       data: (metrics) => _buildSystemMetrics(metrics, colors),
@@ -58,7 +59,7 @@ class CommandCenterScreen extends ConsumerWidget {
                     const SizedBox(height: 16),
                     _buildCriticalActions(context, colors),
                     const SizedBox(height: 16),
-                    _buildRecentSystemActivity(context, colors),
+                    _buildRecentSystemActivity(context, ref, colors),
                     const SizedBox(height: 100), // Space for nav bar
                   ]),
                 ),
@@ -70,28 +71,50 @@ class CommandCenterScreen extends ConsumerWidget {
     );
   }
 
-  Widget _buildTitleSection(ThemeColors colors) {
-    return Column(
+  Widget _buildTitleSection(BuildContext context, ThemeColors colors) {
+    return Row(
+      mainAxisAlignment: MainAxisAlignment.spaceBetween,
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Text(
-          'COMMAND CENTER',
-          style: AppTypography.h1.copyWith(
-            color: colors.textPrimary,
+        Expanded(
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text(
+                'COMMAND CENTER',
+                style: AppTypography.h1.copyWith(
+                  color: colors.textPrimary,
+                ),
+              ),
+              const SizedBox(height: 4),
+              Text(
+                'GLOBAL SYSTEM STATE & OVERSIGHT',
+                style: AppTypography.caption.copyWith(
+                  color: colors.textSecondary,
+                ),
+              ),
+              const SizedBox(height: 16),
+              Container(
+                height: 1,
+                width: 60,
+                color: colors.honey.withOpacity(0.5),
+              ),
+            ],
           ),
         ),
-        const SizedBox(height: 4),
-        Text(
-          'GLOBAL SYSTEM STATE & OVERSIGHT',
-          style: AppTypography.caption.copyWith(
-            color: colors.textSecondary,
+        GestureDetector(
+          onTap: () {
+            context.pop();
+          },
+          child: Container(
+            padding: const EdgeInsets.all(12),
+            decoration: BoxDecoration(
+              color: colors.surface,
+              borderRadius: BorderRadius.circular(14),
+              border: Border.all(color: colors.border),
+            ),
+            child: Icon(LucideIcons.shield, color: colors.honey, size: 20),
           ),
-        ),
-        const SizedBox(height: 16),
-        Container(
-          height: 1,
-          width: 60,
-          color: colors.honey.withOpacity(0.5),
         ),
       ],
     ).animate().fadeIn(duration: 400.ms).slideX(begin: -0.1);
@@ -261,7 +284,9 @@ class CommandCenterScreen extends ConsumerWidget {
     );
   }
 
-  Widget _buildRecentSystemActivity(BuildContext context, ThemeColors colors) {
+  Widget _buildRecentSystemActivity(BuildContext context, WidgetRef ref, ThemeColors colors) {
+    final activityAsync = ref.watch(systemActivityStreamProvider);
+
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -285,29 +310,40 @@ class CommandCenterScreen extends ConsumerWidget {
           ],
         ),
         const SizedBox(height: 16),
-        _buildActivityItem(
-          context,
-          'Security policy updated', 
-          'BY ADMIN • 2 HOURS AGO', 
-          LucideIcons.shieldAlert, 
-          'The global security and network RLS (Row Level Security) policies on the Supabase database clusters were audited, validated, and updated to enhance institutional encryption. All member access rights have been successfully synchronized without system disruption.',
-          colors,
-        ),
-        _buildActivityItem(
-          context,
-          'New Institution Onboarded', 
-          'THAIBA GARDEN • 5 HOURS AGO', 
-          LucideIcons.building2, 
-          'The \'Thaiba Garden\' organizational institution node was successfully provisioned, verified, and integrated into the global hub ecosystem. Initial workspace directories, storage buckets, and standard role permissions were automatically generated and activated.',
-          colors,
-        ),
-        _buildActivityItem(
-          context,
-          'System Infrastructure Updated', 
-          'SYSTEM • 1 DAY AGO', 
-          LucideIcons.refreshCw, 
-          'Automated server-side microservices, mobile APIs, and synchronization worker scripts were upgraded to stable Build v3.4.2. Database connection pools, file server locks, and telemetry caches have been cleared and restarted successfully.',
-          colors,
+        activityAsync.when(
+          data: (logs) {
+            if (logs.isEmpty) {
+              return Center(
+                child: Padding(
+                  padding: const EdgeInsets.all(32.0),
+                  child: Text('No recent activity', style: TextStyle(color: colors.textSecondary)),
+                ),
+              );
+            }
+            return Column(
+              children: logs.map<Widget>((log) {
+                final difference = DateTime.now().difference(log.createdAt);
+                String timeAgo = 'JUST NOW';
+                if (difference.inDays > 1) timeAgo = '${difference.inDays} DAYS AGO';
+                else if (difference.inDays == 1) timeAgo = '1 DAY AGO';
+                else if (difference.inHours > 1) timeAgo = '${difference.inHours} HOURS AGO';
+                else if (difference.inHours == 1) timeAgo = '1 HOUR AGO';
+                else if (difference.inMinutes > 1) timeAgo = '${difference.inMinutes} MINUTES AGO';
+                else if (difference.inMinutes == 1) timeAgo = '1 MINUTE AGO';
+
+                return _buildActivityItem(
+                  context,
+                  log.title,
+                  'BY ${log.actorName.toUpperCase()} • $timeAgo',
+                  log.getIconForType(),
+                  log.description,
+                  colors,
+                );
+              }).toList(),
+            );
+          },
+          loading: () => const Center(child: Padding(padding: EdgeInsets.all(20), child: MhLoading(size: 40))),
+          error: (e, _) => Center(child: Text('Error loading activity: $e', style: const TextStyle(color: Colors.red))),
         ),
       ],
     );

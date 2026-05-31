@@ -153,7 +153,7 @@ class LeaveManagementScreen extends ConsumerWidget {
               icon: Icon(LucideIcons.search, size: 18, color: colors.honey),
               hintText: 'Search team members...',
               hintStyle: TextStyle(color: colors.textSecondary.withOpacity(0.5), fontSize: 14),
-              border: InputBorder.none,
+              border: InputBorder.none, filled: false,
             ),
           ),
         ),

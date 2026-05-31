@@ -16,12 +16,22 @@ class SystemRepository {
           .count(CountOption.exact);
       final totalUsers = userCountResponse.count;
 
-      // 2. Active Nodes (Institutions)
-      final nodesResponse = await _client
+      // 2. Active Nodes (Institutions + Departments)
+      final institutionsResponse = await _client
           .from('institutions')
           .select('id')
           .count(CountOption.exact);
-      final activeNodes = nodesResponse.count;
+          
+      int departmentsCount = 0;
+      try {
+        final departmentsResponse = await _client
+            .from('departments')
+            .select('id')
+            .count(CountOption.exact);
+        departmentsCount = departmentsResponse.count;
+      } catch (_) {}
+
+      final activeNodes = institutionsResponse.count + departmentsCount;
 
       // 3. Pending (Leave Requests + Tasks 'todo')
       final pendingLeavesResponse = await _client
@@ -34,6 +44,7 @@ class SystemRepository {
           .from('tasks')
           .select('id')
           .eq('status', 'todo')
+          .eq('deleted', false)
           .count(CountOption.exact);
       
       final totalPending = pendingLeavesResponse.count + pendingTasksResponse.count;

@@ -132,7 +132,7 @@ export const AdminOversightWidget = () => {
                         <ReactiveCard
                             key={idx}
                             onClick={() => nativeNavigate(card.route, router, `AdminOversight:${card.title}`)}
-                            className="p-[18px] cursor-pointer min-h-[144px] flex flex-col justify-between dashboard-card-secondary transition-all"
+                            className="p-[18px] cursor-pointer min-h-[144px] flex flex-col justify-between dashboard-card-secondary rounded-3xl transition-all"
                         >
 
                             <div className="flex justify-between items-baseline mb-4">

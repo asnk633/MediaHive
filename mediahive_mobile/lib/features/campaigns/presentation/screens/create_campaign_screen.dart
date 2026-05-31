@@ -1,3 +1,4 @@
+import 'dart:ui';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:lucide_icons/lucide_icons.dart';
@@ -75,239 +76,69 @@ class _CreateCampaignScreenState extends ConsumerState<CreateCampaignScreen> {
     }
   }
 
-  @override
-  Widget build(BuildContext context) {
-    final colors = ref.watch(themeColorsProvider);
-
-    return Scaffold(
-      backgroundColor: colors.backgroundPrimary,
-      body: Container(
-        decoration: BoxDecoration(
-          gradient: LinearGradient(
-            colors: [colors.backgroundSecondary, colors.backgroundPrimary],
-            begin: Alignment.topCenter,
-            end: Alignment.bottomCenter,
-          ),
-        ),
-        child: SafeArea(
-          child: Column(
-            children: [
-              _buildAppBar(context, colors),
-              Expanded(
-                child: ListView(
-                  padding: const EdgeInsets.all(AppSpacing.l),
-                  children: [
-                    _buildHeader(),
-                    const SizedBox(height: AppSpacing.xxl),
-                    
-                    _buildInputCard(colors),
-                    
-                    const SizedBox(height: AppSpacing.xl),
-                    _buildNoteBox(colors),
-                    const SizedBox(height: AppSpacing.huge),
-                  ],
-                ),
-              ),
-            ],
-          ),
+  Widget _buildSectionLabel(String text, ThemeColors colors) {
+    return Padding(
+      padding: const EdgeInsets.only(left: 4),
+      child: Text(
+        text,
+        style: TextStyle(
+          fontSize: 12,
+          fontWeight: FontWeight.w800,
+          color: colors.textSecondary,
         ),
       ),
     );
   }
 
-  Widget _buildAppBar(BuildContext context, ThemeColors colors) {
-    return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 12),
-      child: Row(
-        children: [
-          IconButton(
-            icon: Icon(LucideIcons.chevronLeft, color: colors.textPrimary),
-            onPressed: () => Navigator.pop(context),
-          ),
-          const Spacer(),
-          TextButton(
-            onPressed: _isSubmitting ? null : () => Navigator.pop(context),
-            child: Text(
-              'Cancel',
-              style: TextStyle(color: colors.textSecondary),
-            ),
-          ),
-          const SizedBox(width: 8),
-        ],
-      ),
-    );
-  }
-
-  Widget _buildHeader() {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        Row(
-          children: [
-            Container(
-              padding: const EdgeInsets.all(8),
-              decoration: BoxDecoration(
-                color: const Color(0xFF3B82F6).withOpacity(0.1),
-                borderRadius: BorderRadius.circular(8),
-              ),
-              child: const Icon(LucideIcons.layout, color: Color(0xFF3B82F6), size: 24),
-            ),
-            const SizedBox(width: 12),
-            Text(
-              'Create New Campaign',
-              style: AppTypography.h2.copyWith(color: Colors.white),
-            ),
-          ],
-        ),
-        const SizedBox(height: 8),
-        Text(
-          'Initialize a new media campaign for your institution.',
-          style: AppTypography.bodyM.copyWith(color: AppColors.textSecondary),
-        ),
-      ],
-    ).animate().fadeIn().slideX(begin: -0.1, end: 0);
-  }
-
-  Widget _buildInputCard(ThemeColors colors) {
-    return Container(
-      padding: const EdgeInsets.all(AppSpacing.l),
-      decoration: BoxDecoration(
-        color: const Color(0xFF1E293B).withOpacity(0.3),
-        borderRadius: BorderRadius.circular(24),
-        border: Border.all(color: Colors.white.withOpacity(0.05)),
-      ),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          _buildFieldLabel(LucideIcons.layout, 'Campaign Name'),
-          const SizedBox(height: 12),
-          _buildTextField(
-            controller: _nameController,
-            hint: 'E.g. Summer Festival 2026',
-            colors: colors,
-          ),
-          const SizedBox(height: 24),
-
-          _buildFieldLabel(LucideIcons.fileText, 'Description'),
-          const SizedBox(height: 12),
-          _buildTextField(
-            controller: _descriptionController,
-            hint: 'Describe the goals and scope of this campaign...',
-            colors: colors,
-            maxLines: 4,
-          ),
-          const SizedBox(height: 24),
-
-          Row(
-            children: [
-              Expanded(
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text(
-                      'START DATE',
-                      style: AppTypography.caption.copyWith(fontWeight: FontWeight.bold),
-                    ),
-                    const SizedBox(height: 8),
-                    _buildDatePicker(
-                      value: _startDate,
-                      onTap: () => _selectDate(true),
-                      colors: colors,
-                    ),
-                  ],
-                ),
-              ),
-              const SizedBox(width: 16),
-              Expanded(
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text(
-                      'END DATE',
-                      style: AppTypography.caption.copyWith(fontWeight: FontWeight.bold),
-                    ),
-                    const SizedBox(height: 8),
-                    _buildDatePicker(
-                      value: _endDate,
-                      onTap: () => _selectDate(false),
-                      colors: colors,
-                    ),
-                  ],
-                ),
-              ),
-            ],
-          ),
-          const SizedBox(height: 32),
-          _buildSubmitButton(colors),
-        ],
-      ),
-    ).animate().fadeIn(delay: 200.ms).scale(begin: const Offset(0.95, 0.95));
-  }
-
-  Widget _buildFieldLabel(IconData icon, String label) {
-    return Row(
-      children: [
-        Icon(icon, size: 16, color: const Color(0xFF3B82F6)),
-        const SizedBox(width: 8),
-        Text(
-          label,
-          style: AppTypography.bodyM.copyWith(
-            color: Colors.white,
-            fontWeight: FontWeight.bold,
-          ),
-        ),
-      ],
-    );
-  }
-
-  Widget _buildTextField({
-    required TextEditingController controller,
-    required String hint,
-    required ThemeColors colors,
+  Widget _buildTextField(
+    TextEditingController controller,
+    String hint,
+    IconData? icon,
+    ThemeColors colors, {
     int maxLines = 1,
   }) {
     return Container(
       decoration: BoxDecoration(
-        color: const Color(0xFF0F172A).withOpacity(0.5),
-        borderRadius: BorderRadius.circular(12),
-        border: Border.all(color: Colors.white.withOpacity(0.05)),
+        color: colors.isDark ? colors.surface : Colors.white,
+        borderRadius: BorderRadius.circular(16),
+        border: Border.all(color: colors.border),
       ),
       child: TextField(
         controller: controller,
         maxLines: maxLines,
-        style: const TextStyle(color: Colors.white),
+        style: TextStyle(color: colors.textPrimary),
         decoration: InputDecoration(
           hintText: hint,
-          hintStyle: TextStyle(color: Colors.white.withOpacity(0.2)),
+          hintStyle: TextStyle(color: colors.textSecondary.withOpacity(0.5)),
+          prefixIcon: icon != null ? Icon(icon, size: 18, color: colors.textSecondary.withOpacity(0.5)) : null,
           contentPadding: const EdgeInsets.all(16),
-          border: InputBorder.none,
+          border: InputBorder.none, filled: false,
         ),
       ),
     );
   }
 
-  Widget _buildDatePicker({
-    required DateTime value,
-    required VoidCallback onTap,
-    required ThemeColors colors,
-  }) {
-    return InkWell(
+  Widget _buildDateTimePicker(String label, String value, IconData icon, ThemeColors colors, {VoidCallback? onTap}) {
+    return GestureDetector(
       onTap: onTap,
-      borderRadius: BorderRadius.circular(12),
       child: Container(
         padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
         decoration: BoxDecoration(
-          color: const Color(0xFF0F172A).withOpacity(0.5),
-          borderRadius: BorderRadius.circular(12),
-          border: Border.all(color: Colors.white.withOpacity(0.05)),
+          color: colors.isDark ? colors.surface : Colors.white,
+          borderRadius: BorderRadius.circular(16),
+          border: Border.all(color: colors.border),
         ),
         child: Row(
           children: [
-            const Icon(LucideIcons.calendar, size: 16, color: Color(0xFF3B82F6)),
+            Icon(icon, size: 18, color: colors.indigo),
             const SizedBox(width: 12),
-            Text(
-              DateFormat('MMM d, yyyy').format(value),
-              style: const TextStyle(color: Colors.white, fontWeight: FontWeight.w600),
+            Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(label, style: TextStyle(fontSize: 10, fontWeight: FontWeight.bold, color: colors.textSecondary)),
+                const SizedBox(height: 2),
+                Text(value, style: TextStyle(fontSize: 14, color: colors.textPrimary, fontWeight: FontWeight.w500)),
+              ],
             ),
           ],
         ),
@@ -321,23 +152,16 @@ class _CreateCampaignScreenState extends ConsumerState<CreateCampaignScreen> {
       child: Container(
         height: 56,
         decoration: BoxDecoration(
-          gradient: const LinearGradient(
-            colors: [Color(0xFF3B82F6), Color(0xFF2563EB)],
-            begin: Alignment.topLeft,
-            end: Alignment.bottomRight,
-          ),
-          borderRadius: BorderRadius.circular(12),
-          boxShadow: [
-            BoxShadow(
-              color: const Color(0xFF3B82F6).withOpacity(0.3),
-              blurRadius: 12,
-              offset: const Offset(0, 4),
-            ),
-          ],
+          color: colors.indigo,
+          borderRadius: BorderRadius.circular(16),
         ),
         child: Center(
           child: _isSubmitting
-              ? const CircularProgressIndicator(color: Colors.white)
+              ? const SizedBox(
+                  width: 24,
+                  height: 24,
+                  child: CircularProgressIndicator(color: Colors.white, strokeWidth: 2),
+                )
               : Row(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
@@ -359,44 +183,45 @@ class _CreateCampaignScreenState extends ConsumerState<CreateCampaignScreen> {
 
   Widget _buildNoteBox(ThemeColors colors) {
     return Container(
-      padding: const EdgeInsets.all(AppSpacing.l),
+      padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
-        color: const Color(0xFF3B82F6).withOpacity(0.05),
+        color: colors.indigo.withOpacity(0.05),
         borderRadius: BorderRadius.circular(16),
-        border: Border.all(color: const Color(0xFF3B82F6).withOpacity(0.1)),
+        border: Border.all(color: colors.indigo.withOpacity(0.1)),
       ),
       child: Row(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          const Icon(LucideIcons.send, size: 18, color: Color(0xFF3B82F6)),
-          const SizedBox(width: 16),
+          Icon(LucideIcons.info, size: 18, color: colors.indigo),
+          const SizedBox(width: 12),
           Expanded(
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Text(
                   'NOTE',
-                  style: AppTypography.caption.copyWith(
-                    color: const Color(0xFF3B82F6),
+                  style: TextStyle(
+                    fontSize: 12,
                     fontWeight: FontWeight.bold,
+                    color: colors.indigo,
                     letterSpacing: 1.0,
                   ),
                 ),
                 const SizedBox(height: 4),
                 RichText(
                   text: TextSpan(
-                    style: AppTypography.bodyS.copyWith(color: AppColors.textSecondary),
-                    children: const [
-                      TextSpan(text: 'New campaigns are created in the '),
+                    style: TextStyle(fontSize: 13, color: colors.textSecondary, height: 1.4),
+                    children: [
+                      const TextSpan(text: 'New campaigns are created in the '),
                       TextSpan(
                         text: 'Planning',
                         style: TextStyle(
-                          color: Color(0xFF3B82F6),
+                          color: colors.indigo,
                           fontWeight: FontWeight.bold,
                           fontStyle: FontStyle.italic,
                         ),
                       ),
-                      TextSpan(text: ' phase by default. You can add tasks and production milestones once the campaign is initialized.'),
+                      const TextSpan(text: ' phase by default. You can add tasks and production milestones once the campaign is initialized.'),
                     ],
                   ),
                 ),
@@ -408,23 +233,34 @@ class _CreateCampaignScreenState extends ConsumerState<CreateCampaignScreen> {
     );
   }
 
-  Future<void> _selectDate(bool isStart) async {
+  Future<void> _selectDate(bool isStart, ThemeColors colors) async {
     final picked = await showDatePicker(
       context: context,
       initialDate: isStart ? _startDate : _endDate,
-      firstDate: DateTime(2020),
-      lastDate: DateTime(2030),
-      builder: (context, child) => Theme(
-        data: Theme.of(context).copyWith(
-          colorScheme: const ColorScheme.dark(
-            primary: Color(0xFF3B82F6),
-            onPrimary: Colors.white,
-            surface: Color(0xFF1E293B),
-            onSurface: Colors.white,
-          ),
-        ),
-        child: child!,
-      ),
+      firstDate: DateTime.now(),
+      lastDate: DateTime(2101),
+      builder: (context, child) {
+        return Theme(
+          data: colors.isDark
+              ? ThemeData.dark().copyWith(
+                  colorScheme: ColorScheme.dark(
+                    primary: colors.indigo,
+                    onPrimary: Colors.white,
+                    surface: colors.surface,
+                    onSurface: colors.textPrimary,
+                  ),
+                )
+              : ThemeData.light().copyWith(
+                  colorScheme: ColorScheme.light(
+                    primary: colors.indigo,
+                    onPrimary: Colors.white,
+                    surface: Colors.white,
+                    onSurface: colors.textPrimary,
+                  ),
+                ),
+          child: child!,
+        );
+      },
     );
 
     if (picked != null) {
@@ -441,5 +277,107 @@ class _CreateCampaignScreenState extends ConsumerState<CreateCampaignScreen> {
         }
       });
     }
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final colors = ref.watch(themeColorsProvider);
+
+    return Scaffold(
+      backgroundColor: colors.backgroundPrimary,
+      extendBodyBehindAppBar: true,
+      appBar: AppBar(
+        backgroundColor: colors.backgroundPrimary.withOpacity(0.8),
+        elevation: 0,
+        flexibleSpace: ClipRect(
+          child: BackdropFilter(
+            filter: ImageFilter.blur(sigmaX: 10, sigmaY: 10),
+            child: Container(color: Colors.transparent),
+          ),
+        ),
+        leading: IconButton(
+          icon: Icon(LucideIcons.chevronLeft, color: colors.textPrimary),
+          onPressed: () => Navigator.pop(context),
+        ),
+        title: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Text(
+              'Create New Campaign', 
+              style: AppTypography.h3.copyWith(color: colors.textPrimary, fontWeight: FontWeight.w900),
+            ),
+            Text(
+              'Initialize a new media campaign for your institution', 
+              style: AppTypography.caption.copyWith(color: colors.textSecondary, fontWeight: FontWeight.bold),
+            ),
+          ],
+        ),
+      ),
+      body: Container(
+        decoration: BoxDecoration(
+          gradient: LinearGradient(
+            colors: [
+              colors.backgroundSecondary,
+              colors.backgroundPrimary,
+            ],
+            begin: Alignment.topCenter,
+            end: Alignment.bottomCenter,
+          ),
+        ),
+        child: ListView(
+          padding: const EdgeInsets.only(top: 120, left: 24, right: 24, bottom: 40),
+          children: [
+            _buildSectionLabel('Campaign Name', colors),
+            const SizedBox(height: 8),
+            _buildTextField(
+              _nameController,
+              'E.g. Summer Festival 2026',
+              LucideIcons.layout,
+              colors,
+            ),
+            const SizedBox(height: 24),
+
+            _buildSectionLabel('Description', colors),
+            const SizedBox(height: 8),
+            _buildTextField(
+              _descriptionController,
+              'Describe the goals and scope of this campaign...',
+              null,
+              colors,
+              maxLines: 4,
+            ),
+            const SizedBox(height: 24),
+
+            Row(
+              children: [
+                Expanded(
+                  child: _buildDateTimePicker(
+                    'START DATE',
+                    DateFormat('MMM d, yyyy').format(_startDate),
+                    LucideIcons.calendar,
+                    colors,
+                    onTap: () => _selectDate(true, colors),
+                  ),
+                ),
+                const SizedBox(width: 16),
+                Expanded(
+                  child: _buildDateTimePicker(
+                    'END DATE',
+                    DateFormat('MMM d, yyyy').format(_endDate),
+                    LucideIcons.calendar,
+                    colors,
+                    onTap: () => _selectDate(false, colors),
+                  ),
+                ),
+              ],
+            ),
+            const SizedBox(height: 32),
+            _buildSubmitButton(colors),
+            const SizedBox(height: 32),
+            _buildNoteBox(colors),
+          ],
+        ),
+      ),
+    );
   }
 }

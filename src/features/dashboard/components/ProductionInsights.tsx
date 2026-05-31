@@ -10,6 +10,7 @@ interface ProductionInsightsProps {
     data: {
         events: any[];
         tasks: any[];
+        totalInventory?: number;
     };
     isLoading?: boolean;
 }
@@ -26,10 +27,26 @@ export const ProductionInsights: React.FC<ProductionInsightsProps> = ({ data, is
     const equipMetrics = useMemo(() => {
         const allEquipItems = data.events.flatMap(e => e.equipment || []);
         const uniqueItems = new Set(allEquipItems.map((i: any) => i.id || i.name)).size;
-        const totalInventory = 120; // Mock total cap for percentage
-        const utilization = Math.round((uniqueItems / totalInventory) * 100);
-        return { used: uniqueItems, utilization };
-    }, [data.events]);
+        const totalInventory = data.totalInventory || 0; 
+        const utilization = totalInventory > 0 ? Math.round((uniqueItems / totalInventory) * 100) : 0;
+        return { used: uniqueItems, utilization, total: totalInventory };
+    }, [data.events, data.totalInventory]);
+
+    // Reliability Score (On-time Task Completion)
+    const reliabilityScore = useMemo(() => {
+        const total = data.tasks.length;
+        if (total === 0) return { score: 100.0, label: "Perfect", color: "text-emerald-400" };
+        
+        const overdue = data.tasks.filter(t => t.status !== 'done' && t.due_date && new Date(t.due_date) < new Date()).length;
+        const score = Math.round(((total - overdue) / total) * 1000) / 10;
+        
+        let label = "Excellent";
+        let color = "text-emerald-400";
+        if (score < 80) { label = "Warning"; color = "text-amber-400"; }
+        if (score < 60) { label = "Critical"; color = "text-red-400"; }
+        
+        return { score: score.toFixed(1), label, color };
+    }, [data.tasks]);
 
     // Resource Health (Status of tasks/events)
     const resourceHealth = useMemo(() => {
@@ -109,8 +126,10 @@ export const ProductionInsights: React.FC<ProductionInsightsProps> = ({ data, is
                     
                     <div className="flex items-center justify-between mx-6 mb-6">
                         <div>
-                            <p className="text-4xl font-black text-foreground tracking-tighter">94.2</p>
-                            <p className="text-[10px] text-emerald-400 font-black uppercase tracking-widest mt-1">Excellent +4%</p>
+                            <p className="text-4xl font-black text-foreground tracking-tighter">{reliabilityScore.score}</p>
+                            <p className={cn("text-[10px] font-black uppercase tracking-widest mt-1", reliabilityScore.color)}>
+                                {reliabilityScore.label}
+                            </p>
                         </div>
                         <div className="w-16 h-16 rounded-full border-4 border-foreground/10 border-t-blue-500 flex items-center justify-center relative mr-1.5">
                              <div className="text-[10px] font-bold text-foreground/80">SYS</div>

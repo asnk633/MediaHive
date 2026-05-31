@@ -33,12 +33,15 @@ class _CreateEventScreenState extends ConsumerState<CreateEventScreen> {
   bool _isRecurring = false;
   bool _isTestData = false;
   bool _createOnBehalfOf = false;
-  bool _autoTasks = true;
+  bool _autoTasks = false;
 
   DateTime? _startDate;
   TimeOfDay? _startTime;
   DateTime? _endDate;
   TimeOfDay? _endTime;
+
+  final PageController _pageController = PageController();
+  int _currentPage = 0;
 
   String? _pendingInstitutionId;
   String? _pendingDepartmentId;
@@ -119,8 +122,8 @@ class _CreateEventScreenState extends ConsumerState<CreateEventScreen> {
       final now = DateTime.now();
       _startDate = now;
       _startTime = TimeOfDay(hour: now.hour, minute: now.minute);
-      _endDate = now.add(const Duration(hours: 2));
-      _endTime = TimeOfDay(hour: (now.hour + 2) % 24, minute: now.minute);
+      _endDate = null;
+      _endTime = null;
       _locationController = TextEditingController(text: '');
     }
   }
@@ -148,6 +151,7 @@ class _CreateEventScreenState extends ConsumerState<CreateEventScreen> {
   void dispose() {
     _titleController.dispose();
     _locationController.dispose();
+    _pageController.dispose();
     super.dispose();
   }
 
@@ -187,6 +191,173 @@ class _CreateEventScreenState extends ConsumerState<CreateEventScreen> {
     if (_selectedDepartment != null && _selectedInstitution != null) {
       _selectedInstitution = null;
     }
+
+    Future<void> _handleSubmit() async {
+
+                              if (_titleController.text.isEmpty) {
+                                ScaffoldMessenger.of(context).showSnackBar(
+                                  const SnackBar(content: Text('Please enter an event title'))
+                                );
+                                return;
+                              }
+
+                              if (_startDate == null || _startTime == null) {
+                                ScaffoldMessenger.of(context).showSnackBar(
+                                  const SnackBar(content: Text('Please select Start Date and Time'))
+                                );
+                                return;
+                              }
+
+                              if (_endDate == null || _endTime == null) {
+                                _endDate = _startDate;
+                                _endTime = const TimeOfDay(hour: 23, minute: 59);
+                              }
+
+                              if (_startDate != null && _startTime != null && _endDate != null && _endTime != null) {
+                                final start = DateTime(_startDate!.year, _startDate!.month, _startDate!.day, _startTime!.hour, _startTime!.minute);
+                                final end = DateTime(_endDate!.year, _endDate!.month, _endDate!.day, _endTime!.hour, _endTime!.minute);
+                                
+                                if (end.isBefore(start)) {
+                                  ScaffoldMessenger.of(context).showSnackBar(
+                                    SnackBar(
+                                      content: const Text('End date/time cannot be before start date/time'),
+                                      backgroundColor: colors.error,
+                                    )
+                                  );
+                                  return;
+                                }
+                              }
+
+                              ref.read(loadingMessageProvider.notifier).state = isEdit ? "Updating Event..." : "Saving Event Details...";
+                              ref.read(globalLoadingProvider.notifier).state = true;
+
+                              try {
+                                final eventDateStr = _startDate != null 
+                                    ? '${_startDate!.year}-${_startDate!.month.toString().padLeft(2, '0')}-${_startDate!.day.toString().padLeft(2, '0')}' 
+                                    : DateTime.now().toIso8601String().split('T')[0];
+                                
+                                final eventTimeStr = _startTime != null 
+                                    ? '${_startTime!.hour.toString().padLeft(2, '0')}:${_startTime!.minute.toString().padLeft(2, '0')}' 
+                                    : '10:00';
+                              
+                              final newEvent = Event(
+                                id: isEdit ? widget.eventToEdit!.id : const Uuid().v4(),
+                                title: _titleController.text,
+                                time: eventTimeStr,
+                                type: 'EVENT',
+                                colorValue: colors.indigo.value,
+                                date: eventDateStr,
+                                location: _locationController.text,
+                                description: _createOnBehalfOf ? 'Created on behalf of user' : 'Standard Event',
+                                institutionId: _createOnBehalfOf ? _selectedInstitution?.id : null,
+                                departmentId: _createOnBehalfOf ? _selectedDepartment?.id : null,
+                                onBehalfOf: _createOnBehalfOf ? {
+                                  'institution_id': _selectedInstitution?.id,
+                                  'institution_name': _selectedInstitution?.name,
+                                  'department_id': _selectedDepartment?.id,
+                                  'department_name': _selectedDepartment?.name,
+                                } : null,
+                                mediaCoverage: _selectedMedia.toList(),
+                                assignedCrew: _assignedCrew.map((u) => {
+                                  'id': u.id,
+                                  'full_name': u.fullName,
+                                  'role': u.role,
+                                  'avatar_url': u.avatarUrl,
+                                }).toList(),
+                              );
+
+                                // 1. Add/Update Event
+                                if (isEdit) {
+                                  await ref.read(eventListProvider.notifier).updateEvent(newEvent);
+                                  ref.read(soundServiceProvider).playSuccess();
+                                } else {
+                                  await ref.read(eventListProvider.notifier).addEvent(newEvent);
+                                  ref.read(soundServiceProvider).playTaskAdded();
+                                }
+
+                                // 2. Auto-generate Tasks if enabled
+                                if (_autoTasks) {
+                                  final eventTitle = _titleController.text;
+                                  final dueDateStr = eventDateStr;
+                                  final contextName = _selectedDepartment != null 
+                                      ? _selectedDepartment!.name 
+                                      : _selectedInstitution?.name;
+                                  final contextMeta = jsonEncode({
+                                    'institution_id': _selectedInstitution?.id,
+                                    'department_id': _selectedDepartment?.id,
+                                  });
+
+                                  // Preparation Task
+                                  await ref.read(tasksListProvider.notifier).addTask(Task(
+                                    id: const Uuid().v4(),
+                                    title: 'Preparation: $eventTitle',
+                                    status: 'To Do',
+                                    priority: 'High',
+                                    requester: 'System',
+                                    assignee: 'Media Team',
+                                    dueDate: dueDateStr,
+                                    description: 'Equipment prep, script review, and logistical setup for $eventTitle.${contextName != null ? '\nContext: $contextName' : ''}',
+                                    attachments: [],
+                                    eventId: newEvent.id,
+                                    department: contextName,
+                                    onBehalfOf: contextMeta,
+                                  ));
+
+                                  // Execution Task
+                                  await ref.read(tasksListProvider.notifier).addTask(Task(
+                                    id: const Uuid().v4(),
+                                    title: 'Execution: $eventTitle',
+                                    status: 'To Do',
+                                    priority: 'High',
+                                    requester: 'System',
+                                    assignee: 'Media Team',
+                                    dueDate: dueDateStr,
+                                    description: 'Live coverage, videography, and photography during the event.${contextName != null ? '\nContext: $contextName' : ''}',
+                                    attachments: [],
+                                    eventId: newEvent.id,
+                                    department: contextName,
+                                    onBehalfOf: contextMeta,
+                                  ));
+
+                                  // Post Production Task
+                                  await ref.read(tasksListProvider.notifier).addTask(Task(
+                                    id: const Uuid().v4(),
+                                    title: 'Post Production: $eventTitle',
+                                    status: 'To Do',
+                                    priority: 'Medium',
+                                    requester: 'System',
+                                    assignee: 'Editing Team',
+                                    dueDate: dueDateStr,
+                                    description: 'Editing, color grading, and final delivery of $eventTitle assets.${contextName != null ? '\nContext: $contextName' : ''}',
+                                    attachments: [],
+                                    eventId: newEvent.id,
+                                    department: contextName,
+                                    onBehalfOf: contextMeta,
+                                  ));
+                                }
+
+                                await Future.delayed(const Duration(milliseconds: 1500));
+
+                                if (mounted) {
+                                  ScaffoldMessenger.of(context).showSnackBar(
+                                    SnackBar(
+                                      content: Text(isEdit 
+                                          ? 'Event updated successfully' 
+                                          : (_autoTasks ? 'Event created with auto-tasks' : 'Event created successfully')),
+                                      backgroundColor: colors.emerald,
+                                      behavior: SnackBarBehavior.floating,
+                                    )
+                                  );
+                                  Navigator.pop(context);
+                                }
+                              } catch (e) {
+                                ScaffoldMessenger.of(context).showSnackBar(
+                                  SnackBar(content: Text('Error: $e'), backgroundColor: colors.error)
+                                );
+                              } finally {
+                                ref.read(globalLoadingProvider.notifier).state = false;
+                              }
+                                }
 
     return Scaffold(
       backgroundColor: colors.backgroundPrimary,
@@ -228,496 +399,439 @@ class _CreateEventScreenState extends ConsumerState<CreateEventScreen> {
             end: Alignment.bottomCenter,
           ),
         ),
-        child: SingleChildScrollView(
-          physics: const AlwaysScrollableScrollPhysics(),
-          padding: const EdgeInsets.only(top: 120, left: 24, right: 24, bottom: 40),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              // System Event Switch
-              _buildSwitchCard(
-                colors,
-                'System Event',
-                'Recurring event for everyone',
-                _isSystemEvent,
-                (val) => setState(() => _isSystemEvent = val),
-              ),
-              const SizedBox(height: 24),
-
-              // Title Input
-              _buildSectionLabel(colors, 'Event Title'),
-              const SizedBox(height: 12),
-              _buildTextField(colors, _titleController, 'Event Title (e.g., Q4 Planning)', LucideIcons.alignLeft),
-              const SizedBox(height: 24),
-
-              // Toggle Group
-              _buildSwitchCard(
-                colors,
-                'All Day Event',
-                'Event spans the entire calendar day',
-                _isAllDay,
-                (val) => setState(() => _isAllDay = val),
-                icon: LucideIcons.clock,
-              ),
-              const SizedBox(height: 16),
-              _buildSwitchCard(
-                colors,
-                'Recurring Event',
-                'Repeat this event on a schedule',
-                _isRecurring,
-                (val) => setState(() => _isRecurring = val),
-                icon: LucideIcons.refreshCcw,
-              ),
-               if (testDemoDataEnabled) ...[
-                _buildSwitchCard(
-                  colors,
-                  'Test / Demo Data',
-                  'EXCLUDE FROM OFFICIAL REPORTS',
-                  _isTestData,
-                  (val) => setState(() => _isTestData = val),
-                  icon: LucideIcons.edit3,
-                  highlightColor: colors.honey,
-                ),
-                const SizedBox(height: 16),
-              ],
-              const SizedBox(height: 8),
-
-              // Admin Action Box
-              Container(
-                padding: const EdgeInsets.all(16),
-                decoration: BoxDecoration(
-                  color: colors.surface.withOpacity(0.5),
-                  borderRadius: BorderRadius.circular(20),
-                  border: Border.all(color: colors.indigo.withOpacity(0.3)),
-                ),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Row(
+        child: Column(
+          children: [
+            Expanded(
+              child: PageView(
+                controller: _pageController,
+                physics: const NeverScrollableScrollPhysics(),
+                onPageChanged: (index) {
+                  setState(() => _currentPage = index);
+                },
+                children: [
+                  // Page 1: General
+                  SingleChildScrollView(
+                    physics: const AlwaysScrollableScrollPhysics(),
+                    padding: const EdgeInsets.only(top: 120, left: 24, right: 24, bottom: 40),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        Icon(LucideIcons.shield, size: 14, color: colors.indigo),
-                        const SizedBox(width: 8),
-                        Text('ADMINISTRATIVE ACTION', 
-                          style: TextStyle(fontSize: 10, fontWeight: FontWeight.bold, color: colors.indigo, letterSpacing: 1.2)),
+                        // System Event Switch
+                        _buildSwitchCard(
+                          colors,
+                          'System Event',
+                          'Recurring event for everyone',
+                          _isSystemEvent,
+                          (val) => setState(() => _isSystemEvent = val),
+                        ),
+                        const SizedBox(height: 24),
+
+                        // Title Input
+                        _buildSectionLabel(colors, 'Event Title *'),
+                        const SizedBox(height: 12),
+                        _buildTextField(colors, _titleController, 'Event Title (e.g., Q4 Planning)', LucideIcons.alignLeft),
+                        const SizedBox(height: 24),
+
+                        // Toggle Group
+                        _buildSwitchCard(
+                          colors,
+                          'All Day Event',
+                          'Event spans the entire calendar day',
+                          _isAllDay,
+                          (val) => setState(() => _isAllDay = val),
+                          icon: LucideIcons.clock,
+                        ),
+                        const SizedBox(height: 16),
+                        _buildSwitchCard(
+                          colors,
+                          'Recurring Event',
+                          'Repeat this event on a schedule',
+                          _isRecurring,
+                          (val) => setState(() => _isRecurring = val),
+                          icon: LucideIcons.refreshCcw,
+                        ),
+                         if (testDemoDataEnabled) ...[
+                          _buildSwitchCard(
+                            colors,
+                            'Test / Demo Data',
+                            'EXCLUDE FROM OFFICIAL REPORTS',
+                            _isTestData,
+                            (val) => setState(() => _isTestData = val),
+                            icon: LucideIcons.edit3,
+                            highlightColor: colors.honey,
+                          ),
+                          const SizedBox(height: 16),
+                        ],
+                        const SizedBox(height: 8),
+
+                        // Admin Action Box
+                        Container(
+                          padding: const EdgeInsets.all(16),
+                          decoration: BoxDecoration(
+                            color: colors.surface.withOpacity(0.5),
+                            borderRadius: BorderRadius.circular(20),
+                            border: Border.all(color: colors.indigo.withOpacity(0.3)),
+                          ),
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Row(
+                                children: [
+                                  Icon(LucideIcons.shield, size: 14, color: colors.indigo),
+                                  const SizedBox(width: 8),
+                                  Text('ADMINISTRATIVE ACTION', 
+                                    style: TextStyle(fontSize: 10, fontWeight: FontWeight.bold, color: colors.indigo, letterSpacing: 1.2)),
+                                ],
+                              ),
+                              const SizedBox(height: 16),
+                              _buildSwitchItem(
+                                colors,
+                                'Create On Behalf Of',
+                                'Event owned by you (the user)',
+                                _createOnBehalfOf,
+                                (val) => setState(() => _createOnBehalfOf = val),
+                              ),
+                              
+                              if (_createOnBehalfOf) ...[
+                                const SizedBox(height: 16),
+                                Divider(color: colors.border),
+                                const SizedBox(height: 16),
+                                _buildActionLabel(colors, LucideIcons.building2, 'Target Context'),
+                                const SizedBox(height: 12),
+                                Consumer(builder: (context, ref, _) {
+                                  final instsAsync = ref.watch(institutionsProvider);
+                                  final deptsAsync = ref.watch(departmentsProvider);
+
+                                  final isLoading = instsAsync.isLoading || deptsAsync.isLoading;
+
+                                  return _buildActionPlaceholder(
+                                    colors,
+                                    isLoading 
+                                        ? 'Loading contexts...'
+                                        : (_selectedDepartment != null 
+                                            ? _selectedDepartment!.name
+                                            : (_selectedInstitution != null ? _selectedInstitution!.name : '+ Select Institution or Department')),
+                                    onTap: isLoading ? null : () {
+                                      final insts = instsAsync.value ?? [];
+                                      final depts = deptsAsync.value ?? [];
+                                      _showInstitutionalPicker(context, insts, depts);
+                                    },
+                                  );
+                                }),
+                              ],
+                            ],
+                          ),
+                        ),
+                        const SizedBox(height: 32),
+
+                        // Created By
+                        _buildSectionLabel(colors, 'Created By *'),
+                        const SizedBox(height: 12),
+                        Consumer(builder: (context, ref, _) {
+                          final profileAsync = ref.watch(currentUserProfileProvider);
+                          final creatorName = profileAsync.maybeWhen(
+                            data: (p) => p?['full_name'] as String? ?? 'Super Admin',
+                            orElse: () => 'Super Admin',
+                          );
+                          return _buildTextField(colors, TextEditingController(text: creatorName), '', LucideIcons.user, enabled: false);
+                        }),
                       ],
                     ),
-                    const SizedBox(height: 16),
-                    _buildSwitchItem(
-                      colors,
-                      'Create On Behalf Of',
-                      'Event owned by you (the user)',
-                      _createOnBehalfOf,
-                      (val) => setState(() => _createOnBehalfOf = val),
+                  ),
+                  
+                  // Page 2: Date & Time, Location
+                  SingleChildScrollView(
+                    physics: const AlwaysScrollableScrollPhysics(),
+                    padding: const EdgeInsets.only(top: 120, left: 24, right: 24, bottom: 40),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        // Date & Time Grid
+                        Row(
+                          children: [
+                            Expanded(child: _buildDateTimePicker(
+                              colors, 
+                              'Start Date *', 
+                              _startDate == null ? 'Pick start date' : '${_startDate!.day.toString().padLeft(2, '0')}-${_startDate!.month.toString().padLeft(2, '0')}-${_startDate!.year}', 
+                              LucideIcons.calendar,
+                              onTap: () => _selectDate(context, true),
+                            )),
+                            const SizedBox(width: 16),
+                            Expanded(child: _buildDateTimePicker(
+                              colors, 
+                              'Start Time *', 
+                              _startTime == null ? 'Pick start time' : _startTime!.format(context), 
+                              LucideIcons.clock,
+                              onTap: () => _selectTime(context, true),
+                            )),
+                          ],
+                        ),
+                        const SizedBox(height: 16),
+                        Row(
+                          children: [
+                            Expanded(child: _buildDateTimePicker(
+                              colors, 
+                              'End Date', 
+                              _endDate == null ? 'Pick end date' : '${_endDate!.day.toString().padLeft(2, '0')}-${_endDate!.month.toString().padLeft(2, '0')}-${_endDate!.year}', 
+                              LucideIcons.calendar,
+                              onTap: () => _selectDate(context, false),
+                            )),
+                            const SizedBox(width: 16),
+                            Expanded(child: _buildDateTimePicker(
+                              colors, 
+                              'End Time', 
+                              _endTime == null ? 'Pick end time' : _endTime!.format(context), 
+                              LucideIcons.clock,
+                              onTap: () => _selectTime(context, false),
+                            )),
+                          ],
+                        ),
+                        const SizedBox(height: 32),
+
+                        // Location
+                        _buildSectionLabel(colors, 'Location (Optional)'),
+                        const SizedBox(height: 12),
+                        _buildTextField(colors, _locationController, 'Location (Optional)', LucideIcons.mapPin),
+                      ],
                     ),
-                    
-                    if (_createOnBehalfOf) ...[
-                      const SizedBox(height: 16),
-                      Divider(color: colors.border),
-                      const SizedBox(height: 16),
-                      _buildActionLabel(colors, LucideIcons.building2, 'Target Context'),
-                      const SizedBox(height: 12),
-                      Consumer(builder: (context, ref, _) {
-                        final instsAsync = ref.watch(institutionsProvider);
-                        final deptsAsync = ref.watch(departmentsProvider);
+                  ),
 
-                        final isLoading = instsAsync.isLoading || deptsAsync.isLoading;
-
-                        return _buildActionPlaceholder(
-                          colors,
-                          isLoading 
-                              ? 'Loading contexts...'
-                              : (_selectedDepartment != null 
-                                  ? _selectedDepartment!.name
-                                  : (_selectedInstitution != null ? _selectedInstitution!.name : '+ Select Institution or Department')),
-                          onTap: isLoading ? null : () {
-                            final insts = instsAsync.value ?? [];
-                            final depts = deptsAsync.value ?? [];
-                            _showInstitutionalPicker(context, insts, depts);
+                  // Page 3: Media, Tasks & Crew
+                  SingleChildScrollView(
+                    physics: const AlwaysScrollableScrollPhysics(),
+                    padding: const EdgeInsets.only(top: 120, left: 24, right: 24, bottom: 40),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        // Request Media Team
+                        Row(
+                          children: [
+                            Icon(LucideIcons.camera, size: 16, color: colors.indigo),
+                            const SizedBox(width: 12),
+                            Text('Request Media Team', style: TextStyle(fontSize: 14, fontWeight: FontWeight.bold, color: colors.textPrimary)),
+                          ],
+                        ),
+                        const SizedBox(height: 8),
+                        GridView.builder(
+                          shrinkWrap: true,
+                          padding: EdgeInsets.zero,
+                          physics: const NeverScrollableScrollPhysics(),
+                          gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+                            crossAxisCount: 2,
+                            childAspectRatio: 2.2,
+                            crossAxisSpacing: 12,
+                            mainAxisSpacing: 12,
+                          ),
+                          itemCount: _mediaRequests.length,
+                          itemBuilder: (context, index) {
+                            final label = _mediaRequests[index];
+                            final isSelected = _selectedMedia.contains(label);
+                            return _buildSelectableCard(colors, label, isSelected, () {
+                              setState(() {
+                                if (isSelected) {
+                                  _selectedMedia.remove(label);
+                                } else {
+                                  _selectedMedia.add(label);
+                                }
+                              });
+                            });
                           },
-                        );
-                      }),
-                    ],
-                  ],
-                ),
-              ),
-              const SizedBox(height: 32),
+                        ),
+                        const SizedBox(height: 24),
 
-              // Created By
-              _buildSectionLabel(colors, 'Created By'),
-              const SizedBox(height: 12),
-              Consumer(builder: (context, ref, _) {
-                final profileAsync = ref.watch(currentUserProfileProvider);
-                final creatorName = profileAsync.maybeWhen(
-                  data: (p) => p?['full_name'] as String? ?? 'Super Admin',
-                  orElse: () => 'Super Admin',
-                );
-                return _buildTextField(colors, TextEditingController(text: creatorName), '', LucideIcons.user, enabled: false);
-              }),
-              const SizedBox(height: 24),
+                        // Auto Tasks
+                        _buildSwitchCard(
+                          colors,
+                          'Auto-generate Actionable Tasks',
+                          'Creates Preparation, Execution, and Post Production tasks automatically.',
+                          _autoTasks,
+                          (val) => setState(() => _autoTasks = val),
+                          activeColor: colors.emerald,
+                        ),
+                        const SizedBox(height: 32),
 
-              // Date & Time Grid
-              Row(
-                children: [
-                  Expanded(child: _buildDateTimePicker(
-                    colors, 
-                    'Start Date', 
-                    _startDate == null ? 'Pick start date' : '${_startDate!.day.toString().padLeft(2, '0')}-${_startDate!.month.toString().padLeft(2, '0')}-${_startDate!.year}', 
-                    LucideIcons.calendar,
-                    onTap: () => _selectDate(context, true),
-                  )),
-                  const SizedBox(width: 16),
-                  Expanded(child: _buildDateTimePicker(
-                    colors, 
-                    'Start Time', 
-                    _startTime == null ? 'Pick start time' : _startTime!.format(context), 
-                    LucideIcons.clock,
-                    onTap: () => _selectTime(context, true),
-                  )),
-                ],
-              ),
-              const SizedBox(height: 16),
-              Row(
-                children: [
-                  Expanded(child: _buildDateTimePicker(
-                    colors, 
-                    'End Date', 
-                    _endDate == null ? 'Pick end date' : '${_endDate!.day.toString().padLeft(2, '0')}-${_endDate!.month.toString().padLeft(2, '0')}-${_endDate!.year}', 
-                    LucideIcons.calendar,
-                    onTap: () => _selectDate(context, false),
-                  )),
-                  const SizedBox(width: 16),
-                  Expanded(child: _buildDateTimePicker(
-                    colors, 
-                    'End Time', 
-                    _endTime == null ? 'Pick end time' : _endTime!.format(context), 
-                    LucideIcons.clock,
-                    onTap: () => _selectTime(context, false),
-                  )),
-                ],
-              ),
-              const SizedBox(height: 32),
+                        Consumer(builder: (context, ref, _) {
+                          final profile = ref.read(currentUserProfileProvider).value;
+                          final role = profile?['role']?.toString().toLowerCase() ?? 'member';
+                          return _buildActionLabel(
+                            colors,
+                            LucideIcons.users,
+                            role == 'member' || role == 'guest'
+                                ? 'Propose Crew (Pending Admin Approval)'
+                                : 'Crew Assignment',
+                          );
+                        }),
+                        const SizedBox(height: 12),
+                        if (_assignedCrew.isNotEmpty)
+                          Wrap(
+                            spacing: 8,
+                            runSpacing: 8,
+                            children: _assignedCrew.map((user) => _buildCrewChip(colors, user)).toList(),
+                          ),
+                        if (_assignedCrew.isNotEmpty) const SizedBox(height: 12),
+                        Consumer(builder: (context, ref, _) {
+                          final usersAsync = ref.watch(allUsersProvider);
+                          final deptsAsync = ref.watch(departmentsProvider);
 
-              // Location
-              _buildSectionLabel(colors, 'Location (Optional)'),
-              const SizedBox(height: 12),
-              _buildTextField(colors, _locationController, 'Location (Optional)', LucideIcons.mapPin),
-              const SizedBox(height: 32),
+                          return usersAsync.when(
+                            data: (users) {
+                              final departments = deptsAsync.value ?? [];
+                              dynamic mediaItDeptId;
+                              
+                              for (final d in departments) {
+                                final name = d.name.toLowerCase();
+                                if (name.contains('media') || name.contains('it')) {
+                                  mediaItDeptId = d.id;
+                                  break;
+                                }
+                              }
 
-              // Request Media Team
-              Row(
-                children: [
-                  Icon(LucideIcons.camera, size: 16, color: colors.indigo),
-                  const SizedBox(width: 12),
-                  Text('Request Media Team', style: TextStyle(fontSize: 14, fontWeight: FontWeight.bold, color: colors.textPrimary)),
-                ],
-              ),
-              const SizedBox(height: 8),
-              GridView.builder(
-                shrinkWrap: true,
-                padding: EdgeInsets.zero,
-                physics: const NeverScrollableScrollPhysics(),
-                gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-                  crossAxisCount: 2,
-                  childAspectRatio: 2.2,
-                  crossAxisSpacing: 12,
-                  mainAxisSpacing: 12,
-                ),
-                itemCount: _mediaRequests.length,
-                itemBuilder: (context, index) {
-                  final label = _mediaRequests[index];
-                  final isSelected = _selectedMedia.contains(label);
-                  return _buildSelectableCard(colors, label, isSelected, () {
-                    setState(() {
-                      if (isSelected) {
-                        _selectedMedia.remove(label);
-                      } else {
-                        _selectedMedia.add(label);
-                      }
-                    });
-                  });
-                },
-              ),
-              const SizedBox(height: 24),
+                              final currentUserId = Supabase.instance.client.auth.currentUser?.id;
+                              final filteredUsers = users.where((u) {
+                                final userId = u['id'];
+                                final userDeptId = u['department_id'];
+                                final role = u['role']?.toString().toLowerCase() ?? '';
+                                 
+                                if (role == 'admin' || role == 'super_admin' || role == 'superadmin') return false;
 
-              // Auto Tasks
-              _buildSwitchCard(
-                colors,
-                'Auto-generate Actionable Tasks',
-                'Creates Preparation, Execution, and Post Production tasks automatically.',
-                _autoTasks,
-                (val) => setState(() => _autoTasks = val),
-                activeColor: colors.emerald,
-              ),
-              const SizedBox(height: 32),
+                                if (mediaItDeptId != null && userDeptId.toString() != mediaItDeptId.toString()) {
+                                  return false;
+                                }
 
-              Consumer(builder: (context, ref, _) {
-                final profile = ref.read(currentUserProfileProvider).value;
-                final role = profile?['role']?.toString().toLowerCase() ?? 'member';
-                return _buildActionLabel(
-                  colors,
-                  LucideIcons.users,
-                  role == 'member' || role == 'guest'
-                      ? 'Propose Crew (Pending Admin Approval)'
-                      : 'Crew Assignment',
-                );
-              }),
-              const SizedBox(height: 12),
-              if (_assignedCrew.isNotEmpty)
-                Wrap(
-                  spacing: 8,
-                  runSpacing: 8,
-                  children: _assignedCrew.map((user) => _buildCrewChip(colors, user)).toList(),
-                ),
-              if (_assignedCrew.isNotEmpty) const SizedBox(height: 12),
-              Consumer(builder: (context, ref, _) {
-                final usersAsync = ref.watch(allUsersProvider);
-                final deptsAsync = ref.watch(departmentsProvider);
+                                final isTargetRole = role == 'manager' || role == 'team';
+                                if (!isTargetRole) return false;
 
-                return usersAsync.when(
-                  data: (users) {
-                    final departments = deptsAsync.value ?? [];
-                    dynamic mediaItDeptId;
-                    
-                    for (final d in departments) {
-                      final name = d.name.toLowerCase();
-                      if (name.contains('media') || name.contains('it')) {
-                        mediaItDeptId = d.id;
-                        break;
-                      }
-                    }
+                                if (_canAssignOthers) return true;
+                                if (_canAssignSelf) return userId == currentUserId;
+                                
+                                // Allow members to propose any target team user
+                                final currentUserProfile = ref.read(currentUserProfileProvider).value;
+                                final currentUserRole = currentUserProfile?['role']?.toString().toLowerCase() ?? 'member';
+                                if (currentUserRole == 'member' || currentUserRole == 'guest') return true;
+                                
+                                return false;
+                              }).toList();
 
-                    final currentUserId = Supabase.instance.client.auth.currentUser?.id;
-                    final filteredUsers = users.where((u) {
-                      final userId = u['id'];
-                      final userDeptId = u['department_id'];
-                      final role = u['role']?.toString().toLowerCase() ?? '';
-                       
-                      if (role == 'admin' || role == 'super_admin' || role == 'superadmin') return false;
+                              if (filteredUsers.isEmpty) {
+                                final profile = ref.read(currentUserProfileProvider).value;
+                                final role = profile?['role']?.toString().toLowerCase() ?? 'member';
+                                String message = 'No team members found';
+                                if (role == 'team' && !_canAssignSelf) message = 'Self-assign only on your events';
+                                
+                                return _buildActionPlaceholder(colors, message, onTap: null);
+                              }
 
-                      if (mediaItDeptId != null && userDeptId.toString() != mediaItDeptId.toString()) {
-                        return false;
-                      }
+                              return _buildActionPlaceholder(
+                                colors,
+                                '+ Add Team Member',
+                                onTap: () => _showCrewPicker(context, filteredUsers),
+                              );
+                            },
+                            loading: () => _buildActionPlaceholder(colors, 'Loading team...'),
+                            error: (e, _) => _buildActionPlaceholder(colors, 'Error loading team'),
+                          );
+                        }),
+                        const SizedBox(height: 24),
 
-                      final isTargetRole = role == 'manager' || role == 'team';
-                      if (!isTargetRole) return false;
+                        _buildActionLabel(colors, LucideIcons.camera, 'Equipment Reservation'),
+                        const SizedBox(height: 12),
+                        _buildActionPlaceholder(colors, '+ Reserve Equipment'),
 
-                      if (_canAssignOthers) return true;
-                      if (_canAssignSelf) return userId == currentUserId;
-                      
-                      // Allow members to propose any target team user
-                      final currentUserProfile = ref.read(currentUserProfileProvider).value;
-                      final currentUserRole = currentUserProfile?['role']?.toString().toLowerCase() ?? 'member';
-                      if (currentUserRole == 'member' || currentUserRole == 'guest') return true;
-                      
-                      return false;
-                    }).toList();
-
-                    if (filteredUsers.isEmpty) {
-                      final profile = ref.read(currentUserProfileProvider).value;
-                      final role = profile?['role']?.toString().toLowerCase() ?? 'member';
-                      String message = 'No team members found';
-                      if (role == 'team' && !_canAssignSelf) message = 'Self-assign only on your events';
-                      
-                      return _buildActionPlaceholder(colors, message, onTap: null);
-                    }
-
-                    return _buildActionPlaceholder(
-                      colors,
-                      '+ Add Team Member',
-                      onTap: () => _showCrewPicker(context, filteredUsers),
-                    );
-                  },
-                  loading: () => _buildActionPlaceholder(colors, 'Loading team...'),
-                  error: (e, _) => _buildActionPlaceholder(colors, 'Error loading team'),
-                );
-              }),
-              const SizedBox(height: 24),
-
-              _buildActionLabel(colors, LucideIcons.camera, 'Equipment Reservation'),
-              const SizedBox(height: 12),
-              _buildActionPlaceholder(colors, '+ Reserve Equipment'),
-
-              const SizedBox(height: 48),
-
-              // Submit Button
-              Container(
-                width: double.infinity,
-                height: 56,
-                decoration: BoxDecoration(
-                  gradient: LinearGradient(colors: [colors.indigo, colors.indigo.withOpacity(0.8)]),
-                  borderRadius: BorderRadius.circular(16),
-                  boxShadow: [
-                    BoxShadow(color: colors.indigo.withOpacity(0.3), blurRadius: 12, offset: const Offset(0, 6)),
-                  ],
-                ),
-                child: ElevatedButton(
-                  onPressed: () async {
-                    if (_titleController.text.isEmpty) {
-                      ScaffoldMessenger.of(context).showSnackBar(
-                        const SnackBar(content: Text('Please enter an event title'))
-                      );
-                      return;
-                    }
-
-                    if (_startDate != null && _startTime != null && _endDate != null && _endTime != null) {
-                      final start = DateTime(_startDate!.year, _startDate!.month, _startDate!.day, _startTime!.hour, _startTime!.minute);
-                      final end = DateTime(_endDate!.year, _endDate!.month, _endDate!.day, _endTime!.hour, _endTime!.minute);
-                      
-                      if (end.isBefore(start)) {
-                        ScaffoldMessenger.of(context).showSnackBar(
-                          SnackBar(
-                            content: const Text('End date/time cannot be before start date/time'),
-                            backgroundColor: colors.error,
-                          )
-                        );
-                        return;
-                      }
-                    }
-
-                    ref.read(loadingMessageProvider.notifier).state = isEdit ? "Updating Event..." : "Saving Event Details...";
-                    ref.read(globalLoadingProvider.notifier).state = true;
-
-                    try {
-                      final eventDateStr = _startDate != null 
-                          ? '${_startDate!.year}-${_startDate!.month.toString().padLeft(2, '0')}-${_startDate!.day.toString().padLeft(2, '0')}' 
-                          : DateTime.now().toIso8601String().split('T')[0];
-                      
-                      final eventTimeStr = _startTime != null 
-                          ? '${_startTime!.hour.toString().padLeft(2, '0')}:${_startTime!.minute.toString().padLeft(2, '0')}' 
-                          : '10:00';
-                    
-                    final newEvent = Event(
-                      id: isEdit ? widget.eventToEdit!.id : const Uuid().v4(),
-                      title: _titleController.text,
-                      time: eventTimeStr,
-                      type: 'EVENT',
-                      colorValue: colors.indigo.value,
-                      date: eventDateStr,
-                      location: _locationController.text,
-                      description: _createOnBehalfOf ? 'Created on behalf of user' : 'Standard Event',
-                      institutionId: _createOnBehalfOf ? _selectedInstitution?.id : null,
-                      departmentId: _createOnBehalfOf ? _selectedDepartment?.id : null,
-                      onBehalfOf: _createOnBehalfOf ? {
-                        'institution_id': _selectedInstitution?.id,
-                        'institution_name': _selectedInstitution?.name,
-                        'department_id': _selectedDepartment?.id,
-                        'department_name': _selectedDepartment?.name,
-                      } : null,
-                      mediaCoverage: _selectedMedia.toList(),
-                      assignedCrew: _assignedCrew.map((u) => {
-                        'id': u.id,
-                        'full_name': u.fullName,
-                        'role': u.role,
-                        'avatar_url': u.avatarUrl,
-                      }).toList(),
-                    );
-
-                      // 1. Add/Update Event
-                      if (isEdit) {
-                        await ref.read(eventListProvider.notifier).updateEvent(newEvent);
-                        ref.read(soundServiceProvider).playSuccess();
-                      } else {
-                        await ref.read(eventListProvider.notifier).addEvent(newEvent);
-                        ref.read(soundServiceProvider).playTaskAdded();
-                      }
-
-                      // 2. Auto-generate Tasks if enabled
-                      if (_autoTasks) {
-                        final eventTitle = _titleController.text;
-                        final dueDateStr = eventDateStr;
-                        final contextName = _selectedDepartment != null 
-                            ? _selectedDepartment!.name 
-                            : _selectedInstitution?.name;
-                        final contextMeta = jsonEncode({
-                          'institution_id': _selectedInstitution?.id,
-                          'department_id': _selectedDepartment?.id,
-                        });
-
-                        // Preparation Task
-                        await ref.read(tasksListProvider.notifier).addTask(Task(
-                          id: const Uuid().v4(),
-                          title: 'Preparation: $eventTitle',
-                          status: 'To Do',
-                          priority: 'High',
-                          requester: 'System',
-                          assignee: 'Media Team',
-                          dueDate: dueDateStr,
-                          description: 'Equipment prep, script review, and logistical setup for $eventTitle.${contextName != null ? '\nContext: $contextName' : ''}',
-                          attachments: [],
-                          eventId: newEvent.id,
-                          department: contextName,
-                          onBehalfOf: contextMeta,
-                        ));
-
-                        // Execution Task
-                        await ref.read(tasksListProvider.notifier).addTask(Task(
-                          id: const Uuid().v4(),
-                          title: 'Execution: $eventTitle',
-                          status: 'To Do',
-                          priority: 'High',
-                          requester: 'System',
-                          assignee: 'Media Team',
-                          dueDate: dueDateStr,
-                          description: 'Live coverage, videography, and photography during the event.${contextName != null ? '\nContext: $contextName' : ''}',
-                          attachments: [],
-                          eventId: newEvent.id,
-                          department: contextName,
-                          onBehalfOf: contextMeta,
-                        ));
-
-                        // Post Production Task
-                        await ref.read(tasksListProvider.notifier).addTask(Task(
-                          id: const Uuid().v4(),
-                          title: 'Post Production: $eventTitle',
-                          status: 'To Do',
-                          priority: 'Medium',
-                          requester: 'System',
-                          assignee: 'Editing Team',
-                          dueDate: dueDateStr,
-                          description: 'Editing, color grading, and final delivery of $eventTitle assets.${contextName != null ? '\nContext: $contextName' : ''}',
-                          attachments: [],
-                          eventId: newEvent.id,
-                          department: contextName,
-                          onBehalfOf: contextMeta,
-                        ));
-                      }
-
-                      await Future.delayed(const Duration(milliseconds: 1500));
-
-                      if (mounted) {
-                        ScaffoldMessenger.of(context).showSnackBar(
-                          SnackBar(
-                            content: Text(isEdit 
-                                ? 'Event updated successfully' 
-                                : (_autoTasks ? 'Event created with auto-tasks' : 'Event created successfully')),
-                            backgroundColor: colors.emerald,
-                            behavior: SnackBarBehavior.floating,
-                          )
-                        );
-                        Navigator.pop(context);
-                      }
-                    } catch (e) {
-                      ScaffoldMessenger.of(context).showSnackBar(
-                        SnackBar(content: Text('Error: $e'), backgroundColor: colors.error)
-                      );
-                    } finally {
-                      ref.read(globalLoadingProvider.notifier).state = false;
-                    }
-                  },
-                  style: ElevatedButton.styleFrom(
-                    backgroundColor: Colors.transparent,
-                    shadowColor: Colors.transparent,
-                    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+                        const SizedBox(height: 48),
+                        
+                        // Submit Button
+                        Container(
+                          width: double.infinity,
+                          height: 56,
+                          decoration: BoxDecoration(
+                            gradient: LinearGradient(colors: [colors.indigo, colors.indigo.withOpacity(0.8)]),
+                            borderRadius: BorderRadius.circular(16),
+                            boxShadow: [
+                              BoxShadow(color: colors.indigo.withOpacity(0.3), blurRadius: 12, offset: const Offset(0, 6)),
+                            ],
+                          ),
+                          child: ElevatedButton(
+                            onPressed: _handleSubmit,
+                            style: ElevatedButton.styleFrom(
+                              backgroundColor: Colors.transparent,
+                              shadowColor: Colors.transparent,
+                              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+                            ),
+                            child: Text(
+                              isEdit ? 'Save Changes' : 'Create Event',
+                              style: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold, color: Colors.white),
+                            ),
+                          ),
+                        ),
+                      ],
+                    ),
                   ),
-                  child: Text(
-                    isEdit ? 'Save Changes' : 'Create Event',
-                    style: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold, color: Colors.white),
-                  ),
-                ),
+                ],
               ),
-              const SizedBox(height: 40),
-            ],
-          ),
+            ),
+            
+            // Bottom Navigation & Progress Indicator
+            Container(
+              padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 16),
+              color: colors.backgroundPrimary,
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  if (_currentPage > 0)
+                    TextButton(
+                      onPressed: () {
+                        _pageController.previousPage(
+                          duration: const Duration(milliseconds: 300),
+                          curve: Curves.easeInOut,
+                        );
+                      },
+                      child: Text('Back', style: TextStyle(color: colors.textSecondary)),
+                    )
+                  else
+                    const SizedBox(width: 64),
+                  Row(
+                    children: List.generate(3, (index) {
+                      return AnimatedContainer(
+                        duration: const Duration(milliseconds: 300),
+                        margin: const EdgeInsets.symmetric(horizontal: 4),
+                        height: 8,
+                        width: _currentPage == index ? 24 : 8,
+                        decoration: BoxDecoration(
+                          color: _currentPage == index ? colors.indigo : colors.border,
+                          borderRadius: BorderRadius.circular(4),
+                        ),
+                      );
+                    }),
+                  ),
+                  if (_currentPage < 2)
+                    Row(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        if (widget.eventToEdit != null)
+                          Padding(
+                            padding: const EdgeInsets.only(right: 8.0),
+                            child: TextButton(
+                              onPressed: _handleSubmit,
+                              child: Text('Save', style: TextStyle(color: colors.honey, fontWeight: FontWeight.bold)),
+                            ),
+                          ),
+                        TextButton(
+                          onPressed: () {
+                            _pageController.nextPage(
+                              duration: const Duration(milliseconds: 300),
+                              curve: Curves.easeInOut,
+                            );
+                          },
+                          child: Text('Next', style: TextStyle(color: colors.indigo, fontWeight: FontWeight.bold)),
+                        ),
+                      ],
+                    )
+                  else
+                    const SizedBox(width: 64),
+                ],
+              ),
+            ),
+          ],
         ),
       ),
     );
@@ -743,7 +857,7 @@ class _CreateEventScreenState extends ConsumerState<CreateEventScreen> {
           hintText: hint,
           hintStyle: TextStyle(color: colors.textSecondary.withOpacity(0.5)),
           prefixIcon: Icon(icon, size: 18, color: colors.textSecondary),
-          border: InputBorder.none,
+          border: InputBorder.none, filled: false,
           contentPadding: const EdgeInsets.symmetric(horizontal: 20, vertical: 16),
         ),
       ),
@@ -986,7 +1100,7 @@ class _CreateEventScreenState extends ConsumerState<CreateEventScreen> {
                       hintText: 'Search ${isShowingInstitutions ? 'institutions' : 'departments'}...',
                       hintStyle: TextStyle(color: colors.textSecondary.withOpacity(0.5)),
                       prefixIcon: Icon(LucideIcons.search, size: 18, color: colors.textSecondary.withOpacity(0.5)),
-                      border: InputBorder.none,
+                      border: InputBorder.none, filled: false,
                       contentPadding: const EdgeInsets.all(16),
                     ),
                   ),

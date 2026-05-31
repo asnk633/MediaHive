@@ -221,7 +221,7 @@ class _DownloadsScreenState extends ConsumerState<DownloadsScreen> {
                       crossAxisAlignment: CrossAxisAlignment.start,
                       mainAxisAlignment: MainAxisAlignment.end,
                       children: [
-                        const Icon(LucideIcons.folder, color: Color(0xFF3B82F6), size: 20),
+                        Icon(LucideIcons.folder, color: colors.indigo, size: 20),
                         const SizedBox(height: 8),
                         Text(
                           album.key,
@@ -267,7 +267,7 @@ class _DownloadsScreenState extends ConsumerState<DownloadsScreen> {
           hintText: 'Search library...',
           hintStyle: TextStyle(color: colors.textSecondary.withOpacity(0.5)),
           prefixIcon: Icon(LucideIcons.search, size: 18, color: colors.textSecondary),
-          border: InputBorder.none,
+          border: InputBorder.none, filled: false,
           contentPadding: const EdgeInsets.symmetric(vertical: 15),
         ),
       ),
@@ -373,10 +373,10 @@ class _DownloadsScreenState extends ConsumerState<DownloadsScreen> {
                         Container(
                           padding: const EdgeInsets.all(8),
                           decoration: BoxDecoration(
-                            color: const Color(0xFF3B82F6).withOpacity(0.1),
+                            color: colors.indigo.withOpacity(0.1),
                             borderRadius: BorderRadius.circular(10),
                           ),
-                          child: const Icon(LucideIcons.folder, color: Color(0xFF3B82F6), size: 24),
+                          child: Icon(LucideIcons.folder, color: colors.indigo, size: 24),
                         ),
                         const SizedBox(height: 12),
                         Text(
@@ -495,7 +495,7 @@ class _DownloadsScreenState extends ConsumerState<DownloadsScreen> {
                     child: Container(
                       padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
                       decoration: BoxDecoration(
-                        color: isPdf ? Colors.red.withOpacity(0.8) : (isVideo ? const Color(0xFF3B82F6).withOpacity(0.8) : Colors.black.withOpacity(0.5)),
+                        color: isPdf ? Colors.red.withOpacity(0.8) : (isVideo ? colors.indigo.withOpacity(0.8) : Colors.black.withOpacity(0.5)),
                         borderRadius: BorderRadius.circular(8),
                       ),
                       child: Text(

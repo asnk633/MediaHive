@@ -397,7 +397,7 @@ export const TaskDetailModalV2: React.FC<TaskDetailsModalProps> = ({ task, isOpe
                         animate={{ opacity: 1 }}
                         exit={{ opacity: 0 }}
                         onClick={onClose}
-                        className="absolute inset-0 bg-[#0B0E14]/98 backdrop-blur-sm"
+                        className="absolute inset-0 bg-background/80 backdrop-blur-sm"
                     />
 
                     {/* Modal - Minimal Aesthetic Layer */}
@@ -406,7 +406,7 @@ export const TaskDetailModalV2: React.FC<TaskDetailsModalProps> = ({ task, isOpe
                         animate={{ scale: 1, opacity: 1 }}
                         exit={{ scale: 0.98, opacity: 0 }}
                         transition={{ duration: 0.2 }}
-                        className="relative w-full max-w-2xl rounded-2xl overflow-hidden border border-foreground/10 flex flex-col max-h-[90vh] bg-[#0B0E14] shadow-[0_20px_50px_rgba(0,0,0,0.5)] outline-none"
+                        className="relative w-[95vw] sm:w-[90vw] md:w-[85vw] max-w-6xl rounded-3xl overflow-hidden border border-foreground/10 flex flex-col max-h-[90vh] bg-background shadow-[0_20px_50px_rgba(0,0,0,0.5)] outline-none"
                         style={{}}
                         role="dialog"
                         aria-modal="true"
@@ -562,15 +562,19 @@ export const TaskDetailModalV2: React.FC<TaskDetailsModalProps> = ({ task, isOpe
 
                         {/* BODY - Reading Surface, Calm, Scrollable */}
                         <div
-                            className="flex-1 overflow-y-auto px-8 py-8 bg-background"
+                            className="flex-1 overflow-y-auto px-8 py-8 bg-transparent"
                         >
                             <TaskRatingComponent
                                 task={task}
                                 onRatingSubmitted={onClose}
                             />
 
+                            <div className="grid grid-cols-1 xl:grid-cols-12 gap-8 h-full">
+                                {/* LEFT COLUMN: Main Content */}
+                                <div className="xl:col-span-8 flex flex-col space-y-8">
+
                             {/* Section 1: Perspective */}
-                            <div className="mb-8">
+                            <div>
                                 <div className="flex items-center gap-2 mb-4">
                                     <div className="w-1.5 h-1.5 rounded-full bg-blue-500/50" />
                                     <span className="text-[10px] font-bold uppercase tracking-widest text-foreground/70">Perspective & Description</span>
@@ -583,8 +587,10 @@ export const TaskDetailModalV2: React.FC<TaskDetailsModalProps> = ({ task, isOpe
                                 </div>
                             </div>
 
-                            {/* Section 2: Request Info */}
-                            <div className="mb-8">
+                            <div className="grid grid-cols-1 md:grid-cols-2 gap-8 mb-8">
+                                <div>
+                                    {/* Section 2: Request Info */}
+                            <div>
                                 <div className="flex items-center gap-2 mb-4">
                                     <div className="w-1.5 h-1.5 rounded-full bg-emerald-500/50" />
                                     <span className="text-[10px] font-bold uppercase tracking-widest text-foreground/70">Request Context</span>
@@ -637,8 +643,10 @@ export const TaskDetailModalV2: React.FC<TaskDetailsModalProps> = ({ task, isOpe
                                 </div>
                             </div>
 
-                            {/* Section 3: Task Assignment */}
-                            <div className="mb-8">
+                                </div>
+                                <div>
+                                    {/* Section 3: Task Assignment */}
+                            <div>
                                 <div className="flex items-center gap-2 mb-4">
                                     <div className="w-1.5 h-1.5 rounded-full bg-purple-500/50" />
                                     <span className="text-[10px] font-bold uppercase tracking-widest text-foreground/70">Task Assignment</span>
@@ -711,9 +719,12 @@ export const TaskDetailModalV2: React.FC<TaskDetailsModalProps> = ({ task, isOpe
                                 </div>
                             </div>
 
+                                </div>
+                            </div>
+
                             {/* Attachments Section - Consolidated */}
                             <div
-                                className="pt-6 mt-8 -mx-8 px-8 pb-8 border-t border-soft bg-muted/5"
+                                className="pt-6 border-t border-soft"
                             >
                                 <AttachmentSection
                                     task={fullTask}
@@ -729,7 +740,7 @@ export const TaskDetailModalV2: React.FC<TaskDetailsModalProps> = ({ task, isOpe
 
                             {/* Subtasks Section */}
                             {((fullTask.subtasks?.length ?? 0) > 0 || user?.role === 'admin' || (user?.role === 'manager' || user?.role === 'member')) && (
-                                <div className="pt-6 mt-8 -mx-8 px-8 pb-8 border-t border-soft bg-muted/5">
+                                <div className="pt-6 border-t border-soft">
                                     <TaskSubtasks
                                         taskId={task.id}
                                         subtasks={fullTask.subtasks || []}
@@ -740,8 +751,13 @@ export const TaskDetailModalV2: React.FC<TaskDetailsModalProps> = ({ task, isOpe
                                 </div>
                             )}
 
+                                </div> {/* End Left Column */}
+
+                                {/* RIGHT COLUMN: Comments & Activity */}
+                                <div className="xl:col-span-4 flex flex-col space-y-8 xl:border-l xl:border-foreground/5 xl:pl-8">
+
                             {/* Comments Section */}
-                            <div className="pt-6 mt-8 -mx-8 px-8 pb-8 border-t border-soft bg-muted/5">
+                            <div>
                                 <TaskComments
                                     taskId={task.id}
                                     activity={fullTask.activity || []}
@@ -752,7 +768,7 @@ export const TaskDetailModalV2: React.FC<TaskDetailsModalProps> = ({ task, isOpe
                             </div>
 
                             {/* Phase-12: Task History Section */}
-                            <div className="pt-6 mt-8 -mx-8 px-8 pb-8 border-t border-soft bg-muted/5">
+                            <div className="pt-6 border-t border-soft">
                                 <h3 className="text-sm font-bold text-foreground mb-4 flex items-center gap-2">
                                     <Clock size={16} className="text-muted-foreground" />
                                     Recent Activity
@@ -769,6 +785,9 @@ export const TaskDetailModalV2: React.FC<TaskDetailsModalProps> = ({ task, isOpe
                                     </div>
                                 )}
                             </div>
+
+                                </div> {/* End Right Column */}
+                            </div> {/* End Grid */}
                         </div>
                     </motion.div>
                 </div>

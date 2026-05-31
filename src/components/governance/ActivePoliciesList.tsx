@@ -1,10 +1,39 @@
 'use client';
 
-import React from 'react';
-import { defaultPolicies } from '@/domain/conflicts/conflictPolicies';
+import React, { useEffect, useState } from 'react';
 import { ShieldAlert, Info, Zap, ChevronRight, Box } from 'lucide-react';
+import { supabase } from '@/lib/supabaseClient';
+
+interface Policy {
+    id: string;
+    title: string;
+    description: string;
+    icon_name: string;
+    is_active: boolean;
+    trigger_text: string;
+    suggested_outcome: string;
+}
 
 export const ActivePoliciesList: React.FC = () => {
+    const [policies, setPolicies] = useState<Policy[]>([]);
+    const [loading, setLoading] = useState(true);
+
+    useEffect(() => {
+        const fetchPolicies = async () => {
+            const { data, error } = await supabase
+                .from('governance_policies')
+                .select('*')
+                .eq('is_active', true)
+                .order('created_at', { ascending: true });
+            
+            if (data && !error) {
+                setPolicies(data as Policy[]);
+            }
+            setLoading(false);
+        };
+        fetchPolicies();
+    }, []);
+
     return (
         <div className="space-y-6">
             <div className="flex flex-col gap-1">
@@ -14,8 +43,11 @@ export const ActivePoliciesList: React.FC = () => {
                 </p>
             </div>
 
-            <div className="space-y-4">
-                {defaultPolicies.map((policy) => (
+            {loading ? (
+                <div className="animate-pulse h-40 bg-foreground/5 rounded-[32px]" />
+            ) : (
+                <div className="space-y-4">
+                    {policies.map((policy) => (
                     <div
                         key={policy.id}
                         className="group bg-foreground/5 border border-foreground/10 rounded-[32px] p-6 hover:bg-foreground/[0.08] hover:border-foreground/20 transition-all duration-300 relative overflow-hidden"
@@ -31,7 +63,7 @@ export const ActivePoliciesList: React.FC = () => {
                                     <ShieldAlert size={24} />
                                 </div>
                                 <div className="flex flex-col">
-                                    <span className="text-lg font-bold text-foreground">{policy.name}</span>
+                                    <span className="text-lg font-bold text-foreground">{policy.title}</span>
                                     <span className="text-xs font-medium text-foreground/70 tracking-tight">{policy.description}</span>
                                 </div>
                             </div>
@@ -42,14 +74,14 @@ export const ActivePoliciesList: React.FC = () => {
                                         <Zap size={12} className="text-amber-400" />
                                         Trigger
                                     </div>
-                                    <p className="text-sm text-foreground/80 font-medium leading-relaxed">{policy.metadata.trigger}</p>
+                                    <p className="text-sm text-foreground/80 font-medium leading-relaxed">{policy.trigger_text}</p>
                                 </div>
                                 <div className="space-y-2">
                                     <div className="flex items-center gap-2 text-[10px] font-black uppercase tracking-widest text-foreground/80">
                                         <Info size={12} className="text-blue-400" />
                                         Suggested Outcome
                                     </div>
-                                    <p className="text-sm text-foreground/80 font-medium leading-relaxed">{policy.metadata.suggestedOutcome}</p>
+                                    <p className="text-sm text-foreground/80 font-medium leading-relaxed">{policy.suggested_outcome}</p>
                                 </div>
                                 <div className="flex items-end justify-end">
                                     <button
@@ -67,8 +99,9 @@ export const ActivePoliciesList: React.FC = () => {
                             </div>
                         </div>
                     </div>
-                ))}
-            </div>
+                    ))}
+                </div>
+            )}
         </div>
     );
 };

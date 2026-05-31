@@ -83,19 +83,23 @@ final routerProvider = Provider<GoRouter>((ref) {
           GoRoute(
             path: '/governance',
             builder: (context, state) {
+              return const GovernanceScreen();
+            },
+          ),
+          GoRoute(
+            path: '/governance/command-center',
+            builder: (context, state) {
               final profileAsync = ref.read(currentUserProfileProvider);
               return profileAsync.maybeWhen(
                 data: (profile) {
                   final role = profile?['role'] as String? ?? 'member';
                   if (role == 'admin' || role == 'manager') {
                     return const CommandCenterScreen();
-                  } else if (role == 'team') {
-                    return const LeaveRequestScreen();
                   } else {
-                    return const ProfileScreen();
+                    return const GovernanceScreen();
                   }
                 },
-                orElse: () => const GovernanceScreen(), // Fallback
+                orElse: () => const CommandCenterScreen(),
               );
             },
           ),

@@ -58,3 +58,27 @@ class GovernanceLog {
     'timestamp': timestamp,
   };
 }
+
+class GovernanceStats {
+  final int activeRulesCount;
+  final int auditEventsCount;
+  final double adminPercentage;
+  final double managerPercentage;
+  final double teamPercentage;
+
+  const GovernanceStats({
+    required this.activeRulesCount,
+    required this.auditEventsCount,
+    required this.adminPercentage,
+    required this.managerPercentage,
+    required this.teamPercentage,
+  });
+
+  factory GovernanceStats.empty() => const GovernanceStats(
+        activeRulesCount: 0,
+        auditEventsCount: 0,
+        adminPercentage: 0.0,
+        managerPercentage: 0.0,
+        teamPercentage: 0.0,
+      );
+}

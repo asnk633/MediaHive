@@ -95,7 +95,7 @@ class _MhInputState extends State<MhInput> {
                     prefixIcon: widget.prefixIcon != null 
                       ? Icon(widget.prefixIcon, size: 18, color: _isFocused ? colors.honey : colors.textSecondary) 
                       : null,
-                    border: InputBorder.none,
+                    border: InputBorder.none, filled: false,
                     contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 16),
                   ),
                 ),

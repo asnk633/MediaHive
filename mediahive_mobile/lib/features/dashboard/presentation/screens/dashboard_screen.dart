@@ -1097,11 +1097,11 @@ class DashboardScreen extends ConsumerWidget {
               Container(
                 padding: const EdgeInsets.all(6),
                 decoration: BoxDecoration(
-                  color: const Color(0xFF3B82F6).withOpacity(0.1),
+                  color: colors.indigo.withOpacity(0.1),
                   borderRadius: BorderRadius.circular(8),
-                  border: Border.all(color: const Color(0xFF3B82F6).withOpacity(0.2)),
+                  border: Border.all(color: colors.indigo.withOpacity(0.2)),
                 ),
-                child: const Icon(LucideIcons.calendar, size: 16, color: Color(0xFF3B82F6)),
+                child: Icon(LucideIcons.calendar, size: 16, color: colors.indigo),
               ),
               const SizedBox(width: 12),
               Expanded(

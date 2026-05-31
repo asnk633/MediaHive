@@ -423,7 +423,7 @@ class _SignUpScreenState extends ConsumerState<SignUpScreen> {
                       onPressed: onToggleVisibility,
                     )
                   : null,
-              border: InputBorder.none,
+              border: InputBorder.none, filled: false,
               contentPadding: isPassword 
                   ? const EdgeInsets.only(left: 20, right: 10, top: 16, bottom: 16)
                   : const EdgeInsets.symmetric(horizontal: 20, vertical: 16),

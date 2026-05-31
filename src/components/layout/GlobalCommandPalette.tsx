@@ -43,8 +43,8 @@ export function GlobalCommandPalette() {
       <CommandList>
         <CommandEmpty>No results found.</CommandEmpty>
         <CommandGroup heading="Navigation">
-          <CommandItem onSelect={() => runCommand(() => router.push("/dashboard"))}>
-            Go to Dashboard
+          <CommandItem onSelect={() => runCommand(() => router.push("/home"))}>
+            Go to Home
           </CommandItem>
           <CommandItem onSelect={() => runCommand(() => router.push("/tasks"))}>
             Go to Tasks

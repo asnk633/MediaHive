@@ -17,6 +17,7 @@ import 'package:image_cropper/image_cropper.dart';
 import '../../../../core/services/media_service.dart';
 import 'dart:io';
 import 'package:package_info_plus/package_info_plus.dart';
+import '../../../dashboard/presentation/providers/dashboard_providers.dart';
 
 class ProfileScreen extends ConsumerStatefulWidget {
   const ProfileScreen({super.key});
@@ -162,8 +163,8 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
           case 'manager':
           case 'globalmanager':
             badgeText = 'MANAGER';
-            badgeColor = const Color(0xFF3B82F6); // Blue
-            badgeBgColor = const Color(0xFF3B82F6).withOpacity(0.1);
+            badgeColor = colors.indigo; // Blue
+            badgeBgColor = colors.indigo.withOpacity(0.1);
             break;
           case 'team':
             badgeText = 'TEAM';
@@ -893,12 +894,17 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
 
   Widget _buildStatsRow() {
     final colors = ref.watch(themeColorsProvider);
+    final metrics = ref.watch(dashboardMetricsProvider);
+    final requests = metrics['myRequests'] as Map<String, dynamic>?;
+    
+    final totalRequests = requests?['total']?.toString() ?? '0';
+    final completedRequests = requests?['completed']?.toString() ?? '0';
 
     return Row(
       children: [
-        Expanded(child: _buildStatCard(colors, 'TASKS REQUESTED', '0', LucideIcons.pin, Colors.blue)),
+        Expanded(child: _buildStatCard(colors, 'TASKS REQUESTED', totalRequests, LucideIcons.pin, Colors.blue)),
         const SizedBox(width: 12),
-        Expanded(child: _buildStatCard(colors, 'COMPLETED', '0', LucideIcons.checkCircle, Colors.green)),
+        Expanded(child: _buildStatCard(colors, 'COMPLETED', completedRequests, LucideIcons.checkCircle, Colors.green)),
         const SizedBox(width: 12),
         Expanded(child: _buildStatCard(colors, 'LAST ACTIVE', 'Just now', LucideIcons.clock, Colors.purple)),
       ],

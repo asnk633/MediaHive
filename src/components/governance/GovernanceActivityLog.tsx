@@ -1,10 +1,19 @@
 'use client';
 
 import React, { useEffect, useState } from 'react';
-import { ActivityHistory, ActivityEntry } from '@/lib/activityHistory';
 import { useAuth } from '@/contexts/AuthContextProvider';
 import { History, ShieldCheck, AlertCircle, Clock, User } from 'lucide-react';
 import { formatDistanceToNow } from 'date-fns';
+import { supabase } from '@/lib/supabaseClient';
+
+interface ActivityEntry {
+    id: string;
+    label: string;
+    action: string;
+    actorName: string;
+    taskId: string;
+    timestamp: Date;
+}
 
 export const GovernanceActivityLog: React.FC = () => {
     const { user } = useAuth();
@@ -12,11 +21,29 @@ export const GovernanceActivityLog: React.FC = () => {
     const [loading, setLoading] = useState(true);
 
     useEffect(() => {
-        if (user) {
-            const logs = (ActivityHistory as any).getAllGovernance(user.uid, user.role);
-            setEntries(logs);
+        const fetchLogs = async () => {
+            if (!user) return;
+            
+            const { data, error } = await supabase
+                .from('system_activity_logs')
+                .select('*')
+                .order('created_at', { ascending: false })
+                .limit(20);
+
+            if (data && !error) {
+                const logs: ActivityEntry[] = data.map((d: any) => ({
+                    id: d.id,
+                    label: d.description || 'System Event',
+                    action: d.action_type || 'event',
+                    actorName: d.actor_id ? d.actor_id.substring(0, 8) : 'System',
+                    taskId: d.target_id || 'system',
+                    timestamp: new Date(d.created_at)
+                }));
+                setEntries(logs);
+            }
             setLoading(false);
-        }
+        };
+        fetchLogs();
     }, [user]);
 
     if (loading) return <div className="animate-pulse h-32 bg-foreground/5 rounded-3xl" />;

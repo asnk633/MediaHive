@@ -1,5 +1,6 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
+import '../../data/models/system_activity_log.dart';
 import '../../../system/data/repositories/system_repository.dart';
 
 final systemRepositoryProvider = Provider<SystemRepository>((ref) {
@@ -18,4 +19,13 @@ final commandCenterMetricsStreamProvider = StreamProvider<Map<String, int>>((ref
   return Stream.fromFuture(repository.getCommandCenterMetrics()).asyncExpand((initial) {
     return repository.watchCommandCenterMetrics();
   });
+});
+
+final systemActivityStreamProvider = StreamProvider<List<SystemActivityLog>>((ref) {
+  return Supabase.instance.client
+      .from('system_activity_logs')
+      .stream(primaryKey: ['id'])
+      .order('created_at', ascending: false)
+      .limit(10)
+      .map((data) => data.map((item) => SystemActivityLog.fromJson(item)).toList());
 });

@@ -169,7 +169,7 @@ class UserManagementScreen extends ConsumerWidget {
                         icon: Icon(LucideIcons.search, size: 18, color: colors.honey),
                         hintText: 'Search users...',
                         hintStyle: TextStyle(color: colors.textSecondary.withOpacity(0.5), fontSize: 14),
-                        border: InputBorder.none,
+                        border: InputBorder.none, filled: false,
                       ),
                     ),
                   ),
@@ -486,7 +486,7 @@ class UserManagementScreen extends ConsumerWidget {
                     Container(
                       padding: const EdgeInsets.all(4),
                       decoration: BoxDecoration(
-                        color: const Color(0xFF6366F1),
+                        color: colors.indigo,
                         shape: BoxShape.circle,
                         border: Border.all(color: colors.surface, width: 2),
                       ),
@@ -506,7 +506,7 @@ class UserManagementScreen extends ConsumerWidget {
                         runSpacing: 8,
                         children: [
                           _buildBadge(email.length > 5 ? email.replaceRange(1, email.indexOf('@'), '***') : email, LucideIcons.mail, colors.textSecondary.withOpacity(0.1), colors.textSecondary, colors),
-                          _buildBadge('GLOBAL ${role.toUpperCase()}', LucideIcons.shield, const Color(0xFF6366F1).withOpacity(0.1), const Color(0xFF6366F1), colors),
+                          _buildBadge('GLOBAL ${role.toUpperCase()}', LucideIcons.shield, colors.indigo.withOpacity(0.1), colors.indigo, colors),
                         ],
                       ),
                       const SizedBox(height: 12),
@@ -706,7 +706,7 @@ class _InviteUserModalState extends ConsumerState<_InviteUserModal> {
                 icon: Icon(LucideIcons.mail, size: 18, color: colors.textSecondary.withOpacity(0.5)),
                 hintText: 'user@example.com',
                 hintStyle: TextStyle(color: colors.textSecondary.withOpacity(0.3), fontSize: 14),
-                border: InputBorder.none,
+                border: InputBorder.none, filled: false,
               ),
             ),
           ),
@@ -818,7 +818,7 @@ class _InviteUserModalState extends ConsumerState<_InviteUserModal> {
             color: colors.surface.withOpacity(0.3),
             borderRadius: BorderRadius.circular(12),
             border: Border.all(
-              color: isSelected ? const Color(0xFF3B82F6) : colors.border.withOpacity(0.2),
+              color: isSelected ? colors.indigo : colors.border.withOpacity(0.2),
               width: isSelected ? 2 : 1,
             ),
           ),
@@ -828,9 +828,9 @@ class _InviteUserModalState extends ConsumerState<_InviteUserModal> {
                 width: 20,
                 height: 20,
                 decoration: BoxDecoration(
-                  color: isSelected ? const Color(0xFF3B82F6) : Colors.transparent,
+                  color: isSelected ? colors.indigo : Colors.transparent,
                   border: Border.all(
-                    color: isSelected ? const Color(0xFF3B82F6) : colors.textSecondary.withOpacity(0.3),
+                    color: isSelected ? colors.indigo : colors.textSecondary.withOpacity(0.3),
                     width: 2,
                   ),
                   borderRadius: BorderRadius.circular(6),

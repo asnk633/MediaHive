@@ -129,16 +129,16 @@ export const AttachmentSection: React.FC<AttachmentSectionProps> = ({ task, onUp
                 </div>
             )}
             {files.map(file => (
-                <div key={file.id} className="flex items-center justify-between p-3 bg-[#0a0c10] border border-[#ffffff1a] rounded-xl hover:border-blue-500/30 transition-colors group">
+                <div key={file.id} className="flex items-center justify-between p-3 bg-background/50 border border-foreground/10 rounded-xl hover:border-blue-500/30 transition-colors group">
                     <div className="flex items-center gap-3 overflow-hidden">
-                        <div className={`w-10 h-10 rounded-lg flex items-center justify-center shrink-0 ${file.section === 'team-final-exports' ? 'bg-green-500/10 text-green-400' : 'bg-blue-500/10 text-blue-400'}`}>
+                        <div className={`w-10 h-10 rounded-lg flex items-center justify-center shrink-0 ${file.section === 'team-final-exports' ? 'bg-green-500/10 text-green-600 dark:text-green-400' : 'bg-blue-500/10 text-blue-600 dark:text-blue-400'}`}>
                             <FileIcon size={20} />
                         </div>
                         <div className="min-w-0">
                             <div className="flex items-center gap-2">
-                                <a href={file.url} target="_blank" rel="noreferrer" className="text-sm font-medium text-foreground truncate hover:underline hover:text-blue-300 block max-w-[150px] sm:max-w-xs">{file.name}</a>
+                                <a href={file.url} target="_blank" rel="noreferrer" className="text-sm font-medium text-foreground truncate hover:underline hover:text-blue-600 dark:hover:text-blue-400 block max-w-[150px] sm:max-w-xs">{file.name}</a>
                                 {file.show_in_downloads ? (
-                                    <Badge variant="neutral" className="text-[9px] h-4 bg-green-500/20 text-green-300 border-0 px-1 hidden sm:inline-flex gap-1 items-center">
+                                    <Badge variant="neutral" className="text-[9px] h-4 bg-green-500/20 text-green-700 dark:text-green-300 border-0 px-1 hidden sm:inline-flex gap-1 items-center">
                                         <Eye size={8} /> Public
                                     </Badge>
                                 ) : (
@@ -157,7 +157,7 @@ export const AttachmentSection: React.FC<AttachmentSectionProps> = ({ task, onUp
                     <div className="flex items-center gap-2">
                         {showToggle && canUploadTeam && (
                             <div className="flex items-center gap-2 mr-2 border-r border-foreground/10 pr-2">
-                                <span className={`text-[10px] font-medium uppercase ${file.show_in_downloads ? 'text-green-400' : 'text-foreground/70'}`}>
+                                <span className={`text-[10px] font-medium uppercase ${file.show_in_downloads ? 'text-green-600 dark:text-green-400' : 'text-foreground/70'}`}>
                                     {file.show_in_downloads ? 'Public' : 'Private'}
                                 </span>
                                 <Switch
@@ -197,10 +197,10 @@ export const AttachmentSection: React.FC<AttachmentSectionProps> = ({ task, onUp
             <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 mt-6">
 
                 {/* 1. Requester Inputs */}
-                <Card className="border-none bg-gradient-to-b from-[#141e30] to-[#1e2a3b] shadow-lg rounded-[15px] text-foreground">
+                <Card className="border-none bg-blue-500/5 shadow-lg rounded-[15px] text-foreground ring-1 ring-blue-500/10">
                     <CardHeader className="pb-2 border-b border-foreground/5">
                         <div className="flex items-center justify-between">
-                            <CardTitle className="text-xs font-bold uppercase tracking-wider text-blue-300/80 flex items-center gap-2">
+                            <CardTitle className="text-xs font-bold uppercase tracking-wider text-blue-600 dark:text-blue-400 flex items-center gap-2">
                                 Requester Inputs
                                 <Badge className="bg-foreground/10 text-foreground border-0 text-[10px] h-5">{inputs.length}</Badge>
                             </CardTitle>
@@ -230,7 +230,7 @@ export const AttachmentSection: React.FC<AttachmentSectionProps> = ({ task, onUp
                 </Card>
 
                 {/* 2. Team Working Files */}
-                <Card className="border-none bg-gradient-to-b from-[#1e293b] to-[#0f172a] shadow-lg rounded-[15px] text-foreground">
+                <Card className="border-none bg-foreground/5 shadow-lg rounded-[15px] text-foreground ring-1 ring-foreground/10">
                     <CardHeader className="pb-2 border-b border-foreground/5">
                         <div className="flex items-center justify-between">
                             <CardTitle className="text-xs font-bold uppercase tracking-wider text-foreground/80 flex items-center gap-2">
@@ -263,12 +263,12 @@ export const AttachmentSection: React.FC<AttachmentSectionProps> = ({ task, onUp
                 </Card>
 
                 {/* 3. Final Deliverables */}
-                <Card className="border-none bg-gradient-to-b from-[#064e3b] to-[#022c22] shadow-lg rounded-[15px] text-foreground relative overflow-hidden ring-1 ring-green-500/20">
+                <Card className="border-none bg-green-500/5 shadow-lg rounded-[15px] text-foreground relative overflow-hidden ring-1 ring-green-500/20">
                     <div className="absolute top-0 right-0 w-32 h-32 bg-green-500/10 rounded-full blur-3xl -translate-y-16 translate-x-16 pointer-events-none" />
 
                     <CardHeader className="pb-2 border-b border-foreground/5 relative z-10">
                         <div className="flex items-center justify-between">
-                            <CardTitle className="text-xs font-bold uppercase tracking-wider text-green-300/90 flex items-center gap-2">
+                            <CardTitle className="text-xs font-bold uppercase tracking-wider text-green-600 dark:text-green-400 flex items-center gap-2">
                                 Final Deliverables
                                 <Badge className="bg-green-500/20 text-green-200 border-0 text-[10px] h-5">{final.length}</Badge>
                             </CardTitle>

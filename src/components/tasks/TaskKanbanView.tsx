@@ -34,7 +34,7 @@ const COLUMNS = [
     { id: 'todo', label: 'To Do', color: 'slate', icon: Circle, status: 'todo' },
     { id: 'in_progress', label: 'Working', color: 'blue', icon: Clock, status: 'in_progress' },
     { id: 'review', label: 'On Hold', color: 'amber', icon: AlertCircle, status: 'review' },
-    { id: 'done', label: 'Completed', color: 'emerald', icon: CheckCircle2, status: 'done' }
+    { id: 'done', label: 'Done', color: 'emerald', icon: CheckCircle2, status: 'done' }
 ];
 
 // Droppable Column Component

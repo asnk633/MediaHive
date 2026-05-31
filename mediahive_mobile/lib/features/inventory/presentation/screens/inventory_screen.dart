@@ -787,7 +787,7 @@ class _InventoryScreenState extends ConsumerState<InventoryScreen> {
                         decoration: InputDecoration(
                           hintText: 'Search by name or serial...',
                           hintStyle: AppTypography.bodyM.copyWith(color: colors.textSecondary.withOpacity(0.5)),
-                          border: InputBorder.none,
+                          border: InputBorder.none, filled: false,
                           isDense: true,
                         ),
                         style: AppTypography.bodyM.copyWith(color: colors.textPrimary),
@@ -1162,7 +1162,7 @@ class _InventoryScreenState extends ConsumerState<InventoryScreen> {
                   decoration: InputDecoration(
                     hintText: 'Search categories...',
                     hintStyle: TextStyle(color: colors.textSecondary.withOpacity(0.5)),
-                    border: InputBorder.none,
+                    border: InputBorder.none, filled: false,
                     icon: Icon(LucideIcons.search, size: 16, color: colors.textSecondary),
                   ),
                 ),

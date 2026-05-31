@@ -177,7 +177,7 @@ class WorkspaceManagementScreen extends ConsumerWidget {
                       icon: Icon(LucideIcons.search, size: 16, color: colors.textSecondary.withOpacity(0.5)),
                       hintText: 'Filter by name...',
                       hintStyle: TextStyle(color: colors.textSecondary.withOpacity(0.3), fontSize: 14),
-                      border: InputBorder.none,
+                      border: InputBorder.none, filled: false,
                     ),
                   ),
                 ),
@@ -450,7 +450,7 @@ class _CreateWorkspaceModalState extends State<_CreateWorkspaceModal> {
               decoration: InputDecoration(
                 hintText: selectedType == 'INSTITUTION' ? 'e.g. Media Academy' : 'e.g. Production Dept',
                 hintStyle: TextStyle(color: colors.textSecondary.withOpacity(0.3), fontSize: 14),
-                border: InputBorder.none,
+                border: InputBorder.none, filled: false,
               ),
             ),
           ),

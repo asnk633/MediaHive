@@ -5,4 +5,5 @@ import '../models/governance_models.dart';
 abstract class GovernanceRepository {
   Future<Either<Failure, List<Policy>>> getPolicies();
   Future<Either<Failure, List<GovernanceLog>>> getLogs();
+  Future<Either<Failure, GovernanceStats>> getStats();
 }

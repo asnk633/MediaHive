@@ -8,6 +8,7 @@ import '../../../../../core/services/analytics_service.dart';
 import '../providers/governance_provider.dart';
 import '../../../../../shared/widgets/mh_skeleton.dart';
 import '../../domain/models/governance_models.dart';
+import 'package:go_router/go_router.dart';
 
 class GovernanceScreen extends ConsumerWidget {
   const GovernanceScreen({super.key});
@@ -19,6 +20,7 @@ class GovernanceScreen extends ConsumerWidget {
     
     final policiesAsync = ref.watch(governancePoliciesProvider);
     final logsAsync = ref.watch(governanceLogsProvider);
+    final statsAsync = ref.watch(governanceStatsProvider);
 
     return Scaffold(
       backgroundColor: AppColors.backgroundPrimary,
@@ -36,11 +38,19 @@ class GovernanceScreen extends ConsumerWidget {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              _buildPageHeader(),
+              _buildPageHeader(context),
               const SizedBox(height: 32),
-              _buildStatsGrid(),
-              const SizedBox(height: 40),
-              _buildAuthorityMap(),
+              statsAsync.when(
+                data: (stats) => Column(
+                  children: [
+                    _buildStatsGrid(stats),
+                    const SizedBox(height: 40),
+                    _buildAuthorityMap(stats),
+                  ],
+                ),
+                loading: () => const MhSkeleton(height: 300),
+                error: (e, _) => Text('Error loading stats', style: AppTypography.caption.copyWith(color: AppColors.error)),
+              ),
               const SizedBox(height: 40),
               policiesAsync.when(
                 data: (policies) => _buildActivePolicies(policies),
@@ -60,7 +70,7 @@ class GovernanceScreen extends ConsumerWidget {
     );
   }
 
-  Widget _buildPageHeader() {
+  Widget _buildPageHeader(BuildContext context) {
     return Row(
       mainAxisAlignment: MainAxisAlignment.spaceBetween,
       children: [
@@ -77,24 +87,29 @@ class GovernanceScreen extends ConsumerWidget {
             ],
           ),
         ),
-        Container(
-          padding: const EdgeInsets.all(12),
-          decoration: BoxDecoration(
-            color: AppColors.info,
-            borderRadius: BorderRadius.circular(14),
+        GestureDetector(
+          onTap: () {
+            context.push('/governance/command-center');
+          },
+          child: Container(
+            padding: const EdgeInsets.all(12),
+            decoration: BoxDecoration(
+              color: AppColors.info,
+              borderRadius: BorderRadius.circular(14),
+            ),
+            child: const Icon(LucideIcons.layoutGrid, color: Colors.white, size: 20), // Changed icon to represent Command Center
           ),
-          child: const Icon(LucideIcons.box, color: Colors.white, size: 20),
         ),
       ],
     );
   }
 
-  Widget _buildStatsGrid() {
+  Widget _buildStatsGrid(GovernanceStats stats) {
     return Row(
       children: [
-        Expanded(child: _buildStatCard('Active Rules', '24', LucideIcons.shieldCheck, AppColors.success)),
+        Expanded(child: _buildStatCard('Active Rules', stats.activeRulesCount.toString(), LucideIcons.shieldCheck, AppColors.success)),
         const SizedBox(width: 16),
-        Expanded(child: _buildStatCard('Audit Events', '142', LucideIcons.activity, AppColors.info)),
+        Expanded(child: _buildStatCard('Audit Events', stats.auditEventsCount.toString(), LucideIcons.activity, AppColors.info)),
       ],
     );
   }
@@ -120,17 +135,17 @@ class GovernanceScreen extends ConsumerWidget {
     );
   }
 
-  Widget _buildAuthorityMap() {
+  Widget _buildAuthorityMap(GovernanceStats stats) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Text('ROLE AUTHORITY MAP', style: AppTypography.caption.copyWith(fontWeight: FontWeight.bold)),
+        Text('ROLE POPULATION MAP', style: AppTypography.caption.copyWith(fontWeight: FontWeight.bold)),
         const SizedBox(height: 16),
-        _buildRoleRow('ADMIN', 'OMNISCIENT', 1.0, AppColors.error),
+        _buildRoleRow('ADMIN', '${(stats.adminPercentage * 100).toStringAsFixed(0)}%', stats.adminPercentage, AppColors.error),
         const SizedBox(height: 12),
-        _buildRoleRow('MANAGER', 'INSTITUTIONAL', 0.8, AppColors.warning),
+        _buildRoleRow('MANAGER', '${(stats.managerPercentage * 100).toStringAsFixed(0)}%', stats.managerPercentage, AppColors.warning),
         const SizedBox(height: 12),
-        _buildRoleRow('TEAM', 'DEPARTMENTAL', 0.5, AppColors.info),
+        _buildRoleRow('TEAM', '${(stats.teamPercentage * 100).toStringAsFixed(0)}%', stats.teamPercentage, AppColors.info),
       ],
     );
   }

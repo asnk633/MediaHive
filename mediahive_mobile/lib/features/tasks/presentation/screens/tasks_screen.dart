@@ -251,6 +251,11 @@ class TasksScreen extends ConsumerWidget {
     final todayStr = DateFormat('yyyy-MM-dd').format(now);
     
     final total = tasks.length.toString();
+    final todo = tasks.where((t) {
+      final status = (t as Task).status.toLowerCase();
+      return status == 'todo' || status == 'to do' || status == 'to_do';
+    }).length.toString();
+
     final dueToday = tasks.where((t) {
       final task = t as Task;
       return task.dueDate == todayStr && task.status.toLowerCase() != 'done';
@@ -273,26 +278,29 @@ class TasksScreen extends ConsumerWidget {
 
     return Row(
       children: [
-        _buildStatCard(colors, 'TOTAL', total, LucideIcons.clipboardCheck, colors.isDark ? const Color(0xFF3B82F6) : colors.honey),
-        const SizedBox(width: 6),
-        _buildStatCard(colors, 'TODAY', dueToday, LucideIcons.clock, colors.honey),
-        const SizedBox(width: 6),
-        _buildStatCard(colors, 'ACTIVE', inProgress, LucideIcons.activity, colors.isDark ? const Color(0xFF6366F1) : colors.indigo),
-        const SizedBox(width: 6),
-        _buildStatCard(colors, 'HOLD', onHold, LucideIcons.pauseCircle, colors.error),
-        const SizedBox(width: 6),
-        _buildStatCard(colors, 'DONE', completed, LucideIcons.checkCircle2, colors.emerald),
+        _buildStatCard(colors, 'TOTAL', total, LucideIcons.clipboardCheck, colors.isDark ? colors.indigo : colors.honey, flex: 3),
+        const SizedBox(width: 4),
+        _buildStatCard(colors, 'TO DO', todo, LucideIcons.listTodo, const Color(0xFF3B82F6), flex: 4),
+        const SizedBox(width: 4),
+        _buildStatCard(colors, 'TODAY', dueToday, LucideIcons.clock, colors.honey, flex: 4),
+        const SizedBox(width: 4),
+        _buildStatCard(colors, 'ACTIVE', inProgress, LucideIcons.activity, colors.isDark ? colors.indigo : colors.indigo, flex: 4),
+        const SizedBox(width: 4),
+        _buildStatCard(colors, 'HOLD', onHold, LucideIcons.pauseCircle, colors.error, flex: 4),
+        const SizedBox(width: 4),
+        _buildStatCard(colors, 'DONE', completed, LucideIcons.checkCircle2, colors.emerald, flex: 3),
       ],
     );
   }
 
-  Widget _buildStatCard(ThemeColors colors, String label, String value, IconData icon, Color color) {
+  Widget _buildStatCard(ThemeColors colors, String label, String value, IconData icon, Color color, {int flex = 1}) {
     return Expanded(
+      flex: flex,
       child: Container(
-        padding: const EdgeInsets.symmetric(vertical: 12, horizontal: 4),
+        padding: const EdgeInsets.symmetric(vertical: 10, horizontal: 2),
         decoration: BoxDecoration(
           color: colors.isDark ? const Color(0xFF0F172A) : Colors.white,
-          borderRadius: BorderRadius.circular(16),
+          borderRadius: BorderRadius.circular(14),
           border: Border.all(
             color: colors.isDark 
                 ? Colors.white.withOpacity(0.05) 
@@ -311,29 +319,29 @@ class TasksScreen extends ConsumerWidget {
         child: Column(
           children: [
             Icon(icon, size: 12, color: color.withOpacity(colors.isDark ? 0.8 : 0.9)),
-            const SizedBox(height: 8),
+            const SizedBox(height: 6),
             Text(
               value,
               style: AppTypography.h3.copyWith(
                 color: colors.isDark ? Colors.white : colors.textPrimary, 
                 height: 1,
-                fontSize: 16,
+                fontSize: 15,
               ),
             ),
-            const SizedBox(height: 4),
+            const SizedBox(height: 3),
             Text(
               label,
               style: AppTypography.caption.copyWith(
-                fontSize: 6.5,
+                fontSize: 6,
                 fontWeight: FontWeight.w900,
-                letterSpacing: 0.2,
+                letterSpacing: 0.1,
                 color: colors.isDark 
                     ? Colors.white.withOpacity(0.4) 
                     : colors.textSecondary.withOpacity(0.6),
               ),
               textAlign: TextAlign.center,
               maxLines: 1,
-              overflow: TextOverflow.ellipsis,
+              overflow: TextOverflow.clip,
             ),
           ],
         ),
@@ -468,7 +476,7 @@ class TasksScreen extends ConsumerWidget {
                         ),
                       )
                     : null,
-                border: InputBorder.none,
+                border: InputBorder.none, filled: false,
                 contentPadding:
                     const EdgeInsets.symmetric(horizontal: 4, vertical: 11),
               ),

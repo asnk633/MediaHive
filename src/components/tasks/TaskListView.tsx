@@ -105,7 +105,7 @@ PriorityBadge.displayName = "PriorityBadge";
 
 const StatusPill = React.forwardRef<HTMLSpanElement, any>(({ status, onClick, className, ...props }, ref) => {
     const config = {
-        done: { color: 'emerald', icon: CheckCircle2, label: 'Completed' },
+        done: { color: 'emerald', icon: CheckCircle2, label: 'Done' },
         in_progress: { color: 'blue', icon: Clock, label: 'Working' },
         review: { color: 'amber', icon: AlertCircle, label: 'On Hold' },
         todo: { color: 'slate', icon: Circle, label: 'To Do' },
@@ -821,10 +821,10 @@ const TaskListViewComponent: React.FC<TaskListViewProps> = ({ tasks, loading = f
                                 </SelectTrigger>
                                 <SelectContent className="backdrop-blur-md border-foreground/10 shadow-lg shadow-black/30 bg-slate-900/95">
                                     <SelectItem value="all">Any Status</SelectItem>
-                                    <SelectItem value="todo">Pending</SelectItem>
+                                    <SelectItem value="todo">To Do</SelectItem>
                                     <SelectItem value="in_progress">Working</SelectItem>
                                     <SelectItem value="review">On Hold</SelectItem>
-                                    <SelectItem value="done">Completed</SelectItem>
+                                    <SelectItem value="done">Done</SelectItem>
                                 </SelectContent>
                             </Select>
                             <Select value={filterPriority} onValueChange={handlePriorityChange}>

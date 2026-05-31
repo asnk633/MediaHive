@@ -422,7 +422,7 @@ export default function HomeClient() {
                                             <div className="space-y-6 pt-2">
                                                 <h3 className="text-xs font-bold text-foreground/70 uppercase tracking-widest mb-4 ml-2 mt-2">Strategic Insights</h3>
                                                 <ProductionInsights 
-                                                    data={{ events, tasks }} 
+                                                    data={{ events, tasks, totalInventory: operationalData.totalInventory }} 
                                                     isLoading={isDataLoading} 
                                                 />
                                             </div>

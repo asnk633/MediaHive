@@ -1,7 +1,8 @@
 'use client';
 
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import { Shield, Users, User, CheckCircle2, XCircle, ShieldCheck } from 'lucide-react';
+import { supabase } from '@/lib/supabaseClient';
 
 const ROLES = [
     {
@@ -67,6 +68,40 @@ const ROLES = [
 ];
 
 export const RoleAuthorityMap: React.FC = () => {
+    const [rolePercentages, setRolePercentages] = useState<Record<string, number>>({
+        admin: 0,
+        manager: 0,
+        team: 0,
+        member: 0,
+    });
+
+    useEffect(() => {
+        const fetchRoles = async () => {
+            const { data, error } = await supabase.from('profiles').select('role');
+            if (error || !data) return;
+
+            let total = data.length || 1;
+            let counts: Record<string, number> = { admin: 0, manager: 0, team: 0, member: 0 };
+
+            data.forEach((p: any) => {
+                const role = (p.role || 'member').toLowerCase();
+                if (role.includes('admin')) counts.admin++;
+                else if (role.includes('manager')) counts.manager++;
+                else if (role.includes('team')) counts.team++;
+                else counts.member++;
+            });
+
+            setRolePercentages({
+                admin: (counts.admin / total) * 100,
+                manager: (counts.manager / total) * 100,
+                team: (counts.team / total) * 100,
+                member: (counts.member / total) * 100,
+            });
+        };
+
+        fetchRoles();
+    }, []);
+
     return (
         <div className="space-y-6">
             <div className="flex flex-col gap-1">
@@ -102,6 +137,19 @@ export const RoleAuthorityMap: React.FC = () => {
                                     )}
                                 </div>
                             ))}
+                        </div>
+
+                        <div className="mt-8 space-y-2">
+                            <div className="flex justify-between items-center">
+                                <span className="text-[10px] font-black uppercase tracking-widest text-foreground/50">Population</span>
+                                <span className={`text-xs font-bold ${role.color}`}>{rolePercentages[role.id]?.toFixed(0)}%</span>
+                            </div>
+                            <div className="h-1.5 w-full bg-foreground/5 rounded-full overflow-hidden">
+                                <div 
+                                    className={`h-full ${role.bg.replace('/10', '')} transition-all duration-1000`}
+                                    style={{ width: `${rolePercentages[role.id] || 0}%` }}
+                                />
+                            </div>
                         </div>
                     </div>
                 ))}

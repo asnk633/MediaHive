@@ -78,6 +78,7 @@ export interface OperationalSummary {
   tasks: Task[];
   crew: any[];
   equipment: any[];
+  totalInventory?: number;
 }
 
 /**
@@ -852,7 +853,7 @@ export class CanonicalDataService {
 
       if (error) throw error;
 
-      return (files || []).map((f: any) => ({
+      return ((files as any[]) || []).map((f: any) => ({
         ...f,
         mimeType: f.mime_type,
         driveFileId: f.drive_file_id,
@@ -947,7 +948,7 @@ export class CanonicalDataService {
       const startOfDay = new Date(today.getFullYear(), today.getMonth(), today.getDate()).toISOString();
       const endOfDay = new Date(today.getFullYear(), today.getMonth(), today.getDate(), 23, 59, 59, 999).toISOString();
 
-      const [eventsRes, tasksRes] = await Promise.all([
+      const [eventsRes, tasksRes, inventoryRes] = await Promise.all([
         safeQuery(() => {
           let query = supabase
             .from(TABLES.EVENTS)
@@ -995,7 +996,8 @@ export class CanonicalDataService {
           */
           
           return query.order('due_date', { ascending: true });
-        })
+        }),
+        safeQuery(() => supabase.from('inventory').select('*', { count: 'exact', head: true }).eq('tenant_id', tenantId))
       ]);
 
       if (eventsRes.error) throw eventsRes.error;
@@ -1025,7 +1027,8 @@ export class CanonicalDataService {
         events,
         tasks,
         crew,
-        equipment
+        equipment,
+        totalInventory: (inventoryRes as any).count || 0
       };
     } catch (error: any) {
       const errorDetails = {

@@ -167,7 +167,7 @@ export const EventDetailsModal: React.FC<EventDetailsModalProps> = ({ event, isO
         <Dialog open={isOpen} onOpenChange={(open) => !open && onClose()}>
             <DialogContent
                 showCloseButton={false}
-                className="max-w-5xl bg-background border-none p-0 gap-0 overflow-hidden flex flex-col max-h-[90vh] rounded-3xl shadow-2xl"
+                className="w-[95vw] sm:w-[90vw] md:w-[85vw] max-w-6xl sm:max-w-6xl md:max-w-6xl bg-background border-none p-0 gap-0 overflow-hidden flex flex-col max-h-[90vh] rounded-3xl shadow-2xl"
             >
 
                 {/* Screen readers title */}
@@ -246,9 +246,9 @@ export const EventDetailsModal: React.FC<EventDetailsModalProps> = ({ event, isO
 
                 {/* Scrollable Content */}
                 <div className="flex-1 overflow-y-auto overflow-x-hidden px-8 py-6 custom-scrollbar min-h-0">
-                    <div className="grid grid-cols-1 md:grid-cols-5 gap-8">
+                    <div className="grid grid-cols-1 xl:grid-cols-12 gap-8 h-full">
                         {/* Left Column: Main Info */}
-                        <div className="md:col-span-3 space-y-8">
+                        <div className="xl:col-span-8 flex flex-col space-y-8">
                             <section>
                                 <h3 className="text-xs font-bold text-muted uppercase tracking-widest mb-4 flex items-center gap-2">
                                     <Info size={14} /> Description
@@ -370,7 +370,7 @@ export const EventDetailsModal: React.FC<EventDetailsModalProps> = ({ event, isO
                         </div>
 
                         {/* Right Column: Metadata */}
-                        <div className="md:col-span-2 space-y-6">
+                        <div className="xl:col-span-4 flex flex-col space-y-6 xl:border-l xl:border-foreground/5 xl:pl-8">
                             <div className="bg-glass rounded-2xl p-5 space-y-6 shadow-sm">
                                 <div className="flex items-center gap-4">
                                     <div className="w-10 h-10 rounded-xl bg-primary/10 flex items-center justify-center text-primary">
@@ -474,7 +474,7 @@ export const EventDetailsModal: React.FC<EventDetailsModalProps> = ({ event, isO
                 </div>
 
                 {/* Footer */}
-                <div className="px-8 py-5 border-t border-soft/50 bg-background flex flex-col sm:flex-row justify-between items-center gap-4 shrink-0">
+                <div className="px-8 py-5 border-t border-soft/50 bg-transparent flex flex-col sm:flex-row justify-between items-center gap-4 shrink-0">
                     <div className="text-[10px] text-muted font-medium">
                         EVENT ID: {event.id}
                     </div>

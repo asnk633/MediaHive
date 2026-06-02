@@ -18,6 +18,8 @@ import 'package:mediahive_mobile/core/theme/app_colors.dart';
 import 'package:mediahive_mobile/core/design_tokens.dart';
 import 'package:mediahive_mobile/core/theme_provider.dart';
 import 'package:mediahive_mobile/core/utils/url_helpers.dart';
+import 'package:mediahive_mobile/core/utils/media_cache_manager.dart';
+import 'package:mediahive_mobile/features/chat/presentation/widgets/cached_chat_image.dart';
 import 'package:mediahive_mobile/core/providers/user_provider.dart';
 import 'pdf_viewer_screen.dart';
 import 'image_viewer_screen.dart';
@@ -660,6 +662,26 @@ class _ChatRoomScreenState extends ConsumerState<ChatRoomScreen> {
   Future<void> _startVoiceNote() async {
     try {
       if (await _audioRecorder.hasPermission()) {
+        // Pause all other media playing in the chatroom
+        ChatMediaManager.play('');
+        
+        // Request exclusive audio focus to pause background music player apps like Spotify
+        await AudioPlayer.global.setAudioContext(const AudioContext(
+          android: AndroidAudioContext(
+            isSpeakerphoneOn: true,
+            stayAwake: true,
+            contentType: AndroidContentType.music,
+            usageType: AndroidUsageType.media,
+            audioFocus: AndroidAudioFocus.gain,
+          ),
+          iOS: AudioContextIOS(
+            category: AVAudioSessionCategory.playAndRecord,
+            options: [
+              AVAudioSessionOptions.defaultToSpeaker,
+            ],
+          ),
+        ));
+
         final tempDir = await getTemporaryDirectory();
         final path = '${tempDir.path}/voice_note_${DateTime.now().millisecondsSinceEpoch}.m4a';
         
@@ -734,6 +756,29 @@ class _ChatRoomScreenState extends ConsumerState<ChatRoomScreen> {
           final newMsgsCount = messages.length - prev!.value!.length;
           final newMsg = messages.last;
           
+          if (newMsg.senderId != currentUser?.id) {
+            final isVoiceNote = newMsg.mediaType == 'voice' || newMsg.mediaType == 'audio';
+            if (isVoiceNote) {
+              // Request exclusive audio focus to pause background music player apps like Spotify
+              AudioPlayer.global.setAudioContext(const AudioContext(
+                android: AndroidAudioContext(
+                  isSpeakerphoneOn: true,
+                  stayAwake: true,
+                  contentType: AndroidContentType.music,
+                  usageType: AndroidUsageType.media,
+                  audioFocus: AndroidAudioFocus.gain,
+                ),
+                iOS: AudioContextIOS(
+                  category: AVAudioSessionCategory.playback,
+                  options: [
+                    AVAudioSessionOptions.defaultToSpeaker,
+                  ],
+                ),
+              ));
+            }
+            ref.read(audioServiceProvider).playMessageReceived();
+          }
+
           final isScrolledUp = _scrollController.hasClients && 
               (_scrollController.position.maxScrollExtent - _scrollController.offset > 150);
 
@@ -2200,10 +2245,10 @@ class _ChatRoomScreenState extends ConsumerState<ChatRoomScreen> {
                                                     child: ClipRRect(
                                                       borderRadius: BorderRadius.circular(11),
                                                       child: msg.mediaType == 'image'
-                                                          ? Image.network(
-                                                              directUrl ?? msg.mediaUrl!,
+                                                          ? CachedChatImage(
+                                                              imageUrl: directUrl ?? msg.mediaUrl!,
                                                               fit: BoxFit.cover,
-                                                              errorBuilder: (c, e, s) => const Center(
+                                                              errorWidget: const Center(
                                                                 child: Icon(LucideIcons.image, color: Colors.grey),
                                                               ),
                                                             )
@@ -2907,15 +2952,42 @@ class _InlineVideoPlayerState extends State<InlineVideoPlayer> {
   @override
   void initState() {
     super.initState();
+    ChatMediaManager.register(_onMediaChanged);
     _initializeVideo();
   }
 
+  @override
+  void dispose() {
+    ChatMediaManager.unregister(_onMediaChanged);
+    _controller?.dispose();
+    super.dispose();
+  }
+
+  void _onMediaChanged(String? activeUrl) {
+    if (activeUrl != widget.videoUrl && _isPlaying) {
+      _controller?.pause();
+      if (mounted) {
+        setState(() {
+          _isPlaying = false;
+        });
+      }
+    }
+  }
+
   Future<void> _initializeVideo() async {
-    _controller = VideoPlayerController.networkUrl(
-      Uri.parse(widget.videoUrl),
-      videoPlayerOptions: VideoPlayerOptions(mixWithOthers: true),
-    );
     try {
+      final localPath = await MediaCacheManager.getCachedFilePath(widget.videoUrl);
+      if (localPath != null && File(localPath).existsSync()) {
+        _controller = VideoPlayerController.file(
+          File(localPath),
+          videoPlayerOptions: VideoPlayerOptions(mixWithOthers: true),
+        );
+      } else {
+        _controller = VideoPlayerController.networkUrl(
+          Uri.parse(widget.videoUrl),
+          videoPlayerOptions: VideoPlayerOptions(mixWithOthers: true),
+        );
+      }
       await _controller!.initialize();
       if (mounted) {
         setState(() {
@@ -2925,12 +2997,6 @@ class _InlineVideoPlayerState extends State<InlineVideoPlayer> {
     } catch (e) {
       debugPrint("Error pre-initializing video: $e");
     }
-  }
-
-  @override
-  void dispose() {
-    _controller?.dispose();
-    super.dispose();
   }
 
   Future<void> _togglePlay() async {
@@ -2944,6 +3010,26 @@ class _InlineVideoPlayerState extends State<InlineVideoPlayer> {
           _controller!.pause();
           _isPlaying = false;
         } else {
+          // Request exclusive audio focus to pause background music player apps like Spotify
+          AudioPlayer.global.setAudioContext(AudioContext(
+            android: const AndroidAudioContext(
+              isSpeakerphoneOn: true,
+              stayAwake: true,
+              contentType: AndroidContentType.music,
+              usageType: AndroidUsageType.media,
+              audioFocus: AndroidAudioFocus.gain,
+            ),
+            iOS: const AudioContextIOS(
+              category: AVAudioSessionCategory.playback,
+              options: [
+                AVAudioSessionOptions.defaultToSpeaker,
+              ],
+            ),
+          ));
+
+          // Pause all other media playing in the chatroom
+          ChatMediaManager.play(widget.videoUrl);
+
           _controller!.play();
           _isPlaying = true;
           _controller!.addListener(_videoListener);
@@ -3097,6 +3183,7 @@ class _InlineVoicePlayerState extends State<InlineVoicePlayer> {
   @override
   void initState() {
     super.initState();
+    ChatMediaManager.register(_onMediaChanged);
     debugPrint('[InlineVoicePlayer] initState: durationSeconds=${widget.durationSeconds}, audioUrl=${widget.audioUrl}');
     if (widget.durationSeconds != null) {
       _duration = Duration(seconds: widget.durationSeconds!);
@@ -3104,6 +3191,14 @@ class _InlineVoicePlayerState extends State<InlineVoicePlayer> {
     }
     if (!widget.isUploading) {
       _initAudio();
+    }
+  }
+
+  void _onMediaChanged(String? activeUrl) {
+    if (activeUrl != widget.audioUrl && _isPlaying) {
+      _audioPlayer.pause();
+      _playbackTimer?.cancel();
+      if (mounted) setState(() => _isPlaying = false);
     }
   }
 
@@ -3230,6 +3325,7 @@ class _InlineVoicePlayerState extends State<InlineVoicePlayer> {
 
   @override
   void dispose() {
+    ChatMediaManager.unregister(_onMediaChanged);
     _durationSubscription?.cancel();
     _positionSubscription?.cancel();
     _playerCompleteSubscription?.cancel();
@@ -3280,6 +3376,27 @@ class _InlineVoicePlayerState extends State<InlineVoicePlayer> {
       if (_position >= _duration && _duration > Duration.zero) {
         _position = Duration.zero;
       }
+
+      // Request exclusive audio focus to pause background music player apps like Spotify
+      await AudioPlayer.global.setAudioContext(AudioContext(
+        android: const AndroidAudioContext(
+          isSpeakerphoneOn: true,
+          stayAwake: true,
+          contentType: AndroidContentType.music,
+          usageType: AndroidUsageType.media,
+          audioFocus: AndroidAudioFocus.gain,
+        ),
+        iOS: const AudioContextIOS(
+          category: AVAudioSessionCategory.playback,
+          options: [
+            AVAudioSessionOptions.defaultToSpeaker,
+          ],
+        ),
+      ));
+
+      // Pause all other media playing in the chatroom
+      ChatMediaManager.play(widget.audioUrl);
+
       await _audioPlayer.play(
         DeviceFileSource(_localFilePath!),
         position: _position > Duration.zero ? _position : null,
@@ -3482,6 +3599,28 @@ class _AnimatedChatTickState extends State<AnimatedChatTick> with SingleTickerPr
         color: _isRead ? widget.colors.honey : widget.colors.textSecondary.withValues(alpha: 0.35),
       ),
     );
+  }
+}
+
+class ChatMediaManager {
+  static String? activeMediaUrl;
+  static final List<void Function(String?)> _listeners = [];
+
+  static void register(void Function(String?) listener) {
+    _listeners.add(listener);
+  }
+
+  static void unregister(void Function(String?) listener) {
+    _listeners.remove(listener);
+  }
+
+  static void play(String url) {
+    activeMediaUrl = url;
+    for (final listener in List.from(_listeners)) {
+      try {
+        listener(url);
+      } catch (_) {}
+    }
   }
 }
 

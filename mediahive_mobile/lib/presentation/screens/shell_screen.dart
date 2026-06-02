@@ -382,7 +382,7 @@ class _ShellScreenState extends ConsumerState<ShellScreen> {
                                   backgroundImage: profileImagePath != null
                                       ? FileImage(File(profileImagePath)) as ImageProvider
                                       : NetworkImage(
-                                          avatarUrl ?? 'https://i.pravatar.cc/150?u=superadmin'),
+                                          avatarUrl ?? 'https://www.gravatar.com/avatar/00000000000000000000000000000000?d=mp&f=y'),
                                   backgroundColor: colors.surface,
                                 ),
                               ),

@@ -200,7 +200,7 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
                         child: profileImagePath != null 
                           ? Image.file(File(profileImagePath), fit: BoxFit.cover)
                           : Image.network(
-                              avatarUrl ?? 'https://i.pravatar.cc/150?u=${user?.id ?? 'default'}',
+                              avatarUrl ?? 'https://www.gravatar.com/avatar/00000000000000000000000000000000?d=mp&f=y',
                               fit: BoxFit.cover,
                               errorBuilder: (context, error, stackTrace) {
                                 return Container(

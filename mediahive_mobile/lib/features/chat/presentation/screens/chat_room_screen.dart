@@ -871,7 +871,17 @@ class _ChatRoomScreenState extends ConsumerState<ChatRoomScreen> {
                       // Post frame callback to ensure bottom scrolling on initial load
                       if (!_initialScrollDone) {
                         WidgetsBinding.instance.addPostFrameCallback((_) {
-                          _scrollToBottom(instant: true);
+                          _scrollToBottom(instant: true, force: true);
+                          // Multi-tiered delayed fail-safes to handle image and layout expansion offsets
+                          Future.delayed(const Duration(milliseconds: 50), () {
+                            _scrollToBottom(instant: true, force: true);
+                          });
+                          Future.delayed(const Duration(milliseconds: 150), () {
+                            _scrollToBottom(instant: true, force: true);
+                          });
+                          Future.delayed(const Duration(milliseconds: 400), () {
+                            _scrollToBottom(instant: false, force: true);
+                          });
                           _initialScrollDone = true;
                         });
                       }

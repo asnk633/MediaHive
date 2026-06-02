@@ -670,8 +670,8 @@ class _ChatRoomScreenState extends ConsumerState<ChatRoomScreen> {
           android: const AudioContextAndroid(
             isSpeakerphoneOn: true,
             stayAwake: true,
-            contentType: AndroidContentType.speech,
-            usageType: AndroidUsageType.voiceCommunication,
+            contentType: AndroidContentType.music,
+            usageType: AndroidUsageType.media,
             audioFocus: AndroidAudioFocus.gain,
           ),
           iOS: AudioContextIOS(
@@ -3248,7 +3248,7 @@ class _InlineVoicePlayerState extends State<InlineVoicePlayer> {
       cacheKey = widget.audioUrl.split('/').last.split('?').first;
     }
     final tempDir = await getTemporaryDirectory();
-    final cachedFile = File('${tempDir.path}/voice_$cacheKey.wav'); // Use .wav extension to match actual uploaded audio format!
+    final cachedFile = File('${tempDir.path}/voice_$cacheKey.m4a'); // Use .m4a extension to match actual uploaded audio format!
 
     // Prevent concurrent download race conditions for the same file key
     if (_activeDownloads.contains(cacheKey)) {

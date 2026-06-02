@@ -62,6 +62,8 @@ export const VoicePlayer: React.FC<VoicePlayerProps> = ({ src, durationSeconds }
 
   const togglePlay = () => {
     if (!audioRef.current) return;
+    const isRealFile = src.includes('google') || src.includes('api/') || src.includes('localhost') || src.includes('10.0.2.2') || src.includes('vercel.app');
+
     if (isPlaying) {
       audioRef.current.pause();
     } else {
@@ -84,11 +86,14 @@ export const VoicePlayer: React.FC<VoicePlayerProps> = ({ src, durationSeconds }
         setCurrentTime(0);
       }
       
-      // If durationSeconds is set, loop the short physical asset to simulate long note
-      if (durationSeconds) {
+      // If durationSeconds is set and it's a mock local asset, loop the short physical asset to simulate long note
+      if (durationSeconds && !isRealFile) {
         audioRef.current.loop = true;
         const dur = audioRef.current.duration && audioRef.current.duration > 0 ? audioRef.current.duration : 1.0;
         audioRef.current.currentTime = startingPos % dur;
+      } else {
+        audioRef.current.loop = false;
+        audioRef.current.currentTime = startingPos;
       }
       
       audioRef.current.play().catch(err => {
@@ -99,21 +104,25 @@ export const VoicePlayer: React.FC<VoicePlayerProps> = ({ src, durationSeconds }
 
   const handleTimeUpdate = () => {
     if (!audioRef.current) return;
-    // Only track native time if we are not running a virtual duration note
-    if (!durationSeconds) {
+    const isRealFile = src.includes('google') || src.includes('api/') || src.includes('localhost') || src.includes('10.0.2.2') || src.includes('vercel.app');
+    // Only track native time if we are not running a virtual duration note for a mock asset
+    if (!durationSeconds || isRealFile) {
       setCurrentTime(audioRef.current.currentTime);
     }
   };
 
   const handleLoadedMetadata = () => {
     if (!audioRef.current) return;
-    if (!durationSeconds && audioRef.current.duration) {
+    if (audioRef.current.duration && !isNaN(audioRef.current.duration) && audioRef.current.duration > 0) {
       setDuration(audioRef.current.duration);
+    } else if (durationSeconds) {
+      setDuration(durationSeconds);
     }
   };
 
   const handleEnded = () => {
-    if (!durationSeconds) {
+    const isRealFile = src.includes('google') || src.includes('api/') || src.includes('localhost') || src.includes('10.0.2.2') || src.includes('vercel.app');
+    if (!durationSeconds || isRealFile) {
       setIsPlaying(false);
       setCurrentTime(0);
     }
@@ -121,13 +130,14 @@ export const VoicePlayer: React.FC<VoicePlayerProps> = ({ src, durationSeconds }
 
   const handleSeek = (e: React.MouseEvent<HTMLDivElement>) => {
     if (!audioRef.current || !progressRef.current || duration === 0) return;
+    const isRealFile = src.includes('google') || src.includes('api/') || src.includes('localhost') || src.includes('10.0.2.2') || src.includes('vercel.app');
     const rect = progressRef.current.getBoundingClientRect();
     const clickX = e.clientX - rect.left;
     const width = rect.width;
     const percentage = Math.max(0, Math.min(1, clickX / width));
     const seekTime = percentage * duration;
     
-    if (durationSeconds) {
+    if (durationSeconds && !isRealFile) {
       setCurrentTime(seekTime);
       if (audioRef.current) {
         const dur = audioRef.current.duration && audioRef.current.duration > 0 ? audioRef.current.duration : 1.0;
@@ -155,7 +165,8 @@ export const VoicePlayer: React.FC<VoicePlayerProps> = ({ src, durationSeconds }
         src={src}
         onPlay={() => {
           setIsPlaying(true);
-          if (durationSeconds) {
+          const isRealFile = src.includes('google') || src.includes('api/') || src.includes('localhost') || src.includes('10.0.2.2') || src.includes('vercel.app');
+          if (durationSeconds && !isRealFile) {
             startPlaybackTimer();
           }
         }}

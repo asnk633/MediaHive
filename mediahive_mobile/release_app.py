@@ -80,143 +80,159 @@ if not os.path.exists(source_apk):
 
 # Copy to root directory
 shutil.copyfile(source_apk, target_apk_path)
+
+# Copy to public directory for Vercel hosting
+public_dir = os.path.join(os.path.dirname(BASE_DIR), "public")
+public_apk_path = os.path.join(public_dir, target_apk_name)
+if os.path.exists(public_dir):
+    shutil.copyfile(source_apk, public_apk_path)
+    print(f"[SUCCESS] Copied APK to public folder: {public_apk_path}")
+else:
+    print(f"[WARNING] Public directory not found at {public_dir}, skipped copying to public.")
+
 print(f"[SUCCESS] Compiled optimized APK: {target_apk_path} ({os.path.getsize(target_apk_path) / 1024 / 1024:.2f} MB)")
 
-# ─── 3. PUBLISH TO GITHUB RELEASES ────────────────────────────────────────────
-github_headers = {
-    "Authorization": f"Bearer {GITHUB_TOKEN}",
-    "Accept": "application/vnd.github+json",
-    "X-GitHub-Api-Version": "2022-11-28"
-}
+# ─── 3. PUBLISH TO GITHUB RELEASES (WITH ROBUST FALLBACK) ──────────────────────
+asset_download_url = f"https://thaiba-garden-media-manager.vercel.app/{target_apk_name}"
+github_success = False
 
-# Create Release
-print(f"\n[GitHub] Creating release {tag_name}...")
-release_payload = {
-    "tag_name": tag_name,
-    "target_commitish": "main",
-    "name": f"MediaHive Release {tag_name}",
-    "body": f"• Operational Flow optimization\n• Auto-generated split-architecture release build.\n• Contains performance improvements and bug fixes.",
-    "draft": False,
-    "prerelease": "beta" in tag_name.lower()
-}
-
-req_data = json.dumps(release_payload).encode('utf-8')
-req = urllib.request.Request(
-    f"https://api.github.com/repos/{REPO}/releases",
-    data=req_data,
-    headers={"Content-Type": "application/json", **github_headers},
-    method="POST"
-)
-
-release_id = None
 try:
-    with urllib.request.urlopen(req) as response:
-        res = json.loads(response.read().decode())
-        release_id = res["id"]
-        html_url = res["html_url"]
-        print(f"[SUCCESS] Created GitHub Release: {html_url}")
-except urllib.error.HTTPError as e:
-    # If release already exists, try fetching it
-    error_body = e.read().decode()
-    if e.code == 422 and "already_exists" in error_body:
-        print("[GitHub] Release already exists. Fetching existing release...")
-        req = urllib.request.Request(
-            f"https://api.github.com/repos/{REPO}/releases/tags/{tag_name}",
-            headers=github_headers
-        )
+    github_headers = {
+        "Authorization": f"Bearer {GITHUB_TOKEN}",
+        "Accept": "application/vnd.github+json",
+        "X-GitHub-Api-Version": "2022-11-28"
+    }
+
+    # Create Release
+    print(f"\n[GitHub] Creating release {tag_name}...")
+    release_payload = {
+        "tag_name": tag_name,
+        "target_commitish": "main",
+        "name": f"MediaHive Release {tag_name}",
+        "body": f"• Operational Flow optimization\n• Auto-generated split-architecture release build.\n• Contains performance improvements and bug fixes.",
+        "draft": False,
+        "prerelease": "beta" in tag_name.lower()
+    }
+
+    req_data = json.dumps(release_payload).encode('utf-8')
+    req = urllib.request.Request(
+        f"https://api.github.com/repos/{REPO}/releases",
+        data=req_data,
+        headers={"Content-Type": "application/json", **github_headers},
+        method="POST"
+    )
+
+    release_id = None
+    try:
+        with urllib.request.urlopen(req) as response:
+            res = json.loads(response.read().decode())
+            release_id = res["id"]
+            html_url = res["html_url"]
+            print(f"[SUCCESS] Created GitHub Release: {html_url}")
+    except urllib.error.HTTPError as e:
+        error_body = e.read().decode()
+        if e.code == 422 and "already_exists" in error_body:
+            print("[GitHub] Release already exists. Fetching existing release...")
+            req = urllib.request.Request(
+                f"https://api.github.com/repos/{REPO}/releases/tags/{tag_name}",
+                headers=github_headers
+            )
+            try:
+                with urllib.request.urlopen(req) as response:
+                    res = json.loads(response.read().decode())
+                    release_id = res["id"]
+            except Exception as ex:
+                print("[ERROR] Failed to fetch existing release:", ex)
+        else:
+            print("[ERROR] Failed to create release:", e.code, error_body)
+
+    if release_id:
+        # Upload APK asset
+        print(f"[GitHub] Uploading {target_apk_name} as release asset...")
+        with open(target_apk_path, "rb") as f:
+            apk_bytes = f.read()
+
+        upload_headers = {
+            **github_headers,
+            "Content-Type": "application/vnd.android.package-archive",
+            "Content-Length": str(len(apk_bytes))
+        }
+
+        # Construct upload URL
+        upload_url = f"https://uploads.github.com/repos/{REPO}/releases/{release_id}/assets?name={target_apk_name}"
+        req = urllib.request.Request(upload_url, data=apk_bytes, headers=upload_headers, method="POST")
+
         try:
             with urllib.request.urlopen(req) as response:
                 res = json.loads(response.read().decode())
-                release_id = res["id"]
-        except Exception as ex:
-            print("[ERROR] Failed to fetch existing release:", ex)
-            exit(1)
-    else:
-        print("[ERROR] Failed to create release:", e.code, error_body)
-        exit(1)
+                asset_download_url = res["browser_download_url"]
+                github_success = True
+                print(f"[SUCCESS] Uploaded asset to GitHub: {asset_download_url}")
+        except urllib.error.HTTPError as e:
+            error_body = e.read().decode()
+            if e.code == 422 and "already_exists" in error_body:
+                print("[GitHub] Asset already exists. Fetching asset URL...")
+                # Get assets list and find matching asset
+                req = urllib.request.Request(f"https://api.github.com/repos/{REPO}/releases/{release_id}/assets", headers=github_headers)
+                with urllib.request.urlopen(req) as response:
+                    assets = json.loads(response.read().decode())
+                    for asset in assets:
+                        if asset["name"] == target_apk_name:
+                            asset_download_url = asset["browser_download_url"]
+                            github_success = True
+                            print(f"[SUCCESS] Re-used existing asset URL: {asset_download_url}")
+                            break
+            else:
+                print("[ERROR] Failed to upload asset:", e.code, error_body)
 
-# Upload APK asset
-print(f"[GitHub] Uploading {target_apk_name} as release asset...")
-with open(target_apk_path, "rb") as f:
-    apk_bytes = f.read()
+        if github_success:
+            # ─── 4. AUTOMATED OLD RELEASES CLEANUP (KEEP ONLY LATEST 2) ───────────────
+            print("\n[GitHub] Cleaning up old releases (Keeping only the latest 2 versions)...")
+            req = urllib.request.Request(f"https://api.github.com/repos/{REPO}/releases", headers=github_headers)
+            try:
+                with urllib.request.urlopen(req) as response:
+                    releases = json.loads(response.read().decode())
+                    releases.sort(key=lambda r: r["created_at"], reverse=True)
+                    
+                    print(f"Current total releases on GitHub: {len(releases)}")
+                    if len(releases) > 2:
+                        to_delete = releases[2:]
+                        print(f"Releases to delete: {[r['tag_name'] for r in to_delete]}")
+                        
+                        for rel in to_delete:
+                            del_id = rel["id"]
+                            del_tag = rel["tag_name"]
+                            
+                            # Delete Release
+                            print(f"[GitHub] Deleting old release {del_tag}...")
+                            del_req = urllib.request.Request(
+                                f"https://api.github.com/repos/{REPO}/releases/{del_id}",
+                                headers=github_headers,
+                                method="DELETE"
+                            )
+                            with urllib.request.urlopen(del_req) as _:
+                                print(f"[SUCCESS] Deleted release {del_tag}")
+                            
+                            # Delete Git Tag
+                            print(f"[GitHub] Deleting remote git tag {del_tag}...")
+                            tag_req = urllib.request.Request(
+                                f"https://api.github.com/repos/{REPO}/git/refs/tags/{del_tag}",
+                                headers=github_headers,
+                                method="DELETE"
+                            )
+                            try:
+                                with urllib.request.urlopen(tag_req) as _:
+                                    print(f"[SUCCESS] Deleted remote tag {del_tag}")
+                            except Exception as ex:
+                                print(f"[WARNING] Failed to delete remote tag {del_tag}: {ex}")
+                    else:
+                        print("No old releases to delete. Keeping all current releases.")
+            except Exception as e:
+                print("[WARNING] Failed during releases cleanup:", e)
 
-upload_headers = {
-    **github_headers,
-    "Content-Type": "application/vnd.android.package-archive",
-    "Content-Length": str(len(apk_bytes))
-}
-
-# Construct upload URL
-upload_url = f"https://uploads.github.com/repos/{REPO}/releases/{release_id}/assets?name={target_apk_name}"
-req = urllib.request.Request(upload_url, data=apk_bytes, headers=upload_headers, method="POST")
-
-asset_download_url = None
-try:
-    with urllib.request.urlopen(req) as response:
-        res = json.loads(response.read().decode())
-        asset_download_url = res["browser_download_url"]
-        print(f"[SUCCESS] Uploaded asset to GitHub: {asset_download_url}")
-except urllib.error.HTTPError as e:
-    error_body = e.read().decode()
-    if e.code == 422 and "already_exists" in error_body:
-        print("[GitHub] Asset already exists. Fetching asset URL...")
-        # Get assets list and find matching asset
-        req = urllib.request.Request(f"https://api.github.com/repos/{REPO}/releases/{release_id}/assets", headers=github_headers)
-        with urllib.request.urlopen(req) as response:
-            assets = json.loads(response.read().decode())
-            for asset in assets:
-                if asset["name"] == target_apk_name:
-                    asset_download_url = asset["browser_download_url"]
-                    print(f"[SUCCESS] Re-used existing asset URL: {asset_download_url}")
-                    break
-    else:
-        print("[ERROR] Failed to upload asset:", e.code, error_body)
-        exit(1)
-
-# ─── 4. AUTOMATED OLD RELEASES CLEANUP (KEEP ONLY LATEST 2) ───────────────────
-print("\n[GitHub] Cleaning up old releases (Keeping only the latest 2 versions)...")
-req = urllib.request.Request(f"https://api.github.com/repos/{REPO}/releases", headers=github_headers)
-try:
-    with urllib.request.urlopen(req) as response:
-        releases = json.loads(response.read().decode())
-        # Sort releases by creation date (newest first)
-        releases.sort(key=lambda r: r["created_at"], reverse=True)
-        
-        print(f"Current total releases on GitHub: {len(releases)}")
-        if len(releases) > 2:
-            to_delete = releases[2:]
-            print(f"Releases to delete: {[r['tag_name'] for r in to_delete]}")
-            
-            for rel in to_delete:
-                del_id = rel["id"]
-                del_tag = rel["tag_name"]
-                
-                # Delete Release
-                print(f"[GitHub] Deleting old release {del_tag}...")
-                del_req = urllib.request.Request(
-                    f"https://api.github.com/repos/{REPO}/releases/{del_id}",
-                    headers=github_headers,
-                    method="DELETE"
-                )
-                with urllib.request.urlopen(del_req) as _:
-                    print(f"[SUCCESS] Deleted release {del_tag}")
-                
-                # Delete Git Tag
-                print(f"[GitHub] Deleting remote git tag {del_tag}...")
-                tag_req = urllib.request.Request(
-                    f"https://api.github.com/repos/{REPO}/git/refs/tags/{del_tag}",
-                    headers=github_headers,
-                    method="DELETE"
-                )
-                try:
-                    with urllib.request.urlopen(tag_req) as _:
-                        print(f"[SUCCESS] Deleted remote tag {del_tag}")
-                except Exception as ex:
-                    print(f"[WARNING] Failed to delete remote tag {del_tag}: {ex}")
-        else:
-            print("No old releases to delete. Keeping all current releases.")
-except Exception as e:
-    print("[WARNING] Failed during releases cleanup:", e)
+except Exception as global_gh_err:
+    print(f"\n[WARNING] GitHub release publication failed: {global_gh_err}")
+    print(f"Falling back to Vercel hosted direct URL: {asset_download_url}")
 
 # ─── 5. UPDATE SUPABASE SYSTEM_CONFIG ─────────────────────────────────────────
 if SUPABASE_SERVICE_KEY and asset_download_url:

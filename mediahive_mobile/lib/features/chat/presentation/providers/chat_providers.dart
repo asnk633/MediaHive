@@ -300,12 +300,7 @@ class ChatMessagesNotifier extends StateNotifier<AsyncValue<List<ChatMessage>>> 
         
         // Filter out optimistic messages that are already returned by the backend
         final pendingOptimistic = localOptimistic.where((op) {
-          return !resolvedMessages.any((d) => 
-            d.senderId == op.senderId && 
-            d.text == op.text &&
-            d.mediaUrl == op.mediaUrl &&
-            (d.createdAt.difference(op.createdAt).inSeconds).abs() < 30
-          );
+          return !resolvedMessages.any((d) => d.id == op.id);
         }).toList();
         
         state = AsyncValue.data([...resolvedMessages, ...pendingOptimistic]);

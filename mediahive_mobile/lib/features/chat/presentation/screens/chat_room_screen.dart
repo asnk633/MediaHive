@@ -366,7 +366,6 @@ class _ChatRoomScreenState extends ConsumerState<ChatRoomScreen> {
 
   Future<void> _stopAndSendVoiceNote() async {
     try {
-      ref.read(audioServiceProvider).playVoiceStop();
       _voiceTimer?.cancel();
       final duration = _voiceSeconds;
       
@@ -374,7 +373,11 @@ class _ChatRoomScreenState extends ConsumerState<ChatRoomScreen> {
         _isRecordingVoice = false;
       });
 
+      // Stop recorder FIRST so the stop beep isn't captured in the audio
       final String? filePath = await _audioRecorder.stop();
+
+      // Now play the stop sound after the mic is closed
+      ref.read(audioServiceProvider).playVoiceStop();
       
       if (duration < 1) {
         _showError('Voice note too short');
@@ -685,9 +688,8 @@ class _ChatRoomScreenState extends ConsumerState<ChatRoomScreen> {
         final tempDir = await getTemporaryDirectory();
         final path = '${tempDir.path}/voice_note_${DateTime.now().millisecondsSinceEpoch}.m4a';
         
-        await ref.read(audioServiceProvider).playVoiceStart();
-        // Wait for the beep sound effect to complete so the microphone capture starts cleanly
-        await Future.delayed(const Duration(milliseconds: 500));
+        // Play beep and wait for it to fully finish so the mic doesn't pick it up
+        await ref.read(audioServiceProvider).playVoiceStartAndWait();
         
         await _audioRecorder.start(
           const RecordConfig(
@@ -897,19 +899,8 @@ class _ChatRoomScreenState extends ConsumerState<ChatRoomScreen> {
                       final messages = List<ChatMessage>.from(messagesList)
                         ..sort((a, b) => a.createdAt.compareTo(b.createdAt));
 
-                      if (_isUploading && _uploadType == 'voice') {
-                        messages.add(
-                          ChatMessage(
-                            id: 'uploading_mock',
-                            roomId: widget.roomId,
-                            senderId: currentUser?.id ?? '',
-                            text: '',
-                            mediaUrl: 'uploading_mock_url',
-                            mediaType: 'voice',
-                            createdAt: DateTime.now(),
-                          ),
-                        );
-                      }
+                      // Voice upload progress is shown via the optimistic message
+                      // from sendMessage — no separate mock message needed
 
                       if (messages.isEmpty) {
                         return _buildEmptyMessagesState(colors);

@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'package:audioplayers/audioplayers.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -19,9 +20,32 @@ class AudioService {
     await HapticFeedback.vibrate();
   }
 
-  Future<void> playVoiceStart() async {
-    await _playEffect('sounds/voice_record_start.wav');
-    await HapticFeedback.mediumImpact();
+  /// Plays the voice-start beep and waits for it to finish completely,
+  /// so the microphone won't pick up the tail end of the sound.
+  Future<void> playVoiceStartAndWait() async {
+    final completer = Completer<void>();
+    late StreamSubscription sub;
+    sub = _effectsPlayer.onPlayerComplete.listen((_) {
+      if (!completer.isCompleted) completer.complete();
+      sub.cancel();
+    });
+    try {
+      await _effectsPlayer.stop();
+      await _effectsPlayer.play(AssetSource('sounds/voice_record_start.wav'));
+      _logger.debug('Playing audio effect: sounds/voice_record_start.wav');
+      await HapticFeedback.mediumImpact();
+      // Wait for playback to finish OR timeout after 1.5s as a safety net
+      await completer.future.timeout(
+        const Duration(milliseconds: 1500),
+        onTimeout: () {},
+      );
+      // Extra 100ms silence gap to ensure speaker fully stops before mic opens
+      await Future.delayed(const Duration(milliseconds: 100));
+    } catch (e, stack) {
+      _logger.error('Failed to play voice start effect', e, stack);
+      if (!completer.isCompleted) completer.complete();
+      sub.cancel();
+    }
   }
 
   Future<void> playVoiceStop() async {

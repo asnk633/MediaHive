@@ -86,6 +86,8 @@ const formatDateHeader = (dateStr: string) => {
     }
     return date.toLocaleDateString();
   }
+};
+
 function AnimatedReadReceipt({ isNew }: { isNew: boolean }) {
   const [read, setRead] = useState(false);
 

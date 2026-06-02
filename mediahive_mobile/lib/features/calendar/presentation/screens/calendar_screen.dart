@@ -134,7 +134,7 @@ class CalendarScreen extends ConsumerWidget {
                 'VIEW AND MANAGE INSTITUTIONAL EVENTS',
                 style: AppTypography.caption.copyWith(
                   fontWeight: FontWeight.bold,
-                  color: colors.textSecondary.withOpacity(0.8),
+                  color: colors.textSecondary.withValues(alpha: 0.8),
                 ),
               ),
             ],
@@ -161,7 +161,7 @@ class CalendarScreen extends ConsumerWidget {
     return Container(
       padding: const EdgeInsets.all(6),
       decoration: BoxDecoration(
-        color: colors.surface.withOpacity(0.5),
+        color: colors.surface.withValues(alpha: 0.5),
         borderRadius: BorderRadius.circular(16),
         border: Border.all(color: colors.border),
       ),
@@ -181,7 +181,7 @@ class CalendarScreen extends ConsumerWidget {
                   boxShadow: isSelected
                       ? [
                           BoxShadow(
-                            color: colors.indigo.withOpacity(0.3),
+                            color: colors.indigo.withValues(alpha: 0.3),
                             blurRadius: 10,
                             offset: const Offset(0, 2),
                           )
@@ -194,7 +194,7 @@ class CalendarScreen extends ConsumerWidget {
                     Icon(
                       view['icon'] as IconData, 
                       size: 14, 
-                      color: isSelected ? Colors.white : colors.textSecondary.withOpacity(0.4)
+                      color: isSelected ? Colors.white : colors.textSecondary.withValues(alpha: 0.4)
                     ),
                     const SizedBox(width: 6),
                     Text(
@@ -202,7 +202,7 @@ class CalendarScreen extends ConsumerWidget {
                       style: AppTypography.caption.copyWith(
                         fontSize: 8, 
                         fontWeight: FontWeight.w900, 
-                        color: isSelected ? Colors.white : colors.textSecondary.withOpacity(0.4),
+                        color: isSelected ? Colors.white : colors.textSecondary.withValues(alpha: 0.4),
                       ),
                     ),
                   ],
@@ -267,14 +267,14 @@ class CalendarScreen extends ConsumerWidget {
           Container(
             padding: const EdgeInsets.all(AppSpacing.xl),
             decoration: BoxDecoration(
-              color: colors.surface.withOpacity(0.5),
+              color: colors.surface.withValues(alpha: 0.5),
               borderRadius: BorderRadius.circular(20),
-              border: Border.all(color: colors.border.withOpacity(0.5)),
+              border: Border.all(color: colors.border.withValues(alpha: 0.5)),
             ),
             child: Center(
               child: Column(
                 children: [
-                  Icon(LucideIcons.calendarCheck, color: colors.textSecondary.withOpacity(0.2), size: 32),
+                  Icon(LucideIcons.calendarCheck, color: colors.textSecondary.withValues(alpha: 0.2), size: 32),
                   const SizedBox(height: AppSpacing.s),
                   Text('No upcoming events scheduled', style: AppTypography.caption.copyWith(color: colors.textSecondary)),
                 ],
@@ -355,11 +355,11 @@ class CalendarScreen extends ConsumerWidget {
         border: Border.all(
           color: colors.isDark 
               ? colors.border 
-              : colors.border.withOpacity(0.12),
+              : colors.border.withValues(alpha: 0.12),
         ),
         boxShadow: [
           BoxShadow(
-            color: colors.border.withOpacity(0.05),
+            color: colors.border.withValues(alpha: 0.05),
             blurRadius: 20,
             offset: const Offset(0, 10),
           ),
@@ -377,7 +377,7 @@ class CalendarScreen extends ConsumerWidget {
                 style: AppTypography.caption.copyWith(
                   fontSize: 8,
                   fontWeight: FontWeight.w900,
-                  color: colors.textSecondary.withOpacity(0.6),
+                  color: colors.textSecondary.withValues(alpha: 0.6),
                 ),
               ),
             )).toList(),
@@ -423,7 +423,7 @@ class CalendarScreen extends ConsumerWidget {
                 return Container(
                   decoration: BoxDecoration(
                     border: Border.all(
-                      color: colors.border.withOpacity(colors.isDark ? 0.05 : 0.03), 
+                      color: colors.border.withValues(alpha: colors.isDark ? 0.05 : 0.03), 
                       width: 0.5,
                     ),
                   ),
@@ -435,9 +435,9 @@ class CalendarScreen extends ConsumerWidget {
                           width: 32,
                           height: 32,
                           decoration: BoxDecoration(
-                            color: colors.indigo.withOpacity(0.1),
+                            color: colors.indigo.withValues(alpha: 0.1),
                             shape: BoxShape.circle,
-                            border: Border.all(color: colors.indigo.withOpacity(0.3)),
+                            border: Border.all(color: colors.indigo.withValues(alpha: 0.3)),
                           ),
                         ),
                       Column(
@@ -452,7 +452,7 @@ class CalendarScreen extends ConsumerWidget {
                                 ? colors.indigo 
                                 : (isCurrentMonth 
                                     ? colors.textPrimary 
-                                    : colors.textSecondary.withOpacity(0.2)),
+                                    : colors.textSecondary.withValues(alpha: 0.2)),
                             ),
                           ),
                           if (hasEvents) ...[
@@ -510,20 +510,20 @@ class CalendarScreen extends ConsumerWidget {
                       color: isSelected 
                           ? Colors.transparent 
                           : (isToday 
-                              ? colors.indigo.withOpacity(0.5) 
-                              : colors.border.withOpacity(colors.isDark ? 1 : 0.12)),
+                              ? colors.indigo.withValues(alpha: 0.5) 
+                              : colors.border.withValues(alpha: colors.isDark ? 1 : 0.12)),
                     ),
                     boxShadow: isSelected
                         ? [
                             BoxShadow(
-                              color: colors.honey.withOpacity(0.3),
+                              color: colors.honey.withValues(alpha: 0.3),
                               blurRadius: 10,
                               offset: const Offset(0, 4),
                             )
                           ]
                         : [
                             BoxShadow(
-                              color: colors.border.withOpacity(0.03),
+                              color: colors.border.withValues(alpha: 0.03),
                               blurRadius: 10,
                               offset: const Offset(0, 4),
                             )
@@ -535,7 +535,7 @@ class CalendarScreen extends ConsumerWidget {
                         DateFormat('E').format(date).toUpperCase(),
                         style: AppTypography.caption.copyWith(
                           fontWeight: FontWeight.bold,
-                          color: isSelected ? Colors.black.withOpacity(0.8) : colors.textSecondary,
+                          color: isSelected ? Colors.black.withValues(alpha: 0.8) : colors.textSecondary,
                         ),
                       ),
                       const SizedBox(height: 8),
@@ -666,7 +666,7 @@ class CalendarScreen extends ConsumerWidget {
                                 border: Border.all(color: colors.backgroundPrimary, width: 2),
                                 boxShadow: [
                                   BoxShadow(
-                                    color: Color(event.colorValue).withOpacity(0.4),
+                                    color: Color(event.colorValue).withValues(alpha: 0.4),
                                     blurRadius: 8,
                                   ),
                                 ],
@@ -879,11 +879,11 @@ class CalendarScreen extends ConsumerWidget {
           border: Border.all(
             color: colors.isDark 
                 ? colors.border 
-                : colors.border.withOpacity(0.12),
+                : colors.border.withValues(alpha: 0.12),
           ),
           boxShadow: [
             BoxShadow(
-              color: colors.border.withOpacity(0.05),
+              color: colors.border.withValues(alpha: 0.05),
               blurRadius: 10,
               offset: const Offset(0, 4),
             ),
@@ -923,7 +923,7 @@ class CalendarScreen extends ConsumerWidget {
                             Container(
                               padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
                               decoration: BoxDecoration(
-                                color: color.withOpacity(0.1),
+                                color: color.withValues(alpha: 0.1),
                                 borderRadius: BorderRadius.circular(8),
                               ),
                               child: Text(
@@ -952,21 +952,21 @@ class CalendarScreen extends ConsumerWidget {
                                 style: AppTypography.caption.copyWith(
                                   fontSize: 8,
                                   fontWeight: FontWeight.w900,
-                                  color: colors.textSecondary.withOpacity(0.6),
+                                  color: colors.textSecondary.withValues(alpha: 0.6),
                                   letterSpacing: 0.5,
                                 ),
                               ),
                             ),
                             if (event.location != null && event.location!.isNotEmpty) ...[
                               const SizedBox(width: 8),
-                              Icon(LucideIcons.mapPin, size: 10, color: colors.textSecondary.withOpacity(0.4)),
+                              Icon(LucideIcons.mapPin, size: 10, color: colors.textSecondary.withValues(alpha: 0.4)),
                               const SizedBox(width: 4),
                               Expanded(
                                 child: Text(
                                   event.location!,
                                   style: AppTypography.caption.copyWith(
                                     fontSize: 10,
-                                    color: colors.textSecondary.withOpacity(0.6),
+                                    color: colors.textSecondary.withValues(alpha: 0.6),
                                   ),
                                   maxLines: 1,
                                   overflow: TextOverflow.ellipsis,
@@ -980,14 +980,14 @@ class CalendarScreen extends ConsumerWidget {
                           const SizedBox(height: 6),
                           Row(
                             children: [
-                              Icon(LucideIcons.building2, size: 10, color: colors.indigo.withOpacity(0.6)),
+                              Icon(LucideIcons.building2, size: 10, color: colors.indigo.withValues(alpha: 0.6)),
                               const SizedBox(width: 4),
                               Expanded(
                                 child: Text(
                                   orgLabel,
                                   style: AppTypography.caption.copyWith(
                                     fontSize: 10,
-                                    color: colors.indigo.withOpacity(0.8),
+                                    color: colors.indigo.withValues(alpha: 0.8),
                                     fontWeight: FontWeight.w600,
                                   ),
                                   maxLines: 1,
@@ -1046,7 +1046,7 @@ class CalendarScreen extends ConsumerWidget {
                   Container(
                     width: 40,
                     height: 40,
-                    decoration: BoxDecoration(color: color.withOpacity(0.1), shape: BoxShape.circle),
+                    decoration: BoxDecoration(color: color.withValues(alpha: 0.1), shape: BoxShape.circle),
                     child: Icon(LucideIcons.calendar, color: color, size: 20),
                   ),
                   const SizedBox(width: 16),
@@ -1101,8 +1101,8 @@ class CalendarScreen extends ConsumerWidget {
                       borderRadius: BorderRadius.circular(12),
                       border: Border.all(
                         color: colors.isDark 
-                            ? colors.border.withOpacity(0.5) 
-                            : colors.border.withOpacity(0.12),
+                            ? colors.border.withValues(alpha: 0.5) 
+                            : colors.border.withValues(alpha: 0.12),
                       ),
                     ),
                     child: Row(
@@ -1176,9 +1176,9 @@ class CalendarScreen extends ConsumerWidget {
                   children: event.mediaCoverage.map((service) => Container(
                     padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
                     decoration: BoxDecoration(
-                      color: colors.indigo.withOpacity(0.08),
+                      color: colors.indigo.withValues(alpha: 0.08),
                       borderRadius: BorderRadius.circular(20),
-                      border: Border.all(color: colors.indigo.withOpacity(0.3)),
+                      border: Border.all(color: colors.indigo.withValues(alpha: 0.3)),
                     ),
                     child: Row(
                       mainAxisSize: MainAxisSize.min,
@@ -1232,13 +1232,13 @@ class CalendarScreen extends ConsumerWidget {
                         border: Border.all(
                           color: colors.isDark 
                               ? colors.border 
-                              : colors.border.withOpacity(0.12),
+                              : colors.border.withValues(alpha: 0.12),
                         ),
                         boxShadow: colors.isDark
                             ? []
                             : [
                                 BoxShadow(
-                                  color: colors.border.withOpacity(0.03),
+                                  color: colors.border.withValues(alpha: 0.03),
                                   blurRadius: 5,
                                 ),
                               ],
@@ -1254,7 +1254,7 @@ class CalendarScreen extends ConsumerWidget {
                           else
                             CircleAvatar(
                               radius: 10,
-                              backgroundColor: colors.honey.withOpacity(0.2),
+                              backgroundColor: colors.honey.withValues(alpha: 0.2),
                               child: Text(
                                 initials,
                                 style: TextStyle(
@@ -1309,9 +1309,9 @@ class CalendarScreen extends ConsumerWidget {
                         child: Container(
                           padding: const EdgeInsets.symmetric(vertical: 14),
                           decoration: BoxDecoration(
-                            color: colors.indigo.withOpacity(0.08),
+                            color: colors.indigo.withValues(alpha: 0.08),
                             borderRadius: BorderRadius.circular(16),
-                            border: Border.all(color: colors.indigo.withOpacity(0.3)),
+                            border: Border.all(color: colors.indigo.withValues(alpha: 0.3)),
                           ),
                           child: Row(
                             mainAxisAlignment: MainAxisAlignment.center,
@@ -1342,9 +1342,9 @@ class CalendarScreen extends ConsumerWidget {
                         child: Container(
                           padding: const EdgeInsets.symmetric(vertical: 14),
                           decoration: BoxDecoration(
-                            color: colors.error.withOpacity(0.08),
+                            color: colors.error.withValues(alpha: 0.08),
                             borderRadius: BorderRadius.circular(16),
-                            border: Border.all(color: colors.error.withOpacity(0.3)),
+                            border: Border.all(color: colors.error.withValues(alpha: 0.3)),
                           ),
                           child: Row(
                             mainAxisAlignment: MainAxisAlignment.center,
@@ -1462,7 +1462,7 @@ class CalendarScreen extends ConsumerWidget {
           child: LinearProgressIndicator(
             value: readiness,
             minHeight: 2,
-            backgroundColor: colors.border.withOpacity(0.5),
+            backgroundColor: colors.border.withValues(alpha: 0.5),
             valueColor: AlwaysStoppedAnimation<Color>(
               readiness == 1.0 ? colors.emerald : colors.indigo
             ),

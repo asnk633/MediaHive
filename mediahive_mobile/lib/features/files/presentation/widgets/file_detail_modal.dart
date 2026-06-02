@@ -1,4 +1,5 @@
 import 'dart:ui';
+import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:lucide_icons/lucide_icons.dart';
@@ -14,6 +15,7 @@ import 'package:syncfusion_flutter_pdfviewer/pdfviewer.dart';
 import 'package:gal/gal.dart';
 import 'dart:io';
 import 'package:supabase_flutter/supabase_flutter.dart';
+import 'package:audioplayers/audioplayers.dart';
 
 import '../../../../core/theme_provider.dart';
 import '../../../../core/providers/user_provider.dart';
@@ -22,10 +24,12 @@ import '../providers/files_provider.dart';
 
 class FileDetailModal extends ConsumerStatefulWidget {
   final FileAsset asset;
+  final bool showDeleteOption;
 
   const FileDetailModal({
     super.key,
     required this.asset,
+    this.showDeleteOption = true,
   });
 
   @override
@@ -34,18 +38,128 @@ class FileDetailModal extends ConsumerStatefulWidget {
 
 class _FileDetailModalState extends ConsumerState<FileDetailModal> {
   VideoPlayerController? _videoPlayerController;
-   ChewieController? _chewieController;
+  ChewieController? _chewieController;
+  AudioPlayer? _audioPlayer;
+  bool _isAudioPlaying = false;
+  bool _isAudioDownloading = false;
+  Duration _audioDuration = Duration.zero;
+  Duration _audioPosition = Duration.zero;
+  StreamSubscription? _audioDurationSubscription;
+  StreamSubscription? _audioPositionSubscription;
+  StreamSubscription? _audioCompleteSubscription;
+  String? _audioLocalPath;
+
   bool _isDownloading = false;
   bool _isDeleting = false;
   double _downloadProgress = 0;
   String? _videoError;
 
+  bool get _isAudio {
+    final nameLower = widget.asset.name.toLowerCase();
+    return widget.asset.mimeType.startsWith('audio/') ||
+        nameLower.endsWith('.mp3') ||
+        nameLower.endsWith('.wav') ||
+        nameLower.endsWith('.m4a') ||
+        nameLower.endsWith('.aac') ||
+        nameLower.endsWith('.ogg') ||
+        nameLower.endsWith('.flac') ||
+        (nameLower.contains('audio') && nameLower.endsWith('.mp4'));
+  }
+
   @override
   void initState() {
     super.initState();
     
-    if (widget.asset.mimeType.startsWith('video/')) {
+    if (_isAudio) {
+      _initializeAudioPlayer();
+    } else if (widget.asset.mimeType.startsWith('video/')) {
       _initializeVideoPlayer();
+    }
+  }
+
+  Future<void> _initializeAudioPlayer() async {
+    if (widget.asset.downloadLink == null) return;
+
+    _audioPlayer = AudioPlayer();
+
+    _audioDurationSubscription = _audioPlayer!.onDurationChanged.listen((d) {
+      if (mounted) setState(() => _audioDuration = d);
+    });
+    _audioPositionSubscription = _audioPlayer!.onPositionChanged.listen((p) {
+      if (mounted) setState(() => _audioPosition = p);
+    });
+    _audioCompleteSubscription = _audioPlayer!.onPlayerComplete.listen((_) {
+      if (mounted) {
+        setState(() {
+          _isAudioPlaying = false;
+          _audioPosition = Duration.zero;
+        });
+      }
+    });
+
+    setState(() => _isAudioDownloading = true);
+
+    try {
+      final downloadUrl = widget.asset.downloadLink!;
+      String cacheKey;
+      try {
+        final uri = Uri.parse(downloadUrl);
+        cacheKey = uri.queryParameters['id'] ?? downloadUrl.split('/').last.split('?').first;
+      } catch (_) {
+        cacheKey = downloadUrl.split('/').last.split('?').first;
+      }
+      
+      final tempDir = await getTemporaryDirectory();
+      final ext = widget.asset.name.contains('.') ? widget.asset.name.split('.').last : 'wav';
+      final cachedFile = File('${tempDir.path}/audio_${cacheKey}_${widget.asset.id}.$ext');
+
+      if (cachedFile.existsSync() && cachedFile.lengthSync() > 0) {
+        _audioLocalPath = cachedFile.path;
+      } else {
+        final dio = Dio();
+        await dio.download(
+          downloadUrl,
+          cachedFile.path,
+          options: Options(
+            receiveTimeout: const Duration(seconds: 30),
+            sendTimeout: const Duration(seconds: 10),
+            headers: {'Accept': 'audio/*,*/*'},
+          ),
+        );
+        _audioLocalPath = cachedFile.path;
+      }
+
+      if (_audioLocalPath != null) {
+        await _audioPlayer!.setSourceDeviceFile(_audioLocalPath!);
+        final dur = await _audioPlayer!.getDuration();
+        if (dur != null && mounted) {
+          setState(() => _audioDuration = dur);
+        }
+      }
+    } catch (e) {
+      debugPrint('[FileDetailModal] Audio init error: $e');
+    } finally {
+      if (mounted) {
+        setState(() => _isAudioDownloading = false);
+      }
+    }
+  }
+
+  Future<void> _toggleAudioPlay() async {
+    if (_isAudioDownloading || _audioLocalPath == null || _audioPlayer == null) return;
+
+    if (_isAudioPlaying) {
+      await _audioPlayer!.pause();
+      if (mounted) setState(() => _isAudioPlaying = false);
+    } else {
+      if (_audioPosition >= _audioDuration && _audioDuration > Duration.zero) {
+        _audioPosition = Duration.zero;
+      }
+      await _audioPlayer!.play(
+        DeviceFileSource(_audioLocalPath!),
+        position: _audioPosition > Duration.zero ? _audioPosition : null,
+      );
+      if (mounted) setState(() => _isAudioPlaying = true);
     }
   }
 
@@ -64,7 +178,7 @@ class _FileDetailModalState extends ConsumerState<FileDetailModal> {
         videoPlayerController: _videoPlayerController!,
         autoPlay: true,
         looping: false,
-        aspectRatio: _videoPlayerController!.value.aspectRatio,
+        aspectRatio: _videoPlayerController!.value.aspectRatio > 0 ? _videoPlayerController!.value.aspectRatio : 16/9,
         placeholder: Container(
           color: Colors.black,
           child: const Center(
@@ -74,8 +188,8 @@ class _FileDetailModalState extends ConsumerState<FileDetailModal> {
         materialProgressColors: ChewieProgressColors(
           playedColor: const Color(0xFFE59312),
           handleColor: const Color(0xFFE59312),
-          backgroundColor: Colors.grey.withOpacity(0.5),
-          bufferedColor: Colors.white.withOpacity(0.3),
+          backgroundColor: Colors.grey.withValues(alpha: 0.5),
+          bufferedColor: Colors.white.withValues(alpha: 0.3),
         ),
       );
       
@@ -93,6 +207,10 @@ class _FileDetailModalState extends ConsumerState<FileDetailModal> {
   void dispose() {
     _videoPlayerController?.dispose();
     _chewieController?.dispose();
+    _audioDurationSubscription?.cancel();
+    _audioPositionSubscription?.cancel();
+    _audioCompleteSubscription?.cancel();
+    _audioPlayer?.dispose();
     super.dispose();
   }
 
@@ -116,10 +234,16 @@ class _FileDetailModalState extends ConsumerState<FileDetailModal> {
     });
 
     try {
-      // First download to a temp file
       final dio = Dio();
       final tempDir = await getTemporaryDirectory();
-      final tempPath = '${tempDir.path}/${widget.asset.name}';
+      
+      String fileName = widget.asset.name;
+      if (!fileName.contains('.')) {
+        final mimeExt = widget.asset.mimeType.split('/').last;
+        fileName = '$fileName.$mimeExt';
+      }
+      
+      final tempPath = '${tempDir.path}/$fileName';
       
       await dio.download(
         widget.asset.downloadLink!,
@@ -214,7 +338,7 @@ class _FileDetailModalState extends ConsumerState<FileDetailModal> {
               Container(
                 padding: const EdgeInsets.all(8),
                 decoration: BoxDecoration(
-                  color: colors.emerald.withOpacity(0.2),
+                  color: colors.emerald.withValues(alpha: 0.2),
                   shape: BoxShape.circle,
                 ),
                 child: Icon(LucideIcons.checkCircle, color: colors.emerald, size: 20),
@@ -233,12 +357,12 @@ class _FileDetailModalState extends ConsumerState<FileDetailModal> {
             ],
           ),
         ),
-        backgroundColor: colors.backgroundSecondary.withOpacity(0.9),
+        backgroundColor: colors.backgroundSecondary.withValues(alpha: 0.9),
         behavior: SnackBarBehavior.floating,
         margin: const EdgeInsets.fromLTRB(24, 0, 24, 40),
         shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.circular(20),
-          side: BorderSide(color: colors.emerald.withOpacity(0.3), width: 1.5),
+          side: BorderSide(color: colors.emerald.withValues(alpha: 0.3), width: 1.5),
         ),
         elevation: 0,
         duration: const Duration(seconds: 3),
@@ -356,9 +480,9 @@ class _FileDetailModalState extends ConsumerState<FileDetailModal> {
     return Container(
       height: MediaQuery.of(context).size.height * 0.85,
       decoration: BoxDecoration(
-        color: colors.backgroundSecondary.withOpacity(0.95),
+        color: colors.backgroundSecondary.withValues(alpha: 0.95),
         borderRadius: const BorderRadius.vertical(top: Radius.circular(32)),
-        border: Border.all(color: colors.border.withOpacity(0.5)),
+        border: Border.all(color: colors.border.withValues(alpha: 0.5)),
       ),
       child: ClipRRect(
         borderRadius: const BorderRadius.vertical(top: Radius.circular(32)),
@@ -373,7 +497,7 @@ class _FileDetailModalState extends ConsumerState<FileDetailModal> {
                   width: 40,
                   height: 4,
                   decoration: BoxDecoration(
-                    color: colors.textSecondary.withOpacity(0.3),
+                    color: colors.textSecondary.withValues(alpha: 0.3),
                     borderRadius: BorderRadius.circular(2),
                   ),
                 ),
@@ -400,7 +524,7 @@ class _FileDetailModalState extends ConsumerState<FileDetailModal> {
                           ),
                           const SizedBox(height: 4),
                           Text(
-                            '${(widget.asset.size / (1024 * 1024)).toStringAsFixed(2)} MB • ${DateFormat('MMM dd, yyyy').format(widget.asset.createdAt)}',
+                            '${widget.asset.size > 0 ? "${(widget.asset.size / (1024 * 1024)).toStringAsFixed(2)} MB • " : ""}${DateFormat('MMM dd, yyyy').format(widget.asset.createdAt)}',
                             style: TextStyle(
                               color: colors.textSecondary,
                               fontSize: 12,
@@ -413,7 +537,7 @@ class _FileDetailModalState extends ConsumerState<FileDetailModal> {
                       onPressed: () => Navigator.pop(context),
                       icon: Icon(LucideIcons.x, color: colors.textSecondary),
                       style: IconButton.styleFrom(
-                        backgroundColor: colors.surface.withOpacity(0.5),
+                        backgroundColor: colors.surface.withValues(alpha: 0.5),
                       ),
                     ),
                   ],
@@ -426,9 +550,9 @@ class _FileDetailModalState extends ConsumerState<FileDetailModal> {
                   width: double.infinity,
                   margin: const EdgeInsets.symmetric(horizontal: 24),
                   decoration: BoxDecoration(
-                    color: Colors.black.withOpacity(0.3),
+                    color: Colors.black.withValues(alpha: 0.3),
                     borderRadius: BorderRadius.circular(24),
-                    border: Border.all(color: colors.border.withOpacity(0.3)),
+                    border: Border.all(color: colors.border.withValues(alpha: 0.3)),
                   ),
                   child: ClipRRect(
                     borderRadius: BorderRadius.circular(24),
@@ -501,7 +625,7 @@ class _FileDetailModalState extends ConsumerState<FileDetailModal> {
                             final isAdminOrManager = role == 'admin' || role == 'manager';
                             final isUploader = userId != null && widget.asset.uploadedBy == userId;
                             
-                            final canDelete = isAdminOrManager || (role == 'team' && isUploader);
+                            final canDelete = widget.showDeleteOption && (isAdminOrManager || (role == 'team' && isUploader));
 
                             if (!canDelete) return const SizedBox.shrink();
 
@@ -513,7 +637,7 @@ class _FileDetailModalState extends ConsumerState<FileDetailModal> {
                                     height: 56,
                                     padding: const EdgeInsets.all(16),
                                     decoration: BoxDecoration(
-                                      color: Colors.redAccent.withOpacity(0.1),
+                                      color: Colors.redAccent.withValues(alpha: 0.1),
                                       borderRadius: BorderRadius.circular(16),
                                     ),
                                     child: const CircularProgressIndicator(strokeWidth: 2, color: Colors.redAccent),
@@ -522,7 +646,7 @@ class _FileDetailModalState extends ConsumerState<FileDetailModal> {
                                     onPressed: _handleDelete,
                                     icon: LucideIcons.trash2,
                                     label: '',
-                                    color: Colors.redAccent.withOpacity(0.1),
+                                    color: Colors.redAccent.withValues(alpha: 0.1),
                                     textColor: Colors.redAccent,
                                     isSquare: true,
                                   ),
@@ -542,6 +666,9 @@ class _FileDetailModalState extends ConsumerState<FileDetailModal> {
   }
 
   Widget _buildPreview(bool isImage, bool isVideo, bool isPdf, ThemeColors colors) {
+    if (_isAudio) {
+      return _buildAudioPreview(colors);
+    }
     if (isImage && widget.asset.downloadLink != null) {
       return PhotoView(
         imageProvider: NetworkImage(widget.asset.downloadLink!),
@@ -617,7 +744,7 @@ class _FileDetailModalState extends ConsumerState<FileDetailModal> {
           Icon(
             _getIconForMimeType(widget.asset.mimeType),
             size: 80,
-            color: colors.textSecondary.withOpacity(0.5),
+            color: colors.textSecondary.withValues(alpha: 0.5),
           ),
           const SizedBox(height: 16),
           Text(
@@ -627,6 +754,169 @@ class _FileDetailModalState extends ConsumerState<FileDetailModal> {
         ],
       );
     }
+  }
+
+  Widget _buildAudioPreview(ThemeColors colors) {
+    final activeColor = colors.honey;
+    final inactiveColor = colors.textSecondary.withValues(alpha: 0.3);
+
+    return Center(
+      child: Padding(
+        padding: const EdgeInsets.all(24.0),
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            Container(
+              width: 100,
+              height: 100,
+              decoration: BoxDecoration(
+                color: colors.honey.withValues(alpha: 0.1),
+                shape: BoxShape.circle,
+                border: Border.all(color: colors.honey.withValues(alpha: 0.2), width: 2),
+              ),
+              child: Center(
+                child: Icon(
+                  _isAudioPlaying ? LucideIcons.headphones : LucideIcons.music,
+                  color: colors.honey,
+                  size: 40,
+                ),
+              ),
+            ),
+            const SizedBox(height: 24),
+            Text(
+              widget.asset.name,
+              style: TextStyle(
+                color: colors.textPrimary,
+                fontSize: 16,
+                fontWeight: FontWeight.bold,
+              ),
+              textAlign: TextAlign.center,
+              maxLines: 2,
+              overflow: TextOverflow.ellipsis,
+            ),
+            const SizedBox(height: 8),
+            Text(
+              _isAudioDownloading 
+                  ? 'Loading Audio...' 
+                  : (_isAudioPlaying ? 'Playing Audio' : 'Paused'),
+              style: TextStyle(
+                color: colors.textSecondary,
+                fontSize: 12,
+              ),
+            ),
+            const SizedBox(height: 32),
+            Container(
+              padding: const EdgeInsets.all(16),
+              decoration: BoxDecoration(
+                color: colors.surface.withValues(alpha: 0.5),
+                borderRadius: BorderRadius.circular(20),
+                border: Border.all(color: colors.border.withValues(alpha: 0.3)),
+              ),
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  Row(
+                    children: [
+                      GestureDetector(
+                        onTap: _toggleAudioPlay,
+                        child: CircleAvatar(
+                          backgroundColor: activeColor,
+                          radius: 24,
+                          child: _isAudioDownloading
+                              ? const SizedBox(
+                                  width: 20,
+                                  height: 20,
+                                  child: CircularProgressIndicator(
+                                    strokeWidth: 2.5,
+                                    color: Colors.black87,
+                                  ),
+                                )
+                              : Icon(
+                                  _isAudioPlaying ? LucideIcons.pause : LucideIcons.play,
+                                  color: Colors.black87,
+                                  size: 20,
+                                ),
+                        ),
+                      ),
+                      const SizedBox(width: 16),
+                      Expanded(
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            SliderTheme(
+                              data: SliderThemeData(
+                                trackHeight: 4.0,
+                                thumbShape: const RoundSliderThumbShape(enabledThumbRadius: 8.0),
+                                overlayShape: const RoundSliderOverlayShape(overlayRadius: 16.0),
+                                activeTrackColor: activeColor,
+                                inactiveTrackColor: inactiveColor,
+                                thumbColor: activeColor,
+                                overlayColor: activeColor.withValues(alpha: 0.2),
+                              ),
+                              child: Slider(
+                                min: 0.0,
+                                max: _audioDuration.inMilliseconds.toDouble() > 0 
+                                    ? _audioDuration.inMilliseconds.toDouble() 
+                                    : 100.0,
+                                value: _audioPosition.inMilliseconds.toDouble().clamp(
+                                  0.0, 
+                                  _audioDuration.inMilliseconds.toDouble() > 0 
+                                      ? _audioDuration.inMilliseconds.toDouble() 
+                                      : 100.0
+                                ),
+                                onChanged: (value) async {
+                                  final newPosition = Duration(milliseconds: value.toInt());
+                                  await _audioPlayer?.seek(newPosition);
+                                  if (mounted) {
+                                    setState(() {
+                                      _audioPosition = newPosition;
+                                    });
+                                  }
+                                },
+                              ),
+                            ),
+                            Padding(
+                              padding: const EdgeInsets.symmetric(horizontal: 8.0),
+                              child: Row(
+                                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                children: [
+                                  Text(
+                                    _formatDuration(_audioPosition),
+                                    style: TextStyle(
+                                      color: colors.textSecondary,
+                                      fontSize: 10,
+                                      fontWeight: FontWeight.bold,
+                                    ),
+                                  ),
+                                  Text(
+                                    _formatDuration(_audioDuration),
+                                    style: TextStyle(
+                                      color: colors.textSecondary,
+                                      fontSize: 10,
+                                      fontWeight: FontWeight.bold,
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                    ],
+                  ),
+                ],
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  String _formatDuration(Duration d) {
+    final minutes = d.inMinutes.remainder(60).toString();
+    final seconds = d.inSeconds.remainder(60).toString().padLeft(2, '0');
+    return '$minutes:$seconds';
   }
 
   IconData _getIconForMimeType(String mimeType) {

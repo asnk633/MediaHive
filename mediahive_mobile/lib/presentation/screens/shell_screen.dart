@@ -16,6 +16,8 @@ import 'dart:io';
 import '../../shared/widgets/ambient_canvas_background.dart';
 import '../../core/providers/update_provider.dart';
 import '../../core/services/update_service.dart';
+import '../../features/chat/presentation/providers/chat_providers.dart';
+
 
 class ShellScreen extends ConsumerStatefulWidget {
   final Widget child;
@@ -45,8 +47,9 @@ class _ShellScreenState extends ConsumerState<ShellScreen> {
       orElse: () => false,
     );
     final isProfileRoute = currentRoute.startsWith('/profile') || isMemberProfile;
+    final isChatRoute = currentRoute.startsWith('/chat');
 
-    final shouldHideNav = isProfileRoute || isNotificationsRoute || !isBottomNavVisible;
+    final shouldHideNav = isProfileRoute || isNotificationsRoute || isChatRoute || !isBottomNavVisible;
 
     final updateInfoAsync = ref.watch(updateInfoProvider);
     final updateState = ref.watch(updateStateProvider);
@@ -64,7 +67,7 @@ class _ShellScreenState extends ConsumerState<ShellScreen> {
                 children: [
                   if (isTablet && !shouldHideNav) ...[
                     _buildTabletNavigationRail(currentItem, colors),
-                    VerticalDivider(thickness: 1, width: 1, color: colors.border.withOpacity(0.2)),
+                    VerticalDivider(thickness: 1, width: 1, color: colors.border.withValues(alpha: 0.2)),
                   ],
                   Expanded(
                     child: Stack(
@@ -87,7 +90,8 @@ class _ShellScreenState extends ConsumerState<ShellScreen> {
                         ),
                         
                         // Persistent Header
-                        _buildGlobalHeader(colors, currentRoute, shouldHideNav, isProfileRoute),
+                        if (!currentRoute.startsWith('/chat/'))
+                          _buildGlobalHeader(colors, currentRoute, shouldHideNav, isProfileRoute),
 
                         // Persistent Update Banner under Header
                         updateInfoAsync.maybeWhen(
@@ -154,7 +158,7 @@ class _ShellScreenState extends ConsumerState<ShellScreen> {
             decoration: BoxDecoration(
               // Light: frosted glass panel | Dark: solid primary
               color: isLight
-                  ? Colors.white.withOpacity(0.78)
+                  ? Colors.white.withValues(alpha: 0.78)
                   : colors.backgroundPrimary,
               border: Border(
                 bottom: BorderSide(
@@ -239,8 +243,60 @@ class _ShellScreenState extends ConsumerState<ShellScreen> {
                     ),
                     Row(
                       children: [
+                        // Chat Button
+                        Consumer(
+                          builder: (context, ref, _) {
+                            final unreadChatsCount = ref.watch(unreadChatMessagesCountProvider);
+                            return GestureDetector(
+                              onTap: () {
+                                if (currentRoute.startsWith('/chat')) {
+                                  context.pop();
+                                } else {
+                                  context.push('/chat');
+                                }
+                              },
+                              child: Stack(
+                                clipBehavior: Clip.none,
+                                children: [
+                                  Icon(
+                                    LucideIcons.messageSquare,
+                                    color: colors.iconColor.withValues(alpha: 0.7),
+                                    size: 22,
+                                  ),
+                                  if (unreadChatsCount > 0)
+                                    Positioned(
+                                      top: -2,
+                                      right: -2,
+                                      child: Container(
+                                        padding: const EdgeInsets.all(4),
+                                        decoration: const BoxDecoration(
+                                          color: Color(0xFFEF4444),
+                                          shape: BoxShape.circle,
+                                        ),
+                                        constraints: const BoxConstraints(
+                                          minWidth: 14,
+                                          minHeight: 14,
+                                        ),
+                                        child: Text(
+                                          unreadChatsCount > 9 ? '9+' : unreadChatsCount.toString(),
+                                          style: const TextStyle(
+                                            color: Colors.white,
+                                            fontSize: 8,
+                                            fontWeight: FontWeight.bold,
+                                          ),
+                                          textAlign: TextAlign.center,
+                                        ),
+                                      ),
+                                    ),
+                                ],
+                              ),
+                            );
+                          },
+                        ),
+                        const SizedBox(width: 20),
                         // Notification Bell
                         Consumer(
+
                           builder: (context, ref, _) {
                             final unreadCount = ref.watch(unreadNotificationsCountProvider);
                             return GestureDetector(
@@ -256,7 +312,7 @@ class _ShellScreenState extends ConsumerState<ShellScreen> {
                                 children: [
                                   Icon(
                                     LucideIcons.bell,
-                                    color: colors.iconColor.withOpacity(0.7),
+                                    color: colors.iconColor.withValues(alpha: 0.7),
                                     size: 22,
                                   ),
                                   if (unreadCount > 0)
@@ -316,7 +372,7 @@ class _ShellScreenState extends ConsumerState<ShellScreen> {
                                   border: Border.all(
                                     color: isLight
                                         ? DesignTokens.lightBorderStrong
-                                        : Colors.white.withOpacity(0.1),
+                                        : Colors.white.withValues(alpha: 0.1),
                                     width: 1.5,
                                   ),
                                   boxShadow: isLight ? DesignTokens.spatialChipShadow : [],
@@ -360,9 +416,9 @@ class _ShellScreenState extends ConsumerState<ShellScreen> {
               begin: Alignment.topCenter,
               end: Alignment.bottomCenter,
               colors: [
-                colors.backgroundPrimary.withOpacity(0.0),
-                colors.backgroundPrimary.withOpacity(isLight ? 0.35 : 0.5),
-                colors.backgroundPrimary.withOpacity(isLight ? 0.75 : 0.9),
+                colors.backgroundPrimary.withValues(alpha: 0.0),
+                colors.backgroundPrimary.withValues(alpha: isLight ? 0.35 : 0.5),
+                colors.backgroundPrimary.withValues(alpha: isLight ? 0.75 : 0.9),
                 colors.backgroundPrimary,
               ],
               stops: const [0.0, 0.5, 0.8, 1.0],
@@ -413,7 +469,7 @@ class _ShellScreenState extends ConsumerState<ShellScreen> {
               ? DesignTokens.spatialDockShadow
               : [
                   BoxShadow(
-                    color: Colors.black.withOpacity(0.5),
+                    color: Colors.black.withValues(alpha: 0.5),
                     blurRadius: 30,
                     offset: const Offset(0, 15),
                   ),
@@ -430,13 +486,13 @@ class _ShellScreenState extends ConsumerState<ShellScreen> {
               decoration: BoxDecoration(
                 // Light: ~80% white frost | Dark: semi-transparent dark
                 color: isLight
-                    ? Colors.white.withOpacity(0.80)
-                    : colors.backgroundPrimary.withOpacity(0.5),
+                    ? Colors.white.withValues(alpha: 0.80)
+                    : colors.backgroundPrimary.withValues(alpha: 0.5),
                 borderRadius: BorderRadius.circular(32),
                 border: Border.all(
                   color: isLight
                       ? DesignTokens.lightBorder
-                      : Colors.white.withOpacity(0.08),
+                      : Colors.white.withValues(alpha: 0.08),
                   width: isLight ? 0.75 : 1.0,
                 ),
               ),
@@ -492,7 +548,7 @@ class _ShellScreenState extends ConsumerState<ShellScreen> {
     final isLight = !colors.isDark;
     
     return NavigationRail(
-      backgroundColor: isLight ? Colors.white.withOpacity(0.8) : colors.backgroundPrimary.withOpacity(0.8),
+      backgroundColor: isLight ? Colors.white.withValues(alpha: 0.8) : colors.backgroundPrimary.withValues(alpha: 0.8),
       selectedIndex: _getNavIndex(currentItem),
       onDestinationSelected: (index) {
         NavItem selectedItem;
@@ -518,14 +574,14 @@ class _ShellScreenState extends ConsumerState<ShellScreen> {
       },
       labelType: NavigationRailLabelType.all,
       selectedIconTheme: IconThemeData(color: colors.indigo, size: 24),
-      unselectedIconTheme: IconThemeData(color: colors.textSecondary.withOpacity(isLight ? 0.5 : 0.4), size: 24),
+      unselectedIconTheme: IconThemeData(color: colors.textSecondary.withValues(alpha: isLight ? 0.5 : 0.4), size: 24),
       selectedLabelTextStyle: TextStyle(
         color: isLight ? DesignTokens.lightHoney : colors.textPrimary,
         fontSize: 10,
         fontWeight: FontWeight.bold,
       ),
       unselectedLabelTextStyle: TextStyle(
-        color: colors.textSecondary.withOpacity(isLight ? 0.5 : 0.4),
+        color: colors.textSecondary.withValues(alpha: isLight ? 0.5 : 0.4),
         fontSize: 10,
         fontWeight: FontWeight.w600,
       ),
@@ -651,7 +707,7 @@ class _ShellScreenState extends ConsumerState<ShellScreen> {
               Container(
                 padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
                 decoration: BoxDecoration(
-                  color: DesignTokens.lightHoney.withOpacity(0.12),
+                  color: DesignTokens.lightHoney.withValues(alpha: 0.12),
                   borderRadius: BorderRadius.circular(DesignTokens.radiusM),
                 ),
                 child: Icon(
@@ -669,7 +725,7 @@ class _ShellScreenState extends ConsumerState<ShellScreen> {
                 size: 24,
                 color: isSelected
                     ? colors.indigo
-                    : colors.textSecondary.withOpacity(isLight ? 0.5 : 0.4),
+                    : colors.textSecondary.withValues(alpha: isLight ? 0.5 : 0.4),
               ).animate(target: isSelected ? 1 : 0).scale(
                 begin: const Offset(0.8, 0.8),
                 end: const Offset(1.1, 1.1),
@@ -721,8 +777,8 @@ class _ShellScreenState extends ConsumerState<ShellScreen> {
         child: Container(
           // Light: faint sky-tinted scrim | Dark: dark scrim
           color: isLight
-              ? DesignTokens.lightBackground.withOpacity(0.55)
-              : colors.backgroundPrimary.withOpacity(0.4),
+              ? DesignTokens.lightBackground.withValues(alpha: 0.55)
+              : colors.backgroundPrimary.withValues(alpha: 0.4),
           child: BackdropFilter(
             filter: ImageFilter.blur(sigmaX: 12, sigmaY: 12),
             child: Consumer(
@@ -805,25 +861,25 @@ class _ShellScreenState extends ConsumerState<ShellScreen> {
                 decoration: BoxDecoration(
                   // Light: frosted white | Dark: semi-transparent dark surface
                   color: isLight
-                      ? Colors.white.withOpacity(0.85)
-                      : colors.surface.withOpacity(0.8),
+                      ? Colors.white.withValues(alpha: 0.85)
+                      : colors.surface.withValues(alpha: 0.8),
                   shape: BoxShape.circle,
                   border: Border.all(
                     color: isLight
                         ? DesignTokens.lightBorderStrong
-                        : colors.border.withOpacity(0.5),
+                        : colors.border.withValues(alpha: 0.5),
                     width: isLight ? 0.75 : 1.0,
                   ),
                   boxShadow: [
                     BoxShadow(
-                      color: color.withOpacity(isLight ? 0.18 : 0.25),
+                      color: color.withValues(alpha: isLight ? 0.18 : 0.25),
                       blurRadius: isLight ? 16 : 20,
                       spreadRadius: isLight ? 0 : 2,
                       offset: isLight ? const Offset(0, 4) : Offset.zero,
                     ),
                     if (isLight)
                       BoxShadow(
-                        color: Colors.black.withOpacity(0.08),
+                        color: Colors.black.withValues(alpha: 0.08),
                         blurRadius: 8,
                         offset: const Offset(0, 2),
                       ),
@@ -853,8 +909,8 @@ class _ShellScreenState extends ConsumerState<ShellScreen> {
                     padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
                     decoration: BoxDecoration(
                       color: isLight
-                          ? Colors.white.withOpacity(0.75)
-                          : Colors.black.withOpacity(0.3),
+                          ? Colors.white.withValues(alpha: 0.75)
+                          : Colors.black.withValues(alpha: 0.3),
                       borderRadius: BorderRadius.circular(6),
                       border: isLight
                           ? Border.all(color: DesignTokens.lightBorder, width: 0.75)
@@ -913,18 +969,18 @@ class _ShellScreenState extends ConsumerState<ShellScreen> {
         gradient: LinearGradient(
           colors: isLight
               ? [const Color(0xFFFFFBEB), const Color(0xFFFEF3C7)] // Premium light amber
-              : [const Color(0xFF78350F).withOpacity(0.85), const Color(0xFF451A03).withOpacity(0.9)], // Deep warm amber
+              : [const Color(0xFF78350F).withValues(alpha: 0.85), const Color(0xFF451A03).withValues(alpha: 0.9)], // Deep warm amber
           begin: Alignment.topLeft,
           end: Alignment.bottomRight,
         ),
         borderRadius: BorderRadius.circular(DesignTokens.radiusL),
         border: Border.all(
-          color: isLight ? const Color(0xFFFDE68A) : const Color(0xFFD97706).withOpacity(0.4),
+          color: isLight ? const Color(0xFFFDE68A) : const Color(0xFFD97706).withValues(alpha: 0.4),
           width: 1,
         ),
         boxShadow: [
           BoxShadow(
-            color: const Color(0xFFD97706).withOpacity(isLight ? 0.08 : 0.15),
+            color: const Color(0xFFD97706).withValues(alpha: isLight ? 0.08 : 0.15),
             blurRadius: 12,
             offset: const Offset(0, 4),
           ),
@@ -942,7 +998,7 @@ class _ShellScreenState extends ConsumerState<ShellScreen> {
                   Container(
                     padding: const EdgeInsets.all(8),
                     decoration: BoxDecoration(
-                      color: const Color(0xFFF59E0B).withOpacity(isLight ? 0.15 : 0.25),
+                      color: const Color(0xFFF59E0B).withValues(alpha: isLight ? 0.15 : 0.25),
                       shape: BoxShape.circle,
                     ),
                     child: const Icon(
@@ -977,7 +1033,7 @@ class _ShellScreenState extends ConsumerState<ShellScreen> {
                           maxLines: 1,
                           overflow: TextOverflow.ellipsis,
                           style: TextStyle(
-                            color: isLight ? const Color(0xFF92400E) : const Color(0xFFFCD34D).withOpacity(0.8),
+                            color: isLight ? const Color(0xFF92400E) : const Color(0xFFFCD34D).withValues(alpha: 0.8),
                             fontSize: 11,
                             fontWeight: FontWeight.w500,
                           ),
@@ -1035,7 +1091,7 @@ class _ShellScreenState extends ConsumerState<ShellScreen> {
                         borderRadius: BorderRadius.circular(4),
                         child: LinearProgressIndicator(
                           value: progress,
-                          backgroundColor: const Color(0xFFD97706).withOpacity(0.15),
+                          backgroundColor: const Color(0xFFD97706).withValues(alpha: 0.15),
                           valueColor: const AlwaysStoppedAnimation<Color>(Color(0xFFD97706)),
                           minHeight: 5,
                         ),

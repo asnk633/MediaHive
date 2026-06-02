@@ -38,8 +38,8 @@ class MhEmptyState extends ConsumerWidget {
               padding: const EdgeInsets.all(AppSpacing.xl),
               decoration: BoxDecoration(
                 color: isLight
-                    ? DesignTokens.lightSurface.withOpacity(0.8)
-                    : AppColors.surface.withOpacity(0.5),
+                    ? DesignTokens.lightSurface.withValues(alpha: 0.8)
+                    : AppColors.surface.withValues(alpha: 0.5),
                 shape: BoxShape.circle,
                 border: isLight
                     ? Border.all(color: DesignTokens.lightBorder, width: 0.75)
@@ -51,7 +51,7 @@ class MhEmptyState extends ConsumerWidget {
                 size: 48,
                 color: isLight
                     ? DesignTokens.lightTextMuted
-                    : AppColors.textSecondary.withOpacity(0.5),
+                    : AppColors.textSecondary.withValues(alpha: 0.5),
               ),
             ),
             const SizedBox(height: AppSpacing.xl),

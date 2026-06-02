@@ -55,7 +55,10 @@ export const initFcm = async (userId: string): Promise<string | null> => {
       scope: "/firebase-cloud-messaging-push-scope"
     });
 
-    console.log("[FCM] Dynamic background messaging Service Worker registered successfully.");
+    // Wait until the service worker is active to prevent 'PushManager: no active Service Worker' errors
+    await navigator.serviceWorker.ready;
+
+    console.log("[FCM] Dynamic background messaging Service Worker registered successfully and ready.");
 
     // 4. Retrieve the Web registration token
     const token = await getToken(messaging, {

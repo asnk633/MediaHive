@@ -150,6 +150,20 @@ export const EdgeCaseService = {
    * Perform comprehensive edge case analysis
    */
   analyze: (tasks: Task[], events: Event[], mediaFiles: MediaFile[], allUsers: User[]): EdgeCaseResult => {
+    // Validate models using Zod schemas
+    tasks.forEach(task => {
+      const validation = TaskSchema.safeParse(task);
+      if (!validation.success) {
+        console.warn(`[EdgeCaseService] Task validation failed for ID: ${task.id}`, validation.error.format());
+      }
+    });
+    events.forEach(event => {
+      const validation = EventSchema.safeParse(event);
+      if (!validation.success) {
+        console.warn(`[EdgeCaseService] Event validation failed for ID: ${event.id}`, validation.error.format());
+      }
+    });
+
     return {
       orphanedTasks: EdgeCaseService.findOrphanedTasks(tasks, events),
       orphanedMedia: EdgeCaseService.findOrphanedMedia(mediaFiles, tasks, events),

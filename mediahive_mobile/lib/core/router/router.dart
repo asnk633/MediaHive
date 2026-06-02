@@ -24,11 +24,14 @@ import '../../features/system/presentation/screens/notification_center_screen.da
 import '../../features/system/presentation/screens/create_notification_screen.dart';
 import '../../features/campaigns/presentation/screens/create_campaign_screen.dart';
 import '../../features/governance/presentation/screens/command_center_screen.dart';
-import '../../features/governance/presentation/screens/leave_request_screen.dart';
 import '../../features/tasks/presentation/screens/task_details_screen.dart';
 import '../../features/governance/presentation/screens/user_management_screen.dart';
 import '../../features/system/presentation/screens/system_health_screen.dart';
 import '../providers/user_provider.dart';
+import '../../features/chat/presentation/screens/chat_rooms_screen.dart';
+import '../../features/chat/presentation/screens/chat_room_screen.dart';
+import '../../features/chat/domain/models/chat_room.dart';
+
 
 final _rootNavigatorKey = GlobalKey<NavigatorState>();
 
@@ -143,6 +146,19 @@ final routerProvider = Provider<GoRouter>((ref) {
               },
             ),
           ),
+          GoRoute(
+            path: '/chat',
+            builder: (context, state) => const ChatRoomsScreen(),
+          ),
+          GoRoute(
+            path: '/chat/:roomId',
+            builder: (context, state) {
+              final roomId = state.pathParameters['roomId']!;
+              final roomExtra = state.extra as ChatRoom?;
+              return ChatRoomScreen(roomId: roomId, roomExtra: roomExtra);
+            },
+          ),
+
           GoRoute(
             path: '/governance/users',
             builder: (context, state) => const UserManagementScreen(),

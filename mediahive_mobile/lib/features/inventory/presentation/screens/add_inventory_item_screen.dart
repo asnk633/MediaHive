@@ -608,12 +608,12 @@ class _AddInventoryItemScreenState extends ConsumerState<AddInventoryItemScreen>
             child: Container(
               padding: const EdgeInsets.all(8),
               decoration: BoxDecoration(
-                color: colors.isDark ? colors.surface.withOpacity(0.5) : Colors.white.withOpacity(0.8),
+                color: colors.isDark ? colors.surface.withValues(alpha: 0.5) : Colors.white.withValues(alpha: 0.8),
                 borderRadius: BorderRadius.circular(12),
                 border: Border.all(
                   color: colors.isDark 
-                      ? colors.border.withOpacity(0.3) 
-                      : colors.border.withOpacity(0.12),
+                      ? colors.border.withValues(alpha: 0.3) 
+                      : colors.border.withValues(alpha: 0.12),
                 ),
               ),
               child: Icon(LucideIcons.chevronLeft, color: colors.textPrimary, size: 20),
@@ -662,12 +662,12 @@ class _AddInventoryItemScreenState extends ConsumerState<AddInventoryItemScreen>
             width: 120,
             height: 120,
             decoration: BoxDecoration(
-              color: colors.isDark ? colors.surface.withOpacity(0.3) : Colors.white.withOpacity(0.8),
+              color: colors.isDark ? colors.surface.withValues(alpha: 0.3) : Colors.white.withValues(alpha: 0.8),
               borderRadius: BorderRadius.circular(AppRadius.l),
               border: Border.all(
                 color: colors.isDark 
-                    ? colors.border.withOpacity(0.5) 
-                    : colors.border.withOpacity(0.15), 
+                    ? colors.border.withValues(alpha: 0.5) 
+                    : colors.border.withValues(alpha: 0.15), 
                 style: BorderStyle.solid,
               ),
             ),
@@ -809,7 +809,7 @@ class _AddInventoryItemScreenState extends ConsumerState<AddInventoryItemScreen>
           child: Container(
             padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 16),
             decoration: BoxDecoration(
-              color: colors.isDark ? colors.surface.withOpacity(0.5) : Colors.white.withOpacity(0.8),
+              color: colors.isDark ? colors.surface.withValues(alpha: 0.5) : Colors.white.withValues(alpha: 0.8),
               borderRadius: BorderRadius.circular(16),
               border: Border.all(color: colors.border),
             ),
@@ -821,7 +821,7 @@ class _AddInventoryItemScreenState extends ConsumerState<AddInventoryItemScreen>
                   child: Text(
                     hint,
                     style: AppTypography.bodyM.copyWith(
-                      color: hint == 'Select date' ? colors.textSecondary.withOpacity(0.5) : colors.textPrimary,
+                      color: hint == 'Select date' ? colors.textSecondary.withValues(alpha: 0.5) : colors.textPrimary,
                       fontWeight: FontWeight.w600,
                     ),
                   ),

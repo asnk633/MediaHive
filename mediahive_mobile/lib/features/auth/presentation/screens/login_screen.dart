@@ -138,13 +138,13 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
         Container(
           padding: const EdgeInsets.all(20),
           decoration: BoxDecoration(
-            color: Colors.white.withOpacity(isDark ? 0.04 : 0.15),
+            color: Colors.white.withValues(alpha: isDark ? 0.04 : 0.15),
             shape: BoxShape.circle,
-            border: Border.all(color: Colors.white.withOpacity(isDark ? 0.08 : 0.3)),
+            border: Border.all(color: Colors.white.withValues(alpha: isDark ? 0.08 : 0.3)),
             boxShadow: [
               BoxShadow(
                 color: (isDark ? const Color(0xFFFFD700) : const Color(0xFF006EE6))
-                    .withOpacity(isDark ? 0.2 : 0.1),
+                    .withValues(alpha: isDark ? 0.2 : 0.1),
                 blurRadius: 30,
                 spreadRadius: 5,
               ),
@@ -172,7 +172,7 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
           style: TextStyle(
             fontSize: 10,
             fontWeight: FontWeight.w900,
-            color: colors.textSecondary.withOpacity(0.5),
+            color: colors.textSecondary.withValues(alpha: 0.5),
             letterSpacing: 4,
           ),
         ).animate().fadeIn(delay: 400.ms),
@@ -189,12 +189,12 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
         child: Container(
           padding: const EdgeInsets.all(32),
           decoration: BoxDecoration(
-            color: isDark ? Colors.white.withOpacity(0.06) : Colors.white.withOpacity(0.65),
+            color: isDark ? Colors.white.withValues(alpha: 0.06) : Colors.white.withValues(alpha: 0.65),
             borderRadius: BorderRadius.circular(32),
-            border: Border.all(color: Colors.white.withOpacity(isDark ? 0.08 : 0.2)),
+            border: Border.all(color: Colors.white.withValues(alpha: isDark ? 0.08 : 0.2)),
             boxShadow: [
               BoxShadow(
-                color: Colors.black.withOpacity(isDark ? 0.3 : 0.05),
+                color: Colors.black.withValues(alpha: isDark ? 0.3 : 0.05),
                 blurRadius: 40,
                 offset: const Offset(0, 20),
               ),
@@ -216,7 +216,7 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                 'Enter your credentials to continue',
                 style: TextStyle(
                   fontSize: 13,
-                  color: colors.textSecondary.withOpacity(0.7),
+                  color: colors.textSecondary.withValues(alpha: 0.7),
                 ),
               ),
               const SizedBox(height: 32),
@@ -257,7 +257,7 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                     style: TextStyle(
                       fontSize: 12,
                       fontWeight: FontWeight.w700,
-                      color: (isDark ? const Color(0xFFFFD700) : const Color(0xFF006EE6)).withOpacity(0.85),
+                      color: (isDark ? const Color(0xFFFFD700) : const Color(0xFF006EE6)).withValues(alpha: 0.85),
                     ),
                   ),
                 ),
@@ -322,16 +322,16 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
           style: TextStyle(
             fontSize: 10,
             fontWeight: FontWeight.w900,
-            color: colors.textSecondary.withOpacity(0.5),
+            color: colors.textSecondary.withValues(alpha: 0.5),
             letterSpacing: 1.5,
           ),
         ),
         const SizedBox(height: 12),
         Container(
           decoration: BoxDecoration(
-            color: isDark ? Colors.black.withOpacity(0.3) : Colors.white.withOpacity(0.5),
+            color: isDark ? Colors.black.withValues(alpha: 0.3) : Colors.white.withValues(alpha: 0.5),
             borderRadius: BorderRadius.circular(16),
-            border: Border.all(color: isDark ? Colors.white.withOpacity(0.04) : Colors.black.withOpacity(0.05)),
+            border: Border.all(color: isDark ? Colors.white.withValues(alpha: 0.04) : Colors.black.withValues(alpha: 0.05)),
           ),
           child: TextField(
             controller: controller,
@@ -339,7 +339,7 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
             style: TextStyle(color: colors.textPrimary, fontSize: 15),
             decoration: InputDecoration(
               hintText: hint,
-              hintStyle: TextStyle(color: colors.textSecondary.withOpacity(0.3)),
+              hintStyle: TextStyle(color: colors.textSecondary.withValues(alpha: 0.3)),
               prefixIcon: Icon(
                 icon, 
                 size: 20, 
@@ -349,7 +349,7 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                   ? IconButton(
                       icon: Icon(
                         obscureText ? LucideIcons.eyeOff : LucideIcons.eye,
-                        color: colors.textSecondary.withOpacity(0.5),
+                        color: colors.textSecondary.withValues(alpha: 0.5),
                         size: 20,
                       ),
                       onPressed: onToggleVisibility,
@@ -375,7 +375,7 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
           children: [
             Text(
               "New User? ",
-              style: TextStyle(color: colors.textSecondary.withOpacity(0.6), fontSize: 13),
+              style: TextStyle(color: colors.textSecondary.withValues(alpha: 0.6), fontSize: 13),
             ),
             GestureDetector(
               onTap: () => context.push('/signup'),
@@ -397,7 +397,7 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
           style: TextStyle(
             fontSize: 8,
             fontWeight: FontWeight.bold,
-            color: colors.textSecondary.withOpacity(0.2),
+            color: colors.textSecondary.withValues(alpha: 0.2),
             letterSpacing: 2,
             height: 1.5,
           ),

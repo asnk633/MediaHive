@@ -34,7 +34,6 @@ export async function createServerSupabaseClient() {
 export async function verifyUser(req: Request, options = { strict: true }): Promise<AuthenticatedUser | null> {
     const supabaseServer = await getSupabaseServerClient();
 
-    const authHeader = req.headers.get('Authorization') || req.headers.get('authorization');
     console.log(`[verifyUser] 🕵️ Checking auth for ${new URL(req.url).pathname}`);
 
     // 1. Try cookie-based session via getUser()
@@ -54,15 +53,6 @@ export async function verifyUser(req: Request, options = { strict: true }): Prom
         email = cookieUser.email;
     }
 
-    // 2. Fallback: Bearer token
-    if (!userId && authHeader?.startsWith('Bearer ')) {
-        const token = authHeader.slice(7);
-        const { data: { user: tokenUser }, error: tokenError } = await supabaseServer.auth.getUser(token);
-        if (tokenUser) {
-            userId = tokenUser.id;
-            email = tokenUser.email;
-        }
-    }
 
     if (!userId) return null;
 

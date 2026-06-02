@@ -194,7 +194,7 @@ class _AddTaskDialogState extends ConsumerState<AddTaskDialog> {
                                 width: 48,
                                 height: 48,
                                 decoration: BoxDecoration(
-                                  color: AppColors.border.withOpacity(0.3),
+                                  color: AppColors.border.withValues(alpha: 0.3),
                                   borderRadius: BorderRadius.circular(8),
                                 ),
                                 child: Icon(

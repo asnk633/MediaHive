@@ -49,6 +49,9 @@ export function GlobalCommandPalette() {
           <CommandItem onSelect={() => runCommand(() => router.push("/tasks"))}>
             Go to Tasks
           </CommandItem>
+          <CommandItem onSelect={() => runCommand(() => router.push("/chat"))}>
+            Go to Chat
+          </CommandItem>
           <CommandItem onSelect={() => runCommand(() => router.push("/calendar"))}>
             Go to Calendar
           </CommandItem>

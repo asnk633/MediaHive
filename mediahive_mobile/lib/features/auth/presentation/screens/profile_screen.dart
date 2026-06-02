@@ -8,7 +8,6 @@ import 'package:supabase_flutter/supabase_flutter.dart';
 import '../../../../core/theme_provider.dart';
 import '../../../system/presentation/screens/system_health_screen.dart';
 import '../../../../core/services/notification_service.dart';
-import '../../../../shared/widgets/mh_role_guard.dart';
 import '../../../../core/providers/user_provider.dart';
 import '../../../../core/services/auth_service.dart';
 import '../../../../core/providers/labs_provider.dart';
@@ -18,6 +17,7 @@ import '../../../../core/services/media_service.dart';
 import 'dart:io';
 import 'package:package_info_plus/package_info_plus.dart';
 import '../../../dashboard/presentation/providers/dashboard_providers.dart';
+import '../../../chat/presentation/providers/chat_providers.dart';
 
 class ProfileScreen extends ConsumerStatefulWidget {
   const ProfileScreen({super.key});
@@ -79,10 +79,7 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
               const SizedBox(height: 16),
               _buildLabsTile(),
               const SizedBox(height: 16),
-              MhRoleGuard(
-                allowedRoles: const [UserRole.admin, UserRole.manager],
-                child: _buildSystemHealthTile(),
-              ),
+              _buildSystemHealthTile(),
               const SizedBox(height: 32),
               _buildSignOutButton(),
               const SizedBox(height: 40),
@@ -90,7 +87,7 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
               const SizedBox(height: 24),
               _buildAboutSection(),
               const SizedBox(height: 24),
-              _buildDeveloperContact(),
+              _buildDeveloperContact(context),
               const SizedBox(height: 40),
               FutureBuilder<PackageInfo>(
                 future: _packageInfoFuture,
@@ -150,7 +147,7 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
         // Normalize the role for badge display
         String badgeText = rawRole.toUpperCase();
         Color badgeColor = Colors.grey;
-        Color badgeBgColor = Colors.grey.withOpacity(0.1);
+        Color badgeBgColor = Colors.grey.withValues(alpha: 0.1);
         
         final normalized = rawRole.replaceAll(' ', '').replaceAll('_', '').toLowerCase();
         switch (normalized) {
@@ -158,23 +155,23 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
           case 'superadmin':
             badgeText = 'ADMIN';
             badgeColor = const Color(0xFFEF4444); // Red
-            badgeBgColor = const Color(0xFFEF4444).withOpacity(0.1);
+            badgeBgColor = const Color(0xFFEF4444).withValues(alpha: 0.1);
             break;
           case 'manager':
           case 'globalmanager':
             badgeText = 'MANAGER';
             badgeColor = colors.indigo; // Blue
-            badgeBgColor = colors.indigo.withOpacity(0.1);
+            badgeBgColor = colors.indigo.withValues(alpha: 0.1);
             break;
           case 'team':
             badgeText = 'TEAM';
             badgeColor = const Color(0xFF10B981); // Green
-            badgeBgColor = const Color(0xFF10B981).withOpacity(0.1);
+            badgeBgColor = const Color(0xFF10B981).withValues(alpha: 0.1);
             break;
           default:
             badgeText = 'MEMBER';
             badgeColor = const Color(0xFF8B5CF6); // Purple
-            badgeBgColor = const Color(0xFF8B5CF6).withOpacity(0.1);
+            badgeBgColor = const Color(0xFF8B5CF6).withValues(alpha: 0.1);
             break;
         }
 
@@ -197,7 +194,7 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
                       height: 80,
                       decoration: BoxDecoration(
                         shape: BoxShape.circle,
-                        border: Border.all(color: colors.textPrimary.withOpacity(0.1), width: 2),
+                        border: Border.all(color: colors.textPrimary.withValues(alpha: 0.1), width: 2),
                       ),
                       child: ClipOval(
                         child: profileImagePath != null 
@@ -253,7 +250,7 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
                           ),
                         ),
                         const SizedBox(width: 8),
-                        Icon(LucideIcons.edit3, size: 16, color: colors.textPrimary.withOpacity(0.3)),
+                        Icon(LucideIcons.edit3, size: 16, color: colors.textPrimary.withValues(alpha: 0.3)),
                       ],
                     ),
                     const SizedBox(height: 8),
@@ -298,7 +295,7 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
           mainAxisSize: MainAxisSize.min,
           children: [
             const SizedBox(height: 8),
-            Container(width: 40, height: 4, decoration: BoxDecoration(color: colors.textSecondary.withOpacity(0.2), borderRadius: BorderRadius.circular(2))),
+            Container(width: 40, height: 4, decoration: BoxDecoration(color: colors.textSecondary.withValues(alpha: 0.2), borderRadius: BorderRadius.circular(2))),
             const SizedBox(height: 24),
             Text('Change Profile Picture', style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold, color: colors.textPrimary)),
             const SizedBox(height: 24),
@@ -550,7 +547,7 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
         children: [
           Container(
             padding: const EdgeInsets.all(8),
-            decoration: BoxDecoration(color: Colors.blue.withOpacity(0.1), borderRadius: BorderRadius.circular(8)),
+            decoration: BoxDecoration(color: Colors.blue.withValues(alpha: 0.1), borderRadius: BorderRadius.circular(8)),
             child: const Icon(LucideIcons.lock, size: 18, color: Colors.blue),
           ),
           const SizedBox(width: 16),
@@ -566,7 +563,7 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
           TextButton(
             onPressed: () => _showChangePasswordBottomSheet(context),
             style: TextButton.styleFrom(
-              backgroundColor: colors.textPrimary.withOpacity(0.05),
+              backgroundColor: colors.textPrimary.withValues(alpha: 0.05),
               padding: const EdgeInsets.symmetric(horizontal: 12),
               shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
             ),
@@ -599,7 +596,7 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
               Container(
                 padding: const EdgeInsets.all(8),
                 decoration: BoxDecoration(
-                  color: (isAllowed ? Colors.green : Colors.orange).withOpacity(0.1),
+                  color: (isAllowed ? Colors.green : Colors.orange).withValues(alpha: 0.1),
                   borderRadius: BorderRadius.circular(8),
                 ),
                 child: Icon(
@@ -631,7 +628,7 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
                   setState(() {}); // Refresh status
                 },
                 style: TextButton.styleFrom(
-                  backgroundColor: colors.textPrimary.withOpacity(0.05),
+                  backgroundColor: colors.textPrimary.withValues(alpha: 0.05),
                   padding: const EdgeInsets.symmetric(horizontal: 12),
                   shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
                 ),
@@ -662,7 +659,7 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
         children: [
           Container(
             padding: const EdgeInsets.all(8),
-            decoration: BoxDecoration(color: Colors.purple.withOpacity(0.1), borderRadius: BorderRadius.circular(8)),
+            decoration: BoxDecoration(color: Colors.purple.withValues(alpha: 0.1), borderRadius: BorderRadius.circular(8)),
             child: const Icon(LucideIcons.palette, size: 18, color: Colors.purple),
           ),
           const SizedBox(width: 16),
@@ -696,7 +693,7 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
         children: [
           Container(
             padding: const EdgeInsets.all(8),
-            decoration: BoxDecoration(color: Colors.amber.withOpacity(0.1), borderRadius: BorderRadius.circular(8)),
+            decoration: BoxDecoration(color: Colors.amber.withValues(alpha: 0.1), borderRadius: BorderRadius.circular(8)),
             child: const Icon(LucideIcons.activity, size: 18, color: Colors.amber),
           ),
           const SizedBox(width: 16),
@@ -733,7 +730,7 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
         children: [
           Container(
             padding: const EdgeInsets.all(8),
-            decoration: BoxDecoration(color: Colors.purple.withOpacity(0.1), borderRadius: BorderRadius.circular(8)),
+            decoration: BoxDecoration(color: Colors.purple.withValues(alpha: 0.1), borderRadius: BorderRadius.circular(8)),
             child: const Icon(LucideIcons.flaskConical, size: 18, color: Colors.purple),
           ),
           const SizedBox(width: 16),
@@ -792,7 +789,7 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
                       width: 40,
                       height: 4,
                       decoration: BoxDecoration(
-                        color: colors.textSecondary.withOpacity(0.2),
+                        color: colors.textSecondary.withValues(alpha: 0.2),
                         borderRadius: BorderRadius.circular(2),
                       ),
                     ),
@@ -803,7 +800,7 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
                       Container(
                         padding: const EdgeInsets.all(10),
                         decoration: BoxDecoration(
-                          color: Colors.purple.withOpacity(0.1),
+                          color: Colors.purple.withValues(alpha: 0.1),
                           borderRadius: BorderRadius.circular(12),
                         ),
                         child: const Icon(LucideIcons.flaskConical, color: Colors.purple, size: 22),
@@ -844,7 +841,7 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
                         Container(
                           padding: const EdgeInsets.all(8),
                           decoration: BoxDecoration(
-                            color: colors.honey.withOpacity(0.1),
+                            color: colors.honey.withValues(alpha: 0.1),
                             borderRadius: BorderRadius.circular(8),
                           ),
                           child: Icon(LucideIcons.edit3, size: 18, color: colors.honey),
@@ -971,7 +968,7 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
               icon: const Icon(LucideIcons.bookOpen, size: 16),
               label: const Text('View Full Member Guide'),
               style: ElevatedButton.styleFrom(
-                backgroundColor: colors.textPrimary.withOpacity(0.05),
+                backgroundColor: colors.textPrimary.withValues(alpha: 0.05),
                 foregroundColor: colors.textPrimary,
                 padding: const EdgeInsets.symmetric(vertical: 16),
                 shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
@@ -983,7 +980,7 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
     );
   }
 
-  Widget _buildDeveloperContact() {
+  Widget _buildDeveloperContact(BuildContext context) {
     final colors = ref.watch(themeColorsProvider);
 
     return Column(
@@ -991,26 +988,69 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
       children: [
         Text('Contact Developer', style: TextStyle(fontSize: 14, fontWeight: FontWeight.bold, color: colors.textSecondary)),
         const SizedBox(height: 12),
-        Container(
-          padding: const EdgeInsets.all(16),
-          decoration: BoxDecoration(
-            color: colors.surface,
-            borderRadius: BorderRadius.circular(16),
-            border: Border.all(color: colors.border),
-            boxShadow: colors.cardShadow,
-          ),
-          child: Row(
-            children: [
-              const Icon(LucideIcons.phone, size: 16, color: Colors.blue),
-              const SizedBox(width: 16),
-              Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text('Abdul Shukoor Nurani', style: TextStyle(fontWeight: FontWeight.bold, color: colors.textPrimary)),
-                  Text('+91 8137 017 835', style: TextStyle(fontSize: 12, color: colors.textSecondary)),
-                ],
-              ),
-            ],
+        GestureDetector(
+          onTap: () async {
+            // Find developer/admin programmatically & launch diagnostic line chat
+            ScaffoldMessenger.of(context).showSnackBar(
+              const SnackBar(content: Text('Connecting to Thaiba Support...')),
+            );
+            
+            try {
+              final client = Supabase.instance.client;
+              // Fetch admin developer id
+              final adminRes = await client
+                  .from('profiles')
+                  .select('id, role')
+                  .eq('role', 'admin')
+                  .limit(1)
+                  .maybeSingle();
+
+              if (adminRes != null) {
+                final adminId = adminRes['id'] as String;
+                final chatCreator = ref.read(chatCreationProvider);
+                final roomId = await chatCreator.getOrCreateDirectChat(adminId);
+                
+                if (context.mounted) {
+                  context.push('/chat/$roomId');
+                }
+              } else {
+                if (context.mounted) {
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    const SnackBar(content: Text('Support line busy. Try again later.')),
+                  );
+                }
+              }
+            } catch (e) {
+              if (context.mounted) {
+                ScaffoldMessenger.of(context).showSnackBar(
+                  SnackBar(content: Text('Error: $e')),
+                );
+              }
+            }
+          },
+          child: Container(
+            padding: const EdgeInsets.all(16),
+            decoration: BoxDecoration(
+              color: colors.surface,
+              borderRadius: BorderRadius.circular(16),
+              border: Border.all(color: colors.border),
+              boxShadow: colors.cardShadow,
+            ),
+            child: Row(
+              children: [
+                const Icon(LucideIcons.phone, size: 16, color: Colors.blue),
+                const SizedBox(width: 16),
+                Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text('Abdul Shukoor Nurani', style: TextStyle(fontWeight: FontWeight.bold, color: colors.textPrimary)),
+                    Text('Launch Diagnostics & Support Chat', style: TextStyle(fontSize: 12, color: colors.textSecondary)),
+                  ],
+                ),
+                const Spacer(),
+                Icon(LucideIcons.messageSquare, size: 18, color: colors.honey),
+              ],
+            ),
           ),
         ),
       ],
@@ -1163,7 +1203,7 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
         const SizedBox(height: 12),
         Text(
           'MediaHive is the central workspace for Thaiba Garden\'s Media Team — built to manage tasks, events, creative workflows, and team coordination in one organized platform. Designed for fast-moving media operations, it helps teams plan, collaborate, and create efficiently.',
-          style: TextStyle(fontSize: 12, color: colors.textSecondary.withOpacity(0.6), height: 1.6),
+          style: TextStyle(fontSize: 12, color: colors.textSecondary.withValues(alpha: 0.6), height: 1.6),
         ),
       ],
     );
@@ -1292,7 +1332,7 @@ class _ChangePasswordSheetState extends ConsumerState<_ChangePasswordSheet> {
                   width: 40,
                   height: 4,
                   decoration: BoxDecoration(
-                    color: colors.textSecondary.withOpacity(0.2),
+                    color: colors.textSecondary.withValues(alpha: 0.2),
                     borderRadius: BorderRadius.circular(2),
                   ),
                 ),
@@ -1305,7 +1345,7 @@ class _ChangePasswordSheetState extends ConsumerState<_ChangePasswordSheet> {
                   Container(
                     padding: const EdgeInsets.all(10),
                     decoration: BoxDecoration(
-                      color: colors.honey.withOpacity(0.1),
+                      color: colors.honey.withValues(alpha: 0.1),
                       borderRadius: BorderRadius.circular(12),
                     ),
                     child: Icon(LucideIcons.lock, color: colors.honey, size: 22),
@@ -1339,9 +1379,9 @@ class _ChangePasswordSheetState extends ConsumerState<_ChangePasswordSheet> {
                 Container(
                   padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
                   decoration: BoxDecoration(
-                    color: const Color(0xFFEF4444).withOpacity(0.1),
+                    color: const Color(0xFFEF4444).withValues(alpha: 0.1),
                     borderRadius: BorderRadius.circular(12),
-                    border: Border.all(color: const Color(0xFFEF4444).withOpacity(0.2)),
+                    border: Border.all(color: const Color(0xFFEF4444).withValues(alpha: 0.2)),
                   ),
                   child: Row(
                     children: [
@@ -1376,7 +1416,7 @@ class _ChangePasswordSheetState extends ConsumerState<_ChangePasswordSheet> {
                 style: TextStyle(color: colors.textPrimary, fontSize: 14),
                 decoration: InputDecoration(
                   hintText: 'Enter at least 6 characters',
-                  hintStyle: TextStyle(color: colors.textSecondary.withOpacity(0.5), fontSize: 13),
+                  hintStyle: TextStyle(color: colors.textSecondary.withValues(alpha: 0.5), fontSize: 13),
                   filled: true,
                   fillColor: colors.surface,
                   prefixIcon: Icon(LucideIcons.keyRound, size: 16, color: colors.textSecondary),
@@ -1431,7 +1471,7 @@ class _ChangePasswordSheetState extends ConsumerState<_ChangePasswordSheet> {
                 style: TextStyle(color: colors.textPrimary, fontSize: 14),
                 decoration: InputDecoration(
                   hintText: 'Re-enter your new password',
-                  hintStyle: TextStyle(color: colors.textSecondary.withOpacity(0.5), fontSize: 13),
+                  hintStyle: TextStyle(color: colors.textSecondary.withValues(alpha: 0.5), fontSize: 13),
                   filled: true,
                   fillColor: colors.surface,
                   prefixIcon: Icon(LucideIcons.checkSquare, size: 16, color: colors.textSecondary),

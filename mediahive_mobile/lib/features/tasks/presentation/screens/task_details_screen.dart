@@ -142,7 +142,7 @@ class _TaskDetailsScreenState extends ConsumerState<TaskDetailsScreen> {
         return colors.emerald;
       case 'on_hold':
       case 'on hold':
-        return colors.error.withOpacity(0.8);
+        return colors.error.withValues(alpha: 0.8);
       default:
         return colors.textSecondary;
     }
@@ -154,7 +154,7 @@ class _TaskDetailsScreenState extends ConsumerState<TaskDetailsScreen> {
       child: Row(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Icon(icon, size: 20, color: iconColor ?? colors.textSecondary.withOpacity(0.7)),
+          Icon(icon, size: 20, color: iconColor ?? colors.textSecondary.withValues(alpha: 0.7)),
           const SizedBox(width: 16),
           Expanded(
             child: Column(
@@ -163,7 +163,7 @@ class _TaskDetailsScreenState extends ConsumerState<TaskDetailsScreen> {
                 Text(
                   label.toUpperCase(),
                   style: TextStyle(
-                    color: colors.textSecondary.withOpacity(0.7),
+                    color: colors.textSecondary.withValues(alpha: 0.7),
                     fontSize: 10,
                     fontWeight: FontWeight.bold,
                     letterSpacing: 1.0,
@@ -219,7 +219,7 @@ class _TaskDetailsScreenState extends ConsumerState<TaskDetailsScreen> {
       backgroundColor: colors.backgroundPrimary,
       extendBodyBehindAppBar: true,
       appBar: AppBar(
-        backgroundColor: colors.backgroundPrimary.withOpacity(0.8),
+        backgroundColor: colors.backgroundPrimary.withValues(alpha: 0.8),
         elevation: 0,
         flexibleSpace: ClipRect(
           child: BackdropFilter(
@@ -281,9 +281,9 @@ class _TaskDetailsScreenState extends ConsumerState<TaskDetailsScreen> {
                     Container(
                       padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
                       decoration: BoxDecoration(
-                        color: colors.emerald.withOpacity(0.1),
+                        color: colors.emerald.withValues(alpha: 0.1),
                         borderRadius: BorderRadius.circular(8),
-                        border: Border.all(color: colors.emerald.withOpacity(0.3)),
+                        border: Border.all(color: colors.emerald.withValues(alpha: 0.3)),
                       ),
                       child: Row(
                         children: [
@@ -309,7 +309,7 @@ class _TaskDetailsScreenState extends ConsumerState<TaskDetailsScreen> {
                   Text(
                     'DESCRIPTION',
                     style: TextStyle(
-                      color: colors.textSecondary.withOpacity(0.7),
+                      color: colors.textSecondary.withValues(alpha: 0.7),
                       fontSize: 10,
                       fontWeight: FontWeight.bold,
                       letterSpacing: 1.0,
@@ -320,9 +320,9 @@ class _TaskDetailsScreenState extends ConsumerState<TaskDetailsScreen> {
                     width: double.infinity,
                     padding: const EdgeInsets.all(16),
                     decoration: BoxDecoration(
-                      color: colors.surface.withOpacity(0.5),
+                      color: colors.surface.withValues(alpha: 0.5),
                       borderRadius: BorderRadius.circular(16),
-                      border: Border.all(color: colors.border.withOpacity(0.5)),
+                      border: Border.all(color: colors.border.withValues(alpha: 0.5)),
                     ),
                     child: Text(
                       (widget.task.description != null && widget.task.description!.trim().isNotEmpty)
@@ -331,7 +331,7 @@ class _TaskDetailsScreenState extends ConsumerState<TaskDetailsScreen> {
                       style: TextStyle(
                         color: (widget.task.description != null && widget.task.description!.trim().isNotEmpty)
                             ? colors.textSecondary
-                            : colors.textSecondary.withOpacity(0.5),
+                            : colors.textSecondary.withValues(alpha: 0.5),
                         fontStyle: (widget.task.description != null && widget.task.description!.trim().isNotEmpty)
                             ? FontStyle.normal
                             : FontStyle.italic,
@@ -345,7 +345,7 @@ class _TaskDetailsScreenState extends ConsumerState<TaskDetailsScreen> {
                   Text(
                     'DETAILS',
                     style: TextStyle(
-                      color: colors.textSecondary.withOpacity(0.7),
+                      color: colors.textSecondary.withValues(alpha: 0.7),
                       fontSize: 10,
                       fontWeight: FontWeight.bold,
                       letterSpacing: 1.0,
@@ -355,9 +355,9 @@ class _TaskDetailsScreenState extends ConsumerState<TaskDetailsScreen> {
                   Container(
                     padding: const EdgeInsets.all(16),
                     decoration: BoxDecoration(
-                      color: colors.surface.withOpacity(0.3),
+                      color: colors.surface.withValues(alpha: 0.3),
                       borderRadius: BorderRadius.circular(16),
-                      border: Border.all(color: colors.border.withOpacity(0.3)),
+                      border: Border.all(color: colors.border.withValues(alpha: 0.3)),
                     ),
                     child: Column(
                       children: [
@@ -369,7 +369,7 @@ class _TaskDetailsScreenState extends ConsumerState<TaskDetailsScreen> {
                           iconColor: _getPriorityColor(widget.task.priority, colors),
                           valueColor: _getPriorityColor(widget.task.priority, colors),
                         ),
-                        Divider(color: colors.border.withOpacity(0.3), height: 1),
+                        Divider(color: colors.border.withValues(alpha: 0.3), height: 1),
                         _buildDetailRow(
                           'Status',
                           widget.task.status.toUpperCase(),
@@ -378,7 +378,7 @@ class _TaskDetailsScreenState extends ConsumerState<TaskDetailsScreen> {
                           iconColor: _getStatusColor(widget.task.status, colors),
                           valueColor: _getStatusColor(widget.task.status, colors),
                         ),
-                        Divider(color: colors.border.withOpacity(0.3), height: 1),
+                        Divider(color: colors.border.withValues(alpha: 0.3), height: 1),
                         if (widget.task.department != null && widget.task.department!.isNotEmpty) ...[
                           _buildDetailRow(
                             'Department / Inst.',
@@ -387,7 +387,7 @@ class _TaskDetailsScreenState extends ConsumerState<TaskDetailsScreen> {
                             colors,
                             iconColor: colors.indigo,
                           ),
-                          Divider(color: colors.border.withOpacity(0.3), height: 1),
+                          Divider(color: colors.border.withValues(alpha: 0.3), height: 1),
                         ],
                         _buildDetailRow(
                           'Due Date',
@@ -396,7 +396,7 @@ class _TaskDetailsScreenState extends ConsumerState<TaskDetailsScreen> {
                           colors,
                           iconColor: colors.indigo,
                         ),
-                        Divider(color: colors.border.withOpacity(0.3), height: 1),
+                        Divider(color: colors.border.withValues(alpha: 0.3), height: 1),
                         _buildDetailRow(
                           'Assignee',
                           widget.task.assignee ?? 'Unassigned',
@@ -404,7 +404,7 @@ class _TaskDetailsScreenState extends ConsumerState<TaskDetailsScreen> {
                           colors,
                           iconColor: colors.honey,
                         ),
-                        Divider(color: colors.border.withOpacity(0.3), height: 1),
+                        Divider(color: colors.border.withValues(alpha: 0.3), height: 1),
                         _buildDetailRow(
                           'Requested By',
                           widget.task.requester ?? 'Unknown',
@@ -412,7 +412,7 @@ class _TaskDetailsScreenState extends ConsumerState<TaskDetailsScreen> {
                           colors,
                           iconColor: colors.emerald,
                         ),
-                        Divider(color: colors.border.withOpacity(0.3), height: 1),
+                        Divider(color: colors.border.withValues(alpha: 0.3), height: 1),
                         _buildDetailRow(
                           'Created On',
                           _formatDate(widget.task.createdAt),

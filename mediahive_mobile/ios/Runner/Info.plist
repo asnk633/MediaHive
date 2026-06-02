@@ -66,6 +66,14 @@
 			<string>UIInterfaceOrientationLandscapeLeft</string>
 			<string>UIInterfaceOrientationLandscapeRight</string>
 		</array>
+		<key>NSCameraUsageDescription</key>
+		<string>We need access to your camera to take photos and record videos for sharing in chat.</string>
+		<key>NSPhotoLibraryUsageDescription</key>
+		<string>We need access to your photo library to select and upload photos and videos.</string>
+		<key>NSPhotoLibraryAddUsageDescription</key>
+		<string>We need access to your photo library to save downloaded attachments.</string>
+		<key>NSMicrophoneUsageDescription</key>
+		<string>We need access to your microphone to record and send voice notes in the chat.</string>
 		<key>UIStatusBarHidden</key>
 		<false/>
 	</dict>

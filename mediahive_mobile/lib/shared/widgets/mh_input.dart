@@ -40,7 +40,7 @@ class _MhInputState extends State<MhInput> {
         final colors = ref.watch(themeColorsProvider);
         final bgFillColor = _isFocused
             ? (colors.isDark ? colors.surface : Colors.white)
-            : (colors.isDark ? colors.surface.withOpacity(0.5) : Colors.white.withOpacity(0.8));
+            : (colors.isDark ? colors.surface.withValues(alpha: 0.5) : Colors.white.withValues(alpha: 0.8));
 
         return Column(
           crossAxisAlignment: CrossAxisAlignment.start,
@@ -73,7 +73,7 @@ class _MhInputState extends State<MhInput> {
                   ),
                   boxShadow: _isFocused ? [
                     BoxShadow(
-                      color: colors.honey.withOpacity(0.1),
+                      color: colors.honey.withValues(alpha: 0.1),
                       blurRadius: 10,
                       spreadRadius: 1,
                     )
@@ -91,7 +91,7 @@ class _MhInputState extends State<MhInput> {
                   ),
                   decoration: InputDecoration(
                     hintText: widget.hint,
-                    hintStyle: AppTypography.bodyM.copyWith(color: colors.textSecondary.withOpacity(0.5)),
+                    hintStyle: AppTypography.bodyM.copyWith(color: colors.textSecondary.withValues(alpha: 0.5)),
                     prefixIcon: widget.prefixIcon != null 
                       ? Icon(widget.prefixIcon, size: 18, color: _isFocused ? colors.honey : colors.textSecondary) 
                       : null,

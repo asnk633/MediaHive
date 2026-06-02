@@ -131,7 +131,7 @@ class _StartupScreenState extends ConsumerState<StartupScreen> with SingleTicker
                                 boxShadow: [
                                   BoxShadow(
                                     color: (isDark ? const Color(0xFFFFD700) : const Color(0xFF006EE6))
-                                        .withOpacity(isDark ? 0.3 : 0.2), // Enhanced glow opacity
+                                        .withValues(alpha: isDark ? 0.3 : 0.2), // Enhanced glow opacity
                                     blurRadius: 50, // Enhanced glow blur radius
                                     spreadRadius: 6, // Enhanced glow spread radius
                                   ),
@@ -170,7 +170,7 @@ class _StartupScreenState extends ConsumerState<StartupScreen> with SingleTicker
                                 fontSize: 11,
                                 height: 1.5,
                                 fontWeight: FontWeight.bold,
-                                color: isDark ? Colors.white.withOpacity(0.85) : const Color(0xFF1D1D1F).withOpacity(0.85),
+                                color: isDark ? Colors.white.withValues(alpha: 0.85) : const Color(0xFF1D1D1F).withValues(alpha: 0.85),
                               ),
                             ),
                           ).animate().fadeIn(delay: 400.ms),
@@ -182,7 +182,7 @@ class _StartupScreenState extends ConsumerState<StartupScreen> with SingleTicker
                               width: 140,
                               height: 2,
                               child: LinearProgressIndicator(
-                                backgroundColor: Colors.white.withOpacity(0.1),
+                                backgroundColor: Colors.white.withValues(alpha: 0.1),
                                 valueColor: AlwaysStoppedAnimation<Color>(
                                   isDark ? const Color(0xFFFFD700) : const Color(0xFF006EE6),
                                 ),
@@ -219,15 +219,15 @@ class _StartupScreenState extends ConsumerState<StartupScreen> with SingleTicker
                       bottom: 40 + MediaQuery.of(context).padding.bottom, // Extends background to device bottom bezel safely
                     ),
                     decoration: BoxDecoration(
-                      color: isDark ? Colors.white.withOpacity(0.06) : Colors.white.withOpacity(0.65),
+                      color: isDark ? Colors.white.withValues(alpha: 0.06) : Colors.white.withValues(alpha: 0.65),
                       borderRadius: const BorderRadius.only(
                         topLeft: Radius.circular(40),
                         topRight: Radius.circular(40),
                       ),
-                      border: Border.all(color: Colors.white.withOpacity(isDark ? 0.08 : 0.2)),
+                      border: Border.all(color: Colors.white.withValues(alpha: isDark ? 0.08 : 0.2)),
                       boxShadow: [
                         BoxShadow(
-                          color: Colors.black.withOpacity(isDark ? 0.3 : 0.08),
+                          color: Colors.black.withValues(alpha: isDark ? 0.3 : 0.08),
                           blurRadius: 40,
                           offset: const Offset(0, -10),
                         ),
@@ -253,7 +253,7 @@ class _StartupScreenState extends ConsumerState<StartupScreen> with SingleTicker
                           style: TextStyle(
                             fontSize: 13,
                             height: 1.5,
-                            color: colors.textSecondary.withOpacity(0.85),
+                            color: colors.textSecondary.withValues(alpha: 0.85),
                           ),
                         ).animate().fadeIn(delay: 150.ms, duration: 400.ms),
                         
@@ -298,7 +298,7 @@ class _StartupScreenState extends ConsumerState<StartupScreen> with SingleTicker
                                   onPressed: () => context.push('/signup'),
                                   style: OutlinedButton.styleFrom(
                                     side: BorderSide(
-                                      color: isDark ? const Color(0xFFFFD700).withOpacity(0.4) : const Color(0xFF006EE6).withOpacity(0.4),
+                                      color: isDark ? const Color(0xFFFFD700).withValues(alpha: 0.4) : const Color(0xFF006EE6).withValues(alpha: 0.4),
                                       width: 1.5,
                                     ),
                                     shape: RoundedRectangleBorder(
@@ -343,9 +343,9 @@ class _StartupScreenState extends ConsumerState<StartupScreen> with SingleTicker
                     filter: ImageFilter.blur(sigmaX: 10, sigmaY: 10),
                     child: Container(
                       decoration: BoxDecoration(
-                        color: Colors.white.withOpacity(isDark ? 0.08 : 0.4),
+                        color: Colors.white.withValues(alpha: isDark ? 0.08 : 0.4),
                         borderRadius: BorderRadius.circular(16),
-                        border: Border.all(color: Colors.white.withOpacity(isDark ? 0.1 : 0.3)),
+                        border: Border.all(color: Colors.white.withValues(alpha: isDark ? 0.1 : 0.3)),
                       ),
                       child: IconButton(
                         icon: Icon(

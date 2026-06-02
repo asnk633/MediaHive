@@ -265,7 +265,7 @@ class _EquipmentRequestSheetState extends ConsumerState<EquipmentRequestSheet> {
     return Container(
       padding: const EdgeInsets.all(AppSpacing.m),
       decoration: BoxDecoration(
-        color: colors.isDark ? colors.surface.withOpacity(0.5) : Colors.white.withOpacity(0.8),
+        color: colors.isDark ? colors.surface.withValues(alpha: 0.5) : Colors.white.withValues(alpha: 0.8),
         borderRadius: BorderRadius.circular(AppRadius.l),
         border: Border.all(color: colors.border),
       ),
@@ -275,7 +275,7 @@ class _EquipmentRequestSheetState extends ConsumerState<EquipmentRequestSheet> {
             width: 50,
             height: 50,
             decoration: BoxDecoration(
-              color: colors.isDark ? colors.surface : colors.border.withOpacity(0.12),
+              color: colors.isDark ? colors.surface : colors.border.withValues(alpha: 0.12),
               borderRadius: BorderRadius.circular(AppRadius.m),
             ),
             child: Icon(LucideIcons.package, color: colors.honey),
@@ -365,7 +365,7 @@ class _EquipmentRequestSheetState extends ConsumerState<EquipmentRequestSheet> {
       style: TextStyle(color: colors.textPrimary),
       decoration: InputDecoration(
         hintText: hint,
-        hintStyle: AppTypography.bodyS.copyWith(color: colors.textSecondary.withOpacity(0.5)),
+        hintStyle: AppTypography.bodyS.copyWith(color: colors.textSecondary.withValues(alpha: 0.5)),
         filled: true,
         fillColor: colors.isDark ? colors.surface : Colors.white,
         border: OutlineInputBorder(
@@ -424,7 +424,7 @@ class _EquipmentRequestSheetState extends ConsumerState<EquipmentRequestSheet> {
                   height: 4,
                   margin: const EdgeInsets.only(bottom: AppSpacing.l),
                   decoration: BoxDecoration(
-                    color: colors.textSecondary.withOpacity(0.3),
+                    color: colors.textSecondary.withValues(alpha: 0.3),
                     borderRadius: BorderRadius.circular(2),
                   ),
                 ),
@@ -522,7 +522,7 @@ class _EquipmentBookingSheetState extends ConsumerState<EquipmentBookingSheet> {
                   height: 4,
                   margin: const EdgeInsets.only(bottom: AppSpacing.l),
                   decoration: BoxDecoration(
-                    color: colors.textSecondary.withOpacity(0.3),
+                    color: colors.textSecondary.withValues(alpha: 0.3),
                     borderRadius: BorderRadius.circular(2),
                   ),
                 ),
@@ -598,7 +598,7 @@ class _EquipmentBookingSheetState extends ConsumerState<EquipmentBookingSheet> {
     return Container(
       padding: const EdgeInsets.all(AppSpacing.m),
       decoration: BoxDecoration(
-        color: colors.isDark ? colors.surface.withOpacity(0.5) : Colors.white.withOpacity(0.8),
+        color: colors.isDark ? colors.surface.withValues(alpha: 0.5) : Colors.white.withValues(alpha: 0.8),
         borderRadius: BorderRadius.circular(AppRadius.l),
         border: Border.all(color: colors.border),
       ),
@@ -608,7 +608,7 @@ class _EquipmentBookingSheetState extends ConsumerState<EquipmentBookingSheet> {
             width: 50,
             height: 50,
             decoration: BoxDecoration(
-              color: colors.isDark ? colors.surface : colors.border.withOpacity(0.12),
+              color: colors.isDark ? colors.surface : colors.border.withValues(alpha: 0.12),
               borderRadius: BorderRadius.circular(AppRadius.m),
             ),
             child: Icon(LucideIcons.calendar, color: colors.indigo),
@@ -722,7 +722,7 @@ class _EquipmentBookingSheetState extends ConsumerState<EquipmentBookingSheet> {
       style: AppTypography.bodyM.copyWith(color: colors.textPrimary),
       decoration: InputDecoration(
         hintText: hint,
-        hintStyle: AppTypography.bodyS.copyWith(color: colors.textSecondary.withOpacity(0.5)),
+        hintStyle: AppTypography.bodyS.copyWith(color: colors.textSecondary.withValues(alpha: 0.5)),
         filled: true,
         fillColor: colors.isDark ? colors.surface : Colors.white,
         border: OutlineInputBorder(
@@ -799,7 +799,7 @@ class EquipmentDetailsSheet extends ConsumerWidget {
                   height: 4,
                   margin: const EdgeInsets.only(bottom: AppSpacing.l),
                   decoration: BoxDecoration(
-                    color: colors.textSecondary.withOpacity(0.3),
+                    color: colors.textSecondary.withValues(alpha: 0.3),
                     borderRadius: BorderRadius.circular(2),
                   ),
                 ),
@@ -819,9 +819,9 @@ class EquipmentDetailsSheet extends ConsumerWidget {
                               Container(
                                 padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
                                 decoration: BoxDecoration(
-                                  color: colors.honey.withOpacity(0.15),
+                                  color: colors.honey.withValues(alpha: 0.15),
                                   borderRadius: BorderRadius.circular(4),
-                                  border: Border.all(color: colors.honey.withOpacity(0.5)),
+                                  border: Border.all(color: colors.honey.withValues(alpha: 0.5)),
                                 ),
                                 child: Text(
                                   item.assetId,
@@ -1054,9 +1054,9 @@ class EquipmentDetailsSheet extends ConsumerWidget {
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 2),
       decoration: BoxDecoration(
-        color: color.withOpacity(0.1),
+        color: color.withValues(alpha: 0.1),
         borderRadius: BorderRadius.circular(4),
-        border: Border.all(color: color.withOpacity(0.5)),
+        border: Border.all(color: color.withValues(alpha: 0.5)),
       ),
       child: Text(
         status,

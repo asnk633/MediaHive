@@ -18,9 +18,13 @@ import { useAuth } from "@/contexts/AuthContextProvider";
  
 import { MobileViewportSafety } from "@/components/layout/MobileViewportSafety";
 import DesktopSideNav from "@/components/layout/DesktopSideNav";
+import { usePathname } from "next/navigation";
+import { cn } from "@/lib/utils";
  
 export default function ShellProviders({ children }: { children: React.ReactNode }) {
     const { user } = useAuth();
+    const pathname = usePathname();
+    const isChatPage = pathname === '/chat';
  
     // Initialize Collaboration functionality
     useEffect(() => {
@@ -80,7 +84,10 @@ export default function ShellProviders({ children }: { children: React.ReactNode
                                 }}
                             >
                                 <ErrorBoundary>
-                                    <div className="min-h-full max-w-7xl mx-auto w-full px-4 sm:px-6 lg:px-8">
+                                    <div className={cn(
+                                        "min-h-full mx-auto w-full px-4 sm:px-6 lg:px-8 transition-all duration-300",
+                                        isChatPage ? "max-w-full lg:px-6" : "max-w-7xl"
+                                    )}>
                                         <ProtectedRoute>
                                             {children}
                                         </ProtectedRoute>

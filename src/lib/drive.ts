@@ -104,7 +104,7 @@ export function sanitizeForDrive(name: string): string {
 export async function makeFilePublic(drive: any, file_id: string): Promise<boolean> {
     try {
         const listRes = await drive.permissions.list({
-            file_id,
+            fileId: file_id,
             fields: 'permissions(id, type, role)',
             supportsAllDrives: true,
         });
@@ -113,7 +113,7 @@ export async function makeFilePublic(drive: any, file_id: string): Promise<boole
         if (existingPerm) return true;
 
         await drive.permissions.create({
-            file_id,
+            fileId: file_id,
             requestBody: { role: 'reader', type: 'anyone' },
             supportsAllDrives: true,
         });
@@ -130,7 +130,7 @@ export async function makeFilePublic(drive: any, file_id: string): Promise<boole
 export async function makeFilePrivate(drive: any, file_id: string): Promise<boolean> {
     try {
         const res = await drive.permissions.list({
-            file_id,
+            fileId: file_id,
             fields: 'permissions(id, type, role)',
             supportsAllDrives: true,
         });
@@ -139,7 +139,7 @@ export async function makeFilePrivate(drive: any, file_id: string): Promise<bool
 
         if (sensitivePerm && sensitivePerm.id) {
             await drive.permissions.delete({
-                file_id,
+                fileId: file_id,
                 permissionId: sensitivePerm.id,
                 supportsAllDrives: true,
             });

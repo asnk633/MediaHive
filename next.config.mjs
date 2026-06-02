@@ -6,12 +6,15 @@ const isMobile = process.env.IS_MOBILE === 'true';
 /** @type {import('next').NextConfig} */
 const nextConfig = {
   output: isMobile ? 'export' : undefined,
-  trailingSlash: true,
+  trailingSlash: isMobile,
   images: {
     unoptimized: true,
   },
   env: {
     IS_MOBILE: process.env.IS_MOBILE,
+  },
+  experimental: {
+    proxyClientMaxBodySize: 250 * 1024 * 1024,      // 250MB
   },
 };
 

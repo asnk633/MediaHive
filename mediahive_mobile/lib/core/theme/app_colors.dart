@@ -75,13 +75,13 @@ class AppColors {
   );
 
   // ─── Glass helpers ─────────────────────────────────────────────────────────
-  static Color glassBackground(double opacity)  => Colors.white.withOpacity(opacity);
-  static Color glassBorder(double opacity)      => Colors.white.withOpacity(opacity);
+  static Color glassBackground(double opacity)  => Colors.white.withValues(alpha: opacity);
+  static Color glassBorder(double opacity)      => Colors.white.withValues(alpha: opacity);
 
   static const Color glassSurface     = Color(0x1AFFFFFF);  // dark glass fill
   static const Color glassBorderLight = Color(0x33FFFFFF);
 
   // Light-theme glass fill (higher opacity for VisionOS frosted look)
-  static Color lightGlassFill(double opacity) => Colors.white.withOpacity(opacity);
+  static Color lightGlassFill(double opacity) => Colors.white.withValues(alpha: opacity);
   static Color lightGlassBorder() => const Color(0x26AAAACC);
 }

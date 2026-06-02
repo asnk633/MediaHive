@@ -7,7 +7,7 @@ class PermissionService {
 
   /// Requests all necessary production permissions for MediaHive.
   static Future<bool> requestProductionPermissions() async {
-    _logger.info('PERMISSION_SERVICE', 'Requesting production permissions...');
+    _logger.info('[PERMISSION_SERVICE] Requesting production permissions...');
     
     final permissions = [
       Permission.camera,
@@ -27,7 +27,7 @@ class PermissionService {
     bool allGranted = true;
     statuses.forEach((permission, status) {
       if (!status.isGranted) {
-        _logger.warning('PERMISSION_SERVICE', 'Permission ${permission.toString()} was denied: $status');
+        _logger.warning('[PERMISSION_SERVICE] Permission ${permission.toString()} was denied: $status');
         allGranted = false;
       }
     });

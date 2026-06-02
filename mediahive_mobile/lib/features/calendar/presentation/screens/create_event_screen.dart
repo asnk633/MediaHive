@@ -192,7 +192,7 @@ class _CreateEventScreenState extends ConsumerState<CreateEventScreen> {
       _selectedInstitution = null;
     }
 
-    Future<void> _handleSubmit() async {
+    Future<void> handleSubmit() async {
 
                               if (_titleController.text.isEmpty) {
                                 ScaffoldMessenger.of(context).showSnackBar(
@@ -363,7 +363,7 @@ class _CreateEventScreenState extends ConsumerState<CreateEventScreen> {
       backgroundColor: colors.backgroundPrimary,
       extendBodyBehindAppBar: true,
       appBar: AppBar(
-        backgroundColor: colors.backgroundPrimary.withOpacity(0.8),
+        backgroundColor: colors.backgroundPrimary.withValues(alpha: 0.8),
         elevation: 0,
         flexibleSpace: ClipRect(
           child: BackdropFilter(
@@ -468,9 +468,9 @@ class _CreateEventScreenState extends ConsumerState<CreateEventScreen> {
                         Container(
                           padding: const EdgeInsets.all(16),
                           decoration: BoxDecoration(
-                            color: colors.surface.withOpacity(0.5),
+                            color: colors.surface.withValues(alpha: 0.5),
                             borderRadius: BorderRadius.circular(20),
-                            border: Border.all(color: colors.indigo.withOpacity(0.3)),
+                            border: Border.all(color: colors.indigo.withValues(alpha: 0.3)),
                           ),
                           child: Column(
                             crossAxisAlignment: CrossAxisAlignment.start,
@@ -744,14 +744,14 @@ class _CreateEventScreenState extends ConsumerState<CreateEventScreen> {
                           width: double.infinity,
                           height: 56,
                           decoration: BoxDecoration(
-                            gradient: LinearGradient(colors: [colors.indigo, colors.indigo.withOpacity(0.8)]),
+                            gradient: LinearGradient(colors: [colors.indigo, colors.indigo.withValues(alpha: 0.8)]),
                             borderRadius: BorderRadius.circular(16),
                             boxShadow: [
-                              BoxShadow(color: colors.indigo.withOpacity(0.3), blurRadius: 12, offset: const Offset(0, 6)),
+                              BoxShadow(color: colors.indigo.withValues(alpha: 0.3), blurRadius: 12, offset: const Offset(0, 6)),
                             ],
                           ),
                           child: ElevatedButton(
-                            onPressed: _handleSubmit,
+                            onPressed: handleSubmit,
                             style: ElevatedButton.styleFrom(
                               backgroundColor: Colors.transparent,
                               shadowColor: Colors.transparent,
@@ -811,7 +811,7 @@ class _CreateEventScreenState extends ConsumerState<CreateEventScreen> {
                           Padding(
                             padding: const EdgeInsets.only(right: 8.0),
                             child: TextButton(
-                              onPressed: _handleSubmit,
+                              onPressed: handleSubmit,
                               child: Text('Save', style: TextStyle(color: colors.honey, fontWeight: FontWeight.bold)),
                             ),
                           ),
@@ -844,7 +844,7 @@ class _CreateEventScreenState extends ConsumerState<CreateEventScreen> {
   Widget _buildTextField(ThemeColors colors, TextEditingController controller, String hint, IconData icon, {bool enabled = true}) {
     return Container(
       decoration: BoxDecoration(
-        color: colors.surface.withOpacity(enabled ? 1 : 0.5),
+        color: colors.surface.withValues(alpha: enabled ? 1 : 0.5),
         borderRadius: BorderRadius.circular(16),
         border: Border.all(color: colors.border),
       ),
@@ -855,7 +855,7 @@ class _CreateEventScreenState extends ConsumerState<CreateEventScreen> {
         style: TextStyle(color: colors.textPrimary),
         decoration: InputDecoration(
           hintText: hint,
-          hintStyle: TextStyle(color: colors.textSecondary.withOpacity(0.5)),
+          hintStyle: TextStyle(color: colors.textSecondary.withValues(alpha: 0.5)),
           prefixIcon: Icon(icon, size: 18, color: colors.textSecondary),
           border: InputBorder.none, filled: false,
           contentPadding: const EdgeInsets.symmetric(horizontal: 20, vertical: 16),
@@ -870,7 +870,7 @@ class _CreateEventScreenState extends ConsumerState<CreateEventScreen> {
       decoration: BoxDecoration(
         color: colors.surface,
         borderRadius: BorderRadius.circular(20),
-        border: Border.all(color: highlightColor?.withOpacity(0.3) ?? colors.border),
+        border: Border.all(color: highlightColor?.withValues(alpha: 0.3) ?? colors.border),
       ),
       child: _buildSwitchItem(colors, title, subtitle, value, onChanged, icon: icon, highlightColor: highlightColor, activeColor: activeColor),
     );
@@ -994,14 +994,14 @@ class _CreateEventScreenState extends ConsumerState<CreateEventScreen> {
       child: Container(
         padding: const EdgeInsets.all(12),
         decoration: BoxDecoration(
-          color: isSelected ? colors.indigo.withOpacity(0.1) : colors.surface,
+          color: isSelected ? colors.indigo.withValues(alpha: 0.1) : colors.surface,
           borderRadius: BorderRadius.circular(16),
           border: Border.all(color: isSelected ? colors.indigo : colors.border),
         ),
         child: Row(
           children: [
             Icon(isSelected ? LucideIcons.checkCircle2 : LucideIcons.circle, 
-              size: 16, color: isSelected ? colors.indigo : colors.textSecondary.withOpacity(0.3)),
+              size: 16, color: isSelected ? colors.indigo : colors.textSecondary.withValues(alpha: 0.3)),
             const SizedBox(width: 10),
             Expanded(child: Text(label, style: TextStyle(fontSize: 12, fontWeight: FontWeight.bold, color: colors.textPrimary))),
           ],
@@ -1027,18 +1027,18 @@ class _CreateEventScreenState extends ConsumerState<CreateEventScreen> {
         width: double.infinity,
         padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 16),
         decoration: BoxDecoration(
-          color: colors.surface.withOpacity(0.5),
+          color: colors.surface.withValues(alpha: 0.5),
           borderRadius: BorderRadius.circular(16),
           border: Border.all(color: colors.border, style: BorderStyle.solid),
         ),
         child: Row(
           children: [
             if (icon != null) ...[
-              Icon(icon, size: 18, color: colors.textSecondary.withOpacity(0.5)),
+              Icon(icon, size: 18, color: colors.textSecondary.withValues(alpha: 0.5)),
               const SizedBox(width: 12),
             ],
             Expanded(
-              child: Text(label, style: TextStyle(fontSize: 14, color: colors.textSecondary.withOpacity(0.5))),
+              child: Text(label, style: TextStyle(fontSize: 14, color: colors.textSecondary.withValues(alpha: 0.5))),
             ),
           ],
         ),
@@ -1089,7 +1089,7 @@ class _CreateEventScreenState extends ConsumerState<CreateEventScreen> {
                   decoration: BoxDecoration(
                     color: colors.surface,
                     borderRadius: BorderRadius.circular(16),
-                    border: Border.all(color: colors.border.withOpacity(0.5)),
+                    border: Border.all(color: colors.border.withValues(alpha: 0.5)),
                   ),
                   child: TextField(
                     onChanged: (value) {
@@ -1098,8 +1098,8 @@ class _CreateEventScreenState extends ConsumerState<CreateEventScreen> {
                     style: TextStyle(color: colors.textPrimary, fontSize: 14),
                     decoration: InputDecoration(
                       hintText: 'Search ${isShowingInstitutions ? 'institutions' : 'departments'}...',
-                      hintStyle: TextStyle(color: colors.textSecondary.withOpacity(0.5)),
-                      prefixIcon: Icon(LucideIcons.search, size: 18, color: colors.textSecondary.withOpacity(0.5)),
+                      hintStyle: TextStyle(color: colors.textSecondary.withValues(alpha: 0.5)),
+                      prefixIcon: Icon(LucideIcons.search, size: 18, color: colors.textSecondary.withValues(alpha: 0.5)),
                       border: InputBorder.none, filled: false,
                       contentPadding: const EdgeInsets.all(16),
                     ),

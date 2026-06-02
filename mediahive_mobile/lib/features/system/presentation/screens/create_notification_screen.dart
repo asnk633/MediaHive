@@ -9,8 +9,6 @@ import '../providers/notifications_provider.dart';
 import '../../../../core/theme_provider.dart';
 import '../../../../core/providers/user_provider.dart';
 import '../../../../core/services/upload_service.dart';
-import '../../../../core/theme/app_spacing.dart';
-import '../../../../core/theme/app_colors.dart';
 import '../../../../core/services/media_service.dart';
 import '../../../../core/theme/app_typography.dart';
 
@@ -111,7 +109,7 @@ class _CreateNotificationScreenState extends ConsumerState<CreateNotificationScr
       backgroundColor: colors.backgroundPrimary,
       extendBodyBehindAppBar: true,
       appBar: AppBar(
-        backgroundColor: colors.backgroundPrimary.withOpacity(0.8),
+        backgroundColor: colors.backgroundPrimary.withValues(alpha: 0.8),
         elevation: 0,
         flexibleSpace: ClipRect(
           child: BackdropFilter(
@@ -340,7 +338,7 @@ class _CreateNotificationScreenState extends ConsumerState<CreateNotificationScr
         style: TextStyle(color: colors.textPrimary),
         decoration: InputDecoration(
           hintText: hint,
-          hintStyle: TextStyle(color: colors.textSecondary.withOpacity(0.5)),
+          hintStyle: TextStyle(color: colors.textSecondary.withValues(alpha: 0.5)),
           contentPadding: const EdgeInsets.all(16),
           border: InputBorder.none, filled: false,
         ),
@@ -359,7 +357,7 @@ class _CreateNotificationScreenState extends ConsumerState<CreateNotificationScr
           color: colors.isDark ? colors.surface : Colors.white,
           borderRadius: BorderRadius.circular(16),
           border: Border.all(
-            color: isScheduled ? colors.indigo.withOpacity(0.5) : colors.border,
+            color: isScheduled ? colors.indigo.withValues(alpha: 0.5) : colors.border,
           ),
         ),
         child: Row(
@@ -631,7 +629,7 @@ class _CreateNotificationScreenState extends ConsumerState<CreateNotificationScr
           items: items,
           onChanged: onChanged,
           dropdownColor: colors.surface,
-          hint: Text(hint, style: TextStyle(color: colors.textSecondary.withOpacity(0.5))),
+          hint: Text(hint, style: TextStyle(color: colors.textSecondary.withValues(alpha: 0.5))),
           style: TextStyle(color: colors.textPrimary),
           icon: Icon(LucideIcons.chevronDown, color: colors.textSecondary),
           isExpanded: true,
@@ -644,7 +642,7 @@ class _CreateNotificationScreenState extends ConsumerState<CreateNotificationScr
     return Container(
       padding: const EdgeInsets.all(4),
       decoration: BoxDecoration(
-        color: colors.isDark ? colors.surface : colors.border.withOpacity(0.12),
+        color: colors.isDark ? colors.surface : colors.border.withValues(alpha: 0.12),
         borderRadius: BorderRadius.circular(12),
       ),
       child: Row(
@@ -692,7 +690,7 @@ class _CreateNotificationScreenState extends ConsumerState<CreateNotificationScr
           borderRadius: BorderRadius.circular(16),
           boxShadow: [
             BoxShadow(
-              color: colors.indigo.withOpacity(0.3),
+              color: colors.indigo.withValues(alpha: 0.3),
               blurRadius: 12,
               offset: const Offset(0, 4),
             ),

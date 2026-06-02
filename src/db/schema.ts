@@ -385,3 +385,40 @@ export const inventory = sqliteTable('inventory', {
   created_at: text('created_at').notNull().default(sql`CURRENT_TIMESTAMP`),
   updated_at: text('updated_at').notNull().default(sql`CURRENT_TIMESTAMP`),
 });
+
+// Chat Rooms table
+export const chatRooms = sqliteTable('chat_rooms', {
+  id: text('id').primaryKey(), // using text id (uuid) for easier integration with client generated ids
+  name: text('name').notNull(),
+  isMediaTeamOnly: integer('is_media_team_only', { mode: 'boolean' }).default(false),
+  tenantId: integer('tenant_id').notNull().references(() => tenants.id),
+  createdBy: integer('created_by').notNull().references(() => users.id),
+  lastMessageTime: text('last_message_time'),
+  lastMessagePreview: text('last_message_preview'),
+  iconUrl: text('icon_url'),
+  created_at: text('created_at').notNull().default(sql`CURRENT_TIMESTAMP`),
+});
+
+// Chat Participants table
+export const chatParticipants = sqliteTable('chat_participants', {
+  id: text('id').primaryKey(),
+  roomId: text('room_id').notNull().references(() => chatRooms.id, { onDelete: 'cascade' }),
+  userId: integer('user_id').notNull().references(() => users.id, { onDelete: 'cascade' }),
+  role: text('role').notNull(), // 'Manager', 'Team', 'Member'
+  addedBy: integer('added_by').references(() => users.id),
+  tenantId: integer('tenant_id').notNull().references(() => tenants.id),
+  created_at: text('created_at').notNull().default(sql`CURRENT_TIMESTAMP`),
+});
+
+// Chat Messages table
+export const chatMessages = sqliteTable('chat_messages', {
+  id: text('id').primaryKey(),
+  roomId: text('room_id').notNull().references(() => chatRooms.id, { onDelete: 'cascade' }),
+  senderId: integer('sender_id').notNull().references(() => users.id),
+  text: text('text'),
+  mediaUrl: text('media_url'),
+  mediaType: text('media_type').notNull(), // 'text', 'image', 'document', 'voice'
+  driveFileId: text('drive_file_id'), // To store the Google Drive file ID
+  tenantId: integer('tenant_id').notNull().references(() => tenants.id),
+  created_at: text('created_at').notNull().default(sql`CURRENT_TIMESTAMP`),
+});

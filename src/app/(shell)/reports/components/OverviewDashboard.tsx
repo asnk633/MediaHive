@@ -81,8 +81,8 @@ export function OverviewDashboard() {
                     StructureService.getDepartments(),
                     StructureService.getInstitutions()
                 ]);
-                setDepartmentsList(deptData.departments.map(d => d.name));
-                setInstitutionsList(instData.institutions.map(i => i.name));
+                setDepartmentsList(deptData.departments.map((d: any) => d.name));
+                setInstitutionsList(instData.institutions.map((i: any) => i.name));
             } catch (error) {
                 console.error('Failed to fetch org data:', error);
             }

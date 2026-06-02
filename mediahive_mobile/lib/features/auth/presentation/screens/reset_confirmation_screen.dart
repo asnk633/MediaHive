@@ -82,13 +82,13 @@ class ResetConfirmationScreen extends ConsumerWidget {
         Container(
           padding: const EdgeInsets.all(20),
           decoration: BoxDecoration(
-            color: Colors.white.withOpacity(isDark ? 0.05 : 0.15),
+            color: Colors.white.withValues(alpha: isDark ? 0.05 : 0.15),
             shape: BoxShape.circle,
-            border: Border.all(color: Colors.white.withOpacity(isDark ? 0.1 : 0.3)),
+            border: Border.all(color: Colors.white.withValues(alpha: isDark ? 0.1 : 0.3)),
             boxShadow: [
               BoxShadow(
                 color: (isDark ? const Color(0xFFFFD700) : const Color(0xFF006EE6))
-                    .withOpacity(isDark ? 0.2 : 0.1),
+                    .withValues(alpha: isDark ? 0.2 : 0.1),
                 blurRadius: 30,
                 spreadRadius: 5,
               ),
@@ -116,7 +116,7 @@ class ResetConfirmationScreen extends ConsumerWidget {
           style: TextStyle(
             fontSize: 10,
             fontWeight: FontWeight.w900,
-            color: colors.textSecondary.withOpacity(0.5),
+            color: colors.textSecondary.withValues(alpha: 0.5),
             letterSpacing: 4,
           ),
         ).animate().fadeIn(delay: 400.ms),
@@ -134,12 +134,12 @@ class ResetConfirmationScreen extends ConsumerWidget {
           width: double.infinity,
           padding: const EdgeInsets.all(32),
           decoration: BoxDecoration(
-            color: isDark ? Colors.white.withOpacity(0.08) : Colors.white.withOpacity(0.65),
+            color: isDark ? Colors.white.withValues(alpha: 0.08) : Colors.white.withValues(alpha: 0.65),
             borderRadius: BorderRadius.circular(32),
-            border: Border.all(color: Colors.white.withOpacity(isDark ? 0.1 : 0.2)),
+            border: Border.all(color: Colors.white.withValues(alpha: isDark ? 0.1 : 0.2)),
             boxShadow: [
               BoxShadow(
-                color: Colors.black.withOpacity(isDark ? 0.2 : 0.05),
+                color: Colors.black.withValues(alpha: isDark ? 0.2 : 0.05),
                 blurRadius: 40,
                 offset: const Offset(0, 20),
               ),
@@ -152,12 +152,12 @@ class ResetConfirmationScreen extends ConsumerWidget {
               Container(
                 padding: const EdgeInsets.all(20),
                 decoration: BoxDecoration(
-                  color: const Color(0xFF10B981).withOpacity(0.15),
+                  color: const Color(0xFF10B981).withValues(alpha: 0.15),
                   shape: BoxShape.circle,
-                  border: Border.all(color: const Color(0xFF10B981).withOpacity(0.3)),
+                  border: Border.all(color: const Color(0xFF10B981).withValues(alpha: 0.3)),
                   boxShadow: [
                     BoxShadow(
-                      color: const Color(0xFF10B981).withOpacity(0.2),
+                      color: const Color(0xFF10B981).withValues(alpha: 0.2),
                       blurRadius: 20,
                       spreadRadius: 2,
                     ),
@@ -190,7 +190,7 @@ class ResetConfirmationScreen extends ConsumerWidget {
                 textAlign: TextAlign.center,
                 style: TextStyle(
                   fontSize: 13,
-                  color: colors.textSecondary.withOpacity(0.7),
+                  color: colors.textSecondary.withValues(alpha: 0.7),
                   height: 1.5,
                 ),
               ),
@@ -237,7 +237,7 @@ class ResetConfirmationScreen extends ConsumerWidget {
           style: TextStyle(
             fontSize: 8,
             fontWeight: FontWeight.bold,
-            color: colors.textSecondary.withOpacity(0.2),
+            color: colors.textSecondary.withValues(alpha: 0.2),
             letterSpacing: 2,
             height: 1.5,
           ),

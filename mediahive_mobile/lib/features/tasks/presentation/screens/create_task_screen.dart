@@ -548,8 +548,8 @@ class _CreateTaskScreenState extends ConsumerState<CreateTaskScreen> {
                     style: TextStyle(color: colors.textPrimary, fontSize: 14),
                     decoration: InputDecoration(
                       hintText: 'Search ${isShowingInstitutions ? 'institutions' : 'departments'}...',
-                      hintStyle: TextStyle(color: colors.textSecondary.withOpacity(0.5)),
-                      prefixIcon: Icon(LucideIcons.search, size: 18, color: colors.textSecondary.withOpacity(0.5)),
+                      hintStyle: TextStyle(color: colors.textSecondary.withValues(alpha: 0.5)),
+                      prefixIcon: Icon(LucideIcons.search, size: 18, color: colors.textSecondary.withValues(alpha: 0.5)),
                       border: InputBorder.none, filled: false,
                       contentPadding: const EdgeInsets.all(16),
                     ),
@@ -560,7 +560,7 @@ class _CreateTaskScreenState extends ConsumerState<CreateTaskScreen> {
                 Container(
                   padding: const EdgeInsets.all(4),
                   decoration: BoxDecoration(
-                    color: colors.isDark ? colors.surface : colors.border.withOpacity(0.12),
+                    color: colors.isDark ? colors.surface : colors.border.withValues(alpha: 0.12),
                     borderRadius: BorderRadius.circular(12),
                   ),
                   child: Row(
@@ -663,7 +663,7 @@ class _CreateTaskScreenState extends ConsumerState<CreateTaskScreen> {
       backgroundColor: colors.backgroundPrimary,
       extendBodyBehindAppBar: true,
       appBar: AppBar(
-        backgroundColor: colors.backgroundPrimary.withOpacity(0.8),
+        backgroundColor: colors.backgroundPrimary.withValues(alpha: 0.8),
         elevation: 0,
         flexibleSpace: ClipRect(
           child: BackdropFilter(
@@ -856,7 +856,7 @@ class _CreateTaskScreenState extends ConsumerState<CreateTaskScreen> {
                                   children: [
                                     Container(
                                       padding: const EdgeInsets.all(8),
-                                      decoration: BoxDecoration(color: colors.honey.withOpacity(0.1), shape: BoxShape.circle),
+                                      decoration: BoxDecoration(color: colors.honey.withValues(alpha: 0.1), shape: BoxShape.circle),
                                       child: Icon(LucideIcons.penTool, color: colors.honey, size: 16),
                                     ),
                                     const SizedBox(width: 12),
@@ -875,7 +875,7 @@ class _CreateTaskScreenState extends ConsumerState<CreateTaskScreen> {
                                   activeThumbColor: Colors.white,
                                   activeTrackColor: colors.honey,
                                   inactiveThumbColor: colors.textSecondary,
-                                  inactiveTrackColor: colors.isDark ? colors.border : colors.border.withOpacity(0.2),
+                                  inactiveTrackColor: colors.isDark ? colors.border : colors.border.withValues(alpha: 0.2),
                                 ),
                               ],
                             ),
@@ -898,12 +898,12 @@ class _CreateTaskScreenState extends ConsumerState<CreateTaskScreen> {
                             height: 120,
                             width: double.infinity,
                             decoration: BoxDecoration(
-                              color: colors.isDark ? colors.surface.withOpacity(0.3) : Colors.white.withOpacity(0.8),
+                              color: colors.isDark ? colors.surface.withValues(alpha: 0.3) : Colors.white.withValues(alpha: 0.8),
                               borderRadius: BorderRadius.circular(16),
                               border: Border.all(
                                 color: colors.isDark 
-                                    ? colors.border.withOpacity(0.5) 
-                                    : colors.border.withOpacity(0.15), 
+                                    ? colors.border.withValues(alpha: 0.5) 
+                                    : colors.border.withValues(alpha: 0.15), 
                                 style: BorderStyle.solid,
                               ),
                             ),
@@ -955,7 +955,7 @@ class _CreateTaskScreenState extends ConsumerState<CreateTaskScreen> {
                                             width: 48,
                                             height: 48,
                                             decoration: BoxDecoration(
-                                              color: colors.border.withOpacity(0.3),
+                                              color: colors.border.withValues(alpha: 0.3),
                                               borderRadius: BorderRadius.circular(8),
                                             ),
                                             child: Icon(
@@ -997,7 +997,7 @@ class _CreateTaskScreenState extends ConsumerState<CreateTaskScreen> {
                                           ),
                                           if (_isEditingAllowed)
                                             IconButton(
-                                              icon: Icon(LucideIcons.trash2, color: Colors.redAccent.withOpacity(0.8), size: 18),
+                                              icon: Icon(LucideIcons.trash2, color: Colors.redAccent.withValues(alpha: 0.8), size: 18),
                                               onPressed: () {
                                                 setState(() {
                                                   _selectedFile = null;
@@ -1014,7 +1014,7 @@ class _CreateTaskScreenState extends ConsumerState<CreateTaskScreen> {
                                       Container(
                                         padding: const EdgeInsets.all(12),
                                         decoration: BoxDecoration(
-                                          color: colors.isDark ? colors.border.withOpacity(0.3) : colors.border.withOpacity(0.08), 
+                                          color: colors.isDark ? colors.border.withValues(alpha: 0.3) : colors.border.withValues(alpha: 0.08), 
                                           shape: BoxShape.circle,
                                         ),
                                         child: Icon(
@@ -1037,7 +1037,7 @@ class _CreateTaskScreenState extends ConsumerState<CreateTaskScreen> {
                           width: double.infinity,
                           constraints: const BoxConstraints(minHeight: 56),
                           decoration: BoxDecoration(
-                            gradient: LinearGradient(colors: [colors.indigo, colors.indigo.withOpacity(0.8)]),
+                            gradient: LinearGradient(colors: [colors.indigo, colors.indigo.withValues(alpha: 0.8)]),
                             borderRadius: BorderRadius.circular(16),
                           ),
                           child: ElevatedButton(
@@ -1150,9 +1150,9 @@ class _CreateTaskScreenState extends ConsumerState<CreateTaskScreen> {
       child: Container(
         padding: const EdgeInsets.symmetric(vertical: 14),
         decoration: BoxDecoration(
-          color: isSelected ? color.withOpacity(0.15) : (colors.isDark ? colors.surface : Colors.white),
+          color: isSelected ? color.withValues(alpha: 0.15) : (colors.isDark ? colors.surface : Colors.white),
           borderRadius: BorderRadius.circular(12),
-          border: Border.all(color: isSelected ? color.withOpacity(0.5) : colors.border),
+          border: Border.all(color: isSelected ? color.withValues(alpha: 0.5) : colors.border),
         ),
         alignment: Alignment.center,
         child: Text(
@@ -1236,9 +1236,9 @@ class _CreateTaskScreenState extends ConsumerState<CreateTaskScreen> {
                 width: MediaQuery.of(context).size.width / 2 - 32,
                 padding: const EdgeInsets.all(12),
                 decoration: BoxDecoration(
-                  color: isSelected ? (colors.isDark ? colors.surface : Colors.white) : (colors.isDark ? colors.surface.withOpacity(0.4) : colors.border.withOpacity(0.06)),
+                  color: isSelected ? (colors.isDark ? colors.surface : Colors.white) : (colors.isDark ? colors.surface.withValues(alpha: 0.4) : colors.border.withValues(alpha: 0.06)),
                   borderRadius: BorderRadius.circular(12),
-                  border: Border.all(color: isSelected ? colors.indigo.withOpacity(0.5) : colors.border),
+                  border: Border.all(color: isSelected ? colors.indigo.withValues(alpha: 0.5) : colors.border),
                 ),
                 child: Row(
                   children: [
@@ -1302,8 +1302,8 @@ class _CreateTaskScreenState extends ConsumerState<CreateTaskScreen> {
         style: TextStyle(color: enabled ? colors.textPrimary : colors.textSecondary),
         decoration: InputDecoration(
           hintText: hint, 
-          hintStyle: TextStyle(color: colors.textSecondary.withOpacity(0.5)),
-          prefixIcon: icon != null ? Icon(icon, size: 18, color: colors.textSecondary.withOpacity(0.5)) : null, 
+          hintStyle: TextStyle(color: colors.textSecondary.withValues(alpha: 0.5)),
+          prefixIcon: icon != null ? Icon(icon, size: 18, color: colors.textSecondary.withValues(alpha: 0.5)) : null, 
           border: InputBorder.none, filled: false, 
           contentPadding: const EdgeInsets.all(16),
         ),
@@ -1408,7 +1408,7 @@ class _CreateTaskScreenState extends ConsumerState<CreateTaskScreen> {
                   child: Text(
                     selectedEvent?.title ?? '+ Link to Institutional Event',
                     style: TextStyle(
-                      color: selectedEvent != null ? colors.textPrimary : colors.textSecondary.withOpacity(0.5),
+                      color: selectedEvent != null ? colors.textPrimary : colors.textSecondary.withValues(alpha: 0.5),
                       fontSize: 14,
                     ),
                   ),

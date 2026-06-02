@@ -59,7 +59,7 @@ class WorkspaceManagementScreen extends ConsumerWidget {
             end: Alignment.bottomRight,
             colors: [
               colors.backgroundPrimary,
-              colors.backgroundSecondary.withOpacity(0.8),
+              colors.backgroundSecondary.withValues(alpha: 0.8),
             ],
           ),
         ),
@@ -108,7 +108,7 @@ class WorkspaceManagementScreen extends ConsumerWidget {
                         shape: BoxShape.circle,
                         boxShadow: [
                           BoxShadow(
-                            color: colors.honey.withOpacity(0.3),
+                            color: colors.honey.withValues(alpha: 0.3),
                             blurRadius: 12,
                             offset: const Offset(0, 4),
                           ),
@@ -132,7 +132,7 @@ class WorkspaceManagementScreen extends ConsumerWidget {
                 child: Container(
                   height: 44,
                   decoration: BoxDecoration(
-                    color: colors.surface.withOpacity(0.3),
+                    color: colors.surface.withValues(alpha: 0.3),
                     borderRadius: BorderRadius.circular(12),
                   ),
                   child: Row(
@@ -166,17 +166,17 @@ class WorkspaceManagementScreen extends ConsumerWidget {
                 child: Container(
                   padding: const EdgeInsets.symmetric(horizontal: 16),
                   decoration: BoxDecoration(
-                    color: colors.surface.withOpacity(0.3),
+                    color: colors.surface.withValues(alpha: 0.3),
                     borderRadius: BorderRadius.circular(12),
-                    border: Border.all(color: colors.border.withOpacity(0.2)),
+                    border: Border.all(color: colors.border.withValues(alpha: 0.2)),
                   ),
                   child: TextField(
                     style: TextStyle(color: colors.textPrimary, fontSize: 14),
                     onChanged: (val) => ref.read(workspaceSearchQueryProvider.notifier).state = val,
                     decoration: InputDecoration(
-                      icon: Icon(LucideIcons.search, size: 16, color: colors.textSecondary.withOpacity(0.5)),
+                      icon: Icon(LucideIcons.search, size: 16, color: colors.textSecondary.withValues(alpha: 0.5)),
                       hintText: 'Filter by name...',
-                      hintStyle: TextStyle(color: colors.textSecondary.withOpacity(0.3), fontSize: 14),
+                      hintStyle: TextStyle(color: colors.textSecondary.withValues(alpha: 0.3), fontSize: 14),
                       border: InputBorder.none, filled: false,
                     ),
                   ),
@@ -199,12 +199,12 @@ class WorkspaceManagementScreen extends ConsumerWidget {
                         child: Column(
                           mainAxisAlignment: MainAxisAlignment.center,
                           children: [
-                            Icon(LucideIcons.layoutGrid, size: 48, color: colors.textSecondary.withOpacity(0.2)),
+                            Icon(LucideIcons.layoutGrid, size: 48, color: colors.textSecondary.withValues(alpha: 0.2)),
                             const SizedBox(height: 16),
                             Text(
                               'NO UNITS FOUND',
                               style: TextStyle(
-                                color: colors.textSecondary.withOpacity(0.5),
+                                color: colors.textSecondary.withValues(alpha: 0.5),
                                 fontSize: 10,
                                 fontWeight: FontWeight.w900,
                                 letterSpacing: 1,
@@ -250,9 +250,9 @@ class WorkspaceManagementScreen extends ConsumerWidget {
         child: Container(
           padding: const EdgeInsets.all(16),
           decoration: BoxDecoration(
-            color: colors.surface.withOpacity(0.2),
+            color: colors.surface.withValues(alpha: 0.2),
             borderRadius: BorderRadius.circular(16),
-            border: Border.all(color: accentColor.withOpacity(0.1)),
+            border: Border.all(color: accentColor.withValues(alpha: 0.1)),
           ),
           child: Row(
             children: [
@@ -260,9 +260,9 @@ class WorkspaceManagementScreen extends ConsumerWidget {
                 width: 48,
                 height: 48,
                 decoration: BoxDecoration(
-                  color: colors.surface.withOpacity(0.5),
+                  color: colors.surface.withValues(alpha: 0.5),
                   borderRadius: BorderRadius.circular(14),
-                  border: Border.all(color: accentColor.withOpacity(0.2)),
+                  border: Border.all(color: accentColor.withValues(alpha: 0.2)),
                 ),
                 child: Icon(
                   isInstitution ? LucideIcons.building2 : LucideIcons.layers,
@@ -294,7 +294,7 @@ class WorkspaceManagementScreen extends ConsumerWidget {
                         Text(
                           '0 MEMBERS',
                           style: TextStyle(
-                            color: colors.textSecondary.withOpacity(0.6), 
+                            color: colors.textSecondary.withValues(alpha: 0.6), 
                             fontSize: 9,
                             fontWeight: FontWeight.w900,
                             letterSpacing: 0.5,
@@ -305,7 +305,7 @@ class WorkspaceManagementScreen extends ConsumerWidget {
                   ],
                 ),
               ),
-              Icon(LucideIcons.chevronRight, color: colors.textSecondary.withOpacity(0.2), size: 16),
+              Icon(LucideIcons.chevronRight, color: colors.textSecondary.withValues(alpha: 0.2), size: 16),
             ],
           ),
         ),
@@ -317,7 +317,7 @@ class WorkspaceManagementScreen extends ConsumerWidget {
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
       decoration: BoxDecoration(
-        color: color.withOpacity(0.1),
+        color: color.withValues(alpha: 0.1),
         borderRadius: BorderRadius.circular(4),
       ),
       child: Text(
@@ -386,7 +386,7 @@ class _CreateWorkspaceModalState extends State<_CreateWorkspaceModal> {
                   const SizedBox(height: 4),
                   Text(
                     'Provision a new organizational entity',
-                    style: TextStyle(color: colors.textSecondary.withOpacity(0.6), fontSize: 12, fontWeight: FontWeight.bold),
+                    style: TextStyle(color: colors.textSecondary.withValues(alpha: 0.6), fontSize: 12, fontWeight: FontWeight.bold),
                   ),
                 ],
               ),
@@ -440,16 +440,16 @@ class _CreateWorkspaceModalState extends State<_CreateWorkspaceModal> {
           Container(
             padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 4),
             decoration: BoxDecoration(
-              color: colors.surface.withOpacity(0.3),
+              color: colors.surface.withValues(alpha: 0.3),
               borderRadius: BorderRadius.circular(16),
-              border: Border.all(color: accentColor.withOpacity(0.2)),
+              border: Border.all(color: accentColor.withValues(alpha: 0.2)),
             ),
             child: TextField(
               controller: nameController,
               style: TextStyle(color: colors.textPrimary, fontSize: 15, fontWeight: FontWeight.w600),
               decoration: InputDecoration(
                 hintText: selectedType == 'INSTITUTION' ? 'e.g. Media Academy' : 'e.g. Production Dept',
-                hintStyle: TextStyle(color: colors.textSecondary.withOpacity(0.3), fontSize: 14),
+                hintStyle: TextStyle(color: colors.textSecondary.withValues(alpha: 0.3), fontSize: 14),
                 border: InputBorder.none, filled: false,
               ),
             ),
@@ -505,10 +505,10 @@ class _TypeButton extends StatelessWidget {
         duration: const Duration(milliseconds: 200),
         padding: const EdgeInsets.symmetric(vertical: 16),
         decoration: BoxDecoration(
-          color: isActive ? activeColor.withOpacity(0.1) : colors.surface.withOpacity(0.3),
+          color: isActive ? activeColor.withValues(alpha: 0.1) : colors.surface.withValues(alpha: 0.3),
           borderRadius: BorderRadius.circular(16),
           border: Border.all(
-            color: isActive ? activeColor : colors.border.withOpacity(0.2),
+            color: isActive ? activeColor : colors.border.withValues(alpha: 0.2),
             width: isActive ? 2 : 1,
           ),
         ),
@@ -555,7 +555,7 @@ class _WorkspaceTabButton extends StatelessWidget {
           color: isActive ? colors.backgroundPrimary : Colors.transparent,
           borderRadius: BorderRadius.circular(10),
           border: Border.all(
-            color: isActive ? colors.border.withOpacity(0.2) : Colors.transparent,
+            color: isActive ? colors.border.withValues(alpha: 0.2) : Colors.transparent,
           ),
         ),
         alignment: Alignment.center,
@@ -615,7 +615,7 @@ class _WorkspaceDetailModalState extends State<_WorkspaceDetailModal> {
                 width: 60,
                 height: 60,
                 decoration: BoxDecoration(
-                  color: accentColor.withOpacity(0.1),
+                  color: accentColor.withValues(alpha: 0.1),
                   borderRadius: BorderRadius.circular(16),
                 ),
                 child: Icon(
@@ -662,7 +662,7 @@ class _WorkspaceDetailModalState extends State<_WorkspaceDetailModal> {
               const Spacer(),
               Text(
                 'CHANGES TAKE EFFECT IMMEDIATELY',
-                style: TextStyle(color: colors.textSecondary.withOpacity(0.5), fontSize: 8, fontWeight: FontWeight.bold),
+                style: TextStyle(color: colors.textSecondary.withValues(alpha: 0.5), fontSize: 8, fontWeight: FontWeight.bold),
               ),
             ],
           ),
@@ -684,9 +684,9 @@ class _WorkspaceDetailModalState extends State<_WorkspaceDetailModal> {
           Container(
             padding: const EdgeInsets.all(16),
             decoration: BoxDecoration(
-              color: colors.honey.withOpacity(0.05),
+              color: colors.honey.withValues(alpha: 0.05),
               borderRadius: BorderRadius.circular(16),
-              border: Border.all(color: colors.honey.withOpacity(0.1)),
+              border: Border.all(color: colors.honey.withValues(alpha: 0.1)),
             ),
             child: Row(
               children: [
@@ -703,7 +703,7 @@ class _WorkspaceDetailModalState extends State<_WorkspaceDetailModal> {
                       const SizedBox(height: 4),
                       Text(
                         'Disabled modules will be hidden from the sidebar for all members of this institution.',
-                        style: TextStyle(color: colors.textSecondary.withOpacity(0.7), fontSize: 9),
+                        style: TextStyle(color: colors.textSecondary.withValues(alpha: 0.7), fontSize: 9),
                       ),
                     ],
                   ),
@@ -728,7 +728,7 @@ class _WorkspaceDetailModalState extends State<_WorkspaceDetailModal> {
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
       decoration: BoxDecoration(
-        color: color.withOpacity(0.1),
+        color: color.withValues(alpha: 0.1),
         borderRadius: BorderRadius.circular(6),
       ),
       child: Text(
@@ -742,9 +742,9 @@ class _WorkspaceDetailModalState extends State<_WorkspaceDetailModal> {
     return Container(
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
-        color: widget.colors.surface.withOpacity(0.3),
+        color: widget.colors.surface.withValues(alpha: 0.3),
         borderRadius: BorderRadius.circular(20),
-        border: Border.all(color: widget.colors.border.withOpacity(0.2)),
+        border: Border.all(color: widget.colors.border.withValues(alpha: 0.2)),
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -755,14 +755,14 @@ class _WorkspaceDetailModalState extends State<_WorkspaceDetailModal> {
               Container(
                 padding: const EdgeInsets.all(8),
                 decoration: BoxDecoration(
-                  color: accentColor.withOpacity(0.1),
+                  color: accentColor.withValues(alpha: 0.1),
                   borderRadius: BorderRadius.circular(10),
                 ),
                 child: Icon(LucideIcons.key, color: accentColor, size: 16),
               ),
               Icon(
                 isEnabled ? LucideIcons.checkCircle2 : LucideIcons.circle,
-                color: isEnabled ? const Color(0xFF10B981) : widget.colors.textSecondary.withOpacity(0.2),
+                color: isEnabled ? const Color(0xFF10B981) : widget.colors.textSecondary.withValues(alpha: 0.2),
                 size: 16,
               ),
             ],

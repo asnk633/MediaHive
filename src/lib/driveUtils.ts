@@ -6,6 +6,11 @@
  * @returns A direct thumbnail URL if it's a Drive ID, otherwise the original URL.
  */
 export function getDriveImageUrl(url: string | undefined | null, file_id?: string | null, thumbnail = false): string {
+    // If the URL is a direct web URL and NOT a Google Drive URL, use it directly (e.g., Supabase storage)
+    if (url && url.startsWith('http') && !url.includes('drive.google.com') && !url.includes('googleusercontent.com')) {
+        return url;
+    }
+
     // Use our local API proxy to fetch the image via the Drive API.
     // This avoids 403 Forbidden errors from Google's lh3 proxy.
     if (file_id && file_id.trim()) {

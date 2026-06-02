@@ -357,12 +357,12 @@ class _InventoryScreenState extends ConsumerState<InventoryScreen> {
     return Container(
       padding: const EdgeInsets.all(12),
       decoration: BoxDecoration(
-        color: colors.surface.withOpacity(0.4),
+        color: colors.surface.withValues(alpha: 0.4),
         borderRadius: BorderRadius.circular(20),
         border: Border.all(
           color: colors.isDark 
-              ? colors.border.withOpacity(0.5) 
-              : colors.border.withOpacity(0.15),
+              ? colors.border.withValues(alpha: 0.5) 
+              : colors.border.withValues(alpha: 0.15),
         ),
       ),
       child: Column(
@@ -401,7 +401,7 @@ class _InventoryScreenState extends ConsumerState<InventoryScreen> {
             child: Text(
               error.toString(),
               textAlign: TextAlign.center,
-              style: AppTypography.caption.copyWith(color: colors.error.withOpacity(0.7)),
+              style: AppTypography.caption.copyWith(color: colors.error.withValues(alpha: 0.7)),
             ),
           ),
           const SizedBox(height: AppSpacing.l),
@@ -439,7 +439,7 @@ class _InventoryScreenState extends ConsumerState<InventoryScreen> {
           style: AppTypography.caption.copyWith(
             fontWeight: FontWeight.bold, 
             letterSpacing: 1.2,
-            color: colors.textSecondary.withOpacity(0.8),
+            color: colors.textSecondary.withValues(alpha: 0.8),
           ),
         ),
       ],
@@ -535,7 +535,7 @@ class _InventoryScreenState extends ConsumerState<InventoryScreen> {
         border: Border.all(
           color: colors.isDark 
               ? colors.border 
-              : colors.border.withOpacity(0.12),
+              : colors.border.withValues(alpha: 0.12),
         ),
       ),
       child: Row(
@@ -559,7 +559,7 @@ class _InventoryScreenState extends ConsumerState<InventoryScreen> {
           boxShadow: active && !colors.isDark
               ? [
                   BoxShadow(
-                    color: colors.indigo.withOpacity(0.3),
+                    color: colors.indigo.withValues(alpha: 0.3),
                     blurRadius: 10,
                     offset: const Offset(0, 2),
                   )
@@ -570,7 +570,7 @@ class _InventoryScreenState extends ConsumerState<InventoryScreen> {
           label,
           style: AppTypography.bodyS.copyWith(
             fontWeight: FontWeight.bold,
-            color: active ? Colors.white : colors.textSecondary.withOpacity(0.8),
+            color: active ? Colors.white : colors.textSecondary.withValues(alpha: 0.8),
           ),
         ),
       ),
@@ -609,13 +609,13 @@ class _InventoryScreenState extends ConsumerState<InventoryScreen> {
         border: Border.all(
           color: colors.isDark 
               ? colors.border 
-              : colors.border.withOpacity(0.12),
+              : colors.border.withValues(alpha: 0.12),
         ),
         boxShadow: colors.isDark
             ? []
             : [
                 BoxShadow(
-                  color: colors.border.withOpacity(0.03),
+                  color: colors.border.withValues(alpha: 0.03),
                   blurRadius: 10,
                   offset: const Offset(0, 4),
                 )
@@ -641,7 +641,7 @@ class _InventoryScreenState extends ConsumerState<InventoryScreen> {
             style: AppTypography.caption.copyWith(
               fontSize: 8, 
               letterSpacing: 1.1,
-              color: colors.textSecondary.withOpacity(0.7),
+              color: colors.textSecondary.withValues(alpha: 0.7),
             ),
             maxLines: 1,
             overflow: TextOverflow.ellipsis,
@@ -663,7 +663,7 @@ class _InventoryScreenState extends ConsumerState<InventoryScreen> {
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
                 const SizedBox(height: AppSpacing.xl),
-                Icon(LucideIcons.calendar, size: 64, color: colors.textSecondary.withOpacity(0.2)),
+                Icon(LucideIcons.calendar, size: 64, color: colors.textSecondary.withValues(alpha: 0.2)),
                 const SizedBox(height: AppSpacing.m),
                 Text('No active bookings found', style: AppTypography.bodyM.copyWith(color: colors.textSecondary)),
                 const SizedBox(height: AppSpacing.m),
@@ -708,13 +708,13 @@ class _InventoryScreenState extends ConsumerState<InventoryScreen> {
         border: Border.all(
           color: colors.isDark 
               ? colors.border 
-              : colors.border.withOpacity(0.12),
+              : colors.border.withValues(alpha: 0.12),
         ),
         boxShadow: colors.isDark
             ? []
             : [
                 BoxShadow(
-                  color: colors.border.withOpacity(0.03),
+                  color: colors.border.withValues(alpha: 0.03),
                   blurRadius: 10,
                   offset: const Offset(0, 4),
                 )
@@ -725,7 +725,7 @@ class _InventoryScreenState extends ConsumerState<InventoryScreen> {
           Container(
             padding: const EdgeInsets.all(10),
             decoration: BoxDecoration(
-              color: colors.indigo.withOpacity(0.1),
+              color: colors.indigo.withValues(alpha: 0.1),
               borderRadius: BorderRadius.circular(AppRadius.m),
             ),
             child: Icon(LucideIcons.calendar, color: colors.indigo, size: 20),
@@ -779,14 +779,14 @@ class _InventoryScreenState extends ConsumerState<InventoryScreen> {
                 ),
                 child: Row(
                   children: [
-                    Icon(LucideIcons.search, size: 18, color: colors.textSecondary.withOpacity(0.6)),
+                    Icon(LucideIcons.search, size: 18, color: colors.textSecondary.withValues(alpha: 0.6)),
                     const SizedBox(width: 12),
                     Expanded(
                       child: TextField(
                         onChanged: (val) => ref.read(inventorySearchProvider.notifier).state = val,
                         decoration: InputDecoration(
                           hintText: 'Search by name or serial...',
-                          hintStyle: AppTypography.bodyM.copyWith(color: colors.textSecondary.withOpacity(0.5)),
+                          hintStyle: AppTypography.bodyM.copyWith(color: colors.textSecondary.withValues(alpha: 0.5)),
                           border: InputBorder.none, filled: false,
                           isDense: true,
                         ),
@@ -1129,7 +1129,7 @@ class _InventoryScreenState extends ConsumerState<InventoryScreen> {
             width: 40,
             height: 4,
             decoration: BoxDecoration(
-              color: colors.textSecondary.withOpacity(0.3),
+              color: colors.textSecondary.withValues(alpha: 0.3),
               borderRadius: BorderRadius.circular(2),
             ),
           ),
@@ -1161,7 +1161,7 @@ class _InventoryScreenState extends ConsumerState<InventoryScreen> {
                   style: TextStyle(color: colors.textPrimary),
                   decoration: InputDecoration(
                     hintText: 'Search categories...',
-                    hintStyle: TextStyle(color: colors.textSecondary.withOpacity(0.5)),
+                    hintStyle: TextStyle(color: colors.textSecondary.withValues(alpha: 0.5)),
                     border: InputBorder.none, filled: false,
                     icon: Icon(LucideIcons.search, size: 16, color: colors.textSecondary),
                   ),
@@ -1190,8 +1190,8 @@ class _InventoryScreenState extends ConsumerState<InventoryScreen> {
           padding: const EdgeInsets.all(AppSpacing.m),
           decoration: BoxDecoration(
             color: isSelected 
-                ? colors.indigo.withOpacity(0.1) 
-                : (colors.isDark ? colors.surface.withOpacity(0.3) : Colors.white.withOpacity(0.8)),
+                ? colors.indigo.withValues(alpha: 0.1) 
+                : (colors.isDark ? colors.surface.withValues(alpha: 0.3) : Colors.white.withValues(alpha: 0.8)),
             borderRadius: BorderRadius.circular(AppRadius.m),
             border: Border.all(color: isSelected ? colors.indigo : colors.border),
           ),
@@ -1236,10 +1236,10 @@ class _InventoryScreenState extends ConsumerState<InventoryScreen> {
           padding: const EdgeInsets.all(AppSpacing.m),
           decoration: BoxDecoration(
             color: isChildSelected 
-                ? colors.indigo.withOpacity(0.05) 
-                : (colors.isDark ? colors.surface.withOpacity(0.3) : Colors.white.withOpacity(0.8)),
+                ? colors.indigo.withValues(alpha: 0.05) 
+                : (colors.isDark ? colors.surface.withValues(alpha: 0.3) : Colors.white.withValues(alpha: 0.8)),
             borderRadius: BorderRadius.circular(AppRadius.m),
-            border: Border.all(color: isChildSelected ? colors.indigo.withOpacity(0.3) : colors.border),
+            border: Border.all(color: isChildSelected ? colors.indigo.withValues(alpha: 0.3) : colors.border),
           ),
           child: Row(
             children: [
@@ -1275,9 +1275,9 @@ class _InventoryScreenState extends ConsumerState<InventoryScreen> {
         child: Container(
           padding: const EdgeInsets.symmetric(horizontal: AppSpacing.m, vertical: AppSpacing.s),
           decoration: BoxDecoration(
-            color: isSelected ? colors.indigo.withOpacity(0.08) : Colors.transparent,
+            color: isSelected ? colors.indigo.withValues(alpha: 0.08) : Colors.transparent,
             borderRadius: BorderRadius.circular(AppRadius.s),
-            border: Border.all(color: isSelected ? colors.indigo.withOpacity(0.5) : Colors.transparent),
+            border: Border.all(color: isSelected ? colors.indigo.withValues(alpha: 0.5) : Colors.transparent),
           ),
           child: Row(
             children: [
@@ -1350,17 +1350,17 @@ class _InventoryScreenState extends ConsumerState<InventoryScreen> {
           border: Border.all(
             color: colors.isDark 
                 ? colors.border 
-                : colors.border.withOpacity(0.12),
+                : colors.border.withValues(alpha: 0.12),
           ),
           boxShadow: [
             if (isMaintenanceDue)
               BoxShadow(
-                color: colors.error.withOpacity(0.15),
+                color: colors.error.withValues(alpha: 0.15),
                 blurRadius: 12,
                 spreadRadius: 2,
               ),
             BoxShadow(
-              color: colors.border.withOpacity(0.05),
+              color: colors.border.withValues(alpha: 0.05),
               blurRadius: 12,
               offset: const Offset(0, 4),
             ),
@@ -1396,7 +1396,7 @@ class _InventoryScreenState extends ConsumerState<InventoryScreen> {
                         child: Container(
                           padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
                           decoration: BoxDecoration(
-                            color: Colors.black.withOpacity(0.65),
+                            color: Colors.black.withValues(alpha: 0.65),
                             borderRadius: BorderRadius.circular(4),
                           ),
                           child: Text(
@@ -1439,7 +1439,7 @@ class _InventoryScreenState extends ConsumerState<InventoryScreen> {
                           style: AppTypography.caption.copyWith(
                             fontSize: 8, 
                             fontWeight: FontWeight.w900, 
-                            color: colors.textSecondary.withOpacity(0.5)
+                            color: colors.textSecondary.withValues(alpha: 0.5)
                           ),
                         ),
                       ],
@@ -1494,13 +1494,13 @@ class _InventoryScreenState extends ConsumerState<InventoryScreen> {
           border: Border.all(
             color: colors.isDark 
                 ? colors.border 
-                : colors.border.withOpacity(0.12),
+                : colors.border.withValues(alpha: 0.12),
           ),
           boxShadow: colors.isDark
               ? []
               : [
                   BoxShadow(
-                    color: colors.border.withOpacity(0.03),
+                    color: colors.border.withValues(alpha: 0.03),
                     blurRadius: 5,
                   )
                 ],
@@ -1572,9 +1572,9 @@ class _InventoryScreenState extends ConsumerState<InventoryScreen> {
 
   Widget _buildPlaceholderImage(ThemeColors colors) {
     return Container(
-      color: colors.isDark ? colors.surface.withOpacity(0.8) : colors.border.withOpacity(0.12),
+      color: colors.isDark ? colors.surface.withValues(alpha: 0.8) : colors.border.withValues(alpha: 0.12),
       child: Center(
-        child: Icon(LucideIcons.image, color: colors.textSecondary.withOpacity(0.6), size: 24),
+        child: Icon(LucideIcons.image, color: colors.textSecondary.withValues(alpha: 0.6), size: 24),
       ),
     );
   }
@@ -1591,7 +1591,7 @@ class _InventoryScreenState extends ConsumerState<InventoryScreen> {
             shape: BoxShape.circle,
             boxShadow: [
               BoxShadow(
-                color: color.withOpacity(0.5),
+                color: color.withValues(alpha: 0.5),
                 blurRadius: 4,
                 spreadRadius: 1,
               ),
@@ -1634,7 +1634,7 @@ class _InventoryScreenState extends ConsumerState<InventoryScreen> {
           return Column(
             children: [
               const SizedBox(height: AppSpacing.xl),
-              Icon(LucideIcons.clipboardList, size: 64, color: colors.textSecondary.withOpacity(0.3)),
+              Icon(LucideIcons.clipboardList, size: 64, color: colors.textSecondary.withValues(alpha: 0.3)),
               const SizedBox(height: AppSpacing.m),
               Text(
                 'No Requests Yet',
@@ -1710,13 +1710,13 @@ class _InventoryScreenState extends ConsumerState<InventoryScreen> {
         border: Border.all(
           color: colors.isDark 
               ? colors.border 
-              : colors.border.withOpacity(0.12),
+              : colors.border.withValues(alpha: 0.12),
         ),
         boxShadow: colors.isDark
             ? []
             : [
                 BoxShadow(
-                  color: colors.border.withOpacity(0.03),
+                  color: colors.border.withValues(alpha: 0.03),
                   blurRadius: 10,
                   offset: const Offset(0, 4),
                 )
@@ -1776,21 +1776,21 @@ class _InventoryScreenState extends ConsumerState<InventoryScreen> {
               padding: const EdgeInsets.all(AppSpacing.s),
               decoration: BoxDecoration(
                 color: request.status.toLowerCase() == 'rejected' 
-                  ? colors.error.withOpacity(0.05)
-                  : colors.indigo.withOpacity(0.05),
+                  ? colors.error.withValues(alpha: 0.05)
+                  : colors.indigo.withValues(alpha: 0.05),
                 borderRadius: BorderRadius.circular(AppRadius.s),
                 border: Border.all(
                   color: request.status.toLowerCase() == 'rejected' 
-                    ? colors.error.withOpacity(0.2)
-                    : colors.indigo.withOpacity(0.2),
+                    ? colors.error.withValues(alpha: 0.2)
+                    : colors.indigo.withValues(alpha: 0.2),
                 ),
               ),
               child: Container(
                 padding: const EdgeInsets.all(AppSpacing.m),
                 decoration: BoxDecoration(
-                  color: colors.error.withOpacity(0.05),
+                  color: colors.error.withValues(alpha: 0.05),
                   borderRadius: BorderRadius.circular(AppRadius.m),
-                  border: Border.all(color: colors.error.withOpacity(0.1)),
+                  border: Border.all(color: colors.error.withValues(alpha: 0.1)),
                 ),
                 child: Row(
                   crossAxisAlignment: CrossAxisAlignment.start,
@@ -1878,9 +1878,9 @@ class _InventoryScreenState extends ConsumerState<InventoryScreen> {
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
       decoration: BoxDecoration(
-        color: color.withOpacity(0.1),
+        color: color.withValues(alpha: 0.1),
         borderRadius: BorderRadius.circular(AppRadius.s),
-        border: Border.all(color: color.withOpacity(0.3)),
+        border: Border.all(color: color.withValues(alpha: 0.3)),
       ),
       child: Row(
         mainAxisSize: MainAxisSize.min,

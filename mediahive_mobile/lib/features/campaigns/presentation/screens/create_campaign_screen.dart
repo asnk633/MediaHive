@@ -3,12 +3,9 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:lucide_icons/lucide_icons.dart';
 import 'package:intl/intl.dart';
-import 'package:flutter_animate/flutter_animate.dart';
 import '../providers/campaigns_provider.dart';
 import '../../../../core/theme_provider.dart';
 import '../../../../core/providers/user_provider.dart';
-import '../../../../core/theme/app_spacing.dart';
-import '../../../../core/theme/app_colors.dart';
 import '../../../../core/theme/app_typography.dart';
 
 class CreateCampaignScreen extends ConsumerStatefulWidget {
@@ -109,8 +106,8 @@ class _CreateCampaignScreenState extends ConsumerState<CreateCampaignScreen> {
         style: TextStyle(color: colors.textPrimary),
         decoration: InputDecoration(
           hintText: hint,
-          hintStyle: TextStyle(color: colors.textSecondary.withOpacity(0.5)),
-          prefixIcon: icon != null ? Icon(icon, size: 18, color: colors.textSecondary.withOpacity(0.5)) : null,
+          hintStyle: TextStyle(color: colors.textSecondary.withValues(alpha: 0.5)),
+          prefixIcon: icon != null ? Icon(icon, size: 18, color: colors.textSecondary.withValues(alpha: 0.5)) : null,
           contentPadding: const EdgeInsets.all(16),
           border: InputBorder.none, filled: false,
         ),
@@ -185,9 +182,9 @@ class _CreateCampaignScreenState extends ConsumerState<CreateCampaignScreen> {
     return Container(
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
-        color: colors.indigo.withOpacity(0.05),
+        color: colors.indigo.withValues(alpha: 0.05),
         borderRadius: BorderRadius.circular(16),
-        border: Border.all(color: colors.indigo.withOpacity(0.1)),
+        border: Border.all(color: colors.indigo.withValues(alpha: 0.1)),
       ),
       child: Row(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -287,7 +284,7 @@ class _CreateCampaignScreenState extends ConsumerState<CreateCampaignScreen> {
       backgroundColor: colors.backgroundPrimary,
       extendBodyBehindAppBar: true,
       appBar: AppBar(
-        backgroundColor: colors.backgroundPrimary.withOpacity(0.8),
+        backgroundColor: colors.backgroundPrimary.withValues(alpha: 0.8),
         elevation: 0,
         flexibleSpace: ClipRect(
           child: BackdropFilter(

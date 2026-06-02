@@ -13,12 +13,15 @@ export async function GET(req: NextRequest, { params }: { params: Promise<{ room
       .from('chat_messages')
       .select('*')
       .eq('room_id', roomId)
-      .order('created_at', { ascending: true })
-      .limit(50);
+      .order('created_at', { ascending: false })
+      .limit(100);
 
     if (error) throw error;
 
-    return NextResponse.json(messages || [], { status: 200 });
+    // Reverse to display chronologically (oldest first, newest last) for the UI message list
+    const chronologicalMessages = messages ? [...messages].reverse() : [];
+
+    return NextResponse.json(chronologicalMessages, { status: 200 });
   } catch (error: any) {
     console.error("Error fetching messages:", error);
     return NextResponse.json({ error: "Internal server error" }, { status: 500 });

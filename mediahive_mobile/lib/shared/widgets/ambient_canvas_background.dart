@@ -110,7 +110,7 @@ class _AmbientGradientPainter extends CustomPainter {
         cy + math.cos(t * 0.7) * size.height * 0.12,
       ),
       radius: radius,
-      color: const Color(0xFF0A0A05).withOpacity(0.45),
+      color: const Color(0xFF0A0A05).withValues(alpha: 0.45),
     );
 
     // Blob B – slightly cooler warm, drifting lower-right ↔ centre.
@@ -121,7 +121,7 @@ class _AmbientGradientPainter extends CustomPainter {
         cy + math.sin(t * 1.1) * size.height * 0.14,
       ),
       radius: radius * 0.9,
-      color: const Color(0xFF050503).withOpacity(0.35),
+      color: const Color(0xFF050503).withValues(alpha: 0.35),
     );
 
     // Blob C – faintest accent, wandering slowly.
@@ -132,7 +132,7 @@ class _AmbientGradientPainter extends CustomPainter {
         cy + math.cos(t * 0.6 + 0.8) * size.height * 0.18,
       ),
       radius: radius * 0.75,
-      color: const Color(0xFF080805).withOpacity(0.30),
+      color: const Color(0xFF080805).withValues(alpha: 0.30),
     );
   }
 
@@ -158,7 +158,7 @@ class _AmbientGradientPainter extends CustomPainter {
         cy + math.cos(t * 0.7) * size.height * 0.10,
       ),
       radius: radius,
-      color: const Color(0xFFE7EDF8).withOpacity(0.70),
+      color: const Color(0xFFE7EDF8).withValues(alpha: 0.70),
     );
 
     // Blob B – deeper blue tint, lower-right area.
@@ -169,7 +169,7 @@ class _AmbientGradientPainter extends CustomPainter {
         cy + math.sin(t * 1.1) * size.height * 0.12,
       ),
       radius: radius * 0.85,
-      color: const Color(0xFFDDE5F7).withOpacity(0.55),
+      color: const Color(0xFFDDE5F7).withValues(alpha: 0.55),
     );
 
     // Blob C – very soft lavender accent, slow drift.
@@ -180,7 +180,7 @@ class _AmbientGradientPainter extends CustomPainter {
         cy + math.cos(t * 0.6 + 0.7) * size.height * 0.15,
       ),
       radius: radius * 0.70,
-      color: const Color(0xFFE2E9F6).withOpacity(0.50),
+      color: const Color(0xFFE2E9F6).withValues(alpha: 0.50),
     );
   }
 
@@ -193,7 +193,7 @@ class _AmbientGradientPainter extends CustomPainter {
   }) {
     final paint = Paint()
       ..shader = RadialGradient(
-        colors: [color, color.withOpacity(0.0)],
+        colors: [color, color.withValues(alpha: 0.0)],
         stops: const [0.0, 1.0],
       ).createShader(Rect.fromCircle(center: center, radius: radius));
 

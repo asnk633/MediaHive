@@ -24,27 +24,8 @@ export default function InventoryClient() {
 
     if (isChecking) return <div className="min-h-screen bg-slate-950" />;
 
-    // TODO: [Future Sync]
-    // When offline sync is implemented, we will invoke syncService here or enable write actions.
-    // For now, allow render (view-only).
-
-    /*
-    if (isNative) {
-        // TODO: [Future Sync]
-        // When offline sync is implemented, this guard should check:
-        // if (isNative && !syncService.isReady) ...
-        // Instead of hard blocking all native access.
-        return (
-            <PageLayout mode="plain">
-                <OfflinePlaceholder
-                    title="Inventory Sync"
-                    message="Mobile inventory sync is coming soon. Use the web app for full management."
-                    icon={Package}
-                />
-            </PageLayout>
-        );
-    }
-    */
+    // Online-First Architecture: Offline sync is formally abandoned to ensure reliability.
+    // Full online inventory interface is active.
 
     return (
         <PageLayout mode="plain">

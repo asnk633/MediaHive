@@ -104,7 +104,7 @@ class MhGlobalErrorScreen extends StatelessWidget {
                   ),
                   child: Text(
                     details.exceptionAsString(),
-                    style: AppTypography.caption.copyWith(color: AppColors.error.withOpacity(0.8), fontFamily: 'monospace'),
+                    style: AppTypography.caption.copyWith(color: AppColors.error.withValues(alpha: 0.8), fontFamily: 'monospace'),
                   ),
                 ),
                 const SizedBox(height: AppSpacing.xl),

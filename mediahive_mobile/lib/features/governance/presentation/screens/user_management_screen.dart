@@ -123,7 +123,7 @@ class UserManagementScreen extends ConsumerWidget {
                 child: Container(
                   height: 48,
                   decoration: BoxDecoration(
-                    color: colors.surface.withOpacity(0.3),
+                    color: colors.surface.withValues(alpha: 0.3),
                     borderRadius: BorderRadius.circular(12),
                   ),
                   child: Row(
@@ -158,9 +158,9 @@ class UserManagementScreen extends ConsumerWidget {
                   child: Container(
                     padding: const EdgeInsets.symmetric(horizontal: 16),
                     decoration: BoxDecoration(
-                      color: colors.surface.withOpacity(0.3),
+                      color: colors.surface.withValues(alpha: 0.3),
                       borderRadius: BorderRadius.circular(12),
-                      border: Border.all(color: colors.border.withOpacity(0.2)),
+                      border: Border.all(color: colors.border.withValues(alpha: 0.2)),
                     ),
                     child: TextField(
                       style: TextStyle(color: colors.textPrimary, fontSize: 14),
@@ -168,7 +168,7 @@ class UserManagementScreen extends ConsumerWidget {
                       decoration: InputDecoration(
                         icon: Icon(LucideIcons.search, size: 18, color: colors.honey),
                         hintText: 'Search users...',
-                        hintStyle: TextStyle(color: colors.textSecondary.withOpacity(0.5), fontSize: 14),
+                        hintStyle: TextStyle(color: colors.textSecondary.withValues(alpha: 0.5), fontSize: 14),
                         border: InputBorder.none, filled: false,
                       ),
                     ),
@@ -216,12 +216,12 @@ class UserManagementScreen extends ConsumerWidget {
             child: Column(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
-                Icon(LucideIcons.mail, size: 48, color: colors.textSecondary.withOpacity(0.2)),
+                Icon(LucideIcons.mail, size: 48, color: colors.textSecondary.withValues(alpha: 0.2)),
                 const SizedBox(height: 16),
                 Text(
                   'NO PENDING INVITATIONS',
                   style: TextStyle(
-                    color: colors.textSecondary.withOpacity(0.5),
+                    color: colors.textSecondary.withValues(alpha: 0.5),
                     fontSize: 10,
                     fontWeight: FontWeight.w900,
                     letterSpacing: 1,
@@ -255,9 +255,9 @@ class UserManagementScreen extends ConsumerWidget {
       child: Container(
         padding: const EdgeInsets.all(16),
         decoration: BoxDecoration(
-          color: colors.surface.withOpacity(0.2),
+          color: colors.surface.withValues(alpha: 0.2),
           borderRadius: BorderRadius.circular(16),
-          border: Border.all(color: colors.border.withOpacity(0.1)),
+          border: Border.all(color: colors.border.withValues(alpha: 0.1)),
         ),
         child: Row(
           children: [
@@ -265,7 +265,7 @@ class UserManagementScreen extends ConsumerWidget {
               width: 48,
               height: 48,
               decoration: BoxDecoration(
-                color: colors.honey.withOpacity(0.1),
+                color: colors.honey.withValues(alpha: 0.1),
                 shape: BoxShape.circle,
               ),
               child: Icon(LucideIcons.mail, color: colors.honey, size: 20),
@@ -285,7 +285,7 @@ class UserManagementScreen extends ConsumerWidget {
                       Container(
                         padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
                         decoration: BoxDecoration(
-                          color: colors.honey.withOpacity(0.1),
+                          color: colors.honey.withValues(alpha: 0.1),
                           borderRadius: BorderRadius.circular(4),
                         ),
                         child: Text(
@@ -318,13 +318,13 @@ class UserManagementScreen extends ConsumerWidget {
         color: active ? colors.backgroundPrimary : Colors.transparent,
         borderRadius: BorderRadius.circular(12),
         boxShadow: active ? [
-          BoxShadow(color: Colors.black.withOpacity(0.2), blurRadius: 4, offset: const Offset(0, 2)),
+          BoxShadow(color: Colors.black.withValues(alpha: 0.2), blurRadius: 4, offset: const Offset(0, 2)),
         ] : null,
       ),
       child: Text(
         label,
         style: TextStyle(
-          color: active ? colors.textPrimary : colors.textSecondary.withOpacity(0.6),
+          color: active ? colors.textPrimary : colors.textSecondary.withValues(alpha: 0.6),
           fontSize: 10,
           fontWeight: FontWeight.w900,
           letterSpacing: 1,
@@ -360,16 +360,16 @@ class UserManagementScreen extends ConsumerWidget {
         child: Container(
           padding: const EdgeInsets.all(16),
           decoration: BoxDecoration(
-            color: colors.surface.withOpacity(0.4),
+            color: colors.surface.withValues(alpha: 0.4),
             borderRadius: BorderRadius.circular(20),
-            border: Border.all(color: colors.border.withOpacity(0.3)),
+            border: Border.all(color: colors.border.withValues(alpha: 0.3)),
           ),
           child: Row(
             children: [
               Container(
                 decoration: BoxDecoration(
                   shape: BoxShape.circle,
-                  border: Border.all(color: roleColor.withOpacity(0.5), width: 2),
+                  border: Border.all(color: roleColor.withValues(alpha: 0.5), width: 2),
                 ),
                 child: CircleAvatar(
                   radius: 24,
@@ -395,7 +395,7 @@ class UserManagementScreen extends ConsumerWidget {
                         Container(
                           padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
                           decoration: BoxDecoration(
-                            color: roleColor.withOpacity(0.1),
+                            color: roleColor.withValues(alpha: 0.1),
                             borderRadius: BorderRadius.circular(4),
                           ),
                           child: Text(
@@ -407,7 +407,7 @@ class UserManagementScreen extends ConsumerWidget {
                         Expanded(
                           child: Text(
                             email.length > 5 ? email.replaceRange(1, email.indexOf('@'), '***') : email,
-                            style: TextStyle(color: colors.textSecondary.withOpacity(0.7), fontSize: 10, fontWeight: FontWeight.w600),
+                            style: TextStyle(color: colors.textSecondary.withValues(alpha: 0.7), fontSize: 10, fontWeight: FontWeight.w600),
                             overflow: TextOverflow.ellipsis,
                           ),
                         ),
@@ -416,7 +416,7 @@ class UserManagementScreen extends ConsumerWidget {
                   ],
                 ),
               ),
-              Icon(LucideIcons.chevronRight, size: 16, color: colors.textSecondary.withOpacity(0.2)),
+              Icon(LucideIcons.chevronRight, size: 16, color: colors.textSecondary.withValues(alpha: 0.2)),
             ],
           ),
         ),
@@ -462,7 +462,7 @@ class UserManagementScreen extends ConsumerWidget {
                 width: 40,
                 height: 4,
                 decoration: BoxDecoration(
-                  color: colors.textSecondary.withOpacity(0.2),
+                  color: colors.textSecondary.withValues(alpha: 0.2),
                   borderRadius: BorderRadius.circular(2),
                 ),
               ),
@@ -505,18 +505,18 @@ class UserManagementScreen extends ConsumerWidget {
                         spacing: 8,
                         runSpacing: 8,
                         children: [
-                          _buildBadge(email.length > 5 ? email.replaceRange(1, email.indexOf('@'), '***') : email, LucideIcons.mail, colors.textSecondary.withOpacity(0.1), colors.textSecondary, colors),
-                          _buildBadge('GLOBAL ${role.toUpperCase()}', LucideIcons.shield, colors.indigo.withOpacity(0.1), colors.indigo, colors),
+                          _buildBadge(email.length > 5 ? email.replaceRange(1, email.indexOf('@'), '***') : email, LucideIcons.mail, colors.textSecondary.withValues(alpha: 0.1), colors.textSecondary, colors),
+                          _buildBadge('GLOBAL ${role.toUpperCase()}', LucideIcons.shield, colors.indigo.withValues(alpha: 0.1), colors.indigo, colors),
                         ],
                       ),
                       const SizedBox(height: 12),
-                      _buildBadge(department.toUpperCase(), LucideIcons.mapPin, const Color(0xFF10B981).withOpacity(0.1), const Color(0xFF10B981), colors),
+                      _buildBadge(department.toUpperCase(), LucideIcons.mapPin, const Color(0xFF10B981).withValues(alpha: 0.1), const Color(0xFF10B981), colors),
                     ],
                   ),
                 ),
                 Column(
                   children: [
-                    _buildIconButton(LucideIcons.trash2, Colors.redAccent.withOpacity(0.1), Colors.redAccent),
+                    _buildIconButton(LucideIcons.trash2, Colors.redAccent.withValues(alpha: 0.1), Colors.redAccent),
                     const SizedBox(height: 8),
                     Container(
                       padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
@@ -539,7 +539,7 @@ class UserManagementScreen extends ConsumerWidget {
               children: [
                 Row(
                   children: [
-                    Icon(LucideIcons.building2, color: colors.textSecondary.withOpacity(0.5), size: 18),
+                    Icon(LucideIcons.building2, color: colors.textSecondary.withValues(alpha: 0.5), size: 18),
                     const SizedBox(width: 8),
                     Text('WORKSPACE ACCESS CONTROL', style: TextStyle(color: colors.textSecondary, fontSize: 12, fontWeight: FontWeight.w900, letterSpacing: 0.5)),
                   ],
@@ -596,16 +596,16 @@ class UserManagementScreen extends ConsumerWidget {
     return Container(
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
-        color: colors.backgroundPrimary.withOpacity(0.3),
+        color: colors.backgroundPrimary.withValues(alpha: 0.3),
         borderRadius: BorderRadius.circular(20),
-        border: Border.all(color: colors.border.withOpacity(0.5)),
+        border: Border.all(color: colors.border.withValues(alpha: 0.5)),
       ),
       child: Row(
         children: [
           Container(
             padding: const EdgeInsets.all(10),
             decoration: BoxDecoration(
-              color: const Color(0xFF10B981).withOpacity(0.1),
+              color: const Color(0xFF10B981).withValues(alpha: 0.1),
               shape: BoxShape.circle,
             ),
             child: const Icon(LucideIcons.mapPin, color: Color(0xFF10B981), size: 18),
@@ -629,7 +629,7 @@ class UserManagementScreen extends ConsumerWidget {
             child: const Text('ASSIGNEE', style: TextStyle(color: Colors.white, fontSize: 10, fontWeight: FontWeight.w900)),
           ),
           const SizedBox(width: 12),
-          Icon(LucideIcons.trash2, color: colors.textSecondary.withOpacity(0.3), size: 16),
+          Icon(LucideIcons.trash2, color: colors.textSecondary.withValues(alpha: 0.3), size: 16),
         ],
       ),
     );
@@ -675,7 +675,7 @@ class _InviteUserModalState extends ConsumerState<_InviteUserModal> {
                   const SizedBox(height: 4),
                   Text(
                     'Provision multi-layer access controls',
-                    style: TextStyle(color: colors.textSecondary.withOpacity(0.6), fontSize: 12, fontWeight: FontWeight.bold),
+                    style: TextStyle(color: colors.textSecondary.withValues(alpha: 0.6), fontSize: 12, fontWeight: FontWeight.bold),
                   ),
                 ],
               ),
@@ -695,17 +695,17 @@ class _InviteUserModalState extends ConsumerState<_InviteUserModal> {
           Container(
             padding: const EdgeInsets.symmetric(horizontal: 16),
             decoration: BoxDecoration(
-              color: colors.backgroundPrimary.withOpacity(0.5),
+              color: colors.backgroundPrimary.withValues(alpha: 0.5),
               borderRadius: BorderRadius.circular(12),
-              border: Border.all(color: colors.border.withOpacity(0.3)),
+              border: Border.all(color: colors.border.withValues(alpha: 0.3)),
             ),
             child: TextField(
               controller: emailController,
               style: TextStyle(color: colors.textPrimary, fontSize: 14),
               decoration: InputDecoration(
-                icon: Icon(LucideIcons.mail, size: 18, color: colors.textSecondary.withOpacity(0.5)),
+                icon: Icon(LucideIcons.mail, size: 18, color: colors.textSecondary.withValues(alpha: 0.5)),
                 hintText: 'user@example.com',
-                hintStyle: TextStyle(color: colors.textSecondary.withOpacity(0.3), fontSize: 14),
+                hintStyle: TextStyle(color: colors.textSecondary.withValues(alpha: 0.3), fontSize: 14),
                 border: InputBorder.none, filled: false,
               ),
             ),
@@ -815,10 +815,10 @@ class _InviteUserModalState extends ConsumerState<_InviteUserModal> {
         child: Container(
           padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
           decoration: BoxDecoration(
-            color: colors.surface.withOpacity(0.3),
+            color: colors.surface.withValues(alpha: 0.3),
             borderRadius: BorderRadius.circular(12),
             border: Border.all(
-              color: isSelected ? colors.indigo : colors.border.withOpacity(0.2),
+              color: isSelected ? colors.indigo : colors.border.withValues(alpha: 0.2),
               width: isSelected ? 2 : 1,
             ),
           ),
@@ -830,7 +830,7 @@ class _InviteUserModalState extends ConsumerState<_InviteUserModal> {
                 decoration: BoxDecoration(
                   color: isSelected ? colors.indigo : Colors.transparent,
                   border: Border.all(
-                    color: isSelected ? colors.indigo : colors.textSecondary.withOpacity(0.3),
+                    color: isSelected ? colors.indigo : colors.textSecondary.withValues(alpha: 0.3),
                     width: 2,
                   ),
                   borderRadius: BorderRadius.circular(6),
@@ -881,11 +881,11 @@ class _TabButton extends StatelessWidget {
           color: isActive ? colors.backgroundPrimary : Colors.transparent,
           borderRadius: BorderRadius.circular(10),
           border: Border.all(
-            color: isActive ? colors.border.withOpacity(0.2) : Colors.transparent,
+            color: isActive ? colors.border.withValues(alpha: 0.2) : Colors.transparent,
           ),
           boxShadow: isActive ? [
             BoxShadow(
-              color: Colors.black.withOpacity(0.2),
+              color: Colors.black.withValues(alpha: 0.2),
               blurRadius: 10,
               offset: const Offset(0, 4),
             ),

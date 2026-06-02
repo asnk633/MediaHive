@@ -198,6 +198,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
                     department_id: finalProfile?.department_id,
                     avatar_url: finalProfile?.avatar_url,
                     photoURL: finalProfile?.avatar_url,
+                    avatar_drive_id: finalProfile?.avatar_drive_id,
                 });
 
             } catch (err: any) {
@@ -299,6 +300,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
                             department_id: finalProfile?.department_id,
                             avatar_url: finalProfile?.avatar_url,
                             photoURL: finalProfile?.avatar_url,
+                            avatar_drive_id: finalProfile?.avatar_drive_id,
                         });
                     } catch (err: any) {
                         const isAbort = err?.name === 'AbortError' || err?.message?.includes('Lock broken') || err?.message?.includes('TIMEOUT');
@@ -487,6 +489,18 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         if (user && !loading) {
             prefetchDashboardData();
             
+            // Wire user context to Sentry
+            import("@/services/monitoringService").then(({ MonitoringService }) => {
+                MonitoringService.setUserContext({
+                    id: user.uid,
+                    email: user.email,
+                    full_name: user.name,
+                    role: user.role,
+                    tenant_id: user.tenant_id,
+                    institution_id: user.institution_id
+                });
+            }).catch(err => console.error("[Sentry] Failed to set user context:", err));
+
             // Lazy load and register Web FCM token
             import("@/services/fcmService").then(({ initFcm }) => {
                 initFcm(user.uid).catch(err => {
@@ -495,6 +509,10 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
             });
         } else if (!user) {
             prefetchedRef.current = false; // Reset on logout
+            // Clear Sentry context
+            import("@/services/monitoringService").then(({ MonitoringService }) => {
+                MonitoringService.clearUserContext();
+            }).catch(err => console.error("[Sentry] Failed to clear user context:", err));
         }
     }, [user, loading]);
 

@@ -177,11 +177,11 @@ class ThemeColors {
 
   /// Glass fill color for use with ClipRRect + BackdropFilter.
   Color get glassFill =>
-      isDark ? Colors.white.withOpacity(0.07) : Colors.white.withOpacity(glassOpacity);
+      isDark ? Colors.white.withValues(alpha: 0.07) : Colors.white.withValues(alpha: glassOpacity);
 
   /// Glass border color.
   Color get glassBorderColor => isDark
-      ? Colors.white.withOpacity(0.12)
+      ? Colors.white.withValues(alpha: 0.12)
       : const Color(0x26AAAACC);
 
   /// Button text color for primary buttons.

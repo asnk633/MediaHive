@@ -2,8 +2,8 @@ import 'package:flutter/material.dart';
 import 'app_colors.dart';
 
 class AppTypography {
-  static const String primaryFont = '.SF Pro Text';
-  static const String displayFont = '.SF Pro Display';
+  static const String primaryFont = 'Muli';
+  static const String displayFont = 'Muli';
   static const String logoFont = 'BavistaSoulvare';
 
   static TextStyle get h1 => const TextStyle(

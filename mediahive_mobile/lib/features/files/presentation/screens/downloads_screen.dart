@@ -255,7 +255,7 @@ class _DownloadsScreenState extends ConsumerState<DownloadsScreen> {
   Widget _buildSearchBar(ThemeColors colors) {
     return Container(
       decoration: BoxDecoration(
-        color: colors.surface.withOpacity(0.5),
+        color: colors.surface.withValues(alpha: 0.5),
         borderRadius: BorderRadius.circular(16),
         border: Border.all(color: colors.border),
       ),
@@ -265,7 +265,7 @@ class _DownloadsScreenState extends ConsumerState<DownloadsScreen> {
         style: TextStyle(color: colors.textPrimary, fontSize: 14),
         decoration: InputDecoration(
           hintText: 'Search library...',
-          hintStyle: TextStyle(color: colors.textSecondary.withOpacity(0.5)),
+          hintStyle: TextStyle(color: colors.textSecondary.withValues(alpha: 0.5)),
           prefixIcon: Icon(LucideIcons.search, size: 18, color: colors.textSecondary),
           border: InputBorder.none, filled: false,
           contentPadding: const EdgeInsets.symmetric(vertical: 15),
@@ -296,9 +296,9 @@ class _DownloadsScreenState extends ConsumerState<DownloadsScreen> {
               child: Container(
                 padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
                 decoration: BoxDecoration(
-                  color: isSelected ? colors.textPrimary.withOpacity(0.1) : colors.surface.withOpacity(0.3),
+                  color: isSelected ? colors.textPrimary.withValues(alpha: 0.1) : colors.surface.withValues(alpha: 0.3),
                   borderRadius: BorderRadius.circular(12),
-                  border: Border.all(color: isSelected ? colors.textPrimary.withOpacity(0.2) : colors.border),
+                  border: Border.all(color: isSelected ? colors.textPrimary.withValues(alpha: 0.2) : colors.border),
                 ),
                 child: Row(
                   children: [
@@ -373,7 +373,7 @@ class _DownloadsScreenState extends ConsumerState<DownloadsScreen> {
                         Container(
                           padding: const EdgeInsets.all(8),
                           decoration: BoxDecoration(
-                            color: colors.indigo.withOpacity(0.1),
+                            color: colors.indigo.withValues(alpha: 0.1),
                             borderRadius: BorderRadius.circular(10),
                           ),
                           child: Icon(LucideIcons.folder, color: colors.indigo, size: 24),
@@ -413,7 +413,7 @@ class _DownloadsScreenState extends ConsumerState<DownloadsScreen> {
         Container(
           padding: const EdgeInsets.all(4),
           decoration: BoxDecoration(
-            color: colors.surface.withOpacity(0.5),
+            color: colors.surface.withValues(alpha: 0.5),
             borderRadius: BorderRadius.circular(10),
             border: Border.all(color: colors.border),
           ),
@@ -434,7 +434,7 @@ class _DownloadsScreenState extends ConsumerState<DownloadsScreen> {
       child: Container(
         padding: const EdgeInsets.all(6),
         decoration: BoxDecoration(
-          color: isActive ? colors.textPrimary.withOpacity(0.1) : Colors.transparent,
+          color: isActive ? colors.textPrimary.withValues(alpha: 0.1) : Colors.transparent,
           borderRadius: BorderRadius.circular(6),
         ),
         child: Icon(icon, size: 16, color: isActive ? colors.textPrimary : colors.textSecondary),
@@ -495,7 +495,7 @@ class _DownloadsScreenState extends ConsumerState<DownloadsScreen> {
                     child: Container(
                       padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
                       decoration: BoxDecoration(
-                        color: isPdf ? Colors.red.withOpacity(0.8) : (isVideo ? colors.indigo.withOpacity(0.8) : Colors.black.withOpacity(0.5)),
+                        color: isPdf ? Colors.red.withValues(alpha: 0.8) : (isVideo ? colors.indigo.withValues(alpha: 0.8) : Colors.black.withValues(alpha: 0.5)),
                         borderRadius: BorderRadius.circular(8),
                       ),
                       child: Text(
@@ -509,7 +509,7 @@ class _DownloadsScreenState extends ConsumerState<DownloadsScreen> {
                   if (isVideo)
                     Center(child: Container(
                       padding: const EdgeInsets.all(8),
-                      decoration: BoxDecoration(color: Colors.black.withOpacity(0.4), shape: BoxShape.circle),
+                      decoration: BoxDecoration(color: Colors.black.withValues(alpha: 0.4), shape: BoxShape.circle),
                       child: const Icon(LucideIcons.play, color: Colors.white, size: 20),
                     )),
   
@@ -520,7 +520,7 @@ class _DownloadsScreenState extends ConsumerState<DownloadsScreen> {
                         gradient: LinearGradient(
                           begin: Alignment.topCenter,
                           end: Alignment.bottomCenter,
-                          colors: [Colors.transparent, Colors.black.withOpacity(0.8)],
+                          colors: [Colors.transparent, Colors.black.withValues(alpha: 0.8)],
                           stops: const [0.5, 1.0],
                         ),
                       ),
@@ -544,7 +544,7 @@ class _DownloadsScreenState extends ConsumerState<DownloadsScreen> {
                         const SizedBox(height: 2),
                         Text(
                           _formatSize(file.size),
-                          style: TextStyle(color: Colors.white.withOpacity(0.6), fontSize: 9),
+                          style: TextStyle(color: Colors.white.withValues(alpha: 0.6), fontSize: 9),
                         ),
                       ],
                     ),
@@ -596,7 +596,7 @@ class _DownloadsScreenState extends ConsumerState<DownloadsScreen> {
                     width: 44,
                     height: 44,
                     decoration: BoxDecoration(
-                      color: colors.textPrimary.withOpacity(0.05),
+                      color: colors.textPrimary.withValues(alpha: 0.05),
                       borderRadius: BorderRadius.circular(10),
                     ),
                     clipBehavior: Clip.antiAlias,
@@ -614,7 +614,7 @@ class _DownloadsScreenState extends ConsumerState<DownloadsScreen> {
                               return Center(
                                 child: Icon(
                                   isVideo ? LucideIcons.fileVideo : (isPdf ? LucideIcons.fileText : LucideIcons.image),
-                                  color: colors.textSecondary.withOpacity(0.5),
+                                  color: colors.textSecondary.withValues(alpha: 0.5),
                                   size: 20,
                                 ),
                               );
@@ -625,7 +625,7 @@ class _DownloadsScreenState extends ConsumerState<DownloadsScreen> {
                         return Center(
                           child: Icon(
                             isVideo ? LucideIcons.fileVideo : (isPdf ? LucideIcons.fileText : LucideIcons.image),
-                            color: colors.textSecondary.withOpacity(0.5),
+                            color: colors.textSecondary.withValues(alpha: 0.5),
                             size: 20,
                           ),
                         );
@@ -676,7 +676,7 @@ class _DownloadsScreenState extends ConsumerState<DownloadsScreen> {
                   ? loadingProgress.cumulativeBytesLoaded / loadingProgress.expectedTotalBytes!
                   : null,
               strokeWidth: 2,
-              color: colors.textSecondary.withOpacity(0.2),
+              color: colors.textSecondary.withValues(alpha: 0.2),
             ),
           ),
         );
@@ -695,7 +695,7 @@ class _DownloadsScreenState extends ConsumerState<DownloadsScreen> {
     
     return Container(
       color: colors.surface,
-      child: Center(child: Icon(icon, color: colors.textSecondary.withOpacity(0.3), size: 40)),
+      child: Center(child: Icon(icon, color: colors.textSecondary.withValues(alpha: 0.3), size: 40)),
     );
   }
 
@@ -707,10 +707,10 @@ class _DownloadsScreenState extends ConsumerState<DownloadsScreen> {
           Container(
             padding: const EdgeInsets.all(32),
             decoration: BoxDecoration(
-              color: colors.surface.withOpacity(0.3),
+              color: colors.surface.withValues(alpha: 0.3),
               shape: BoxShape.circle,
             ),
-            child: Icon(LucideIcons.download, size: 48, color: colors.textSecondary.withOpacity(0.3)),
+            child: Icon(LucideIcons.download, size: 48, color: colors.textSecondary.withValues(alpha: 0.3)),
           ),
           const SizedBox(height: 24),
           Text('NO ASSETS FOUND', style: TextStyle(color: colors.textPrimary, fontSize: 16, fontWeight: FontWeight.bold)),

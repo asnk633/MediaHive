@@ -184,10 +184,10 @@ class DashboardScreen extends ConsumerWidget {
       decoration: BoxDecoration(
         color: colors.surface,
         borderRadius: BorderRadius.circular(20),
-        border: Border.all(color: colors.border.withOpacity(0.5)),
+        border: Border.all(color: colors.border.withValues(alpha: 0.5)),
         boxShadow: [
           BoxShadow(
-            color: colors.isDark ? Colors.black.withOpacity(0.2) : colors.border.withOpacity(0.05),
+            color: colors.isDark ? Colors.black.withValues(alpha: 0.2) : colors.border.withValues(alpha: 0.05),
             blurRadius: 10,
             offset: const Offset(0, 4),
           ),
@@ -195,7 +195,7 @@ class DashboardScreen extends ConsumerWidget {
       ),
       child: Column(
         children: [
-          Icon(icon, size: 20, color: accentColor.withOpacity(0.8)),
+          Icon(icon, size: 20, color: accentColor.withValues(alpha: 0.8)),
           const SizedBox(height: 12),
           Text(
             value,
@@ -211,7 +211,7 @@ class DashboardScreen extends ConsumerWidget {
             style: AppTypography.caption.copyWith(
               fontSize: 8,
               fontWeight: FontWeight.w900,
-              color: colors.textSecondary.withOpacity(0.4),
+              color: colors.textSecondary.withValues(alpha: 0.4),
               letterSpacing: 1.0,
             ),
           ),
@@ -224,9 +224,9 @@ class DashboardScreen extends ConsumerWidget {
     return Container(
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
-        color: AppColors.error.withOpacity(0.05),
+        color: AppColors.error.withValues(alpha: 0.05),
         borderRadius: BorderRadius.circular(16),
-        border: Border.all(color: AppColors.error.withOpacity(0.1)),
+        border: Border.all(color: AppColors.error.withValues(alpha: 0.1)),
       ),
       child: Column(
         children: alerts.map((alert) => Padding(
@@ -237,7 +237,7 @@ class DashboardScreen extends ConsumerWidget {
               const SizedBox(width: 12),
               Text(
                 alert.toString(),
-                style: AppTypography.caption.copyWith(color: AppColors.error.withOpacity(0.8), fontWeight: FontWeight.bold),
+                style: AppTypography.caption.copyWith(color: AppColors.error.withValues(alpha: 0.8), fontWeight: FontWeight.bold),
               ),
             ],
           ),
@@ -319,14 +319,14 @@ class DashboardScreen extends ConsumerWidget {
     return Center(
       child: Column(
         children: [
-          Icon(LucideIcons.shieldCheck, size: 16, color: colors.textSecondary.withOpacity(0.2)),
+          Icon(LucideIcons.shieldCheck, size: 16, color: colors.textSecondary.withValues(alpha: 0.2)),
           const SizedBox(height: 8),
           Text(
             'MEDIAHIVE SECURE OPS CORE',
             style: AppTypography.caption.copyWith(
               fontSize: 8,
               letterSpacing: 2.0,
-              color: colors.textSecondary.withOpacity(0.2),
+              color: colors.textSecondary.withValues(alpha: 0.2),
               fontWeight: FontWeight.w900,
             ),
           ),
@@ -358,7 +358,7 @@ class DashboardScreen extends ConsumerWidget {
         child: Center(
           child: Column(
             children: [
-              Icon(LucideIcons.checkCircle2, color: AppColors.success.withOpacity(0.2), size: 32),
+              Icon(LucideIcons.checkCircle2, color: AppColors.success.withValues(alpha: 0.2), size: 32),
               const SizedBox(height: 12),
               Text(
                 'ALL CLEAR',
@@ -367,7 +367,7 @@ class DashboardScreen extends ConsumerWidget {
               const SizedBox(height: 4),
               Text(
                 'No immediate priorities found',
-                style: AppTypography.caption.copyWith(color: colors.textSecondary.withOpacity(0.5)),
+                style: AppTypography.caption.copyWith(color: colors.textSecondary.withValues(alpha: 0.5)),
               ),
             ],
           ),
@@ -401,7 +401,7 @@ class DashboardScreen extends ConsumerWidget {
           color: colors.surface,
           borderRadius: BorderRadius.circular(20),
           border: Border.all(
-            color: isOverdue ? AppColors.error.withOpacity(0.5) : colors.border.withOpacity(0.5),
+            color: isOverdue ? AppColors.error.withValues(alpha: 0.5) : colors.border.withValues(alpha: 0.5),
           ),
         ),
         child: Row(
@@ -410,7 +410,7 @@ class DashboardScreen extends ConsumerWidget {
               width: 32,
               height: 32,
               decoration: BoxDecoration(
-                color: (isOverdue ? AppColors.error : AppColors.info).withOpacity(0.1),
+                color: (isOverdue ? AppColors.error : AppColors.info).withValues(alpha: 0.1),
                 shape: BoxShape.circle,
               ),
               child: Icon(
@@ -430,7 +430,7 @@ class DashboardScreen extends ConsumerWidget {
                     overflow: TextOverflow.ellipsis,
                     style: AppTypography.bodyS.copyWith(
                       fontWeight: FontWeight.w900,
-                      color: isDone ? colors.textSecondary.withOpacity(0.5) : (isOverdue ? AppColors.error : colors.textPrimary),
+                      color: isDone ? colors.textSecondary.withValues(alpha: 0.5) : (isOverdue ? AppColors.error : colors.textPrimary),
                       decoration: isDone ? TextDecoration.lineThrough : null,
                     ),
                   ),
@@ -439,13 +439,13 @@ class DashboardScreen extends ConsumerWidget {
                     style: AppTypography.caption.copyWith(
                       fontSize: 8,
                       fontWeight: FontWeight.bold,
-                      color: colors.textSecondary.withOpacity(0.5),
+                      color: colors.textSecondary.withValues(alpha: 0.5),
                     ),
                   ),
                 ],
               ),
             ),
-            Icon(LucideIcons.chevronRight, size: 14, color: colors.textSecondary.withOpacity(0.3)),
+            Icon(LucideIcons.chevronRight, size: 14, color: colors.textSecondary.withValues(alpha: 0.3)),
           ],
         ),
       ),
@@ -499,6 +499,8 @@ class DashboardScreen extends ConsumerWidget {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
+        _buildRoleBadge(colors, role),
+        const SizedBox(height: 12),
         Text(
           greeting.toUpperCase(),
           style: AppTypography.caption.copyWith(
@@ -516,13 +518,15 @@ class DashboardScreen extends ConsumerWidget {
             color: colors.isDark ? Colors.white : colors.textPrimary,
             height: 1.1,
           ),
+          maxLines: 1,
+          overflow: TextOverflow.ellipsis,
         ),
         const SizedBox(height: 8),
         Text(
           motivation,
           style: TextStyle(
             fontSize: 14,
-            color: colors.textSecondary.withOpacity(0.5),
+            color: colors.textSecondary.withValues(alpha: 0.5),
             fontWeight: FontWeight.w500,
             fontStyle: FontStyle.italic,
           ),
@@ -531,19 +535,82 @@ class DashboardScreen extends ConsumerWidget {
     );
   }
 
+  Widget _buildRoleBadge(ThemeColors colors, String role) {
+    final cleanRole = role.replaceAll('userrole.', '').trim().toUpperCase();
+    final isDark = colors.isDark;
+    
+    Gradient badgeGradient;
+    Color borderColor;
+    Color textColor;
+    
+    if (cleanRole.contains('ADMIN')) {
+      badgeGradient = const LinearGradient(
+        colors: [Color(0xFFFFD700), Color(0xFFC9A84C)],
+        begin: Alignment.topLeft,
+        end: Alignment.bottomRight,
+      );
+      borderColor = isDark ? const Color(0x26FFD700) : const Color(0xFFC9A84C).withValues(alpha: 0.4);
+      textColor = isDark ? const Color(0xFF000000) : Colors.white;
+    } else if (cleanRole.contains('MANAGER')) {
+      badgeGradient = const LinearGradient(
+        colors: [Color(0xFF3B82F6), Color(0xFF1D4ED8)],
+        begin: Alignment.topLeft,
+        end: Alignment.bottomRight,
+      );
+      borderColor = isDark ? const Color(0x333B82F6) : const Color(0xFF1D4ED8).withValues(alpha: 0.4);
+      textColor = Colors.white;
+    } else {
+      // MEMBER / USER
+      badgeGradient = isDark
+          ? const LinearGradient(
+              colors: [Color(0xFF333333), Color(0xFF1A1A1A)],
+              begin: Alignment.topLeft,
+              end: Alignment.bottomRight,
+            )
+          : const LinearGradient(
+              colors: [Color(0xFFE5E7EB), Color(0xFFD1D5DB)],
+              begin: Alignment.topLeft,
+              end: Alignment.bottomRight,
+            );
+      borderColor = isDark ? Colors.white.withValues(alpha: 0.08) : Colors.black.withValues(alpha: 0.08);
+      textColor = isDark ? const Color(0xFFCCCCCC) : const Color(0xFF1F2937);
+    }
+
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
+      decoration: BoxDecoration(
+        gradient: badgeGradient,
+        borderRadius: BorderRadius.circular(8),
+        border: Border.all(color: borderColor, width: 0.75),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black.withValues(alpha: 0.1),
+            blurRadius: 4,
+            offset: const Offset(0, 2),
+          ),
+        ],
+      ),
+      child: Text(
+        cleanRole,
+        style: TextStyle(
+          fontSize: 8,
+          fontWeight: FontWeight.w900,
+          color: textColor,
+          letterSpacing: 0.8,
+        ),
+      ),
+    );
+  }
+
   Widget _buildGreetingPlaceholder(ThemeColors colors) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
+        Container(width: 60, height: 20, decoration: BoxDecoration(color: colors.surface, borderRadius: BorderRadius.circular(8))),
+        const SizedBox(height: 12),
         Container(width: 100, height: 16, decoration: BoxDecoration(color: colors.surface, borderRadius: BorderRadius.circular(4))),
         const SizedBox(height: 8),
-        Row(
-          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-          children: [
-            Container(width: 200, height: 32, decoration: BoxDecoration(color: colors.surface, borderRadius: BorderRadius.circular(8))),
-            Container(width: 60, height: 20, decoration: BoxDecoration(color: colors.surface, borderRadius: BorderRadius.circular(8))),
-          ],
-        ),
+        Container(width: 200, height: 32, decoration: BoxDecoration(color: colors.surface, borderRadius: BorderRadius.circular(8))),
       ],
     ).animate(onPlay: (controller) => controller.repeat()).shimmer(duration: 1.5.seconds);
   }
@@ -696,20 +763,20 @@ class DashboardScreen extends ConsumerWidget {
           borderRadius: BorderRadius.circular(16),
           border: Border.all(
             color: colors.isDark 
-                ? Colors.white.withOpacity(0.08) 
-                : colors.border.withOpacity(0.12),
+                ? Colors.white.withValues(alpha: 0.08) 
+                : colors.border.withValues(alpha: 0.12),
           ),
           boxShadow: colors.isDark
               ? [
                   BoxShadow(
-                    color: Colors.black.withOpacity(0.3),
+                    color: Colors.black.withValues(alpha: 0.3),
                     blurRadius: 12,
                     offset: const Offset(0, 4),
                   ),
                 ]
               : [
                   BoxShadow(
-                    color: colors.border.withOpacity(0.08),
+                    color: colors.border.withValues(alpha: 0.08),
                     blurRadius: 12,
                     offset: const Offset(0, 4),
                   ),
@@ -721,7 +788,7 @@ class DashboardScreen extends ConsumerWidget {
             Container(
               padding: const EdgeInsets.all(8),
               decoration: BoxDecoration(
-                color: colors.honey.withOpacity(colors.isDark ? 0.1 : 0.15),
+                color: colors.honey.withValues(alpha: colors.isDark ? 0.1 : 0.15),
                 shape: BoxShape.circle,
               ),
               child: Icon(icon, color: colors.honey, size: 16),
@@ -776,7 +843,7 @@ class DashboardScreen extends ConsumerWidget {
                 width: 8,
                 height: 8,
                 decoration: BoxDecoration(
-                  color: colors.textSecondary.withOpacity(0.3),
+                  color: colors.textSecondary.withValues(alpha: 0.3),
                   shape: BoxShape.circle,
                 ),
               ),
@@ -784,7 +851,7 @@ class DashboardScreen extends ConsumerWidget {
               Text(
                 'STANDBY MODE',
                 style: TextStyle(
-                  color: colors.textSecondary.withOpacity(0.6),
+                  color: colors.textSecondary.withValues(alpha: 0.6),
                   fontWeight: FontWeight.bold,
                   fontSize: 12,
                   letterSpacing: 1.5,
@@ -857,7 +924,7 @@ class DashboardScreen extends ConsumerWidget {
             Container(
               padding: const EdgeInsets.all(8),
               decoration: BoxDecoration(
-                color: color.withOpacity(colors.isDark ? 0.1 : 0.15),
+                color: color.withValues(alpha: colors.isDark ? 0.1 : 0.15),
                 shape: BoxShape.circle,
               ),
               child: Icon(icon, size: 18, color: color),
@@ -878,7 +945,7 @@ class DashboardScreen extends ConsumerWidget {
               style: TextStyle(
                 fontSize: 8,
                 fontWeight: FontWeight.w800,
-                color: colors.textSecondary.withOpacity(0.5),
+                color: colors.textSecondary.withValues(alpha: 0.5),
                 letterSpacing: 1.0,
               ),
               textAlign: TextAlign.center,
@@ -926,7 +993,7 @@ class DashboardScreen extends ConsumerWidget {
                   borderRadius: BorderRadius.circular(6),
                   boxShadow: [
                     BoxShadow(
-                      color: const Color(0xFF10B981).withOpacity(0.3),
+                      color: const Color(0xFF10B981).withValues(alpha: 0.3),
                       blurRadius: 8,
                       offset: const Offset(0, 2),
                     ),
@@ -1016,7 +1083,7 @@ class DashboardScreen extends ConsumerWidget {
                   borderRadius: BorderRadius.circular(6),
                   boxShadow: [
                     BoxShadow(
-                      color: const Color(0xFF6366F1).withOpacity(0.3),
+                      color: const Color(0xFF6366F1).withValues(alpha: 0.3),
                       blurRadius: 8,
                       offset: const Offset(0, 2),
                     ),
@@ -1097,9 +1164,9 @@ class DashboardScreen extends ConsumerWidget {
               Container(
                 padding: const EdgeInsets.all(6),
                 decoration: BoxDecoration(
-                  color: colors.indigo.withOpacity(0.1),
+                  color: colors.indigo.withValues(alpha: 0.1),
                   borderRadius: BorderRadius.circular(8),
-                  border: Border.all(color: colors.indigo.withOpacity(0.2)),
+                  border: Border.all(color: colors.indigo.withValues(alpha: 0.2)),
                 ),
                 child: Icon(LucideIcons.calendar, size: 16, color: colors.indigo),
               ),
@@ -1176,7 +1243,7 @@ class DashboardScreen extends ConsumerWidget {
           Container(
             padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
             decoration: BoxDecoration(
-              color: Color(event.colorValue).withOpacity(0.1),
+              color: Color(event.colorValue).withValues(alpha: 0.1),
               borderRadius: BorderRadius.circular(12),
             ),
             child: Column(
@@ -1194,7 +1261,7 @@ class DashboardScreen extends ConsumerWidget {
                   style: TextStyle(
                     fontSize: 10,
                     fontWeight: FontWeight.bold,
-                    color: Color(event.colorValue).withOpacity(0.6),
+                    color: Color(event.colorValue).withValues(alpha: 0.6),
                   ),
                 ),
               ],
@@ -1238,7 +1305,7 @@ class DashboardScreen extends ConsumerWidget {
             ),
             child: Text(
               event.type.toUpperCase(),
-              style: TextStyle(fontSize: 8, fontWeight: FontWeight.bold, color: colors.textSecondary.withOpacity(0.6)),
+              style: TextStyle(fontSize: 8, fontWeight: FontWeight.bold, color: colors.textSecondary.withValues(alpha: 0.6)),
             ),
           ),
         ],
@@ -1270,9 +1337,9 @@ class DashboardScreen extends ConsumerWidget {
               Container(
                 padding: const EdgeInsets.all(6),
                 decoration: BoxDecoration(
-                  color: const Color(0xFF10B981).withOpacity(0.1),
+                  color: const Color(0xFF10B981).withValues(alpha: 0.1),
                   borderRadius: BorderRadius.circular(8),
-                  border: Border.all(color: const Color(0xFF10B981).withOpacity(0.2)),
+                  border: Border.all(color: const Color(0xFF10B981).withValues(alpha: 0.2)),
                 ),
                 child: const Icon(LucideIcons.checkSquare, size: 16, color: Color(0xFF10B981)),
               ),
@@ -1339,7 +1406,7 @@ class DashboardScreen extends ConsumerWidget {
             child: Center(
               child: Column(
                 children: [
-                  Icon(LucideIcons.checkCircle2, color: AppColors.success.withOpacity(0.2), size: 32),
+                  Icon(LucideIcons.checkCircle2, color: AppColors.success.withValues(alpha: 0.2), size: 32),
                   const SizedBox(height: 12),
                   Text(
                     'ALL CLEAR',
@@ -1348,7 +1415,7 @@ class DashboardScreen extends ConsumerWidget {
                   const SizedBox(height: 4),
                   Text(
                     'No immediate priorities found',
-                    style: AppTypography.caption.copyWith(color: colors.textSecondary.withOpacity(0.5)),
+                    style: AppTypography.caption.copyWith(color: colors.textSecondary.withValues(alpha: 0.5)),
                   ),
                 ],
               ),
@@ -1385,7 +1452,7 @@ class DashboardScreen extends ConsumerWidget {
                       width: 8,
                       height: 8,
                       decoration: BoxDecoration(
-                        color: _getStatusColor(task.status).withOpacity(0.8),
+                        color: _getStatusColor(task.status).withValues(alpha: 0.8),
                         shape: BoxShape.circle,
                       ),
                     ),
@@ -1415,16 +1482,16 @@ class DashboardScreen extends ConsumerWidget {
               Container(
                 padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
                 decoration: BoxDecoration(
-                  color: Colors.blue.withOpacity(0.1),
+                  color: Colors.blue.withValues(alpha: 0.1),
                   borderRadius: BorderRadius.circular(6),
                 ),
                 child: Row(
                   children: [
-                    Icon(LucideIcons.user, size: 10, color: colors.textSecondary.withOpacity(0.6)),
+                    Icon(LucideIcons.user, size: 10, color: colors.textSecondary.withValues(alpha: 0.6)),
                     const SizedBox(width: 4),
                     Text(
                       task.assignee.toUpperCase(),
-                      style: TextStyle(fontSize: 10, fontWeight: FontWeight.bold, color: colors.textSecondary.withOpacity(0.6)),
+                      style: TextStyle(fontSize: 10, fontWeight: FontWeight.bold, color: colors.textSecondary.withValues(alpha: 0.6)),
                     ),
                   ],
                 ),
@@ -1454,9 +1521,9 @@ class DashboardScreen extends ConsumerWidget {
       child: Container(
         padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
         decoration: BoxDecoration(
-          color: color.withOpacity(0.1),
+          color: color.withValues(alpha: 0.1),
           borderRadius: BorderRadius.circular(6),
-          border: Border.all(color: color.withOpacity(0.2)),
+          border: Border.all(color: color.withValues(alpha: 0.2)),
         ),
         child: Text(
           task.status.toUpperCase(),
@@ -1496,7 +1563,7 @@ class DashboardScreen extends ConsumerWidget {
             const SizedBox(height: 12),
             Container(
               width: 40, height: 4,
-              decoration: BoxDecoration(color: colors.textSecondary.withOpacity(0.1), borderRadius: BorderRadius.circular(2)),
+              decoration: BoxDecoration(color: colors.textSecondary.withValues(alpha: 0.1), borderRadius: BorderRadius.circular(2)),
             ),
             const SizedBox(height: 20),
             Text(
@@ -1519,7 +1586,7 @@ class DashboardScreen extends ConsumerWidget {
                   ref.read(tasksListProvider.notifier).updateTask(updatedTask);
                   Navigator.pop(context);
                 },
-                leading: Icon(s['icon'] as IconData, color: isSelected ? color : color.withOpacity(0.3)),
+                leading: Icon(s['icon'] as IconData, color: isSelected ? color : color.withValues(alpha: 0.3)),
                 title: Text(
                   s['label'] as String,
                   style: TextStyle(
@@ -1561,7 +1628,7 @@ class DashboardScreen extends ConsumerWidget {
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
       decoration: BoxDecoration(
-        color: color.withOpacity(0.1),
+        color: color.withValues(alpha: 0.1),
         borderRadius: BorderRadius.circular(6),
       ),
       child: Text(
@@ -1577,7 +1644,7 @@ class DashboardScreen extends ConsumerWidget {
       decoration: BoxDecoration(
         color: colors.isDark ? const Color(0xFF0F172A) : colors.surface,
         borderRadius: BorderRadius.circular(24),
-        border: Border.all(color: colors.border.withOpacity(0.2)),
+        border: Border.all(color: colors.border.withValues(alpha: 0.2)),
       ),
       child: Column(
         children: [
@@ -1598,7 +1665,7 @@ class DashboardScreen extends ConsumerWidget {
                   ),
                 ],
               ),
-              Icon(LucideIcons.chevronRight, size: 16, color: colors.textSecondary.withOpacity(0.3)),
+              Icon(LucideIcons.chevronRight, size: 16, color: colors.textSecondary.withValues(alpha: 0.3)),
             ],
           ),
           const SizedBox(height: 20),
@@ -1627,7 +1694,7 @@ class DashboardScreen extends ConsumerWidget {
             boxShadow: [
               if (active)
                 BoxShadow(
-                  color: const Color(0xFF10B981).withOpacity(0.5),
+                  color: const Color(0xFF10B981).withValues(alpha: 0.5),
                   blurRadius: 4,
                   spreadRadius: 1,
                 ),
@@ -1640,7 +1707,7 @@ class DashboardScreen extends ConsumerWidget {
           style: TextStyle(
             fontSize: 8,
             fontWeight: FontWeight.bold,
-            color: colors.textSecondary.withOpacity(0.6),
+            color: colors.textSecondary.withValues(alpha: 0.6),
           ),
         ),
       ],

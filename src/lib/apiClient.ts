@@ -71,9 +71,9 @@ function isRetryable(error: Error): boolean {
     return false;
   }
 
-  // ALLOW a single retry for 401/Unauthorized on the client
+  // NEVER retry 401/Unauthorized to avoid infinite loops and redundant backend load
   if (message.includes('401') || message.includes('unauthorized')) {
-    return typeof window !== 'undefined'; // Only retry on client
+    return false;
   }
 
   // Default: don't retry
@@ -439,29 +439,16 @@ export const apiClient = async <T = any>(endpoint: string, options: ApiOptions =
     const isServer = typeof window === 'undefined';
 
     if (!headers['Authorization'] && !headers['authorization']) {
-      // 🌐 CLIENT: Pulse check for Bearer token fallback
+      // 🌐 CLIENT: Pulse check for Bearer token fallback - REMOVED (Cookie-Only)
       if (!isServer) {
-        try {
-          const { supabase } = await import('@/lib/supabaseClient');
-          const { data: { session } } = await supabase.auth.getSession();
-          if (session?.access_token) {
-            headers['Authorization'] = `Bearer ${session.access_token}`;
-            if (isDev) {
-              const masked = `${session.access_token.substring(0, 5)}...${session.access_token.substring(session.access_token.length - 5)}`;
-              console.log(`[API TRACE] Injected Client Bearer token fallback: ${masked}`);
-            }
-          }
-        } catch (err) {
-          if (isDev) console.warn("[API TRACE] Client Bearer token injection failed", err);
-        }
+        if (isDev) console.log(`[API TRACE] Client request using cookies (Bearer fallback removed)`);
       }
-      // 🖥️ SERVER: Pulse check for SSR prefetching
+      // 🖥️ SERVER: Forward cookies to the internal API call
       else {
         try {
           // Dynamic imports because next/headers is only available on server
           const { cookies } = await import('next/headers');
           const cookieStore = await cookies();
-          const { createServerClient } = await import('@supabase/ssr');
 
           const allCookies = cookieStore.getAll();
           if (isDev) {
@@ -474,32 +461,9 @@ export const apiClient = async <T = any>(endpoint: string, options: ApiOptions =
             headers['Cookie'] = allCookies.map(c => `${c.name}=${c.value}`).join('; ');
             if (isDev) console.log(`[API TRACE][SERVER] 📤 Forwarded Cookies: ${headers['Cookie'].substring(0, 50)}...`);
           }
-
-          const supabase = createServerClient(
-            process.env.NEXT_PUBLIC_SUPABASE_URL!,
-            process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
-            {
-              cookies: {
-                getAll() {
-                  return cookieStore.getAll();
-                },
-              },
-            }
-          );
-
-          const { data: { session } } = await supabase.auth.getSession();
-          if (session?.access_token) {
-            headers['Authorization'] = `Bearer ${session.access_token}`;
-            if (isDev) {
-              const masked = `${session.access_token.substring(0, 5)}...${session.access_token.substring(session.access_token.length - 5)}`;
-              console.log(`[API TRACE][SERVER] ✅ Injected Bearer token: ${masked}`);
-            }
-          } else {
-            if (isDev) console.log("[API TRACE][SERVER] 🛑 No session found in cookies");
-          }
         } catch (err) {
           // Silent - next/headers might not be available in some edge runtimes or middleware/proxy contexts
-          if (isDev) console.warn("[API TRACE][SERVER] 🛑 Injection failed:", (err as Error).message);
+          if (isDev) console.warn("[API TRACE][SERVER] 🛑 Cookie Forwarding failed:", (err as Error).message);
         }
       }
     }

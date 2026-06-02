@@ -157,13 +157,13 @@ class _SignUpScreenState extends ConsumerState<SignUpScreen> {
         Container(
           padding: const EdgeInsets.all(20),
           decoration: BoxDecoration(
-            color: Colors.white.withOpacity(isDark ? 0.05 : 0.15),
+            color: Colors.white.withValues(alpha: isDark ? 0.05 : 0.15),
             shape: BoxShape.circle,
-            border: Border.all(color: Colors.white.withOpacity(isDark ? 0.1 : 0.3)),
+            border: Border.all(color: Colors.white.withValues(alpha: isDark ? 0.1 : 0.3)),
             boxShadow: [
               BoxShadow(
                 color: (isDark ? const Color(0xFFFFD700) : const Color(0xFF006EE6))
-                    .withOpacity(isDark ? 0.2 : 0.1),
+                    .withValues(alpha: isDark ? 0.2 : 0.1),
                 blurRadius: 30,
                 spreadRadius: 5,
               ),
@@ -191,7 +191,7 @@ class _SignUpScreenState extends ConsumerState<SignUpScreen> {
           style: TextStyle(
             fontSize: 9,
             fontWeight: FontWeight.w900,
-            color: colors.textSecondary.withOpacity(0.5),
+            color: colors.textSecondary.withValues(alpha: 0.5),
             letterSpacing: 4,
           ),
         ).animate().fadeIn(delay: 400.ms),
@@ -212,12 +212,12 @@ class _SignUpScreenState extends ConsumerState<SignUpScreen> {
         child: Container(
           padding: const EdgeInsets.all(32),
           decoration: BoxDecoration(
-            color: isDark ? Colors.white.withOpacity(0.08) : Colors.white.withOpacity(0.65),
+            color: isDark ? Colors.white.withValues(alpha: 0.08) : Colors.white.withValues(alpha: 0.65),
             borderRadius: BorderRadius.circular(32),
-            border: Border.all(color: Colors.white.withOpacity(isDark ? 0.1 : 0.2)),
+            border: Border.all(color: Colors.white.withValues(alpha: isDark ? 0.1 : 0.2)),
             boxShadow: [
               BoxShadow(
-                color: Colors.black.withOpacity(isDark ? 0.2 : 0.05),
+                color: Colors.black.withValues(alpha: isDark ? 0.2 : 0.05),
                 blurRadius: 40,
                 offset: const Offset(0, 20),
               ),
@@ -239,7 +239,7 @@ class _SignUpScreenState extends ConsumerState<SignUpScreen> {
                 'Enter your details to create an operative key',
                 style: TextStyle(
                   fontSize: 13,
-                  color: colors.textSecondary.withOpacity(0.7),
+                  color: colors.textSecondary.withValues(alpha: 0.7),
                 ),
               ),
               const SizedBox(height: 24),
@@ -283,7 +283,7 @@ class _SignUpScreenState extends ConsumerState<SignUpScreen> {
                 'Select either an Institution or a Department (not both)',
                 style: TextStyle(
                   fontSize: 11,
-                  color: colors.textSecondary.withOpacity(0.5),
+                  color: colors.textSecondary.withValues(alpha: 0.5),
                   fontStyle: FontStyle.italic,
                 ),
               ),
@@ -390,16 +390,16 @@ class _SignUpScreenState extends ConsumerState<SignUpScreen> {
           style: TextStyle(
             fontSize: 10,
             fontWeight: FontWeight.w900,
-            color: colors.textSecondary.withOpacity(0.5),
+            color: colors.textSecondary.withValues(alpha: 0.5),
             letterSpacing: 1.5,
           ),
         ),
         const SizedBox(height: 10),
         Container(
           decoration: BoxDecoration(
-            color: isDark ? Colors.black.withOpacity(0.2) : Colors.white.withOpacity(0.5),
+            color: isDark ? Colors.black.withValues(alpha: 0.2) : Colors.white.withValues(alpha: 0.5),
             borderRadius: BorderRadius.circular(16),
-            border: Border.all(color: isDark ? Colors.white.withOpacity(0.05) : Colors.black.withOpacity(0.05)),
+            border: Border.all(color: isDark ? Colors.white.withValues(alpha: 0.05) : Colors.black.withValues(alpha: 0.05)),
           ),
           child: TextField(
             controller: controller,
@@ -407,7 +407,7 @@ class _SignUpScreenState extends ConsumerState<SignUpScreen> {
             style: TextStyle(color: colors.textPrimary, fontSize: 15),
             decoration: InputDecoration(
               hintText: hint,
-              hintStyle: TextStyle(color: colors.textSecondary.withOpacity(0.3)),
+              hintStyle: TextStyle(color: colors.textSecondary.withValues(alpha: 0.3)),
               prefixIcon: Icon(
                 icon, 
                 size: 20, 
@@ -417,7 +417,7 @@ class _SignUpScreenState extends ConsumerState<SignUpScreen> {
                   ? IconButton(
                       icon: Icon(
                         obscureText ? LucideIcons.eyeOff : LucideIcons.eye,
-                        color: colors.textSecondary.withOpacity(0.5),
+                        color: colors.textSecondary.withValues(alpha: 0.5),
                         size: 20,
                       ),
                       onPressed: onToggleVisibility,
@@ -440,7 +440,7 @@ class _SignUpScreenState extends ConsumerState<SignUpScreen> {
       style: TextStyle(
         fontSize: 10,
         fontWeight: FontWeight.w900,
-        color: colors.textSecondary.withOpacity(0.5),
+        color: colors.textSecondary.withValues(alpha: 0.5),
         letterSpacing: 1.5,
       ),
     );
@@ -473,9 +473,9 @@ class _SignUpScreenState extends ConsumerState<SignUpScreen> {
         height: 56,
         padding: const EdgeInsets.symmetric(horizontal: 20),
         decoration: BoxDecoration(
-          color: isDark ? Colors.black.withOpacity(0.2) : Colors.white.withOpacity(0.5),
+          color: isDark ? Colors.black.withValues(alpha: 0.2) : Colors.white.withValues(alpha: 0.5),
           borderRadius: BorderRadius.circular(16),
-          border: Border.all(color: isDark ? Colors.white.withOpacity(0.05) : Colors.black.withOpacity(0.05)),
+          border: Border.all(color: isDark ? Colors.white.withValues(alpha: 0.05) : Colors.black.withValues(alpha: 0.05)),
         ),
         child: Row(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -484,14 +484,14 @@ class _SignUpScreenState extends ConsumerState<SignUpScreen> {
               displayText,
               style: TextStyle(
                 color: value == null 
-                    ? colors.textSecondary.withOpacity(0.3) 
+                    ? colors.textSecondary.withValues(alpha: 0.3) 
                     : colors.textPrimary, 
                 fontSize: 15,
               ),
             ),
             Icon(
               LucideIcons.chevronDown, 
-              color: colors.textSecondary.withOpacity(0.5), 
+              color: colors.textSecondary.withValues(alpha: 0.5), 
               size: 20,
             ),
           ],
@@ -512,7 +512,7 @@ class _SignUpScreenState extends ConsumerState<SignUpScreen> {
     showModalBottomSheet(
       context: context,
       backgroundColor: Colors.transparent,
-      barrierColor: Colors.black.withOpacity(0.4),
+      barrierColor: Colors.black.withValues(alpha: 0.4),
       isScrollControlled: true,
       builder: (context) {
         return ClipRRect(
@@ -528,12 +528,12 @@ class _SignUpScreenState extends ConsumerState<SignUpScreen> {
               ),
               padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 20),
               decoration: BoxDecoration(
-                color: isDark ? Colors.black.withOpacity(0.85) : Colors.white.withOpacity(0.85),
+                color: isDark ? Colors.black.withValues(alpha: 0.85) : Colors.white.withValues(alpha: 0.85),
                 borderRadius: const BorderRadius.only(
                   topLeft: Radius.circular(32),
                   topRight: Radius.circular(32),
                 ),
-                border: Border.all(color: Colors.white.withOpacity(isDark ? 0.08 : 0.2)),
+                border: Border.all(color: Colors.white.withValues(alpha: isDark ? 0.08 : 0.2)),
               ),
               child: Column(
                 mainAxisSize: MainAxisSize.min,
@@ -542,7 +542,7 @@ class _SignUpScreenState extends ConsumerState<SignUpScreen> {
                     width: 40,
                     height: 4,
                     decoration: BoxDecoration(
-                      color: colors.textSecondary.withOpacity(0.3),
+                      color: colors.textSecondary.withValues(alpha: 0.3),
                       borderRadius: BorderRadius.circular(2),
                     ),
                   ),
@@ -577,12 +577,12 @@ class _SignUpScreenState extends ConsumerState<SignUpScreen> {
                           margin: const EdgeInsets.only(bottom: 8),
                           decoration: BoxDecoration(
                             color: isSelected 
-                                ? (isDark ? const Color(0xFFFFB300).withOpacity(0.15) : const Color(0xFF006EE6).withOpacity(0.1))
+                                ? (isDark ? const Color(0xFFFFB300).withValues(alpha: 0.15) : const Color(0xFF006EE6).withValues(alpha: 0.1))
                                 : Colors.transparent,
                             borderRadius: BorderRadius.circular(16),
                             border: Border.all(
                               color: isSelected
-                                  ? (isDark ? const Color(0xFFFFB300).withOpacity(0.3) : const Color(0xFF006EE6).withOpacity(0.3))
+                                  ? (isDark ? const Color(0xFFFFB300).withValues(alpha: 0.3) : const Color(0xFF006EE6).withValues(alpha: 0.3))
                                   : Colors.transparent,
                             ),
                           ),
@@ -629,7 +629,7 @@ class _SignUpScreenState extends ConsumerState<SignUpScreen> {
       height: 56,
       width: double.infinity,
       decoration: BoxDecoration(
-        color: isDark ? Colors.black.withOpacity(0.1) : Colors.white.withOpacity(0.3),
+        color: isDark ? Colors.black.withValues(alpha: 0.1) : Colors.white.withValues(alpha: 0.3),
         borderRadius: BorderRadius.circular(16),
       ),
       child: Center(
@@ -651,14 +651,14 @@ class _SignUpScreenState extends ConsumerState<SignUpScreen> {
       height: 56,
       width: double.infinity,
       decoration: BoxDecoration(
-        color: const Color(0xFFEF4444).withOpacity(0.1),
+        color: const Color(0xFFEF4444).withValues(alpha: 0.1),
         borderRadius: BorderRadius.circular(16),
-        border: Border.all(color: const Color(0xFFEF4444).withOpacity(0.2)),
+        border: Border.all(color: const Color(0xFFEF4444).withValues(alpha: 0.2)),
       ),
       child: Center(
         child: Text(
           'Failed to load data', 
-          style: TextStyle(color: const Color(0xFFEF4444).withOpacity(0.8), fontSize: 13),
+          style: TextStyle(color: const Color(0xFFEF4444).withValues(alpha: 0.8), fontSize: 13),
         ),
       ),
     );
@@ -673,7 +673,7 @@ class _SignUpScreenState extends ConsumerState<SignUpScreen> {
           children: [
             Text(
               "Already have an operative key? ",
-              style: TextStyle(color: colors.textSecondary.withOpacity(0.6), fontSize: 13),
+              style: TextStyle(color: colors.textSecondary.withValues(alpha: 0.6), fontSize: 13),
             ),
             GestureDetector(
               onTap: () => context.pop(),
@@ -695,7 +695,7 @@ class _SignUpScreenState extends ConsumerState<SignUpScreen> {
           style: TextStyle(
             fontSize: 8,
             fontWeight: FontWeight.bold,
-            color: colors.textSecondary.withOpacity(0.2),
+            color: colors.textSecondary.withValues(alpha: 0.2),
             letterSpacing: 2,
             height: 1.5,
           ),

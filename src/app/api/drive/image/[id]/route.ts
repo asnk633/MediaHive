@@ -81,10 +81,20 @@ export async function GET(
         );
 
         // 3. Create a readable stream from the Drive response
-        const stream = response.data;
+        const nodeStream = response.data;
+        
+        // 4. Convert Node.js stream to Web Stream for Next.js NextResponse
+        // @ts-ignore - response.data is a Node stream but types may not reflect this
+        const webStream = new ReadableStream({
+            start(controller) {
+                nodeStream.on('data', (chunk: any) => controller.enqueue(chunk));
+                nodeStream.on('end', () => controller.close());
+                nodeStream.on('error', (err: any) => controller.error(err));
+            }
+        });
 
-        // 4. Return the stream as a NextResponse
-        return new NextResponse(stream as any, {
+        // 5. Return the stream as a NextResponse
+        return new NextResponse(webStream, {
             headers: {
                 'Content-Type': mimeType,
                 'Cache-Control': 'public, max-age=3600', // Cache for 1 hour

@@ -9,6 +9,7 @@ import '../../../../../core/testing/chaos_controller.dart';
 import '../../../../../core/services/notification_service.dart';
 import '../../../../../core/services/sound_service.dart';
 import '../../../../../core/theme_provider.dart';
+import '../../../../../core/providers/user_provider.dart';
 
 class SystemHealthScreen extends ConsumerWidget {
   const SystemHealthScreen({super.key});
@@ -56,23 +57,40 @@ class SystemHealthScreen extends ConsumerWidget {
               ),
               const SizedBox(height: AppSpacing.xl),
               
-              _buildSectionTitle(colors, 'CHAOS ENGINEERING'),
-              const SizedBox(height: AppSpacing.m),
-              _buildChaosControl(
-                colors,
-                ref,
-                'Simulate Network Loss',
-                chaos.isForcedOffline,
-                (val) => ref.read(chaosProvider.notifier).toggleForcedOffline(val),
+              // Fetch the profile state
+              ref.watch(currentUserProfileProvider).maybeWhen(
+                data: (profile) {
+                  final rawRole = profile?['role'] as String? ?? 'member';
+                  final normalized = rawRole.replaceAll(' ', '').replaceAll('_', '').toLowerCase();
+                  final isDeveloper = normalized == 'admin' || normalized == 'manager';
+
+                  if (!isDeveloper) return const SizedBox.shrink();
+
+                  return Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      _buildSectionTitle(colors, 'CHAOS ENGINEERING'),
+                      const SizedBox(height: AppSpacing.m),
+                      _buildChaosControl(
+                        colors,
+                        ref,
+                        'Simulate Network Loss',
+                        chaos.isForcedOffline,
+                        (val) => ref.read(chaosProvider.notifier).toggleForcedOffline(val),
+                      ),
+                      _buildChaosControl(
+                        colors,
+                        ref,
+                        'Inject Failures',
+                        chaos.shouldInjectFailures,
+                        (val) => ref.read(chaosProvider.notifier).toggleInjectedFailures(val),
+                      ),
+                      const SizedBox(height: AppSpacing.xl),
+                    ],
+                  );
+                },
+                orElse: () => const SizedBox.shrink(),
               ),
-              _buildChaosControl(
-                colors,
-                ref,
-                'Inject Failures',
-                chaos.shouldInjectFailures,
-                (val) => ref.read(chaosProvider.notifier).toggleInjectedFailures(val),
-              ),
-              const SizedBox(height: AppSpacing.xl),
               
               _buildSectionTitle(colors, 'SOUNDS & NOTIFICATIONS'),
               const SizedBox(height: AppSpacing.m),
@@ -103,7 +121,7 @@ class SystemHealthScreen extends ConsumerWidget {
           style: AppTypography.caption.copyWith(
             fontWeight: FontWeight.bold, 
             letterSpacing: 1.2,
-            color: colors.textSecondary.withOpacity(0.8),
+            color: colors.textSecondary.withValues(alpha: 0.8),
           ),
         ),
       ],
@@ -126,12 +144,12 @@ class SystemHealthScreen extends ConsumerWidget {
       decoration: BoxDecoration(
         color: colors.surface,
         borderRadius: BorderRadius.circular(AppRadius.m),
-        border: Border.all(color: colors.border.withOpacity(0.5)),
+        border: Border.all(color: colors.border.withValues(alpha: 0.5)),
         boxShadow: colors.isDark
             ? []
             : [
                 BoxShadow(
-                  color: colors.border.withOpacity(0.05),
+                  color: colors.border.withValues(alpha: 0.05),
                   blurRadius: 10,
                   offset: const Offset(0, 4),
                 ),
@@ -181,14 +199,14 @@ class SystemHealthScreen extends ConsumerWidget {
     return Container(
       height: 300,
       decoration: BoxDecoration(
-        color: colors.isDark ? Colors.black45 : Colors.white.withOpacity(0.9),
+        color: colors.isDark ? Colors.black45 : Colors.white.withValues(alpha: 0.9),
         borderRadius: BorderRadius.circular(AppRadius.m),
         border: Border.all(color: colors.border),
         boxShadow: colors.isDark
             ? []
             : [
                 BoxShadow(
-                  color: colors.border.withOpacity(0.05),
+                  color: colors.border.withValues(alpha: 0.05),
                   blurRadius: 10,
                   offset: const Offset(0, 4),
                 ),
@@ -199,7 +217,7 @@ class SystemHealthScreen extends ConsumerWidget {
         itemCount: logs.length,
         itemBuilder: (context, index) {
           final log = logs[index];
-          Color color = colors.isDark ? Colors.white70 : colors.textPrimary.withOpacity(0.7);
+          Color color = colors.isDark ? Colors.white70 : colors.textPrimary.withValues(alpha: 0.7);
           if (log.level == LogLevel.error) color = colors.error;
           if (log.level == LogLevel.sync) color = colors.indigo;
           if (log.level == LogLevel.warning) color = colors.honey;
@@ -229,12 +247,12 @@ class SystemHealthScreen extends ConsumerWidget {
       decoration: BoxDecoration(
         color: colors.surface,
         borderRadius: BorderRadius.circular(16),
-        border: Border.all(color: colors.border.withOpacity(0.5)),
+        border: Border.all(color: colors.border.withValues(alpha: 0.5)),
         boxShadow: colors.isDark
             ? []
             : [
                 BoxShadow(
-                  color: colors.border.withOpacity(0.05),
+                  color: colors.border.withValues(alpha: 0.05),
                   blurRadius: 10,
                   offset: const Offset(0, 4),
                 ),
@@ -253,31 +271,31 @@ class SystemHealthScreen extends ConsumerWidget {
             runSpacing: 8,
             children: [
               ActionChip(
-                backgroundColor: colors.border.withOpacity(0.1),
+                backgroundColor: colors.border.withValues(alpha: 0.1),
                 side: BorderSide.none,
                 label: Text('Task Sound', style: TextStyle(fontSize: 11, color: colors.textPrimary)),
                 onPressed: () => sound.playTaskAdded(),
               ),
               ActionChip(
-                backgroundColor: colors.border.withOpacity(0.1),
+                backgroundColor: colors.border.withValues(alpha: 0.1),
                 side: BorderSide.none,
                 label: Text('Event Sound', style: TextStyle(fontSize: 11, color: colors.textPrimary)),
                 onPressed: () => sound.playEventAlert(),
               ),
               ActionChip(
-                backgroundColor: colors.border.withOpacity(0.1),
+                backgroundColor: colors.border.withValues(alpha: 0.1),
                 side: BorderSide.none,
                 label: Text('Success Sound', style: TextStyle(fontSize: 11, color: colors.textPrimary)),
                 onPressed: () => sound.playSuccess(),
               ),
               ActionChip(
-                backgroundColor: colors.border.withOpacity(0.1),
+                backgroundColor: colors.border.withValues(alpha: 0.1),
                 side: BorderSide.none,
                 label: Text('Warning Sound', style: TextStyle(fontSize: 11, color: colors.textPrimary)),
                 onPressed: () => sound.playWarning(),
               ),
               ActionChip(
-                backgroundColor: colors.border.withOpacity(0.1),
+                backgroundColor: colors.border.withValues(alpha: 0.1),
                 side: BorderSide.none,
                 label: Text('Upload Sound', style: TextStyle(fontSize: 11, color: colors.textPrimary)),
                 onPressed: () => sound.playUploadComplete(),
@@ -285,7 +303,7 @@ class SystemHealthScreen extends ConsumerWidget {
             ],
           ),
           const SizedBox(height: AppSpacing.m),
-          Divider(color: colors.border.withOpacity(0.3)),
+          Divider(color: colors.border.withValues(alpha: 0.3)),
           const SizedBox(height: AppSpacing.s),
           Text(
             'NATIVE PUSH NOTIFICATION TESTING',
@@ -349,13 +367,13 @@ class SystemHealthScreen extends ConsumerWidget {
       leading: Container(
         padding: const EdgeInsets.all(AppSpacing.s),
         decoration: BoxDecoration(
-          color: colors.textSecondary.withOpacity(0.1),
+          color: colors.textSecondary.withValues(alpha: 0.1),
           shape: BoxShape.circle,
         ),
         child: Icon(icon, color: colors.honey, size: 18),
       ),
       title: Text(title, style: AppTypography.bodyM.copyWith(fontWeight: FontWeight.bold, color: colors.textPrimary)),
-      subtitle: Text(subtitle, style: AppTypography.bodyS.copyWith(color: colors.textSecondary.withOpacity(0.8), fontSize: 10)),
+      subtitle: Text(subtitle, style: AppTypography.bodyS.copyWith(color: colors.textSecondary.withValues(alpha: 0.8), fontSize: 10)),
       trailing: IconButton(
         icon: Icon(LucideIcons.bellRing, color: colors.honey, size: 18),
         onPressed: onTap,

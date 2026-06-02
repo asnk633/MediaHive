@@ -26,7 +26,7 @@ class EnvConfig {
       case 'production':
         return EnvConfig(
           flavor: AppFlavor.production,
-          apiBaseUrl: 'https://api.mediahive.app',
+          apiBaseUrl: 'https://thaiba-garden-media-manager.vercel.app',
           supabaseUrl: dotenv.env['SUPABASE_URL'] ?? 'PROD_URL',
           supabaseAnonKey: dotenv.env['SUPABASE_ANON_KEY'] ?? 'PROD_KEY',
           enableAnalytics: true,

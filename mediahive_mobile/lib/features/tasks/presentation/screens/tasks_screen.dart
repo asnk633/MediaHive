@@ -167,7 +167,7 @@ class TasksScreen extends ConsumerWidget {
                     style: AppTypography.caption.copyWith(
                       fontWeight: FontWeight.bold, 
                       letterSpacing: 1.2,
-                      color: colors.textSecondary.withOpacity(0.8),
+                      color: colors.textSecondary.withValues(alpha: 0.8),
                     ),
                   ),
                 ],
@@ -303,14 +303,14 @@ class TasksScreen extends ConsumerWidget {
           borderRadius: BorderRadius.circular(14),
           border: Border.all(
             color: colors.isDark 
-                ? Colors.white.withOpacity(0.05) 
-                : colors.border.withOpacity(0.12),
+                ? Colors.white.withValues(alpha: 0.05) 
+                : colors.border.withValues(alpha: 0.12),
           ),
           boxShadow: colors.isDark
               ? []
               : [
                   BoxShadow(
-                    color: colors.border.withOpacity(0.05),
+                    color: colors.border.withValues(alpha: 0.05),
                     blurRadius: 10,
                     offset: const Offset(0, 4),
                   ),
@@ -318,7 +318,7 @@ class TasksScreen extends ConsumerWidget {
         ),
         child: Column(
           children: [
-            Icon(icon, size: 12, color: color.withOpacity(colors.isDark ? 0.8 : 0.9)),
+            Icon(icon, size: 12, color: color.withValues(alpha: colors.isDark ? 0.8 : 0.9)),
             const SizedBox(height: 6),
             Text(
               value,
@@ -336,8 +336,8 @@ class TasksScreen extends ConsumerWidget {
                 fontWeight: FontWeight.w900,
                 letterSpacing: 0.1,
                 color: colors.isDark 
-                    ? Colors.white.withOpacity(0.4) 
-                    : colors.textSecondary.withOpacity(0.6),
+                    ? Colors.white.withValues(alpha: 0.4) 
+                    : colors.textSecondary.withValues(alpha: 0.6),
               ),
               textAlign: TextAlign.center,
               maxLines: 1,
@@ -353,7 +353,7 @@ class TasksScreen extends ConsumerWidget {
     return Container(
       padding: const EdgeInsets.all(4),
       decoration: BoxDecoration(
-        color: colors.surface.withOpacity(0.5),
+        color: colors.surface.withValues(alpha: 0.5),
         borderRadius: BorderRadius.circular(16),
         border: Border.all(color: colors.border),
       ),
@@ -379,7 +379,7 @@ class TasksScreen extends ConsumerWidget {
             borderRadius: BorderRadius.circular(12),
             boxShadow: isActive ? [
               BoxShadow(
-                color: colors.honey.withOpacity(0.3),
+                color: colors.honey.withValues(alpha: 0.3),
                 blurRadius: 10,
                 offset: const Offset(0, 2),
               )
@@ -420,18 +420,18 @@ class TasksScreen extends ConsumerWidget {
             constraints: const BoxConstraints(minHeight: 44),
             decoration: BoxDecoration(
               color: colors.isDark
-                  ? colors.surface.withOpacity(0.6)
+                  ? colors.surface.withValues(alpha: 0.6)
                   : Colors.white,
               borderRadius: BorderRadius.circular(14),
               border: Border.all(
                 color: query.isNotEmpty
-                    ? colors.honey.withOpacity(0.6)
-                    : colors.border.withOpacity(0.3),
+                    ? colors.honey.withValues(alpha: 0.6)
+                    : colors.border.withValues(alpha: 0.3),
                 width: query.isNotEmpty ? 1.5 : 1,
               ),
               boxShadow: [
                 BoxShadow(
-                  color: colors.border.withOpacity(0.05),
+                  color: colors.border.withValues(alpha: 0.05),
                   blurRadius: 8,
                   offset: const Offset(0, 2),
                 ),
@@ -447,7 +447,7 @@ class TasksScreen extends ConsumerWidget {
               decoration: InputDecoration(
                 hintText: 'Search tasks, assignees…',
                 hintStyle: AppTypography.bodyM.copyWith(
-                  color: colors.textSecondary.withOpacity(0.4),
+                  color: colors.textSecondary.withValues(alpha: 0.4),
                   fontSize: 12,
                 ),
                 prefixIcon: Padding(
@@ -457,7 +457,7 @@ class TasksScreen extends ConsumerWidget {
                     size: 15,
                     color: query.isNotEmpty
                         ? colors.honey
-                        : colors.textSecondary.withOpacity(0.45),
+                        : colors.textSecondary.withValues(alpha: 0.45),
                   ),
                 ),
                 prefixIconConstraints: const BoxConstraints(minWidth: 36),
@@ -471,7 +471,7 @@ class TasksScreen extends ConsumerWidget {
                           child: Icon(
                             LucideIcons.x,
                             size: 13,
-                            color: colors.textSecondary.withOpacity(0.55),
+                            color: colors.textSecondary.withValues(alpha: 0.55),
                           ),
                         ),
                       )
@@ -523,20 +523,20 @@ class TasksScreen extends ConsumerWidget {
         height: 44,
         decoration: BoxDecoration(
           color: isActive
-              ? colors.honey.withOpacity(0.12)
+              ? colors.honey.withValues(alpha: 0.12)
               : colors.isDark
-                  ? colors.surface.withOpacity(0.6)
+                  ? colors.surface.withValues(alpha: 0.6)
                   : Colors.white,
           borderRadius: BorderRadius.circular(14),
           border: Border.all(
             color: isActive
-                ? colors.honey.withOpacity(0.6)
-                : colors.border.withOpacity(0.3),
+                ? colors.honey.withValues(alpha: 0.6)
+                : colors.border.withValues(alpha: 0.3),
             width: isActive ? 1.5 : 1,
           ),
           boxShadow: [
             BoxShadow(
-              color: colors.border.withOpacity(0.05),
+              color: colors.border.withValues(alpha: 0.05),
               blurRadius: 8,
               offset: const Offset(0, 2),
             ),
@@ -550,7 +550,7 @@ class TasksScreen extends ConsumerWidget {
               size: 16,
               color: isActive
                   ? colors.honey
-                  : colors.textSecondary.withOpacity(0.6),
+                  : colors.textSecondary.withValues(alpha: 0.6),
             ),
             if (badge != null)
               Positioned(
@@ -609,17 +609,17 @@ class TasksScreen extends ConsumerWidget {
               margin: const EdgeInsets.only(right: 8),
               padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
               decoration: BoxDecoration(
-                color: isSelected ? colors.honey.withOpacity(0.1) : colors.surface.withOpacity(0.3),
+                color: isSelected ? colors.honey.withValues(alpha: 0.1) : colors.surface.withValues(alpha: 0.3),
                 borderRadius: BorderRadius.circular(20),
                 border: Border.all(
-                  color: isSelected ? colors.honey : colors.border.withOpacity(0.5),
+                  color: isSelected ? colors.honey : colors.border.withValues(alpha: 0.5),
                   width: isSelected ? 1.5 : 1,
                 ),
               ),
               child: Text(
                 status,
                 style: TextStyle(
-                  color: isSelected ? colors.honey : colors.textSecondary.withOpacity(0.7),
+                  color: isSelected ? colors.honey : colors.textSecondary.withValues(alpha: 0.7),
                   fontSize: 9,
                   fontWeight: FontWeight.w900,
                   letterSpacing: 1.0,
@@ -665,7 +665,7 @@ class TasksScreen extends ConsumerWidget {
                     width: 40,
                     height: 4,
                     decoration: BoxDecoration(
-                      color: colors.textSecondary.withOpacity(0.2),
+                      color: colors.textSecondary.withValues(alpha: 0.2),
                       borderRadius: BorderRadius.circular(2),
                     ),
                   ),
@@ -975,26 +975,26 @@ class TasksScreen extends ConsumerWidget {
           decoration: BoxDecoration(
             color: colors.isDark 
                 ? colors.surface 
-                : (isDone ? colors.surface.withOpacity(0.5) : Colors.white),
+                : (isDone ? colors.surface.withValues(alpha: 0.5) : Colors.white),
             borderRadius: BorderRadius.circular(20),
             border: Border.all(
               color: isOverdue 
-                  ? colors.error.withOpacity(0.5) 
+                  ? colors.error.withValues(alpha: 0.5) 
                   : (isDone 
-                      ? colors.emerald.withOpacity(0.2) 
-                      : colors.border.withOpacity(colors.isDark ? 0.5 : 0.12)),
+                      ? colors.emerald.withValues(alpha: 0.2) 
+                      : colors.border.withValues(alpha: colors.isDark ? 0.5 : 0.12)),
               width: isOverdue ? 1.5 : 1,
             ),
             boxShadow: [
               if (isOverdue)
                 BoxShadow(
-                  color: colors.error.withOpacity(0.1),
+                  color: colors.error.withValues(alpha: 0.1),
                   blurRadius: 15,
                   spreadRadius: 2,
                 ),
               if (!isDone && !isOverdue)
                 BoxShadow(
-                  color: colors.border.withOpacity(0.05),
+                  color: colors.border.withValues(alpha: 0.05),
                   blurRadius: 10,
                   offset: const Offset(0, 4),
                 ),
@@ -1036,7 +1036,7 @@ class TasksScreen extends ConsumerWidget {
                     const SizedBox(height: 6),
                     Row(
                       children: [
-                        Icon(LucideIcons.user, size: 10, color: colors.textSecondary.withOpacity(0.4)),
+                        Icon(LucideIcons.user, size: 10, color: colors.textSecondary.withValues(alpha: 0.4)),
                         const SizedBox(width: 6),
                         Expanded(
                           child: Text(
@@ -1044,7 +1044,7 @@ class TasksScreen extends ConsumerWidget {
                             style: AppTypography.caption.copyWith(
                               fontSize: 9,
                               fontWeight: FontWeight.w600,
-                              color: colors.textSecondary.withOpacity(0.6),
+                              color: colors.textSecondary.withValues(alpha: 0.6),
                             ),
                             maxLines: 1,
                             overflow: TextOverflow.ellipsis,
@@ -1072,7 +1072,7 @@ class TasksScreen extends ConsumerWidget {
                             context,
                             LucideIcons.calendar,
                             _formatDate(task.dueDate),
-                            colors.textSecondary.withOpacity(0.6),
+                            colors.textSecondary.withValues(alpha: 0.6),
                           ),
                         ),
                         if (task.department != null && task.department!.trim().isNotEmpty)
@@ -1082,7 +1082,7 @@ class TasksScreen extends ConsumerWidget {
                               context,
                               LucideIcons.building2,
                               task.department!.toUpperCase(),
-                              colors.indigo.withOpacity(0.8),
+                              colors.indigo.withValues(alpha: 0.8),
                             ),
                           ),
                         if (isDone && (task.completedByName != null || task.completionDate != null))
@@ -1092,7 +1092,7 @@ class TasksScreen extends ConsumerWidget {
                               context,
                               LucideIcons.checkCircle2,
                               _formatCompletionInfo(task),
-                              colors.emerald.withOpacity(0.9),
+                              colors.emerald.withValues(alpha: 0.9),
                             ),
                           ),
                       ],
@@ -1144,12 +1144,12 @@ class TasksScreen extends ConsumerWidget {
         width: 24,
         height: 24,
         decoration: BoxDecoration(
-          color: isDone ? colors.emerald.withOpacity(0.1) : Colors.transparent,
+          color: isDone ? colors.emerald.withValues(alpha: 0.1) : Colors.transparent,
           shape: BoxShape.circle,
           border: Border.all(
             color: isDone 
                 ? colors.emerald 
-                : (isOverdue ? colors.error : colors.border.withOpacity(0.8)),
+                : (isOverdue ? colors.error : colors.border.withValues(alpha: 0.8)),
             width: 1.5,
           ),
         ),
@@ -1194,14 +1194,14 @@ class TasksScreen extends ConsumerWidget {
         child: Container(
           padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
           decoration: BoxDecoration(
-            color: color.withOpacity(isOffline ? 0.05 : 0.1),
+            color: color.withValues(alpha: isOffline ? 0.05 : 0.1),
             borderRadius: BorderRadius.circular(10),
-            border: Border.all(color: color.withOpacity(isOffline ? 0.1 : 0.3)),
+            border: Border.all(color: color.withValues(alpha: isOffline ? 0.1 : 0.3)),
           ),
           child: Text(
             label,
             style: TextStyle(
-              color: isOffline ? color.withOpacity(0.5) : color,
+              color: isOffline ? color.withValues(alpha: 0.5) : color,
               fontSize: 9,
               fontWeight: FontWeight.w900,
               letterSpacing: 0.5,
@@ -1239,7 +1239,7 @@ class TasksScreen extends ConsumerWidget {
               width: 40,
               height: 4,
               decoration: BoxDecoration(
-                color: colors.textSecondary.withOpacity(0.2),
+                color: colors.textSecondary.withValues(alpha: 0.2),
                 borderRadius: BorderRadius.circular(2),
               ),
             ),
@@ -1273,7 +1273,7 @@ class TasksScreen extends ConsumerWidget {
                 },
                 leading: Icon(
                   s['icon'] as IconData, 
-                  color: isSelected ? color : color.withOpacity(0.3),
+                  color: isSelected ? color : color.withValues(alpha: 0.3),
                 ),
                 title: Text(
                   s['label'] as String,
@@ -1300,9 +1300,9 @@ class TasksScreen extends ConsumerWidget {
       constraints: BoxConstraints(maxWidth: MediaQuery.of(context).size.width - 120),
       padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
       decoration: BoxDecoration(
-        color: color.withOpacity(0.1),
+        color: color.withValues(alpha: 0.1),
         borderRadius: BorderRadius.circular(8),
-        border: Border.all(color: color.withOpacity(0.2)),
+        border: Border.all(color: color.withValues(alpha: 0.2)),
       ),
       child: Row(
         mainAxisSize: MainAxisSize.min,
@@ -1397,7 +1397,7 @@ class TasksScreen extends ConsumerWidget {
               width: 40,
               height: 4,
               decoration: BoxDecoration(
-                color: colors.textSecondary.withOpacity(0.2),
+                color: colors.textSecondary.withValues(alpha: 0.2),
                 borderRadius: BorderRadius.circular(2),
               ),
             ),
@@ -1530,7 +1530,7 @@ class _FilterSheetState extends ConsumerState<_FilterSheet> {
       decoration: BoxDecoration(
         color: colors.backgroundPrimary,
         borderRadius: const BorderRadius.vertical(top: Radius.circular(28)),
-        border: Border.all(color: colors.border.withOpacity(0.5)),
+        border: Border.all(color: colors.border.withValues(alpha: 0.5)),
       ),
       child: Column(
         children: [
@@ -1540,7 +1540,7 @@ class _FilterSheetState extends ConsumerState<_FilterSheet> {
             width: 40,
             height: 4,
             decoration: BoxDecoration(
-              color: colors.textSecondary.withOpacity(0.2),
+              color: colors.textSecondary.withValues(alpha: 0.2),
               borderRadius: BorderRadius.circular(2),
             ),
           ),
@@ -1567,10 +1567,10 @@ class _FilterSheetState extends ConsumerState<_FilterSheet> {
                       padding: const EdgeInsets.symmetric(
                           horizontal: 12, vertical: 6),
                       decoration: BoxDecoration(
-                        color: colors.error.withOpacity(0.1),
+                        color: colors.error.withValues(alpha: 0.1),
                         borderRadius: BorderRadius.circular(8),
                         border: Border.all(
-                            color: colors.error.withOpacity(0.3)),
+                            color: colors.error.withValues(alpha: 0.3)),
                       ),
                       child: Text(
                         'CLEAR ALL',
@@ -1712,7 +1712,7 @@ class _FilterSheetState extends ConsumerState<_FilterSheet> {
       IconData icon, String title, ThemeColors colors) {
     return Row(
       children: [
-        Icon(icon, size: 13, color: colors.textSecondary.withOpacity(0.7)),
+        Icon(icon, size: 13, color: colors.textSecondary.withValues(alpha: 0.7)),
         const SizedBox(width: 8),
         Text(
           title,
@@ -1720,14 +1720,14 @@ class _FilterSheetState extends ConsumerState<_FilterSheet> {
             fontWeight: FontWeight.w900,
             fontSize: 9,
             letterSpacing: 1.5,
-            color: colors.textSecondary.withOpacity(0.7),
+            color: colors.textSecondary.withValues(alpha: 0.7),
           ),
         ),
         const SizedBox(width: 10),
         Expanded(
           child: Container(
             height: 1,
-            color: colors.border.withOpacity(0.3),
+            color: colors.border.withValues(alpha: 0.3),
           ),
         ),
       ],
@@ -1749,13 +1749,13 @@ class _FilterSheetState extends ConsumerState<_FilterSheet> {
             const EdgeInsets.symmetric(horizontal: 14, vertical: 8),
         decoration: BoxDecoration(
           color: isSelected
-              ? accentColor.withOpacity(0.12)
-              : colors.surface.withOpacity(0.4),
+              ? accentColor.withValues(alpha: 0.12)
+              : colors.surface.withValues(alpha: 0.4),
           borderRadius: BorderRadius.circular(12),
           border: Border.all(
             color: isSelected
-                ? accentColor.withOpacity(0.6)
-                : colors.border.withOpacity(0.4),
+                ? accentColor.withValues(alpha: 0.6)
+                : colors.border.withValues(alpha: 0.4),
             width: isSelected ? 1.5 : 1,
           ),
         ),
@@ -1764,7 +1764,7 @@ class _FilterSheetState extends ConsumerState<_FilterSheet> {
           style: TextStyle(
             color: isSelected
                 ? accentColor
-                : colors.textSecondary.withOpacity(0.7),
+                : colors.textSecondary.withValues(alpha: 0.7),
             fontSize: 11,
             fontWeight:
                 isSelected ? FontWeight.w800 : FontWeight.w500,

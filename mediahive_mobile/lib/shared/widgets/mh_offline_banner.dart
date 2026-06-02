@@ -26,13 +26,13 @@ class MhOfflineBanner extends ConsumerWidget {
           decoration: BoxDecoration(
             // Light: warm amber-tinted frosted glass | Dark: deep navy scrim
             color: isLight
-                ? const Color(0xFFFFF3CD).withOpacity(0.85)
-                : const Color(0xFF0F172A).withOpacity(0.8),
+                ? const Color(0xFFFFF3CD).withValues(alpha: 0.85)
+                : const Color(0xFF0F172A).withValues(alpha: 0.8),
             border: Border(
               bottom: BorderSide(
                 color: isLight
-                    ? const Color(0xFFFFD600).withOpacity(0.3)
-                    : Colors.white.withOpacity(0.05),
+                    ? const Color(0xFFFFD600).withValues(alpha: 0.3)
+                    : Colors.white.withValues(alpha: 0.05),
                 width: isLight ? 0.75 : 1.0,
               ),
             ),
@@ -68,8 +68,8 @@ class MhOfflineBanner extends ConsumerWidget {
                     strokeWidth: 1.5,
                     valueColor: AlwaysStoppedAnimation<Color>(
                       isLight
-                          ? const Color(0xFF7A5C00).withOpacity(0.5)
-                          : Colors.white.withOpacity(0.2),
+                          ? const Color(0xFF7A5C00).withValues(alpha: 0.5)
+                          : Colors.white.withValues(alpha: 0.2),
                     ),
                   ),
                 ),

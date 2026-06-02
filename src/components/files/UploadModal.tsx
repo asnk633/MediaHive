@@ -48,8 +48,8 @@ export function UploadModal({ open, onClose, onSuccess, event_id, taskId }: Uplo
                     const departments = deptsRes.departments || [];
                     const institutions = instsRes.institutions || [];
 
-                    setDepartmentsList(departments.map(d => d.name));
-                    setInstitutionsList(institutions.map(i => i.name));
+                    setDepartmentsList(departments.map((d: any) => d.name));
+                    setInstitutionsList(institutions.map((i: any) => i.name));
                 } catch (e) {
                     console.error("Failed to fetch organizations", e);
                 }

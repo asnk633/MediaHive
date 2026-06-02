@@ -78,7 +78,7 @@ class MhButton extends StatelessWidget {
               ? DesignTokens.spatialGlowBlue
               : [
                   BoxShadow(
-                    color: AppColors.honey.withOpacity(0.3),
+                    color: AppColors.honey.withValues(alpha: 0.3),
                     blurRadius: 12,
                     offset: const Offset(0, 4),
                   ),

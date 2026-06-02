@@ -161,7 +161,7 @@ class _UploadFileModalState extends ConsumerState<UploadFileModal> {
               width: 40,
               height: 4,
               decoration: BoxDecoration(
-                color: colors.textSecondary.withOpacity(0.2),
+                color: colors.textSecondary.withValues(alpha: 0.2),
                 borderRadius: BorderRadius.circular(2),
               ),
             ),
@@ -222,7 +222,7 @@ class _UploadFileModalState extends ConsumerState<UploadFileModal> {
           border: Border.all(color: colors.border),
           boxShadow: [
             BoxShadow(
-                color: Colors.black.withOpacity(0.5),
+                color: Colors.black.withValues(alpha: 0.5),
                 blurRadius: 40,
                 spreadRadius: 10),
           ],
@@ -240,7 +240,7 @@ class _UploadFileModalState extends ConsumerState<UploadFileModal> {
                       Container(
                         padding: const EdgeInsets.all(10),
                         decoration: BoxDecoration(
-                          color: colors.indigo.withOpacity(0.1),
+                          color: colors.indigo.withValues(alpha: 0.1),
                           shape: BoxShape.circle,
                         ),
                         child: Icon(
@@ -456,7 +456,7 @@ class _UploadFileModalState extends ConsumerState<UploadFileModal> {
                       style: ElevatedButton.styleFrom(
                         backgroundColor: colors.indigo,
                         foregroundColor: Colors.white,
-                        disabledBackgroundColor: colors.border.withOpacity(0.5),
+                        disabledBackgroundColor: colors.border.withValues(alpha: 0.5),
                         padding: const EdgeInsets.symmetric(
                             horizontal: 24, vertical: 16),
                         shape: RoundedRectangleBorder(
@@ -482,13 +482,13 @@ class _UploadFileModalState extends ConsumerState<UploadFileModal> {
         width: double.infinity,
         padding: const EdgeInsets.symmetric(vertical: 40),
         decoration: BoxDecoration(
-          color: colors.surface.withOpacity(0.3),
+          color: colors.surface.withValues(alpha: 0.3),
           borderRadius: BorderRadius.circular(20),
           border: Border.all(color: colors.border, style: BorderStyle.none),
         ),
         child: Column(
           children: [
-            Icon(LucideIcons.filePlus, color: colors.textSecondary.withOpacity(0.2), size: 48),
+            Icon(LucideIcons.filePlus, color: colors.textSecondary.withValues(alpha: 0.2), size: 48),
             const SizedBox(height: 12),
             Text('No files selected', style: TextStyle(color: colors.textSecondary)),
           ],
@@ -512,7 +512,7 @@ class _UploadFileModalState extends ConsumerState<UploadFileModal> {
             margin: const EdgeInsets.only(bottom: 8),
             padding: const EdgeInsets.all(8),
             decoration: BoxDecoration(
-              color: colors.surface.withOpacity(0.5),
+              color: colors.surface.withValues(alpha: 0.5),
               borderRadius: BorderRadius.circular(12),
               border: Border.all(color: colors.border),
             ),
@@ -566,7 +566,7 @@ class _UploadFileModalState extends ConsumerState<UploadFileModal> {
         width: double.infinity,
         padding: const EdgeInsets.symmetric(vertical: 12),
         decoration: BoxDecoration(
-          border: Border.all(color: colors.indigo.withOpacity(0.3), style: BorderStyle.solid),
+          border: Border.all(color: colors.indigo.withValues(alpha: 0.3), style: BorderStyle.solid),
           borderRadius: BorderRadius.circular(12),
         ),
         child: Row(
@@ -687,7 +687,7 @@ class _UploadFileModalState extends ConsumerState<UploadFileModal> {
               Container(
                 padding: const EdgeInsets.all(8),
                 decoration: BoxDecoration(
-                  color: colors.emerald.withOpacity(0.2),
+                  color: colors.emerald.withValues(alpha: 0.2),
                   shape: BoxShape.circle,
                 ),
                 child: Icon(LucideIcons.checkCircle, color: colors.emerald, size: 20),
@@ -706,12 +706,12 @@ class _UploadFileModalState extends ConsumerState<UploadFileModal> {
             ],
           ),
         ),
-        backgroundColor: colors.backgroundSecondary.withOpacity(0.9),
+        backgroundColor: colors.backgroundSecondary.withValues(alpha: 0.9),
         behavior: SnackBarBehavior.floating,
         margin: const EdgeInsets.fromLTRB(24, 0, 24, 40),
         shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.circular(20),
-          side: BorderSide(color: colors.emerald.withOpacity(0.3), width: 1.5),
+          side: BorderSide(color: colors.emerald.withValues(alpha: 0.3), width: 1.5),
         ),
         elevation: 0,
       ),
@@ -726,7 +726,7 @@ class _UploadFileModalState extends ConsumerState<UploadFileModal> {
       child: Container(
         padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 15),
         decoration: BoxDecoration(
-          color: colors.surface.withOpacity(0.5),
+          color: colors.surface.withValues(alpha: 0.5),
           borderRadius: BorderRadius.circular(16),
           border: Border.all(color: colors.border),
         ),
@@ -758,7 +758,7 @@ class _UploadFileModalState extends ConsumerState<UploadFileModal> {
   Widget _buildDialogTextField(String hint, ThemeColors colors) {
     return Container(
       decoration: BoxDecoration(
-        color: colors.surface.withOpacity(0.5),
+        color: colors.surface.withValues(alpha: 0.5),
         borderRadius: BorderRadius.circular(16),
         border: Border.all(color: colors.border),
       ),
@@ -767,7 +767,7 @@ class _UploadFileModalState extends ConsumerState<UploadFileModal> {
         style: TextStyle(color: colors.textPrimary, fontSize: 14),
         decoration: InputDecoration(
           hintText: hint,
-          hintStyle: TextStyle(color: colors.textSecondary.withOpacity(0.3)),
+          hintStyle: TextStyle(color: colors.textSecondary.withValues(alpha: 0.3)),
           border: InputBorder.none, filled: false,
           contentPadding:
               const EdgeInsets.symmetric(horizontal: 16, vertical: 15),
@@ -779,16 +779,16 @@ class _UploadFileModalState extends ConsumerState<UploadFileModal> {
   Widget _buildAlbumTextField(String hint, ThemeColors colors) {
     return Container(
       decoration: BoxDecoration(
-        color: colors.indigo.withOpacity(0.05),
+        color: colors.indigo.withValues(alpha: 0.05),
         borderRadius: BorderRadius.circular(16),
-        border: Border.all(color: colors.indigo.withOpacity(0.3)),
+        border: Border.all(color: colors.indigo.withValues(alpha: 0.3)),
       ),
       child: TextField(
         controller: _albumController,
         style: TextStyle(color: colors.textPrimary, fontSize: 14, fontWeight: FontWeight.bold),
         decoration: InputDecoration(
           hintText: hint,
-          hintStyle: TextStyle(color: colors.textSecondary.withOpacity(0.3)),
+          hintStyle: TextStyle(color: colors.textSecondary.withValues(alpha: 0.3)),
           prefixIcon: Icon(LucideIcons.folder, color: colors.indigo, size: 18),
           border: InputBorder.none, filled: false,
           contentPadding:
@@ -802,7 +802,7 @@ class _UploadFileModalState extends ConsumerState<UploadFileModal> {
       ThemeColors colors, bool isInstitution, Function(bool) onToggle) {
     return Container(
       decoration: BoxDecoration(
-        color: colors.surface.withOpacity(0.5),
+        color: colors.surface.withValues(alpha: 0.5),
         borderRadius: BorderRadius.circular(12),
         border: Border.all(color: colors.border),
       ),

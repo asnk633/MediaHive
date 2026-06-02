@@ -86,7 +86,7 @@ class LeaveManagementScreen extends ConsumerWidget {
         Container(
           height: 1,
           width: 60,
-          color: colors.honey.withOpacity(0.5),
+          color: colors.honey.withValues(alpha: 0.5),
         ),
       ],
     ).animate().fadeIn(duration: 400.ms).slideX(begin: -0.1);
@@ -122,9 +122,9 @@ class LeaveManagementScreen extends ConsumerWidget {
     return Container(
       padding: const EdgeInsets.symmetric(vertical: 20),
       decoration: BoxDecoration(
-        color: colors.surface.withOpacity(0.4),
+        color: colors.surface.withValues(alpha: 0.4),
         borderRadius: BorderRadius.circular(20),
-        border: Border.all(color: colors.border.withOpacity(0.5)),
+        border: Border.all(color: colors.border.withValues(alpha: 0.5)),
       ),
       child: Column(
         children: [
@@ -152,7 +152,7 @@ class LeaveManagementScreen extends ConsumerWidget {
             decoration: InputDecoration(
               icon: Icon(LucideIcons.search, size: 18, color: colors.honey),
               hintText: 'Search team members...',
-              hintStyle: TextStyle(color: colors.textSecondary.withOpacity(0.5), fontSize: 14),
+              hintStyle: TextStyle(color: colors.textSecondary.withValues(alpha: 0.5), fontSize: 14),
               border: InputBorder.none, filled: false,
             ),
           ),
@@ -179,9 +179,9 @@ class LeaveManagementScreen extends ConsumerWidget {
         duration: 300.ms,
         padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
         decoration: BoxDecoration(
-          color: isActive ? colors.honey.withOpacity(0.1) : Colors.transparent,
+          color: isActive ? colors.honey.withValues(alpha: 0.1) : Colors.transparent,
           borderRadius: BorderRadius.circular(12),
-          border: Border.all(color: isActive ? colors.honey : colors.border.withOpacity(0.3)),
+          border: Border.all(color: isActive ? colors.honey : colors.border.withValues(alpha: 0.3)),
         ),
         child: Text(
           label,
@@ -214,7 +214,7 @@ class LeaveManagementScreen extends ConsumerWidget {
             child: Column(
               children: [
                 const SizedBox(height: 40),
-                Icon(LucideIcons.calendarX, size: 48, color: colors.textSecondary.withOpacity(0.2)),
+                Icon(LucideIcons.calendarX, size: 48, color: colors.textSecondary.withValues(alpha: 0.2)),
                 const SizedBox(height: 16),
                 Text('No leave requests found', style: TextStyle(color: colors.textSecondary)),
               ],
@@ -248,9 +248,9 @@ class LeaveManagementScreen extends ConsumerWidget {
       margin: const EdgeInsets.only(bottom: 16),
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
-        color: colors.surface.withOpacity(0.4),
+        color: colors.surface.withValues(alpha: 0.4),
         borderRadius: BorderRadius.circular(20),
-        border: Border.all(color: colors.border.withOpacity(0.5)),
+        border: Border.all(color: colors.border.withValues(alpha: 0.5)),
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -259,7 +259,7 @@ class LeaveManagementScreen extends ConsumerWidget {
             children: [
               CircleAvatar(
                 radius: 18,
-                backgroundColor: colors.honey.withOpacity(0.1),
+                backgroundColor: colors.honey.withValues(alpha: 0.1),
                 child: profile['avatar_url'] != null 
                   ? ClipOval(child: Image.network(profile['avatar_url'], width: 36, height: 36, fit: BoxFit.cover))
                   : Text((profile['full_name'] ?? '?')[0], style: TextStyle(color: colors.honey, fontWeight: FontWeight.bold)),
@@ -292,7 +292,7 @@ class LeaveManagementScreen extends ConsumerWidget {
               padding: const EdgeInsets.all(12),
               width: double.infinity,
               decoration: BoxDecoration(
-                color: colors.backgroundPrimary.withOpacity(0.5),
+                color: colors.backgroundPrimary.withValues(alpha: 0.5),
                 borderRadius: BorderRadius.circular(12),
               ),
               child: Text(
@@ -364,9 +364,9 @@ class LeaveManagementScreen extends ConsumerWidget {
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
       decoration: BoxDecoration(
-        color: color.withOpacity(0.1),
+        color: color.withValues(alpha: 0.1),
         borderRadius: BorderRadius.circular(8),
-        border: Border.all(color: color.withOpacity(0.3)),
+        border: Border.all(color: color.withValues(alpha: 0.3)),
       ),
       child: Text(
         status.toUpperCase(),

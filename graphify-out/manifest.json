@@ -205,13 +205,13 @@
     "semantic_hash": ""
   },
   "D:\\MediaHive App\\next-env.d.ts": {
-    "mtime": 1780129692.1589887,
-    "ast_hash": "b698cdd97fe8e3bd16dcd74899ad7cef",
+    "mtime": 1780392119.2637448,
+    "ast_hash": "29f60a376e12bf72b67d4994fcc84214",
     "semantic_hash": ""
   },
   "D:\\MediaHive App\\next.config.mjs": {
-    "mtime": 1777977762.4487877,
-    "ast_hash": "d960aadc5285032b5209483ced61cfea",
+    "mtime": 1780385109.4302206,
+    "ast_hash": "a4190e49158c0dab0b678c896be0de1a",
     "semantic_hash": ""
   },
   "D:\\MediaHive App\\package.json": {
@@ -1010,638 +1010,628 @@
     "semantic_hash": ""
   },
   "D:\\MediaHive App\\mediahive_mobile\\lib\\firebase_options.dart": {
-    "mtime": 1779176081.4519575,
-    "ast_hash": "83fa1b6edfad944bcb600de6fb309e15",
+    "mtime": 1780216556.5731707,
+    "ast_hash": "799539340e4f457af0e3d5316122212c",
     "semantic_hash": ""
   },
   "D:\\MediaHive App\\mediahive_mobile\\lib\\main.dart": {
-    "mtime": 1780132702.7803235,
-    "ast_hash": "e012f158e667a0b8281eed2816f6c1d5",
+    "mtime": 1780372949.188198,
+    "ast_hash": "a6710c3d7677d6ea3a2a26d78a6bccdf",
     "semantic_hash": ""
   },
   "D:\\MediaHive App\\mediahive_mobile\\lib\\simple.preview.dart": {
-    "mtime": 1778657756.7711926,
-    "ast_hash": "ef9920b79411ba425de88314e2ea5677",
+    "mtime": 1780216556.5827048,
+    "ast_hash": "e6e63805224d36352c6b4c1736152f3b",
     "semantic_hash": ""
   },
   "D:\\MediaHive App\\mediahive_mobile\\lib\\tasks.preview.dart": {
-    "mtime": 1778739182.2934704,
-    "ast_hash": "5fabf95b0ea9cbcef2b4498813937d6a",
+    "mtime": 1780216556.5857823,
+    "ast_hash": "f7ab5126e128fc75af4cfeedd2b5be49",
     "semantic_hash": ""
   },
   "D:\\MediaHive App\\mediahive_mobile\\lib\\core\\theme_provider.dart": {
-    "mtime": 1779642008.895723,
-    "ast_hash": "a3064047a1921659527a2105cbd6e594",
+    "mtime": 1780372949.1901965,
+    "ast_hash": "7985a9e16f6738579377af6bcba5c0d8",
     "semantic_hash": ""
   },
   "D:\\MediaHive App\\mediahive_mobile\\lib\\core\\config\\env_config.dart": {
-    "mtime": 1778828344.824857,
-    "ast_hash": "991bba52b29f2cfd9b8079133ca89034",
+    "mtime": 1780242303.491721,
+    "ast_hash": "79012f890b933c5675a538144e61ce86",
     "semantic_hash": ""
   },
   "D:\\MediaHive App\\mediahive_mobile\\lib\\core\\error\\failure.dart": {
-    "mtime": 1778764412.743497,
-    "ast_hash": "cfbad62a2d345be9f0ba896790410d48",
-    "semantic_hash": ""
-  },
-  "D:\\MediaHive App\\mediahive_mobile\\lib\\core\\models\\sync_mutation.freezed.dart": {
-    "mtime": 1778926105.3554401,
-    "ast_hash": "b96bbd31ea7adcb5a353a99adfbf41ee",
-    "semantic_hash": ""
-  },
-  "D:\\MediaHive App\\mediahive_mobile\\lib\\core\\models\\sync_mutation.g.dart": {
-    "mtime": 1778926113.753932,
-    "ast_hash": "b11ca78983b30786c8a82a402b3d6932",
+    "mtime": 1780216555.8846445,
+    "ast_hash": "4e7c2d81dac212cf2fdc0efd4306d2d6",
     "semantic_hash": ""
   },
   "D:\\MediaHive App\\mediahive_mobile\\lib\\core\\models\\upload_mutation.dart": {
-    "mtime": 1778737299.1081955,
-    "ast_hash": "9bee7dbc4eba0af2db46597b27190397",
+    "mtime": 1780216555.8931932,
+    "ast_hash": "4758d0f6b134e1f612fb00504867f5a4",
     "semantic_hash": ""
   },
   "D:\\MediaHive App\\mediahive_mobile\\lib\\core\\models\\upload_mutation.freezed.dart": {
-    "mtime": 1779254000.4136963,
-    "ast_hash": "673f0dea48316f74e83be2e974e8671b",
+    "mtime": 1780216555.900247,
+    "ast_hash": "07db9e9ec6a230e97aaa19888c3886b1",
     "semantic_hash": ""
   },
   "D:\\MediaHive App\\mediahive_mobile\\lib\\core\\models\\upload_mutation.g.dart": {
-    "mtime": 1779254004.9138665,
-    "ast_hash": "e422b56ea8ce8f6228a9094dc7e54b46",
+    "mtime": 1780216555.902245,
+    "ast_hash": "708e41d06f1a04aceb29406b8494dbd0",
     "semantic_hash": ""
   },
   "D:\\MediaHive App\\mediahive_mobile\\lib\\core\\providers\\ui_providers.dart": {
-    "mtime": 1778951050.0541165,
-    "ast_hash": "a128b3717fc616eaa4602a45094080f8",
+    "mtime": 1780216555.906247,
+    "ast_hash": "263c32ff12c213d04465918d8d9accdf",
     "semantic_hash": ""
   },
   "D:\\MediaHive App\\mediahive_mobile\\lib\\core\\providers\\user_provider.dart": {
-    "mtime": 1779034265.9970953,
-    "ast_hash": "7b647e757bde63a16e243c9b887a3199",
+    "mtime": 1780243782.6114874,
+    "ast_hash": "e9948b896439bbc70a919414bbba661b",
     "semantic_hash": ""
   },
   "D:\\MediaHive App\\mediahive_mobile\\lib\\core\\router\\router.dart": {
-    "mtime": 1779639902.1759126,
-    "ast_hash": "f38b2f42bd1a9a3deb29d5e0df528a1f",
+    "mtime": 1780373004.0446005,
+    "ast_hash": "85e0435d1c6c785a1daf6243feebf049",
     "semantic_hash": ""
   },
   "D:\\MediaHive App\\mediahive_mobile\\lib\\core\\services\\analytics_service.dart": {
-    "mtime": 1778737059.0786278,
-    "ast_hash": "09e32ecce0f79d6587ceec2cb85f399d",
+    "mtime": 1780216555.9192355,
+    "ast_hash": "b29c1e4a32ed2efceae5fbce2740a78c",
     "semantic_hash": ""
   },
   "D:\\MediaHive App\\mediahive_mobile\\lib\\core\\services\\auth_service.dart": {
-    "mtime": 1779639894.5974412,
-    "ast_hash": "130deaadcbf369759a5fcfa62777aa54",
+    "mtime": 1780216555.925273,
+    "ast_hash": "a04ac8986c6bcac643d101bdcac328be",
     "semantic_hash": ""
   },
   "D:\\MediaHive App\\mediahive_mobile\\lib\\core\\services\\fcm_service.dart": {
-    "mtime": 1779183260.1715584,
-    "ast_hash": "6749c31329ce935c5cdb7685a8532c24",
+    "mtime": 1780216555.9292712,
+    "ast_hash": "630ff690ffda0f268946edacc00a82ea",
     "semantic_hash": ""
   },
   "D:\\MediaHive App\\mediahive_mobile\\lib\\core\\services\\logger_service.dart": {
-    "mtime": 1779025148.4894931,
-    "ast_hash": "32d17ec4d05dd4e8a89ea69905f9d9ec",
+    "mtime": 1780216555.9313765,
+    "ast_hash": "472910f35b254ae68f226ed78bceaf13",
     "semantic_hash": ""
   },
   "D:\\MediaHive App\\mediahive_mobile\\lib\\core\\services\\media_service.dart": {
-    "mtime": 1779171139.6404922,
-    "ast_hash": "4303dbbe7c5c624daedf433227529410",
+    "mtime": 1780216555.9354177,
+    "ast_hash": "4f4ee25fd867c74a49f8d60a7fb1b35e",
     "semantic_hash": ""
   },
   "D:\\MediaHive App\\mediahive_mobile\\lib\\core\\services\\network_service.dart": {
-    "mtime": 1778952768.927248,
-    "ast_hash": "8106436e52b7018a23109b5da4a64505",
+    "mtime": 1780216555.9380794,
+    "ast_hash": "b11bcb8d43c502e23d6de7a006e1864b",
     "semantic_hash": ""
   },
   "D:\\MediaHive App\\mediahive_mobile\\lib\\core\\services\\notification_router.dart": {
-    "mtime": 1779025137.0852253,
-    "ast_hash": "af47047ff84f6525ac5a50e4c700fecc",
+    "mtime": 1780216555.9395962,
+    "ast_hash": "a172fe8429092dbd3767a3d46dfdda2f",
     "semantic_hash": ""
   },
   "D:\\MediaHive App\\mediahive_mobile\\lib\\core\\services\\notification_service.dart": {
-    "mtime": 1779112437.2300146,
-    "ast_hash": "e149ea428d381a8c02264fbb106eb411",
+    "mtime": 1780286216.663124,
+    "ast_hash": "e2713eee0d2449229f0640625fa20de9",
     "semantic_hash": ""
   },
   "D:\\MediaHive App\\mediahive_mobile\\lib\\core\\services\\notification_sync_service.dart": {
-    "mtime": 1779024137.7809467,
-    "ast_hash": "6af4de2ca9aa9f4a9c1263c32ea86867",
+    "mtime": 1780216555.9491928,
+    "ast_hash": "839e50bca049584b021df685e9dc90f7",
     "semantic_hash": ""
   },
   "D:\\MediaHive App\\mediahive_mobile\\lib\\core\\services\\permission_service.dart": {
-    "mtime": 1778945410.6399477,
-    "ast_hash": "5e9a00800c46cdfb6dc432d8cf1aead9",
+    "mtime": 1780373021.397878,
+    "ast_hash": "1ac5b32ceee2633e55727b029afa2d4d",
     "semantic_hash": ""
   },
   "D:\\MediaHive App\\mediahive_mobile\\lib\\core\\services\\realtime_service.dart": {
-    "mtime": 1779170353.1430466,
-    "ast_hash": "c0ffa13bce98c8c8be7187bbcefbb5c1",
+    "mtime": 1780216555.9548304,
+    "ast_hash": "4c152bd8bdeb827f0e589ca661b350ee",
     "semantic_hash": ""
   },
   "D:\\MediaHive App\\mediahive_mobile\\lib\\core\\services\\sound_service.dart": {
-    "mtime": 1779039590.912189,
-    "ast_hash": "db503b247e19ff7acc1d5ed9eb2d4f2c",
+    "mtime": 1780216555.9568326,
+    "ast_hash": "f60bf64e2a370e09fb20572cbbb9456d",
     "semantic_hash": ""
   },
   "D:\\MediaHive App\\mediahive_mobile\\lib\\core\\services\\sync_service.dart": {
-    "mtime": 1778951102.0136006,
-    "ast_hash": "9434ab6ccfeda987fdf108f9363b0218",
+    "mtime": 1780216555.9603426,
+    "ast_hash": "f8db674b5acf1c270a4eb50f673ebb84",
     "semantic_hash": ""
   },
   "D:\\MediaHive App\\mediahive_mobile\\lib\\core\\services\\upload_service.dart": {
-    "mtime": 1778859621.6055064,
-    "ast_hash": "085e6ab0a3a95419da36feb51c03fd47",
+    "mtime": 1780216555.9696085,
+    "ast_hash": "6f8854f11cfa99162c2a37ea0cf71200",
     "semantic_hash": ""
   },
   "D:\\MediaHive App\\mediahive_mobile\\lib\\core\\services\\workflow_service.dart": {
-    "mtime": 1778952603.742398,
-    "ast_hash": "7b87af8afd0fa8413502c4d24c2327b0",
+    "mtime": 1780216555.9726145,
+    "ast_hash": "92143657cd2e97acbfd740cd67aa2536",
     "semantic_hash": ""
   },
   "D:\\MediaHive App\\mediahive_mobile\\lib\\core\\testing\\chaos_controller.dart": {
-    "mtime": 1778736007.5519924,
-    "ast_hash": "1f57ccbba6a5ee56b387ee461d606fbe",
+    "mtime": 1780216555.9779725,
+    "ast_hash": "f38027e75cd448f3924c53a5bd0cdfed",
     "semantic_hash": ""
   },
   "D:\\MediaHive App\\mediahive_mobile\\lib\\core\\theme\\app_colors.dart": {
-    "mtime": 1779617285.7864437,
-    "ast_hash": "5466b700df3d58fe9f829ea19ca99032",
+    "mtime": 1780372949.1932826,
+    "ast_hash": "6922949cc581781f9cb36b708220a0db",
     "semantic_hash": ""
   },
   "D:\\MediaHive App\\mediahive_mobile\\lib\\core\\theme\\app_spacing.dart": {
-    "mtime": 1778735060.3150086,
-    "ast_hash": "5bcfd59d83d83cfa908fc52e17781281",
+    "mtime": 1780216555.9851968,
+    "ast_hash": "8fdde0e61e728375433160d9a744518f",
     "semantic_hash": ""
   },
   "D:\\MediaHive App\\mediahive_mobile\\lib\\core\\theme\\app_typography.dart": {
-    "mtime": 1779615038.799014,
-    "ast_hash": "963db8bd63cb42b59ddcef519ad645de",
+    "mtime": 1780296945.718582,
+    "ast_hash": "a7a781e5f9d71eb48e016b5c8b182d5b",
     "semantic_hash": ""
   },
   "D:\\MediaHive App\\mediahive_mobile\\lib\\core\\utils\\url_helpers.dart": {
-    "mtime": 1778941865.6649075,
-    "ast_hash": "80d23fa34335c72ddad692300b41db61",
+    "mtime": 1780324085.5939856,
+    "ast_hash": "5679982013ccc71d32af333a99e6f841",
     "semantic_hash": ""
   },
   "D:\\MediaHive App\\mediahive_mobile\\lib\\features\\auth\\presentation\\screens\\login_screen.dart": {
-    "mtime": 1779704402.4689717,
-    "ast_hash": "ff6559a5087956a6dda522ef2912195d",
+    "mtime": 1780372949.1942818,
+    "ast_hash": "684c7cfc21ea9249fd70b25b2436e2ad",
     "semantic_hash": ""
   },
   "D:\\MediaHive App\\mediahive_mobile\\lib\\features\\auth\\presentation\\screens\\profile_screen.dart": {
-    "mtime": 1780125702.0069313,
-    "ast_hash": "7774f56ef42a9d0457767609c85ed57d",
+    "mtime": 1780373004.0451517,
+    "ast_hash": "dfe57e1cce657fb3af6c489d43c1c6b0",
     "semantic_hash": ""
   },
   "D:\\MediaHive App\\mediahive_mobile\\lib\\features\\auth\\presentation\\screens\\signup_screen.dart": {
-    "mtime": 1779704431.2285647,
-    "ast_hash": "b390361316237b93b8b78ed70cac9f5b",
+    "mtime": 1780372949.1973555,
+    "ast_hash": "64f3ab25cd266ceb06928e75c3196e34",
     "semantic_hash": ""
   },
   "D:\\MediaHive App\\mediahive_mobile\\lib\\features\\auth\\presentation\\screens\\startup_screen.dart": {
-    "mtime": 1779701405.7523584,
-    "ast_hash": "5240078b861cbf0ab1c435960bf4c97c",
+    "mtime": 1780372949.1973555,
+    "ast_hash": "2d4f765bcaaed242e99637b76477c9ee",
     "semantic_hash": ""
   },
   "D:\\MediaHive App\\mediahive_mobile\\lib\\features\\calendar\\data\\datasources\\event_local_datasource.dart": {
-    "mtime": 1779530663.5970943,
-    "ast_hash": "f8d08aa819ab076b6158b48bb2e64346",
+    "mtime": 1780216556.0675082,
+    "ast_hash": "94ae1827a49fdb28140ee4852b6cfb75",
     "semantic_hash": ""
   },
   "D:\\MediaHive App\\mediahive_mobile\\lib\\features\\calendar\\data\\repositories\\supabase_event_repository.dart": {
-    "mtime": 1779034109.4731386,
-    "ast_hash": "af4ae7427093b90b9722c296a6450565",
+    "mtime": 1780216556.0718472,
+    "ast_hash": "507531d51f64c0a58b56446f2f9b23a5",
     "semantic_hash": ""
   },
   "D:\\MediaHive App\\mediahive_mobile\\lib\\features\\calendar\\domain\\models\\event.dart": {
-    "mtime": 1779034047.0095897,
-    "ast_hash": "10e4ef97d1aed8f6f0294ee00cf0d3d1",
+    "mtime": 1780216556.0743575,
+    "ast_hash": "e5666868d74061a2bfca8a3df90f0569",
     "semantic_hash": ""
   },
   "D:\\MediaHive App\\mediahive_mobile\\lib\\features\\calendar\\domain\\models\\event.freezed.dart": {
-    "mtime": 1779254000.4784887,
-    "ast_hash": "5de217488296884e891e310285cfa1a6",
+    "mtime": 1780216556.1045628,
+    "ast_hash": "889e24277ea9428327b498a669d3529f",
     "semantic_hash": ""
   },
   "D:\\MediaHive App\\mediahive_mobile\\lib\\features\\calendar\\domain\\models\\event.g.dart": {
-    "mtime": 1779254004.9148686,
-    "ast_hash": "fa74c58502b52828572b1bc106465237",
+    "mtime": 1780216556.1075635,
+    "ast_hash": "b063f234912d7135b7bbcb3bb8674dbd",
     "semantic_hash": ""
   },
   "D:\\MediaHive App\\mediahive_mobile\\lib\\features\\calendar\\domain\\repositories\\event_repository.dart": {
-    "mtime": 1778736253.4450738,
-    "ast_hash": "26abf51006db8c269cd47692f4eb82c7",
+    "mtime": 1780216556.1105402,
+    "ast_hash": "df7276e37f288cf5beed7d61b568b5cd",
     "semantic_hash": ""
   },
   "D:\\MediaHive App\\mediahive_mobile\\lib\\features\\calendar\\presentation\\providers\\events_provider.dart": {
-    "mtime": 1779702161.3488219,
-    "ast_hash": "7a46aef9971404efeedb16c066a35b80",
+    "mtime": 1780216556.1125412,
+    "ast_hash": "57ed692af44d33716725b0a1b4990b8e",
     "semantic_hash": ""
   },
   "D:\\MediaHive App\\mediahive_mobile\\lib\\features\\calendar\\presentation\\providers\\events_provider.g.dart": {
-    "mtime": 1779255649.5030613,
-    "ast_hash": "0152d9da2b21913e7d46dab0c18be87c",
+    "mtime": 1780216556.1135404,
+    "ast_hash": "9833140165dc023821d7498c7840b03b",
     "semantic_hash": ""
   },
   "D:\\MediaHive App\\mediahive_mobile\\lib\\features\\calendar\\presentation\\screens\\calendar_screen.dart": {
-    "mtime": 1779702467.6751447,
-    "ast_hash": "c0f0153eed5f06904ce044a63a9411db",
+    "mtime": 1780372949.2003567,
+    "ast_hash": "a69135828fc00cdd6f409a527d5c48e6",
     "semantic_hash": ""
   },
   "D:\\MediaHive App\\mediahive_mobile\\lib\\features\\calendar\\presentation\\screens\\create_event_screen.dart": {
-    "mtime": 1779883833.4494646,
-    "ast_hash": "27582275bd35eeaf4add44d020b569e2",
+    "mtime": 1780373004.045677,
+    "ast_hash": "cd7ec1d3c2aab0337a3099cce8a48882",
     "semantic_hash": ""
   },
   "D:\\MediaHive App\\mediahive_mobile\\lib\\features\\calendar\\presentation\\screens\\event_detail_screen.dart": {
-    "mtime": 1779104542.95728,
-    "ast_hash": "dd0572bd7d27efce67928b211e6e6c68",
+    "mtime": 1780372949.2028692,
+    "ast_hash": "aad68f8f998fb0573859d0a512945d60",
     "semantic_hash": ""
   },
   "D:\\MediaHive App\\mediahive_mobile\\lib\\features\\campaigns\\data\\repositories\\campaign_repository.dart": {
-    "mtime": 1778860008.9416342,
-    "ast_hash": "73db316eff9f45e9f093afd61a941c28",
+    "mtime": 1780216556.1478226,
+    "ast_hash": "6f0228a4100486022360887593e1dab6",
     "semantic_hash": ""
   },
   "D:\\MediaHive App\\mediahive_mobile\\lib\\features\\campaigns\\presentation\\providers\\campaigns_provider.dart": {
-    "mtime": 1778860056.3505425,
-    "ast_hash": "78a442ea52a168631fbee51cb3a146d5",
+    "mtime": 1780216556.149364,
+    "ast_hash": "e39f7e5c605f39c5a9ec371a3098676b",
     "semantic_hash": ""
   },
   "D:\\MediaHive App\\mediahive_mobile\\lib\\features\\campaigns\\presentation\\screens\\create_campaign_screen.dart": {
-    "mtime": 1780125005.2087293,
-    "ast_hash": "0e35405190f3dda2afbbbb91ef14b0a6",
+    "mtime": 1780373004.045677,
+    "ast_hash": "f65495b581b1e7bf4a6bf3bfc5b52001",
     "semantic_hash": ""
   },
   "D:\\MediaHive App\\mediahive_mobile\\lib\\features\\dashboard\\presentation\\providers\\dashboard_providers.dart": {
-    "mtime": 1778997486.4775589,
-    "ast_hash": "ed0983c0d6214b091c5a4d6b5d0278e2",
+    "mtime": 1780216556.160452,
+    "ast_hash": "7944cd7e5dc272163ed69c3ebf932441",
     "semantic_hash": ""
   },
   "D:\\MediaHive App\\mediahive_mobile\\lib\\features\\dashboard\\presentation\\screens\\dashboard_screen.dart": {
-    "mtime": 1780131806.573993,
-    "ast_hash": "9a356379821aeab5dfe3ef3ec34ace77",
+    "mtime": 1780376623.3003697,
+    "ast_hash": "18cf2b37af6de3a01d9acb69a73985a8",
     "semantic_hash": ""
   },
   "D:\\MediaHive App\\mediahive_mobile\\lib\\features\\files\\data\\repositories\\supabase_file_repository.dart": {
-    "mtime": 1779016788.3136196,
-    "ast_hash": "7504ce8c022e44c955643ca6fe217c2c",
+    "mtime": 1780216556.1949162,
+    "ast_hash": "8cb59c0f375d4d8436da6ae99d7f3e1a",
     "semantic_hash": ""
   },
   "D:\\MediaHive App\\mediahive_mobile\\lib\\features\\files\\domain\\models\\file_asset.dart": {
-    "mtime": 1779277643.5916343,
-    "ast_hash": "db5bfc04267e2ad20c5f3235f942be0b",
+    "mtime": 1780216556.1974227,
+    "ast_hash": "32160de64da49a2f26f12de4d9d3f605",
     "semantic_hash": ""
   },
   "D:\\MediaHive App\\mediahive_mobile\\lib\\features\\files\\domain\\repositories\\file_repository.dart": {
-    "mtime": 1778755418.006951,
-    "ast_hash": "c9e3cae831efefd9f1abd1a9372f0bb9",
+    "mtime": 1780216556.1984272,
+    "ast_hash": "82c0ef4f0c64147e16e7b7e534c79017",
     "semantic_hash": ""
   },
   "D:\\MediaHive App\\mediahive_mobile\\lib\\features\\files\\presentation\\providers\\files_provider.dart": {
-    "mtime": 1778755676.9993193,
-    "ast_hash": "afb396beb28d14db68b21ecca78ddddd",
+    "mtime": 1780216556.2004707,
+    "ast_hash": "fbf20e1adfa36740a204b30fac5fae89",
     "semantic_hash": ""
   },
   "D:\\MediaHive App\\mediahive_mobile\\lib\\features\\files\\presentation\\screens\\downloads_screen.dart": {
-    "mtime": 1779105813.5216885,
-    "ast_hash": "39fca21305e2d5e1c1e435ea2e10379c",
+    "mtime": 1780372949.209383,
+    "ast_hash": "6e561fc30deb408b6c8c04ce2e9f912d",
     "semantic_hash": ""
   },
   "D:\\MediaHive App\\mediahive_mobile\\lib\\features\\files\\presentation\\widgets\\file_detail_modal.dart": {
-    "mtime": 1779277653.26606,
-    "ast_hash": "4af7eae836bc89d25d0c537e5c02b221",
+    "mtime": 1780375185.0886183,
+    "ast_hash": "7c06191c4ede8bcad0d353b62c26ec6c",
     "semantic_hash": ""
   },
   "D:\\MediaHive App\\mediahive_mobile\\lib\\features\\files\\presentation\\widgets\\upload_file_modal.dart": {
-    "mtime": 1779171118.757347,
-    "ast_hash": "8c879270575ff9681c18fa9457c32fc3",
+    "mtime": 1780372949.2103834,
+    "ast_hash": "a99bb35afffc86f305511370e88c7947",
     "semantic_hash": ""
   },
   "D:\\MediaHive App\\mediahive_mobile\\lib\\features\\governance\\data\\repositories\\leave_repository.dart": {
-    "mtime": 1778870499.9594097,
-    "ast_hash": "20065ba146c687eedbf33c45a16ca407",
+    "mtime": 1780216556.235108,
+    "ast_hash": "0a2daba3ff2bd13ff8184cac0f53580c",
     "semantic_hash": ""
   },
   "D:\\MediaHive App\\mediahive_mobile\\lib\\features\\governance\\domain\\models\\governance_models.dart": {
-    "mtime": 1778738300.5935054,
-    "ast_hash": "3258632c87175d259599fe54e3a6031a",
+    "mtime": 1780216556.237629,
+    "ast_hash": "bc5e98f222e05367c86a9037ce462c7c",
     "semantic_hash": ""
   },
   "D:\\MediaHive App\\mediahive_mobile\\lib\\features\\governance\\domain\\repositories\\governance_repository.dart": {
-    "mtime": 1778736363.1668272,
-    "ast_hash": "606a086b29751932448304eab8433765",
+    "mtime": 1780216556.237629,
+    "ast_hash": "f37c6bd820e914ab8e11c17cd7113b70",
     "semantic_hash": ""
   },
   "D:\\MediaHive App\\mediahive_mobile\\lib\\features\\governance\\presentation\\providers\\command_metrics_provider.dart": {
-    "mtime": 1778865441.7198522,
-    "ast_hash": "1a6379b3ec1073c638adf9f2b430a94b",
+    "mtime": 1780216556.2401357,
+    "ast_hash": "335dee98f9a31279de5a9982bdee7c95",
     "semantic_hash": ""
   },
   "D:\\MediaHive App\\mediahive_mobile\\lib\\features\\governance\\presentation\\providers\\governance_provider.dart": {
-    "mtime": 1778738320.0051515,
-    "ast_hash": "bb6c64885149b05574d8e3662617206f",
+    "mtime": 1780373004.0472548,
+    "ast_hash": "7fca848e2d6284ce63c0164cb09ac701",
     "semantic_hash": ""
   },
   "D:\\MediaHive App\\mediahive_mobile\\lib\\features\\governance\\presentation\\providers\\leave_provider.dart": {
-    "mtime": 1778870515.9835336,
-    "ast_hash": "a72717c9eb0496b250e050533000b9dc",
+    "mtime": 1780216556.2442458,
+    "ast_hash": "929981a11ae9d95f9da3b49626c07f8b",
     "semantic_hash": ""
   },
   "D:\\MediaHive App\\mediahive_mobile\\lib\\features\\governance\\presentation\\screens\\command_center_screen.dart": {
-    "mtime": 1780131809.2439048,
-    "ast_hash": "c872962228ab3a184cf20d70d411dacb",
+    "mtime": 1780373004.0472548,
+    "ast_hash": "843f7e83c6740bcbc0cfb52a6a5e8744",
     "semantic_hash": ""
   },
   "D:\\MediaHive App\\mediahive_mobile\\lib\\features\\governance\\presentation\\screens\\governance_screen.dart": {
-    "mtime": 1778738135.6347885,
-    "ast_hash": "d30f09a02fe6d2b948a7e7deba0010b9",
+    "mtime": 1780372949.2129004,
+    "ast_hash": "563ea03aa0bb76f00a34131ce553c04f",
     "semantic_hash": ""
   },
   "D:\\MediaHive App\\mediahive_mobile\\lib\\features\\governance\\presentation\\screens\\leave_management_screen.dart": {
-    "mtime": 1780131811.4747176,
-    "ast_hash": "99ee594a4094b4ea7980a50701b3a6bf",
+    "mtime": 1780372949.2129004,
+    "ast_hash": "c61b8ccf061942297b83cfe8ad754d09",
     "semantic_hash": ""
   },
   "D:\\MediaHive App\\mediahive_mobile\\lib\\features\\governance\\presentation\\screens\\leave_request_screen.dart": {
-    "mtime": 1780131815.4928122,
-    "ast_hash": "e06788e9610b96743c7e6989a13e209f",
+    "mtime": 1780372949.2138987,
+    "ast_hash": "588dad555438b7bcf028ad7764d5966c",
     "semantic_hash": ""
   },
   "D:\\MediaHive App\\mediahive_mobile\\lib\\features\\governance\\presentation\\screens\\user_management_screen.dart": {
-    "mtime": 1779793504.1344955,
-    "ast_hash": "204d2cbfbf9fb96d21c3332e773ad716",
+    "mtime": 1780372949.214899,
+    "ast_hash": "10d574b4dec4adc35192080c510ad44b",
     "semantic_hash": ""
   },
   "D:\\MediaHive App\\mediahive_mobile\\lib\\features\\governance\\presentation\\screens\\workspace_management_screen.dart": {
-    "mtime": 1779884402.5891137,
-    "ast_hash": "9ba4607a7812ac566e728a359167538b",
+    "mtime": 1780372949.214899,
+    "ast_hash": "2b9f91a602995013c2ee6ce899b58c9c",
     "semantic_hash": ""
   },
   "D:\\MediaHive App\\mediahive_mobile\\lib\\features\\inventory\\data\\datasources\\inventory_local_datasource.dart": {
-    "mtime": 1778764494.7845383,
-    "ast_hash": "0d7ea077e4f4a2944f184a85c45cb267",
+    "mtime": 1780216556.297469,
+    "ast_hash": "04425ed1049a7f9cb1dba16a66bcd481",
     "semantic_hash": ""
   },
   "D:\\MediaHive App\\mediahive_mobile\\lib\\features\\inventory\\data\\repositories\\supabase_inventory_repository.dart": {
-    "mtime": 1779035747.6810956,
-    "ast_hash": "c0337437bc2e4bfb409fb82c298ab830",
+    "mtime": 1780216556.3039844,
+    "ast_hash": "3f946faa6ada351fe35957f4717afded",
     "semantic_hash": ""
   },
   "D:\\MediaHive App\\mediahive_mobile\\lib\\features\\inventory\\data\\services\\inventory_api_service.dart": {
-    "mtime": 1778773338.4745042,
-    "ast_hash": "97e625162fceb2a944867196a691954b",
+    "mtime": 1780216556.3079848,
+    "ast_hash": "8aba514adbbebbc24fb6ab9353c2b8aa",
     "semantic_hash": ""
   },
   "D:\\MediaHive App\\mediahive_mobile\\lib\\features\\inventory\\domain\\models\\equipment_booking.dart": {
-    "mtime": 1778761309.5590982,
-    "ast_hash": "a42bebff3110d3bc60bc351612b9da74",
+    "mtime": 1780216556.3104942,
+    "ast_hash": "bb542befbcc220168c6fd712ec125b3e",
     "semantic_hash": ""
   },
   "D:\\MediaHive App\\mediahive_mobile\\lib\\features\\inventory\\domain\\models\\equipment_booking.freezed.dart": {
-    "mtime": 1779254000.553519,
-    "ast_hash": "bc2c0daf5fd6a9c4d6bd19a71205f2d1",
+    "mtime": 1780216556.3150668,
+    "ast_hash": "7f9f90c8e58babaf68527f431cc2624e",
     "semantic_hash": ""
   },
   "D:\\MediaHive App\\mediahive_mobile\\lib\\features\\inventory\\domain\\models\\equipment_booking.g.dart": {
-    "mtime": 1779254004.9168909,
-    "ast_hash": "28429bc09f63061ec05b83d64c79096d",
+    "mtime": 1780216556.3160682,
+    "ast_hash": "26a9dab61fb46efc56bf46c9e4df2e6e",
     "semantic_hash": ""
   },
   "D:\\MediaHive App\\mediahive_mobile\\lib\\features\\inventory\\domain\\models\\inventory_item.dart": {
-    "mtime": 1779013927.9003668,
-    "ast_hash": "15f025279a27bf2d5136b154887a1feb",
+    "mtime": 1780216556.3194122,
+    "ast_hash": "f4f0380de43c1c9b7e5236328c3ba6d9",
     "semantic_hash": ""
   },
   "D:\\MediaHive App\\mediahive_mobile\\lib\\features\\inventory\\domain\\models\\inventory_item.freezed.dart": {
-    "mtime": 1779254000.6645525,
-    "ast_hash": "4324553ac2728cd55f812e29ffebb59b",
+    "mtime": 1780216556.328011,
+    "ast_hash": "8aa91f16bae6babfc1f9f87e8cda86e1",
     "semantic_hash": ""
   },
   "D:\\MediaHive App\\mediahive_mobile\\lib\\features\\inventory\\domain\\models\\inventory_item.g.dart": {
-    "mtime": 1779254004.919358,
-    "ast_hash": "c882f572da5a1f7aa85952fc3ebee2c6",
+    "mtime": 1780216556.3305197,
+    "ast_hash": "8a644235517884a2ed1d9de3c6a3d880",
     "semantic_hash": ""
   },
   "D:\\MediaHive App\\mediahive_mobile\\lib\\features\\inventory\\domain\\models\\inventory_request.dart": {
-    "mtime": 1778930051.1753328,
-    "ast_hash": "a6c029ba78420f273c15baa120ea981b",
+    "mtime": 1780216556.3315196,
+    "ast_hash": "e11ca1a054280d355193703b2f752cf6",
     "semantic_hash": ""
   },
   "D:\\MediaHive App\\mediahive_mobile\\lib\\features\\inventory\\domain\\models\\inventory_request.freezed.dart": {
-    "mtime": 1779254000.6645525,
-    "ast_hash": "12f655ed43eedabe7f3b2af72a226faa",
+    "mtime": 1780216556.33641,
+    "ast_hash": "0e81a3bdf4f38989479e66bbbfaea51c",
     "semantic_hash": ""
   },
   "D:\\MediaHive App\\mediahive_mobile\\lib\\features\\inventory\\domain\\models\\inventory_request.g.dart": {
-    "mtime": 1779254004.919358,
-    "ast_hash": "7ac1f9b6a472c7cd8f64127dd80cee68",
+    "mtime": 1780216556.3374157,
+    "ast_hash": "f17c08820469797d2b1ffc0b46d0a887",
     "semantic_hash": ""
   },
   "D:\\MediaHive App\\mediahive_mobile\\lib\\features\\inventory\\domain\\repositories\\inventory_repository.dart": {
-    "mtime": 1779035739.4837954,
-    "ast_hash": "065b2c7fecc84dece280ad38ecb1e462",
+    "mtime": 1780216556.3394156,
+    "ast_hash": "2c4d39ed105c9c41801264e6fd6dcdfd",
     "semantic_hash": ""
   },
   "D:\\MediaHive App\\mediahive_mobile\\lib\\features\\inventory\\presentation\\providers\\inventory_provider.dart": {
-    "mtime": 1779035756.236237,
-    "ast_hash": "862a94b8bd624ebc01c7bba868002f06",
+    "mtime": 1780216556.3437643,
+    "ast_hash": "5852ad81447ff157a59cb4b3e1e692cb",
     "semantic_hash": ""
   },
   "D:\\MediaHive App\\mediahive_mobile\\lib\\features\\inventory\\presentation\\providers\\inventory_provider.g.dart": {
-    "mtime": 1779255649.5030613,
-    "ast_hash": "131f09ed9863ae1f7a1e2d58abcc3c67",
+    "mtime": 1780216556.3467655,
+    "ast_hash": "1750b8d1d03a750b4c7ca69745974bab",
     "semantic_hash": ""
   },
   "D:\\MediaHive App\\mediahive_mobile\\lib\\features\\inventory\\presentation\\screens\\add_inventory_item_screen.dart": {
-    "mtime": 1779461744.8141043,
-    "ast_hash": "a02a99bf7819e361db6770883402190f",
+    "mtime": 1780372949.2174106,
+    "ast_hash": "b1c37c0f1ce6fc094881a3777412fdea",
     "semantic_hash": ""
   },
   "D:\\MediaHive App\\mediahive_mobile\\lib\\features\\inventory\\presentation\\screens\\inventory_screen.dart": {
-    "mtime": 1779461753.936098,
-    "ast_hash": "4eefe773146ac4f35be4343f9ee0a005",
+    "mtime": 1780372949.2194114,
+    "ast_hash": "3abc470bf0ca241305c12293d446755d",
     "semantic_hash": ""
   },
   "D:\\MediaHive App\\mediahive_mobile\\lib\\features\\inventory\\presentation\\widgets\\inventory_transaction_sheets.dart": {
-    "mtime": 1780131817.6968107,
-    "ast_hash": "862ff82cb20a35fc767eefb06a6cba5f",
+    "mtime": 1780372949.2194114,
+    "ast_hash": "33064e5eda0dd12c52ebba1293bf86be",
     "semantic_hash": ""
   },
   "D:\\MediaHive App\\mediahive_mobile\\lib\\features\\system\\data\\repositories\\notification_repository.dart": {
-    "mtime": 1779172355.3184457,
-    "ast_hash": "589f3c489819c20e4f92963d1c6f2582",
+    "mtime": 1780216556.3941169,
+    "ast_hash": "41da82a2f591fbacf0eb0fba20b93978",
     "semantic_hash": ""
   },
   "D:\\MediaHive App\\mediahive_mobile\\lib\\features\\system\\data\\repositories\\system_repository.dart": {
-    "mtime": 1778865314.933554,
-    "ast_hash": "0748b0eabf4e6019f358260256029ee9",
+    "mtime": 1780373094.6895304,
+    "ast_hash": "5507a84140cf248e97990a83b636355c",
     "semantic_hash": ""
   },
   "D:\\MediaHive App\\mediahive_mobile\\lib\\features\\system\\presentation\\providers\\notifications_provider.dart": {
-    "mtime": 1778859556.1543324,
-    "ast_hash": "1e7d1e874ae091a9d5508059bc569442",
+    "mtime": 1780216556.397622,
+    "ast_hash": "787d6e3edf8ce0e8db82c98597aef080",
     "semantic_hash": ""
   },
   "D:\\MediaHive App\\mediahive_mobile\\lib\\features\\system\\presentation\\screens\\create_notification_screen.dart": {
-    "mtime": 1780125019.9729717,
-    "ast_hash": "593fbbbbb6be3d63afb8be1c05162e1b",
+    "mtime": 1780373004.048261,
+    "ast_hash": "7834571afd99abec696818761b397abd",
     "semantic_hash": ""
   },
   "D:\\MediaHive App\\mediahive_mobile\\lib\\features\\system\\presentation\\screens\\notification_center_screen.dart": {
-    "mtime": 1780131818.0311294,
-    "ast_hash": "16e2cb1894f88c1263b92094107623eb",
+    "mtime": 1780372949.2225418,
+    "ast_hash": "0c3e4376e7a781a227bc754505e2b1a5",
     "semantic_hash": ""
   },
   "D:\\MediaHive App\\mediahive_mobile\\lib\\features\\system\\presentation\\screens\\system_health_screen.dart": {
-    "mtime": 1779102034.710793,
-    "ast_hash": "faaf2f0c12df81e00f73d6f0d6ddeb36",
+    "mtime": 1780372949.2225418,
+    "ast_hash": "7dc32626b6500df2a34c3550adadf88c",
     "semantic_hash": ""
   },
   "D:\\MediaHive App\\mediahive_mobile\\lib\\features\\tasks\\data\\datasources\\task_local_datasource.dart": {
-    "mtime": 1779530660.0020063,
-    "ast_hash": "2860597b6f551893545fb7b4a7de64c8",
+    "mtime": 1780216556.4325435,
+    "ast_hash": "20a62af0272c8c83447d6f362c04a0d8",
     "semantic_hash": ""
   },
   "D:\\MediaHive App\\mediahive_mobile\\lib\\features\\tasks\\data\\repositories\\supabase_task_repository.dart": {
-    "mtime": 1779794833.407613,
-    "ast_hash": "9b33c1df8c7ab4144f07d5e1ce7b1872",
+    "mtime": 1780216556.4365537,
+    "ast_hash": "86ce2f57dbb7fc446a291bf88506105a",
     "semantic_hash": ""
   },
   "D:\\MediaHive App\\mediahive_mobile\\lib\\features\\tasks\\domain\\models\\task.dart": {
-    "mtime": 1779255553.682523,
-    "ast_hash": "42269c886bb636ac267104fa94369e36",
+    "mtime": 1780216556.4385583,
+    "ast_hash": "f8488b9cfe09a466eeb89a9c376f0efe",
     "semantic_hash": ""
   },
   "D:\\MediaHive App\\mediahive_mobile\\lib\\features\\tasks\\domain\\models\\task.freezed.dart": {
-    "mtime": 1779255645.9225783,
-    "ast_hash": "29f573f177c70a5254e63dd1bdcb23d5",
+    "mtime": 1780216556.4450839,
+    "ast_hash": "6d1680240152623f68bafcd061ab45fe",
     "semantic_hash": ""
   },
   "D:\\MediaHive App\\mediahive_mobile\\lib\\features\\tasks\\domain\\models\\task.g.dart": {
-    "mtime": 1779255649.5030613,
-    "ast_hash": "43067063a9a93c61f0a8d6fce8d49888",
+    "mtime": 1780216556.4475875,
+    "ast_hash": "f873519b880a40edceca0c4d5c2ced6f",
     "semantic_hash": ""
   },
   "D:\\MediaHive App\\mediahive_mobile\\lib\\features\\tasks\\domain\\repositories\\task_repository.dart": {
-    "mtime": 1778738070.1211188,
-    "ast_hash": "7536dfac291673a5bfebb15e447738c2",
+    "mtime": 1780216556.4491236,
+    "ast_hash": "ef562ebbcc0bcfcf0da85c4778eec882",
     "semantic_hash": ""
   },
   "D:\\MediaHive App\\mediahive_mobile\\lib\\features\\tasks\\presentation\\providers\\tasks_provider.dart": {
-    "mtime": 1778951920.0607922,
-    "ast_hash": "ffd0ceed6154c5e9dfd253a534e72014",
+    "mtime": 1780216556.4527988,
+    "ast_hash": "358c0d6f6e14e57d8b924004173703f7",
     "semantic_hash": ""
   },
   "D:\\MediaHive App\\mediahive_mobile\\lib\\features\\tasks\\presentation\\providers\\tasks_provider.g.dart": {
-    "mtime": 1779255649.5030613,
-    "ast_hash": "6d4275e9b20a19f00aaae94f226c51ae",
+    "mtime": 1780216556.4558027,
+    "ast_hash": "ffb28d776b4b6551f8ae226cbe9f5449",
     "semantic_hash": ""
   },
   "D:\\MediaHive App\\mediahive_mobile\\lib\\features\\tasks\\presentation\\screens\\create_task_screen.dart": {
-    "mtime": 1780133711.1678348,
-    "ast_hash": "ce250f36371ff723b8452ebc09a951a6",
+    "mtime": 1780372949.2245474,
+    "ast_hash": "d1a3af7f3983fe0512ed6848e814bb71",
     "semantic_hash": ""
   },
   "D:\\MediaHive App\\mediahive_mobile\\lib\\features\\tasks\\presentation\\screens\\tasks_screen.dart": {
-    "mtime": 1780133124.4524112,
-    "ast_hash": "caacf0743de88d2981dd4a617dfe27f0",
+    "mtime": 1780372949.226053,
+    "ast_hash": "95dc622cd0f808078a8bbe4baf027fdd",
     "semantic_hash": ""
   },
   "D:\\MediaHive App\\mediahive_mobile\\lib\\features\\tasks\\presentation\\screens\\task_details_screen.dart": {
-    "mtime": 1780125022.8971689,
-    "ast_hash": "440b1dd906ecdfcbae9ccd91fc75e1a5",
+    "mtime": 1780372949.226053,
+    "ast_hash": "b9614862258add18f23a2d817d4fb091",
     "semantic_hash": ""
   },
   "D:\\MediaHive App\\mediahive_mobile\\lib\\features\\tasks\\presentation\\widgets\\add_task_dialog.dart": {
-    "mtime": 1779171147.6770537,
-    "ast_hash": "656e2c65ac283abce9796e3f62b8a927",
+    "mtime": 1780372949.2270596,
+    "ast_hash": "d3d0d799d63fe45fed99fea8e56487f3",
     "semantic_hash": ""
   },
   "D:\\MediaHive App\\mediahive_mobile\\lib\\models\\institutional_data.dart": {
-    "mtime": 1778696537.9748175,
-    "ast_hash": "f67a813f53412b443a067e7e744d579b",
+    "mtime": 1780216556.5142906,
+    "ast_hash": "6fee488975324fb3623d4b4f77bb096a",
     "semantic_hash": ""
   },
   "D:\\MediaHive App\\mediahive_mobile\\lib\\presentation\\providers\\navigation_provider.dart": {
-    "mtime": 1778905709.6698806,
-    "ast_hash": "99803882f96a38cac1f659e6b5a5a597",
+    "mtime": 1780216556.515797,
+    "ast_hash": "1d4c22c3f16cc1a072875d9106365278",
     "semantic_hash": ""
   },
   "D:\\MediaHive App\\mediahive_mobile\\lib\\presentation\\screens\\shell_screen.dart": {
-    "mtime": 1780134413.7315056,
-    "ast_hash": "9b17809941f8fb17994e0dfe3be48e49",
+    "mtime": 1780372949.2270596,
+    "ast_hash": "d68f6195258d70c81639a60009496843",
     "semantic_hash": ""
   },
   "D:\\MediaHive App\\mediahive_mobile\\lib\\presentation\\widgets\\theme_toggle_button.dart": {
-    "mtime": 1779644647.898075,
-    "ast_hash": "3bfd67eae2d3597b8adc8ae0dcb9cd0e",
+    "mtime": 1780372949.2285655,
+    "ast_hash": "a402158daebeeb87d56f94c88367b18b",
     "semantic_hash": ""
   },
   "D:\\MediaHive App\\mediahive_mobile\\lib\\providers\\institutional_provider.dart": {
-    "mtime": 1778695118.3442037,
-    "ast_hash": "4b31ff78554dbc5251f0acfb2f8d16ec",
+    "mtime": 1780216556.5345287,
+    "ast_hash": "4c7120aaf6ff8ec02efd5373304296c3",
     "semantic_hash": ""
   },
   "D:\\MediaHive App\\mediahive_mobile\\lib\\services\\supabase_service.dart": {
-    "mtime": 1778735167.5463355,
-    "ast_hash": "0de45d7452322f48ec56ca33f7e43491",
+    "mtime": 1780216556.5365374,
+    "ast_hash": "fb8c3605414324e207663156b337e4c8",
     "semantic_hash": ""
   },
   "D:\\MediaHive App\\mediahive_mobile\\lib\\shared\\widgets\\mh_button.dart": {
-    "mtime": 1779612273.1180995,
-    "ast_hash": "baa41fb1c2a883e7534afad436b7a85d",
+    "mtime": 1780372949.2295723,
+    "ast_hash": "0b5340eb6c8b3a1f3161962682721995",
     "semantic_hash": ""
   },
   "D:\\MediaHive App\\mediahive_mobile\\lib\\shared\\widgets\\mh_empty_state.dart": {
-    "mtime": 1779612442.417059,
-    "ast_hash": "0efab3f07cfabaccfec972c6080552f7",
+    "mtime": 1780372949.2305715,
+    "ast_hash": "327fcf7405f661e7b0a27d24f35b26f4",
     "semantic_hash": ""
   },
   "D:\\MediaHive App\\mediahive_mobile\\lib\\shared\\widgets\\mh_error_boundary.dart": {
-    "mtime": 1778858784.8497055,
-    "ast_hash": "81f89686787246087a4c4101e32de527",
+    "mtime": 1780372949.2305715,
+    "ast_hash": "a495f06ad2b4a283e968b07653cf4dde",
     "semantic_hash": ""
   },
   "D:\\MediaHive App\\mediahive_mobile\\lib\\shared\\widgets\\mh_honey_loader.dart": {
-    "mtime": 1778853140.1103144,
-    "ast_hash": "07d8d4c580c2e6df2d0cc9916529224b",
+    "mtime": 1780216556.5552301,
+    "ast_hash": "e9dcc53781268c8e5d2d2d77856b31ff",
     "semantic_hash": ""
   },
   "D:\\MediaHive App\\mediahive_mobile\\lib\\shared\\widgets\\mh_input.dart": {
-    "mtime": 1779107060.4388654,
-    "ast_hash": "2b42a281e31824fd865b84f5d2a79f8b",
+    "mtime": 1780372949.2305715,
+    "ast_hash": "1d64436b90c57ae4010aa6bb2f0b4505",
     "semantic_hash": ""
   },
   "D:\\MediaHive App\\mediahive_mobile\\lib\\shared\\widgets\\mh_loading.dart": {
-    "mtime": 1778864984.4340367,
-    "ast_hash": "ebe20ad5452d44b44427393ad5e11225",
+    "mtime": 1780216556.5613892,
+    "ast_hash": "da4147fca4be0165d7b8ba509842fda4",
     "semantic_hash": ""
   },
   "D:\\MediaHive App\\mediahive_mobile\\lib\\shared\\widgets\\mh_loading_overlay.dart": {
-    "mtime": 1778853359.410356,
-    "ast_hash": "8394cb09d4747c65715ccd41ed4293dd",
+    "mtime": 1780372949.2320764,
+    "ast_hash": "9371d89c58d2f97d8efeac4789580d06",
     "semantic_hash": ""
   },
   "D:\\MediaHive App\\mediahive_mobile\\lib\\shared\\widgets\\mh_offline_banner.dart": {
-    "mtime": 1779614256.3024547,
-    "ast_hash": "d5c536819e9234b245df92f2675bd14f",
+    "mtime": 1780372949.2320764,
+    "ast_hash": "d67a74b4e02b9e8afb7b213a3a769ce1",
     "semantic_hash": ""
   },
   "D:\\MediaHive App\\mediahive_mobile\\lib\\shared\\widgets\\mh_refresh_indicator.dart": {
-    "mtime": 1778850963.471376,
-    "ast_hash": "5a98346df7172d3a80c2172e555637bd",
+    "mtime": 1780216556.5674284,
+    "ast_hash": "64e0aca43067a118915551ab8ffdd8e3",
     "semantic_hash": ""
   },
   "D:\\MediaHive App\\mediahive_mobile\\lib\\shared\\widgets\\mh_role_guard.dart": {
-    "mtime": 1778926330.5212553,
-    "ast_hash": "94f4890c15d116369b74dc3059e8e98c",
+    "mtime": 1780216556.5694337,
+    "ast_hash": "b4217846dfa4be87fab406162807dfb9",
     "semantic_hash": ""
   },
   "D:\\MediaHive App\\mediahive_mobile\\lib\\shared\\widgets\\mh_skeleton.dart": {
-    "mtime": 1779612458.3946817,
-    "ast_hash": "3104e53dac0e1feba0713a224866bef1",
+    "mtime": 1780216556.5715046,
+    "ast_hash": "0a3fea9a0738c4f425dd0a341babee4b",
     "semantic_hash": ""
   },
   "D:\\MediaHive App\\mediahive_mobile\\scratch\\check_audio_data.py": {
@@ -1660,8 +1650,8 @@
     "semantic_hash": ""
   },
   "D:\\MediaHive App\\mediahive_mobile\\test\\widget_test.dart": {
-    "mtime": 1778665076.7064204,
-    "ast_hash": "4c1b78baab9f088cef0283018d0f4242",
+    "mtime": 1780153165.5215292,
+    "ast_hash": "89bc465c4b5a34f2b605b01124295674",
     "semantic_hash": ""
   },
   "D:\\MediaHive App\\migrations\\0001_core_v1_schema.sql": {
@@ -2520,8 +2510,8 @@
     "semantic_hash": ""
   },
   "D:\\MediaHive App\\src\\app\\layout.tsx": {
-    "mtime": 1780133025.760382,
-    "ast_hash": "7bafa1016f505147b697ef71ef097e50",
+    "mtime": 1780391597.8820295,
+    "ast_hash": "1cad9fa1a083c88bcdf519703c4719b4",
     "semantic_hash": ""
   },
   "D:\\MediaHive App\\src\\app\\loading.tsx": {
@@ -2600,8 +2590,8 @@
     "semantic_hash": ""
   },
   "D:\\MediaHive App\\src\\app\\(shell)\\admin\\page.tsx": {
-    "mtime": 1780134375.4224155,
-    "ast_hash": "bcd8fecf15b3d0288a8ca45a55a47785",
+    "mtime": 1780143688.3679128,
+    "ast_hash": "6db6fe369fcd378ee0b19bd7674dc6ef",
     "semantic_hash": ""
   },
   "D:\\MediaHive App\\src\\app\\(shell)\\admin\\activity\\page.tsx": {
@@ -2890,8 +2880,8 @@
     "semantic_hash": ""
   },
   "D:\\MediaHive App\\src\\app\\(shell)\\home\\HomeClient.tsx": {
-    "mtime": 1780134375.4349103,
-    "ast_hash": "9e54d1db010d4d4c000819d7cc7dd83d",
+    "mtime": 1780210037.0241442,
+    "ast_hash": "ca3ddf2d6148931855dbac0c30e83ee7",
     "semantic_hash": ""
   },
   "D:\\MediaHive App\\src\\app\\(shell)\\home\\layout.tsx": {
@@ -2905,8 +2895,8 @@
     "semantic_hash": ""
   },
   "D:\\MediaHive App\\src\\app\\(shell)\\inventory\\InventoryClient.tsx": {
-    "mtime": 1778213104.9060285,
-    "ast_hash": "07cd770cdfe6ae0c327c5b462ca8e645",
+    "mtime": 1780391542.650604,
+    "ast_hash": "949f0ab6f2bd1a3c9269b2dfe1796e7d",
     "semantic_hash": ""
   },
   "D:\\MediaHive App\\src\\app\\(shell)\\inventory\\layout.tsx": {
@@ -3440,8 +3430,8 @@
     "semantic_hash": ""
   },
   "D:\\MediaHive App\\src\\app\\api\\drive\\image\\[id]\\route.ts": {
-    "mtime": 1777994440.0840065,
-    "ast_hash": "0e67e80a074e8619ddcf63c934639c8f",
+    "mtime": 1780389696.3199031,
+    "ast_hash": "d9aacca131a31fae5be08c315a75a689",
     "semantic_hash": ""
   },
   "D:\\MediaHive App\\src\\app\\api\\drive\\init\\route.ts": {
@@ -3595,8 +3585,8 @@
     "semantic_hash": ""
   },
   "D:\\MediaHive App\\src\\app\\api\\leave\\analytics\\route.ts": {
-    "mtime": 1779621973.1509278,
-    "ast_hash": "dc7654f7d299be61f1d68b62b28a7e8b",
+    "mtime": 1780289373.0336554,
+    "ast_hash": "c33057c2b97280626553594e4d6da34b",
     "semantic_hash": ""
   },
   "D:\\MediaHive App\\src\\app\\api\\leave\\requests\\route.ts": {
@@ -3880,8 +3870,8 @@
     "semantic_hash": ""
   },
   "D:\\MediaHive App\\src\\client\\components\\FAB.tsx": {
-    "mtime": 1780131760.5487022,
-    "ast_hash": "0da51eb95a3eed1d632967bb18f5a2cc",
+    "mtime": 1780135136.3377137,
+    "ast_hash": "f360f1a11ecf7d5dce77a77f46efdb06",
     "semantic_hash": ""
   },
   "D:\\MediaHive App\\src\\client\\components\\Icon.tsx": {
@@ -4015,8 +4005,8 @@
     "semantic_hash": ""
   },
   "D:\\MediaHive App\\src\\components\\DemoDataButton.tsx": {
-    "mtime": 1778213105.883807,
-    "ast_hash": "6496e75aaf073b451ba70f1733084370",
+    "mtime": 1780139661.8740654,
+    "ast_hash": "14f3e1eb79f023799c70ba6760cfe039",
     "semantic_hash": ""
   },
   "D:\\MediaHive App\\src\\components\\Diagnostics.tsx": {
@@ -4275,8 +4265,8 @@
     "semantic_hash": ""
   },
   "D:\\MediaHive App\\src\\components\\admin\\SystemHealthPanel.tsx": {
-    "mtime": 1780132404.279987,
-    "ast_hash": "fa01810e973a0cde9e4070bc74454b98",
+    "mtime": 1780139689.692995,
+    "ast_hash": "fb14affdf4a645dbc061de1507d3d5f4",
     "semantic_hash": ""
   },
   "D:\\MediaHive App\\src\\components\\admin\\SystemUpdatesView.tsx": {
@@ -4465,8 +4455,8 @@
     "semantic_hash": ""
   },
   "D:\\MediaHive App\\src\\components\\events\\EventDetailsModal.tsx": {
-    "mtime": 1779608553.536237,
-    "ast_hash": "3780a3201083fa4b5e665a8f84420a9c",
+    "mtime": 1780216272.484891,
+    "ast_hash": "66d786bf539004225e36c9e7904dd30f",
     "semantic_hash": ""
   },
   "D:\\MediaHive App\\src\\components\\events\\EventEditModal.tsx": {
@@ -4505,18 +4495,18 @@
     "semantic_hash": ""
   },
   "D:\\MediaHive App\\src\\components\\files\\UploadModal.tsx": {
-    "mtime": 1780132404.328446,
-    "ast_hash": "32e05397dbc84d722b8fe782b23273ad",
+    "mtime": 1780391688.950245,
+    "ast_hash": "a51234e8d91f43e476c61cf17eec3aac",
     "semantic_hash": ""
   },
   "D:\\MediaHive App\\src\\components\\governance\\ActivePoliciesList.tsx": {
-    "mtime": 1779444803.3876042,
-    "ast_hash": "5ee3d84bed83a0e6d917ef90d669dd79",
+    "mtime": 1780209303.513582,
+    "ast_hash": "323a5ebd1ed9c1af18ae0cdf16c3c801",
     "semantic_hash": ""
   },
   "D:\\MediaHive App\\src\\components\\governance\\GovernanceActivityLog.tsx": {
-    "mtime": 1779444803.3886065,
-    "ast_hash": "667283f34c8f44a7dd2bc1f39a5b2a76",
+    "mtime": 1780209334.0265436,
+    "ast_hash": "6f4a793e9883ddbff1b86a3bfa128d5e",
     "semantic_hash": ""
   },
   "D:\\MediaHive App\\src\\components\\governance\\GovernanceDashboard.tsx": {
@@ -4525,8 +4515,8 @@
     "semantic_hash": ""
   },
   "D:\\MediaHive App\\src\\components\\governance\\RoleAuthorityMap.tsx": {
-    "mtime": 1779444803.3886065,
-    "ast_hash": "b71ee4417fc1e84a5af4ae6d94687d88",
+    "mtime": 1780210200.1089814,
+    "ast_hash": "e12ccfc5e060607eeff1c3a0d54e0119",
     "semantic_hash": ""
   },
   "D:\\MediaHive App\\src\\components\\home\\CollapsibleSectionHeader.tsx": {
@@ -4690,8 +4680,8 @@
     "semantic_hash": ""
   },
   "D:\\MediaHive App\\src\\components\\inventory\\IssueItemDialog.tsx": {
-    "mtime": 1780132404.371799,
-    "ast_hash": "341fd898872eec0dc4ef599664393ca4",
+    "mtime": 1780391776.3620305,
+    "ast_hash": "ddfad1ad32298665853392fef6b48cf1",
     "semantic_hash": ""
   },
   "D:\\MediaHive App\\src\\components\\inventory\\RequestList.tsx": {
@@ -4715,8 +4705,8 @@
     "semantic_hash": ""
   },
   "D:\\MediaHive App\\src\\components\\layout\\DesktopSideNav.tsx": {
-    "mtime": 1780131790.2774777,
-    "ast_hash": "095f1c1b64e340860bdc9953268ada2c",
+    "mtime": 1780386166.8351512,
+    "ast_hash": "1a734ef2877468510207b8e93a6b2018",
     "semantic_hash": ""
   },
   "D:\\MediaHive App\\src\\components\\layout\\MobileViewportSafety.tsx": {
@@ -4730,8 +4720,8 @@
     "semantic_hash": ""
   },
   "D:\\MediaHive App\\src\\components\\layout\\ShellProviders.tsx": {
-    "mtime": 1780134313.5505836,
-    "ast_hash": "32c6562741932f66f4e86c2192f1b742",
+    "mtime": 1780229320.4132447,
+    "ast_hash": "8bfa15d57bdf6c9786e0f2262fb221db",
     "semantic_hash": ""
   },
   "D:\\MediaHive App\\src\\components\\layout\\WorkspaceLayout.tsx": {
@@ -4800,8 +4790,8 @@
     "semantic_hash": ""
   },
   "D:\\MediaHive App\\src\\components\\library\\organisms\\CreateEventForm.tsx": {
-    "mtime": 1779444803.4000945,
-    "ast_hash": "7d8f5f6da71d7a50fc1b29e2e02b9da4",
+    "mtime": 1780135691.2585218,
+    "ast_hash": "699ab690922c63e27f637187621c6d8c",
     "semantic_hash": ""
   },
   "D:\\MediaHive App\\src\\components\\library\\organisms\\CreateEventModal.tsx": {
@@ -5010,8 +5000,8 @@
     "semantic_hash": ""
   },
   "D:\\MediaHive App\\src\\components\\system\\CommandPalette.tsx": {
-    "mtime": 1778213106.63886,
-    "ast_hash": "a8d6defed8a9e7cea51420495d427082",
+    "mtime": 1780224750.0004396,
+    "ast_hash": "bb254d073f3a4ab51cbc7165ed841c85",
     "semantic_hash": ""
   },
   "D:\\MediaHive App\\src\\components\\system\\ConflictResolutionModal.tsx": {
@@ -5055,13 +5045,13 @@
     "semantic_hash": ""
   },
   "D:\\MediaHive App\\src\\components\\tasks\\AttachmentSection.tsx": {
-    "mtime": 1780132404.4542763,
-    "ast_hash": "6b2a642a8cdb693f1cf745efa7d41ca3",
+    "mtime": 1780215756.1143267,
+    "ast_hash": "57a952bc5b6c897f521589c7253fc29d",
     "semantic_hash": ""
   },
   "D:\\MediaHive App\\src\\components\\tasks\\BulkActionBar.tsx": {
-    "mtime": 1780132404.4569247,
-    "ast_hash": "e617355583c0560bd71b4af50f711963",
+    "mtime": 1780135150.2595887,
+    "ast_hash": "910464143087d10df557834e05049118",
     "semantic_hash": ""
   },
   "D:\\MediaHive App\\src\\components\\tasks\\BulkDeleteDialog.tsx": {
@@ -5105,8 +5095,8 @@
     "semantic_hash": ""
   },
   "D:\\MediaHive App\\src\\components\\tasks\\SortableTaskRow.tsx": {
-    "mtime": 1780132404.460164,
-    "ast_hash": "c8c4a7aecc1baa3ac58e8df76df70da1",
+    "mtime": 1780135149.9307609,
+    "ast_hash": "5cf0fcdefab9f5e2f67db921a30d0732",
     "semantic_hash": ""
   },
   "D:\\MediaHive App\\src\\components\\tasks\\TaskActivityFeed.tsx": {
@@ -5125,8 +5115,8 @@
     "semantic_hash": ""
   },
   "D:\\MediaHive App\\src\\components\\tasks\\TaskDetailModalV2.tsx": {
-    "mtime": 1780132404.4634035,
-    "ast_hash": "63ea46fd312e8cabea532c7dbb037f3a",
+    "mtime": 1780216139.560294,
+    "ast_hash": "9635500311aa2283ca0b260c16435cdd",
     "semantic_hash": ""
   },
   "D:\\MediaHive App\\src\\components\\tasks\\TaskListSkeleton.tsx": {
@@ -5135,8 +5125,8 @@
     "semantic_hash": ""
   },
   "D:\\MediaHive App\\src\\components\\tasks\\TaskListView.tsx": {
-    "mtime": 1780132404.4661033,
-    "ast_hash": "72fe82d6b255ce728f8c245f456d8089",
+    "mtime": 1780207998.6225681,
+    "ast_hash": "f9b02f00897383acdd0a56b867233bca",
     "semantic_hash": ""
   },
   "D:\\MediaHive App\\src\\components\\tasks\\TaskRatingComponent.tsx": {
@@ -5635,8 +5625,8 @@
     "semantic_hash": ""
   },
   "D:\\MediaHive App\\src\\contexts\\AuthContextProvider.tsx": {
-    "mtime": 1779514168.7422338,
-    "ast_hash": "40384073234cdb7b4436bc2cd315c2cd",
+    "mtime": 1780391507.741383,
+    "ast_hash": "82d613bf42a883f5218eda4aae8798cc",
     "semantic_hash": ""
   },
   "D:\\MediaHive App\\src\\contexts\\TaskContext.tsx": {
@@ -5665,8 +5655,8 @@
     "semantic_hash": ""
   },
   "D:\\MediaHive App\\src\\db\\schema.ts": {
-    "mtime": 1779452489.2359693,
-    "ast_hash": "a963312d0da21f0ae669f6383710b000",
+    "mtime": 1780228078.2388198,
+    "ast_hash": "cef99c511fd8c4951c0803beb105247c",
     "semantic_hash": ""
   },
   "D:\\MediaHive App\\src\\db\\schema_snapshot.sql": {
@@ -5910,8 +5900,8 @@
     "semantic_hash": ""
   },
   "D:\\MediaHive App\\src\\features\\dashboard\\components\\AdminOversightWidget.tsx": {
-    "mtime": 1779444803.4434218,
-    "ast_hash": "70785ad6c1e6d027a4b577c4bb0b8bd9",
+    "mtime": 1780214676.1013217,
+    "ast_hash": "6cc2134f1af1bb6eb60b2f6695c024e5",
     "semantic_hash": ""
   },
   "D:\\MediaHive App\\src\\features\\dashboard\\components\\CrewScheduleCard.tsx": {
@@ -5960,8 +5950,8 @@
     "semantic_hash": ""
   },
   "D:\\MediaHive App\\src\\features\\dashboard\\components\\MediaTeamOverview.tsx": {
-    "mtime": 1779444803.4489312,
-    "ast_hash": "1304201789ad8a664d63da667dfe84a3",
+    "mtime": 1780214685.468112,
+    "ast_hash": "0611297ff27747473984cf37129b0d8a",
     "semantic_hash": ""
   },
   "D:\\MediaHive App\\src\\features\\dashboard\\components\\MemberRequestSummaryWidget.tsx": {
@@ -5990,8 +5980,8 @@
     "semantic_hash": ""
   },
   "D:\\MediaHive App\\src\\features\\dashboard\\components\\OverdueTasksWidget.tsx": {
-    "mtime": 1779444803.4544506,
-    "ast_hash": "ac32b5b9769e9eea95e24c148943f521",
+    "mtime": 1780137353.7999039,
+    "ast_hash": "8c77e6d3309d37489a533874d16aecec",
     "semantic_hash": ""
   },
   "D:\\MediaHive App\\src\\features\\dashboard\\components\\ProductionDashboard.tsx": {
@@ -6000,8 +5990,8 @@
     "semantic_hash": ""
   },
   "D:\\MediaHive App\\src\\features\\dashboard\\components\\ProductionInsights.tsx": {
-    "mtime": 1779444803.456451,
-    "ast_hash": "db9747d0b8112e2e31b548396840002f",
+    "mtime": 1780210050.2077754,
+    "ast_hash": "c25f453b2342e63d12be295c8cb78562",
     "semantic_hash": ""
   },
   "D:\\MediaHive App\\src\\features\\dashboard\\components\\ProductionPulseBar.tsx": {
@@ -6045,8 +6035,8 @@
     "semantic_hash": ""
   },
   "D:\\MediaHive App\\src\\features\\dashboard\\components\\TodayTasksCard.tsx": {
-    "mtime": 1779453092.3752892,
-    "ast_hash": "5b31efc7c4d308b79da71aee10685e74",
+    "mtime": 1780136640.910143,
+    "ast_hash": "16a6dc89c93b776ebb2528f4f9052c5e",
     "semantic_hash": ""
   },
   "D:\\MediaHive App\\src\\features\\dashboard\\hooks\\useDashboardMetrics.ts": {
@@ -6115,8 +6105,8 @@
     "semantic_hash": ""
   },
   "D:\\MediaHive App\\src\\features\\tasks\\components\\TaskSummaryWidget.tsx": {
-    "mtime": 1779444803.4775147,
-    "ast_hash": "7c3162cfbde60463fd0ae7771982a335",
+    "mtime": 1780207077.3484733,
+    "ast_hash": "b01f81e6a16d8b47d7448b676d6ac2f7",
     "semantic_hash": ""
   },
   "D:\\MediaHive App\\src\\features\\tasks\\hooks\\useOptimisticTasks.ts": {
@@ -6345,8 +6335,8 @@
     "semantic_hash": ""
   },
   "D:\\MediaHive App\\src\\lib\\apiClient.ts": {
-    "mtime": 1779453108.0032268,
-    "ast_hash": "2a4bf78017ea6eea25c835e6f8a69366",
+    "mtime": 1780391155.3758304,
+    "ast_hash": "b3309d3f962ab91d341197a07e0b485f",
     "semantic_hash": ""
   },
   "D:\\MediaHive App\\src\\lib\\audit.ts": {
@@ -6430,13 +6420,13 @@
     "semantic_hash": ""
   },
   "D:\\MediaHive App\\src\\lib\\drive.ts": {
-    "mtime": 1778213107.18355,
-    "ast_hash": "ce8f066b9471db30031c0e4e605d12f0",
+    "mtime": 1780332178.0299933,
+    "ast_hash": "7e61c8ee455a5676e175c7c973ba10c6",
     "semantic_hash": ""
   },
   "D:\\MediaHive App\\src\\lib\\driveUtils.ts": {
-    "mtime": 1779369438.2415054,
-    "ast_hash": "b3d0a0e5bcced2a03596665ec94ccba6",
+    "mtime": 1780389597.2349017,
+    "ast_hash": "630ab9b71fe97e979203f99221ed4642",
     "semantic_hash": ""
   },
   "D:\\MediaHive App\\src\\lib\\emailVerificationGuard.ts": {
@@ -6705,8 +6695,8 @@
     "semantic_hash": ""
   },
   "D:\\MediaHive App\\src\\lib\\verifyUser.ts": {
-    "mtime": 1778821748.0739925,
-    "ast_hash": "f2c6b9df803f3a7f7ced379eae172ecb",
+    "mtime": 1780391155.0868297,
+    "ast_hash": "4b6b2a113990d7a834cc765c97a1c24d",
     "semantic_hash": ""
   },
   "D:\\MediaHive App\\src\\lib\\api\\withApiAuth.ts": {
@@ -6980,13 +6970,13 @@
     "semantic_hash": ""
   },
   "D:\\MediaHive App\\src\\services\\bulkOperationsService.ts": {
-    "mtime": 1778566854.2818913,
-    "ast_hash": "0a13003a56a79e0a196298f0d1dacb05",
+    "mtime": 1780391493.5063658,
+    "ast_hash": "897d9ad6b30ee9b6eadf7e6e66033eb4",
     "semantic_hash": ""
   },
   "D:\\MediaHive App\\src\\services\\canonicalDataService.ts": {
-    "mtime": 1779878653.04188,
-    "ast_hash": "5b22c1cfdb5d98173f5068b5d3659919",
+    "mtime": 1780210480.859931,
+    "ast_hash": "42f8f2acceea225814e5599270417ed7",
     "semantic_hash": ""
   },
   "D:\\MediaHive App\\src\\services\\conflictDetectionService.ts": {
@@ -7020,8 +7010,8 @@
     "semantic_hash": ""
   },
   "D:\\MediaHive App\\src\\services\\edgeCaseService.ts": {
-    "mtime": 1778213107.5162628,
-    "ast_hash": "90ee040a5fc07f14271a91ccbfeb453c",
+    "mtime": 1780385112.529844,
+    "ast_hash": "1cca8bf61209b0cf0e8072b05eb5700a",
     "semantic_hash": ""
   },
   "D:\\MediaHive App\\src\\services\\emailService.ts": {
@@ -7030,8 +7020,8 @@
     "semantic_hash": ""
   },
   "D:\\MediaHive App\\src\\services\\fcmService.ts": {
-    "mtime": 1779024534.0282953,
-    "ast_hash": "d885b5822b03ecc954f98227850cf906",
+    "mtime": 1780314612.9650114,
+    "ast_hash": "1d8dd3f5bb6fd7a53f9225a6c48db48f",
     "semantic_hash": ""
   },
   "D:\\MediaHive App\\src\\services\\files.ts": {
@@ -7155,8 +7145,8 @@
     "semantic_hash": ""
   },
   "D:\\MediaHive App\\src\\services\\structureService.ts": {
-    "mtime": 1779885220.3621738,
-    "ast_hash": "fb1bc6a6889ccfaad6dcb6fd44ad1be9",
+    "mtime": 1780391854.663476,
+    "ast_hash": "b062f36ce694082dee8e467fdc673354",
     "semantic_hash": ""
   },
   "D:\\MediaHive App\\src\\services\\systemSettingsService.ts": {
@@ -7880,8 +7870,8 @@
     "semantic_hash": ""
   },
   "D:\\MediaHive App\\AGENTS.md": {
-    "mtime": 1779458488.1847289,
-    "ast_hash": "abe2f65dd1bd12e8b36c4d684fd993e7",
+    "mtime": 1780136388.6740835,
+    "ast_hash": "fb19e0468818a295493656008e1f1ca1",
     "semantic_hash": ""
   },
   "D:\\MediaHive App\\analysis.md": {
@@ -8065,8 +8055,8 @@
     "semantic_hash": ""
   },
   "D:\\MediaHive App\\GEMINI.md": {
-    "mtime": 1779458493.4466615,
-    "ast_hash": "c45994ae8a5386b45a98c635d796a973",
+    "mtime": 1780136388.1720169,
+    "ast_hash": "22629770c1ad985bb23cde2ece8fb0e2",
     "semantic_hash": ""
   },
   "D:\\MediaHive App\\IMPLEMENTATION_SUMMARY.md": {
@@ -8920,8 +8910,8 @@
     "semantic_hash": ""
   },
   "D:\\MediaHive App\\mediahive_mobile\\analysis_options.yaml": {
-    "mtime": 1778652311.2260497,
-    "ast_hash": "9e65f4b9beebb674c0dc252f70a5c177",
+    "mtime": 1780373187.6340604,
+    "ast_hash": "0dee4e08021c64bc45a988829f735f81",
     "semantic_hash": ""
   },
   "D:\\MediaHive App\\mediahive_mobile\\devtools_options.yaml": {
@@ -8930,8 +8920,8 @@
     "semantic_hash": ""
   },
   "D:\\MediaHive App\\mediahive_mobile\\pubspec.yaml": {
-    "mtime": 1779895726.5909631,
-    "ast_hash": "29dd6dd91615746046277ee8b1dea685",
+    "mtime": 1780396797.0369103,
+    "ast_hash": "2540a53d92b1ffc84ff1117a11d34dfb",
     "semantic_hash": ""
   },
   "D:\\MediaHive App\\mediahive_mobile\\README.md": {
@@ -9000,8 +8990,8 @@
     "semantic_hash": ""
   },
   "D:\\MediaHive App\\src\\components\\tasks\\TaskKanbanView.tsx": {
-    "mtime": 1780132404.4079514,
-    "ast_hash": "e3f4c498d69ff7c5a5e5b0268211e130",
+    "mtime": 1780208004.0242138,
+    "ast_hash": "66313ed3ad810a915dfbcd700237a1ac",
     "semantic_hash": ""
   },
   "D:\\MediaHive App\\src\\app\\api\\demo-data\\route.ts": {
@@ -26595,8 +26585,8 @@
     "semantic_hash": ""
   },
   "D:\\MediaHive App\\mediahive_mobile\\lib\\features\\auth\\presentation\\screens\\reset_confirmation_screen.dart": {
-    "mtime": 1779644684.8030095,
-    "ast_hash": "81509c0c0575aa86a1963e4e942477e6",
+    "mtime": 1780372949.1963592,
+    "ast_hash": "61c31329c5135aad22a114ab8f989425",
     "semantic_hash": ""
   },
   "D:\\MediaHive App\\archive\\offline-features\\components\\ClientOfflineStatusIndicator.tsx": {
@@ -26730,18 +26720,18 @@
     "semantic_hash": ""
   },
   "D:\\MediaHive App\\mediahive_mobile\\lib\\core\\providers\\labs_provider.dart": {
-    "mtime": 1779883805.1805794,
-    "ast_hash": "8a6c5f2537b8fe1bd90ad15e95255756",
+    "mtime": 1780216555.904245,
+    "ast_hash": "a5f639aa77a305315ea9409e3e6d4a5d",
     "semantic_hash": ""
   },
   "D:\\MediaHive App\\mediahive_mobile\\lib\\core\\providers\\update_provider.dart": {
-    "mtime": 1779888591.9637241,
-    "ast_hash": "49faab08b57fa5899f50e651bedef489",
+    "mtime": 1780216555.9084978,
+    "ast_hash": "b8902d26c16f2ae807ea9ae3c895f5ef",
     "semantic_hash": ""
   },
   "D:\\MediaHive App\\mediahive_mobile\\lib\\core\\services\\update_service.dart": {
-    "mtime": 1779889920.853022,
-    "ast_hash": "217b79d396dfc5df1c8736f9d48f9144",
+    "mtime": 1780216555.9643438,
+    "ast_hash": "c5c7f7335f92fd96d508e1341c18c0ed",
     "semantic_hash": ""
   },
   "D:\\MediaHive App\\mediahive_mobile\\release_app.py": {
@@ -27155,13 +27145,13 @@
     "semantic_hash": ""
   },
   "D:\\MediaHive App\\mediahive_mobile\\lib\\core\\theme\\elastic_scroll_physics.dart": {
-    "mtime": 1780131595.2716124,
-    "ast_hash": "c8f4cab203ec4a898b46d8a3203e0b5b",
+    "mtime": 1780216555.9917254,
+    "ast_hash": "f6b7800cc9ea4ebd3402d19cb573d2b7",
     "semantic_hash": ""
   },
   "D:\\MediaHive App\\mediahive_mobile\\lib\\shared\\widgets\\ambient_canvas_background.dart": {
-    "mtime": 1780131784.081673,
-    "ast_hash": "9248ede7e9d8f9a981a6304d8e5d1dde",
+    "mtime": 1780372949.2295723,
+    "ast_hash": "76ca04008d5ec7fc023616c3eed74bbb",
     "semantic_hash": ""
   },
   "D:\\MediaHive App\\src\\hooks\\useMagneticHover.ts": {
@@ -27170,13 +27160,223 @@
     "semantic_hash": ""
   },
   "D:\\MediaHive App\\src\\components\\layout\\GlobalCommandPalette.tsx": {
-    "mtime": 1780133019.8340752,
-    "ast_hash": "e0434ebcd6018a8b4c63462e27b91504",
+    "mtime": 1780223184.6880975,
+    "ast_hash": "372eaa505c1a3ec99c0f4c0db399c2cf",
     "semantic_hash": ""
   },
   "D:\\MediaHive App\\tmp_replace.py": {
     "mtime": 1780134371.222445,
     "ast_hash": "93bd3eacac2abdd16756b7e0d4aa586a",
+    "semantic_hash": ""
+  },
+  "D:\\MediaHive App\\update_task_modal.py": {
+    "mtime": 1780215168.3535619,
+    "ast_hash": "f197b03f03c3d7fd9c4aee84b47ff288",
+    "semantic_hash": ""
+  },
+  "D:\\MediaHive App\\update_theme_bg.py": {
+    "mtime": 1780215364.7727141,
+    "ast_hash": "9a5632f4a26a3eb0aef7cae0b9ce7486",
+    "semantic_hash": ""
+  },
+  "D:\\MediaHive App\\update_theme_bg2.py": {
+    "mtime": 1780215493.2637541,
+    "ast_hash": "3da194dc78b7685351ad5c34e477029c",
+    "semantic_hash": ""
+  },
+  "D:\\MediaHive App\\mediahive_mobile\\lib\\core\\services\\system_logger.dart": {
+    "mtime": 1780216555.9613428,
+    "ast_hash": "e1a44c6c25c55d5aa5058d2dfa7feeef",
+    "semantic_hash": ""
+  },
+  "D:\\MediaHive App\\mediahive_mobile\\lib\\features\\governance\\data\\models\\system_activity_log.dart": {
+    "mtime": 1780216556.2328665,
+    "ast_hash": "a51901e0f092f4dc4609f7f8e77d3a55",
+    "semantic_hash": ""
+  },
+  "D:\\MediaHive App\\scripts\\update-version-config.js": {
+    "mtime": 1780217905.521031,
+    "ast_hash": "f440f508021d3b40eabe103635d1d505",
+    "semantic_hash": ""
+  },
+  "D:\\MediaHive App\\src\\app\\(shell)\\chat\\page.tsx": {
+    "mtime": 1780385120.1407828,
+    "ast_hash": "dbf2a510e6e04f0092a1eb96ac21219f",
+    "semantic_hash": ""
+  },
+  "D:\\MediaHive App\\src\\app\\api\\chat\\rooms\\route.ts": {
+    "mtime": 1780385934.5343757,
+    "ast_hash": "097fdf3700d522d1ece3ff176cb5d86c",
+    "semantic_hash": ""
+  },
+  "D:\\MediaHive App\\src\\app\\api\\chat\\rooms\\[roomId]\\add-user\\route.ts": {
+    "mtime": 1780227112.7433944,
+    "ast_hash": "d80a04a85706b3cc944286a315ebd5b6",
+    "semantic_hash": ""
+  },
+  "D:\\MediaHive App\\src\\app\\api\\chat\\rooms\\[roomId]\\messages\\route.ts": {
+    "mtime": 1780397955.4948826,
+    "ast_hash": "02035c54f524429d9073b34c62852af3",
+    "semantic_hash": ""
+  },
+  "D:\\MediaHive App\\src\\app\\api\\chat\\upload\\route.ts": {
+    "mtime": 1780222964.9916627,
+    "ast_hash": "8346a3cf95c945c84a063f57b4dd81d0",
+    "semantic_hash": ""
+  },
+  "D:\\MediaHive App\\src\\components\\chat\\AddUserModal.tsx": {
+    "mtime": 1780228222.3375943,
+    "ast_hash": "dbd6963716200017046a6d917498c2e6",
+    "semantic_hash": ""
+  },
+  "D:\\MediaHive App\\src\\components\\chat\\ChatLayout.tsx": {
+    "mtime": 1780385755.8933876,
+    "ast_hash": "f918238b7896833f799a977809d2b6d2",
+    "semantic_hash": ""
+  },
+  "D:\\MediaHive App\\src\\components\\chat\\ChatSidebar.tsx": {
+    "mtime": 1780389715.1252055,
+    "ast_hash": "3326506bdcfa0c3d9a5765e56d587dbe",
+    "semantic_hash": ""
+  },
+  "D:\\MediaHive App\\src\\components\\chat\\ChatWindow.tsx": {
+    "mtime": 1780389706.8261752,
+    "ast_hash": "0d6d7e430b2dbb0a1efee2780551f71c",
+    "semantic_hash": ""
+  },
+  "D:\\MediaHive App\\src\\components\\system\\CardErrorBoundary.tsx": {
+    "mtime": 1780134860.293647,
+    "ast_hash": "f0cfb4a2f6151ca7da4686d4e7f012ef",
+    "semantic_hash": ""
+  },
+  "D:\\MediaHive App\\src\\types\\chat.ts": {
+    "mtime": 1780222852.6984937,
+    "ast_hash": "7ec30e261f492d844a700c690c8626b3",
+    "semantic_hash": ""
+  },
+  "D:\\MediaHive App\\.agent\\skills\\learned-mistakes\\SKILL.md": {
+    "mtime": 1780211150.6358027,
+    "ast_hash": "486a4eb4a94ce634a2055d9a693e05df",
+    "semantic_hash": ""
+  },
+  "D:\\MediaHive App\\src\\app\\api\\chat\\rooms\\[roomId]\\route.ts": {
+    "mtime": 1780228096.8850293,
+    "ast_hash": "dd002ea6c422e26f6b23c516927d4e86",
+    "semantic_hash": ""
+  },
+  "D:\\MediaHive App\\src\\components\\chat\\GroupInfoSidebar.tsx": {
+    "mtime": 1780385147.9168968,
+    "ast_hash": "3a048da2361471e1d953e229465d2cb2",
+    "semantic_hash": ""
+  },
+  "D:\\MediaHive App\\src\\app\\api\\chat\\rooms\\[roomId]\\participants\\route.ts": {
+    "mtime": 1780236407.4685948,
+    "ast_hash": "7b2be3460cb25e7fea9ad785f8df16a8",
+    "semantic_hash": ""
+  },
+  "D:\\MediaHive App\\scratch\\test-db-query.js": {
+    "mtime": 1780235835.797633,
+    "ast_hash": "b257ef06741fa0d71526ecc36557f106",
+    "semantic_hash": ""
+  },
+  "D:\\MediaHive App\\directives\\ui_styling_and_data_sync.md": {
+    "mtime": 1780237222.3701675,
+    "ast_hash": "e6238e18be1342843d53f3327b38ee56",
+    "semantic_hash": ""
+  },
+  "D:\\MediaHive App\\src\\components\\chat\\GroupIconUploadModal.tsx": {
+    "mtime": 1780238383.6774056,
+    "ast_hash": "7d3bccd9e181a2138f497bb725d97f59",
+    "semantic_hash": ""
+  },
+  "D:\\MediaHive App\\src\\components\\chat\\MediaCaptureModal.tsx": {
+    "mtime": 1780239944.2652423,
+    "ast_hash": "895b76116a96717859ed4e86b89d87ec",
+    "semantic_hash": ""
+  },
+  "D:\\MediaHive App\\src\\components\\chat\\VoiceRecorder.tsx": {
+    "mtime": 1780328501.0694606,
+    "ast_hash": "f72550b715c22ce2bba1480c8afa0f19",
+    "semantic_hash": ""
+  },
+  "D:\\MediaHive App\\mediahive_mobile\\lib\\core\\services\\audio_service.dart": {
+    "mtime": 1780286210.5196357,
+    "ast_hash": "0cafa6636edd8f768fbaea8d0fc4b7a7",
+    "semantic_hash": ""
+  },
+  "D:\\MediaHive App\\mediahive_mobile\\lib\\features\\chat\\domain\\models\\chat_room.dart": {
+    "mtime": 1780375940.028736,
+    "ast_hash": "72811f5631b20b0d654e48cca2c0e3cd",
+    "semantic_hash": ""
+  },
+  "D:\\MediaHive App\\mediahive_mobile\\lib\\features\\chat\\presentation\\providers\\chat_providers.dart": {
+    "mtime": 1780394729.429451,
+    "ast_hash": "b40d154086a86865581abdae7fbb6793",
+    "semantic_hash": ""
+  },
+  "D:\\MediaHive App\\mediahive_mobile\\lib\\features\\chat\\presentation\\screens\\chat_rooms_screen.dart": {
+    "mtime": 1780375969.4635315,
+    "ast_hash": "69d0a0df2e4cf68dd529ee1ca73f9587",
+    "semantic_hash": ""
+  },
+  "D:\\MediaHive App\\mediahive_mobile\\lib\\features\\chat\\presentation\\screens\\chat_room_screen.dart": {
+    "mtime": 1780397212.682444,
+    "ast_hash": "cc653a5b4bd722509970dc57e5f1eade",
+    "semantic_hash": ""
+  },
+  "D:\\MediaHive App\\src\\app\\api\\chat\\rooms\\[roomId]\\messages\\[messageId]\\route.ts": {
+    "mtime": 1780377938.51747,
+    "ast_hash": "6825f36faf24b57a78eb6faa3ec34057",
+    "semantic_hash": ""
+  },
+  "D:\\MediaHive App\\test_download.dart": {
+    "mtime": 1780336257.9492254,
+    "ast_hash": "557c41757dc22cc7f2830e7228b96a98",
+    "semantic_hash": ""
+  },
+  "D:\\MediaHive App\\test_supabase.dart": {
+    "mtime": 1780336526.8492486,
+    "ast_hash": "c2dcef16949189286e908e783718d46c",
+    "semantic_hash": ""
+  },
+  "D:\\MediaHive App\\mediahive_mobile\\lib\\core\\utils\\file_download_helper.dart": {
+    "mtime": 1780371257.4974673,
+    "ast_hash": "37b765a81fa972233076992e073c9a75",
+    "semantic_hash": ""
+  },
+  "D:\\MediaHive App\\mediahive_mobile\\lib\\features\\chat\\presentation\\screens\\image_viewer_screen.dart": {
+    "mtime": 1780373004.0467293,
+    "ast_hash": "9abb6ff3d60dd51fc1a42581f459bbc7",
+    "semantic_hash": ""
+  },
+  "D:\\MediaHive App\\mediahive_mobile\\lib\\features\\chat\\presentation\\screens\\pdf_viewer_screen.dart": {
+    "mtime": 1780335442.5730965,
+    "ast_hash": "2e62762aae6aa404131a11c9902b4523",
+    "semantic_hash": ""
+  },
+  "D:\\MediaHive App\\mediahive_mobile\\scratch\\query_chat.py": {
+    "mtime": 1780371846.605374,
+    "ast_hash": "bcfd719480df93d94e9dc1678852657a",
+    "semantic_hash": ""
+  },
+  "D:\\MediaHive App\\mediahive_mobile\\scratch\\search_filename.py": {
+    "mtime": 1780371868.44647,
+    "ast_hash": "ebcdcb5f2f5111c6aeb1ae768f288a3d",
+    "semantic_hash": ""
+  },
+  "D:\\MediaHive App\\src\\components\\chat\\VoicePlayer.tsx": {
+    "mtime": 1780328434.0313358,
+    "ast_hash": "4de99172b190f1540c03dd0d8e6503b7",
+    "semantic_hash": ""
+  },
+  "D:\\MediaHive App\\src\\lib\\chatUnreadTracker.ts": {
+    "mtime": 1780377034.5941777,
+    "ast_hash": "2bc937aae5e7f2b7cf0e24d505048ae6",
+    "semantic_hash": ""
+  },
+  "D:\\MediaHive App\\src\\app\\api\\chat\\rooms\\[roomId]\\clear\\route.ts": {
+    "mtime": 1780380331.382418,
+    "ast_hash": "78e5de305bed8ba3edb7fef41f166d51",
     "semantic_hash": ""
   }
 }

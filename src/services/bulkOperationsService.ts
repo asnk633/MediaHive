@@ -38,14 +38,16 @@ export const BulkOperationsService = {
       const actorName = user?.full_name || 'You';
       const actorUid = user?.id || 'unknown';
 
-      // OPTIMIZATION: If simple column update, use bulkUpdateFields
-      if (operation === 'changeStatus' || operation === 'changePriority') {
+      // OPTIMIZATION: If simple column update or soft delete, use bulkUpdateFields
+      if (operation === 'changeStatus' || operation === 'changePriority' || operation === 'delete') {
         const fields: Record<string, any> = {};
         if (operation === 'changeStatus') {
           fields.status = value;
           if (value === 'done') fields.completed_at = new Date().toISOString();
-        } else {
+        } else if (operation === 'changePriority') {
           fields.priority = value;
+        } else if (operation === 'delete') {
+          fields.deleted = true;
         }
 
         const success = await CanonicalDataService.bulkUpdateFields(
@@ -55,30 +57,31 @@ export const BulkOperationsService = {
         );
 
         if (success) {
+          const actionName = operation === 'changeStatus' ? 'status_changed' : 
+                             operation === 'changePriority' ? 'priority_changed' : 'deleted';
           ActivityHistory.pushBulk(taskIds, {
-            action: operation === 'changeStatus' ? 'status_changed' : 'priority_changed',
-            label: buildActivityLabel(operation === 'changeStatus' ? 'status_changed' : 'priority_changed', value, taskIds.length),
+            action: actionName,
+            label: buildActivityLabel(actionName, operation !== 'delete' ? value : undefined, taskIds.length),
             actorUid,
             actorName,
           });
 
           return {
             success: true,
-            message: `Successfully queued ${taskIds.length} updates`,
+            message: `Successfully queued ${taskIds.length} ${operation === 'delete' ? 'deletions' : 'updates'}`,
             results: taskIds.map(id => ({ taskId: id, updated: true })),
             errors: []
           };
         }
       }
 
-      // FALLBACK: Sequential for complex relational (assign) or destructive (delete)
+      // FALLBACK: Sequential for complex relational operations (assign)
       for (const id of taskIds) {
         try {
           const updates: any = {};
           if (operation === 'assign') {
             updates.assigned_to = typeof value === 'string' ? [{ uid: value }] : value;
           }
-          if (operation === 'delete') updates.deleted = true;
 
           const success = await CanonicalDataService.patchFields('tasks', id, updates, 'task');
           if (success) {

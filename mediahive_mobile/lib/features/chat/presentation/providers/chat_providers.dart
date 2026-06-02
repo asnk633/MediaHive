@@ -337,13 +337,13 @@ class ChatMessagesNotifier extends StateNotifier<AsyncValue<List<ChatMessage>>> 
         return Map<String, dynamic>.from(response.data);
       } else {
         print('[CHAT_UPLOAD] Direct file upload failed with status: ${response.statusCode}, body: ${response.data}');
+        throw Exception('Status code: ${response.statusCode}');
       }
     } catch (e) {
       print('[CHAT_UPLOAD] Direct file upload failed on $uploadUrl: $e');
       
-      // FAILOVER: If local dev server is not running or unreachable, upload directly to the live production proxy!
-      if (baseUrl.contains('10.0.2.2') || baseUrl.contains('localhost')) {
-        const liveUploadUrl = 'https://thaiba-garden-media-manager.vercel.app/api/chat/upload/';
+      const liveUploadUrl = 'https://thaiba-garden-media-manager.vercel.app/api/chat/upload/';
+      if (uploadUrl != liveUploadUrl) {
         print('[CHAT_UPLOAD] Failover: Attempting direct upload to live production proxy: $liveUploadUrl');
         try {
           final dioClient = dio.Dio();
@@ -361,12 +361,16 @@ class ChatMessagesNotifier extends StateNotifier<AsyncValue<List<ChatMessage>>> 
             options: dio.Options(
               followRedirects: true,
               validateStatus: (status) => status! < 500,
+              connectTimeout: const Duration(seconds: 10),
+              receiveTimeout: const Duration(seconds: 30),
             ),
           );
 
           if (response.statusCode == 201 || response.statusCode == 200) {
             print('[CHAT_UPLOAD] Failover upload Succeeded!');
             return Map<String, dynamic>.from(response.data);
+          } else {
+            print('[CHAT_UPLOAD] Failover upload failed with status: ${response.statusCode}');
           }
         } catch (failoverError) {
           print('[CHAT_UPLOAD] Direct failover upload failed: $failoverError');

@@ -9,11 +9,15 @@ final authStateProvider = StreamProvider<AuthState>((ref) {
 });
 
 final profileImagePathProvider = StateNotifierProvider<ProfileImagePathNotifier, String?>((ref) {
-  return ProfileImagePathNotifier();
+  // Watch auth state to recreate the notifier when logging in/out
+  final authState = ref.watch(authStateProvider);
+  final userId = authState.value?.session?.user.id ?? Supabase.instance.client.auth.currentUser?.id;
+  return ProfileImagePathNotifier(userId);
 });
 
 class ProfileImagePathNotifier extends StateNotifier<String?> {
-  ProfileImagePathNotifier() : super(null) {
+  final String? _userId;
+  ProfileImagePathNotifier(this._userId) : super(null) {
     _loadFromHive();
   }
 
@@ -21,14 +25,27 @@ class ProfileImagePathNotifier extends StateNotifier<String?> {
   static const _key = 'profile_image_path';
 
   Future<void> _loadFromHive() async {
+    if (_userId == null) {
+      if (mounted) state = null;
+      return;
+    }
     final box = await Hive.openBox(_boxName);
-    state = box.get(_key) as String?;
+    if (mounted) {
+      state = box.get('${_key}_$_userId') as String?;
+    }
   }
 
   Future<void> updatePath(String? path) async {
+    if (_userId == null) return;
     final box = await Hive.openBox(_boxName);
-    await box.put(_key, path);
-    state = path;
+    if (path == null) {
+      await box.delete('${_key}_$_userId');
+    } else {
+      await box.put('${_key}_$_userId', path);
+    }
+    if (mounted) {
+      state = path;
+    }
   }
 }
 

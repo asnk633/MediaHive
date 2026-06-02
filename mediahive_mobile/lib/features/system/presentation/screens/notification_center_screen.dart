@@ -22,7 +22,7 @@ class NotificationCenterScreen extends ConsumerWidget {
     final notificationsAsync = ref.watch(notificationsStreamProvider);
 
     return Scaffold(
-      backgroundColor: colors.backgroundPrimary.withOpacity(0.95), // Slight transparency for the "pane" feel
+      backgroundColor: colors.backgroundPrimary.withValues(alpha: 0.95), // Slight transparency for the "pane" feel
       body: Container(
         decoration: BoxDecoration(
           gradient: LinearGradient(
@@ -91,7 +91,7 @@ class NotificationCenterScreen extends ConsumerWidget {
             },
             style: TextButton.styleFrom(
               padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
-              backgroundColor: colors.honey.withOpacity(0.15),
+              backgroundColor: colors.honey.withValues(alpha: 0.15),
               shape: RoundedRectangleBorder(
                 borderRadius: BorderRadius.circular(15),
               ),
@@ -117,7 +117,7 @@ class NotificationCenterScreen extends ConsumerWidget {
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
-          Icon(LucideIcons.bellOff, size: 64, color: colors.textSecondary.withOpacity(0.3)),
+          Icon(LucideIcons.bellOff, size: 64, color: colors.textSecondary.withValues(alpha: 0.3)),
           const SizedBox(height: 16),
           Text(
             'No notifications yet',
@@ -176,9 +176,9 @@ class NotificationCenterScreen extends ConsumerWidget {
               padding: const EdgeInsets.symmetric(horizontal: 20),
               margin: const EdgeInsets.only(bottom: 12),
               decoration: BoxDecoration(
-                color: colors.error.withOpacity(0.15),
+                color: colors.error.withValues(alpha: 0.15),
                 borderRadius: BorderRadius.circular(20),
-                border: Border.all(color: colors.error.withOpacity(0.3)),
+                border: Border.all(color: colors.error.withValues(alpha: 0.3)),
               ),
               child: Row(
                 mainAxisAlignment: MainAxisAlignment.end,
@@ -276,9 +276,9 @@ class NotificationCenterScreen extends ConsumerWidget {
       builder: (context) => Container(
         height: MediaQuery.of(context).size.height * 0.75,
         decoration: BoxDecoration(
-          color: colors.backgroundSecondary.withOpacity(0.95),
+          color: colors.backgroundSecondary.withValues(alpha: 0.95),
           borderRadius: const BorderRadius.vertical(top: Radius.circular(32)),
-          border: Border.all(color: colors.border.withOpacity(0.5)),
+          border: Border.all(color: colors.border.withValues(alpha: 0.5)),
         ),
         child: ClipRRect(
           borderRadius: const BorderRadius.vertical(top: Radius.circular(32)),
@@ -294,7 +294,7 @@ class NotificationCenterScreen extends ConsumerWidget {
                     width: 40,
                     height: 4,
                     decoration: BoxDecoration(
-                      color: colors.textSecondary.withOpacity(0.3),
+                      color: colors.textSecondary.withValues(alpha: 0.3),
                       borderRadius: BorderRadius.circular(2),
                     ),
                   ),
@@ -310,9 +310,9 @@ class NotificationCenterScreen extends ConsumerWidget {
                       Container(
                         padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
                         decoration: BoxDecoration(
-                          color: _getIconColor(type).withOpacity(0.15),
+                          color: _getIconColor(type).withValues(alpha: 0.15),
                           borderRadius: BorderRadius.circular(10),
-                          border: Border.all(color: _getIconColor(type).withOpacity(0.3)),
+                          border: Border.all(color: _getIconColor(type).withValues(alpha: 0.3)),
                         ),
                         child: Row(
                           mainAxisSize: MainAxisSize.min,
@@ -335,7 +335,7 @@ class NotificationCenterScreen extends ConsumerWidget {
                         onPressed: () => Navigator.pop(context),
                         icon: Icon(LucideIcons.x, color: colors.textSecondary),
                         style: IconButton.styleFrom(
-                          backgroundColor: colors.surface.withOpacity(0.5),
+                          backgroundColor: colors.surface.withValues(alpha: 0.5),
                         ),
                       ),
                     ],
@@ -371,9 +371,9 @@ class NotificationCenterScreen extends ConsumerWidget {
                           width: double.infinity,
                           padding: const EdgeInsets.all(20),
                           decoration: BoxDecoration(
-                            color: colors.surface.withOpacity(0.4),
+                            color: colors.surface.withValues(alpha: 0.4),
                             borderRadius: BorderRadius.circular(20),
-                            border: Border.all(color: colors.border.withOpacity(0.5)),
+                            border: Border.all(color: colors.border.withValues(alpha: 0.5)),
                           ),
                           child: SelectableText(
                             body,
@@ -461,7 +461,7 @@ class NotificationCenterScreen extends ConsumerWidget {
                                       Container(
                                         padding: const EdgeInsets.all(10),
                                         decoration: BoxDecoration(
-                                          color: iconColor.withOpacity(0.1),
+                                          color: iconColor.withValues(alpha: 0.1),
                                           shape: BoxShape.circle,
                                         ),
                                         child: Icon(fileIcon, color: iconColor, size: 20),
@@ -518,12 +518,12 @@ class NotificationCenterScreen extends ConsumerWidget {
         color: isLight ? const Color(0xFFFFFBEB) : colors.surface,
         borderRadius: BorderRadius.circular(24),
         border: Border.all(
-          color: const Color(0xFFD97706).withOpacity(isLight ? 0.3 : 0.4),
+          color: const Color(0xFFD97706).withValues(alpha: isLight ? 0.3 : 0.4),
           width: 1.5,
         ),
         boxShadow: [
           BoxShadow(
-            color: const Color(0xFFD97706).withOpacity(isLight ? 0.05 : 0.1),
+            color: const Color(0xFFD97706).withValues(alpha: isLight ? 0.05 : 0.1),
             blurRadius: 16,
             offset: const Offset(0, 6),
           ),
@@ -543,7 +543,7 @@ class NotificationCenterScreen extends ConsumerWidget {
                     Container(
                       padding: const EdgeInsets.all(10),
                       decoration: BoxDecoration(
-                        color: const Color(0xFFF59E0B).withOpacity(0.15),
+                        color: const Color(0xFFF59E0B).withValues(alpha: 0.15),
                         shape: BoxShape.circle,
                       ),
                       child: const Icon(
@@ -561,7 +561,7 @@ class NotificationCenterScreen extends ConsumerWidget {
                           Container(
                             padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
                             decoration: BoxDecoration(
-                              color: const Color(0xFFD97706).withOpacity(0.15),
+                              color: const Color(0xFFD97706).withValues(alpha: 0.15),
                               borderRadius: BorderRadius.circular(8),
                             ),
                             child: const Text(
@@ -593,10 +593,10 @@ class NotificationCenterScreen extends ConsumerWidget {
                   width: double.infinity,
                   padding: const EdgeInsets.all(14),
                   decoration: BoxDecoration(
-                    color: isLight ? Colors.white.withOpacity(0.6) : colors.backgroundPrimary.withOpacity(0.5),
+                    color: isLight ? Colors.white.withValues(alpha: 0.6) : colors.backgroundPrimary.withValues(alpha: 0.5),
                     borderRadius: BorderRadius.circular(16),
                     border: Border.all(
-                      color: isLight ? Colors.black.withOpacity(0.05) : colors.border,
+                      color: isLight ? Colors.black.withValues(alpha: 0.05) : colors.border,
                     ),
                   ),
                   child: Column(
@@ -632,7 +632,7 @@ class NotificationCenterScreen extends ConsumerWidget {
                           borderRadius: BorderRadius.circular(6),
                           child: LinearProgressIndicator(
                             value: progress,
-                            backgroundColor: const Color(0xFFD97706).withOpacity(0.15),
+                            backgroundColor: const Color(0xFFD97706).withValues(alpha: 0.15),
                             valueColor: const AlwaysStoppedAnimation<Color>(Color(0xFFD97706)),
                             minHeight: 8,
                           ),
@@ -780,15 +780,15 @@ class _NotificationTile extends StatelessWidget {
     return Container(
       margin: const EdgeInsets.only(bottom: 12),
       decoration: BoxDecoration(
-        color: isRead ? colors.surface.withOpacity(0.5) : colors.surface,
+        color: isRead ? colors.surface.withValues(alpha: 0.5) : colors.surface,
         borderRadius: BorderRadius.circular(20),
         border: Border.all(
-          color: isRead ? colors.border : colors.honey.withOpacity(0.3),
+          color: isRead ? colors.border : colors.honey.withValues(alpha: 0.3),
           width: 1,
         ),
         boxShadow: isRead ? [] : [
           BoxShadow(
-            color: colors.honey.withOpacity(0.05),
+            color: colors.honey.withValues(alpha: 0.05),
             blurRadius: 10,
             offset: const Offset(0, 4),
           ),
@@ -805,7 +805,7 @@ class _NotificationTile extends StatelessWidget {
               Container(
                 padding: const EdgeInsets.all(10),
                 decoration: BoxDecoration(
-                  color: _getIconColor(notification['type']).withOpacity(0.1),
+                  color: _getIconColor(notification['type']).withValues(alpha: 0.1),
                   shape: BoxShape.circle,
                 ),
                 child: Icon(
@@ -900,7 +900,7 @@ class _NotificationTile extends StatelessWidget {
                               width: 60,
                               height: 60,
                               decoration: BoxDecoration(
-                                color: colors.surface.withOpacity(0.5),
+                                color: colors.surface.withValues(alpha: 0.5),
                                 borderRadius: BorderRadius.circular(12),
                                 border: Border.all(color: colors.border),
                               ),
@@ -917,7 +917,7 @@ class _NotificationTile extends StatelessWidget {
               ),
               if (isRead)
                 IconButton(
-                  icon: Icon(LucideIcons.trash2, size: 18, color: colors.textSecondary.withOpacity(0.5)),
+                  icon: Icon(LucideIcons.trash2, size: 18, color: colors.textSecondary.withValues(alpha: 0.5)),
                   onPressed: onDelete,
                 ),
             ],

@@ -16,11 +16,14 @@ export async function GET(request: NextRequest) {
 
         const userId = user.uid;
 
-        // Fetch tasks assigned to the current user strictly from Supabase
+        // Fetch tasks assigned to the current user strictly from Supabase using relational task_assignments
         const { data: taskList, error } = await supabase
             .from('tasks')
-            .select('*')
-            .eq('assigned_to_id', userId)
+            .select(`
+                *,
+                task_assignments!inner(user_id)
+            `)
+            .eq('task_assignments.user_id', userId)
             .eq('is_archived', false)
             .order('created_at', { ascending: false });
 

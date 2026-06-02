@@ -33,6 +33,7 @@ import 'package:video_compress/video_compress.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:dio/dio.dart';
 import 'package:audioplayers/audioplayers.dart';
+import 'package:record/record.dart';
 
 class ChatRoomScreen extends ConsumerStatefulWidget {
   final String roomId;
@@ -65,6 +66,7 @@ class _ChatRoomScreenState extends ConsumerState<ChatRoomScreen> {
   bool _isRecordingVoice = false;
   int _voiceSeconds = 0;
   Timer? _voiceTimer;
+  final AudioRecorder _audioRecorder = AudioRecorder();
 
   String _myRole = 'member';
   int _unreadCount = 0;
@@ -336,6 +338,7 @@ class _ChatRoomScreenState extends ConsumerState<ChatRoomScreen> {
     _scrollController.dispose();
     _messageFocusNode.dispose();
     _voiceTimer?.cancel();
+    _audioRecorder.dispose();
     super.dispose();
   }
 
@@ -360,27 +363,46 @@ class _ChatRoomScreenState extends ConsumerState<ChatRoomScreen> {
   }
 
   Future<void> _stopAndSendVoiceNote() async {
-    ref.read(audioServiceProvider).playVoiceStop();
-    _voiceTimer?.cancel();
-    final duration = _voiceSeconds;
-    setState(() {
-      _isRecordingVoice = false;
-    });
-
-    if (duration < 1) {
-      _showError('Voice note too short');
-      return;
-    }
-
     try {
-      final byteData = await rootBundle.load('assets/sounds/voice_record_start.wav');
-      final tempDir = await getTemporaryDirectory();
-      final tempFile = File('${tempDir.path}/voice_note_${DateTime.now().millisecondsSinceEpoch}.wav');
-      await tempFile.writeAsBytes(byteData.buffer.asUint8List(byteData.offsetInBytes, byteData.lengthInBytes));
+      ref.read(audioServiceProvider).playVoiceStop();
+      _voiceTimer?.cancel();
+      final duration = _voiceSeconds;
       
-      await _uploadAndSend(tempFile, 'voice', duration: duration);
+      setState(() {
+        _isRecordingVoice = false;
+      });
+
+      final String? filePath = await _audioRecorder.stop();
+      
+      if (duration < 1) {
+        _showError('Voice note too short');
+        return;
+      }
+
+      if (filePath != null) {
+        final File audioFile = File(filePath);
+        if (await audioFile.exists()) {
+          await _uploadAndSend(audioFile, 'voice', duration: duration);
+        } else {
+          _showError('Recorded audio file not found');
+        }
+      } else {
+        _showError('Failed to capture audio path');
+      }
     } catch (e) {
-      _showError('Failed to send mock voice note: $e');
+      _showError('Failed to stop recording: $e');
+    }
+  }
+
+  Future<void> _cancelVoiceNote() async {
+    try {
+      _voiceTimer?.cancel();
+      setState(() {
+        _isRecordingVoice = false;
+      });
+      await _audioRecorder.stop();
+    } catch (e) {
+      debugPrint('[VOICE_RECORD] Error canceling voice note: $e');
     }
   }
 
@@ -492,6 +514,84 @@ class _ChatRoomScreenState extends ConsumerState<ChatRoomScreen> {
     }
   }
 
+  // 1b. Record Video
+  Future<void> _recordVideo() async {
+    try {
+      final XFile? video = await _picker.pickVideo(source: ImageSource.camera);
+      if (video != null) {
+        final compressed = await _compressVideo(File(video.path));
+        await _uploadAndSend(compressed, 'video');
+      }
+    } catch (e) {
+      _showError('Camera video error: $e');
+    }
+  }
+
+  // Camera Options Menu (Photo vs Video)
+  Future<void> _showCameraOptions() async {
+    try {
+      showModalBottomSheet(
+        context: context,
+        backgroundColor: Colors.transparent,
+        builder: (context) {
+          final colors = ref.read(themeColorsProvider);
+          final isLight = !colors.isDark;
+          return Container(
+            padding: const EdgeInsets.all(24),
+            decoration: BoxDecoration(
+              color: isLight ? Colors.white : colors.backgroundPrimary,
+              borderRadius: const BorderRadius.only(topLeft: Radius.circular(30), topRight: Radius.circular(30)),
+              border: Border.all(
+                color: isLight ? DesignTokens.lightBorder : colors.border.withValues(alpha: 0.3),
+              ),
+            ),
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                Container(
+                  width: 40,
+                  height: 4,
+                  margin: const EdgeInsets.only(bottom: 20),
+                  decoration: BoxDecoration(
+                    color: colors.textSecondary.withValues(alpha: 0.3),
+                    borderRadius: BorderRadius.circular(2),
+                  ),
+                ),
+                Text(
+                  'Camera Capture',
+                  style: TextStyle(
+                    color: colors.textPrimary,
+                    fontSize: 18,
+                    fontWeight: FontWeight.bold,
+                  ),
+                ),
+                const SizedBox(height: 20),
+                ListTile(
+                  leading: const Icon(LucideIcons.camera, color: Colors.blueAccent),
+                  title: Text('Take Photo', style: TextStyle(color: colors.textPrimary, fontWeight: FontWeight.w600)),
+                  onTap: () {
+                    Navigator.pop(context);
+                    _takePhoto();
+                  },
+                ),
+                ListTile(
+                  leading: const Icon(LucideIcons.video, color: Colors.redAccent),
+                  title: Text('Record Video', style: TextStyle(color: colors.textPrimary, fontWeight: FontWeight.w600)),
+                  onTap: () {
+                    Navigator.pop(context);
+                    _recordVideo();
+                  },
+                ),
+              ],
+            ),
+          );
+        },
+      );
+    } catch (e) {
+      _showError('Error showing camera options: $e');
+    }
+  }
+
   // 2. Pick Video or Photo
   Future<void> _pickMedia() async {
     try {
@@ -556,20 +656,42 @@ class _ChatRoomScreenState extends ConsumerState<ChatRoomScreen> {
     }
   }
 
-  // 4. Voice Note Recording Simulation
-  void _startVoiceNote() {
-    ref.read(audioServiceProvider).playVoiceStart();
-    setState(() {
-      _isRecordingVoice = true;
-      _voiceSeconds = 0;
-      _showAttachmentMenu = false;
-    });
-    _voiceTimer = Timer.periodic(const Duration(seconds: 1), (timer) {
+  // 4. Real Voice Note Recording
+  Future<void> _startVoiceNote() async {
+    try {
+      if (await _audioRecorder.hasPermission()) {
+        final tempDir = await getTemporaryDirectory();
+        final path = '${tempDir.path}/voice_note_${DateTime.now().millisecondsSinceEpoch}.m4a';
+        
+        ref.read(audioServiceProvider).playVoiceStart();
+        
+        await _audioRecorder.start(
+          const RecordConfig(
+            encoder: AudioEncoder.aacLc,
+            sampleRate: 44100,
+            bitRate: 128000,
+          ),
+          path: path,
+        );
 
-      setState(() {
-        _voiceSeconds++;
-      });
-    });
+        setState(() {
+          _isRecordingVoice = true;
+          _voiceSeconds = 0;
+          _showAttachmentMenu = false;
+        });
+
+        _voiceTimer?.cancel();
+        _voiceTimer = Timer.periodic(const Duration(seconds: 1), (timer) {
+          setState(() {
+            _voiceSeconds++;
+          });
+        });
+      } else {
+        _showError('Microphone permission is required to record voice notes');
+      }
+    } catch (e) {
+      _showError('Failed to start recording: $e');
+    }
   }
 
 
@@ -888,10 +1010,7 @@ class _ChatRoomScreenState extends ConsumerState<ChatRoomScreen> {
                                   ),
                                   const Spacer(),
                                   TextButton(
-                                    onPressed: () => setState(() {
-                                      _voiceTimer?.cancel();
-                                      _isRecordingVoice = false;
-                                    }),
+                                    onPressed: _cancelVoiceNote,
                                     child: const Text('Cancel', style: TextStyle(color: Colors.grey)),
                                   ),
                                 ],
@@ -998,7 +1117,7 @@ class _ChatRoomScreenState extends ConsumerState<ChatRoomScreen> {
                                   ),
                                   // Camera capture shortcut
                                   GestureDetector(
-                                    onTap: _takePhoto,
+                                    onTap: _showCameraOptions,
                                     child: Padding(
                                       padding: const EdgeInsets.only(left: 6),
                                       child: Icon(
@@ -3157,7 +3276,7 @@ class _InlineVoicePlayerState extends State<InlineVoicePlayer> {
 
   @override
   Widget build(BuildContext context) {
-    debugPrint('[InlineVoicePlayer] build: durationSeconds=${widget.durationSeconds}, _duration=$_duration, isUploading=${widget.isUploading}, isMe=${widget.isMe}');
+    // debugPrint('[InlineVoicePlayer] build: durationSeconds=${widget.durationSeconds}, _duration=$_duration, isUploading=${widget.isUploading}, isMe=${widget.isMe}');
     final activeColor = widget.isMe ? Colors.white : widget.colors.honey;
     final inactiveColor = widget.isMe ? Colors.white30 : Colors.grey.shade400;
 

@@ -91,8 +91,9 @@ class SupabaseGovernanceRepository implements GovernanceRepository {
       
       for (var p in profiles) {
         final role = p['role']?.toString().toLowerCase() ?? 'member';
-        if (role.contains('admin')) admins++;
-        else if (role.contains('manager')) managers++;
+        if (role.contains('admin')) {
+          admins++;
+        } else if (role.contains('manager')) managers++;
         else members++;
       }
 

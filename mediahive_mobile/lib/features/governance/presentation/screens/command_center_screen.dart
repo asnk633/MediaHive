@@ -11,7 +11,6 @@ import '../../../../core/theme/elastic_scroll_physics.dart';
 import '../../../../core/theme/app_typography.dart';
 import '../../../dashboard/presentation/providers/dashboard_providers.dart';
 import '../providers/command_metrics_provider.dart';
-import '../../data/models/system_activity_log.dart';
 import '../../../../shared/widgets/mh_loading.dart';
 
 class CommandCenterScreen extends ConsumerWidget {
@@ -46,7 +45,7 @@ class CommandCenterScreen extends ConsumerWidget {
             physics: const ElasticScrollPhysics(),
             slivers: [
               SliverPadding(
-                padding: const EdgeInsets.fromLTRB(20, 140, 20, 20),
+                padding: EdgeInsets.fromLTRB(20, 100 + MediaQuery.of(context).padding.top, 20, 20),
                 sliver: SliverList(
                   delegate: SliverChildListDelegate([
                     _buildTitleSection(context, colors),
@@ -97,7 +96,7 @@ class CommandCenterScreen extends ConsumerWidget {
               Container(
                 height: 1,
                 width: 60,
-                color: colors.honey.withOpacity(0.5),
+                color: colors.honey.withValues(alpha: 0.5),
               ),
             ],
           ),
@@ -165,9 +164,9 @@ class CommandCenterScreen extends ConsumerWidget {
       decoration: BoxDecoration(
         color: colors.surface,
         borderRadius: BorderRadius.circular(20),
-        border: Border.all(color: colors.border.withOpacity(0.5)),
+        border: Border.all(color: colors.border.withValues(alpha: 0.5)),
         boxShadow: [
-          BoxShadow(color: color.withOpacity(0.05), blurRadius: 15, offset: const Offset(0, 8)),
+          BoxShadow(color: color.withValues(alpha: 0.05), blurRadius: 15, offset: const Offset(0, 8)),
         ],
       ),
       child: Column(
@@ -181,7 +180,7 @@ class CommandCenterScreen extends ConsumerWidget {
                 Tooltip(
                   message: subtitle,
                   triggerMode: TooltipTriggerMode.tap,
-                  child: Icon(LucideIcons.info, size: 14, color: colors.textSecondary.withOpacity(0.5)),
+                  child: Icon(LucideIcons.info, size: 14, color: colors.textSecondary.withValues(alpha: 0.5)),
                 ),
             ],
           ),
@@ -324,8 +323,9 @@ class CommandCenterScreen extends ConsumerWidget {
               children: logs.map<Widget>((log) {
                 final difference = DateTime.now().difference(log.createdAt);
                 String timeAgo = 'JUST NOW';
-                if (difference.inDays > 1) timeAgo = '${difference.inDays} DAYS AGO';
-                else if (difference.inDays == 1) timeAgo = '1 DAY AGO';
+                if (difference.inDays > 1) {
+                  timeAgo = '${difference.inDays} DAYS AGO';
+                } else if (difference.inDays == 1) timeAgo = '1 DAY AGO';
                 else if (difference.inHours > 1) timeAgo = '${difference.inHours} HOURS AGO';
                 else if (difference.inHours == 1) timeAgo = '1 HOUR AGO';
                 else if (difference.inMinutes > 1) timeAgo = '${difference.inMinutes} MINUTES AGO';
@@ -360,7 +360,7 @@ class CommandCenterScreen extends ConsumerWidget {
     return Container(
       margin: const EdgeInsets.only(bottom: 12),
       decoration: BoxDecoration(
-        color: colors.surface.withOpacity(0.5),
+        color: colors.surface.withValues(alpha: 0.5),
         borderRadius: BorderRadius.circular(16),
         border: Border.all(color: colors.border),
       ),
@@ -371,7 +371,7 @@ class CommandCenterScreen extends ConsumerWidget {
           padding: const EdgeInsets.all(16),
           child: Row(
             children: [
-              Icon(icon, color: colors.textSecondary.withOpacity(0.5), size: 20),
+              Icon(icon, color: colors.textSecondary.withValues(alpha: 0.5), size: 20),
               const SizedBox(width: 16),
               Expanded(
                 child: Column(
@@ -383,7 +383,7 @@ class CommandCenterScreen extends ConsumerWidget {
                   ],
                 ),
               ),
-              Icon(LucideIcons.chevronRight, color: colors.textSecondary.withOpacity(0.3), size: 16),
+              Icon(LucideIcons.chevronRight, color: colors.textSecondary.withValues(alpha: 0.3), size: 16),
             ],
           ),
         ),
@@ -427,7 +427,7 @@ class CommandCenterScreen extends ConsumerWidget {
                     width: 40,
                     height: 4,
                     decoration: BoxDecoration(
-                      color: colors.textSecondary.withOpacity(0.2),
+                      color: colors.textSecondary.withValues(alpha: 0.2),
                       borderRadius: BorderRadius.circular(2),
                     ),
                   ),
@@ -438,7 +438,7 @@ class CommandCenterScreen extends ConsumerWidget {
                     Container(
                       padding: const EdgeInsets.all(12),
                       decoration: BoxDecoration(
-                        color: colors.honey.withOpacity(0.1),
+                        color: colors.honey.withValues(alpha: 0.1),
                         shape: BoxShape.circle,
                       ),
                       child: Icon(icon, color: colors.honey, size: 24),
@@ -485,9 +485,9 @@ class CommandCenterScreen extends ConsumerWidget {
                   width: double.infinity,
                   padding: const EdgeInsets.all(16),
                   decoration: BoxDecoration(
-                    color: colors.isDark ? colors.backgroundPrimary.withOpacity(0.5) : colors.backgroundPrimary.withOpacity(0.05),
+                    color: colors.isDark ? colors.backgroundPrimary.withValues(alpha: 0.5) : colors.backgroundPrimary.withValues(alpha: 0.05),
                     borderRadius: BorderRadius.circular(16),
-                    border: Border.all(color: colors.border.withOpacity(0.5)),
+                    border: Border.all(color: colors.border.withValues(alpha: 0.5)),
                   ),
                   child: Text(
                     description,

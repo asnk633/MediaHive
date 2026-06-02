@@ -1,0 +1,5222 @@
+{
+  "D:\\MediaHive App\\src\\check-schema.ts": {
+    "mtime": 1778213104.3681152,
+    "ast_hash": "093027bd65d7492fef8900d790754941",
+    "semantic_hash": ""
+  },
+  "D:\\MediaHive App\\src\\instrumentation.ts": {
+    "mtime": 1778213104.3717635,
+    "ast_hash": "f7ad0334e07bbe7d5f85d8fe896028b5",
+    "semantic_hash": ""
+  },
+  "D:\\MediaHive App\\src\\proxy.ts": {
+    "mtime": 1778213104.3750978,
+    "ast_hash": "1b9f5d2719f20644c138921d7ab4d885",
+    "semantic_hash": ""
+  },
+  "D:\\MediaHive App\\src\\app\\featureFlags.ts": {
+    "mtime": 1778213104.3796103,
+    "ast_hash": "3a20f8e653e23f6dd92aa1450ac10df6",
+    "semantic_hash": ""
+  },
+  "D:\\MediaHive App\\src\\app\\featureFlagsOverview.ts": {
+    "mtime": 1778213104.4063458,
+    "ast_hash": "60f5825543da7e62ea70f9f7b0c18535",
+    "semantic_hash": ""
+  },
+  "D:\\MediaHive App\\src\\app\\global-error.tsx": {
+    "mtime": 1778213104.4090774,
+    "ast_hash": "999807641055eedf5ced730c60fb1761",
+    "semantic_hash": ""
+  },
+  "D:\\MediaHive App\\src\\app\\layout.tsx": {
+    "mtime": 1780133025.760382,
+    "ast_hash": "7bafa1016f505147b697ef71ef097e50",
+    "semantic_hash": ""
+  },
+  "D:\\MediaHive App\\src\\app\\loading.tsx": {
+    "mtime": 1779445013.296053,
+    "ast_hash": "84d44238cabfc84c1a21cd1f53eda4d8",
+    "semantic_hash": ""
+  },
+  "D:\\MediaHive App\\src\\app\\manifest.ts": {
+    "mtime": 1778213104.4209273,
+    "ast_hash": "939b5543180b3b13b73dfab4c05c0043",
+    "semantic_hash": ""
+  },
+  "D:\\MediaHive App\\src\\app\\not-found.tsx": {
+    "mtime": 1779427154.9605784,
+    "ast_hash": "632674114e2ace2e952845bc42141a05",
+    "semantic_hash": ""
+  },
+  "D:\\MediaHive App\\src\\app\\NotFoundClient.tsx": {
+    "mtime": 1779427154.9605784,
+    "ast_hash": "723bcf6bc8be92a0ad3327cbc9b7ef35",
+    "semantic_hash": ""
+  },
+  "D:\\MediaHive App\\src\\app\\page.tsx": {
+    "mtime": 1778213104.4291878,
+    "ast_hash": "dd881b415aff5d2a031bbc80c0af4882",
+    "semantic_hash": ""
+  },
+  "D:\\MediaHive App\\src\\app\\(public)\\layout.tsx": {
+    "mtime": 1778213104.4311874,
+    "ast_hash": "500b0aa286ecc365daca98bfcbe5a96c",
+    "semantic_hash": ""
+  },
+  "D:\\MediaHive App\\src\\app\\(public)\\signup\\page.tsx": {
+    "mtime": 1778213104.4327009,
+    "ast_hash": "b97bcb5f559430d6403e168e9764679c",
+    "semantic_hash": ""
+  },
+  "D:\\MediaHive App\\src\\app\\(public)\\welcome\\page.tsx": {
+    "mtime": 1778213104.4354599,
+    "ast_hash": "170a0ef34cae89891cccca8602ce779b",
+    "semantic_hash": ""
+  },
+  "D:\\MediaHive App\\src\\app\\(shell)\\ClientDataContext.tsx": {
+    "mtime": 1779514514.3749197,
+    "ast_hash": "cbfb3ed076d9fdcddf2bbdd59b60f046",
+    "semantic_hash": ""
+  },
+  "D:\\MediaHive App\\src\\app\\(shell)\\layout.tsx": {
+    "mtime": 1778213104.444021,
+    "ast_hash": "1dbb0431a2b3ebfc6fc9483af6915e26",
+    "semantic_hash": ""
+  },
+  "D:\\MediaHive App\\src\\app\\(shell)\\page.tsx": {
+    "mtime": 1778213104.4470527,
+    "ast_hash": "2cf73abc096500d30114ad5a49c2663a",
+    "semantic_hash": ""
+  },
+  "D:\\MediaHive App\\src\\app\\(shell)\\activity\\ActivityClient.tsx": {
+    "mtime": 1778213104.4500663,
+    "ast_hash": "049f44a258e7f4213aaef406bc296c8c",
+    "semantic_hash": ""
+  },
+  "D:\\MediaHive App\\src\\app\\(shell)\\activity\\layout.tsx": {
+    "mtime": 1778213104.451573,
+    "ast_hash": "16af17d5250d14b2a0746a527f41b459",
+    "semantic_hash": ""
+  },
+  "D:\\MediaHive App\\src\\app\\(shell)\\activity\\page.tsx": {
+    "mtime": 1780132404.2251637,
+    "ast_hash": "cab75a7e126033d96fc1b583ba3f229e",
+    "semantic_hash": ""
+  },
+  "D:\\MediaHive App\\src\\app\\(shell)\\admin\\layout.tsx": {
+    "mtime": 1779444803.3174632,
+    "ast_hash": "a084792cf1915ac30ab810e0e9bc712f",
+    "semantic_hash": ""
+  },
+  "D:\\MediaHive App\\src\\app\\(shell)\\admin\\page.tsx": {
+    "mtime": 1780143688.3679128,
+    "ast_hash": "6db6fe369fcd378ee0b19bd7674dc6ef",
+    "semantic_hash": ""
+  },
+  "D:\\MediaHive App\\src\\app\\(shell)\\admin\\activity\\page.tsx": {
+    "mtime": 1779883159.709321,
+    "ast_hash": "a8d5db968c1e366afc0b4a2596892e78",
+    "semantic_hash": ""
+  },
+  "D:\\MediaHive App\\src\\app\\(shell)\\admin\\calendar-master\\CalendarMasterClient.tsx": {
+    "mtime": 1779445013.256013,
+    "ast_hash": "7f94612552f942d79671d73f2e9438b0",
+    "semantic_hash": ""
+  },
+  "D:\\MediaHive App\\src\\app\\(shell)\\admin\\calendar-master\\page.tsx": {
+    "mtime": 1778213104.4783306,
+    "ast_hash": "c4f32197479cf57f938e6bc32148a39b",
+    "semantic_hash": ""
+  },
+  "D:\\MediaHive App\\src\\app\\(shell)\\admin\\drive-queue\\page.tsx": {
+    "mtime": 1779444803.315462,
+    "ast_hash": "a1fbc031e1265ef83cd3bdd4a489d6f4",
+    "semantic_hash": ""
+  },
+  "D:\\MediaHive App\\src\\app\\(shell)\\admin\\insights\\page.tsx": {
+    "mtime": 1780134375.425667,
+    "ast_hash": "aede0404b194faa8c06e254652de9fc9",
+    "semantic_hash": ""
+  },
+  "D:\\MediaHive App\\src\\app\\(shell)\\admin\\institutions\\layout.tsx": {
+    "mtime": 1778213104.5009296,
+    "ast_hash": "8ca839b786cd743cfc93976c38b1108a",
+    "semantic_hash": ""
+  },
+  "D:\\MediaHive App\\src\\app\\(shell)\\admin\\institutions\\policies\\InstitutionPoliciesClient.tsx": {
+    "mtime": 1780132404.227823,
+    "ast_hash": "b2a64fbcc3e126a0d175eb19bb8f06fe",
+    "semantic_hash": ""
+  },
+  "D:\\MediaHive App\\src\\app\\(shell)\\admin\\institutions\\policies\\page.tsx": {
+    "mtime": 1778213104.507841,
+    "ast_hash": "343a319227d847925d07fc447203797e",
+    "semantic_hash": ""
+  },
+  "D:\\MediaHive App\\src\\app\\(shell)\\admin\\institutions\\role-policies\\InstitutionRolePoliciesClient.tsx": {
+    "mtime": 1780132404.2334328,
+    "ast_hash": "9ca52a65fae9479e05aa96037f5e8961",
+    "semantic_hash": ""
+  },
+  "D:\\MediaHive App\\src\\app\\(shell)\\admin\\institutions\\role-policies\\page.tsx": {
+    "mtime": 1778213104.5154958,
+    "ast_hash": "a338d87b5b471c13d443db050a18b071",
+    "semantic_hash": ""
+  },
+  "D:\\MediaHive App\\src\\app\\(shell)\\admin\\leave-analytics\\page.tsx": {
+    "mtime": 1779878663.8888922,
+    "ast_hash": "d00a24ebe82f8f43415cc4b9a1d8ac87",
+    "semantic_hash": ""
+  },
+  "D:\\MediaHive App\\src\\app\\(shell)\\admin\\leave-requests\\page.tsx": {
+    "mtime": 1779445013.258014,
+    "ast_hash": "37d13015be4491e6952558cd68095e98",
+    "semantic_hash": ""
+  },
+  "D:\\MediaHive App\\src\\app\\(shell)\\admin\\monitoring\\page.tsx": {
+    "mtime": 1778213104.5372386,
+    "ast_hash": "919ec79f10eb7ba3e780c2320ba88412",
+    "semantic_hash": ""
+  },
+  "D:\\MediaHive App\\src\\app\\(shell)\\admin\\monitoring\\system\\page.tsx": {
+    "mtime": 1780134375.4268885,
+    "ast_hash": "a0ca9dc19f1fd7658022a0febca4a1a4",
+    "semantic_hash": ""
+  },
+  "D:\\MediaHive App\\src\\app\\(shell)\\admin\\security\\page.tsx": {
+    "mtime": 1780132404.2361171,
+    "ast_hash": "06fdb80528c481101bc34f656be08a25",
+    "semantic_hash": ""
+  },
+  "D:\\MediaHive App\\src\\app\\(shell)\\admin\\settings\\features\\FeaturePermissionsClient.tsx": {
+    "mtime": 1780132404.238713,
+    "ast_hash": "54ecae387f43fd20ecc4fd9ead8a127d",
+    "semantic_hash": ""
+  },
+  "D:\\MediaHive App\\src\\app\\(shell)\\admin\\settings\\features\\page.tsx": {
+    "mtime": 1778213104.571832,
+    "ast_hash": "807ac5202368304d0e142fdaf6514f80",
+    "semantic_hash": ""
+  },
+  "D:\\MediaHive App\\src\\app\\(shell)\\admin\\structure\\DepartmentsTab.tsx": {
+    "mtime": 1780134375.427895,
+    "ast_hash": "e268ec50fa0800bd1434d98885f7cd5a",
+    "semantic_hash": ""
+  },
+  "D:\\MediaHive App\\src\\app\\(shell)\\admin\\structure\\InstitutionsTab.tsx": {
+    "mtime": 1780134375.4288948,
+    "ast_hash": "cfb4745484556ab1760f3b983b7513d3",
+    "semantic_hash": ""
+  },
+  "D:\\MediaHive App\\src\\app\\(shell)\\admin\\structure\\page.tsx": {
+    "mtime": 1779605899.045055,
+    "ast_hash": "8515cedfc154ffec171ccccefe182e2e",
+    "semantic_hash": ""
+  },
+  "D:\\MediaHive App\\src\\app\\(shell)\\admin\\system-health\\page.tsx": {
+    "mtime": 1778213104.5987623,
+    "ast_hash": "bc3d46cd631c015b20708aa8aa68fdaf",
+    "semantic_hash": ""
+  },
+  "D:\\MediaHive App\\src\\app\\(shell)\\admin\\system-settings\\page.tsx": {
+    "mtime": 1779444803.3219693,
+    "ast_hash": "dbc7d634d16f0f5e1662d0289b92f21b",
+    "semantic_hash": ""
+  },
+  "D:\\MediaHive App\\src\\app\\(shell)\\admin\\system-updates\\page.tsx": {
+    "mtime": 1778213104.6062872,
+    "ast_hash": "5e9360295cc74eff69dab40587418213",
+    "semantic_hash": ""
+  },
+  "D:\\MediaHive App\\src\\app\\(shell)\\admin\\tenants\\page.tsx": {
+    "mtime": 1780132404.1727798,
+    "ast_hash": "ef88a1baf7d5a290982d655cdd685f48",
+    "semantic_hash": ""
+  },
+  "D:\\MediaHive App\\src\\app\\(shell)\\admin\\tenants\\TenantsClient.tsx": {
+    "mtime": 1780132404.1711833,
+    "ast_hash": "7c50980deb72044fa16dfe8063062483",
+    "semantic_hash": ""
+  },
+  "D:\\MediaHive App\\src\\app\\(shell)\\admin\\units\\layout.tsx": {
+    "mtime": 1778213104.620888,
+    "ast_hash": "a4cc47346cee5736bdf2221aa1887ef1",
+    "semantic_hash": ""
+  },
+  "D:\\MediaHive App\\src\\app\\(shell)\\admin\\units\\policies\\AdminUnitPoliciesClient.tsx": {
+    "mtime": 1778213104.6253698,
+    "ast_hash": "afd4e2edc908fd167f317407154eae9b",
+    "semantic_hash": ""
+  },
+  "D:\\MediaHive App\\src\\app\\(shell)\\admin\\units\\policies\\AdminUnitPoliciesContent.tsx": {
+    "mtime": 1780132404.2470498,
+    "ast_hash": "a46f96c5d5efac5fdb1ec50d77f1e41c",
+    "semantic_hash": ""
+  },
+  "D:\\MediaHive App\\src\\app\\(shell)\\admin\\units\\policies\\page.tsx": {
+    "mtime": 1778213104.6304634,
+    "ast_hash": "b43ba464820cb9fb9081929578b01998",
+    "semantic_hash": ""
+  },
+  "D:\\MediaHive App\\src\\app\\(shell)\\admin\\users\\page.tsx": {
+    "mtime": 1779605280.100601,
+    "ast_hash": "95c6f4ec2187ddd673e97a7fd6b4e346",
+    "semantic_hash": ""
+  },
+  "D:\\MediaHive App\\src\\app\\(shell)\\admin\\users\\UserDialog.tsx": {
+    "mtime": 1780132404.2491148,
+    "ast_hash": "fe8cf619220137cfd2fb8bf63e7e3d47",
+    "semantic_hash": ""
+  },
+  "D:\\MediaHive App\\src\\app\\(shell)\\admin\\workspaces\\page.tsx": {
+    "mtime": 1779879321.747908,
+    "ast_hash": "a0fca8131e189427795d7b866cdc82c0",
+    "semantic_hash": ""
+  },
+  "D:\\MediaHive App\\src\\app\\(shell)\\calendar\\CalendarClient.tsx": {
+    "mtime": 1780132404.251111,
+    "ast_hash": "7fc7c01b8a299fd14ab5819ac9bf3497",
+    "semantic_hash": ""
+  },
+  "D:\\MediaHive App\\src\\app\\(shell)\\calendar\\layout.tsx": {
+    "mtime": 1778213104.682927,
+    "ast_hash": "4972d4f3c07a6b63a1403144e961bcf4",
+    "semantic_hash": ""
+  },
+  "D:\\MediaHive App\\src\\app\\(shell)\\calendar\\page.tsx": {
+    "mtime": 1778213104.6850584,
+    "ast_hash": "3db44c7dbc4c1454fe72b211d782a46b",
+    "semantic_hash": ""
+  },
+  "D:\\MediaHive App\\src\\app\\(shell)\\campaigns\\CampaignsListClient.tsx": {
+    "mtime": 1780134375.4314053,
+    "ast_hash": "009a23b2460f6d0ecc0a92a8eecfccfc",
+    "semantic_hash": ""
+  },
+  "D:\\MediaHive App\\src\\app\\(shell)\\campaigns\\layout.tsx": {
+    "mtime": 1778213104.6925938,
+    "ast_hash": "d5687327bfa20fe591047193e3d80c8b",
+    "semantic_hash": ""
+  },
+  "D:\\MediaHive App\\src\\app\\(shell)\\campaigns\\page.tsx": {
+    "mtime": 1778213104.695178,
+    "ast_hash": "49d89fff4de7e160ae9c51e8af1052d4",
+    "semantic_hash": ""
+  },
+  "D:\\MediaHive App\\src\\app\\(shell)\\campaigns\\new\\CampaignNewClient.tsx": {
+    "mtime": 1780132404.1744356,
+    "ast_hash": "c1942dacae3cef3446e824f242726dd7",
+    "semantic_hash": ""
+  },
+  "D:\\MediaHive App\\src\\app\\(shell)\\campaigns\\new\\page.tsx": {
+    "mtime": 1778213104.703457,
+    "ast_hash": "a47e9b79d2e5755661f80d8427cf4969",
+    "semantic_hash": ""
+  },
+  "D:\\MediaHive App\\src\\app\\(shell)\\campaigns\\view\\CampaignViewClient.tsx": {
+    "mtime": 1780132404.1760013,
+    "ast_hash": "334b95582d6147ce38e563087b24d345",
+    "semantic_hash": ""
+  },
+  "D:\\MediaHive App\\src\\app\\(shell)\\campaigns\\view\\page.tsx": {
+    "mtime": 1778213104.71632,
+    "ast_hash": "f00f470a74f40e150e59459fc8e3722a",
+    "semantic_hash": ""
+  },
+  "D:\\MediaHive App\\src\\app\\(shell)\\chat\\page.tsx": {
+    "mtime": 1780329163.4365158,
+    "ast_hash": "ab53aac9f944627e7c27bdcf6fcebd34",
+    "semantic_hash": ""
+  },
+  "D:\\MediaHive App\\src\\app\\(shell)\\conflicts\\ConflictResolutionCenter.tsx": {
+    "mtime": 1779444803.3264835,
+    "ast_hash": "1b0a60ef600470b0b5f4ca310be079fc",
+    "semantic_hash": ""
+  },
+  "D:\\MediaHive App\\src\\app\\(shell)\\conflicts\\page.tsx": {
+    "mtime": 1778213104.755073,
+    "ast_hash": "0a382a78633f13704050351055eecfc7",
+    "semantic_hash": ""
+  },
+  "D:\\MediaHive App\\src\\app\\(shell)\\downloads\\DownloadsClient.tsx": {
+    "mtime": 1779605225.7156608,
+    "ast_hash": "655ccbf9cc67768f4d01a2190d80391d",
+    "semantic_hash": ""
+  },
+  "D:\\MediaHive App\\src\\app\\(shell)\\downloads\\layout.tsx": {
+    "mtime": 1778213104.7648628,
+    "ast_hash": "1a3deade519987478b59e68c04082668",
+    "semantic_hash": ""
+  },
+  "D:\\MediaHive App\\src\\app\\(shell)\\downloads\\page.tsx": {
+    "mtime": 1778213104.7664232,
+    "ast_hash": "faaa179b946285613a149944f9d422fb",
+    "semantic_hash": ""
+  },
+  "D:\\MediaHive App\\src\\app\\(shell)\\events\\EventsClient.tsx": {
+    "mtime": 1779608522.0356207,
+    "ast_hash": "4166bf249fd644a5f1b8599e3c96468e",
+    "semantic_hash": ""
+  },
+  "D:\\MediaHive App\\src\\app\\(shell)\\events\\layout.tsx": {
+    "mtime": 1778213104.773208,
+    "ast_hash": "60736ec08d22b17394467b36d7253f4b",
+    "semantic_hash": ""
+  },
+  "D:\\MediaHive App\\src\\app\\(shell)\\events\\page.tsx": {
+    "mtime": 1778213104.7749343,
+    "ast_hash": "efc79f9414861cb235e1f2c1917d78b8",
+    "semantic_hash": ""
+  },
+  "D:\\MediaHive App\\src\\app\\(shell)\\events\\@modal\\default.tsx": {
+    "mtime": 1778213104.7784019,
+    "ast_hash": "e18c04538571b66b87595d12b2e3cd07",
+    "semantic_hash": ""
+  },
+  "D:\\MediaHive App\\src\\app\\(shell)\\events\\edit\\EditEventClient.tsx": {
+    "mtime": 1779444803.3274827,
+    "ast_hash": "057f4259d00332e9381d877d57b215b8",
+    "semantic_hash": ""
+  },
+  "D:\\MediaHive App\\src\\app\\(shell)\\events\\edit\\page.tsx": {
+    "mtime": 1779444803.3274827,
+    "ast_hash": "283acfb2f3f3d2e2611416e5fa156aa5",
+    "semantic_hash": ""
+  },
+  "D:\\MediaHive App\\src\\app\\(shell)\\events\\new\\CreateEventClient.tsx": {
+    "mtime": 1779444803.3299932,
+    "ast_hash": "1f410a998220c2aaa6f47c8f0549a272",
+    "semantic_hash": ""
+  },
+  "D:\\MediaHive App\\src\\app\\(shell)\\events\\new\\page.tsx": {
+    "mtime": 1779444803.3299932,
+    "ast_hash": "c8d341fff31e76c8752fd020c1bf1db4",
+    "semantic_hash": ""
+  },
+  "D:\\MediaHive App\\src\\app\\(shell)\\events\\[id]\\page.tsx": {
+    "mtime": 1779608566.5238132,
+    "ast_hash": "09acfb2804c437b0c67cbf701b41c590",
+    "semantic_hash": ""
+  },
+  "D:\\MediaHive App\\src\\app\\(shell)\\governance\\page.tsx": {
+    "mtime": 1778213104.8918557,
+    "ast_hash": "15ff1c87268cf4556fc81173a0f70768",
+    "semantic_hash": ""
+  },
+  "D:\\MediaHive App\\src\\app\\(shell)\\home\\HomeClient.tsx": {
+    "mtime": 1780210037.0241442,
+    "ast_hash": "ca3ddf2d6148931855dbac0c30e83ee7",
+    "semantic_hash": ""
+  },
+  "D:\\MediaHive App\\src\\app\\(shell)\\home\\layout.tsx": {
+    "mtime": 1778213104.9003267,
+    "ast_hash": "3ee2c8d6a507cc718fb088ab1f26ba9a",
+    "semantic_hash": ""
+  },
+  "D:\\MediaHive App\\src\\app\\(shell)\\home\\page.tsx": {
+    "mtime": 1778213104.903401,
+    "ast_hash": "6f8749ac43cd0c0388bdb3e15ef678c4",
+    "semantic_hash": ""
+  },
+  "D:\\MediaHive App\\src\\app\\(shell)\\inventory\\InventoryClient.tsx": {
+    "mtime": 1778213104.9060285,
+    "ast_hash": "07cd770cdfe6ae0c327c5b462ca8e645",
+    "semantic_hash": ""
+  },
+  "D:\\MediaHive App\\src\\app\\(shell)\\inventory\\layout.tsx": {
+    "mtime": 1778213104.9070854,
+    "ast_hash": "13603fb7ff9d17689f265ac888ba38f0",
+    "semantic_hash": ""
+  },
+  "D:\\MediaHive App\\src\\app\\(shell)\\inventory\\page.tsx": {
+    "mtime": 1778213104.9081292,
+    "ast_hash": "24e80d2df8097e6d50b414bd63e461d9",
+    "semantic_hash": ""
+  },
+  "D:\\MediaHive App\\src\\app\\(shell)\\inventory\\@modal\\default.tsx": {
+    "mtime": 1778213104.9097106,
+    "ast_hash": "e18c04538571b66b87595d12b2e3cd07",
+    "semantic_hash": ""
+  },
+  "D:\\MediaHive App\\src\\app\\(shell)\\inventory\\add\\InventoryAddClient.tsx": {
+    "mtime": 1779445013.266524,
+    "ast_hash": "2d6de239fc4a9614d4b72b2ded3083bc",
+    "semantic_hash": ""
+  },
+  "D:\\MediaHive App\\src\\app\\(shell)\\inventory\\add\\page.tsx": {
+    "mtime": 1778213104.9227314,
+    "ast_hash": "fc109f1b60da9036b502ebdb2490ece5",
+    "semantic_hash": ""
+  },
+  "D:\\MediaHive App\\src\\app\\(shell)\\inventory\\edit\\layout.tsx": {
+    "mtime": 1778213104.923741,
+    "ast_hash": "2c1f200e820a0e90b51765e28a25cd8b",
+    "semantic_hash": ""
+  },
+  "D:\\MediaHive App\\src\\app\\(shell)\\inventory\\edit\\page.tsx": {
+    "mtime": 1778213104.925737,
+    "ast_hash": "e4a504a70674ec563568c69efa41d9b6",
+    "semantic_hash": ""
+  },
+  "D:\\MediaHive App\\src\\app\\(shell)\\inventory\\edit\\item\\InventoryEditClient.tsx": {
+    "mtime": 1779445013.2675245,
+    "ast_hash": "57ad6a44c00e8435252fafbf348ad1d1",
+    "semantic_hash": ""
+  },
+  "D:\\MediaHive App\\src\\app\\(shell)\\inventory\\edit\\item\\page.tsx": {
+    "mtime": 1778213104.940444,
+    "ast_hash": "4b2a42ca1ab2f0c36080946fede8f0bf",
+    "semantic_hash": ""
+  },
+  "D:\\MediaHive App\\src\\app\\(shell)\\inventory\\requests\\InventoryRequestsClient.tsx": {
+    "mtime": 1780132404.2522748,
+    "ast_hash": "f0ad005473c6732d5da884fe80dd74e0",
+    "semantic_hash": ""
+  },
+  "D:\\MediaHive App\\src\\app\\(shell)\\inventory\\requests\\page.tsx": {
+    "mtime": 1778213104.9424446,
+    "ast_hash": "37d334a6bd63925958ebe3f1da36ca0e",
+    "semantic_hash": ""
+  },
+  "D:\\MediaHive App\\src\\app\\(shell)\\inventory\\[id]\\page.tsx": {
+    "mtime": 1779018105.962054,
+    "ast_hash": "7cd6d32fc8868543461638e6121e1ceb",
+    "semantic_hash": ""
+  },
+  "D:\\MediaHive App\\src\\app\\(shell)\\labs\\layout.tsx": {
+    "mtime": 1778213104.9486241,
+    "ast_hash": "2558e0547856208a7579ab71e6ef5505",
+    "semantic_hash": ""
+  },
+  "D:\\MediaHive App\\src\\app\\(shell)\\labs\\page.tsx": {
+    "mtime": 1780134375.4372098,
+    "ast_hash": "80596cbf95174bd00dc21af3ce831ee8",
+    "semantic_hash": ""
+  },
+  "D:\\MediaHive App\\src\\app\\(shell)\\labs\\ai-assistant\\page.tsx": {
+    "mtime": 1778213104.9533021,
+    "ast_hash": "8f7c12898ff65ee03fad7194b27bf021",
+    "semantic_hash": ""
+  },
+  "D:\\MediaHive App\\src\\app\\(shell)\\labs\\automation\\page.tsx": {
+    "mtime": 1778213104.9543326,
+    "ast_hash": "9f2b7cb3d3ecc0bca491f63db8dc1d01",
+    "semantic_hash": ""
+  },
+  "D:\\MediaHive App\\src\\app\\(shell)\\labs\\intelligence\\page.tsx": {
+    "mtime": 1778213104.958928,
+    "ast_hash": "e47713df4c897be885e83c57a557d938",
+    "semantic_hash": ""
+  },
+  "D:\\MediaHive App\\src\\app\\(shell)\\labs\\production-center\\page.tsx": {
+    "mtime": 1779444803.334501,
+    "ast_hash": "0ce1b9f4e6031e3d58974e395c1df1a4",
+    "semantic_hash": ""
+  },
+  "D:\\MediaHive App\\src\\app\\(shell)\\leave\\request\\page.tsx": {
+    "mtime": 1779877542.650517,
+    "ast_hash": "e42aac2a56f0c50edf888d03c4206778",
+    "semantic_hash": ""
+  },
+  "D:\\MediaHive App\\src\\app\\(shell)\\notifications\\NotificationCenterClient.tsx": {
+    "mtime": 1779449591.514604,
+    "ast_hash": "46bbea2c5118ab9e9ab8b5d0c86aabf2",
+    "semantic_hash": ""
+  },
+  "D:\\MediaHive App\\src\\app\\(shell)\\notifications\\NotificationsClient.tsx": {
+    "mtime": 1778213104.97093,
+    "ast_hash": "caeb43c13e1cc0ed0fd016d4c1ca55fa",
+    "semantic_hash": ""
+  },
+  "D:\\MediaHive App\\src\\app\\(shell)\\notifications\\page.tsx": {
+    "mtime": 1778213104.9719362,
+    "ast_hash": "b08f62eba8fbf411e12e89eb495032d9",
+    "semantic_hash": ""
+  },
+  "D:\\MediaHive App\\src\\app\\(shell)\\notifications\\new\\ClientBoundary.tsx": {
+    "mtime": 1778213104.9729414,
+    "ast_hash": "fa79790b127bf9533d8ab03c0c7e0ea7",
+    "semantic_hash": ""
+  },
+  "D:\\MediaHive App\\src\\app\\(shell)\\notifications\\new\\NotificationsNewClient.tsx": {
+    "mtime": 1779444803.3355005,
+    "ast_hash": "23884a86fc611faf9119484f82ed0996",
+    "semantic_hash": ""
+  },
+  "D:\\MediaHive App\\src\\app\\(shell)\\notifications\\new\\page.tsx": {
+    "mtime": 1778213104.9754894,
+    "ast_hash": "a33502a77b4ba2f814ba32e65e81773b",
+    "semantic_hash": ""
+  },
+  "D:\\MediaHive App\\src\\app\\(shell)\\production\\[id]\\page.tsx": {
+    "mtime": 1777977762.5529492,
+    "ast_hash": "caebeb534ae9c8bd28b87613c3f2f75e",
+    "semantic_hash": ""
+  },
+  "D:\\MediaHive App\\src\\app\\(shell)\\profile\\layout.tsx": {
+    "mtime": 1778213104.9805415,
+    "ast_hash": "73d183db773fc949c0870dfe2f887e86",
+    "semantic_hash": ""
+  },
+  "D:\\MediaHive App\\src\\app\\(shell)\\profile\\page.tsx": {
+    "mtime": 1778213104.9821415,
+    "ast_hash": "d8d2628b660cdb79f784b0310397dbfc",
+    "semantic_hash": ""
+  },
+  "D:\\MediaHive App\\src\\app\\(shell)\\profile\\ProfileClient.tsx": {
+    "mtime": 1778213104.9847555,
+    "ast_hash": "84d60947c768d0528c0538d875893a9d",
+    "semantic_hash": ""
+  },
+  "D:\\MediaHive App\\src\\app\\(shell)\\settings\\layout.tsx": {
+    "mtime": 1778213105.0274687,
+    "ast_hash": "bd08722307173dcb7787515fdd01a58c",
+    "semantic_hash": ""
+  },
+  "D:\\MediaHive App\\src\\app\\(shell)\\settings\\page.tsx": {
+    "mtime": 1778213105.0289986,
+    "ast_hash": "3f37f4e003170c3fb666debbde1c71e0",
+    "semantic_hash": ""
+  },
+  "D:\\MediaHive App\\src\\app\\(shell)\\settings\\SettingsClient.tsx": {
+    "mtime": 1778213105.029544,
+    "ast_hash": "c5ead150a0cc198e7b2c249102a0de70",
+    "semantic_hash": ""
+  },
+  "D:\\MediaHive App\\src\\app\\(shell)\\system-activity\\layout.tsx": {
+    "mtime": 1778213105.0310547,
+    "ast_hash": "b77dd263a67544c3d73df73c148c6e2a",
+    "semantic_hash": ""
+  },
+  "D:\\MediaHive App\\src\\app\\(shell)\\system-activity\\page.tsx": {
+    "mtime": 1778213105.0310547,
+    "ast_hash": "693c465a0290bba82d5aa6fdb04f3d33",
+    "semantic_hash": ""
+  },
+  "D:\\MediaHive App\\src\\app\\(shell)\\system-activity\\SystemActivityClient.tsx": {
+    "mtime": 1779444803.3406315,
+    "ast_hash": "884ca75468eafcd15837f7a8015fe4f6",
+    "semantic_hash": ""
+  },
+  "D:\\MediaHive App\\src\\app\\(shell)\\system-updates\\layout.tsx": {
+    "mtime": 1778213105.0340621,
+    "ast_hash": "720b9068f63a7da4e581854f37124905",
+    "semantic_hash": ""
+  },
+  "D:\\MediaHive App\\src\\app\\(shell)\\system-updates\\page.tsx": {
+    "mtime": 1780132404.2557895,
+    "ast_hash": "a21cf47786b6246c6e7d2b42ebdbdb41",
+    "semantic_hash": ""
+  },
+  "D:\\MediaHive App\\src\\app\\(shell)\\system-updates\\view\\page.tsx": {
+    "mtime": 1778213105.0366766,
+    "ast_hash": "11b11803ae895df257ab388dfa78ef2f",
+    "semantic_hash": ""
+  },
+  "D:\\MediaHive App\\src\\app\\(shell)\\system-updates\\view\\SystemUpdateViewClient.tsx": {
+    "mtime": 1780132404.257295,
+    "ast_hash": "c1f5bc85e55155f621e3bcd9790e548c",
+    "semantic_hash": ""
+  },
+  "D:\\MediaHive App\\src\\app\\(shell)\\tasks\\layout.tsx": {
+    "mtime": 1778213105.0392013,
+    "ast_hash": "cdda058d0ab1473177782117c348a98f",
+    "semantic_hash": ""
+  },
+  "D:\\MediaHive App\\src\\app\\(shell)\\tasks\\page.tsx": {
+    "mtime": 1778213105.0392013,
+    "ast_hash": "b2c9a5ca19e63d259c2cd1ef5f3c43d9",
+    "semantic_hash": ""
+  },
+  "D:\\MediaHive App\\src\\app\\(shell)\\tasks\\TasksPageClient.tsx": {
+    "mtime": 1780133039.9997044,
+    "ast_hash": "a894820567b2031be37a17619778e6de",
+    "semantic_hash": ""
+  },
+  "D:\\MediaHive App\\src\\app\\(shell)\\tasks\\@modal\\default.tsx": {
+    "mtime": 1778213105.0437114,
+    "ast_hash": "e18c04538571b66b87595d12b2e3cd07",
+    "semantic_hash": ""
+  },
+  "D:\\MediaHive App\\src\\app\\(shell)\\tasks\\new\\page.tsx": {
+    "mtime": 1778213105.0437114,
+    "ast_hash": "b8329999ab5fd9b6049baca54103520e",
+    "semantic_hash": ""
+  },
+  "D:\\MediaHive App\\src\\app\\(shell)\\tasks\\new\\TasksNewClient.tsx": {
+    "mtime": 1780132404.213568,
+    "ast_hash": "895b2acfc0571bd358b919863cb9874c",
+    "semantic_hash": ""
+  },
+  "D:\\MediaHive App\\src\\app\\(shell)\\tasks\\trash\\page.tsx": {
+    "mtime": 1778213105.0555797,
+    "ast_hash": "0040d3cdef0b17fda51a3ca64d635ff7",
+    "semantic_hash": ""
+  },
+  "D:\\MediaHive App\\src\\app\\(shell)\\tasks\\trash\\TrashPageClient.tsx": {
+    "mtime": 1779427154.9363468,
+    "ast_hash": "a5cd53583bff24d0943ece44579ff5f5",
+    "semantic_hash": ""
+  },
+  "D:\\MediaHive App\\src\\app\\(shell)\\tasks\\view\\page.tsx": {
+    "mtime": 1778213105.0580897,
+    "ast_hash": "1f541bee8f0fa806d6482fab9436bfad",
+    "semantic_hash": ""
+  },
+  "D:\\MediaHive App\\src\\app\\(shell)\\tasks\\view\\TasksViewClient.tsx": {
+    "mtime": 1780132404.2169893,
+    "ast_hash": "0e8c3aba95e2ffb0265aba80fd02f461",
+    "semantic_hash": ""
+  },
+  "D:\\MediaHive App\\src\\app\\(shell)\\tasks\\[id]\\page.tsx": {
+    "mtime": 1778246551.0451326,
+    "ast_hash": "de2efc8182ca88b2b3f6f09dde009340",
+    "semantic_hash": ""
+  },
+  "D:\\MediaHive App\\src\\app\\(shell)\\updates\\layout.tsx": {
+    "mtime": 1778213105.0682478,
+    "ast_hash": "a3d63977f17d164260d92dd42608bff2",
+    "semantic_hash": ""
+  },
+  "D:\\MediaHive App\\src\\app\\(shell)\\updates\\page.tsx": {
+    "mtime": 1778213105.0697596,
+    "ast_hash": "cc34a3e256ab23f04173f603a1ff5fd1",
+    "semantic_hash": ""
+  },
+  "D:\\MediaHive App\\src\\app\\(shell)\\updates\\view\\page.tsx": {
+    "mtime": 1778213105.070799,
+    "ast_hash": "a4754fa09ec58545e846f7e8a6d257ad",
+    "semantic_hash": ""
+  },
+  "D:\\MediaHive App\\src\\app\\(shell)\\updates\\view\\UpdatesViewClient.tsx": {
+    "mtime": 1778213105.0729032,
+    "ast_hash": "b7bd272fb9b62bb4f10380268a22afa8",
+    "semantic_hash": ""
+  },
+  "D:\\MediaHive App\\src\\app\\(shell)\\users\\page.tsx": {
+    "mtime": 1778213105.0739522,
+    "ast_hash": "cc0589e81a5f1da5098c5cb520f0af5e",
+    "semantic_hash": ""
+  },
+  "D:\\MediaHive App\\src\\app\\(shell)\\users\\me\\page.tsx": {
+    "mtime": 1778213105.0744758,
+    "ast_hash": "0f1a67e9d641b0fe46c0df7b709a1f69",
+    "semantic_hash": ""
+  },
+  "D:\\MediaHive App\\src\\app\\(shell)\\utils\\uiMaps.ts": {
+    "mtime": 1778213105.0760489,
+    "ast_hash": "f68c3ec6c4feb61b945e1bab0b7265f7",
+    "semantic_hash": ""
+  },
+  "D:\\MediaHive App\\src\\app\\accept-invite\\page.tsx": {
+    "mtime": 1779444803.3446388,
+    "ast_hash": "b54792eda51c20011197e84cc6183185",
+    "semantic_hash": ""
+  },
+  "D:\\MediaHive App\\src\\app\\api\\admin\\audit\\route.ts": {
+    "mtime": 1778213105.0801334,
+    "ast_hash": "74d1dbe8beebbd4494af8e44633e6ff3",
+    "semantic_hash": ""
+  },
+  "D:\\MediaHive App\\src\\app\\api\\admin\\audit-logs\\route.ts": {
+    "mtime": 1778213105.081141,
+    "ast_hash": "eed08485cfc1a98f735348d91edd21f1",
+    "semantic_hash": ""
+  },
+  "D:\\MediaHive App\\src\\app\\api\\admin\\automation-rules\\route.ts": {
+    "mtime": 1778213105.0829625,
+    "ast_hash": "dcdc6c74a7332b1635ef1608c34f601d",
+    "semantic_hash": ""
+  },
+  "D:\\MediaHive App\\src\\app\\api\\admin\\change-role\\route.ts": {
+    "mtime": 1778213105.08697,
+    "ast_hash": "426b0e2e73d93a7b17d7f5594a4a1728",
+    "semantic_hash": ""
+  },
+  "D:\\MediaHive App\\src\\app\\api\\admin\\drive-queue\\route.ts": {
+    "mtime": 1778774191.5765748,
+    "ast_hash": "6a21cff35e403604da4f7734cf3e315a",
+    "semantic_hash": ""
+  },
+  "D:\\MediaHive App\\src\\app\\api\\admin\\drive-queue\\meta\\route.ts": {
+    "mtime": 1778213105.0914967,
+    "ast_hash": "782acaabc03c11044396ad37228438c3",
+    "semantic_hash": ""
+  },
+  "D:\\MediaHive App\\src\\app\\api\\admin\\drive-queue\\scan\\route.ts": {
+    "mtime": 1778213105.0935104,
+    "ast_hash": "66310f133e25aefd1a32cfa7f8e24e51",
+    "semantic_hash": ""
+  },
+  "D:\\MediaHive App\\src\\app\\api\\admin\\exports\\department\\route.ts": {
+    "mtime": 1778213105.0945137,
+    "ast_hash": "e26fad2584f9ec2b71dd28d9c909a0ac",
+    "semantic_hash": ""
+  },
+  "D:\\MediaHive App\\src\\app\\api\\admin\\exports\\department\\[departmentId]\\route.ts": {
+    "mtime": 1777977762.5911157,
+    "ast_hash": "282641547f8ba752303038948057e54f",
+    "semantic_hash": ""
+  },
+  "D:\\MediaHive App\\src\\app\\api\\admin\\exports\\user\\route.ts": {
+    "mtime": 1778213105.100303,
+    "ast_hash": "c44df84e95ba3c405864b2bc84086067",
+    "semantic_hash": ""
+  },
+  "D:\\MediaHive App\\src\\app\\api\\admin\\exports\\user\\[userId]\\route.ts": {
+    "mtime": 1777977762.5931175,
+    "ast_hash": "04acf470ec89a19b6f8b7e4efe9b8557",
+    "semantic_hash": ""
+  },
+  "D:\\MediaHive App\\src\\app\\api\\admin\\feature-flags\\route.ts": {
+    "mtime": 1778213105.105128,
+    "ast_hash": "2e35015bd1d8ae8eb8cfb7e265578acf",
+    "semantic_hash": ""
+  },
+  "D:\\MediaHive App\\src\\app\\api\\admin\\features\\route.ts": {
+    "mtime": 1778213105.1066911,
+    "ast_hash": "28b582d61feafb27c240233b9bb459cc",
+    "semantic_hash": ""
+  },
+  "D:\\MediaHive App\\src\\app\\api\\admin\\health\\route.ts": {
+    "mtime": 1778213105.1087804,
+    "ast_hash": "f1da8c99e1ffb97f0179dd9ad1c1f48f",
+    "semantic_hash": ""
+  },
+  "D:\\MediaHive App\\src\\app\\api\\admin\\institutions\\route.ts": {
+    "mtime": 1778213105.1103673,
+    "ast_hash": "31adc8cd97e91b78cf18c2c2e67c7d99",
+    "semantic_hash": ""
+  },
+  "D:\\MediaHive App\\src\\app\\api\\admin\\institutions\\[id]\\policies\\route.ts": {
+    "mtime": 1777977762.5946264,
+    "ast_hash": "4e298c8632c43a5a67d4209922910d9b",
+    "semantic_hash": ""
+  },
+  "D:\\MediaHive App\\src\\app\\api\\admin\\interventions\\route.ts": {
+    "mtime": 1778213105.1158946,
+    "ast_hash": "a7ddd8ff6fac82af348d0e6ffe6c0072",
+    "semantic_hash": ""
+  },
+  "D:\\MediaHive App\\src\\app\\api\\admin\\interventions\\[userId]\\route.ts": {
+    "mtime": 1777977762.596146,
+    "ast_hash": "4de6b1fe813ebeb5c7da1ac191aa6c58",
+    "semantic_hash": ""
+  },
+  "D:\\MediaHive App\\src\\app\\api\\admin\\inventory\\sync\\route.ts": {
+    "mtime": 1778213105.119545,
+    "ast_hash": "8afca7d43a652c3bbf2299aab969d725",
+    "semantic_hash": ""
+  },
+  "D:\\MediaHive App\\src\\app\\api\\admin\\leadership\\summary\\route.ts": {
+    "mtime": 1778213105.122665,
+    "ast_hash": "869ad2cbd9c1f4cf1b66a8c656c6c4c2",
+    "semantic_hash": ""
+  },
+  "D:\\MediaHive App\\src\\app\\api\\admin\\metrics\\route.ts": {
+    "mtime": 1778213105.1241748,
+    "ast_hash": "5982fdc9818f39f9104fb1790191155e",
+    "semantic_hash": ""
+  },
+  "D:\\MediaHive App\\src\\app\\api\\admin\\performance-history\\route.ts": {
+    "mtime": 1778213105.125215,
+    "ast_hash": "d9f94f3455771228cb9190e6dce49bfe",
+    "semantic_hash": ""
+  },
+  "D:\\MediaHive App\\src\\app\\api\\admin\\performance-history\\[userId]\\route.ts": {
+    "mtime": 1777977762.5982554,
+    "ast_hash": "71834717c062da681d9e0cf2170b97fc",
+    "semantic_hash": ""
+  },
+  "D:\\MediaHive App\\src\\app\\api\\admin\\role-policies\\route.ts": {
+    "mtime": 1778213105.1337788,
+    "ast_hash": "3834e3bf3b3766bc971a79cb5d1cdc13",
+    "semantic_hash": ""
+  },
+  "D:\\MediaHive App\\src\\app\\api\\admin\\roles\\route.ts": {
+    "mtime": 1778213105.1358938,
+    "ast_hash": "3239433f5f666a4ea878e7ac7ecd9216",
+    "semantic_hash": ""
+  },
+  "D:\\MediaHive App\\src\\app\\api\\admin\\settings\\route.ts": {
+    "mtime": 1778213105.1369731,
+    "ast_hash": "4ebb0bcd290acb9a8f08d76f47006056",
+    "semantic_hash": ""
+  },
+  "D:\\MediaHive App\\src\\app\\api\\admin\\structure-policies\\route.ts": {
+    "mtime": 1778213105.1385605,
+    "ast_hash": "3c1ea32cf131b780ae981d4a3d6342a1",
+    "semantic_hash": ""
+  },
+  "D:\\MediaHive App\\src\\app\\api\\admin\\sync-orgs\\route.ts": {
+    "mtime": 1778213105.1400976,
+    "ast_hash": "e3ff7cb38103ec5ea255a67ebefcb6c4",
+    "semantic_hash": ""
+  },
+  "D:\\MediaHive App\\src\\app\\api\\admin\\system-updates\\route.ts": {
+    "mtime": 1779295171.2882755,
+    "ast_hash": "6c225278c418ce960f0baa23f90bb755",
+    "semantic_hash": ""
+  },
+  "D:\\MediaHive App\\src\\app\\api\\admin\\tenants\\route.ts": {
+    "mtime": 1778213105.1410925,
+    "ast_hash": "1d9e810a5637067dcd0a22c5a20253d3",
+    "semantic_hash": ""
+  },
+  "D:\\MediaHive App\\src\\app\\api\\admin\\users\\route.ts": {
+    "mtime": 1778213105.1426022,
+    "ast_hash": "3b32467773247ba32bee067669c796c8",
+    "semantic_hash": ""
+  },
+  "D:\\MediaHive App\\src\\app\\api\\ai\\generate-task\\route.ts": {
+    "mtime": 1778213105.1456037,
+    "ast_hash": "613b33ad6e5bd28ae1fda960f83cbc7b",
+    "semantic_hash": ""
+  },
+  "D:\\MediaHive App\\src\\app\\api\\ai\\suggestions\\route.ts": {
+    "mtime": 1778213105.147118,
+    "ast_hash": "41e031bafbad5f5ef069bf7e94067638",
+    "semantic_hash": ""
+  },
+  "D:\\MediaHive App\\src\\app\\api\\ai\\summarize-notifications\\route.ts": {
+    "mtime": 1778213105.1486611,
+    "ast_hash": "18fecb84acbb180823fed71d2eea1a48",
+    "semantic_hash": ""
+  },
+  "D:\\MediaHive App\\src\\app\\api\\api-utils\\compression.ts": {
+    "mtime": 1778213105.1496665,
+    "ast_hash": "b6f062c231bfdd144096bcc921baaa9f",
+    "semantic_hash": ""
+  },
+  "D:\\MediaHive App\\src\\app\\api\\api-utils\\logging.ts": {
+    "mtime": 1778213105.1515365,
+    "ast_hash": "83e8f2b6b50d989ddecb14160a8745b5",
+    "semantic_hash": ""
+  },
+  "D:\\MediaHive App\\src\\app\\api\\api-utils\\route.ts": {
+    "mtime": 1778213105.1525433,
+    "ast_hash": "bd22a149bdd153a71cc326db1785071d",
+    "semantic_hash": ""
+  },
+  "D:\\MediaHive App\\src\\app\\api\\attendance\\route.ts": {
+    "mtime": 1778213105.1550562,
+    "ast_hash": "10202fb663dd245d891ba7aa7da8bc46",
+    "semantic_hash": ""
+  },
+  "D:\\MediaHive App\\src\\app\\api\\audit\\events\\route.ts": {
+    "mtime": 1778213105.158128,
+    "ast_hash": "65397b986a3f37dbf3f128468bb7cf17",
+    "semantic_hash": ""
+  },
+  "D:\\MediaHive App\\src\\app\\api\\audit-log\\route.ts": {
+    "mtime": 1778213105.1642861,
+    "ast_hash": "ce5e3eb7d3d1d8ed1f77592d50bfdfc0",
+    "semantic_hash": ""
+  },
+  "D:\\MediaHive App\\src\\app\\api\\auth\\login\\route.ts": {
+    "mtime": 1778213105.1657975,
+    "ast_hash": "451d5ce95904bd4e1c4f01ecd99a378a",
+    "semantic_hash": ""
+  },
+  "D:\\MediaHive App\\src\\app\\api\\auth\\logout\\route.ts": {
+    "mtime": 1778213105.1663013,
+    "ast_hash": "d0ea5d00170fde8d74e49309b7a95252",
+    "semantic_hash": ""
+  },
+  "D:\\MediaHive App\\src\\app\\api\\auth\\refresh\\route.ts": {
+    "mtime": 1778213105.1678119,
+    "ast_hash": "665b009163f7b9ea0ff050db3d70f057",
+    "semantic_hash": ""
+  },
+  "D:\\MediaHive App\\src\\app\\api\\campaigns\\route.ts": {
+    "mtime": 1778213105.168816,
+    "ast_hash": "7b824f3ac5ec8e7ea952ce07bd4fcd55",
+    "semantic_hash": ""
+  },
+  "D:\\MediaHive App\\src\\app\\api\\campaigns\\[id]\\route.ts": {
+    "mtime": 1778173092.7743118,
+    "ast_hash": "da90911995d520a87a7e2c163c3baaad",
+    "semantic_hash": ""
+  },
+  "D:\\MediaHive App\\src\\app\\api\\chat\\rooms\\route.ts": {
+    "mtime": 1780229299.8962765,
+    "ast_hash": "5eb180add86ba17c7076e0ed5e7da7f5",
+    "semantic_hash": ""
+  },
+  "D:\\MediaHive App\\src\\app\\api\\chat\\rooms\\[roomId]\\route.ts": {
+    "mtime": 1780228096.8850293,
+    "ast_hash": "dd002ea6c422e26f6b23c516927d4e86",
+    "semantic_hash": ""
+  },
+  "D:\\MediaHive App\\src\\app\\api\\chat\\rooms\\[roomId]\\add-user\\route.ts": {
+    "mtime": 1780227112.7433944,
+    "ast_hash": "d80a04a85706b3cc944286a315ebd5b6",
+    "semantic_hash": ""
+  },
+  "D:\\MediaHive App\\src\\app\\api\\chat\\rooms\\[roomId]\\messages\\route.ts": {
+    "mtime": 1780328991.1520612,
+    "ast_hash": "9990cf155cbd8d68d947531e7a4b6ec0",
+    "semantic_hash": ""
+  },
+  "D:\\MediaHive App\\src\\app\\api\\chat\\rooms\\[roomId]\\messages\\[messageId]\\route.ts": {
+    "mtime": 1780310911.4004898,
+    "ast_hash": "c80738ed0ffdadd09e7e46e620f98aae",
+    "semantic_hash": ""
+  },
+  "D:\\MediaHive App\\src\\app\\api\\chat\\rooms\\[roomId]\\participants\\route.ts": {
+    "mtime": 1780236407.4685948,
+    "ast_hash": "7b2be3460cb25e7fea9ad785f8df16a8",
+    "semantic_hash": ""
+  },
+  "D:\\MediaHive App\\src\\app\\api\\chat\\upload\\route.ts": {
+    "mtime": 1780222964.9916627,
+    "ast_hash": "8346a3cf95c945c84a063f57b4dd81d0",
+    "semantic_hash": ""
+  },
+  "D:\\MediaHive App\\src\\app\\api\\cron\\cleanup\\route.ts": {
+    "mtime": 1778213105.1737156,
+    "ast_hash": "601374fe9e7a91c6de9f1a75f21c14aa",
+    "semantic_hash": ""
+  },
+  "D:\\MediaHive App\\src\\app\\api\\cron\\notifications\\route.ts": {
+    "mtime": 1778213105.1764853,
+    "ast_hash": "d740b018ae9f52b9cb46d8d3e001cbf7",
+    "semantic_hash": ""
+  },
+  "D:\\MediaHive App\\src\\app\\api\\demo-data\\route.ts": {
+    "mtime": 1779514908.6312304,
+    "ast_hash": "7d34b01917b694c487d1f981a1c0064a",
+    "semantic_hash": ""
+  },
+  "D:\\MediaHive App\\src\\app\\api\\device-logs\\active\\route.ts": {
+    "mtime": 1778213105.1780686,
+    "ast_hash": "aeac2879be2ad4a8517019018c4d14eb",
+    "semantic_hash": ""
+  },
+  "D:\\MediaHive App\\src\\app\\api\\drive\\image\\[id]\\route.ts": {
+    "mtime": 1777994440.0840065,
+    "ast_hash": "0e67e80a074e8619ddcf63c934639c8f",
+    "semantic_hash": ""
+  },
+  "D:\\MediaHive App\\src\\app\\api\\drive\\init\\route.ts": {
+    "mtime": 1778213105.1817293,
+    "ast_hash": "2b7bb21b3a3212253edeca540be93337",
+    "semantic_hash": ""
+  },
+  "D:\\MediaHive App\\src\\app\\api\\equipment-bookings\\route.ts": {
+    "mtime": 1778213105.183296,
+    "ast_hash": "cbbebcb41f0ae1883ff529e2a68bb48d",
+    "semantic_hash": ""
+  },
+  "D:\\MediaHive App\\src\\app\\api\\face\\enroll\\route.ts": {
+    "mtime": 1778213105.18581,
+    "ast_hash": "a8f739a5c8a815bfef579db7b1043f1e",
+    "semantic_hash": ""
+  },
+  "D:\\MediaHive App\\src\\app\\api\\face\\match\\route.ts": {
+    "mtime": 1778213105.187318,
+    "ast_hash": "c0f9878b2a418b35fcf33dd0718a7559",
+    "semantic_hash": ""
+  },
+  "D:\\MediaHive App\\src\\app\\api\\face\\proxy\\route.ts": {
+    "mtime": 1778213105.1943312,
+    "ast_hash": "1904b7db31df97aa7452c906948480f1",
+    "semantic_hash": ""
+  },
+  "D:\\MediaHive App\\src\\app\\api\\face\\vips\\route.ts": {
+    "mtime": 1778213105.2001784,
+    "ast_hash": "0cebeeaddc582880277ca0eb7a1560ff",
+    "semantic_hash": ""
+  },
+  "D:\\MediaHive App\\src\\app\\api\\face\\vips\\[id]\\route.ts": {
+    "mtime": 1777977762.6105309,
+    "ast_hash": "a6a348c36d06645d4c62ae1f34de7b80",
+    "semantic_hash": ""
+  },
+  "D:\\MediaHive App\\src\\app\\api\\files\\route.ts": {
+    "mtime": 1778941979.4394324,
+    "ast_hash": "ee72724c319aa16b336c2fb179e4fc0f",
+    "semantic_hash": ""
+  },
+  "D:\\MediaHive App\\src\\app\\api\\files\\migrate\\route.ts": {
+    "mtime": 1778213105.2344587,
+    "ast_hash": "9c87cb1e6ffa8fc65114b88be145c8a6",
+    "semantic_hash": ""
+  },
+  "D:\\MediaHive App\\src\\app\\api\\files\\upload\\route.ts": {
+    "mtime": 1778768019.0929532,
+    "ast_hash": "2f64a34908188de32cb75d5e76ce7a2b",
+    "semantic_hash": ""
+  },
+  "D:\\MediaHive App\\src\\app\\api\\files\\[id]\\route.ts": {
+    "mtime": 1777977762.6115372,
+    "ast_hash": "69b303a8010c6106eeddd5b6cf1e7e9e",
+    "semantic_hash": ""
+  },
+  "D:\\MediaHive App\\src\\app\\api\\files\\[id]\\download\\route.ts": {
+    "mtime": 1777977762.6115372,
+    "ast_hash": "0eb6690fc5707dda4bb9108d1eadf362",
+    "semantic_hash": ""
+  },
+  "D:\\MediaHive App\\src\\app\\api\\health\\route.ts": {
+    "mtime": 1778213105.2844627,
+    "ast_hash": "2c942f11133ab12c8a2f96cfda38d440",
+    "semantic_hash": ""
+  },
+  "D:\\MediaHive App\\src\\app\\api\\health\\db\\route.ts": {
+    "mtime": 1778213105.288048,
+    "ast_hash": "88031a6cd83cef3b551c9c5af69e8ea7",
+    "semantic_hash": ""
+  },
+  "D:\\MediaHive App\\src\\app\\api\\health\\firebase-admin\\route.ts": {
+    "mtime": 1778213105.2900574,
+    "ast_hash": "ffae3b302f3fd932b7b2de9711f96c31",
+    "semantic_hash": ""
+  },
+  "D:\\MediaHive App\\src\\app\\api\\health\\ready\\route.ts": {
+    "mtime": 1778213105.2959197,
+    "ast_hash": "b0d05e684612e534efe4757f4ac80d12",
+    "semantic_hash": ""
+  },
+  "D:\\MediaHive App\\src\\app\\api\\health\\realtime\\route.ts": {
+    "mtime": 1778213105.2989933,
+    "ast_hash": "a5ebc5aa2b5c9a7c661953c3acc6f0b9",
+    "semantic_hash": ""
+  },
+  "D:\\MediaHive App\\src\\app\\api\\health\\schema\\route.ts": {
+    "mtime": 1778213105.3028448,
+    "ast_hash": "404337ac1cd9370bf010493289c9e2be",
+    "semantic_hash": ""
+  },
+  "D:\\MediaHive App\\src\\app\\api\\insights\\dashboard\\route.ts": {
+    "mtime": 1779452748.8009808,
+    "ast_hash": "4ae05c9b714bc73c31328afa416d07df",
+    "semantic_hash": ""
+  },
+  "D:\\MediaHive App\\src\\app\\api\\insights\\email-summary\\route.ts": {
+    "mtime": 1778213105.3164363,
+    "ast_hash": "dd7c59bdf33302cd2aca32f16e3fef6d",
+    "semantic_hash": ""
+  },
+  "D:\\MediaHive App\\src\\app\\api\\insights\\export\\route.ts": {
+    "mtime": 1778213105.3211162,
+    "ast_hash": "4425a0456afb553dd2fd6d73fe5bbd0c",
+    "semantic_hash": ""
+  },
+  "D:\\MediaHive App\\src\\app\\api\\inventory\\route.ts": {
+    "mtime": 1778213105.3261454,
+    "ast_hash": "c711a85ee6dd2c876b32434f238b11fe",
+    "semantic_hash": ""
+  },
+  "D:\\MediaHive App\\src\\app\\api\\inventory\\requests\\route.ts": {
+    "mtime": 1778213105.3314056,
+    "ast_hash": "ae8acdbeab417dbb46aeb82884f87327",
+    "semantic_hash": ""
+  },
+  "D:\\MediaHive App\\src\\app\\api\\inventory\\requests\\[id]\\route.ts": {
+    "mtime": 1777977762.6176646,
+    "ast_hash": "e4e7c871bd07ec19088c0a555e6d06bc",
+    "semantic_hash": ""
+  },
+  "D:\\MediaHive App\\src\\app\\api\\inventory\\stats\\route.ts": {
+    "mtime": 1779017149.4850495,
+    "ast_hash": "48341f9f5d6ed20b35fad5b61750bac6",
+    "semantic_hash": ""
+  },
+  "D:\\MediaHive App\\src\\app\\api\\inventory\\[id]\\route.ts": {
+    "mtime": 1777977762.6176646,
+    "ast_hash": "125c76caabd52f8981436a52c271e699",
+    "semantic_hash": ""
+  },
+  "D:\\MediaHive App\\src\\app\\api\\invites\\route.ts": {
+    "mtime": 1778213105.3806596,
+    "ast_hash": "d8c75011e9f129e974ead3ecef2d24ca",
+    "semantic_hash": ""
+  },
+  "D:\\MediaHive App\\src\\app\\api\\invites\\send\\route.ts": {
+    "mtime": 1778213105.384229,
+    "ast_hash": "dbe50a1b3c2bb7d57b656ac1038e7605",
+    "semantic_hash": ""
+  },
+  "D:\\MediaHive App\\src\\app\\api\\kanban\\route.ts": {
+    "mtime": 1778213105.3877356,
+    "ast_hash": "d93e0b457f68dc81ca2921223ed58057",
+    "semantic_hash": ""
+  },
+  "D:\\MediaHive App\\src\\app\\api\\kanban\\subscribe\\route.ts": {
+    "mtime": 1778213105.391256,
+    "ast_hash": "e1f9e45947db25a2846d86c161c5d1df",
+    "semantic_hash": ""
+  },
+  "D:\\MediaHive App\\src\\app\\api\\leave\\analytics\\route.ts": {
+    "mtime": 1780289373.0336554,
+    "ast_hash": "c33057c2b97280626553594e4d6da34b",
+    "semantic_hash": ""
+  },
+  "D:\\MediaHive App\\src\\app\\api\\leave\\requests\\route.ts": {
+    "mtime": 1779621979.7720714,
+    "ast_hash": "768e16b4d7e2170776228e8d09b485c6",
+    "semantic_hash": ""
+  },
+  "D:\\MediaHive App\\src\\app\\api\\leave\\requests\\[id]\\status\\route.ts": {
+    "mtime": 1778084323.4320211,
+    "ast_hash": "6d91b82e8bab69ef18388734ad3adb65",
+    "semantic_hash": ""
+  },
+  "D:\\MediaHive App\\src\\app\\api\\locks\\acquire\\route.ts": {
+    "mtime": 1778213105.4360113,
+    "ast_hash": "0e35f0bfe0c5896fb6862f6581353e76",
+    "semantic_hash": ""
+  },
+  "D:\\MediaHive App\\src\\app\\api\\locks\\release\\route.ts": {
+    "mtime": 1778213105.4400098,
+    "ast_hash": "31fe866bff4cc819b41abf486a9a2b00",
+    "semantic_hash": ""
+  },
+  "D:\\MediaHive App\\src\\app\\api\\locks\\subscribe\\route.ts": {
+    "mtime": 1778213105.4446628,
+    "ast_hash": "13607b640a51aa447ee549b832184695",
+    "semantic_hash": ""
+  },
+  "D:\\MediaHive App\\src\\app\\api\\media\\analyze\\route.ts": {
+    "mtime": 1778213105.4511826,
+    "ast_hash": "ad5f6590427ca1091e531da0a2dab7d9",
+    "semantic_hash": ""
+  },
+  "D:\\MediaHive App\\src\\app\\api\\media-comments\\route.ts": {
+    "mtime": 1779464755.9788096,
+    "ast_hash": "d24974a45f85e8523c2cbb46644ebd51",
+    "semantic_hash": ""
+  },
+  "D:\\MediaHive App\\src\\app\\api\\media-versions\\route.ts": {
+    "mtime": 1779464755.988266,
+    "ast_hash": "7b9fb4f9ad56bd7532b0abdb437b3560",
+    "semantic_hash": ""
+  },
+  "D:\\MediaHive App\\src\\app\\api\\media-versions\\active\\route.ts": {
+    "mtime": 1779464756.346758,
+    "ast_hash": "963ef2821d708963c0585e55d2f76148",
+    "semantic_hash": ""
+  },
+  "D:\\MediaHive App\\src\\app\\api\\middleware\\compression.ts": {
+    "mtime": 1778213105.4550757,
+    "ast_hash": "b6f062c231bfdd144096bcc921baaa9f",
+    "semantic_hash": ""
+  },
+  "D:\\MediaHive App\\src\\app\\api\\middleware\\logging.ts": {
+    "mtime": 1778213105.4599764,
+    "ast_hash": "83e8f2b6b50d989ddecb14160a8745b5",
+    "semantic_hash": ""
+  },
+  "D:\\MediaHive App\\src\\app\\api\\monitoring\\errors\\route.ts": {
+    "mtime": 1778213105.4640214,
+    "ast_hash": "f13de83805ea6e82d15563c172f35447",
+    "semantic_hash": ""
+  },
+  "D:\\MediaHive App\\src\\app\\api\\monitoring\\events\\route.ts": {
+    "mtime": 1778213105.4716008,
+    "ast_hash": "50f4b8de1946914351e86a912abd670c",
+    "semantic_hash": ""
+  },
+  "D:\\MediaHive App\\src\\app\\api\\monitoring\\system\\stats\\route.ts": {
+    "mtime": 1778213105.4770253,
+    "ast_hash": "9f98a24a33de66c305ad12b29705e01b",
+    "semantic_hash": ""
+  },
+  "D:\\MediaHive App\\src\\app\\api\\notification-settings\\route.ts": {
+    "mtime": 1778213105.4818456,
+    "ast_hash": "1f8f2ad23d643348ca5ea4b37c7f4cb7",
+    "semantic_hash": ""
+  },
+  "D:\\MediaHive App\\src\\app\\api\\presence\\ping\\route.ts": {
+    "mtime": 1778213105.4899564,
+    "ast_hash": "c665d60cc11874b75c4533466a394e3e",
+    "semantic_hash": ""
+  },
+  "D:\\MediaHive App\\src\\app\\api\\registerUser\\route.ts": {
+    "mtime": 1778213105.491962,
+    "ast_hash": "ef1c0bf1e7d9f5b94d6ad11ac00cc1c6",
+    "semantic_hash": ""
+  },
+  "D:\\MediaHive App\\src\\app\\api\\replication\\export\\route.ts": {
+    "mtime": 1778213105.4980104,
+    "ast_hash": "320dc7ccfe7cb35e89b253efe45adc7b",
+    "semantic_hash": ""
+  },
+  "D:\\MediaHive App\\src\\app\\api\\replication\\ingest\\route.ts": {
+    "mtime": 1778213105.5045297,
+    "ast_hash": "5ce396c06bb8bd89be9d46561e7b06c5",
+    "semantic_hash": ""
+  },
+  "D:\\MediaHive App\\src\\app\\api\\replication\\status\\route.ts": {
+    "mtime": 1778213105.5090768,
+    "ast_hash": "c460dd0de8fcb4930a6edd640bcaa2b1",
+    "semantic_hash": ""
+  },
+  "D:\\MediaHive App\\src\\app\\api\\search\\route.ts": {
+    "mtime": 1778213105.5291903,
+    "ast_hash": "b4b7d4cf5950c27a547e1c81ffb9313f",
+    "semantic_hash": ""
+  },
+  "D:\\MediaHive App\\src\\app\\api\\system-updates\\route.ts": {
+    "mtime": 1779295179.6877203,
+    "ast_hash": "0a5fee26aca343bbc017a6127d23dafa",
+    "semantic_hash": ""
+  },
+  "D:\\MediaHive App\\src\\app\\api\\system-updates\\[id]\\route.ts": {
+    "mtime": 1779371849.1413856,
+    "ast_hash": "ca7ca36c67a6d828c02e463ad5970139",
+    "semantic_hash": ""
+  },
+  "D:\\MediaHive App\\src\\app\\api\\tasks\\bulk-update\\route.ts": {
+    "mtime": 1778213105.5402067,
+    "ast_hash": "2d5118dc51f1eb0bbc941baa6e08e5a4",
+    "semantic_hash": ""
+  },
+  "D:\\MediaHive App\\src\\app\\api\\tenants\\route.ts": {
+    "mtime": 1778213105.5452273,
+    "ast_hash": "58b191f53866f1fb688b74614aa897eb",
+    "semantic_hash": ""
+  },
+  "D:\\MediaHive App\\src\\app\\api\\tenants\\[id]\\route.ts": {
+    "mtime": 1777977762.6373174,
+    "ast_hash": "6db11c74456ce5b833ee29750b2192c6",
+    "semantic_hash": ""
+  },
+  "D:\\MediaHive App\\src\\app\\api\\test-utils\\cleanup\\route.ts": {
+    "mtime": 1778213105.5628474,
+    "ast_hash": "13fe5836a938878e0bbe004dd8e9a009",
+    "semantic_hash": ""
+  },
+  "D:\\MediaHive App\\src\\app\\api\\test-utils\\seed-user\\route.ts": {
+    "mtime": 1778213105.5695038,
+    "ast_hash": "8fe51255c3a36afc9bcb1b4ac8c22276",
+    "semantic_hash": ""
+  },
+  "D:\\MediaHive App\\src\\app\\api\\upload\\attachment\\route.ts": {
+    "mtime": 1778213105.5750487,
+    "ast_hash": "cb8a464109e6dbbcda8672d71e7fbb03",
+    "semantic_hash": ""
+  },
+  "D:\\MediaHive App\\src\\app\\api\\upload\\avatar\\route.ts": {
+    "mtime": 1778213105.580995,
+    "ast_hash": "8064ef2c7a5b63decbf253e059deca9c",
+    "semantic_hash": ""
+  },
+  "D:\\MediaHive App\\src\\app\\api\\upload\\files\\route.ts": {
+    "mtime": 1778213105.5885723,
+    "ast_hash": "a0d9234a35ace1f6fc374b9967e3cef9",
+    "semantic_hash": ""
+  },
+  "D:\\MediaHive App\\src\\app\\api\\user\\preferences\\notifications\\route.ts": {
+    "mtime": 1778213105.5936599,
+    "ast_hash": "6ee6e9c122122bf9dee30a55900a327f",
+    "semantic_hash": ""
+  },
+  "D:\\MediaHive App\\src\\app\\api\\user-departments\\route.ts": {
+    "mtime": 1778213105.5996392,
+    "ast_hash": "d440aa48e28adc2a71a45e5a5d993bf7",
+    "semantic_hash": ""
+  },
+  "D:\\MediaHive App\\src\\app\\api\\user-institutions\\route.ts": {
+    "mtime": 1778213105.6059468,
+    "ast_hash": "d8ebd14786c72c5e84d6c1f2f4e686ef",
+    "semantic_hash": ""
+  },
+  "D:\\MediaHive App\\src\\app\\api\\users\\route.ts": {
+    "mtime": 1778213105.6113007,
+    "ast_hash": "272ecaafd1282bb1fc80c42d649a96d7",
+    "semantic_hash": ""
+  },
+  "D:\\MediaHive App\\src\\app\\api\\users\\admins\\route.ts": {
+    "mtime": 1778213105.6149597,
+    "ast_hash": "bb3c8c737e0b9a6ea0d77887cd592464",
+    "semantic_hash": ""
+  },
+  "D:\\MediaHive App\\src\\app\\api\\users\\me\\route.ts": {
+    "mtime": 1778213105.6204543,
+    "ast_hash": "32d802ae46cc740a3a02c37add49f4c5",
+    "semantic_hash": ""
+  },
+  "D:\\MediaHive App\\src\\app\\api\\users\\me\\avatar\\route.ts": {
+    "mtime": 1778213105.627175,
+    "ast_hash": "f73457a8fb3d1873cb854f766c5b33e2",
+    "semantic_hash": ""
+  },
+  "D:\\MediaHive App\\src\\app\\api\\users\\[id]\\route.ts": {
+    "mtime": 1777977762.6433206,
+    "ast_hash": "575511910b96cbf540eac719b7049165",
+    "semantic_hash": ""
+  },
+  "D:\\MediaHive App\\src\\app\\api\\users\\[id]\\status\\route.ts": {
+    "mtime": 1777977762.6448255,
+    "ast_hash": "d2dcb604a4b20c4ca2a2d1886fb4e3e3",
+    "semantic_hash": ""
+  },
+  "D:\\MediaHive App\\src\\app\\api\\_lib\\audit.ts": {
+    "mtime": 1778213105.7363844,
+    "ast_hash": "183486cecb61289ecf8de1ac35a2ccb7",
+    "semantic_hash": ""
+  },
+  "D:\\MediaHive App\\src\\app\\api\\_lib\\auth.ts": {
+    "mtime": 1778213105.7402859,
+    "ast_hash": "eef8338fef992ba89a3d301494e22f20",
+    "semantic_hash": ""
+  },
+  "D:\\MediaHive App\\src\\app\\api\\_lib\\http.ts": {
+    "mtime": 1778213105.7427883,
+    "ast_hash": "62aab2409c772d9a6fc95e8b21869c28",
+    "semantic_hash": ""
+  },
+  "D:\\MediaHive App\\src\\app\\api\\_lib\\rate-limiter.ts": {
+    "mtime": 1778213105.7478626,
+    "ast_hash": "060e12eadee8935067da2afdec04a1e9",
+    "semantic_hash": ""
+  },
+  "D:\\MediaHive App\\src\\app\\api\\_lib\\rbac.ts": {
+    "mtime": 1778213105.7514062,
+    "ast_hash": "760977957e76b1edd3a991a7d66aba83",
+    "semantic_hash": ""
+  },
+  "D:\\MediaHive App\\src\\app\\api\\_lib\\realtime.ts": {
+    "mtime": 1778213105.7548137,
+    "ast_hash": "00c88bed393d2d198e969da513e786c2",
+    "semantic_hash": ""
+  },
+  "D:\\MediaHive App\\src\\app\\api\\_lib\\session.ts": {
+    "mtime": 1778213105.7583342,
+    "ast_hash": "29f6653d5ebcd705e4589dcf4f8be446",
+    "semantic_hash": ""
+  },
+  "D:\\MediaHive App\\src\\app\\api\\_lib\\store.ts": {
+    "mtime": 1779452922.649222,
+    "ast_hash": "eec58f913229374f2fc3035b6bc0ce94",
+    "semantic_hash": ""
+  },
+  "D:\\MediaHive App\\src\\app\\api\\_lib\\test-rbac.ts": {
+    "mtime": 1778213105.7648952,
+    "ast_hash": "31e29276b5f886751e8e3e524b246bbd",
+    "semantic_hash": ""
+  },
+  "D:\\MediaHive App\\src\\app\\api\\_lib\\types.ts": {
+    "mtime": 1778213105.7674255,
+    "ast_hash": "bda5d2fe204a68f3ccd4c1a84167e58f",
+    "semantic_hash": ""
+  },
+  "D:\\MediaHive App\\src\\app\\api\\_lib\\test-utils\\asserts.ts": {
+    "mtime": 1778213105.7701023,
+    "ast_hash": "3a52d31818d7811c25332ec1f5204af5",
+    "semantic_hash": ""
+  },
+  "D:\\MediaHive App\\src\\app\\debug\\firebase\\page.tsx": {
+    "mtime": 1778213105.773207,
+    "ast_hash": "58a78e4f6beac2513d01d2de5b23455c",
+    "semantic_hash": ""
+  },
+  "D:\\MediaHive App\\src\\app\\leave\\my-requests\\page.tsx": {
+    "mtime": 1779445013.2950583,
+    "ast_hash": "65c05c4c3e4353dad55b25be609885e4",
+    "semantic_hash": ""
+  },
+  "D:\\MediaHive App\\src\\app\\login\\page.tsx": {
+    "mtime": 1778213105.7803676,
+    "ast_hash": "d35bfd47ffbfa77b9104e3e3fa2f7f07",
+    "semantic_hash": ""
+  },
+  "D:\\MediaHive App\\src\\app\\report-preview\\page.tsx": {
+    "mtime": 1778213105.7828789,
+    "ast_hash": "6d5f8c134040dcdf3f5329861476cfbf",
+    "semantic_hash": ""
+  },
+  "D:\\MediaHive App\\src\\app\\report-preview\\ReportPreviewClient.tsx": {
+    "mtime": 1780132404.219644,
+    "ast_hash": "dca768cbd2d6bf3033f79e34e10ba1bb",
+    "semantic_hash": ""
+  },
+  "D:\\MediaHive App\\src\\app\\simulation-demo\\page.tsx": {
+    "mtime": 1780132404.2229,
+    "ast_hash": "44c4dc7f58aec1bab0fae80185045c36",
+    "semantic_hash": ""
+  },
+  "D:\\MediaHive App\\src\\app\\test\\page.tsx": {
+    "mtime": 1779427154.9630878,
+    "ast_hash": "c1b9b93a87168730d13c7135230704ac",
+    "semantic_hash": ""
+  },
+  "D:\\MediaHive App\\src\\client\\index.ts": {
+    "mtime": 1778213105.7978969,
+    "ast_hash": "34011ee73df236ab4d40842c722c36df",
+    "semantic_hash": ""
+  },
+  "D:\\MediaHive App\\src\\client\\components\\FAB.tsx": {
+    "mtime": 1780135136.3377137,
+    "ast_hash": "f360f1a11ecf7d5dce77a77f46efdb06",
+    "semantic_hash": ""
+  },
+  "D:\\MediaHive App\\src\\client\\components\\Icon.tsx": {
+    "mtime": 1778213105.8111954,
+    "ast_hash": "0db6ebf73dba16e8b5f0ffb82990349a",
+    "semantic_hash": ""
+  },
+  "D:\\MediaHive App\\src\\client\\components\\OfflineStatusIndicator.tsx": {
+    "mtime": 1778213105.8156617,
+    "ast_hash": "0a42d08760607d0215e8042f97942d71",
+    "semantic_hash": ""
+  },
+  "D:\\MediaHive App\\src\\client\\hooks\\use-mobile.ts": {
+    "mtime": 1778213105.8174682,
+    "ast_hash": "08fadc2503fd5d18190ae4d53e70cb5a",
+    "semantic_hash": ""
+  },
+  "D:\\MediaHive App\\src\\client\\hooks\\useOffline.ts": {
+    "mtime": 1778213105.8214564,
+    "ast_hash": "446642d1fef918dae512daa553448193",
+    "semantic_hash": ""
+  },
+  "D:\\MediaHive App\\src\\components\\AppChrome.tsx": {
+    "mtime": 1778213105.8239906,
+    "ast_hash": "3edf8093b1f8bed29fb87039da5baba3",
+    "semantic_hash": ""
+  },
+  "D:\\MediaHive App\\src\\components\\AppLayout.tsx": {
+    "mtime": 1778213105.8259928,
+    "ast_hash": "d88977c0f86d680fd4869bada248cda4",
+    "semantic_hash": ""
+  },
+  "D:\\MediaHive App\\src\\components\\AppLink.tsx": {
+    "mtime": 1778213105.829,
+    "ast_hash": "ec57d4ea2aa73f7ca27cb70f1ef39a12",
+    "semantic_hash": ""
+  },
+  "D:\\MediaHive App\\src\\components\\AwarenessIndicator.tsx": {
+    "mtime": 1780132404.3102665,
+    "ast_hash": "4bb20a17364c2b9a772108bf1f907d1d",
+    "semantic_hash": ""
+  },
+  "D:\\MediaHive App\\src\\components\\BottomNav.tsx": {
+    "mtime": 1768675316.359321,
+    "ast_hash": "d41d8cd98f00b204e9800998ecf8427e",
+    "semantic_hash": ""
+  },
+  "D:\\MediaHive App\\src\\components\\BottomNavigation.tsx": {
+    "mtime": 1779444803.3773608,
+    "ast_hash": "31111f2fb747ee35b77646a121008677",
+    "semantic_hash": ""
+  },
+  "D:\\MediaHive App\\src\\components\\ClientFAB.tsx": {
+    "mtime": 1768675315.1417406,
+    "ast_hash": "d41d8cd98f00b204e9800998ecf8427e",
+    "semantic_hash": ""
+  },
+  "D:\\MediaHive App\\src\\components\\ClientLayout.tsx": {
+    "mtime": 1778213105.8483534,
+    "ast_hash": "6bd2f3200cced4d01e6399b41503bf48",
+    "semantic_hash": ""
+  },
+  "D:\\MediaHive App\\src\\components\\ClientOfflineStatusIndicator.tsx": {
+    "mtime": 1778213105.848859,
+    "ast_hash": "8a78c667442c4e9e517c5809679d8173",
+    "semantic_hash": ""
+  },
+  "D:\\MediaHive App\\src\\components\\ClientOnly.tsx": {
+    "mtime": 1778213105.8534932,
+    "ast_hash": "740793accd12e417b996cb74792707da",
+    "semantic_hash": ""
+  },
+  "D:\\MediaHive App\\src\\components\\ClipDetection.client.tsx": {
+    "mtime": 1778213105.8544993,
+    "ast_hash": "8f9a1dd4fa7749bbee00db8b631267f7",
+    "semantic_hash": ""
+  },
+  "D:\\MediaHive App\\src\\components\\ConfirmDialog.tsx": {
+    "mtime": 1778213105.8555043,
+    "ast_hash": "4142b268df54749bb96acee6c1ea437c",
+    "semantic_hash": ""
+  },
+  "D:\\MediaHive App\\src\\components\\ConflictResolutionModal.tsx": {
+    "mtime": 1778213105.8589242,
+    "ast_hash": "c99d949b639c885c48cff2321f666ff8",
+    "semantic_hash": ""
+  },
+  "D:\\MediaHive App\\src\\components\\CrashLoopBreaker.tsx": {
+    "mtime": 1780132404.3145504,
+    "ast_hash": "426b0323afee82479049c08660763aef",
+    "semantic_hash": ""
+  },
+  "D:\\MediaHive App\\src\\components\\CreateEventModal.tsx": {
+    "mtime": 1779427154.982044,
+    "ast_hash": "6771979d1f5d84db9bbe97bf487548f4",
+    "semantic_hash": ""
+  },
+  "D:\\MediaHive App\\src\\components\\CreateEventModalAdmin.tsx": {
+    "mtime": 1779427154.982044,
+    "ast_hash": "4adc5cd9f231a4b4cdd10efb566e9856",
+    "semantic_hash": ""
+  },
+  "D:\\MediaHive App\\src\\components\\CreateEventModalGuest.tsx": {
+    "mtime": 1780132404.3162093,
+    "ast_hash": "47f79e443d822e7a7ca74a7a1114cbcb",
+    "semantic_hash": ""
+  },
+  "D:\\MediaHive App\\src\\components\\CreateNotificationModalAdmin.tsx": {
+    "mtime": 1779427154.9831593,
+    "ast_hash": "9066f4b82f553e0f97a3782895a94365",
+    "semantic_hash": ""
+  },
+  "D:\\MediaHive App\\src\\components\\CreateTaskModalGuest.tsx": {
+    "mtime": 1779444803.381026,
+    "ast_hash": "7adb398a420c076aa7e8d110ed524407",
+    "semantic_hash": ""
+  },
+  "D:\\MediaHive App\\src\\components\\DataFallback.tsx": {
+    "mtime": 1778213105.880633,
+    "ast_hash": "b9dca23fef7f17811a77fc9db5a558d8",
+    "semantic_hash": ""
+  },
+  "D:\\MediaHive App\\src\\components\\DebugTaskList.tsx": {
+    "mtime": 1768675315.1625211,
+    "ast_hash": "d41d8cd98f00b204e9800998ecf8427e",
+    "semantic_hash": ""
+  },
+  "D:\\MediaHive App\\src\\components\\DebugUserInfo.tsx": {
+    "mtime": 1768675315.168025,
+    "ast_hash": "d41d8cd98f00b204e9800998ecf8427e",
+    "semantic_hash": ""
+  },
+  "D:\\MediaHive App\\src\\components\\DemoDataButton.tsx": {
+    "mtime": 1780139661.8740654,
+    "ast_hash": "14f3e1eb79f023799c70ba6760cfe039",
+    "semantic_hash": ""
+  },
+  "D:\\MediaHive App\\src\\components\\Diagnostics.tsx": {
+    "mtime": 1778213105.8864832,
+    "ast_hash": "7cc3b5bf068f32cbf18ebbafdc6cffc0",
+    "semantic_hash": ""
+  },
+  "D:\\MediaHive App\\src\\components\\EditEventModalAdmin.tsx": {
+    "mtime": 1779427154.9856708,
+    "ast_hash": "3c67c8c510ce4d44d81731cb62cbd814",
+    "semantic_hash": ""
+  },
+  "D:\\MediaHive App\\src\\components\\ErrorBoundary.tsx": {
+    "mtime": 1778213105.8998158,
+    "ast_hash": "673b6028fd8ae79bc34db6a641e20bbb",
+    "semantic_hash": ""
+  },
+  "D:\\MediaHive App\\src\\components\\ErrorReporter.tsx": {
+    "mtime": 1778213105.9033732,
+    "ast_hash": "ab82ef9729d5f0761770f688df52a74b",
+    "semantic_hash": ""
+  },
+  "D:\\MediaHive App\\src\\components\\FeatureFlagProvider.tsx": {
+    "mtime": 1778213105.9090908,
+    "ast_hash": "8ee2891619e3fdad3605f0cb135208c4",
+    "semantic_hash": ""
+  },
+  "D:\\MediaHive App\\src\\components\\FirstRunWalkthrough.tsx": {
+    "mtime": 1780132404.3305671,
+    "ast_hash": "8e81d9f181d39304c9acfcba6ee7c98e",
+    "semantic_hash": ""
+  },
+  "D:\\MediaHive App\\src\\components\\HaloLogo.tsx": {
+    "mtime": 1779876643.4492493,
+    "ast_hash": "be56317d9d3b5d4e0cf3751084d97a18",
+    "semantic_hash": ""
+  },
+  "D:\\MediaHive App\\src\\components\\HydrationDetector.tsx": {
+    "mtime": 1778213105.9225373,
+    "ast_hash": "1d0d6d9437f211d7cabd1c5a38a442ef",
+    "semantic_hash": ""
+  },
+  "D:\\MediaHive App\\src\\components\\ImageCropper.tsx": {
+    "mtime": 1779427155.0002282,
+    "ast_hash": "b09b71c4bf8cd76a049a654c51ba532f",
+    "semantic_hash": ""
+  },
+  "D:\\MediaHive App\\src\\components\\JankMonitor.tsx": {
+    "mtime": 1778213105.9334815,
+    "ast_hash": "f8bd1315fcfe462f6060623c17ffbc5f",
+    "semantic_hash": ""
+  },
+  "D:\\MediaHive App\\src\\components\\KeyboardNavigationDetector.tsx": {
+    "mtime": 1778213105.935233,
+    "ast_hash": "d3a21880cb0ce5ac152b75b15dce55fe",
+    "semantic_hash": ""
+  },
+  "D:\\MediaHive App\\src\\components\\ModalBase.tsx": {
+    "mtime": 1778213105.9387548,
+    "ast_hash": "8d359fdc1e267e049c5377279fd938c3",
+    "semantic_hash": ""
+  },
+  "D:\\MediaHive App\\src\\components\\MonitoringDashboard.tsx": {
+    "mtime": 1778213105.9427614,
+    "ast_hash": "9854cf0efdff3ccd72f1c2cd9530c6a3",
+    "semantic_hash": ""
+  },
+  "D:\\MediaHive App\\src\\components\\NotificationForm.tsx": {
+    "mtime": 1779444803.4016123,
+    "ast_hash": "586314db49acdb4f986909a40e7efbec",
+    "semantic_hash": ""
+  },
+  "D:\\MediaHive App\\src\\components\\NotificationPanel.tsx": {
+    "mtime": 1779449570.9619637,
+    "ast_hash": "1775cb3d1d2c1b1840f9f299a08ffd71",
+    "semantic_hash": ""
+  },
+  "D:\\MediaHive App\\src\\components\\NotificationPreviewModal.tsx": {
+    "mtime": 1780132404.427243,
+    "ast_hash": "12242ea259028761f37f10e787dbc0d5",
+    "semantic_hash": ""
+  },
+  "D:\\MediaHive App\\src\\components\\OfflineBanner.tsx": {
+    "mtime": 1778213105.9605377,
+    "ast_hash": "1eb3c480710271a9d1f3b3acb356ca93",
+    "semantic_hash": ""
+  },
+  "D:\\MediaHive App\\src\\components\\OfflinePlaceholder.tsx": {
+    "mtime": 1778213105.9630473,
+    "ast_hash": "266860fc30338cb473248fdaf80aada0",
+    "semantic_hash": ""
+  },
+  "D:\\MediaHive App\\src\\components\\PeoplePicker.tsx": {
+    "mtime": 1779444803.4046028,
+    "ast_hash": "690f1c7c7be786bb5c82a8faed0633bc",
+    "semantic_hash": ""
+  },
+  "D:\\MediaHive App\\src\\components\\PresenceDot.tsx": {
+    "mtime": 1778213105.9685729,
+    "ast_hash": "3ceb60ef71cefedb6a0a6535de6a1419",
+    "semantic_hash": ""
+  },
+  "D:\\MediaHive App\\src\\components\\PrivacyCenter.tsx": {
+    "mtime": 1780132404.4288652,
+    "ast_hash": "a1794f337c2ab556819056bdbd93f2fb",
+    "semantic_hash": ""
+  },
+  "D:\\MediaHive App\\src\\components\\ProtectedRoute.tsx": {
+    "mtime": 1778213105.9787407,
+    "ast_hash": "abbfc0b9fdbfb59b8a883bafed4abd6d",
+    "semantic_hash": ""
+  },
+  "D:\\MediaHive App\\src\\components\\RippleLogo.tsx": {
+    "mtime": 1779427155.0261123,
+    "ast_hash": "777c5d513983abb7bf2f94e2bb175d97",
+    "semantic_hash": ""
+  },
+  "D:\\MediaHive App\\src\\components\\SafeResponsiveContainer.tsx": {
+    "mtime": 1778213105.9842947,
+    "ast_hash": "7d484d699e528d3255e1e2543d16929b",
+    "semantic_hash": ""
+  },
+  "D:\\MediaHive App\\src\\components\\SafetyConfirmationOverlay.tsx": {
+    "mtime": 1780132404.4385495,
+    "ast_hash": "423fda0485d7e83eaa3168b524a2fd35",
+    "semantic_hash": ""
+  },
+  "D:\\MediaHive App\\src\\components\\SortableItem.tsx": {
+    "mtime": 1778213105.9938617,
+    "ast_hash": "6b02cfb677cbd2f3095429db9fa362a3",
+    "semantic_hash": ""
+  },
+  "D:\\MediaHive App\\src\\components\\SSEStatusBadge.tsx": {
+    "mtime": 1778213105.9963286,
+    "ast_hash": "0282633d92731a730f575129ad2b7195",
+    "semantic_hash": ""
+  },
+  "D:\\MediaHive App\\src\\components\\StatusPill.tsx": {
+    "mtime": 1780132404.4682941,
+    "ast_hash": "2413b5412ec10c48b3a7f33ee516a63a",
+    "semantic_hash": ""
+  },
+  "D:\\MediaHive App\\src\\components\\TaskActivity.tsx": {
+    "mtime": 1778213106.0030694,
+    "ast_hash": "ccec27f07a2fc65f642c2aebd79b4dd2",
+    "semantic_hash": ""
+  },
+  "D:\\MediaHive App\\src\\components\\TaskCardSkeleton.tsx": {
+    "mtime": 1779427155.033631,
+    "ast_hash": "ff7ebed9a08deb497ace177947c6308f",
+    "semantic_hash": ""
+  },
+  "D:\\MediaHive App\\src\\components\\TaskForm.tsx": {
+    "mtime": 1779452450.7237587,
+    "ast_hash": "9ce7bac7985710f3fa9cb8e929bda757",
+    "semantic_hash": ""
+  },
+  "D:\\MediaHive App\\src\\components\\TaskItem.tsx": {
+    "mtime": 1779452933.2741842,
+    "ast_hash": "2f5437fe0a28a6626f48a863f9a059fa",
+    "semantic_hash": ""
+  },
+  "D:\\MediaHive App\\src\\components\\TaskList.tsx": {
+    "mtime": 1780132404.4446054,
+    "ast_hash": "b504e4a00fad8365d1bdde94d11bf4b2",
+    "semantic_hash": ""
+  },
+  "D:\\MediaHive App\\src\\components\\TestThemeComponent.tsx": {
+    "mtime": 1779427155.0452974,
+    "ast_hash": "168d1a6288e1d9051daa0969e0c233d3",
+    "semantic_hash": ""
+  },
+  "D:\\MediaHive App\\src\\components\\ThemeToggle.tsx": {
+    "mtime": 1778213106.0188482,
+    "ast_hash": "3b83e875898e1a5c6f69c80e11b81b80",
+    "semantic_hash": ""
+  },
+  "D:\\MediaHive App\\src\\components\\ToastProvider.tsx": {
+    "mtime": 1779427155.0452974,
+    "ast_hash": "a27a9a30449172d7a89e2b833f7c44d3",
+    "semantic_hash": ""
+  },
+  "D:\\MediaHive App\\src\\components\\TopBar.tsx": {
+    "mtime": 1780132404.4708755,
+    "ast_hash": "36c7ffe27ed7882e70080d8052d8a9a2",
+    "semantic_hash": ""
+  },
+  "D:\\MediaHive App\\src\\components\\WebViewDetector.tsx": {
+    "mtime": 1778213106.0280113,
+    "ast_hash": "fcc9869bb51e7fc29d6761ff76044625",
+    "semantic_hash": ""
+  },
+  "D:\\MediaHive App\\src\\components\\activity\\SmartActivityFeed.tsx": {
+    "mtime": 1780132404.2665296,
+    "ast_hash": "56e5037318e7b0c8a2c2cdab35a8e7e0",
+    "semantic_hash": ""
+  },
+  "D:\\MediaHive App\\src\\components\\admin\\ActivityFeedWidget.tsx": {
+    "mtime": 1780132404.2866628,
+    "ast_hash": "e2942f15ceda433906d93a03d73f8733",
+    "semantic_hash": ""
+  },
+  "D:\\MediaHive App\\src\\components\\admin\\AdminSidebar.tsx": {
+    "mtime": 1779444803.3673468,
+    "ast_hash": "807691b071149e00fc08944a6c67f035",
+    "semantic_hash": ""
+  },
+  "D:\\MediaHive App\\src\\components\\admin\\AutomationRulesView.tsx": {
+    "mtime": 1780132404.2893617,
+    "ast_hash": "875772c38073437dde5aa3694e95ad90",
+    "semantic_hash": ""
+  },
+  "D:\\MediaHive App\\src\\components\\admin\\CalendarMasterList.tsx": {
+    "mtime": 1779444803.3673468,
+    "ast_hash": "81ac02880316e9485022f6c97d6cda37",
+    "semantic_hash": ""
+  },
+  "D:\\MediaHive App\\src\\components\\admin\\DepartmentManagement.tsx": {
+    "mtime": 1780132404.2914865,
+    "ast_hash": "d96c18e19d2a8bfe19c6a3565405b4af",
+    "semantic_hash": ""
+  },
+  "D:\\MediaHive App\\src\\components\\admin\\DriveQueueView.tsx": {
+    "mtime": 1779444803.3683445,
+    "ast_hash": "28d209176e28c423be35ea29325d5673",
+    "semantic_hash": ""
+  },
+  "D:\\MediaHive App\\src\\components\\admin\\InstitutionManagement.tsx": {
+    "mtime": 1780132404.2925353,
+    "ast_hash": "e4bc0e879e1936e6bb9f7bf5951e6457",
+    "semantic_hash": ""
+  },
+  "D:\\MediaHive App\\src\\components\\admin\\InviteUserPanel.tsx": {
+    "mtime": 1780132404.278356,
+    "ast_hash": "d0c36e9617a8301fbdcf25a533481c40",
+    "semantic_hash": ""
+  },
+  "D:\\MediaHive App\\src\\components\\admin\\NotificationPolicyView.tsx": {
+    "mtime": 1780132404.2941196,
+    "ast_hash": "9f0c52ad7de14a4e19e9b634b58f225e",
+    "semantic_hash": ""
+  },
+  "D:\\MediaHive App\\src\\components\\admin\\RoleEditor.tsx": {
+    "mtime": 1778213106.1147714,
+    "ast_hash": "168a9a0c5ca630e4c23f1a8c7d49866c",
+    "semantic_hash": ""
+  },
+  "D:\\MediaHive App\\src\\components\\admin\\RolePolicyEditor.tsx": {
+    "mtime": 1780132404.2957747,
+    "ast_hash": "786ea68ccf69dfc55833f3d4425b6c25",
+    "semantic_hash": ""
+  },
+  "D:\\MediaHive App\\src\\components\\admin\\StructurePolicyEditor.tsx": {
+    "mtime": 1780132404.2957747,
+    "ast_hash": "a2b7284732c1d247589509b40443b3a1",
+    "semantic_hash": ""
+  },
+  "D:\\MediaHive App\\src\\components\\admin\\SystemHealthPanel.tsx": {
+    "mtime": 1780139689.692995,
+    "ast_hash": "fb14affdf4a645dbc061de1507d3d5f4",
+    "semantic_hash": ""
+  },
+  "D:\\MediaHive App\\src\\components\\admin\\SystemUpdatesView.tsx": {
+    "mtime": 1779428462.8798094,
+    "ast_hash": "9f85939f741a18455e89fb6b2e3f0747",
+    "semantic_hash": ""
+  },
+  "D:\\MediaHive App\\src\\components\\admin\\UserManagementPanel.tsx": {
+    "mtime": 1780132404.2820969,
+    "ast_hash": "8d4a650885baa3a309b0733ff4e0f6da",
+    "semantic_hash": ""
+  },
+  "D:\\MediaHive App\\src\\components\\admin\\UserRoleManager.tsx": {
+    "mtime": 1780132404.2842813,
+    "ast_hash": "f83c028dc98b556355cb9f4c6c580730",
+    "semantic_hash": ""
+  },
+  "D:\\MediaHive App\\src\\components\\admin\\intelligence\\AuditLogTable.tsx": {
+    "mtime": 1779444803.3698485,
+    "ast_hash": "2c00e14a19c957372fa35709073d7cd3",
+    "semantic_hash": ""
+  },
+  "D:\\MediaHive App\\src\\components\\admin\\intelligence\\ExportModal.tsx": {
+    "mtime": 1780132404.2691662,
+    "ast_hash": "be22f6a84cfdd081fa821ecb622d6bfa",
+    "semantic_hash": ""
+  },
+  "D:\\MediaHive App\\src\\components\\admin\\intelligence\\LeadershipSummaryPanel.tsx": {
+    "mtime": 1780132404.2725883,
+    "ast_hash": "0fb21871cdabfd5e95e3e3c643849611",
+    "semantic_hash": ""
+  },
+  "D:\\MediaHive App\\src\\components\\admin\\intelligence\\PerformanceChart.tsx": {
+    "mtime": 1780132404.2741845,
+    "ast_hash": "103da0252d2de694ef56593a9ca23ccc",
+    "semantic_hash": ""
+  },
+  "D:\\MediaHive App\\src\\components\\admin\\intelligence\\PerformanceHistoryModal.tsx": {
+    "mtime": 1780132404.2767546,
+    "ast_hash": "95fddada148aca4b3876437d03a7b491",
+    "semantic_hash": ""
+  },
+  "D:\\MediaHive App\\src\\components\\admin\\intelligence\\TeamContributionChart.tsx": {
+    "mtime": 1779444803.372853,
+    "ast_hash": "72e4c1f9f8a6a313e5653c5fdd6c0c27",
+    "semantic_hash": ""
+  },
+  "D:\\MediaHive App\\src\\components\\admin\\structure\\ResolvedStructureName.tsx": {
+    "mtime": 1779444803.3738546,
+    "ast_hash": "720dd6b579abdd534d3767a43d4b049b",
+    "semantic_hash": ""
+  },
+  "D:\\MediaHive App\\src\\components\\admin\\users\\InviteUserModal.tsx": {
+    "mtime": 1779444803.375357,
+    "ast_hash": "ea4535323d6c649df45c4631201a2ec5",
+    "semantic_hash": ""
+  },
+  "D:\\MediaHive App\\src\\components\\AI\\AssistantPanel.tsx": {
+    "mtime": 1778213106.1831534,
+    "ast_hash": "ee89966b1c2397c759a976135d29b2bb",
+    "semantic_hash": ""
+  },
+  "D:\\MediaHive App\\src\\components\\AI\\InstitutionAssistant.tsx": {
+    "mtime": 1780132404.298306,
+    "ast_hash": "2c927ebb6a569eaec3c3a753ac9d2102",
+    "semantic_hash": ""
+  },
+  "D:\\MediaHive App\\src\\components\\auth\\AuthErrorBoundary.tsx": {
+    "mtime": 1780132404.3039055,
+    "ast_hash": "4259e4af12b949c842026c639538e437",
+    "semantic_hash": ""
+  },
+  "D:\\MediaHive App\\src\\components\\auth\\AuthGate.tsx": {
+    "mtime": 1778213106.1966994,
+    "ast_hash": "18b6b29b10878a07f5e3db662607fbfa",
+    "semantic_hash": ""
+  },
+  "D:\\MediaHive App\\src\\components\\auth\\EmailVerificationGate.tsx": {
+    "mtime": 1780132404.2993035,
+    "ast_hash": "71c2d1fc349cf08f06e5e547f76ad36b",
+    "semantic_hash": ""
+  },
+  "D:\\MediaHive App\\src\\components\\auth\\FirestoreAccessGuard.tsx": {
+    "mtime": 1778213106.2027843,
+    "ast_hash": "fa3913bc00b2b35859595a9f98b5f0a8",
+    "semantic_hash": ""
+  },
+  "D:\\MediaHive App\\src\\components\\auth\\FirstLoginWelcome.tsx": {
+    "mtime": 1780132404.3018112,
+    "ast_hash": "42d2ea40903062ef894d04672f8a34fb",
+    "semantic_hash": ""
+  },
+  "D:\\MediaHive App\\src\\components\\auth\\LoginClient.tsx": {
+    "mtime": 1780132404.3064961,
+    "ast_hash": "c2647d95a81321cc3409fae91fc80017",
+    "semantic_hash": ""
+  },
+  "D:\\MediaHive App\\src\\components\\auth\\OnboardingFlow.tsx": {
+    "mtime": 1779444803.376361,
+    "ast_hash": "23c0ac28174cf1f588b35960f0d8f40b",
+    "semantic_hash": ""
+  },
+  "D:\\MediaHive App\\src\\components\\auth\\SignupClient.tsx": {
+    "mtime": 1780132404.3086834,
+    "ast_hash": "46b3f43838112d3c84a669f5c724f9de",
+    "semantic_hash": ""
+  },
+  "D:\\MediaHive App\\src\\components\\calendar\\EventPreviewCard.tsx": {
+    "mtime": 1779444803.3773608,
+    "ast_hash": "331375a23e11afcf0e27bbb66286085e",
+    "semantic_hash": ""
+  },
+  "D:\\MediaHive App\\src\\components\\campaigns\\CampaignCreateModal.tsx": {
+    "mtime": 1780132404.3129215,
+    "ast_hash": "bd36c056da748a832beac905c5478590",
+    "semantic_hash": ""
+  },
+  "D:\\MediaHive App\\src\\components\\chat\\AddUserModal.tsx": {
+    "mtime": 1780228222.3375943,
+    "ast_hash": "dbd6963716200017046a6d917498c2e6",
+    "semantic_hash": ""
+  },
+  "D:\\MediaHive App\\src\\components\\chat\\ChatLayout.tsx": {
+    "mtime": 1780235111.8531723,
+    "ast_hash": "882696a632b15b57313d831d7a4f7436",
+    "semantic_hash": ""
+  },
+  "D:\\MediaHive App\\src\\components\\chat\\ChatSidebar.tsx": {
+    "mtime": 1780329005.4913666,
+    "ast_hash": "491fe884def8574da426c4e3f1d7236e",
+    "semantic_hash": ""
+  },
+  "D:\\MediaHive App\\src\\components\\chat\\ChatWindow.tsx": {
+    "mtime": 1780330727.8146152,
+    "ast_hash": "da206bf5b50cbd1e5e882cb94056d648",
+    "semantic_hash": ""
+  },
+  "D:\\MediaHive App\\src\\components\\chat\\GroupIconUploadModal.tsx": {
+    "mtime": 1780238383.6774056,
+    "ast_hash": "7d3bccd9e181a2138f497bb725d97f59",
+    "semantic_hash": ""
+  },
+  "D:\\MediaHive App\\src\\components\\chat\\GroupInfoSidebar.tsx": {
+    "mtime": 1780298106.938623,
+    "ast_hash": "ccd2e91b477afdf731d4f21c7f183807",
+    "semantic_hash": ""
+  },
+  "D:\\MediaHive App\\src\\components\\chat\\MediaCaptureModal.tsx": {
+    "mtime": 1780239944.2652423,
+    "ast_hash": "895b76116a96717859ed4e86b89d87ec",
+    "semantic_hash": ""
+  },
+  "D:\\MediaHive App\\src\\components\\chat\\VoicePlayer.tsx": {
+    "mtime": 1780328434.0313358,
+    "ast_hash": "4de99172b190f1540c03dd0d8e6503b7",
+    "semantic_hash": ""
+  },
+  "D:\\MediaHive App\\src\\components\\chat\\VoiceRecorder.tsx": {
+    "mtime": 1780328501.0694606,
+    "ast_hash": "f72550b715c22ce2bba1480c8afa0f19",
+    "semantic_hash": ""
+  },
+  "D:\\MediaHive App\\src\\components\\collaboration\\FieldPresence.tsx": {
+    "mtime": 1779427154.9785333,
+    "ast_hash": "bfbac4f06f34b22c9027097ce3fa1526",
+    "semantic_hash": ""
+  },
+  "D:\\MediaHive App\\src\\components\\collaboration\\PresencePile.tsx": {
+    "mtime": 1779427154.9790375,
+    "ast_hash": "0fcd4a3bba24fbdb79db7bbe8dba111c",
+    "semantic_hash": ""
+  },
+  "D:\\MediaHive App\\src\\components\\collaboration\\TypingIndicator.tsx": {
+    "mtime": 1778213106.2303467,
+    "ast_hash": "1e7539c25a610488fcffdb60d5523eb7",
+    "semantic_hash": ""
+  },
+  "D:\\MediaHive App\\src\\components\\common\\HealthIndicator.tsx": {
+    "mtime": 1779427154.9790375,
+    "ast_hash": "3166c086064061a45341e3fbadc7fa67",
+    "semantic_hash": ""
+  },
+  "D:\\MediaHive App\\src\\components\\conflicts\\ConflictWarningBanner.tsx": {
+    "mtime": 1779444803.379872,
+    "ast_hash": "2d65cbc5a77ea5d7b7b10039acc6648f",
+    "semantic_hash": ""
+  },
+  "D:\\MediaHive App\\src\\components\\conflicts\\PolicyGuidanceDisplay.tsx": {
+    "mtime": 1779427154.9810417,
+    "ast_hash": "6bcc11f8e55909ed49386b7406eb2de7",
+    "semantic_hash": ""
+  },
+  "D:\\MediaHive App\\src\\components\\debug\\MissingApiBanner.tsx": {
+    "mtime": 1779427154.9831593,
+    "ast_hash": "8be9d05d8ccba3bb486ace656a62f89d",
+    "semantic_hash": ""
+  },
+  "D:\\MediaHive App\\src\\components\\deliverables\\DeliverablePreviewModal.tsx": {
+    "mtime": 1780132404.3187337,
+    "ast_hash": "3c8b35ab5adb19cf8b0fd3b99aa56721",
+    "semantic_hash": ""
+  },
+  "D:\\MediaHive App\\src\\components\\deliverables\\DeliverablesList.tsx": {
+    "mtime": 1780132404.32087,
+    "ast_hash": "7b78fc620e5f57779156cb3bea96be01",
+    "semantic_hash": ""
+  },
+  "D:\\MediaHive App\\src\\components\\deliverables\\DeliverableUploadModal.tsx": {
+    "mtime": 1780132404.3230672,
+    "ast_hash": "21629ab59ad9f9d63c63cd1173d0da48",
+    "semantic_hash": ""
+  },
+  "D:\\MediaHive App\\src\\components\\deliverables\\SafeDeliverablePreview.tsx": {
+    "mtime": 1780132404.3246565,
+    "ast_hash": "27adbe2621dada15d32a7241c3fa19d8",
+    "semantic_hash": ""
+  },
+  "D:\\MediaHive App\\src\\components\\event\\EventCard.tsx": {
+    "mtime": 1779608138.177726,
+    "ast_hash": "be00039b1ea478261a9f318bbc59c80b",
+    "semantic_hash": ""
+  },
+  "D:\\MediaHive App\\src\\components\\event\\EventModal.tsx": {
+    "mtime": 1779444803.3830287,
+    "ast_hash": "f2580b3a77306aadc0591ca18f144531",
+    "semantic_hash": ""
+  },
+  "D:\\MediaHive App\\src\\components\\events\\CalendarView.tsx": {
+    "mtime": 1779608531.337072,
+    "ast_hash": "64eeac44447694e7b62b7323bcad29b2",
+    "semantic_hash": ""
+  },
+  "D:\\MediaHive App\\src\\components\\events\\EventDetailsModal.tsx": {
+    "mtime": 1780216272.484891,
+    "ast_hash": "66d786bf539004225e36c9e7904dd30f",
+    "semantic_hash": ""
+  },
+  "D:\\MediaHive App\\src\\components\\events\\EventEditModal.tsx": {
+    "mtime": 1779608556.47482,
+    "ast_hash": "593c5eb80fa61f3bd9fba874acfd1301",
+    "semantic_hash": ""
+  },
+  "D:\\MediaHive App\\src\\components\\events\\EventHoverTooltip.tsx": {
+    "mtime": 1779608558.911566,
+    "ast_hash": "2b561a3b91f314c1205941c8a444acb3",
+    "semantic_hash": ""
+  },
+  "D:\\MediaHive App\\src\\components\\events\\EventListView.tsx": {
+    "mtime": 1779608415.0454643,
+    "ast_hash": "f586fc403ba6a1faa0bec4b2bad2056d",
+    "semantic_hash": ""
+  },
+  "D:\\MediaHive App\\src\\components\\events\\TimelineView.tsx": {
+    "mtime": 1779608430.4655745,
+    "ast_hash": "122dfc3f3cee9a6b1ce3e73bc8433b1c",
+    "semantic_hash": ""
+  },
+  "D:\\MediaHive App\\src\\components\\events\\UpcomingEventsStrip.tsx": {
+    "mtime": 1779444803.3860283,
+    "ast_hash": "8a95e261faf666f6ece4452998072f40",
+    "semantic_hash": ""
+  },
+  "D:\\MediaHive App\\src\\components\\events\\WeekTimelineView.tsx": {
+    "mtime": 1779608524.939343,
+    "ast_hash": "0d0c8bb6e231c01bc036f65945baf8d4",
+    "semantic_hash": ""
+  },
+  "D:\\MediaHive App\\src\\components\\files\\FileCard.tsx": {
+    "mtime": 1780132404.3263535,
+    "ast_hash": "270764610204090d65670cc5d601a8ef",
+    "semantic_hash": ""
+  },
+  "D:\\MediaHive App\\src\\components\\files\\UploadModal.tsx": {
+    "mtime": 1780132404.328446,
+    "ast_hash": "32e05397dbc84d722b8fe782b23273ad",
+    "semantic_hash": ""
+  },
+  "D:\\MediaHive App\\src\\components\\governance\\ActivePoliciesList.tsx": {
+    "mtime": 1780209303.513582,
+    "ast_hash": "323a5ebd1ed9c1af18ae0cdf16c3c801",
+    "semantic_hash": ""
+  },
+  "D:\\MediaHive App\\src\\components\\governance\\GovernanceActivityLog.tsx": {
+    "mtime": 1780209334.0265436,
+    "ast_hash": "6f4a793e9883ddbff1b86a3bfa128d5e",
+    "semantic_hash": ""
+  },
+  "D:\\MediaHive App\\src\\components\\governance\\GovernanceDashboard.tsx": {
+    "mtime": 1779444803.3886065,
+    "ast_hash": "717e9ae162db826b55ad95a3a3c255a7",
+    "semantic_hash": ""
+  },
+  "D:\\MediaHive App\\src\\components\\governance\\RoleAuthorityMap.tsx": {
+    "mtime": 1780210200.1089814,
+    "ast_hash": "e12ccfc5e060607eeff1c3a0d54e0119",
+    "semantic_hash": ""
+  },
+  "D:\\MediaHive App\\src\\components\\home\\CollapsibleSectionHeader.tsx": {
+    "mtime": 1779444803.3886065,
+    "ast_hash": "96254b73479aea4a7875166f3b6837ed",
+    "semantic_hash": ""
+  },
+  "D:\\MediaHive App\\src\\components\\home\\DashboardSection.tsx": {
+    "mtime": 1778213106.3172214,
+    "ast_hash": "9d7d10b8e4450745aaf103f6d357ccf5",
+    "semantic_hash": ""
+  },
+  "D:\\MediaHive App\\src\\components\\home\\FilterChips.tsx": {
+    "mtime": 1779427154.994458,
+    "ast_hash": "977e82700ca4ab6e3f07d83e9dab632d",
+    "semantic_hash": ""
+  },
+  "D:\\MediaHive App\\src\\components\\home\\HomeTaskRow.tsx": {
+    "mtime": 1779444803.3901105,
+    "ast_hash": "52be117aa3a2af6194ea001f85b0de4d",
+    "semantic_hash": ""
+  },
+  "D:\\MediaHive App\\src\\components\\home\\OverviewCard.tsx": {
+    "mtime": 1779604360.8303032,
+    "ast_hash": "885ffdd5b8d8b9204ab4d438b56daf09",
+    "semantic_hash": ""
+  },
+  "D:\\MediaHive App\\src\\components\\home\\TaskItem.tsx": {
+    "mtime": 1779427154.9954565,
+    "ast_hash": "2766741e3c5b897042ba5f9c4348aea5",
+    "semantic_hash": ""
+  },
+  "D:\\MediaHive App\\src\\components\\home\\widgets\\ActiveCampaignsWidget.tsx": {
+    "mtime": 1780132404.3439467,
+    "ast_hash": "a40a1c32b88cf15c99c41a9705a23a89",
+    "semantic_hash": ""
+  },
+  "D:\\MediaHive App\\src\\components\\home\\widgets\\ActivityFeed.tsx": {
+    "mtime": 1780132404.3318486,
+    "ast_hash": "429b8e80636b163f3cd14c19b19853cb",
+    "semantic_hash": ""
+  },
+  "D:\\MediaHive App\\src\\components\\home\\widgets\\DueSoonWidget.tsx": {
+    "mtime": 1779427154.9964573,
+    "ast_hash": "546c6f7b2772c33226cf23427a8654fe",
+    "semantic_hash": ""
+  },
+  "D:\\MediaHive App\\src\\components\\home\\widgets\\InventoryStatsWidget.tsx": {
+    "mtime": 1779427154.9964573,
+    "ast_hash": "0ecc2724e91d3f0171d917dead153bcf",
+    "semantic_hash": ""
+  },
+  "D:\\MediaHive App\\src\\components\\home\\widgets\\MemberActivityFeed.tsx": {
+    "mtime": 1780132404.3334754,
+    "ast_hash": "9ee1c3a99a9149b59ada0de58f4cc130",
+    "semantic_hash": ""
+  },
+  "D:\\MediaHive App\\src\\components\\home\\widgets\\MemberQuickActions.tsx": {
+    "mtime": 1779427154.9984598,
+    "ast_hash": "4f868177dc2fff9ce835fcb9063bbef7",
+    "semantic_hash": ""
+  },
+  "D:\\MediaHive App\\src\\components\\home\\widgets\\MemberTaskOverviewWidget.tsx": {
+    "mtime": 1778213106.3380368,
+    "ast_hash": "6da5437b43c3fc37670bf8d9f464a38b",
+    "semantic_hash": ""
+  },
+  "D:\\MediaHive App\\src\\components\\home\\widgets\\MyFocusWidget.tsx": {
+    "mtime": 1779603424.7629476,
+    "ast_hash": "6a936280877e1480f06d4f8366783b1c",
+    "semantic_hash": ""
+  },
+  "D:\\MediaHive App\\src\\components\\home\\widgets\\MyWorkflowWidget.tsx": {
+    "mtime": 1780132404.336003,
+    "ast_hash": "eb9024705f0143e591efd5debabc6de9",
+    "semantic_hash": ""
+  },
+  "D:\\MediaHive App\\src\\components\\home\\widgets\\OverdueAlertsWidget.tsx": {
+    "mtime": 1780132404.3460498,
+    "ast_hash": "2d18b272131f83d79af1bd9456bcf99a",
+    "semantic_hash": ""
+  },
+  "D:\\MediaHive App\\src\\components\\home\\widgets\\StatusChart.tsx": {
+    "mtime": 1780132404.3388784,
+    "ast_hash": "d234d5e3bd95c542cab2c74c06d5331a",
+    "semantic_hash": ""
+  },
+  "D:\\MediaHive App\\src\\components\\home\\widgets\\TasksFromMeWidget.tsx": {
+    "mtime": 1780132404.34094,
+    "ast_hash": "d6e903176b2ddacff5524b38b5b1047f",
+    "semantic_hash": ""
+  },
+  "D:\\MediaHive App\\src\\components\\home\\widgets\\TimelineWidget.tsx": {
+    "mtime": 1779427155.0002282,
+    "ast_hash": "a63df3bc23a8f86ae6e45225150e91ab",
+    "semantic_hash": ""
+  },
+  "D:\\MediaHive App\\src\\components\\inventory\\EquipmentBookingDialog.tsx": {
+    "mtime": 1780132404.3516488,
+    "ast_hash": "5b60193c007e1fe8f329a9a49164ead2",
+    "semantic_hash": ""
+  },
+  "D:\\MediaHive App\\src\\components\\inventory\\EquipmentScheduleWidget.tsx": {
+    "mtime": 1780132404.353657,
+    "ast_hash": "441e47377cabf398296e7380a20f983f",
+    "semantic_hash": ""
+  },
+  "D:\\MediaHive App\\src\\components\\inventory\\InventoryCard.tsx": {
+    "mtime": 1780132404.3561714,
+    "ast_hash": "1c1ab2371eb66a06470ef7a40a1f18ad",
+    "semantic_hash": ""
+  },
+  "D:\\MediaHive App\\src\\components\\inventory\\InventoryDetailDialog.tsx": {
+    "mtime": 1780132404.3581693,
+    "ast_hash": "b3e1caaae52c8a94116df9bf6f77fdf6",
+    "semantic_hash": ""
+  },
+  "D:\\MediaHive App\\src\\components\\inventory\\InventoryFilters.tsx": {
+    "mtime": 1780132404.3596742,
+    "ast_hash": "0d36c5b9328131fd8530a216dd945040",
+    "semantic_hash": ""
+  },
+  "D:\\MediaHive App\\src\\components\\inventory\\InventoryForm.tsx": {
+    "mtime": 1780132404.3623612,
+    "ast_hash": "e58872e46b80a527074d79da7d46f7e9",
+    "semantic_hash": ""
+  },
+  "D:\\MediaHive App\\src\\components\\inventory\\InventoryGallery.tsx": {
+    "mtime": 1779427155.0032573,
+    "ast_hash": "57b454680c0ced0c4a06958961942679",
+    "semantic_hash": ""
+  },
+  "D:\\MediaHive App\\src\\components\\inventory\\InventoryGrid.tsx": {
+    "mtime": 1778583063.0217643,
+    "ast_hash": "b439763156e1694247086ab9435f395d",
+    "semantic_hash": ""
+  },
+  "D:\\MediaHive App\\src\\components\\inventory\\InventoryList.tsx": {
+    "mtime": 1780132404.363925,
+    "ast_hash": "ba21f8516f1b998fcd976fbb2e47b2dd",
+    "semantic_hash": ""
+  },
+  "D:\\MediaHive App\\src\\components\\inventory\\InventoryRequestDialog.tsx": {
+    "mtime": 1780132404.3660479,
+    "ast_hash": "e32a606852f78baf38c291b58a962f73",
+    "semantic_hash": ""
+  },
+  "D:\\MediaHive App\\src\\components\\inventory\\InventoryRequestModal.tsx": {
+    "mtime": 1780132404.3480499,
+    "ast_hash": "080382f0d1125cda6acd3b4cf6e9c3b4",
+    "semantic_hash": ""
+  },
+  "D:\\MediaHive App\\src\\components\\inventory\\InventoryTable.tsx": {
+    "mtime": 1780132404.3676126,
+    "ast_hash": "230ccd9eaa086f419056105e0a0a1cac",
+    "semantic_hash": ""
+  },
+  "D:\\MediaHive App\\src\\components\\inventory\\InventoryView.tsx": {
+    "mtime": 1780132404.369705,
+    "ast_hash": "ff8c251608ea76d9cc71cfba577ee590",
+    "semantic_hash": ""
+  },
+  "D:\\MediaHive App\\src\\components\\inventory\\IssueItemDialog.tsx": {
+    "mtime": 1780132404.371799,
+    "ast_hash": "341fd898872eec0dc4ef599664393ca4",
+    "semantic_hash": ""
+  },
+  "D:\\MediaHive App\\src\\components\\inventory\\RequestList.tsx": {
+    "mtime": 1780132404.3734236,
+    "ast_hash": "b4eaebb7bef03aee63fbedf5216063e4",
+    "semantic_hash": ""
+  },
+  "D:\\MediaHive App\\src\\components\\inventory\\ReturnItemDialog.tsx": {
+    "mtime": 1780132404.375515,
+    "ast_hash": "dc26587d1592f5d9e85ab19ea313de5d",
+    "semantic_hash": ""
+  },
+  "D:\\MediaHive App\\src\\components\\layout\\BootGate.tsx": {
+    "mtime": 1780132404.3839886,
+    "ast_hash": "9b5e744bcd642cbfa4aa185ad0d9c56a",
+    "semantic_hash": ""
+  },
+  "D:\\MediaHive App\\src\\components\\layout\\ClientDataProvider.tsx": {
+    "mtime": 1778213106.4012632,
+    "ast_hash": "e3cfa887c9424497fa68af2de101f04d",
+    "semantic_hash": ""
+  },
+  "D:\\MediaHive App\\src\\components\\layout\\DesktopSideNav.tsx": {
+    "mtime": 1780225031.0809338,
+    "ast_hash": "d8e7f35bbea06a04b5d3948b6da9e023",
+    "semantic_hash": ""
+  },
+  "D:\\MediaHive App\\src\\components\\layout\\GlobalCommandPalette.tsx": {
+    "mtime": 1780223184.6880975,
+    "ast_hash": "372eaa505c1a3ec99c0f4c0db399c2cf",
+    "semantic_hash": ""
+  },
+  "D:\\MediaHive App\\src\\components\\layout\\MobileViewportSafety.tsx": {
+    "mtime": 1778213106.414718,
+    "ast_hash": "bd013fde6a14bccb9d041f2766c4315e",
+    "semantic_hash": ""
+  },
+  "D:\\MediaHive App\\src\\components\\layout\\RootProviders.tsx": {
+    "mtime": 1779724894.3391626,
+    "ast_hash": "cb38f7028fce6f7b27704315a37d368e",
+    "semantic_hash": ""
+  },
+  "D:\\MediaHive App\\src\\components\\layout\\ShellProviders.tsx": {
+    "mtime": 1780229320.4132447,
+    "ast_hash": "8bfa15d57bdf6c9786e0f2262fb221db",
+    "semantic_hash": ""
+  },
+  "D:\\MediaHive App\\src\\components\\layout\\WorkspaceLayout.tsx": {
+    "mtime": 1778213106.421332,
+    "ast_hash": "5bcb6e44b50ab071a42aab69e44843db",
+    "semantic_hash": ""
+  },
+  "D:\\MediaHive App\\src\\components\\layout\\WorkspaceSwitcher.tsx": {
+    "mtime": 1779444803.3956485,
+    "ast_hash": "435fd9ce8d68b56bb2a3366afc92fe5e",
+    "semantic_hash": ""
+  },
+  "D:\\MediaHive App\\src\\components\\leave\\LeaveAnalytics.tsx": {
+    "mtime": 1779878863.9837804,
+    "ast_hash": "c49b3aef6a8181a704c7bcfef0ea9962",
+    "semantic_hash": ""
+  },
+  "D:\\MediaHive App\\src\\components\\leave\\LeaveApprovalCard.tsx": {
+    "mtime": 1779444803.3970969,
+    "ast_hash": "7c760676feafa54395b301764edc405a",
+    "semantic_hash": ""
+  },
+  "D:\\MediaHive App\\src\\components\\leave\\LeaveBalanceDisplay.tsx": {
+    "mtime": 1779444803.3980925,
+    "ast_hash": "5ce1e02e862a894fa94d79b81fea6170",
+    "semantic_hash": ""
+  },
+  "D:\\MediaHive App\\src\\components\\leave\\LeaveRejectionModal.tsx": {
+    "mtime": 1780132404.3777733,
+    "ast_hash": "749e893845faeba3531d23cf08e502e3",
+    "semantic_hash": ""
+  },
+  "D:\\MediaHive App\\src\\components\\leave\\LeaveRequestCard.tsx": {
+    "mtime": 1779444803.3980925,
+    "ast_hash": "7ea3c2c79b8dec883e1c5d738501a68c",
+    "semantic_hash": ""
+  },
+  "D:\\MediaHive App\\src\\components\\leave\\LeaveRequestForm.tsx": {
+    "mtime": 1779444803.3990953,
+    "ast_hash": "5f1a8532392a1eeea43a6fbd79a1933f",
+    "semantic_hash": ""
+  },
+  "D:\\MediaHive App\\src\\components\\library\\atoms\\Button.tsx": {
+    "mtime": 1779427155.0095496,
+    "ast_hash": "18c74e54172f0b8d002e906e3478412f",
+    "semantic_hash": ""
+  },
+  "D:\\MediaHive App\\src\\components\\library\\molecules\\FileCard.tsx": {
+    "mtime": 1780132404.410072,
+    "ast_hash": "86c157cc75f53d894e56aa462870a8cf",
+    "semantic_hash": ""
+  },
+  "D:\\MediaHive App\\src\\components\\library\\molecules\\OverviewCard.tsx": {
+    "mtime": 1779427155.0105474,
+    "ast_hash": "b3ab3193b830c1f7346a097e5e9634a6",
+    "semantic_hash": ""
+  },
+  "D:\\MediaHive App\\src\\components\\library\\molecules\\TaskCard.tsx": {
+    "mtime": 1780132404.4121993,
+    "ast_hash": "224389d10ee6bdca14859b3e73084492",
+    "semantic_hash": ""
+  },
+  "D:\\MediaHive App\\src\\components\\library\\organisms\\BottomNav.tsx": {
+    "mtime": 1780132404.4143307,
+    "ast_hash": "5fa7607f938c4ded55fbe3e4b35c3d19",
+    "semantic_hash": ""
+  },
+  "D:\\MediaHive App\\src\\components\\library\\organisms\\CreateEventForm.tsx": {
+    "mtime": 1780135691.2585218,
+    "ast_hash": "699ab690922c63e27f637187621c6d8c",
+    "semantic_hash": ""
+  },
+  "D:\\MediaHive App\\src\\components\\library\\organisms\\CreateEventModal.tsx": {
+    "mtime": 1779444803.4000945,
+    "ast_hash": "dd1dbbf15180209cfd8aae5bcc14057e",
+    "semantic_hash": ""
+  },
+  "D:\\MediaHive App\\src\\components\\library\\organisms\\FAB.tsx": {
+    "mtime": 1779877471.2615304,
+    "ast_hash": "2036e408e2922135a70ccc7f83e79b24",
+    "semantic_hash": ""
+  },
+  "D:\\MediaHive App\\src\\components\\library\\organisms\\TopBar.tsx": {
+    "mtime": 1780132404.4191043,
+    "ast_hash": "0f73d563beef85ed2a3b4416fd7d403d",
+    "semantic_hash": ""
+  },
+  "D:\\MediaHive App\\src\\components\\media\\EventMediaTab.tsx": {
+    "mtime": 1778213106.489551,
+    "ast_hash": "8258936caf641463a4612e270f631bcc",
+    "semantic_hash": ""
+  },
+  "D:\\MediaHive App\\src\\components\\media\\LazyMediaLightbox.tsx": {
+    "mtime": 1778213106.493066,
+    "ast_hash": "86822c2d0ce3a8324be1f1767a70946c",
+    "semantic_hash": ""
+  },
+  "D:\\MediaHive App\\src\\components\\media\\MediaCard.tsx": {
+    "mtime": 1779427155.01506,
+    "ast_hash": "8aa0240a5ce08434cf2d2d96111c1caa",
+    "semantic_hash": ""
+  },
+  "D:\\MediaHive App\\src\\components\\media\\MediaGalleryGrid.tsx": {
+    "mtime": 1778213106.4982417,
+    "ast_hash": "b6cb3e1932788f42817abec2514dbf1f",
+    "semantic_hash": ""
+  },
+  "D:\\MediaHive App\\src\\components\\media\\MediaLightbox.tsx": {
+    "mtime": 1780132404.4235775,
+    "ast_hash": "4dcf67c2ecc72437aa08fb8b4a7480f0",
+    "semantic_hash": ""
+  },
+  "D:\\MediaHive App\\src\\components\\media\\TaskMediaGallery.tsx": {
+    "mtime": 1778213106.5081291,
+    "ast_hash": "b699eb5c04f01430d41aaf59e31564f9",
+    "semantic_hash": ""
+  },
+  "D:\\MediaHive App\\src\\components\\navigation\\ConflictCenterLink.tsx": {
+    "mtime": 1780132404.4251454,
+    "ast_hash": "4094b2a6b225fa6d8f826d62e75d23df",
+    "semantic_hash": ""
+  },
+  "D:\\MediaHive App\\src\\components\\notifications\\EscalationPanel.tsx": {
+    "mtime": 1779449598.8544471,
+    "ast_hash": "c5361da40032eeb89e165951bcab613d",
+    "semantic_hash": ""
+  },
+  "D:\\MediaHive App\\src\\components\\notifications\\NotificationBell.tsx": {
+    "mtime": 1779530686.204357,
+    "ast_hash": "2d47104a3dcaf6cda592b821706eaaf7",
+    "semantic_hash": ""
+  },
+  "D:\\MediaHive App\\src\\components\\notifications\\NotificationFilters.tsx": {
+    "mtime": 1779449387.6727657,
+    "ast_hash": "bdeaf94a44049043c09ee141dc240ad7",
+    "semantic_hash": ""
+  },
+  "D:\\MediaHive App\\src\\components\\notifications\\NotificationGroup.tsx": {
+    "mtime": 1779449602.7192078,
+    "ast_hash": "a32f7f99fecb61518498ea8375336351",
+    "semantic_hash": ""
+  },
+  "D:\\MediaHive App\\src\\components\\notifications\\NotificationInbox.tsx": {
+    "mtime": 1779449577.5138614,
+    "ast_hash": "8ad445e425744ef57d32978b219fc4cd",
+    "semantic_hash": ""
+  },
+  "D:\\MediaHive App\\src\\components\\notifications\\NotificationItem.tsx": {
+    "mtime": 1779449556.720839,
+    "ast_hash": "f552d1b3dff13dd0fb84b6cdc9e115dd",
+    "semantic_hash": ""
+  },
+  "D:\\MediaHive App\\src\\components\\onboarding\\AppTour.tsx": {
+    "mtime": 1778213106.5465746,
+    "ast_hash": "18b12423c0ff91005dc2813bba6e2896",
+    "semantic_hash": ""
+  },
+  "D:\\MediaHive App\\src\\components\\onboarding\\MemberGuideModal.tsx": {
+    "mtime": 1779444407.346759,
+    "ast_hash": "9569adfd09846e7c5909347132b4e91c",
+    "semantic_hash": ""
+  },
+  "D:\\MediaHive App\\src\\components\\onboarding\\MemberOnboardingWrapper.tsx": {
+    "mtime": 1778213106.5496051,
+    "ast_hash": "3cda889167300e75573374e2a2d5dbb5",
+    "semantic_hash": ""
+  },
+  "D:\\MediaHive App\\src\\components\\onboarding\\MemberWelcomeModal.tsx": {
+    "mtime": 1779444407.3570359,
+    "ast_hash": "a9e3f47d0971b47154f373ba917f2446",
+    "semantic_hash": ""
+  },
+  "D:\\MediaHive App\\src\\components\\onboarding\\OnboardingContainer.tsx": {
+    "mtime": 1779452968.72125,
+    "ast_hash": "2c80440ff1197ffb8e1f1e7172980aa4",
+    "semantic_hash": ""
+  },
+  "D:\\MediaHive App\\src\\components\\onboarding\\OnboardingProgress.tsx": {
+    "mtime": 1779427155.0205677,
+    "ast_hash": "7817817a0652f41a08379190726fb7e1",
+    "semantic_hash": ""
+  },
+  "D:\\MediaHive App\\src\\components\\onboarding\\OnboardingStep.tsx": {
+    "mtime": 1780132404.3883436,
+    "ast_hash": "b838922d053853f6389864769b1a6058",
+    "semantic_hash": ""
+  },
+  "D:\\MediaHive App\\src\\components\\profile\\AccountSnapshot.tsx": {
+    "mtime": 1779444407.4593656,
+    "ast_hash": "16ce5855d2bc638597d779f6c53f560b",
+    "semantic_hash": ""
+  },
+  "D:\\MediaHive App\\src\\components\\profile\\ActivitySummary.tsx": {
+    "mtime": 1778213106.564334,
+    "ast_hash": "abc96e132f7a84995070cf7d301fa4ac",
+    "semantic_hash": ""
+  },
+  "D:\\MediaHive App\\src\\components\\profile\\HelpInfoCard.tsx": {
+    "mtime": 1778213106.5668514,
+    "ast_hash": "74f953db8623d96e1503b4964282d073",
+    "semantic_hash": ""
+  },
+  "D:\\MediaHive App\\src\\components\\profile\\InstitutionContextCard.tsx": {
+    "mtime": 1779427155.0230763,
+    "ast_hash": "1509b296190ba717fb4bb606095355e4",
+    "semantic_hash": ""
+  },
+  "D:\\MediaHive App\\src\\components\\profile\\MemberProfilePage.tsx": {
+    "mtime": 1780132404.435768,
+    "ast_hash": "464280f0afcd4288988d968f802930e3",
+    "semantic_hash": ""
+  },
+  "D:\\MediaHive App\\src\\components\\profile\\ProfileHeaderCard.tsx": {
+    "mtime": 1778213106.5846443,
+    "ast_hash": "0dfd985c01487366c80bbf87fda4cbfe",
+    "semantic_hash": ""
+  },
+  "D:\\MediaHive App\\src\\components\\profile\\SecurityCard.tsx": {
+    "mtime": 1779427155.0240746,
+    "ast_hash": "7063fb53126706b1c0f3eba39e44c326",
+    "semantic_hash": ""
+  },
+  "D:\\MediaHive App\\src\\components\\profile\\UserPreferences.tsx": {
+    "mtime": 1779427155.0240746,
+    "ast_hash": "0b49ffd803522b60a3745c85b464dc28",
+    "semantic_hash": ""
+  },
+  "D:\\MediaHive App\\src\\components\\requests\\DeviceRequestForm.tsx": {
+    "mtime": 1780132404.4022353,
+    "ast_hash": "bf35d82a39d6baa01e6828b869e41740",
+    "semantic_hash": ""
+  },
+  "D:\\MediaHive App\\src\\components\\requests\\RequestManager.tsx": {
+    "mtime": 1780132404.4049535,
+    "ast_hash": "1d05ce78cc1efff736390c981fb1c494",
+    "semantic_hash": ""
+  },
+  "D:\\MediaHive App\\src\\components\\settings\\AvatarUploadModal.tsx": {
+    "mtime": 1780132404.4736006,
+    "ast_hash": "b8ed231b9a4fd2a850b6539ff6ccd3fb",
+    "semantic_hash": ""
+  },
+  "D:\\MediaHive App\\src\\components\\settings\\SettingsLayout.tsx": {
+    "mtime": 1780132404.475694,
+    "ast_hash": "c4a9f38233f395861b67fed544b45524",
+    "semantic_hash": ""
+  },
+  "D:\\MediaHive App\\src\\components\\settings\\views\\NotificationSettingsView.tsx": {
+    "mtime": 1780132404.4777849,
+    "ast_hash": "b82a299bdbbd9a97856ababcaaee54dc",
+    "semantic_hash": ""
+  },
+  "D:\\MediaHive App\\src\\components\\settings\\views\\ProfileSettingsView.tsx": {
+    "mtime": 1780132404.4794154,
+    "ast_hash": "508d2edf468d17f696c47a6f08891125",
+    "semantic_hash": ""
+  },
+  "D:\\MediaHive App\\src\\components\\settings\\views\\ThemeSelector.tsx": {
+    "mtime": 1779444803.4076035,
+    "ast_hash": "f984ebc81b38f3eb1ec5debf98dd2c73",
+    "semantic_hash": ""
+  },
+  "D:\\MediaHive App\\src\\components\\simulation\\SimulationPreviewPanel.tsx": {
+    "mtime": 1780132404.4409158,
+    "ast_hash": "50d4440a8457f7ab034e82cdbb15450a",
+    "semantic_hash": ""
+  },
+  "D:\\MediaHive App\\src\\components\\simulation\\StateSeparationDemo.tsx": {
+    "mtime": 1780132404.4425056,
+    "ast_hash": "2b2082a741dbe825999c7b55d1ee8486",
+    "semantic_hash": ""
+  },
+  "D:\\MediaHive App\\src\\components\\system\\AppErrorBoundary.tsx": {
+    "mtime": 1780132404.4810224,
+    "ast_hash": "117b957e0c9e0b6c4d03c938da0650dc",
+    "semantic_hash": ""
+  },
+  "D:\\MediaHive App\\src\\components\\system\\CardErrorBoundary.tsx": {
+    "mtime": 1780134860.293647,
+    "ast_hash": "f0cfb4a2f6151ca7da4686d4e7f012ef",
+    "semantic_hash": ""
+  },
+  "D:\\MediaHive App\\src\\components\\system\\CommandPalette.tsx": {
+    "mtime": 1780224750.0004396,
+    "ast_hash": "bb254d073f3a4ab51cbc7165ed841c85",
+    "semantic_hash": ""
+  },
+  "D:\\MediaHive App\\src\\components\\system\\ConflictResolutionModal.tsx": {
+    "mtime": 1779444803.408603,
+    "ast_hash": "c47e69307c66d57006d998ee1183b83b",
+    "semantic_hash": ""
+  },
+  "D:\\MediaHive App\\src\\components\\system\\KeyboardShortcutsModal.tsx": {
+    "mtime": 1779444803.408603,
+    "ast_hash": "ec033d881befae9ff711b004260c9434",
+    "semantic_hash": ""
+  },
+  "D:\\MediaHive App\\src\\components\\system\\OfflineBanner.tsx": {
+    "mtime": 1779427155.032623,
+    "ast_hash": "0d603fb41fad63c3f6f1a6918f5da812",
+    "semantic_hash": ""
+  },
+  "D:\\MediaHive App\\src\\components\\system\\ShellCommands.tsx": {
+    "mtime": 1778213106.6475062,
+    "ast_hash": "8bea3cd834a302ab19c42e4b97a0f36c",
+    "semantic_hash": ""
+  },
+  "D:\\MediaHive App\\src\\components\\system\\SyncDevPanel.tsx": {
+    "mtime": 1779444803.4101076,
+    "ast_hash": "01afb74e2bf72325c0d956fe6b613974",
+    "semantic_hash": ""
+  },
+  "D:\\MediaHive App\\src\\components\\system\\SyncIndicator.tsx": {
+    "mtime": 1779444803.4101076,
+    "ast_hash": "4f869d27d2c4a14b6b44f912d9a36dd6",
+    "semantic_hash": ""
+  },
+  "D:\\MediaHive App\\src\\components\\tasks\\AdminConfidencePanel.tsx": {
+    "mtime": 1780132404.4472697,
+    "ast_hash": "f03b1b3f63110958152be074bf75b966",
+    "semantic_hash": ""
+  },
+  "D:\\MediaHive App\\src\\components\\tasks\\AttachmentActivityLog.tsx": {
+    "mtime": 1780132404.452033,
+    "ast_hash": "441cbf6c25945b140f96bed70dd52e45",
+    "semantic_hash": ""
+  },
+  "D:\\MediaHive App\\src\\components\\tasks\\AttachmentSection.tsx": {
+    "mtime": 1780215756.1143267,
+    "ast_hash": "57a952bc5b6c897f521589c7253fc29d",
+    "semantic_hash": ""
+  },
+  "D:\\MediaHive App\\src\\components\\tasks\\BulkActionBar.tsx": {
+    "mtime": 1780135150.2595887,
+    "ast_hash": "910464143087d10df557834e05049118",
+    "semantic_hash": ""
+  },
+  "D:\\MediaHive App\\src\\components\\tasks\\BulkDeleteDialog.tsx": {
+    "mtime": 1779444803.4126163,
+    "ast_hash": "ff92d697ea8a86a1f88f01911c9c7fb7",
+    "semantic_hash": ""
+  },
+  "D:\\MediaHive App\\src\\components\\tasks\\BulkOperationsToolbar.tsx": {
+    "mtime": 1779444803.413622,
+    "ast_hash": "052e87a59cbe10caf5c71f7e6712ea7f",
+    "semantic_hash": ""
+  },
+  "D:\\MediaHive App\\src\\components\\tasks\\ConflictAwarenessBadge.tsx": {
+    "mtime": 1779427155.0381467,
+    "ast_hash": "bda790ebc7ed16a181f032d5838856ba",
+    "semantic_hash": ""
+  },
+  "D:\\MediaHive App\\src\\components\\tasks\\ConflictResolutionPanel.tsx": {
+    "mtime": 1780129148.339509,
+    "ast_hash": "c1fb2a5793c8d88b1ad6fc42fc9defc7",
+    "semantic_hash": ""
+  },
+  "D:\\MediaHive App\\src\\components\\tasks\\EditTaskDialog.tsx": {
+    "mtime": 1780133629.2909737,
+    "ast_hash": "64a6fdd1480dd84c16fbf3d9782eb772",
+    "semantic_hash": ""
+  },
+  "D:\\MediaHive App\\src\\components\\tasks\\EditTaskModal.tsx": {
+    "mtime": 1778213106.6864235,
+    "ast_hash": "f7563ab172438accfc2436ecb6c1ff04",
+    "semantic_hash": ""
+  },
+  "D:\\MediaHive App\\src\\components\\tasks\\EquipmentBookingPanel.tsx": {
+    "mtime": 1779444803.4146204,
+    "ast_hash": "96bc2cf775e4c373f3df340a3b9e75ae",
+    "semantic_hash": ""
+  },
+  "D:\\MediaHive App\\src\\components\\tasks\\PolicySimulationPanel.tsx": {
+    "mtime": 1779444803.4146204,
+    "ast_hash": "23503f73b057c01eb184dd5bdde488e8",
+    "semantic_hash": ""
+  },
+  "D:\\MediaHive App\\src\\components\\tasks\\SortableTaskRow.tsx": {
+    "mtime": 1780135149.9307609,
+    "ast_hash": "5cf0fcdefab9f5e2f67db921a30d0732",
+    "semantic_hash": ""
+  },
+  "D:\\MediaHive App\\src\\components\\tasks\\TaskActivityFeed.tsx": {
+    "mtime": 1780132404.448892,
+    "ast_hash": "5d4b3dc089baab2adaf5bb5863fee4b7",
+    "semantic_hash": ""
+  },
+  "D:\\MediaHive App\\src\\components\\tasks\\TaskComments.tsx": {
+    "mtime": 1778213106.70531,
+    "ast_hash": "3cae2aab3a41f2c8b180a9138158aeb8",
+    "semantic_hash": ""
+  },
+  "D:\\MediaHive App\\src\\components\\tasks\\TaskConfidenceView.tsx": {
+    "mtime": 1780132404.4504833,
+    "ast_hash": "b284b804c3091cd4b8fbd86c520df216",
+    "semantic_hash": ""
+  },
+  "D:\\MediaHive App\\src\\components\\tasks\\TaskDetailModalV2.tsx": {
+    "mtime": 1780216139.560294,
+    "ast_hash": "9635500311aa2283ca0b260c16435cdd",
+    "semantic_hash": ""
+  },
+  "D:\\MediaHive App\\src\\components\\tasks\\TaskKanbanView.tsx": {
+    "mtime": 1780208004.0242138,
+    "ast_hash": "66313ed3ad810a915dfbcd700237a1ac",
+    "semantic_hash": ""
+  },
+  "D:\\MediaHive App\\src\\components\\tasks\\TaskListSkeleton.tsx": {
+    "mtime": 1779469516.2782238,
+    "ast_hash": "764c58b20e28b719ff08a2ab1f8b7de7",
+    "semantic_hash": ""
+  },
+  "D:\\MediaHive App\\src\\components\\tasks\\TaskListView.tsx": {
+    "mtime": 1780207998.6225681,
+    "ast_hash": "f9b02f00897383acdd0a56b867233bca",
+    "semantic_hash": ""
+  },
+  "D:\\MediaHive App\\src\\components\\tasks\\TaskRatingComponent.tsx": {
+    "mtime": 1779444803.4176207,
+    "ast_hash": "3f206bb8416eb048e9c6b219c54268d0",
+    "semantic_hash": ""
+  },
+  "D:\\MediaHive App\\src\\components\\tasks\\TaskRowSkeleton.tsx": {
+    "mtime": 1779469512.8188505,
+    "ast_hash": "18deefb5c34135ce2a4d072e6dbb1566",
+    "semantic_hash": ""
+  },
+  "D:\\MediaHive App\\src\\components\\tasks\\TaskSubtasks.tsx": {
+    "mtime": 1778213106.741582,
+    "ast_hash": "8a5b1acc8340113dfe31d4a1f3135b41",
+    "semantic_hash": ""
+  },
+  "D:\\MediaHive App\\src\\components\\tasks\\audit\\AuditTimeline.tsx": {
+    "mtime": 1779444803.4126163,
+    "ast_hash": "aeee50834ed5ee917fc633eecde21a74",
+    "semantic_hash": ""
+  },
+  "D:\\MediaHive App\\src\\components\\trash\\PermanentDeleteDialog.tsx": {
+    "mtime": 1779444803.4186208,
+    "ast_hash": "311755bd6d543bd6061bb12ac8220c5c",
+    "semantic_hash": ""
+  },
+  "D:\\MediaHive App\\src\\components\\ui\\accordion.tsx": {
+    "mtime": 1778213106.748709,
+    "ast_hash": "9acd8f651844143bd32aa3f4ebdd8498",
+    "semantic_hash": ""
+  },
+  "D:\\MediaHive App\\src\\components\\ui\\alert-dialog.tsx": {
+    "mtime": 1778213106.7511635,
+    "ast_hash": "96289b446b05be92f5fa68a99489c908",
+    "semantic_hash": ""
+  },
+  "D:\\MediaHive App\\src\\components\\ui\\alert.tsx": {
+    "mtime": 1778213106.7528267,
+    "ast_hash": "7deb5681c7ed25d18dd1b4fb7d223693",
+    "semantic_hash": ""
+  },
+  "D:\\MediaHive App\\src\\components\\ui\\AmbientCursorLight.tsx": {
+    "mtime": 1778213106.754489,
+    "ast_hash": "4bdefda4bd78537a32b7ba1904f8c615",
+    "semantic_hash": ""
+  },
+  "D:\\MediaHive App\\src\\components\\ui\\AppLoader.tsx": {
+    "mtime": 1780132404.493657,
+    "ast_hash": "2c09a62cc05b841a70c0843df5112e30",
+    "semantic_hash": ""
+  },
+  "D:\\MediaHive App\\src\\components\\ui\\aspect-ratio.tsx": {
+    "mtime": 1778213106.756737,
+    "ast_hash": "dcb189013ec808fefffceed9f15bcc3b",
+    "semantic_hash": ""
+  },
+  "D:\\MediaHive App\\src\\components\\ui\\avatar.tsx": {
+    "mtime": 1778213106.7583756,
+    "ast_hash": "dfe8c1ef8f73aa7f91230c14a4a21b71",
+    "semantic_hash": ""
+  },
+  "D:\\MediaHive App\\src\\components\\ui\\background-boxes.tsx": {
+    "mtime": 1780132404.4947343,
+    "ast_hash": "cd05bc466cfa9194cc6bb41c0497404f",
+    "semantic_hash": ""
+  },
+  "D:\\MediaHive App\\src\\components\\ui\\badge.tsx": {
+    "mtime": 1780132404.482592,
+    "ast_hash": "561d8e5bd50f8815b498f0e9af2c5b85",
+    "semantic_hash": ""
+  },
+  "D:\\MediaHive App\\src\\components\\ui\\BottomNav.tsx": {
+    "mtime": 1778213106.763903,
+    "ast_hash": "dacf9dfc805d6c5a91a77aa4e06f0ba0",
+    "semantic_hash": ""
+  },
+  "D:\\MediaHive App\\src\\components\\ui\\breadcrumb.tsx": {
+    "mtime": 1778213106.766745,
+    "ast_hash": "908958673b534e7ab8af02a47d450bf3",
+    "semantic_hash": ""
+  },
+  "D:\\MediaHive App\\src\\components\\ui\\button-group.tsx": {
+    "mtime": 1778213106.7689176,
+    "ast_hash": "a2256e299194271a0026118add476a85",
+    "semantic_hash": ""
+  },
+  "D:\\MediaHive App\\src\\components\\ui\\button.tsx": {
+    "mtime": 1779554927.149774,
+    "ast_hash": "68908c3420e971fda57365a33d9740fd",
+    "semantic_hash": ""
+  },
+  "D:\\MediaHive App\\src\\components\\ui\\calendar.tsx": {
+    "mtime": 1780132404.4968767,
+    "ast_hash": "103359eddd6618cdf856b58305238913",
+    "semantic_hash": ""
+  },
+  "D:\\MediaHive App\\src\\components\\ui\\card.tsx": {
+    "mtime": 1778213106.7752142,
+    "ast_hash": "486b4175c685923e8ace5592259f93c4",
+    "semantic_hash": ""
+  },
+  "D:\\MediaHive App\\src\\components\\ui\\carousel.tsx": {
+    "mtime": 1778213106.7787392,
+    "ast_hash": "61511ca1762ddf6b333c382a4e921c52",
+    "semantic_hash": ""
+  },
+  "D:\\MediaHive App\\src\\components\\ui\\chart.tsx": {
+    "mtime": 1778213106.7818806,
+    "ast_hash": "fdfc55eeb58abb6453aa6d8469291bb7",
+    "semantic_hash": ""
+  },
+  "D:\\MediaHive App\\src\\components\\ui\\checkbox.tsx": {
+    "mtime": 1778213106.7833838,
+    "ast_hash": "d2a583d1dcaf06dcf1ef6d83430f620f",
+    "semantic_hash": ""
+  },
+  "D:\\MediaHive App\\src\\components\\ui\\collapsible.tsx": {
+    "mtime": 1778213106.7853909,
+    "ast_hash": "6dc9bbf54b5bdb11466bfa79966c2755",
+    "semantic_hash": ""
+  },
+  "D:\\MediaHive App\\src\\components\\ui\\command.tsx": {
+    "mtime": 1778213106.787392,
+    "ast_hash": "c1db40a6f8892dba4122046b4b448484",
+    "semantic_hash": ""
+  },
+  "D:\\MediaHive App\\src\\components\\ui\\ComponentSeparator.tsx": {
+    "mtime": 1778213106.7896929,
+    "ast_hash": "114714385459f1da678a3c6f2fdc3cd2",
+    "semantic_hash": ""
+  },
+  "D:\\MediaHive App\\src\\components\\ui\\ConfirmationDialog.tsx": {
+    "mtime": 1780132404.4996612,
+    "ast_hash": "ff529910e2c01ba5977e85c716a163d5",
+    "semantic_hash": ""
+  },
+  "D:\\MediaHive App\\src\\components\\ui\\container-scroll-animation.tsx": {
+    "mtime": 1778213106.7952363,
+    "ast_hash": "8507e980a767efec90cc6b770889495c",
+    "semantic_hash": ""
+  },
+  "D:\\MediaHive App\\src\\components\\ui\\context-menu.tsx": {
+    "mtime": 1778213106.7972956,
+    "ast_hash": "87a6fe9d4a224f1750dd6e83dfee98ea",
+    "semantic_hash": ""
+  },
+  "D:\\MediaHive App\\src\\components\\ui\\DataIntegritySignal.tsx": {
+    "mtime": 1778213106.800376,
+    "ast_hash": "f308a5c478710bbf901298d261566f2a",
+    "semantic_hash": ""
+  },
+  "D:\\MediaHive App\\src\\components\\ui\\DataList.tsx": {
+    "mtime": 1779444803.422132,
+    "ast_hash": "90c3a40ac2c2abac0f6260faec6bf516",
+    "semantic_hash": ""
+  },
+  "D:\\MediaHive App\\src\\components\\ui\\DataRow.tsx": {
+    "mtime": 1779427155.053321,
+    "ast_hash": "cbf8fdf04e2ec7d216ee78eeb7c037a2",
+    "semantic_hash": ""
+  },
+  "D:\\MediaHive App\\src\\components\\ui\\date-picker.tsx": {
+    "mtime": 1779444803.422132,
+    "ast_hash": "9e1f10e5f119df41ed178f0676e7d0e7",
+    "semantic_hash": ""
+  },
+  "D:\\MediaHive App\\src\\components\\ui\\dialog.tsx": {
+    "mtime": 1778213106.8059459,
+    "ast_hash": "0eb48e5c636740cd707d10e4249cb0b3",
+    "semantic_hash": ""
+  },
+  "D:\\MediaHive App\\src\\components\\ui\\Divider.tsx": {
+    "mtime": 1780132404.484937,
+    "ast_hash": "7d48f033091da7526743a522f64332a3",
+    "semantic_hash": ""
+  },
+  "D:\\MediaHive App\\src\\components\\ui\\DraftIndicator.tsx": {
+    "mtime": 1779444803.4231377,
+    "ast_hash": "2cc6df693c38cc7253453d2851089414",
+    "semantic_hash": ""
+  },
+  "D:\\MediaHive App\\src\\components\\ui\\drawer.tsx": {
+    "mtime": 1778213106.8094532,
+    "ast_hash": "a8b5b2183141895e5467855872b6e25b",
+    "semantic_hash": ""
+  },
+  "D:\\MediaHive App\\src\\components\\ui\\dropdown-menu.tsx": {
+    "mtime": 1778213106.8124583,
+    "ast_hash": "aea8d23d12da65c714a900a3605bc68b",
+    "semantic_hash": ""
+  },
+  "D:\\MediaHive App\\src\\components\\ui\\empty.tsx": {
+    "mtime": 1778213106.8154075,
+    "ast_hash": "f972af182c8cec0e8d907ed5024514cb",
+    "semantic_hash": ""
+  },
+  "D:\\MediaHive App\\src\\components\\ui\\EmptyState.tsx": {
+    "mtime": 1779444803.4231377,
+    "ast_hash": "62cb1dd2348df91c69e4f28f54312186",
+    "semantic_hash": ""
+  },
+  "D:\\MediaHive App\\src\\components\\ui\\ErrorFallback.tsx": {
+    "mtime": 1779444803.4241338,
+    "ast_hash": "55dc504948aeafdee4cbe3c3a9b14fa0",
+    "semantic_hash": ""
+  },
+  "D:\\MediaHive App\\src\\components\\ui\\FeatureToggle.tsx": {
+    "mtime": 1779528112.2967322,
+    "ast_hash": "fb8fdfa0ea31b1173a7662f36b56826b",
+    "semantic_hash": ""
+  },
+  "D:\\MediaHive App\\src\\components\\ui\\field.tsx": {
+    "mtime": 1778213106.8219552,
+    "ast_hash": "8a89772f77064254df12734a599bfd7a",
+    "semantic_hash": ""
+  },
+  "D:\\MediaHive App\\src\\components\\ui\\form.tsx": {
+    "mtime": 1778213106.822961,
+    "ast_hash": "99de6156a685803cbd5e1f044694502d",
+    "semantic_hash": ""
+  },
+  "D:\\MediaHive App\\src\\components\\ui\\FormGroup.tsx": {
+    "mtime": 1780132404.4883394,
+    "ast_hash": "6c9b9b9ac2b42d1724f9f147f433938a",
+    "semantic_hash": ""
+  },
+  "D:\\MediaHive App\\src\\components\\ui\\GlobalSyncBanner.tsx": {
+    "mtime": 1780132404.5018504,
+    "ast_hash": "06648b7b7c70889334007e830da787aa",
+    "semantic_hash": ""
+  },
+  "D:\\MediaHive App\\src\\components\\ui\\HomePageRedesign.tsx": {
+    "mtime": 1780132404.5207317,
+    "ast_hash": "d28f8e32748b9fb4b5e18d5db96a9404",
+    "semantic_hash": ""
+  },
+  "D:\\MediaHive App\\src\\components\\ui\\hover-card.tsx": {
+    "mtime": 1778213106.8280182,
+    "ast_hash": "f681899e530942801ad3d2a98fa868d4",
+    "semantic_hash": ""
+  },
+  "D:\\MediaHive App\\src\\components\\ui\\ImageCropper.tsx": {
+    "mtime": 1780132404.5228975,
+    "ast_hash": "4da8b6820cdbacd76045f0c20933f748",
+    "semantic_hash": ""
+  },
+  "D:\\MediaHive App\\src\\components\\ui\\input-group.tsx": {
+    "mtime": 1778213106.8330677,
+    "ast_hash": "b95028fb13027010f07e6a8e5a7ca00e",
+    "semantic_hash": ""
+  },
+  "D:\\MediaHive App\\src\\components\\ui\\input-otp.tsx": {
+    "mtime": 1778213106.834576,
+    "ast_hash": "7943a8f7c2ccb786bf71682042e7ec00",
+    "semantic_hash": ""
+  },
+  "D:\\MediaHive App\\src\\components\\ui\\input.tsx": {
+    "mtime": 1780132404.490507,
+    "ast_hash": "4c9c9b89afd83a275c65085da05ccf27",
+    "semantic_hash": ""
+  },
+  "D:\\MediaHive App\\src\\components\\ui\\item.tsx": {
+    "mtime": 1778213106.8375978,
+    "ast_hash": "8f632ac4e70727ce7e5c32b17442f91e",
+    "semantic_hash": ""
+  },
+  "D:\\MediaHive App\\src\\components\\ui\\kbd.tsx": {
+    "mtime": 1778213106.8385572,
+    "ast_hash": "1ddd8fc328895065aec377ecdbce4501",
+    "semantic_hash": ""
+  },
+  "D:\\MediaHive App\\src\\components\\ui\\label.tsx": {
+    "mtime": 1778213106.8385572,
+    "ast_hash": "54182f15eaa11b2f35bc2ff903e2557b",
+    "semantic_hash": ""
+  },
+  "D:\\MediaHive App\\src\\components\\ui\\Magnetic.tsx": {
+    "mtime": 1778213106.8395603,
+    "ast_hash": "4687a88b8959c8d661e8a8a08a0a5bf8",
+    "semantic_hash": ""
+  },
+  "D:\\MediaHive App\\src\\components\\ui\\menubar.tsx": {
+    "mtime": 1778213106.8440695,
+    "ast_hash": "5ba9104f5c8183c72a6c9ec4f2643c4e",
+    "semantic_hash": ""
+  },
+  "D:\\MediaHive App\\src\\components\\ui\\navigation-menu.tsx": {
+    "mtime": 1778213106.8460863,
+    "ast_hash": "74d588ba6187fb0c5620fcc3e5bfd19a",
+    "semantic_hash": ""
+  },
+  "D:\\MediaHive App\\src\\components\\ui\\navigation.tsx": {
+    "mtime": 1780132404.4920902,
+    "ast_hash": "9edef8740295e5bbe77ab80cf6e1c35b",
+    "semantic_hash": ""
+  },
+  "D:\\MediaHive App\\src\\components\\ui\\PageContainer.tsx": {
+    "mtime": 1778213106.8491282,
+    "ast_hash": "7957771ae0f8fbdc937536b31796d6e3",
+    "semantic_hash": ""
+  },
+  "D:\\MediaHive App\\src\\components\\ui\\pagination.tsx": {
+    "mtime": 1778213106.8506436,
+    "ast_hash": "b2cf42b151e165c5d0ab3978f81524d5",
+    "semantic_hash": ""
+  },
+  "D:\\MediaHive App\\src\\components\\ui\\popover.tsx": {
+    "mtime": 1779427862.7546103,
+    "ast_hash": "ac8c1ef81d91529b38e454293ca3bf05",
+    "semantic_hash": ""
+  },
+  "D:\\MediaHive App\\src\\components\\ui\\portal.tsx": {
+    "mtime": 1778213106.8526487,
+    "ast_hash": "58a06700a3eedd66bbab28a0882b9c28",
+    "semantic_hash": ""
+  },
+  "D:\\MediaHive App\\src\\components\\ui\\progress.tsx": {
+    "mtime": 1778213106.853153,
+    "ast_hash": "9c90dcb71b3ebb4af52e5b5bab7c4492",
+    "semantic_hash": ""
+  },
+  "D:\\MediaHive App\\src\\components\\ui\\radio-group.tsx": {
+    "mtime": 1778213106.8541574,
+    "ast_hash": "0f087070684fb1f5ca5eb2c1a263ad5f",
+    "semantic_hash": ""
+  },
+  "D:\\MediaHive App\\src\\components\\ui\\ReactiveCard.tsx": {
+    "mtime": 1779381755.024855,
+    "ast_hash": "7656b6628e1a789af2e3a6057f25836d",
+    "semantic_hash": ""
+  },
+  "D:\\MediaHive App\\src\\components\\ui\\resizable.tsx": {
+    "mtime": 1778213106.857191,
+    "ast_hash": "4ad1d7d1dba79f66fee0f602394ba62e",
+    "semantic_hash": ""
+  },
+  "D:\\MediaHive App\\src\\components\\ui\\SafeAvatar.tsx": {
+    "mtime": 1779444803.428165,
+    "ast_hash": "7f079e68edf0faf223748a7fcd20ec45",
+    "semantic_hash": ""
+  },
+  "D:\\MediaHive App\\src\\components\\ui\\scroll-area.tsx": {
+    "mtime": 1778213106.8602931,
+    "ast_hash": "bcfa838c604a2e1b3cba179c2c174989",
+    "semantic_hash": ""
+  },
+  "D:\\MediaHive App\\src\\components\\ui\\SectionHeader.tsx": {
+    "mtime": 1779427155.059322,
+    "ast_hash": "3ea3428543585361491b503f879bf0fa",
+    "semantic_hash": ""
+  },
+  "D:\\MediaHive App\\src\\components\\ui\\select.tsx": {
+    "mtime": 1779444209.8714707,
+    "ast_hash": "83aba3e618c9339e3479b41ea8e1e8c9",
+    "semantic_hash": ""
+  },
+  "D:\\MediaHive App\\src\\components\\ui\\separator.tsx": {
+    "mtime": 1778213106.8643005,
+    "ast_hash": "981488d95a2e21d07ed8acfd3963d7e9",
+    "semantic_hash": ""
+  },
+  "D:\\MediaHive App\\src\\components\\ui\\sheet.tsx": {
+    "mtime": 1778213106.8663101,
+    "ast_hash": "edbeb83948a72bc767f0052a40bc0dca",
+    "semantic_hash": ""
+  },
+  "D:\\MediaHive App\\src\\components\\ui\\sidebar.tsx": {
+    "mtime": 1778213106.8729217,
+    "ast_hash": "df68d500c998a23a31eb49d2cce1a78f",
+    "semantic_hash": ""
+  },
+  "D:\\MediaHive App\\src\\components\\ui\\skeleton.tsx": {
+    "mtime": 1780131803.8482988,
+    "ast_hash": "0d9c13c85832fc1b22343fab466c9b04",
+    "semantic_hash": ""
+  },
+  "D:\\MediaHive App\\src\\components\\ui\\slider.tsx": {
+    "mtime": 1778213106.8755007,
+    "ast_hash": "5fdb371d39dedd5962bbfae6e7282ead",
+    "semantic_hash": ""
+  },
+  "D:\\MediaHive App\\src\\components\\ui\\sonner.tsx": {
+    "mtime": 1778213106.877007,
+    "ast_hash": "7ac795c4ca4ddc1ffbf3d14d15c0eb1e",
+    "semantic_hash": ""
+  },
+  "D:\\MediaHive App\\src\\components\\ui\\spinner.tsx": {
+    "mtime": 1778213106.8780148,
+    "ast_hash": "950317316cd2d2c4e49a050348c837cd",
+    "semantic_hash": ""
+  },
+  "D:\\MediaHive App\\src\\components\\ui\\Surface.tsx": {
+    "mtime": 1778213106.8805285,
+    "ast_hash": "4ef96207c5c8fad66d9f51a687b94d53",
+    "semantic_hash": ""
+  },
+  "D:\\MediaHive App\\src\\components\\ui\\switch.tsx": {
+    "mtime": 1778213106.8810444,
+    "ast_hash": "ae852948bb159c1d93470d135d8f9160",
+    "semantic_hash": ""
+  },
+  "D:\\MediaHive App\\src\\components\\ui\\table.tsx": {
+    "mtime": 1778213106.884559,
+    "ast_hash": "1b339aeaa78100603808436dd1ae9fe2",
+    "semantic_hash": ""
+  },
+  "D:\\MediaHive App\\src\\components\\ui\\tabs.tsx": {
+    "mtime": 1778213106.8855636,
+    "ast_hash": "c40b57c831b57166ae18690a41e5d5b3",
+    "semantic_hash": ""
+  },
+  "D:\\MediaHive App\\src\\components\\ui\\textarea.tsx": {
+    "mtime": 1779022775.9813077,
+    "ast_hash": "7dbb2adf88a5a7655d70611ad792e98b",
+    "semantic_hash": ""
+  },
+  "D:\\MediaHive App\\src\\components\\ui\\time-picker.tsx": {
+    "mtime": 1779444803.4342644,
+    "ast_hash": "e565521f7e724dc0d33e1663e7d6cb45",
+    "semantic_hash": ""
+  },
+  "D:\\MediaHive App\\src\\components\\ui\\toggle-group.tsx": {
+    "mtime": 1778213106.8916347,
+    "ast_hash": "b351a550a05e42fb26146c4d79e326f3",
+    "semantic_hash": ""
+  },
+  "D:\\MediaHive App\\src\\components\\ui\\toggle.tsx": {
+    "mtime": 1778213106.892635,
+    "ast_hash": "5461d4ac7e35a1845cffe0b46bd43af3",
+    "semantic_hash": ""
+  },
+  "D:\\MediaHive App\\src\\components\\ui\\tooltip.tsx": {
+    "mtime": 1778213106.8936343,
+    "ast_hash": "c660b43af1749d010755b523f12d4d96",
+    "semantic_hash": ""
+  },
+  "D:\\MediaHive App\\src\\components\\ui\\layout\\PageHeader.tsx": {
+    "mtime": 1778213106.896143,
+    "ast_hash": "3e710bc862db01032072a7b4624607d0",
+    "semantic_hash": ""
+  },
+  "D:\\MediaHive App\\src\\components\\ui\\layout\\PageLayout.tsx": {
+    "mtime": 1778213106.8966455,
+    "ast_hash": "6644287a42cc849ca1d55d699d343847",
+    "semantic_hash": ""
+  },
+  "D:\\MediaHive App\\src\\components\\ui\\layout\\PageSection.tsx": {
+    "mtime": 1780132404.5244613,
+    "ast_hash": "f04edb373475a516f16271fe66fc5d54",
+    "semantic_hash": ""
+  },
+  "D:\\MediaHive App\\src\\components\\ui\\selectors\\DateSelector.tsx": {
+    "mtime": 1779444803.4291663,
+    "ast_hash": "f95ece6b785edeb853a24817173fb812",
+    "semantic_hash": ""
+  },
+  "D:\\MediaHive App\\src\\components\\ui\\selectors\\DropdownSelector.tsx": {
+    "mtime": 1779444803.4291663,
+    "ast_hash": "d950393d6dc1f8d84b7164f41b962fc6",
+    "semantic_hash": ""
+  },
+  "D:\\MediaHive App\\src\\components\\ui\\selectors\\MultiSelect.tsx": {
+    "mtime": 1780133669.6490405,
+    "ast_hash": "847697458be45a7543c4fd14507ff447",
+    "semantic_hash": ""
+  },
+  "D:\\MediaHive App\\src\\components\\ui\\selectors\\SearchSelect.tsx": {
+    "mtime": 1779444803.4316435,
+    "ast_hash": "c7e4c0daeb879f314d597da62faacd30",
+    "semantic_hash": ""
+  },
+  "D:\\MediaHive App\\src\\components\\ui\\selectors\\TimeSelector.tsx": {
+    "mtime": 1779444803.4316435,
+    "ast_hash": "78a2a16ae498948a2f80720154ae38ff",
+    "semantic_hash": ""
+  },
+  "D:\\MediaHive App\\src\\components\\ui\\sky-aura\\SafeSurface.tsx": {
+    "mtime": 1779427155.0619745,
+    "ast_hash": "c481035810d5d986e58442295198863c",
+    "semantic_hash": ""
+  },
+  "D:\\MediaHive App\\src\\components\\ui\\sky-aura\\SkySelect.tsx": {
+    "mtime": 1780132404.5260231,
+    "ast_hash": "cd5f5290d388d98ce0a17de447aa8c4e",
+    "semantic_hash": ""
+  },
+  "D:\\MediaHive App\\src\\components\\ui\\sky-aura\\SkyToggle.tsx": {
+    "mtime": 1778213106.9114304,
+    "ast_hash": "f3dc469deccac753b98bc7c795594ea6",
+    "semantic_hash": ""
+  },
+  "D:\\MediaHive App\\src\\config\\featureFlags.ts": {
+    "mtime": 1778213106.912482,
+    "ast_hash": "42c913047bcae66ab57e02b7c476d338",
+    "semantic_hash": ""
+  },
+  "D:\\MediaHive App\\src\\contexts\\AuthContextProvider.tsx": {
+    "mtime": 1780236781.520457,
+    "ast_hash": "a6ae4a80797b8583f970aa5dd77e6df3",
+    "semantic_hash": ""
+  },
+  "D:\\MediaHive App\\src\\contexts\\TaskContext.tsx": {
+    "mtime": 1778213106.9192085,
+    "ast_hash": "d49122fb12595180caf70f322489a9ff",
+    "semantic_hash": ""
+  },
+  "D:\\MediaHive App\\src\\contexts\\ThemeContext.tsx": {
+    "mtime": 1779426823.5542839,
+    "ast_hash": "2ee5a39ab680b810c2d4f41f6e6516d3",
+    "semantic_hash": ""
+  },
+  "D:\\MediaHive App\\src\\db\\index.js": {
+    "mtime": 1772349251.8598735,
+    "ast_hash": "281ad1e6f504bd807b752d54c3530cda",
+    "semantic_hash": ""
+  },
+  "D:\\MediaHive App\\src\\db\\index.ts": {
+    "mtime": 1778213106.9229765,
+    "ast_hash": "474e6adf68e57092c52018827166bc79",
+    "semantic_hash": ""
+  },
+  "D:\\MediaHive App\\src\\db\\schema.js": {
+    "mtime": 1779453011.3774328,
+    "ast_hash": "8301027c85b06b6b282d6827cfbc66cf",
+    "semantic_hash": ""
+  },
+  "D:\\MediaHive App\\src\\db\\schema.ts": {
+    "mtime": 1780228078.2388198,
+    "ast_hash": "cef99c511fd8c4951c0803beb105247c",
+    "semantic_hash": ""
+  },
+  "D:\\MediaHive App\\src\\db\\schema_snapshot.sql": {
+    "mtime": 1777977762.8528738,
+    "ast_hash": "dc73346f816a2afabb8347b1c40ff23c",
+    "semantic_hash": ""
+  },
+  "D:\\MediaHive App\\src\\db\\seed.js": {
+    "mtime": 1777977762.8534055,
+    "ast_hash": "8cbf63dbe48ad4c41f2c8e01773b4673",
+    "semantic_hash": ""
+  },
+  "D:\\MediaHive App\\src\\db\\seed.ts": {
+    "mtime": 1779452533.9388983,
+    "ast_hash": "a96b2c7de2646aea947f3e02d1737cb0",
+    "semantic_hash": ""
+  },
+  "D:\\MediaHive App\\src\\db\\test-import.ts": {
+    "mtime": 1768675316.627324,
+    "ast_hash": "d41d8cd98f00b204e9800998ecf8427e",
+    "semantic_hash": ""
+  },
+  "D:\\MediaHive App\\src\\db\\migrations\\20260306_audit_log_init.sql": {
+    "mtime": 1777977762.848118,
+    "ast_hash": "2f2b9b18d92be37d30b5b778e9904c01",
+    "semantic_hash": ""
+  },
+  "D:\\MediaHive App\\src\\db\\migrations\\20260306_campaigns_upgrade.sql": {
+    "mtime": 1777977762.848118,
+    "ast_hash": "17e61919543aa55c46b9d1f114a6aa8e",
+    "semantic_hash": ""
+  },
+  "D:\\MediaHive App\\src\\db\\migrations\\20260306_events_upgrade.sql": {
+    "mtime": 1777977762.84876,
+    "ast_hash": "5acfa1140678b3cb77f69cdc0fb3820f",
+    "semantic_hash": ""
+  },
+  "D:\\MediaHive App\\src\\db\\migrations\\20260306_tasks_upgrade.sql": {
+    "mtime": 1777977762.84876,
+    "ast_hash": "4ecc10540b2b2e70a6f93ab17ae76780",
+    "semantic_hash": ""
+  },
+  "D:\\MediaHive App\\src\\db\\migrations\\20260308_hardening_rls.sql": {
+    "mtime": 1777977762.84876,
+    "ast_hash": "f05c76d7f840260760386b4b0b77af6c",
+    "semantic_hash": ""
+  },
+  "D:\\MediaHive App\\src\\db\\migrations\\20260308_rls_policies.sql": {
+    "mtime": 1777977762.84876,
+    "ast_hash": "7c830a29d0dc09ca6e500943f15928a8",
+    "semantic_hash": ""
+  },
+  "D:\\MediaHive App\\src\\db\\migrations\\20260308_tenant_isolation.sql": {
+    "mtime": 1777977762.849766,
+    "ast_hash": "47c75e99ca552d782f37bdb252315a82",
+    "semantic_hash": ""
+  },
+  "D:\\MediaHive App\\src\\db\\migrations\\20260315_drive_queue_init.sql": {
+    "mtime": 1777977762.849766,
+    "ast_hash": "2c3b77f0d1c5cffa32cb1e8c4910bc05",
+    "semantic_hash": ""
+  },
+  "D:\\MediaHive App\\src\\db\\migrations\\20260315_inventory_bookings_fix.sql": {
+    "mtime": 1777977762.849766,
+    "ast_hash": "0e77dd6e0554feb242b2d340a9952988",
+    "semantic_hash": ""
+  },
+  "D:\\MediaHive App\\src\\db\\migrations\\20260315_inventory_hardening.sql": {
+    "mtime": 1777977762.849766,
+    "ast_hash": "322a8ffc80d35a1ea04efebf4ecad33d",
+    "semantic_hash": ""
+  },
+  "D:\\MediaHive App\\src\\db\\migrations\\20260315_rls_recursion_fix.sql": {
+    "mtime": 1777977762.850768,
+    "ast_hash": "d857153c5f3dba42858bfb70d5386fb8",
+    "semantic_hash": ""
+  },
+  "D:\\MediaHive App\\src\\db\\migrations\\20260503_global_versioning.sql": {
+    "mtime": 1777977762.850768,
+    "ast_hash": "36368a06a33025d7130b1496a3929a28",
+    "semantic_hash": ""
+  },
+  "D:\\MediaHive App\\src\\db\\migrations\\20260503_harden_integrity_constraints.sql": {
+    "mtime": 1777977762.8512747,
+    "ast_hash": "b4416e70006956fdb9906ce62c9a3602",
+    "semantic_hash": ""
+  },
+  "D:\\MediaHive App\\src\\db\\migrations\\20260523_demo_data_indexes.sql": {
+    "mtime": 1779528127.3617468,
+    "ast_hash": "152267769d44f703a6a89762f54bae8f",
+    "semantic_hash": ""
+  },
+  "D:\\MediaHive App\\src\\db\\migrations\\apply_equipment_bookings.js": {
+    "mtime": 1777977762.8512747,
+    "ast_hash": "b3110c004a59f24caac9896aed70dfaf",
+    "semantic_hash": ""
+  },
+  "D:\\MediaHive App\\src\\db\\migrations\\apply_task_comments.js": {
+    "mtime": 1777977762.8512747,
+    "ast_hash": "6f7b1ced111542f7c1af3eba50d68b96",
+    "semantic_hash": ""
+  },
+  "D:\\MediaHive App\\src\\db\\migrations\\apply_task_comments.ts": {
+    "mtime": 1778213106.9351923,
+    "ast_hash": "5a94d89955febd08187649aa7c0d85db",
+    "semantic_hash": ""
+  },
+  "D:\\MediaHive App\\src\\db\\migrations\\deprecate_assigned_to_jsonb.sql": {
+    "mtime": 1777977762.851807,
+    "ast_hash": "f6b9d94da09317129c0caddd5e3de008",
+    "semantic_hash": ""
+  },
+  "D:\\MediaHive App\\src\\db\\migrations\\sync_admin_profile.sql": {
+    "mtime": 1777977762.851807,
+    "ast_hash": "4d312d1d3994a9014e3339ca7a351532",
+    "semantic_hash": ""
+  },
+  "D:\\MediaHive App\\src\\db\\migrations\\unified_schema_fix.sql": {
+    "mtime": 1777977762.852338,
+    "ast_hash": "0365e19148dc370d5a0b7e7fab71638e",
+    "semantic_hash": ""
+  },
+  "D:\\MediaHive App\\src\\db\\seeds\\events.ts": {
+    "mtime": 1778213106.9383044,
+    "ast_hash": "953dc4215f36831b32eb5032e6b1693a",
+    "semantic_hash": ""
+  },
+  "D:\\MediaHive App\\src\\db\\seeds\\files.ts": {
+    "mtime": 1778213106.9403014,
+    "ast_hash": "014b339e2603246c0dffbf48e912fe29",
+    "semantic_hash": ""
+  },
+  "D:\\MediaHive App\\src\\db\\seeds\\institutions.ts": {
+    "mtime": 1778213106.9413016,
+    "ast_hash": "a01a764a5ae54d7d8eeed513edd2ab0d",
+    "semantic_hash": ""
+  },
+  "D:\\MediaHive App\\src\\db\\seeds\\notifications.ts": {
+    "mtime": 1779453018.0391612,
+    "ast_hash": "ecfc78fa1efb06f15b93b185733005b7",
+    "semantic_hash": ""
+  },
+  "D:\\MediaHive App\\src\\db\\seeds\\tasks.ts": {
+    "mtime": 1779452491.7354133,
+    "ast_hash": "fb4513cb5292d1dbe4098665e3721895",
+    "semantic_hash": ""
+  },
+  "D:\\MediaHive App\\src\\db\\seeds\\users.ts": {
+    "mtime": 1778213106.951069,
+    "ast_hash": "1abca215e8e0b744eef7c3eb1a436d7f",
+    "semantic_hash": ""
+  },
+  "D:\\MediaHive App\\src\\design-system\\icons\\variants.ts": {
+    "mtime": 1778213106.9525962,
+    "ast_hash": "256550e6c9d1001104f5a6db7954f9f3",
+    "semantic_hash": ""
+  },
+  "D:\\MediaHive App\\src\\domain\\conflicts\\conflictPolicies.ts": {
+    "mtime": 1778213106.9541245,
+    "ast_hash": "ffde19f3de256c5f0800b0b5d105cb67",
+    "semantic_hash": ""
+  },
+  "D:\\MediaHive App\\src\\domain\\conflicts\\policyEvaluator.ts": {
+    "mtime": 1779453066.5014281,
+    "ast_hash": "ff9eeb602d8ca1a55e48c644f468e326",
+    "semantic_hash": ""
+  },
+  "D:\\MediaHive App\\src\\domain\\conflicts\\types.ts": {
+    "mtime": 1778407451.5680945,
+    "ast_hash": "a873bbb01e5ac0c319a3f9238e9c3563",
+    "semantic_hash": ""
+  },
+  "D:\\MediaHive App\\src\\domain\\schemas\\campaign.ts": {
+    "mtime": 1778213106.9586565,
+    "ast_hash": "ffae9daa66e9076be0fb8c6c61976a4a",
+    "semantic_hash": ""
+  },
+  "D:\\MediaHive App\\src\\domain\\schemas\\event.ts": {
+    "mtime": 1778213106.9606583,
+    "ast_hash": "06e4137aa6c7db85913c231afb0b0724",
+    "semantic_hash": ""
+  },
+  "D:\\MediaHive App\\src\\domain\\schemas\\file.ts": {
+    "mtime": 1778213106.9611664,
+    "ast_hash": "44fdd97016c0fdfa3367648aca64eadc",
+    "semantic_hash": ""
+  },
+  "D:\\MediaHive App\\src\\domain\\schemas\\index.ts": {
+    "mtime": 1778822181.197296,
+    "ast_hash": "f02b2dd5ab818470736d02bdcdaa2549",
+    "semantic_hash": ""
+  },
+  "D:\\MediaHive App\\src\\domain\\schemas\\institution.ts": {
+    "mtime": 1778822314.5693438,
+    "ast_hash": "1fc23245231488eeee3b142949d9bb96",
+    "semantic_hash": ""
+  },
+  "D:\\MediaHive App\\src\\domain\\schemas\\notification.ts": {
+    "mtime": 1779452477.0066636,
+    "ast_hash": "c9764f9cc4dde930c314c1cd02c2d38c",
+    "semantic_hash": ""
+  },
+  "D:\\MediaHive App\\src\\domain\\schemas\\task.ts": {
+    "mtime": 1779452474.444845,
+    "ast_hash": "4a57095e54d6b5a5fdcad0ffb92dbdee",
+    "semantic_hash": ""
+  },
+  "D:\\MediaHive App\\src\\domain\\schemas\\user.ts": {
+    "mtime": 1778213106.9662304,
+    "ast_hash": "89669acac622097b55f1ed5732e7f9f6",
+    "semantic_hash": ""
+  },
+  "D:\\MediaHive App\\src\\domain\\system\\performanceThresholds.ts": {
+    "mtime": 1778213106.9672892,
+    "ast_hash": "2a388aa01cc12d1ef30c0a979e268859",
+    "semantic_hash": ""
+  },
+  "D:\\MediaHive App\\src\\domain\\system\\systemLimits.ts": {
+    "mtime": 1778213106.9708955,
+    "ast_hash": "fd3e9cc57b58a065b027d060875248e3",
+    "semantic_hash": ""
+  },
+  "D:\\MediaHive App\\src\\features\\campaigns\\hooks\\useCampaigns.ts": {
+    "mtime": 1778213106.9729111,
+    "ast_hash": "ab1202259d7cb37db1ab79f056080cbb",
+    "semantic_hash": ""
+  },
+  "D:\\MediaHive App\\src\\features\\campaigns\\services\\campaignService.ts": {
+    "mtime": 1778213106.9749112,
+    "ast_hash": "a67f1aab9e13f9603730b200ab60fdc8",
+    "semantic_hash": ""
+  },
+  "D:\\MediaHive App\\src\\features\\campaigns\\types\\campaign.ts": {
+    "mtime": 1778213106.9769447,
+    "ast_hash": "bf787429f944e24c9ff6617a663f7fff",
+    "semantic_hash": ""
+  },
+  "D:\\MediaHive App\\src\\features\\dashboard\\components\\ActiveCampaignsWidget.tsx": {
+    "mtime": 1780132404.5462618,
+    "ast_hash": "d9087db1fa07ec23c96b5196902dd12d",
+    "semantic_hash": ""
+  },
+  "D:\\MediaHive App\\src\\features\\dashboard\\components\\ActivityFeed.tsx": {
+    "mtime": 1780132404.528158,
+    "ast_hash": "f00124043c5820a83b1d6b6e16bfd57e",
+    "semantic_hash": ""
+  },
+  "D:\\MediaHive App\\src\\features\\dashboard\\components\\AdminOversightWidget.tsx": {
+    "mtime": 1780214676.1013217,
+    "ast_hash": "6cc2134f1af1bb6eb60b2f6695c024e5",
+    "semantic_hash": ""
+  },
+  "D:\\MediaHive App\\src\\features\\dashboard\\components\\CrewScheduleCard.tsx": {
+    "mtime": 1779444803.4444194,
+    "ast_hash": "9703d4933f0afbd6f4a7edf0b4fbb1ec",
+    "semantic_hash": ""
+  },
+  "D:\\MediaHive App\\src\\features\\dashboard\\components\\DueSoonWidget.tsx": {
+    "mtime": 1779427155.0749576,
+    "ast_hash": "cab8181063d4c98b1a69cb2d63eb2ce4",
+    "semantic_hash": ""
+  },
+  "D:\\MediaHive App\\src\\features\\dashboard\\components\\EquipmentUsageCard.tsx": {
+    "mtime": 1779444803.4444194,
+    "ast_hash": "fa35f2f38efe3602e5f0324647ea84a2",
+    "semantic_hash": ""
+  },
+  "D:\\MediaHive App\\src\\features\\dashboard\\components\\EventsNext7DaysWidget.tsx": {
+    "mtime": 1779444803.445925,
+    "ast_hash": "db2722dbc0218f44bbeb82bec6738026",
+    "semantic_hash": ""
+  },
+  "D:\\MediaHive App\\src\\features\\dashboard\\components\\GuestActivityFeed.tsx": {
+    "mtime": 1780132404.5297647,
+    "ast_hash": "32c24461baf54755ec3263d0d23626ae",
+    "semantic_hash": ""
+  },
+  "D:\\MediaHive App\\src\\features\\dashboard\\components\\GuestQuickActions.tsx": {
+    "mtime": 1779427155.0769744,
+    "ast_hash": "6a094dd0dadcdf20470f133b59d21c17",
+    "semantic_hash": ""
+  },
+  "D:\\MediaHive App\\src\\features\\dashboard\\components\\GuestTaskOverviewWidget.tsx": {
+    "mtime": 1778213106.996147,
+    "ast_hash": "6da5437b43c3fc37670bf8d9f464a38b",
+    "semantic_hash": ""
+  },
+  "D:\\MediaHive App\\src\\features\\dashboard\\components\\InstitutionalPulseRow.tsx": {
+    "mtime": 1779444803.446931,
+    "ast_hash": "3b44e837c1881ff67e1fd28adbacf552",
+    "semantic_hash": ""
+  },
+  "D:\\MediaHive App\\src\\features\\dashboard\\components\\InventoryStatsWidget.tsx": {
+    "mtime": 1779427155.077974,
+    "ast_hash": "fe620c301417aa0ca601f993903a10db",
+    "semantic_hash": ""
+  },
+  "D:\\MediaHive App\\src\\features\\dashboard\\components\\MediaTeamOverview.tsx": {
+    "mtime": 1780214685.468112,
+    "ast_hash": "0611297ff27747473984cf37129b0d8a",
+    "semantic_hash": ""
+  },
+  "D:\\MediaHive App\\src\\features\\dashboard\\components\\MemberRequestSummaryWidget.tsx": {
+    "mtime": 1779444803.4504385,
+    "ast_hash": "1d73fdc41ea3dbe204a3ced4b863fce0",
+    "semantic_hash": ""
+  },
+  "D:\\MediaHive App\\src\\features\\dashboard\\components\\MyFocusWidget.tsx": {
+    "mtime": 1779603431.4248092,
+    "ast_hash": "7031e23ae906e208eebec39fad995ef7",
+    "semantic_hash": ""
+  },
+  "D:\\MediaHive App\\src\\features\\dashboard\\components\\MyWorkflowWidget.tsx": {
+    "mtime": 1780132404.5325663,
+    "ast_hash": "6d916bc3583d2d5da14cf98ae12dc463",
+    "semantic_hash": ""
+  },
+  "D:\\MediaHive App\\src\\features\\dashboard\\components\\NextProductionCard.tsx": {
+    "mtime": 1779444803.4534523,
+    "ast_hash": "27e958a871a50124a9c4f7c3c26fe074",
+    "semantic_hash": ""
+  },
+  "D:\\MediaHive App\\src\\features\\dashboard\\components\\OverdueAlertsWidget.tsx": {
+    "mtime": 1780132404.5484328,
+    "ast_hash": "c6a7ab8f75a60a0d83cd7d9c28e083f7",
+    "semantic_hash": ""
+  },
+  "D:\\MediaHive App\\src\\features\\dashboard\\components\\OverdueTasksWidget.tsx": {
+    "mtime": 1780137353.7999039,
+    "ast_hash": "8c77e6d3309d37489a533874d16aecec",
+    "semantic_hash": ""
+  },
+  "D:\\MediaHive App\\src\\features\\dashboard\\components\\ProductionDashboard.tsx": {
+    "mtime": 1779444803.455452,
+    "ast_hash": "f72ee532f5a731d6e4dbdb3cdbf88aed",
+    "semantic_hash": ""
+  },
+  "D:\\MediaHive App\\src\\features\\dashboard\\components\\ProductionInsights.tsx": {
+    "mtime": 1780210050.2077754,
+    "ast_hash": "c25f453b2342e63d12be295c8cb78562",
+    "semantic_hash": ""
+  },
+  "D:\\MediaHive App\\src\\features\\dashboard\\components\\ProductionPulseBar.tsx": {
+    "mtime": 1779603437.4191966,
+    "ast_hash": "3167d4f3017a189137aa9bdc12e855c2",
+    "semantic_hash": ""
+  },
+  "D:\\MediaHive App\\src\\features\\dashboard\\components\\StatusChart.tsx": {
+    "mtime": 1780132404.5341392,
+    "ast_hash": "069ab721093349149412fb38ca95cd61",
+    "semantic_hash": ""
+  },
+  "D:\\MediaHive App\\src\\features\\dashboard\\components\\SystemStatusWidget.tsx": {
+    "mtime": 1779444803.4584508,
+    "ast_hash": "e8174094e08ea36961d1faadc1094233",
+    "semantic_hash": ""
+  },
+  "D:\\MediaHive App\\src\\features\\dashboard\\components\\TaskIntelligenceWidget.tsx": {
+    "mtime": 1779444803.4644802,
+    "ast_hash": "dc50e3a84809b7595abd8f04ba30aaa9",
+    "semantic_hash": ""
+  },
+  "D:\\MediaHive App\\src\\features\\dashboard\\components\\TasksFromMeWidget.tsx": {
+    "mtime": 1780132404.537818,
+    "ast_hash": "997a342bc8cb5720affcbcb10005fb2d",
+    "semantic_hash": ""
+  },
+  "D:\\MediaHive App\\src\\features\\dashboard\\components\\TimelineWidget.tsx": {
+    "mtime": 1779427155.086385,
+    "ast_hash": "c692644a2e09eaa1213922a8f09801b5",
+    "semantic_hash": ""
+  },
+  "D:\\MediaHive App\\src\\features\\dashboard\\components\\TodayEventsCard.tsx": {
+    "mtime": 1779444803.4684837,
+    "ast_hash": "c1313a323f69a737c163fd61974ef9a0",
+    "semantic_hash": ""
+  },
+  "D:\\MediaHive App\\src\\features\\dashboard\\components\\TodayFocusPanel.tsx": {
+    "mtime": 1779453082.9975913,
+    "ast_hash": "1009c4c76fb5bc8424ff6552783f000f",
+    "semantic_hash": ""
+  },
+  "D:\\MediaHive App\\src\\features\\dashboard\\components\\TodayTasksCard.tsx": {
+    "mtime": 1780136640.910143,
+    "ast_hash": "16a6dc89c93b776ebb2528f4f9052c5e",
+    "semantic_hash": ""
+  },
+  "D:\\MediaHive App\\src\\features\\dashboard\\hooks\\useDashboardMetrics.ts": {
+    "mtime": 1778213107.0374782,
+    "ast_hash": "29c46d88bca520ac4c685015dd5f82fe",
+    "semantic_hash": ""
+  },
+  "D:\\MediaHive App\\src\\features\\events\\hooks\\useEvents.ts": {
+    "mtime": 1778213107.0394902,
+    "ast_hash": "62ec58ef0d84452025a9622c7568c220",
+    "semantic_hash": ""
+  },
+  "D:\\MediaHive App\\src\\features\\events\\services\\eventService.ts": {
+    "mtime": 1779294667.6658435,
+    "ast_hash": "2cc3e6704256de15ea664bd377add86d",
+    "semantic_hash": ""
+  },
+  "D:\\MediaHive App\\src\\features\\events\\services\\recurrenceService.ts": {
+    "mtime": 1778213107.0461104,
+    "ast_hash": "67cb805809b4fb91ca6f827654cb572d",
+    "semantic_hash": ""
+  },
+  "D:\\MediaHive App\\src\\features\\events\\services\\systemEventService.ts": {
+    "mtime": 1778213107.0486598,
+    "ast_hash": "09b1c9bef4fe913824bca587ed155d3e",
+    "semantic_hash": ""
+  },
+  "D:\\MediaHive App\\src\\features\\events\\types\\event.ts": {
+    "mtime": 1778213107.0506752,
+    "ast_hash": "901beadbadfb9cd3486357f4ce413630",
+    "semantic_hash": ""
+  },
+  "D:\\MediaHive App\\src\\features\\events\\types\\systemEvent.ts": {
+    "mtime": 1778213107.0511887,
+    "ast_hash": "1876535cb9a77298de88f51b360b4896",
+    "semantic_hash": ""
+  },
+  "D:\\MediaHive App\\src\\features\\events\\utils\\conflictDetection.ts": {
+    "mtime": 1778213107.052703,
+    "ast_hash": "48524d7592ebc31a965eff1dfc951cca",
+    "semantic_hash": ""
+  },
+  "D:\\MediaHive App\\src\\features\\events\\utils\\dateNormalization.ts": {
+    "mtime": 1778213107.0552442,
+    "ast_hash": "cac4a4afdd58fab0a6bf5cfd602aa50a",
+    "semantic_hash": ""
+  },
+  "D:\\MediaHive App\\src\\features\\production\\components\\CallSheetModal.tsx": {
+    "mtime": 1780132465.516363,
+    "ast_hash": "23194c2934ad5a5b350f64708ef7be6f",
+    "semantic_hash": ""
+  },
+  "D:\\MediaHive App\\src\\features\\production\\components\\ProductionFileClient.tsx": {
+    "mtime": 1779444803.475503,
+    "ast_hash": "ae3a771c133766caf0d61bdc056f8aa1",
+    "semantic_hash": ""
+  },
+  "D:\\MediaHive App\\src\\features\\tasks\\components\\HomeTaskRow.tsx": {
+    "mtime": 1779444803.476509,
+    "ast_hash": "0e7538d0b8e51dcc3f94bff79d5f9447",
+    "semantic_hash": ""
+  },
+  "D:\\MediaHive App\\src\\features\\tasks\\components\\TaskItem.tsx": {
+    "mtime": 1779427155.1062188,
+    "ast_hash": "2766741e3c5b897042ba5f9c4348aea5",
+    "semantic_hash": ""
+  },
+  "D:\\MediaHive App\\src\\features\\tasks\\components\\TaskSummaryWidget.tsx": {
+    "mtime": 1780207077.3484733,
+    "ast_hash": "b01f81e6a16d8b47d7448b676d6ac2f7",
+    "semantic_hash": ""
+  },
+  "D:\\MediaHive App\\src\\features\\tasks\\hooks\\useOptimisticTasks.ts": {
+    "mtime": 1778511060.5831454,
+    "ast_hash": "56c15c2181b57db50cad329888ca32c7",
+    "semantic_hash": ""
+  },
+  "D:\\MediaHive App\\src\\features\\tasks\\hooks\\useTasks.ts": {
+    "mtime": 1778213107.0875258,
+    "ast_hash": "a2aeab057bd084c02471ebca525970d3",
+    "semantic_hash": ""
+  },
+  "D:\\MediaHive App\\src\\features\\tasks\\services\\taskRatingService.ts": {
+    "mtime": 1778213107.0896375,
+    "ast_hash": "567046457706498220fd84c14625c8ac",
+    "semantic_hash": ""
+  },
+  "D:\\MediaHive App\\src\\features\\tasks\\types\\task.ts": {
+    "mtime": 1779452471.4228184,
+    "ast_hash": "8b3486a6b9bbe654284b9957d30ae63c",
+    "semantic_hash": ""
+  },
+  "D:\\MediaHive App\\src\\features\\tasks\\types\\taskRating.ts": {
+    "mtime": 1778213107.0935547,
+    "ast_hash": "465e29997c19aaf9ba599a5d14efccb1",
+    "semantic_hash": ""
+  },
+  "D:\\MediaHive App\\src\\hooks\\use-mobile.ts": {
+    "mtime": 1768675316.6992986,
+    "ast_hash": "d41d8cd98f00b204e9800998ecf8427e",
+    "semantic_hash": ""
+  },
+  "D:\\MediaHive App\\src\\hooks\\useAuth.ts": {
+    "mtime": 1778213107.0951147,
+    "ast_hash": "c8d93bf78ad4477b50cc2d901d6cc53b",
+    "semantic_hash": ""
+  },
+  "D:\\MediaHive App\\src\\hooks\\useAuthQueryGuard.ts": {
+    "mtime": 1778213107.096132,
+    "ast_hash": "ed2a1c85e4174f109c540fd017443f92",
+    "semantic_hash": ""
+  },
+  "D:\\MediaHive App\\src\\hooks\\useAwareness.ts": {
+    "mtime": 1778213107.0971355,
+    "ast_hash": "aae50e4b06cabc6a2cd2685bf3c0ef5f",
+    "semantic_hash": ""
+  },
+  "D:\\MediaHive App\\src\\hooks\\useBulkSelection.ts": {
+    "mtime": 1778213107.0986414,
+    "ast_hash": "2b977a78bb772387dfb2e1b2747ba5cd",
+    "semantic_hash": ""
+  },
+  "D:\\MediaHive App\\src\\hooks\\useClientReady.ts": {
+    "mtime": 1778213107.100157,
+    "ast_hash": "687f28605e33fc7923fe438899bc2d7d",
+    "semantic_hash": ""
+  },
+  "D:\\MediaHive App\\src\\hooks\\useClientSearchParams.ts": {
+    "mtime": 1778213107.101178,
+    "ast_hash": "fa08984c322e02c99884991af9aa4e97",
+    "semantic_hash": ""
+  },
+  "D:\\MediaHive App\\src\\hooks\\useConnectivity.ts": {
+    "mtime": 1778213107.101178,
+    "ast_hash": "d09018ff214b602694623f9fda57cbf9",
+    "semantic_hash": ""
+  },
+  "D:\\MediaHive App\\src\\hooks\\useCurrentUserName.ts": {
+    "mtime": 1778213107.1026902,
+    "ast_hash": "81d4a4ec00e80823e7d239e53b703e29",
+    "semantic_hash": ""
+  },
+  "D:\\MediaHive App\\src\\hooks\\useDebouncedValue.ts": {
+    "mtime": 1778213107.1026902,
+    "ast_hash": "24d50dae139ee0052f1664da5bd47c8d",
+    "semantic_hash": ""
+  },
+  "D:\\MediaHive App\\src\\hooks\\useDevWiring.ts": {
+    "mtime": 1778213107.1042066,
+    "ast_hash": "2e6c990dbfb22f44a7c8a6bd4ca7473e",
+    "semantic_hash": ""
+  },
+  "D:\\MediaHive App\\src\\hooks\\useEntityPresence.ts": {
+    "mtime": 1778213107.105726,
+    "ast_hash": "d92e016afb081f6b2008dac8ca7f6238",
+    "semantic_hash": ""
+  },
+  "D:\\MediaHive App\\src\\hooks\\useFormState.ts": {
+    "mtime": 1778213107.107868,
+    "ast_hash": "86465a7af5c88d8ae9ab9340c2ffa798",
+    "semantic_hash": ""
+  },
+  "D:\\MediaHive App\\src\\hooks\\useFormSubmit.ts": {
+    "mtime": 1778407070.3907442,
+    "ast_hash": "fc3f77c5cfb6a865f8628096f6d697c0",
+    "semantic_hash": ""
+  },
+  "D:\\MediaHive App\\src\\hooks\\useGlobalHotkeys.ts": {
+    "mtime": 1778213107.112393,
+    "ast_hash": "9d1bea87b6c9b74712718690b3cedde6",
+    "semantic_hash": ""
+  },
+  "D:\\MediaHive App\\src\\hooks\\useItemNavigation.ts": {
+    "mtime": 1778213107.1140058,
+    "ast_hash": "c3ecbf21f9d7130ba56ff4a1c0b84a39",
+    "semantic_hash": ""
+  },
+  "D:\\MediaHive App\\src\\hooks\\useMagneticHover.ts": {
+    "mtime": 1780131733.7424276,
+    "ast_hash": "110a5d513aed0974b4d0cf477841046b",
+    "semantic_hash": ""
+  },
+  "D:\\MediaHive App\\src\\hooks\\useModalHistory.ts": {
+    "mtime": 1778213107.1146035,
+    "ast_hash": "f369b284f67d5ae7a570b7573f31a827",
+    "semantic_hash": ""
+  },
+  "D:\\MediaHive App\\src\\hooks\\useMonitoringContext.ts": {
+    "mtime": 1778213107.117166,
+    "ast_hash": "8057e1b7f2d1d3babd37753a96934406",
+    "semantic_hash": ""
+  },
+  "D:\\MediaHive App\\src\\hooks\\useMousePosition.ts": {
+    "mtime": 1778213107.1186833,
+    "ast_hash": "b487e924e52be84417a48e933a39ff89",
+    "semantic_hash": ""
+  },
+  "D:\\MediaHive App\\src\\hooks\\useNative.ts": {
+    "mtime": 1778213107.1196902,
+    "ast_hash": "92cff7dd09bbf915fc8c2961f7063d88",
+    "semantic_hash": ""
+  },
+  "D:\\MediaHive App\\src\\hooks\\useNetworkStatus.ts": {
+    "mtime": 1778213107.120711,
+    "ast_hash": "526cea4f9814b3446d5b8217716be10f",
+    "semantic_hash": ""
+  },
+  "D:\\MediaHive App\\src\\hooks\\useNotifications.ts": {
+    "mtime": 1778213107.1223416,
+    "ast_hash": "c14a65b59b119f8f64a0e4d06cb9c49d",
+    "semantic_hash": ""
+  },
+  "D:\\MediaHive App\\src\\hooks\\useNotificationsRealtime.ts": {
+    "mtime": 1778213107.1233485,
+    "ast_hash": "3d95d8215c318e9e423ce4114cc9d3ae",
+    "semantic_hash": ""
+  },
+  "D:\\MediaHive App\\src\\hooks\\useOffline.ts": {
+    "mtime": 1768675316.675434,
+    "ast_hash": "d41d8cd98f00b204e9800998ecf8427e",
+    "semantic_hash": ""
+  },
+  "D:\\MediaHive App\\src\\hooks\\useOnlineStatus.ts": {
+    "mtime": 1778213107.124358,
+    "ast_hash": "8a0265c530c47222c308d10de7a73c57",
+    "semantic_hash": ""
+  },
+  "D:\\MediaHive App\\src\\hooks\\useOperationalSummary.ts": {
+    "mtime": 1778565343.5923445,
+    "ast_hash": "14128e8706c08b7030dd3dbb42fb9728",
+    "semantic_hash": ""
+  },
+  "D:\\MediaHive App\\src\\hooks\\usePermission.ts": {
+    "mtime": 1778213107.127393,
+    "ast_hash": "1345145fd4042518cc1b9ad0e18182b0",
+    "semantic_hash": ""
+  },
+  "D:\\MediaHive App\\src\\hooks\\usePermissions.ts": {
+    "mtime": 1778213107.1304152,
+    "ast_hash": "e9a840c06c7ca841fd6dc03b64e77a63",
+    "semantic_hash": ""
+  },
+  "D:\\MediaHive App\\src\\hooks\\usePersistentConflicts.ts": {
+    "mtime": 1778396670.6114697,
+    "ast_hash": "d1c59cdb5d934d328c2491feb7b6b25f",
+    "semantic_hash": ""
+  },
+  "D:\\MediaHive App\\src\\hooks\\usePolicyGuidance.ts": {
+    "mtime": 1778213107.1369426,
+    "ast_hash": "3ff93a35ef52b57f16d1cb22888ee4b8",
+    "semantic_hash": ""
+  },
+  "D:\\MediaHive App\\src\\hooks\\usePresence.ts": {
+    "mtime": 1778213107.1374505,
+    "ast_hash": "6970eb753cb90105c6de2c031c1ade29",
+    "semantic_hash": ""
+  },
+  "D:\\MediaHive App\\src\\hooks\\useRefreshOnFocus.ts": {
+    "mtime": 1778213107.13846,
+    "ast_hash": "1f56b16575bf58ed1ac4f8732e346093",
+    "semantic_hash": ""
+  },
+  "D:\\MediaHive App\\src\\hooks\\useServerSync.ts": {
+    "mtime": 1778213107.1394594,
+    "ast_hash": "1edd0156aae8b4b046c36b5e65914442",
+    "semantic_hash": ""
+  },
+  "D:\\MediaHive App\\src\\hooks\\useSimulationPreview.ts": {
+    "mtime": 1778213107.1409664,
+    "ast_hash": "a33860cdd5755c001dc587ae04764d4f",
+    "semantic_hash": ""
+  },
+  "D:\\MediaHive App\\src\\hooks\\useSwipeAction.ts": {
+    "mtime": 1778213107.1429753,
+    "ast_hash": "82b6a70d73ccef30b10480e5fc7cb8b8",
+    "semantic_hash": ""
+  },
+  "D:\\MediaHive App\\src\\hooks\\useTableRealtime.ts": {
+    "mtime": 1778497864.7267783,
+    "ast_hash": "964f195d13bc9d70e6b2209f2a4871e0",
+    "semantic_hash": ""
+  },
+  "D:\\MediaHive App\\src\\hooks\\useTheme.ts": {
+    "mtime": 1768675316.6922863,
+    "ast_hash": "d41d8cd98f00b204e9800998ecf8427e",
+    "semantic_hash": ""
+  },
+  "D:\\MediaHive App\\src\\lib\\activityHistory.ts": {
+    "mtime": 1779452486.4633477,
+    "ast_hash": "6851cc9d19c237f8d389d4efe6bd6713",
+    "semantic_hash": ""
+  },
+  "D:\\MediaHive App\\src\\lib\\adminSeverity.ts": {
+    "mtime": 1778213107.147519,
+    "ast_hash": "2a732b4d645efa505bf3f6726ed90589",
+    "semantic_hash": ""
+  },
+  "D:\\MediaHive App\\src\\lib\\api-utils.ts": {
+    "mtime": 1778213107.1490347,
+    "ast_hash": "81fd90b5e8bb52a20aa1c7ec7aa0f55b",
+    "semantic_hash": ""
+  },
+  "D:\\MediaHive App\\src\\lib\\apiClient.ts": {
+    "mtime": 1779453108.0032268,
+    "ast_hash": "2a4bf78017ea6eea25c835e6f8a69366",
+    "semantic_hash": ""
+  },
+  "D:\\MediaHive App\\src\\lib\\audit.ts": {
+    "mtime": 1778213107.155283,
+    "ast_hash": "a5ec8c0cd8d25bc446fbe04da28157b4",
+    "semantic_hash": ""
+  },
+  "D:\\MediaHive App\\src\\lib\\auth-server.ts": {
+    "mtime": 1778213107.1562824,
+    "ast_hash": "946dc3fa932cb0fb3b8bf76cc4de8577",
+    "semantic_hash": ""
+  },
+  "D:\\MediaHive App\\src\\lib\\awarenessService.ts": {
+    "mtime": 1778402468.133969,
+    "ast_hash": "65cb9acbf8ada06dfd492f3f3d41d347",
+    "semantic_hash": ""
+  },
+  "D:\\MediaHive App\\src\\lib\\client-fetch-wrapper.ts": {
+    "mtime": 1778213107.1613076,
+    "ast_hash": "888ce42943a0abfd4b8a2a8f5ebcc40a",
+    "semantic_hash": ""
+  },
+  "D:\\MediaHive App\\src\\lib\\client-notification.ts": {
+    "mtime": 1778213107.1623163,
+    "ast_hash": "7dd433374c969b893224d18ef8fe9119",
+    "semantic_hash": ""
+  },
+  "D:\\MediaHive App\\src\\lib\\config.ts": {
+    "mtime": 1778213107.1623163,
+    "ast_hash": "65d2def9d5cbf3ba467be91ed72559d3",
+    "semantic_hash": ""
+  },
+  "D:\\MediaHive App\\src\\lib\\conflictStore.ts": {
+    "mtime": 1778213107.1664562,
+    "ast_hash": "bcc47b7cbf42218eefe3e58e9473f6c4",
+    "semantic_hash": ""
+  },
+  "D:\\MediaHive App\\src\\lib\\copy.ts": {
+    "mtime": 1778481469.849183,
+    "ast_hash": "faa054c426279311ebc55cee0ff18b30",
+    "semantic_hash": ""
+  },
+  "D:\\MediaHive App\\src\\lib\\dashboard-data.ts": {
+    "mtime": 1778213107.1701934,
+    "ast_hash": "309136217e4cdb08811fe8b23aa3cef9",
+    "semantic_hash": ""
+  },
+  "D:\\MediaHive App\\src\\lib\\dashboardMetrics.ts": {
+    "mtime": 1778341318.7430246,
+    "ast_hash": "99fc858a3c233ba9ce7151ad9ec8a3e2",
+    "semantic_hash": ""
+  },
+  "D:\\MediaHive App\\src\\lib\\dateUtils.ts": {
+    "mtime": 1778213107.1738665,
+    "ast_hash": "cbd4ec5d1f2dc405f637eee0465b6256",
+    "semantic_hash": ""
+  },
+  "D:\\MediaHive App\\src\\lib\\dbTables.ts": {
+    "mtime": 1779017105.0077386,
+    "ast_hash": "341ceef50fd5225df2f22467cb48cbc0",
+    "semantic_hash": ""
+  },
+  "D:\\MediaHive App\\src\\lib\\dragUtils.ts": {
+    "mtime": 1778213107.1765547,
+    "ast_hash": "b70d89f1b7324ee6d968368e9052d77f",
+    "semantic_hash": ""
+  },
+  "D:\\MediaHive App\\src\\lib\\drive-config.ts": {
+    "mtime": 1778213107.1770766,
+    "ast_hash": "016cc5a080536f17344e52b2716418e6",
+    "semantic_hash": ""
+  },
+  "D:\\MediaHive App\\src\\lib\\drive-init.ts": {
+    "mtime": 1778213107.1791806,
+    "ast_hash": "7fdb4fce1e3dc589171c259e9d5635f2",
+    "semantic_hash": ""
+  },
+  "D:\\MediaHive App\\src\\lib\\drive-scanner.ts": {
+    "mtime": 1778213107.1818023,
+    "ast_hash": "92a38d3124987e637e1bc37142ea5d33",
+    "semantic_hash": ""
+  },
+  "D:\\MediaHive App\\src\\lib\\drive.ts": {
+    "mtime": 1778213107.18355,
+    "ast_hash": "ce8f066b9471db30031c0e4e605d12f0",
+    "semantic_hash": ""
+  },
+  "D:\\MediaHive App\\src\\lib\\driveUtils.ts": {
+    "mtime": 1780236767.5867987,
+    "ast_hash": "630ab9b71fe97e979203f99221ed4642",
+    "semantic_hash": ""
+  },
+  "D:\\MediaHive App\\src\\lib\\emailVerificationGuard.ts": {
+    "mtime": 1778213107.1856668,
+    "ast_hash": "f3285995a7fc99e4be623a4567629841",
+    "semantic_hash": ""
+  },
+  "D:\\MediaHive App\\src\\lib\\emulatorStore.ts": {
+    "mtime": 1779453117.6841936,
+    "ast_hash": "64df33345e3e7f3b2b6527dad7335603",
+    "semantic_hash": ""
+  },
+  "D:\\MediaHive App\\src\\lib\\encryption.ts": {
+    "mtime": 1778213107.1888647,
+    "ast_hash": "a98f46657f5e5b4a3fb2ee379e83b348",
+    "semantic_hash": ""
+  },
+  "D:\\MediaHive App\\src\\lib\\env-guard.ts": {
+    "mtime": 1778213107.1899245,
+    "ast_hash": "aa2930b90bc020ffbac89ba065b7dfbf",
+    "semantic_hash": ""
+  },
+  "D:\\MediaHive App\\src\\lib\\env-validator.ts": {
+    "mtime": 1778213107.1930885,
+    "ast_hash": "e855f0dc35e0b48b216953c7d3b0a277",
+    "semantic_hash": ""
+  },
+  "D:\\MediaHive App\\src\\lib\\error-tracking.ts": {
+    "mtime": 1778213107.19435,
+    "ast_hash": "e6de771487cda922a6f383afc98941f1",
+    "semantic_hash": ""
+  },
+  "D:\\MediaHive App\\src\\lib\\eventBus.ts": {
+    "mtime": 1778213107.195879,
+    "ast_hash": "04dd6f50a0dedebdad70926872be9018",
+    "semantic_hash": ""
+  },
+  "D:\\MediaHive App\\src\\lib\\faceRecognition.ts": {
+    "mtime": 1778213107.198921,
+    "ast_hash": "d276879a3092a9a340db39e8bdebf957",
+    "semantic_hash": ""
+  },
+  "D:\\MediaHive App\\src\\lib\\fetcher.ts": {
+    "mtime": 1778213107.2004378,
+    "ast_hash": "883fb55fbcda53e6751f4e8e7dd84bdc",
+    "semantic_hash": ""
+  },
+  "D:\\MediaHive App\\src\\lib\\findAvailablePort.ts": {
+    "mtime": 1778213107.2014902,
+    "ast_hash": "e9477eee857e9606db449dd038bb6238",
+    "semantic_hash": ""
+  },
+  "D:\\MediaHive App\\src\\lib\\haptics.ts": {
+    "mtime": 1778213107.2024982,
+    "ast_hash": "6ebe5689f17314fcebbb742ed0ab9384",
+    "semantic_hash": ""
+  },
+  "D:\\MediaHive App\\src\\lib\\idempotency.ts": {
+    "mtime": 1778213107.204016,
+    "ast_hash": "a3afe4ef477171790fc67a136ce740c7",
+    "semantic_hash": ""
+  },
+  "D:\\MediaHive App\\src\\lib\\imageCrop.ts": {
+    "mtime": 1778213107.2060242,
+    "ast_hash": "417ae9b34f428feaaa450cba390422ed",
+    "semantic_hash": ""
+  },
+  "D:\\MediaHive App\\src\\lib\\init-pwa.ts": {
+    "mtime": 1778213107.207533,
+    "ast_hash": "241fc3b0b0b5adf95596f8d7b338de97",
+    "semantic_hash": ""
+  },
+  "D:\\MediaHive App\\src\\lib\\init.ts": {
+    "mtime": 1778213107.2085395,
+    "ast_hash": "d4eba7383916b95fcf6cac53d3daedee",
+    "semantic_hash": ""
+  },
+  "D:\\MediaHive App\\src\\lib\\log-pipeline.ts": {
+    "mtime": 1778213107.210055,
+    "ast_hash": "16ca2010c5a757078bc305610d857e19",
+    "semantic_hash": ""
+  },
+  "D:\\MediaHive App\\src\\lib\\logger.ts": {
+    "mtime": 1778213107.211066,
+    "ast_hash": "84e1d7170fee87c79aae1b7a9870fb0f",
+    "semantic_hash": ""
+  },
+  "D:\\MediaHive App\\src\\lib\\logging.ts": {
+    "mtime": 1778213107.2151535,
+    "ast_hash": "66dddc7ea4287455de96ddb748adec8e",
+    "semantic_hash": ""
+  },
+  "D:\\MediaHive App\\src\\lib\\mediaAnalyzer.ts": {
+    "mtime": 1778213107.2187316,
+    "ast_hash": "9e2813e2a3f0b73626d4d8092c82e09b",
+    "semantic_hash": ""
+  },
+  "D:\\MediaHive App\\src\\lib\\monitor.ts": {
+    "mtime": 1778213107.22028,
+    "ast_hash": "82476cf3e4e0acaebcfecc88cc2351d8",
+    "semantic_hash": ""
+  },
+  "D:\\MediaHive App\\src\\lib\\network.ts": {
+    "mtime": 1778213107.2212968,
+    "ast_hash": "a3da42d933ff7ac5a55030f7b1eb477d",
+    "semantic_hash": ""
+  },
+  "D:\\MediaHive App\\src\\lib\\normalization.ts": {
+    "mtime": 1778213107.2218146,
+    "ast_hash": "c8836ca3fdaea05565e900922c16564b",
+    "semantic_hash": ""
+  },
+  "D:\\MediaHive App\\src\\lib\\notification-grouping.ts": {
+    "mtime": 1778213107.2253406,
+    "ast_hash": "6e9af992ba7141f9a9372b38b9f07ea9",
+    "semantic_hash": ""
+  },
+  "D:\\MediaHive App\\src\\lib\\notificationSelectors.ts": {
+    "mtime": 1778413903.3020976,
+    "ast_hash": "2c3a2698b12a919323211cc473c2f28e",
+    "semantic_hash": ""
+  },
+  "D:\\MediaHive App\\src\\lib\\offline-contracts.ts": {
+    "mtime": 1778213107.2310581,
+    "ast_hash": "c8f88e8b3275053ec511b5b55f0a1f1f",
+    "semantic_hash": ""
+  },
+  "D:\\MediaHive App\\src\\lib\\offline-db-test.ts": {
+    "mtime": 1778213107.231601,
+    "ast_hash": "63087ab69c866bf0a648d30b1151141b",
+    "semantic_hash": ""
+  },
+  "D:\\MediaHive App\\src\\lib\\offline-db.ts": {
+    "mtime": 1778213107.2356105,
+    "ast_hash": "01de45a90910bb8cd00d472700490c2c",
+    "semantic_hash": ""
+  },
+  "D:\\MediaHive App\\src\\lib\\offline-sync.ts": {
+    "mtime": 1778213107.2381382,
+    "ast_hash": "9e2d1ed09458a2ae3e1fe7bb7d77b82e",
+    "semantic_hash": ""
+  },
+  "D:\\MediaHive App\\src\\lib\\offlineQueue.ts": {
+    "mtime": 1778213107.2391317,
+    "ast_hash": "bff993a49ad1549f3231fa79dd17ff35",
+    "semantic_hash": ""
+  },
+  "D:\\MediaHive App\\src\\lib\\performance.ts": {
+    "mtime": 1778213107.2426567,
+    "ast_hash": "7f92173166a3882cf4ef45eb1d359bbb",
+    "semantic_hash": ""
+  },
+  "D:\\MediaHive App\\src\\lib\\permissions.ts": {
+    "mtime": 1778213107.2446513,
+    "ast_hash": "389c22518b7fc863c98986b1f67bd0cf",
+    "semantic_hash": ""
+  },
+  "D:\\MediaHive App\\src\\lib\\presence-client.ts": {
+    "mtime": 1778213107.2471626,
+    "ast_hash": "13e5a76b11498a29cff647272648bd09",
+    "semantic_hash": ""
+  },
+  "D:\\MediaHive App\\src\\lib\\queryErrorHandler.ts": {
+    "mtime": 1778213107.2487392,
+    "ast_hash": "f190ba9ec2baf0218d600b79b2314790",
+    "semantic_hash": ""
+  },
+  "D:\\MediaHive App\\src\\lib\\reactQueryPersister.ts": {
+    "mtime": 1778213107.2503052,
+    "ast_hash": "026523441f769348b40f4744167756db",
+    "semantic_hash": ""
+  },
+  "D:\\MediaHive App\\src\\lib\\reportUtils.ts": {
+    "mtime": 1778213107.2524579,
+    "ast_hash": "3134957917231e230f18721530c5b88a",
+    "semantic_hash": ""
+  },
+  "D:\\MediaHive App\\src\\lib\\request-logger.ts": {
+    "mtime": 1778213107.256823,
+    "ast_hash": "dacfcc6a3418897340478a5d34cc5ad2",
+    "semantic_hash": ""
+  },
+  "D:\\MediaHive App\\src\\lib\\roleStyles.ts": {
+    "mtime": 1778213107.2589989,
+    "ast_hash": "4ae5cc2b8fbb4b2745de3bd7ad4aad5d",
+    "semantic_hash": ""
+  },
+  "D:\\MediaHive App\\src\\lib\\safeQuery.ts": {
+    "mtime": 1779427520.473394,
+    "ast_hash": "076cdea95143c4ec5769b7359fc0e753",
+    "semantic_hash": ""
+  },
+  "D:\\MediaHive App\\src\\lib\\safeTransaction.ts": {
+    "mtime": 1778213107.2654293,
+    "ast_hash": "ae49d094b07926a3013ab4eaac7bd3f1",
+    "semantic_hash": ""
+  },
+  "D:\\MediaHive App\\src\\lib\\sanitizer.ts": {
+    "mtime": 1778213107.268126,
+    "ast_hash": "6e51142603de19c5fc666cc75ed4a751",
+    "semantic_hash": ""
+  },
+  "D:\\MediaHive App\\src\\lib\\selfHealUser.ts": {
+    "mtime": 1778213107.2701733,
+    "ast_hash": "00c44efa8be2709473d6d94dd3d342b5",
+    "semantic_hash": ""
+  },
+  "D:\\MediaHive App\\src\\lib\\sendFcm.ts": {
+    "mtime": 1778213107.271198,
+    "ast_hash": "0dd611265f2859d0423d874bd9c318b9",
+    "semantic_hash": ""
+  },
+  "D:\\MediaHive App\\src\\lib\\serverQueryClient.ts": {
+    "mtime": 1778213107.2723331,
+    "ast_hash": "c3e8b4e51087d792815b03bcc308d58c",
+    "semantic_hash": ""
+  },
+  "D:\\MediaHive App\\src\\lib\\service-worker.ts": {
+    "mtime": 1778213107.273909,
+    "ast_hash": "adc47e9d698dd4f2b1960b926331e4d8",
+    "semantic_hash": ""
+  },
+  "D:\\MediaHive App\\src\\lib\\supabaseClient.ts": {
+    "mtime": 1778213107.2760253,
+    "ast_hash": "efa482e10801139e960109373f88b9b9",
+    "semantic_hash": ""
+  },
+  "D:\\MediaHive App\\src\\lib\\supabaseServerClient.ts": {
+    "mtime": 1778213107.278592,
+    "ast_hash": "29b402ab6f7d8f60c5c2386db1b9194e",
+    "semantic_hash": ""
+  },
+  "D:\\MediaHive App\\src\\lib\\sync-queue.ts": {
+    "mtime": 1778213107.2821567,
+    "ast_hash": "e25951e215b958dc0cb21bef7d24cf87",
+    "semantic_hash": ""
+  },
+  "D:\\MediaHive App\\src\\lib\\tenantQuery.ts": {
+    "mtime": 1778213107.2853234,
+    "ast_hash": "73e155a7dc40e98cc3ce9e759beded80",
+    "semantic_hash": ""
+  },
+  "D:\\MediaHive App\\src\\lib\\timeSync.ts": {
+    "mtime": 1778213107.2868288,
+    "ast_hash": "0de63912ec63789bff6791fe80fb6675",
+    "semantic_hash": ""
+  },
+  "D:\\MediaHive App\\src\\lib\\undoManager.ts": {
+    "mtime": 1778213107.2914028,
+    "ast_hash": "5c3f19409d4222a000af10188d850afe",
+    "semantic_hash": ""
+  },
+  "D:\\MediaHive App\\src\\lib\\useTheme.ts": {
+    "mtime": 1778213107.2944117,
+    "ast_hash": "8818ab281139865244489bb503322f9a",
+    "semantic_hash": ""
+  },
+  "D:\\MediaHive App\\src\\lib\\utils.ts": {
+    "mtime": 1778213107.2969275,
+    "ast_hash": "c464fae9aa67218c955bdf22e6517ee3",
+    "semantic_hash": ""
+  },
+  "D:\\MediaHive App\\src\\lib\\validation.ts": {
+    "mtime": 1779452480.3862092,
+    "ast_hash": "8ab4b2e3be379e7e3da876fd92f5f4b3",
+    "semantic_hash": ""
+  },
+  "D:\\MediaHive App\\src\\lib\\verifyUser.ts": {
+    "mtime": 1778821748.0739925,
+    "ast_hash": "f2c6b9df803f3a7f7ced379eae172ecb",
+    "semantic_hash": ""
+  },
+  "D:\\MediaHive App\\src\\lib\\api\\withApiAuth.ts": {
+    "mtime": 1778213107.3113897,
+    "ast_hash": "77ea59afe4b66d4b03854a768af691fc",
+    "semantic_hash": ""
+  },
+  "D:\\MediaHive App\\src\\lib\\auth\\tenantContext.ts": {
+    "mtime": 1778496310.6775067,
+    "ast_hash": "3124a202a30a51e0f2a99a43a5894f6b",
+    "semantic_hash": ""
+  },
+  "D:\\MediaHive App\\src\\lib\\auth\\verifyUser.ts": {
+    "mtime": 1779508938.2781596,
+    "ast_hash": "62371848156d47abaabf9fdc67e03a0b",
+    "semantic_hash": ""
+  },
+  "D:\\MediaHive App\\src\\lib\\bundle\\splitter.ts": {
+    "mtime": 1778213107.319069,
+    "ast_hash": "f096ada66aa72ba0c237cdf029499ca8",
+    "semantic_hash": ""
+  },
+  "D:\\MediaHive App\\src\\lib\\cache\\index.ts": {
+    "mtime": 1778213107.3227026,
+    "ast_hash": "23613f2af33ac32d8ae98ae4f54ceaa6",
+    "semantic_hash": ""
+  },
+  "D:\\MediaHive App\\src\\lib\\cache\\invalidate.ts": {
+    "mtime": 1778213107.3237078,
+    "ast_hash": "26fa7fdee4828bec37422999d4c2ebbe",
+    "semantic_hash": ""
+  },
+  "D:\\MediaHive App\\src\\lib\\cache\\query-cache.ts": {
+    "mtime": 1778213107.3257082,
+    "ast_hash": "382e0dfb1eb159f9708d8dedcab0f35d",
+    "semantic_hash": ""
+  },
+  "D:\\MediaHive App\\src\\lib\\collaboration\\collabManager.ts": {
+    "mtime": 1778426730.7619517,
+    "ast_hash": "db08373d1bca9eedf590ba7839b472de",
+    "semantic_hash": ""
+  },
+  "D:\\MediaHive App\\src\\lib\\collaboration\\useCollaboration.ts": {
+    "mtime": 1778213107.3307793,
+    "ast_hash": "4a389ca14b75e660851ece0ff210e472",
+    "semantic_hash": ""
+  },
+  "D:\\MediaHive App\\src\\lib\\constants\\organizations.ts": {
+    "mtime": 1778213107.3333106,
+    "ast_hash": "55c764aa95432cab61b9778e5d5a5370",
+    "semantic_hash": ""
+  },
+  "D:\\MediaHive App\\src\\lib\\db\\tenantQuery.ts": {
+    "mtime": 1778213107.3348303,
+    "ast_hash": "1c9f50f215cd73c76e899558e122a780",
+    "semantic_hash": ""
+  },
+  "D:\\MediaHive App\\src\\lib\\db\\withTenant.ts": {
+    "mtime": 1778213107.3358376,
+    "ast_hash": "d3119b10963692b93850c4e48ca3e5f3",
+    "semantic_hash": ""
+  },
+  "D:\\MediaHive App\\src\\lib\\forms\\validators.ts": {
+    "mtime": 1779452483.2420824,
+    "ast_hash": "4a5d1d2dd535964ac6b532b46d35eda4",
+    "semantic_hash": ""
+  },
+  "D:\\MediaHive App\\src\\lib\\governance\\auditTrail.ts": {
+    "mtime": 1778213107.3400044,
+    "ast_hash": "0e34617ea4efa846b0a923075157d71a",
+    "semantic_hash": ""
+  },
+  "D:\\MediaHive App\\src\\lib\\governance\\enforcementEngine.ts": {
+    "mtime": 1778213107.342694,
+    "ast_hash": "a182a65654be37d6d8f1e6cfa1d0433d",
+    "semantic_hash": ""
+  },
+  "D:\\MediaHive App\\src\\lib\\governance\\escalationService.ts": {
+    "mtime": 1778213107.349599,
+    "ast_hash": "326a6796a6443c2a834cf2cd9859453a",
+    "semantic_hash": ""
+  },
+  "D:\\MediaHive App\\src\\lib\\governance\\governanceEngine.ts": {
+    "mtime": 1778213107.3543887,
+    "ast_hash": "d1c480ddfeb655b627af761419892f88",
+    "semantic_hash": ""
+  },
+  "D:\\MediaHive App\\src\\lib\\governance\\policySchema.ts": {
+    "mtime": 1778213107.3554592,
+    "ast_hash": "bb6f373a8ac408295ea2d58a785e7cd6",
+    "semantic_hash": ""
+  },
+  "D:\\MediaHive App\\src\\lib\\health\\healthState.ts": {
+    "mtime": 1778333608.8748393,
+    "ast_hash": "bab69229a65f893e946c761c1c192c3d",
+    "semantic_hash": ""
+  },
+  "D:\\MediaHive App\\src\\lib\\health\\schemaCheck.ts": {
+    "mtime": 1778213107.3623476,
+    "ast_hash": "3643f7dfe4ee55dc9880e55fb31adf55",
+    "semantic_hash": ""
+  },
+  "D:\\MediaHive App\\src\\lib\\hooks\\use-mobile.tsx": {
+    "mtime": 1768675317.105223,
+    "ast_hash": "d41d8cd98f00b204e9800998ecf8427e",
+    "semantic_hash": ""
+  },
+  "D:\\MediaHive App\\src\\lib\\localStore\\localDB.ts": {
+    "mtime": 1778213107.366551,
+    "ast_hash": "3e2886d7616ddb352593a053d8615653",
+    "semantic_hash": ""
+  },
+  "D:\\MediaHive App\\src\\lib\\localStore\\offlineQueue.ts": {
+    "mtime": 1778213107.3696835,
+    "ast_hash": "25898db3aba571bc634d74491f1eb0ea",
+    "semantic_hash": ""
+  },
+  "D:\\MediaHive App\\src\\lib\\localStore\\persistedQueries.ts": {
+    "mtime": 1778213107.3727298,
+    "ast_hash": "c37124a6ea293f2c65effcea86ccafc5",
+    "semantic_hash": ""
+  },
+  "D:\\MediaHive App\\src\\lib\\localStore\\syncEngine.ts": {
+    "mtime": 1778213107.3752456,
+    "ast_hash": "35f113b6fbba6234b62ae1ebcc394a8c",
+    "semantic_hash": ""
+  },
+  "D:\\MediaHive App\\src\\lib\\notifications\\sendPush.ts": {
+    "mtime": 1778213107.3782926,
+    "ast_hash": "d7d36916b86effca10d39e4221fa3e25",
+    "semantic_hash": ""
+  },
+  "D:\\MediaHive App\\src\\lib\\offline\\db.ts": {
+    "mtime": 1779371594.5080535,
+    "ast_hash": "2b669a97f2c1f5ed37a23fd2ab4b7582",
+    "semantic_hash": ""
+  },
+  "D:\\MediaHive App\\src\\lib\\offline\\mutationSchemas.ts": {
+    "mtime": 1778213107.3870015,
+    "ast_hash": "88cbc957bb74a2594180b820942e62ea",
+    "semantic_hash": ""
+  },
+  "D:\\MediaHive App\\src\\lib\\offline\\preEnqueueValidator.ts": {
+    "mtime": 1778213107.3885133,
+    "ast_hash": "7fe6added6936b6371ba6b33660e68d3",
+    "semantic_hash": ""
+  },
+  "D:\\MediaHive App\\src\\lib\\offline\\queueManager.ts": {
+    "mtime": 1779371899.9207518,
+    "ast_hash": "8feb225b0d71032ed03688760d5b3ae8",
+    "semantic_hash": ""
+  },
+  "D:\\MediaHive App\\src\\lib\\prefetch\\tasks.ts": {
+    "mtime": 1778213107.4062426,
+    "ast_hash": "9dc24486746286a885a964cf5f48ffc3",
+    "semantic_hash": ""
+  },
+  "D:\\MediaHive App\\src\\lib\\server\\activity-logger.ts": {
+    "mtime": 1778213107.4087532,
+    "ast_hash": "27987524fd849e9970abbe03d19ce092",
+    "semantic_hash": ""
+  },
+  "D:\\MediaHive App\\src\\lib\\server\\server-utils.ts": {
+    "mtime": 1778213107.4097588,
+    "ast_hash": "b4f58fa4523ab049779a61d26f52723b",
+    "semantic_hash": ""
+  },
+  "D:\\MediaHive App\\src\\lib\\server\\supabase-admin.ts": {
+    "mtime": 1778213107.410758,
+    "ast_hash": "ad34616ed38ece5d82e56fd1b82eaf41",
+    "semantic_hash": ""
+  },
+  "D:\\MediaHive App\\src\\lib\\simulation\\simulationEngine.ts": {
+    "mtime": 1778213107.4149191,
+    "ast_hash": "3caa856238a71bd22d0ed037a1c1f5f4",
+    "semantic_hash": ""
+  },
+  "D:\\MediaHive App\\src\\lib\\supabase\\server.ts": {
+    "mtime": 1778213107.4179747,
+    "ast_hash": "3434729971ae4758fed353f3502dc67b",
+    "semantic_hash": ""
+  },
+  "D:\\MediaHive App\\src\\providers\\QueryProvider.tsx": {
+    "mtime": 1778213107.4194863,
+    "ast_hash": "d39e736a6295b0a29055cdb479dac13b",
+    "semantic_hash": ""
+  },
+  "D:\\MediaHive App\\src\\providers\\ReactQueryProvider.tsx": {
+    "mtime": 1778213107.4230254,
+    "ast_hash": "4e354c39d303752fced278d89018028e",
+    "semantic_hash": ""
+  },
+  "D:\\MediaHive App\\src\\scripts\\inspect-schema-v2.ts": {
+    "mtime": 1778213107.4255426,
+    "ast_hash": "769fe77ef1b9fd2bd8f57f33cc510428",
+    "semantic_hash": ""
+  },
+  "D:\\MediaHive App\\src\\scripts\\inspect-schema.ts": {
+    "mtime": 1778213107.4280663,
+    "ast_hash": "7f9ccba4fff5e9126659fecae2600161",
+    "semantic_hash": ""
+  },
+  "D:\\MediaHive App\\src\\server\\init.ts": {
+    "mtime": 1778213107.429778,
+    "ast_hash": "0af5f144cf52e62b121f1d12c02ac462",
+    "semantic_hash": ""
+  },
+  "D:\\MediaHive App\\src\\server\\ai\\service.ts": {
+    "mtime": 1778213107.434607,
+    "ast_hash": "e21f83e5e842cf07809438c5045b344d",
+    "semantic_hash": ""
+  },
+  "D:\\MediaHive App\\src\\server\\knowledgeGraph\\background.ts": {
+    "mtime": 1778213107.436755,
+    "ast_hash": "a6fa79e5a488b3c8a8abe53ed60481cc",
+    "semantic_hash": ""
+  },
+  "D:\\MediaHive App\\src\\server\\knowledgeGraph\\index.ts": {
+    "mtime": 1778213107.442098,
+    "ast_hash": "db9b8b03912c317a81343ae251884d1f",
+    "semantic_hash": ""
+  },
+  "D:\\MediaHive App\\src\\server\\knowledgeGraph\\populate.ts": {
+    "mtime": 1778213107.4449768,
+    "ast_hash": "07e1a407bb4f0e124d60b565c31a57f1",
+    "semantic_hash": ""
+  },
+  "D:\\MediaHive App\\src\\server\\knowledgeGraph\\realtime.ts": {
+    "mtime": 1778213107.4465458,
+    "ast_hash": "0aa40a498fa28685abe8d6f998889729",
+    "semantic_hash": ""
+  },
+  "D:\\MediaHive App\\src\\server\\lib\\audit.ts": {
+    "mtime": 1778213107.4486628,
+    "ast_hash": "7f196b8050919dc64060f9859542fb7b",
+    "semantic_hash": ""
+  },
+  "D:\\MediaHive App\\src\\server\\notifications\\processor.ts": {
+    "mtime": 1778213107.4503336,
+    "ast_hash": "fac8d3c576bb5e84ff23bdc5bce55f4e",
+    "semantic_hash": ""
+  },
+  "D:\\MediaHive App\\src\\services\\activityService.ts": {
+    "mtime": 1778213107.4519897,
+    "ast_hash": "459d2cdf83186a9b098c226340be1c8a",
+    "semantic_hash": ""
+  },
+  "D:\\MediaHive App\\src\\services\\adminService.ts": {
+    "mtime": 1778576393.7552378,
+    "ast_hash": "62d77ac34f338b3edce11ff87379f509",
+    "semantic_hash": ""
+  },
+  "D:\\MediaHive App\\src\\services\\airGapUpdateService.ts": {
+    "mtime": 1778213107.4564903,
+    "ast_hash": "369f806193a7b92e2def0ce0c77cb68a",
+    "semantic_hash": ""
+  },
+  "D:\\MediaHive App\\src\\services\\alertService.ts": {
+    "mtime": 1779024273.869806,
+    "ast_hash": "4121a3c1487ca6deefeb7954522aeb86",
+    "semantic_hash": ""
+  },
+  "D:\\MediaHive App\\src\\services\\auditService.ts": {
+    "mtime": 1778213107.4626946,
+    "ast_hash": "2363e0b6511f9767d23459100660be13",
+    "semantic_hash": ""
+  },
+  "D:\\MediaHive App\\src\\services\\authService.ts": {
+    "mtime": 1778213107.4642155,
+    "ast_hash": "3d132ddbdb3b7cb3dbb41291105992fb",
+    "semantic_hash": ""
+  },
+  "D:\\MediaHive App\\src\\services\\bulkOperationsService.ts": {
+    "mtime": 1778566854.2818913,
+    "ast_hash": "0a13003a56a79e0a196298f0d1dacb05",
+    "semantic_hash": ""
+  },
+  "D:\\MediaHive App\\src\\services\\canonicalDataService.ts": {
+    "mtime": 1780210480.859931,
+    "ast_hash": "42f8f2acceea225814e5599270417ed7",
+    "semantic_hash": ""
+  },
+  "D:\\MediaHive App\\src\\services\\conflictDetectionService.ts": {
+    "mtime": 1778213107.4882214,
+    "ast_hash": "575578935f5fff637a3e3f4d242b3aec",
+    "semantic_hash": ""
+  },
+  "D:\\MediaHive App\\src\\services\\dataClassificationService.ts": {
+    "mtime": 1778213107.4907322,
+    "ast_hash": "99eb28b1145d87449c7e6524da819b20",
+    "semantic_hash": ""
+  },
+  "D:\\MediaHive App\\src\\services\\deliverableService.ts": {
+    "mtime": 1778213107.4958148,
+    "ast_hash": "16fa914f205926071f68ea58718c1ac0",
+    "semantic_hash": ""
+  },
+  "D:\\MediaHive App\\src\\services\\demoDataService.ts": {
+    "mtime": 1778213107.500889,
+    "ast_hash": "d2c43111917df91df93437ff7af9efd1",
+    "semantic_hash": ""
+  },
+  "D:\\MediaHive App\\src\\services\\deviceRequestService.ts": {
+    "mtime": 1778213107.5100162,
+    "ast_hash": "dca6ec89c3f11fe047cc4c9059726378",
+    "semantic_hash": ""
+  },
+  "D:\\MediaHive App\\src\\services\\driveFolderService.ts": {
+    "mtime": 1778213107.5120544,
+    "ast_hash": "9863b5c693810dd8559f5ad99831ab17",
+    "semantic_hash": ""
+  },
+  "D:\\MediaHive App\\src\\services\\edgeCaseService.ts": {
+    "mtime": 1780139053.0306578,
+    "ast_hash": "96134329a9a6f95713c0f913213fc8e9",
+    "semantic_hash": ""
+  },
+  "D:\\MediaHive App\\src\\services\\emailService.ts": {
+    "mtime": 1778213107.5188038,
+    "ast_hash": "73d78c1a6bd410ec42f96fcdf99eb4f0",
+    "semantic_hash": ""
+  },
+  "D:\\MediaHive App\\src\\services\\fcmService.ts": {
+    "mtime": 1780314612.9650114,
+    "ast_hash": "1d8dd3f5bb6fd7a53f9225a6c48db48f",
+    "semantic_hash": ""
+  },
+  "D:\\MediaHive App\\src\\services\\files.ts": {
+    "mtime": 1778213107.5240593,
+    "ast_hash": "27dc69ac6895e40ce43c5213dbba2c15",
+    "semantic_hash": ""
+  },
+  "D:\\MediaHive App\\src\\services\\fileService.ts": {
+    "mtime": 1778774678.7321222,
+    "ast_hash": "d468aaf35be44c7a5277ed314e4380d3",
+    "semantic_hash": ""
+  },
+  "D:\\MediaHive App\\src\\services\\hardwareTrustService.ts": {
+    "mtime": 1778213107.5308666,
+    "ast_hash": "dadf3f9155de9ee265bc8f6ee1244d4f",
+    "semantic_hash": ""
+  },
+  "D:\\MediaHive App\\src\\services\\inviteService.ts": {
+    "mtime": 1778213107.5341482,
+    "ast_hash": "ed45aeedff6fbe5353a95d61d6feb23d",
+    "semantic_hash": ""
+  },
+  "D:\\MediaHive App\\src\\services\\kineticSafetyService.ts": {
+    "mtime": 1778213107.5363007,
+    "ast_hash": "753dedb82486ef4a1c1d95c19fb05431",
+    "semantic_hash": ""
+  },
+  "D:\\MediaHive App\\src\\services\\leaveBalanceService.ts": {
+    "mtime": 1779878291.9877334,
+    "ast_hash": "520f04f89db98515c35af0092b0444b2",
+    "semantic_hash": ""
+  },
+  "D:\\MediaHive App\\src\\services\\leaveRequestService.ts": {
+    "mtime": 1778213107.5498347,
+    "ast_hash": "31736ed2581eb044c234a099eea05eb5",
+    "semantic_hash": ""
+  },
+  "D:\\MediaHive App\\src\\services\\mediaCommentService.ts": {
+    "mtime": 1778213107.554883,
+    "ast_hash": "f1ed0f6a5e3fce09bb8b523302e3e63c",
+    "semantic_hash": ""
+  },
+  "D:\\MediaHive App\\src\\services\\mediaProofingService.ts": {
+    "mtime": 1778213107.5577917,
+    "ast_hash": "3427d35c29f5a71e9d87708f55d62f54",
+    "semantic_hash": ""
+  },
+  "D:\\MediaHive App\\src\\services\\mediaService.ts": {
+    "mtime": 1778213107.5610385,
+    "ast_hash": "0a088357b901927893427780fa26b604",
+    "semantic_hash": ""
+  },
+  "D:\\MediaHive App\\src\\services\\mediaVersioningService.ts": {
+    "mtime": 1778213107.5677168,
+    "ast_hash": "2bf2653ca8e8019b1ef99786924152c8",
+    "semantic_hash": ""
+  },
+  "D:\\MediaHive App\\src\\services\\monitoringService.ts": {
+    "mtime": 1778213107.573301,
+    "ast_hash": "8dd6f0d3945b99017e9c64e38affebac",
+    "semantic_hash": ""
+  },
+  "D:\\MediaHive App\\src\\services\\notificationRealtime.ts": {
+    "mtime": 1778213107.5790493,
+    "ast_hash": "8e3762aac1f35e515caaeef6041f8115",
+    "semantic_hash": ""
+  },
+  "D:\\MediaHive App\\src\\services\\notificationRuleService.ts": {
+    "mtime": 1778213107.5851626,
+    "ast_hash": "087df06ec30597381a296011648072e9",
+    "semantic_hash": ""
+  },
+  "D:\\MediaHive App\\src\\services\\onboardingService.ts": {
+    "mtime": 1778566860.0401099,
+    "ast_hash": "0f5e68f935eadcd72068b27c20c5d5d8",
+    "semantic_hash": ""
+  },
+  "D:\\MediaHive App\\src\\services\\productionService.ts": {
+    "mtime": 1778213107.59627,
+    "ast_hash": "ed116533b9d9daf8ae045593bc0abe63",
+    "semantic_hash": ""
+  },
+  "D:\\MediaHive App\\src\\services\\profilePicture.ts": {
+    "mtime": 1778213107.5989068,
+    "ast_hash": "539d0d4efbbfb63c5a08c8919308c481",
+    "semantic_hash": ""
+  },
+  "D:\\MediaHive App\\src\\services\\proofingAuditService.ts": {
+    "mtime": 1778213107.6025658,
+    "ast_hash": "a743b654f0fc2d7f94b4bf2358d1ed7a",
+    "semantic_hash": ""
+  },
+  "D:\\MediaHive App\\src\\services\\proofingNotificationService.ts": {
+    "mtime": 1778213107.6085918,
+    "ast_hash": "36900b560369beaf94f49310991de398",
+    "semantic_hash": ""
+  },
+  "D:\\MediaHive App\\src\\services\\reportService.ts": {
+    "mtime": 1778213107.6138587,
+    "ast_hash": "87d9d3eb06fb529263d0b3de1cfa5046",
+    "semantic_hash": ""
+  },
+  "D:\\MediaHive App\\src\\services\\retentionService.ts": {
+    "mtime": 1778213107.6173735,
+    "ast_hash": "10e7569bb1b671357592d31bc46e8ff2",
+    "semantic_hash": ""
+  },
+  "D:\\MediaHive App\\src\\services\\roleService.ts": {
+    "mtime": 1778213107.6193821,
+    "ast_hash": "26a2c0af32f7b333dc7731a1c63ac600",
+    "semantic_hash": ""
+  },
+  "D:\\MediaHive App\\src\\services\\statsService.ts": {
+    "mtime": 1778213107.6284084,
+    "ast_hash": "76e04785f9cbc50a0fc75759e985ac53",
+    "semantic_hash": ""
+  },
+  "D:\\MediaHive App\\src\\services\\stepUpAuthService.ts": {
+    "mtime": 1778213107.6314325,
+    "ast_hash": "481e8b01647a38bf1da60901dcaedd95",
+    "semantic_hash": ""
+  },
+  "D:\\MediaHive App\\src\\services\\structureService.ts": {
+    "mtime": 1779885220.3621738,
+    "ast_hash": "fb1bc6a6889ccfaad6dcb6fd44ad1be9",
+    "semantic_hash": ""
+  },
+  "D:\\MediaHive App\\src\\services\\systemSettingsService.ts": {
+    "mtime": 1778213107.6459787,
+    "ast_hash": "7d71c43b906bd5b0c1ad2fd5843fcfaa",
+    "semantic_hash": ""
+  },
+  "D:\\MediaHive App\\src\\services\\tasks.ts": {
+    "mtime": 1779472751.0474956,
+    "ast_hash": "2c13c1c6a3ba715c3a3af22efb283562",
+    "semantic_hash": ""
+  },
+  "D:\\MediaHive App\\src\\services\\trashService.ts": {
+    "mtime": 1778822717.3461475,
+    "ast_hash": "266032d7f5c560db3dee6d30c65ae6c9",
+    "semantic_hash": ""
+  },
+  "D:\\MediaHive App\\src\\services\\userLifecycleService.ts": {
+    "mtime": 1778566872.1667302,
+    "ast_hash": "c4c97405cbf8c6ba846933fadd292cd4",
+    "semantic_hash": ""
+  },
+  "D:\\MediaHive App\\src\\services\\userService.ts": {
+    "mtime": 1778495729.486203,
+    "ast_hash": "62694c5ded1348c3f8916c82c083ae6e",
+    "semantic_hash": ""
+  },
+  "D:\\MediaHive App\\src\\services\\versioningAuditService.ts": {
+    "mtime": 1778213107.6697574,
+    "ast_hash": "613a14f56c20d0b82adaf4765077bc76",
+    "semantic_hash": ""
+  },
+  "D:\\MediaHive App\\src\\services\\campaigns\\campaignContract.ts": {
+    "mtime": 1778213107.673301,
+    "ast_hash": "dc19081246ec5d2dea52f3b4ee80ad4e",
+    "semantic_hash": ""
+  },
+  "D:\\MediaHive App\\src\\services\\campaigns\\campaignService.ts": {
+    "mtime": 1778213107.6772995,
+    "ast_hash": "6bf6bdf328d988bed0659a7d00d12660",
+    "semantic_hash": ""
+  },
+  "D:\\MediaHive App\\src\\services\\campaigns\\useCampaigns.ts": {
+    "mtime": 1778213107.6795027,
+    "ast_hash": "e614c0171bae93f0027ea4efdd41eca5",
+    "semantic_hash": ""
+  },
+  "D:\\MediaHive App\\src\\services\\events\\eventContract.ts": {
+    "mtime": 1778213107.6830897,
+    "ast_hash": "daff46dee67934e1e7882906ff287893",
+    "semantic_hash": ""
+  },
+  "D:\\MediaHive App\\src\\services\\events\\eventService.ts": {
+    "mtime": 1778498008.1486666,
+    "ast_hash": "d21ff043601d208feeb349c3f7abbb6d",
+    "semantic_hash": ""
+  },
+  "D:\\MediaHive App\\src\\services\\inventory\\inventoryContract.ts": {
+    "mtime": 1779018032.0166812,
+    "ast_hash": "3b9f13e6bc724f58098dd50b8ac5f8fe",
+    "semantic_hash": ""
+  },
+  "D:\\MediaHive App\\src\\services\\inventory\\inventoryIssueService.ts": {
+    "mtime": 1778213107.6969337,
+    "ast_hash": "d29410aad91603aae0c9d955ee7fe0d1",
+    "semantic_hash": ""
+  },
+  "D:\\MediaHive App\\src\\services\\inventory\\inventoryRequestService.ts": {
+    "mtime": 1778930043.3885083,
+    "ast_hash": "030630fce7376b8e93d3954ab9cb7457",
+    "semantic_hash": ""
+  },
+  "D:\\MediaHive App\\src\\services\\inventory\\inventoryService.ts": {
+    "mtime": 1779018046.9726703,
+    "ast_hash": "07bae8c7ebd63dea5fc85c76e61e9c46",
+    "semantic_hash": ""
+  },
+  "D:\\MediaHive App\\src\\services\\sync\\types.ts": {
+    "mtime": 1778213107.7152684,
+    "ast_hash": "65f4a45da33485cdf56b4cf2059baf33",
+    "semantic_hash": ""
+  },
+  "D:\\MediaHive App\\src\\stores\\useDensityStore.ts": {
+    "mtime": 1778213107.7213454,
+    "ast_hash": "1639c03dad00419a4d866faed08a6c34",
+    "semantic_hash": ""
+  },
+  "D:\\MediaHive App\\src\\styles\\mediahive.plugin.ts": {
+    "mtime": 1778213107.7342203,
+    "ast_hash": "62a014207cc6403dd8f0aa9b7b493572",
+    "semantic_hash": ""
+  },
+  "D:\\MediaHive App\\src\\system\\AppBootstrap.tsx": {
+    "mtime": 1778213107.743205,
+    "ast_hash": "8e4262925644ad795d5d2fe8cfd8d265",
+    "semantic_hash": ""
+  },
+  "D:\\MediaHive App\\src\\system\\devMonitor.ts": {
+    "mtime": 1778213107.7473035,
+    "ast_hash": "52d683a2e842597acf9b16afc80ba1a3",
+    "semantic_hash": ""
+  },
+  "D:\\MediaHive App\\src\\system\\performanceLogger.ts": {
+    "mtime": 1778213107.749483,
+    "ast_hash": "9b1fe7edd5a151f3758b43790f568eb8",
+    "semantic_hash": ""
+  },
+  "D:\\MediaHive App\\src\\system\\realtimeSync.ts": {
+    "mtime": 1778582900.9919548,
+    "ast_hash": "d7ba1c10a25bff610d242e0cb9745296",
+    "semantic_hash": ""
+  },
+  "D:\\MediaHive App\\src\\system\\dashboard\\DashboardProvider.tsx": {
+    "mtime": 1778213107.7601247,
+    "ast_hash": "1cd49eb0fc8cbadd03dff85a4da5f748",
+    "semantic_hash": ""
+  },
+  "D:\\MediaHive App\\src\\system\\dashboard\\types.ts": {
+    "mtime": 1778213107.7635715,
+    "ast_hash": "3ad264d62de7695c502fdbb399f86833",
+    "semantic_hash": ""
+  },
+  "D:\\MediaHive App\\src\\system\\dashboard\\widgetRegistry.ts": {
+    "mtime": 1778213107.7655866,
+    "ast_hash": "77927c2c7e4cdf4e78c2f9788acc6459",
+    "semantic_hash": ""
+  },
+  "D:\\MediaHive App\\src\\system\\events\\eventSystem.ts": {
+    "mtime": 1778822454.649921,
+    "ast_hash": "90b9d4415055f0718f57f794f31207ad",
+    "semantic_hash": ""
+  },
+  "D:\\MediaHive App\\src\\system\\features\\featureAccess.ts": {
+    "mtime": 1779883561.6614902,
+    "ast_hash": "0a82348073fa951747c529ec1e883c4f",
+    "semantic_hash": ""
+  },
+  "D:\\MediaHive App\\src\\system\\features\\featureRegistry.ts": {
+    "mtime": 1779883566.5087996,
+    "ast_hash": "f30f9bffeceea6d50a577c53151478ea",
+    "semantic_hash": ""
+  },
+  "D:\\MediaHive App\\src\\system\\workspace\\WorkspaceProvider.tsx": {
+    "mtime": 1778823068.828277,
+    "ast_hash": "98413a7febec17ea72ad879feaf4f5f5",
+    "semantic_hash": ""
+  },
+  "D:\\MediaHive App\\src\\tests\\jest-setup.js": {
+    "mtime": 1772349252.301827,
+    "ast_hash": "f5730f284d1f677a03bc6868ad4fdeb5",
+    "semantic_hash": ""
+  },
+  "D:\\MediaHive App\\src\\tests\\jest.rules.config.js": {
+    "mtime": 1772349252.3028252,
+    "ast_hash": "624e153b96afbf354fe19b0306558ea3",
+    "semantic_hash": ""
+  },
+  "D:\\MediaHive App\\src\\tests\\notificationRules.test.ts": {
+    "mtime": 1778213107.7909534,
+    "ast_hash": "ed4c4f71953051498781d6623758cd1f",
+    "semantic_hash": ""
+  },
+  "D:\\MediaHive App\\src\\tests\\setup-globals.ts": {
+    "mtime": 1778213107.7926836,
+    "ast_hash": "13f00a31f3d6c94a5f3c620e989e8ca3",
+    "semantic_hash": ""
+  },
+  "D:\\MediaHive App\\src\\types\\activity.ts": {
+    "mtime": 1778213107.795545,
+    "ast_hash": "5be4f0f7b3658a40525a75d075806963",
+    "semantic_hash": ""
+  },
+  "D:\\MediaHive App\\src\\types\\audit.ts": {
+    "mtime": 1778213107.7990906,
+    "ast_hash": "ce7533ff247fce864ac82c6c1c4b831b",
+    "semantic_hash": ""
+  },
+  "D:\\MediaHive App\\src\\types\\automation-rules.ts": {
+    "mtime": 1778213107.802701,
+    "ast_hash": "9a8e36b3e0afc8364cfac8afc61678fc",
+    "semantic_hash": ""
+  },
+  "D:\\MediaHive App\\src\\types\\chat.ts": {
+    "mtime": 1780222852.6984937,
+    "ast_hash": "7ec30e261f492d844a700c690c8626b3",
+    "semantic_hash": ""
+  },
+  "D:\\MediaHive App\\src\\types\\conflict.ts": {
+    "mtime": 1778213107.8062136,
+    "ast_hash": "82137ac63d27cfc0fb5eae60a3e83b62",
+    "semantic_hash": ""
+  },
+  "D:\\MediaHive App\\src\\types\\deliverable.ts": {
+    "mtime": 1778213107.8077192,
+    "ast_hash": "353c0ee3e2d73f0a5fe27d33c007b396",
+    "semantic_hash": ""
+  },
+  "D:\\MediaHive App\\src\\types\\deviceRequest.ts": {
+    "mtime": 1778213107.811167,
+    "ast_hash": "36a29b26433f5384218bfc388ac4df9d",
+    "semantic_hash": ""
+  },
+  "D:\\MediaHive App\\src\\types\\drive-queue.ts": {
+    "mtime": 1778213107.8131804,
+    "ast_hash": "736aeaa1e7cbe6eec03f2989643675bd",
+    "semantic_hash": ""
+  },
+  "D:\\MediaHive App\\src\\types\\file.ts": {
+    "mtime": 1779021752.9148104,
+    "ast_hash": "3bc711c5008fd665179d308c8a298ed1",
+    "semantic_hash": ""
+  },
+  "D:\\MediaHive App\\src\\types\\index.ts": {
+    "mtime": 1778213107.8191721,
+    "ast_hash": "63c18136ba0f1949b0fc19c204c8c53d",
+    "semantic_hash": ""
+  },
+  "D:\\MediaHive App\\src\\types\\institution-policy.ts": {
+    "mtime": 1778213107.82119,
+    "ast_hash": "3ff192410a0abb79d5e578c0683f383d",
+    "semantic_hash": ""
+  },
+  "D:\\MediaHive App\\src\\types\\inventory.ts": {
+    "mtime": 1779017733.952282,
+    "ast_hash": "ade62b6e47ad5a71a184303a78c20336",
+    "semantic_hash": ""
+  },
+  "D:\\MediaHive App\\src\\types\\leave.ts": {
+    "mtime": 1780132404.5531063,
+    "ast_hash": "6f29d44fae468dc741a70056668b748c",
+    "semantic_hash": ""
+  },
+  "D:\\MediaHive App\\src\\types\\leaveBalance.ts": {
+    "mtime": 1779000357.7902024,
+    "ast_hash": "d91f88e89f2dbac04b63378b7fd1380f",
+    "semantic_hash": ""
+  },
+  "D:\\MediaHive App\\src\\types\\mediaComment.ts": {
+    "mtime": 1778213107.8385315,
+    "ast_hash": "99167c6417dcb483d7ee102fdbaa3356",
+    "semantic_hash": ""
+  },
+  "D:\\MediaHive App\\src\\types\\notification.ts": {
+    "mtime": 1778822577.2601888,
+    "ast_hash": "ec3264808794414b8ed76c0632a50dfb",
+    "semantic_hash": ""
+  },
+  "D:\\MediaHive App\\src\\types\\notificationRules.ts": {
+    "mtime": 1778213107.8460145,
+    "ast_hash": "b3092c5f251a98ac2d51dd664c84d08d",
+    "semantic_hash": ""
+  },
+  "D:\\MediaHive App\\src\\types\\role-policy.ts": {
+    "mtime": 1778213107.8485527,
+    "ast_hash": "f939590f16b77e7fc627def932ebbb49",
+    "semantic_hash": ""
+  },
+  "D:\\MediaHive App\\src\\types\\structure-policy.ts": {
+    "mtime": 1778213107.855132,
+    "ast_hash": "f957db968a4219477b68fa13e0ff64c5",
+    "semantic_hash": ""
+  },
+  "D:\\MediaHive App\\src\\types\\structure.ts": {
+    "mtime": 1778213107.8571398,
+    "ast_hash": "17bed99f38b9d45d3565de22062be4e5",
+    "semantic_hash": ""
+  },
+  "D:\\MediaHive App\\src\\types\\timestamp.ts": {
+    "mtime": 1778213107.8582163,
+    "ast_hash": "a863e029930adf651ab8c1c876549ef1",
+    "semantic_hash": ""
+  },
+  "D:\\MediaHive App\\src\\types\\user.ts": {
+    "mtime": 1778213107.860226,
+    "ast_hash": "3b8c24167231e04fbee3697f5cfff765",
+    "semantic_hash": ""
+  },
+  "D:\\MediaHive App\\src\\utils\\a11y.ts": {
+    "mtime": 1778213107.8642502,
+    "ast_hash": "163822ed1c510dabd0cbd0b34452d99d",
+    "semantic_hash": ""
+  },
+  "D:\\MediaHive App\\src\\utils\\auth-logger.ts": {
+    "mtime": 1778213107.8672705,
+    "ast_hash": "eee690a5cc12ef5dc1f28812397c9cc1",
+    "semantic_hash": ""
+  },
+  "D:\\MediaHive App\\src\\utils\\benchmarkAnalysis.ts": {
+    "mtime": 1778213107.8716886,
+    "ast_hash": "763407fc2324d03d203fea998a67c0d5",
+    "semantic_hash": ""
+  },
+  "D:\\MediaHive App\\src\\utils\\dateUtils.ts": {
+    "mtime": 1778213107.8726933,
+    "ast_hash": "ef73b86868eb7fdfb6389522cc1f0573",
+    "semantic_hash": ""
+  },
+  "D:\\MediaHive App\\src\\utils\\detect-dom-modifications.ts": {
+    "mtime": 1778213107.8746922,
+    "ast_hash": "bb6209c98f80d9a68a6beef38a1846ba",
+    "semantic_hash": ""
+  },
+  "D:\\MediaHive App\\src\\utils\\earlyWarningAnalysis.ts": {
+    "mtime": 1778213107.8792775,
+    "ast_hash": "09e60550b50a961640755952e7d4c7c1",
+    "semantic_hash": ""
+  },
+  "D:\\MediaHive App\\src\\utils\\export.ts": {
+    "mtime": 1778213107.8823354,
+    "ast_hash": "a9218d84160217fe956c958174bb0f80",
+    "semantic_hash": ""
+  },
+  "D:\\MediaHive App\\src\\utils\\exportHelpers.ts": {
+    "mtime": 1778213107.885337,
+    "ast_hash": "a5926f7edfe90a614b1d1027f0ebd282",
+    "semantic_hash": ""
+  },
+  "D:\\MediaHive App\\src\\utils\\greetings.ts": {
+    "mtime": 1778213107.8889182,
+    "ast_hash": "d6d65508e5daab2deca6a51a4299b1bc",
+    "semantic_hash": ""
+  },
+  "D:\\MediaHive App\\src\\utils\\inspiration.ts": {
+    "mtime": 1778213107.8914301,
+    "ast_hash": "ed584649cbd27d41005597a764227b29",
+    "semantic_hash": ""
+  },
+  "D:\\MediaHive App\\src\\utils\\networkMonitor.ts": {
+    "mtime": 1778213107.8960288,
+    "ast_hash": "53ad9381e1dbd7de540c626dc63f6052",
+    "semantic_hash": ""
+  },
+  "D:\\MediaHive App\\src\\utils\\safeAreaInitializer.ts": {
+    "mtime": 1778213107.8985422,
+    "ast_hash": "a0ffe58f544276833db7bdd261826ddd",
+    "semantic_hash": ""
+  },
+  "D:\\MediaHive App\\src\\utils\\trendAnalysis.ts": {
+    "mtime": 1778213107.9015849,
+    "ast_hash": "a4987050d18b669e166372822826c723",
+    "semantic_hash": ""
+  },
+  "D:\\MediaHive App\\src\\utils\\useSafeArea.ts": {
+    "mtime": 1778213107.9050994,
+    "ast_hash": "03659ddfa8e67b29fa3110e4678985b7",
+    "semantic_hash": ""
+  },
+  "D:\\MediaHive App\\src\\utils\\useSafeOffsets.ts": {
+    "mtime": 1778213107.9071085,
+    "ast_hash": "b6c36b38b85f6f5a4ad99771a8afba51",
+    "semantic_hash": ""
+  },
+  "D:\\MediaHive App\\src\\__tests__\\components\\TasksPage.test.tsx": {
+    "mtime": 1779514243.7646947,
+    "ast_hash": "83cc10403493a088a11f15e374531fef",
+    "semantic_hash": ""
+  },
+  "D:\\MediaHive App\\src\\__tests__\\unit\\dashboardMetrics.test.ts": {
+    "mtime": 1778213107.914338,
+    "ast_hash": "e5091336cf0f412e48743f23f4a93363",
+    "semantic_hash": ""
+  },
+  "D:\\MediaHive App\\src\\__tests__\\unit\\dashboardMetricsBench.test.ts": {
+    "mtime": 1778213107.9163437,
+    "ast_hash": "fef30fd45fc431005d5028f68bbea08e",
+    "semantic_hash": ""
+  },
+  "D:\\MediaHive App\\src\\__tests__\\unit\\governanceEngine.test.ts": {
+    "mtime": 1779452855.9617107,
+    "ast_hash": "5b12eb89c79ba2563d4a84b7273567cc",
+    "semantic_hash": ""
+  },
+  "D:\\MediaHive App\\src\\__tests__\\unit\\policyEvaluator.enforcement.test.ts": {
+    "mtime": 1778213107.9234262,
+    "ast_hash": "bfaed714cceefe0d023e522e6d6a1a00",
+    "semantic_hash": ""
+  },
+  "D:\\MediaHive App\\src\\__tests__\\unit\\policyEvaluator.snapshot.test.tsx": {
+    "mtime": 1778213107.925935,
+    "ast_hash": "e54e9bd47050d27e481952d068b4fb21",
+    "semantic_hash": ""
+  },
+  "D:\\MediaHive App\\src\\__tests__\\unit\\policyEvaluator.test.ts": {
+    "mtime": 1778213107.9289472,
+    "ast_hash": "c448e8acfed82776d04e68dec7f441dd",
+    "semantic_hash": ""
+  },
+  "D:\\MediaHive App\\src\\__tests__\\unit\\sanity.test.ts": {
+    "mtime": 1778213107.9309762,
+    "ast_hash": "3b8373c9d72778357f1193e89cd7b2d5",
+    "semantic_hash": ""
+  },
+  "D:\\MediaHive App\\src\\__tests__\\unit\\simulationEngine.test.ts": {
+    "mtime": 1778213107.934503,
+    "ast_hash": "b551f9cea7ef04444dfe07b9308dbd95",
+    "semantic_hash": ""
+  },
+  "D:\\MediaHive App\\src\\__tests__\\__mocks__\\authContext.ts": {
+    "mtime": 1778213107.9356356,
+    "ast_hash": "6e013e8e4fec72744e870fce6df0203f",
+    "semantic_hash": ""
+  },
+  "D:\\MediaHive App\\src\\__tests__\\__mocks__\\canonicalDataService.ts": {
+    "mtime": 1779514270.215233,
+    "ast_hash": "7c0bdd3b9e67fbb02a8a02fde4016a56",
+    "semantic_hash": ""
+  },
+  "D:\\MediaHive App\\src\\README-client-server.md": {
+    "mtime": 1777977762.5128925,
+    "ast_hash": "876fce81c47f4729634e3a4ccfa228e6",
+    "semantic_hash": ""
+  },
+  "D:\\MediaHive App\\src\\components\\library\\README.md": {
+    "mtime": 1772349251.4914236,
+    "ast_hash": "a20bb97cb362b53d28089e7430f5f626",
+    "semantic_hash": ""
+  },
+  "D:\\MediaHive App\\src\\components\\ui\\DesignSystemReadme.md": {
+    "mtime": 1772349251.7449312,
+    "ast_hash": "af15cd97cfbc1be83aaefcad10e6029e",
+    "semantic_hash": ""
+  }
+}

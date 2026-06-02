@@ -22,14 +22,14 @@ export async function GET(request: Request) {
             return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
         }
 
-        // Check if user is admin
+        // Check if user is admin or manager
         const { data: profile } = await supabase
             .from('profiles')
             .select('role, institution_id')
             .eq('id', session.user.id)
             .single();
 
-        if (profile?.role !== 'admin') {
+        if (profile?.role !== 'admin' && profile?.role !== 'manager') {
             return NextResponse.json({ error: 'Forbidden' }, { status: 403 });
         }
 

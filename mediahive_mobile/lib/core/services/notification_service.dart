@@ -184,6 +184,40 @@ class NotificationService {
     );
   }
 
+  Future<void> showChatNotification(String title, String body, {String? payload, required String roomId}) async {
+    const AndroidNotificationDetails androidDetails = AndroidNotificationDetails(
+      'mediahive_chats_v2',
+      'Chat Messages',
+      channelDescription: 'Notifications for secure incoming chat room messages',
+      importance: Importance.max,
+      priority: Priority.high,
+      sound: RawResourceAndroidNotificationSound('message_received'),
+      playSound: true,
+      largeIcon: DrawableResourceAndroidBitmap('ic_launcher_drawable'),
+      enableVibration: true,
+    );
+
+    const DarwinNotificationDetails iosDetails = DarwinNotificationDetails(
+      sound: 'message_received.wav',
+      presentSound: true,
+      presentAlert: true,
+      presentBadge: true,
+    );
+
+    const NotificationDetails details = NotificationDetails(
+      android: androidDetails,
+      iOS: iosDetails,
+    );
+
+    await _show(
+      id: DateTime.now().millisecondsSinceEpoch.remainder(100000),
+      title: title,
+      body: body,
+      notificationDetails: details,
+      payload: payload ?? '/chat/$roomId',
+    );
+  }
+
   // --- API PARITY HELPERS ---
 
   Future<void> showSyncError(String message) async {

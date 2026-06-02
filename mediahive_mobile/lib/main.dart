@@ -119,7 +119,7 @@ class MediaHiveApp extends ConsumerWidget {
       theme: ThemeData(
         useMaterial3: true,
         brightness: Brightness.light,
-        fontFamily: '.SF Pro Text',
+        fontFamily: 'Muli',
         textTheme: const TextTheme(
           // ── Display — Hero/splash text ────────────────────────────
           displayLarge:  TextStyle(fontSize: 34, fontWeight: FontWeight.w800, height: 1.15, letterSpacing: -0.5, color: DesignTokens.lightTextPrimary),
@@ -166,7 +166,7 @@ class MediaHiveApp extends ConsumerWidget {
         ),
         dividerColor: DesignTokens.lightBorder,
         snackBarTheme: SnackBarThemeData(
-          backgroundColor: DesignTokens.lightSurface.withOpacity(0.9),
+          backgroundColor: DesignTokens.lightSurface.withValues(alpha: 0.9),
           contentTextStyle: const TextStyle(color: DesignTokens.lightTextPrimary),
           shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(DesignTokens.radiusM),
@@ -175,7 +175,7 @@ class MediaHiveApp extends ConsumerWidget {
         ),
         inputDecorationTheme: InputDecorationTheme(
           filled: true,
-          fillColor: DesignTokens.lightSurface.withOpacity(0.7),
+          fillColor: DesignTokens.lightSurface.withValues(alpha: 0.7),
           border: OutlineInputBorder(
             borderRadius: BorderRadius.circular(DesignTokens.radiusL),
             borderSide: const BorderSide(color: DesignTokens.lightBorder, width: 0.75),
@@ -201,7 +201,7 @@ class MediaHiveApp extends ConsumerWidget {
           style: OutlinedButton.styleFrom(
             backgroundColor: Colors.transparent,
             foregroundColor: DesignTokens.lightTextPrimary,
-            side: BorderSide(color: DesignTokens.lightBorder.withOpacity(0.15), width: 0.75),
+            side: BorderSide(color: DesignTokens.lightBorder.withValues(alpha: 0.15), width: 0.75),
             shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16.0)),
           ),
         ),
@@ -210,7 +210,7 @@ class MediaHiveApp extends ConsumerWidget {
       darkTheme: ThemeData(
         useMaterial3: true,
         brightness: Brightness.dark,
-        fontFamily: '.SF Pro Text',
+        fontFamily: 'Muli',
         textTheme: const TextTheme(
           // ── Display — Hero/splash text ────────────────────────────
           displayLarge:  TextStyle(fontSize: 34, fontWeight: FontWeight.w800, height: 1.15, letterSpacing: -0.5, color: Colors.white),
@@ -292,7 +292,7 @@ class MediaHiveApp extends ConsumerWidget {
           style: OutlinedButton.styleFrom(
             backgroundColor: Colors.transparent,
             foregroundColor: Colors.white,
-            side: BorderSide(color: DesignTokens.border.withOpacity(0.15), width: 0.75),
+            side: BorderSide(color: DesignTokens.border.withValues(alpha: 0.15), width: 0.75),
             shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16.0)),
           ),
         ),

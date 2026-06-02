@@ -87,7 +87,7 @@ class EventDetailScreen extends ConsumerWidget {
                             color: colors.indigo,
                             borderRadius: BorderRadius.circular(12),
                             boxShadow: [
-                              BoxShadow(color: colors.indigo.withOpacity(0.3), blurRadius: 10, offset: const Offset(0, 4)),
+                              BoxShadow(color: colors.indigo.withValues(alpha: 0.3), blurRadius: 10, offset: const Offset(0, 4)),
                             ],
                           ),
                           child: const Row(
@@ -108,7 +108,7 @@ class EventDetailScreen extends ConsumerWidget {
                   const SizedBox(height: 12),
                   Text(
                     description ?? 'No description provided.',
-                    style: TextStyle(fontSize: 14, color: colors.textPrimary.withOpacity(0.7), height: 1.5),
+                    style: TextStyle(fontSize: 14, color: colors.textPrimary.withValues(alpha: 0.7), height: 1.5),
                   ),
 
                   const SizedBox(height: 32),
@@ -194,7 +194,7 @@ class EventDetailScreen extends ConsumerWidget {
                     child: Column(
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: [
-                        Icon(LucideIcons.camera, size: 40, color: colors.textSecondary.withOpacity(0.3)),
+                        Icon(LucideIcons.camera, size: 40, color: colors.textSecondary.withValues(alpha: 0.3)),
                         const SizedBox(height: 16),
                         Text('No media files found', style: TextStyle(fontSize: 14, fontWeight: FontWeight.bold, color: colors.textPrimary)),
                         const SizedBox(height: 4),
@@ -380,7 +380,7 @@ https://mediahive.app/events/detail?title=${Uri.encodeComponent(title)}
   Widget _buildStatusTag(ThemeColors colors, String label, Color color) {
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 2),
-      decoration: BoxDecoration(color: color.withOpacity(0.1), borderRadius: BorderRadius.circular(4)),
+      decoration: BoxDecoration(color: color.withValues(alpha: 0.1), borderRadius: BorderRadius.circular(4)),
       child: Text(label, style: TextStyle(fontSize: 8, fontWeight: FontWeight.bold, color: color)),
     );
   }

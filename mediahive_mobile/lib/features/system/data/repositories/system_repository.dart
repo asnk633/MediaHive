@@ -1,9 +1,9 @@
 import 'package:supabase_flutter/supabase_flutter.dart';
-import 'package:logging/logging.dart';
+import 'package:mediahive_mobile/core/services/logger_service.dart';
 
 class SystemRepository {
   final SupabaseClient _client;
-  final _logger = Logger('SystemRepository');
+  final _logger = LoggerService();
 
   SystemRepository(this._client);
 
@@ -55,7 +55,7 @@ class SystemRepository {
         'pending': totalPending,
       };
     } catch (e) {
-      _logger.severe('Error fetching command center metrics: $e');
+      _logger.error('Error fetching command center metrics: $e');
       return {
         'totalUsers': 0,
         'activeNodes': 0,

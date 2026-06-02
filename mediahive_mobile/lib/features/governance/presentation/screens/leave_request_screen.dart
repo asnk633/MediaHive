@@ -251,7 +251,7 @@ class _LeaveRequestScreenState extends ConsumerState<LeaveRequestScreen> {
         Container(
           height: 1,
           width: 60,
-          color: colors.honey.withOpacity(0.5),
+          color: colors.honey.withValues(alpha: 0.5),
         ),
       ],
     ).animate().fadeIn(duration: 400.ms).slideX(begin: -0.1);
@@ -310,7 +310,7 @@ class _LeaveRequestScreenState extends ConsumerState<LeaveRequestScreen> {
         border: Border.all(color: colors.border),
         boxShadow: [
           BoxShadow(
-            color: config.color.withOpacity(0.03),
+            color: config.color.withValues(alpha: 0.03),
             blurRadius: 10,
             offset: const Offset(0, 4),
           ),
@@ -326,7 +326,7 @@ class _LeaveRequestScreenState extends ConsumerState<LeaveRequestScreen> {
               Container(
                 padding: const EdgeInsets.all(8),
                 decoration: BoxDecoration(
-                  color: config.color.withOpacity(0.1),
+                  color: config.color.withValues(alpha: 0.1),
                   borderRadius: BorderRadius.circular(12),
                 ),
                 child: Icon(config.icon, color: config.color, size: 18),
@@ -556,7 +556,7 @@ class _LeaveRequestScreenState extends ConsumerState<LeaveRequestScreen> {
         children: [
           Container(
             padding: const EdgeInsets.all(10),
-            decoration: BoxDecoration(color: _getStatusColor(status).withOpacity(0.1), shape: BoxShape.circle),
+            decoration: BoxDecoration(color: _getStatusColor(status).withValues(alpha: 0.1), shape: BoxShape.circle),
             child: Icon(_getStatusIcon(status), color: _getStatusColor(status), size: 20),
           ),
           const SizedBox(width: 16),
@@ -576,7 +576,7 @@ class _LeaveRequestScreenState extends ConsumerState<LeaveRequestScreen> {
           Container(
             padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
             decoration: BoxDecoration(
-              color: _getStatusColor(status).withOpacity(0.1),
+              color: _getStatusColor(status).withValues(alpha: 0.1),
               borderRadius: BorderRadius.circular(20),
             ),
             child: Text(

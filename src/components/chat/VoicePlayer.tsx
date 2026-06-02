@@ -59,9 +59,20 @@ export const VoicePlayer: React.FC<VoicePlayerProps> = ({ src, durationSeconds }
     if (!audioRef.current) return;
     if (isPlaying) {
       audioRef.current.pause();
-      stopPlaybackTimer();
-      setIsPlaying(false);
     } else {
+      // Stop and pause any other active voice note player in the document
+      if (typeof window !== 'undefined') {
+        const globalWin = window as any;
+        if (globalWin.activeAudio && globalWin.activeAudio !== audioRef.current) {
+          try {
+            globalWin.activeAudio.pause();
+          } catch (e) {
+            console.error('Failed to pause background audio:', e);
+          }
+        }
+        globalWin.activeAudio = audioRef.current;
+      }
+
       let startingPos = currentTime;
       if (currentTime >= duration) {
         startingPos = 0;
@@ -75,12 +86,7 @@ export const VoicePlayer: React.FC<VoicePlayerProps> = ({ src, durationSeconds }
         audioRef.current.currentTime = startingPos % dur;
       }
       
-      audioRef.current.play().then(() => {
-        setIsPlaying(true);
-        if (durationSeconds) {
-          startPlaybackTimer();
-        }
-      }).catch(err => {
+      audioRef.current.play().catch(err => {
         console.error('Playback failed:', err);
       });
     }
@@ -142,8 +148,16 @@ export const VoicePlayer: React.FC<VoicePlayerProps> = ({ src, durationSeconds }
       <audio
         ref={audioRef}
         src={src}
-        onPlay={() => setIsPlaying(true)}
-        onPause={() => setIsPlaying(false)}
+        onPlay={() => {
+          setIsPlaying(true);
+          if (durationSeconds) {
+            startPlaybackTimer();
+          }
+        }}
+        onPause={() => {
+          setIsPlaying(false);
+          stopPlaybackTimer();
+        }}
         onTimeUpdate={handleTimeUpdate}
         onLoadedMetadata={handleLoadedMetadata}
         onEnded={handleEnded}

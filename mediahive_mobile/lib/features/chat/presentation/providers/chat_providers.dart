@@ -10,6 +10,7 @@ import 'package:mediahive_mobile/core/utils/url_helpers.dart';
 import 'package:mediahive_mobile/core/config/env_config.dart';
 import '../../domain/models/chat_room.dart';
 import 'package:mediahive_mobile/core/services/audio_service.dart';
+import 'package:http_parser/http_parser.dart';
 
 final supabaseClientProvider = Provider<SupabaseClient>((ref) {
   return Supabase.instance.client;
@@ -330,6 +331,20 @@ class ChatMessagesNotifier extends StateNotifier<AsyncValue<List<ChatMessage>>> 
     final sanitizedBase = baseUrl.endsWith('/') ? baseUrl.substring(0, baseUrl.length - 1) : baseUrl;
     final uploadUrl = '$sanitizedBase/api/chat/upload/';
 
+    final ext = file.path.split('.').last.toLowerCase();
+    String mainType = 'application';
+    String subType = 'octet-stream';
+    if (['jpg', 'jpeg', 'png', 'gif', 'webp'].contains(ext)) {
+      mainType = 'image';
+      subType = ext == 'jpg' ? 'jpeg' : ext;
+    } else if (['mp4', 'mov', 'avi', 'mkv'].contains(ext)) {
+      mainType = 'video';
+      subType = ext == 'mov' ? 'quicktime' : ext;
+    } else if (['m4a', 'mp3', 'wav', 'aac', 'ogg'].contains(ext)) {
+      mainType = 'audio';
+      subType = ext == 'm4a' ? 'x-m4a' : ext;
+    }
+
     try {
       final dioClient = dio.Dio();
       final formData = dio.FormData.fromMap({
@@ -337,6 +352,7 @@ class ChatMessagesNotifier extends StateNotifier<AsyncValue<List<ChatMessage>>> 
         'file': await dio.MultipartFile.fromFile(
           file.path,
           filename: file.path.split('/').last,
+          contentType: MediaType(mainType, subType),
         ),
       });
 
@@ -370,6 +386,7 @@ class ChatMessagesNotifier extends StateNotifier<AsyncValue<List<ChatMessage>>> 
             'file': await dio.MultipartFile.fromFile(
               file.path,
               filename: file.path.split('/').last,
+              contentType: MediaType(mainType, subType),
             ),
           });
 

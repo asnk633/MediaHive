@@ -667,11 +667,11 @@ class _ChatRoomScreenState extends ConsumerState<ChatRoomScreen> {
         
         // Request exclusive audio focus to pause background music player apps like Spotify
         await AudioPlayer.global.setAudioContext(AudioContext(
-          android: AudioContextAndroid(
+          android: const AudioContextAndroid(
             isSpeakerphoneOn: true,
             stayAwake: true,
-            contentType: AndroidContentType.music,
-            usageType: AndroidUsageType.media,
+            contentType: AndroidContentType.speech,
+            usageType: AndroidUsageType.voiceCommunication,
             audioFocus: AndroidAudioFocus.gain,
           ),
           iOS: AudioContextIOS(
@@ -685,7 +685,9 @@ class _ChatRoomScreenState extends ConsumerState<ChatRoomScreen> {
         final tempDir = await getTemporaryDirectory();
         final path = '${tempDir.path}/voice_note_${DateTime.now().millisecondsSinceEpoch}.m4a';
         
-        ref.read(audioServiceProvider).playVoiceStart();
+        await ref.read(audioServiceProvider).playVoiceStart();
+        // Wait for the beep sound effect to complete so the microphone capture starts cleanly
+        await Future.delayed(const Duration(milliseconds: 500));
         
         await _audioRecorder.start(
           const RecordConfig(

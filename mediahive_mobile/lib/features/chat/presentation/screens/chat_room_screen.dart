@@ -667,7 +667,7 @@ class _ChatRoomScreenState extends ConsumerState<ChatRoomScreen> {
         
         // Request exclusive audio focus to pause background music player apps like Spotify
         await AudioPlayer.global.setAudioContext(AudioContext(
-          android: AndroidAudioContext(
+          android: AudioContextAndroid(
             isSpeakerphoneOn: true,
             stayAwake: true,
             contentType: AndroidContentType.music,
@@ -676,9 +676,9 @@ class _ChatRoomScreenState extends ConsumerState<ChatRoomScreen> {
           ),
           iOS: AudioContextIOS(
             category: AVAudioSessionCategory.playAndRecord,
-            options: [
+            options: {
               AVAudioSessionOptions.defaultToSpeaker,
-            ],
+            },
           ),
         ));
 
@@ -761,7 +761,7 @@ class _ChatRoomScreenState extends ConsumerState<ChatRoomScreen> {
             if (isVoiceNote) {
               // Request exclusive audio focus to pause background music player apps like Spotify
               AudioPlayer.global.setAudioContext(AudioContext(
-                android: AndroidAudioContext(
+                android: AudioContextAndroid(
                   isSpeakerphoneOn: true,
                   stayAwake: true,
                   contentType: AndroidContentType.music,
@@ -770,9 +770,9 @@ class _ChatRoomScreenState extends ConsumerState<ChatRoomScreen> {
                 ),
                 iOS: AudioContextIOS(
                   category: AVAudioSessionCategory.playback,
-                  options: [
+                  options: {
                     AVAudioSessionOptions.defaultToSpeaker,
-                  ],
+                  },
                 ),
               ));
             }
@@ -3012,7 +3012,7 @@ class _InlineVideoPlayerState extends State<InlineVideoPlayer> {
         } else {
           // Request exclusive audio focus to pause background music player apps like Spotify
           AudioPlayer.global.setAudioContext(AudioContext(
-            android: AndroidAudioContext(
+            android: AudioContextAndroid(
               isSpeakerphoneOn: true,
               stayAwake: true,
               contentType: AndroidContentType.music,
@@ -3021,9 +3021,9 @@ class _InlineVideoPlayerState extends State<InlineVideoPlayer> {
             ),
             iOS: AudioContextIOS(
               category: AVAudioSessionCategory.playback,
-              options: [
+              options: {
                 AVAudioSessionOptions.defaultToSpeaker,
-              ],
+              },
             ),
           ));
 
@@ -3379,7 +3379,7 @@ class _InlineVoicePlayerState extends State<InlineVoicePlayer> {
 
       // Request exclusive audio focus to pause background music player apps like Spotify
       await AudioPlayer.global.setAudioContext(AudioContext(
-        android: AndroidAudioContext(
+        android: AudioContextAndroid(
           isSpeakerphoneOn: true,
           stayAwake: true,
           contentType: AndroidContentType.music,
@@ -3388,9 +3388,9 @@ class _InlineVoicePlayerState extends State<InlineVoicePlayer> {
         ),
         iOS: AudioContextIOS(
           category: AVAudioSessionCategory.playback,
-          options: [
+          options: {
             AVAudioSessionOptions.defaultToSpeaker,
-          ],
+          },
         ),
       ));
 

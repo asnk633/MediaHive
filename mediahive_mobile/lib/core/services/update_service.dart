@@ -48,13 +48,17 @@ class UpdateService {
   /// Handles beta versions e.g. 1.1.0-beta+21 vs 1.1.1-beta+22
   bool compareVersions(String current, String latest) {
     _logger.info('UPDATE_SERVICE: Comparing versions: current=$current, latest=$latest');
-    if (current == latest) return false;
+    if (current == latest) {
+      _logger.info('UPDATE_SERVICE: Versions are identical, no update');
+      return false;
+    }
 
     try {
       // Normalize version strings
       // Strip build numbers +xx and beta/alpha tags to compare core versions first
       final currentClean = current.split('-').first.split('+').first;
       final latestClean = latest.split('-').first.split('+').first;
+      _logger.info('UPDATE_SERVICE: Core versions: current=$currentClean, latest=$latestClean');
 
       final currentParts = currentClean.split('.').map(int.parse).toList();
       final latestParts = latestClean.split('.').map(int.parse).toList();
@@ -62,16 +66,28 @@ class UpdateService {
       for (int i = 0; i < 3; i++) {
         final currentVal = i < currentParts.length ? currentParts[i] : 0;
         final latestVal = i < latestParts.length ? latestParts[i] : 0;
-        if (latestVal > currentVal) return true;
-        if (latestVal < currentVal) return false;
+        if (latestVal > currentVal) {
+          _logger.info('UPDATE_SERVICE: Core version segment $i: latest($latestVal) > current($currentVal) → UPDATE');
+          return true;
+        }
+        if (latestVal < currentVal) {
+          _logger.info('UPDATE_SERVICE: Core version segment $i: latest($latestVal) < current($currentVal) → NO UPDATE');
+          return false;
+        }
       }
 
+      _logger.info('UPDATE_SERVICE: Core versions equal, checking build numbers...');
+      
       // If core versions are equal, compare build numbers if present
-      if (current.contains('+') && latest.contains('+')) {
-        final currentBuildStr = current.split('+').last;
-        final latestBuildStr = latest.split('+').last;
+      final currentBuildStr = current.contains('+') ? current.split('+').last : null;
+      final latestBuildStr = latest.contains('+') ? latest.split('+').last : null;
+      
+      _logger.info('UPDATE_SERVICE: Build strings: current=$currentBuildStr, latest=$latestBuildStr');
+      
+      if (currentBuildStr != null && latestBuildStr != null) {
         final currentBuild = int.tryParse(currentBuildStr) ?? 0;
         final latestBuild = int.tryParse(latestBuildStr) ?? 0;
+        _logger.info('UPDATE_SERVICE: Build numbers: current=$currentBuild, latest=$latestBuild, result=${latestBuild > currentBuild}');
         return latestBuild > currentBuild;
       }
     } catch (e) {
@@ -79,7 +95,9 @@ class UpdateService {
     }
     
     // Fallback direct string comparison
-    return latest.compareTo(current) > 0;
+    final fallbackResult = latest.compareTo(current) > 0;
+    _logger.info('UPDATE_SERVICE: Fallback string comparison result=$fallbackResult');
+    return fallbackResult;
   }
 
   /// Checks system_config for update details and compares with local package version

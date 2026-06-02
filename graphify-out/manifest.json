@@ -1380,8 +1380,8 @@
     "semantic_hash": ""
   },
   "D:\\MediaHive App\\mediahive_mobile\\lib\\features\\inventory\\data\\services\\inventory_api_service.dart": {
-    "mtime": 1780216556.3079848,
-    "ast_hash": "8aba514adbbebbc24fb6ab9353c2b8aa",
+    "mtime": 1780415052.4180386,
+    "ast_hash": "a61e9c699b31586848ed61aa671f058c",
     "semantic_hash": ""
   },
   "D:\\MediaHive App\\mediahive_mobile\\lib\\features\\inventory\\domain\\models\\equipment_booking.dart": {
@@ -8920,8 +8920,8 @@
     "semantic_hash": ""
   },
   "D:\\MediaHive App\\mediahive_mobile\\pubspec.yaml": {
-    "mtime": 1780396797.0369103,
-    "ast_hash": "2540a53d92b1ffc84ff1117a11d34dfb",
+    "mtime": 1780415201.5241723,
+    "ast_hash": "578e70e84009d53114c90811f38a48ce",
     "semantic_hash": ""
   },
   "D:\\MediaHive App\\mediahive_mobile\\README.md": {
@@ -27230,8 +27230,8 @@
     "semantic_hash": ""
   },
   "D:\\MediaHive App\\src\\components\\chat\\ChatLayout.tsx": {
-    "mtime": 1780385755.8933876,
-    "ast_hash": "f918238b7896833f799a977809d2b6d2",
+    "mtime": 1780415111.799977,
+    "ast_hash": "8edd8dabafcc2a38b401d1abde854de0",
     "semantic_hash": ""
   },
   "D:\\MediaHive App\\src\\components\\chat\\ChatSidebar.tsx": {
@@ -27310,8 +27310,8 @@
     "semantic_hash": ""
   },
   "D:\\MediaHive App\\mediahive_mobile\\lib\\features\\chat\\presentation\\providers\\chat_providers.dart": {
-    "mtime": 1780399874.5523858,
-    "ast_hash": "a98b545d5b89627ed7eecd1b6f06f29c",
+    "mtime": 1780415049.3165052,
+    "ast_hash": "db6170f6f3f481fd0be1106bcf44fb61",
     "semantic_hash": ""
   },
   "D:\\MediaHive App\\mediahive_mobile\\lib\\features\\chat\\presentation\\screens\\chat_rooms_screen.dart": {
@@ -27320,8 +27320,8 @@
     "semantic_hash": ""
   },
   "D:\\MediaHive App\\mediahive_mobile\\lib\\features\\chat\\presentation\\screens\\chat_room_screen.dart": {
-    "mtime": 1780400227.5587137,
-    "ast_hash": "f7e3e58595e254397473b1e81ad244c8",
+    "mtime": 1780408461.993695,
+    "ast_hash": "c1f7ee80f8ab0397965aa5ba1dd6b68d",
     "semantic_hash": ""
   },
   "D:\\MediaHive App\\src\\app\\api\\chat\\rooms\\[roomId]\\messages\\[messageId]\\route.ts": {
@@ -27365,8 +27365,8 @@
     "semantic_hash": ""
   },
   "D:\\MediaHive App\\src\\components\\chat\\VoicePlayer.tsx": {
-    "mtime": 1780328434.0313358,
-    "ast_hash": "4de99172b190f1540c03dd0d8e6503b7",
+    "mtime": 1780415105.190806,
+    "ast_hash": "7c785179c82bb94add2ed24932bec041",
     "semantic_hash": ""
   },
   "D:\\MediaHive App\\src\\lib\\chatUnreadTracker.ts": {
@@ -27377,6 +27377,46 @@
   "D:\\MediaHive App\\src\\app\\api\\chat\\rooms\\[roomId]\\clear\\route.ts": {
     "mtime": 1780380331.382418,
     "ast_hash": "78e5de305bed8ba3edb7fef41f166d51",
+    "semantic_hash": ""
+  },
+  "D:\\MediaHive App\\mediahive_mobile\\lib\\core\\utils\\media_cache_manager.dart": {
+    "mtime": 1780407033.0709822,
+    "ast_hash": "ca707afe8250dfdd390411399b5f219a",
+    "semantic_hash": ""
+  },
+  "D:\\MediaHive App\\mediahive_mobile\\lib\\features\\chat\\presentation\\widgets\\cached_chat_image.dart": {
+    "mtime": 1780407035.9842281,
+    "ast_hash": "af9f4053864701c69d1e1c1cd6c1fdcf",
+    "semantic_hash": ""
+  },
+  "D:\\MediaHive App\\mediahive_mobile\\scratch\\search_middleware.py": {
+    "mtime": 1780413841.216885,
+    "ast_hash": "362623e51a70f72d984e039bc4b1ef4d",
+    "semantic_hash": ""
+  },
+  "D:\\MediaHive App\\mediahive_mobile\\scratch\\search_urls.py": {
+    "mtime": 1780412910.9335816,
+    "ast_hash": "07d3dca8695db5a0abcbcf4004268720",
+    "semantic_hash": ""
+  },
+  "D:\\MediaHive App\\mediahive_mobile\\scratch\\search_voice.py": {
+    "mtime": 1780413766.4237852,
+    "ast_hash": "ecad907fd2b8de97bdd9981577458ffc",
+    "semantic_hash": ""
+  },
+  "D:\\MediaHive App\\mediahive_mobile\\scratch\\search_web_voice.py": {
+    "mtime": 1780413905.4616265,
+    "ast_hash": "7133dd3ab0d53101472e14ac19dfc13c",
+    "semantic_hash": ""
+  },
+  "D:\\MediaHive App\\scratch\\db_update.js": {
+    "mtime": 1780413969.7572052,
+    "ast_hash": "c256c7b6ab0aff4b06d31ea22e24cb17",
+    "semantic_hash": ""
+  },
+  "D:\\MediaHive App\\scratch\\test_upload.js": {
+    "mtime": 1780413875.2199888,
+    "ast_hash": "591afe1559df5a4d592a0dfef82b3a0c",
     "semantic_hash": ""
   }
 }

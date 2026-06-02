@@ -18,7 +18,7 @@ class InventoryApiService {
         baseUrl = baseUrl.replaceAll('localhost', '10.0.2.2');
       }
       
-      final url = Uri.parse('$baseUrl/api/files/upload/');
+      final url = Uri.parse('$baseUrl/api/files/upload');
       final request = http.MultipartRequest('POST', url);
       
       if (token != null) {

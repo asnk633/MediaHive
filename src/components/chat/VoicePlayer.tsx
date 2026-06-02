@@ -25,6 +25,11 @@ export const VoicePlayer: React.FC<VoicePlayerProps> = ({ src, durationSeconds }
   useEffect(() => {
     return () => {
       if (timerRef.current) clearInterval(timerRef.current);
+      if (audioRef.current) {
+        try {
+          audioRef.current.pause();
+        } catch (_) {}
+      }
     };
   }, []);
 

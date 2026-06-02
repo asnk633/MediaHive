@@ -23,6 +23,31 @@ export default function ChatLayout({ currentUser, initialRooms, allUsers }: { cu
     }
   }, [activeRoom?.id, currentUser?.id]);
 
+  // Global exclusive media playback listener (pauses other audio/video elements on any play event)
+  useEffect(() => {
+    const handleGlobalPlay = (event: Event) => {
+      const playingElement = event.target as HTMLMediaElement;
+      if (!playingElement) return;
+      
+      const allMediaElements = document.querySelectorAll('audio, video');
+      allMediaElements.forEach((el) => {
+        const media = el as HTMLMediaElement;
+        if (media !== playingElement && !media.paused) {
+          try {
+            media.pause();
+          } catch (e) {
+            console.error('Failed to pause background media:', e);
+          }
+        }
+      });
+    };
+
+    window.addEventListener('play', handleGlobalPlay, true); // Capture phase since 'play' doesn't bubble
+    return () => {
+      window.removeEventListener('play', handleGlobalPlay, true);
+    };
+  }, []);
+
   // Polling rooms list and dynamic unread message counts
   useEffect(() => {
     if (!currentUser?.id) return;

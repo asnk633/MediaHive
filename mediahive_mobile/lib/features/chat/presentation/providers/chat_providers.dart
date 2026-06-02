@@ -329,7 +329,7 @@ class ChatMessagesNotifier extends StateNotifier<AsyncValue<List<ChatMessage>>> 
     }
 
     final sanitizedBase = baseUrl.endsWith('/') ? baseUrl.substring(0, baseUrl.length - 1) : baseUrl;
-    final uploadUrl = '$sanitizedBase/api/chat/upload/';
+    final uploadUrl = '$sanitizedBase/api/chat/upload';
 
     final ext = file.path.split('.').last.toLowerCase();
     String mainType = 'application';
@@ -376,7 +376,7 @@ class ChatMessagesNotifier extends StateNotifier<AsyncValue<List<ChatMessage>>> 
     } catch (e) {
       print('[CHAT_UPLOAD] Direct file upload failed on $uploadUrl: $e');
       
-      const liveUploadUrl = 'https://thaiba-garden-media-manager.vercel.app/api/chat/upload/';
+      const liveUploadUrl = 'https://thaiba-garden-media-manager.vercel.app/api/chat/upload';
       if (uploadUrl != liveUploadUrl) {
         print('[CHAT_UPLOAD] Failover: Attempting direct upload to live production proxy: $liveUploadUrl');
         try {
@@ -638,7 +638,7 @@ class ChatMessagesNotifier extends StateNotifier<AsyncValue<List<ChatMessage>>> 
     }
 
     final sanitizedBase = baseUrl.endsWith('/') ? baseUrl.substring(0, baseUrl.length - 1) : baseUrl;
-    final clearUrl = '$sanitizedBase/api/chat/rooms/$_roomId/clear/?userId=${user.id}';
+    final clearUrl = '$sanitizedBase/api/chat/rooms/$_roomId/clear?userId=${user.id}';
 
     try {
       final dioClient = dio.Dio();

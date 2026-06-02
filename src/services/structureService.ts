@@ -3,6 +3,7 @@ import { Institution, Department, StructureStatus } from '@/types/structure';
 import { tenantContext } from '@/lib/auth/tenantContext';
 import { safeQuery } from '@/lib/safeQuery';
 import { MonitoringService } from '@/services/monitoringService';
+import { InstitutionSchema } from '@/domain/schemas/institution';
 
 export const StructureService = {
     // Institutions
@@ -32,8 +33,16 @@ export const StructureService = {
 
             if (error) throw error;
 
+            const validated = (data as any[] || []).map(inst => {
+                const validation = InstitutionSchema.safeParse(inst);
+                if (!validation.success) {
+                    MonitoringService.error(`[StructureService] Institution validation failed for ID: ${inst.id}`, validation.error.format());
+                }
+                return inst as Institution;
+            });
+
             return {
-                institutions: (data || []) as Institution[]
+                institutions: validated
             };
         } catch (error: any) {
             MonitoringService.error("[StructureService] Failed to fetch institutions", error);
@@ -172,8 +181,22 @@ export const StructureService = {
 
             if (error) throw error;
 
+            const validated = (data as any[] || []).map(dept => {
+                const validation = InstitutionSchema.safeParse({
+                    id: dept.id,
+                    name: dept.name,
+                    tenant_id: dept.tenant_id,
+                    status: dept.status,
+                    features: dept.features || {}
+                });
+                if (!validation.success) {
+                    MonitoringService.error(`[StructureService] Department validation failed for ID: ${dept.id}`, validation.error.format());
+                }
+                return dept as Department;
+            });
+
             return {
-                departments: (data || []) as Department[]
+                departments: validated
             };
         } catch (error: any) {
             MonitoringService.error("[StructureService] Failed to fetch departments", error);

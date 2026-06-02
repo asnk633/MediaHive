@@ -72,8 +72,8 @@ export function IssueItemDialog({ item, request, open, onOpenChange }: IssueItem
                 UserService.getTeamMembers(),
                 StructureService.getDepartments()
             ]);
-            setUserOptions(users.map(u => ({ id: u.uid, name: u.name, role: 'member' })));
-            setDeptOptions(departments.map(d => ({ id: String(d.id), name: d.name })));
+            setUserOptions(users.map((u: any) => ({ id: u.uid, name: u.name, role: 'member' })));
+            setDeptOptions(departments.map((d: any) => ({ id: String(d.id), name: d.name })));
         } catch (error) {
             console.error("Failed to fetch selection data", error);
         } finally {

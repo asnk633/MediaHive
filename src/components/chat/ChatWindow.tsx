@@ -18,6 +18,8 @@ import {
   Camera,
   Video,
   CheckCheck,
+  Check,
+  Clock,
   Plus,
   Folder,
   Edit2,
@@ -84,7 +86,29 @@ const formatDateHeader = (dateStr: string) => {
     }
     return date.toLocaleDateString();
   }
-};
+function AnimatedReadReceipt({ isNew }: { isNew: boolean }) {
+  const [read, setRead] = useState(false);
+
+  useEffect(() => {
+    if (!isNew) {
+      setRead(true);
+      return;
+    }
+    // Double gray ticks transition to amber ticks after 1.2s to simulate delivery & read status
+    const timer = setTimeout(() => {
+      setRead(true);
+    }, 1200);
+    return () => clearTimeout(timer);
+  }, [isNew]);
+
+  return (
+    <CheckCheck 
+      className={`h-3.5 w-3.5 transition-colors duration-500 ease-out shrink-0 ${
+        read ? 'text-amber-400' : 'text-white/30'
+      }`} 
+    />
+  );
+}
 
 export default function ChatWindow({ 
   currentUser, 
@@ -148,7 +172,23 @@ export default function ChatWindow({
       const res = await fetch(`/api/chat/rooms/${room.id}/messages`);
       if (res.ok) {
         const data = await res.json();
-        setMessages(data);
+        
+        setMessages(prev => {
+          // Keep all messages fetched from backend
+          const localOptimistic = prev.filter(m => m.id.toString().startsWith('temp-'));
+          
+          // Filter out optimistic messages that have already been saved and returned by backend
+          const pendingOptimistic = localOptimistic.filter(op => {
+            return !data.some((d: any) => 
+              d.sender_id === op.sender_id && 
+              d.text === op.text &&
+              Math.abs(new Date(d.created_at).getTime() - new Date(op.created_at).getTime()) < 30000
+            );
+          });
+          
+          return [...data, ...pendingOptimistic];
+        });
+
         if (currentUser?.id) {
           setLastReadTimestamp(currentUser.id, room.id);
         }
@@ -246,19 +286,22 @@ export default function ChatWindow({
     const textToSend = inputText.trim();
     setInputText('');
 
+    const tempId = `temp-${Date.now()}`;
+
     // Optimistic UI updates
     const optimisticMsg = {
-      id: `temp-${Date.now()}`,
+      id: tempId,
       text: textToSend,
       sender_id: currentUser.id,
       media_type: 'text',
-      created_at: new Date().toISOString()
+      created_at: new Date().toISOString(),
+      status: 'sending'
     };
     setMessages(prev => [...prev, optimisticMsg]);
     scrollToBottom('smooth', true);
 
     try {
-      await fetch(`/api/chat/rooms/${room.id}/messages`, {
+      const res = await fetch(`/api/chat/rooms/${room.id}/messages`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
@@ -267,9 +310,15 @@ export default function ChatWindow({
           tenantId: currentUser.tenantId
         })
       });
-      fetchMessages();
+      if (res.ok) {
+        await fetchMessages();
+      } else {
+        throw new Error('Failed to send');
+      }
     } catch (err) {
       console.error(err);
+      // Mark optimistic message as failed
+      setMessages(prev => prev.map(m => m.id === tempId ? { ...m, status: 'error' } : m));
     }
   };
 
@@ -930,7 +979,15 @@ export default function ChatWindow({
                             {new Date(msg.created_at).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
                           </span>
                           {isMe && (
-                            <CheckCheck className="h-3.5 w-3.5 text-amber-400 shrink-0" />
+                            <span className="flex items-center shrink-0 ml-1 select-none">
+                              {msg.status === 'sending' ? (
+                                <Clock className="h-3 w-3 text-white/45 animate-pulse" />
+                              ) : msg.status === 'error' ? (
+                                <span className="text-rose-500 font-bold text-[10px]" title="Failed to send">!</span>
+                              ) : (
+                                <AnimatedReadReceipt isNew={Date.now() - new Date(msg.created_at).getTime() < 5000} />
+                              )}
+                            </span>
                           )}
                         </div>
                       </div>{/* END bubble div */}

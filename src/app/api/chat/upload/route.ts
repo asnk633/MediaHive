@@ -1,0 +1,75 @@
+import { NextRequest, NextResponse } from "next/server";
+import { getDriveClient, ensureFolderPath, DRIVE_CONFIG, makeFilePublic } from "@/lib/drive";
+import { Readable } from "stream";
+
+export const dynamic = 'force-dynamic';
+
+export async function POST(request: NextRequest) {
+  try {
+    const formData = await request.formData();
+    const file = formData.get("file") as File | null;
+    const roomId = formData.get("roomId") as string | null;
+
+    if (!file || !roomId) {
+      return NextResponse.json({ error: "Missing file or roomId" }, { status: 400 });
+    }
+
+    const driveClient = await getDriveClient();
+    const rootFolderId = DRIVE_CONFIG.folderId;
+    
+    if (!rootFolderId) {
+      console.error("GOOGLE_DRIVE_FOLDER_ID is not configured");
+      return NextResponse.json({ error: "Server misconfiguration: Drive folder not set" }, { status: 500 });
+    }
+
+    // Ensure the chatroom subfolder exists
+    const chatFolderId = await ensureFolderPath(driveClient, rootFolderId, ["MediaHive_Chat_Uploads", roomId]);
+
+    // Convert file to stream
+    const arrayBuffer = await file.arrayBuffer();
+    const buffer = Buffer.from(arrayBuffer);
+    const stream = new Readable();
+    stream.push(buffer);
+    stream.push(null);
+
+    // Upload to Google Drive
+    const driveResponse = await driveClient.files.create({
+      requestBody: {
+        name: file.name,
+        parents: [chatFolderId],
+      },
+      media: {
+        mimeType: file.type,
+        body: stream,
+      },
+      fields: "id, webViewLink, webContentLink",
+      supportsAllDrives: true,
+    });
+
+    const fileId = driveResponse.data.id;
+    if (!fileId) {
+      throw new Error("Failed to upload file to Drive");
+    }
+
+    // Make the file public so it can be viewed in the app
+    await makeFilePublic(driveClient, fileId);
+
+    // The webContentLink is a direct download link, webViewLink is the viewer
+    // We prefer a direct link or we can rely on a custom proxy if needed.
+    // We will return both for the frontend to decide.
+    return NextResponse.json({
+      fileId,
+      url: driveResponse.data.webContentLink || driveResponse.data.webViewLink,
+      viewUrl: driveResponse.data.webViewLink,
+      name: file.name,
+      type: file.type
+    }, { status: 201 });
+
+  } catch (error: any) {
+    console.error("Chat file upload error:", error);
+    return NextResponse.json(
+      { error: 'Internal server error: ' + error.message },
+      { status: 500 }
+    );
+  }
+}

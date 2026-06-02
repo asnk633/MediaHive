@@ -666,7 +666,7 @@ class _ChatRoomScreenState extends ConsumerState<ChatRoomScreen> {
         ChatMediaManager.play('');
         
         // Request exclusive audio focus to pause background music player apps like Spotify
-        await AudioPlayer.global.setAudioContext(const AudioContext(
+        await AudioPlayer.global.setAudioContext(AudioContext(
           android: AndroidAudioContext(
             isSpeakerphoneOn: true,
             stayAwake: true,
@@ -760,7 +760,7 @@ class _ChatRoomScreenState extends ConsumerState<ChatRoomScreen> {
             final isVoiceNote = newMsg.mediaType == 'voice' || newMsg.mediaType == 'audio';
             if (isVoiceNote) {
               // Request exclusive audio focus to pause background music player apps like Spotify
-              AudioPlayer.global.setAudioContext(const AudioContext(
+              AudioPlayer.global.setAudioContext(AudioContext(
                 android: AndroidAudioContext(
                   isSpeakerphoneOn: true,
                   stayAwake: true,
@@ -3012,14 +3012,14 @@ class _InlineVideoPlayerState extends State<InlineVideoPlayer> {
         } else {
           // Request exclusive audio focus to pause background music player apps like Spotify
           AudioPlayer.global.setAudioContext(AudioContext(
-            android: const AndroidAudioContext(
+            android: AndroidAudioContext(
               isSpeakerphoneOn: true,
               stayAwake: true,
               contentType: AndroidContentType.music,
               usageType: AndroidUsageType.media,
               audioFocus: AndroidAudioFocus.gain,
             ),
-            iOS: const AudioContextIOS(
+            iOS: AudioContextIOS(
               category: AVAudioSessionCategory.playback,
               options: [
                 AVAudioSessionOptions.defaultToSpeaker,
@@ -3379,14 +3379,14 @@ class _InlineVoicePlayerState extends State<InlineVoicePlayer> {
 
       // Request exclusive audio focus to pause background music player apps like Spotify
       await AudioPlayer.global.setAudioContext(AudioContext(
-        android: const AndroidAudioContext(
+        android: AndroidAudioContext(
           isSpeakerphoneOn: true,
           stayAwake: true,
           contentType: AndroidContentType.music,
           usageType: AndroidUsageType.media,
           audioFocus: AndroidAudioFocus.gain,
         ),
-        iOS: const AudioContextIOS(
+        iOS: AudioContextIOS(
           category: AVAudioSessionCategory.playback,
           options: [
             AVAudioSessionOptions.defaultToSpeaker,

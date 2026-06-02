@@ -1180,8 +1180,8 @@
     "semantic_hash": ""
   },
   "D:\\MediaHive App\\mediahive_mobile\\lib\\features\\auth\\presentation\\screens\\profile_screen.dart": {
-    "mtime": 1780373004.0451517,
-    "ast_hash": "dfe57e1cce657fb3af6c489d43c1c6b0",
+    "mtime": 1780400827.7383623,
+    "ast_hash": "23846d1609777b0fd92e1a55f0646388",
     "semantic_hash": ""
   },
   "D:\\MediaHive App\\mediahive_mobile\\lib\\features\\auth\\presentation\\screens\\signup_screen.dart": {
@@ -1560,8 +1560,8 @@
     "semantic_hash": ""
   },
   "D:\\MediaHive App\\mediahive_mobile\\lib\\presentation\\screens\\shell_screen.dart": {
-    "mtime": 1780372949.2270596,
-    "ast_hash": "d68f6195258d70c81639a60009496843",
+    "mtime": 1780400831.045624,
+    "ast_hash": "07ee58ade5be0e068542728b24959d95",
     "semantic_hash": ""
   },
   "D:\\MediaHive App\\mediahive_mobile\\lib\\presentation\\widgets\\theme_toggle_button.dart": {
@@ -27240,8 +27240,8 @@
     "semantic_hash": ""
   },
   "D:\\MediaHive App\\src\\components\\chat\\ChatWindow.tsx": {
-    "mtime": 1780389706.8261752,
-    "ast_hash": "0d6d7e430b2dbb0a1efee2780551f71c",
+    "mtime": 1780399330.0799413,
+    "ast_hash": "4bd83ba5ba9caf88e8e8a81768326bf7",
     "semantic_hash": ""
   },
   "D:\\MediaHive App\\src\\components\\system\\CardErrorBoundary.tsx": {
@@ -27305,13 +27305,13 @@
     "semantic_hash": ""
   },
   "D:\\MediaHive App\\mediahive_mobile\\lib\\features\\chat\\domain\\models\\chat_room.dart": {
-    "mtime": 1780375940.028736,
-    "ast_hash": "72811f5631b20b0d654e48cca2c0e3cd",
+    "mtime": 1780399861.241452,
+    "ast_hash": "6bb3095d968a7f6906ccc3c32ebc5c09",
     "semantic_hash": ""
   },
   "D:\\MediaHive App\\mediahive_mobile\\lib\\features\\chat\\presentation\\providers\\chat_providers.dart": {
-    "mtime": 1780394729.429451,
-    "ast_hash": "b40d154086a86865581abdae7fbb6793",
+    "mtime": 1780399874.5523858,
+    "ast_hash": "a98b545d5b89627ed7eecd1b6f06f29c",
     "semantic_hash": ""
   },
   "D:\\MediaHive App\\mediahive_mobile\\lib\\features\\chat\\presentation\\screens\\chat_rooms_screen.dart": {
@@ -27320,8 +27320,8 @@
     "semantic_hash": ""
   },
   "D:\\MediaHive App\\mediahive_mobile\\lib\\features\\chat\\presentation\\screens\\chat_room_screen.dart": {
-    "mtime": 1780397212.682444,
-    "ast_hash": "cc653a5b4bd722509970dc57e5f1eade",
+    "mtime": 1780400227.5587137,
+    "ast_hash": "f7e3e58595e254397473b1e81ad244c8",
     "semantic_hash": ""
   },
   "D:\\MediaHive App\\src\\app\\api\\chat\\rooms\\[roomId]\\messages\\[messageId]\\route.ts": {

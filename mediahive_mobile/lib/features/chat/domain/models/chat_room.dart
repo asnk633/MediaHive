@@ -142,6 +142,7 @@ class ChatMessage {
   final DateTime createdAt;
   final bool isEdited;
   final bool isDeleted;
+  final String? status; // 'sending', 'sent', 'error'
 
   // Resolve sender details for UI
   final String? senderName;
@@ -159,6 +160,7 @@ class ChatMessage {
     required this.createdAt,
     this.isEdited = false,
     this.isDeleted = false,
+    this.status,
     this.senderName,
     this.senderAvatar,
   });
@@ -176,6 +178,7 @@ class ChatMessage {
       createdAt: DateTime.parse(json['created_at'] as String).toLocal(),
       isEdited: json['is_edited'] as bool? ?? false,
       isDeleted: json['is_deleted'] as bool? ?? false,
+      status: json['status'] as String?,
       senderName: senderName,
       senderAvatar: senderAvatar,
     );
@@ -194,6 +197,7 @@ class ChatMessage {
       'created_at': createdAt.toIso8601String(),
       'is_edited': isEdited,
       'is_deleted': isDeleted,
+      'status': status,
     };
   }
 }

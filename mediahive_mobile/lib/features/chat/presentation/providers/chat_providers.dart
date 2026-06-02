@@ -294,7 +294,25 @@ class ChatMessagesNotifier extends StateNotifier<AsyncValue<List<ChatMessage>>> 
         );
       }).toList();
 
-      state = AsyncValue.data(resolvedMessages);
+      state.whenData((currentList) {
+        final localOptimistic = currentList.where((m) => m.status == 'sending' || m.status == 'error').toList();
+        
+        // Filter out optimistic messages that are already returned by the backend
+        final pendingOptimistic = localOptimistic.where((op) {
+          return !resolvedMessages.any((d) => 
+            d.senderId == op.senderId && 
+            d.text == op.text &&
+            d.mediaUrl == op.mediaUrl &&
+            (d.createdAt.difference(op.createdAt).inSeconds).abs() < 30
+          );
+        }).toList();
+        
+        state = AsyncValue.data([...resolvedMessages, ...pendingOptimistic]);
+      });
+      
+      if (state.value == null) {
+        state = AsyncValue.data(resolvedMessages);
+      }
     } catch (e, stack) {
       if (!isBackgroundRefresh) {
         state = AsyncValue.error(e, stack);
@@ -423,6 +441,7 @@ class ChatMessagesNotifier extends StateNotifier<AsyncValue<List<ChatMessage>>> 
         mediaType: mediaType,
         driveFileId: driveFileId,
         createdAt: now.toLocal(), // Use local timezone for optimistic display matching
+        status: 'sending',
         senderName: senderName ?? 'You',
         senderAvatar: senderAvatar,
       );
@@ -464,8 +483,24 @@ class ChatMessagesNotifier extends StateNotifier<AsyncValue<List<ChatMessage>>> 
     } catch (e, stackTrace) {
       print('[SEND_MESSAGE_ERROR] Failed to send message: $e');
       print('[SEND_MESSAGE_ERROR] Stacktrace: $stackTrace');
-      // Rollback on error or refresh
-      fetchMessages();
+      // Mark optimistic message as error
+      state.whenData((currentList) {
+        state = AsyncValue.data(
+          currentList.map((m) => m.id == messageId ? ChatMessage(
+            id: m.id,
+            roomId: m.roomId,
+            senderId: m.senderId,
+            text: m.text,
+            mediaUrl: m.mediaUrl,
+            mediaType: m.mediaType,
+            driveFileId: m.driveFileId,
+            createdAt: m.createdAt,
+            senderName: m.senderName,
+            senderAvatar: m.senderAvatar,
+            status: 'error',
+          ) : m).toList(),
+        );
+      });
     }
   }
 

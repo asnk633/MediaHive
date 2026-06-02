@@ -1491,11 +1491,26 @@ class _ChatRoomScreenState extends ConsumerState<ChatRoomScreen> {
                           ),
                           if (isMe) ...[
                             const SizedBox(width: 4),
-                            Icon(
-                              LucideIcons.checkCheck,
-                              size: 13,
-                              color: colors.honey,
-                            ),
+                            if (msg.status == 'sending')
+                              SizedBox(
+                                width: 11,
+                                height: 11,
+                                child: CircularProgressIndicator(
+                                  strokeWidth: 1.2,
+                                  color: isLight ? colors.textSecondary.withValues(alpha: 0.5) : Colors.white60,
+                                ),
+                              )
+                            else if (msg.status == 'error')
+                              const Icon(
+                                LucideIcons.alertCircle,
+                                size: 13,
+                                color: Colors.redAccent,
+                              )
+                            else
+                              AnimatedChatTick(
+                                createdAt: msg.createdAt,
+                                colors: colors,
+                              ),
                           ],
                         ],
                       ),
@@ -3395,3 +3410,68 @@ class _InlineVoicePlayerState extends State<InlineVoicePlayer> {
     );
   }
 }
+
+class AnimatedChatTick extends StatefulWidget {
+  final DateTime createdAt;
+  final ThemeColors colors;
+
+  const AnimatedChatTick({
+    super.key,
+    required this.createdAt,
+    required this.colors,
+  });
+
+  @override
+  State<AnimatedChatTick> createState() => _AnimatedChatTickState();
+}
+
+class _AnimatedChatTickState extends State<AnimatedChatTick> with SingleTickerProviderStateMixin {
+  bool _isRead = false;
+  late AnimationController _controller;
+  late Animation<double> _scaleAnimation;
+
+  @override
+  void initState() {
+    super.initState();
+    _controller = AnimationController(
+      duration: const Duration(milliseconds: 300),
+      vsync: this,
+    );
+    _scaleAnimation = Tween<double>(begin: 1.0, end: 1.15).animate(
+      CurvedAnimation(parent: _controller, curve: Curves.easeOut),
+    );
+
+    final age = DateTime.now().difference(widget.createdAt);
+    if (age.inMilliseconds > 1200) {
+      _isRead = true;
+    } else {
+      Timer(Duration(milliseconds: 1200 - age.inMilliseconds), () {
+        if (mounted) {
+          setState(() {
+            _isRead = true;
+          });
+          _controller.forward().then((_) => _controller.reverse());
+        }
+      });
+    }
+  }
+
+  @override
+  void dispose() {
+    _controller.dispose();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return ScaleTransition(
+      scale: _scaleAnimation,
+      child: Icon(
+        LucideIcons.checkCheck,
+        size: 13,
+        color: _isRead ? widget.colors.honey : widget.colors.textSecondary.withValues(alpha: 0.35),
+      ),
+    );
+  }
+}
+

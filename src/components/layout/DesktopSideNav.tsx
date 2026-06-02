@@ -26,6 +26,7 @@ import {
     Video,
     Coffee,
     Sliders,
+    MessageSquare,
 } from 'lucide-react';
 import { useAuth } from '@/contexts/AuthContextProvider';
 import { useWorkspace } from '@/system/workspace/WorkspaceProvider';
@@ -35,6 +36,7 @@ import { cn, nativeNavigate } from "@/lib/utils";
 import { useMagneticHover } from "@/hooks/useMagneticHover";
 import { getDriveImageUrl } from '@/lib/driveUtils';
 import { NotificationBell } from "@/components/notifications/NotificationBell";
+import { getLastReadTimestamps } from '@/lib/chatUnreadTracker';
 import {
     DropdownMenu,
     DropdownMenuContent,
@@ -49,6 +51,8 @@ import { WorkspaceSwitcher } from "@/components/layout/WorkspaceSwitcher";
 
 import { usePermissions } from '@/hooks/usePermissions';
 
+import { eventBus } from '@/lib/eventBus';
+
 export default function DesktopSideNav() {
     const router = useRouter();
     const pathname = usePathname();
@@ -59,6 +63,52 @@ export default function DesktopSideNav() {
     const { currentWorkspace, tenantSettings } = useWorkspace();
     const { theme } = useTheme();
     const isAdminRoute = pathname.startsWith('/admin');
+
+    const [totalUnreadChat, setTotalUnreadChat] = useState(0);
+
+    // Sync chat unread messages
+    useEffect(() => {
+        if (!user?.uid) return;
+
+        const fetchUnreads = async () => {
+            try {
+                const lastReadMap = getLastReadTimestamps(user.uid);
+                const res = await fetch(`/api/chat/rooms?userId=${user.uid}&lastRead=${encodeURIComponent(JSON.stringify(lastReadMap))}`);
+                if (res.ok) {
+                    const rooms = await res.json();
+                    const total = rooms.reduce((sum: number, r: any) => sum + (r.unreadCount || 0), 0);
+                    setTotalUnreadChat(total);
+                }
+            } catch (err) {
+                console.error("Failed to poll chat unreads in side nav:", err);
+            }
+        };
+
+        fetchUnreads();
+
+        // Register eventBus listener
+        const handleSync = () => {
+            fetchUnreads();
+        };
+        eventBus.on('chat_unread_sync', handleSync);
+
+        // Cross-tab sync listener
+        const handleStorage = (e: StorageEvent) => {
+            if (e.key === `mediahive_chat_last_read_${user.uid}`) {
+                fetchUnreads();
+            }
+        };
+        window.addEventListener('storage', handleStorage);
+
+        // Background poll every 8 seconds
+        const interval = setInterval(fetchUnreads, 8000);
+
+        return () => {
+            eventBus.off('chat_unread_sync', handleSync);
+            window.removeEventListener('storage', handleStorage);
+            clearInterval(interval);
+        };
+    }, [user?.uid]);
 
     const updateWidthVar = (collapsed: boolean) => {
         const width = collapsed ? 'var(--sidebar-collapsed-width)' : 'var(--sidebar-width)';
@@ -88,6 +138,7 @@ export default function DesktopSideNav() {
             items: [
                 { id: 'home', label: 'Dashboard', icon: LayoutDashboard, path: '/home' },
                 { id: 'tasks', label: 'Tasks', icon: CheckSquare, path: '/tasks', feature: 'tasks' as FeatureKey },
+                { id: 'chat', label: 'Chat', icon: MessageSquare, path: '/chat' },
                 { id: 'calendar', label: 'Events', icon: Calendar, path: '/events', feature: 'events' as FeatureKey },
                 ...(canReadReports ? [
                     { id: 'reports', label: 'Reports', icon: BarChart3, path: '/reports', feature: 'reports' as FeatureKey }
@@ -416,27 +467,39 @@ export default function DesktopSideNav() {
 
                                             <div className="grid grid-cols-[40px_1fr] items-center w-full">
                                                 <MagneticNavIcon>
-                                                    <item.icon
-                                                        size={20}
-                                                        strokeWidth={isActive ? 2.5 : 2}
-                                                        className={cn(
-                                                            "transition-all duration-300",
-                                                            isActive
-                                                                ? "text-primary drop-shadow-[0_0_10px_rgba(var(--accent-primary-rgb),0.5)]"
-                                                                : "text-inherit group-hover:text-foreground"
+                                                    <div className="relative">
+                                                        <item.icon
+                                                            size={20}
+                                                            strokeWidth={isActive ? 2.5 : 2}
+                                                            className={cn(
+                                                                "transition-all duration-300",
+                                                                isActive
+                                                                    ? "text-primary drop-shadow-[0_0_10px_rgba(var(--accent-primary-rgb),0.5)]"
+                                                                    : "text-inherit group-hover:text-foreground"
+                                                            )}
+                                                        />
+                                                        {item.id === 'chat' && isCollapsed && totalUnreadChat > 0 && (
+                                                            <span className="absolute -top-1 -right-1 flex h-2.5 w-2.5 rounded-full bg-rose-500 shadow-[0_0_8px_rgba(244,63,94,0.9)] animate-pulse" />
                                                         )}
-                                                    />
+                                                    </div>
                                                 </MagneticNavIcon>
 
                                                 {!isCollapsed && (
-                                                    <span
-                                                        className={cn(
-                                                            "ml-4 text-sm font-bold tracking-tight transition-colors duration-300 truncate text-left",
-                                                            isActive ? "text-foreground" : "text-inherit group-hover:text-foreground"
+                                                    <div className="flex-1 flex items-center justify-between pr-4 ml-4 overflow-hidden">
+                                                        <span
+                                                            className={cn(
+                                                                "text-sm font-bold tracking-tight transition-colors duration-300 truncate text-left",
+                                                                isActive ? "text-foreground" : "text-inherit group-hover:text-foreground"
+                                                            )}
+                                                        >
+                                                            {item.label}
+                                                        </span>
+                                                        {item.id === 'chat' && totalUnreadChat > 0 && (
+                                                            <span className="flex h-5 min-w-[20px] items-center justify-center rounded-full bg-rose-500 px-1.5 text-[10px] font-black text-white shadow-[0_0_12px_rgba(244,63,94,0.6)] animate-pulse shrink-0 typo-mono leading-none">
+                                                                {totalUnreadChat}
+                                                            </span>
                                                         )}
-                                                    >
-                                                        {item.label}
-                                                    </span>
+                                                    </div>
                                                 )}
                                             </div>
                                         </button>

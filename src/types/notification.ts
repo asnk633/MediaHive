@@ -35,7 +35,7 @@ export type NotificationType =
     | 'info';                  // Generic info
 
 export type NotificationEntityType = 'task' | 'event' | 'announcement' | 'file' | 'device_request' | 'system_update';
-export type NotificationPriority = 'high' | 'medium' | 'low';
+export type NotificationPriority = 'high' | 'medium' | 'low' | 'default' | string;
 
 export interface AppNotification {
     id: string;

@@ -990,40 +990,21 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
         const SizedBox(height: 12),
         GestureDetector(
           onTap: () async {
-            // Find developer/admin programmatically & launch diagnostic line chat
-            ScaffoldMessenger.of(context).showSnackBar(
-              const SnackBar(content: Text('Connecting to Thaiba Support...')),
-            );
-            
             try {
-              final client = Supabase.instance.client;
-              // Fetch admin developer id
-              final adminRes = await client
-                  .from('profiles')
-                  .select('id, role')
-                  .eq('role', 'admin')
-                  .limit(1)
-                  .maybeSingle();
+              // Opens a private 1-on-1 chat with the admin user.
+              // The room is created if it doesn't exist yet; only 2 participants
+              // are ever added (the current user + the admin).
+              final roomId = await ref
+                  .read(chatCreationProvider)
+                  .getOrCreateAdminSupportChat();
 
-              if (adminRes != null) {
-                final adminId = adminRes['id'] as String;
-                final chatCreator = ref.read(chatCreationProvider);
-                final roomId = await chatCreator.getOrCreateDirectChat(adminId);
-                
-                if (context.mounted) {
-                  context.push('/chat/$roomId');
-                }
-              } else {
-                if (context.mounted) {
-                  ScaffoldMessenger.of(context).showSnackBar(
-                    const SnackBar(content: Text('Support line busy. Try again later.')),
-                  );
-                }
+              if (context.mounted) {
+                context.push('/chat/$roomId');
               }
             } catch (e) {
               if (context.mounted) {
                 ScaffoldMessenger.of(context).showSnackBar(
-                  SnackBar(content: Text('Error: $e')),
+                  SnackBar(content: Text('Could not open support chat: $e')),
                 );
               }
             }
@@ -1038,17 +1019,26 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
             ),
             child: Row(
               children: [
-                const Icon(LucideIcons.phone, size: 16, color: Colors.blue),
+                Container(
+                  padding: const EdgeInsets.all(8),
+                  decoration: BoxDecoration(
+                    color: Colors.blue.withValues(alpha: 0.1),
+                    borderRadius: BorderRadius.circular(8),
+                  ),
+                  child: const Icon(LucideIcons.messageSquare, size: 18, color: Colors.blue),
+                ),
                 const SizedBox(width: 16),
                 Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Text('Abdul Shukoor Nurani', style: TextStyle(fontWeight: FontWeight.bold, color: colors.textPrimary)),
-                    Text('Launch Diagnostics & Support Chat', style: TextStyle(fontSize: 12, color: colors.textSecondary)),
+                    Text('+91 8137 017 835', style: TextStyle(fontSize: 13, color: colors.textSecondary)),
+                    const SizedBox(height: 4),
+                    Text('Tap to open support chat', style: TextStyle(fontSize: 12, color: colors.textSecondary)),
                   ],
                 ),
                 const Spacer(),
-                Icon(LucideIcons.messageSquare, size: 18, color: colors.honey),
+                Icon(LucideIcons.chevronRight, size: 18, color: colors.honey),
               ],
             ),
           ),

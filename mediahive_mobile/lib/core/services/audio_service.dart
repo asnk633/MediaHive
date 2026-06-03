@@ -22,6 +22,8 @@ class AudioService {
 
   /// Plays the voice-start beep and waits for it to finish completely,
   /// so the microphone won't pick up the tail end of the sound.
+  /// NOTE: Only use this if you need to guarantee the beep has finished
+  /// before doing something else. For concurrent recording, use playVoiceStart().
   Future<void> playVoiceStartAndWait() async {
     final completer = Completer<void>();
     late StreamSubscription sub;
@@ -45,6 +47,20 @@ class AudioService {
       _logger.error('Failed to play voice start effect', e, stack);
       if (!completer.isCompleted) completer.complete();
       sub.cancel();
+    }
+  }
+
+  /// Fire-and-forget version of the voice-start beep.
+  /// Use this when the recorder is already open and you want the beep
+  /// to play concurrently without delaying the start of audio capture.
+  Future<void> playVoiceStart() async {
+    try {
+      await _effectsPlayer.stop();
+      await _effectsPlayer.play(AssetSource('sounds/voice_record_start.wav'));
+      _logger.debug('Playing audio effect: sounds/voice_record_start.wav');
+      await HapticFeedback.mediumImpact();
+    } catch (e, stack) {
+      _logger.error('Failed to play voice start effect', e, stack);
     }
   }
 

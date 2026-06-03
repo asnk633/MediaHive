@@ -27,6 +27,7 @@ import {
     Coffee,
     Sliders,
     MessageSquare,
+    LifeBuoy,
 } from 'lucide-react';
 import { useAuth } from '@/contexts/AuthContextProvider';
 import { useWorkspace } from '@/system/workspace/WorkspaceProvider';
@@ -187,6 +188,7 @@ export default function DesktopSideNav() {
                     { id: 'leave-analytics', label: 'Leave Analytics', icon: BarChart3, path: '/admin/leave-analytics', feature: 'leave_management' as FeatureKey }
                 ] : []),
                 { id: 'settings', label: 'Settings', icon: Settings, path: '/settings' },
+                { id: 'help', label: 'Help & Support', icon: LifeBuoy, path: '/support' },
             ],
         }
     ];
@@ -443,11 +445,17 @@ export default function DesktopSideNav() {
                             )}
                             <div className="space-y-1">
                                 {group.items.map((item) => {
-                                    const isActive = pathname === item.path || pathname.startsWith(item.path + '/');
+                                const isActive = item.path ? (pathname === item.path || pathname.startsWith(item.path + '/')) : false;
                                     return (
                                         <button
                                             key={item.id}
-                                            onClick={() => nativeNavigate(item.path, router, `Nav:${item.label}`)}
+                                            onClick={() => {
+                                                if ('action' in item && typeof (item as any).action === 'function') {
+                                                    (item as any).action();
+                                                } else if ('path' in item && item.path) {
+                                                    nativeNavigate(item.path as string, router, `Nav:${item.label}`);
+                                                }
+                                            }}
                                             className={cn(
                                                 "group relative w-full flex items-center h-12 px-0 rounded-[18px] transition-all duration-300 ease-out active:scale-[0.97] sidebar-item overflow-hidden",
                                                 isActive
@@ -530,9 +538,6 @@ export default function DesktopSideNav() {
                     )}
                 </button>
             </div>
-
-
-
 
         </motion.aside>
     );

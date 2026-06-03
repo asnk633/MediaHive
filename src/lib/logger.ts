@@ -16,6 +16,19 @@ class SystemLogger {
   private readonly MAX_LOGS = 200;
   private readonly TELEMETRY_SAMPLE_RATE = 0.1; // 10% of logs
 
+  constructor() {
+    if (typeof window !== 'undefined') {
+      try {
+        const stored = localStorage.getItem('system_telemetry_logs');
+        if (stored) {
+          this.logs = JSON.parse(stored);
+        }
+      } catch (e) {
+        // Ignore parsing errors
+      }
+    }
+  }
+
   log(event: Omit<SystemEvent, 'timestamp'>) {
     // 1. Redaction
     const safeMetadata = this.redact(event.metadata);
@@ -30,6 +43,14 @@ class SystemLogger {
     this.logs.unshift(fullEvent);
     if (this.logs.length > this.MAX_LOGS) {
       this.logs = this.logs.slice(0, this.MAX_LOGS);
+    }
+
+    if (typeof window !== 'undefined') {
+      try {
+        localStorage.setItem('system_telemetry_logs', JSON.stringify(this.logs));
+      } catch (e) {
+        // Ignore quota errors
+      }
     }
 
     // 3. Telemetry (Sampled)
@@ -87,3 +108,18 @@ export const logger = new SystemLogger();
 export const logEvent = (type: string, metadata?: any, level: LogLevel = 'info') => {
   logger.log({ type, metadata, level });
 };
+
+if (typeof window !== 'undefined') {
+  const originalError = console.error;
+  const originalWarn = console.warn;
+
+  console.error = (...args: any[]) => {
+    logger.log({ type: 'console_error', level: 'error', metadata: { args: args.map(a => typeof a === 'object' ? JSON.stringify(a) : String(a)) } });
+    originalError.apply(console, args);
+  };
+
+  console.warn = (...args: any[]) => {
+    logger.log({ type: 'console_warn', level: 'warn', metadata: { args: args.map(a => typeof a === 'object' ? JSON.stringify(a) : String(a)) } });
+    originalWarn.apply(console, args);
+  };
+}

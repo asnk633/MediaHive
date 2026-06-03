@@ -24,7 +24,8 @@ import {
   Folder,
   Edit2,
   Trash2,
-  ChevronDown
+  ChevronDown,
+  Terminal
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { motion, AnimatePresence } from 'framer-motion';
@@ -35,6 +36,7 @@ import { VoiceRecorder } from './VoiceRecorder';
 import { VoicePlayer } from './VoicePlayer';
 import { setLastReadTimestamp } from '@/lib/chatUnreadTracker';
 import { eventBus } from '@/lib/eventBus';
+import { logger } from '@/lib/logger';
 
 // Helper to resolve the default gradient background
 const getRoomIconStyle = (iconUrl: string = '', roomName: string = 'Room') => {
@@ -133,6 +135,34 @@ export default function ChatWindow({
 }) {
   // Messages & Input States
   const [messages, setMessages] = useState<any[]>([]);
+  const [isInitializingSupport, setIsInitializingSupport] = useState(room.name === null);
+
+  useEffect(() => {
+    setIsInitializingSupport(room.name === null);
+  }, [room.id, room.name]);
+
+  useEffect(() => {
+    if (isInitializingSupport) {
+      const timer = setTimeout(() => {
+        setIsInitializingSupport(false);
+      }, 3000);
+      return () => clearTimeout(timer);
+    }
+  }, [isInitializingSupport]);
+
+  const handleShareLogs = async () => {
+    setAttachmentMenuOpen(false);
+    try {
+      const logs = logger.getLogs();
+      const logContent = JSON.stringify(logs, null, 2);
+      const blob = new Blob([logContent], { type: 'text/plain' });
+      const file = new File([blob], `system_logs_${Date.now()}.txt`, { type: 'text/plain' });
+      await uploadFile(file, 'file');
+    } catch (e) {
+      console.error(e);
+      alert('Failed to share logs');
+    }
+  };
   const [inputText, setInputText] = useState('');
   const [loading, setLoading] = useState(true);
   const [uploading, setUploading] = useState(false);
@@ -676,7 +706,7 @@ export default function ChatWindow({
 
           <div className="flex flex-col gap-0.5">
             <h2 className="font-semibold text-sm text-white tracking-wide typo-heading flex items-center gap-2 group-hover:text-indigo-300 transition-colors">
-              {room.name}
+              {room.name || 'Support Chat'}
               {room.isMediaTeamOnly && (
                 <span className="text-[9px] tracking-widest uppercase px-1.5 py-0.5 rounded bg-indigo-500/10 text-indigo-400 border border-indigo-500/25">
                   Staff
@@ -1098,6 +1128,22 @@ export default function ChatWindow({
 
       {/* Input Area Panel */}
       <div className="p-4 border-t border-white/[0.05] bg-black/20 shrink-0 z-10 relative">
+        <AnimatePresence>
+          {isInitializingSupport && (
+            <motion.div
+              initial={{ opacity: 0, y: 10 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0, y: 10 }}
+              className="max-w-4xl mx-auto mb-3"
+            >
+              <div className="bg-indigo-500/10 border border-indigo-500/20 rounded-xl px-4 py-3 flex flex-col items-center justify-center gap-2">
+                <Loader2 className="h-4 w-4 text-indigo-400 animate-spin" />
+                <p className="text-xs text-indigo-300/80 font-medium tracking-wide">Opening secure developer support chat...</p>
+              </div>
+            </motion.div>
+          )}
+        </AnimatePresence>
+
         <form onSubmit={handleSendMessage} className="flex items-end gap-2.5 max-w-4xl mx-auto relative bg-white/[0.01] border border-white/[0.06] shadow-2xl p-2.5 rounded-2xl backdrop-blur-md">
           <input 
             type="file" 
@@ -1141,6 +1187,20 @@ export default function ChatWindow({
                       >
                         <div className="rounded-2xl bg-[#0c1029]/90 border border-white/[0.08] shadow-2xl shadow-black/40 backdrop-blur-2xl p-5">
                           <div className="grid grid-cols-2 gap-4">
+                            {/* Share Logs */}
+                            {(!room.name) && (
+                              <button
+                                type="button"
+                                onClick={handleShareLogs}
+                                className="flex flex-col items-center gap-2.5 group cursor-pointer"
+                              >
+                                <div className="w-12 h-12 rounded-full bg-gradient-to-br from-orange-500 to-amber-600 flex items-center justify-center shadow-lg shadow-orange-500/25 transition-transform duration-300 group-hover:scale-110">
+                                  <Terminal className="w-5 h-5 text-white" />
+                                </div>
+                                <span className="text-[11px] font-medium text-white/60 group-hover:text-white/90 transition-colors text-center leading-tight">Share Logs</span>
+                              </button>
+                            )}
+
                             {/* Voice Note */}
                             <button
                               type="button"
@@ -1216,7 +1276,7 @@ export default function ChatWindow({
                   size="icon" 
                   className={`h-9 w-9 rounded-full border transition-all duration-300 cursor-pointer ${attachmentMenuOpen ? 'bg-indigo-600 text-white border-indigo-500 shadow-lg shadow-indigo-600/25' : 'bg-white/[0.03] hover:bg-white/[0.08] text-[#a1a1aa] hover:text-white border-white/[0.06]'}`}
                   onClick={() => setAttachmentMenuOpen(!attachmentMenuOpen)}
-                  disabled={uploading}
+                  disabled={uploading || isInitializingSupport}
                 >
                   {uploading ? (
                     <Loader2 className="h-4 w-4 text-indigo-400 animate-spin" />
@@ -1239,7 +1299,7 @@ export default function ChatWindow({
                   }}
                   placeholder={uploading ? "Securing and uploading to Workspace Drive..." : "Message team..."}
                   className="w-full bg-transparent border-0 py-2.5 px-1.5 focus:outline-none focus:ring-0 text-xs text-white placeholder-white/20 resize-none font-light leading-relaxed scrollbar-none max-h-24 h-9"
-                  disabled={uploading}
+                  disabled={uploading || isInitializingSupport}
                 />
               </div>
               
@@ -1247,7 +1307,7 @@ export default function ChatWindow({
                 type="submit" 
                 size="icon" 
                 className="shrink-0 h-9 w-9 rounded-xl bg-indigo-600 hover:bg-indigo-500 text-white shadow-lg shadow-indigo-600/10 cursor-pointer disabled:bg-indigo-950 disabled:text-indigo-400 transition-all" 
-                disabled={!inputText.trim() || uploading}
+                disabled={!inputText.trim() || uploading || isInitializingSupport}
               >
                 <SendIcon className="h-3.5 w-3.5" />
               </Button>

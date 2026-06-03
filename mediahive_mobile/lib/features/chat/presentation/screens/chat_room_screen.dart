@@ -19,6 +19,7 @@ import 'package:mediahive_mobile/core/design_tokens.dart';
 import 'package:mediahive_mobile/core/theme_provider.dart';
 import 'package:mediahive_mobile/core/utils/url_helpers.dart';
 import 'package:mediahive_mobile/core/utils/media_cache_manager.dart';
+import 'package:mediahive_mobile/core/services/logger_service.dart';
 import 'package:mediahive_mobile/features/chat/presentation/widgets/cached_chat_image.dart';
 import 'package:mediahive_mobile/core/providers/user_provider.dart';
 import 'pdf_viewer_screen.dart';
@@ -368,34 +369,75 @@ class _ChatRoomScreenState extends ConsumerState<ChatRoomScreen> {
     try {
       _voiceTimer?.cancel();
       final duration = _voiceSeconds;
-      
+
+      // Hide recording UI immediately so the user sees instant feedback
       setState(() {
         _isRecordingVoice = false;
       });
 
-      // Stop recorder FIRST so the stop beep isn't captured in the audio
-      final String? filePath = await _audioRecorder.stop();
-
-      // Now play the stop sound after the mic is closed
-      ref.read(audioServiceProvider).playVoiceStop();
-      
+      // Check duration BEFORE stopping the recorder – short-circuit early
       if (duration < 1) {
+        await _audioRecorder.stop();
         _showError('Voice note too short');
         return;
       }
 
+      // Show the optimistic uploading placeholder in the chat list RIGHT NOW,
+      // before the (potentially slow) recorder stop() / file I/O calls.
+      final messageId = const Uuid().v4();
+      final client = ref.read(supabaseClientProvider);
+      final user = client.auth.currentUser;
+      final senderProfile = ref.read(currentUserProfileProvider).value;
+      final senderName = senderProfile?['full_name'] as String?;
+      final senderAvatar = senderProfile?['avatar_url'] as String?;
+      final now = DateTime.now();
+
+      final optimisticMsg = ChatMessage(
+        id: messageId,
+        roomId: widget.roomId,
+        senderId: user?.id ?? '',
+        text: duration.toString(),
+        mediaUrl: 'uploading_placeholder',
+        mediaType: 'voice',
+        createdAt: now,
+        status: 'sending',
+        senderName: senderName ?? 'You',
+        senderAvatar: senderAvatar,
+      );
+      ref.read(chatMessagesProvider(widget.roomId).notifier).addOptimisticMessage(optimisticMsg);
+
+      setState(() {
+        _isUploading = true;
+        _uploadType = 'voice';
+        _uploadStatus = 'Uploading voice note...';
+      });
+
+      // NOW stop the recorder (may take 1-3 s on some devices)
+      final String? filePath = await _audioRecorder.stop();
+
+      // Play stop sound after the mic is fully closed
+      ref.read(audioServiceProvider).playVoiceStop();
+
       if (filePath != null) {
         final File audioFile = File(filePath);
         if (await audioFile.exists()) {
-          await _uploadAndSend(audioFile, 'voice', duration: duration);
+          // Upload and replace the optimistic message with the real one
+          await _uploadAndSendWithId(audioFile, 'voice', messageId: messageId, duration: duration);
         } else {
+          ref.read(chatMessagesProvider(widget.roomId).notifier).removeMessage(messageId);
           _showError('Recorded audio file not found');
         }
       } else {
+        ref.read(chatMessagesProvider(widget.roomId).notifier).removeMessage(messageId);
         _showError('Failed to capture audio path');
       }
     } catch (e) {
       _showError('Failed to stop recording: $e');
+    } finally {
+      setState(() {
+        _isUploading = false;
+        _uploadType = null;
+      });
     }
   }
 
@@ -411,8 +453,33 @@ class _ChatRoomScreenState extends ConsumerState<ChatRoomScreen> {
     }
   }
 
-  // File Uploader & Message Sender Helper
+  // File Uploader & Message Sender Helper (photos, videos, documents)
+  // Voice notes use _uploadAndSendWithId because they pre-create the optimistic message.
   Future<void> _uploadAndSend(File file, String type, {int? duration}) async {
+    final messageId = const Uuid().v4();
+    final client = ref.read(supabaseClientProvider);
+    final user = client.auth.currentUser;
+    final senderProfile = ref.read(currentUserProfileProvider).value;
+    final senderName = senderProfile?['full_name'] as String?;
+    final senderAvatar = senderProfile?['avatar_url'] as String?;
+    final now = DateTime.now();
+
+    // Create and insert optimistic message to provider immediately
+    final optimisticMsg = ChatMessage(
+      id: messageId,
+      roomId: widget.roomId,
+      senderId: user?.id ?? '',
+      text: duration != null ? duration.toString() : 'Attachment',
+      mediaUrl: 'uploading_placeholder',
+      mediaType: type,
+      createdAt: now,
+      status: 'sending',
+      senderName: senderName ?? 'You',
+      senderAvatar: senderAvatar,
+    );
+
+    ref.read(chatMessagesProvider(widget.roomId).notifier).addOptimisticMessage(optimisticMsg);
+
     setState(() {
       _isUploading = true;
       _uploadType = type;
@@ -420,34 +487,53 @@ class _ChatRoomScreenState extends ConsumerState<ChatRoomScreen> {
       _showAttachmentMenu = false;
     });
 
+    await _uploadAndSendWithId(file, type, messageId: messageId, duration: duration);
+  }
+
+  /// Core upload logic reused by both _uploadAndSend and _stopAndSendVoiceNote.
+  /// The caller is responsible for creating the optimistic message and setting
+  /// _isUploading if it wants to show a progress indicator.
+  Future<void> _uploadAndSendWithId(
+    File file,
+    String type, {
+    required String messageId,
+    int? duration,
+  }) async {
     try {
       final uploadRes = await ref.read(chatMessagesProvider(widget.roomId).notifier).uploadChatFile(file);
       if (uploadRes != null) {
         final url = uploadRes['url'] as String?;
         final fileId = uploadRes['fileId'] as String?;
         final name = uploadRes['name'] as String? ?? 'Attachment';
-        
-        // Resolve type based on MIME or name, but preserve 'document' if explicitly chosen to support file mode
+
+        // Resolve MIME type but preserve 'document' if explicitly chosen
         String resolvedType = type;
         if (type != 'document' && uploadRes['type'] != null) {
           final String mime = uploadRes['type'] as String;
           if (mime.startsWith('image/')) {
             resolvedType = 'image';
-          } else if (mime.startsWith('video/')) resolvedType = 'video';
-          else if (mime.startsWith('audio/')) resolvedType = 'voice';
-          else resolvedType = 'document';
+          } else if (mime.startsWith('video/')) {
+            resolvedType = 'video';
+          } else if (mime.startsWith('audio/')) {
+            resolvedType = 'voice';
+          } else {
+            resolvedType = 'document';
+          }
         }
 
         await ref.read(chatMessagesProvider(widget.roomId).notifier).sendMessage(
-          duration != null ? duration.toString() : name, // Pass recorded duration or original filename
+          duration != null ? duration.toString() : name,
           mediaUrl: url,
           mediaType: resolvedType,
           driveFileId: fileId,
+          messageId: messageId,
         );
       } else {
+        ref.read(chatMessagesProvider(widget.roomId).notifier).removeMessage(messageId);
         _showError('Upload failed. Please try again.');
       }
     } catch (e) {
+      ref.read(chatMessagesProvider(widget.roomId).notifier).removeMessage(messageId);
       _showError('Error: $e');
     } finally {
       setState(() {
@@ -661,61 +747,113 @@ class _ChatRoomScreenState extends ConsumerState<ChatRoomScreen> {
     }
   }
 
-  // 4. Real Voice Note Recording
-  Future<void> _startVoiceNote() async {
+  Future<void> _shareTelemetry() async {
     try {
-      if (await _audioRecorder.hasPermission()) {
-        // Pause all other media playing in the chatroom
-        ChatMediaManager.play('');
-        
-        // Request exclusive audio focus to pause background music player apps like Spotify
-        await AudioPlayer.global.setAudioContext(AudioContext(
-          android: const AudioContextAndroid(
-            isSpeakerphoneOn: true,
-            stayAwake: true,
-            contentType: AndroidContentType.music,
-            usageType: AndroidUsageType.media,
-            audioFocus: AndroidAudioFocus.gain,
-          ),
-          iOS: AudioContextIOS(
-            category: AVAudioSessionCategory.playAndRecord,
-            options: {
-              AVAudioSessionOptions.defaultToSpeaker,
-            },
-          ),
-        ));
-
-        final tempDir = await getTemporaryDirectory();
-        final path = '${tempDir.path}/voice_note_${DateTime.now().millisecondsSinceEpoch}.m4a';
-        
-        // Play beep and wait for it to fully finish so the mic doesn't pick it up
-        await ref.read(audioServiceProvider).playVoiceStartAndWait();
-        
-        await _audioRecorder.start(
-          const RecordConfig(
-            encoder: AudioEncoder.aacLc,
-            sampleRate: 44100,
-            bitRate: 128000,
-          ),
-          path: path,
+      final logs = ref.read(loggerProvider);
+      if (logs.isEmpty) {
+        _showError('No telemetry data available yet.');
+        return;
+      }
+      
+      final directory = await getTemporaryDirectory();
+      final file = File('${directory.path}/telemetry_${DateTime.now().millisecondsSinceEpoch}.txt');
+      
+      final buffer = StringBuffer();
+      buffer.writeln('--- MediaHive Telemetry & System Logs ---');
+      buffer.writeln('Generated at: ${DateTime.now().toIso8601String()}');
+      buffer.writeln('Room ID: ${widget.roomId}');
+      buffer.writeln('------------------------------------------');
+      for (final log in logs) {
+        buffer.writeln(log.toString());
+      }
+      
+      await file.writeAsString(buffer.toString());
+      
+      await _uploadAndSend(file, 'document');
+      
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text('Telemetry logs shared with Developer.')),
         );
-
-        setState(() {
-          _isRecordingVoice = true;
-          _voiceSeconds = 0;
-          _showAttachmentMenu = false;
-        });
-
-        _voiceTimer?.cancel();
-        _voiceTimer = Timer.periodic(const Duration(seconds: 1), (timer) {
-          setState(() {
-            _voiceSeconds++;
-          });
-        });
-      } else {
-        _showError('Microphone permission is required to record voice notes');
       }
     } catch (e) {
+      _showError('Failed to share telemetry: $e');
+    }
+  }
+
+  // 4. Real Voice Note Recording
+  Future<void> _startVoiceNote() async {
+    // ── Step 1: Show recording UI INSTANTLY on tap ──────────────────────────
+    setState(() {
+      _isRecordingVoice = true;
+      _voiceSeconds = 0;
+      _showAttachmentMenu = false;
+    });
+
+    try {
+      // ── Step 2: Permission check (fast on most devices after first grant) ──
+      if (!await _audioRecorder.hasPermission()) {
+        setState(() { _isRecordingVoice = false; });
+        _showError('Microphone permission is required to record voice notes');
+        return;
+      }
+
+      // ── Step 3: Pause all in-chat media ────────────────────────────────────
+      ChatMediaManager.play('');
+
+      // ── Step 4: Set audio context for recording (playAndRecord from the start)
+      // Using playAndRecord immediately lets the beep play through the earpiece
+      // while the mic can open at the same time without feedback.
+      await AudioPlayer.global.setAudioContext(AudioContext(
+        android: const AudioContextAndroid(
+          isSpeakerphoneOn: false,   // earpiece → mic can't pick up the beep
+          stayAwake: true,
+          contentType: AndroidContentType.sonification,
+          usageType: AndroidUsageType.notificationRingtone,
+          audioFocus: AndroidAudioFocus.gainTransientMayDuck,
+        ),
+        iOS: AudioContextIOS(
+          category: AVAudioSessionCategory.playAndRecord,
+          options: {
+            // No defaultToSpeaker – routes beep to earpiece, away from mic
+          },
+        ),
+      ));
+
+      // ── Step 5: Prepare temp path ──────────────────────────────────────────
+      final tempDir = await getTemporaryDirectory();
+      final path = '${tempDir.path}/voice_note_${DateTime.now().millisecondsSinceEpoch}.m4a';
+
+      // ── Step 6: Open the mic FIRST, then play the beep in parallel ─────────
+      // FIX: Previously we waited for the beep to finish before opening the mic,
+      // which caused ~1 second of speech to be missed. Now the recorder starts
+      // immediately and the beep plays concurrently through the earpiece.
+      // Because isSpeakerphoneOn=false (Android) and playAndRecord routes audio
+      // to the earpiece (iOS), the mic cannot pick up the beep.
+      await _audioRecorder.start(
+        const RecordConfig(
+          encoder: AudioEncoder.aacLc,
+          sampleRate: 44100,
+          bitRate: 128000,
+        ),
+        path: path,
+      );
+
+      // Play the start beep WITHOUT awaiting – it runs concurrently with recording.
+      // ignore: unawaited_futures
+      ref.read(audioServiceProvider).playVoiceStart();
+
+      // ── Step 7: Tick the duration counter ─────────────────────────────────
+      _voiceTimer?.cancel();
+      _voiceTimer = Timer.periodic(const Duration(seconds: 1), (timer) {
+        if (mounted) {
+          setState(() { _voiceSeconds++; });
+        }
+      });
+    } catch (e) {
+      if (mounted) {
+        setState(() { _isRecordingVoice = false; });
+      }
       _showError('Failed to start recording: $e');
     }
   }
@@ -749,8 +887,9 @@ class _ChatRoomScreenState extends ConsumerState<ChatRoomScreen> {
     final client = ref.read(supabaseClientProvider);
     final currentUser = client.auth.currentUser;
 
-    // Use extra if available, otherwise fallback name/avatar
-    final roomTitle = widget.roomExtra?.displayName ?? 'Chat';
+    // Use extra if available, otherwise fallback name/avatar for Support Chat
+    final isSupportChatScreen = widget.roomExtra == null;
+    final roomTitle = widget.roomExtra?.displayName ?? 'Developer Support';
     final roomAvatar = widget.roomExtra?.displayAvatar;
 
     // Schedule scroll to bottom when new messages arrive
@@ -864,7 +1003,7 @@ class _ChatRoomScreenState extends ConsumerState<ChatRoomScreen> {
                                   ),
                                   const SizedBox(height: 2),
                                   Text(
-                                    'Securely connected',
+                                    isSupportChatScreen ? 'App queries & issues' : 'Securely connected',
                                     style: TextStyle(
                                       color: colors.textSecondary.withValues(alpha: 0.6),
                                       fontSize: 10,
@@ -1253,6 +1392,18 @@ class _ChatRoomScreenState extends ConsumerState<ChatRoomScreen> {
                       _pickMedia();
                     },
                   ),
+                  if (widget.roomExtra == null || widget.roomExtra?.name == null || widget.roomExtra!.name!.isEmpty) ...[
+                    const SizedBox(height: 12),
+                    _buildPremiumAttachmentOption(
+                      icon: LucideIcons.bug,
+                      label: 'Share Logs',
+                      gradientColors: [Colors.redAccent, Colors.deepOrange],
+                      onTap: () {
+                        setState(() => _showAttachmentMenu = false);
+                        _shareTelemetry();
+                      },
+                    ),
+                  ],
                 ],
               ).animate()
                   .fadeIn(duration: 180.ms)
@@ -1625,14 +1776,14 @@ class _ChatRoomScreenState extends ConsumerState<ChatRoomScreen> {
     }
 
     if (msg.mediaType == 'voice') {
-      final actualVoiceUrl = UrlHelpers.getDirectMediaUrl(msg.mediaUrl, driveFileId: msg.driveFileId) ?? msg.mediaUrl!;
-      final voiceUrl = msg.id == 'uploading_mock' ? '' : actualVoiceUrl;
+      final isUploading = msg.status == 'sending' || msg.id == 'uploading_mock';
+      final actualVoiceUrl = isUploading ? '' : (UrlHelpers.getDirectMediaUrl(msg.mediaUrl, driveFileId: msg.driveFileId) ?? msg.mediaUrl ?? '');
       final durationSecs = int.tryParse(msg.text);
       return InlineVoicePlayer(
-        audioUrl: voiceUrl,
+        audioUrl: actualVoiceUrl,
         colors: colors,
         isMe: isMe,
-        isUploading: msg.id == 'uploading_mock',
+        isUploading: isUploading,
         durationSeconds: durationSecs,
       );
     }
@@ -1998,8 +2149,8 @@ class _ChatRoomScreenState extends ConsumerState<ChatRoomScreen> {
                   if (snapshot.connectionState == ConnectionState.waiting) {
                     return const Center(child: CircularProgressIndicator(color: Colors.amber));
                   }
-                  
                   final participants = snapshot.data ?? [];
+                  final isPrivateChat = (widget.roomExtra == null || widget.roomExtra!.name == null || widget.roomExtra!.name!.isEmpty) && participants.length <= 2;
                   
                   return Column(
                     children: [
@@ -2019,7 +2170,7 @@ class _ChatRoomScreenState extends ConsumerState<ChatRoomScreen> {
                           mainAxisAlignment: MainAxisAlignment.spaceBetween,
                           children: [
                             Text(
-                              'Group Info',
+                              isPrivateChat ? 'Chat Info' : 'Group Info',
                               style: TextStyle(
                                 color: colors.textPrimary,
                                 fontSize: 18,
@@ -2057,7 +2208,7 @@ class _ChatRoomScreenState extends ConsumerState<ChatRoomScreen> {
                             const SizedBox(height: 16),
                             Center(
                               child: Text(
-                                widget.roomExtra?.displayName ?? 'Group Chat',
+                                widget.roomExtra?.displayName ?? (isPrivateChat ? 'Developer Support' : 'Group Chat'),
                                 style: TextStyle(
                                   color: colors.textPrimary,
                                   fontSize: 20,
@@ -2065,6 +2216,19 @@ class _ChatRoomScreenState extends ConsumerState<ChatRoomScreen> {
                                 ),
                               ),
                             ),
+                            if (isPrivateChat && widget.roomExtra?.displayName == null)
+                              Padding(
+                                padding: const EdgeInsets.only(top: 8, left: 24, right: 24),
+                                child: Text(
+                                  'Chat with the Developer to resolve queries, issues, and other app-related matters.',
+                                  textAlign: TextAlign.center,
+                                  style: TextStyle(
+                                    color: colors.textSecondary.withValues(alpha: 0.7),
+                                    fontSize: 12,
+                                  ),
+                                ),
+                              ),
+
                             const SizedBox(height: 4),
                             Center(
                               child: Text(
@@ -2284,16 +2448,17 @@ class _ChatRoomScreenState extends ConsumerState<ChatRoomScreen> {
                                     letterSpacing: 1.0,
                                   ),
                                 ),
-                                TextButton.icon(
-                                  onPressed: () => _showAddUserSheet(participants, () {
-                                    setSheetState(() {});
-                                  }),
-                                  icon: Icon(LucideIcons.userPlus, size: 14, color: colors.honey),
-                                  label: Text(
-                                    'Add User',
-                                    style: TextStyle(color: colors.honey, fontSize: 11, fontWeight: FontWeight.bold),
+                                if (!isPrivateChat)
+                                  TextButton.icon(
+                                    onPressed: () => _showAddUserSheet(participants, () {
+                                      setSheetState(() {});
+                                    }),
+                                    icon: Icon(LucideIcons.userPlus, size: 14, color: colors.honey),
+                                    label: Text(
+                                      'Add User',
+                                      style: TextStyle(color: colors.honey, fontSize: 11, fontWeight: FontWeight.bold),
+                                    ),
                                   ),
-                                ),
                               ],
                             ),
                             const SizedBox(height: 8),
@@ -2339,23 +2504,24 @@ class _ChatRoomScreenState extends ConsumerState<ChatRoomScreen> {
                                         ],
                                       ),
                                     ),
-                                    Container(
-                                      padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
-                                      decoration: BoxDecoration(
-                                        color: role == 'creator' 
-                                            ? Colors.redAccent.withValues(alpha: 0.12)
-                                            : colors.honey.withValues(alpha: 0.12),
-                                        borderRadius: BorderRadius.circular(6),
-                                      ),
-                                      child: Text(
-                                        role.toUpperCase(),
-                                        style: TextStyle(
-                                          color: role == 'creator' ? Colors.redAccent : colors.honey,
-                                          fontSize: 8,
-                                          fontWeight: FontWeight.bold,
+                                    if (!isPrivateChat)
+                                      Container(
+                                        padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
+                                        decoration: BoxDecoration(
+                                          color: role == 'creator' 
+                                              ? Colors.redAccent.withValues(alpha: 0.12)
+                                              : colors.honey.withValues(alpha: 0.12),
+                                          borderRadius: BorderRadius.circular(6),
+                                        ),
+                                        child: Text(
+                                          role.toUpperCase(),
+                                          style: TextStyle(
+                                            color: role == 'creator' ? Colors.redAccent : colors.honey,
+                                            fontSize: 8,
+                                            fontWeight: FontWeight.bold,
+                                          ),
                                         ),
                                       ),
-                                    ),
                                   ],
                                 ),
                               );
@@ -2408,8 +2574,9 @@ class _ChatRoomScreenState extends ConsumerState<ChatRoomScreen> {
                             }(),
                             
                             // Leave Group Option
-                            GestureDetector(
-                              onTap: () async {
+                            if (!isPrivateChat)
+                              GestureDetector(
+                                onTap: () async {
                                 final client = ref.read(supabaseClientProvider);
                                 final currentUser = client.auth.currentUser;
                                 if (currentUser != null) {

@@ -8,9 +8,14 @@ import { MessageSquare } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { setLastReadTimestamp, getLastReadTimestamps } from '@/lib/chatUnreadTracker';
 
+import { useSearchParams } from 'next/navigation';
+
 export default function ChatLayout({ currentUser, initialRooms, allUsers }: { currentUser: any, initialRooms: any[], allUsers: any[] }) {
-  const [activeRoom, setActiveRoom] = useState<any | null>(null);
+  const searchParams = useSearchParams();
+  const defaultRoomId = searchParams.get('room');
   const [rooms, setRooms] = useState<any[]>(initialRooms);
+  const initialActiveRoom = defaultRoomId ? (initialRooms.find(r => r.id === defaultRoomId) || { id: defaultRoomId, name: null }) : null;
+  const [activeRoom, setActiveRoom] = useState<any | null>(initialActiveRoom);
   const [infoOpen, setInfoOpen] = useState(false);
   const [activeRoomMessages, setActiveRoomMessages] = useState<any[]>([]);
   const [unreadCounts, setUnreadCounts] = useState<Record<string, number>>({});
@@ -22,6 +27,15 @@ export default function ChatLayout({ currentUser, initialRooms, allUsers }: { cu
       setUnreadCounts(prev => ({ ...prev, [activeRoom.id]: 0 }));
     }
   }, [activeRoom?.id, currentUser?.id]);
+
+  // Sync activeRoom with defaultRoomId when URL changes
+  useEffect(() => {
+    if (defaultRoomId && defaultRoomId !== activeRoom?.id) {
+      const room = rooms.find(r => r.id === defaultRoomId) || { id: defaultRoomId, name: null };
+      setActiveRoom(room);
+      setActiveRoomMessages([]);
+    }
+  }, [defaultRoomId]);
 
   // Global exclusive media playback listener (pauses other audio/video elements on any play event)
   useEffect(() => {

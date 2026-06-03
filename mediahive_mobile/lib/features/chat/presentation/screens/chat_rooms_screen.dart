@@ -21,6 +21,7 @@ class ChatRoomsScreen extends ConsumerStatefulWidget {
 class _ChatRoomsScreenState extends ConsumerState<ChatRoomsScreen> {
   final TextEditingController _searchController = TextEditingController();
   String _searchQuery = '';
+  int _selectedTab = 0; // 0 for Chat Rooms, 1 for Private Chats
 
   @override
   void dispose() {
@@ -136,11 +137,75 @@ class _ChatRoomsScreenState extends ConsumerState<ChatRoomsScreen> {
                   ).animate().fadeIn(duration: 400.ms).slideY(begin: 0.1, end: 0),
                 ),
 
+                // Tabs
+                Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 4.0),
+                  child: Row(
+                    children: [
+                      Expanded(
+                        child: GestureDetector(
+                          onTap: () => setState(() => _selectedTab = 0),
+                          child: Container(
+                            padding: const EdgeInsets.symmetric(vertical: 10),
+                            decoration: BoxDecoration(
+                              color: _selectedTab == 0 ? colors.honey : (isLight ? Colors.white.withValues(alpha: 0.6) : colors.surface.withValues(alpha: 0.5)),
+                              borderRadius: BorderRadius.circular(16),
+                              border: Border.all(
+                                color: _selectedTab == 0 ? colors.honey : (isLight ? DesignTokens.lightBorder : colors.border.withValues(alpha: 0.3)),
+                              ),
+                            ),
+                            child: Center(
+                              child: Text(
+                                'Chat Rooms',
+                                style: TextStyle(
+                                  color: _selectedTab == 0 ? Colors.black : colors.textPrimary,
+                                  fontWeight: FontWeight.bold,
+                                  fontSize: 13,
+                                ),
+                              ),
+                            ),
+                          ),
+                        ),
+                      ),
+                      const SizedBox(width: 12),
+                      Expanded(
+                        child: GestureDetector(
+                          onTap: () => setState(() => _selectedTab = 1),
+                          child: Container(
+                            padding: const EdgeInsets.symmetric(vertical: 10),
+                            decoration: BoxDecoration(
+                              color: _selectedTab == 1 ? colors.honey : (isLight ? Colors.white.withValues(alpha: 0.6) : colors.surface.withValues(alpha: 0.5)),
+                              borderRadius: BorderRadius.circular(16),
+                              border: Border.all(
+                                color: _selectedTab == 1 ? colors.honey : (isLight ? DesignTokens.lightBorder : colors.border.withValues(alpha: 0.3)),
+                              ),
+                            ),
+                            child: Center(
+                              child: Text(
+                                'Developer Support',
+                                style: TextStyle(
+                                  color: _selectedTab == 1 ? Colors.black : colors.textPrimary,
+                                  fontWeight: FontWeight.bold,
+                                  fontSize: 13,
+                                ),
+                              ),
+                            ),
+                          ),
+                        ),
+                      ),
+                    ],
+                  ).animate().fadeIn(duration: 400.ms).slideY(begin: 0.1, end: 0),
+                ),
+
                 // Rooms List
                 Expanded(
                   child: chatRoomsAsync.when(
                     data: (rooms) {
                       final filteredRooms = rooms.where((room) {
+                        final isPrivate = room.name == null || room.name!.isEmpty;
+                        if (_selectedTab == 0 && isPrivate) return false;
+                        if (_selectedTab == 1 && !isPrivate) return false;
+
                         final name = room.displayName?.toLowerCase() ?? '';
                         final preview = room.lastMessagePreview?.toLowerCase() ?? '';
                         return name.contains(_searchQuery) || preview.contains(_searchQuery);

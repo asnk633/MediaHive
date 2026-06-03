@@ -189,13 +189,12 @@ export default function ChatSidebar({ currentUser, rooms, activeRoom, unreadCoun
                       <div className="absolute left-0 top-3 bottom-3 w-1 bg-indigo-500 rounded-full shadow-[0_0_8px_rgba(99,102,241,0.8)]" />
                     )}
 
-                    {/* Gradient / Image Avatar */}
-                    <RoomAvatar iconUrl={room.icon_url} name={room.name} gradient={gradient} />
+                    <RoomAvatar iconUrl={room.icon_url} name={room.name || 'Support Chat'} gradient={gradient} />
 
                     {/* Meta info */}
                     <div className="flex-1 overflow-hidden">
                       <div className="flex items-center justify-between gap-2">
-                        <div className={`font-semibold text-xs truncate group-hover:translate-x-0.5 transition-transform duration-300 ${unreadCount > 0 ? 'text-white font-bold' : 'text-white/80'}`}>{room.name}</div>
+                        <div className={`font-semibold text-xs truncate group-hover:translate-x-0.5 transition-transform duration-300 ${unreadCount > 0 ? 'text-white font-bold' : 'text-white/80'}`}>{room.name || 'Support Chat'}</div>
                         {room.last_message_time && (
                           <span className={`text-[9px] shrink-0 font-light tracking-wide ${unreadCount > 0 ? 'text-indigo-400 font-medium' : 'text-white/30'}`}>
                             {formatLastMsgTime(room.last_message_time)}

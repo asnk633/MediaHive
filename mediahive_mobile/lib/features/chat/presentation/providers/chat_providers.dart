@@ -410,24 +410,38 @@ class ChatMessagesNotifier extends StateNotifier<AsyncValue<List<ChatMessage>>> 
     return null;
   }
 
+  void addOptimisticMessage(ChatMessage message) {
+    state.whenData((currentList) {
+      if (currentList.any((m) => m.id == message.id)) return;
+      state = AsyncValue.data([...currentList, message]);
+    });
+  }
+
+  void removeMessage(String messageId) {
+    state.whenData((currentList) {
+      state = AsyncValue.data(currentList.where((m) => m.id != messageId).toList());
+    });
+  }
+
   Future<void> sendMessage(
     String text, {
     String? mediaUrl,
     String? mediaType,
     String? driveFileId,
+    String? messageId,
   }) async {
     final client = _ref.read(supabaseClientProvider);
     final user = client.auth.currentUser;
     if (user == null) return;
 
-    final messageId = const Uuid().v4();
+    final actualMessageId = messageId ?? const Uuid().v4();
     final now = DateTime.now().toUtc();
 
     final senderProfile = _ref.read(currentUserProfileProvider).value;
     final tenantId = senderProfile?['tenant_id'] ?? user.userMetadata?['tenant_id'] ?? '7bc0bbe7-1943-4929-a769-5fdfbc487446';
 
     final payload = {
-      'id': messageId,
+      'id': actualMessageId,
       'room_id': _roomId,
       'sender_id': user.id,
       'text': text,
@@ -445,7 +459,7 @@ class ChatMessagesNotifier extends StateNotifier<AsyncValue<List<ChatMessage>>> 
       final senderAvatar = senderProfile?['avatar_url'] as String?;
 
       final optimisticMsg = ChatMessage(
-        id: messageId,
+        id: actualMessageId,
         roomId: _roomId,
         senderId: user.id,
         text: text,
@@ -459,7 +473,9 @@ class ChatMessagesNotifier extends StateNotifier<AsyncValue<List<ChatMessage>>> 
       );
 
       state.whenData((currentList) {
-        state = AsyncValue.data([...currentList, optimisticMsg]);
+        // If the message is already added via addOptimisticMessage, we update/replace it to avoid duplicate
+        final listWithoutMessage = currentList.where((m) => m.id != actualMessageId).toList();
+        state = AsyncValue.data([...listWithoutMessage, optimisticMsg]);
       });
 
       // Insert message in Supabase
@@ -692,13 +708,18 @@ class ChatCreationService {
 
   ChatCreationService(this._ref);
 
+  /// Returns the room ID of the private 1-on-1 direct chat between the current
+  /// user and [otherUserId]. Creates one if it doesn't exist yet.
+  ///
+  /// Strict matching: only considers rooms that have NO name (i.e. are not group
+  /// chats) and are NOT media-team-only rooms. This prevents accidentally
+  /// returning a shared group room as a DM.
   Future<String> getOrCreateDirectChat(String otherUserId) async {
     final client = _ref.read(supabaseClientProvider);
     final user = client.auth.currentUser;
     if (user == null) throw Exception('User not authenticated');
 
-    // 1. Check if direct chat already exists
-    // Query rooms where is_media_team_only is false and current user and other user are participants
+    // 1. Find all rooms where BOTH users are participants
     final myRoomsRes = await client
         .from('chat_participants')
         .select('room_id')
@@ -709,55 +730,108 @@ class ChatCreationService {
         .toList();
 
     if (myRoomIds.isNotEmpty) {
-      final matchingParticipant = await client
+      // Get room IDs where the other user is also a participant
+      final sharedRoomsRes = await client
           .from('chat_participants')
           .select('room_id')
           .inFilter('room_id', myRoomIds)
-          .eq('user_id', otherUserId)
-          .maybeSingle();
+          .eq('user_id', otherUserId);
 
-      if (matchingParticipant != null) {
-        return matchingParticipant['room_id'] as String;
+      final List<String> sharedRoomIds = (sharedRoomsRes as List)
+          .map((p) => p['room_id'] as String)
+          .toList();
+
+      if (sharedRoomIds.isNotEmpty) {
+        // Among shared rooms, find one that is a true private DM:
+        // - name is empty (not a named group chat)
+        // - is_media_team_only is false
+        final dmRoomRes = await client
+            .from('chat_rooms')
+            .select('id')
+            .inFilter('id', sharedRoomIds)
+            .eq('is_media_team_only', false)
+            .or('name.is.null,name.eq.')
+            .limit(1)
+            .maybeSingle();
+
+        if (dmRoomRes != null) {
+          return dmRoomRes['id'] as String;
+        }
       }
     }
 
-    // 2. Direct chat doesn't exist, create it!
+    // 2. No existing DM found – create a new private room with only 2 participants
     final roomId = const Uuid().v4();
     final now = DateTime.now().toUtc().toIso8601String();
 
-    // Create Room
+    // Resolve tenant_id from the current user's profile (same pattern as sendMessage).
+    // Falls back to the default tenant ID to satisfy the NOT NULL constraint.
+    final senderProfile = _ref.read(currentUserProfileProvider).value;
+    final tenantId = senderProfile?['tenant_id'] as String?
+        ?? user.userMetadata?['tenant_id'] as String?
+        ?? '7bc0bbe7-1943-4929-a769-5fdfbc487446';
+
     await client.from('chat_rooms').insert({
       'id': roomId,
-      'name': '', // Empty name for direct messaging
+      'name': '',              // empty = DM (not a group)
       'is_media_team_only': false,
       'created_by': user.id,
       'created_at': now,
       'last_message_time': now,
       'last_message_preview': 'Conversation started',
+      'tenant_id': tenantId,
     });
 
-    // Create Participants
-    await client.from('chat_participants').insert([
-      {
-        'id': const Uuid().v4(),
-        'room_id': roomId,
-        'user_id': user.id,
-        'role': 'creator',
-        'created_at': now,
-      },
-      {
-        'id': const Uuid().v4(),
-        'room_id': roomId,
-        'user_id': otherUserId,
-        'role': 'member',
-        'created_at': now,
-      }
-    ]);
+    // Upsert participants so that orphaned rows from any previous failed attempt
+    // don't cause a duplicate-key crash on the (room_id, user_id) constraint.
+    await client.from('chat_participants').upsert(
+      [
+        {
+          'id': const Uuid().v4(),
+          'room_id': roomId,
+          'user_id': user.id,
+          'role': 'creator',
+          'created_at': now,
+          'tenant_id': tenantId,
+        },
+        {
+          'id': const Uuid().v4(),
+          'room_id': roomId,
+          'user_id': otherUserId,
+          'role': 'member',
+          'created_at': now,
+          'tenant_id': tenantId,
+        },
+      ],
+      onConflict: 'room_id,user_id',
+    );
 
-    // Force refresh of rooms list
     _ref.read(chatRoomsProvider.notifier).fetchRooms();
-
     return roomId;
+  }
+
+  /// Opens (or creates) the private support chat between the current user and
+  /// the app's Admin user. Returns the room ID.
+  ///
+  /// Identical to [getOrCreateDirectChat] but looks up the admin automatically.
+  /// Always produces a strict 2-participant private room – no other members.
+  Future<String> getOrCreateAdminSupportChat() async {
+    final client = _ref.read(supabaseClientProvider);
+
+    // Find the admin user account
+    final adminRes = await client
+        .from('profiles')
+        .select('id')
+        .eq('role', 'admin')
+        .limit(1)
+        .maybeSingle();
+
+    if (adminRes == null) {
+      throw Exception('No admin account found. Please contact support.');
+    }
+
+    final adminId = adminRes['id'] as String;
+    return getOrCreateDirectChat(adminId);
   }
 
   Future<String> createGroupChat(String name) async {
@@ -768,6 +842,11 @@ class ChatCreationService {
     final roomId = const Uuid().v4();
     final now = DateTime.now().toUtc().toIso8601String();
 
+    final senderProfile = _ref.read(currentUserProfileProvider).value;
+    final tenantId = senderProfile?['tenant_id'] as String?
+        ?? user.userMetadata?['tenant_id'] as String?
+        ?? '7bc0bbe7-1943-4929-a769-5fdfbc487446';
+
     // Create Room
     await client.from('chat_rooms').insert({
       'id': roomId,
@@ -777,16 +856,21 @@ class ChatCreationService {
       'created_at': now,
       'last_message_time': now,
       'last_message_preview': 'Group created',
+      'tenant_id': tenantId,
     });
 
     // Create Participant for current user as 'creator'
-    await client.from('chat_participants').insert({
-      'id': const Uuid().v4(),
-      'room_id': roomId,
-      'user_id': user.id,
-      'role': 'creator',
-      'created_at': now,
-    });
+    await client.from('chat_participants').upsert(
+      {
+        'id': const Uuid().v4(),
+        'room_id': roomId,
+        'user_id': user.id,
+        'role': 'creator',
+        'created_at': now,
+        'tenant_id': tenantId,
+      },
+      onConflict: 'room_id,user_id',
+    );
 
     // Automatically add all other Media & IT Team members as default participants
     final profilesRes = await client.from('profiles').select('id');
@@ -801,12 +885,16 @@ class ChatCreationService {
           'user_id': uid,
           'role': 'member',
           'created_at': now,
+          'tenant_id': tenantId,
         });
       }
     }
 
     if (participants.isNotEmpty) {
-      await client.from('chat_participants').insert(participants);
+      await client.from('chat_participants').upsert(
+        participants,
+        onConflict: 'room_id,user_id',
+      );
     }
 
     // Force refresh of rooms list

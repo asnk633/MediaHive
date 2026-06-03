@@ -2,6 +2,7 @@ import { verifyUser } from "@/lib/server/server-utils";
 import { getSupabaseAdmin } from "@/lib/verifyUser";
 import ChatLayout from "@/components/chat/ChatLayout";
 import { redirect } from "next/navigation";
+import { Suspense } from "react";
 
 export const dynamic = 'force-dynamic';
 
@@ -121,7 +122,9 @@ export default async function ChatPage() {
 
   return (
     <div className="w-full h-[calc(100vh-10rem)] min-h-[500px] flex relative z-10">
-      <ChatLayout currentUser={currentUser} initialRooms={rooms} allUsers={allUsers || []} />
+      <Suspense fallback={<div>Loading chat...</div>}>
+        <ChatLayout currentUser={currentUser} initialRooms={rooms} allUsers={allUsers || []} />
+      </Suspense>
     </div>
   );
 }

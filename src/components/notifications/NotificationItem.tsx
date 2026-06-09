@@ -10,10 +10,11 @@ interface NotificationItemProps {
     notification: AppNotification;
     onRead: (id: string) => void;
     onArchive: (id: string) => void;
-    // Selection props â€” optional; forwarded from NotificationInbox
+    // Selection props — optional; forwarded from NotificationInbox
     selectable?: boolean;
     selected?: boolean;
     onSelectToggle?: (e: React.MouseEvent) => void;
+    variant?: 'flat' | 'card';
 }
 
 export function NotificationItem({
@@ -23,6 +24,7 @@ export function NotificationItem({
     selectable = false,
     selected = false,
     onSelectToggle,
+    variant = 'card',
 }: NotificationItemProps) {
     const { id, title, message, priority, read, created_at, type, action_url } = notification;
 
@@ -47,16 +49,29 @@ export function NotificationItem({
 
     // Type Icons
     const getTypeIcon = () => {
-        if (!type || typeof type !== 'string') {
-            return <Info className="w-5 h-5 text-blue-500" />;
+        const lowerType = (type || '').toLowerCase();
+        let icon = <Info className="w-4 h-4 text-indigo-500" />;
+        let bg = 'bg-indigo-500/10 border-indigo-500/15';
+
+        if (lowerType.includes('overdue')) {
+            icon = <AlertTriangle className="w-4 h-4 text-red-500" />;
+            bg = 'bg-red-500/10 border-red-500/15';
+        } else if (lowerType.includes('warning') || lowerType.includes('reminder')) {
+            icon = <Bell className="w-4 h-4 text-amber-500" />;
+            bg = 'bg-amber-500/10 border-amber-500/15';
         }
 
-        const lowerType = type.toLowerCase();
-        if (lowerType.includes('overdue')) return <AlertTriangle className="w-5 h-5 text-red-500" />;
-        if (lowerType.includes('warning') || lowerType.includes('reminder')) return <Bell className="w-5 h-5 text-yellow-500" />;
-        return <Info className="w-5 h-5 text-blue-500" />;
+        return (
+            <div className={`w-8 h-8 rounded-lg flex items-center justify-center border ${bg} flex-shrink-0`}>
+                {icon}
+            </div>
+        );
     };
 
+    const isCard = variant === 'card';
+    const containerClasses = isCard 
+        ? "relative group rounded-xl border border-foreground/10 bg-foreground/[0.02] hover:bg-foreground/[0.04] transition-all duration-200 cursor-pointer !h-auto !py-3 !px-4"
+        : "relative group bg-transparent transition-all duration-150 cursor-pointer !h-auto !py-3 !px-4 border-b border-border last:border-none hover:bg-foreground/[0.01]";
 
     return (
         <DataRow
@@ -64,64 +79,54 @@ export function NotificationItem({
             selected={selected}
             onSelectToggle={onSelectToggle}
             onClick={() => !read && onRead(id)}
-            className="relative group rounded-xl border border-foreground/5 bg-foreground/[0.02] hover:bg-foreground/[0.05] transition-all duration-200 cursor-pointer"
+            className={containerClasses}
         >
             {/* Priority Accent Strip */}
-            <div className={`absolute left-0 top-0 bottom-0 w-1 rounded-l-xl ${priorityAccent[priority] ?? 'bg-blue-500'}`} />
+            <div className={`absolute left-0 top-0 bottom-0 w-0.5 rounded-l-xl ${priorityAccent[priority] ?? 'bg-blue-500'}`} />
 
-            <div className={`flex gap-4 pl-3 flex-1 min-w-0 ${read ? 'opacity-90' : 'opacity-100'}`}>
+            <div className={`flex gap-3 pl-2.5 flex-1 min-w-0 ${read ? 'opacity-80' : 'opacity-100'}`}>
                 {/* Icon Column */}
-                <div className="mt-1 flex-shrink-0">
+                <div className="mt-0.5 flex-shrink-0">
                     {getTypeIcon()}
                 </div>
 
                 {/* Content Column */}
                 <div className="flex-1 min-w-0">
-                    <div className="flex justify-between items-start">
-                        <h4 className={`text-sm truncate ${read ? 'text-foreground/80 font-semibold' : 'text-foreground font-bold'}`}>
-                            {title}
-                        </h4>
-                        <span className="text-xs text-foreground/75 whitespace-nowrap ml-2">
-                            {timeAgo}
-                        </span>
+                    <div className="flex justify-between items-start gap-4">
+                        <div className="flex items-center gap-1.5 min-w-0">
+                            <h4 className={`text-sm truncate ${read ? 'text-foreground/75 font-semibold' : 'text-foreground font-bold'}`}>
+                                {title}
+                            </h4>
+                            {action_url && <ExternalLink className="w-3.5 h-3.5 text-foreground/40 flex-shrink-0" />}
+                        </div>
+                        <div className="flex items-center gap-2 flex-shrink-0">
+                            <span className="text-[10px] text-foreground/50 font-medium whitespace-nowrap">
+                                {timeAgo}
+                            </span>
+                            <div className="flex items-center gap-0.5 opacity-60 group-hover:opacity-100 transition-opacity">
+                                {!read && (
+                                    <button
+                                        onClick={(e) => { e.stopPropagation(); onRead(id); }}
+                                        className="p-1 rounded-md hover:bg-foreground/10 text-foreground/60 hover:text-emerald-500 transition-colors h-6 w-6 flex items-center justify-center"
+                                        title="Mark as Read"
+                                    >
+                                        <Check className="w-3.5 h-3.5" />
+                                    </button>
+                                )}
+                                <button
+                                    onClick={(e) => { e.stopPropagation(); onArchive(id); }}
+                                    className="p-1 rounded-md hover:bg-foreground/10 text-foreground/60 hover:text-rose-500 transition-colors h-6 w-6 flex items-center justify-center"
+                                    title="Delete"
+                                >
+                                    <Archive className="w-3.5 h-3.5" />
+                                </button>
+                            </div>
+                        </div>
                     </div>
 
-                    <p className={`text-sm mt-1 break-words line-clamp-2 ${read ? 'text-foreground/75' : 'text-foreground/95'}`}>
+                    <p className={`text-xs mt-1 break-words line-clamp-2 leading-relaxed ${read ? 'text-foreground/65' : 'text-foreground/85'}`}>
                         {message}
                     </p>
-
-                    {/* Action Row */}
-                    <div className="flex items-center gap-3 mt-3">
-                        {action_url && (
-                            <Link
-                                href={action_url}
-                                onClick={() => !read && onRead(id)}
-                                className="inline-flex items-center text-xs font-medium text-primary hover:opacity-80 transition-colors"
-                            >
-                                View Details <ExternalLink className="w-3 h-3 ml-1" />
-                            </Link>
-                        )}
-
-                        <div className="flex-1" />
-
-                        {!read && (
-                            <button
-                                onClick={(e) => { e.stopPropagation(); onRead(id); }}
-                                className="p-1 rounded-full hover:bg-foreground/10 text-muted-foreground hover:text-green-400 transition-colors"
-                                title="Mark as Read"
-                            >
-                                <Check className="w-4 h-4" />
-                            </button>
-                        )}
-
-                        <button
-                            onClick={(e) => { e.stopPropagation(); onArchive(id); }}
-                            className="p-1 rounded-full hover:bg-foreground/10 text-muted-foreground hover:text-foreground transition-colors"
-                            title="Delete"
-                        >
-                            <Archive className="w-4 h-4" />
-                        </button>
-                    </div>
                 </div>
             </div>
         </DataRow>

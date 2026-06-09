@@ -37,6 +37,7 @@ import { VoicePlayer } from './VoicePlayer';
 import { setLastReadTimestamp } from '@/lib/chatUnreadTracker';
 import { eventBus } from '@/lib/eventBus';
 import { logger } from '@/lib/logger';
+import { apiClient } from '@/lib/apiClient';
 
 // Helper to resolve the default gradient background
 const getRoomIconStyle = (iconUrl: string = '', roomName: string = 'Room') => {
@@ -198,38 +199,41 @@ export default function ChatWindow({
   }, [room.id, room.name, room.icon_url]);
 
   // Fetch Message Stream
-  // Fetch Message Stream
   const fetchMessages = async () => {
     try {
-      const res = await fetch(`/api/chat/rooms/${room.id}/messages`);
-      if (res.ok) {
-        const data = await res.json();
+      const data = await apiClient<any[]>(`/api/chat/rooms/${room.id}/messages`);
+      setMessages(prev => {
+        // Keep all messages fetched from backend
+        const localOptimistic = prev.filter(m => m.id.toString().startsWith('temp-'));
         
-        setMessages(prev => {
-          // Keep all messages fetched from backend
-          const localOptimistic = prev.filter(m => m.id.toString().startsWith('temp-'));
-          
-          // Filter out optimistic messages that have already been saved and returned by backend
-          const pendingOptimistic = localOptimistic.filter(op => {
-            return !data.some((d: any) => 
-              d.sender_id === op.sender_id && 
-              d.text === op.text &&
-              Math.abs(new Date(d.created_at).getTime() - new Date(op.created_at).getTime()) < 30000
-            );
-          });
-          
-          return [...data, ...pendingOptimistic];
+        // Filter out optimistic messages that have already been saved and returned by backend
+        const pendingOptimistic = localOptimistic.filter(op => {
+          return !data.some((d: any) => 
+            d.sender_id === op.sender_id && 
+            d.text === op.text && 
+            Math.abs(new Date(d.created_at).getTime() - new Date(op.created_at).getTime()) < 10000
+          );
         });
+        
+        // Combine backend messages with remaining optimistic messages
+        const combined = [...data, ...pendingOptimistic];
+        
+        // Call the parent callback to bubble up the messages if it exists
+        if (onMessagesLoaded) {
+          onMessagesLoaded(data);
+        }
+        
+        return combined;
+      });
 
-        if (currentUser?.id) {
-          setLastReadTimestamp(currentUser.id, room.id);
-        }
-        if (isInitialLoad.current) {
-          scrollToBottom('auto', true);
-          isInitialLoad.current = false;
-        } else {
-          scrollToBottom('smooth', false);
-        }
+      if (currentUser?.id) {
+        setLastReadTimestamp(currentUser.id, room.id);
+      }
+      if (isInitialLoad.current) {
+        scrollToBottom('auto', true);
+        isInitialLoad.current = false;
+      } else {
+        scrollToBottom('smooth', false);
       }
     } catch (err) {
       console.error(err);
@@ -278,11 +282,8 @@ export default function ChatWindow({
       
       setLoadingParticipants(true);
       try {
-        const res = await fetch(`/api/chat/rooms/${room.id}/participants`);
-        if (res.ok) {
-          const data = await res.json();
-          setParticipants(data);
-        }
+        const data = await apiClient<any[]>(`/api/chat/rooms/${room.id}/participants`);
+        setParticipants(data);
       } catch (err) {
         console.error(err);
       } finally {
@@ -333,20 +334,15 @@ export default function ChatWindow({
     scrollToBottom('smooth', true);
 
     try {
-      const res = await fetch(`/api/chat/rooms/${room.id}/messages`, {
+      await apiClient(`/api/chat/rooms/${room.id}/messages`, {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
           senderId: currentUser.id,
           text: textToSend,
           tenantId: currentUser.tenantId
         })
       });
-      if (res.ok) {
-        await fetchMessages();
-      } else {
-        throw new Error('Failed to send');
-      }
+      await fetchMessages();
     } catch (err) {
       console.error(err);
       // Mark optimistic message as failed
@@ -357,15 +353,12 @@ export default function ChatWindow({
   const submitEditMessage = async (messageId: string) => {
     if (!editDraftText.trim()) return;
     try {
-      const res = await fetch(`/api/chat/rooms/${room.id}/messages/${messageId}`, {
+      await apiClient(`/api/chat/rooms/${room.id}/messages/${messageId}`, {
         method: 'PATCH',
-        headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ senderId: currentUser.id, text: editDraftText.trim() })
       });
-      if (res.ok) {
-        setEditingMessageId(null);
-        fetchMessages();
-      }
+      setEditingMessageId(null);
+      fetchMessages();
     } catch (err) {
       console.error(err);
     }
@@ -375,14 +368,11 @@ export default function ChatWindow({
     if (!confirm('Are you sure you want to delete this message?')) return;
     const myParticipant = participants.find(p => p.user_id === currentUser.id);
     try {
-      const res = await fetch(`/api/chat/rooms/${room.id}/messages/${messageId}`, {
+      await apiClient(`/api/chat/rooms/${room.id}/messages/${messageId}`, {
         method: 'DELETE',
-        headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ userId: currentUser.id, role: myParticipant?.role || currentUser.role })
       });
-      if (res.ok) {
-        fetchMessages();
-      }
+      fetchMessages();
     } catch (err) {
       console.error(err);
     }
@@ -575,13 +565,10 @@ export default function ChatWindow({
     formData.append('roomId', room.id);
 
     try {
-      const uploadRes = await fetch('/api/chat/upload', {
+      const uploadData = await apiClient<{ url: string; fileId?: string }>('/api' + '/chat/upload', {
         method: 'POST',
         body: formData
       });
-      
-      if (!uploadRes.ok) throw new Error('Upload failed');
-      const uploadData = await uploadRes.json();
 
       let mediaType = 'document';
       let textPayload: string | null = null;
@@ -596,14 +583,13 @@ export default function ChatWindow({
         textPayload = file.name;
       }
 
-      await fetch(`/api/chat/rooms/${room.id}/messages`, {
+      await apiClient(`/api/chat/rooms/${room.id}/messages`, {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
           senderId: currentUser.id,
           mediaUrl: uploadData.url,
           driveFileId: uploadData.fileId,
-          mediaType,
+          mediaType: mediaType,
           text: textPayload,
           tenantId: currentUser.tenantId
         })
@@ -688,7 +674,7 @@ export default function ChatWindow({
     <div className="flex-1 flex flex-col h-full relative overflow-hidden bg-transparent">
       
       {/* Header Panel */}
-      <div className="h-20 border-b border-white/[0.05] flex items-center justify-between px-6 bg-black/15 shrink-0 z-10">
+      <div className="h-20 border-b border-foreground/5 flex items-center justify-between px-6 bg-foreground/[0.02] shrink-0 z-10">
         
         {/* Header Left: Clicking details toggles right collapsible Info drawer */}
         <button 
@@ -705,15 +691,15 @@ export default function ChatWindow({
           </div>
 
           <div className="flex flex-col gap-0.5">
-            <h2 className="font-semibold text-sm text-white tracking-wide typo-heading flex items-center gap-2 group-hover:text-indigo-300 transition-colors">
+            <h2 className="font-semibold text-sm text-foreground tracking-wide typo-heading flex items-center gap-2 group-hover:text-indigo-500 dark:group-hover:text-indigo-300 transition-colors">
               {room.name || 'Support Chat'}
               {room.isMediaTeamOnly && (
-                <span className="text-[9px] tracking-widest uppercase px-1.5 py-0.5 rounded bg-indigo-500/10 text-indigo-400 border border-indigo-500/25">
+                <span className="text-[9px] tracking-widest uppercase px-1.5 py-0.5 rounded bg-indigo-500/10 text-indigo-500 dark:text-indigo-400 border border-indigo-500/25">
                   Staff
                 </span>
               )}
             </h2>
-            <p className="text-[10px] text-[#a1a1aa] font-light">
+            <p className="text-[10px] text-foreground/50 font-light">
               Click for group info • {participants.length} members
             </p>
           </div>
@@ -725,7 +711,7 @@ export default function ChatWindow({
           <Button
             variant="ghost"
             size="icon"
-            className={`h-8 w-8 rounded-lg transition-all cursor-pointer ${searchOpen ? 'bg-white/10 text-indigo-400' : 'text-white/70 hover:text-white hover:bg-white/[0.04]'}`}
+            className={`h-8 w-8 rounded-lg transition-all cursor-pointer ${searchOpen ? 'bg-foreground/10 text-indigo-500 dark:text-indigo-400' : 'text-foreground/70 hover:text-foreground hover:bg-foreground/5'}`}
             onClick={() => {
               setSearchOpen(!searchOpen);
               if (searchOpen) setSearchQuery('');
@@ -738,7 +724,7 @@ export default function ChatWindow({
           <Button
             variant="ghost"
             size="icon"
-            className={`h-8 w-8 rounded-lg transition-all cursor-pointer ${infoOpen ? 'bg-white/10 text-indigo-400' : 'text-white/70 hover:text-white hover:bg-white/[0.04]'}`}
+            className={`h-8 w-8 rounded-lg transition-all cursor-pointer ${infoOpen ? 'bg-foreground/10 text-indigo-500 dark:text-indigo-400' : 'text-foreground/70 hover:text-foreground hover:bg-foreground/5'}`}
             onClick={() => setInfoOpen(!infoOpen)}
           >
             <Info className="h-4.5 w-4.5" />
@@ -753,27 +739,27 @@ export default function ChatWindow({
             initial={{ height: 0, opacity: 0 }}
             animate={{ height: 48, opacity: 1 }}
             exit={{ height: 0, opacity: 0 }}
-            className="bg-black/25 border-b border-white/[0.04] px-6 flex items-center justify-between shrink-0 overflow-hidden"
+            className="bg-foreground/[0.03] border-b border-foreground/5 px-6 flex items-center justify-between shrink-0 overflow-hidden"
           >
             <div className="flex-1 flex items-center gap-2 relative">
-              <Search className="absolute left-2.5 h-3.5 w-3.5 text-white/30" />
+              <Search className="absolute left-2.5 h-3.5 w-3.5 text-foreground/40" />
               <input 
                 type="text" 
                 value={searchQuery}
                 onChange={e => setSearchQuery(e.target.value)}
                 placeholder="Search messages in this channel..."
-                className="w-full bg-white/[0.02] border border-white/[0.06] focus:border-indigo-500/30 rounded-lg pl-8 pr-4 py-1 text-xs text-white placeholder-white/20 focus:outline-none transition-all font-light"
+                className="w-full bg-foreground/[0.02] border border-foreground/10 focus:border-indigo-500/30 rounded-lg pl-8 pr-4 py-1 text-xs text-foreground placeholder:text-foreground/35 focus:outline-none transition-all font-light"
               />
             </div>
             {searchQuery && (
-              <span className="text-[10px] text-white/40 typo-mono mr-3 shrink-0">
+              <span className="text-[10px] text-foreground/50 typo-mono mr-3 shrink-0">
                 {displayMessages.length} matches
               </span>
             )}
             <Button
               variant="ghost"
               size="icon"
-              className="h-6 w-6 text-white/40 hover:text-white shrink-0 hover:bg-white/[0.04] rounded"
+              className="h-6 w-6 text-foreground/45 hover:text-foreground shrink-0 hover:bg-foreground/5 rounded"
               onClick={() => {
                 setSearchQuery('');
                 setSearchOpen(false);
@@ -789,7 +775,7 @@ export default function ChatWindow({
       <div 
         ref={messagesContainerRef}
         onScroll={handleScroll}
-        className="flex-1 overflow-y-auto p-6 space-y-6 scrollbar-thin z-10 relative bg-black/5"
+        className="flex-1 overflow-y-auto p-6 space-y-6 scrollbar-thin z-10 relative bg-transparent"
       >
         {/* Repeating WhatsApp Doodle Wallpaper Overlay */}
         <div 
@@ -801,17 +787,17 @@ export default function ChatWindow({
         />
 
         {loading ? (
-          <div className="flex flex-col items-center justify-center py-12 gap-3 text-[#a1a1aa] text-xs relative z-10">
+          <div className="flex flex-col items-center justify-center py-12 gap-3 text-foreground/50 text-xs relative z-10">
             <Loader2 className="h-5 w-5 animate-spin text-indigo-400" />
             Loading messages...
           </div>
         ) : displayMessages.length === 0 ? (
-          <div className="text-center text-[#a1a1aa] text-xs py-24 flex flex-col items-center justify-center gap-3 relative z-10">
-            <div className="p-4 rounded-full bg-white/[0.01] border border-white/5">
+          <div className="text-center text-foreground/50 text-xs py-24 flex flex-col items-center justify-center gap-3 relative z-10">
+            <div className="p-4 rounded-full bg-foreground/[0.01] border border-foreground/5">
               <Sparkles className="h-6 w-6 text-indigo-400" strokeWidth={1.2} />
             </div>
             <div>
-              <p className="font-medium text-white mb-0.5">{searchQuery ? 'No matching text found' : 'This is the start of your secure chat'}</p>
+              <p className="font-medium text-foreground mb-0.5">{searchQuery ? 'No matching text found' : 'This is the start of your secure chat'}</p>
               <p className="text-[11px] font-light">{searchQuery ? 'Try searching for other keywords.' : 'Say hello or share a document to begin.'}</p>
             </div>
           </div>
@@ -853,7 +839,7 @@ export default function ChatWindow({
                 <React.Fragment key={msg.id}>
                   {showDateHeader && (
                     <div className="flex justify-center my-4 select-none">
-                      <div className="bg-white/5 border border-white/10 px-3 py-1 rounded-full text-[10px] font-bold text-white/55 tracking-wider uppercase backdrop-blur-sm">
+                      <div className="bg-foreground/5 border border-foreground/10 px-3 py-1 rounded-full text-[10px] font-bold text-foreground/60 tracking-wider uppercase backdrop-blur-sm">
                         {formatDateHeader(msg.created_at)}
                       </div>
                     </div>
@@ -886,7 +872,7 @@ export default function ChatWindow({
                     <div className={`flex flex-col gap-1 ${isMe ? 'items-end' : 'items-start'}`}>
                       {showHeader && (
                         <div className="flex items-center gap-2 mb-0.5">
-                          <span className="text-[11px] font-semibold text-white tracking-wide">{senderName}</span>
+                          <span className="text-[11px] font-semibold text-foreground/90 tracking-wide">{senderName}</span>
                         </div>
                       )}                      {/* Bubble + Chevron Wrapper */}
                       <div
@@ -897,8 +883,8 @@ export default function ChatWindow({
                       <div 
                         className={`py-2 shadow-lg flex flex-col ${
                           isMe 
-                            ? 'bg-white/[0.07] border border-white/[0.06] text-white shadow-black/10 pl-3.5 pr-7' 
-                            : 'glass-card border border-white/5 text-white shadow-black/10 pl-7 pr-3.5'
+                            ? 'bg-primary/10 border border-primary/15 text-foreground pl-3.5 pr-7' 
+                            : 'bg-foreground/[0.03] border border-foreground/5 text-foreground pl-7 pr-3.5'
                         }`}
                         style={{
                           borderTopLeftRadius: !isMe ? '0px' : '16px',
@@ -908,7 +894,7 @@ export default function ChatWindow({
                         }}
                       >
                         {msg.is_deleted ? (
-                          <p className="text-xs italic text-white/40 leading-relaxed font-light select-none">
+                          <p className="text-xs italic text-foreground/40 leading-relaxed font-light select-none">
                             This message was deleted
                           </p>
                         ) : (
@@ -918,13 +904,13 @@ export default function ChatWindow({
                                 <textarea
                                   value={editDraftText}
                                   onChange={e => setEditDraftText(e.target.value)}
-                                  className="w-full bg-black/40 border border-white/10 rounded-lg p-2 text-xs text-white resize-none focus:outline-none focus:border-indigo-500"
+                                  className="w-full bg-foreground/[0.02] border border-foreground/10 rounded-lg p-2 text-xs text-foreground resize-none focus:outline-none focus:border-indigo-500"
                                   rows={2}
                                 />
                                 <div className="flex justify-end gap-2">
                                   <button 
                                     onClick={() => setEditingMessageId(null)}
-                                    className="px-2 py-1 bg-white/5 hover:bg-white/10 rounded text-[10px] text-white/80 transition-colors"
+                                    className="px-2 py-1 bg-foreground/5 hover:bg-foreground/10 rounded text-[10px] text-foreground/80 transition-colors"
                                   >
                                     Cancel
                                   </button>
@@ -947,9 +933,9 @@ export default function ChatWindow({
 
                             {/* Attachments drawer */}
                             {msg.media_url && (
-                              <div className={msg.text ? "mt-2.5 border-t border-white/10 pt-2.5" : ""}>
+                              <div className={msg.text ? "mt-2.5 border-t border-foreground/10 pt-2.5" : ""}>
                                 {msg.media_type === 'image' ? (
-                                  <div className="relative overflow-hidden rounded-none border border-white/10 bg-black/30 group/img max-w-sm">
+                                  <div className="relative overflow-hidden rounded-none border border-foreground/10 bg-foreground/[0.02] group/img max-w-sm">
                                     <img src={getDriveImageUrl(msg.media_url, msg.drive_file_id, true)} alt="attachment" className="rounded-none max-h-60 w-full object-cover transition-transform duration-300 group-hover/img:scale-105" />
                                     <a 
                                       href={getDriveImageUrl(msg.media_url, msg.drive_file_id)} 
@@ -962,7 +948,7 @@ export default function ChatWindow({
                                     </a>
                                   </div>
                                 ) : msg.media_type === 'video' ? (
-                                  <div className="relative overflow-hidden rounded-none border border-white/10 bg-black/40 shadow-xl max-w-[280px] sm:max-w-sm group/video">
+                                  <div className="relative overflow-hidden rounded-none border border-foreground/10 bg-foreground/[0.02] shadow-xl max-w-[280px] sm:max-w-sm group/video">
                                     <video 
                                       src={getDriveImageUrl(msg.media_url, msg.drive_file_id)} 
                                       controls 
@@ -981,18 +967,18 @@ export default function ChatWindow({
                                     href={msg.media_url} 
                                     target="_blank" 
                                     rel="noreferrer" 
-                                    className="flex items-center gap-3 p-3 bg-black/20 hover:bg-black/30 border border-white/5 hover:border-white/10 rounded-xl max-w-xs transition-all group/doc"
+                                    className="flex items-center gap-3 p-3 bg-foreground/[0.02] hover:bg-foreground/[0.04] border border-foreground/5 hover:border-foreground/10 rounded-xl max-w-xs transition-all group/doc"
                                   >
                                     <div className="p-2.5 rounded-lg bg-indigo-500/10 text-indigo-400 border border-indigo-500/20 group-hover/doc:scale-105 transition-transform duration-300 shrink-0">
                                       <FileText className="h-4 w-4" />
                                     </div>
                                     <div className="flex-1 overflow-hidden text-left">
-                                      <div className="text-[11px] font-semibold text-white truncate">
+                                      <div className="text-[11px] font-semibold text-foreground truncate">
                                         {msg.text || "Shared Document"}
                                       </div>
-                                      <div className="text-[9px] text-[#a1a1aa] typo-mono mt-0.5 truncate flex items-center gap-1.5">
+                                      <div className="text-[9px] text-foreground/50 typo-mono mt-0.5 truncate flex items-center gap-1.5">
                                         Click to view on Drive
-                                        <ChevronRight className="h-3 w-3 inline text-white/30 shrink-0" />
+                                        <ChevronRight className="h-3 w-3 inline text-foreground/30 shrink-0" />
                                       </div>
                                     </div>
                                   </a>
@@ -1005,7 +991,7 @@ export default function ChatWindow({
                         {/* WhatsApp-style Timestamp & Read receipts at the bottom right */}
                         <div className="flex items-center justify-end gap-1 mt-1 text-[9px] select-none opacity-60 self-end">
                           {msg.is_edited && !msg.is_deleted && (
-                            <span className="text-[9px] text-white/40 italic mr-1 select-none">(edited)</span>
+                            <span className="text-[9px] text-foreground/40 italic mr-1 select-none">(edited)</span>
                           )}
                           <span>
                             {new Date(msg.created_at).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
@@ -1013,7 +999,7 @@ export default function ChatWindow({
                           {isMe && (
                             <span className="flex items-center shrink-0 ml-1 select-none">
                               {msg.status === 'sending' ? (
-                                <Clock className="h-3 w-3 text-white/45 animate-pulse" />
+                                <Clock className="h-3 w-3 text-foreground/45 animate-pulse" />
                               ) : msg.status === 'error' ? (
                                 <span className="text-rose-500 font-bold text-[10px]" title="Failed to send">!</span>
                               ) : (
@@ -1066,7 +1052,7 @@ export default function ChatWindow({
                                     animate={{ opacity: 1, scale: 1, y: 0 }}
                                     exit={{ opacity: 0, scale: 0.95, y: -4 }}
                                     transition={{ duration: 0.12 }}
-                                    className={`absolute ${isMe ? 'right-0' : 'left-0'} mt-1.5 w-36 rounded-xl bg-[#0c1029]/95 border border-white/[0.12] shadow-2xl shadow-black/80 backdrop-blur-2xl py-1.5 z-50`}
+                                    className={`absolute ${isMe ? 'right-0' : 'left-0'} mt-1.5 w-36 rounded-xl bg-popover border border-border shadow-2xl shadow-black/40 backdrop-blur-2xl py-1.5 z-50`}
                                   >
                                     {msg.sender_id === currentUser.id && (msg.media_type === 'text' || !msg.media_url) && (
                                       <button
@@ -1076,7 +1062,7 @@ export default function ChatWindow({
                                           setEditingMessageId(msg.id);
                                           setEditDraftText(msg.text || '');
                                         }}
-                                        className="w-full px-3 py-2 text-left text-[11px] font-medium text-white/80 hover:text-white hover:bg-white/[0.06] transition-colors flex items-center gap-2 cursor-pointer"
+                                        className="w-full px-3 py-2 text-left text-[11px] font-medium text-foreground/80 hover:text-foreground hover:bg-foreground/5 transition-colors flex items-center gap-2 cursor-pointer"
                                       >
                                         <Edit2 className="h-3.5 w-3.5 text-indigo-400 shrink-0" />
                                         <span>Edit message</span>
@@ -1118,7 +1104,7 @@ export default function ChatWindow({
             animate={{ opacity: 1, scale: 1, y: 0 }}
             exit={{ opacity: 0, scale: 0.8, y: 10 }}
             onClick={() => scrollToBottom('smooth', true)}
-            className="absolute bottom-24 right-8 p-3 rounded-full bg-indigo-600 hover:bg-indigo-500 text-white shadow-2xl shadow-indigo-900/50 z-50 border border-white/10 transition-colors"
+            className="absolute bottom-24 right-8 p-3 rounded-full bg-indigo-600 hover:bg-indigo-500 text-white shadow-2xl shadow-indigo-950/20 z-50 border border-foreground/10 transition-colors"
             title="Scroll to bottom"
           >
             <ArrowDown className="h-5 w-5" />
@@ -1127,7 +1113,7 @@ export default function ChatWindow({
       </AnimatePresence>
 
       {/* Input Area Panel */}
-      <div className="p-4 border-t border-white/[0.05] bg-black/20 shrink-0 z-10 relative">
+      <div className="p-4 border-t border-border bg-foreground/[0.01] shrink-0 z-10 relative">
         <AnimatePresence>
           {isInitializingSupport && (
             <motion.div
@@ -1144,7 +1130,7 @@ export default function ChatWindow({
           )}
         </AnimatePresence>
 
-        <form onSubmit={handleSendMessage} className="flex items-end gap-2.5 max-w-4xl mx-auto relative bg-white/[0.01] border border-white/[0.06] shadow-2xl p-2.5 rounded-2xl backdrop-blur-md">
+        <form onSubmit={handleSendMessage} className="flex items-end gap-2.5 max-w-4xl mx-auto relative bg-foreground/[0.01] border border-border shadow-2xl p-2.5 rounded-2xl backdrop-blur-md">
           <input 
             type="file" 
             ref={fileInputRef} 
@@ -1185,7 +1171,7 @@ export default function ChatWindow({
                         exit={{ opacity: 0, y: 8, scale: 0.95 }}
                         transition={{ type: 'spring', stiffness: 400, damping: 28 }}
                       >
-                        <div className="rounded-2xl bg-[#0c1029]/90 border border-white/[0.08] shadow-2xl shadow-black/40 backdrop-blur-2xl p-5">
+                        <div className="rounded-2xl bg-popover border border-border shadow-2xl shadow-black/40 backdrop-blur-2xl p-5">
                           <div className="grid grid-cols-2 gap-4">
                             {/* Share Logs */}
                             {(!room.name) && (
@@ -1197,7 +1183,7 @@ export default function ChatWindow({
                                 <div className="w-12 h-12 rounded-full bg-gradient-to-br from-orange-500 to-amber-600 flex items-center justify-center shadow-lg shadow-orange-500/25 transition-transform duration-300 group-hover:scale-110">
                                   <Terminal className="w-5 h-5 text-white" />
                                 </div>
-                                <span className="text-[11px] font-medium text-white/60 group-hover:text-white/90 transition-colors text-center leading-tight">Share Logs</span>
+                                <span className="text-[11px] font-medium text-foreground/60 group-hover:text-foreground/90 transition-colors text-center leading-tight">Share Logs</span>
                               </button>
                             )}
 
@@ -1210,7 +1196,7 @@ export default function ChatWindow({
                               <div className="w-12 h-12 rounded-full bg-gradient-to-br from-rose-500 to-pink-600 flex items-center justify-center shadow-lg shadow-rose-500/25 transition-transform duration-300 group-hover:scale-110">
                                 <Mic className="w-5 h-5 text-white" />
                               </div>
-                              <span className="text-[11px] font-medium text-white/60 group-hover:text-white/90 transition-colors">Voice Note</span>
+                              <span className="text-[11px] font-medium text-foreground/60 group-hover:text-foreground/90 transition-colors">Voice Note</span>
                             </button>
 
                             {/* Camera */}
@@ -1222,7 +1208,7 @@ export default function ChatWindow({
                               <div className="w-12 h-12 rounded-full bg-gradient-to-br from-emerald-500 to-teal-600 flex items-center justify-center shadow-lg shadow-emerald-500/25 transition-transform duration-300 group-hover:scale-110">
                                 <Camera className="w-5 h-5 text-white" />
                               </div>
-                              <span className="text-[11px] font-medium text-white/60 group-hover:text-white/90 transition-colors">Camera</span>
+                              <span className="text-[11px] font-medium text-foreground/60 group-hover:text-foreground/90 transition-colors">Camera</span>
                             </button>
 
                             {/* Gallery */}
@@ -1241,7 +1227,7 @@ export default function ChatWindow({
                               <div className="w-12 h-12 rounded-full bg-gradient-to-br from-cyan-500 to-blue-600 flex items-center justify-center shadow-lg shadow-cyan-500/25 transition-transform duration-300 group-hover:scale-110">
                                 <ImageIcon className="w-5 h-5 text-white" />
                               </div>
-                              <span className="text-[11px] font-medium text-white/60 group-hover:text-white/90 transition-colors">Gallery</span>
+                              <span className="text-[11px] font-medium text-foreground/60 group-hover:text-foreground/90 transition-colors">Gallery</span>
                             </button>
 
                             {/* Files */}
@@ -1260,7 +1246,7 @@ export default function ChatWindow({
                               <div className="w-12 h-12 rounded-full bg-gradient-to-br from-violet-500 to-indigo-600 flex items-center justify-center shadow-lg shadow-violet-500/25 transition-transform duration-300 group-hover:scale-110">
                                 <Folder className="w-5 h-5 text-white" />
                               </div>
-                              <span className="text-[11px] font-medium text-white/60 group-hover:text-white/90 transition-colors">Files</span>
+                              <span className="text-[11px] font-medium text-foreground/60 group-hover:text-foreground/90 transition-colors">Files</span>
                             </button>
                           </div>
                         </div>
@@ -1274,7 +1260,7 @@ export default function ChatWindow({
                   type="button" 
                   variant="ghost" 
                   size="icon" 
-                  className={`h-9 w-9 rounded-full border transition-all duration-300 cursor-pointer ${attachmentMenuOpen ? 'bg-indigo-600 text-white border-indigo-500 shadow-lg shadow-indigo-600/25' : 'bg-white/[0.03] hover:bg-white/[0.08] text-[#a1a1aa] hover:text-white border-white/[0.06]'}`}
+                  className={`h-9 w-9 rounded-full border transition-all duration-300 cursor-pointer ${attachmentMenuOpen ? 'bg-indigo-600 text-white border-indigo-500 shadow-lg shadow-indigo-600/25' : 'bg-foreground/[0.03] hover:bg-foreground/[0.08] text-foreground/60 hover:text-foreground border-foreground/10'}`}
                   onClick={() => setAttachmentMenuOpen(!attachmentMenuOpen)}
                   disabled={uploading || isInitializingSupport}
                 >
@@ -1298,7 +1284,7 @@ export default function ChatWindow({
                     }
                   }}
                   placeholder={uploading ? "Securing and uploading to Workspace Drive..." : "Message team..."}
-                  className="w-full bg-transparent border-0 py-2.5 px-1.5 focus:outline-none focus:ring-0 text-xs text-white placeholder-white/20 resize-none font-light leading-relaxed scrollbar-none max-h-24 h-9"
+                  className="w-full bg-transparent border-0 py-2.5 px-1.5 focus:outline-none focus:ring-0 text-xs text-foreground placeholder:text-foreground/30 resize-none font-light leading-relaxed scrollbar-none max-h-24 h-9"
                   disabled={uploading || isInitializingSupport}
                 />
               </div>
@@ -1306,7 +1292,7 @@ export default function ChatWindow({
               <Button 
                 type="submit" 
                 size="icon" 
-                className="shrink-0 h-9 w-9 rounded-xl bg-indigo-600 hover:bg-indigo-500 text-white shadow-lg shadow-indigo-600/10 cursor-pointer disabled:bg-indigo-950 disabled:text-indigo-400 transition-all" 
+                className="shrink-0 h-9 w-9 rounded-xl bg-indigo-600 hover:bg-indigo-500 text-white shadow-lg shadow-indigo-600/10 cursor-pointer disabled:bg-indigo-600/20 disabled:text-indigo-500/40 transition-all" 
                 disabled={!inputText.trim() || uploading || isInitializingSupport}
               >
                 <SendIcon className="h-3.5 w-3.5" />

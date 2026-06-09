@@ -129,7 +129,7 @@ export default function TopBar({ title = "MediaHive" }: { title?: string }) {
                 </div>
               </Button>
             </DropdownMenuTrigger>
-            <DropdownMenuContent align="end" className="w-56 bg-slate-950/80 backdrop-blur-xl border border-foreground/10 rounded-2xl shadow-2xl p-1 mt-2 ring-1 ring-foreground/5 animate-in fade-in zoom-in-95 duration-200">
+            <DropdownMenuContent align="end" className="w-56 bg-popover backdrop-blur-xl border border-border rounded-2xl shadow-2xl p-1 mt-2 ring-1 ring-foreground/5 animate-in fade-in zoom-in-95 duration-200">
               <div className="px-3 py-2 border-b border-foreground/5 mb-1">
                 <p className="text-sm font-medium text-foreground">{user?.name || 'User'}</p>
                 <p className="text-[10px] font-black uppercase tracking-widest text-indigo-400 mt-0.5">{currentRole || 'Member'}</p>

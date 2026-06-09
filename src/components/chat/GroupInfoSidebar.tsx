@@ -25,6 +25,7 @@ import { supabase } from '@/lib/supabaseClient';
 import { getDriveImageUrl } from '@/lib/driveUtils';
 import { GroupIconUploadModal } from './GroupIconUploadModal';
 import { eventBus } from '@/lib/eventBus';
+import { apiClient } from '@/lib/apiClient';
 
 // Helper to resolve the default gradient background
 const getRoomIconStyle = (iconUrl: string = '', roomName: string = 'Room') => {
@@ -95,18 +96,13 @@ export default function GroupInfoSidebar({
 
   const handleDeleteIcon = async () => {
     try {
-      const res = await fetch(`/api/chat/rooms/${room.id}`, {
+      await apiClient(`/api/chat/rooms/${room.id}`, {
         method: 'PATCH',
-        headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ iconUrl: null })
       });
-      if (res.ok) {
-        setIsEditingIcon(false);
-        if (onRoomUpdated) {
-          onRoomUpdated({ id: room.id, icon_url: null });
-        }
-      } else {
-        alert('Failed to delete group icon');
+      setIsEditingIcon(false);
+      if (onRoomUpdated) {
+        onRoomUpdated({ id: room.id, icon_url: null });
       }
     } catch (err) {
       console.error(err);
@@ -147,11 +143,8 @@ export default function GroupInfoSidebar({
       // Fetch Room Participants
       setLoadingParticipants(true);
       try {
-        const res = await fetch(`/api/chat/rooms/${room.id}/participants`);
-        if (res.ok) {
-          const data = await res.json();
-          setParticipants(data);
-        }
+        const data = await apiClient<any[]>(`/api/chat/rooms/${room.id}/participants`);
+        setParticipants(data);
       } catch (err) {
         console.error(err);
       } finally {
@@ -169,18 +162,13 @@ export default function GroupInfoSidebar({
       return;
     }
     try {
-      const res = await fetch(`/api/chat/rooms/${room.id}`, {
+      await apiClient(`/api/chat/rooms/${room.id}`, {
         method: 'PATCH',
-        headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ name: editedName })
       });
-      if (res.ok) {
-        setIsEditingName(false);
-        if (onRoomUpdated) {
-          onRoomUpdated({ id: room.id, name: editedName });
-        }
-      } else {
-        alert('Failed to save room name.');
+      setIsEditingName(false);
+      if (onRoomUpdated) {
+        onRoomUpdated({ id: room.id, name: editedName });
       }
     } catch (err) {
       console.error(err);
@@ -191,21 +179,17 @@ export default function GroupInfoSidebar({
   const handleDeleteRoom = async () => {
     setDeleting(true);
     try {
-      const res = await fetch(`/api/chat/rooms/${room.id}?userId=${currentUser.id}`, {
+      await apiClient(`/api/chat/rooms/${room.id}?userId=${currentUser.id}`, {
         method: 'DELETE'
       });
-      if (res.ok) {
-        setIsDeleting(false);
-        if (onRoomDeleted) {
-          onRoomDeleted(room.id);
-        }
-        alert('Chat room deleted successfully.');
-      } else {
-        const data = await res.json();
-        alert(data.error || 'Failed to delete chat room');
+      setIsDeleting(false);
+      if (onRoomDeleted) {
+        onRoomDeleted(room.id);
       }
+      alert('Chat room deleted successfully.');
     } catch (err) {
       console.error(err);
+      alert('Failed to delete chat room');
     } finally {
       setDeleting(false);
     }
@@ -215,18 +199,13 @@ export default function GroupInfoSidebar({
   const handleClearChat = async () => {
     setClearingChat(true);
     try {
-      const res = await fetch(`/api/chat/rooms/${room.id}/clear?userId=${currentUser.id}`, {
+      await apiClient(`/api/chat/rooms/${room.id}/clear?userId=${currentUser.id}`, {
         method: 'DELETE'
       });
-      if (res.ok) {
-        setIsClearingChat(false);
-        // Emit dynamic event for real-time wiping in UI
-        eventBus.emit('chat_cleared', room.id);
-        alert('Chat history cleared successfully.');
-      } else {
-        const data = await res.json();
-        alert(data.error || 'Failed to clear chat history.');
-      }
+      setIsClearingChat(false);
+      // Emit dynamic event for real-time wiping in UI
+      eventBus.emit('chat_cleared', room.id);
+      alert('Chat history cleared successfully.');
     } catch (err) {
       console.error(err);
       alert('An unexpected error occurred while clearing chat.');
@@ -276,12 +255,12 @@ export default function GroupInfoSidebar({
   return (
     <>
       {/* Drawer Header */}
-      <div className="h-20 border-b border-white/[0.05] flex items-center justify-between px-5 shrink-0 bg-black/20">
-        <span className="text-xs font-semibold text-white uppercase tracking-wider typo-label">Group Info</span>
+      <div className="h-20 border-b border-border flex items-center justify-between px-5 shrink-0 bg-foreground/[0.02]">
+        <span className="text-xs font-semibold text-foreground uppercase tracking-wider typo-label">Group Info</span>
         <Button
           variant="ghost"
           size="icon"
-          className="h-7 w-7 text-white/50 hover:text-white hover:bg-white/[0.05] rounded-lg cursor-pointer"
+          className="h-7 w-7 text-foreground/50 hover:text-foreground hover:bg-foreground/5 rounded-lg cursor-pointer"
           onClick={onClose}
         >
           <X className="h-4 w-4" />
@@ -313,8 +292,8 @@ export default function GroupInfoSidebar({
 
           {/* Edit presets selector drawer */}
           {isEditingIcon && (
-            <div className="w-full bg-white/[0.02] border border-white/[0.04] p-3 rounded-2xl mb-4 overflow-hidden text-left animate-in fade-in slide-in-from-top-2 duration-200">
-              <span className="text-[9px] font-bold text-indigo-300 uppercase tracking-widest typo-label block mb-1.5">Group Photo</span>
+            <div className="w-full bg-foreground/[0.02] border border-foreground/10 p-3 rounded-2xl mb-4 overflow-hidden text-left animate-in fade-in slide-in-from-top-2 duration-200">
+              <span className="text-[9px] font-bold text-indigo-500 dark:text-indigo-300 uppercase tracking-widest typo-label block mb-1.5">Group Photo</span>
               <div className="w-full space-y-2">
                 <input 
                   type="file"
@@ -347,12 +326,12 @@ export default function GroupInfoSidebar({
 
           {/* Group Name inline editor */}
           {isEditingName ? (
-            <div className="flex items-center gap-1.5 w-full max-w-[240px] mt-1 bg-black/40 border border-white/[0.08] p-1.5 rounded-xl">
+            <div className="flex items-center gap-1.5 w-full max-w-[240px] mt-1 bg-foreground/[0.02] border border-foreground/10 p-1.5 rounded-xl">
               <input 
                 type="text" 
                 value={editedName} 
                 onChange={e => setEditedName(e.target.value)} 
-                className="bg-transparent border-0 py-0.5 px-1 focus:ring-0 focus:outline-none text-xs text-white w-full font-medium"
+                className="bg-transparent border-0 py-0.5 px-1 focus:ring-0 focus:outline-none text-xs text-foreground w-full font-medium"
                 autoFocus
                 onKeyDown={e => {
                   if (e.key === 'Enter') handleSaveName();
@@ -376,17 +355,17 @@ export default function GroupInfoSidebar({
                   setEditedName(room.name);
                   setIsEditingName(false);
                 }}
-                className="h-6 w-6 text-white/50 hover:text-white shrink-0 hover:bg-white/[0.05] rounded-lg"
+                className="h-6 w-6 text-foreground/50 hover:text-foreground shrink-0 hover:bg-foreground/5 rounded-lg"
               >
                 <X className="h-3 w-3" />
               </Button>
             </div>
           ) : (
-            <h3 className="font-semibold text-base text-white typo-heading flex items-center justify-center gap-2 group/title">
+            <h3 className="font-semibold text-base text-foreground typo-heading flex items-center justify-center gap-2 group/title">
               {room.name}
               <button 
                 onClick={() => setIsEditingName(true)}
-                className="p-1 rounded bg-transparent opacity-0 group-hover/title:opacity-100 hover:bg-white/[0.05] text-[#a1a1aa] hover:text-white transition-all cursor-pointer"
+                className="p-1 rounded bg-transparent opacity-0 group-hover/title:opacity-100 hover:bg-foreground/5 text-foreground/60 hover:text-foreground transition-all cursor-pointer"
               >
                 <Edit2 className="h-3 w-3" />
               </button>
@@ -394,23 +373,23 @@ export default function GroupInfoSidebar({
           )}
 
           {/* Creation Metadata */}
-          <div className="flex items-center justify-center gap-1.5 mt-2 text-[10px] text-white/30 font-light typo-mono">
-            <Calendar className="h-3 w-3 inline text-white/20 shrink-0" />
+          <div className="flex items-center justify-center gap-1.5 mt-2 text-[10px] text-foreground/35 font-light typo-mono">
+            <Calendar className="h-3 w-3 inline text-foreground/20 shrink-0" />
             <span>
-              Created by <strong className="text-white/45">{creatorName}</strong> on{' '}
+              Created by <strong className="text-foreground/55">{creatorName}</strong> on{' '}
               {new Date(room.created_at).toLocaleDateString([], { month: 'short', day: 'numeric', year: 'numeric' })}
             </span>
           </div>
         </div>
 
         {/* Collapsible Section: Media, Links and Docs */}
-        <div className="border-t border-white/[0.04] pt-4.5">
+        <div className="border-t border-border pt-4.5">
           <button 
             onClick={() => setMediaDrawerOpen(!mediaDrawerOpen)}
             className="w-full flex items-center justify-between text-left focus:outline-none cursor-pointer group"
           >
-            <span className="text-[10px] font-bold text-indigo-300 uppercase tracking-widest typo-label">Media, Links & Docs</span>
-            <span className="text-[10px] text-white/30 font-mono group-hover:text-indigo-400 transition-colors">
+            <span className="text-[10px] font-bold text-indigo-500 dark:text-indigo-300 uppercase tracking-widest typo-label">Media, Links & Docs</span>
+            <span className="text-[10px] text-foreground/30 font-mono group-hover:text-indigo-500 dark:group-hover:text-indigo-400 transition-colors">
               {scrapImages.length + scrapDocs.length} items
             </span>
           </button>
@@ -420,8 +399,8 @@ export default function GroupInfoSidebar({
               {/* Image scraper grid */}
               {scrapImages.length > 0 && (
                 <div>
-                  <div className="text-[9px] font-bold text-[#a1a1aa] uppercase tracking-wider mb-2 flex items-center gap-1">
-                    <ImageIcon className="h-2.5 w-2.5 text-white/40" />
+                  <div className="text-[9px] font-bold text-foreground/50 uppercase tracking-wider mb-2 flex items-center gap-1">
+                    <ImageIcon className="h-2.5 w-2.5 text-foreground/40" />
                     Recent Photos
                   </div>
                   <div className="grid grid-cols-3 gap-2">
@@ -431,7 +410,7 @@ export default function GroupInfoSidebar({
                         href={getDriveImageUrl(img.media_url, img.drive_file_id)} 
                         target="_blank" 
                         rel="noreferrer"
-                        className="aspect-square rounded-lg border border-white/5 overflow-hidden bg-black/40 hover:border-indigo-500/50 hover:scale-[1.02] transition-all cursor-pointer relative group/thumb"
+                        className="aspect-square rounded-lg border border-border overflow-hidden bg-foreground/[0.02] hover:border-indigo-500/50 hover:scale-[1.02] transition-all cursor-pointer relative group/thumb"
                       >
                         <img src={getDriveImageUrl(img.media_url, img.drive_file_id, true)} alt="media" className="h-full w-full object-cover" />
                         <div className="absolute inset-0 bg-black/40 opacity-0 group-hover/thumb:opacity-100 flex items-center justify-center transition-opacity">
@@ -446,8 +425,8 @@ export default function GroupInfoSidebar({
               {/* Documents scraper listing */}
               {scrapDocs.length > 0 && (
                 <div className="space-y-1.5">
-                  <div className="text-[9px] font-bold text-[#a1a1aa] uppercase tracking-wider mb-2 flex items-center gap-1">
-                    <FileIcon className="h-2.5 w-2.5 text-white/40" />
+                  <div className="text-[9px] font-bold text-foreground/50 uppercase tracking-wider mb-2 flex items-center gap-1">
+                    <FileIcon className="h-2.5 w-2.5 text-foreground/40" />
                     Recent Documents
                   </div>
                   {scrapDocs.slice(0, 3).map((doc: any) => (
@@ -456,12 +435,12 @@ export default function GroupInfoSidebar({
                       href={getDriveImageUrl(doc.media_url, doc.drive_file_id)} 
                       target="_blank" 
                       rel="noreferrer"
-                      className="flex items-center gap-2.5 p-2 bg-white/[0.01] hover:bg-white/[0.03] border border-white/[0.04] rounded-xl text-left transition-all group/scraped"
+                      className="flex items-center gap-2.5 p-2 bg-foreground/[0.01] hover:bg-foreground/[0.03] border border-foreground/5 rounded-xl text-left transition-all group/scraped"
                     >
                       <FileText className="h-3.5 w-3.5 text-indigo-400 shrink-0" />
                       <div className="flex-1 overflow-hidden">
-                        <div className="text-[10px] text-white truncate group-hover/scraped:text-indigo-300 transition-colors font-medium">Drive File Attachment</div>
-                        <div className="text-[8px] text-[#a1a1aa] typo-mono truncate mt-0.5">Click to download</div>
+                        <div className="text-[10px] text-foreground truncate group-hover/scraped:text-indigo-500 dark:group-hover/scraped:text-indigo-300 transition-colors font-medium">Drive File Attachment</div>
+                        <div className="text-[8px] text-foreground/50 typo-mono truncate mt-0.5">Click to download</div>
                       </div>
                     </a>
                   ))}
@@ -469,7 +448,7 @@ export default function GroupInfoSidebar({
               )}
 
               {scrapImages.length === 0 && scrapDocs.length === 0 && (
-                <div className="text-center text-[10px] text-white/20 py-4 font-light italic">
+                <div className="text-center text-[10px] text-foreground/30 py-4 font-light italic">
                   No media files found in this stream.
                 </div>
               )}
@@ -478,14 +457,14 @@ export default function GroupInfoSidebar({
         </div>
 
         {/* Collapsible Section: Members Listing */}
-        <div className="border-t border-white/[0.04] pt-4.5">
+        <div className="border-t border-border pt-4.5">
           <div className="flex items-center justify-between text-left mb-3">
             <button 
               onClick={() => setMembersDrawerOpen(!membersDrawerOpen)}
               className="flex items-center justify-between text-left focus:outline-none cursor-pointer group flex-1"
             >
-              <span className="text-[10px] font-bold text-indigo-300 uppercase tracking-widest typo-label">Participants</span>
-              <span className="text-[10px] text-white/30 font-mono group-hover:text-indigo-400 transition-colors mr-3">
+              <span className="text-[10px] font-bold text-indigo-500 dark:text-indigo-300 uppercase tracking-widest typo-label">Participants</span>
+              <span className="text-[10px] text-foreground/30 font-mono group-hover:text-indigo-500 dark:group-hover:text-indigo-400 transition-colors mr-3">
                 {participants.length}
               </span>
             </button>
@@ -496,7 +475,7 @@ export default function GroupInfoSidebar({
               currentUser={currentUser} 
               allUsers={allUsers}
               trigger={
-                <button className="text-[10px] font-bold text-indigo-400 hover:text-indigo-300 flex items-center gap-1 hover:underline cursor-pointer">
+                <button className="text-[10px] font-bold text-indigo-500 dark:text-indigo-400 hover:text-indigo-600 dark:hover:text-indigo-300 flex items-center gap-1 hover:underline cursor-pointer">
                   Add User
                 </button>
               }
@@ -506,7 +485,7 @@ export default function GroupInfoSidebar({
           {membersDrawerOpen && (
             <div className="space-y-2 overflow-hidden animate-in fade-in duration-200">
               {loadingParticipants ? (
-                <div className="flex items-center gap-2 py-4 text-[#a1a1aa] text-[10px] font-light">
+                <div className="flex items-center gap-2 py-4 text-foreground/50 text-[10px] font-light">
                   <Loader2 className="h-3.5 w-3.5 animate-spin text-indigo-400 shrink-0" />
                   Refreshing list...
                 </div>
@@ -522,7 +501,7 @@ export default function GroupInfoSidebar({
                   return (
                     <div 
                       key={p.id} 
-                      className="flex items-center gap-3 p-2 bg-white/[0.01] border border-white/[0.03] rounded-xl"
+                      className="flex items-center gap-3 p-2 bg-foreground/[0.01] border border-foreground/5 rounded-xl"
                     >
                       {pAvatarSrc ? (
                         <img 
@@ -538,7 +517,7 @@ export default function GroupInfoSidebar({
 
                       <div className="flex-1 overflow-hidden">
                         <div className="flex items-center justify-between gap-2">
-                          <div className="text-[11px] font-semibold text-white truncate">
+                          <div className="text-[11px] font-semibold text-foreground truncate">
                             {p.fullName} {isParticipantMe && '(You)'}
                           </div>
                           
@@ -550,7 +529,7 @@ export default function GroupInfoSidebar({
                             renderRoleBadge(p.role)
                           )}
                         </div>
-                        <div className="text-[9px] text-[#a1a1aa] truncate mt-0.5 font-light">{p.email}</div>
+                        <div className="text-[9px] text-foreground/50 truncate mt-0.5 font-light">{p.email}</div>
                       </div>
                     </div>
                   );
@@ -562,7 +541,7 @@ export default function GroupInfoSidebar({
 
         {/* Clear Chat & Delete Chatroom Buttons (Manager Only) */}
         {isManager && (
-          <div className="border-t border-white/[0.04] pt-5 mt-6 shrink-0 space-y-3">
+          <div className="border-t border-border pt-5 mt-6 shrink-0 space-y-3">
             {/* Clear Chat Option */}
             <Dialog open={isClearingChat} onOpenChange={setIsClearingChat}>
               <DialogTrigger asChild>
@@ -571,13 +550,13 @@ export default function GroupInfoSidebar({
                   Clear Chat Messages
                 </button>
               </DialogTrigger>
-              <DialogContent className="glass-liquid border-amber-500/30 text-white shadow-2xl rounded-2xl max-w-sm">
+              <DialogContent className="bg-popover border border-amber-500/30 text-foreground shadow-2xl rounded-2xl max-w-sm">
                 <DialogHeader className="text-center">
                   <DialogTitle className="typo-heading text-amber-400 font-medium flex items-center justify-center gap-2 text-base">
                     <AlertCircle className="h-5 w-5 text-amber-500 animate-pulse" />
                     Clear Chat History
                   </DialogTitle>
-                  <p className="text-xs text-[#a1a1aa] mt-2 leading-relaxed">
+                  <p className="text-xs text-foreground/60 mt-2 leading-relaxed">
                     Are you sure you want to clear **"{room.name || 'this direct chat'}"**? This will permanently wipe all text message records from Supabase to free up database storage. Drive attachment files will remain saved.
                   </p>
                 </DialogHeader>
@@ -585,7 +564,7 @@ export default function GroupInfoSidebar({
                   <Button 
                     variant="ghost" 
                     onClick={() => setIsClearingChat(false)}
-                    className="hover:bg-white/[0.05] hover:text-white border border-white/[0.04] rounded-xl h-10 px-4"
+                    className="hover:bg-foreground/5 hover:text-foreground border border-foreground/10 rounded-xl h-10 px-4 text-foreground/85"
                   >
                     Cancel
                   </Button>
@@ -608,13 +587,13 @@ export default function GroupInfoSidebar({
                   Delete Group
                 </button>
               </DialogTrigger>
-              <DialogContent className="glass-liquid border-rose-500/30 text-white shadow-2xl rounded-2xl max-w-sm">
+              <DialogContent className="bg-popover border border-rose-500/30 text-foreground shadow-2xl rounded-2xl max-w-sm">
                 <DialogHeader className="text-center">
                   <DialogTitle className="typo-heading text-rose-400 font-medium flex items-center justify-center gap-2 text-base">
                     <AlertCircle className="h-5 w-5 text-rose-500 animate-pulse" />
                     Delete Conversation
                   </DialogTitle>
-                  <p className="text-xs text-[#a1a1aa] mt-2 leading-relaxed">
+                  <p className="text-xs text-foreground/60 mt-2 leading-relaxed">
                     Are you sure you want to delete **"{room.name}"**? This will permanently wipe all participants, media uploads, and message records.
                   </p>
                 </DialogHeader>
@@ -622,7 +601,7 @@ export default function GroupInfoSidebar({
                   <Button 
                     variant="ghost" 
                     onClick={() => setIsDeleting(false)}
-                    className="hover:bg-white/[0.05] hover:text-white border border-white/[0.04] rounded-xl h-10 px-4"
+                    className="hover:bg-foreground/5 hover:text-foreground border border-foreground/10 rounded-xl h-10 px-4 text-foreground/85"
                   >
                     Cancel
                   </Button>

@@ -121,10 +121,10 @@ export default function ChatLayout({ currentUser, initialRooms, allUsers }: { cu
       <div className="flex-1 max-w-[1000px] h-full relative flex items-center justify-center z-10">
         
         {/* Container 1: Main Chat Area (Sidebar + Message Pane) */}
-        <div className="w-full h-full rounded-[24px] bg-[#02040a]/40 backdrop-blur-md border border-white/5 shadow-[0_32px_64px_-16px_rgba(0,0,0,0.6)] flex overflow-hidden relative z-10">
+        <div className="w-full h-full rounded-[24px] bg-[var(--glass-card-bg)] backdrop-blur-md border border-[var(--glass-card-border)] shadow-[0_32px_64px_-16px_rgba(0,0,0,0.6)] flex overflow-hidden relative z-10">
           
           {/* Sidebar Panel */}
-          <div className="w-80 md:w-88 shrink-0 flex flex-col h-full border-r border-white/[0.06] bg-black/20">
+          <div className="w-80 md:w-88 shrink-0 flex flex-col h-full border-r border-border bg-foreground/[0.01]">
             <ChatSidebar 
               currentUser={currentUser} 
               rooms={rooms} 
@@ -136,7 +136,7 @@ export default function ChatLayout({ currentUser, initialRooms, allUsers }: { cu
           </div>
           
           {/* Content Area Panel */}
-          <div className="flex-1 flex flex-col h-full bg-black/10 relative overflow-hidden">
+          <div className="flex-1 flex flex-col h-full bg-transparent relative overflow-hidden">
             {activeRoom ? (
               <ChatWindow 
                 currentUser={currentUser} 
@@ -171,10 +171,10 @@ export default function ChatLayout({ currentUser, initialRooms, allUsers }: { cu
                   <MessageSquare className="h-12 w-12 text-indigo-400" strokeWidth={1.2} />
                 </motion.div>
                 
-                <h3 className="text-lg font-medium text-white typo-heading mb-1.5 z-10">
+                <h3 className="text-lg font-medium text-foreground typo-heading mb-1.5 z-10">
                   Select a conversation
                 </h3>
-                <p className="text-xs text-[#a1a1aa] text-center max-w-sm px-4 typo-body leading-relaxed z-10">
+                <p className="text-xs text-foreground/60 text-center max-w-sm px-4 typo-body leading-relaxed z-10">
                   Choose a room from the list on the left or create a new group to connect with the Media & IT team.
                 </p>
               </div>
@@ -190,7 +190,7 @@ export default function ChatLayout({ currentUser, initialRooms, allUsers }: { cu
               animate={{ opacity: 1, x: 0 }}
               exit={{ opacity: 0, x: 20 }}
               transition={{ duration: 0.35, ease: [0.16, 1, 0.3, 1] }}
-              className="absolute right-0 xl:left-full xl:right-auto xl:ml-5 top-0 bottom-0 w-[330px] rounded-[24px] bg-[#02040a]/40 backdrop-blur-md border border-white/5 shadow-[0_32px_64px_-16px_rgba(0,0,0,0.6)] flex flex-col z-20 overflow-hidden"
+              className="absolute right-0 xl:left-full xl:right-auto xl:ml-5 top-0 bottom-0 w-[330px] rounded-[24px] bg-[var(--glass-card-bg)] backdrop-blur-md border border-[var(--glass-card-border)] shadow-[0_32px_64px_-16px_rgba(0,0,0,0.6)] flex flex-col z-20 overflow-hidden"
             >
               <GroupInfoSidebar
                 room={activeRoom}

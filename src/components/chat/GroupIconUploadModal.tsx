@@ -9,6 +9,7 @@ import { Label } from '@/components/ui/label';
 import { ZoomIn, ZoomOut, RotateCw, Image as ImageIcon } from 'lucide-react';
 import getCroppedImg from '@/lib/imageCrop';
 import { toast } from 'sonner';
+import { apiClient } from '@/lib/apiClient';
 
 interface GroupIconUploadModalProps {
     isOpen: boolean;
@@ -52,31 +53,23 @@ export const GroupIconUploadModal: React.FC<GroupIconUploadModalProps> = ({
                 formData.append('file', croppedImage);
                 formData.append('roomId', roomId);
 
-                const uploadRes = await fetch('/api/chat/upload', {
+                const uploadData = await apiClient<{ url: string }>('/api' + '/chat/upload', {
                     method: 'POST',
                     body: formData
                 });
-                
-                if (!uploadRes.ok) throw new Error('Upload failed');
-                const uploadData = await uploadRes.json();
                 const directUrl = uploadData.url;
 
                 // Update room in DB
-                const res = await fetch(`/api/chat/rooms/${roomId}`, {
+                await apiClient(`/api/chat/rooms/${roomId}`, {
                     method: 'PATCH',
-                    headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify({ iconUrl: directUrl })
                 });
 
-                if (res.ok) {
-                    if (onRoomUpdated) {
-                        onRoomUpdated({ id: roomId, icon_url: directUrl });
-                    }
-                    toast.success('Group photo updated successfully!');
-                    onClose();
-                } else {
-                    toast.error('Failed to update group photo');
+                if (onRoomUpdated) {
+                    onRoomUpdated({ id: roomId, icon_url: directUrl });
                 }
+                toast.success('Group photo updated successfully!');
+                onClose();
             }
         } catch (error) {
             console.error('Failed to crop/upload image:', error);

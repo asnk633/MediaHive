@@ -271,6 +271,7 @@ export const NotificationBell = () => {
                                                 notification={latest}
                                                 onRead={() => handleNotificationClick(latest)}
                                                 onArchive={() => { }}
+                                                variant="flat"
                                             />
                                         );
 
@@ -278,22 +279,19 @@ export const NotificationBell = () => {
                                             <div
                                                 key={item.id}
                                                 onClick={() => handleNotificationClick(item)}
-                                                className="flex items-start gap-4 p-4 cursor-pointer transition-colors border-b border-border hover:bg-muted/5 group"
+                                                className="flex items-start gap-3 p-3.5 cursor-pointer transition-colors border-b border-border last:border-none hover:bg-foreground/[0.01] group"
                                             >
-                                                <div className="mt-1 flex-shrink-0">
-                                                    <div className="w-10 h-10 bg-primary/10 rounded-xl flex items-center justify-center border border-primary/20 group-hover:border-primary/40 transition-colors">
-                                                        <Layers size={20} className="text-primary" />
+                                                <div className="mt-0.5 flex-shrink-0">
+                                                    <div className="w-8 h-8 bg-primary/10 rounded-lg flex items-center justify-center border border-primary/20 group-hover:border-primary/30 transition-colors">
+                                                        <Layers size={16} className="text-primary" />
                                                     </div>
                                                 </div>
                                                 <div className="flex-1 min-w-0">
-                                                    <p className="text-sm font-medium text-foreground/90 group-hover:text-foreground transition-colors">
-                                                        {item.count} updates on <span className="font-bold text-foreground">'{entityName}'</span>
+                                                    <p className="text-xs font-bold text-foreground/90 group-hover:text-foreground transition-colors leading-relaxed">
+                                                        {item.count} updates on <span className="text-primary font-bold">'{entityName}'</span>
                                                     </p>
-                                                    <p className="text-xs text-foreground/80 mt-1">
-                                                        Click to view all
-                                                    </p>
-                                                    <p className="text-[10px] text-foreground/70 mt-2 font-medium uppercase tracking-wider">
-                                                        {typeof item.latestCreatedAt === 'string'
+                                                    <p className="text-[10px] text-foreground/50 mt-1 font-medium">
+                                                        Click to view all &bull; {typeof item.latestCreatedAt === 'string'
                                                             ? formatDistanceToNow(new Date(item.latestCreatedAt), { addSuffix: true })
                                                             : item.latestCreatedAt?.seconds
                                                                 ? formatDistanceToNow(new Date(item.latestCreatedAt.seconds * 1000), { addSuffix: true })
@@ -301,18 +299,18 @@ export const NotificationBell = () => {
                                                         }
                                                     </p>
                                                 </div>
-                                                <div className="w-2 h-2 rounded-full bg-primary mt-2 flex-shrink-0 shadow-[0_0_8px_rgba(59,130,246,0.6)]" />
+                                                <div className="w-1.5 h-1.5 rounded-full bg-primary mt-2 flex-shrink-0 shadow-[0_0_8px_rgba(59,130,246,0.6)]" />
                                             </div>
                                         );
                                     } else {
                                         return (
-                                            <div key={item.id} className="border-b border-border last:border-0 hover:bg-muted/5 transition-colors">
-                                                <NotificationItem
-                                                    notification={item as any}
-                                                    onRead={() => handleNotificationClick(item)}
-                                                    onArchive={() => { }}
-                                                />
-                                            </div>
+                                            <NotificationItem
+                                                key={item.id}
+                                                notification={item as any}
+                                                onRead={() => handleNotificationClick(item)}
+                                                onArchive={() => { }}
+                                                variant="flat"
+                                            />
                                         );
                                     }
                                 })

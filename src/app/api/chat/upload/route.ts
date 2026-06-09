@@ -25,7 +25,7 @@ export async function POST(request: NextRequest) {
       const fileBuf = Buffer.from(arrayBuffer);
       const pathKey = `chat/${roomId}/${Date.now()}_${file.name}`;
 
-      const { data, error: uploadError } = await supabase.storage.from("files").upload(pathKey, fileBuf, {
+      const { data, error: uploadError } = await supabase.storage.from("media").upload(pathKey, fileBuf, {
         contentType: file.type,
         upsert: true,
       });
@@ -35,7 +35,7 @@ export async function POST(request: NextRequest) {
         return NextResponse.json({ error: "Upload failed: " + uploadError.message }, { status: 500 });
       }
 
-      const { data: { publicUrl } } = supabase.storage.from("files").getPublicUrl(pathKey);
+      const { data: { publicUrl } } = supabase.storage.from("media").getPublicUrl(pathKey);
 
       return NextResponse.json({
         fileId: data.path,

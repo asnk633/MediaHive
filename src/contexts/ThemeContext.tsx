@@ -36,12 +36,34 @@ export function ThemeProvider({ children }: { children: React.ReactNode }) {
 
         // 4. Listen to Auth changes to apply user's saved theme from cloud
         const { data: { subscription } } = supabase.auth.onAuthStateChange((event: any, session: any) => {
-            if (session?.user?.user_metadata?.theme) {
-                const userTheme = session.user.user_metadata.theme as Theme;
-                if (['midnight', 'golden', 'luminous'].includes(userTheme)) {
-                     setThemeState(userTheme);
-                     localStorage.setItem(THEME_KEY, userTheme);
-                     document.documentElement.setAttribute('data-theme', userTheme);
+            if (session?.user) {
+                const cloudTheme = session.user.user_metadata?.theme as Theme;
+                const localTheme = localStorage.getItem(THEME_KEY) as Theme;
+
+                let isExplicit = false;
+                try {
+                    isExplicit = sessionStorage.getItem('mediahive-theme-explicitly-set') === 'true';
+                } catch (e) {}
+
+                if (event === 'SIGNED_IN' && isExplicit) {
+                    if (localTheme && localTheme !== cloudTheme) {
+                        supabase.auth.updateUser({ data: { theme: localTheme } }).catch((err: any) => {
+                            console.error('[Theme] Failed to sync local theme to cloud on sign-in', err);
+                        });
+                        try {
+                            sessionStorage.removeItem('mediahive-theme-explicitly-set');
+                        } catch (e) {}
+                        return;
+                    }
+                }
+
+                if (cloudTheme && ['midnight', 'golden', 'luminous'].includes(cloudTheme)) {
+                    setThemeState(cloudTheme);
+                    localStorage.setItem(THEME_KEY, cloudTheme);
+                    document.documentElement.setAttribute('data-theme', cloudTheme);
+                    try {
+                        sessionStorage.removeItem('mediahive-theme-explicitly-set');
+                    } catch (e) {}
                 }
             }
         });
@@ -53,9 +75,13 @@ export function ThemeProvider({ children }: { children: React.ReactNode }) {
         setThemeState(newTheme);
         localStorage.setItem(THEME_KEY, newTheme);
         document.documentElement.setAttribute('data-theme', newTheme);
+        try {
+            sessionStorage.setItem('mediahive-theme-explicitly-set', 'true');
+        } catch (e) {}
+        
         // Persist to user metadata (fire and forget)
         supabase.auth.updateUser({ data: { theme: newTheme } }).catch((err: any) => {
-            console.error('[Theme] Failed to sync theme to cloud', err);
+            // This might fail if not authenticated, which is expected on the welcome page
         });
     };
 

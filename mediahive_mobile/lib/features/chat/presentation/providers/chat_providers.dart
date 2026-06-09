@@ -338,6 +338,15 @@ class ChatMessagesNotifier extends StateNotifier<AsyncValue<List<ChatMessage>>> 
     } else if (['m4a', 'mp3', 'wav', 'aac', 'ogg'].contains(ext)) {
       mainType = 'audio';
       subType = ext == 'm4a' ? 'x-m4a' : ext;
+    } else if (['txt', 'log'].contains(ext)) {
+      mainType = 'text';
+      subType = 'plain';
+    } else if (ext == 'csv') {
+      mainType = 'text';
+      subType = 'csv';
+    } else if (ext == 'pdf') {
+      mainType = 'application';
+      subType = 'pdf';
     }
 
     try {

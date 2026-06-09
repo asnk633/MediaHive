@@ -65,7 +65,7 @@ print(f"[MediaHive] Target APK Name: MediaHive_V{clean_version}.apk")
 print("\n[MediaHive] Compiling optimized split APKs via Flutter...")
 try:
     # Run the compile process
-    subprocess.run(["D:\\flutter\\bin\\flutter.bat", "build", "apk", "--release", "--split-per-abi"], check=True)
+    subprocess.run(["D:\\flutter\\bin\\flutter.bat", "build", "apk", "--release", "--split-per-abi", "--dart-define=FLAVOR=production"], check=True)
 except Exception as e:
     print("[ERROR] Flutter compilation failed:", e)
     exit(1)
@@ -193,12 +193,14 @@ try:
             req = urllib.request.Request(f"https://api.github.com/repos/{REPO}/releases", headers=github_headers)
             try:
                 with urllib.request.urlopen(req) as response:
-                    releases = json.loads(response.read().decode())
+                    raw_releases = json.loads(response.read().decode())
+                    # Filter out the newly created release to make sure it is never deleted
+                    releases = [r for r in raw_releases if r["tag_name"] != tag_name]
                     releases.sort(key=lambda r: r["created_at"], reverse=True)
                     
-                    print(f"Current total releases on GitHub: {len(releases)}")
-                    if len(releases) > 2:
-                        to_delete = releases[2:]
+                    print(f"Current other releases on GitHub: {len(releases)}")
+                    if len(releases) > 1:
+                        to_delete = releases[1:]
                         print(f"Releases to delete: {[r['tag_name'] for r in to_delete]}")
                         
                         for rel in to_delete:

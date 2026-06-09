@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { getDriveClient, ensureFolderPath, DRIVE_CONFIG, makeFilePublic } from "@/lib/drive";
 import { Readable } from "stream";
+import { supabase } from "@/lib/supabaseClient";
 
 export const dynamic = 'force-dynamic';
 
@@ -12,6 +13,37 @@ export async function POST(request: NextRequest) {
 
     if (!file || !roomId) {
       return NextResponse.json({ error: "Missing file or roomId" }, { status: 400 });
+    }
+
+    const isDriveConfigured = process.env.GOOGLE_SERVICE_ACCOUNT_EMAIL && 
+                              process.env.GOOGLE_PRIVATE_KEY && 
+                              process.env.GOOGLE_DRIVE_FOLDER_ID;
+
+    if (!isDriveConfigured) {
+      console.log("[ChatUpload] Google Drive not configured. Falling back to Supabase Storage.");
+      const arrayBuffer = await file.arrayBuffer();
+      const fileBuf = Buffer.from(arrayBuffer);
+      const pathKey = `chat/${roomId}/${Date.now()}_${file.name}`;
+
+      const { data, error: uploadError } = await supabase.storage.from("files").upload(pathKey, fileBuf, {
+        contentType: file.type,
+        upsert: true,
+      });
+
+      if (uploadError) {
+        console.error("Supabase failover upload error:", uploadError);
+        return NextResponse.json({ error: "Upload failed: " + uploadError.message }, { status: 500 });
+      }
+
+      const { data: { publicUrl } } = supabase.storage.from("files").getPublicUrl(pathKey);
+
+      return NextResponse.json({
+        fileId: data.path,
+        url: publicUrl,
+        viewUrl: publicUrl,
+        name: file.name,
+        type: file.type
+      }, { status: 201 });
     }
 
     const driveClient = await getDriveClient();

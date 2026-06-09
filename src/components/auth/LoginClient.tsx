@@ -162,15 +162,11 @@ export default function LoginClient() {
                 </div>
 
                 <div className="text-center mb-8 space-y-3 px-4">
-                    <h1 
-                        className="text-5xl md:text-6xl tracking-wider text-white drop-shadow-md font-normal"
-                        style={{ 
-                            fontFamily: 'BavistaSoulvare',
-                            textShadow: '0 0 16px rgba(255, 255, 255, 0.12)'
-                        }}
-                    >
-                        MediaHive
-                    </h1>
+                    <img 
+                        src="/brand-name-light.png"
+                        alt="MediaHive"
+                        className="w-72 md:w-96 h-auto object-contain drop-shadow-md mx-auto"
+                    />
                     <p className="text-xs md:text-sm text-foreground font-bold uppercase tracking-wider max-w-md mx-auto">
                         The Central Hub for Thaiba Garden Media & IT
                     </p>

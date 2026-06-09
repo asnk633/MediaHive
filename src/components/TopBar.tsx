@@ -9,6 +9,7 @@ import {
 } from 'lucide-react';
 import { usePathname, useRouter } from 'next/navigation';
 import { useAuth } from "@/contexts/AuthContextProvider";
+import { useTheme } from "@/contexts/ThemeContext";
 import { cn, nativeNavigate } from "@/lib/utils";
 import { getDriveImageUrl } from "@/lib/driveUtils";
 import { Button } from "@/components/ui/button";
@@ -35,6 +36,7 @@ import { usePermissions } from "@/hooks/usePermissions";
 
 export default function TopBar({ title = "MediaHive" }: { title?: string }) {
   const { user, signOut } = useAuth();
+  const { theme } = useTheme();
   const { role: currentRole } = usePermissions();
   const router = useRouter();
   const pathname = usePathname();
@@ -51,16 +53,11 @@ export default function TopBar({ title = "MediaHive" }: { title?: string }) {
         <div className="w-8 h-8 rounded flex items-center justify-center text-foreground text-xs font-bold transition-all duration-300" style={{ backgroundColor: 'var(--brand-logo-bg)' }}>
           MH
         </div>
-        <h1 
-          className="text-base font-normal tracking-wider"
-          style={{ 
-            fontFamily: 'BavistaSoulvare',
-            color: 'var(--brand-title-color)',
-            textShadow: 'var(--brand-title-shadow)'
-          }}
-        >
-          {title}
-        </h1>
+        <img 
+          src={theme === 'midnight' ? '/brand-name-light.png' : '/brand-name-dark.png'}
+          alt={title}
+          className="w-32 md:w-40 h-auto object-contain"
+        />
       </div>
 
       {/* 2. Actions & Profile */}

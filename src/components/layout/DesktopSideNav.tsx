@@ -344,21 +344,15 @@ export default function DesktopSideNav() {
         >
             {/* 1. Brand Header */}
             <div className={cn(
-                "h-[80px] flex items-center transition-all duration-300 border-b border-foreground/[0.03] px-4",
+                "min-h-[80px] py-4 flex items-center transition-all duration-300 border-b border-foreground/[0.03] px-4",
                 isCollapsed ? "justify-center" : ""
             )}>
-                <div className="flex items-center w-full">
-                    <div className="relative group cursor-pointer shrink-0" onClick={() => router.push('/home')}>
+                <div className={cn("flex items-center w-full", isCollapsed ? "justify-center" : "")}>
+                    <div className="relative group cursor-pointer shrink-0" onClick={() => nativeNavigate('/home', router, 'DesktopSideNav:Logo')}>
                         <img
-                            src={
-                                theme === 'midnight' 
-                                    ? '/media-app-logo-midnight.png' 
-                                    : theme === 'luminous' 
-                                        ? '/media-app-logo-luminous.png' 
-                                        : '/media-app-logo-golden.png'
-                            }
+                            src="/media-app-logo-luminous.png"
                             alt="MH"
-                            className="w-10 h-10 rounded-xl shrink-0 shadow-2xl transition-all duration-500 group-hover:scale-110 group-hover:rotate-3"
+                            className="w-12 h-12 rounded-xl shrink-0 shadow-2xl transition-all duration-500 group-hover:scale-110 group-hover:rotate-3"
                         />
                         <div className="absolute inset-0 bg-primary/20 blur-xl opacity-0 group-hover:opacity-100 transition-opacity" />
                     </div>
@@ -372,17 +366,14 @@ export default function DesktopSideNav() {
                                 transition={{ duration: 0.3, ease: "easeOut" }}
                                 className="flex flex-col ml-4"
                             >
-                                <span 
-                                    className="text-2xl tracking-wider leading-none mb-1 font-normal"
-                                    style={{ 
-                                        fontFamily: 'BavistaSoulvare', 
-                                        color: 'var(--brand-title-color)',
-                                        textShadow: 'var(--brand-title-shadow)'
-                                    }}
-                                >
-                                    MediaHive
-                                </span>
-                                <div className="flex items-center gap-1.5">
+                                <div className="relative h-11 w-[168px] overflow-hidden -ml-1">
+                                    <img 
+                                        src={theme === 'luminous' ? '/brand-name-dark.png' : '/brand-name-light.png'}
+                                        alt="MediaHive"
+                                        className="absolute left-[-12px] top-1/2 -translate-y-1/2 w-[195px] max-w-none h-auto object-contain"
+                                    />
+                                </div>
+                                <div className="flex items-center gap-1.5 mt-0.5 relative z-10">
                                     <div className="w-1.5 h-1.5 rounded-full bg-primary shadow-[0_0_8px_var(--accent-primary)]" />
                                     <span className="text-[10px] font-bold text-primary uppercase tracking-[0.2em] leading-none">
                                         Operational

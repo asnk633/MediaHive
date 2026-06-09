@@ -367,13 +367,13 @@ export default function DesktopSideNav() {
                                 animate={{ opacity: 1, x: 0, filter: 'blur(0px)' }}
                                 exit={{ opacity: 0, x: -10, filter: 'blur(8px)' }}
                                 transition={{ duration: 0.3, ease: "easeOut" }}
-                                className="flex flex-col ml-4"
+                                className="flex flex-col ml-2"
                             >
-                                <div className="relative h-11 w-[152px] overflow-hidden -ml-1">
+                                <div className="relative h-11 w-[160px] overflow-hidden -ml-1">
                                     <img 
                                         src={theme === 'luminous' ? '/brand-name-dark.png' : '/brand-name-light.png'}
                                         alt="MediaHive"
-                                        className="absolute left-[-12px] top-1/2 -translate-y-1/2 w-[178px] max-w-none h-auto object-contain"
+                                        className="absolute left-[-12px] top-1/2 -translate-y-1/2 w-[185px] max-w-none h-auto object-contain"
                                     />
                                 </div>
                                 <div className="flex items-center gap-1.5 mt-0.5 relative z-10">

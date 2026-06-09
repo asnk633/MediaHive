@@ -26,9 +26,6 @@ export function WorkspaceSwitcher({ isCollapsed }: WorkspaceSwitcherProps) {
     if (!currentWorkspace) return null;
 
     const Icon = currentWorkspace.type === 'department' ? LayoutGrid : Building2;
-    const accentColor = currentWorkspace.type === 'department' ? 'amber' : 'indigo';
-    const secondaryLabel = currentWorkspace.type === 'department' ? 'Thaiba Garden' : 'Thaiba Garden';
-    const secondaryType = currentWorkspace.type === 'department' ? 'Institution' : 'Department';
 
     return (
         <div className={cn(
@@ -47,15 +44,6 @@ export function WorkspaceSwitcher({ isCollapsed }: WorkspaceSwitcherProps) {
                         <span className="text-sm font-bold text-foreground tracking-tight truncate leading-tight">
                             {currentWorkspace.name}
                         </span>
-                        <div className="flex items-center gap-1.5 mt-0.5">
-                            <span className="text-[9px] text-foreground/80 font-black uppercase tracking-[0.2em]">
-                                {secondaryLabel}
-                            </span>
-                            <span className="w-1 h-1 rounded-full bg-foreground/10" />
-                            <span className="text-[9px] text-foreground/80 font-bold uppercase tracking-wider">
-                                {secondaryType}
-                            </span>
-                        </div>
                     </div>
                 )}
             </div>

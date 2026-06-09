@@ -3,7 +3,9 @@
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { motion, AnimatePresence } from "framer-motion";
-import { nativeNavigate } from '@/lib/utils';
+import { nativeNavigate, cn } from '@/lib/utils';
+import { useTheme } from '@/contexts/ThemeContext';
+import { ThemeToggle } from '@/components/auth/ThemeToggle';
 import { OnboardingStep } from './OnboardingStep';
 import { OnboardingProgress } from './OnboardingProgress';
 
@@ -23,6 +25,7 @@ const STEPS = [
 ];
 
 export function OnboardingContainer() {
+    const { theme } = useTheme();
     const [step, setStep] = useState(0);
     const router = useRouter();
 
@@ -39,25 +42,34 @@ export function OnboardingContainer() {
 
     const TOTAL_STEPS = 3;
 
-    return (
-        <main className="fixed inset-0 overflow-hidden bg-[#050816] flex items-center justify-center p-6 sm:p-12">
-            {/* 1 — Premium Background Gradient System */}
-            <div 
-                className="absolute inset-0 z-0"
-                style={{
-                    background: `linear-gradient(180deg, #050816 0%, #0B1026 45%, #1A1443 100%)`
-                }}
-            />
+    const bgGradient = theme === 'luminous'
+        ? "bg-gradient-to-br from-[#f8fafc] via-[#f1f5f9] to-[#e2e8f0] text-slate-800"
+        : theme === 'golden'
+        ? "bg-gradient-to-br from-[#02040a] via-[#0a0a05] to-[#151100]"
+        : "bg-gradient-to-br from-[#050816] via-[#0B1026] to-[#1A1443]";
 
-            {/* 2 — Animated Ambient Haze Layers */}
-            <div className="absolute inset-0 overflow-hidden pointer-events-none z-0">
-                <div className="radial-indigo -top-20 -left-20 animate-drift opacity-50 animate-haze-drift" />
-                <div className="radial-purple top-1/2 -right-20 animate-drift opacity-30 animate-haze-drift" style={{ animationDelay: '-10s' }} />
-                <div className="radial-indigo -bottom-40 left-1/4 animate-drift opacity-20 animate-haze-drift" style={{ animationDelay: '-20s' }} />
-            </div>
+    const hazeGlow1 = theme === 'luminous'
+        ? "bg-sky-400/15"
+        : theme === 'golden'
+        ? "bg-amber-500/10"
+        : "bg-indigo-500/20";
+
+    const hazeGlow2 = theme === 'luminous'
+        ? "bg-indigo-400/15"
+        : theme === 'golden'
+        ? "bg-amber-600/5"
+        : "bg-purple-500/20";
+
+    return (
+        <main suppressHydrationWarning className={cn("fixed inset-0 overflow-hidden flex items-center justify-center p-6 sm:p-12 transition-all duration-500", bgGradient)}>
+            <ThemeToggle />
+
+            {/* Animated color haze */}
+            <div className={cn("absolute w-[900px] h-[900px] blur-[180px] rounded-full top-[-200px] left-[-200px] animate-[float_12s_ease-in-out_infinite] transition-colors duration-500", hazeGlow1)} />
+            <div className={cn("absolute w-[700px] h-[700px] blur-[160px] rounded-full bottom-[-200px] right-[-200px] animate-[float_16s_ease-in-out_infinite_reverse] transition-colors duration-500", hazeGlow2)} />
 
             {/* Cinematic Focus Area */}
-            <div className="onboarding-vignette" />
+            {theme !== 'luminous' && <div className="onboarding-vignette" />}
             
             {/* 3 — Subtle Film Grain Overlay */}
             <div 
@@ -73,7 +85,7 @@ export function OnboardingContainer() {
                         animate={{ opacity: 1, scale: 1, y: 0 }}
                         exit={{ opacity: 0, scale: 1.04, y: -10 }}
                         transition={{ duration: 0.22, ease: "easeInOut" }}
-                        className="onboarding-card onboarding-enter p-12 sm:p-14 w-full"
+                        className="w-full glass-card p-12 sm:p-14 rounded-2xl"
                     >
                         <OnboardingStep
                             key={step}

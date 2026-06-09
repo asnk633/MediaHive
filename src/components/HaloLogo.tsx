@@ -14,9 +14,9 @@ interface HaloLogoProps {
  */
 export const HaloLogo = ({ size = 110, className }: HaloLogoProps) => {
     return (
-        <div className={cn("relative flex items-center justify-center", className)} style={{ width: size * 1.6, height: size * 1.6 }}>
+        <div className={cn("relative flex items-center justify-center", className)} style={{ width: size, height: size }}>
             {/* Halo Glow */}
-            <div className="absolute inset-0 bg-primary/25 blur-[45px] rounded-full animate-logo-breathing" />
+            <div className="absolute -inset-8 bg-primary/25 blur-[45px] rounded-full animate-logo-breathing" />
             
             {/* Logo Image with Rotating Animation */}
             <img

@@ -157,11 +157,11 @@ export default function LoginClient() {
 
             <div className="w-full max-w-md relative z-10 flex flex-col items-center p-4">
                 {/* Logo Section */}
-                <div className="relative mb-8 flex items-center justify-center">
+                <div className="relative mb-4 flex items-center justify-center">
                     <HaloLogo size={140} />
                 </div>
 
-                <div className="text-center mb-8 space-y-3 px-4">
+                <div className="text-center mb-5 space-y-2 px-4">
                     <img 
                         src="/brand-name-light.png"
                         alt="MediaHive"

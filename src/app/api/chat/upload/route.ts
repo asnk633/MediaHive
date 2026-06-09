@@ -33,7 +33,11 @@ export async function POST(request: NextRequest) {
 
       if (uploadError) {
         console.error("Supabase failover upload error:", uploadError);
-        return NextResponse.json({ error: "Upload failed: " + uploadError.message }, { status: 500 });
+        return NextResponse.json({ 
+          error: "Upload failed: " + uploadError.message,
+          debugUrl: process.env.NEXT_PUBLIC_SUPABASE_URL,
+          hasServiceKey: !!process.env.SUPABASE_SERVICE_ROLE_KEY
+        }, { status: 500 });
       }
 
       const { data: { publicUrl } } = supabaseAdmin.storage.from("media").getPublicUrl(pathKey);

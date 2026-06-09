@@ -352,7 +352,10 @@ export default function DesktopSideNav() {
                         <img
                             src="/media-app-logo-luminous.png"
                             alt="MH"
-                            className="w-12 h-12 rounded-xl shrink-0 shadow-2xl transition-all duration-500 group-hover:scale-110 group-hover:rotate-3"
+                            className={cn(
+                                "rounded-xl shrink-0 shadow-2xl transition-all duration-500 group-hover:scale-110 group-hover:rotate-3",
+                                isCollapsed ? "w-12 h-12" : "w-16 h-16"
+                            )}
                         />
                         <div className="absolute inset-0 bg-primary/20 blur-xl opacity-0 group-hover:opacity-100 transition-opacity" />
                     </div>
@@ -366,11 +369,11 @@ export default function DesktopSideNav() {
                                 transition={{ duration: 0.3, ease: "easeOut" }}
                                 className="flex flex-col ml-4"
                             >
-                                <div className="relative h-11 w-[168px] overflow-hidden -ml-1">
+                                <div className="relative h-11 w-[152px] overflow-hidden -ml-1">
                                     <img 
                                         src={theme === 'luminous' ? '/brand-name-dark.png' : '/brand-name-light.png'}
                                         alt="MediaHive"
-                                        className="absolute left-[-12px] top-1/2 -translate-y-1/2 w-[195px] max-w-none h-auto object-contain"
+                                        className="absolute left-[-12px] top-1/2 -translate-y-1/2 w-[178px] max-w-none h-auto object-contain"
                                     />
                                 </div>
                                 <div className="flex items-center gap-1.5 mt-0.5 relative z-10">

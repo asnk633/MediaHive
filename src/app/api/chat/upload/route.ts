@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { getDriveClient, ensureFolderPath, DRIVE_CONFIG, makeFilePublic } from "@/lib/drive";
 import { Readable } from "stream";
 import { getSupabaseAdmin } from "@/lib/server/supabase-admin";
+import { createClient } from "@supabase/supabase-js";
 
 export const dynamic = 'force-dynamic';
 
@@ -25,8 +26,30 @@ export async function POST(request: NextRequest) {
       const fileBuf = Buffer.from(arrayBuffer);
       const pathKey = `chat/${roomId}/${Date.now()}_${file.name}`;
 
-      const supabaseAdmin = getSupabaseAdmin();
-      const { data, error: uploadError } = await supabaseAdmin.storage.from("media").upload(pathKey, fileBuf, {
+      const authHeader = request.headers.get("Authorization");
+      const token = authHeader?.startsWith("Bearer ") ? authHeader.substring(7) : null;
+
+      let supabaseClient;
+      if (token) {
+        console.log("[ChatUpload] Using user-authenticated client via Bearer token.");
+        const anonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY || process.env.SUPABASE_SERVICE_ROLE_KEY || "";
+        supabaseClient = createClient(
+          process.env.NEXT_PUBLIC_SUPABASE_URL!,
+          anonKey,
+          {
+            global: {
+              headers: {
+                Authorization: `Bearer ${token}`
+              }
+            }
+          }
+        );
+      } else {
+        console.log("[ChatUpload] No Bearer token found. Falling back to Admin client.");
+        supabaseClient = getSupabaseAdmin();
+      }
+
+      const { data, error: uploadError } = await supabaseClient.storage.from("media").upload(pathKey, fileBuf, {
         contentType: file.type,
         upsert: true,
       });
@@ -40,7 +63,7 @@ export async function POST(request: NextRequest) {
         }, { status: 500 });
       }
 
-      const { data: { publicUrl } } = supabaseAdmin.storage.from("media").getPublicUrl(pathKey);
+      const { data: { publicUrl } } = supabaseClient.storage.from("media").getPublicUrl(pathKey);
 
       return NextResponse.json({
         fileId: data.path,

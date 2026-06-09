@@ -350,6 +350,13 @@ class ChatMessagesNotifier extends StateNotifier<AsyncValue<List<ChatMessage>>> 
     }
 
     try {
+      final client = _ref.read(supabaseClientProvider);
+      final token = client.auth.currentSession?.accessToken;
+      final Map<String, String> headers = {};
+      if (token != null) {
+        headers['Authorization'] = 'Bearer $token';
+      }
+
       final dioClient = dio.Dio();
       final formData = dio.FormData.fromMap({
         'roomId': _roomId,
@@ -364,6 +371,7 @@ class ChatMessagesNotifier extends StateNotifier<AsyncValue<List<ChatMessage>>> 
         uploadUrl,
         data: formData,
         options: dio.Options(
+          headers: headers,
           followRedirects: true,
           validateStatus: (status) => status! < 500,
           connectTimeout: const Duration(seconds: 4), // 4 seconds short connect timeout
@@ -384,6 +392,13 @@ class ChatMessagesNotifier extends StateNotifier<AsyncValue<List<ChatMessage>>> 
       if (uploadUrl != liveUploadUrl) {
         print('[CHAT_UPLOAD] Failover: Attempting direct upload to live production proxy: $liveUploadUrl');
         try {
+          final client = _ref.read(supabaseClientProvider);
+          final token = client.auth.currentSession?.accessToken;
+          final Map<String, String> headers = {};
+          if (token != null) {
+            headers['Authorization'] = 'Bearer $token';
+          }
+
           final dioClient = dio.Dio();
           final formData = dio.FormData.fromMap({
             'roomId': _roomId,
@@ -398,6 +413,7 @@ class ChatMessagesNotifier extends StateNotifier<AsyncValue<List<ChatMessage>>> 
             liveUploadUrl,
             data: formData,
             options: dio.Options(
+              headers: headers,
               followRedirects: true,
               validateStatus: (status) => status! < 500,
               connectTimeout: const Duration(seconds: 10),

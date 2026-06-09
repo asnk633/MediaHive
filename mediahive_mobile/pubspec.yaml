@@ -1,6 +1,6 @@
 name: mediahive_mobile
 description: A new Flutter project for MediaHive.
-version: 1.1.3-beta+6037
+version: 1.1.4-beta+8039
 
 
 environment:
@@ -10,7 +10,6 @@ dependencies:
   flutter:
     sdk: flutter
   cupertino_icons: ^1.0.2
-  lucide_icons: ^0.257.0
   google_fonts: ^6.1.0
   flutter_animate: ^4.5.0
   flutter_riverpod: ^2.4.9
@@ -55,6 +54,8 @@ dependencies:
   package_info_plus: ^8.0.0
   open_filex: ^4.5.0
   emoji_picker_flutter: ^4.4.0
+  model_viewer_plus: ^1.10.0
+  lucide_icons_flutter: ^3.1.14+2
 
 dependency_overrides:
   record_platform_interface: 1.1.0
@@ -75,16 +76,16 @@ flutter_launcher_icons:
   android: true
   ios: true
   image_path: "assets/images/app_icon.png"
-  adaptive_icon_background: "#FFFFFF"
+  adaptive_icon_background: "#000000"
   adaptive_icon_foreground: "assets/images/app_icon_padded.png"
   min_sdk_android: 21
 
 flutter_native_splash:
-  color: "#0F172A"
+  color: "#000000"
   image: "assets/images/logo_honey_safe.png"
   android_12:
-    color: "#0F172A"
-    icon_background_color: "#0F172A"
+    color: "#000000"
+    icon_background_color: "#000000"
     image: "assets/images/logo_honey_safe.png"
   web: false
 
@@ -97,6 +98,9 @@ flutter:
     - assets/images/logo_honey_safe.png
     - assets/images/app_icon.png
     - assets/images/app_icon_padded.png
+    - assets/images/app_name_dark.png
+    - assets/images/app_name_light.png
+    - assets/models/logo.glb
     - assets/animations/honey_bee.json
     - assets/animations/bee_looking.json
     - assets/sounds/task_added.wav

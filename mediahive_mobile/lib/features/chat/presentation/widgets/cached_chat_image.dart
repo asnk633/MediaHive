@@ -1,6 +1,6 @@
 import 'dart:io';
 import 'package:flutter/material.dart';
-import 'package:lucide_icons/lucide_icons.dart';
+import 'package:lucide_icons_flutter/lucide_icons.dart';
 import 'package:mediahive_mobile/core/utils/media_cache_manager.dart';
 
 class CachedChatImage extends StatefulWidget {

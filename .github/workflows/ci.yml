@@ -48,7 +48,7 @@ jobs:
         uses: actions/setup-node@v4
         with:
           node-version: 22
-          cache: npm
+          cache: pnpm
 
       - name: Show repo root (diagnostics)
         run: |
@@ -104,6 +104,9 @@ jobs:
           ls -la node_modules/.bin || true
           pnpm list --depth 0 || true
 
+      - name: Run linter (ESLint)
+        run: pnpm exec eslint src
+
       - name: Run unit tests only
         run: |
           # Run Jest unit tests - ignore React 19 warnings
@@ -119,4 +122,4 @@ jobs:
         shell: bash
 
       - name: Build Next.js
-        run: npm run build
+        run: pnpm run build

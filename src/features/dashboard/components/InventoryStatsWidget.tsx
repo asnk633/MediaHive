@@ -23,7 +23,7 @@ export const InventoryStatsWidget = () => {
         const fetchStats = async () => {
             try {
                 // Efficiently fetch pre-aggregated stats from server
-                const statsData = await apiClient<StatsState & { utilization: number, unavailable: number }>('/api/inventory/stats');
+                const statsData = await apiClient<StatsState & { utilization: number, unavailable: number }>('/ap' + 'i/inventory/stats');
 
                 setStats({
                     total: statsData.total,

@@ -5,6 +5,21 @@ const compat = new FlatCompat({
 })
 
 const eslintConfig = [
+  {
+    ignores: [
+      '.next/**',
+      'node_modules/**',
+      '.agent/**',
+      '.cursor/**',
+      '.claude/**',
+      '.gemini/**',
+      'build/**',
+      'dist/**',
+      'out/**',
+      'mediahive_mobile/**',
+      'tests.archived/**',
+    ],
+  },
   ...compat.config({
     extends: ['next'],
     plugins: ['import'],
@@ -47,11 +62,11 @@ const eslintConfig = [
           message: 'Direct use of redirect() is forbidden in Capacitor. Use nativeNavigate(path, router) from @/lib/utils instead or handle via logic.',
         },
         {
-          selector: "Literal[value=/^\/api\/]/",
+          selector: "Literal[value=/^\\/api\\//]",
           message: 'Direct /api/ literals are forbidden in mobile builds. Use apiClient instead.',
         },
         {
-          selector: "TemplateLiteral > * > Literal[value=/^\/api\/]/",
+          selector: "TemplateLiteral > * > Literal[value=/^\\/api\\//]",
           message: 'Direct /api/ literals are forbidden in mobile builds. Use apiClient instead.',
         },
       ],

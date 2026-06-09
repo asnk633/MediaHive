@@ -93,65 +93,9 @@ else:
 print(f"[SUCCESS] Compiled optimized APK: {target_apk_path} ({os.path.getsize(target_apk_path) / 1024 / 1024:.2f} MB)")
 
 # ─── 3. UPLOAD APK TO SUPABASE STORAGE ────────────────────────────────────────
-# Supabase Storage is used as the reliable APK download host.
-# A public 'releases' bucket is created if it doesn't exist yet.
-SUPABASE_STORAGE_URL = "https://fcctcorycpvebupluzpe.supabase.co/storage/v1"
-BUCKET = "releases"
+# SKIPPED: Per directive, APKs are now only hosted on GitHub.
+# We no longer upload the APK file to the 'releases' bucket in Supabase.
 asset_download_url = None
-
-if SUPABASE_SERVICE_KEY:
-    storage_headers = {
-        "Authorization": f"Bearer {SUPABASE_SERVICE_KEY}",
-        "apikey": SUPABASE_SERVICE_KEY,
-    }
-
-    # Ensure bucket exists
-    try:
-        req = urllib.request.Request(
-            f"{SUPABASE_STORAGE_URL}/bucket",
-            headers=storage_headers
-        )
-        with urllib.request.urlopen(req) as r:
-            buckets = json.loads(r.read())
-        if not any(b["id"] == BUCKET for b in buckets):
-            body = json.dumps({"id": BUCKET, "name": BUCKET, "public": True}).encode()
-            req = urllib.request.Request(
-                f"{SUPABASE_STORAGE_URL}/bucket",
-                data=body,
-                headers={**storage_headers, "Content-Type": "application/json"},
-                method="POST"
-            )
-            with urllib.request.urlopen(req) as r:
-                print(f"[Supabase] Created public storage bucket '{BUCKET}'.")
-        else:
-            print(f"[Supabase] Storage bucket '{BUCKET}' already exists.")
-    except Exception as e:
-        print(f"[WARNING] Bucket check/create failed: {e}")
-
-    # Upload APK
-    print(f"\n[Supabase] Uploading APK to storage bucket '{BUCKET}'...")
-    try:
-        with open(target_apk_path, "rb") as f:
-            apk_bytes = f.read()
-        req = urllib.request.Request(
-            f"{SUPABASE_STORAGE_URL}/object/{BUCKET}/{target_apk_name}",
-            data=apk_bytes,
-            headers={
-                **storage_headers,
-                "Content-Type": "application/vnd.android.package-archive",
-                "x-upsert": "true",
-            },
-            method="PUT"
-        )
-        with urllib.request.urlopen(req) as r:
-            asset_download_url = f"{SUPABASE_STORAGE_URL}/object/public/{BUCKET}/{target_apk_name}"
-            print(f"[SUCCESS] APK uploaded to Supabase Storage.")
-            print(f"          URL: {asset_download_url}")
-    except Exception as e:
-        print(f"[ERROR] Supabase Storage upload failed: {e}")
-else:
-    print("[WARNING] SUPABASE_SERVICE_ROLE_KEY missing - skipping storage upload.")
-    asset_download_url = f"https://thaiba-garden-media-manager.vercel.app/{target_apk_name}"  # fallback
 
 
 try:

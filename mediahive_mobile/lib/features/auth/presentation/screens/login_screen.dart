@@ -1,7 +1,7 @@
 import 'dart:ui';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:lucide_icons/lucide_icons.dart';
+import 'package:lucide_icons_flutter/lucide_icons.dart';
 import 'package:go_router/go_router.dart';
 import 'package:flutter_animate/flutter_animate.dart';
 import '../../../../../core/theme_provider.dart';
@@ -143,7 +143,7 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
             border: Border.all(color: Colors.white.withValues(alpha: isDark ? 0.08 : 0.3)),
             boxShadow: [
               BoxShadow(
-                color: (isDark ? const Color(0xFFFFD700) : const Color(0xFF006EE6))
+                color: const Color(0xFFFFD700)
                     .withValues(alpha: isDark ? 0.2 : 0.1),
                 blurRadius: 30,
                 spreadRadius: 5,
@@ -152,21 +152,21 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
           ),
           child: Image.asset(
             'assets/images/logo.png',
-            height: 60,
-            width: 60,
+            height: 100,
+            width: 100,
           ),
         ).animate().scale(duration: 600.ms, curve: Curves.easeOutBack),
-        const SizedBox(height: 24),
-        Text(
-          'MediaHive',
-          style: TextStyle(
-            fontSize: 40,
-            fontWeight: FontWeight.w900,
-            color: isDark ? Colors.white : const Color(0xFF1D1D1F),
-            fontFamily: 'BavistaSoulvare',
-            letterSpacing: 2.0,
-          ),
-        ).animate().fadeIn(delay: 200.ms).slideY(begin: 0.2, end: 0),
+        const SizedBox(height: 12),
+        Align(
+          alignment: Alignment.center,
+          heightFactor: 0.25,
+          child: Image.asset(
+            isDark ? 'assets/images/app_name_light.png' : 'assets/images/app_name_dark.png',
+            width: 280,
+            fit: BoxFit.contain,
+          ).animate().fadeIn(delay: 200.ms).slideY(begin: 0.2, end: 0),
+        ),
+        const SizedBox(height: 16),
         Text(
           'SECURE COMMAND CENTER',
           style: TextStyle(

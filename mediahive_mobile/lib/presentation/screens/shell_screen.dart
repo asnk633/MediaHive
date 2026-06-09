@@ -2,7 +2,7 @@ import 'dart:ui';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:lucide_icons/lucide_icons.dart';
+import 'package:lucide_icons_flutter/lucide_icons.dart';
 import 'package:flutter_animate/flutter_animate.dart';
 import 'package:go_router/go_router.dart';
 import '../providers/navigation_provider.dart';
@@ -17,6 +17,7 @@ import '../../shared/widgets/ambient_canvas_background.dart';
 import '../../core/providers/update_provider.dart';
 import '../../core/services/update_service.dart';
 import '../../features/chat/presentation/providers/chat_providers.dart';
+import 'package:model_viewer_plus/model_viewer_plus.dart';
 
 
 class ShellScreen extends ConsumerStatefulWidget {
@@ -194,25 +195,29 @@ class _ShellScreenState extends ConsumerState<ShellScreen> {
                           )
                         else
                           SizedBox(
-                            width: 42,
-                            height: 42,
+                            width: 54,
+                            height: 54,
                             child: Image.asset(
                               'assets/images/logo.png',
                               fit: BoxFit.contain,
-                            ),
+                            )
+                            .animate(onPlay: (controller) => controller.repeat())
+                            .rotate(duration: 20.seconds, curve: Curves.linear),
                           ),
-                        const SizedBox(width: 16),
+                        const SizedBox(width: 8),
                         Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           mainAxisSize: MainAxisSize.min,
                           children: [
-                            Text(
-                              'MediaHive',
-                              style: TextStyle(
-                                color: colors.honey,
-                                fontFamily: 'BavistaSoulvare',
-                                fontSize: 32,
-                                letterSpacing: 1.5,
+                            SizedBox(
+                              height: 28,
+                              child: Transform.scale(
+                                scale: 4.2, // significantly increased size
+                                alignment: Alignment.centerLeft,
+                                child: Image.asset(
+                                  colors.isDark ? 'assets/images/app_name_light.png' : 'assets/images/app_name_dark.png',
+                                  height: 28,
+                                ),
                               ),
                             ),
                             Row(

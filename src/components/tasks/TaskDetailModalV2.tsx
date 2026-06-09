@@ -29,7 +29,7 @@ import {
     getAdminSeverity,
     getSeverityColor
 } from '@/lib/adminSeverity';
-import { cn } from "@/lib/utils";
+import { cn, nativeNavigate } from "@/lib/utils";
 import { AuditTimeline } from '@/components/tasks/audit/AuditTimeline';
 import { TaskActivityFeed } from '@/components/tasks/TaskActivityFeed';
 import { useEntityPresence } from '@/hooks/useEntityPresence';
@@ -630,7 +630,7 @@ export const TaskDetailModalV2: React.FC<TaskDetailsModalProps> = ({ task, isOpe
                                                     <div className="flex items-center justify-between">
                                                         <p className="text-sm font-semibold text-foreground/90 truncate">{linkedEvent.title}</p>
                                                         <button 
-                                                            onClick={() => router.push(`/events?id=${linkedEvent.id}`)}
+                                                            onClick={() => nativeNavigate(`/events?id=${linkedEvent.id}`, router, 'TaskDetailModalV2 (Event Link)')}
                                                             className="text-[9px] font-bold text-blue-400 hover:text-blue-300 transition-colors uppercase tracking-widest flex items-center gap-1 shrink-0"
                                                         >
                                                             Visit Event →

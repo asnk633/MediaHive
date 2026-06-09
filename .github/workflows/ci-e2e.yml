@@ -35,14 +35,19 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v4
 
+      - name: Setup pnpm
+        uses: pnpm/action-setup@v4
+        with:
+          version: 9
+
       - name: Setup Node
         uses: actions/setup-node@v4
         with:
           node-version: 22
-          cache: npm
+          cache: pnpm
 
       - name: Install deps
-        run: npm ci
+        run: pnpm install --frozen-lockfile
 
       # Write the service account JSON from the secret (Linux/macOS)
       - name: Decode service account (Linux / macOS)
@@ -89,7 +94,7 @@ jobs:
           pip install -r scripts/requirements.txt
 
       - name: Install Playwright browsers
-        run: npx playwright install --with-deps
+        run: pnpm exec playwright install --with-deps
 
       - name: Start Python face recognition service
         run: |
@@ -102,7 +107,7 @@ jobs:
 
       - name: Start Next.js app (background)
         run: |
-          nohup npm run dev > app.log 2>&1 &
+          nohup pnpm dev > app.log 2>&1 &
           echo "Waiting for Next.js to start..."
           sleep 25
 
@@ -126,7 +131,7 @@ jobs:
           exit 1
 
       - name: Run Playwright tests
-        run: npx playwright test --config=playwright.config.cjs
+        run: pnpm exec playwright test --config=playwright.config.cjs
 
       - name: Upload Playwright artifacts (optional)
         if: always()

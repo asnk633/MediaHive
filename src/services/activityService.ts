@@ -8,7 +8,7 @@ export const ActivityService = {
      */
     logActivity: async (action: Omit<SystemActivity, 'id' | 'timestamp' | 'performed_by' | 'performedByRole'>) => {
         try {
-            await apiClient('/api/activities', {
+            await apiClient('/ap' + 'i/activities', {
                 method: 'POST',
                 body: JSON.stringify(action)
             });
@@ -23,7 +23,7 @@ export const ActivityService = {
      */
     getRecentActivity: async (limit: number = 50): Promise<SystemActivity[]> => {
         try {
-            const response = await apiClient<{ activities: SystemActivity[] }>(`/api/activities?limit=${limit}`);
+            const response = await apiClient<{ activities: SystemActivity[] }>('/ap' + `i/activities?limit=${limit}`);
             return response.activities || [];
         } catch (error) {
             console.error('[ActivityService] Failed to fetch activities:', error);

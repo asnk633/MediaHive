@@ -2,7 +2,7 @@ import 'dart:ui';
 import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:lucide_icons/lucide_icons.dart';
+import 'package:lucide_icons_flutter/lucide_icons.dart';
 import 'package:share_plus/share_plus.dart';
 import 'package:url_launcher/url_launcher.dart';
 import 'package:dio/dio.dart';
@@ -623,9 +623,7 @@ class _FileDetailModalState extends ConsumerState<FileDetailModal> {
                             final userId = profile?['id']?.toString();
                             
                             final isAdminOrManager = role == 'admin' || role == 'manager';
-                            final isUploader = userId != null && widget.asset.uploadedBy == userId;
-                            
-                            final canDelete = widget.showDeleteOption && (isAdminOrManager || (role == 'team' && isUploader));
+                            final canDelete = widget.showDeleteOption && isAdminOrManager;
 
                             if (!canDelete) return const SizedBox.shrink();
 

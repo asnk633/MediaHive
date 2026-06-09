@@ -26,28 +26,33 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v4
 
+      - name: Setup pnpm
+        uses: pnpm/action-setup@v4
+        with:
+          version: 9
+
       - name: Setup Node
         uses: actions/setup-node@v4
         with:
           node-version: 22
-          cache: npm
+          cache: pnpm
 
       - name: Install deps
-        run: npm ci
+        run: pnpm install --frozen-lockfile
 
       # 🔥 This is what was missing for this workflow
       - name: Install Playwright browsers
-        run: npx playwright install --with-deps
+        run: pnpm exec playwright install --with-deps
 
       - name: Start Next.js app (background)
         run: |
-          nohup npm run dev > app.log 2>&1 &
+          nohup pnpm dev > app.log 2>&1 &
           echo "Waiting for Next.js to start..."
           sleep 25
 
       # Only run the Playwright UI tests here
       - name: Run Playwright tests
-        run: npx playwright test --retries=0
+        run: pnpm exec playwright test --retries=0
 
       - name: Upload Playwright artifacts
         if: always()

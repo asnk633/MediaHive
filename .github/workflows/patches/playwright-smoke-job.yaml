@@ -4,11 +4,16 @@
     needs: test
     steps:
       - uses: actions/checkout@v4
+      - name: Setup pnpm
+        uses: pnpm/action-setup@v4
+        with:
+          version: 9
       - uses: actions/setup-node@v4
         with:
           node-version: '20'
+          cache: pnpm
       - name: Install
-        run: npm ci
+        run: pnpm install --frozen-lockfile
       - name: Inject envs (from secrets)
         run: chmod +x .github/actions/ci-env-loader.sh && ./.github/actions/ci-env-loader.sh
         env:
@@ -19,13 +24,13 @@
           FIREBASE_ADMIN_SA: ${{ secrets.FIREBASE_ADMIN_SA }}
       - name: Build & start
         run: |
-          npm run build
-          nohup npm run start &>/tmp/next-start.log &
+          pnpm run build
+          nohup pnpm start &>/tmp/next-start.log &
       - name: Wait for server
-        run: npx wait-on http://localhost:3000 --timeout 60000
+        run: pnpm exec wait-on http://localhost:3000 --timeout 60000
       - name: Install Playwright browsers
-        run: npx playwright install --with-deps
+        run: pnpm exec playwright install --with-deps
       - name: Run smoke spec (single worker + retries)
-        run: npx playwright test e2e/smoke.spec.ts --project=chromium --retries=2 --workers=1 --reporter=list
+        run: pnpm exec playwright test e2e/smoke.spec.ts --project=chromium --retries=2 --workers=1 --reporter=list
         env:
           CI: true

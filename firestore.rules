@@ -34,6 +34,14 @@ service cloud.firestore {
       return request.auth.token.isTeam == true || userRole() == "team";
     }
 
+    function isManager() {
+      return request.auth.token.manager == true || userRole() == "manager";
+    }
+
+    function isMember() {
+      return userRole() == "member";
+    }
+
     function isGuest() {
       return userRole() == "guest";
     }
@@ -57,14 +65,17 @@ service cloud.firestore {
 
     // 1. TASKS
     match /tasks/{taskId} {
-      allow read: if isSignedIn() && isScoped(resource) && (isAdmin() || isTeam() || (isGuest() && isOwner(resource)));
-      allow create: if isSignedIn() && isScopedCreate(request.resource.data) && (isAdmin() || isTeam() || (isGuest() && request.resource.data.status == 'pending'));
+      allow read: if isSignedIn() && isScoped(resource) && (isAdmin() || isManager() || isTeam() || isMember() || (isGuest() && isOwner(resource)));
+      allow create: if isSignedIn() && isScopedCreate(request.resource.data) && (isAdmin() || isManager() || isTeam() || isMember() || (isGuest() && request.resource.data.status == 'pending'));
       allow update: if isSignedIn() && isScoped(resource) && (
-        isAdmin() || 
-        (isTeam() && resource.data.status != 'done') || 
+        isAdmin() || isManager() || 
+        ((isTeam() || isMember()) && isOwner(resource)) ||
         (isGuest() && isOwner(resource) && request.resource.data.diff(resource.data).affectedKeys().hasOnly(['status', 'remarks', 'updatedAt']))
       );
-      allow delete: if isSignedIn() && isScoped(resource) && isAdmin();
+      allow delete: if isSignedIn() && isScoped(resource) && (
+        isAdmin() || isManager() ||
+        ((isTeam() || isMember()) && isOwner(resource))
+      );
     }
 
     // 2. DEVICE REQUESTS
@@ -170,20 +181,19 @@ service cloud.firestore {
     match /events/{eventId} {
         // Read: All Scoped Users
         allow read: if isSignedIn() && isScoped(resource);
-        // Create: Admin, Team, Guest (Restricted to 'request' type)
+        // Create: Admin, Manager, Team, Member, Guest (Restricted to 'request' type)
         allow create: if isSignedIn() && isScopedCreate(request.resource.data) && (
-            isAdmin() || 
-            isTeam() || 
+            isAdmin() || isManager() || isTeam() || isMember() || 
             (isGuest() && request.resource.data.type == 'request')
         );
-        // Update: Admin or Team (Guests CANNOT update)
-        // Team cannot change critical metadata (createdBy, institution, type)
+        // Update: Admin, Manager, Team, Member (Guests CANNOT update)
+        // Team/Member cannot change critical metadata (createdBy, institution, type)
         allow update: if isSignedIn() && isScoped(resource) && (
-            isAdmin() || 
-            (isTeam() && !request.resource.data.diff(resource.data).affectedKeys().hasAny(['createdBy', 'institutionId', 'type']))
+            isAdmin() || isManager() || 
+            ((isTeam() || isMember()) && !request.resource.data.diff(resource.data).affectedKeys().hasAny(['createdBy', 'institutionId', 'type']))
         );
-        // Delete: Admin Only
-        allow delete: if isSignedIn() && isScoped(resource) && isAdmin();
+        // Delete: Admin or Manager
+        allow delete: if isSignedIn() && isScoped(resource) && (isAdmin() || isManager());
     }
     
     // 6. SYSTEM EVENTS (Audit Logs - Immutable)
@@ -246,6 +256,7 @@ service cloud.firestore {
     match /files/{fileId} {
        allow read: if isSignedIn(); 
        allow write: if false; 
+       allow delete: if isSignedIn() && (isAdmin() || isManager());
     }
 
     // 11. CHATS

@@ -21,11 +21,34 @@ final dashboardMetricsProvider = Provider((ref) {
 
       // 1. Common Data
       final now = DateTime.now();
-      final todayStr = DateFormat('yyyy-MM-dd').format(now);
+      final todayStart = DateTime(now.year, now.month, now.day);
+      final todayEnd = DateTime(now.year, now.month, now.day, 23, 59, 59);
       final tomorrow = now.add(const Duration(days: 1));
       final tomorrowStr = DateFormat('yyyy-MM-dd').format(tomorrow);
+
+      bool isToday(String? dateStr) {
+        if (dateStr == null || dateStr.isEmpty) return false;
+        try {
+          final d = DateTime.parse(dateStr).toLocal();
+          return d.isAfter(todayStart.subtract(const Duration(milliseconds: 1))) && 
+                 d.isBefore(todayEnd.add(const Duration(milliseconds: 1)));
+        } catch (_) { return false; }
+      }
+
+      bool isPast(String? dateStr) {
+        if (dateStr == null || dateStr.isEmpty) return false;
+        try {
+          final d = DateTime.parse(dateStr).toLocal();
+          return d.isBefore(todayStart);
+        } catch (_) { return false; }
+      }
       
-      final teamTodayTasks = tasks.where((t) => t.dueDate == todayStr).toList();
+      final dueTodayTasks = tasks.where((t) => t.status != 'done' && t.status != 'completed' && (isToday(t.dueDate) || isPast(t.dueDate))).toList();
+      final inProgressTasks = tasks.where((t) => t.status == 'in_progress' || t.status == 'in-progress').toList();
+      final onHoldTasks = tasks.where((t) => t.status == 'on_hold' || t.status == 'on-hold' || t.status == 'blocked').toList();
+      final completedTodayTasks = tasks.where((t) => (t.status == 'done' || t.status == 'completed') && isToday(t.completionDate)).toList();
+      
+      final totalSystemTasks = dueTodayTasks.length + inProgressTasks.length + onHoldTasks.length + completedTodayTasks.length;
       final events = eventsAsync.valueOrNull ?? [];
 
       // 2. Admin Metrics (Bottleneck Detection)
@@ -101,15 +124,25 @@ final dashboardMetricsProvider = Provider((ref) {
             : 0,
       };
 
-      final requestsList = tasks.where((t) => t.requester == fullName).toList();
+      final currentUserId = profile?['id'] as String?;
+      final requestsList = tasks.where((t) {
+        bool isAssigned = t.requester == fullName || t.assignee == fullName || t.createdBy == currentUserId;
+        if (t.onBehalfOf != null && currentUserId != null) {
+          if (t.onBehalfOf!.contains(currentUserId)) {
+             isAssigned = true;
+          }
+        }
+        return isAssigned;
+      }).toList();
+
       final myRequestsMetrics = {
         'total': requestsList.length,
-        'pending': requestsList.where((t) => t.status == 'todo').length,
-        'inProgress': requestsList.where((t) => t.status == 'in_progress').length,
-        'inReview': requestsList.where((t) => t.status == 'review').length,
-        'completed': requestsList.where((t) => t.status == 'done').length,
-        'fulfilled': requestsList.where((t) => t.status == 'done').length,
-        'progress': requestsList.isNotEmpty ? (requestsList.where((t) => t.status == 'done').length / requestsList.length * 100).toInt() : 0,
+        'pending': requestsList.where((t) => t.status == 'todo' || t.status == 'pending').length,
+        'inProgress': requestsList.where((t) => t.status == 'in_progress' || t.status == 'in-progress').length,
+        'inReview': requestsList.where((t) => t.status == 'review' || t.status == 'in_review').length,
+        'completed': requestsList.where((t) => t.status == 'done' || t.status == 'completed').length,
+        'fulfilled': requestsList.where((t) => t.status == 'done' || t.status == 'completed').length,
+        'progress': requestsList.isNotEmpty ? (requestsList.where((t) => t.status == 'done' || t.status == 'completed').length / requestsList.length * 100).toInt() : 0,
       };
 
       return {
@@ -118,17 +151,17 @@ final dashboardMetricsProvider = Provider((ref) {
         'team': teamMetrics,
         'myRequests': myRequestsMetrics,
         'systemStatus': {
-          'dueToday': teamTodayTasks.where((t) => t.status != 'done').length.toString(),
-          'inProgress': teamTodayTasks.where((t) => t.status == 'in_progress').length.toString(),
-          'onHold': teamTodayTasks.where((t) => t.status == 'review' || t.isBlocked).length.toString(),
-          'completed': teamTodayTasks.where((t) => t.status == 'done').length.toString(),
-          'totalTodayCount': teamTodayTasks.length,
+          'dueToday': dueTodayTasks.length.toString(),
+          'inProgress': inProgressTasks.length.toString(),
+          'onHold': onHoldTasks.length.toString(),
+          'completed': completedTodayTasks.length.toString(),
+          'totalTodayCount': totalSystemTasks,
         },
         'completion': {
-          'percentage': teamTodayTasks.isNotEmpty 
-              ? (teamTodayTasks.where((t) => t.status == 'done').length / teamTodayTasks.length * 100).toInt() 
+          'percentage': (dueTodayTasks.length + completedTodayTasks.length) > 0 
+              ? (completedTodayTasks.length / (dueTodayTasks.length + completedTodayTasks.length) * 100).toInt() 
               : 0,
-          'label': '${teamTodayTasks.where((t) => t.status == 'done').length} of ${teamTodayTasks.length} today tasks completed',
+          'label': '${completedTodayTasks.length} of ${dueTodayTasks.length + completedTodayTasks.length} today tasks completed',
         },
       };
     },

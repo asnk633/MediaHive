@@ -3,7 +3,7 @@
 import React from 'react';
 import { useRouter } from 'next/navigation';
 import { AlertCircle, Calendar, Clock, ArrowRight } from 'lucide-react';
-import { cn } from '@/lib/utils';
+import { cn, nativeNavigate } from '@/lib/utils';
 import { useDashboard } from '@/system/dashboard/DashboardProvider';
 
 export const TaskIntelligenceWidget: React.FC = () => {
@@ -58,7 +58,7 @@ export const TaskIntelligenceWidget: React.FC = () => {
     ];
 
     const handleNavigate = (filter: string) => {
-        router.push(`/tasks?filter=${filter}`);
+        nativeNavigate(`/tasks?filter=${filter}`, router, 'TaskIntelligenceWidget (Filter Link)');
     };
 
     return (

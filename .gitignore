@@ -10,6 +10,12 @@
 !.yarn/releases
 !.yarn/versions
 
+# Non-pnpm lockfiles (project uses pnpm exclusively)
+package-lock.json
+bun.lock
+bun.lockb
+yarn.lock
+
 # testing
 /coverage
 
@@ -90,3 +96,6 @@ credentials/
 
 # Database Backups
 /backups
+
+# Graphify large cache files
+graphify-out/graph.json

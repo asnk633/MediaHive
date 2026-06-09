@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:lucide_icons/lucide_icons.dart';
+import 'package:lucide_icons_flutter/lucide_icons.dart';
 import 'package:photo_view/photo_view.dart';
 import '../../../../core/theme_provider.dart';
 import '../../../../core/utils/file_download_helper.dart';

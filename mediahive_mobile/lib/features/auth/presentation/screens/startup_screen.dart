@@ -4,7 +4,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 import 'package:go_router/go_router.dart';
 import 'package:flutter_animate/flutter_animate.dart';
-import 'package:lucide_icons/lucide_icons.dart';
+import 'package:lucide_icons_flutter/lucide_icons.dart';
 import '../../../../core/theme_provider.dart';
 
 class StartupScreen extends ConsumerStatefulWidget {
@@ -110,11 +110,11 @@ class _StartupScreenState extends ConsumerState<StartupScreen> with SingleTicker
               builder: (context, constraints) {
                 return Stack(
                   children: [
-                    // Top Half: Rotating Logo and Tagline (Shifted top to 125 to match Photoshop mock layout)
+                    // Top Half: Rotating Logo and Tagline (Shifted top to center above the Welcome card)
                     AnimatedPositioned(
                       duration: const Duration(milliseconds: 700),
                       curve: Curves.easeOutQuart,
-                      top: _showOnboarding ? 125 : (constraints.maxHeight / 2) - 200,
+                      top: _showOnboarding ? 140 : (constraints.maxHeight / 2) - 200,
                       left: 0,
                       right: 0,
                       child: Column(
@@ -124,47 +124,47 @@ class _StartupScreenState extends ConsumerState<StartupScreen> with SingleTicker
                           RotationTransition(
                             turns: _rotationController,
                             child: Container(
-                              width: _showOnboarding ? 220 : 260,
-                              height: _showOnboarding ? 220 : 260,
+                              width: _showOnboarding ? 220 : 300,
+                              height: _showOnboarding ? 220 : 300,
                               decoration: BoxDecoration(
                                 shape: BoxShape.circle,
                                 boxShadow: [
                                   BoxShadow(
-                                    color: (isDark ? const Color(0xFFFFD700) : const Color(0xFF006EE6))
-                                        .withValues(alpha: isDark ? 0.3 : 0.2), // Enhanced glow opacity
-                                    blurRadius: 50, // Enhanced glow blur radius
-                                    spreadRadius: 6, // Enhanced glow spread radius
+                                    color: const Color(0xFFFFD700).withValues(alpha: isDark ? 0.12 : 0.2), // Much softer opacity in dark theme
+                                    blurRadius: isDark ? 80 : 50, // Wider, softer blur in dark theme
+                                    spreadRadius: isDark ? 0 : 6, // Zero hard spread in dark theme
                                   ),
                                 ],
                               ),
                               child: Image.asset(
-                                'assets/images/app_icon.png',
+                                'assets/images/logo.png',
                                 fit: BoxFit.contain,
                               ),
                             ),
                           ).animate().scale(duration: 600.ms, curve: Curves.easeOutBack),
                           
-                          const SizedBox(height: 24),
-                          
-                          // Brand Name (Responsive: White in Dark theme, Black/Charcoal in Light theme - Enlarged to match Photoshop mock)
-                          Text(
-                            'MediaHive',
-                            style: TextStyle(
-                              fontSize: _showOnboarding ? 48 : 56,
-                              fontWeight: FontWeight.w900,
-                              color: isDark ? Colors.white : const Color(0xFF1D1D1F),
-                              fontFamily: 'BavistaSoulvare',
-                              letterSpacing: 2.0,
-                            ),
-                          ).animate().fadeIn(delay: 200.ms).slideY(begin: 0.2, end: 0),
-                          
                           const SizedBox(height: 12),
                           
-                          // Brand Tagline / Purpose (Formatted into a single line matching Photoshop mock, responsive text color)
+                          // Brand Name (Typography Image) with heightFactor to natively collapse transparent padding
+                          Align(
+                            alignment: Alignment.center,
+                            heightFactor: 0.25, // Aggressively trims the empty top/bottom space
+                            child: Image.asset(
+                              isDark ? 'assets/images/app_name_light.png' : 'assets/images/app_name_dark.png',
+                              key: ValueKey('brand_name_$isDark'), // Prevents ghosting during theme transition
+                              width: _showOnboarding ? 280 : 340,
+                              fit: BoxFit.contain,
+                            ).animate().fadeIn(delay: 200.ms).slideY(begin: 0.2, end: 0),
+                          ),
+                          
+                          const SizedBox(height: 16),
+                          
+                          // Tagline
                           Padding(
                             padding: const EdgeInsets.symmetric(horizontal: 20),
                             child: Text(
-                              'The Central Hub for Thaiba Garden Media & IT',
+                              'The Central Hub to Thaiba Garden Media Department',
+                              key: ValueKey('tagline_$isDark'), // Prevents ghosting during theme transition
                               textAlign: TextAlign.center,
                               style: TextStyle(
                                 fontSize: 11,

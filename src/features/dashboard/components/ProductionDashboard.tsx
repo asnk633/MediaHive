@@ -11,7 +11,7 @@ import {
     RefreshCcw,
     LayoutDashboard
 } from 'lucide-react';
-import { cn } from '@/lib/utils';
+import { cn, nativeNavigate } from '@/lib/utils';
 import { CanonicalDataService, OperationalSummary } from '@/services/canonicalDataService';
 import { synergySyncManager } from '@/system/realtimeSync';
 import { TodayEventsCard } from './TodayEventsCard';
@@ -74,7 +74,7 @@ export const ProductionDashboard: React.FC = () => {
     }, [user?.institution_id, user?.tenant_id, fetchOperationalData]);
 
     const handleQuickAction = (route: string) => {
-        router.push(route);
+        nativeNavigate(route, router, 'ProductionDashboard (Quick Action)');
     };
 
     return (
@@ -86,14 +86,14 @@ export const ProductionDashboard: React.FC = () => {
                         events={data.events} 
                         tasks={data.tasks}
                         isLoading={isLoading} 
-                        onViewEvent={(id) => router.push(`/calendar?id=${id}`)}
+                        onViewEvent={(id) => nativeNavigate(`/calendar?id=${id}`, router, 'ProductionDashboard (View Event)')}
                     />
                 </div>
                 <div className="h-full min-h-[400px]">
                     <TodayTasksCard 
                         tasks={data.tasks} 
                         isLoading={isLoading} 
-                        onViewTask={(id) => router.push(`/tasks?id=${id}`)}
+                        onViewTask={(id) => nativeNavigate(`/tasks?id=${id}`, router, 'ProductionDashboard (View Task)')}
                     />
                 </div>
             </div>

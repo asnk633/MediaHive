@@ -17,7 +17,9 @@ export type Permission =
     | 'read:reports'
     | 'write:intervention'
     | 'read:audit_log'
-    | 'upload:files';
+    | 'read:files'
+    | 'upload:files'
+    | 'delete:files';
 
 export const ROLES: Record<string, Permission[]> = {
     admin: [
@@ -25,22 +27,22 @@ export const ROLES: Record<string, Permission[]> = {
         'edit:task_status', 'edit:task_priority', 'assign:tasks',
         'read:events', 'create:events', 'edit:events', 'delete:events',
         'read:users', 'manage:users', 'read:reports',
-        'write:intervention', 'read:audit_log', 'upload:files'
+        'write:intervention', 'read:audit_log', 'read:files', 'upload:files', 'delete:files'
     ],
     manager: [
-        'read:tasks', 'create:tasks', 'edit:tasks', 'edit:task_status', 'edit:task_priority', 'assign:tasks',
+        'read:tasks', 'create:tasks', 'edit:tasks', 'delete:tasks', 'edit:task_status', 'edit:task_priority', 'assign:tasks',
         'read:events', 'create:events', 'edit:events',
-        'read:users', 'upload:files', 'read:reports'
+        'read:users', 'read:files', 'upload:files', 'delete:files', 'read:reports'
     ],
     team: [ 
-        'read:tasks', 'create:tasks', 'edit:tasks', 'edit:task_status', 'edit:task_priority',
+        'read:tasks', 'create:tasks', 'edit:tasks', 'delete:tasks', 'edit:task_status', 'edit:task_priority',
         'read:events', 'create:events', 'edit:events',
-        'read:users', 'upload:files'
+        'read:users', 'read:files', 'upload:files'
     ],
     member: [
-        'read:tasks', 'create:tasks', 'edit:task_status',
-        'read:events', 'create:events',
-        'upload:files'
+        'read:tasks', 'create:tasks', 'edit:tasks', 'delete:tasks', 'edit:task_status',
+        'read:events', 'create:events', 'edit:events',
+        'read:files', 'upload:files'
     ]
 };
 
@@ -64,19 +66,19 @@ export function canEditTask(user: any, task: any, currentRole?: Role): boolean {
     // Admin/Manager -> always
     if (role === 'admin' || role === 'manager' || user.isAdmin) return true;
 
-    // Member/Team -> only if assigned to them or created by them
-    if (role === 'member' || (role === 'manager' || role === 'team') || user.isTeam) {
-        const creatorId = getUserId(task.created_by);
-        if (creatorId === userId) return true;
-        
-        if (!task.assigned_to) return false;
-        const assignees = Array.isArray(task.assigned_to) ? task.assigned_to : [task.assigned_to];
-        return assignees.some((a: any) => getUserId(a) === userId);
-    }
-
-    // Member -> only if they created it
+    // Team/Member -> only if they created it
     const creatorId = getUserId(task.created_by);
     return creatorId === userId;
+}
+
+export function canDeleteTask(user: any, task: any, currentRole?: Role): boolean {
+    return canEditTask(user, task, currentRole);
+}
+
+export function canDeleteFile(user: any, currentRole?: Role): boolean {
+    if (!user) return false;
+    const role = currentRole || user.role?.toLowerCase() || 'member';
+    return role === 'admin' || role === 'manager' || user.isAdmin;
 }
 
 export function canChangeStatus(user: any, task: any, currentRole?: Role): boolean {
@@ -84,10 +86,16 @@ export function canChangeStatus(user: any, task: any, currentRole?: Role): boole
     const role = currentRole || user.role?.toLowerCase() || 'member';
     const userId = getUserId(user);
 
-    // Admin/Manager/Member -> yes
-    if (['admin', 'manager', 'member', 'team'].includes(role)) return true;
+    // Admin/Manager -> yes
+    if (['admin', 'manager'].includes(role)) return true;
+    
+    // Team -> if assigned to them (or if they created it, handled below)
+    if (role === 'team' && task.assigned_to) {
+        const assignees = Array.isArray(task.assigned_to) ? task.assigned_to : [task.assigned_to];
+        if (assignees.some((a: any) => getUserId(a) === userId)) return true;
+    }
 
-    // Member -> only if creator
+    // Team/Member -> if creator
     const creatorId = getUserId(task.created_by);
     return creatorId === userId;
 }

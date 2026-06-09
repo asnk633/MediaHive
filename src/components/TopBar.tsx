@@ -54,7 +54,7 @@ export default function TopBar({ title = "MediaHive" }: { title?: string }) {
           MH
         </div>
         <img 
-          src={theme === 'midnight' ? '/brand-name-light.png' : '/brand-name-dark.png'}
+          src={theme === 'luminous' ? '/brand-name-dark.png' : '/brand-name-light.png'}
           alt={title}
           className="w-32 md:w-40 h-auto object-contain"
         />

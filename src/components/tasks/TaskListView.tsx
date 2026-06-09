@@ -50,7 +50,7 @@ import {
     SelectTrigger,
     SelectValue,
 } from "@/components/ui/select";
-import { cn } from "@/lib/utils";
+import { cn, nativeNavigate } from "@/lib/utils";
 import { triggerHaptic } from "@/lib/haptics";
 import EmptyState from '@/components/ui/EmptyState';
 
@@ -193,7 +193,7 @@ const TaskListViewComponent: React.FC<TaskListViewProps> = ({ tasks, loading = f
             });
             
             if (changed) {
-                router.replace(`${window.location.pathname}?${params.toString()}`, { scroll: false });
+                nativeNavigate(`${window.location.pathname}?${params.toString()}`, router, 'TaskListView (URL Update)', { scroll: false, replace: true });
             }
         }, 200), [searchParams, router]);
 

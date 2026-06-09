@@ -10,11 +10,14 @@ import { useAuth } from '@/contexts/AuthContextProvider';
 import { supabase } from '@/lib/supabaseClient';
 import { Lock, Mail, AlertCircle, Loader2, CheckCircle2, Eye, EyeOff } from 'lucide-react';
 import { useRouter } from 'next/navigation';
-import { nativeNavigate } from '@/lib/utils';
+import { nativeNavigate, cn } from '@/lib/utils';
 import { toast } from 'sonner';
+import { useTheme } from '@/contexts/ThemeContext';
+import { ThemeToggle } from '@/components/auth/ThemeToggle';
 
 export default function LoginClient() {
     const router = useRouter();
+    const { theme } = useTheme();
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
     const [newPassword, setNewPassword] = useState('');
@@ -149,23 +152,43 @@ export default function LoginClient() {
         }
     };
 
+    const bgGradient = theme === 'luminous'
+        ? "bg-gradient-to-br from-[#f8fafc] via-[#f1f5f9] to-[#e2e8f0] text-slate-800"
+        : theme === 'golden'
+        ? "bg-gradient-to-br from-[#02040a] via-[#0a0a05] to-[#151100]"
+        : "bg-gradient-to-br from-[#050816] via-[#0B1026] to-[#1A1443]";
+
+    const hazeGlow1 = theme === 'luminous'
+        ? "bg-sky-400/15"
+        : theme === 'golden'
+        ? "bg-amber-500/10"
+        : "bg-indigo-500/20";
+
+    const hazeGlow2 = theme === 'luminous'
+        ? "bg-indigo-400/15"
+        : theme === 'golden'
+        ? "bg-amber-600/5"
+        : "bg-purple-500/20";
+
     return (
-        <div suppressHydrationWarning className="relative min-h-screen flex items-center justify-center overflow-hidden bg-gradient-to-br from-[#050816] via-[#0B1026] to-[#1A1443]">
+        <div suppressHydrationWarning className={cn("relative min-h-screen flex items-center justify-center overflow-hidden transition-all duration-500", bgGradient)}>
+            <ThemeToggle />
+            
             {/* Animated color haze */}
-            <div className="absolute w-[900px] h-[900px] bg-indigo-500/20 blur-[180px] rounded-full top-[-200px] left-[-200px] animate-[float_12s_ease-in-out_infinite]" />
-            <div className="absolute w-[700px] h-[700px] bg-purple-500/20 blur-[160px] rounded-full bottom-[-200px] right-[-200px] animate-[float_16s_ease-in-out_infinite_reverse]" />
+            <div className={cn("absolute w-[900px] h-[900px] blur-[180px] rounded-full top-[-200px] left-[-200px] animate-[float_12s_ease-in-out_infinite] transition-colors duration-500", hazeGlow1)} />
+            <div className={cn("absolute w-[700px] h-[700px] blur-[160px] rounded-full bottom-[-200px] right-[-200px] animate-[float_16s_ease-in-out_infinite_reverse] transition-colors duration-500", hazeGlow2)} />
 
             <div className="w-full max-w-md relative z-10 flex flex-col items-center p-4">
                 {/* Logo Section */}
-                <div className="relative mb-4 flex items-center justify-center">
+                <div className="relative -mb-10 flex items-center justify-center">
                     <HaloLogo size={140} />
                 </div>
 
-                <div className="text-center mb-5 space-y-2 px-4">
+                <div className="text-center mb-8 space-y-0.5 px-4">
                     <img 
-                        src="/brand-name-light.png"
+                        src={theme === 'luminous' ? '/brand-name-dark.png' : '/brand-name-light.png'}
                         alt="MediaHive"
-                        className="w-72 md:w-96 h-auto object-contain drop-shadow-md mx-auto"
+                        className="w-72 md:w-96 h-auto object-contain drop-shadow-md mx-auto -mt-20 md:-mt-32 -mb-[80px] md:-mb-[120px]"
                     />
                     <p className="text-xs md:text-sm text-foreground font-bold uppercase tracking-wider max-w-md mx-auto">
                         The Central Hub for Thaiba Garden Media & IT
@@ -173,7 +196,7 @@ export default function LoginClient() {
                 </div>
 
                 {/* Main Card */}
-                <div className="w-full backdrop-blur-xl bg-gradient-to-b from-white/10 to-white/5 border border-foreground/10 shadow-2xl rounded-2xl overflow-hidden mb-8">
+                <div className="w-full glass-card rounded-2xl overflow-hidden mb-8">
                     <div className="p-10">
                         {!isRecoveryMode && (
                             <div className="mb-8 space-y-2">

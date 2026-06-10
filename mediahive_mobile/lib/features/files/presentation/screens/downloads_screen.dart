@@ -146,7 +146,7 @@ class _DownloadsScreenState extends ConsumerState<DownloadsScreen> {
                 },
               ),
               
-              const SliverToBoxAdapter(child: SizedBox(height: 120)),
+              const SliverToBoxAdapter(child: SizedBox(height: 140)),
             ],
           ),
         ),

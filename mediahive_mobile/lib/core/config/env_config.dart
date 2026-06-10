@@ -27,8 +27,8 @@ class EnvConfig {
         return EnvConfig(
           flavor: AppFlavor.production,
           apiBaseUrl: 'https://thaiba-garden-media-manager.vercel.app',
-          supabaseUrl: dotenv.env['SUPABASE_URL'] ?? 'PROD_URL',
-          supabaseAnonKey: dotenv.env['SUPABASE_ANON_KEY'] ?? 'PROD_KEY',
+          supabaseUrl: dotenv.env['SUPABASE_URL'] ?? 'https://fcctcorycpvebupluzpe.supabase.co',
+          supabaseAnonKey: dotenv.env['SUPABASE_ANON_KEY'] ?? 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImZjY3Rjb3J5Y3B2ZWJ1cGx1enBlIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzIyNjQ1NDEsImV4cCI6MjA4Nzg0MDU0MX0.D2X24KYzoN5tNXZgPaVT7cMWDE2TxYlCeFEa5DHcn1M',
           enableAnalytics: true,
           enableDetailedLogging: false,
         );

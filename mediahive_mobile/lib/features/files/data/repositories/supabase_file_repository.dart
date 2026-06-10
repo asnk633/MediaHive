@@ -35,8 +35,21 @@ class SupabaseFileRepository implements FileRepository {
                             file.name.startsWith('INV_');
         return !isInventory;
       }).toList();
+
+      // De-duplicate items to prevent duplicate transfers/files listing
+      final seenIds = <String>{};
+      final seenFiles = <String>{}; // combination of name and size
+      final uniqueFiles = <FileAsset>[];
+      for (var file in files) {
+        final fileKey = '${file.name}_${file.size}';
+        if (!seenIds.contains(file.id) && !seenFiles.contains(fileKey)) {
+          seenIds.add(file.id);
+          seenFiles.add(fileKey);
+          uniqueFiles.add(file);
+        }
+      }
       
-      return Right(files);
+      return Right(uniqueFiles);
     } catch (e) {
       print('[FILE_REPO] Error: $e');
       return Left(ServerFailure(e.toString()));

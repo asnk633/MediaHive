@@ -56,7 +56,7 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
             left: 20, 
             right: 20, 
             top: 140, 
-            bottom: 40,
+            bottom: 140,
           ),
           child: Column(
             children: [

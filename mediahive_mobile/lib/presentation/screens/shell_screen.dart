@@ -998,6 +998,7 @@ class _ShellScreenState extends ConsumerState<ShellScreen> {
 
     // Split release notes by newline or bullet characters to display list items
     final List<String> bulletPoints = info.releaseNotes
+        .replaceAll(r'\n', '\n')
         .split('\n')
         .map((s) => s.trim())
         .where((s) => s.isNotEmpty)

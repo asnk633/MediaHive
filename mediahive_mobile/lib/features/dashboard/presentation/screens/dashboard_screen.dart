@@ -59,7 +59,7 @@ class DashboardScreen extends ConsumerWidget {
                 _buildSliverHeader(colors),
                 SliverToBoxAdapter(
                   child: Padding(
-                    padding: const EdgeInsets.fromLTRB(20, 120, 20, 80),
+                    padding: const EdgeInsets.fromLTRB(20, 120, 20, 140),
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [

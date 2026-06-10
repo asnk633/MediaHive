@@ -243,6 +243,63 @@ class CommandCenterScreen extends ConsumerWidget {
             ),
           ],
         ),
+        const SizedBox(height: 12),
+        Row(
+          children: [
+            Expanded(
+              child: _buildActionCard(
+                'NFC TAGS', 
+                'Registry & biometrics', 
+                LucideIcons.nfc, 
+                colors,
+                onTap: () => context.push('/governance/nfc-tags'),
+              ),
+            ),
+            const SizedBox(width: 12),
+            Expanded(
+              child: _buildActionCard(
+                'ATTENDANCE REPORTS', 
+                'Logs & dynamic stats', 
+                LucideIcons.fileSpreadsheet, 
+                colors,
+                onTap: () => context.push('/governance/attendance-reports'),
+              ),
+            ),
+          ],
+        ),
+        const SizedBox(height: 12),
+        _buildActionCard(
+          'ATTENDANCE POLICIES', 
+          'Office hours, grace period, auto close & overtime configurations', 
+          LucideIcons.shieldAlert, 
+          colors,
+          isFullWidth: true,
+          onTap: () => context.push('/governance/attendance-policy'),
+        ),
+        const SizedBox(height: 12),
+        Row(
+          children: [
+            Expanded(
+              child: _buildActionCard(
+                'ATTENDANCE REQUESTS', 
+                'Review missed check-in & remote requests', 
+                LucideIcons.gitPullRequest, 
+                colors,
+                onTap: () => context.push('/attendance/requests'),
+              ),
+            ),
+            const SizedBox(width: 12),
+            Expanded(
+              child: _buildActionCard(
+                'HOLIDAY LIST', 
+                'Manage custom & public holidays', 
+                LucideIcons.palmtree, 
+                colors,
+                onTap: () => context.push('/attendance/holidays'),
+              ),
+            ),
+          ],
+        ),
       ],
     );
   }

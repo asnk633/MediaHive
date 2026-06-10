@@ -17,6 +17,7 @@ import 'core/services/auth_service.dart';
 import 'core/services/notification_service.dart';
 import 'core/services/fcm_service.dart';
 import 'core/providers/update_provider.dart';
+import 'features/attendance/presentation/providers/attendance_provider.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'firebase_options.dart';
 import 'dart:ui';
@@ -95,6 +96,9 @@ class MediaHiveApp extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
+    // Warm up the attendance location exit monitor
+    ref.watch(attendanceLocationMonitorProvider);
+
     final themeMode = ref.watch(themeModeProvider);
     final router = ref.watch(routerProvider);
 

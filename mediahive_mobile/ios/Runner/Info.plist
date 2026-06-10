@@ -74,7 +74,26 @@
 		<string>We need access to your photo library to save downloaded attachments.</string>
 		<key>NSMicrophoneUsageDescription</key>
 		<string>We need access to your microphone to record and send voice notes in the chat.</string>
+		<key>NFCReaderUsageDescription</key>
+		<string>We need access to NFC to read team attendance and equipment tags.</string>
+		<key>NSLocationWhenInUseUsageDescription</key>
+		<string>We need your location to verify you are within the office radius during attendance scanning.</string>
+		<key>NSFaceIDUsageDescription</key>
+		<string>We need biometric authentication to verify your identity during check-in and check-out.</string>
 		<key>UIStatusBarHidden</key>
 		<false/>
+		<key>CFBundleURLTypes</key>
+		<array>
+			<dict>
+				<key>CFBundleTypeRole</key>
+				<string>Editor</string>
+				<key>CFBundleURLName</key>
+				<string>mediahive.app</string>
+				<key>CFBundleURLSchemes</key>
+				<array>
+					<string>mediahive</string>
+				</array>
+			</dict>
+		</array>
 	</dict>
 </plist>

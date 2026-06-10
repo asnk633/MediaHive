@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:lucide_icons_flutter/lucide_icons.dart';
+import 'package:share_plus/share_plus.dart';
 import '../../../../../core/theme/app_spacing.dart';
 import '../../../../../core/theme/app_typography.dart';
 import '../../../../../core/services/logger_service.dart';
@@ -97,7 +98,20 @@ class SystemHealthScreen extends ConsumerWidget {
               _buildNotificationSoundTestPanel(context, ref, colors),
               const SizedBox(height: AppSpacing.xl),
               
-              _buildSectionTitle(colors, 'LOGS & TELEMETRY'),
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  _buildSectionTitle(colors, 'LOGS & TELEMETRY'),
+                  IconButton(
+                    icon: Icon(LucideIcons.share2, color: colors.honey, size: 18),
+                    tooltip: 'Share logs',
+                    onPressed: () {
+                      final logText = logs.map((l) => l.toString()).join('\n');
+                      Share.share(logText, subject: 'MediaHive System Logs & Telemetry');
+                    },
+                  ),
+                ],
+              ),
               const SizedBox(height: AppSpacing.m),
               _buildLogBuffer(colors, ref, logs),
             ],

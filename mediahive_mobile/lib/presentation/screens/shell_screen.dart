@@ -18,6 +18,9 @@ import '../../core/providers/update_provider.dart';
 import '../../core/services/update_service.dart';
 import '../../features/chat/presentation/providers/chat_providers.dart';
 import 'package:model_viewer_plus/model_viewer_plus.dart';
+import '../../features/attendance/presentation/providers/attendance_provider.dart';
+import 'package:nfc_manager/nfc_manager.dart';
+import 'package:intl/intl.dart';
 
 
 class ShellScreen extends ConsumerStatefulWidget {
@@ -30,12 +33,14 @@ class ShellScreen extends ConsumerStatefulWidget {
 
 class _ShellScreenState extends ConsumerState<ShellScreen> {
   bool _isSpeedDialOpen = false;
+  bool _showReleaseNotes = false;
 
   @override
   Widget build(BuildContext context) {
     final currentItem = ref.watch(navigationProvider);
     final colors = ref.watch(themeColorsProvider);
     final isBottomNavVisible = ref.watch(bottomNavVisibleProvider);
+    final nfcState = ref.watch(globalNfcScanningProvider);
     
     // Determine current route to selectively hide UI elements
     final currentRoute = GoRouterState.of(context).uri.toString();
@@ -95,7 +100,7 @@ class _ShellScreenState extends ConsumerState<ShellScreen> {
                           _buildGlobalHeader(colors, currentRoute, shouldHideNav, isProfileRoute),
 
                         // Persistent Update Banner under Header
-                        updateInfoAsync.maybeWhen(
+                        updateInfoAsync.when(
                           data: (info) {
                             if (!info.isUpdateAvailable) return const SizedBox.shrink();
                             return Positioned(
@@ -105,7 +110,25 @@ class _ShellScreenState extends ConsumerState<ShellScreen> {
                               child: _buildUpdateBanner(context, colors, info, updateState, updateProgress),
                             );
                           },
-                          orElse: () => const SizedBox.shrink(),
+                          loading: () => const SizedBox.shrink(),
+                          error: (err, stack) {
+                            return Positioned(
+                              top: 92 + MediaQuery.of(context).padding.top,
+                              left: 16,
+                              right: 16,
+                              child: Container(
+                                padding: const EdgeInsets.all(8),
+                                decoration: BoxDecoration(
+                                  color: Colors.red.shade900.withValues(alpha: 0.9),
+                                  borderRadius: BorderRadius.circular(8),
+                                ),
+                                child: Text(
+                                  'Update Error: $err',
+                                  style: const TextStyle(color: Colors.white, fontSize: 10),
+                                ),
+                              ),
+                            );
+                          },
                         ),
                         
                         // Floating Dock with Integrated FAB & Bottom Blur (Phone only)
@@ -125,6 +148,8 @@ class _ShellScreenState extends ConsumerState<ShellScreen> {
               ),
               // Speed Dial Overlay
               if (_isSpeedDialOpen) _buildSpeedDialOverlay(colors, isTablet),
+              if (nfcState.status != NfcScanStatus.idle)
+                _buildNfcScanOverlay(context, ref, nfcState, colors),
             ],
           );
         },
@@ -211,12 +236,15 @@ class _ShellScreenState extends ConsumerState<ShellScreen> {
                           children: [
                             SizedBox(
                               height: 28,
-                              child: Transform.scale(
-                                scale: 4.2, // significantly increased size
-                                alignment: Alignment.centerLeft,
-                                child: Image.asset(
-                                  colors.isDark ? 'assets/images/app_name_light.png' : 'assets/images/app_name_dark.png',
-                                  height: 28,
+                              child: Transform.translate(
+                                offset: const Offset(-14.5, 0),
+                                child: Transform.scale(
+                                  scale: 6.0, // increased size
+                                  alignment: Alignment.centerLeft,
+                                  child: Image.asset(
+                                    colors.isDark ? 'assets/images/app_name_light.png' : 'assets/images/app_name_dark.png',
+                                    height: 28,
+                                  ),
                                 ),
                               ),
                             ),
@@ -968,6 +996,14 @@ class _ShellScreenState extends ConsumerState<ShellScreen> {
     final isDownloaded = state == UpdateDownloadState.downloaded;
     final isInstalling = state == UpdateDownloadState.installing;
 
+    // Split release notes by newline or bullet characters to display list items
+    final List<String> bulletPoints = info.releaseNotes
+        .split('\n')
+        .map((s) => s.trim())
+        .where((s) => s.isNotEmpty)
+        .map((s) => s.startsWith('•') ? s.substring(1).trim() : s)
+        .toList();
+
     return Container(
       padding: const EdgeInsets.all(12),
       decoration: BoxDecoration(
@@ -997,6 +1033,7 @@ class _ShellScreenState extends ConsumerState<ShellScreen> {
           filter: ImageFilter.blur(sigmaX: 5, sigmaY: 5),
           child: Column(
             mainAxisSize: MainAxisSize.min,
+            crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               Row(
                 children: [
@@ -1027,25 +1064,65 @@ class _ShellScreenState extends ConsumerState<ShellScreen> {
                           ),
                         ),
                         const SizedBox(height: 2),
-                        Text(
-                          isDownloading
-                              ? 'Downloading system resources...'
-                              : isDownloaded
-                                  ? 'Update downloaded successfully!'
-                                  : isInstalling
-                                      ? 'Installing update package...'
-                                      : info.releaseNotes,
-                          maxLines: 1,
-                          overflow: TextOverflow.ellipsis,
-                          style: TextStyle(
-                            color: isLight ? const Color(0xFF92400E) : const Color(0xFFFCD34D).withValues(alpha: 0.8),
-                            fontSize: 11,
-                            fontWeight: FontWeight.w500,
-                          ),
+                        Row(
+                          children: [
+                            Expanded(
+                              child: Text(
+                                isDownloading
+                                    ? 'Downloading system resources...'
+                                    : isDownloaded
+                                        ? 'Update downloaded successfully!'
+                                        : isInstalling
+                                            ? 'Installing update package...'
+                                            : 'Tap "What\'s New" to see changes.',
+                                maxLines: 1,
+                                overflow: TextOverflow.ellipsis,
+                                style: TextStyle(
+                                  color: isLight ? const Color(0xFF92400E) : const Color(0xFFFCD34D).withValues(alpha: 0.8),
+                                  fontSize: 11,
+                                  fontWeight: FontWeight.w500,
+                                ),
+                              ),
+                            ),
+                          ],
                         ),
                       ],
                     ),
                   ),
+                  const SizedBox(width: 8),
+                  if (!isDownloading && !isInstalling && bulletPoints.isNotEmpty)
+                    TextButton(
+                      style: TextButton.styleFrom(
+                        padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                        minimumSize: Size.zero,
+                        tapTargetSize: MaterialTapTargetSize.shrinkWrap,
+                      ),
+                      onPressed: () {
+                        setState(() {
+                          _showReleaseNotes = !_showReleaseNotes;
+                        });
+                      },
+                      child: Row(
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          Text(
+                            _showReleaseNotes ? 'COLLAPSE' : "WHAT'S NEW",
+                            style: const TextStyle(
+                              color: Color(0xFFD97706),
+                              fontSize: 9,
+                              fontWeight: FontWeight.w900,
+                              letterSpacing: 0.5,
+                            ),
+                          ),
+                          const SizedBox(width: 2),
+                          Icon(
+                            _showReleaseNotes ? LucideIcons.chevronUp : LucideIcons.chevronDown,
+                            color: const Color(0xFFD97706),
+                            size: 10,
+                          ),
+                        ],
+                      ),
+                    ),
                   const SizedBox(width: 8),
                   if (!isDownloading && !isInstalling)
                     ElevatedButton(
@@ -1114,11 +1191,269 @@ class _ShellScreenState extends ConsumerState<ShellScreen> {
                   ],
                 ),
               ],
+              if (_showReleaseNotes && bulletPoints.isNotEmpty && !isDownloading && !isInstalling) ...[
+                const SizedBox(height: 8),
+                const Divider(
+                  color: Color(0xFFFDE68A),
+                  thickness: 0.5,
+                  height: 12,
+                ),
+                ...bulletPoints.map((point) => Padding(
+                  padding: const EdgeInsets.symmetric(vertical: 4, horizontal: 4),
+                  child: Row(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      const Padding(
+                        padding: EdgeInsets.only(top: 2.0),
+                        child: Icon(
+                          LucideIcons.checkCircle2,
+                          color: Color(0xFFD97706),
+                          size: 12,
+                        ),
+                      ),
+                      const SizedBox(width: 8),
+                      Expanded(
+                        child: Text(
+                          point,
+                          style: TextStyle(
+                            color: isLight ? const Color(0xFF78350F) : Colors.white.withValues(alpha: 0.9),
+                            fontSize: 11,
+                            fontWeight: FontWeight.w600,
+                            height: 1.3,
+                          ),
+                        ),
+                      ),
+                    ],
+                  ),
+                )),
+              ],
             ],
           ),
         ),
       ),
     ).animate().fadeIn(duration: 400.ms).slideY(begin: -0.1, end: 0, curve: Curves.easeOutCubic);
+  }
+
+  Widget _buildNfcScanOverlay(BuildContext context, WidgetRef ref, NfcScanState nfcState, ThemeColors colors) {
+    final isLight = !colors.isDark;
+    return Positioned.fill(
+      child: Container(
+        color: colors.backgroundPrimary.withValues(alpha: 0.7),
+        child: BackdropFilter(
+          filter: ImageFilter.blur(sigmaX: 15, sigmaY: 15),
+          child: Center(
+            child: Container(
+              margin: const EdgeInsets.symmetric(horizontal: 32),
+              padding: const EdgeInsets.all(24),
+              decoration: BoxDecoration(
+                color: isLight ? Colors.white.withValues(alpha: 0.9) : colors.surface.withValues(alpha: 0.95),
+                borderRadius: BorderRadius.circular(30),
+                border: Border.all(
+                  color: colors.border.withValues(alpha: 0.3),
+                  width: 0.75,
+                ),
+                boxShadow: isLight ? DesignTokens.spatialCardShadow : [
+                  BoxShadow(
+                    color: colors.honey.withValues(alpha: 0.1),
+                    blurRadius: 30,
+                    spreadRadius: 2,
+                  ),
+                ],
+              ),
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  _buildNfcStatusIcon(nfcState, colors),
+                  const SizedBox(height: 24),
+                  Text(
+                    _getNfcStatusTitle(nfcState.status),
+                    style: TextStyle(
+                      color: colors.textPrimary,
+                      fontSize: 18,
+                      fontWeight: FontWeight.w900,
+                      letterSpacing: 0.5,
+                    ),
+                    textAlign: TextAlign.center,
+                  ),
+                  const SizedBox(height: 12),
+                  Text(
+                    nfcState.message ?? '',
+                    style: TextStyle(
+                      color: colors.textSecondary.withValues(alpha: 0.8),
+                      fontSize: 13,
+                      height: 1.4,
+                    ),
+                    textAlign: TextAlign.center,
+                  ),
+                  if (nfcState.status == NfcScanStatus.success && nfcState.record != null) ...[
+                    const SizedBox(height: 20),
+                    Container(
+                      padding: const EdgeInsets.all(16),
+                      decoration: BoxDecoration(
+                        color: colors.backgroundPrimary.withValues(alpha: 0.3),
+                        borderRadius: BorderRadius.circular(16),
+                        border: Border.all(color: colors.border.withValues(alpha: 0.2)),
+                      ),
+                      child: Column(
+                        children: [
+                          _buildDetailRow('USER', nfcState.record!.userName, colors),
+                          const Divider(height: 16, thickness: 0.5, color: Colors.grey),
+                          _buildDetailRow('LOCATION', nfcState.tagName ?? 'Registered Tag', colors),
+                          const Divider(height: 16, thickness: 0.5, color: Colors.grey),
+                          _buildDetailRow('WORK MODE', nfcState.record!.workMode.toUpperCase(), colors),
+                          if (nfcState.record!.lastKnownWorkLocation != null) ...[
+                            const Divider(height: 16, thickness: 0.5, color: Colors.grey),
+                            _buildDetailRow('VENUE', nfcState.record!.lastKnownWorkLocation!, colors),
+                          ],
+                          const Divider(height: 16, thickness: 0.5, color: Colors.grey),
+                          _buildDetailRow(
+                            nfcState.record!.checkOutTime != null ? 'CHECK OUT TIME' : 'CHECK IN TIME',
+                            DateFormat('hh:mm a').format(
+                              DateTime.parse(nfcState.record!.checkOutTime ?? nfcState.record!.checkInTime).toLocal()
+                            ),
+                            colors,
+                          ),
+                          if (nfcState.record!.checkOutTime != null) ...[
+                            const Divider(height: 16, thickness: 0.5, color: Colors.grey),
+                            _buildDetailRow('DURATION', nfcState.record!.formattedDuration, colors),
+                          ]
+                        ],
+                      ),
+                    ),
+                  ],
+                  const SizedBox(height: 28),
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      if (nfcState.status == NfcScanStatus.scanning)
+                        OutlinedButton(
+                          style: OutlinedButton.styleFrom(
+                            foregroundColor: colors.textSecondary,
+                            side: BorderSide(color: colors.border),
+                            padding: const EdgeInsets.symmetric(horizontal: 28, vertical: 12),
+                            shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+                          ),
+                          onPressed: () {
+                            NfcManager.instance.stopSession();
+                            ref.read(globalNfcScanningProvider.notifier).reset();
+                          },
+                          child: const Text('CANCEL', style: TextStyle(fontWeight: FontWeight.bold, fontSize: 12)),
+                        )
+                      else
+                        ElevatedButton(
+                          style: ElevatedButton.styleFrom(
+                            backgroundColor: colors.honey,
+                            foregroundColor: colors.backgroundPrimary,
+                            padding: const EdgeInsets.symmetric(horizontal: 40, vertical: 14),
+                            shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+                            elevation: 0,
+                          ),
+                          onPressed: () {
+                            ref.read(globalNfcScanningProvider.notifier).reset();
+                          },
+                          child: const Text('DISMISS', style: TextStyle(fontWeight: FontWeight.bold, fontSize: 12, letterSpacing: 0.5)),
+                        ),
+                    ],
+                  ),
+                ],
+              ),
+            ),
+          ),
+        ),
+      ),
+    );
+  }
+
+  Widget _buildNfcStatusIcon(NfcScanState nfcState, ThemeColors colors) {
+    switch (nfcState.status) {
+      case NfcScanStatus.scanning:
+        return Container(
+          width: 80,
+          height: 80,
+          decoration: BoxDecoration(
+            color: colors.honey.withValues(alpha: 0.1),
+            shape: BoxShape.circle,
+          ),
+          child: Icon(LucideIcons.nfc, color: colors.honey, size: 40),
+        ).animate(onPlay: (controller) => controller.repeat())
+         .scale(begin: const Offset(0.9, 0.9), end: const Offset(1.1, 1.1), duration: 1.seconds, curve: Curves.easeInOut)
+         .blurXY(begin: 0, end: 1, duration: 1.seconds, curve: Curves.easeInOut);
+      case NfcScanStatus.success:
+        return Container(
+          width: 80,
+          height: 80,
+          decoration: BoxDecoration(
+            color: Colors.green.withValues(alpha: 0.1),
+            shape: BoxShape.circle,
+          ),
+          child: const Icon(LucideIcons.checkCircle, color: Colors.green, size: 40),
+        ).animate().scale(duration: 400.ms, curve: Curves.easeOutBack);
+      case NfcScanStatus.error:
+        return Container(
+          width: 80,
+          height: 80,
+          decoration: BoxDecoration(
+            color: Colors.red.withValues(alpha: 0.1),
+            shape: BoxShape.circle,
+          ),
+          child: const Icon(LucideIcons.alertTriangle, color: Colors.red, size: 40),
+        ).animate().shake(duration: 500.ms);
+      case NfcScanStatus.nfcNotAvailable:
+      case NfcScanStatus.nfcDisabled:
+        return Container(
+          width: 80,
+          height: 80,
+          decoration: BoxDecoration(
+            color: Colors.orange.withValues(alpha: 0.1),
+            shape: BoxShape.circle,
+          ),
+          child: const Icon(LucideIcons.nfc, color: Colors.orange, size: 40),
+        );
+      default:
+        return const SizedBox.shrink();
+    }
+  }
+
+  String _getNfcStatusTitle(NfcScanStatus status) {
+    switch (status) {
+      case NfcScanStatus.scanning:
+        return 'TAP NFC TAG';
+      case NfcScanStatus.success:
+        return 'TAP VERIFIED';
+      case NfcScanStatus.error:
+        return 'ACCESS DENIED';
+      case NfcScanStatus.nfcNotAvailable:
+        return 'NFC NOT AVAILABLE';
+      case NfcScanStatus.nfcDisabled:
+        return 'NFC DISABLED';
+      default:
+        return 'NFC SCAN';
+    }
+  }
+
+  Widget _buildDetailRow(String label, String value, ThemeColors colors) {
+    return Row(
+      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+      children: [
+        Text(
+          label,
+          style: TextStyle(
+            color: colors.textSecondary.withValues(alpha: 0.5),
+            fontSize: 10,
+            fontWeight: FontWeight.bold,
+            letterSpacing: 0.5,
+          ),
+        ),
+        Text(
+          value,
+          style: TextStyle(
+            color: colors.textPrimary,
+            fontSize: 12,
+            fontWeight: FontWeight.bold,
+          ),
+        ),
+      ],
+    );
   }
 }
 

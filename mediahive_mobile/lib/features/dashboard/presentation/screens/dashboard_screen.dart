@@ -14,6 +14,8 @@ import '../providers/dashboard_providers.dart';
 import '../../../../core/theme/app_typography.dart';
 import 'package:intl/intl.dart';
 import '../../../../core/theme/app_colors.dart';
+import '../../../attendance/presentation/providers/attendance_provider.dart';
+import '../../../attendance/presentation/screens/qr_scanner_overlay.dart';
 import '../../../tasks/domain/models/task.dart';
 import '../../../calendar/presentation/providers/events_provider.dart';
 import '../../../../shared/widgets/mh_refresh_indicator.dart';
@@ -63,7 +65,10 @@ class DashboardScreen extends ConsumerWidget {
                       children: [
                         _buildGreeting(colors, ref),
                         const SizedBox(height: 32),
-                        
+                        if (!isAdmin) ...[
+                          _buildAttendanceWidget(context, colors, ref),
+                          const SizedBox(height: 32),
+                        ],
                         _buildQuickActions(context, ref, colors),
                         const SizedBox(height: 32),
 
@@ -449,6 +454,242 @@ class DashboardScreen extends ConsumerWidget {
           ],
         ),
       ),
+    );
+  }
+
+  Widget _buildAttendanceWidget(BuildContext context, ThemeColors colors, WidgetRef ref) {
+    final profileAsync = ref.watch(currentUserProfileProvider);
+    final isLight = !colors.isDark;
+    
+    return profileAsync.maybeWhen(
+      data: (profile) {
+        final role = (profile?['role']?.toString() ?? 'member').toLowerCase().trim();
+        
+        // Check role permissions: if role == 'member', show "Guest Account - Attendance Disabled"
+        if (role == 'member') {
+          return Container(
+            padding: const EdgeInsets.symmetric(vertical: 16, horizontal: 20),
+            decoration: BoxDecoration(
+              color: colors.surface.withValues(alpha: 0.4),
+              borderRadius: BorderRadius.circular(20),
+              border: Border.all(color: colors.border.withValues(alpha: 0.5)),
+            ),
+            child: Row(
+              children: [
+                Icon(LucideIcons.shieldAlert, color: colors.textSecondary.withValues(alpha: 0.5), size: 20),
+                const SizedBox(width: 16),
+                Expanded(
+                  child: Text(
+                    'GUEST ACCOUNT • ATTENDANCE DISABLED',
+                    style: TextStyle(
+                      color: colors.textSecondary.withValues(alpha: 0.6),
+                      fontSize: 10,
+                      fontWeight: FontWeight.bold,
+                      letterSpacing: 0.5,
+                    ),
+                  ),
+                ),
+              ],
+            ),
+          );
+        }
+        
+        // Show interactive Attendance status & action card
+        final activeSessionAsync = ref.watch(activeAttendanceSessionProvider);
+        
+        return activeSessionAsync.maybeWhen(
+          data: (activeSession) {
+            final isCheckedIn = activeSession != null;
+            final statusColor = isCheckedIn ? Colors.green : Colors.red;
+            final statusText = isCheckedIn ? '🟢 Checked In' : '🔴 Checked Out';
+            final workModeText = isCheckedIn ? ' (${activeSession.workMode.toUpperCase()})' : '';
+            
+            return GestureDetector(
+              onTap: () => context.push('/attendance'),
+              child: Container(
+                padding: const EdgeInsets.all(16),
+                decoration: BoxDecoration(
+                  color: colors.surface,
+                  borderRadius: BorderRadius.circular(20),
+                  border: Border.all(
+                    color: isCheckedIn ? Colors.green.withValues(alpha: 0.3) : colors.border.withValues(alpha: 0.5),
+                  ),
+                  boxShadow: isLight ? DesignTokens.spatialCardShadow : [
+                    BoxShadow(
+                      color: (isCheckedIn ? Colors.green : colors.honey).withValues(alpha: 0.05),
+                      blurRadius: 15,
+                      offset: const Offset(0, 8),
+                    ),
+                  ],
+                ),
+                child: Row(
+                  children: [
+                    Expanded(
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Row(
+                            children: [
+                              Text(
+                                statusText,
+                                style: TextStyle(
+                                  color: isCheckedIn ? Colors.green : colors.textPrimary,
+                                  fontSize: 15,
+                                  fontWeight: FontWeight.bold,
+                                ),
+                              ),
+                              Text(
+                                workModeText,
+                                style: TextStyle(
+                                  color: colors.textSecondary.withValues(alpha: 0.8),
+                                  fontSize: 12,
+                                  fontWeight: FontWeight.bold,
+                                ),
+                              ),
+                            ],
+                          ),
+                          const SizedBox(height: 6),
+                          if (isCheckedIn) ...[
+                            Text(
+                              'Since ${DateFormat('hh:mm a').format(DateTime.parse(activeSession.checkInTime).toLocal())}',
+                              style: TextStyle(
+                                color: colors.textSecondary.withValues(alpha: 0.6),
+                                fontSize: 11,
+                              ),
+                            ),
+                            if (activeSession.lastKnownWorkLocation != null) ...[
+                              const SizedBox(height: 2),
+                              Text(
+                                'Location: ${activeSession.lastKnownWorkLocation}',
+                                style: TextStyle(
+                                  color: colors.honey.withValues(alpha: 0.8),
+                                  fontSize: 10,
+                                  fontWeight: FontWeight.bold,
+                                ),
+                              ),
+                            ],
+                          ] else ...[
+                            Text(
+                              'Ready to log check-in',
+                              style: TextStyle(
+                                color: colors.textSecondary.withValues(alpha: 0.5),
+                                fontSize: 11,
+                              ),
+                            ),
+                          ],
+                        ],
+                      ),
+                    ),
+                    const SizedBox(width: 16),
+                    Column(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        GestureDetector(
+                          onTap: () {
+                            ref.read(globalNfcScanningProvider.notifier).startScan(
+                              workMode: isCheckedIn ? activeSession.workMode : 'office',
+                              source: 'nfc',
+                            );
+                          },
+                          child: Container(
+                            padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
+                            decoration: BoxDecoration(
+                              gradient: isCheckedIn
+                                  ? const LinearGradient(colors: [Colors.green, Color(0xFF059669)])
+                                  : AppColors.primaryGradient,
+                              borderRadius: BorderRadius.circular(12),
+                              boxShadow: isCheckedIn
+                                  ? [BoxShadow(color: Colors.green.withValues(alpha: 0.2), blurRadius: 6)]
+                                  : DesignTokens.fintechGlowGold,
+                            ),
+                            child: Row(
+                              mainAxisSize: MainAxisSize.min,
+                              children: [
+                                Icon(
+                                  LucideIcons.nfc,
+                                  color: isCheckedIn ? Colors.white : colors.backgroundPrimary,
+                                  size: 14,
+                                ),
+                                const SizedBox(width: 6),
+                                Text(
+                                  isCheckedIn ? 'CHECK OUT' : 'TAP NFC',
+                                  style: TextStyle(
+                                    color: isCheckedIn ? Colors.white : colors.backgroundPrimary,
+                                    fontSize: 10,
+                                    fontWeight: FontWeight.w900,
+                                    letterSpacing: 0.5,
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ),
+                        ),
+                        const SizedBox(height: 8),
+                        GestureDetector(
+                          onTap: () {
+                            showModalBottomSheet(
+                              context: context,
+                              isScrollControlled: true,
+                              backgroundColor: Colors.transparent,
+                              builder: (context) => QrScannerOverlay(
+                                onScan: (payload) {
+                                  Navigator.pop(context);
+                                  ref.read(globalNfcScanningProvider.notifier).startScan(
+                                    workMode: isCheckedIn ? activeSession.workMode : 'office',
+                                    source: 'qr',
+                                    qrPayload: payload,
+                                  );
+                                },
+                              ),
+                            );
+                          },
+                          child: Container(
+                            padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
+                            decoration: BoxDecoration(
+                              gradient: isCheckedIn
+                                  ? const LinearGradient(colors: [Color(0xFF3B82F6), Color(0xFF1D4ED8)])
+                                  : const LinearGradient(colors: [Color(0xFF8B5CF6), Color(0xFF6D28D9)]),
+                              borderRadius: BorderRadius.circular(12),
+                              boxShadow: [
+                                BoxShadow(
+                                  color: (isCheckedIn ? Colors.blue : Colors.purple).withValues(alpha: 0.2),
+                                  blurRadius: 6,
+                                ),
+                              ],
+                            ),
+                            child: Row(
+                              mainAxisSize: MainAxisSize.min,
+                              children: [
+                                Icon(
+                                  LucideIcons.qrCode,
+                                  color: Colors.white,
+                                  size: 14,
+                                ),
+                                const SizedBox(width: 6),
+                                Text(
+                                  isCheckedIn ? 'QR OUT' : 'SCAN QR',
+                                  style: const TextStyle(
+                                    color: Colors.white,
+                                    fontSize: 10,
+                                    fontWeight: FontWeight.w900,
+                                    letterSpacing: 0.5,
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ),
+                        ),
+                      ],
+                    ),
+                  ],
+                ),
+              ),
+            );
+          },
+          orElse: () => const SizedBox.shrink(),
+        );
+      },
+      orElse: () => const SizedBox.shrink(),
     );
   }
 

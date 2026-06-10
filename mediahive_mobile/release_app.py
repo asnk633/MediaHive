@@ -41,6 +41,17 @@ if not GITHUB_TOKEN:
 if not SUPABASE_SERVICE_KEY:
     print("[WARNING] SUPABASE_SERVICE_ROLE_KEY not found in ../.env.local. Supabase sync will be skipped.")
 
+RELEASE_NOTES = (
+    "• NFC & QR Attendance Logging: Real-time, touchless checking directly from the dashboard.\n"
+    "• NFC Tag & Biometrics Registry: Comprehensive registry management & biometric credentials linking.\n"
+    "• Dynamic Attendance Reports: Live operational metrics, log verification, and daily summaries.\n"
+    "• Governance & Shift Policies: Customizable hours, grace periods, overtime, and auto-close configurations.\n"
+    "• Missed Log & Remote Requests: Easy submission, adjustment, and approvals of attendance logs.\n"
+    "• Custom Holiday List: Global and location-specific holiday scheduling and details.\n"
+    "• Top Header & Logo Alignment: Redesigned header with enlarged logo and perfect alignment.\n"
+    "• Fixed Trapped Interfaces: Standardized margins and scrolls to clear global top bar and bottom dock."
+)
+
 # ─── 1. PARSE VERSION ─────────────────────────────────────────────────────────
 if not os.path.exists(PUBSPEC_PATH):
     print(f"[ERROR] pubspec.yaml not found at {PUBSPEC_PATH}!")
@@ -111,7 +122,7 @@ try:
         "tag_name": tag_name,
         "target_commitish": "main",
         "name": f"MediaHive Release {tag_name}",
-        "body": f"• Operational Flow optimization\n• Auto-generated split-architecture release build.\n• Contains performance improvements and bug fixes.",
+        "body": RELEASE_NOTES,
         "draft": False,
         "prerelease": "beta" in tag_name.lower()
     }
@@ -250,7 +261,8 @@ if SUPABASE_SERVICE_KEY and asset_download_url:
     
     payload = [
         {"key": "app_latest_version", "value": raw_version},
-        {"key": "app_download_url", "value": asset_download_url}
+        {"key": "app_download_url", "value": asset_download_url},
+        {"key": "app_release_notes", "value": RELEASE_NOTES}
     ]
     
     req_data = json.dumps(payload).encode('utf-8')

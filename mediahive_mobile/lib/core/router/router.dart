@@ -12,6 +12,13 @@ import '../../features/inventory/presentation/screens/inventory_screen.dart';
 import '../../features/calendar/presentation/screens/calendar_screen.dart';
 import '../../features/governance/presentation/screens/governance_screen.dart';
 import '../../features/auth/presentation/screens/profile_screen.dart';
+import '../../features/attendance/presentation/screens/attendance_dashboard_screen.dart';
+import '../../features/attendance/presentation/screens/attendance_scan_screen.dart';
+import '../../features/attendance/presentation/screens/nfc_management_screen.dart';
+import '../../features/attendance/presentation/screens/attendance_reports_screen.dart';
+import '../../features/attendance/presentation/screens/attendance_policy_screen.dart';
+import '../../features/attendance/presentation/screens/attendance_requests_screen.dart';
+import '../../features/attendance/presentation/screens/holiday_management_screen.dart';
 import '../../features/calendar/presentation/screens/create_event_screen.dart';
 import '../../features/tasks/presentation/screens/create_task_screen.dart';
 import '../../features/dashboard/presentation/screens/dashboard_screen.dart';
@@ -82,6 +89,37 @@ final routerProvider = Provider<GoRouter>((ref) {
           GoRoute(
             path: '/files',
             builder: (context, state) => const DownloadsScreen(),
+          ),
+          GoRoute(
+            path: '/attendance',
+            builder: (context, state) => const AttendanceDashboardScreen(),
+          ),
+          GoRoute(
+            path: '/attendance/scan',
+            builder: (context, state) {
+              final tagId = state.uri.queryParameters['tagId'];
+              return AttendanceScanScreen(tagId: tagId);
+            },
+          ),
+          GoRoute(
+            path: '/governance/nfc-tags',
+            builder: (context, state) => const NfcManagementScreen(),
+          ),
+          GoRoute(
+            path: '/governance/attendance-reports',
+            builder: (context, state) => const AttendanceReportsScreen(),
+          ),
+          GoRoute(
+            path: '/governance/attendance-policy',
+            builder: (context, state) => const AttendancePolicyScreen(),
+          ),
+          GoRoute(
+            path: '/attendance/requests',
+            builder: (context, state) => const AttendanceRequestsScreen(),
+          ),
+          GoRoute(
+            path: '/attendance/holidays',
+            builder: (context, state) => const HolidayManagementScreen(),
           ),
           GoRoute(
             path: '/governance',

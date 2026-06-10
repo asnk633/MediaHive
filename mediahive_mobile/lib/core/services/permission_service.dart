@@ -35,6 +35,12 @@ class PermissionService {
     return allGranted;
   }
 
+  /// Specialized request for Location access
+  static Future<bool> requestLocation() async {
+    final status = await Permission.locationWhenInUse.request();
+    return status.isGranted;
+  }
+
   /// Specialized request for Camera access
   static Future<bool> requestCamera() async {
     final status = await Permission.camera.request();

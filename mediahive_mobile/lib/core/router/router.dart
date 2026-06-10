@@ -46,6 +46,21 @@ final routerProvider = Provider<GoRouter>((ref) {
   return GoRouter(
     navigatorKey: _rootNavigatorKey,
     initialLocation: '/',
+    redirect: (context, state) {
+      final location = state.uri.toString();
+      if (location.startsWith('mediahive://')) {
+        try {
+          final uri = Uri.parse(location);
+          final host = uri.host;
+          final path = uri.path;
+          final query = uri.query.isNotEmpty ? '?${uri.query}' : '';
+          return '/$host$path$query';
+        } catch (_) {
+          return null;
+        }
+      }
+      return null;
+    },
     routes: [
       GoRoute(
         path: '/',

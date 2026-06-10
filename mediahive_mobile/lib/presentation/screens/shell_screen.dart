@@ -248,6 +248,7 @@ class _ShellScreenState extends ConsumerState<ShellScreen> {
                                 ),
                               ),
                             ),
+                            const SizedBox(height: 4),
                             Row(
                               children: [
                                 Container(

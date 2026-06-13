@@ -216,7 +216,7 @@ class _ResetPasswordScreenState extends ConsumerState<ResetPasswordScreen> {
             ],
           ),
           child: Image.asset(
-            'assets/images/logo.png',
+            'assets/brand/icon.png',
             height: 60,
             width: 60,
           ),

@@ -137,7 +137,7 @@ class _StartupScreenState extends ConsumerState<StartupScreen> with SingleTicker
                                 ],
                               ),
                               child: Image.asset(
-                                'assets/images/logo.png',
+                                'assets/brand/icon.png',
                                 fit: BoxFit.contain,
                               ),
                             ),
@@ -150,7 +150,7 @@ class _StartupScreenState extends ConsumerState<StartupScreen> with SingleTicker
                             alignment: Alignment.center,
                             heightFactor: 0.25, // Aggressively trims the empty top/bottom space
                             child: Image.asset(
-                              isDark ? 'assets/images/app_name_light.png' : 'assets/images/app_name_dark.png',
+                              isDark ? 'assets/brand/wordmark-light.png' : 'assets/brand/wordmark-dark.png',
                               key: ValueKey('brand_name_$isDark'), // Prevents ghosting during theme transition
                               width: _showOnboarding ? 280 : 340,
                               fit: BoxFit.contain,

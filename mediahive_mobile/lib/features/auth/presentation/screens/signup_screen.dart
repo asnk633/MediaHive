@@ -170,7 +170,7 @@ class _SignUpScreenState extends ConsumerState<SignUpScreen> {
             ],
           ),
           child: Image.asset(
-            'assets/images/logo.png',
+            'assets/brand/icon.png',
             height: 100,
             width: 100,
           ),
@@ -180,7 +180,7 @@ class _SignUpScreenState extends ConsumerState<SignUpScreen> {
           alignment: Alignment.center,
           heightFactor: 0.25,
           child: Image.asset(
-            isDark ? 'assets/images/app_name_light.png' : 'assets/images/app_name_dark.png',
+            isDark ? 'assets/brand/wordmark-light.png' : 'assets/brand/wordmark-dark.png',
             width: 280,
             fit: BoxFit.contain,
           ).animate().fadeIn(delay: 200.ms).slideY(begin: 0.2, end: 0),

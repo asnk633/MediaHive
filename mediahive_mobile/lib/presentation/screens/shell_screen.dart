@@ -12,12 +12,13 @@ import '../../core/theme_provider.dart';
 import '../../core/providers/user_provider.dart';
 import '../../features/system/presentation/providers/notifications_provider.dart';
 import 'dart:io';
+import 'package:url_launcher/url_launcher.dart';
 
 import '../../shared/widgets/ambient_canvas_background.dart';
 import '../../core/providers/update_provider.dart';
 import '../../core/services/update_service.dart';
 import '../../features/chat/presentation/providers/chat_providers.dart';
-import 'package:model_viewer_plus/model_viewer_plus.dart';
+
 import '../../features/attendance/presentation/providers/attendance_provider.dart';
 import 'package:nfc_manager/nfc_manager.dart';
 import 'package:intl/intl.dart';
@@ -223,7 +224,7 @@ class _ShellScreenState extends ConsumerState<ShellScreen> {
                             width: 54,
                             height: 54,
                             child: Image.asset(
-                              'assets/images/logo.png',
+                              'assets/brand/icon.png',
                               fit: BoxFit.contain,
                             )
                             .animate(onPlay: (controller) => controller.repeat())
@@ -242,7 +243,7 @@ class _ShellScreenState extends ConsumerState<ShellScreen> {
                                   scale: 6.0, // increased size
                                   alignment: Alignment.centerLeft,
                                   child: Image.asset(
-                                    colors.isDark ? 'assets/images/app_name_light.png' : 'assets/images/app_name_dark.png',
+                                    colors.isDark ? 'assets/brand/wordmark-light.png' : 'assets/brand/wordmark-dark.png',
                                     height: 28,
                                   ),
                                 ),
@@ -289,48 +290,54 @@ class _ShellScreenState extends ConsumerState<ShellScreen> {
                                   context.push('/chat');
                                 }
                               },
-                              child: Stack(
-                                clipBehavior: Clip.none,
-                                children: [
-                                  Icon(
-                                    LucideIcons.messageSquare,
-                                    color: colors.iconColor.withValues(alpha: 0.7),
-                                    size: 22,
-                                  ),
-                                  if (unreadChatsCount > 0)
-                                    Positioned(
-                                      top: -2,
-                                      right: -2,
-                                      child: Container(
-                                        padding: const EdgeInsets.all(4),
-                                        decoration: const BoxDecoration(
-                                          color: Color(0xFFEF4444),
-                                          shape: BoxShape.circle,
-                                        ),
-                                        constraints: const BoxConstraints(
-                                          minWidth: 14,
-                                          minHeight: 14,
-                                        ),
-                                        child: Text(
-                                          unreadChatsCount > 9 ? '9+' : unreadChatsCount.toString(),
-                                          style: const TextStyle(
-                                            color: Colors.white,
-                                            fontSize: 8,
-                                            fontWeight: FontWeight.bold,
-                                          ),
-                                          textAlign: TextAlign.center,
-                                        ),
+                              behavior: HitTestBehavior.opaque,
+                              child: SizedBox(
+                                width: 44,
+                                height: 44,
+                                child: Center(
+                                  child: Stack(
+                                    clipBehavior: Clip.none,
+                                    children: [
+                                      Icon(
+                                        LucideIcons.messageSquare,
+                                        color: colors.iconColor.withValues(alpha: 0.7),
+                                        size: 22,
                                       ),
-                                    ),
-                                ],
+                                      if (unreadChatsCount > 0)
+                                        Positioned(
+                                          top: -2,
+                                          right: -2,
+                                          child: Container(
+                                            padding: const EdgeInsets.all(4),
+                                            decoration: const BoxDecoration(
+                                              color: Color(0xFFEF4444),
+                                              shape: BoxShape.circle,
+                                            ),
+                                            constraints: const BoxConstraints(
+                                              minWidth: 14,
+                                              minHeight: 14,
+                                            ),
+                                            child: Text(
+                                              unreadChatsCount > 9 ? '9+' : unreadChatsCount.toString(),
+                                              style: const TextStyle(
+                                                color: Colors.white,
+                                                fontSize: 8,
+                                                fontWeight: FontWeight.bold,
+                                              ),
+                                              textAlign: TextAlign.center,
+                                            ),
+                                          ),
+                                        ),
+                                    ],
+                                  ),
+                                ),
                               ),
                             );
                           },
                         ),
-                        const SizedBox(width: 20),
+                        const SizedBox(width: 8),
                         // Notification Bell
                         Consumer(
-
                           builder: (context, ref, _) {
                             final unreadCount = ref.watch(unreadNotificationsCountProvider);
                             return GestureDetector(
@@ -341,45 +348,52 @@ class _ShellScreenState extends ConsumerState<ShellScreen> {
                                   context.push('/notifications');
                                 }
                               },
-                              child: Stack(
-                                clipBehavior: Clip.none,
-                                children: [
-                                  Icon(
-                                    LucideIcons.bell,
-                                    color: colors.iconColor.withValues(alpha: 0.7),
-                                    size: 22,
-                                  ),
-                                  if (unreadCount > 0)
-                                    Positioned(
-                                      top: -2,
-                                      right: -2,
-                                      child: Container(
-                                        padding: const EdgeInsets.all(4),
-                                        decoration: const BoxDecoration(
-                                          color: Color(0xFFEF4444),
-                                          shape: BoxShape.circle,
-                                        ),
-                                        constraints: const BoxConstraints(
-                                          minWidth: 14,
-                                          minHeight: 14,
-                                        ),
-                                        child: Text(
-                                          unreadCount > 9 ? '9+' : unreadCount.toString(),
-                                          style: const TextStyle(
-                                            color: Colors.white,
-                                            fontSize: 8,
-                                            fontWeight: FontWeight.bold,
-                                          ),
-                                          textAlign: TextAlign.center,
-                                        ),
+                              behavior: HitTestBehavior.opaque,
+                              child: SizedBox(
+                                width: 44,
+                                height: 44,
+                                child: Center(
+                                  child: Stack(
+                                    clipBehavior: Clip.none,
+                                    children: [
+                                      Icon(
+                                        LucideIcons.bell,
+                                        color: colors.iconColor.withValues(alpha: 0.7),
+                                        size: 22,
                                       ),
-                                    ),
-                                ],
+                                      if (unreadCount > 0)
+                                        Positioned(
+                                          top: -2,
+                                          right: -2,
+                                          child: Container(
+                                            padding: const EdgeInsets.all(4),
+                                            decoration: const BoxDecoration(
+                                              color: Color(0xFFEF4444),
+                                              shape: BoxShape.circle,
+                                            ),
+                                            constraints: const BoxConstraints(
+                                              minWidth: 14,
+                                              minHeight: 14,
+                                            ),
+                                            child: Text(
+                                              unreadCount > 9 ? '9+' : unreadCount.toString(),
+                                              style: const TextStyle(
+                                                color: Colors.white,
+                                                fontSize: 8,
+                                                fontWeight: FontWeight.bold,
+                                              ),
+                                              textAlign: TextAlign.center,
+                                            ),
+                                          ),
+                                        ),
+                                    ],
+                                  ),
+                                ),
                               ),
                             );
                           },
                         ),
-                        const SizedBox(width: 20),
+                        const SizedBox(width: 8),
                         Builder(
                           builder: (context) {
                             final profileImagePath = ref.watch(profileImagePathProvider);
@@ -400,24 +414,31 @@ class _ShellScreenState extends ConsumerState<ShellScreen> {
                                   context.push('/profile');
                                 }
                               },
-                              child: Container(
-                                decoration: BoxDecoration(
-                                  shape: BoxShape.circle,
-                                  border: Border.all(
-                                    color: isLight
-                                        ? DesignTokens.lightBorderStrong
-                                        : Colors.white.withValues(alpha: 0.1),
-                                    width: 1.5,
+                              behavior: HitTestBehavior.opaque,
+                              child: SizedBox(
+                                width: 44,
+                                height: 44,
+                                child: Center(
+                                  child: Container(
+                                    decoration: BoxDecoration(
+                                      shape: BoxShape.circle,
+                                      border: Border.all(
+                                        color: isLight
+                                            ? DesignTokens.lightBorderStrong
+                                            : Colors.white.withValues(alpha: 0.1),
+                                        width: 1.5,
+                                      ),
+                                      boxShadow: isLight ? DesignTokens.spatialChipShadow : [],
+                                    ),
+                                    child: CircleAvatar(
+                                      radius: 18,
+                                      backgroundImage: profileImagePath != null
+                                          ? FileImage(File(profileImagePath)) as ImageProvider
+                                          : NetworkImage(
+                                              avatarUrl ?? 'https://www.gravatar.com/avatar/00000000000000000000000000000000?d=mp&f=y'),
+                                      backgroundColor: colors.surface,
+                                    ),
                                   ),
-                                  boxShadow: isLight ? DesignTokens.spatialChipShadow : [],
-                                ),
-                                child: CircleAvatar(
-                                  radius: 18,
-                                  backgroundImage: profileImagePath != null
-                                      ? FileImage(File(profileImagePath)) as ImageProvider
-                                      : NetworkImage(
-                                          avatarUrl ?? 'https://www.gravatar.com/avatar/00000000000000000000000000000000?d=mp&f=y'),
-                                  backgroundColor: colors.surface,
                                 ),
                               ),
                             );
@@ -1323,6 +1344,180 @@ class _ShellScreenState extends ConsumerState<ShellScreen> {
                       ),
                     ),
                   ],
+                  if (nfcState.status == NfcScanStatus.error && nfcState.registeredLatitude != null) ...[
+                    const SizedBox(height: 16),
+                    Container(
+                      padding: const EdgeInsets.all(16),
+                      decoration: BoxDecoration(
+                        color: colors.backgroundPrimary.withValues(alpha: 0.3),
+                        borderRadius: BorderRadius.circular(16),
+                        border: Border.all(color: colors.border.withValues(alpha: 0.2)),
+                      ),
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Center(
+                            child: Text(
+                              'RULE-BASED VALIDATION',
+                              style: TextStyle(
+                                color: colors.honey,
+                                fontSize: 10,
+                                fontWeight: FontWeight.w900,
+                                letterSpacing: 1,
+                              ),
+                            ),
+                          ),
+                          const Divider(height: 16, thickness: 0.5, color: Colors.grey),
+                          _buildDetailRow(
+                            'Registered Location',
+                            nfcState.tagName ?? 'Registered Tag',
+                            colors,
+                          ),
+                          const Divider(height: 12, thickness: 0.5, color: Colors.grey),
+                          _buildDetailRow(
+                            'Distance to Tag',
+                            nfcState.calculatedDistance != null
+                                ? '${nfcState.calculatedDistance!.toStringAsFixed(1)}m'
+                                : (nfcState.gpsFailureReason ?? 'Unknown'),
+                            colors,
+                          ),
+                          const Divider(height: 12, thickness: 0.5, color: Colors.grey),
+                          _buildDetailRow(
+                            'Allowed Radius',
+                            nfcState.registeredRadius != null
+                                ? '${nfcState.registeredRadius!.toInt()}m'
+                                : 'Unknown',
+                            colors,
+                          ),
+                          const Divider(height: 12, thickness: 0.5, color: Colors.grey),
+                          _buildDetailRow(
+                            'GPS Accuracy',
+                            nfcState.gpsAccuracy != null
+                                ? '±${nfcState.gpsAccuracy!.toStringAsFixed(1)}m'
+                                : (nfcState.gpsFailureReason ?? 'Unknown'),
+                            colors,
+                          ),
+                          const Divider(height: 12, thickness: 0.5, color: Colors.grey),
+                          _buildDetailRow(
+                            'Connected WiFi',
+                            nfcState.activeSsid ?? 'Not Connected',
+                            colors,
+                          ),
+                          const Divider(height: 12, thickness: 0.5, color: Colors.grey),
+                          _buildDetailRow(
+                            'Attempts',
+                            nfcState.attempts != null ? '${nfcState.attempts}/3' : '3/3',
+                            colors,
+                          ),
+                          const Divider(height: 12, thickness: 0.5, color: Colors.grey),
+                          Padding(
+                            padding: const EdgeInsets.only(left: 8.0, top: 4, bottom: 4),
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                Text(
+                                  'VERIFICATION SIGNALS:',
+                                  style: TextStyle(
+                                    color: colors.textSecondary.withValues(alpha: 0.6),
+                                    fontSize: 8,
+                                    fontWeight: FontWeight.bold,
+                                    letterSpacing: 0.5,
+                                  ),
+                                ),
+                                const SizedBox(height: 6),
+                                _buildDetailRow(
+                                  '• Scan Source (NFC/QR)',
+                                  nfcState.pointsNfcOrQr > 0 ? 'REQUIRED: MET' : 'REQUIRED: NOT MET',
+                                  colors,
+                                  valueColor: nfcState.pointsNfcOrQr > 0 ? Colors.green : colors.error,
+                                ),
+                                const SizedBox(height: 4),
+                                _buildDetailRow(
+                                  '• Connected Office WiFi',
+                                  nfcState.pointsWifi > 0 ? 'MET (+SSID)' : 'NOT MET',
+                                  colors,
+                                  valueColor: nfcState.pointsWifi > 0 ? Colors.green : colors.textSecondary.withValues(alpha: 0.6),
+                                ),
+                                const SizedBox(height: 4),
+                                _buildDetailRow(
+                                  '• Inside GPS Radius',
+                                  nfcState.pointsGps > 0 ? 'MET (Inside)' : 'NOT MET',
+                                  colors,
+                                  valueColor: nfcState.pointsGps > 0 ? Colors.green : colors.textSecondary.withValues(alpha: 0.6),
+                                ),
+                                const SizedBox(height: 4),
+                                _buildDetailRow(
+                                  '• Biometrics Checked',
+                                  nfcState.pointsBiometrics > 0 ? 'YES' : 'NO',
+                                  colors,
+                                  valueColor: nfcState.pointsBiometrics > 0 ? Colors.green : colors.textSecondary.withValues(alpha: 0.6),
+                                ),
+                              ],
+                            ),
+                          ),
+                          const Divider(height: 12, thickness: 0.5, color: Colors.grey),
+                          _buildDetailRow(
+                            'Eligibility Rule',
+                            'NFC/QR + (GPS or WiFi)',
+                            colors,
+                            valueColor: colors.textPrimary,
+                          ),
+                          const Divider(height: 12, thickness: 0.5, color: Colors.grey),
+                          _buildDetailRow(
+                            'Result',
+                            'Denied',
+                            colors,
+                            valueColor: colors.error,
+                          ),
+                        ],
+                      ),
+                    ),
+                    const SizedBox(height: 16),
+                    Row(
+                      children: [
+                        if (nfcState.currentLatitude != null)
+                          Expanded(
+                            child: OutlinedButton.icon(
+                              style: OutlinedButton.styleFrom(
+                                foregroundColor: colors.textPrimary,
+                                side: BorderSide(color: colors.border),
+                                padding: const EdgeInsets.symmetric(vertical: 12),
+                                shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+                              ),
+                              onPressed: () async {
+                                final url = Uri.parse(
+                                    'https://www.google.com/maps/search/?api=1&query=${nfcState.currentLatitude},${nfcState.currentLongitude}');
+                                if (await canLaunchUrl(url)) {
+                                  await launchUrl(url, mode: LaunchMode.externalApplication);
+                                }
+                              },
+                              icon: const Icon(LucideIcons.map, size: 14),
+                              label: const Text('MY LOCATION', style: TextStyle(fontSize: 10, fontWeight: FontWeight.bold)),
+                            ),
+                          ),
+                        const SizedBox(width: 8),
+                        Expanded(
+                          child: OutlinedButton.icon(
+                            style: OutlinedButton.styleFrom(
+                              foregroundColor: colors.textPrimary,
+                              side: BorderSide(color: colors.border),
+                              padding: const EdgeInsets.symmetric(vertical: 12),
+                              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+                            ),
+                            onPressed: () async {
+                              final url = Uri.parse(
+                                  'https://www.google.com/maps/search/?api=1&query=${nfcState.registeredLatitude},${nfcState.registeredLongitude}');
+                              if (await canLaunchUrl(url)) {
+                                  await launchUrl(url, mode: LaunchMode.externalApplication);
+                                }
+                            },
+                            icon: const Icon(LucideIcons.mapPin, size: 14),
+                            label: const Text('TAG LOCATION', style: TextStyle(fontSize: 10, fontWeight: FontWeight.bold)),
+                          ),
+                        ),
+                      ],
+                    ),
+                  ],
                   const SizedBox(height: 28),
                   Row(
                     mainAxisAlignment: MainAxisAlignment.center,
@@ -1433,7 +1628,7 @@ class _ShellScreenState extends ConsumerState<ShellScreen> {
     }
   }
 
-  Widget _buildDetailRow(String label, String value, ThemeColors colors) {
+  Widget _buildDetailRow(String label, String value, ThemeColors colors, {Color? valueColor}) {
     return Row(
       mainAxisAlignment: MainAxisAlignment.spaceBetween,
       children: [
@@ -1449,7 +1644,7 @@ class _ShellScreenState extends ConsumerState<ShellScreen> {
         Text(
           value,
           style: TextStyle(
-            color: colors.textPrimary,
+            color: valueColor ?? colors.textPrimary,
             fontSize: 12,
             fontWeight: FontWeight.bold,
           ),

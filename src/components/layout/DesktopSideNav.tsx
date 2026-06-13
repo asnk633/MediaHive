@@ -350,7 +350,7 @@ export default function DesktopSideNav() {
                 <div className={cn("flex items-center w-full", isCollapsed ? "justify-center" : "")}>
                     <div className="relative group cursor-pointer shrink-0" onClick={() => nativeNavigate('/home', router, 'DesktopSideNav:Logo')}>
                         <img
-                            src="/media-app-logo-luminous.png"
+                            src="/brand/icon.png"
                             alt="MH"
                             className={cn(
                                 "rounded-xl shrink-0 shadow-2xl transition-all duration-500 group-hover:scale-110 group-hover:rotate-3",
@@ -371,7 +371,7 @@ export default function DesktopSideNav() {
                             >
                                 <div className="relative h-11 w-[160px] overflow-hidden -ml-1">
                                     <img 
-                                        src={theme === 'luminous' ? '/brand-name-dark.png' : '/brand-name-light.png'}
+                                        src={theme === 'luminous' ? '/brand/wordmark-dark.png' : '/brand/wordmark-light.png'}
                                         alt="MediaHive"
                                         className="absolute left-[-12px] top-1/2 -translate-y-1/2 w-[185px] max-w-none h-auto object-contain"
                                     />

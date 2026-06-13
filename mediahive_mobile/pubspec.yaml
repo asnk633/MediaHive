@@ -1,6 +1,6 @@
 name: mediahive_mobile
 description: A new Flutter project for MediaHive.
-version: 1.1.5-beta+14050
+version: 1.1.6-beta+43080
 
 
 environment:
@@ -63,9 +63,16 @@ dependencies:
   excel: ^4.0.6
   crypto: ^3.0.3
   qr_flutter: ^4.1.0
+  mobile_scanner: ^7.0.0
   nfc_manager_ndef: ^1.1.0
+  flutter_map: ^6.1.0
+  latlong2: ^0.9.0
+  network_info_plus: ^6.0.0
+  flutter_secure_storage: ^9.2.2
+  google_sign_in: ^6.2.1
 
 
+  http_parser: any
 dependency_overrides:
   record_platform_interface: 1.1.0
 
@@ -109,6 +116,10 @@ flutter:
     - assets/images/app_icon_padded.png
     - assets/images/app_name_dark.png
     - assets/images/app_name_light.png
+    - assets/brand/icon.png
+    - assets/brand/icon-padded.png
+    - assets/brand/wordmark-dark.png
+    - assets/brand/wordmark-light.png
     - assets/models/logo.glb
     - assets/animations/honey_bee.json
     - assets/animations/bee_looking.json

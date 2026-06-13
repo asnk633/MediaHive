@@ -137,7 +137,7 @@ export default function SupportPage() {
             <div className="bg-foreground/[0.02] rounded-2xl p-6 border border-foreground/5 shadow-sm">
               <div className="flex items-center gap-5 mb-4">
                 <div className="w-16 h-16 flex items-center justify-center overflow-hidden">
-                  <img src="/mediahive-honey-logo.png" alt="MediaHive Logo" className="w-full h-full object-contain" />
+                  <img src="/brand/icon.png" alt="MediaHive Logo" className="w-full h-full object-contain" />
                 </div>
                 <div>
                   <h4 className="font-bold text-lg text-foreground">MediaHive</h4>

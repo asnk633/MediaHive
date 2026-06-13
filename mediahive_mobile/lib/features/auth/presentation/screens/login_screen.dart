@@ -18,7 +18,31 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
   final _emailController = TextEditingController();
   final _passwordController = TextEditingController();
   bool _isLoading = false;
+  bool _isGoogleLoading = false;
   bool _obscurePassword = true;
+  bool _rememberMe = false;
+
+  @override
+  void initState() {
+    super.initState();
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      _loadSavedCredentials();
+    });
+  }
+
+  Future<void> _loadSavedCredentials() async {
+    final authService = ref.read(authServiceProvider);
+    final creds = await authService.loadCredentials();
+    if (creds != null) {
+      if (mounted) {
+        setState(() {
+          _emailController.text = creds['email']!;
+          _passwordController.text = creds['password']!;
+          _rememberMe = true;
+        });
+      }
+    }
+  }
 
   @override
   void dispose() {
@@ -44,6 +68,15 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
         _passwordController.text.trim(),
       );
       
+      if (_rememberMe) {
+        await authService.saveCredentials(
+          _emailController.text.trim(),
+          _passwordController.text.trim(),
+        );
+      } else {
+        await authService.clearCredentials();
+      }
+      
       if (mounted) {
         setState(() => _isLoading = false);
         context.go('/dashboard');
@@ -54,6 +87,27 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(content: Text('Authentication Failed: ${e.toString()}')),
         );
+      }
+    }
+  }
+
+  void _handleGoogleSignIn() async {
+    setState(() => _isGoogleLoading = true);
+    try {
+      final authService = ref.read(authServiceProvider);
+      final response = await authService.signInWithGoogle();
+      if (response != null && mounted) {
+        context.go('/dashboard');
+      }
+    } catch (e) {
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('Google Sign-In Failed: ${e.toString()}')),
+        );
+      }
+    } finally {
+      if (mounted) {
+        setState(() => _isGoogleLoading = false);
       }
     }
   }
@@ -151,7 +205,7 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
             ],
           ),
           child: Image.asset(
-            'assets/images/logo.png',
+            'assets/brand/icon.png',
             height: 100,
             width: 100,
           ),
@@ -161,7 +215,7 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
           alignment: Alignment.center,
           heightFactor: 0.25,
           child: Image.asset(
-            isDark ? 'assets/images/app_name_light.png' : 'assets/images/app_name_dark.png',
+            isDark ? 'assets/brand/wordmark-light.png' : 'assets/brand/wordmark-dark.png',
             width: 280,
             fit: BoxFit.contain,
           ).animate().fadeIn(delay: 200.ms).slideY(begin: 0.2, end: 0),
@@ -262,6 +316,37 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                   ),
                 ),
               ),
+              const SizedBox(height: 12),
+              Row(
+                children: [
+                  SizedBox(
+                    height: 24,
+                    width: 24,
+                    child: Checkbox(
+                      value: _rememberMe,
+                      onChanged: (value) {
+                        setState(() {
+                          _rememberMe = value ?? false;
+                        });
+                      },
+                      activeColor: isDark ? const Color(0xFFFFD700) : const Color(0xFF006EE6),
+                      checkColor: isDark ? Colors.black : Colors.white,
+                      side: BorderSide(color: colors.textSecondary.withValues(alpha: 0.5)),
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(4),
+                      ),
+                    ),
+                  ),
+                  const SizedBox(width: 8),
+                  Text(
+                    'Remember Me',
+                    style: TextStyle(
+                      fontSize: 13,
+                      color: colors.textSecondary.withValues(alpha: 0.8),
+                    ),
+                  ),
+                ],
+              ),
               const SizedBox(height: 28),
               
               SizedBox(
@@ -294,6 +379,57 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                           fontSize: 14,
                         ),
                       ),
+                ),
+              ),
+              const SizedBox(height: 16),
+              Row(
+                children: [
+                  Expanded(child: Divider(color: colors.textSecondary.withValues(alpha: 0.2))),
+                  Padding(
+                    padding: const EdgeInsets.symmetric(horizontal: 16),
+                    child: Text(
+                      'OR',
+                      style: TextStyle(
+                        fontSize: 12,
+                        fontWeight: FontWeight.bold,
+                        color: colors.textSecondary.withValues(alpha: 0.5),
+                      ),
+                    ),
+                  ),
+                  Expanded(child: Divider(color: colors.textSecondary.withValues(alpha: 0.2))),
+                ],
+              ),
+              const SizedBox(height: 16),
+              SizedBox(
+                width: double.infinity,
+                height: 56,
+                child: OutlinedButton.icon(
+                  onPressed: _isGoogleLoading || _isLoading ? null : _handleGoogleSignIn,
+                  icon: _isGoogleLoading 
+                    ? SizedBox(
+                        height: 20,
+                        width: 20,
+                        child: CircularProgressIndicator(
+                          strokeWidth: 2, 
+                          color: colors.textPrimary,
+                        ),
+                      )
+                    : Icon(Icons.login, color: colors.textPrimary),
+                  label: Text(
+                    'CONTINUE WITH GOOGLE',
+                    style: TextStyle(
+                      fontWeight: FontWeight.w900,
+                      letterSpacing: 1.5,
+                      fontSize: 14,
+                      color: colors.textPrimary,
+                    ),
+                  ),
+                  style: OutlinedButton.styleFrom(
+                    side: BorderSide(color: isDark ? Colors.white.withValues(alpha: 0.2) : Colors.black.withValues(alpha: 0.1)),
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(16),
+                    ),
+                  ),
                 ),
               ),
             ],

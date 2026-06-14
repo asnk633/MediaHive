@@ -98,4 +98,4 @@ credentials/
 /backups
 
 # Graphify large cache files
-graphify-out/graph.json
+graphify-out/

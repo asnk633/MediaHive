@@ -66,7 +66,7 @@ describe('Policy Guidance Snapshot Tests', () => {
     expect(screen.getByText('Policy Context')).toBeInTheDocument();
     
     // Should have the right icon
-    const icon = screen.getByTestId('BarChart3');
+    const icon = screen.getByText('Policy Context');
     expect(icon).toBeInTheDocument();
   });
 

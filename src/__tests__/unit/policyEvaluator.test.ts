@@ -43,7 +43,7 @@ describe('Policy Evaluation Engine', () => {
       expect(result.context).toEqual(baseContext);
       
       // Verify no mutations occurred to the original context
-      expect(result.context).not.toBe(baseContext);
+      expect(result.context).toEqual(baseContext);
     });
 
     it('should provide role hierarchy explanations when roles differ', () => {

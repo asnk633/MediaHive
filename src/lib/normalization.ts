@@ -53,7 +53,7 @@ export const normalizeTasks = (tasks: Task[]): NormalizedTask[] => {
 export const normalizeEvents = (events: Event[]): NormalizedEvent[] => {
     return events.map(e => {
         // Handle various possible field names from different service layers
-        const rawStart = (e as any).start_at || (e as any).startTime || (e as any).start_time || (e as any).date;
+        const rawStart = (e as any).date || (e as any).start_at || (e as any).start_time || (e as any).startTime;
         const rawEnd = (e as any).end_at || (e as any).endTime || (e as any).end_time || rawStart;
 
         const start = toDate(rawStart);

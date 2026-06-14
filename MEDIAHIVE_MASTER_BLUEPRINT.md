@@ -455,6 +455,8 @@ USING (tenant_id = (auth.jwt() ->> 'tenant_id')::uuid)
 | Jun 14, 2026 | All | Fixed GitHub Actions CI pipelines (swapped setup-node/action-setup sequence in ci.yml, updated pnpm to latest in e2e-mocked-ui.yml) and pushed changes to resolve PR #84 checks | AI Agent |
 | Jun 14, 2026 | All | Modified .gitignore to ignore the entire graphify-out/ directory, optimizing git and Jules scan performance | AI Agent |
 | Jun 14, 2026 | All | Created remote Google Jules AI session (ID: 8386157609187695369) to run a full bug test on the repository | AI Agent |
+| Jun 14, 2026 | All | Fixed pnpm/action-setup version collision in all 5 GitHub Actions workflows by removing explicit version configurations | AI Agent |
+
 
 
 

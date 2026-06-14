@@ -5,6 +5,8 @@ import { tenantContext } from '@/lib/auth/tenantContext';
 import { tenantQuery, fromTable } from '@/lib/db/tenantQuery';
 import { NotificationSchema } from '@/domain/schemas/notification';
 import { TABLES } from '@/lib/dbTables';
+import { apiClient } from '@/lib/apiClient';
+import { API_BASE } from '@/lib/api-utils';
 
 
 export class AlertService {
@@ -183,6 +185,25 @@ export class AlertService {
         throw error;
       }
 
+      // Trigger local SSE broadcast for real-time delivery
+      if (data?.notification) {
+        try {
+          await apiClient(`${API_BASE}/notification/broadcast`, {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({
+              userId: params.user_id,
+              type: 'new',
+              notification: data.notification
+            })
+          });
+        } catch (broadcastError) {
+          console.warn('[AlertService] ⚠️ Local real-time broadcast failed:', broadcastError);
+        }
+      }
+
       return data?.notification?.id || null;
     } catch (error) {
       console.error('[AlertService] ❌ Error in createNotification:', JSON.stringify(error, null, 2));
@@ -289,7 +310,7 @@ export class AlertService {
    */
   static async markAsRead(notificationId: string): Promise<void> {
     try {
-      const { tenantId } = await tenantContext();
+      const { tenantId, userId } = await tenantContext();
 
       const { error } = await fromTable(TABLES.NOTIFICATIONS)
         .update({ read: true })
@@ -297,6 +318,20 @@ export class AlertService {
         .eq('id', notificationId);
 
       if (error) throw error;
+
+      // Broadcast refresh to update other open tabs
+      try {
+        await apiClient(`${API_BASE}/notification/broadcast`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            userId,
+            type: 'refresh'
+          })
+        });
+      } catch (broadcastError) {
+        console.warn('[AlertService] SSE refresh broadcast failed:', broadcastError);
+      }
     } catch (error) {
       console.error('[AlertService] ❌ Error marking notification as read:', error);
       throw error;
@@ -317,6 +352,20 @@ export class AlertService {
         .eq('read', false);
 
       if (error) throw error;
+
+      // Broadcast refresh to update other open tabs
+      try {
+        await apiClient(`${API_BASE}/notification/broadcast`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            userId,
+            type: 'refresh'
+          })
+        });
+      } catch (broadcastError) {
+        console.warn('[AlertService] SSE refresh broadcast failed:', broadcastError);
+      }
     } catch (error) {
       console.error('[AlertService] ❌ Error marking all as read:', error);
       throw error;
@@ -328,7 +377,7 @@ export class AlertService {
    */
   static async archiveNotification(notificationId: string): Promise<void> {
     try {
-      const { tenantId } = await tenantContext();
+      const { tenantId, userId } = await tenantContext();
 
       const { error } = await fromTable(TABLES.NOTIFICATIONS)
         .delete()
@@ -336,6 +385,20 @@ export class AlertService {
         .eq('id', notificationId);
 
       if (error) throw error;
+
+      // Broadcast refresh to update other open tabs
+      try {
+        await apiClient(`${API_BASE}/notification/broadcast`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            userId,
+            type: 'refresh'
+          })
+        });
+      } catch (broadcastError) {
+        console.warn('[AlertService] SSE refresh broadcast failed:', broadcastError);
+      }
     } catch (error) {
       console.error('[AlertService] ❌ Error deleting notification:', error);
       throw error;

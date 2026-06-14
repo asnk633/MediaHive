@@ -52,6 +52,9 @@ if (typeof window !== 'undefined') {
       // Also set the original variables for backward compatibility
       document.documentElement.style.setProperty('--safe-area-top', `${safeAreaTop}px`);
       document.documentElement.style.setProperty('--safe-area-bottom', `${safeAreaBottom}px`);
+
+      // Mark as initialized for E2E tests
+      (window as any).__SAFE_AREA_INITIALIZED = true;
     } catch (e) {
       // Ensure we don't break the page if something goes wrong
       console.warn('Safe area initializer failed:', e);

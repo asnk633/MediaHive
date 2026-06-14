@@ -62,6 +62,7 @@ graph TD
 
 | Date | Platform / Component | Description | Author |
 | :--- | :--- | :--- | :--- |
+| 2026-06-15 | Web / Real-time | Replaced 30-second and 60-second interval polling for notifications in `NotificationInbox` and `NotificationPanel` with a secure, targeted Server-Sent Events (SSE) subscription. Implemented SSE subscribe and broadcast routes (`/api/notification/subscribe` and `/api/notification/broadcast`), integrated broadcasts into `AlertService` on create/read/archive, and added client-side auto-reconnection with exponential backoff. Verified build and ESLint successfully. | AI Agent |
 | 2026-06-15 | Web / Tests | Identified five modules with zero/low test coverage in `src/features/` (conflictDetection, dateNormalization, recurrenceService, taskRatingService, and useDashboardMetrics) and implemented 57 new unit tests under `src/__tests__/unit/`, lifting coverage of all five modules to 96%+. Verified all 138 unit tests pass successfully. | AI Agent |
 | 2026-06-14 | Web / Capacitor | Refactored all remaining 129 ESLint violations across the Next.js SaaS platform. Replaced `/api/` literals with `${API_BASE}/` template literals, updated navigation to use client-side `nativeNavigate` / server-side `serverRedirect`, and resolved all React hook rule violations. Verified with project-wide ESLint passing with zero warnings/errors and all 81 unit tests passing. | AI Agent |
 | 2026-06-14 | Unified / CI | Resolved Jest test suites resolution and setup-pnpm workflows in Jules Session 8386157609187695369. | AI Agent |

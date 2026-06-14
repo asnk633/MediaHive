@@ -1,10 +1,12 @@
 import React from 'react';
 import { Task } from '@/features/tasks/types/task';
 import { Clock, ArrowUpRight } from 'lucide-react';
-import { format, isAfter, isBefore, addHours } from 'date-fns';
+import { format } from 'date-fns';
 import { useRouter } from 'next/navigation';
 import { nativeNavigate } from '@/lib/utils';
 import { normalizeDate } from '@/lib/dateUtils';
+
+import { getDueSoonTasks } from '@/lib/dashboardMetrics';
 
 interface DueSoonWidgetProps {
     tasks: Task[];
@@ -16,17 +18,7 @@ export const DueSoonWidget = ({ tasks, userRole }: DueSoonWidgetProps) => {
 
     // Filter tasks due in the next 24 hours
     // Also filter out done tasks
-    const dueSoonTasks = tasks.filter(task => {
-        if (task.status === 'done' || !task.due_date) return false;
-
-        const date = normalizeDate(task.due_date);
-        if (!date) return false;
-
-        const now = new Date();
-        const twentyFourHoursLater = addHours(now, 24);
-
-        return isAfter(date, now) && isBefore(date, twentyFourHoursLater);
-    });
+    const dueSoonTasks = getDueSoonTasks(tasks);
 
     if (dueSoonTasks.length === 0) return null;
 

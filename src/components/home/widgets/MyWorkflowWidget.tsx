@@ -4,6 +4,8 @@ import { Video, Edit3, Eye, UploadCloud, Layers } from 'lucide-react';
 import { useRouter } from 'next/navigation';
 import { nativeNavigate } from '@/lib/utils';
 
+import { getMyWorkflowTasks } from '@/lib/dashboardMetrics';
+
 interface MyWorkflowWidgetProps {
     tasks: Task[];
     userId: string;
@@ -13,17 +15,7 @@ export const MyWorkflowWidget = ({ tasks, userId }: MyWorkflowWidgetProps) => {
     const router = useRouter();
 
     // Filter tasks assigned to me
-    const myTasks = tasks.filter(task => {
-        if (task.status === 'done') return false;
-
-        // Handle array of assignees
-        if (Array.isArray(task.assigned_to)) {
-            return task.assigned_to.some(u =>
-                (typeof u === 'string' ? u : u.uid) === userId
-            );
-        }
-        return false;
-    });
+    const myTasks = getMyWorkflowTasks(tasks, userId);
 
     // Bucket by Stage
     const stageCounts = {

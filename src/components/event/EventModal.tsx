@@ -15,7 +15,6 @@ interface EventModalProps {
 }
 
 export function EventModal({ isOpen, onClose, defaultDate, eventToEdit }: EventModalProps) {
-    // eslint-disable-next-line @typescript-eslint/no-unused-vars
     const createEvent = async (_: any) => { console.warn("Events disabled"); };
     const { user } = useAuth();
     const [loading, setLoading] = useState(false);
